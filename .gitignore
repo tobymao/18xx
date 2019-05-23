@@ -10,7 +10,7 @@
 coverage/
 /spec/tmp
 /.bundle
-/public/js/
+/public/js/*.js
 /vendor/bundle
 .rvmrc
 .tags
