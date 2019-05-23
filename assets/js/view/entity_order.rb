@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'component'
 
 require 'engine/player'
@@ -19,7 +21,7 @@ module View
         style['border-left'] = 'black solid thin' if index > 0
 
         owner = " (#{entity.owner.name})" if !entity.is_a?(Engine::Player) && entity.owner
-        h(:div, {style: style}, "#{entity.name}#{owner}")
+        h(:div, { style: style }, "#{entity.name}#{owner}")
       end
 
       h(:div, divs)

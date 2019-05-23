@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'component'
 require 'view/company'
 
@@ -19,7 +21,7 @@ module View
 
     def render_input
       selected_company = state(:selected_company, :scope_company)
-      input = h(:input, {props: {value: @round.min_bid(selected_company)} })
+      input = h(:input, props: { value: @round.min_bid(selected_company) })
 
       create_bid = lambda do
         price = input.JS['elm'].JS['value'].to_i
@@ -44,15 +46,15 @@ module View
 
       h(:div, [
         input,
-        h(:button, {on: {click: decrease_bid}}, '-'),
-        h(:button, {on: {click: increase_bid}}, '+'),
-        h(:button, {on: {click: create_bid}}, 'Place Bid'),
-        h(:button, {on: {click: pass}}, 'Pass'),
+        h(:button, { on: { click: decrease_bid } }, '-'),
+        h(:button, { on: { click: increase_bid } }, '+'),
+        h(:button, { on: { click: create_bid } }, 'Place Bid'),
+        h(:button, { on: { click: pass } }, 'Pass'),
       ])
     end
 
     def render
-      h(:div,'Private Company Auction', [
+      h(:div, 'Private Company Auction', [
         *render_companies,
         render_input,
       ])

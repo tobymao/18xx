@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 class Component
   attr_accessor :node, :root
 
-  def render
-  end
+  def render; end
 
   def h(tag, props = {}, children = nil)
     props_is_hash = props.is_a?(Hash)
@@ -35,12 +36,12 @@ class Component
     raise NotImplementedError unless root?
   end
 
-  def set_state(key, value, scope=nil)
+  def set_state(key, value, scope = nil)
     @root._state[scope || state_key][key] = value
     update
   end
 
-  def state(key, scope=nil)
+  def state(key, scope = nil)
     @root._state[scope || state_key][key]
   end
 
@@ -57,6 +58,7 @@ class Component
 
   def _state
     raise 'Must be root' unless root?
+
     @state ||= Hash.new { |h, k| h[k] = {} }
   end
 end

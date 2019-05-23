@@ -29,6 +29,7 @@ module Engine
       def min_bid(company)
         return unless company
         return company.min_bid if !@auctioning_company && company == companies.first
+
         high_bid = @bids[company].max_by(&:price)
         (high_bid ? high_bid.price : company.min_bid) + @min_increment
       end
@@ -67,7 +68,7 @@ module Engine
           resolve_bids
         else
           min = min_bid(bid.company)
-          raise Engine::GameError.new("Minimum bid is #{min}") if bid.price < min
+          raise Engine::GameError, "Minimum bid is #{min}" if bid.price < min
 
           @bids[bid.company] << bid
         end

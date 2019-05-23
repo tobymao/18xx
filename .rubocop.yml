@@ -12,6 +12,9 @@ Metrics/LineLength:
 Metrics/MethodLength:
   Enabled: false
 
+Style/CommandLiteral:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 

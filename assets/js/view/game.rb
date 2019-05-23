@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'component'
 require 'view/auction_companies'
 require 'view/entity_order'

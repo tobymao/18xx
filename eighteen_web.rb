@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'roda'
 require 'opal'
 require 'opal/sprockets'
@@ -11,11 +13,10 @@ File.write(OPAL_PATH, Opal::Builder.build('./assets/requires.rb')) unless File.f
 class EighteenWeb < Roda
   plugin :public
 
-
   environment = Sprockets::Environment.new
   environment.append_path('lib')
   environment.append_path('assets/js')
-  #environment.js_compressor = :uglifier
+  # environment.js_compressor = :uglifier
 
   route do |r|
     r.public
@@ -39,7 +40,7 @@ class EighteenWeb < Roda
         <script src="https://cdnjs.cloudflare.com/ajax/libs/snabbdom/0.7.3/snabbdom-props.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/snabbdom/0.7.3/snabbdom-eventlisteners.min.js"></script>
         <script src="/js/opal.js"></script>
-        #{Opal::Sprockets.javascript_include_tag('application', options={sprockets: environment, prefix: '/assets', debug: true})}
+        #{Opal::Sprockets.javascript_include_tag('application', options = { sprockets: environment, prefix: '/assets', debug: true })}
       </body>
     </html>
     HTML

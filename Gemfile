@@ -12,7 +12,7 @@ group :development, :test do
   gem 'rubocop'
   gem 'simplecov'
 
-	gem 'c_lexer'
+  gem 'c_lexer'
   gem 'opal'
   gem 'opal-sprockets'
   gem 'uglifier'

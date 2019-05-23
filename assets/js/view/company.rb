@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'component'
 
 module View
   class Company < Component
-    def initialize(company: , bids: [])
+    def initialize(company:, bids: [])
       @company = company
       @bids = bids
     end
@@ -30,7 +32,7 @@ module View
 
       style['background-color'] = 'lightblue' if selected?
 
-      h(:div, {style: style, on: {click: onclick}}, [
+      h(:div, { style: style, on: { click: onclick } }, [
         h(:div, "Company: #{@company.name}"),
         h(:div, "Desc: #{@company.desc}"),
         h(:div, "Value: #{@company.value}"),
