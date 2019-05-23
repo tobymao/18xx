@@ -7,7 +7,7 @@ require 'view/player'
 
 module View
   class Game < Component
-    def initialize(game: game)
+    def initialize(game:)
       @game = game
       @round = @game.round
     end

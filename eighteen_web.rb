@@ -40,7 +40,7 @@ class EighteenWeb < Roda
         <script src="https://cdnjs.cloudflare.com/ajax/libs/snabbdom/0.7.3/snabbdom-props.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/snabbdom/0.7.3/snabbdom-eventlisteners.min.js"></script>
         <script src="/js/opal.js"></script>
-        #{Opal::Sprockets.javascript_include_tag('application', options = { sprockets: environment, prefix: '/assets', debug: true })}
+        #{Opal::Sprockets.javascript_include_tag('application', sprockets: environment, prefix: '/assets', debug: true)}
       </body>
     </html>
     HTML

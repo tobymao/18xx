@@ -4,7 +4,7 @@ require 'component'
 
 module View
   class Player < Component
-    def initialize(player: player)
+    def initialize(player:)
       @player = player
     end
 

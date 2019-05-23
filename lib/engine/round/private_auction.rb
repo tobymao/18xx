@@ -75,12 +75,11 @@ module Engine
       end
 
       def resolve_bids
-        while bids = @bids[@companies.first]
+        while (bids = @bids[@companies.first])
           break if bids.empty?
 
           if bids.size == 1
             accept_bid(bids.first)
-            company = @companies.first
           else
             @auctioning_company = @companies.first
             break

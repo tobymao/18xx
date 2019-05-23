@@ -8,7 +8,7 @@ require 'engine/action/pass'
 
 module View
   class AuctionCompanies < Component
-    def initialize(round: round)
+    def initialize(round:)
       @round = round
       @current_entity = @round.current_entity
     end

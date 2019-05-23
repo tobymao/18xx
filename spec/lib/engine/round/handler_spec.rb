@@ -9,6 +9,7 @@ require 'engine/round/operating'
 module Engine
   describe Round::Handler do
     describe '#finish!' do
+      let(:bank) { Bank.new(1000) }
       let(:players) { [Player.new('a'), Player.new('b')] }
       let(:privates) { [Company::Base.new('private', value: 10, income: 5)] }
       let(:auction) { Round::PrivateAuction.new(players, companies: privates) }
@@ -17,7 +18,7 @@ module Engine
       let(:or_2) { Round::Operating.new(players, num: 2) }
       let(:green_phase) { Phase.green }
 
-      subject { Round::Handler.new(players, privates) }
+      subject { Round::Handler.new(players, privates, bank) }
 
       it 'advances to the proper round' do
         [

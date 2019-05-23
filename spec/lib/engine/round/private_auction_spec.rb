@@ -29,7 +29,7 @@ module Engine
       end
 
       it 'resolves waterfall' do
-        subject.process_action(Action::Bid.new(player_1, private_2, 20))
+        subject.process_action(Action::Bid.new(player_1, private_2, 25))
         expect(player_1.companies).to eq([])
         expect(player_1.cash).to eq(100)
 
@@ -37,7 +37,7 @@ module Engine
         expect(player_2.companies).to eq([private_1])
         expect(player_2.cash).to eq(95)
         expect(player_1.companies).to eq([private_2])
-        expect(player_1.cash).to eq(80)
+        expect(player_1.cash).to eq(75)
       end
     end
   end
