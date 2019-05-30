@@ -5,7 +5,7 @@ require 'engine/round/base'
 
 module Engine
   module Round
-    class PrivateAuction < Base
+    class Auction < Base
       attr_reader :bids, :companies, :min_increment
 
       def finished?
@@ -20,10 +20,6 @@ module Engine
           @current_entity = @last_to_act if @last_to_act
           super
         end
-      end
-
-      def active_entities
-        [@current_entity]
       end
 
       def min_bid(company)

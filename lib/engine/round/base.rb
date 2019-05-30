@@ -5,17 +5,20 @@ require 'engine/game_error'
 module Engine
   module Round
     class Base
-      attr_reader :entities, :current_entity, :current_entities, :active_entities
+      attr_reader :entities, :current_entity, :current_entities
 
       def initialize(entities, **opts)
         @entities = entities
-        @active_entities = [@entities.first]
-        @current_entity = @active_entities.first
+        @current_entity = @entities.first
         init_round(opts)
       end
 
       def current_player
         @current_entity.player
+      end
+
+      def active_entities
+        [@current_entity]
       end
 
       def next_entity
@@ -29,14 +32,13 @@ module Engine
 
       def process_action(action)
         entity = action.entity
-        raise GameError, "It is not {action.entity.name}'s turn" unless can_act?(entity)
+        raise GameError, "It is not #{action.entity.name}'s turn" unless can_act?(entity)
 
         if action.pass?
           pass(entity)
         else
           _process_action(action)
         end
-
         @current_entity = next_entity
       end
 

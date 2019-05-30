@@ -16,7 +16,7 @@ module Engine
     let(:corporation) { Corporation::Base.new('a', name: 'a', tokens: 1) }
     let(:share_price) { SharePrice.from_code('10', 0, 0) }
     let(:subject) { SharePool.new([corporation], bank) }
-    let(:share) { Share.new(corporation, subject, president: true, percent: 20) }
+    let(:share) { Share.new(corporation, owner: subject, president: true, percent: 20) }
 
     before :each do
       player.add_cash(100)

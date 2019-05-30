@@ -1,18 +1,21 @@
 # frozen_string_literal: true
 
+require 'engine/share'
+
 module Engine
   module Corporation
     class Base
-      attr_accessor :par_price, :share_price
-      attr_reader :shares
+      attr_accessor :ipoed, :par_price, :share_price
+      attr_reader :sym, :name, :shares
 
-      def initialize(key, name:, tokens:)
-        @key = key
+      def initialize(sym, name:, tokens:)
+        @sym = sym
         @name = name
         @tokens = tokens
-        @shares = []
+        @shares = [Share.new(self, president: true, percent: 20)] + 8.times.map { Share.new(self, percent: 10) }
         @share_price = nil
         @par_price = nil
+        @ipoed = false
       end
     end
   end

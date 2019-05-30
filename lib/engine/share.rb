@@ -9,11 +9,11 @@ module Engine
     attr_accessor :owner, :president
     attr_reader :corporation, :percent
 
-    def initialize(corporation, owner, president: false, percent: 10)
+    def initialize(corporation, owner: nil, president: false, percent: 10)
       @corporation = corporation
       @president = president
       @percent = percent
-      @owner = owner
+      @owner = owner || corporation
     end
   end
 end

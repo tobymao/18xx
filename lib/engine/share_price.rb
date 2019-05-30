@@ -2,7 +2,7 @@
 
 module Engine
   class SharePrice
-    attr_reader :coordinates, :price, :color, :corporations
+    attr_reader :coordinates, :price, :color, :corporations, :can_par
 
     def self.from_code(code, row, column)
       return nil if !code || code == ''

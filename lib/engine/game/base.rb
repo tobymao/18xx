@@ -2,14 +2,17 @@
 
 require 'engine/bank'
 require 'engine/player'
-require 'engine/round/handler'
+require 'engine/share_pool'
+require 'engine/stock_market'
+require 'engine/round/auction'
+require 'engine/round/stock'
 require 'engine/train/base'
 require 'engine/train/handler'
 
 module Engine
   module Game
     class Base
-      attr_reader :bank, :corporations, :players
+      attr_reader :bank, :corporations, :players, :round
 
       STARTING_CASH = {
         2 => 1200,
@@ -25,17 +28,15 @@ module Engine
         @trains = init_trains
         @corporations = init_corporations
         @companies = init_companies
-        @rounds = init_rounds
-
+        @round = init_round
+        @share_pool = SharePool.new(@corporations, @bank)
+        @stock_market = init_stock_market
         init_starting_cash
       end
 
-      def round
-        @rounds.current
-      end
-
       def process_action(action)
-        round.process_action(action)
+        @round.process_action(action)
+        next_round! if @round.finished?
       end
 
       private
@@ -44,15 +45,19 @@ module Engine
         Bank.new(12_000)
       end
 
+      def init_round
+        Round::Auction.new(@players, companies: @companies, bank: @bank)
+      end
+
+      def init_stock_market
+        StockMarket.new(StockMarket::MARKET)
+      end
+
       def init_companies
         [
           Company::Base.new('Mohawk', value: 20, income: 5),
           Company::TileLaying.new('PRR', value: 30, income: 5),
         ]
-      end
-
-      def init_rounds
-        Round::Handler.new(@players, @companies, @bank)
       end
 
       def init_trains
@@ -77,6 +82,21 @@ module Engine
           @bank.remove_cash(cash)
           player.add_cash(cash)
         end
+      end
+
+      def next_round!(phase)
+        @round =
+          case @round
+          when Round::Auction
+            Round::Stock.new(@players, share_pool: @share_pool, stock_market: @stock_market)
+          when Round::Stock
+            Round::Operating.new(@players)
+          when Round::Operating
+            num = @round.num
+            num < phase.operating_rounds ? Round::Operating.new(@players, num: num + 1) : Stock.new(@players)
+          else
+            raise "Unexected round type #{@round}"
+          end
       end
     end
   end

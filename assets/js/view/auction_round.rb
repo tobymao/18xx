@@ -7,9 +7,10 @@ require 'engine/action/bid'
 require 'engine/action/pass'
 
 module View
-  class AuctionCompanies < Component
-    def initialize(round:)
+  class AuctionRound < Component
+    def initialize(round:, handler:)
       @round = round
+      @handler = handler
       @current_entity = @round.current_entity
     end
 
@@ -25,7 +26,7 @@ module View
 
       create_bid = lambda do
         price = input.JS['elm'].JS['value'].to_i
-        @round.process_action(Engine::Action::Bid.new(@current_entity, selected_company, price))
+        @handler.process_action(Engine::Action::Bid.new(@current_entity, selected_company, price))
         update
       end
 
@@ -40,7 +41,7 @@ module View
       end
 
       pass = lambda do
-        @round.process_action(Engine::Action::Pass.new(@current_entity))
+        @handler.process_action(Engine::Action::Pass.new(@current_entity))
         update
       end
 

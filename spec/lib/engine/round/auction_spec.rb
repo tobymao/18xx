@@ -3,17 +3,17 @@
 require './spec/spec_helper'
 
 require 'engine/action/bid'
-require 'engine/round/private_auction'
+require 'engine/round/auction'
 
 module Engine
-  describe Round::PrivateAuction do
+  describe Round::Auction do
     let(:bank) { Bank.new(1000) }
     let(:player_1) { Player.new('a') }
     let(:player_2) { Player.new('b') }
     let(:private_1) { Company::Base.new('c_1', value: 10, income: 5) }
     let(:private_2) { Company::Base.new('c_2', value: 20, income: 10) }
 
-    subject { Round::PrivateAuction.new([player_1, player_2], bank: bank, companies: [private_1, private_2]) }
+    subject { Round::Auction.new([player_1, player_2], bank: bank, companies: [private_1, private_2]) }
 
     before :each do
       player_1.add_cash(100)

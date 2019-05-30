@@ -20,12 +20,15 @@ module Engine
     ].freeze
     # rubocop:enable Lint/EmptyExpression, Layout/SpaceInsideArrayPercentLiteral, Lint/EmptyInterpolation
 
-    attr_reader :market
+    attr_reader :market, :par_prices
 
     def initialize(market)
+      @par_prices = []
       @market = market.map.with_index do |row, r_index|
         row.map.with_index do |code, c_index|
-          SharePrice.from_code(code, r_index, c_index)
+          price = SharePrice.from_code(code, r_index, c_index)
+          @par_prices << price if price&.can_par
+          price
         end
       end
     end

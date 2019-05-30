@@ -18,6 +18,16 @@ module Engine
       @passed = false
     end
 
+    def shares_by_corporation
+      shares = Hash.new { |h, k| h[k] = [] }
+
+      @shares.each do |share|
+        shares[share.corporation] << share
+      end
+
+      shares
+    end
+
     def player
       self
     end

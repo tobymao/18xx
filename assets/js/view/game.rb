@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 require 'component'
-require 'view/auction_companies'
+require 'view/auction_round'
 require 'view/entity_order'
 require 'view/player'
+require 'view/stock_round'
+
+require 'engine/round/auction'
+require 'engine/round/stock'
 
 module View
   class Game < Component
@@ -17,7 +21,12 @@ module View
     end
 
     def render_action
-      c(AuctionCompanies, round: @round)
+      case @round
+      when Engine::Round::Auction
+        c(AuctionRound, round: @round, handler: @game)
+      when Engine::Round::Stock
+        c(StockRound, round: @round, handler: @game)
+      end
     end
 
     def render
@@ -27,8 +36,8 @@ module View
         h(:div, 'Game test 1889'),
         c(EntityOrder, round: @round),
         render_round,
-        *players,
         render_action,
+        *players,
       ])
     end
   end
