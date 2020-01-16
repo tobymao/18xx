@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'component'
 require 'view/auction_round'
 require 'view/entity_order'
+require 'view/map'
 require 'view/player'
 require 'view/stock_round'
 
@@ -10,11 +10,8 @@ require 'engine/round/auction'
 require 'engine/round/stock'
 
 module View
-  class Game < Component
-    def initialize(game:)
-      @game = game
-      @round = @game.round
-    end
+  class Game < Snabberb::Component
+    needs :game
 
     def render_round
       h(:div, "Round: #{@round.class.name}")
@@ -23,20 +20,23 @@ module View
     def render_action
       case @round
       when Engine::Round::Auction
-        c(AuctionRound, round: @round, handler: @game)
+        h(AuctionRound, game: @game)
       when Engine::Round::Stock
-        c(StockRound, round: @round, handler: @game)
+        h(StockRound, game: @game)
       end
     end
 
     def render
-      players = @game.players.map { |player| c(Player, player: player) }
+      @round = @game.round
+
+      players = @game.players.map { |player| h(Player, player: player) }
 
       h(:div, [
         h(:div, 'Game test 1889'),
-        c(EntityOrder, round: @round),
+        h(EntityOrder, round: @round),
         render_round,
         render_action,
+        h(Map, game: @game),
         *players,
       ])
     end

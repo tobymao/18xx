@@ -2,18 +2,23 @@
 
 source 'https://rubygems.org'
 
+gem 'c_lexer'
+gem 'execjs'
+gem 'mini_racer'
+gem 'opal'
 gem 'roda'
-gem 'thin'
+gem 'sequel'
+gem 'sequel_pg'
+gem 'snabberb'
+gem 'tilt'
 
-group :development, :test do
+group :development do
   gem 'rake'
   gem 'rerun'
-  gem 'rspec'
   gem 'rubocop'
-  gem 'simplecov'
+  gem 'sequel-annotate'
+end
 
-  gem 'c_lexer'
-  gem 'opal'
-  gem 'opal-sprockets'
-  gem 'uglifier'
+group :test do
+  gem 'rspec'
 end

@@ -5,7 +5,7 @@ require 'engine/game_error'
 module Engine
   module Round
     class Base
-      attr_reader :entities, :current_entity, :current_entities
+      attr_reader :entities, :current_entity
 
       def initialize(entities, **opts)
         @entities = entities

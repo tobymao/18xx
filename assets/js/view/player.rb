@@ -1,12 +1,8 @@
 # frozen_string_literal: true
 
-require 'component'
-
 module View
-  class Player < Component
-    def initialize(player:)
-      @player = player
-    end
+  class Player < Snabberb::Component
+    needs :player
 
     def render
       style = {

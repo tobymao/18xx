@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'component'
 require 'view/corporation'
 
 require 'engine/action/buy_share'
@@ -8,16 +7,24 @@ require 'engine/action/float'
 require 'engine/action/sell_share'
 
 module View
-  class StockRound < Component
-    def initialize(round:, handler:)
-      @round = round
-      @handler = handler
+  class StockRound < Snabberb::Component
+    needs :game
+    needs :selected_corporation, default: nil, store: true
+
+    def render
+      @round = @game.round
       @current_entity = @round.current_entity
+
+      h(:div, [
+        *render_corporations,
+        render_input,
+        render_shares,
+      ])
     end
 
     def render_corporations
       @round.share_pool.corporations.map do |corporation|
-        c(Corporation, corporation: corporation)
+        h(Corporation, corporation: corporation)
       end
     end
 
@@ -29,13 +36,11 @@ module View
     end
 
     def render_input
-      selected_corporation = state(:selected_corporation, :scope_corporation)
+      return '' unless @selected_corporation
 
-      return '' unless selected_corporation
-
-      if selected_corporation.ipoed
+      if @selected_corporation.ipoed
         buy = lambda do
-          @handler.process_action(Engine::Action::BuyShare.new(@current_entity, selected_corporation.shares.first))
+          @game.process_action(Engine::Action::BuyShare.new(@current_entity, @selected_corporation.shares.first))
           update
         end
         input = [
@@ -50,7 +55,7 @@ module View
 
         input = @round.stock_market.par_prices.map do |share_price|
           float = lambda do
-            @handler.process_action(Engine::Action::Float.new(@current_entity, selected_corporation, share_price))
+            @game.process_action(Engine::Action::Float.new(@current_entity, @selected_corporation, share_price))
             update
           end
 
@@ -59,14 +64,6 @@ module View
       end
 
       h(:div, 'Choose a par price', input)
-    end
-
-    def render
-      h(:div, [
-        *render_corporations,
-        render_input,
-        render_shares,
-      ])
     end
   end
 end

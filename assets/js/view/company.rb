@@ -1,16 +1,13 @@
 # frozen_string_literal: true
 
-require 'component'
-
 module View
-  class Company < Component
-    def initialize(company:, bids: [])
-      @company = company
-      @bids = bids
-    end
+  class Company < Snabberb::Component
+    needs :company
+    needs :bids
+    needs :selected_company, default: nil, store: true
 
     def selected?
-      @company == state(:selected_company, :scope_company)
+      @company == @selected_company
     end
 
     def render_bidders
@@ -21,7 +18,7 @@ module View
     def render
       onclick = lambda do
         selected_company = selected? ? nil : @company
-        set_state(:selected_company, selected_company, :scope_company)
+        store(:selected_company, selected_company)
       end
 
       style = {

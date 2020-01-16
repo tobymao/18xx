@@ -1,21 +1,18 @@
 # frozen_string_literal: true
 
-require 'component'
-
 module View
-  class Corporation < Component
-    def initialize(corporation:)
-      @corporation = corporation
-    end
+  class Corporation < Snabberb::Component
+    needs :corporation
+    needs :selected_corporation, default: nil, store: true
 
     def selected?
-      @corporation == state(:selected_corporation, :scope_corporation)
+      @corporation == @selected_corporation
     end
 
     def render
       onclick = lambda do
         selected_corporation = selected? ? nil : @corporation
-        set_state(:selected_corporation, selected_corporation, :scope_corporation)
+        store(:selected_corporation, selected_corporation)
       end
 
       style = {

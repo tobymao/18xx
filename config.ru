@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
-require_relative 'eighteen_web'
+dev = ENV['RACK_ENV'] == 'development'
 
-run EighteenWeb.freeze.app
+if dev
+  require 'logger'
+  logger = Logger.new($stdout) # rubocop:disable UselessAssignment
+end
+
+require_relative 'api'
+run(Api.freeze.app)

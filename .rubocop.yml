@@ -1,4 +1,4 @@
-Layout/IndentFirstArrayElement:
+Layout/FirstArrayElementIndentation:
   Enabled: false
 
 Metrics/AbcSize:
