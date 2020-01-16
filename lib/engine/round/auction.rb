@@ -8,6 +8,18 @@ module Engine
     class Auction < Base
       attr_reader :bids, :companies, :min_increment
 
+      def initialize(entities, companies:, bank:, min_increment: 5)
+        super
+
+        @companies = companies.sort_by(&:value)
+        @bank = bank
+        @min_increment = min_increment
+
+        @bids = Hash.new { |h, k| h[k] = [] }
+        @auctioning_company = nil
+        @last_to_act = nil
+      end
+
       def finished?
         @companies.empty?
       end
@@ -36,16 +48,6 @@ module Engine
       end
 
       private
-
-      def init_round(opts)
-        @bank = opts[:bank]
-        @companies = opts[:companies].sort_by(&:value)
-        @bids = Hash.new { |h, k| h[k] = [] }
-        @min_increment = opts[:min_bid] || 5
-
-        @auctioning_company = nil
-        @last_to_act = nil
-      end
 
       def _process_action(bid)
         if @auctioning_company

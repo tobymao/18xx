@@ -7,7 +7,12 @@ require 'engine/action/sell_share'
 module Engine
   module Round
     class Stock < Base
-      attr_reader :share_pool, :stock_market
+      def initialize(entities, share_pool:, stock_market:)
+        super
+
+        @share_pool = share_pool
+        @stock_market = stock_market
+      end
 
       def finished?
         active_entities.all?(&:passed?)

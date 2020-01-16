@@ -12,7 +12,7 @@ require 'engine/train/handler'
 module Engine
   module Game
     class Base
-      attr_reader :bank, :corporations, :players, :round
+      attr_reader :bank, :corporations, :players, :round, :share_pool, :stock_market
 
       STARTING_CASH = {
         2 => 1200,

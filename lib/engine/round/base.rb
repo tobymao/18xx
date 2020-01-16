@@ -7,10 +7,9 @@ module Engine
     class Base
       attr_reader :entities, :current_entity
 
-      def initialize(entities, **opts)
+      def initialize(entities, **_kwargs)
         @entities = entities
         @current_entity = @entities.first
-        init_round(opts)
       end
 
       def current_player
@@ -55,8 +54,6 @@ module Engine
       def _process(_action)
         raise NotImplementedError
       end
-
-      def init_round(opts); end
     end
   end
 end

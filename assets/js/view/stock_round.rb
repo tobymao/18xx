@@ -23,7 +23,7 @@ module View
     end
 
     def render_corporations
-      @round.share_pool.corporations.map do |corporation|
+      @game.share_pool.corporations.map do |corporation|
         h(Corporation, corporation: corporation)
       end
     end
@@ -53,7 +53,7 @@ module View
           display: 'inline-block',
         }
 
-        input = @round.stock_market.par_prices.map do |share_price|
+        input = @game.stock_market.par_prices.map do |share_price|
           float = lambda do
             @game.process_action(Engine::Action::Float.new(@current_entity, @selected_corporation, share_price))
             update
