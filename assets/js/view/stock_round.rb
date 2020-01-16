@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 require 'view/corporation'
+require 'view/round'
 
 require 'engine/action/buy_share'
 require 'engine/action/float'
 require 'engine/action/sell_share'
 
 module View
-  class StockRound < Snabberb::Component
-    needs :game
+  class StockRound < Round
     needs :selected_corporation, default: nil, store: true
 
     def render
@@ -40,8 +40,7 @@ module View
 
       if @selected_corporation.ipoed
         buy = lambda do
-          @game.process_action(Engine::Action::BuyShare.new(@current_entity, @selected_corporation.shares.first))
-          update
+          process_action(Engine::Action::BuyShare.new(@current_entity, @selected_corporation.shares.first))
         end
         input = [
           h(:button, { on: { click: buy } }, 'Buy Share'),
@@ -55,8 +54,7 @@ module View
 
         input = @game.stock_market.par_prices.map do |share_price|
           float = lambda do
-            @game.process_action(Engine::Action::Float.new(@current_entity, @selected_corporation, share_price))
-            update
+            process_action(Engine::Action::Float.new(@current_entity, @selected_corporation, share_price))
           end
 
           h(:div, { style: style, on: { click: float } }, share_price.price)

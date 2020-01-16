@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 require 'view/company'
+require 'view/round'
 
 require 'engine/action/bid'
 require 'engine/action/pass'
 
 module View
-  class AuctionRound < Snabberb::Component
-    needs :game
+  class AuctionRound < Round
     needs :selected_company, default: nil, store: true
 
     def render
@@ -31,8 +31,7 @@ module View
 
       create_bid = lambda do
         price = input.JS['elm'].JS['value'].to_i
-        @game.process_action(Engine::Action::Bid.new(@current_entity, @selected_company, price))
-        update
+        process_action(Engine::Action::Bid.new(@current_entity, @selected_company, price))
       end
 
       decrease_bid = lambda do
@@ -46,8 +45,7 @@ module View
       end
 
       pass = lambda do
-        @game.process_action(Engine::Action::Pass.new(@current_entity))
-        update
+        process_action(Engine::Action::Pass.new(@current_entity))
       end
 
       h(:div, [
