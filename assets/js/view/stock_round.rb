@@ -42,9 +42,8 @@ module View
         buy = lambda do
           process_action(Engine::Action::BuyShare.new(@current_entity, @selected_corporation.shares.first))
         end
-        input = [
-          h(:button, { on: { click: buy } }, 'Buy Share'),
-        ]
+
+        h(:div, [h(:button, { on: { click: buy } }, 'Buy Share')])
       else
         style = {
           cursor: 'pointer',
@@ -52,16 +51,16 @@ module View
           display: 'inline-block',
         }
 
-        input = @game.stock_market.par_prices.map do |share_price|
+        float_values = @game.stock_market.par_prices.map do |share_price|
           float = lambda do
             process_action(Engine::Action::Float.new(@current_entity, @selected_corporation, share_price))
           end
 
           h(:div, { style: style, on: { click: float } }, share_price.price)
         end
-      end
 
-      h(:div, 'Choose a par price', input)
+        h(:div, ['Choose a par price', *float_values])
+      end
     end
   end
 end
