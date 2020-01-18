@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'view/tile'
+
 module View
   class Hex < Snabberb::Component
     SIZE = 100
@@ -14,6 +16,7 @@ module View
 
     def render
       children = [h(:polygon, attrs: { points: self.class::POINTS })]
+      children << h(View::Tile, engine_tile: @tile, rotate_steps: 0) if @tile
 
       props = {
         attrs: {
