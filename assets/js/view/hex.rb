@@ -14,8 +14,16 @@ module View
 
     def render
       children = [h(:polygon, attrs: { points: self.class::POINTS })]
-      children << h(@tile) if @tile
-      h(:g, { attrs: { transform: transform, fill: @tile&.color || 'white', stroke: 'black' } }, children)
+
+      props = {
+        attrs: {
+          transform: transform,
+          fill: @tile&.color || 'white',
+          stroke: 'black'
+        },
+      }
+
+      h(:g, props, children)
     end
 
     def translation
