@@ -12,7 +12,7 @@ require 'engine/train/handler'
 module Engine
   module Game
     class Base
-      attr_reader :bank, :corporations, :players, :round, :share_pool, :stock_market
+      attr_reader :bank, :corporations, :map, :players, :round, :share_pool, :stock_market
 
       STARTING_CASH = {
         2 => 1200,
@@ -31,6 +31,7 @@ module Engine
         @round = init_round
         @share_pool = SharePool.new(@corporations, @bank)
         @stock_market = init_stock_market
+        @map = init_map
         init_starting_cash
       end
 
@@ -73,6 +74,9 @@ module Engine
 
       def init_corporations
         []
+      end
+
+      def init_map
       end
 
       def init_starting_cash

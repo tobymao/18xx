@@ -14,10 +14,13 @@ module View
   class Hex < Snabberb::Component
     SIZE = 100
     POINTS = '100,0 50,-87 -50,-87 -100,-0 -50,87 50,87'
+    LAYOUT = {
+      flat: [SIZE * 3 / 2, SIZE * Math.sqrt(3) / 2],
+      pointy: [SIZE * Math.sqrt(3) / 2, SIZE * 3 / 2],
+    }
 
     needs :tile, default: nil
-    needs :x, default: 0
-    needs :y, default: 0
+    needs :hex
 
     def render
       children = [h(:polygon, attrs: { points: self.class::POINTS })]
@@ -26,14 +29,12 @@ module View
     end
 
     def translation
-      offset = self.class::SIZE
-      x = self.class::SIZE * Math.sqrt(3) / 2 * @x + offset
-      y = self.class::SIZE * 3 / 2 * @y + offset
-      "translate(#{x}, #{y})"
+      t_x, t_y = LAYOUT[@hex.layout]
+      "translate(#{t_x * @hex.x + SIZE}, #{t_y * @hex.y + SIZE})"
     end
 
     def transform
-      "#{translation} rotate(30)"
+      "#{translation}#{@hex.layout == :pointy ? ' rotate(30)' : ''}"
     end
   end
 
@@ -41,15 +42,12 @@ module View
     needs :game
 
     def render
-      h(:svg, { style: { width: '100%', height: '400px' } }, [
-        h(:g, { attrs: { transform: 'scale(0.5)' } }, [
-          h(Hex),
-          h(Hex, x: 2),
-          h(Hex, x: 4),
-          h(Hex, x: 1, y: 1),
-          h(Hex, x: 3, y: 1),
-          h(Hex, x: 2, y: 2),
-        ])
+      hexes = @game.map.hexes.map do |hex|
+        h(Hex, hex: hex)
+      end
+
+      h(:svg, { style: { width: '100%', height: '800px' } }, [
+        h(:g, { attrs: { transform: 'scale(0.5)' } }, hexes)
       ])
     end
   end
