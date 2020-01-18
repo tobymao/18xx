@@ -31,7 +31,7 @@ module Engine
     def self.decode(code)
       cache = []
 
-      paths = code.split(';').map do |path_code|
+      code.split(';').map do |path_code|
         type, params = path_code.split('=')
         params = params.split(',').map { |param| param.split(':') }.to_h
         path(type, params, cache)
@@ -62,6 +62,10 @@ module Engine
       @name = name
       @color = color
       @parts = parts
+    end
+
+    def paths
+      @paths ||= @parts.select { |p| p.is_a?(Path) }
     end
 
     def ==(other)
