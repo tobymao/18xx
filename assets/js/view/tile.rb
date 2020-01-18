@@ -7,8 +7,7 @@ module View
 
     # "plain" just meaning two edges of the hex are connected
     def plain_svg_path(path)
-      a = path.min
-      b = path.max
+      a, b = [path.a.num, path.b.num].sort
 
       # diff = how many steps apart the two edges connected by the path are
       #
@@ -52,9 +51,7 @@ module View
 
     def hex_paths_to_svg_paths
       @engine_tile.paths.flat_map do |path|
-        if path.all? { |x| x.is_a?(Numeric) }
-          plain_svg_path(path)
-        end
+        plain_svg_path(path)
       end
     end
 
