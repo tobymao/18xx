@@ -13,11 +13,19 @@ module Engine
       '8' => 'p=a:0,b:2',
       '9' => 'p=a:0,b:3',
       '57' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3',
+      '1889;C4' => 'c=r:20;p=a:2,b:_0',
+      '1889;K4' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0',
     }.freeze
 
     GREEN = {
       '18' => 'p=a:0,b:3;p=a:1,b:2',
+      '1889;F9' => 'c=r:30;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
     }.freeze
+
+    GRAY = {
+      '1889;B7' => 'c=r:40;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0',
+      '1889;J7' => 'p=a:1,b:5',
+    }
 
     attr_reader :color, :name, :parts, :rotation
 
@@ -26,6 +34,8 @@ module Engine
         color = :yellow
       elsif (code = GREEN[name])
         color = :green
+      elsif (code = GRAY[name])
+        color = :gray
       end
 
       Tile.new(name, color: color, parts: decode(code), **opts)
