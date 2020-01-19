@@ -13,7 +13,7 @@ module Engine
     }
 
     GREEN = {
-      '18' => 'e=a:0,b:3;e=a:1,b:2',
+      '18' => 'p=a:0,b:3;p=a:1,b:2',
     }
 
     attr_reader :color, :name, :parts
