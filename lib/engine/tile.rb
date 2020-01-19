@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-#
+
 require 'engine/city'
 require 'engine/edge'
 require 'engine/path'
@@ -10,18 +10,18 @@ module Engine
       '8' => 'p=a:0,b:3',
       '9' => 'p=a:0,b:2',
       '57' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3',
-    }
+    }.freeze
 
     GREEN = {
       '18' => 'p=a:0,b:3;p=a:1,b:2',
-    }
+    }.freeze
 
     attr_reader :color, :name, :parts
 
-    def self.from(name)
-      if code = YELLOW[name]
+    def self.for(name)
+      if (code = YELLOW[name])
         color = :yellow
-      elsif code = GREEN[name]
+      elsif (code = GREEN[name])
         color = :green
       end
 

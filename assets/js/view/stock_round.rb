@@ -1,14 +1,16 @@
 # frozen_string_literal: true
 
+require 'view/actionable'
 require 'view/corporation'
-require 'view/round'
 
 require 'engine/action/buy_share'
 require 'engine/action/float'
 require 'engine/action/sell_share'
 
 module View
-  class StockRound < Round
+  class StockRound < Snabberb::Component
+    include Actionable
+
     needs :selected_corporation, default: nil, store: true
 
     def render

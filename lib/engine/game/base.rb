@@ -5,6 +5,7 @@ require 'engine/player'
 require 'engine/share_pool'
 require 'engine/stock_market'
 require 'engine/round/auction'
+require 'engine/round/operating'
 require 'engine/round/stock'
 require 'engine/train/base'
 require 'engine/train/handler'
@@ -47,7 +48,8 @@ module Engine
       end
 
       def init_round
-        Round::Auction.new(@players, companies: @companies, bank: @bank)
+        # Round::Auction.new(@players, companies: @companies, bank: @bank)
+        Round::Operating.new(@players)
       end
 
       def init_stock_market
@@ -76,8 +78,7 @@ module Engine
         []
       end
 
-      def init_map
-      end
+      def init_map; end
 
       def init_starting_cash
         cash = self.class::STARTING_CASH[@players.size]

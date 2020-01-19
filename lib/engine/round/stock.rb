@@ -20,11 +20,6 @@ module Engine
 
       private
 
-      def init_round(opts)
-        @share_pool = opts[:share_pool]
-        @stock_market = opts[:stock_market]
-      end
-
       def _process_action(action)
         case action
         when Action::BuyShare

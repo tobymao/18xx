@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 module View
-  class Round < Snabberb::Component
-    needs :game, store: true
+  module Actionable
+    def self.included(base)
+      base.needs :game, store: true
+    end
 
     def process_action(action)
       @game.process_action(action)

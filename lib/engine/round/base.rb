@@ -31,7 +31,7 @@ module Engine
 
       def process_action(action)
         entity = action.entity
-        raise GameError, "It is not #{action.entity.name}'s turn" unless can_act?(entity)
+        raise GameError, "It is not #{entity.name}'s turn" unless can_act?(entity)
 
         if action.pass?
           pass(entity)

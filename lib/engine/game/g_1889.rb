@@ -40,12 +40,12 @@ module Engine
       end
 
       def init_map
-        coordinates = [
-          'A8', 'A10', 'B3', 'B5', 'B7', 'B9', 'B11', 'C4', 'C6', 'C8', 'C10',
-          'D3', 'D5', 'D7', 'D9', 'E2', 'E4', 'E6', 'E8', 'F1', 'F3', 'F5',
-          'F7', 'F9', 'G4', 'G6', 'G8', 'G10', 'G12', 'G14', 'H3', 'H5', 'H7',
-          'H9', 'H11', 'H13', 'I2', 'I4', 'I6', 'I8', 'I10', 'I12', 'J1', 'J3',
-          'J5', 'J7', 'J9', 'J11', 'K4', 'K6', 'K8', 'L7',
+        coordinates = %w[
+          A8 A10 B3 B5 B7 B9 B11 C4 C6 C8 C10
+          D3 D5 D7 D9 E2 E4 E6 E8 F1 F3 F5
+          F7 F9 G4 G6 G8 G10 G12 G14 H3 H5 H7
+          H9 H11 H13 I2 I4 I6 I8 I10 I12 J1 J3
+          J5 J7 J9 J11 K4 K6 K8 L7
         ]
 
         Map.new(coordinates.map { |c| Hex.new(c, layout: :flat) })

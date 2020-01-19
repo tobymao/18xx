@@ -16,7 +16,7 @@ class Api < Roda
          'Content-Type' => 'text/html',
          # 'Strict-Transport-Security'=>'max-age=16070400;', # Uncomment if only allowing https:// access
          'X-Frame-Options' => 'deny',
-         #'X-Content-Type-Options' => 'nosniff',
+         # 'X-Content-Type-Options' => 'nosniff',
          'X-XSS-Protection' => '1; mode=block'
 
   plugin :content_security_policy do |csp|
