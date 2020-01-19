@@ -2,6 +2,7 @@
 
 require 'engine/city'
 require 'engine/edge'
+require 'engine/game_error'
 require 'engine/path'
 
 module Engine
@@ -36,6 +37,8 @@ module Engine
         color = :green
       elsif (code = GRAY[name])
         color = :gray
+      else
+        raise GameError "Tile '#{name}' not found"
       end
 
       Tile.new(name, color: color, parts: decode(code), **opts)
