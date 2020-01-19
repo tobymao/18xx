@@ -7,11 +7,11 @@ require 'engine/path'
 module Engine
   class Tile
     YELLOW = {
+      '5' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:1',
+      '6' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:2',
       '7' => 'p=a:0,b:1',
       '8' => 'p=a:0,b:2',
       '9' => 'p=a:0,b:3',
-      '5' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:1',
-      '6' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:2',
       '57' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3',
     }.freeze
 
