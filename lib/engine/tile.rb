@@ -7,6 +7,7 @@ require 'engine/path'
 module Engine
   class Tile
     YELLOW = {
+      '7' => 'p=a:0,b:1',
       '8' => 'p=a:0,b:3',
       '9' => 'p=a:0,b:2',
       '57' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3',
@@ -16,16 +17,16 @@ module Engine
       '18' => 'p=a:0,b:3;p=a:1,b:2',
     }.freeze
 
-    attr_reader :color, :name, :parts
+    attr_reader :color, :name, :parts, :rotation
 
-    def self.for(name)
+    def self.for(name, **opts)
       if (code = YELLOW[name])
         color = :yellow
       elsif (code = GREEN[name])
         color = :green
       end
 
-      Tile.new(name, color: color, parts: decode(code))
+      Tile.new(name, color: color, parts: decode(code), **opts)
     end
 
     def self.decode(code)
@@ -58,14 +59,22 @@ module Engine
       end
     end
 
-    def initialize(name, color:, parts:)
+    # rotation 0-5
+    def initialize(name, color:, parts:, rotation: 0)
       @name = name
       @color = color
       @parts = parts
+      @rotation = rotation
     end
 
     def paths
       @paths ||= @parts.select { |p| p.is_a?(Path) }
+    end
+
+    def rotate!(clockwise)
+      direction = clockwise ? 1 : -1
+      @rotation += direction
+      @rotation = @rotation % 6
     end
 
     def ==(other)

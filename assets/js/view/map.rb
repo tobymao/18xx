@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/hex'
+require 'view/rotation_selector'
 require 'view/tile_selector'
 
 require 'engine/hex'
@@ -22,7 +23,10 @@ module View
         ]),
       ]
 
-      children << h(TileSelector, hex: @selected_hex_info) if @selected_hex_info
+      if @selected_hex_info
+        children << h(TileSelector)
+        children << h(RotationSelector) if @selected_hex_info[:tile]
+      end
 
       h(:div, children)
     end

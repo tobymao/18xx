@@ -19,13 +19,13 @@ module View
 
     needs :hex
     needs :selected_hex_info, default: nil, store: true
-    needs :location, default: :map
+    needs :role, default: :map
 
     def render
       children = [h(:polygon, attrs: { points: self.class::POINTS })]
       tile = @hex.tile
       children << h(Tile, tile: tile) if tile
-      selected = @selected_hex_info && @selected_hex_info[:hex] == @hex
+      @selected = @selected_hex_info && @selected_hex_info[:hex] == @hex
 
       props = {
         attrs: {
@@ -36,7 +36,7 @@ module View
         on: { click: ->(e) { on_hex_click(e) } },
       }
 
-      props[:attrs]['stroke-width'] = 5 if selected
+      props[:attrs]['stroke-width'] = 5 if @selected
 
       h(:g, props, children)
     end
@@ -51,17 +51,31 @@ module View
     end
 
     def on_hex_click(event)
-      case @location
+      if @selected
+        store(:selected_hex_info, nil)
+        return
+      end
+
+      case @role
       when :map
-        store(:selected_hex_info, hex: @hex, abs_x: event.JS['x'], abs_y: event.JS['y'])
+        rect = event.JS['target'].JS.getBoundingClientRect
+
+        store(
+          :selected_hex_info,
+          hex: @hex,
+          tile: @hex.tile,
+          x: rect.JS['x'],
+          y: rect.JS['y'],
+        )
       when :tile_selector
+        @selected_hex_info[:tile] = @hex.tile
+
         action = Engine::Action::LayTile.new(
           @game.round.current_entity,
           @hex.tile,
           @selected_hex_info[:hex],
         )
         process_action(action)
-        store(:selected_hex_info, nil)
       end
     end
   end

@@ -3,7 +3,6 @@
 module View
   class Tile < Snabberb::Component
     needs :tile
-    needs :rotate_steps, default: 0 # 0-5
 
     # "plain" just meaning two edges of the hex are connected
     def plain_svg_path(path)
@@ -50,7 +49,7 @@ module View
     end
 
     def render
-      h(:g, { attrs: { transform: "rotate(#{60 * @rotate_steps})" } }, hex_paths_to_svg_paths)
+      h(:g, { attrs: { transform: "rotate(#{60 * @tile.rotation})" } }, hex_paths_to_svg_paths)
     end
   end
 end
