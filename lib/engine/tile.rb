@@ -25,7 +25,7 @@ module Engine
     GRAY = {
       '1889;B7' => 'c=r:40;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0',
       '1889;J7' => 'p=a:1,b:5',
-    }
+    }.freeze
 
     attr_reader :color, :name, :parts, :rotation
 
