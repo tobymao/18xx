@@ -22,10 +22,13 @@ module View
         h(Hex, hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for('7')), role: :tile_selector),
         h(Hex, hex: Engine::Hex.new('B2', layout: 'flat', tile: Engine::Tile.for('8')), role: :tile_selector),
         h(Hex, hex: Engine::Hex.new('A3', layout: 'flat', tile: Engine::Tile.for('9')), role: :tile_selector),
+        h(Hex, hex: Engine::Hex.new('B4', layout: 'flat', tile: Engine::Tile.for('5')), role: :tile_selector),
+        h(Hex, hex: Engine::Hex.new('C1', layout: 'flat', tile: Engine::Tile.for('6')), role: :tile_selector),
+        h(Hex, hex: Engine::Hex.new('C3', layout: 'flat', tile: Engine::Tile.for('57')), role: :tile_selector),
       ]
 
       h(:div, { style: style }, [
-        h(:svg, { style: { width: '200px', height: '200px' } }, [
+        h(:svg, { style: { width: '250px', height: '225px' } }, [
           h(:g, { attrs: { transform: 'scale(0.5)' } }, hexes)
         ]),
       ])
