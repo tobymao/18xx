@@ -1,12 +1,33 @@
 # frozen_string_literal: true
 
+require 'set'
+
+require 'engine/edge'
+
 module View
   class Tile < Snabberb::Component
     needs :tile
 
-    # "plain" just meaning two edges of the hex are connected
-    def plain_svg_path(path)
-      a, b = [path.a.num, path.b.num].sort
+    # TODO: support for track when city is not in center of tile (e.g., NY, OO)
+    def render_track_edge_to_city(path)
+      edge = path.find { |p| p.is_a?(Engine::Edge) }
+
+      rotate = 60 * edge.num
+
+      transform = "rotate(#{rotate})"
+
+      d = 'M 0 87 L 0 0'
+
+      [
+        h(:path, attrs: { transform: transform, d: d, stroke: 'black', 'stroke-width' => 8 }),
+      ]
+    end
+
+    # TODO: extract diff and rotate computations to small function and add unit
+    # tests
+    # TODO: add white border to track
+    def render_track_edge_to_edge(path)
+      a, b = path.sort
 
       # diff = how many steps apart the two edges connected by the path are
       #
@@ -42,14 +63,48 @@ module View
       ]
     end
 
-    def hex_paths_to_svg_paths
+    # TODO: support for multiple station locations in one city
+    # TOOD: support for multiple cities on one tile (e.g., NY, OO)
+    def render_cities
+      return [] if @tile.cities.empty?
+
+      city = @tile.cities.first
+
+      city_spot = h(:g, { attrs: { transform: '' } }, [
+                      h(:circle, attrs: { r: 25, fill: 'white' })
+                    ])
+
+      city_revenue = h(:g, { attrs: { transform: 'translate(-30 40)' } }, [
+                      h(:circle, attrs: { r: 14, fill: 'white' }),
+                      h(:text, attrs: { transform: 'translate(-8 6)' }, props: { innerHTML: city.revenue }),
+                    ])
+
+      [
+        city_spot,
+        city_revenue,
+      ]
+    end
+
+    # TODO: support for lawson track
+    def render_track
       @tile.paths.flat_map do |path|
-        plain_svg_path(path)
+        a = path.a
+        b = path.b
+
+        if [a, b].all? { |x| x.is_a?(Engine::Edge) }
+          render_track_edge_to_edge([a.num, b.num])
+        elsif ::Set.new([a.class, b.class]) == ::Set.new([Engine::Edge, Engine::City])
+          render_track_edge_to_city([a, b])
+        end
       end
     end
 
     def render
-      h(:g, { attrs: { transform: "rotate(#{60 * @tile.rotation})" } }, hex_paths_to_svg_paths)
+      children = []
+      children += render_track
+      children += render_cities
+
+      h(:g, { attrs: { transform: "rotate(#{60 * @tile.rotation})" } }, children)
     end
   end
 end
