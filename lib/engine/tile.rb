@@ -10,6 +10,7 @@ require 'engine/path'
 module Engine
   class Tile
     YELLOW = {
+      '1' => 't=r:10,n:A;p=a:0,b:_0;p=a:_0,b:2;t=r:10,n:B;p=a:3,b:_1;p=a:_1,b:5',
       '3' => 't=r:10;p=a:0,b:_0;p=a:_0,b:5',
       '4' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3',
       '5' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:1',
@@ -31,14 +32,14 @@ module Engine
       '14' => 'c=r:30;p=a:0,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:5,b:_0', # s:2
       '16' => 'p=a:0,b:4;p=a:5,b:3',
       '18' => 'p=a:0,b:3;p=a:1,b:2',
-      '81' => 'p=a:0,b:j;p=a:2,b:j;p=a:4,b:j',
+      '81A' => 'p=a:0,b:j;p=a:2,b:j;p=a:4,b:j',
       '1889;F9' => 'c=r:30;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0', # s:2,v:TR
     }.freeze
 
     GRAY = {
-      '1889;B3' => 't=r:20;p=a:0,b:5',
+      '1889;B3' => 't=r:20;p=a:0,b:_0;p=a:_0,b:5',
       '1889;B7' => 'c=r:40;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0', # v:UR
-      '1889;G14' => 't=r:20;p=a:3,b:4',
+      '1889;G14' => 't=r:20;p=a:3,b:_0;p=a:_0,b:4',
       '1889;J7' => 'p=a:1,b:5',
     }.freeze
 
@@ -88,7 +89,7 @@ module Engine
         cache << city
         city
       when 't'
-        town = Town.new(params['r'])
+        town = Town.new(params['r'], params['n'])
         cache << town
         town
       end

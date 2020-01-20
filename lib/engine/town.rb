@@ -2,14 +2,15 @@
 
 module Engine
   class Town
-    attr_reader :revenue
+    attr_reader :name, :revenue
 
-    def initialize(revenue)
+    def initialize(revenue, name = nil)
+      @name = name
       @revenue = revenue.to_i
     end
 
     def ==(other)
-      @revenue == other.revenue
+      (@revenue == other.revenue) && (@name == other.name)
     end
   end
 end

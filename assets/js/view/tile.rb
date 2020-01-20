@@ -155,9 +155,12 @@ module View
       ]
     end
 
-    def render_track_single_town
-      town = @tile.towns.first
-      edges = @tile.paths.flat_map do |p|
+    def render_track_town(town)
+      paths = @tile.paths.select do |p|
+        [p.a, p.b].include?(town)
+      end
+
+      edges = paths.flat_map do |p|
         [p.a, p.b].select { |x| x.is_a?(Engine::Edge) }
       end
 
@@ -169,9 +172,19 @@ module View
         r_track + r_town + r_revenue
 
       elsif edges.count == 1
-      # TODO, e.g., 371
+      # TODO, e.g., IR2
       elsif edges.count > 2
         # TODO, e.g., 141
+      end
+    end
+
+    def render_track_single_town
+      render_track_town(@tile.towns.first)
+    end
+
+    def render_track_double_town
+      @tile.towns.flat_map do |town|
+        render_track_town(town)
       end
     end
 
@@ -194,6 +207,8 @@ module View
         render_track_single_city
       when [0, 1]
         render_track_single_town
+      when [0, 2]
+        render_track_double_town
       else
         raise GameError, "Don't how to render track for #{@tile.towns.count}"\
                          " towns and #{@tile.cities.count} cities on the tile."

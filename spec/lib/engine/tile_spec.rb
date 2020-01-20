@@ -15,6 +15,8 @@ module Engine
     let(:edge5) { Edge.new(5) }
     let(:city) { City.new(20) }
     let(:town) { Town.new(10) }
+    let(:townA) { Town.new(10, 'A') }
+    let(:townB) { Town.new(10, 'B') }
     let(:junction) { Junction.new }
 
     describe '.for' do
@@ -25,10 +27,10 @@ module Engine
       end
 
       it 'should render a lawson track tile' do
-        actual = Tile.for('81')
+        actual = Tile.for('81A')
 
         expected = Tile.new(
-          '81',
+          '81A',
           color: :green,
           parts: [Path.new(edge0, junction), Path.new(edge2, junction), Path.new(edge4, junction)]
         )
@@ -46,6 +48,24 @@ module Engine
         expect(Tile.for('3')).to eq(
           Tile.new('3', color: :yellow, parts: [town, Path.new(edge0, town), Path.new(town, edge5)])
         )
+      end
+
+      it 'should render a double town' do
+        actual = Tile.for('1')
+
+        expected = Tile.new(
+          '1',
+          color: :yellow,
+          parts: [
+            townA,
+            Path.new(edge0, townA),
+            Path.new(townA, edge2),
+            townB,
+            Path.new(edge3, townB),
+            Path.new(townB, edge5),
+          ]
+        )
+        expect(actual).to eq(expected)
       end
     end
   end
