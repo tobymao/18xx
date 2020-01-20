@@ -12,10 +12,10 @@ module View
     needs :selected_hex_info, default: nil, store: true
 
     def render
-      hexes = @game.map.hexes
+      hexes = @game.map.hexes.dup
       # move the selected hex to the back so it renders highest in z space
-      hexes = hexes.rotate(hexes.index(@selected_hex_info[:hex]) + 1) if @selected_hex_info
-      hexes = hexes.map { |hex| h(Hex, hex: hex, game: @game) }
+      hexes << hexes.delete(@selected_hex_info[:hex]) if @selected_hex_info
+      hexes.map! { |hex| h(Hex, hex: hex, game: @game) }
 
       children = [
         h(:svg, { style: { width: '100%', height: '800px' } }, [

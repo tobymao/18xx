@@ -101,11 +101,12 @@ module View
     end
 
     def render
-      h(
-        :g,
-        { attrs: { 'stroke-width' => 1, transform: "rotate(#{60 * @tile.rotation})" } },
-        render_track + render_cities,
-      )
+      attrs = {
+        transform: "rotate(#{60 * @tile.rotation})",
+        'stroke-width' => 1,
+      }
+
+      h(:g, { attrs: attrs }, render_track + render_cities)
     end
   end
 end
