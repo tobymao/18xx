@@ -76,7 +76,7 @@ module View
 
       city_revenue = h(
         :g,
-        { attrs: { transform: "translate(-25 40) rotate(-#{60 * @tile.rotation})" } },
+        { attrs: { 'stroke-width': 1, transform: "translate(-25 40) rotate(-#{60 * @tile.rotation})" } },
         [
           h(:circle, attrs: { r: 14, fill: 'white' }),
           h(:text, attrs: { transform: 'translate(-8 6)' }, props: { innerHTML: city.revenue }),
