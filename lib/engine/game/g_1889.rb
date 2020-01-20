@@ -49,14 +49,17 @@ module Engine
           J5 J7 J9 J11 K4 K6 K8 L7
         ]
 
-        Map.new(coordinates.map do |c|
-                  tile = begin
-                    Tile.for("1889;#{c}")
-                         rescue StandardError
-                           nil
-                  end
-                  Hex.new(c, layout: :flat, tile: tile)
-                end)
+        hexes = coordinates.map do |c|
+          tile =
+            begin
+              Tile.for("1889;#{c}")
+            rescue StandardError
+              nil
+            end
+          Hex.new(c, layout: :flat, tile: tile)
+        end
+
+        Map.new(hexes)
       end
     end
   end

@@ -71,18 +71,19 @@ module View
       city = @tile.cities.first
 
       city_spot = h(:g, { attrs: { transform: '' } }, [
-                      h(:circle, attrs: { r: 25, fill: 'white' })
-                    ])
+        h(:circle, attrs: { r: 25, fill: 'white' })
+      ])
 
-      city_revenue = h(:g, { attrs: { transform: "translate(-25 40) rotate(-#{60 * @tile.rotation})" } }, [
-                      h(:circle, attrs: { r: 14, fill: 'white' }),
-                      h(:text, attrs: { transform: 'translate(-8 6)' }, props: { innerHTML: city.revenue }),
-                    ])
+      city_revenue = h(
+        :g,
+        { attrs: { transform: "translate(-25 40) rotate(-#{60 * @tile.rotation})" } },
+        [
+          h(:circle, attrs: { r: 14, fill: 'white' }),
+          h(:text, attrs: { transform: 'translate(-8 6)' }, props: { innerHTML: city.revenue }),
+        ]
+      )
 
-      [
-        city_spot,
-        city_revenue,
-      ]
+      [city_spot, city_revenue]
     end
 
     # TODO: support for lawson track
@@ -100,10 +101,7 @@ module View
     end
 
     def render
-      children = []
-      children = children.concat(render_track)
-      children = children.concat(render_cities)
-
+      children = render_track + render_cities
       h(:g, { attrs: { transform: "rotate(#{60 * @tile.rotation})" } }, children)
     end
   end
