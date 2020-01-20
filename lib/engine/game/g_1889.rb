@@ -53,7 +53,7 @@ module Engine
           tile =
             begin
               Tile.for("1889;#{c}")
-            rescue StandardError
+            rescue GameError
               nil
             end
           Hex.new(c, layout: :flat, tile: tile)
