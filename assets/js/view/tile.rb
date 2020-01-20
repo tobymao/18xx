@@ -101,8 +101,11 @@ module View
     end
 
     def render
-      children = render_track + render_cities
-      h(:g, { attrs: { transform: "rotate(#{60 * @tile.rotation})" } }, children)
+      h(
+        :g,
+        { attrs: { 'stroke-width' => 1, transform: "rotate(#{60 * @tile.rotation})" } },
+        render_track + render_cities,
+      )
     end
   end
 end
