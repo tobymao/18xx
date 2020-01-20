@@ -43,7 +43,7 @@ module Engine
       elsif (code = GRAY[name])
         color = :gray
       else
-        raise GameError "Tile '#{name}' not found"
+        raise Engine::GameError, "Tile '#{name}' not found"
       end
 
       Tile.new(name, color: color, parts: decode(code), **opts)
