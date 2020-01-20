@@ -4,12 +4,14 @@ require 'engine/city'
 require 'engine/town'
 require 'engine/edge'
 require 'engine/game_error'
+require 'engine/junction'
 require 'engine/path'
 
 module Engine
   class Tile
     YELLOW = {
       '3' => 't=r:10;p=a:0,b:_0;p=a:_0,b:5',
+      '4' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3',
       '5' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:1',
       '6' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:2',
       '7' => 'p=a:0,b:1',
@@ -20,16 +22,23 @@ module Engine
       '437' => 't=r:30;p=a:0,b:_0;p=a:_0,b:2', # 1889 Port
       '438' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:2', # 1889 Kotohira
       '1889;C4' => 'c=r:20;p=a:2,b:_0',
-      '1889;K4' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0',
+      '1889;K4' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0', # v:KO
     }.freeze
 
     GREEN = {
+      '12' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:5,b:_0',
+      '13' => 'c=r:30;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0',
+      '14' => 'c=r:30;p=a:0,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:5,b:_0', # s:2
+      '16' => 'p=a:0,b:4;p=a:5,b:3',
       '18' => 'p=a:0,b:3;p=a:1,b:2',
-      '1889;F9' => 'c=r:30;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
+      '81' => 'p=a:0,b:j;p=a:2,b:j;p=a:4,b:j',
+      '1889;F9' => 'c=r:30;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0', # s:2,v:TR
     }.freeze
 
     GRAY = {
-      '1889;B7' => 'c=r:40;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0',
+      '1889;B3' => 't=r:20;p=a:0,b:5',
+      '1889;B7' => 'c=r:40;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0', # v:UR
+      '1889;G14' => 't=r:20;p=a:3,b:4',
       '1889;J7' => 'p=a:1,b:5',
     }.freeze
 
@@ -66,6 +75,8 @@ module Engine
           case v[0]
           when '_'
             [k, cache[v[1..-1].to_i]]
+          when 'j'
+            [k, Junction.new]
           else
             [k, Edge.new(v)]
           end
@@ -93,6 +104,10 @@ module Engine
 
     def cities
       @cities ||= @parts.select { |p| p.is_a?(City) }
+    end
+
+    def towns
+      @towns ||= @parts.select { |p| p.is_a?(Town) }
     end
 
     def paths

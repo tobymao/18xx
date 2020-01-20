@@ -2,60 +2,78 @@
 
 require 'set'
 
+require 'engine/city'
 require 'engine/edge'
+require 'engine/junction'
+require 'engine/town'
+
+# TODO: add white border to track
+
+SHARP = 1
+GENTLE = 2
+STRAIGHT = 3
 
 module View
   class Tile < Snabberb::Component
     needs :tile
 
-    # TODO: support for track when city is not in center of tile (e.g., NY, OO)
-    def render_track_edge_to_city(path)
-      edge = path.find { |p| p.is_a?(Engine::Edge) }
-
-      rotate = 60 * edge.num
-
-      transform = "rotate(#{rotate})"
-
-      d = 'M 0 87 L 0 0'
-
-      [
-        h(:path, attrs: { transform: transform, d: d, stroke: 'black', 'stroke-width' => 8 }),
-      ]
+    def lawson?
+      @lawson ||= @tile.paths.any? do |p|
+        [p.a, p.b].any? { |x| x.is_a?(Engine::Junction) }
+      end
     end
 
-    # TODO: extract diff and rotate computations to small function and add unit
-    # tests
-    # TODO: add white border to track
-    def render_track_edge_to_edge(path)
-      a, b = path.sort
+    # SHARP, GENTLE, or STRAIGHT
+    def compute_curvilinear_type(edge_a, edge_b)
+      diff = edge_b - edge_a
+      diff = (edge_a - edge_b) % 6 if diff > 3
+      diff
+    end
 
-      # diff = how many steps apart the two edges connected by the path are
-      #
-      # rotate = degrees to rotate the svg path for this track path; e.g., a
-      # normal gentle is 0,2; for 1,3, rotate = 60
-      diff = b - a
-      if diff > 3
-        diff = (a - b) % 6
-        rotate = 60 * b
+    # degrees to rotate the svg path for this track path; e.g., a normal gentle
+    # is 0,2; for 1,3, rotate = 60
+    def compute_track_rotation(edge_a, edge_b)
+      if (edge_b - edge_a) > 3
+        60 * edge_b
       else
-        rotate = 60 * a
+        60 * edge_a
       end
+    end
 
-      transform = "rotate(#{rotate})"
+    # "just track" means no towns/cities
+    def render_just_track
+      if lawson?
+        render_lawson_track
+      else
+        render_curvilinear_track
+      end
+    end
+
+    def render_curvilinear_track
+      @tile.paths.flat_map do |path|
+        render_curvilinear_track_segment(path.a.num, path.b.num)
+      end
+    end
+
+    def render_curvilinear_track_segment(edge_num_a, edge_num_b)
+      a, b = [edge_num_a, edge_num_b].sort
+
+      curvilinear_type = compute_curvilinear_type(a, b)
+      rotation = compute_track_rotation(a, b)
+
+      transform = "rotate(#{rotation})"
 
       d =
-        case diff
-        when 1 # sharp
+        case curvilinear_type
+        when SHARP
           'm 0 85 L 0 75 A 43.30125 43.30125 0 0 0 -64.951875 37.5 L -73.612125 42.5'
-        when 2 # gentle
+        when GENTLE
           'm 0 85 L 0 75 A 129.90375 129.90375 0 0 0 -64.951875 -37.5 L -73.612125 -42.5'
-        when 3 # straight
+        when STRAIGHT
           'm 0 87 L 0 -87'
           # h(:path, attrs: { d: 'm -4 86 L -4 -86', stroke: 'white', 'stroke-width' => 2 }),
           # h(:path, attrs: { d: 'm 4 86 L 4 -86', stroke: 'white',
           # 'stroke-width' => 2 }),
-        else
-          ''
         end
 
       [
@@ -63,40 +81,122 @@ module View
       ]
     end
 
-    # TODO: support for multiple station locations in one city
-    # TOOD: support for multiple cities on one tile (e.g., NY, OO)
-    def render_cities
-      return [] if @tile.cities.empty?
+    def render_lawson_track
+      edge_nums = @tile.paths.flat_map do |p|
+        [p.a, p.b].select { |x| x.is_a?(Engine::Edge) }
+      end.map(&:num)
+      edge_nums.flat_map { |e| render_lawson_track_segment(e) }
+    end
 
+    def render_lawson_track_segment(edge_num)
+      rotate = 60 * edge_num
+
+      props = {
+        attrs: {
+          transform: "rotate(#{rotate})",
+          d: 'M 0 87 L 0 0',
+          stroke: 'black',
+          'stroke-width' => 8
+        }
+      }
+
+      [
+        h(:path, props),
+      ]
+    end
+
+    def render_revenue(revenue)
+      [
+        h(
+          :g,
+          { attrs: { 'stroke-width': 1, transform: "translate(-25 40) rotate(-#{60 * @tile.rotation})" } },
+          [
+            h(:circle, attrs: { r: 14, fill: 'white' }),
+            h(:text, attrs: { transform: 'translate(-8 6)' }, props: { innerHTML: revenue }),
+          ]
+        )
+      ]
+    end
+
+    # render the small rectangle representing a town stop between curvilinear
+    # track connecting A and B
+    def render_town_rect(edge_a, edge_b)
+      width = 8
+      height = 28
+
+      rotation_edge = (edge_b - edge_a) > 3 ? edge_a : edge_b
+      rotation_offset = 60 * rotation_edge
+
+      translation, rotation =
+        case compute_curvilinear_type(edge_a, edge_b)
+        when SHARP
+          [30, -30 + rotation_offset]
+        when GENTLE
+          [5, -60 + rotation_offset]
+        when STRAIGHT
+          [-(height / 2), 90 + rotation_offset]
+        else
+          [0, 0]
+        end
+
+      [
+        h(
+          :g,
+          { attrs: { transform: "rotate(#{rotation})" } },
+          [
+            h(:rect, attrs: {
+                transform: "translate(#{-(width / 2)} #{translation})",
+                height: height,
+                width: width,
+                fill: 'black'
+              }),
+          ]
+        )
+      ]
+    end
+
+    def render_track_single_town
+      town = @tile.towns.first
+      edges = @tile.paths.flat_map do |p|
+        [p.a, p.b].select { |x| x.is_a?(Engine::Edge) }
+      end
+
+      if edges.count == 2
+        edge_nums = edges.map(&:num).sort
+        r_track = render_curvilinear_track_segment(*edge_nums)
+        r_town = render_town_rect(*edge_nums)
+        r_revenue = render_revenue(town.revenue)
+        r_track + r_town + r_revenue
+
+      elsif edges.count == 1
+      # TODO, e.g., 371
+      elsif edges.count > 2
+        # TODO, e.g., 141
+      end
+    end
+
+    # TODO: support for multiple station locations in one city
+    def render_track_single_city
       city = @tile.cities.first
 
-      city_spot = h(:g, { attrs: { transform: '' } }, [
+      city_slot = h(:g, { attrs: { transform: '' } }, [
         h(:circle, attrs: { r: 25, fill: 'white' })
       ])
 
-      city_revenue = h(
-        :g,
-        { attrs: { 'stroke-width': 1, transform: "translate(-25 40) rotate(-#{60 * @tile.rotation})" } },
-        [
-          h(:circle, attrs: { r: 14, fill: 'white' }),
-          h(:text, attrs: { transform: 'translate(-8 6)' }, props: { innerHTML: city.revenue }),
-        ]
-      )
-
-      [city_spot, city_revenue]
+      render_lawson_track + [city_slot] + render_revenue(city.revenue)
     end
 
-    # TODO: support for lawson track
     def render_track
-      @tile.paths.flat_map do |path|
-        a = path.a
-        b = path.b
-
-        if [a, b].all? { |x| x.is_a?(Engine::Edge) }
-          render_track_edge_to_edge([a.num, b.num])
-        elsif ::Set.new([a.class, b.class]) == ::Set.new([Engine::Edge, Engine::City])
-          render_track_edge_to_city([a, b])
-        end
+      case [@tile.cities.count, @tile.towns.count]
+      when [0, 0]
+        render_just_track
+      when [1, 0]
+        render_track_single_city
+      when [0, 1]
+        render_track_single_town
+      else
+        raise GameError, "Don't how to render track for #{@tile.towns.count}"\
+                         " towns and #{@tile.cities.count} cities on the tile."
       end
     end
 
@@ -106,7 +206,7 @@ module View
         'stroke-width' => 1,
       }
 
-      h(:g, { attrs: attrs }, render_track + render_cities)
+      h(:g, { attrs: attrs }, render_track)
     end
   end
 end
