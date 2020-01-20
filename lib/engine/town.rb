@@ -2,5 +2,14 @@
 
 module Engine
   class Town
+    attr_reader :revenue
+
+    def initialize(revenue)
+      @revenue = revenue.to_i
+    end
+
+    def ==(other)
+      @revenue == other.revenue
+    end
   end
 end

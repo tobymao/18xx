@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'engine/city'
+require 'engine/town'
 require 'engine/edge'
 require 'engine/game_error'
 require 'engine/path'
@@ -75,6 +76,10 @@ module Engine
         city = City.new(params['r'])
         cache << city
         city
+      when 't'
+        town = Town.new(params['r'])
+        cache << town
+        town
       end
     end
 

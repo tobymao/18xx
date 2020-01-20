@@ -8,7 +8,9 @@ module Engine
     let(:edge0) { Edge.new(0) }
     let(:edge2) { Edge.new(2) }
     let(:edge3) { Edge.new(3) }
+    let(:edge5) { Edge.new(5) }
     let(:city) { City.new(20) }
+    let(:town) { Town.new(10) }
 
     describe '.for' do
       it 'should render basic tile' do
@@ -20,6 +22,12 @@ module Engine
       it 'should render a city' do
         expect(Tile.for('57')).to eq(
           Tile.new('57', color: :yellow, parts: [city, Path.new(edge0, city), Path.new(city, edge3)])
+        )
+      end
+
+      it 'should render a town' do
+        expect(Tile.for('3')).to eq(
+          Tile.new('3', color: :yellow, parts: [town, Path.new(edge0, town), Path.new(town, edge5)])
         )
       end
     end
