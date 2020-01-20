@@ -101,8 +101,8 @@ module View
 
     def render
       children = []
-      children += render_track
-      children += render_cities
+      children = children.concat(render_track)
+      children = children.concat(render_cities)
 
       h(:g, { attrs: { transform: "rotate(#{60 * @tile.rotation})" } }, children)
     end
