@@ -10,7 +10,7 @@ module Engine
     end
 
     def ==(other)
-      (@revenue == other.revenue) && (@name == other.name)
+      (other.class == Town) && (@revenue == other.revenue) && (@name == other.name)
     end
   end
 end

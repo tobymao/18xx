@@ -5,12 +5,13 @@ require 'engine/town'
 require 'engine/edge'
 require 'engine/game_error'
 require 'engine/junction'
+require 'engine/label'
 require 'engine/path'
 
 module Engine
-  class Tile
+  class Tile # rubocop:disable Metrics/ClassLength
     YELLOW = {
-      '1' => 't=r:10,n:A;p=a:0,b:_0;p=a:_0,b:2;t=r:10,n:B;p=a:3,b:_1;p=a:_1,b:5',
+      '1' => 't=r:10,n:_A;p=a:0,b:_0;p=a:_0,b:2;t=r:10,n:_B;p=a:3,b:_1;p=a:_1,b:5',
       '3' => 't=r:10;p=a:0,b:_0;p=a:_0,b:5',
       '4' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3',
       '5' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:1',
@@ -20,26 +21,68 @@ module Engine
       '9' => 'p=a:0,b:3',
       '57' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3',
       '58' => 't=r:10;p=a:0,b:_0;p=a:_0,b:4',
-      '437' => 't=r:30;p=a:0,b:_0;p=a:_0,b:2', # 1889 Port
-      '438' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:2', # 1889 Kotohira
-      '1889;C4' => 'c=r:20;p=a:2,b:_0',
-      '1889;K4' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0', # v:KO
+      '437' => 't=r:30,n:Port;p=a:0,b:_0;p=a:_0,b:2',
+      '438' => 'c=r:40,n:Kotohira;p=a:0,b:_0;p=a:_0,b:2;l=H', # u: 80 JPY
+      '1889;C4' => 'c=r:20,n:Ohzu;p=a:2,b:_0',
+      '1889;K4' => 'c=r:30,n:Takamatsu;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T', # v:KO
     }.freeze
 
     GREEN = {
       '12' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:5,b:_0',
       '13' => 'c=r:30;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0',
-      '14' => 'c=r:30;p=a:0,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:5,b:_0', # s:2
+      '14' => 'c=r:30,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:5,b:_0',
+      '15' => 'c=r:30,s:2;p=a:0,b:_0;p=a:4,b:_0;p=a:3,b:_0;p=a:5,b:_0',
       '16' => 'p=a:0,b:4;p=a:5,b:3',
       '18' => 'p=a:0,b:3;p=a:1,b:2',
+      '19' => 'p=a:5,b:1;p=a:0,b:3',
+      '20' => 'p=a:0,b:3;p=a:5,b:2',
+      '23' => 'p=a:0,b:3;p=a:0,b:4',
+      '24' => 'p=a:0,b:3;p=a:0,b:2',
+      '25' => 'p=a:0,b:2;p=a:0,b:4',
+      '26' => 'p=a:0,b:3;p=a:0,b:5',
+      '27' => 'p=a:0,b:3;p=a:3,b:4',
+      '28' => 'p=a:0,b:4;p=a:0,b:5',
+      '29' => 'p=a:0,b:4;p=a:5,b:4',
       '81A' => 'p=a:0,b:j;p=a:2,b:j;p=a:4,b:j',
-      '1889;F9' => 'c=r:30;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0', # s:2,v:TR
+      '205' => 'c=r:30;p=a:0,b:_0;p=a:3,b:_0;p=a:4,b:_0',
+      '206' => 'c=r:30;p=a:0,b:_0;p=a:3,b:_0;p=a:5,b:_0',
+      '298' => 'c=r:40,n:_A;c=r:40,n:_B;c=r:40,n:_C;c=r:40,n:_D;l=Chi;'\
+               'p=a:1,b:_0;p=a:0,b:_1;p=a:5,b:_2;p=a:4,b:_3;'\
+               'p=a:_0,b:3;p=a:_2,b:3;p=a:_3,b:3;p=a:_1,b:3',
+      '439' => 'c=r:60,s:2,n:Kotohira;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=H', # u: 80 JPY
+      '440' => 'c=r:40,n:Takamatsu,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:5,b:_0;l=T',
+      '1889;F9' => 'c=r:30,s:2,n:Kouchi;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K', # v:TR
+    }.freeze
+
+    BROWN = {
+      '39' => 'p=a:1,b:5;p=a:0,b:1;p=a:5,b:0',
+      '40' => 'p=a:0,b:2;p=a:2,b:4;p=a:4,b:0',
+      '41' => 'p=a:0,b:3;p=a:3,b:4;p=a:4,b:0',
+      '42' => 'p=a:0,b:3;p=a:3,b:2;p=a:2,b:0',
+
+      '45' => 'p=a:3,b:1;p=a:1,b:5;p=a:0,b:3;p=a:5,b:0',
+      '46' => 'p=a:1,b:5;p=a:3,b:5;p=a:0,b:3;p=a:1,b:0',
+
+      '47' => 'p=a:0,b:3;p=a:3,b:5;p=a:5,b:2;p=a:2,b:0',
+
+      '448' => 'c=r:40,s:2;p=a:0,b:_0;p=a:4,b:_0;p=a:3,b:_0;p=a:5,b:_0',
+
+      '465' => 'c=r:40,s:2,n:Kouchi;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K', # v:TR
+
+      '466' => 'c=r:60,n:Takamatsu,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:5,b:_0;l=T',
+
+      '492' => 'c=r:80,s:3,n:Kotohira;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=H',
+
+      '611' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;',
+
+      'W5' => 'c=r:50,s:6;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
     }.freeze
 
     GRAY = {
+      '456' => 'c=r:70,s:5;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
+      '639' => 'c=r:100,s:4;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
       '1889;B3' => 't=r:20;p=a:0,b:_0;p=a:_0,b:5',
-      '1889;B7' => 'c=r:40;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0', # v:UR
-      '1889;G14' => 't=r:20;p=a:3,b:_0;p=a:_0,b:4',
+      '1889;B7' => 'c=r:40,s:2,n:Uwajima;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0', # v:UR
       '1889;J7' => 'p=a:1,b:5',
     }.freeze
 
@@ -50,6 +93,8 @@ module Engine
         color = :yellow
       elsif (code = GREEN[name])
         color = :green
+      elsif (code = BROWN[name])
+        color = :brown
       elsif (code = GRAY[name])
         color = :gray
       else
@@ -62,14 +107,16 @@ module Engine
     def self.decode(code)
       cache = []
 
-      code.split(';').map do |path_code|
-        type, params = path_code.split('=')
-        params = params.split(',').map { |param| param.split(':') }.to_h
-        path(type, params, cache)
+      code.split(';').map do |part_code|
+        type, params = part_code.split('=')
+
+        params = params.split(',').map { |param| param.split(':') }.to_h if params.include?(':')
+
+        part(type, params, cache)
       end
     end
 
-    def self.path(type, params, cache)
+    def self.part(type, params, cache)
       case type
       when 'p'
         params = params.map do |k, v|
@@ -85,13 +132,17 @@ module Engine
 
         Path.new(params['a'], params['b'])
       when 'c'
-        city = City.new(params['r'])
+        city = City.new(params['r'], params.fetch('s', 1), params['n'])
         cache << city
         city
       when 't'
         town = Town.new(params['r'], params['n'])
         cache << town
         town
+      when 'l'
+        label = Label.new(params)
+        cache << label
+        label
       end
     end
 
@@ -113,6 +164,10 @@ module Engine
 
     def paths
       @paths ||= @parts.select { |p| p.is_a?(Path) }
+    end
+
+    def label
+      @label ||= @parts.find { |p| p.is_a?(Label) }
     end
 
     def rotate!(clockwise)

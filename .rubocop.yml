@@ -4,6 +4,9 @@ Layout/FirstArrayElementIndentation:
 Metrics/AbcSize:
   Enabled: false
 
+Metrics/CyclomaticComplexity:
+  Max: 7
+
 Metrics/BlockLength:
   Enabled: False
 

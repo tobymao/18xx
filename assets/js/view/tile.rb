@@ -4,6 +4,7 @@ require 'set'
 
 require 'engine/city'
 require 'engine/edge'
+require 'engine/game_error'
 require 'engine/junction'
 require 'engine/town'
 
@@ -14,7 +15,7 @@ GENTLE = 2
 STRAIGHT = 3
 
 module View
-  class Tile < Snabberb::Component
+  class Tile < Snabberb::Component # rubocop:disable Metrics/ClassLength
     needs :tile
 
     def lawson?
@@ -105,6 +106,8 @@ module View
       ]
     end
 
+    # TODO: don't use fixed translation, do something clever to find a
+    # reasonable spot on the tile for rendering
     def render_revenue(revenue)
       [
         h(
@@ -188,15 +191,38 @@ module View
       end
     end
 
+    # TODO: render white background to join circles together as one object
+    def render_city_slots_center(slots = 1)
+      x, y = {
+        1 => [0, 0],
+        2 => [-25, 0],
+        3 => [0, -29],
+        4 => [-25, -25],
+        5 => [0, -43],
+        6 => [0, -50],
+      }[slots]
+
+      circles = (0..(slots - 1)).map do |c|
+        rotation = (360 / slots) * c
+        # use the rotation on the outer <g> to position the circle, then use
+        # -rotation on the <circle> so its contents are rendered without
+        # rotation
+        h(:g, { attrs: { transform: "rotate(#{rotation})" } }, [
+          h(:circle, attrs: { r: 25, fill: 'white', transform: "translate(#{x}, #{y}) rotate(#{-rotation})" })
+        ])
+      end
+
+      # undo the rotation of the tile so that the city contents can be rendered
+      # without rotation
+      [h(:g, { attrs: { transform: "rotate(-#{60 * @tile.rotation})" } }, circles)]
+    end
+
     # TODO: support for multiple station locations in one city
     def render_track_single_city
       city = @tile.cities.first
+      slots = city.slots
 
-      city_slot = h(:g, { attrs: { transform: '' } }, [
-        h(:circle, attrs: { r: 25, fill: 'white' })
-      ])
-
-      render_lawson_track + [city_slot] + render_revenue(city.revenue)
+      render_lawson_track + render_city_slots_center(slots) + render_revenue(city.revenue)
     end
 
     def render_track
@@ -210,9 +236,39 @@ module View
       when [0, 2]
         render_track_double_town
       else
-        raise GameError, "Don't how to render track for #{@tile.towns.count}"\
-                         " towns and #{@tile.cities.count} cities on the tile."
+        raise Engine::GameError, "Don't how to render track for #{@tile.towns.count}"\
+                                 " towns and #{@tile.cities.count} cities."
       end
+    end
+
+    # render letter label, like "Z", "H", "OO"
+    def render_label
+      [
+        h(
+          :text,
+          attrs: { transform: 'scale(2.5) translate(10 30)' },
+          props: { innerHTML: @tile.label }
+        )
+      ]
+    end
+
+    # render city/town name iff no other label is present
+    def render_name
+      return [] unless @tile.label.to_s == ''
+
+      revenue_center = (@tile.cities + @tile.towns).compact.find { |c| !c.name.nil? }
+      return [] if revenue_center.nil?
+
+      name = revenue_center.name
+      return [] if name[0] == '_'
+
+      [
+        h(
+          :text,
+          attrs: { transform: 'scale(1.5) translate(10 30)' },
+          props: { innerHTML: name }
+        )
+      ]
     end
 
     def render
@@ -221,7 +277,18 @@ module View
         'stroke-width' => 1,
       }
 
-      h(:g, { attrs: attrs }, render_track)
+      children =
+        begin
+          render_track + render_label + render_name
+        rescue Engine::GameError => e
+          # TODO: send to console.error
+          puts("Engine::GameError: Cannot render Tile '#{@tile.name}': #{e}")
+          [
+            h(:text, attrs: { transform: 'scale(2.5)' }, props: { innerHTML: @tile.name })
+          ]
+        end
+
+      h(:g, { attrs: attrs }, children)
     end
   end
 end

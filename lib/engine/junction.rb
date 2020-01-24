@@ -2,8 +2,8 @@
 
 module Engine
   class Junction
-    def ==(_other)
-      true
+    def ==(other)
+      other.class == Junction
     end
   end
 end

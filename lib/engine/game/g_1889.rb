@@ -6,6 +6,7 @@ require 'engine/company/tile_laying'
 require 'engine/company/terrain_discount'
 require 'engine/corporation/base'
 require 'engine/game/base'
+require 'engine/game_error'
 require 'engine/hex'
 require 'engine/map'
 require 'engine/tile'
@@ -40,6 +41,18 @@ module Engine
         ]
       end
 
+      def initial_tiles
+        @initial_tiles ||= {
+          'B3' => ['1889;B3', 0],
+          'B7' => ['1889;B7', 0],
+          'C4' => ['1889;C4', 0],
+          'F9' => ['1889;F9', 0],
+          'G14' => ['1889;B3', 4],
+          'J7' => ['1889;J7', 0],
+          'K4' => ['1889;K4', 0],
+        }
+      end
+
       def init_map
         coordinates = %w[
           A8 A10 B3 B5 B7 B9 B11 C4 C6 C8 C10
@@ -52,10 +65,12 @@ module Engine
         hexes = coordinates.map do |c|
           tile =
             begin
-              Tile.for("1889;#{c}")
-            rescue GameError
+              name, rotation = initial_tiles[c]
+              Tile.for(name, rotation: rotation)
+            rescue Engine::GameError
               nil
             end
+
           Hex.new(c, layout: :flat, tile: tile)
         end
 

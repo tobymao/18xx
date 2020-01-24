@@ -17,6 +17,14 @@ module View
       pointy: [SIZE * Math.sqrt(3) / 2, SIZE * 3 / 2],
     }.freeze
 
+    COLOR = {
+      white: '#fff',
+      yellow: '#fde900',
+      green: '#71bf44',
+      brown: '#cb7745',
+      gray: '#bcbdc0',
+    }.freeze
+
     needs :hex
     needs :selected_hex_info, default: nil, store: true
     needs :role, default: :map
@@ -30,7 +38,7 @@ module View
       props = {
         attrs: {
           transform: transform,
-          fill: tile&.color || 'white',
+          fill: COLOR.fetch(tile&.color, 'white'),
           stroke: 'black',
         },
         on: { click: ->(e) { on_hex_click(e) } },
