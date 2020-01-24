@@ -27,22 +27,23 @@ module View
       6 => [0, -50],
     }.freeze
 
+    # lawson style or curvilinear style?
     def lawson?
       @lawson ||= @tile.paths.any? do |p|
         [p.a, p.b].any? { |x| x.is_a?(Engine::Junction) }
       end
     end
 
-    # SHARP, GENTLE, or STRAIGHT
+    # returns SHARP, GENTLE, or STRAIGHT
     def compute_curvilinear_type(edge_a, edge_b)
       diff = edge_b - edge_a
       diff = (edge_a - edge_b) % 6 if diff > 3
       diff
     end
 
-    # degrees to rotate the svg path for this track path; e.g., a normal gentle
-    # is 0,2; for 1,3, rotate = 60
-    def compute_track_rotation(edge_a, edge_b)
+    # degrees to rotate the svg path for this track path; e.g., a normal straight
+    # is 0,3; for 1,4, rotate = 60
+    def compute_track_rotation_degrees(edge_a, edge_b)
       if (edge_b - edge_a) > 3
         60 * edge_b
       else
@@ -69,7 +70,7 @@ module View
       a, b = [edge_num_a, edge_num_b].sort
 
       curvilinear_type = compute_curvilinear_type(a, b)
-      rotation = compute_track_rotation(a, b)
+      rotation = compute_track_rotation_degrees(a, b)
 
       transform = "rotate(#{rotation})"
 
@@ -179,7 +180,7 @@ module View
         r_track + r_town + r_revenue
 
       elsif edges.count == 1
-      # TODO, e.g., IR2
+        # TODO, e.g., IR2
       elsif edges.count > 2
         # TODO, e.g., 141
       end
@@ -249,8 +250,10 @@ module View
 
     # render city/town name iff no other label is present
     def render_name
+      # nothing to do if there's already a label (might reconsider this)
       return [] unless @tile.label.to_s == ''
 
+      # nothing to do if no named city/town
       revenue_center = (@tile.cities + @tile.towns).compact.find { |c| !c.name.nil? }
       return [] if revenue_center.nil?
 
