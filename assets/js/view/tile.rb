@@ -8,8 +8,6 @@ require 'engine/game_error'
 require 'engine/junction'
 require 'engine/town'
 
-# TODO: add white border to track
-
 SHARP = 1
 GENTLE = 2
 STRAIGHT = 3
@@ -83,9 +81,6 @@ module View
           'm 0 85 L 0 75 A 129.90375 129.90375 0 0 0 -64.951875 -37.5 L -73.612125 -42.5'
         when STRAIGHT
           'm 0 87 L 0 -87'
-          # h(:path, attrs: { d: 'm -4 86 L -4 -86', stroke: 'white', 'stroke-width' => 2 }),
-          # h(:path, attrs: { d: 'm 4 86 L 4 -86', stroke: 'white',
-          # 'stroke-width' => 2 }),
         end
 
       [
@@ -117,8 +112,6 @@ module View
       ]
     end
 
-    # TODO: don't use fixed translation, do something clever to find a
-    # reasonable spot on the tile for rendering
     def render_revenue(revenue)
       [
         h(
@@ -202,7 +195,6 @@ module View
       end
     end
 
-    # TODO: render white background to join circles together as one object
     def render_city_slots_center(slots = 1)
       x, y = CITY_SLOT_POSITION[slots]
 
@@ -221,7 +213,6 @@ module View
       [h(:g, { attrs: { transform: "rotate(-#{60 * @tile.rotation})" } }, circles)]
     end
 
-    # TODO: support for multiple station locations in one city
     def render_track_single_city
       city = @tile.cities.first
       slots = city.slots
