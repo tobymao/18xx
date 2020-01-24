@@ -18,6 +18,8 @@ module View
   class Tile < Snabberb::Component # rubocop:disable Metrics/ClassLength
     needs :tile
 
+    # key is how many city slots are part of the city; value is the offset for
+    # the first city slot
     CITY_SLOT_POSITION = {
       1 => [0, 0],
       2 => [-25, 0],
