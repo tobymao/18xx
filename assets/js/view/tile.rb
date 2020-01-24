@@ -15,7 +15,7 @@ GENTLE = 2
 STRAIGHT = 3
 
 module View
-  class Tile < Snabberb::Component # rubocop:disable Metrics/ClassLength
+  class Tile < Snabberb::Component
     needs :tile
 
     def lawson?

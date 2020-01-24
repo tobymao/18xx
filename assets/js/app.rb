@@ -6,7 +6,6 @@ require 'polyfill'
 
 require 'view/game'
 require 'view/tiles'
-require 'engine/player'
 require 'engine/game/base'
 require 'engine/game/g_1889'
 
@@ -46,11 +45,7 @@ class Index < Snabberb::Layout
   end
 end
 
-players = [
-  Engine::Player.new('Ambie'),
-  Engine::Player.new('Talbot'),
-  Engine::Player.new('Toby'),
-]
+players = %w[Ambie Talbot Toby]
 
 game = Engine::Game::G1889.new(players)
 

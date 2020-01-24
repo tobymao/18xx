@@ -10,6 +10,14 @@ module Engine
         @corporation = corporation
         @share_price = share_price
       end
+
+      def copy(game)
+        self.class.new(
+          game.player_by_name(@entity.name),
+          game.corporation_by_name(@corporation.name),
+          @share_price,
+        )
+      end
     end
   end
 end

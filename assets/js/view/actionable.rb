@@ -10,5 +10,9 @@ module View
       @game.process_action(action)
       store(:game, @game)
     end
+
+    def rollback
+      store(:game, @game.rollback)
+    end
   end
 end

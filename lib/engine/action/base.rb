@@ -10,6 +10,10 @@ module Engine
       def entity
         raise NotImplementedError
       end
+
+      def copy(_game)
+        raise NotImplementedError
+      end
     end
   end
 end

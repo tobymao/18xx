@@ -13,6 +13,7 @@ module Engine
         @name = name
         @tokens = tokens
         @shares = [Share.new(self, president: true, percent: 20)] + 8.times.map { Share.new(self, percent: 10) }
+        @shares.each_with_index { |s, index| s.index = index }
         @share_price = nil
         @par_price = nil
         @ipoed = false

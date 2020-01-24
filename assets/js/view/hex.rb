@@ -60,7 +60,8 @@ module View
 
     def on_hex_click(event)
       if @selected
-        store(:selected_hex_info, nil)
+        @selected_hex_info[:tile]&.rotate!
+        update
         return
       end
 

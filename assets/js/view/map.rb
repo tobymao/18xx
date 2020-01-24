@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/hex'
-require 'view/rotation_selector'
+require 'view/tile_confirmation'
 require 'view/tile_selector'
 
 require 'engine/hex'
@@ -24,8 +24,8 @@ module View
       ]
 
       if @selected_hex_info
-        children << h(TileSelector)
-        children << h(RotationSelector) if @selected_hex_info[:tile]
+        children << h(TileSelector) unless @selected_hex_info[:tile]
+        children << h(TileConfirmation) if @selected_hex_info[:tile]
       end
 
       h(:div, children)

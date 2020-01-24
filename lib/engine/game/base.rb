@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'engine/bank'
+require 'engine/map'
 require 'engine/player'
 require 'engine/share_pool'
 require 'engine/stock_market'
@@ -13,7 +14,8 @@ require 'engine/train/handler'
 module Engine
   module Game
     class Base
-      attr_reader :bank, :corporations, :map, :players, :round, :share_pool, :stock_market
+      attr_reader :actions, :bank, :corporations, :map,
+                  :players, :round, :share_pool, :stock_market
 
       STARTING_CASH = {
         2 => 1200,
@@ -23,8 +25,9 @@ module Engine
         6 => 400,
       }.freeze
 
-      def initialize(players)
-        @players = players
+      def initialize(names, actions: [])
+        @names = names.freeze
+        @players = @names.map { |name| Player.new(name) }
         @bank = init_bank
         @trains = init_trains
         @corporations = init_corporations
@@ -32,13 +35,56 @@ module Engine
         @round = init_round
         @share_pool = SharePool.new(@corporations, @bank)
         @stock_market = init_stock_market
-        @map = init_map
+        @hexes = init_hexes
+        @tiles = init_tiles
+        @map = Map.new(@hexes)
+        @actions = []
         init_starting_cash
+
+        # replay all actions with a copy
+        actions.each { |action| process_action(action.copy(self)) }
       end
 
       def process_action(action)
         @round.process_action(action)
+        @actions << action
         next_round! if @round.finished?
+      end
+
+      def rollback
+        self.class.new(@names, actions: @actions[0...-1])
+      end
+
+      def player_by_name(name)
+        @_players ||= @players.map { |p| [p.name, p] }.to_h
+        @_players[name]
+      end
+
+      def corporation_by_name(name)
+        @_corporations ||= @corporations.map { |c| [c.name, c] }.to_h
+        @_corporations[name]
+      end
+
+      def company_by_name(name)
+        @_companies ||= @companies.map { |c| [c.name, c] }.to_h
+        @_companies[name]
+      end
+
+      def hex_by_name(name)
+        @_hexes ||= @hexes.map { |h| [h.name, h] }.to_h
+        @_hexes[name]
+      end
+
+      def tile_by_name(name)
+        @_tiles ||= @tiles.map { |t| [t.name, t] }.to_h
+        @_tiles[name]
+      end
+
+      def share_by_name(name)
+        @_shares ||= @corporations.flat_map do |c|
+          c.shares.map { |s| [s.name, s] }
+        end
+        @_shares[name]
       end
 
       private
@@ -78,7 +124,9 @@ module Engine
         []
       end
 
-      def init_map; end
+      def init_hexes; end
+
+      def init_tiles; end
 
       def init_starting_cash
         cash = self.class::STARTING_CASH[@players.size]

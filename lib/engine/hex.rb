@@ -17,6 +17,10 @@ module Engine
       @tile = tile
     end
 
+    def name
+      @coordinates
+    end
+
     def lay(tile)
       @tile = tile
     end

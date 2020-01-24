@@ -16,6 +16,14 @@ module Engine
       def entity
         @player
       end
+
+      def copy(game)
+        self.class.new(
+          game.player_by_name(@player.name),
+          game.company_by_name(@company.name),
+          @price,
+        )
+      end
     end
   end
 end

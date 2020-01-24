@@ -7,7 +7,7 @@ require 'engine/hex'
 require 'engine/tile'
 
 module View
-  class RotationSelector < Snabberb::Component
+  class TileConfirmation < Snabberb::Component
     needs :selected_hex_info, store: true
 
     def render

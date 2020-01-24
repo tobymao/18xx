@@ -9,7 +9,7 @@ require 'engine/label'
 require 'engine/path'
 
 module Engine
-  class Tile # rubocop:disable Metrics/ClassLength
+  class Tile
     YELLOW = {
       '1' => 't=r:10,n:_A;p=a:0,b:_0;p=a:_0,b:2;t=r:10,n:_B;p=a:3,b:_1;p=a:_1,b:5',
       '3' => 't=r:10;p=a:0,b:_0;p=a:_0,b:5',
@@ -170,7 +170,7 @@ module Engine
       @label ||= @parts.find { |p| p.is_a?(Label) }
     end
 
-    def rotate!(clockwise)
+    def rotate!(clockwise = true)
       direction = clockwise ? 1 : -1
       @rotation += direction
       @rotation = @rotation % 6

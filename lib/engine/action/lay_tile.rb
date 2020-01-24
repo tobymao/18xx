@@ -12,6 +12,14 @@ module Engine
         @hex = hex
         @tile = tile
       end
+
+      def copy(game)
+        self.class.new(
+          game.player_by_name(@entity.name), # this should actually be a corporation
+          game.tile_by_name(@tile.name),
+          game.hex_by_name(@hex.name),
+        )
+      end
     end
   end
 end

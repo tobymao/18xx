@@ -15,6 +15,13 @@ module Engine
       def corporation
         @share.corporation
       end
+
+      def copy(game)
+        self.class.new(
+          game.player_by_name(@player.name),
+          game.share_by_name(@share.name),
+        )
+      end
     end
   end
 end

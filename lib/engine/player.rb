@@ -31,5 +31,9 @@ module Engine
     def player
       self
     end
+
+    def ==(other)
+      @name == other.name
+    end
   end
 end
