@@ -18,6 +18,15 @@ module View
   class Tile < Snabberb::Component # rubocop:disable Metrics/ClassLength
     needs :tile
 
+    CITY_SLOT_POSITION = {
+      1 => [0, 0],
+      2 => [-25, 0],
+      3 => [0, -29],
+      4 => [-25, -25],
+      5 => [0, -43],
+      6 => [0, -50],
+    }.freeze
+
     def lawson?
       @lawson ||= @tile.paths.any? do |p|
         [p.a, p.b].any? { |x| x.is_a?(Engine::Junction) }
@@ -193,14 +202,7 @@ module View
 
     # TODO: render white background to join circles together as one object
     def render_city_slots_center(slots = 1)
-      x, y = {
-        1 => [0, 0],
-        2 => [-25, 0],
-        3 => [0, -29],
-        4 => [-25, -25],
-        5 => [0, -43],
-        6 => [0, -50],
-      }[slots]
+      x, y = CITY_SLOT_POSITION[slots]
 
       circles = (0..(slots - 1)).map do |c|
         rotation = (360 / slots) * c
