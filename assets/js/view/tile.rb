@@ -262,6 +262,10 @@ module View
       return [] if revenue_center.nil?
 
       name = revenue_center.name
+
+      # don't render names starting with "_"; this allows differentiating the
+      # towns on a double-town tile by using the name property without rendering
+      # the name
       return [] if name[0] == '_'
 
       [
