@@ -6,7 +6,6 @@ require 'engine/tile'
 
 module View
   class Tiles < Snabberb::Component
-
     def render
       tile_ids = [
         Engine::Tile::YELLOW.keys,
