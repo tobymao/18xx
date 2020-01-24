@@ -12,7 +12,7 @@ require 'engine/game/g_1889'
 
 class App < Snabberb::Component
   needs :game
-  needs :page, store: true, default: 'tiles'
+  needs :page, store: true, default: 'game'
 
   def render
     page =
