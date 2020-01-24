@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'engine/city'
-require 'engine/town'
-require 'engine/edge'
 require 'engine/game_error'
-require 'engine/junction'
-require 'engine/label'
-require 'engine/path'
+require 'engine/part/city'
+require 'engine/part/town'
+require 'engine/part/edge'
+require 'engine/part/junction'
+require 'engine/part/label'
+require 'engine/part/path'
 
 module Engine
   class Tile
@@ -124,23 +124,23 @@ module Engine
           when '_'
             [k, cache[v[1..-1].to_i]]
           when 'j'
-            [k, Junction.new]
+            [k, Part::Junction.new]
           else
-            [k, Edge.new(v)]
+            [k, Part::Edge.new(v)]
           end
         end.to_h
 
-        Path.new(params['a'], params['b'])
+        Part::Path.new(params['a'], params['b'])
       when 'c'
-        city = City.new(params['r'], params.fetch('s', 1), params['n'])
+        city = Part::City.new(params['r'], params.fetch('s', 1), params['n'])
         cache << city
         city
       when 't'
-        town = Town.new(params['r'], params['n'])
+        town = Part::Town.new(params['r'], params['n'])
         cache << town
         town
       when 'l'
-        label = Label.new(params)
+        label = Part::Label.new(params)
         cache << label
         label
       end
@@ -155,19 +155,27 @@ module Engine
     end
 
     def cities
-      @cities ||= @parts.select { |p| p.is_a?(City) }
+      @cities ||= @parts.select(&:city?)
     end
 
     def towns
-      @towns ||= @parts.select { |p| p.is_a?(Town) }
+      @towns ||= @parts.select(&:town?)
     end
 
     def paths
-      @paths ||= @parts.select { |p| p.is_a?(Path) }
+      @paths ||= @parts.select(&:path?)
+    end
+
+    def connections
+      @connections ||= paths.flat_map { |p| [p.a, p.b] }
     end
 
     def label
-      @label ||= @parts.find { |p| p.is_a?(Label) }
+      @label ||= @parts.find(&:label?)
+    end
+
+    def lawson?
+      @lawson ||= connections.any?(&:junction?)
     end
 
     def rotate!(clockwise = true)

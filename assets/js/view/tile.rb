@@ -2,27 +2,17 @@
 
 require 'set'
 
-require 'engine/city'
-require 'engine/edge'
 require 'engine/game_error'
-require 'engine/junction'
-require 'engine/town'
 
 # TODO: add white border to track
 
-SHARP = 1
-GENTLE = 2
-STRAIGHT = 3
-
 module View
   class Tile < Snabberb::Component
-    needs :tile
+    SHARP = 1
+    GENTLE = 2
+    STRAIGHT = 3
 
-    def lawson?
-      @lawson ||= @tile.paths.any? do |p|
-        [p.a, p.b].any? { |x| x.is_a?(Engine::Junction) }
-      end
-    end
+    needs :tile
 
     # SHARP, GENTLE, or STRAIGHT
     def compute_curvilinear_type(edge_a, edge_b)
@@ -43,11 +33,7 @@ module View
 
     # "just track" means no towns/cities
     def render_just_track
-      if lawson?
-        render_lawson_track
-      else
-        render_curvilinear_track
-      end
+      @tile.lawson? ? render_lawson_track : render_curvilinear_track
     end
 
     def render_curvilinear_track
@@ -83,10 +69,11 @@ module View
     end
 
     def render_lawson_track
-      edge_nums = @tile.paths.flat_map do |p|
-        [p.a, p.b].select { |x| x.is_a?(Engine::Edge) }
-      end.map(&:num)
-      edge_nums.flat_map { |e| render_lawson_track_segment(e) }
+      @tile
+        .connections
+        .select(&:edge?)
+        .map(&:num)
+        .flat_map { |e| render_lawson_track_segment(e) }
     end
 
     def render_lawson_track_segment(edge_num)
@@ -115,7 +102,7 @@ module View
           { attrs: { 'stroke-width': 1, transform: "translate(-25 40) rotate(-#{60 * @tile.rotation})" } },
           [
             h(:circle, attrs: { r: 14, fill: 'white' }),
-            h(:text, attrs: { transform: 'translate(-8 6)' }, props: { innerHTML: revenue }),
+            h(:text, { attrs: { transform: 'translate(-8 6)' } }, revenue),
           ]
         )
       ]
@@ -147,25 +134,25 @@ module View
           :g,
           { attrs: { transform: "rotate(#{rotation})" } },
           [
-            h(:rect, attrs: {
+            h(
+              :rect,
+              attrs: {
                 transform: "translate(#{-(width / 2)} #{translation})",
                 height: height,
                 width: width,
                 fill: 'black'
-              }),
+              },
+            ),
           ]
         )
       ]
     end
 
     def render_track_town(town)
-      paths = @tile.paths.select do |p|
-        [p.a, p.b].include?(town)
-      end
-
-      edges = paths.flat_map do |p|
-        [p.a, p.b].select { |x| x.is_a?(Engine::Edge) }
-      end
+      edges = @tile
+        .paths
+        .select { |p| p.a == town || p.b == town }
+        .flat_map { |p| [p.a, p.b].select(&:edge?) }
 
       if edges.count == 2
         edge_nums = edges.map(&:num).sort
@@ -173,7 +160,6 @@ module View
         r_town = render_town_rect(*edge_nums)
         r_revenue = render_revenue(town.revenue)
         r_track + r_town + r_revenue
-
       elsif edges.count == 1
       # TODO, e.g., IR2
       elsif edges.count > 2
@@ -243,32 +229,18 @@ module View
 
     # render letter label, like "Z", "H", "OO"
     def render_label
-      [
-        h(
-          :text,
-          attrs: { transform: 'scale(2.5) translate(10 30)' },
-          props: { innerHTML: @tile.label }
-        )
-      ]
+      [h(:text, { attrs: { transform: 'scale(2.5) translate(10 30)' } }, @tile.label)]
     end
 
     # render city/town name iff no other label is present
     def render_name
       return [] unless @tile.label.to_s == ''
 
-      revenue_center = (@tile.cities + @tile.towns).compact.find { |c| !c.name.nil? }
-      return [] if revenue_center.nil?
+      revenue_center = (@tile.cities + @tile.towns).find { |c| c.name }
+      name = revenue_center&.name
+      return [] if !name || name[0] == '_'
 
-      name = revenue_center.name
-      return [] if name[0] == '_'
-
-      [
-        h(
-          :text,
-          attrs: { transform: 'scale(1.5) translate(10 30)' },
-          props: { innerHTML: name }
-        )
-      ]
+      [h(:text, { attrs: { transform: 'scale(1.5) translate(10 30)' } }, name)]
     end
 
     def render
@@ -283,9 +255,7 @@ module View
         rescue Engine::GameError => e
           # TODO: send to console.error
           puts("Engine::GameError: Cannot render Tile '#{@tile.name}': #{e}")
-          [
-            h(:text, attrs: { transform: 'scale(2.5)' }, props: { innerHTML: @tile.name })
-          ]
+          [h(:text, { attrs: { transform: 'scale(2.5)' } }, @tile.name)]
         end
 
       h(:g, { attrs: attrs }, children)
