@@ -6,12 +6,8 @@ require 'engine/tile'
 
 module View
   class Tiles < Snabberb::Component
-    needs :visible
 
     def render
-      attrs = { id: 'tiles' }
-      attrs[:style] = 'display: none' unless @visible
-
       tile_ids = [
         Engine::Tile::YELLOW.keys,
         Engine::Tile::GREEN.keys,
@@ -29,7 +25,7 @@ module View
 
       h(
         :div,
-        { attrs: attrs },
+        { attrs: { id: 'tiles' } },
         children,
       )
     end

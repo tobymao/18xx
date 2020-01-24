@@ -15,11 +15,19 @@ class App < Snabberb::Component
   needs :page, store: true, default: 'tiles'
 
   def render
-    h(:div, { props: { id: 'app' } }, [
-      *tabs,
-      h(View::Game, game: @game, visible: @page == 'game'),
-      h(View::Tiles, visible: @page == 'tiles'),
-    ])
+    page =
+      case @page
+      when 'game'
+        [h(View::Game, game: @game)]
+      when 'tiles'
+        [h(View::Tiles)]
+      else
+        []
+      end
+
+    children = tabs + page
+
+    h(:div, { props: { id: 'app' } }, children)
   end
 
   def tabs
