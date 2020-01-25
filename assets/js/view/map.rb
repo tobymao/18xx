@@ -4,17 +4,15 @@ require 'view/hex'
 require 'view/tile_confirmation'
 require 'view/tile_selector'
 
-require 'engine/hex'
-
 module View
   class Map < Snabberb::Component
-    needs :game
-    needs :selected_hex_info, default: nil, store: true
+    needs :game, store: true
+    needs :tile_selector, default: nil, store: true
 
     def render
       hexes = @game.map.hexes.dup
       # move the selected hex to the back so it renders highest in z space
-      hexes << hexes.delete(@selected_hex_info[:hex]) if @selected_hex_info
+      hexes << hexes.delete(@tile_selector.hex) if @tile_selector
       hexes.map! { |hex| h(Hex, hex: hex, game: @game) }
 
       children = [
@@ -23,9 +21,9 @@ module View
         ]),
       ]
 
-      if @selected_hex_info
-        children << h(TileSelector) unless @selected_hex_info[:tile]
-        children << h(TileConfirmation) if @selected_hex_info[:tile]
+      if @tile_selector
+        children << h(TileSelector, tiles: @game.tiles.take(8)) unless @tile_selector.tile
+        children << h(TileConfirmation) if @tile_selector.tile
       end
 
       h(:div, children)

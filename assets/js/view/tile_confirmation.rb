@@ -1,23 +1,14 @@
 # frozen_string_literal: true
 
-require 'view/actionable'
-require 'view/hex'
-
-require 'engine/action/lay_tile'
-require 'engine/hex'
-require 'engine/tile'
-
 module View
   class TileConfirmation < Snabberb::Component
-    include Actionable
-
-    needs :selected_hex_info, store: true
+    needs :tile_selector, store: true
 
     def render
       style = {
         position: 'absolute',
-        left: @selected_hex_info[:x],
-        top: @selected_hex_info[:y],
+        left: @tile_selector.x,
+        top: @tile_selector.y,
         'font-size': '20px',
       }
 
@@ -28,12 +19,7 @@ module View
           cursor: 'pointer',
           left: '55px',
         },
-        on: {
-          click: lambda do
-            @selected_hex_info[:tile] = nil
-            rollback
-          end
-        }
+        on: { click: -> { @tile_selector.tile = nil } },
       }
 
       delete = {
@@ -43,12 +29,7 @@ module View
           cursor: 'pointer',
           left: '20px',
         },
-        on: {
-          click: lambda do
-            store(:selected_hex_info, nil)
-            rollback
-          end
-        },
+        on: { click: -> { store(:tile_selector, nil) } },
       }
 
       h(:div, { style: style }, [

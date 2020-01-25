@@ -7,23 +7,14 @@ require 'engine/tile'
 
 module View
   class TileSelector < Snabberb::Component
-    needs :selected_hex_info, store: true
+    needs :tile_selector, store: true
+    needs :tiles
 
     def render
-      hexes = [
-        h(Hex, hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for('7')), role: :tile_selector),
-        h(Hex, hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for('8')), role: :tile_selector),
-        h(Hex, hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for('9')), role: :tile_selector),
-        h(Hex, hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for('5')), role: :tile_selector),
-        h(Hex, hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for('6')), role: :tile_selector),
-        h(Hex, hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for('57')), role: :tile_selector),
-        h(Hex, hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for('3')), role: :tile_selector),
-        h(Hex, hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for('4')), role: :tile_selector),
-        h(Hex, hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for('5')), role: :tile_selector),
-        h(Hex, hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for('6')), role: :tile_selector),
-        h(Hex, hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for('12')), role: :tile_selector),
-        h(Hex, hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for('13')), role: :tile_selector),
-      ]
+      hexes = @tiles.map do |tile|
+        hex = Engine::Hex.new('A1', layout: 'flat', tile: tile)
+        h(Hex, hex: hex, role: :tile_selector)
+      end
 
       theta = 360.0 / hexes.size * Math::PI / 180
 
@@ -41,8 +32,8 @@ module View
 
       style = {
         position: 'absolute',
-        left: @selected_hex_info[:x] - 50,
-        top: @selected_hex_info[:y] - 50,
+        left: @tile_selector.x - 50,
+        top: @tile_selector.y - 50,
         width: '200px',
         height: '200px',
         opacity: 0.8,

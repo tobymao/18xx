@@ -26,7 +26,7 @@ module Engine
     end
 
     def ==(other)
-      @coordinates == other.coordinates
+      @coordinates == other&.coordinates
     end
   end
 end

@@ -15,7 +15,7 @@ module Engine
   module Game
     class Base
       attr_reader :actions, :bank, :corporations, :map,
-                  :players, :round, :share_pool, :stock_market
+                  :players, :round, :share_pool, :stock_market, :tiles
 
       STARTING_CASH = {
         2 => 1200,
@@ -43,6 +43,10 @@ module Engine
 
         # replay all actions with a copy
         actions.each { |action| process_action(action.copy(self)) }
+      end
+
+      def current_entity
+        @round.current_entity
       end
 
       def process_action(action)

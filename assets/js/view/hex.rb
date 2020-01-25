@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
+require 'lib/tile_selector'
 require 'view/actionable'
 require 'view/tile'
-
-require 'engine/tile'
 require 'engine/action/lay_tile'
 
 module View
@@ -26,19 +25,21 @@ module View
     }.freeze
 
     needs :hex
-    needs :selected_hex_info, default: nil, store: true
+    needs :tile_selector, default: nil, store: true
     needs :role, default: :map
 
     def render
       children = [h(:polygon, attrs: { points: self.class::POINTS })]
-      tile = @hex.tile
-      children << h(Tile, tile: tile) if tile
-      @selected = @selected_hex_info && @selected_hex_info[:hex] == @hex
+
+      @selected = @hex == @tile_selector&.hex
+      @tile = @selected && @tile_selector.tile ? @tile_selector.tile : @hex.tile
+
+      children << h(Tile, tile: @tile) if @tile
 
       props = {
         attrs: {
           transform: transform,
-          fill: COLOR.fetch(tile&.color, 'white'),
+          fill: COLOR.fetch(@tile&.color, 'white'),
           stroke: 'black',
         },
         on: { click: ->(e) { on_hex_click(e) } },
@@ -59,32 +60,25 @@ module View
     end
 
     def on_hex_click(event)
-      if @selected
-        @selected_hex_info[:tile]&.rotate!
-        update
-        return
-      end
+      `console.log(#{event})`
+      return @tile_selector.rotate! if @selected && @tile_selector.tile
 
       case @role
       when :map
-        rect = event.JS['target'].JS.getBoundingClientRect
-
-        store(
-          :selected_hex_info,
-          hex: @hex,
-          tile: @hex.tile,
-          x: rect.JS['x'],
-          y: rect.JS['y'],
-        )
+        if !@selected && @tile_selector&.tile
+          action = Engine::Action::LayTile.new(
+            @game.current_entity,
+            @tile_selector.tile,
+            @tile_selector.hex,
+            @tile_selector.tile.rotation,
+          )
+          process_action(action)
+          store(:tile_selector, nil)
+        else
+          store(:tile_selector, Lib::TileSelector.new(@hex, @tile, event, root))
+        end
       when :tile_selector
-        @selected_hex_info[:tile] = @hex.tile
-
-        action = Engine::Action::LayTile.new(
-          @game.round.current_entity,
-          @hex.tile,
-          @selected_hex_info[:hex],
-        )
-        process_action(action)
+        @tile_selector.tile = @tile
       end
     end
   end

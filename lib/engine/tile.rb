@@ -154,6 +154,11 @@ module Engine
       @rotation = rotation
     end
 
+    def rotate!
+      @rotation += 1
+      @rotation = @rotation % 6
+    end
+
     def cities
       @cities ||= @parts.select(&:city?)
     end
@@ -176,12 +181,6 @@ module Engine
 
     def lawson?
       @lawson ||= connections.any?(&:junction?)
-    end
-
-    def rotate!(clockwise = true)
-      direction = clockwise ? 1 : -1
-      @rotation += direction
-      @rotation = @rotation % 6
     end
 
     def ==(other)
