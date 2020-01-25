@@ -102,7 +102,7 @@ module View
       [
         h(
           :g,
-          { attrs: { 'stroke-width': 1, transform: "translate(-25 40) rotate(-#{60 * @tile.rotation})" } },
+          { attrs: { 'stroke-width': 1, transform: 'translate(-25 40)' } },
           [
             h(:circle, attrs: { r: 14, fill: 'white' }),
             h(:text, { attrs: { transform: 'translate(-8 6)' } }, revenue),
@@ -189,13 +189,11 @@ module View
         # -rotation on the <circle> so its contents are rendered without
         # rotation
         h(:g, { attrs: { transform: "rotate(#{rotation})" } }, [
-          h(:circle, attrs: { r: 25, fill: 'white', transform: "translate(#{x}, #{y}) rotate(#{-rotation})" })
+          h(:circle, attrs: { r: 25, fill: 'white', transform: "translate(#{x}, #{y}) rotate(#{-rotation})" }),
         ])
       end
 
-      # undo the rotation of the tile so that the city contents can be rendered
-      # without rotation
-      [h(:g, { attrs: { transform: "rotate(-#{60 * @tile.rotation})" } }, circles)]
+      [h(:g, circles)]
     end
 
     def render_track_single_city
@@ -243,7 +241,6 @@ module View
 
     def render
       attrs = {
-        transform: "rotate(#{60 * @tile.rotation})",
         fill: 'none',
         'stroke-width' => 1,
       }

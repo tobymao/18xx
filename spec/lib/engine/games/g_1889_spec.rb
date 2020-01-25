@@ -15,7 +15,7 @@ module Engine
         expect(subject.players.map(&:cash)).to eq([1200, 1200])
       end
 
-      it 'starts with an auction' do
+      skip 'starts with an auction' do
         expect(subject.round).to be_a(Round::Auction)
       end
     end

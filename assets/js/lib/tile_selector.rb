@@ -2,8 +2,7 @@
 
 module Lib
   class TileSelector
-    attr_reader :hex, :x, :y
-    attr_accessor :tile
+    attr_reader :hex, :tile, :x, :y
 
     def initialize(hex, tile, event, root)
       @hex = hex

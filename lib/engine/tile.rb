@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'set'
+
 require 'engine/game_error'
 require 'engine/part/city'
 require 'engine/part/town'
@@ -152,11 +154,16 @@ module Engine
       @color = color
       @parts = parts
       @rotation = rotation
+      rotate_edges!(rotation)
     end
 
     def rotate!
-      @rotation += 1
-      @rotation = @rotation % 6
+      @rotation = rotate(@rotation)
+      rotate_edges!
+    end
+
+    def rotate(num, ticks = 1)
+      (num + ticks) % 6
     end
 
     def cities
@@ -175,8 +182,16 @@ module Engine
       @connections ||= paths.flat_map { |p| [p.a, p.b] }
     end
 
+    def edges
+      @edges ||= connections.select(&:edge?)
+    end
+
     def label
       @label ||= @parts.find(&:label?)
+    end
+
+    def exits
+      @exits ||= Set.new(edges.map(&:num))
     end
 
     def lawson?
@@ -185,6 +200,13 @@ module Engine
 
     def ==(other)
       @name == other.name && @color == other.color && @parts == other.parts
+    end
+
+    private
+
+    def rotate_edges!(ticks = 1)
+      edges.each { |e| e.num = rotate(e.num, ticks) }
+      @exits = nil
     end
   end
 end

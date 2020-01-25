@@ -5,7 +5,7 @@ require 'engine/part/base'
 module Engine
   module Part
     class Edge < Base
-      attr_reader :num
+      attr_accessor :num
 
       def initialize(num)
         @num = num.to_i
