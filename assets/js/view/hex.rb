@@ -60,7 +60,6 @@ module View
     end
 
     def on_hex_click(event)
-      `console.log(#{event})`
       return @tile_selector.rotate! if @selected && @tile_selector.tile
 
       case @role

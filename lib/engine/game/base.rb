@@ -30,15 +30,15 @@ module Engine
         @players = @names.map { |name| Player.new(name) }
         @bank = init_bank
         @trains = init_trains
-        @corporations = init_corporations
         @companies = init_companies
-        @round = init_round
         @share_pool = SharePool.new(@corporations, @bank)
         @stock_market = init_stock_market
+        @corporations = init_corporations
         @hexes = init_hexes
         @tiles = init_tiles
         @map = Map.new(@hexes)
         @actions = []
+        @round = init_round
         init_starting_cash
 
         # replay all actions with a copy
@@ -99,7 +99,7 @@ module Engine
 
       def init_round
         # Round::Auction.new(@players, companies: @companies, bank: @bank)
-        Round::Operating.new(@players)
+        Round::Operating.new(@players, tiles: @tiles)
       end
 
       def init_stock_market

@@ -7,9 +7,10 @@ module Engine
     class Operating < Base
       attr_reader :num
 
-      def initialize(entities, num: 1)
+      def initialize(entities, tiles:, num: 1)
         super
         @num = num
+        @tiles = tiles
       end
 
       def finished?
@@ -21,6 +22,7 @@ module Engine
       def _process_action(action)
         case action
         when Action::LayTile
+          @tiles.reject! { |t| action.tile.equal?(t) }
           action.hex.lay(action.tile)
         end
       end
