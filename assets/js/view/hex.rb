@@ -41,6 +41,7 @@ module View
           transform: transform,
           fill: COLOR.fetch(@tile&.color, 'white'),
           stroke: 'black',
+          cursor: 'pointer',
         },
         on: { click: ->(e) { on_hex_click(e) } },
       }
