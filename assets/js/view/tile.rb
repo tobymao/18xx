@@ -244,6 +244,7 @@ module View
     def render
       attrs = {
         transform: "rotate(#{60 * @tile.rotation})",
+        fill: 'none',
         'stroke-width' => 1,
       }
 
