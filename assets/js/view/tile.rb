@@ -9,8 +9,6 @@ module View
     SHARP = 1
     GENTLE = 2
     STRAIGHT = 3
-
-    needs :tile
     # key is how many city slots are part of the city; value is the offset for
     # the first city slot
     CITY_SLOT_POSITION = {
@@ -21,6 +19,8 @@ module View
       5 => [0, -43],
       6 => [0, -50],
     }.freeze
+
+    needs :tile
 
     # returns SHARP, GENTLE, or STRAIGHT
     def compute_curvilinear_type(edge_a, edge_b)
@@ -231,7 +231,7 @@ module View
       # nothing to do if there's already a label (might reconsider this)
       return [] unless @tile.label.to_s == ''
 
-      revenue_center = (@tile.cities + @tile.towns).find(&:name?)
+      revenue_center = (@tile.cities + @tile.towns).find(&:name)
       name = revenue_center&.name
       # don't render names starting with "_"; this allows differentiating the
       # towns on a double-town tile by using the name property without rendering

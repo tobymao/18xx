@@ -11,7 +11,7 @@ require 'engine/round/stock'
 
 module View
   class Game < Snabberb::Component
-    needs :game
+    needs :game, store: true
 
     def render_round
       h(:div, "Round: #{@round.class.name}")
@@ -20,9 +20,9 @@ module View
     def render_action
       case @round
       when Engine::Round::Auction
-        h(AuctionRound, game: @game)
+        h(AuctionRound)
       when Engine::Round::Stock
-        h(StockRound, game: @game)
+        h(StockRound)
       end
     end
 

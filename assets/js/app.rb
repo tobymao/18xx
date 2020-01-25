@@ -10,14 +10,14 @@ require 'engine/game/base'
 require 'engine/game/g_1889'
 
 class App < Snabberb::Component
-  needs :game
+  needs :game, store: true
   needs :page, store: true, default: 'game'
 
   def render
     page =
       case @page
       when 'game'
-        [h(View::Game, game: @game)]
+        [h(View::Game)]
       when 'tiles'
         [h(View::Tiles)]
       else
