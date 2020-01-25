@@ -4,7 +4,6 @@ require 'set'
 
 require 'engine/game_error'
 
-
 module View
   class Tile < Snabberb::Component
     SHARP = 1
@@ -22,7 +21,6 @@ module View
       5 => [0, -43],
       6 => [0, -50],
     }.freeze
-
 
     # returns SHARP, GENTLE, or STRAIGHT
     def compute_curvilinear_type(edge_a, edge_b)
@@ -233,7 +231,7 @@ module View
       # nothing to do if there's already a label (might reconsider this)
       return [] unless @tile.label.to_s == ''
 
-      revenue_center = (@tile.cities + @tile.towns).find { |c| c.name }
+      revenue_center = (@tile.cities + @tile.towns).find(&:name?)
       name = revenue_center&.name
       # don't render names starting with "_"; this allows differentiating the
       # towns on a double-town tile by using the name property without rendering

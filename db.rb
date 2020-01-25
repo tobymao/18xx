@@ -2,7 +2,7 @@
 
 begin
   require_relative '.env.rb'
-rescue LoadError # rubocop:disable SuppressedException
+rescue LoadError # rubocop:disable Lint/SuppressedException
 end
 
 require 'sequel/core'

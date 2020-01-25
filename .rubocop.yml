@@ -13,6 +13,9 @@ Metrics/BlockLength:
 Layout/LineLength:
   Max: 120
 
+Layout/MultilineMethodCallIndentation:
+  Enabled: False
+
 Metrics/ClassLength:
   Enabled: false
 
@@ -29,6 +32,9 @@ Style/Documentation:
   Enabled: false
 
 Style/EmptyCaseCondition:
+  Enabled: false
+
+Style/MultipleComparison:
   Enabled: false
 
 Style/TrailingCommaInArguments:

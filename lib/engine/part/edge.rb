@@ -14,6 +14,7 @@ module Engine
       def ==(other)
         other.is_a?(Edge) && (@num == other.num)
       end
+
       def edge?
         true
       end

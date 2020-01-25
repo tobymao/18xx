@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
-require 'engine/city'
-require 'engine/junction'
-require 'engine/label'
+require 'engine/part/city'
+require 'engine/part/junction'
+require 'engine/part/label'
+require 'engine/part/town'
 require 'engine/tile'
-require 'engine/town'
 
 module Engine
+  include Engine::Part
+
   describe Tile do
     let(:edge0) { Edge.new(0) }
     let(:edge1) { Edge.new(1) }
@@ -19,8 +21,8 @@ module Engine
     let(:city2) { City.new(30, 2) }
     let(:kotohira40) { City.new(40, 1, 'Kotohira') }
     let(:town) { Town.new(10) }
-    let(:town_A) { Town.new(10, '_A') }
-    let(:town_B) { Town.new(10, '_B') }
+    let(:town_a) { Town.new(10, '_A') }
+    let(:town_b) { Town.new(10, '_B') }
     let(:junction) { Junction.new }
 
     describe '.for' do
@@ -88,12 +90,12 @@ module Engine
           '1',
           color: :yellow,
           parts: [
-            town_A,
-            Path.new(edge0, town_A),
-            Path.new(town_A, edge2),
-            town_B,
-            Path.new(edge3, town_B),
-            Path.new(town_B, edge5),
+            town_a,
+            Path.new(edge0, town_a),
+            Path.new(town_a, edge2),
+            town_b,
+            Path.new(edge3, town_b),
+            Path.new(town_b, edge5),
           ]
         )
         expect(actual).to eq(expected)
