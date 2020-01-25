@@ -4,7 +4,6 @@ require 'set'
 
 require 'engine/game_error'
 
-# TODO: add white border to track
 
 module View
   class Tile < Snabberb::Component
@@ -13,17 +12,28 @@ module View
     STRAIGHT = 3
 
     needs :tile
+    # key is how many city slots are part of the city; value is the offset for
+    # the first city slot
+    CITY_SLOT_POSITION = {
+      1 => [0, 0],
+      2 => [-25, 0],
+      3 => [0, -29],
+      4 => [-25, -25],
+      5 => [0, -43],
+      6 => [0, -50],
+    }.freeze
 
-    # SHARP, GENTLE, or STRAIGHT
+
+    # returns SHARP, GENTLE, or STRAIGHT
     def compute_curvilinear_type(edge_a, edge_b)
       diff = edge_b - edge_a
       diff = (edge_a - edge_b) % 6 if diff > 3
       diff
     end
 
-    # degrees to rotate the svg path for this track path; e.g., a normal gentle
-    # is 0,2; for 1,3, rotate = 60
-    def compute_track_rotation(edge_a, edge_b)
+    # degrees to rotate the svg path for this track path; e.g., a normal straight
+    # is 0,3; for 1,4, rotate = 60
+    def compute_track_rotation_degrees(edge_a, edge_b)
       if (edge_b - edge_a) > 3
         60 * edge_b
       else
@@ -46,7 +56,7 @@ module View
       a, b = [edge_num_a, edge_num_b].sort
 
       curvilinear_type = compute_curvilinear_type(a, b)
-      rotation = compute_track_rotation(a, b)
+      rotation = compute_track_rotation_degrees(a, b)
 
       transform = "rotate(#{rotation})"
 
@@ -58,9 +68,6 @@ module View
           'm 0 85 L 0 75 A 129.90375 129.90375 0 0 0 -64.951875 -37.5 L -73.612125 -42.5'
         when STRAIGHT
           'm 0 87 L 0 -87'
-          # h(:path, attrs: { d: 'm -4 86 L -4 -86', stroke: 'white', 'stroke-width' => 2 }),
-          # h(:path, attrs: { d: 'm 4 86 L 4 -86', stroke: 'white',
-          # 'stroke-width' => 2 }),
         end
 
       [
@@ -93,8 +100,6 @@ module View
       ]
     end
 
-    # TODO: don't use fixed translation, do something clever to find a
-    # reasonable spot on the tile for rendering
     def render_revenue(revenue)
       [
         h(
@@ -161,7 +166,7 @@ module View
         r_revenue = render_revenue(town.revenue)
         r_track + r_town + r_revenue
       elsif edges.count == 1
-      # TODO, e.g., IR2
+        # TODO, e.g., IR2
       elsif edges.count > 2
         # TODO, e.g., 141
       end
@@ -177,16 +182,8 @@ module View
       end
     end
 
-    # TODO: render white background to join circles together as one object
     def render_city_slots_center(slots = 1)
-      x, y = {
-        1 => [0, 0],
-        2 => [-25, 0],
-        3 => [0, -29],
-        4 => [-25, -25],
-        5 => [0, -43],
-        6 => [0, -50],
-      }[slots]
+      x, y = CITY_SLOT_POSITION[slots]
 
       circles = (0..(slots - 1)).map do |c|
         rotation = (360 / slots) * c
@@ -203,7 +200,6 @@ module View
       [h(:g, { attrs: { transform: "rotate(-#{60 * @tile.rotation})" } }, circles)]
     end
 
-    # TODO: support for multiple station locations in one city
     def render_track_single_city
       city = @tile.cities.first
       slots = city.slots
@@ -234,10 +230,14 @@ module View
 
     # render city/town name iff no other label is present
     def render_name
+      # nothing to do if there's already a label (might reconsider this)
       return [] unless @tile.label.to_s == ''
 
       revenue_center = (@tile.cities + @tile.towns).find { |c| c.name }
       name = revenue_center&.name
+      # don't render names starting with "_"; this allows differentiating the
+      # towns on a double-town tile by using the name property without rendering
+      # the name
       return [] if !name || name[0] == '_'
 
       [h(:text, { attrs: { transform: 'scale(1.5) translate(10 30)' } }, name)]

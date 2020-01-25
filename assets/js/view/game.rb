@@ -12,7 +12,6 @@ require 'engine/round/stock'
 module View
   class Game < Snabberb::Component
     needs :game
-    needs :visible
 
     def render_round
       h(:div, "Round: #{@round.class.name}")
@@ -32,10 +31,7 @@ module View
 
       players = @game.players.map { |player| h(Player, player: player) }
 
-      attrs = { id: 'game' }
-      attrs[:style] = 'display: none' unless @visible
-
-      h(:div, { attrs: attrs }, [
+      h(:div, { attrs: { id: 'game' } }, [
         h(:div, 'Game test 1889'),
         h(EntityOrder, round: @round),
         render_round,

@@ -11,14 +11,22 @@ require 'engine/game/g_1889'
 
 class App < Snabberb::Component
   needs :game
-  needs :page, store: true, default: 'tiles'
+  needs :page, store: true, default: 'game'
 
   def render
-    h(:div, { props: { id: 'app' } }, [
-      *tabs,
-      h(View::Game, game: @game, visible: @page == 'game'),
-      h(View::Tiles, visible: @page == 'tiles'),
-    ])
+    page =
+      case @page
+      when 'game'
+        [h(View::Game, game: @game)]
+      when 'tiles'
+        [h(View::Tiles)]
+      else
+        []
+      end
+
+    children = tabs + page
+
+    h(:div, { props: { id: 'app' } }, children)
   end
 
   def tabs

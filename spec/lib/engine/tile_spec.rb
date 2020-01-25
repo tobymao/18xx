@@ -19,8 +19,8 @@ module Engine
     let(:city2) { City.new(30, 2) }
     let(:kotohira40) { City.new(40, 1, 'Kotohira') }
     let(:town) { Town.new(10) }
-    let(:townA) { Town.new(10, '_A') }
-    let(:townB) { Town.new(10, '_B') }
+    let(:town_A) { Town.new(10, '_A') }
+    let(:town_B) { Town.new(10, '_B') }
     let(:junction) { Junction.new }
 
     describe '.for' do
@@ -88,12 +88,12 @@ module Engine
           '1',
           color: :yellow,
           parts: [
-            townA,
-            Path.new(edge0, townA),
-            Path.new(townA, edge2),
-            townB,
-            Path.new(edge3, townB),
-            Path.new(townB, edge5),
+            town_A,
+            Path.new(edge0, town_A),
+            Path.new(town_A, edge2),
+            town_B,
+            Path.new(edge3, town_B),
+            Path.new(town_B, edge5),
           ]
         )
         expect(actual).to eq(expected)
