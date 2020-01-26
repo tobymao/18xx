@@ -14,7 +14,7 @@ module Engine
       end
 
       def ==(other)
-        (other.class == Label) && (@label == other.to_s)
+        other.label? && (@label == other.to_s)
       end
 
       def label?

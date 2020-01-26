@@ -14,7 +14,7 @@ module Engine
       end
 
       def ==(other)
-        (other.class == City) && (@revenue == other.revenue) && (@slots == other.slots) && (@name == other.name)
+        other.city? && (@revenue == other.revenue) && (@slots == other.slots) && (@name == other.name)
       end
 
       def city?

@@ -21,7 +21,7 @@ module Engine
       # rubocop:enable Naming/MethodParameterName
 
       def ==(other)
-        @a == other.a && @b == other.b
+        other.path? && @a == other.a && @b == other.b
       end
 
       def path?

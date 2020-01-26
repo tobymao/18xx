@@ -12,7 +12,7 @@ module Engine
       end
 
       def ==(other)
-        other.is_a?(Edge) && (@num == other.num)
+        other.edge? && (@num == other.num)
       end
 
       def edge?

@@ -6,7 +6,7 @@ module Engine
   module Part
     class Junction < Base
       def ==(other)
-        other.class == Junction
+        other.junction?
       end
 
       def junction?
