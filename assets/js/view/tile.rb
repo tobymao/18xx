@@ -224,7 +224,7 @@ module View
 
     # render letter label, like "Z", "H", "OO"
     def render_label
-      [h(:text, { attrs: { transform: 'scale(2.5) translate(10 30)' } }, @tile.label)]
+      [h(:text, { attrs: { transform: 'scale(2.5) translate(10 30)' } }, @tile.label.to_s)]
     end
 
     # render city/town name iff no other label is present
