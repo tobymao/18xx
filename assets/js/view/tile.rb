@@ -115,6 +115,7 @@ module View
     # render the small rectangle representing a town stop between curvilinear
     # track connecting A and B
     def render_town_rect(edge_a, edge_b)
+      edge_a, edge_b = edge_b, edge_a if edge_b < edge_a
       width = 8
       height = 28
 
