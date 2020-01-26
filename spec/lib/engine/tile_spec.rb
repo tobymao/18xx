@@ -28,7 +28,7 @@ module Engine
     describe '.for' do
       it 'should render basic tile' do
         expect(Tile.for('8')).to eq(
-          Tile.new('8', color: :yellow, parts: [Path.new(edge0, edge2)])
+          Tile.new('8', color: :yellow, parts: [Path.new(edge0, edge4)])
         )
       end
 
@@ -55,7 +55,7 @@ module Engine
         expected = Tile.new(
           '14',
           color: :green,
-          parts: [city2, Path.new(edge0, city2), Path.new(edge2, city2), Path.new(edge3, city2), Path.new(edge5, city2)]
+          parts: [city2, Path.new(edge0, city2), Path.new(edge1, city2), Path.new(edge3, city2), Path.new(edge4, city2)]
         )
 
         expect(actual).to eq(expected)
@@ -79,7 +79,7 @@ module Engine
 
       it 'should render a town' do
         expect(Tile.for('3')).to eq(
-          Tile.new('3', color: :yellow, parts: [town, Path.new(edge0, town), Path.new(town, edge5)])
+          Tile.new('3', color: :yellow, parts: [town, Path.new(edge0, town), Path.new(town, edge1)])
         )
       end
 
@@ -92,13 +92,20 @@ module Engine
           parts: [
             town_a,
             Path.new(edge0, town_a),
-            Path.new(town_a, edge2),
+            Path.new(town_a, edge4),
             town_b,
-            Path.new(edge3, town_b),
-            Path.new(town_b, edge5),
+            Path.new(edge1, town_b),
+            Path.new(town_b, edge3),
           ]
         )
         expect(actual).to eq(expected)
+      end
+    end
+
+    describe '#exits' do
+      it 'should have the right exits' do
+        expect(Tile.for('1889;C4').exits.to_a).to eq([2])
+        expect(Tile.for('1889;B3').exits.to_a.sort).to eq([0, 5])
       end
     end
   end

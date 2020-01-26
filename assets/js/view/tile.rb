@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require 'set'
-
-require 'engine/game_error'
-
 module View
   class Tile < Snabberb::Component
     SHARP = 1
@@ -21,9 +17,11 @@ module View
     }.freeze
 
     needs :tile
+    needs :route, default: nil, store: true
 
     # returns SHARP, GENTLE, or STRAIGHT
     def compute_curvilinear_type(edge_a, edge_b)
+      edge_a, edge_b = edge_b, edge_a if edge_b < edge_a
       diff = edge_b - edge_a
       diff = (edge_a - edge_b) % 6 if diff > 3
       diff
@@ -32,6 +30,8 @@ module View
     # degrees to rotate the svg path for this track path; e.g., a normal straight
     # is 0,3; for 1,4, rotate = 60
     def compute_track_rotation_degrees(edge_a, edge_b)
+      edge_a, edge_b = edge_b, edge_a if edge_b < edge_a
+
       if (edge_b - edge_a) > 3
         60 * edge_b
       else
@@ -45,16 +45,17 @@ module View
     end
 
     def render_curvilinear_track
+      color = 'red' if @route_paths.any?
+
       @tile.paths.flat_map do |path|
-        render_curvilinear_track_segment(path.a.num, path.b.num)
+        puts "#{path.exits}" if @tile.name == '7'
+        render_curvilinear_track_segment(*path.exits, color)
       end
     end
 
-    def render_curvilinear_track_segment(edge_num_a, edge_num_b)
-      a, b = [edge_num_a, edge_num_b].sort
-
-      curvilinear_type = compute_curvilinear_type(a, b)
-      rotation = compute_track_rotation_degrees(a, b)
+    def render_curvilinear_track_segment(edge_a, edge_b, color = nil)
+      curvilinear_type = compute_curvilinear_type(edge_a, edge_b)
+      rotation = compute_track_rotation_degrees(edge_a, edge_b)
 
       transform = "rotate(#{rotation})"
 
@@ -66,29 +67,30 @@ module View
           'm 0 85 L 0 75 A 129.90375 129.90375 0 0 0 -64.951875 -37.5 L -73.612125 -42.5'
         when STRAIGHT
           'm 0 87 L 0 -87'
+        else
+          raise
         end
 
-      [
-        h(:path, attrs: { transform: transform, d: d, stroke: 'black', 'stroke-width' => 8 }),
-      ]
+      [h(:path, attrs: { transform: transform, d: d, stroke: color || 'black', 'stroke-width' => 8 })]
     end
 
     def render_lawson_track
-      @tile
-        .connections
-        .select(&:edge?)
-        .map(&:num)
-        .flat_map { |e| render_lawson_track_segment(e) }
+      exits = @route_paths.flat_map(&:exits)
+
+      @tile.exits.flat_map do |e|
+        color = 'red' if exits.include?(e)
+        render_lawson_track_segment(e, color)
+      end
     end
 
-    def render_lawson_track_segment(edge_num)
+    def render_lawson_track_segment(edge_num, color = 'black')
       rotate = 60 * edge_num
 
       props = {
         attrs: {
           transform: "rotate(#{rotate})",
           d: 'M 0 87 L 0 0',
-          stroke: 'black',
+          stroke: color,
           'stroke-width' => 8
         }
       }
@@ -152,20 +154,21 @@ module View
     end
 
     def render_track_town(town)
-      edges = @tile
+      color = 'red' if @route_paths.flat_map(&:towns).any?
+
+      exits = @tile
         .paths
         .select { |p| p.a == town || p.b == town }
-        .flat_map { |p| [p.a, p.b].select(&:edge?) }
+        .flat_map(&:exits)
 
-      if edges.count == 2
-        edge_nums = edges.map(&:num).sort
-        r_track = render_curvilinear_track_segment(*edge_nums)
-        r_town = render_town_rect(*edge_nums)
+      if exits.size == 2
+        r_track = render_curvilinear_track_segment(*exits, color)
+        r_town = render_town_rect(*exits)
         r_revenue = render_revenue(town.revenue)
         r_track + r_town + r_revenue
-      elsif edges.count == 1
+      elsif exits.count == 1
         # TODO, e.g., IR2
-      elsif edges.count > 2
+      elsif exits.count > 2
         # TODO, e.g., 141
       end
     end
@@ -214,8 +217,8 @@ module View
       when [0, 2]
         render_track_double_town
       else
-        raise Engine::GameError, "Don't how to render track for #{@tile.towns.count}"\
-                                 " towns and #{@tile.cities.count} cities."
+        puts "Don't how to render track for #{@tile.towns.count} towns and #{@tile.cities.count} cities."
+        []
       end
     end
 
@@ -245,14 +248,16 @@ module View
         'stroke-width' => 1,
       }
 
-      children =
-        begin
-          render_track + render_label + render_name
-        rescue Engine::GameError => e
-          # TODO: send to console.error
-          puts("Engine::GameError: Cannot render Tile '#{@tile.name}': #{e}")
-          [h(:text, { attrs: { transform: 'scale(2.5)' } }, @tile.name)]
-        end
+      @route_paths = @route&.paths_for(@tile.paths) || []
+
+      track = render_track
+
+      if track.empty?
+        puts "Cannot render Tile '#{@tile.name}'"
+        track = [h(:text, { attrs: { transform: 'scale(2.5)' } }, @tile.name)]
+      end
+
+      children = track + render_label + render_name
 
       h(:g, { attrs: attrs }, children)
     end

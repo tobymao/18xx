@@ -3,6 +3,18 @@
 module Engine
   module Part
     class Base
+      def <=>(other)
+        if edge? && other.edge?
+          num <=> other.num
+        elsif edge?
+          -1
+        elsif other.edge?
+          1
+        else
+          0
+        end
+      end
+
       def city?
         false
       end

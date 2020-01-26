@@ -6,7 +6,6 @@ require 'engine/company/tile_laying'
 require 'engine/company/terrain_discount'
 require 'engine/corporation/base'
 require 'engine/game/base'
-require 'engine/game_error'
 require 'engine/hex'
 require 'engine/tile'
 
@@ -60,14 +59,8 @@ module Engine
         }
 
         coordinates.map do |c|
-          tile =
-            begin
-              name, rotation = initial_tiles[c]
-              Tile.for(name, rotation: rotation)
-            rescue Engine::GameError
-              nil
-            end
-
+          name, rotation = initial_tiles[c]
+          tile = Tile.for(name, rotation: rotation) if name
           Hex.new(c, layout: :flat, tile: tile)
         end
       end

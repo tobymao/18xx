@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'set'
-
 require 'engine/game_error'
 require 'engine/part/city'
 require 'engine/part/town'
@@ -80,7 +78,8 @@ module Engine
       '1889;J7' => 'p=a:1,b:5',
     }.freeze
 
-    attr_reader :color, :name, :parts, :rotation
+    attr_reader :cities, :color, :edges, :junctions, :label, :name,
+                :parts, :paths, :rotation, :towns
 
     def self.for(name, **opts)
       if (code = YELLOW[name])
@@ -146,6 +145,12 @@ module Engine
       @color = color
       @parts = parts
       @rotation = rotation
+      @cities = []
+      @paths = []
+      @towns = []
+      @edges = nil
+      @junctions = nil
+      separate_parts
       rotate_edges!(rotation)
     end
 
@@ -158,36 +163,12 @@ module Engine
       (num + ticks) % 6
     end
 
-    def cities
-      @cities ||= @parts.select(&:city?)
-    end
-
-    def towns
-      @towns ||= @parts.select(&:town?)
-    end
-
-    def paths
-      @paths ||= @parts.select(&:path?)
-    end
-
-    def connections
-      @connections ||= paths.flat_map { |p| [p.a, p.b] }
-    end
-
-    def edges
-      @edges ||= connections.select(&:edge?)
-    end
-
-    def label
-      @label ||= @parts.find(&:label?)
-    end
-
     def exits
-      @exits ||= Set.new(edges.map(&:num))
+      @edges.map(&:num).uniq
     end
 
     def lawson?
-      @lawson ||= connections.any?(&:junction?)
+      @lawson ||= @junctions.any?
     end
 
     def ==(other)
@@ -198,7 +179,25 @@ module Engine
 
     def rotate_edges!(ticks = 1)
       edges.each { |e| e.num = rotate(e.num, ticks) }
-      @exits = nil
+    end
+
+    def separate_parts
+      @parts.each do |part|
+        if part.city?
+          @cities << part
+        elsif part.label?
+          @label = part
+        elsif part.path?
+          @paths << part
+        elsif part.town?
+          @towns << part
+        else
+          raise "Part #{part} not separated."
+        end
+      end
+
+      @junctions = @paths.flat_map(&:junctions)
+      @edges = @paths.flat_map(&:edges)
     end
   end
 end

@@ -6,20 +6,20 @@ module Engine
 
     DIRECTIONS = {
       flat: {
-        [0, -2] => 0,
-        [1, -1] => 1,
-        [1, 1] => 2,
-        [0, 2] => 3,
-        [-1, 1] => 4,
-        [-1, -1] => 5,
+        [0, 2] => 0,
+        [-1, 1] => 1,
+        [-1, -1] => 2,
+        [0, -2] => 3,
+        [1, -1] => 4,
+        [1, 1] => 5,
       },
       pointy: {
-        [-1, -1] => 0,
-        [1, -1] => 1,
-        [2, 0] => 2,
-        [1, 1] => 3,
-        [-1, 1] => 4,
-        [-2, 0] => 5,
+        [1, 1] => 0,
+        [-1, 1] => 1,
+        [-2, 0] => 2,
+        [-1, -1] => 3,
+        [1, -1] => 4,
+        [2, 0] => 5,
       },
     }.freeze
 
@@ -48,19 +48,26 @@ module Engine
       [other.x - @x, other.y - @y]
     end
 
-    def neighbor?(other)
-      DIRECTIONS[@layout].key?(direction(other))
+    def neighbor_direction(other)
+      DIRECTIONS[@layout][direction(other)]
+    end
+
+    def connections(other)
+      dir = neighbor_direction(other)
+      idir = invert(dir)
+
+      # this current assumes there's only one valid route to an exit which may not be true
+      @tile.paths.select { |p| p.exits.include?(dir) } +
+        other.tile.paths.select { |p| p.exits.include?(idir) }
     end
 
     def connected?(other)
-      direction = DIRECTIONS[@layout][direction(other)]
-
-      @tile.exits.include?(direction) &&
-        other.tile.exits.include?(inverted(direction))
+      dir = neighbor_direction(other)
+      @tile.exits.include?(dir) && other.tile.exits.include?(invert(dir))
     end
 
-    def inverted(direction)
-      (direction + 3) % 6
+    def invert(dir)
+      (dir + 3) % 6
     end
 
     def ==(other)

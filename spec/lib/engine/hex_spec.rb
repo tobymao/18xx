@@ -13,13 +13,13 @@ module Engine
     let(:connected_neighbor) { Hex.new('B5', layout: :flat, tile: Tile.for('9')) }
     let(:rotated_neighbor) { Hex.new('B5', layout: :flat, tile: Tile.for('9', rotation: 1)) }
 
-    describe '#neighbor?' do
+    describe '#neighbor_direction' do
       it 'is a neighbor' do
-        expect(subject.neighbor?(neighbor)).to be_truthy
+        expect(subject.neighbor_direction(neighbor)).to eq(5)
       end
 
       it 'is not a neighbor' do
-        expect(subject.neighbor?(not_neighbor)).to be_falsey
+        expect(subject.neighbor_direction(not_neighbor)).to be_falsey
       end
     end
 

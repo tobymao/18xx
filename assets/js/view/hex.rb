@@ -3,7 +3,9 @@
 require 'lib/tile_selector'
 require 'view/actionable'
 require 'view/tile'
+
 require 'engine/action/lay_tile'
+require 'engine/route'
 
 module View
   class Hex < Snabberb::Component
@@ -26,6 +28,7 @@ module View
 
     needs :hex
     needs :tile_selector, default: nil, store: true
+    needs :route, default: nil, store: true
     needs :role, default: :map
 
     def render
@@ -61,6 +64,10 @@ module View
     end
 
     def on_hex_click(event)
+      # @route ||= Engine::Route.new
+      # @route.add_hex(@hex)
+      # store(:route, @route)
+      # return
       return @tile_selector.rotate! if @selected && @tile_selector.tile
 
       case @role
