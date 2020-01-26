@@ -48,7 +48,6 @@ module View
       color = 'red' if @route_paths.any?
 
       @tile.paths.flat_map do |path|
-        puts "#{path.exits}" if @tile.name == '7'
         render_curvilinear_track_segment(*path.exits, color)
       end
     end
