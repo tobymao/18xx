@@ -24,6 +24,8 @@ module Engine
         when Action::LayTile
           @tiles.reject! { |t| action.tile.equal?(t) }
           action.hex.lay(action.tile)
+        when Action::PlaceToken
+          action.city.place_token(action.entity, action.slot)
         end
       end
     end

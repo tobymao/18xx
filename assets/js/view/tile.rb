@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require 'snabberb/component'
+
+require 'view/city'
+
 module View
   class Tile < Snabberb::Component
     SHARP = 1
@@ -183,27 +187,15 @@ module View
       end
     end
 
-    def render_city_slots_center(slots = 1)
-      x, y = CITY_SLOT_POSITION[slots]
-
-      circles = (0..(slots - 1)).map do |c|
-        rotation = (360 / slots) * c
-        # use the rotation on the outer <g> to position the circle, then use
-        # -rotation on the <circle> so its contents are rendered without
-        # rotation
-        h(:g, { attrs: { transform: "rotate(#{rotation})" } }, [
-          h(:circle, attrs: { r: 25, fill: 'white', transform: "translate(#{x}, #{y}) rotate(#{-rotation})" }),
-        ])
-      end
-
-      [h(:g, circles)]
+    def render_city(city)
+      x, y = CITY_SLOT_POSITION[city.slots]
+      h(City, city: city, x: x, y: y)
     end
 
     def render_track_single_city
       city = @tile.cities.first
-      slots = city.slots
 
-      render_lawson_track + render_city_slots_center(slots) + render_revenue(city.revenue)
+      render_lawson_track + render_city(city) + render_revenue(city.revenue)
     end
 
     def render_track
