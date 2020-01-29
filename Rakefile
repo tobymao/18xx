@@ -57,6 +57,11 @@ task :prod_up do
   migrate.call('production', nil)
 end
 
+desc 'irb with -I lib/ -I assets/js/'
+task :irb do
+  sh 'irb -I lib/ -I assets/js/'
+end
+
 # Shell
 
 irb = proc do |env|
