@@ -16,7 +16,7 @@ module Engine
       def copy(game)
         puts "copying #{self.class}"
         self.class.new(
-          game.corporation_by_name(@entity.name), # this should actually be a corporation
+          game.corporation_by_name(@entity.name),
           @city,
           @slot
         )
