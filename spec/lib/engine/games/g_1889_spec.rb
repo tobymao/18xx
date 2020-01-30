@@ -3,6 +3,7 @@
 require './spec/spec_helper'
 
 require 'engine/game/g_1889'
+require 'engine/part/city'
 
 module Engine
   describe Game::G1889 do
@@ -21,9 +22,10 @@ module Engine
     end
 
     describe '#city_by_name' do
-      it 'returns an object with matching properties' do
+      it 'returns the correct Engine::Part::City' do
         actual = subject.city_by_name('Kouchi')
 
+        expect(actual.class).to eq(Engine::Part::City)
         expect(actual.revenue).to eq(30)
         expect(actual.slots).to eq(2)
         expect(actual.name).to eq('Kouchi')
