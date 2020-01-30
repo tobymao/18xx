@@ -15,7 +15,11 @@ class EntityOrder < Snabberb::Component
       style['text-decoration'] = 'underline' if @round.can_act?(entity)
       style['border-left'] = 'black solid thin' if index.positive?
 
-      owner = " (#{entity.owner.name})" if !entity.is_a?(Engine::Player) && entity.owner
+      owner = ''
+      unless entity.is_a?(Engine::Player)
+        owner = " (#{entity.owner.name})" if entity.respond_to?(:owner) && entity.owner
+      end
+
       h(:div, { style: style }, "#{entity.name}#{owner}")
     end
 
