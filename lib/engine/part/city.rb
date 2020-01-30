@@ -15,7 +15,11 @@ module Engine
       end
 
       def ==(other)
-        other.city? && (@revenue == other.revenue) && (@slots == other.slots) && (@name == other.name)
+        other.city? &&
+          @revenue == other.revenue &&
+          @slots == other.slots &&
+          @name == other.name &&
+          @tokens == other.tokens
       end
 
       def city?

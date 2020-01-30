@@ -91,6 +91,14 @@ module Engine
         @_shares[name]
       end
 
+      def city_by_name(name)
+        @_cities = @hexes.map(&:tile).compact.flat_map(&:cities).map do |c|
+          [c.name, c]
+        end.to_h
+
+        @_cities[name]
+      end
+
       private
 
       def init_bank
