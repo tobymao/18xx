@@ -18,7 +18,7 @@ module Engine
     end
 
     def ==(other)
-      (other.class == Token) && (unplaced? == other.unplaced?)
+      (other.class == Token) && (unplaced? == other.unplaced?) && (@corporation.sym == other.corporation.sym)
     end
   end
 end

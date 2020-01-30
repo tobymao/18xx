@@ -3,6 +3,7 @@
 require 'snabberb/component'
 
 require 'engine/action/place_token'
+require 'view/actionable'
 
 module View
   class Slot < Snabberb::Component
