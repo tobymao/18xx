@@ -92,7 +92,7 @@ module Engine
       end
 
       def city_by_name(name)
-        @_cities = @hexes.map(&:tile).compact.flat_map(&:cities).map do |c|
+        @_cities ||= @hexes.map(&:tile).compact.flat_map(&:cities).map do |c|
           [c.name, c]
         end.to_h
 
