@@ -4,49 +4,40 @@ require 'snabberb/component'
 
 require 'engine/action/place_token'
 require 'view/actionable'
+require 'view/token'
 
 module View
+  # a "slot" is a space in a city for a token
   class Slot < Snabberb::Component
     include Actionable
 
     needs :token
     needs :slot_index, default: 0
     needs :city
+    needs :radius
 
     def render
-      h(:g, {}, [
-          h(
-            :circle,
-            attrs: { r: 25, fill: 'white' },
-            on: { click: ->(e) { on_slot_click(e, @slot_index) } }
-          ),
-          render_token
+      h(:g, { on: { click: on_click } }, [
+          h(:circle, attrs: { r: @radius, fill: 'white' }),
+          (h(Token, token: @token, radius: @radius) unless @token.nil?)
         ].compact)
     end
 
-    def render_token
-      return nil if @token.nil?
+    def on_click
+      lambda do |event|
+        # don't propagate to a click on the hex (i.e., don't trigger a tile laying
+        # action from the same click)
+        event.JS.stopPropagation
 
-      h(
-        :text,
-        { attrs: { 'text-anchor': 'middle' } },
-        @token.corporation.sym
-      )
-    end
+        next unless @token.nil?
 
-    def on_slot_click(event, slot)
-      return unless @token.nil?
-
-      action = Engine::Action::PlaceToken.new(
-        @game.current_entity,
-        @city,
-        slot
-      )
-      process_action(action)
-
-      # don't propagate to a click on the hex (ie don't trigger a tile laying
-      # action from the same click)
-      event.JS.stopPropagation
+        action = Engine::Action::PlaceToken.new(
+          @game.current_entity,
+          @city,
+          @slot_index
+        )
+        process_action(action)
+      end
     end
   end
 end

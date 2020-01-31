@@ -11,6 +11,8 @@ module View
     needs :y
 
     def render
+      slot_radius = 25
+
       slots = (0..(@city.slots - 1)).zip(@city.tokens).map do |slot_index, token|
         rotation = (360 / @city.slots) * slot_index
 
@@ -19,7 +21,7 @@ module View
         # rotation
         h(:g, { attrs: { 'stroke-width': 1, transform: "rotate(#{rotation})" } }, [
             h(:g, { attrs: { transform: "translate(#{@x}, #{@y}) rotate(#{rotation})" } }, [
-                h(Slot, city: @city, token: token, slot_index: slot_index)
+                h(Slot, city: @city, token: token, slot_index: slot_index, radius: slot_radius)
               ].compact)
           ])
       end

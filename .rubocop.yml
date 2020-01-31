@@ -12,6 +12,8 @@ Metrics/BlockLength:
 
 Layout/LineLength:
   Max: 120
+  Exclude:
+    - 'assets/js/view/svg_tokens/**/*'
 
 Layout/MultilineMethodCallIndentation:
   Enabled: False
