@@ -15,6 +15,7 @@ module View
     needs :slot_index, default: 0
     needs :city
     needs :radius
+    needs :tile_selector, default: nil, store: true
 
     def render
       h(:g, { on: { click: on_click } }, [
@@ -23,10 +24,16 @@ module View
         ].compact)
     end
 
+    def on_selected_hex?
+      @tile_selector&.hex&.tile&.cities&.include?(@city)
+    end
+
     def on_click
       lambda do |event|
-        # don't propagate to a click on the hex (i.e., don't trigger a tile laying
-        # action from the same click)
+        # when clicking on a city slot in an unselected hex, do nothing
+        next unless on_selected_hex?
+
+        # don't propagate to the hex view's click handler
         event.JS.stopPropagation
 
         next unless @token.nil?
