@@ -34,17 +34,17 @@ module View
 
     def render_token_block(token_class)
       h(:div, { style: {
-                  display: 'inline-block',
-                  width: '76px',
-                  height: '100px',
-                  'outline-style': 'solid',
-                        'outline-width': 'thin',
-                        'margin-top': '10px',
-                        'margin-right': '1px',
-                } }, [
+          display: 'inline-block',
+          width: '76px',
+          height: '100px',
+          'outline-style': 'solid',
+          'outline-width': 'thin',
+          'margin-top': '10px',
+          'margin-right': '1px',
+        } }, [
           h(:div, { style: { 'text-align': 'center' } }, token_class.name.split('::').last),
           h(:svg, { style: { width: '100%', height: '100%' },
-                    attrs: {transform: 'translate(19 26) scale(1.5)'} }, [
+                    attrs: { transform: 'translate(19 26) scale(1.5)' } }, [
               h(token_class)
             ])
         ])
