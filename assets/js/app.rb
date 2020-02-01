@@ -6,6 +6,7 @@ require 'polyfill'
 
 require 'view/game'
 require 'view/tiles'
+require 'view/tokens'
 require 'engine/game/base'
 require 'engine/game/g_1889'
 
@@ -20,6 +21,8 @@ class App < Snabberb::Component
         [h(View::Game)]
       when 'tiles'
         [h(View::Tiles)]
+      when 'tokens'
+        [h(View::Tokens)]
       else
         []
       end
@@ -33,6 +36,7 @@ class App < Snabberb::Component
     [
       h(:button, { on: { click: -> { store(:page, 'game') } } }, 'Game'),
       h(:button, { on: { click: -> { store(:page, 'tiles') } } }, 'Tiles'),
+      h(:button, { on: { click: -> { store(:page, 'tokens') } } }, 'Tokens'),
     ]
   end
 end
