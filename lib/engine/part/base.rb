@@ -38,6 +38,10 @@ module Engine
       def town?
         false
       end
+
+      def upgrade?
+        false
+      end
     end
   end
 end

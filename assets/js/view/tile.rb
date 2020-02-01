@@ -3,6 +3,7 @@
 require 'snabberb/component'
 
 require 'view/city'
+require 'view/tile_parts/upgrade'
 
 module View
   class Tile < Snabberb::Component
@@ -109,7 +110,7 @@ module View
       [
         h(
           :g,
-          { attrs: { 'stroke-width': 1, transform: 'translate(-25 40)' } },
+          { attrs: { 'stroke-width': 1, transform: 'translate(-41 71)' } },
           [
             h(:circle, attrs: { r: 14, fill: 'white' }),
             h(:text, { attrs: { transform: 'translate(-8 6)' } }, revenue),
@@ -236,6 +237,19 @@ module View
       [h(:text, { attrs: { transform: 'scale(1.5) translate(10 30)' } }, name)]
     end
 
+    def render_upgrades
+      @tile.upgrades.flat_map do |upgrade|
+        h(TileParts::Upgrade, cost: upgrade.cost, terrains: upgrade.terrains)
+      end
+    end
+
+    def render_town_dot
+      h(:circle, attrs: { fill: '#000',
+                          cx: '0',
+                          cy: '0',
+                          r: '10' })
+    end
+
     def render
       attrs = {
         fill: 'none',
@@ -246,6 +260,8 @@ module View
         track =
           if @tile.cities.count == 1
             render_city(@tile.cities.first)
+          elsif @tile.towns.count == 1
+            [render_town_dot]
           else
             []
           end
@@ -260,7 +276,7 @@ module View
         end
       end
 
-      children = track + render_label + render_name
+      children = track + render_upgrades + render_label + render_name
 
       h(:g, { attrs: attrs }, children)
     end

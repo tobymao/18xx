@@ -1,0 +1,32 @@
+# frozen_string_literal: true
+
+require 'engine/part/base'
+
+module Engine
+  module Part
+    class Upgrade < Base
+      attr_reader :cost, :terrains
+
+      def initialize(cost, terrains = [])
+        @cost = cost.to_i
+        @terrains = terrains&.map(&:to_sym) || []
+      end
+
+      def ==(other)
+        other.upgrade? && (@cost == other.cost) && (@terrains == other.terrains)
+      end
+
+      def upgrade?
+        true
+      end
+
+      def mountain?
+        @mountain ||= @terrains.include?(:mountain)
+      end
+
+      def water?
+        @water ||= @terrains.include?(:water)
+      end
+    end
+  end
+end

@@ -5,6 +5,7 @@ require 'engine/part/city'
 require 'engine/part/junction'
 require 'engine/part/label'
 require 'engine/part/town'
+require 'engine/part/upgrade'
 require 'engine/tile'
 
 module Engine
@@ -76,7 +77,8 @@ module Engine
             kotohira40,
             Path.new(edge0, kotohira40),
             Path.new(kotohira40, edge2),
-            Label.new('H')
+            Label.new('H'),
+            Upgrade.new(80),
 ]
         )
 
@@ -108,10 +110,18 @@ module Engine
       end
     end
 
+    describe '.from_code' do
+      it 'should render tile with upgrade cost and terrain' do
+        expect(Tile.from_code('name', :white, 'u=c:80,t:mountain+water')).to eq(
+          Tile.new('name', color: :white, parts: [Upgrade.new(80, %i[mountain water])])
+        )
+      end
+    end
+
     describe '#exits' do
       it 'should have the right exits' do
-        expect(Tile.for('1889;C4').exits.to_a).to eq([2])
-        expect(Tile.for('1889;B3').exits.to_a.sort).to eq([0, 5])
+        expect(Tile.for('6').exits.to_a).to eq([0, 2])
+        expect(Tile.for('7').exits.to_a.sort).to eq([0, 5])
       end
     end
   end

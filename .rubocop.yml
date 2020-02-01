@@ -5,7 +5,10 @@ Metrics/AbcSize:
   Enabled: false
 
 Metrics/CyclomaticComplexity:
-  Max: 7
+  Max: 8
+
+Metrics/PerceivedComplexity:
+  Max: 8
 
 Metrics/BlockLength:
   Enabled: False

@@ -7,6 +7,7 @@ require 'engine/part/edge'
 require 'engine/part/junction'
 require 'engine/part/label'
 require 'engine/part/path'
+require 'engine/part/upgrade'
 
 module Engine
   class Tile
@@ -22,6 +23,10 @@ module Engine
     WHITE = {
       '_0' => '',
       '_1' => 'c=r:0',
+      '_2' => 'u=c:80,t:mountain',
+      '_3' => 'u=c:80,t:mountain+water',
+      '_4' => 'u=c:80,t:water',
+      '_5' => 't=r:0',
     }.freeze
 
     YELLOW = {
@@ -36,7 +41,7 @@ module Engine
       '57' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3',
       '58' => 't=r:10;p=a:0,b:_0;p=a:_0,b:2',
       '437' => 't=r:30,n:Port;p=a:0,b:_0;p=a:_0,b:2',
-      '438' => 'c=r:40,n:Kotohira;p=a:0,b:_0;p=a:_0,b:2;l=H', # u: 80 JPY
+      '438' => 'c=r:40,n:Kotohira;p=a:0,b:_0;p=a:_0,b:2;l=H;u=c:80',
     }.freeze
 
     GREEN = {
@@ -61,7 +66,7 @@ module Engine
       '298' => 'c=r:40,n:_A;c=r:40,n:_B;c=r:40,n:_C;c=r:40,n:_D;l=Chi;'\
                'p=a:1,b:_0;p=a:0,b:_1;p=a:5,b:_2;p=a:4,b:_3;'\
                'p=a:_0,b:3;p=a:_2,b:3;p=a:_3,b:3;p=a:_1,b:3',
-      '439' => 'c=r:60,s:2,n:Kotohira;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=H', # u: 80 JPY
+      '439' => 'c=r:60,s:2,n:Kotohira;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=H;u=c:80',
       '440' => 'c=r:40,n:Takamatsu,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
     }.freeze
 
@@ -87,7 +92,7 @@ module Engine
     }.freeze
 
     attr_reader :cities, :color, :edges, :junctions, :label, :name,
-                :parts, :paths, :rotation, :towns
+                :parts, :paths, :rotation, :towns, :upgrades
 
     def self.for(name, **opts)
       if (code = WHITE[name])
@@ -150,6 +155,10 @@ module Engine
         label = Part::Label.new(params)
         cache << label
         label
+      when 'u'
+        upgrade = Part::Upgrade.new(params['c'], params['t']&.split('+'))
+        cache << upgrade
+        upgrade
       end
     end
 
@@ -164,6 +173,7 @@ module Engine
       @towns = []
       @edges = nil
       @junctions = nil
+      @upgrades = []
       separate_parts
       rotate_edges!(rotation)
     end
@@ -205,6 +215,8 @@ module Engine
           @paths << part
         elsif part.town?
           @towns << part
+        elsif part.upgrade?
+          @upgrades << part
         else
           raise "Part #{part} not separated."
         end
