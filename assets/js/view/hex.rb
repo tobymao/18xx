@@ -85,7 +85,7 @@ module View
           store(:tile_selector, Lib::TileSelector.new(@hex, @tile, event, root))
         end
       when :tile_selector
-        @tile_selector.tile = @tile
+        @tile_selector&.tile = @tile
       end
     end
   end
