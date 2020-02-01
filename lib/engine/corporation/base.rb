@@ -10,9 +10,9 @@ module Engine
       include Ownable
 
       attr_accessor :ipoed, :owner, :par_price, :share_price, :tokens
-      attr_reader :sym, :name, :shares
+      attr_reader :sym, :name, :logo, :shares
 
-      def initialize(sym, name:, tokens:)
+      def initialize(sym, name:, tokens:, logo: nil)
         @sym = sym
         @name = name
         @tokens = tokens.times.map { Token.new(self) }
@@ -21,6 +21,7 @@ module Engine
         @share_price = nil
         @par_price = nil
         @ipoed = false
+        @logo = "logos/#{logo || sym}.svg"
       end
     end
   end

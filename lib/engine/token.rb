@@ -9,7 +9,7 @@ module Engine
       @placed = placed
     end
 
-    def place
+    def place!
       @placed = true
     end
 

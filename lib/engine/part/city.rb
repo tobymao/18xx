@@ -38,7 +38,7 @@ module Engine
 
         # place token on this city
         token = corporation.tokens.find(&:unplaced?)
-        token.place
+        token.place!
         @tokens[slot] = token
       end
     end

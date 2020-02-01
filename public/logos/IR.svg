@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 50.8 50.8">
+    <g fill-rule="evenodd" stroke-width=".26" transform="translate(-195.323 -150.186) scale(3.90769)">
+        <circle class="color-main color-orange" fill="#f68121" cx="56.484" cy="44.933" r="6.5"/>
+        <path class="color-white" fill="#f2f2ff" d="M56.486 42.12l3.972 2.812-3.977 2.815-3.97-2.815z"/>
+        <path class="color-orange" fill="#f68121" d="M56.5 42.387v1.084l-.53.167v1.293h-.936v-.865l-2.24.877h1.495l.26.371h1.901v.6h-1.288l1.306 1.566v-1.084l.53-.167v-1.293h.936v.865l2.241-.878H58.68l-.26-.37h-1.902v-.6h1.289z"/>
+    </g>
+</svg>

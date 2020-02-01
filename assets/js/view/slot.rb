@@ -20,7 +20,7 @@ module View
     def render
       h(:g, { on: { click: on_click } }, [
           h(:circle, attrs: { r: @radius, fill: 'white' }),
-          (h(Token, token: @token, radius: @radius) unless @token.nil?)
+          (h(Token, corporation: @token.corporation, radius: @radius) unless @token.nil?)
         ].compact)
     end
 

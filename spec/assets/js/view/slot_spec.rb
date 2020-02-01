@@ -26,7 +26,7 @@ module View
           slot.render
 
           # assert
-          expect(slot).to have_received(:h).with(View::Token, token: token, radius: radius)
+          expect(slot).to have_received(:h).with(View::Token, corporation: corp, radius: radius)
         end
       end
 
