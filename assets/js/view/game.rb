@@ -36,8 +36,8 @@ module View
         h(EntityOrder, round: @round),
         render_round,
         render_action,
-        h(Map),
         *players,
+        h(Map),
       ])
     end
   end

@@ -5,12 +5,23 @@ require 'engine/action/lay_tile'
 module Engine
   module Round
     class Operating < Base
-      attr_reader :num
+      attr_reader :round_num
 
-      def initialize(entities, tiles:, num: 1)
+      def initialize(entities, tiles:, companies:, bank:, round_num: 1)
         super
-        @num = num
+        @round_num = round_num
         @tiles = tiles
+        @companies = companies
+        @bank = bank
+
+        companies_payout
+      end
+
+      def companies_payout
+        @companies.each do |company|
+          company.owner.add_cash(company.income)
+          @bank.remove_cash(company.income)
+        end
       end
 
       def finished?

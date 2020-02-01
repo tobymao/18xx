@@ -1,8 +1,13 @@
 # frozen_string_literal: true
 
+require 'engine/ownable'
+
 module Engine
   module Company
     class Base
+      include Ownable
+
+      attr_accessor :owner
       attr_reader :name, :value, :desc, :income
 
       def initialize(name, value:, income: 0, desc: '')

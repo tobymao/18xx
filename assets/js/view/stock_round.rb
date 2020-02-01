@@ -5,6 +5,7 @@ require 'view/corporation'
 
 require 'engine/action/buy_share'
 require 'engine/action/float'
+require 'engine/action/pass'
 require 'engine/action/sell_share'
 
 module View
@@ -17,10 +18,14 @@ module View
       @round = @game.round
       @current_entity = @round.current_entity
 
+      pass = lambda do
+        process_action(Engine::Action::Pass.new(@current_entity))
+      end
+
       h(:div, [
         *render_corporations,
         render_input,
-        render_shares,
+        h(:button, { on: { click: pass } }, 'Pass')
       ])
     end
 
@@ -28,13 +33,6 @@ module View
       @game.share_pool.corporations.map do |corporation|
         h(Corporation, corporation: corporation)
       end
-    end
-
-    def render_shares
-      div = @current_entity.shares_by_corporation.map do |corporation, shares|
-        h(:div, "#{corporation.name} - Shares #{shares.size}")
-      end
-      h(:div, div)
     end
 
     def render_input

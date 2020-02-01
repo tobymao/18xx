@@ -88,8 +88,10 @@ module Engine
       def accept_bid(bid)
         price = bid.price
         company = bid.company
-        bid.player.companies << company
-        bid.player.remove_cash(price)
+        player = bid.player
+        company.owner = player
+        player.companies << company
+        player.remove_cash(price)
         @bank.add_cash(price)
         @companies.delete(company)
         @bids.delete(company)

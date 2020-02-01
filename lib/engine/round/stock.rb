@@ -14,6 +14,10 @@ module Engine
         @stock_market = stock_market
       end
 
+      def pass
+        @current_entity.pass!
+      end
+
       def finished?
         active_entities.all?(&:passed?)
       end
@@ -21,6 +25,8 @@ module Engine
       private
 
       def _process_action(action)
+        @current_entity.unpass!
+
         case action
         when Action::BuyShare
           @share_pool.buy_share(action.entity, action.share)

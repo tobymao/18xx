@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
+require 'engine/ownable'
 require 'engine/share'
 require 'engine/token'
 
 module Engine
   module Corporation
     class Base
-      attr_accessor :ipoed, :par_price, :share_price, :tokens
+      include Ownable
+
+      attr_accessor :ipoed, :owner, :par_price, :share_price, :tokens
       attr_reader :sym, :name, :shares
 
       def initialize(sym, name:, tokens:)
