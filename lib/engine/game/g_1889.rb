@@ -48,21 +48,39 @@ module Engine
           J5 J7 J9 J11 K4 K6 K8 L7
         ]
 
-        initial_tiles = {
-          'B3' => ['1889;B3', 0],
-          'B7' => ['1889;B7', 0],
-          'C4' => ['1889;C4', 0],
-          'F9' => ['1889;F9', 0],
-          'G14' => ['1889;B3', 4],
-          'J7' => ['1889;J7', 0],
-          'K4' => ['1889;K4', 0],
-        }
+        # blanks
+        hexes = coordinates.map do |c|
+          [c, Hex.new(c, layout: :flat, tile: Tile.for('_0'))]
+        end.to_h
 
-        coordinates.map do |c|
-          name, rotation = initial_tiles[c]
-          tile = Tile.for(name, rotation: rotation) if name
-          Hex.new(c, layout: :flat, tile: tile)
+        # preprinted tiles
+        {
+          yellow: {
+            'C4' => 'c=r:20,n:Ohzu;p=a:2,b:_0',
+            'K4' => 'c=r:30,n:Takamatsu;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T', # v:KO
+          },
+          green: {
+            'F9' => 'c=r:30,s:2,n:Kouchi,v:TR;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K',
+          },
+          gray: {
+            'B3' => 't=r:20;p=a:0,b:_0;p=a:_0,b:5',
+            'B7' => 'c=r:40,s:2,n:Uwajima;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0', # v:UR
+            'G14' => 't=r:20;p=a:3,b:_0;p=a:_0,b:4',
+            'J7' => 'p=a:1,b:5',
+          },
+        }.each do |color, tiles|
+          tiles.each do |coord, code|
+            tile = Tile.from_code(coord, color, code)
+            hexes[coord] = Hex.new(coord, layout: :flat, tile: tile)
+          end
         end
+
+        cities = %w[A10 C10 E2 F3 G4 G12 H7 I2 I4 J11]
+        cities.each do |coord|
+          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('_1'))
+        end
+
+        hexes.values
       end
 
       def init_tiles

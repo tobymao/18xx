@@ -8,6 +8,7 @@ module View
   class Tiles < Snabberb::Component
     def render
       tile_ids = [
+        Engine::Tile::WHITE.keys,
         Engine::Tile::YELLOW.keys,
         Engine::Tile::GREEN.keys,
         Engine::Tile::BROWN.keys,

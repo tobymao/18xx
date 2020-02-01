@@ -10,6 +10,20 @@ require 'engine/part/path'
 
 module Engine
   class Tile
+    # * [t]own    - [r]evenue, [n]ame
+    # * [c]ity    - [r]evenue, [n]ame, [s]lots (default 1); some slots may be
+    #               reser[v]ed by referencing a corporation's short name/@sym
+    # * [p]ath    - endpoints [a] and [b]; the endpoints can be an edge number,
+    #               town/city reference, or a lawson-style [j]unction
+    # * [l]abel   - large letters on tile
+    # * [u]pgrade - [c]ost, [t]errain, [e]dge (if not specified, then the
+    #               upgrade applies to the tile and is rendered in the center)
+
+    WHITE = {
+      '_0' => '',
+      '_1' => 'c=r:0',
+    }.freeze
+
     YELLOW = {
       '1' => 't=r:10,n:_A;p=a:0,b:_0;p=a:_0,b:4;t=r:10,n:_B;p=a:1,b:_1;p=a:_1,b:3',
       '3' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1',
@@ -23,8 +37,6 @@ module Engine
       '58' => 't=r:10;p=a:0,b:_0;p=a:_0,b:2',
       '437' => 't=r:30,n:Port;p=a:0,b:_0;p=a:_0,b:2',
       '438' => 'c=r:40,n:Kotohira;p=a:0,b:_0;p=a:_0,b:2;l=H', # u: 80 JPY
-      '1889;C4' => 'c=r:20,n:Ohzu;p=a:2,b:_0',
-      '1889;K4' => 'c=r:30,n:Takamatsu;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T', # v:KO
     }.freeze
 
     GREEN = {
@@ -51,7 +63,6 @@ module Engine
                'p=a:_0,b:3;p=a:_2,b:3;p=a:_3,b:3;p=a:_1,b:3',
       '439' => 'c=r:60,s:2,n:Kotohira;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=H', # u: 80 JPY
       '440' => 'c=r:40,n:Takamatsu,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
-      '1889;F9' => 'c=r:30,s:2,n:Kouchi;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K', # v:TR
     }.freeze
 
     BROWN = {
@@ -73,16 +84,15 @@ module Engine
     GRAY = {
       '456' => 'c=r:70,s:5;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
       '639' => 'c=r:100,s:4;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
-      '1889;B3' => 't=r:20;p=a:0,b:_0;p=a:_0,b:5',
-      '1889;B7' => 'c=r:40,s:2,n:Uwajima;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0', # v:UR
-      '1889;J7' => 'p=a:1,b:5',
     }.freeze
 
     attr_reader :cities, :color, :edges, :junctions, :label, :name,
                 :parts, :paths, :rotation, :towns
 
     def self.for(name, **opts)
-      if (code = YELLOW[name])
+      if (code = WHITE[name])
+        color = :white
+      elsif (code = YELLOW[name])
         color = :yellow
       elsif (code = GREEN[name])
         color = :green
@@ -94,7 +104,7 @@ module Engine
         raise Engine::GameError, "Tile '#{name}' not found"
       end
 
-      Tile.new(name, color: color, parts: decode(code), **opts)
+      from_code(name, color, code, **opts)
     end
 
     def self.decode(code)
@@ -107,6 +117,10 @@ module Engine
 
         part(type, params, cache)
       end
+    end
+
+    def self.from_code(name, color, code, **opts)
+      Tile.new(name, color: color, parts: decode(code), **opts)
     end
 
     def self.part(type, params, cache)

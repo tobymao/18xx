@@ -32,6 +32,12 @@ module Engine
         )
       end
 
+      it 'should render basic tile' do
+        expect(Tile.for('_0')).to eq(
+          Tile.new('_0', color: :white, parts: [])
+        )
+      end
+
       it 'should render a lawson track tile' do
         actual = Tile.for('81A')
 

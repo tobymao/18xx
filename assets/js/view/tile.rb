@@ -104,6 +104,8 @@ module View
     end
 
     def render_revenue(revenue)
+      return [] if revenue.zero?
+
       [
         h(
           :g,
@@ -240,13 +242,22 @@ module View
         'stroke-width' => 1,
       }
 
-      @route_paths = @route&.paths_for(@tile.paths) || []
+      if @tile.paths.empty?
+        track =
+          if @tile.cities.count == 1
+            render_city(@tile.cities.first)
+          else
+            []
+          end
+      else
+        @route_paths = @route&.paths_for(@tile.paths) || []
 
-      track = render_track
+        track = render_track
 
-      if track.empty?
-        puts "Cannot render Tile '#{@tile.name}'"
-        track = [h(:text, { attrs: { transform: 'scale(2.5)' } }, @tile.name)]
+        if track.empty?
+          puts "Cannot render Tile '#{@tile.name}'"
+          track = [h(:text, { attrs: { transform: 'scale(2.5)' } }, @tile.name)]
+        end
       end
 
       children = track + render_label + render_name
