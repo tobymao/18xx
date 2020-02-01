@@ -2,7 +2,13 @@
 
 require 'snabberb/component'
 
+require 'view/svg_tokens/ar'
 require 'view/svg_tokens/ir'
+require 'view/svg_tokens/ko'
+require 'view/svg_tokens/ku'
+require 'view/svg_tokens/sr'
+require 'view/svg_tokens/tr'
+require 'view/svg_tokens/ur'
 
 # mapping of corporation short names to component classes for their token SVG
 # representation
@@ -11,7 +17,13 @@ require 'view/svg_tokens/ir'
 # corporation in different games, with different colors (e.g., PRR is green in
 # 1830 vs red in 1846)?
 TOKEN_SVG_COMPONENTS = {
-  'IR' => View::SvgTokens::IR
+  'AR' => View::SvgTokens::AR,
+  'IR' => View::SvgTokens::IR,
+  'KO' => View::SvgTokens::KO,
+  'KU' => View::SvgTokens::KU,
+  'SR' => View::SvgTokens::SR,
+  'TR' => View::SvgTokens::TR,
+  'UR' => View::SvgTokens::UR,
 }.freeze
 
 module View
