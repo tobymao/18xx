@@ -217,6 +217,9 @@ module Engine
         exits.to_set.subset?(other_exits.to_set)
       end
 
+      # honors existing town/city counts?
+      # TODO: this is not true for some OO upgrades, or some tiles where
+      # double-town can be upgraded into a single town
       return false unless @towns.count == other.towns.count
       return false unless @cities.count == other.cities.count
 
