@@ -56,18 +56,22 @@ module Engine
         # preprinted tiles
         {
           white: {
+            'C10' => 'c=r:0,v:KU',
+            'E2' => 'c=r:0,v:IR',
+            'I2' => 'c=r:0,v:SR',
             'I4' => 'c=r:0,n:Kotohira;l=H;u=c:80',
+            'K8' => 'c=r:0,v:AR',
           },
           yellow: {
             'C4' => 'c=r:20,n:Ohzu;p=a:2,b:_0',
-            'K4' => 'c=r:30,n:Takamatsu;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T', # v:KO
+            'K4' => 'c=r:30,n:Takamatsu,v:KO;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
           },
           green: {
             'F9' => 'c=r:30,s:2,n:Kouchi,v:TR;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K;u=c:80',
           },
           gray: {
             'B3' => 't=r:20;p=a:0,b:_0;p=a:_0,b:5',
-            'B7' => 'c=r:40,s:2,n:Uwajima;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0', # v:UR
+            'B7' => 'c=r:40,s:2,n:Uwajima,v:UR;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0',
             'G14' => 't=r:20;p=a:3,b:_0;p=a:_0,b:4',
             'J7' => 'p=a:1,b:5',
           },
@@ -79,7 +83,7 @@ module Engine
         end
 
         # city
-        %w[A10 C10 E2 F3 G4 G12 H7 I2 J11 K8].each do |coord|
+        %w[A10 F3 G4 G12 H7 J11].each do |coord|
           hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('_1'))
         end
 

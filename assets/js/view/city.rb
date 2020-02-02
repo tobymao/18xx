@@ -21,7 +21,11 @@ module View
         # rotation
         h(:g, { attrs: { 'stroke-width': 1, transform: "rotate(#{rotation})" } }, [
             h(:g, { attrs: { transform: "translate(#{@x}, #{@y}) rotate(#{rotation})" } }, [
-                h(Slot, city: @city, token: token, slot_index: slot_index, radius: slot_radius)
+                h(Slot, city: @city,
+                        token: token,
+                        slot_index: slot_index,
+                        radius: slot_radius,
+                        reservation: @city.reservations[slot_index])
               ].compact)
           ])
       end

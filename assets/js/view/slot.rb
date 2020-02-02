@@ -16,12 +16,24 @@ module View
     needs :city
     needs :radius
     needs :tile_selector, default: nil, store: true
+    needs :reservation, default: nil
 
     def render
       h(:g, { on: { click: on_click } }, [
           h(:circle, attrs: { r: @radius, fill: 'white' }),
+          reservation,
           (h(Token, corporation: @token.corporation, radius: @radius) unless @token.nil?)
         ].compact)
+    end
+
+    def reservation
+      return if @reservation.nil?
+
+      h(
+        :text,
+        { attrs: { 'text-anchor': 'middle', transform: 'translate(0 9) scale(1.75)' } },
+        @reservation,
+      )
     end
 
     def on_selected_hex?
