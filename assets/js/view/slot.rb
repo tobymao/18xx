@@ -40,10 +40,16 @@ module View
       @tile_selector&.hex&.tile&.cities&.include?(@city)
     end
 
+    def on_white_tile?
+      @tile_selector&.hex&.tile&.color == :white
+    end
+
     def on_click
       lambda do |event|
         # when clicking on a city slot in an unselected hex, do nothing
         next unless on_selected_hex?
+
+        next if on_white_tile?
 
         # don't propagate to the hex view's click handler
         event.JS.stopPropagation
