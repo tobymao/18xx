@@ -233,6 +233,7 @@ module Engine
           when [2, 0]
             other_paths.any? do |other_path|
               next unless other_path.edges.count == 2
+
               rotated_other_a = Engine::Part::Edge.new((other_path.a.num + other_rotation) % 6)
               rotated_other_b = Engine::Part::Edge.new((other_path.b.num + other_rotation) % 6)
               rotated_other_path = Engine::Path.new(rotated_other_a, rotated_other_b)
@@ -242,13 +243,13 @@ module Engine
           when [1, 1]
             other_paths.any? do |other_path|
               next unless [other_path.edges, other_path.cities].map(&:count) == [1, 1]
+
               rotated_other_edge = (other_path.edges.first.num + other_rotation) % 6
 
               self_edge = self_path.edges.first.num
 
               rotated_other_edge == self_edge
             end
-          else
           end
         end
       end
