@@ -22,7 +22,7 @@ module View
       ]
 
       if @tile_selector
-        children << h(TileSelector, tiles: @game.tiles.take(8)) unless @tile_selector.tile
+        children << h(TileSelector, tiles: @game.upgrades_for_tile(@tile_selector.tile))
         children << h(TileConfirmation) if @tile_selector.tile
       end
 

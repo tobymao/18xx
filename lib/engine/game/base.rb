@@ -99,6 +99,10 @@ module Engine
         @_cities[name]
       end
 
+      def upgrades_for_tile(tile)
+        @tiles.select { |t| tile.upgrades_to?(t) }.uniq(&:name)
+      end
+
       private
 
       def init_bank

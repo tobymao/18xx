@@ -44,7 +44,7 @@ module Engine
       '9' => 'p=a:0,b:3',
       '57' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3',
       '58' => 't=r:10;p=a:0,b:_0;p=a:_0,b:2',
-      '437' => 't=r:30,n:Port;p=a:0,b:_0;p=a:_0,b:2',
+      '437' => 't=r:30;p=a:0,b:_0;p=a:_0,b:2;l=P',
       '438' => 'c=r:40,n:Kotohira;p=a:0,b:_0;p=a:_0,b:2;l=H;u=c:80',
     }.freeze
 
@@ -236,7 +236,7 @@ module Engine
 
               rotated_other_a = Engine::Part::Edge.new((other_path.a.num + other_rotation) % 6)
               rotated_other_b = Engine::Part::Edge.new((other_path.b.num + other_rotation) % 6)
-              rotated_other_path = Engine::Path.new(rotated_other_a, rotated_other_b)
+              rotated_other_path = Engine::Part::Path.new(rotated_other_a, rotated_other_b)
 
               rotated_other_path.equal?(self_path)
             end
