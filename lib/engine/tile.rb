@@ -217,6 +217,9 @@ module Engine
         exits.to_set.subset?(other_exits.to_set)
       end
 
+      return false unless @towns.count == other.towns.count
+      return false unless @cities.count == other.cities.count
+
       # honors pre-existing track?
       return false unless paths_are_subset_of?(other.paths)
 
