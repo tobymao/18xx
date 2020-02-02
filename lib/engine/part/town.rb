@@ -16,6 +16,10 @@ module Engine
         other.town? && (@revenue == other.revenue) && (@name == other.name)
       end
 
+      def <=(other)
+        other.town? && (@name == other.name)
+      end
+
       def town?
         true
       end

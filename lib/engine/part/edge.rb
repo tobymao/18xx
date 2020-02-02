@@ -18,6 +18,10 @@ module Engine
       def edge?
         true
       end
+
+      def rotate(ticks)
+        Edge.new((@num + ticks) % 6)
+      end
     end
   end
 end

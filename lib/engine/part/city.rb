@@ -24,6 +24,10 @@ module Engine
           @reservations == other.reservations
       end
 
+      def <=(other)
+        other.city? && (@name == other.name)
+      end
+
       def city?
         true
       end

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'set'
-
 require 'engine/game_error'
 require 'engine/part/city'
 require 'engine/part/town'
@@ -194,7 +192,7 @@ module Engine
     end
 
     def exits
-      @edges.map(&:num).uniq
+      @exits ||= @edges.map(&:num).uniq
     end
 
     def lawson?
@@ -210,19 +208,13 @@ module Engine
       return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)
 
       # correct label?
-      return false unless label.to_s == other.label.to_s
-
-      # honors pre-existing exits?
-      return false unless (0..5).any? do |rot|
-        other_exits = other.exits.map { |e| (e + rot) % 6 }
-        exits.to_set.subset?(other_exits.to_set)
-      end
+      return false unless label == other.label
 
       # honors existing town/city counts?
       # TODO: this is not true for some OO upgrades, or some tiles where
       # double-town can be upgraded into a single town
-      return false unless @towns.count == other.towns.count
-      return false unless @cities.count == other.cities.count
+      return false unless @towns.size == other.towns.size
+      return false unless @cities.size == other.cities.size
 
       # honors pre-existing track?
       return false unless paths_are_subset_of?(other.paths)
@@ -231,30 +223,10 @@ module Engine
     end
 
     def paths_are_subset_of?(other_paths)
-      (0..5).any? do |other_rotation|
-        @paths.all? do |self_path|
-          case [self_path.edges, self_path.cities].map(&:count)
-          when [2, 0]
-            other_paths.any? do |other_path|
-              next unless other_path.edges.count == 2
-
-              rotated_other_a = Engine::Part::Edge.new((other_path.a.num + other_rotation) % 6)
-              rotated_other_b = Engine::Part::Edge.new((other_path.b.num + other_rotation) % 6)
-              rotated_other_path = Engine::Part::Path.new(rotated_other_a, rotated_other_b)
-
-              rotated_other_path == self_path
-            end
-          when [1, 1]
-            other_paths.any? do |other_path|
-              next unless [other_path.edges, other_path.cities].map(&:count) == [1, 1]
-
-              rotated_other_edge = (other_path.edges.first.num + other_rotation) % 6
-
-              self_edge = self_path.edges.first.num
-
-              rotated_other_edge == self_edge
-            end
-          end
+      (0..5).any? do |ticks|
+        @paths.all? do |path|
+          path = path.rotate(ticks)
+          other_paths.any? { |other| path <= other }
         end
       end
     end

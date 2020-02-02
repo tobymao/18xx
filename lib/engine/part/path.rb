@@ -26,12 +26,21 @@ module Engine
            (@a == other.b && @b == other.a))
       end
 
+      def <=(other)
+        (@a <= other.a && @b <= other.b) ||
+          (@a <= other.b && @b <= other.a)
+      end
+
       def path?
         true
       end
 
       def exits
-        @edges.map(&:num)
+        @exits ||= @edges.map(&:num)
+      end
+
+      def rotate(ticks)
+        Path.new(@a.rotate(ticks), @b.rotate(ticks))
       end
 
       private

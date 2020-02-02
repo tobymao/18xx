@@ -15,6 +15,14 @@ module Engine
         end
       end
 
+      def <=(other)
+        self == other
+      end
+
+      def rotate(_ticks)
+        self
+      end
+
       def city?
         false
       end

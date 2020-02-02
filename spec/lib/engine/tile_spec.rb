@@ -130,29 +130,22 @@ module Engine
     end
 
     describe '#paths_are_subset_of?' do
-      describe "Tile 9's path set" do
-        it 'is subset of itself' do
-          tile = Tile.for('9')
-          straight_path = [Path.new(Edge.new(0), Edge.new(3))]
+      context "Tile 9's path set" do
+        subject { Tile.for('9') }
 
-          actual = tile.paths_are_subset_of?(straight_path)
-          expect(actual).to be true
+        it 'is subset of itself' do
+          straight_path = [Path.new(Edge.new(0), Edge.new(3))]
+          expect(subject.paths_are_subset_of?(straight_path)).to be_truthy
         end
 
         it 'is subset of itself reversed' do
-          tile = Tile.for('9')
           straight_path = [Path.new(Edge.new(3), Edge.new(0))]
-
-          actual = tile.paths_are_subset_of?(straight_path)
-          expect(actual).to be true
+          expect(subject.paths_are_subset_of?(straight_path)).to be_truthy
         end
 
         it 'is subset of itself rotated 1' do
-          tile = Tile.for('9')
           straight_path = [Path.new(Edge.new(1), Edge.new(4))]
-
-          actual = tile.paths_are_subset_of?(straight_path)
-          expect(actual).to be true
+          expect(subject.paths_are_subset_of?(straight_path)).to be_truthy
         end
       end
     end
@@ -212,16 +205,10 @@ module Engine
           EXPECTED_TILE_UPGRADES.keys.each do |u|
             tile = Tile.for(t)
             upgrade = Tile.for(u)
-            actual = tile.upgrades_to?(upgrade)
+            included = EXPECTED_TILE_UPGRADES[t].include?(u)
 
-            if EXPECTED_TILE_UPGRADES[t].include?(u)
-              it "#{t} can upgrade to #{u}" do
-                expect(actual).to be true
-              end
-            else
-              it "#{t} cannot upgrade to #{u}" do
-                expect(actual).to be false
-              end
+            it "#{t} can#{included ? '' : 'not'} upgrade to #{u}" do
+              expect(tile.upgrades_to?(upgrade)).to eq(included)
             end
           end
         end
