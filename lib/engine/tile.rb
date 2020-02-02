@@ -95,6 +95,8 @@ module Engine
       '639' => 'c=r:100,s:4;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
     }.freeze
 
+    COLORS = %i[white yellow green brown gray].freeze
+
     attr_reader :cities, :color, :edges, :junctions, :label, :name,
                 :parts, :paths, :rotation, :towns, :upgrades
 
@@ -205,8 +207,7 @@ module Engine
 
     def upgrades_to?(other)
       # correct color progression?
-      colors = %i[white yellow green brown gray]
-      return false unless colors.index(other.color) == (colors.index(@color) + 1)
+      return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)
 
       # correct label?
       return false unless label.to_s == other.label.to_s
