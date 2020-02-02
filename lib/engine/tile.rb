@@ -242,7 +242,7 @@ module Engine
               rotated_other_b = Engine::Part::Edge.new((other_path.b.num + other_rotation) % 6)
               rotated_other_path = Engine::Part::Path.new(rotated_other_a, rotated_other_b)
 
-              rotated_other_path.equal?(self_path)
+              rotated_other_path == self_path
             end
           when [1, 1]
             other_paths.any? do |other_path|

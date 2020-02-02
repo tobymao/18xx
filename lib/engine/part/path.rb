@@ -21,7 +21,9 @@ module Engine
       # rubocop:enable Naming/MethodParameterName
 
       def ==(other)
-        other.path? && @a == other.a && @b == other.b
+        other.path? &&
+          ((@a == other.a && @b == other.b) ||
+           (@a == other.b && @b == other.a))
       end
 
       def path?
@@ -30,11 +32,6 @@ module Engine
 
       def exits
         @edges.map(&:num)
-      end
-
-      # ==, but also returns true if a and b are swapped on the other
-      def equal?(other)
-        [self, Path.new(@b, @a)].include?(other)
       end
 
       private
