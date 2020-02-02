@@ -209,7 +209,7 @@ module Engine
       return false unless colors.index(other.color) == (colors.index(@color) + 1)
 
       # correct label?
-      return unless label == other.label
+      return false unless label.to_s == other.label.to_s
 
       # honors pre-existing exits?
       return false unless (0..5).any? do |rot|
