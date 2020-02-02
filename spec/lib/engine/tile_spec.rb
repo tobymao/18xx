@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
+require 'engine/game/g_1889'
 require 'engine/part/city'
+require 'engine/part/edge'
 require 'engine/part/junction'
 require 'engine/part/label'
+require 'engine/part/path'
 require 'engine/part/town'
 require 'engine/part/upgrade'
 require 'engine/tile'
 
+# rubocop: disable Metrics/ModuleLength
 module Engine
   include Engine::Part
 
@@ -124,5 +128,105 @@ module Engine
         expect(Tile.for('7').exits.to_a.sort).to eq([0, 5])
       end
     end
+
+    describe '#paths_are_subset_of?' do
+      describe "Tile 9's path set" do
+        it 'is subset of itself' do
+          tile = Tile.for('9')
+          straight_path = [Path.new(Edge.new(0), Edge.new(3))]
+
+          actual = tile.paths_are_subset_of?(straight_path)
+          expect(actual).to be true
+        end
+
+        it 'is subset of itself reversed' do
+          tile = Tile.for('9')
+          straight_path = [Path.new(Edge.new(3), Edge.new(0))]
+
+          actual = tile.paths_are_subset_of?(straight_path)
+          expect(actual).to be true
+        end
+
+        it 'is subset of itself rotated 1' do
+          tile = Tile.for('9')
+          straight_path = [Path.new(Edge.new(1), Edge.new(4))]
+
+          actual = tile.paths_are_subset_of?(straight_path)
+          expect(actual).to be true
+        end
+      end
+    end
+
+    describe '#upgrades_to?' do
+      context '1889' do
+        EXPECTED_TILE_UPGRADES = {
+          '_0' => %w[7 8 9],
+          # '_1' => %w[5 6 57],
+          '_2' => %w[7 8 9],
+          '_3' => %w[7 8 9],
+          '_4' => %w[7 8 9],
+          # '_5' => %w[3 58],
+          # '3' => %w[],
+          # '5' => %w[12 14 15 205 206],
+          # '6' => %w[12 13 14 15 205 206],
+          '7' => %w[26 27 28 29],
+          '8' => %w[16 19 23 24 25 28 29],
+          '9' => %w[19 20 23 24 26 27],
+          # '12' => %w[448 611],
+          # '13' => %w[611],
+          # '14' => %w[611],
+          # '15' => %w[448 611],
+          '16' => %w[],
+          '19' => %w[45 46],
+          '20' => %w[47],
+          '23' => %w[41 45 47],
+          '24' => %w[42 46 47],
+          '25' => %w[40 45 46],
+          '26' => %w[42 45],
+          '27' => %w[41 46],
+          '28' => %w[39 46],
+          '29' => %w[39 45],
+          '39' => %w[],
+          '40' => %w[],
+          '41' => %w[],
+          '42' => %w[],
+          '45' => %w[],
+          '46' => %w[],
+          '47' => %w[],
+          # '57' => %w[14 15],
+          # '58' => %w[],
+          # '205' => %w[448 611],
+          # '206' => %w[448 611],
+          # '437' => %w[],
+          # '438' => %w[439],
+          # '439' => %w[492],
+          # '440' => %w[465],
+          # '448' => %w[],
+          # '465' => %w[],
+          # '466' => %w[],
+          # '492' => %w[],
+          # '611' => %w[],
+        }.freeze
+
+        EXPECTED_TILE_UPGRADES.keys.each do |t|
+          EXPECTED_TILE_UPGRADES.keys.each do |u|
+            tile = Tile.for(t)
+            upgrade = Tile.for(u)
+            actual = tile.upgrades_to?(upgrade)
+
+            if EXPECTED_TILE_UPGRADES[t].include?(u)
+              it "#{t} can upgrade to #{u}" do
+                expect(actual).to be true
+              end
+            else
+              it "#{t} cannot upgrade to #{u}" do
+                expect(actual).to be false
+              end
+            end
+          end
+        end
+      end
+    end
   end
 end
+# rubocop: enable Metrics/ModuleLength

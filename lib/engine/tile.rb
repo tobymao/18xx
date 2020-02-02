@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'set'
+
 require 'engine/game_error'
 require 'engine/part/city'
 require 'engine/part/town'
@@ -199,6 +201,42 @@ module Engine
 
     def ==(other)
       @name == other.name && @color == other.color && @parts == other.parts
+    end
+
+    def upgrades_to?(other)
+      # correct color progression?
+      colors = %i[white yellow green brown gray]
+      return false unless colors.index(other.color) == (colors.index(@color) + 1)
+
+      # correct label?
+      return unless label == other.label
+
+      # honors pre-existing exits?
+      return false unless (0..5).any? do |rot|
+        other_exits = other.exits.map { |e| (e + rot) % 6 }
+        exits.to_set.subset?(other_exits.to_set)
+      end
+
+      # honors pre-existing track?
+      return false unless paths_are_subset_of?(other.paths)
+
+      true
+    end
+
+    def paths_are_subset_of?(other_paths)
+      (0..5).any? do |other_rotation|
+        @paths.all? do |self_path|
+          next false unless self_path.a.edge? && self_path.b.edge?
+
+          other_paths.any? do |other_path|
+            rotated_other_a = Engine::Part::Edge.new((other_path.a.num + other_rotation) % 6)
+            rotated_other_b = Engine::Part::Edge.new((other_path.b.num + other_rotation) % 6)
+            rotated_other_path = Engine::Path.new(rotated_other_a, rotated_other_b)
+
+            rotated_other_path.equal?(self_path)
+          end
+        end
+      end
     end
 
     private

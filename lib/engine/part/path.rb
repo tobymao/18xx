@@ -32,6 +32,11 @@ module Engine
         @edges.map(&:num)
       end
 
+      # ==, but also returns true if a and b are swapped on the other
+      def equal?(other)
+        [self, Path.new(@b, @a)].include?(other)
+      end
+
       private
 
       def separate_parts
