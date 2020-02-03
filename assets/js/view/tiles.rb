@@ -38,10 +38,11 @@ module View
             height: '97px',
             'outline-style': 'solid',
             'outline-width': 'thin',
+            'margin-bottom': '10px',
             'margin-top': '10px',
             'margin-right': '1px',
           } }, [
-            h(:div, { style: { 'text-align': 'center' } }, tile_id),
+            h(:div, { style: { 'text-align': 'center', 'font-size': '12px' } }, tile_id),
             h(:svg, { style: { width: '100%', height: '100%' } }, [
                 h(:g, { attrs: { transform: 'scale(0.4)' } }, [
                     h(
