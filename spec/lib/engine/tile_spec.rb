@@ -38,8 +38,8 @@ module Engine
       end
 
       it 'should render basic tile' do
-        expect(Tile.for('_0')).to eq(
-          Tile.new('_0', color: :white, parts: [])
+        expect(Tile.for('blank')).to eq(
+          Tile.new('blank', color: :white, parts: [])
         )
       end
 
@@ -153,12 +153,12 @@ module Engine
     describe '#upgrades_to?' do
       context '1889' do
         EXPECTED_TILE_UPGRADES = {
-          '_0' => %w[7 8 9],
-          '_1' => %w[5 6 57],
-          '_2' => %w[7 8 9],
-          '_3' => %w[7 8 9],
-          '_4' => %w[7 8 9],
-          '_5' => %w[3 58],
+          'blank' => %w[7 8 9],
+          'city' => %w[5 6 57],
+          'mtn80' => %w[7 8 9],
+          'mtn+wtr80' => %w[7 8 9],
+          'wtr80' => %w[7 8 9],
+          'town' => %w[3 58],
           '3' => %w[],
           '5' => %w[12 14 15 205 206],
           '6' => %w[12 13 14 15 205 206],
