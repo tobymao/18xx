@@ -5,12 +5,11 @@ require 'engine/action/base'
 module Engine
   module Action
     class PlaceToken < Base
-      attr_reader :entity, :city, :slot
+      attr_reader :entity, :city
 
-      def initialize(entity, city, slot)
+      def initialize(entity, city)
         @entity = entity
         @city = city
-        @slot = slot
       end
 
       def copy(game)

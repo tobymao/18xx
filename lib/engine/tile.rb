@@ -234,7 +234,8 @@ module Engine
     private
 
     def rotate_edges!(ticks = 1)
-      edges.each { |e| e.num = rotate(e.num, ticks) }
+      @exits = nil
+      @edges.each { |e| e.num = rotate(e.num, ticks) }
     end
 
     def separate_parts

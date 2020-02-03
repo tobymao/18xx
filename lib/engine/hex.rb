@@ -41,6 +41,10 @@ module Engine
     end
 
     def lay(tile)
+      if @tile
+        token = @tile.cities[0].tokens[0]
+        tile.cities[0].place_token(token.corporation) if token
+      end
       @tile = tile
     end
 

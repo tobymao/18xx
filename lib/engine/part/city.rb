@@ -12,7 +12,7 @@ module Engine
         @slots = slots.to_i
         @name = name
         @tokens = Array.new(@slots)
-        @reservations = reservations || []
+        @reservations = reservations&.map(&:to_sym) || []
       end
 
       def ==(other)
@@ -32,24 +32,26 @@ module Engine
         true
       end
 
-      def place_token(corporation, slot)
+      def place_token(corporation)
         # the slot is reserved for a different corporation
+        slot = @reservations.index(corporation.sym) || @tokens.find_index(&:nil?)
+
         reservation = @reservations[slot]
         unless reservation.nil?
-          return unless corporation.sym == reservation
+          raise unless corporation.sym == reservation
         end
 
         # a token is already in this slot
-        return unless @tokens[slot].nil?
+        raise unless @tokens[slot].nil?
 
         # corporation has a reservation for a different spot in the city
-        return unless [nil, slot].include?(@reservations.index(corporation.sym))
+        raise unless [nil, slot].include?(@reservations.index(corporation.sym))
 
         # corporation already placed a token in this city
-        return if @tokens.compact.map(&:corporation).include?(corporation)
+        raise if @tokens.compact.map(&:corporation).include?(corporation)
 
         # corporation already placed all their tokens
-        return if corporation.tokens.select(&:unplaced?).empty?
+        raise if corporation.tokens.select(&:unplaced?).empty?
 
         # place token on this city
         token = corporation.tokens.find(&:unplaced?)

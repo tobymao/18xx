@@ -19,25 +19,6 @@ module Engine
           expect(subject.tokens).to eq([nil])
         end
       end
-
-      describe '#place_token' do
-        it 'does not update the tokens when there is already a token in the slot' do
-          subject.place_token(corporation, 0)
-          expect(subject.tokens).to eq([placed_token])
-
-          subject.place_token(corporation, 0)
-          expect(subject.tokens).to eq([placed_token])
-        end
-
-        it "places the corporation's first unplaced token" do
-          expect(corporation.tokens).to eq([unplaced_token, unplaced_token])
-
-          subject.place_token(corporation, 0)
-
-          expect(corporation.tokens).to eq([placed_token, unplaced_token])
-          expect(subject.tokens).to eq([placed_token])
-        end
-      end
     end
   end
 end

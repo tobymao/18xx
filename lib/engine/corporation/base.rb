@@ -23,7 +23,7 @@ module Engine
         @ipoed = false
 
         @float_percent = opts[:float_percent] || 60
-        @coordinates = opts[:home_coordinates]
+        @coordinates = opts[:coordinates]
         @logo = "logos/#{opts[:logo] || sym}.svg"
       end
 

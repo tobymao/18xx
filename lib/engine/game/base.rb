@@ -110,6 +110,7 @@ module Engine
       end
 
       def init_round
+        # new_operating_round(round_num = 0)
         Round::Auction.new(@players, companies: @companies, bank: @bank)
       end
 
@@ -172,6 +173,8 @@ module Engine
       def new_operating_round(round_num = 0)
         Round::Operating.new(
           @corporations.select(&:floated?),
+          # [@corporations[0]],
+          hexes: @hexes,
           tiles: @tiles,
           companies: @companies,
           bank: @bank,

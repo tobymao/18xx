@@ -7,9 +7,10 @@ module Engine
     class Operating < Base
       attr_reader :round_num
 
-      def initialize(entities, tiles:, companies:, bank:, round_num: 1)
+      def initialize(entities, hexes:, tiles:, companies:, bank:, round_num: 1) # rubocop:disable Metrics/ParameterLists
         super
         @round_num = round_num
+        @hexes = hexes
         @tiles = tiles
         @companies = companies
         @bank = bank
@@ -20,12 +21,15 @@ module Engine
 
       def companies_payout
         @companies.each do |company|
-          @bank.spend(company.income, company.owner)
+          @bank.spend(company.income, company.owner) if company.owner
         end
       end
 
       def place_home_stations
         @entities.each do |corporation|
+          hex = @hexes.find { |h| h.coordinates == corporation.coordinates }
+          city = hex.tile.cities.find { |c| c.reservations.include?(corporation.sym.to_s) } || hex.tile.cities.first
+          city.place_token(corporation)
         end
       end
 
@@ -41,7 +45,7 @@ module Engine
           @tiles.reject! { |t| action.tile.equal?(t) }
           action.hex.lay(action.tile)
         when Action::PlaceToken
-          action.city.place_token(action.entity, action.slot)
+          action.city.place_token(action.entity)
         end
       end
     end
