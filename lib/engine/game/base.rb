@@ -171,7 +171,13 @@ module Engine
       end
 
       def new_operating_round(round_num = 0)
-        Round::Operating.new(@corporations, tiles: @tiles, companies: @companies, round_num: round_num)
+        Round::Operating.new(
+          @corporations.select(&:floated?),
+          tiles: @tiles,
+          companies: @companies,
+          bank: @bank,
+          round_num: round_num,
+        )
       end
     end
   end

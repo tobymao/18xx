@@ -15,12 +15,18 @@ module Engine
         @bank = bank
 
         companies_payout
+        place_home_stations
       end
 
       def companies_payout
         @companies.each do |company|
           company.owner.add_cash(company.income)
           @bank.remove_cash(company.income)
+        end
+      end
+
+      def place_home_stations
+        @entities.each do |corporation|
         end
       end
 

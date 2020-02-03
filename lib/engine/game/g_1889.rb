@@ -29,13 +29,55 @@ module Engine
 
       def init_corporations
         [
-          Corporation::Base.new('AR', name: 'Awa Railroad', tokens: 2),
-          Corporation::Base.new('IR', name: 'Iyo Railway', tokens: 2),
-          Corporation::Base.new('SR', name: 'Sanuki Railway', tokens: 2),
-          Corporation::Base.new('KO', name: 'Takamatsu & Kotohira Electric Railway', tokens: 2),
-          Corporation::Base.new('TR', name: 'Tosa Electric Railway', tokens: 3),
-          Corporation::Base.new('KU', name: 'Tosa Kuroshio Railway', tokens: 1),
-          Corporation::Base.new('UR', name: 'Uwajima Railway', tokens: 3),
+          Corporation::Base.new(
+            'AR',
+            name: 'Awa Railroad',
+            tokens: 2,
+            float_percent: 50,
+            coordinates: 'K8',
+          ),
+          Corporation::Base.new(
+            'IR',
+            name: 'Iyo Railway',
+            tokens: 2,
+            float_percent: 50,
+            coordinates: 'E2',
+          ),
+          Corporation::Base.new(
+            'SR',
+            name: 'Sanuki Railway',
+            tokens: 2,
+            float_percent: 50,
+            coordinates: 'I2',
+          ),
+          Corporation::Base.new(
+            'KO',
+            name: 'Takamatsu & Kotohira Electric Railway',
+            tokens: 2,
+            float_percent: 50,
+            coordinates: 'K4',
+          ),
+          Corporation::Base.new(
+            'TR',
+            name: 'Tosa Electric Railway',
+            tokens: 3,
+            float_percent: 50,
+            coordinates: 'F9',
+          ),
+          Corporation::Base.new(
+            'KU',
+            name: 'Tosa Kuroshio Railway',
+            tokens: 1,
+            float_percent: 50,
+            coordinates: 'C10',
+          ),
+          Corporation::Base.new(
+            'UR',
+            name: 'Uwajima Railway',
+            tokens: 3,
+            float_percent: 50,
+            coordinates: 'B7',
+          ),
         ]
       end
 

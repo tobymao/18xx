@@ -10,9 +10,9 @@ module Engine
       include Ownable
 
       attr_accessor :ipoed, :owner, :par_price, :share_price, :tokens
-      attr_reader :sym, :name, :logo, :shares
+      attr_reader :coordinates, :sym, :name, :logo, :shares
 
-      def initialize(sym, name:, tokens:, logo: nil)
+      def initialize(sym, name:, tokens:, **opts)
         @sym = sym
         @name = name
         @tokens = tokens.times.map { Token.new(self) }
@@ -21,7 +21,14 @@ module Engine
         @share_price = nil
         @par_price = nil
         @ipoed = false
-        @logo = "logos/#{logo || sym}.svg"
+
+        @float_percent = opts[:float_percent] || 60
+        @coordinates = opts[:home_coordinates]
+        @logo = "logos/#{opts[:logo] || sym}.svg"
+      end
+
+      def floated?
+        @shares.sum(&:percent) <= 100 - @float_percent
       end
     end
   end
