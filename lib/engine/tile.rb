@@ -93,6 +93,8 @@ module Engine
       '639' => 'c=r:100,s:4;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
     }.freeze
 
+    RED = {}.freeze
+
     COLORS = %i[white yellow green brown gray].freeze
 
     attr_reader :cities, :color, :edges, :junctions, :label, :name,
@@ -109,6 +111,8 @@ module Engine
         color = :brown
       elsif (code = GRAY[name])
         color = :gray
+      elsif (code = RED[name])
+        color = :red
       else
         raise Engine::GameError, "Tile '#{name}' not found"
       end

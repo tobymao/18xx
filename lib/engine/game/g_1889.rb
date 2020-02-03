@@ -12,6 +12,39 @@ require 'engine/tile'
 module Engine
   module Game
     class G1889 < Base
+      HEXES = {
+        white: {
+          %w[B5 C8 D3 D9 E8 H3 I8 I10 J3] => 'blank',
+          %w[B11 G10 I12 J5 J9] => 'town',
+          %w[A10 F3 G4 G12 H7 J11] => 'city',
+          %w[A8 B9 C6 D5 D7 E4 E6 F5 F7 G6 G8 H9 H11 H13] => 'mtn80',
+          %w[K6] => 'wtr80',
+          %w[H5 I6] => 'mtn+wtr80',
+
+          %w[C10] => 'c=r:0,v:KU',
+          %w[E2] => 'c=r:0,v:IR',
+          %w[I2] => 'c=r:0,v:SR',
+          %w[I4] => 'c=r:0,n:Kotohira;l=H;u=c:80',
+          %w[K8] => 'c=r:0,v:AR',
+        },
+        yellow: {
+          %w[C4] => 'c=r:20,n:Ohzu;p=a:2,b:_0',
+          %w[K4] => 'c=r:30,n:Takamatsu,v:KO;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
+        },
+        green: {
+          %w[F9] => 'c=r:30,s:2,n:Kouchi,v:TR;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K;u=c:80',
+        },
+        gray: {
+          %w[B3] => 't=r:20;p=a:0,b:_0;p=a:_0,b:5',
+          %w[B7] => 'c=r:40,s:2,n:Uwajima,v:UR;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0',
+          %w[G14] => 't=r:20;p=a:3,b:_0;p=a:_0,b:4',
+          %w[J7] => 'p=a:1,b:5',
+        },
+        red: {
+          %w[F1 J1 L7] => '',
+        }
+      }.freeze
+
       private
 
       def init_bank
@@ -79,77 +112,6 @@ module Engine
             coordinates: 'B7',
           ),
         ]
-      end
-
-      def init_hexes
-        coordinates = %w[
-          A8 A10 B3 B5 B7 B9 B11 C4 C6 C8 C10
-          D3 D5 D7 D9 E2 E4 E6 E8 F1 F3 F5
-          F7 F9 G4 G6 G8 G10 G12 G14 H3 H5 H7
-          H9 H11 H13 I2 I4 I6 I8 I10 I12 J1 J3
-          J5 J7 J9 J11 K4 K6 K8 L7
-        ]
-
-        # initialize with blanks
-        hexes = coordinates.map do |c|
-          [c, Hex.new(c, layout: :flat, tile: Tile.for('blank'))]
-        end.to_h
-
-        # preprinted tiles
-        {
-          white: {
-            'C10' => 'c=r:0,v:KU',
-            'E2' => 'c=r:0,v:IR',
-            'I2' => 'c=r:0,v:SR',
-            'I4' => 'c=r:0,n:Kotohira;l=H;u=c:80',
-            'K8' => 'c=r:0,v:AR',
-          },
-          yellow: {
-            'C4' => 'c=r:20,n:Ohzu;p=a:2,b:_0',
-            'K4' => 'c=r:30,n:Takamatsu,v:KO;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
-          },
-          green: {
-            'F9' => 'c=r:30,s:2,n:Kouchi,v:TR;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K;u=c:80',
-          },
-          gray: {
-            'B3' => 't=r:20;p=a:0,b:_0;p=a:_0,b:5',
-            'B7' => 'c=r:40,s:2,n:Uwajima,v:UR;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0',
-            'G14' => 't=r:20;p=a:3,b:_0;p=a:_0,b:4',
-            'J7' => 'p=a:1,b:5',
-          },
-        }.each do |color, tiles|
-          tiles.each do |coord, code|
-            tile = Tile.from_code(coord, color, code)
-            hexes[coord] = Hex.new(coord, layout: :flat, tile: tile)
-          end
-        end
-
-        # city
-        %w[A10 F3 G4 G12 H7 J11].each do |coord|
-          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('city'))
-        end
-
-        # town
-        %w[B11 G10 I12 J5 J9].each do |coord|
-          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('town'))
-        end
-
-        # mountain
-        %w[A8 B9 C6 D5 D7 E4 E6 F5 F7 G6 G8 H9 H11 H13].each do |coord|
-          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('mtn80'))
-        end
-
-        # mountain + water
-        %w[H5 I6].each do |coord|
-          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('mtn+wtr80'))
-        end
-
-        # water
-        %w[K6].each do |coord|
-          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('wtr80'))
-        end
-
-        hexes.values
       end
 
       def init_tiles

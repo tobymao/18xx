@@ -24,6 +24,7 @@ module View
       green: '#71bf44',
       brown: '#cb7745',
       gray: '#bcbdc0',
+      red: '#ec232a',
     }.freeze
 
     needs :hex

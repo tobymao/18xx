@@ -25,6 +25,14 @@ module Engine
         6 => 400,
       }.freeze
 
+      HEXES = {
+        white: {
+          %w[A1] => 'blank',
+          %w[B2] => 'city',
+          %w[A3] => 'c=r:0,n:Exampleville;l=A;u=c:30',
+        },
+      }.freeze
+
       def initialize(names, actions: [])
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
@@ -140,7 +148,23 @@ module Engine
         []
       end
 
-      def init_hexes; end
+      def init_hexes
+        self.class::HEXES.map do |color, hexes|
+          hexes.map do |coords, tile_string|
+            tile =
+              begin
+                Tile.for(tile_string)
+              rescue Engine::GameError
+                name = tile_string
+                code = tile_string
+                Tile.from_code(name, color, code)
+              end
+            coords.map do |coord|
+              Hex.new(coord, layout: :flat, tile: tile)
+            end
+          end
+        end.flatten
+      end
 
       def init_tiles; end
 
