@@ -91,8 +91,7 @@ module Engine
         player = bid.player
         company.owner = player
         player.companies << company
-        player.remove_cash(price)
-        @bank.add_cash(price)
+        player.spend(price, @bank)
         @companies.delete(company)
         @bids.delete(company)
         @auctioning_company = nil

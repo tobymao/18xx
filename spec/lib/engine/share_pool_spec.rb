@@ -19,7 +19,7 @@ module Engine
     let(:share) { Share.new(corporation, owner: subject, president: true, percent: 20) }
 
     before :each do
-      player.add_cash(100)
+      bank.spend(100, player)
       corporation.share_price = share_price
     end
 

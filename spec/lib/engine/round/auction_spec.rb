@@ -16,8 +16,8 @@ module Engine
     subject { Round::Auction.new([player_1, player_2], bank: bank, companies: [private_1, private_2]) }
 
     before :each do
-      player_1.add_cash(100)
-      player_2.add_cash(100)
+      bank.spend(100, player_1)
+      bank.spend(100, player_2)
     end
 
     describe '#process_action' do
@@ -25,7 +25,7 @@ module Engine
         subject.process_action(Action::Bid.new(player_1, private_1, 10))
         expect(player_1.companies).to eq([private_1])
         expect(player_1.cash).to eq(90)
-        expect(bank.cash).to eq(1010)
+        expect(bank.cash).to eq(810)
       end
 
       it 'resolves waterfall' do

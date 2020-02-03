@@ -147,8 +147,7 @@ module Engine
         cash = self.class::STARTING_CASH[@players.size]
 
         @players.each do |player|
-          @bank.remove_cash(cash)
-          player.add_cash(cash)
+          @bank.spend(cash, player)
         end
       end
 

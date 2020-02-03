@@ -20,8 +20,7 @@ module Engine
 
       def companies_payout
         @companies.each do |company|
-          company.owner.add_cash(company.income)
-          @bank.remove_cash(company.income)
+          @bank.spend(company.income, company.owner)
         end
       end
 

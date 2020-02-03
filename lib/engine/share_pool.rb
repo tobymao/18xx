@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'engine/corporation/base'
+require 'engine/spender'
 
 module Engine
   class SharePool
@@ -12,31 +13,24 @@ module Engine
       @shares = []
     end
 
-    def remove_cash(cash)
-      @bank.remove_cash(cash)
-    end
-
-    def add_cash(cash)
-      @bank.add_cash(cash)
-    end
-
     def buy_share(entity, share)
       share.corporation.ipoed = true
-      transfer_share(entity, share)
+      transfer_share(entity, share, entity, @bank)
     end
 
     def sell_share(share)
-      transfer_share(self, share)
+      transfer_share(self, share, @bank, share.owner)
     end
 
     private
 
-    def transfer_share(to_entity, share)
+    def transfer_share(to_entity, share, spender, receiver)
       price = share.corporation.share_price.price
       owner = share.owner
       owner.shares.delete(share)
-      owner.is_a?(Corporation::Base) ? add_cash(price) : owner.add_cash(price)
-      to_entity.remove_cash(price)
+
+      spender.spend(price, receiver)
+
       to_entity.shares << share
       share.owner = to_entity
     end
