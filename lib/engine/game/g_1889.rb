@@ -50,7 +50,7 @@ module Engine
 
         # initialize with blanks
         hexes = coordinates.map do |c|
-          [c, Hex.new(c, layout: :flat, tile: Tile.for('_0'))]
+          [c, Hex.new(c, layout: :flat, tile: Tile.for('blank'))]
         end.to_h
 
         # preprinted tiles
@@ -84,27 +84,27 @@ module Engine
 
         # city
         %w[A10 F3 G4 G12 H7 J11].each do |coord|
-          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('_1'))
+          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('city'))
         end
 
         # town
         %w[B11 G10 I12 J5 J9].each do |coord|
-          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('_5'))
+          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('town'))
         end
 
         # mountain
         %w[A8 B9 C6 D5 D7 E4 E6 F5 F7 G6 G8 H9 H11 H13].each do |coord|
-          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('_2'))
+          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('mtn80'))
         end
 
         # mountain + water
         %w[H5 I6].each do |coord|
-          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('_3'))
+          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('mtn+wtr80'))
         end
 
         # water
         %w[K6].each do |coord|
-          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('_4'))
+          hexes[coord] = Hex.new(coord, layout: :flat, tile: Tile.for('wtr80'))
         end
 
         hexes.values

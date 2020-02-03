@@ -23,12 +23,12 @@ module Engine
     #               tile and is rendered in the center)
 
     WHITE = {
-      '_0' => '',
-      '_1' => 'c=r:0',
-      '_2' => 'u=c:80,t:mountain',
-      '_3' => 'u=c:80,t:mountain+water',
-      '_4' => 'u=c:80,t:water',
-      '_5' => 't=r:0',
+      'blank' => '',
+      'town' => 't=r:0',
+      'city' => 'c=r:0',
+      'mtn80' => 'u=c:80,t:mountain',
+      'wtr80' => 'u=c:80,t:water',
+      'mtn+wtr80' => 'u=c:80,t:mountain+water',
     }.freeze
 
     YELLOW = {
