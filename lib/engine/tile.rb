@@ -102,8 +102,9 @@ module Engine
 
     COLORS = %i[white yellow green brown gray].freeze
 
+    attr_accessor :id, :legal_rotations
     attr_reader :cities, :color, :edges, :junctions, :label, :name,
-                :parts, :paths, :rotation, :towns, :upgrades, :offboards
+                :parts, :rotation, :towns, :upgrades, :offboards
 
     def self.for(name, **opts)
       if (code = WHITE[name])
@@ -192,21 +193,30 @@ module Engine
       @junctions = nil
       @upgrades = []
       @offboards = []
+      @legal_rotations = []
       separate_parts
-      rotate_edges!(rotation)
     end
 
-    def rotate!
-      @rotation = rotate(@rotation)
-      rotate_edges!
+    def rotate!(absolute = nil)
+      new_rotation = absolute ||
+        @legal_rotations.find { |r| r > @rotation } ||
+        @legal_rotations.first ||
+        @rotation
+      @rotation = new_rotation
+      @_paths = nil
+      @_exits = nil
     end
 
     def rotate(num, ticks = 1)
       (num + ticks) % 6
     end
 
+    def paths
+      @_paths ||= @paths.map { |path| path.rotate(@rotation) }
+    end
+
     def exits
-      @exits ||= @edges.map(&:num).uniq
+      @_exits ||= @edges.map { |e| rotate(e.num, @rotation) }.uniq
     end
 
     def lawson?
@@ -215,6 +225,10 @@ module Engine
 
     def ==(other)
       @name == other.name && @color == other.color && @parts == other.parts
+    end
+
+    def upgrade_tiles(tiles)
+      tiles.select { |t| upgrades_to?(t) }.uniq(&:name)
     end
 
     def upgrades_to?(other)
@@ -246,11 +260,6 @@ module Engine
     end
 
     private
-
-    def rotate_edges!(ticks = 1)
-      @exits = nil
-      @edges.each { |e| e.num = rotate(e.num, ticks) }
-    end
 
     def separate_parts
       @parts.each do |part|

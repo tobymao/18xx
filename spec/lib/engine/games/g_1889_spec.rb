@@ -21,18 +21,6 @@ module Engine
       end
     end
 
-    describe '#city_by_name' do
-      it 'returns the correct Engine::Part::City' do
-        actual = subject.city_by_name('Kouchi')
-
-        expect(actual.class).to eq(Engine::Part::City)
-        expect(actual.revenue).to eq(30)
-        expect(actual.slots).to eq(2)
-        expect(actual.name).to eq('Kouchi')
-        expect(actual.tokens).to eq([nil, nil])
-      end
-    end
-
     # describe '#next_round!' do
     #   let(:bank) { Bank.new(1000) }
     #   let(:players) { [Player.new('a'), Player.new('b')] }

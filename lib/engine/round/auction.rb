@@ -47,6 +47,10 @@ module Engine
         resolve_bids
       end
 
+      def auction?
+        true
+      end
+
       private
 
       def _process_action(bid)

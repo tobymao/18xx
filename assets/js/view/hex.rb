@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'lib/tile_selector'
-require 'view/actionable'
 require 'view/tile'
 
 require 'engine/action/lay_tile'
@@ -9,8 +8,6 @@ require 'engine/route'
 
 module View
   class Hex < Snabberb::Component
-    include Actionable
-
     SIZE = 100
     POINTS = '100,0 50,-87 -50,-87 -100,-0 -50,87 50,87'
     LAYOUT = {
@@ -31,6 +28,7 @@ module View
     needs :tile_selector, default: nil, store: true
     needs :route, default: nil, store: true
     needs :role, default: :map
+    needs :layable, default: false
 
     def render
       children = [h(:polygon, attrs: { points: self.class::POINTS })]
@@ -39,6 +37,7 @@ module View
       @tile = @selected && @tile_selector.tile ? @tile_selector.tile : @hex.tile
 
       children << h(Tile, tile: @tile) if @tile
+      clickable = @layable || @role == :tile_selector
 
       props = {
         attrs: {
@@ -46,11 +45,12 @@ module View
           transform: transform,
           fill: COLOR.fetch(@tile&.color, 'white'),
           stroke: 'black',
-          cursor: 'pointer',
+          opacity: @layable || @role == :tile_selector ? 1.0 : 0.3,
+          cursor: clickable ? 'pointer' : nil,
         },
-        on: { click: ->(e) { on_hex_click(e) } },
       }
 
+      props[:on] = { click: ->(e) { on_hex_click(e) } } if clickable
       props[:attrs]['stroke-width'] = 5 if @selected
 
       h(:g, props, children)
@@ -74,18 +74,7 @@ module View
 
       case @role
       when :map
-        if !@selected && @tile_selector&.tile
-          action = Engine::Action::LayTile.new(
-            @game.current_entity,
-            @tile_selector.tile,
-            @tile_selector.hex,
-            @tile_selector.tile.rotation,
-          )
-          process_action(action)
-          store(:tile_selector, nil)
-        else
-          store(:tile_selector, Lib::TileSelector.new(@hex, @tile, event, root))
-        end
+        store(:tile_selector, Lib::TileSelector.new(@hex, @tile, event, root))
       when :tile_selector
         @tile_selector&.tile = @tile
       end

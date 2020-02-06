@@ -36,7 +36,6 @@ module View
         top: @tile_selector.y - 50,
         width: '200px',
         height: '200px',
-        opacity: 0.8,
         'pointer-events' => 'none',
       }
 

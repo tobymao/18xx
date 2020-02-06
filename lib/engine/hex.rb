@@ -2,7 +2,7 @@
 
 module Engine
   class Hex
-    attr_reader :coordinates, :layout, :tile, :x, :y
+    attr_reader :coordinates, :layout, :neighbors, :tile, :x, :y
 
     DIRECTIONS = {
       flat: {
@@ -25,6 +25,10 @@ module Engine
 
     LETTERS = ('A'..'Z').to_a
 
+    def self.invert(dir)
+      (dir + 3) % 6
+    end
+
     # Coordinates are of the form A1..Z99
     # x and y map to the double coordinate system
     # layout is pointy or flat
@@ -34,6 +38,7 @@ module Engine
       @x = LETTERS.index(@coordinates[0]).to_i
       @y = @coordinates[1..-1].to_i - 1
       @tile = tile
+      @neighbors = {}
     end
 
     def name
@@ -54,12 +59,8 @@ module Engine
       @tile = tile
     end
 
-    def direction(other)
-      [other.x - @x, other.y - @y]
-    end
-
     def neighbor_direction(other)
-      DIRECTIONS[@layout][direction(other)]
+      DIRECTIONS[@layout][[other.x - @x, other.y - @y]]
     end
 
     def connections(other)
@@ -77,7 +78,7 @@ module Engine
     end
 
     def invert(dir)
-      (dir + 3) % 6
+      self.class.invert(dir)
     end
 
     def ==(other)

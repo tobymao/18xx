@@ -16,8 +16,8 @@ module Engine
 
       def copy(game)
         self.class.new(
-          game.player_by_name(@entity.name), # this should actually be a corporation
-          game.tile_by_name(@tile.name),
+          game.corportation_by_name(@entity.name),
+          game.tile_by_id(@tile.id),
           game.hex_by_name(@hex.name),
           @rotation,
         )

@@ -49,6 +49,18 @@ module Engine
         active_entities.include?(entity)
       end
 
+      def auction?
+        false
+      end
+
+      def stock?
+        false
+      end
+
+      def operating?
+        false
+      end
+
       private
 
       def _process(_action)

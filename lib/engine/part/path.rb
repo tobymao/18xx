@@ -36,7 +36,7 @@ module Engine
       end
 
       def exits
-        @exits ||= @edges.map(&:num)
+        @edges.map(&:num)
       end
 
       def rotate(ticks)

@@ -22,6 +22,10 @@ module Engine
         active_entities.all?(&:passed?)
       end
 
+      def stock?
+        true
+      end
+
       private
 
       def _process_action(action)

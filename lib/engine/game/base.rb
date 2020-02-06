@@ -49,6 +49,16 @@ module Engine
         @round = init_round
         init_starting_cash
 
+        @tiles.each.with_index do |tile, index|
+          tile.id = index
+        end
+
+        @tiles.flat_map(&:cities).each.with_index do |city, index|
+          city.id = index
+        end
+
+        connect_hexes
+
         # replay all actions with a copy
         actions.each { |action| process_action(action.copy(self)) }
       end
@@ -87,9 +97,14 @@ module Engine
         @_hexes[name]
       end
 
-      def tile_by_name(name)
-        @_tiles ||= @tiles.map { |t| [t.name, t] }.to_h
-        @_tiles[name]
+      def tile_by_id(id)
+        @_tiles ||= @tiles.map { |t| [t.id, t] }.to_h
+        @_tiles[id]
+      end
+
+      def city_by_id(id)
+        @_cities ||= @cities.map { |c| [c.id, c] }.to_h
+        @_cities[id]
       end
 
       def share_by_name(name)
@@ -97,18 +112,6 @@ module Engine
           c.shares.map { |s| [s.name, s] }
         end
         @_shares[name]
-      end
-
-      def city_by_name(name)
-        @_cities ||= @hexes.map(&:tile).compact.flat_map(&:cities).map do |c|
-          [c.name, c]
-        end.to_h
-
-        @_cities[name]
-      end
-
-      def upgrades_for_tile(tile)
-        @tiles.select { |t| tile.upgrades_to?(t) }.uniq(&:name)
       end
 
       def layout
@@ -122,8 +125,8 @@ module Engine
       end
 
       def init_round
-        # new_operating_round(round_num = 0)
         Round::Auction.new(@players, companies: @companies, bank: @bank)
+        # new_operating_round(round_num = 0)
       end
 
       def init_stock_market
@@ -177,6 +180,17 @@ module Engine
 
         @players.each do |player|
           @bank.spend(cash, player)
+        end
+      end
+
+      def connect_hexes
+        coordinates = @hexes.map { |h| [[h.x, h.y], h] }.to_h
+
+        @hexes.each do |hex|
+          Hex::DIRECTIONS[hex.layout].each do |xy, direction|
+            x, y = xy
+            hex.neighbors[direction] = coordinates[[hex.x + x, hex.y + y]]
+          end
         end
       end
 

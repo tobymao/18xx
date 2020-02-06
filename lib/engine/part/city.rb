@@ -8,7 +8,7 @@ module Engine
     class City < Base
       include Part::RevenueCenter
 
-      attr_accessor :reservations
+      attr_accessor :id, :reservations
       attr_reader :name, :slots, :tokens
 
       def initialize(revenue, slots = 1, name = nil, reservations = [])
@@ -30,6 +30,14 @@ module Engine
 
       def <=(other)
         other.city? && (@name == other.name)
+      end
+
+      def tokened_by?(corporation)
+        @tokens.any? { |t| t&.corporation == corporation }
+      end
+
+      def reserved_by?(corporation)
+        @reservations.any? { |r| r == corporation.sym }
       end
 
       def city?

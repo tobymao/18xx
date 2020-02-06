@@ -19,7 +19,8 @@ module View
 
       # move the selected hex to the back so it renders highest in z space
       hexes << hexes.delete(@tile_selector.hex) if @tile_selector
-      hexes.map! { |hex| h(Hex, hex: hex, game: @game) }
+      layable_hexes = @game.round.operating? ? @game.round.layable_hexes : {}
+      hexes.map! { |hex| h(Hex, hex: hex, layable: layable_hexes.key?(hex)) }
 
       children = [
         h(:svg, { attrs: { id: 'map' }, style: { width: '1600px', height: '800px' } }, [
@@ -31,8 +32,20 @@ module View
       ]
 
       if @tile_selector
-        children << h(TileSelector, tiles: @game.upgrades_for_tile(@tile_selector.tile))
-        children << h(TileConfirmation) if @tile_selector.tile
+        tiles = @tile_selector.tile.upgrade_tiles(@game.tiles)
+
+        tiles.each do |tile|
+          tile.rotate!(0) # reset tile to no rotation since calculations are absolute
+          tile.legal_rotations = @game.round.legal_rotations(@tile_selector.hex, tile)
+          tile.rotate!
+        end
+
+        children <<
+        if @tile_selector.hex.tile == @tile_selector.tile
+          h(TileSelector, tiles: tiles)
+        else
+          h(TileConfirmation)
+        end
       end
 
       h(:div, children)
