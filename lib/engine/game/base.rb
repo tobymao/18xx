@@ -111,6 +111,10 @@ module Engine
         @tiles.select { |t| tile.upgrades_to?(t) }.uniq(&:name)
       end
 
+      def layout
+        :flat
+      end
+
       private
 
       def init_bank
@@ -160,7 +164,7 @@ module Engine
                 Tile.from_code(name, color, code)
               end
             coords.map do |coord|
-              Hex.new(coord, layout: :flat, tile: tile)
+              Hex.new(coord, layout: layout, tile: tile)
             end
           end
         end.flatten
