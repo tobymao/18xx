@@ -42,6 +42,7 @@ module View
 
       props = {
         attrs: {
+          id: "hex-#{@hex.coordinates}",
           transform: transform,
           fill: COLOR.fetch(@tile&.color, 'white'),
           stroke: 'black',
