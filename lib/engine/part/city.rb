@@ -35,11 +35,8 @@ module Engine
 
       def place_token(corporation)
         # the slot is reserved for a different corporation
-        slot = @reservations.index(corporation.sym) || @tokens.find_index(&:nil?)
-
-        reservation = @reservations[slot]
-        unless reservation.nil?
-          raise unless corporation.sym == reservation
+        slot = @reservations.index(corporation.sym) || @tokens.find_index.with_index do |t, i|
+          t.nil? && @reservations[i].nil?
         end
 
         # a token is already in this slot

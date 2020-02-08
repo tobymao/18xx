@@ -41,10 +41,16 @@ module Engine
     end
 
     def lay(tile)
-      if @tile
-        token = @tile.cities[0].tokens[0]
-        tile.cities[0].place_token(token.corporation) if token
+      # when upgrading, preserve tokens (both reserved and actually placed) on
+      # previous tile
+      @tile&.cities&.each_with_index do |city, i|
+        tile.cities[i].reservations = city.reservations.dup
+
+        city.tokens.each do |token|
+          tile.cities[i].place_token(token.corporation) if token
+        end
       end
+
       @tile = tile
     end
 
