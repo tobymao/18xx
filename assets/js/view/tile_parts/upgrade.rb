@@ -20,7 +20,7 @@ module View
           :g,
           { attrs: { 'stroke-width': 1, transform: 'translate(30 -60)' } },
           [
-            h(:text, { attrs: { transform: 'scale(1.5)' } }, @cost),
+            h(:text, { attrs: { fill: 'black', transform: 'scale(1.5)' } }, @cost),
           ] + terrain
         )
       end

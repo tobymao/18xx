@@ -113,7 +113,7 @@ module View
           { attrs: { 'stroke-width': 1, transform: 'translate(-41 71)' } },
           [
             h(:circle, attrs: { r: 14, fill: 'white' }),
-            h(:text, { attrs: { transform: 'translate(-8 6)' } }, revenue),
+            h(:text, { attrs: { fill: 'black', transform: 'translate(-8 6)' } }, revenue),
           ]
         )
       ]
@@ -219,7 +219,7 @@ module View
 
     # render letter label, like "Z", "H", "OO"
     def render_label
-      [h(:text, { attrs: { transform: 'scale(2.5) translate(10 30)' } }, @tile.label.to_s)]
+      [h(:text, { attrs: { fill: 'black', transform: 'scale(2.5) translate(10 30)' } }, @tile.label.to_s)]
     end
 
     # render city/town name iff no other label is present
@@ -234,7 +234,7 @@ module View
       # the name
       return [] if !name || name[0] == '_'
 
-      [h(:text, { attrs: { transform: 'scale(1.5) translate(10 30)' } }, name)]
+      [h(:text, { attrs: { fill: 'black', transform: 'scale(1.5) translate(10 30)' } }, name)]
     end
 
     def render_upgrades
