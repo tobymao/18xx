@@ -5,7 +5,8 @@ require 'engine/part/base'
 module Engine
   module Part
     class City < Base
-      attr_reader :name, :revenue, :slots, :tokens, :reservations
+      attr_accessor :reservations
+      attr_reader :name, :revenue, :slots, :tokens
 
       def initialize(revenue, slots = 1, name = nil, reservations = [])
         @revenue = revenue.to_i
