@@ -6,6 +6,7 @@ require 'engine/part/city'
 require 'engine/part/edge'
 require 'engine/part/junction'
 require 'engine/part/label'
+require 'engine/part/offboard'
 require 'engine/part/path'
 require 'engine/part/town'
 require 'engine/part/upgrade'
@@ -119,6 +120,32 @@ module Engine
         expect(Tile.from_code('name', :white, 'u=c:80,t:mountain+water')).to eq(
           Tile.new('name', color: :white, parts: [Upgrade.new(80, %i[mountain water])])
         )
+      end
+
+      it 'should render tile with variable revenue' do
+        code = 'c=r:yellow_30|green_40|brown_50|gray_70'
+        actual = Tile.from_code('tile', :gray, code)
+
+        revenue = { yellow: 30, green: 40, brown: 50, gray: 70 }
+
+        expected = Tile.new('tile', color: :gray, parts: [City.new(revenue)])
+
+        expect(actual).to eq(expected)
+      end
+
+      it 'should render an offboard tile' do
+        code = 'o=r:yellow_30|brown_60|diesel_100;p=a:0,b:_0;p=a:1,b:_0'
+        actual = Tile.from_code('test_tile', :red, code)
+
+        revenue = { yellow: 30, brown: 60, diesel: 100 }
+        offboard = Offboard.new(revenue)
+        expected = Tile.new('test_tile',
+                            color: :red,
+                            parts: [offboard,
+                                    Path.new(Edge.new(0), offboard),
+                                    Path.new(Edge.new(1), offboard)])
+
+        expect(actual).to eq(expected)
       end
     end
 

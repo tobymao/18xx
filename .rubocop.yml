@@ -5,7 +5,7 @@ Metrics/AbcSize:
   Enabled: false
 
 Metrics/CyclomaticComplexity:
-  Max: 8
+  Max: 9
 
 Metrics/PerceivedComplexity:
   Max: 8
@@ -52,4 +52,4 @@ Style/TrailingCommaInHashLiteral:
   Enabled: false
 
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.7

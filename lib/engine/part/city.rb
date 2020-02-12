@@ -1,15 +1,18 @@
 # frozen_string_literal: true
 
 require 'engine/part/base'
+require 'engine/part/revenue_center'
 
 module Engine
   module Part
     class City < Base
+      include Part::RevenueCenter
+
       attr_accessor :reservations
-      attr_reader :name, :revenue, :slots, :tokens
+      attr_reader :name, :slots, :tokens
 
       def initialize(revenue, slots = 1, name = nil, reservations = [])
-        @revenue = revenue.to_i
+        @revenue = parse_revenue(revenue)
         @slots = slots.to_i
         @name = name
         @tokens = Array.new(@slots)

@@ -50,6 +50,10 @@ module Engine
       def upgrade?
         false
       end
+
+      def offboard?
+        false
+      end
     end
   end
 end

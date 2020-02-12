@@ -21,6 +21,15 @@ module View
       6 => [0, -50],
     }.freeze
 
+    COLOR = {
+      white: '#fff',
+      yellow: '#fde900',
+      green: '#71bf44',
+      brown: '#cb7745',
+      gray: '#bcbdc0',
+      red: '#ec232a',
+    }.freeze
+
     needs :tile
     needs :route, default: nil, store: true
 
@@ -201,16 +210,84 @@ module View
       render_lawson_track + render_city(city) + render_revenue(city.revenue)
     end
 
+    def render_multi_revenue(revenues)
+      children =
+        if revenues.is_a?(Array)
+          text = revenues.join('/')
+          [h(:text, {}, text)]
+        elsif revenues.is_a?(Hash)
+          revenues.flat_map.with_index do |rev, index|
+            phase, revenue = rev
+            text = "#{'D' if phase == :diesel}#{revenue}"
+
+            color = phase == :diesel ? :gray : phase
+            fill = COLOR[color]
+
+            width = text.size * 13
+
+            t_x = 26 * index
+
+            rect_attrs = {
+              fill: fill,
+              transform: "translate(#{t_x} 0)",
+              height: 24,
+              width: width,
+              x: -2,
+              y: -18,
+            }
+
+            text_attrs = {
+              transform: "translate(#{t_x} 0)",
+              fill: 'black',
+              'font-size': 20,
+            }
+
+            [
+              h(:rect, attrs: rect_attrs),
+              h(:text, { attrs: text_attrs }, text),
+            ]
+          end
+        end
+
+      [h(:g, { attrs: { transform: 'translate(-30 0)' } }, children)]
+    end
+
+    def render_track_single_offboard
+      track = @tile.paths.map do |path|
+        edge_num = path.edges.first.num
+
+        rotate = 60 * edge_num
+
+        props = {
+          attrs: {
+            transform: "rotate(#{rotate})",
+            d: 'M6 75 L 6 85 L -6 85 L -6 75 L 0 48 Z',
+            fill: 'black',
+            stroke: 'none',
+            'stroke-linecap': 'butt',
+            'stroke-linejoin': 'miter',
+            'stroke-width': 6,
+          }
+        }
+
+        h(:path, props)
+      end
+
+      track + render_multi_revenue(@tile.offboards.first.revenue)
+    end
+
     def render_track
-      case [@tile.cities.count, @tile.towns.count]
-      when [0, 0]
+      case [@tile.cities.size, @tile.towns.size, @tile.offboards.size]
+      when [0, 0, 0]
         render_just_track
-      when [1, 0]
+      when [1, 0, 0]
         render_track_single_city
-      when [0, 1]
+      when [0, 1, 0]
         render_track_single_town
-      when [0, 2]
+      when [0, 2, 0]
         render_track_double_town
+      when [0, 0, 1]
+        render_track_single_offboard
       else
         puts "Don't how to render track for #{@tile.towns.count} towns and #{@tile.cities.count} cities."
         []

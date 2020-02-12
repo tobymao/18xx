@@ -6,21 +6,26 @@ require 'engine/part/town'
 require 'engine/part/edge'
 require 'engine/part/junction'
 require 'engine/part/label'
+require 'engine/part/offboard'
 require 'engine/part/path'
 require 'engine/part/upgrade'
 
 module Engine
   class Tile
-    # * [t]own    - [r]evenue, [n]ame
-    # * [c]ity    - [r]evenue, [n]ame, [s]lots (default 1); some slots may be
-    #               reser[v]ed by referencing a corporation's short name/@sym
-    #               (multiple corporation reservations separated by "+")
-    # * [p]ath    - endpoints [a] and [b]; the endpoints can be an edge number,
-    #               town/city reference, or a lawson-style [j]unction
-    # * [l]abel   - large letters on tile
-    # * [u]pgrade - [c]ost, [t]errain (multiple terrain types separated by "+"),
-    #               [e]dge (if not specified, then the upgrade applies to the
-    #               tile and is rendered in the center)
+    # * [t]own     - [r]evenue, [n]ame
+    # * [c]ity     - [r]evenue, [n]ame, [s]lots (default 1); some slots may be
+    #                reser[v]ed by referencing a corporation's short name/@sym
+    #                (multiple corporation reservations separated by "+")
+    # * [o]ffboard - [n]ame, [r]evenues for different phases (separated by "/")
+    # * [p]ath     - endpoints [a] and [b]; the endpoints can be an edge number,
+    #                town/city/offboard reference, or a lawson-style [j]unction
+    # * [l]abel    - large letters on tile
+    # * [u]pgrade  - [c]ost, [t]errain (multiple terrain types separated
+    #                by "+"), [e]dge (if not specified, then the upgrade applies
+    #                to the tile and is rendered in the center)
+
+    # [r]evenue    - number, list of numbers separated by "/", or something like
+    #                yellow_30|brown_60|diesel_100
 
     WHITE = {
       'blank' => '',
@@ -98,7 +103,7 @@ module Engine
     COLORS = %i[white yellow green brown gray].freeze
 
     attr_reader :cities, :color, :edges, :junctions, :label, :name,
-                :parts, :paths, :rotation, :towns, :upgrades
+                :parts, :paths, :rotation, :towns, :upgrades, :offboards
 
     def self.for(name, **opts)
       if (code = WHITE[name])
@@ -167,6 +172,10 @@ module Engine
         upgrade = Part::Upgrade.new(params['c'], params['t']&.split('+'))
         cache << upgrade
         upgrade
+      when 'o'
+        offboard = Part::Offboard.new(params['r'])
+        cache << offboard
+        offboard
       end
     end
 
@@ -182,6 +191,7 @@ module Engine
       @edges = nil
       @junctions = nil
       @upgrades = []
+      @offboards = []
       separate_parts
       rotate_edges!(rotation)
     end
@@ -254,6 +264,8 @@ module Engine
           @towns << part
         elsif part.upgrade?
           @upgrades << part
+        elsif part.offboard?
+          @offboards << part
         else
           raise "Part #{part} not separated."
         end

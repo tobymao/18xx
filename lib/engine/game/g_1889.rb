@@ -41,7 +41,9 @@ module Engine
           %w[J7] => 'p=a:1,b:5',
         },
         red: {
-          %w[F1 J1 L7] => '',
+          %w[F1] => 'o=r:yellow_30|brown_60|diesel_100;p=a:0,b:_0;p=a:1,b:_0',
+          %w[J1] => 'o=r:yellow_20|brown_40|diesel_80;p=a:0,b:_0;p=a:1,b:_0',
+          %w[L7] => 'o=r:yellow_20|brown_40|diesel_80;p=a:1,b:_0;p=a:2,b:_0',
         }
       }.freeze
 
