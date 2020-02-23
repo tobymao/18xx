@@ -171,9 +171,17 @@ module Engine
                   code = tile_string
                   Tile.from_code(name, color, code)
                 end
+
+              # add private companies that block tile lays on this hex
               blocker = @companies.find { |c| c.blocks_hex == coord }
               tile.add_blocker!(blocker) unless blocker.nil?
 
+              # reserve corporation home spots
+              @corporations.select { |c| c.coordinates == coord }.each do |c|
+                tile.cities.first.add_reservation!(c.sym)
+              end
+
+              # name the location (city/town)
               location_name = self.class::LOCATION_NAMES[coord]
 
               Hex.new(coord, layout: layout, tile: tile, location_name: location_name)

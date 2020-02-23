@@ -13,11 +13,8 @@ require 'engine/part/upgrade'
 module Engine
   class Tile
     # * [t]own     - [r]evenue, local_[id] (default: 0)
-    # * [c]ity     - [r]evenue, local_[id] (default: 0), [s]lots (default 1);
-    #                some slots may be reser[v]ed by referencing a corporation's
-    #                short name/@sym (multiple corporation reservations
-    #                separated by "+")
-    # * [o]ffboard - [n]ame, [r]evenues for different phases (separated by "/")
+    # * [c]ity     - [r]evenue, local_[id] (default: 0), [s]lots (default 1)
+    # * [o]ffboard - [r]evenues for different phases (separated by "/")
     # * [p]ath     - endpoints [a] and [b]; the endpoints can be an edge number,
     #                town/city/offboard reference, or a lawson-style [j]unction
     # * [l]abel    - large letters on tile
@@ -159,7 +156,7 @@ module Engine
 
         Part::Path.new(params['a'], params['b'])
       when 'c'
-        city = Part::City.new(params['r'], params.fetch('s', 1), params['id'], params['v']&.split('+'))
+        city = Part::City.new(params['r'], params.fetch('s', 1), params['id'])
         cache << city
         city
       when 't'

@@ -11,12 +11,12 @@ module Engine
       attr_accessor :id, :reservations
       attr_reader :local_id, :slots, :tokens
 
-      def initialize(revenue, slots = 1, local_id = 0, reservations = [])
+      def initialize(revenue, slots = 1, local_id = 0)
         @revenue = parse_revenue(revenue)
         @slots = slots.to_i
         @local_id = local_id.to_i
         @tokens = Array.new(@slots)
-        @reservations = reservations&.map(&:to_sym) || []
+        @reservations = []
       end
 
       def ==(other)
@@ -38,6 +38,10 @@ module Engine
 
       def reserved_by?(corporation)
         @reservations.any? { |r| r == corporation.sym }
+      end
+
+      def add_reservation!(corporation_sym)
+        @reservations << corporation_sym
       end
 
       def city?
