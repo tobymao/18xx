@@ -14,7 +14,11 @@ module Engine
       end
 
       def ==(other)
-        other&.label? && (@label == other.to_s)
+        if other&.label? && (@label == other.to_s)
+          true
+        else
+          false
+        end
       end
 
       def label?

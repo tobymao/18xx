@@ -24,19 +24,19 @@ module Engine
           %w[C10] => 'c=r:0,v:KU',
           %w[E2] => 'c=r:0,v:IR',
           %w[I2] => 'c=r:0,v:SR',
-          %w[I4] => 'c=r:0,n:Kotohira;l=H;u=c:80',
+          %w[I4] => 'c=r:0;l=H;u=c:80',
           %w[K8] => 'c=r:0,v:AR',
         },
         yellow: {
-          %w[C4] => 'c=r:20,n:Ohzu;p=a:2,b:_0',
-          %w[K4] => 'c=r:30,n:Takamatsu,v:KO;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
+          %w[C4] => 'c=r:20;p=a:2,b:_0',
+          %w[K4] => 'c=r:30,v:KO;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
         },
         green: {
-          %w[F9] => 'c=r:30,s:2,n:Kouchi,v:TR;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K;u=c:80',
+          %w[F9] => 'c=r:30,s:2,v:TR;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K;u=c:80',
         },
         gray: {
           %w[B3] => 't=r:20;p=a:0,b:_0;p=a:_0,b:5',
-          %w[B7] => 'c=r:40,s:2,n:Uwajima,v:UR;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0',
+          %w[B7] => 'c=r:40,s:2,v:UR;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0',
           %w[G14] => 't=r:20;p=a:3,b:_0;p=a:_0,b:4',
           %w[J7] => 'p=a:1,b:5',
         },
@@ -45,6 +45,34 @@ module Engine
           %w[J1] => 'o=r:yellow_20|brown_40|diesel_80;p=a:0,b:_0;p=a:1,b:_0',
           %w[L7] => 'o=r:yellow_20|brown_40|diesel_80;p=a:1,b:_0;p=a:2,b:_0',
         }
+      }.freeze
+
+      LOCATION_NAMES = {
+        'A10' => 'Sukumo',
+        'B11' => 'Nakamura',
+        'B3' => 'Yawatahama',
+        'B7' => 'Uwajima',
+        'C10' => 'Kubokawa',
+        'C4' => 'Ohzu',
+        'E2' => 'Matsuyama',
+        'F1' => 'Imabari',
+        'F3' => 'Saijou',
+        'F9' => 'Kouchi',
+        'G10' => 'Nangoku',
+        'G12' => 'Nahari',
+        'G14' => 'Muroto',
+        'G4' => 'Niihama',
+        'H7' => 'Ikeda',
+        'I12' => 'Muki',
+        'I2' => 'Marugame',
+        'I4' => 'Kotohira',
+        'J1' => 'Sakaide & Okoyama',
+        'J11' => 'Anan',
+        'J5' => 'Ritsurin Kouen',
+        'J9' => 'Komatsujima',
+        'K4' => 'Takamatsu',
+        'K8' => 'Tokushima',
+        'L7' => 'Naruoto & Awaji',
       }.freeze
 
       private

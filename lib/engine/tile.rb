@@ -12,10 +12,11 @@ require 'engine/part/upgrade'
 
 module Engine
   class Tile
-    # * [t]own     - [r]evenue, [n]ame
-    # * [c]ity     - [r]evenue, [n]ame, [s]lots (default 1); some slots may be
-    #                reser[v]ed by referencing a corporation's short name/@sym
-    #                (multiple corporation reservations separated by "+")
+    # * [t]own     - [r]evenue, local_[id] (default: 0)
+    # * [c]ity     - [r]evenue, local_[id] (default: 0), [s]lots (default 1);
+    #                some slots may be reser[v]ed by referencing a corporation's
+    #                short name/@sym (multiple corporation reservations
+    #                separated by "+")
     # * [o]ffboard - [n]ame, [r]evenues for different phases (separated by "/")
     # * [p]ath     - endpoints [a] and [b]; the endpoints can be an edge number,
     #                town/city/offboard reference, or a lawson-style [j]unction
@@ -37,7 +38,7 @@ module Engine
     }.freeze
 
     YELLOW = {
-      '1' => 't=r:10,n:_A;p=a:0,b:_0;p=a:_0,b:4;t=r:10,n:_B;p=a:1,b:_1;p=a:_1,b:3',
+      '1' => 't=r:10,id:0;p=a:0,b:_0;p=a:_0,b:4;t=r:10,id:1;p=a:1,b:_1;p=a:_1,b:3',
       '3' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1',
       '4' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3',
       '5' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:1',
@@ -48,7 +49,7 @@ module Engine
       '57' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3',
       '58' => 't=r:10;p=a:0,b:_0;p=a:_0,b:2',
       '437' => 't=r:30;p=a:0,b:_0;p=a:_0,b:2;l=P',
-      '438' => 'c=r:40,n:Kotohira;p=a:0,b:_0;p=a:_0,b:2;l=H;u=c:80',
+      '438' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:2;l=H;u=c:80',
     }.freeze
 
     GREEN = {
@@ -70,11 +71,11 @@ module Engine
       '81A' => 'p=a:0,b:j;p=a:2,b:j;p=a:4,b:j',
       '205' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:3,b:_0',
       '206' => 'c=r:30;p=a:0,b:_0;p=a:3,b:_0;p=a:5,b:_0',
-      '298' => 'c=r:40,n:_A;c=r:40,n:_B;c=r:40,n:_C;c=r:40,n:_D;l=Chi;'\
+      '298' => 'c=r:40,id:0;c=r:40,id:1;c=r:40,id:2;c=r:40,id:3;l=Chi;'\
                'p=a:1,b:_0;p=a:0,b:_1;p=a:5,b:_2;p=a:4,b:_3;'\
                'p=a:_0,b:3;p=a:_2,b:3;p=a:_3,b:3;p=a:_1,b:3',
-      '439' => 'c=r:60,s:2,n:Kotohira;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=H;u=c:80',
-      '440' => 'c=r:40,n:Takamatsu,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
+      '439' => 'c=r:60,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=H;u=c:80',
+      '440' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
     }.freeze
 
     BROWN = {
@@ -86,9 +87,9 @@ module Engine
       '46' => 'p=a:0,b:1;p=a:0,b:3;p=a:1,b:5;p=a:3,b:5',
       '47' => 'p=a:0,b:2;p=a:0,b:3;p=a:2,b:5;p=a:3,b:5',
       '448' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0',
-      '465' => 'c=r:40,s:2,n:Kouchi;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K',
-      '466' => 'c=r:60,n:Takamatsu,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
-      '492' => 'c=r:80,s:3,n:Kotohira;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=H',
+      '465' => 'c=r:40,s:2;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K',
+      '466' => 'c=r:60,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
+      '492' => 'c=r:80,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=H',
       '611' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;',
       'W5' => 'c=r:50,s:6;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
     }.freeze
@@ -102,7 +103,7 @@ module Engine
 
     COLORS = %i[white yellow green brown gray].freeze
 
-    attr_accessor :id, :legal_rotations
+    attr_accessor :id, :legal_rotations, :location_name
     attr_reader :cities, :color, :edges, :junctions, :label, :name,
                 :parts, :rotation, :towns, :upgrades, :offboards, :blockers
 
@@ -158,11 +159,11 @@ module Engine
 
         Part::Path.new(params['a'], params['b'])
       when 'c'
-        city = Part::City.new(params['r'], params.fetch('s', 1), params['n'], params['v']&.split('+'))
+        city = Part::City.new(params['r'], params.fetch('s', 1), params['id'], params['v']&.split('+'))
         cache << city
         city
       when 't'
-        town = Part::Town.new(params['r'], params['n'])
+        town = Part::Town.new(params['r'], params['id'])
         cache << town
         town
       when 'l'
@@ -192,6 +193,7 @@ module Engine
       @edges = nil
       @junctions = nil
       @upgrades = []
+      @location_name = nil
       @offboards = []
       @legal_rotations = []
       @blockers = []

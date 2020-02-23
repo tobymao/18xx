@@ -301,17 +301,13 @@ module View
 
     # render city/town name iff no other label is present
     def render_name
-      # nothing to do if there's already a label (might reconsider this)
-      return [] unless @tile.label.to_s == ''
-
-      revenue_center = (@tile.cities + @tile.towns).find(&:name)
-      name = revenue_center&.name
-      # don't render names starting with "_"; this allows differentiating the
-      # towns on a double-town tile by using the name property without rendering
-      # the name
-      return [] if !name || name[0] == '_'
-
-      [h(:text, { attrs: { fill: 'black', transform: 'scale(1.5) translate(10 30)' } }, name)]
+      attrs = {
+        fill: 'black',
+        transform: 'scale(1.1) translate(0 -30)',
+        'text-anchor': 'middle',
+        'stroke-width': 0.5,
+      }
+      [h(:text, { attrs: attrs }, @tile.location_name)]
     end
 
     def render_upgrades

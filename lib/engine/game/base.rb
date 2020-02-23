@@ -29,8 +29,12 @@ module Engine
         white: {
           %w[A1] => 'blank',
           %w[B2] => 'city',
-          %w[A3] => 'c=r:0,n:Exampleville;l=A;u=c:30',
+          %w[A3] => 'c=r:0;l=A;u=c:30',
         },
+      }.freeze
+
+      LOCATION_NAMES = {
+        'A3' => 'Exampleville',
       }.freeze
 
       def initialize(names, actions: [])
@@ -163,14 +167,16 @@ module Engine
                 begin
                   Tile.for(tile_string)
                 rescue Engine::GameError
-                  name = tile_string
+                  name = coords
                   code = tile_string
                   Tile.from_code(name, color, code)
                 end
               blocker = @companies.find { |c| c.blocks_hex == coord }
               tile.add_blocker!(blocker) unless blocker.nil?
 
-              Hex.new(coord, layout: layout, tile: tile)
+              location_name = self.class::LOCATION_NAMES[coord]
+
+              Hex.new(coord, layout: layout, tile: tile, location_name: location_name)
             end
           end
         end.flatten

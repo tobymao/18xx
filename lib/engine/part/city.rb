@@ -9,12 +9,12 @@ module Engine
       include Part::RevenueCenter
 
       attr_accessor :id, :reservations
-      attr_reader :name, :slots, :tokens
+      attr_reader :local_id, :slots, :tokens
 
-      def initialize(revenue, slots = 1, name = nil, reservations = [])
+      def initialize(revenue, slots = 1, local_id = 0, reservations = [])
         @revenue = parse_revenue(revenue)
         @slots = slots.to_i
-        @name = name
+        @local_id = local_id.to_i
         @tokens = Array.new(@slots)
         @reservations = reservations&.map(&:to_sym) || []
       end
@@ -23,13 +23,13 @@ module Engine
         other.city? &&
           @revenue == other.revenue &&
           @slots == other.slots &&
-          @name == other.name &&
+          @local_id == other.local_id &&
           @tokens == other.tokens &&
           @reservations == other.reservations
       end
 
       def <=(other)
-        other.city? && (@name == other.name)
+        other.city?
       end
 
       def tokened_by?(corporation)

@@ -25,10 +25,10 @@ module Engine
     let(:edge5) { Edge.new(5) }
     let(:city) { City.new(20) }
     let(:city2) { City.new(30, 2) }
-    let(:kotohira40) { City.new(40, 1, 'Kotohira') }
+    let(:kotohira40) { City.new(40, 1) }
     let(:town) { Town.new(10) }
-    let(:town_a) { Town.new(10, '_A') }
-    let(:town_b) { Town.new(10, '_B') }
+    let(:town_a) { Town.new(10, 0) }
+    let(:town_b) { Town.new(10, 1) }
     let(:junction) { Junction.new }
 
     describe '.for' do
