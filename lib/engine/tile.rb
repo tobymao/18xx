@@ -104,7 +104,7 @@ module Engine
 
     attr_accessor :id, :legal_rotations
     attr_reader :cities, :color, :edges, :junctions, :label, :name,
-                :parts, :rotation, :towns, :upgrades, :offboards
+                :parts, :rotation, :towns, :upgrades, :offboards, :blockers
 
     def self.for(name, **opts)
       if (code = WHITE[name])
@@ -194,6 +194,7 @@ module Engine
       @upgrades = []
       @offboards = []
       @legal_rotations = []
+      @blockers = []
       separate_parts
     end
 
@@ -257,6 +258,11 @@ module Engine
           other_paths.any? { |other| path <= other }
         end
       end
+    end
+
+    def add_blocker!(private_company)
+      @parts << private_company
+      @blockers << private_company
     end
 
     private

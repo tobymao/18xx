@@ -55,9 +55,9 @@ module Engine
 
       def init_companies
         [
-          Company::Base.new('Takamatsu E-Railroad', value: 20, income: 5),
+          Company::Base.new('Takamatsu E-Railroad', sym: 'TR', value: 20, income: 5, blocks_hex: 'K4'),
           # Company::TileLaying.new('Mitsubishi Ferry', value: 30, income: 5),
-          # Company::TileLaying.new('Ehime Railway', value: 40, income: 10),
+          # Company::TileLaying.new('Ehime Railway', sym: 'ER', value: 40, income: 10, blocks_hex: 'C4'),
           # Company::TerrainDiscount.new('Sumitomo Mines Railway', value: 50, income: 15),
         ]
       end

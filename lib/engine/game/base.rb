@@ -158,15 +158,18 @@ module Engine
       def init_hexes
         self.class::HEXES.map do |color, hexes|
           hexes.map do |coords, tile_string|
-            tile =
-              begin
-                Tile.for(tile_string)
-              rescue Engine::GameError
-                name = tile_string
-                code = tile_string
-                Tile.from_code(name, color, code)
-              end
             coords.map do |coord|
+              tile =
+                begin
+                  Tile.for(tile_string)
+                rescue Engine::GameError
+                  name = tile_string
+                  code = tile_string
+                  Tile.from_code(name, color, code)
+                end
+              blocker = @companies.find { |c| c.blocks_hex == coord }
+              tile.add_blocker!(blocker) unless blocker.nil?
+
               Hex.new(coord, layout: layout, tile: tile)
             end
           end

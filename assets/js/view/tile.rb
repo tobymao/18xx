@@ -327,6 +327,28 @@ module View
                           r: '10' })
     end
 
+    def render_blocker
+      blocker = @tile.blockers.first
+      return [] if blocker.nil? || !blocker.open? || blocker.owned_by_corporation?
+
+      [
+        h(:g,
+          { attrs: { transform: 'translate(-70 5)' } },
+          [
+            h(:text,
+              { attrs: { fill: 'black',
+                         'dominant-baseline': 'baseline',
+                         'text-anchor': 'middle',
+                         x: 0,
+                         y: -5 } },
+              blocker.sym),
+            h(:path, { attrs: { fill: 'white', d: 'M -11 6 A 44 44 0 0 0 11 6' } }, blocker.sym),
+            h(:circle, { attrs: { fill: 'white', r: 6, cx: 11, cy: 6 } }, blocker.sym),
+            h(:circle, { attrs: { fill: 'white', r: 6, cx: -11, cy: 6 } }, blocker.sym),
+          ])
+      ]
+    end
+
     def render
       attrs = {
         fill: 'none',
@@ -353,7 +375,7 @@ module View
         end
       end
 
-      children = track + render_upgrades + render_label + render_name
+      children = track + render_upgrades + render_label + render_name + render_blocker
 
       h(:g, { attrs: attrs }, children)
     end
