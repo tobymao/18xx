@@ -69,18 +69,31 @@ module Engine
       DIRECTIONS[@layout][[other.x - @x, other.y - @y]]
     end
 
-    def connections(other)
-      dir = neighbor_direction(other)
-      idir = invert(dir)
-
+    def connections(other, direct = false)
       # this current assumes there's only one valid route to an exit which may not be true
-      @tile.paths.select { |p| p.exits.include?(dir) } +
-        other.tile.paths.select { |p| p.exits.include?(idir) }
+      connected_paths(other, direct) + other.connected_paths(self, direct)
+    end
+
+    def connected_paths(other, direct = false)
+      dir = neighbor_direction(other)
+      direct_paths = @tile.paths.select { |p| p.exits.include?(dir) }
+      return direct_paths if direct
+
+      branches = direct_paths.map(&:branch).compact
+      direct_paths + @tile.paths.select { |path| branches.include?(path.branch) }
+    end
+
+    def connected_exits(other, direct = false)
+      connected_paths(other, direct).map(&:exits).flatten.uniq
     end
 
     def connected?(other)
+      targeting?(other) && other.targeting?(self)
+    end
+
+    def targeting?(other)
       dir = neighbor_direction(other)
-      @tile.exits.include?(dir) && other.tile.exits.include?(invert(dir))
+      @tile.exits.include?(dir)
     end
 
     def invert(dir)
@@ -89,6 +102,10 @@ module Engine
 
     def ==(other)
       @coordinates == other&.coordinates
+    end
+
+    def inspect
+      "<Hex: #{name}, tile: #{@tile.name}>"
     end
   end
 end

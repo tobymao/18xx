@@ -285,7 +285,7 @@ module Engine
         end
       end
 
-      @junctions = @paths.flat_map(&:junctions)
+      @junctions = @paths.map(&:junction)
       @edges = @paths.flat_map(&:edges)
     end
   end

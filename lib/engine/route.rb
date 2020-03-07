@@ -12,14 +12,14 @@ module Engine
     end
 
     def add_hex(hex)
-      if (prev = @hexes.last) && !hex.connected?(prev)
+      if (prev = @hexes.last) && !hex.connected?(prev, true)
         raise GameError, "Cannot use #{hex.name} in route because it is not connected"
       end
 
       @hexes << hex
       return unless prev
 
-      @paths.concat(hex.connections(prev))
+      @paths.concat(hex.connections(prev, true))
     end
 
     def paths_for(paths)

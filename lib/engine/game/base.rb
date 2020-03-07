@@ -14,7 +14,7 @@ require 'engine/train/handler'
 module Engine
   module Game
     class Base
-      attr_reader :actions, :bank, :corporations, :map,
+      attr_reader :actions, :bank, :companies, :corporations, :hexes, :map,
                   :players, :round, :share_pool, :stock_market, :tiles
 
       STARTING_CASH = {
@@ -130,7 +130,6 @@ module Engine
 
       def init_round
         Round::Auction.new(@players, companies: @companies, bank: @bank)
-        # new_operating_round(round_num = 0)
       end
 
       def init_stock_market
@@ -206,7 +205,11 @@ module Engine
         @hexes.each do |hex|
           Hex::DIRECTIONS[hex.layout].each do |xy, direction|
             x, y = xy
-            hex.neighbors[direction] = coordinates[[hex.x + x, hex.y + y]]
+            neighbor = coordinates[[hex.x + x, hex.y + y]]
+            next unless neighbor
+            next if neighbor.tile.color == :gray && !neighbor.targeting?(hex)
+
+            hex.neighbors[direction] = neighbor
           end
         end
       end

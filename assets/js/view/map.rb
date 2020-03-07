@@ -40,6 +40,8 @@ module View
           tile.rotate!
         end
 
+        tiles.reject! { |tile| tile.legal_rotations.empty? }
+
         children <<
         if @tile_selector.hex.tile == @tile_selector.tile
           h(TileSelector, tiles: tiles)

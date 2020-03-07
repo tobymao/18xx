@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'engine/action/lay_tile'
+require 'engine/round/base'
 
 module Engine
   module Round
@@ -36,24 +37,29 @@ module Engine
       def layable_hexes
         @layable_hexes ||=
           begin
-            queue = @hexes.select do |hex|
-              hex.tile.cities.any? { |c| c.tokened_by?(current_entity) }
-            end
-
+            # hexes is a map hex => exits
             hexes = Hash.new { |h, k| h[k] = [] }
 
-            queue.each { |hex| hexes[hex].concat((0..5).to_a) }
+            starting_hexes = @hexes.select do |hex|
+              hex.tile.cities.any? { |c| c.tokened_by?(current_entity) }
+            end
+            starting_hexes.each { |h| hexes[h] = h.tile.exits }
+
+            queue = starting_hexes.dup
 
             until queue.empty?
               hex = queue.pop
-              next unless (tile = hex.tile)
+              next unless hex.tile
 
-              tile.exits.each do |direction|
-                neighbor = hex.neighbors[direction]
-                queue << neighbor if neighbor && !hexes.key?(neighbor)
-                hexes[neighbor] << Hex.invert(direction)
+              hexes[hex].each do |direction|
+                next unless (neighbor = hex.neighbors[direction])
+
+                queue << neighbor if !hexes.key?(neighbor) && hex.connected?(neighbor)
+                hexes[neighbor] |= neighbor.connected_exits(hex) | [Hex.invert(direction)]
               end
             end
+
+            starting_hexes.each { |h| hexes[h] |= h.neighbors.keys }
 
             hexes
           end
@@ -82,6 +88,7 @@ module Engine
         case action
         when Action::LayTile
           @tiles.reject! { |t| action.tile.equal?(t) }
+          action.tile.rotate!(action.rotation)
           action.hex.lay(action.tile)
         when Action::PlaceToken
           action.city.place_token(action.entity)

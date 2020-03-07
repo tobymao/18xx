@@ -5,16 +5,13 @@ require 'engine/part/base'
 module Engine
   module Part
     class Path < Base
-      attr_reader :a, :b, :cities, :edges, :junctions, :towns
+      attr_reader :a, :b, :branch, :city, :edges, :junction, :offboard, :town
 
       # rubocop:disable Naming/MethodParameterName
       def initialize(a, b)
         @a = a
         @b = b
-        @cities = []
         @edges = []
-        @junctions = []
-        @towns = []
 
         separate_parts
       end
@@ -47,14 +44,17 @@ module Engine
 
       def separate_parts
         [@a, @b].each do |part|
+          next @edges << part if part.edge?
+          next @offboard = part if part.offboard?
+
+          @branch = part
+
           if part.city?
-            @cities << part
-          elsif part.edge?
-            @edges << part
+            @city = part
           elsif part.junction?
-            @junctions << part
+            @junction = part
           elsif part.town?
-            @towns << part
+            @town = part
           end
         end
       end
