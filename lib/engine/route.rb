@@ -4,11 +4,18 @@ require 'engine/game_error'
 
 module Engine
   class Route
-    attr_reader :hexes, :paths
+    attr_reader :hexes, :paths, :train
 
-    def initialize
+    def initialize(phase, train)
       @hexes = []
       @paths = []
+      @phase = phase
+      @train = train
+    end
+
+    def reset!
+      @hexes.clear
+      @paths.clear
     end
 
     def add_hex(hex)
@@ -27,9 +34,11 @@ module Engine
     end
 
     def stops
-      @paths.flat_map(&:cities).size + @paths.flat_map(&:towns).size
+      @paths.flat_map { |path| [path.city, path.town, path.offboard] }.compact
     end
 
-    def revenue; end
+    def revenue
+      stops.map { |stop| stop.route_revenue(@phase, @train) }.reduce(&:+)
+    end
   end
 end

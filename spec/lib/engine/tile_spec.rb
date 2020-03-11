@@ -23,12 +23,12 @@ module Engine
     let(:edge3) { Edge.new(3) }
     let(:edge4) { Edge.new(4) }
     let(:edge5) { Edge.new(5) }
-    let(:city) { City.new(20) }
-    let(:city2) { City.new(30, 2) }
-    let(:kotohira40) { City.new(40, 1) }
-    let(:town) { Town.new(10) }
-    let(:town_a) { Town.new(10, 0) }
-    let(:town_b) { Town.new(10, 1) }
+    let(:city) { City.new('20') }
+    let(:city2) { City.new('30', 2) }
+    let(:kotohira40) { City.new('40', 1) }
+    let(:town) { Town.new('10') }
+    let(:town_a) { Town.new('10', 0) }
+    let(:town_b) { Town.new('10', 1) }
     let(:junction) { Junction.new }
 
     describe '.for' do
@@ -126,7 +126,7 @@ module Engine
         code = 'c=r:yellow_30|green_40|brown_50|gray_70'
         actual = Tile.from_code('tile', :gray, code)
 
-        revenue = { yellow: 30, green: 40, brown: 50, gray: 70 }
+        revenue = 'yellow_30|green_40|brown_50|gray_70'
 
         expected = Tile.new('tile', color: :gray, parts: [City.new(revenue)])
 
@@ -137,7 +137,7 @@ module Engine
         code = 'o=r:yellow_30|brown_60|diesel_100;p=a:0,b:_0;p=a:1,b:_0'
         actual = Tile.from_code('test_tile', :red, code)
 
-        revenue = { yellow: 30, brown: 60, diesel: 100 }
+        revenue = 'yellow_30|brown_60|diesel_100'
         offboard = Offboard.new(revenue)
         expected = Tile.new('test_tile',
                             color: :red,

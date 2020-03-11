@@ -19,8 +19,8 @@ module View
 
       # move the selected hex to the back so it renders highest in z space
       hexes << hexes.delete(@tile_selector.hex) if @tile_selector
-      layable_hexes = @game.round.operating? ? @game.round.layable_hexes : {}
-      hexes.map! { |hex| h(Hex, hex: hex, layable: layable_hexes.key?(hex)) }
+      round = @game.round
+      hexes.map! { |hex| h(Hex, hex: hex, operating_round: round.operating? ? round : nil) }
 
       children = [
         h(:svg, { attrs: { id: 'map' }, style: { width: '1600px', height: '800px' } }, [

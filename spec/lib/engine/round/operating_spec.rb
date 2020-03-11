@@ -21,6 +21,7 @@ module Engine
       Round::Operating.new(
         [corporation],
         hexes: game.hexes,
+        phase: :yellow,
         tiles: game.tiles,
         companies: game.companies,
         bank: game.bank,

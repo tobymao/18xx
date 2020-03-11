@@ -1,23 +1,45 @@
 # frozen_string_literal: true
 
 require 'engine/action/lay_tile'
+require 'engine/action/run_routes'
 require 'engine/round/base'
 
 module Engine
   module Round
     class Operating < Base
-      attr_reader :round_num
+      attr_reader :phase, :round_num, :step
 
-      def initialize(entities, hexes:, tiles:, companies:, bank:, round_num: 1) # rubocop:disable Metrics/ParameterLists
+      STEPS = [
+        :track,
+        #:token,
+        :route,
+        :dividend,
+        :train,
+      ].freeze
+
+      def initialize(entities, hexes:, tiles:, phase:, companies:, bank:, round_num: 1) # rubocop:disable Metrics/ParameterLists
         super
         @round_num = round_num
         @hexes = hexes
         @tiles = tiles
+        @phase = phase
         @companies = companies
         @bank = bank
+        @step = self.class::STEPS.first
 
         companies_payout
         place_home_stations
+      end
+
+      def next_entity
+        current_index = self.class::STEPS.find_index(@step)
+        if current_index < self.class::STEPS.size - 1
+          @step = self.class::STEPS[current_index + 1]
+          @current_entity
+        else
+          @step = self.class::STEPS.first
+          super
+        end
       end
 
       def companies_payout
@@ -41,7 +63,7 @@ module Engine
             hexes = Hash.new { |h, k| h[k] = [] }
 
             starting_hexes = @hexes.select do |hex|
-              hex.tile.cities.any? { |c| c.tokened_by?(current_entity) }
+              hex.tile.cities.any? { |c| c.tokened_by?(@current_entity) }
             end
             starting_hexes.each { |h| hexes[h] = h.tile.exits }
 
@@ -95,6 +117,10 @@ module Engine
           action.hex.lay(action.tile)
         when Action::PlaceToken
           action.city.place_token(action.entity)
+        when Action::RunRoutes
+          action.routes.each do |route|
+            @bank.spend(route.revenue, @current_entity.owner)
+          end
         end
         @layable_hexes = nil
       end

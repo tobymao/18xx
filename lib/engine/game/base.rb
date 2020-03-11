@@ -14,8 +14,8 @@ require 'engine/train/handler'
 module Engine
   module Game
     class Base
-      attr_reader :actions, :bank, :companies, :corporations, :hexes, :map,
-                  :players, :round, :share_pool, :stock_market, :tiles
+      attr_reader :actions, :bank, :companies, :corporations, :hexes, :log,
+                  :map, :players, :round, :share_pool, :stock_market, :tiles
 
       STARTING_CASH = {
         2 => 1200,
@@ -33,6 +33,13 @@ module Engine
         },
       }.freeze
 
+      PHASE_OPERATING_ROUNDS = {
+        yellow: 1,
+        green: 2,
+        brown: 3,
+        gray: 3,
+      }.freeze
+
       LOCATION_NAMES = {
         'A3' => 'Exampleville',
       }.freeze
@@ -41,7 +48,7 @@ module Engine
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
         @bank = init_bank
-        @trains = init_trains
+        @train_handler = init_train_handler
         @companies = init_companies
         @corporations = init_corporations
         @stock_market = init_stock_market
@@ -50,16 +57,15 @@ module Engine
         @tiles = init_tiles
         @map = Map.new(@hexes)
         @actions = []
+        @log = []
         @round = init_round
         init_starting_cash
+        set_ids
 
-        @tiles.each.with_index do |tile, index|
-          tile.id = index
-        end
-
-        @tiles.flat_map(&:cities).each.with_index do |city, index|
-          city.id = index
-        end
+        # hacks
+        # @corporations[0].owner = @players[0]
+        # @corporations[0].buy_train(@train_handler.trains[0], @train_handler)
+        # @corporations[0].buy_train(@train_handler.trains[0], @train_handler)
 
         connect_hexes
 
@@ -111,6 +117,11 @@ module Engine
         @_cities[id]
       end
 
+      def train_by_id(id)
+        @_trains ||= @train_handler.trains.map { |t| [c.id, t] }.to_h
+        @_trains[id]
+      end
+
       def share_by_name(name)
         @_shares ||= @corporations.flat_map do |c|
           c.shares.map { |s| [s.name, s] }
@@ -122,6 +133,10 @@ module Engine
         :flat
       end
 
+      def phase
+        :yellow
+      end
+
       private
 
       def init_bank
@@ -130,6 +145,7 @@ module Engine
 
       def init_round
         Round::Auction.new(@players, companies: @companies, bank: @bank)
+        # new_operating_round
       end
 
       def init_stock_market
@@ -143,15 +159,14 @@ module Engine
         ]
       end
 
-      def init_trains
-        Train::Handler.new(
-          Array(6).map { Train::Base.new('2', distance: 2, price: 80, phase: :yellow) } +
-          Array(5).map { Train::Base.new('3', distance: 3, price: 180, phase: :green) } +
-          Array(4).map { Train::Base.new('4', distance: 4, price: 300, phase: :green, rusts: '2') } +
-          Array(3).map { Train::Base.new('5', distance: 5, price: 450, phase: :brown) } +
-          Array(2).map { Train::Base.new('6', distance: 6, price: 630, phase: :brown, rusts: '3') } +
-          Array(20).map { Train::Base.new('D', distance: 999, price: 1100, phase: :brown, rusts: '4') }
-        )
+      def init_train_handler
+        trains = 6.times.map { Train::Base.new('2', distance: 2, price: 80, phase: :yellow) } +
+          5.times.map { Train::Base.new('3', distance: 3, price: 180, phase: :green) } +
+          4.times.map { Train::Base.new('4', distance: 4, price: 300, phase: :green, rusts: '2') } +
+          3.times.map { Train::Base.new('5', distance: 5, price: 450, phase: :brown) } +
+          2.times.map { Train::Base.new('6', distance: 6, price: 630, phase: :brown, rusts: '3') } +
+          20.times.map { Train::Base.new('D', distance: 999, price: 1100, phase: :brown, rusts: '4') }
+        Train::Handler.new(trains, bank: @bank)
       end
 
       def init_corporations
@@ -214,7 +229,7 @@ module Engine
         end
       end
 
-      def next_round!(phase)
+      def next_round!
         @round =
           case @round
           when Round::Auction
@@ -222,7 +237,7 @@ module Engine
           when Round::Stock
             new_operating_round
           when Round::Operating
-            if @round.round_num < phase.operating_rounds
+            if @round.round_num < self.class::PHASE_OPERATING_ROUNDS[phase]
               new_operating_round(@round.round_num + 1)
             else
               Stock.new(@players)
@@ -238,10 +253,25 @@ module Engine
           # [@corporations[0]],
           hexes: @hexes,
           tiles: @tiles,
+          phase: phase,
           companies: @companies,
           bank: @bank,
           round_num: round_num,
         )
+      end
+
+      def set_ids
+        @tiles.each.with_index do |tile, index|
+          tile.id = index
+        end
+
+        @tiles.flat_map(&:cities).each.with_index do |city, index|
+          city.id = index
+        end
+
+        @train_handler.trains.each.with_index do |train, index|
+          train.id = index
+        end
       end
     end
   end

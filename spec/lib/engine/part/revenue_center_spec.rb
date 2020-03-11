@@ -14,17 +14,13 @@ module Engine
 
       describe '#parse_revenue' do
         it 'parses an integer' do
-          actual = subject.parse_revenue('20')
-          expected = 20
-
-          expect(actual).to eq(expected)
-        end
-
-        it 'parses a slash-separated list of revenues' do
-          actual = subject.parse_revenue('20/30/40')
-          expected = [20, 30, 40]
-
-          expect(actual).to eq(expected)
+          expect(subject.parse_revenue('20')).to eq(
+            yellow: 20,
+            green: 20,
+            brown: 20,
+            gray: 20,
+            diesel: 20,
+          )
         end
 
         it 'parses revenue for different colors and diesels' do

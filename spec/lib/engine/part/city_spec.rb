@@ -8,7 +8,7 @@ require 'engine/token'
 module Engine
   module Part
     describe City do
-      subject { described_class.new(20) }
+      subject { described_class.new('20') }
 
       let(:corporation) { Engine::Corporation::Base.new('AS', name: 'Aperture Science', tokens: 2) }
       let(:placed_token) { Engine::Token.new(corporation, true) }

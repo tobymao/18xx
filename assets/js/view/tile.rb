@@ -30,8 +30,10 @@ module View
       red: '#ec232a',
     }.freeze
 
+    ROUTE_COLORS = %i[red blue green purple].freeze
+
     needs :tile
-    needs :route, default: nil, store: true
+    needs :routes, default: [], store: true
 
     # returns SHARP, GENTLE, or STRAIGHT
     def compute_curvilinear_type(edge_a, edge_b)
@@ -59,7 +61,7 @@ module View
     end
 
     def render_curvilinear_track
-      color = 'red' if @route_paths.any?
+      color = color_for(@route_paths.find_index(&:any?))
 
       @tile.paths.flat_map do |path|
         render_curvilinear_track_segment(*path.exits, color)
@@ -88,10 +90,11 @@ module View
     end
 
     def render_lawson_track
-      exits = @route_paths.flat_map(&:exits)
-
       @tile.exits.flat_map do |e|
-        color = 'red' if exits.include?(e)
+        color = color_for(
+          @route_paths
+          .find_index { |paths| paths.flat_map(&:exits).include?(e) }
+        )
         render_lawson_track_segment(e, color)
       end
     end
@@ -114,6 +117,7 @@ module View
     end
 
     def render_revenue(revenue)
+      revenue = revenue.values.min
       return [] if revenue.zero?
 
       [
@@ -170,7 +174,7 @@ module View
     end
 
     def render_track_town(town)
-      color = 'red' if @route_paths.flat_map(&:towns).any?
+      color = color_for(@route_paths.find_index { |p| p.any?(&:town) })
 
       exits = @tile
         .paths
@@ -361,7 +365,7 @@ module View
             []
           end
       else
-        @route_paths = @route&.paths_for(@tile.paths) || []
+        @route_paths = @routes.map { |route| route.paths_for(@tile.paths) }
 
         track = render_track
 
@@ -374,6 +378,12 @@ module View
       children = track + render_upgrades + render_label + render_name + render_blocker
 
       h(:g, { attrs: attrs }, children)
+    end
+
+    private
+
+    def color_for(index)
+      index ? self.class::ROUTE_COLORS[index] : nil
     end
   end
 end

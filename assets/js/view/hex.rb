@@ -25,19 +25,20 @@ module View
     }.freeze
 
     needs :hex
+    needs :selected_route, default: nil, store: true
     needs :tile_selector, default: nil, store: true
-    needs :route, default: nil, store: true
     needs :role, default: :map
-    needs :layable, default: false
+    needs :operating_round, default: nil
 
     def render
       children = [h(:polygon, attrs: { points: self.class::POINTS })]
+      layable = @operating_round&.layable_hexes&.key?(@hex)
 
       @selected = @hex == @tile_selector&.hex
       @tile = @selected && @tile_selector.tile ? @tile_selector.tile : @hex.tile
 
       children << h(Tile, tile: @tile) if @tile
-      clickable = @layable || @role == :tile_selector
+      clickable = layable || @role == :tile_selector
 
       props = {
         attrs: {
@@ -45,7 +46,7 @@ module View
           transform: transform,
           fill: COLOR.fetch(@tile&.color, 'white'),
           stroke: 'black',
-          opacity: @layable || @role == :tile_selector ? 1.0 : 0.3,
+          opacity: layable || @role == :tile_selector ? 1.0 : 0.3,
           cursor: clickable ? 'pointer' : nil,
         },
       }
@@ -66,17 +67,19 @@ module View
     end
 
     def on_hex_click(event)
-      # @route ||= Engine::Route.new
-      # @route.add_hex(@hex)
-      # store(:route, @route)
-      # return
+      if @selected_route
+        @selected_route.add_hex(@hex)
+        store(:selected_route, @selected_route)
+        return
+      end
+
       return @tile_selector.rotate! if @selected && @tile_selector.tile
 
       case @role
       when :map
         store(:tile_selector, Lib::TileSelector.new(@hex, @tile, event, root))
       when :tile_selector
-        @tile_selector&.tile = @tile
+        @tile_selector.tile = @tile
       end
     end
   end

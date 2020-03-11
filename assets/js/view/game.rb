@@ -3,10 +3,12 @@
 require 'view/auction_round'
 require 'view/entity_order'
 require 'view/map'
+require 'view/operating_round'
 require 'view/player'
 require 'view/stock_round'
 
 require 'engine/round/auction'
+require 'engine/round/operating'
 require 'engine/round/stock'
 
 module View
@@ -23,7 +25,22 @@ module View
         h(AuctionRound)
       when Engine::Round::Stock
         h(StockRound)
+      when Engine::Round::Operating
+        h(OperatingRound)
       end
+    end
+
+    def render_log
+      props = {
+        style: {
+          'overflow-y' => 'scroll',
+          'background-color': 'lightgray',
+          height: '200px',
+          margin: '5px 0',
+        },
+      }
+
+      h(:div, props, @game.log.map { |line| h(:div, line) })
     end
 
     def render
@@ -32,9 +49,9 @@ module View
       players = @game.players.map { |player| h(Player, player: player) }
 
       h(:div, { attrs: { id: 'game' } }, [
-        h(:div, 'Game test 1889'),
-        h(EntityOrder, round: @round),
         render_round,
+        render_log,
+        h(EntityOrder, round: @round),
         render_action,
         *players,
         h(Map),
