@@ -32,7 +32,10 @@ module View
 
     def render_log
       props = {
+        props: { id: 'log' },
         style: {
+          display: 'flex',
+          'flex-direction' => 'column-reverse',
           'overflow-y' => 'scroll',
           'background-color': 'lightgray',
           height: '200px',
@@ -40,7 +43,7 @@ module View
         },
       }
 
-      h(:div, props, @game.log.map { |line| h(:div, line) })
+      h(:div, props, @game.log.reverse.map { |line| h(:div, line) })
     end
 
     def render

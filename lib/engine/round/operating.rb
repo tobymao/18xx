@@ -31,6 +31,10 @@ module Engine
         place_home_stations
       end
 
+      def finished?
+        @entities.all?(&:passed?)
+      end
+
       def next_entity
         current_index = self.class::STEPS.find_index(@step)
         if current_index < self.class::STEPS.size - 1
@@ -38,6 +42,7 @@ module Engine
           @current_entity
         else
           @step = self.class::STEPS.first
+          @current_entity.pass!
           super
         end
       end
@@ -99,10 +104,6 @@ module Engine
         end
       end
 
-      def finished?
-        false
-      end
-
       def operating?
         true
       end
@@ -110,13 +111,19 @@ module Engine
       private
 
       def _process_action(action)
+        entity = action.entity
+
         case action
         when Action::LayTile
-          @tiles.reject! { |t| action.tile.equal?(t) }
-          action.tile.rotate!(action.rotation)
-          action.hex.lay(action.tile)
+          tile = action.tile
+          hex = action.hex
+          rotation = action.rotation
+          @tiles.reject! { |t| tile.equal?(t) }
+          tile.rotate!(rotation)
+          hex.lay(tile)
+          @log << "#{entity.name} lays tile #{tile.name} with rotation #{rotation} on #{hex.name}"
         when Action::PlaceToken
-          action.city.place_token(action.entity)
+          action.city.place_token(entity)
         when Action::RunRoutes
           action.routes.each do |route|
             @bank.spend(route.revenue, @current_entity.owner)

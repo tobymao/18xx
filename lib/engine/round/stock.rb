@@ -58,7 +58,7 @@ module Engine
         return if floated == corporation.floated?
 
         corporation.cash = corporation.par_price.price * 10
-        @log << "#{corporation.name} floats with $#{corporation.cash}"
+        @log << "#{corporation.name} floats with $#{corporation.cash} and tokens #{corporation.coordinates}"
       end
     end
   end
