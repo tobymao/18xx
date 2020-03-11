@@ -8,7 +8,7 @@ module Engine
     class Auction < Base
       attr_reader :bids, :companies, :min_increment
 
-      def initialize(entities, companies:, bank:, min_increment: 5)
+      def initialize(entities, log:, companies:, bank:, min_increment: 5)
         super
 
         @companies = companies.sort_by(&:value)
@@ -72,6 +72,7 @@ module Engine
           min = min_bid(bid.company)
           raise Engine::GameError, "Minimum bid is #{min}" if bid.price < min
 
+          @log << "#{bid.player.name} bids #{bid.price} for #{bid.company.name}"
           @bids[bid.company] << bid
         end
       end
@@ -99,6 +100,7 @@ module Engine
         @companies.delete(company)
         @bids.delete(company)
         @auctioning_company = nil
+        @log << "#{player.name} buys #{company.name} for $#{price}"
       end
     end
   end

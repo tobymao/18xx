@@ -17,7 +17,7 @@ module Engine
         :train,
       ].freeze
 
-      def initialize(entities, hexes:, tiles:, phase:, companies:, bank:, round_num: 1) # rubocop:disable Metrics/ParameterLists
+      def initialize(entities, log:, hexes:, tiles:, phase:, companies:, bank:, round_num: 1) # rubocop:disable Metrics/ParameterLists
         super
         @round_num = round_num
         @hexes = hexes

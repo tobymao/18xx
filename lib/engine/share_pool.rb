@@ -25,11 +25,10 @@ module Engine
     private
 
     def transfer_share(to_entity, share, spender, receiver)
-      price = share.corporation.share_price.price
       owner = share.owner
       owner.shares.delete(share)
 
-      spender.spend(price, receiver)
+      spender.spend(share.price, receiver)
 
       to_entity.shares << share
       share.owner = to_entity

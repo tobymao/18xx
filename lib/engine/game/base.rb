@@ -144,7 +144,7 @@ module Engine
       end
 
       def init_round
-        Round::Auction.new(@players, companies: @companies, bank: @bank)
+        Round::Auction.new(@players, log: @log, companies: @companies, bank: @bank)
         # new_operating_round
       end
 
@@ -233,14 +233,14 @@ module Engine
         @round =
           case @round
           when Round::Auction
-            Round::Stock.new(@players, share_pool: @share_pool, stock_market: @stock_market)
+            Round::Stock.new(@players, log: @log, share_pool: @share_pool, stock_market: @stock_market)
           when Round::Stock
             new_operating_round
           when Round::Operating
             if @round.round_num < self.class::PHASE_OPERATING_ROUNDS[phase]
               new_operating_round(@round.round_num + 1)
             else
-              Stock.new(@players)
+              Round::Stock.new(@players, log: @log, share_pool: @share_pool, stock_market: @stock_market)
             end
           else
             raise "Unexected round type #{@round}"
@@ -251,6 +251,7 @@ module Engine
         Round::Operating.new(
           @corporations.select(&:floated?),
           # [@corporations[0]],
+          log: @log,
           hexes: @hexes,
           tiles: @tiles,
           phase: phase,

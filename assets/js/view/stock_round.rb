@@ -4,7 +4,7 @@ require 'view/actionable'
 require 'view/corporation'
 
 require 'engine/action/buy_share'
-require 'engine/action/float'
+require 'engine/action/par'
 require 'engine/action/pass'
 require 'engine/action/sell_share'
 
@@ -51,15 +51,15 @@ module View
           display: 'inline-block',
         }
 
-        float_values = @game.stock_market.par_prices.map do |share_price|
-          float = lambda do
-            process_action(Engine::Action::Float.new(@current_entity, @selected_corporation, share_price))
+        par_values = @game.stock_market.par_prices.map do |share_price|
+          par = lambda do
+            process_action(Engine::Action::Par.new(@current_entity, @selected_corporation, share_price))
           end
 
-          h(:div, { style: style, on: { click: float } }, share_price.price)
+          h(:div, { style: style, on: { click: par } }, share_price.price)
         end
 
-        h(:div, ['Choose a par price', *float_values])
+        h(:div, ['Choose a par price', *par_values])
       end
     end
   end

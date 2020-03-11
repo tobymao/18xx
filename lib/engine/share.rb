@@ -20,5 +20,10 @@ module Engine
     def name
       "#{@corporation.name}_#{@index}"
     end
+
+    def price
+      share_price = @owner == corporation ? corporation.par_price : corporation.share_price
+      share_price.price * @percent / 10
+    end
   end
 end

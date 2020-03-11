@@ -13,7 +13,7 @@ module Engine
     let(:private_1) { Company::Base.new('c_1', value: 10, income: 5) }
     let(:private_2) { Company::Base.new('c_2', value: 20, income: 10) }
 
-    subject { Round::Auction.new([player_1, player_2], bank: bank, companies: [private_1, private_2]) }
+    subject { Round::Auction.new([player_1, player_2], log: [], bank: bank, companies: [private_1, private_2]) }
 
     before :each do
       bank.spend(100, player_1)

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'engine/action/buy_share'
-require 'engine/action/float'
+require 'engine/action/par'
 require 'engine/action/sell_share'
 
 module Engine
@@ -30,17 +30,35 @@ module Engine
 
       def _process_action(action)
         @current_entity.unpass!
+        entity = action.entity
 
         case action
         when Action::BuyShare
-          @share_pool.buy_share(action.entity, action.share)
+          buy_share(entity, action.share)
+          @share_pool.buy_share(entity, action.share)
         when Action::SellShare
-          @share_pool.sell_share(action.entity, action.share)
+          @share_pool.sell_share(entity, action.share)
           @stock_market.move_down(action.corporation)
-        when Action::Float
-          @stock_market.set_par(action.corporation, action.share_price)
-          @share_pool.buy_share(action.entity, action.corporation.shares.first)
+        when Action::Par
+          corporation = action.corporation
+          share_price = action.share_price
+          @stock_market.set_par(corporation, share_price)
+          @log << "#{entity.name} pars #{corporation.name} at $#{corporation.par_price.price}"
+
+          share = action.corporation.shares.first
+          buy_share(entity, share)
         end
+      end
+
+      def buy_share(entity, share)
+        corporation = share.corporation
+        floated = corporation.floated?
+        @share_pool.buy_share(entity, share)
+        @log << "#{entity.name} buys a #{share.percent}% share of #{corporation.name} for $#{share.price}"
+        return if floated == corporation.floated?
+
+        corporation.cash = corporation.par_price.price * 10
+        @log << "#{corporation.name} floats with $#{corporation.cash}"
       end
     end
   end

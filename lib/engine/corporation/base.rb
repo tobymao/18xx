@@ -23,7 +23,6 @@ module Engine
         @share_price = nil
         @par_price = nil
         @ipoed = false
-        @cash = 1000 # temp hack
         @trains = []
 
         @float_percent = opts[:float_percent] || 60

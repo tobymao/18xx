@@ -2,7 +2,7 @@
 
 module Engine
   module Action
-    class Float < Base
+    class Par < Base
       attr_reader :entity, :corporation, :share_price
 
       def initialize(entity, corporation, share_price)

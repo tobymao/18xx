@@ -20,6 +20,7 @@ module Engine
     subject do
       Round::Operating.new(
         [corporation],
+        log: [],
         hexes: game.hexes,
         phase: :yellow,
         tiles: game.tiles,

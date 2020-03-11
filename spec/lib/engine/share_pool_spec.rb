@@ -21,11 +21,12 @@ module Engine
     before :each do
       bank.spend(100, player)
       corporation.share_price = share_price
+      corporation.par_price = share_price
     end
 
     describe '#buy_share' do
       it 'sends money and share to right place' do
-        expect { subject.buy_share(player, share) }.to change { bank.cash }.by(10)
+        expect { subject.buy_share(player, share) }.to change { bank.cash }.by(20)
       end
     end
 
@@ -35,7 +36,7 @@ module Engine
       end
 
       it 'sends money and share to right place' do
-        expect { subject.sell_share(share) }.to change { bank.cash }.by(-10)
+        expect { subject.sell_share(share) }.to change { bank.cash }.by(-20)
       end
     end
   end

@@ -7,8 +7,9 @@ module Engine
     class Base
       attr_reader :entities, :current_entity
 
-      def initialize(entities, **_kwargs)
+      def initialize(entities, log:, **_kwargs)
         @entities = entities
+        @log = log
         @current_entity = @entities.first
       end
 
@@ -34,6 +35,7 @@ module Engine
         raise GameError, "It is not #{entity.name}'s turn" unless can_act?(entity)
 
         if action.pass?
+          @log << "#{entity.name} passes"
           pass(entity)
         else
           _process_action(action)
