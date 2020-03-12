@@ -31,6 +31,10 @@ module View
     def render_input
       input = h(:input, props: { value: @round.min_bid(@selected_company) })
 
+      buy = lambda do
+        process_action(Engine::Action::Bid.new(@current_entity, @selected_company, @round.min_bid(@selected_company)))
+      end
+
       create_bid = lambda do
         price = input.JS['elm'].JS['value'].to_i
         process_action(Engine::Action::Bid.new(@current_entity, @selected_company, price))
@@ -50,11 +54,18 @@ module View
         process_action(Engine::Action::Pass.new(@current_entity))
       end
 
+      company_actions = []
+      if @round.may_purchase?(@selected_company)
+        company_actions.push(h(:button, { on: { click: buy } }, 'Buy'))
+      elsif @selected_company
+        company_actions.push(input)
+        company_actions.push(h(:button, { on: { click: decrease_bid } }, '-'))
+        company_actions.push(h(:button, { on: { click: increase_bid } }, '+'))
+        company_actions.push(h(:button, { on: { click: create_bid } }, 'Place Bid'))
+      end
+
       h(:div, [
-        input,
-        h(:button, { on: { click: decrease_bid } }, '-'),
-        h(:button, { on: { click: increase_bid } }, '+'),
-        h(:button, { on: { click: create_bid } }, 'Place Bid'),
+        *company_actions,
         h(:button, { on: { click: pass } }, 'Pass'),
       ])
     end

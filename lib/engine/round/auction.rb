@@ -36,7 +36,7 @@ module Engine
 
       def min_bid(company)
         return unless company
-        return company.min_bid if !@auctioning_company && company == companies.first
+        return company.min_bid if may_purchase?(company)
 
         high_bid = @bids[company].max_by(&:price)
         (high_bid ? high_bid.price : company.min_bid) + @min_increment
@@ -49,6 +49,10 @@ module Engine
 
       def auction?
         true
+      end
+
+      def may_purchase?(company)
+        !@auctioning_company && company == companies.first
       end
 
       private
