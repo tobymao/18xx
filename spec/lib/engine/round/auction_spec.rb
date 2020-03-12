@@ -20,6 +20,25 @@ module Engine
       bank.spend(100, player_2)
     end
 
+    describe '#may_purchase?' do
+      it 'is true for the cheapest, false for others' do
+        expect(subject.may_purchase?(private_1)).to be true
+        expect(subject.may_purchase?(private_2)).to be false
+      end
+
+      it 'is false if the cheapest has bids' do
+        subject.process_action(Action::Bid.new(player_1, private_2, 25))
+        subject.process_action(Action::Bid.new(player_2, private_2, 30))
+        subject.process_action(Action::Bid.new(player_1, private_1, 10))
+        expect(subject.may_purchase?(private_2)).to be false
+      end
+
+      it 'is true if the cheapest remaining has no bids' do
+        subject.process_action(Action::Bid.new(player_1, private_1, 10))
+        expect(subject.may_purchase?(private_2)).to be true
+      end
+    end
+
     describe '#process_action' do
       it 'buys the cheapest private' do
         subject.process_action(Action::Bid.new(player_1, private_1, 10))
