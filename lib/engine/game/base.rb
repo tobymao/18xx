@@ -143,7 +143,7 @@ module Engine
       end
 
       def init_stock_market
-        StockMarket.new(StockMarket::MARKET)
+        StockMarket.new(self.class::MARKET)
       end
 
       def init_companies
