@@ -39,8 +39,8 @@ module Engine
       @y = @coordinates[1..-1].to_i - 1
       @neighbors = {}
       @location_name = location_name
+      tile.location_name = location_name
       @tile = tile
-      lay(tile)
     end
 
     def name
