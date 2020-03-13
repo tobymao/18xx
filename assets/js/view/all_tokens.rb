@@ -6,7 +6,7 @@ require 'engine/game/g_1889'
 require 'view/token'
 
 module View
-  class Tokens < Snabberb::Component
+  class AllTokens < Snabberb::Component
     def render
       corporations = Engine::Game::G1889.new([]).corporations
 

@@ -5,7 +5,7 @@ require 'snabberb'
 require 'engine/tile'
 
 module View
-  class Tiles < Snabberb::Component
+  class AllTiles < Snabberb::Component
     def render
       tile_ids = [
         Engine::Tile::WHITE.keys,

@@ -5,8 +5,8 @@ require 'snabberb'
 require 'polyfill'
 
 require 'view/game'
-require 'view/tiles'
-require 'view/tokens'
+require 'view/all_tiles'
+require 'view/all_tokens'
 require 'engine/game/base'
 require 'engine/game/g_1889'
 
@@ -20,9 +20,9 @@ class App < Snabberb::Component
       when 'game'
         [h(View::Game)]
       when 'tiles'
-        [h(View::Tiles)]
+        [h(View::AllTiles)]
       when 'tokens'
-        [h(View::Tokens)]
+        [h(View::AllTokens)]
       else
         []
       end
@@ -35,8 +35,8 @@ class App < Snabberb::Component
   def tabs
     [
       h(:button, { on: { click: -> { store(:page, 'game') } } }, 'Game'),
-      h(:button, { on: { click: -> { store(:page, 'tiles') } } }, 'Tiles'),
-      h(:button, { on: { click: -> { store(:page, 'tokens') } } }, 'Tokens'),
+      h(:button, { on: { click: -> { store(:page, 'tiles') } } }, 'All Tiles'),
+      h(:button, { on: { click: -> { store(:page, 'tokens') } } }, 'All Tokens'),
     ]
   end
 end

@@ -1,28 +1,52 @@
 # frozen_string_literal: true
 
-require 'snabberb/component'
+require 'view/part/base'
 
 module View
-  module TileParts
-    class Upgrade < Snabberb::Component
+  module Part
+    class Upgrade < Base
       needs :cost
       needs :terrains, default: []
 
-      def render
+      def preferred_render_locations
+        [
+          {
+            regions: ['center'],
+            transform: 'translate(0 0)',
+          },
+          {
+            regions: ['corner3.5'],
+            transform: 'translate(30 -60)',
+          },
+        ]
+      end
+
+      def render_part
+        text_attrs = {
+          'text-anchor': 'middle',
+          fill: 'black',
+          transform: 'scale(1.5)',
+        }
+        cost = h(:text, { attrs: text_attrs }, @cost)
+
+        delta_x = -10
+
         terrain = @terrains.map.with_index do |t, index|
           {
-            mountain: mountain(delta_y: 5 + (20 * index)),
-            water: water(delta_y: 5 + (20 * index)),
+            mountain: mountain(delta_x: delta_x, delta_y: 5 + (20 * index)),
+            water: water(delta_x: delta_x, delta_y: 5 + (20 * index)),
           }[t]
         end
 
-        h(
-          :g,
-          { attrs: { 'stroke-width': 1, transform: 'translate(30 -60)' } },
-          [
-            h(:text, { attrs: { fill: 'black', transform: 'scale(1.5)' } }, @cost),
-          ] + terrain
-        )
+        children = [cost] + terrain
+
+        attrs = {
+          class: 'upgrade',
+          'stroke-width': 1,
+          transform: transform,
+        }
+
+        h(:g, { attrs: attrs }, children)
       end
 
       def mountain(delta_x: 0, delta_y: 0)

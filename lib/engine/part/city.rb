@@ -10,7 +10,7 @@ module Engine
       include Part::RevenueCenter
 
       attr_accessor :id, :reservations
-      attr_reader :local_id, :slots, :tokens
+      attr_reader :local_id, :slots, :tokens, :revenue
 
       def initialize(revenue, slots = 1, local_id = 0)
         @revenue = parse_revenue(revenue)
