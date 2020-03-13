@@ -2,6 +2,7 @@
 
 require 'view/auction_round'
 require 'view/entity_order'
+require 'view/log'
 require 'view/map'
 require 'view/operating_round'
 require 'view/player'
@@ -34,33 +35,6 @@ module View
       end
     end
 
-    def render_log
-      reverse_scroll = lambda do |event|
-        %x{
-          var e = #{event}
-          e.preventDefault()
-          e.currentTarget.scrollTop -= e.deltaY
-        }
-      end
-
-      props = {
-        on: { wheel: reverse_scroll },
-        style: {
-          transform: 'scaleY(-1)',
-          overflow: 'auto',
-          height: '200px',
-          margin: '5px 0',
-          'background-color': 'lightgray',
-        },
-      }
-
-      lines = @game.log.reverse.map do |line|
-        h(:div, { style: { transform: 'scaleY(-1)' } }, line)
-      end
-
-      h(:div, props, lines)
-    end
-
     def render
       @round = @game.round
 
@@ -68,7 +42,7 @@ module View
 
       h(:div, { attrs: { id: 'game' } }, [
         render_round,
-        render_log,
+        h(Log),
         h(EntityOrder, round: @round),
         render_action,
         *players,
