@@ -2,9 +2,9 @@
 
 require 'view/actionable'
 require 'view/company'
+require 'view/pass_button'
 
 require 'engine/action/bid'
-require 'engine/action/pass'
 
 module View
   class AuctionRound < Snabberb::Component
@@ -50,23 +50,21 @@ module View
         input.JS['elm'].JS['value'] = price + @round.min_increment
       end
 
-      pass = lambda do
-        process_action(Engine::Action::Pass.new(@current_entity))
-      end
-
-      company_actions = []
+      company_actions =
       if @round.may_purchase?(@selected_company)
-        company_actions.push(h(:button, { on: { click: buy } }, 'Buy'))
+        [h(:button, { on: { click: buy } }, 'Buy')]
       elsif @selected_company
-        company_actions.push(input)
-        company_actions.push(h(:button, { on: { click: decrease_bid } }, '-'))
-        company_actions.push(h(:button, { on: { click: increase_bid } }, '+'))
-        company_actions.push(h(:button, { on: { click: create_bid } }, 'Place Bid'))
+        [
+          input,
+          h(:button, { on: { click: decrease_bid } }, '-'),
+          h(:button, { on: { click: increase_bid } }, '+'),
+          h(:button, { on: { click: create_bid } }, 'Place Bid'),
+        ]
       end
 
       h(:div, [
         *company_actions,
-        h(:button, { on: { click: pass } }, 'Pass'),
+        h(PassButton),
       ])
     end
   end

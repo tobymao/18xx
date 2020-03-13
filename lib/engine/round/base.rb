@@ -13,6 +13,10 @@ module Engine
         @current_entity = @entities.first
       end
 
+      def description
+        raise NotImplementedError
+      end
+
       def current_player
         @current_entity.player
       end
@@ -26,8 +30,8 @@ module Engine
         index < @entities.size ? @entities[index] : @entities[0]
       end
 
-      def pass(_entity)
-        raise NotImplementedError
+      def pass(entity)
+        entity.pass!
       end
 
       def process_action(action)
@@ -38,13 +42,14 @@ module Engine
           @log << "#{entity.name} passes"
           pass(entity)
         else
+          @current_entity.unpass!
           _process_action(action)
         end
         @current_entity = next_entity
       end
 
       def finished?
-        true
+        @entities.all?(&:passed?)
       end
 
       def can_act?(entity)

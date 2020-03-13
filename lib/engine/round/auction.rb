@@ -11,7 +11,7 @@ module Engine
       def initialize(entities, log:, companies:, bank:, min_increment: 5)
         super
 
-        @companies = companies.sort_by(&:value)
+        @companies = companies.reject(&:owner).sort_by(&:value)
         @bank = bank
         @min_increment = min_increment
 
@@ -20,8 +20,12 @@ module Engine
         @last_to_act = nil
       end
 
+      def description
+        'Bid on Companies'
+      end
+
       def finished?
-        @companies.empty?
+        @companies.empty? || @entities.all?(&:passed?)
       end
 
       def next_entity
@@ -43,6 +47,8 @@ module Engine
       end
 
       def pass(entity)
+        super
+        @last_to_act = nil
         @bids[@auctioning_company]&.reject! { |bid| bid.player == entity }
         resolve_bids
       end
@@ -76,7 +82,7 @@ module Engine
           min = min_bid(bid.company)
           raise Engine::GameError, "Minimum bid is #{min}" if bid.price < min
 
-          @log << "#{bid.player.name} bids #{bid.price} for #{bid.company.name}"
+          @log << "#{bid.player.name} bids $#{bid.price} for #{bid.company.name}"
           @bids[bid.company] << bid
         end
       end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'engine/ownable'
+require 'engine/passer'
 require 'engine/share'
 require 'engine/spender'
 require 'engine/token'
@@ -9,9 +10,10 @@ module Engine
   module Corporation
     class Base
       include Ownable
+      include Passer
       include Spender
 
-      attr_accessor :ipoed, :owner, :par_price, :share_price, :tokens
+      attr_accessor :ipoed, :par_price, :share_price, :tokens
       attr_reader :coordinates, :sym, :name, :logo, :shares, :trains
 
       def initialize(sym, name:, tokens:, **opts)
@@ -30,10 +32,15 @@ module Engine
         @logo = "logos/#{opts[:logo] || sym}.svg"
       end
 
-      def buy_train(train, seller, price = nil)
-        spend(price || train.price, seller)
-        seller.trains.delete(train)
+      def buy_train(train, price = nil)
+        spend(price || train.price, train.owner)
+        train.owner.remove_train(train)
+        train.owner = self
         @trains << train
+      end
+
+      def remove_train(train)
+        @trains.delete(train)
       end
 
       def floated?

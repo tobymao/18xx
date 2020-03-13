@@ -32,6 +32,7 @@ module Engine
 
       to_entity.shares << share
       share.owner = to_entity
+      share.corporation.owner = to_entity if share.president
     end
   end
 end

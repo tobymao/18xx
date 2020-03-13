@@ -15,7 +15,6 @@ module Engine
       @cash = 0
       @shares = []
       @companies = []
-      @passed = false
     end
 
     def shares_by_corporation

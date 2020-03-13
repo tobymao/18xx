@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'engine/game_error'
 require 'engine/part/base'
 require 'engine/part/revenue_center'
 
@@ -48,25 +49,34 @@ module Engine
         true
       end
 
-      def place_token(corporation)
-        # the slot is reserved for a different corporation
-        slot = @reservations.index(corporation.sym) || @tokens.find_index.with_index do |t, i|
-          t.nil? && @reservations[i].nil?
-        end
+      def tokenable?(corporation)
+        slot = slot(corporation)
+        # corporation already placed all their tokens
+        return false unless corporation.tokens.any?(&:unplaced?)
 
         # a token is already in this slot
-        raise unless @tokens[slot].nil?
+        return false unless @tokens[slot].nil?
 
         # corporation has a reservation for a different spot in the city
-        raise unless [nil, slot].include?(@reservations.index(corporation.sym))
+        return false unless [nil, slot].include?(@reservations.index(corporation.sym))
 
         # corporation already placed a token in this city
-        raise if @tokens.compact.map(&:corporation).include?(corporation)
+        return false if @tokens.compact.map(&:corporation).include?(corporation)
 
-        # corporation already placed all their tokens
-        raise if corporation.tokens.select(&:unplaced?).empty?
+        true
+      end
 
-        # place token on this city
+      def slot(corporation)
+        @reservations.index(corporation.sym) || @tokens.find_index.with_index do |t, i|
+          t.nil? && @reservations[i].nil?
+        end
+      end
+
+      def place_token(corporation)
+        # the slot is reserved for a different corporation
+        raise GameError, 'Cannot lay token' unless tokenable?(corporation)
+
+        slot = slot(corporation)
         token = corporation.tokens.find(&:unplaced?)
         token.place!
         @tokens[slot] = token

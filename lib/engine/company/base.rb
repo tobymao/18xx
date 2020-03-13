@@ -8,7 +8,6 @@ module Engine
     class Base
       include Ownable
 
-      attr_accessor :owner
       attr_reader :name, :sym, :value, :desc, :income, :blocks_hex
 
       def initialize(name, value:, income: 0, desc: '', sym: '', blocks_hex: nil) # rubocop:disable Metrics/ParameterLists

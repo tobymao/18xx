@@ -2,9 +2,7 @@
 
 module Engine
   module Ownable
-    def owner
-      nil
-    end
+    attr_accessor :owner
 
     def owned_by?(entity)
       return false unless entity

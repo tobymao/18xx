@@ -14,12 +14,12 @@ module Engine
         @stock_market = stock_market
       end
 
-      def pass
-        @current_entity.pass!
+      def description
+        'Buy and Sell Shares'
       end
 
-      def finished?
-        active_entities.all?(&:passed?)
+      def pass
+        @current_entity.pass!
       end
 
       def stock?
@@ -29,7 +29,6 @@ module Engine
       private
 
       def _process_action(action)
-        @current_entity.unpass!
         entity = action.entity
 
         case action

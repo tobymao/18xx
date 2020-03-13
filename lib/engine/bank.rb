@@ -9,5 +9,9 @@ module Engine
     def initialize(cash)
       @cash = cash
     end
+
+    def name
+      'The Bank'
+    end
   end
 end

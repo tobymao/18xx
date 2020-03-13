@@ -9,13 +9,13 @@ require 'engine/round/auction'
 require 'engine/round/operating'
 require 'engine/round/stock'
 require 'engine/train/base'
-require 'engine/train/handler'
+require 'engine/train/depot'
 
 module Engine
   module Game
     class Base
-      attr_reader :actions, :bank, :companies, :corporations, :hexes, :log,
-                  :map, :players, :round, :share_pool, :stock_market, :tiles
+      attr_reader :actions, :bank, :companies, :corporations, :depot, :hexes, :log,
+                  :map, :players, :round, :share_pool, :stock_market, :tiles, :turn
 
       STARTING_CASH = {
         2 => 1200,
@@ -45,10 +45,11 @@ module Engine
       }.freeze
 
       def initialize(names, actions: [])
+        @turn = 1
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
         @bank = init_bank
-        @train_handler = init_train_handler
+        @depot = init_train_handler
         @companies = init_companies
         @corporations = init_corporations
         @stock_market = init_stock_market
@@ -61,12 +62,6 @@ module Engine
         @round = init_round
         init_starting_cash
         set_ids
-
-        # hacks
-        # @corporations[0].owner = @players[0]
-        # @corporations[0].buy_train(@train_handler.trains[0], @train_handler)
-        # @corporations[0].buy_train(@train_handler.trains[0], @train_handler)
-
         connect_hexes
 
         # replay all actions with a copy
@@ -80,7 +75,7 @@ module Engine
       def process_action(action)
         @round.process_action(action)
         @actions << action
-        next_round! if @round.finished?
+        next_round! while @round.finished?
       end
 
       def rollback
@@ -118,7 +113,7 @@ module Engine
       end
 
       def train_by_id(id)
-        @_trains ||= @train_handler.trains.map { |t| [c.id, t] }.to_h
+        @_trains ||= @depot.trains.map { |t| [c.id, t] }.to_h
         @_trains[id]
       end
 
@@ -144,8 +139,7 @@ module Engine
       end
 
       def init_round
-        Round::Auction.new(@players, log: @log, companies: @companies, bank: @bank)
-        # new_operating_round
+        new_auction_round
       end
 
       def init_stock_market
@@ -166,7 +160,7 @@ module Engine
           3.times.map { Train::Base.new('5', distance: 5, price: 450, phase: :brown) } +
           2.times.map { Train::Base.new('6', distance: 6, price: 630, phase: :brown, rusts: '3') } +
           20.times.map { Train::Base.new('D', distance: 999, price: 1100, phase: :brown, rusts: '4') }
-        Train::Handler.new(trains, bank: @bank)
+        Train::Depot.new(trains, bank: @bank)
       end
 
       def init_corporations
@@ -230,33 +224,50 @@ module Engine
       end
 
       def next_round!
+        @round.entities.each(&:unpass!)
+
         @round =
           case @round
           when Round::Auction
-            Round::Stock.new(@players, log: @log, share_pool: @share_pool, stock_market: @stock_market)
+            @turn += 1
+            @companies.all?(&:owner) ? new_stock_round : new_operating_round
           when Round::Stock
+            @turn += 1
             new_operating_round
           when Round::Operating
             if @round.round_num < self.class::PHASE_OPERATING_ROUNDS[phase]
               new_operating_round(@round.round_num + 1)
             else
-              Round::Stock.new(@players, log: @log, share_pool: @share_pool, stock_market: @stock_market)
+              @companies.all?(&:owner) ? new_stock_round : new_auction_round
             end
           else
             raise "Unexected round type #{@round}"
           end
       end
 
-      def new_operating_round(round_num = 0)
+      def new_auction_round
+        @log << "-- Auction Round #{@turn} --"
+        Round::Auction.new(@players, log: @log, companies: @companies, bank: @bank)
+      end
+
+      def new_stock_round
+        @log << "-- Stock Round #{@turn} --"
+        Round::Stock.new(@players, log: @log, share_pool: @share_pool, stock_market: @stock_market)
+      end
+
+      def new_operating_round(round_num = 1)
+        @log << "-- Operating Round #{@turn}.#{round_num} --"
         Round::Operating.new(
           @corporations.select(&:floated?),
-          # [@corporations[0]],
           log: @log,
           hexes: @hexes,
           tiles: @tiles,
           phase: phase,
           companies: @companies,
           bank: @bank,
+          depot: @depot,
+          players: @players,
+          stock_market: @stock_market,
           round_num: round_num,
         )
       end
@@ -270,7 +281,7 @@ module Engine
           city.id = index
         end
 
-        @train_handler.trains.each.with_index do |train, index|
+        @depot.upcoming.each.with_index do |train, index|
           train.id = index
         end
       end

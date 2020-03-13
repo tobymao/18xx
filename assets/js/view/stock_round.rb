@@ -2,10 +2,10 @@
 
 require 'view/actionable'
 require 'view/corporation'
+require 'view/pass_button'
 
 require 'engine/action/buy_share'
 require 'engine/action/par'
-require 'engine/action/pass'
 require 'engine/action/sell_share'
 
 module View
@@ -18,14 +18,10 @@ module View
       @round = @game.round
       @current_entity = @round.current_entity
 
-      pass = lambda do
-        process_action(Engine::Action::Pass.new(@current_entity))
-      end
-
       h(:div, [
         *render_corporations,
         render_input,
-        h(:button, { on: { click: pass } }, 'Pass')
+        h(PassButton),
       ])
     end
 

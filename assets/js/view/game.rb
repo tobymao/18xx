@@ -6,6 +6,7 @@ require 'view/map'
 require 'view/operating_round'
 require 'view/player'
 require 'view/stock_round'
+require 'view/stock_market'
 
 require 'engine/round/auction'
 require 'engine/round/operating'
@@ -16,7 +17,10 @@ module View
     needs :game, store: true
 
     def render_round
-      h(:div, "Round: #{@round.class.name}")
+      name = @round.class.name.split(':').last
+      description = @round.operating? ? "#{@game.turn}.#{@round.round_num}" : @game.turn
+      description = "#{description} - #{@round.description}"
+      h(:div, "#{name} Round #{description}")
     end
 
     def render_action
@@ -57,6 +61,7 @@ module View
         h(EntityOrder, round: @round),
         render_action,
         *players,
+        h(StockMarket, stock_market: @game.stock_market),
         h(Map),
       ])
     end

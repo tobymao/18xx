@@ -26,11 +26,18 @@ module Engine
         tiles: game.tiles,
         companies: game.companies,
         bank: game.bank,
+        depot: game.depot,
+        players: game.players,
+        stock_market: game.stock_market,
         round_num: 1,
       )
     end
 
     describe '#layable_hexes' do
+      before :each do
+        game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
+      end
+
       it 'returns the layable hexes' do
         expect(subject.layable_hexes).to eq(
           hex_k8 => [1, 2, 3, 4]
