@@ -51,16 +51,16 @@ module View
       end
 
       company_actions =
-      if @round.may_purchase?(@selected_company)
-        [h(:button, { on: { click: buy } }, 'Buy')]
-      elsif @selected_company
-        [
-          input,
-          h(:button, { on: { click: decrease_bid } }, '-'),
-          h(:button, { on: { click: increase_bid } }, '+'),
-          h(:button, { on: { click: create_bid } }, 'Place Bid'),
-        ]
-      end
+        if @round.may_purchase?(@selected_company)
+          [h(:button, { on: { click: buy } }, 'Buy')]
+        elsif @selected_company
+          [
+            input,
+            h(:button, { on: { click: decrease_bid } }, '-'),
+            h(:button, { on: { click: increase_bid } }, '+'),
+            h(:button, { on: { click: create_bid } }, 'Place Bid'),
+          ]
+        end
 
       h(:div, [
         *company_actions,

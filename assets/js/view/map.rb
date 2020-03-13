@@ -22,8 +22,12 @@ module View
       round = @game.round
       hexes.map! { |hex| h(Hex, hex: hex, operating_round: round.operating? ? round : nil) }
 
+      w_size, h_size = @game.layout == :flat ? [100, 50] : [50, 100]
+      width = cols.size * w_size
+      height = rows.size * h_size
+
       children = [
-        h(:svg, { attrs: { id: 'map' }, style: { width: '1600px', height: '800px' } }, [
+        h(:svg, { attrs: { id: 'map' }, style: { width: width, height: height } }, [
             h(:g, { attrs: { transform: 'scale(0.5)' } }, [
                 h(:g, { attrs: { id: 'map-hexes', transform: "translate(#{25 + gap} #{12.5 + gap})" } }, hexes),
                 h(Axis, cols: cols, rows: rows, layout: @game.layout, gap: gap),
@@ -50,7 +54,7 @@ module View
         end
       end
 
-      h(:div, children)
+      h(:div, { style: { overflow: 'auto' } }, children)
     end
   end
 end

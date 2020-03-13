@@ -35,19 +35,30 @@ module View
     end
 
     def render_log
+      reverse_scroll = lambda do |event|
+        %x{
+          var e = #{event}
+          e.preventDefault()
+          e.currentTarget.scrollTop -= e.deltaY
+        }
+      end
+
       props = {
-        props: { id: 'log' },
+        on: { wheel: reverse_scroll },
         style: {
-          display: 'flex',
-          'flex-direction' => 'column-reverse',
-          'overflow-y' => 'scroll',
-          'background-color': 'lightgray',
+          transform: 'scaleY(-1)',
+          overflow: 'auto',
           height: '200px',
           margin: '5px 0',
+          'background-color': 'lightgray',
         },
       }
 
-      h(:div, props, @game.log.reverse.map { |line| h(:div, line) })
+      lines = @game.log.reverse.map do |line|
+        h(:div, { style: { transform: 'scaleY(-1)' } }, line)
+      end
+
+      h(:div, props, lines)
     end
 
     def render
