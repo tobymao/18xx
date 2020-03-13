@@ -32,13 +32,14 @@ module Engine
     # Coordinates are of the form A1..Z99
     # x and y map to the double coordinate system
     # layout is pointy or flat
-    def initialize(coordinates, layout: :pointy, tile: nil, location_name: nil)
+    def initialize(coordinates, layout: :pointy, tile: Tile.for('blank'), location_name: nil)
       @coordinates = coordinates
       @layout = layout
       @x = LETTERS.index(@coordinates[0]).to_i
       @y = @coordinates[1..-1].to_i - 1
       @neighbors = {}
       @location_name = location_name
+      @tile = tile
       lay(tile)
     end
 
@@ -49,19 +50,18 @@ module Engine
     def lay(tile)
       # when upgrading, preserve tokens (both reserved and actually placed) on
       # previous tile
-      @tile&.cities&.each_with_index do |city, i|
+      @tile.cities.each_with_index do |city, i|
         tile.cities[i].reservations = city.reservations.dup
 
         city.tokens.each do |token|
-          tile.cities[i].place_token(token.corporation) if token
+          tile.cities[i].exchange_token(token) if token
         end
       end
 
       # give the city/town name of this hex to the new tile; remove it from the
       # old one
-      tile&.location_name = @location_name
-      @tile&.location_name = nil
-
+      tile.location_name = @location_name
+      @tile.location_name = nil
       @tile = tile
     end
 

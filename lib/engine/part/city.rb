@@ -52,7 +52,7 @@ module Engine
       def tokenable?(corporation)
         slot = slot(corporation)
         # corporation already placed all their tokens
-        return false unless corporation.tokens.any?(&:unplaced?)
+        return false if corporation.tokens.empty?
 
         # a token is already in this slot
         return false unless @tokens[slot].nil?
@@ -76,10 +76,11 @@ module Engine
         # the slot is reserved for a different corporation
         raise GameError, 'Cannot lay token' unless tokenable?(corporation)
 
-        slot = slot(corporation)
-        token = corporation.tokens.find(&:unplaced?)
-        token.place!
-        @tokens[slot] = token
+        exchange_token(corporation.tokens.pop)
+      end
+
+      def exchange_token(token)
+        @tokens[slot(token.corporation)] = token
       end
     end
   end

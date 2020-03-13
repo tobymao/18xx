@@ -57,7 +57,7 @@ module Engine
           subject.tile.cities[0].place_token(corp_1)
 
           subject.lay(green_tile)
-          expect(subject.tile.cities[0].tokens).to eq([Token.new(corp_1, true), nil])
+          expect(subject.tile.cities[0].tokens).to eq([Token.new(corp_1), nil])
         end
 
         it 'preserves a token reservation' do
@@ -81,7 +81,7 @@ module Engine
           subject.tile.cities[0].place_token(corp_1)
 
           subject.lay(brown_tile)
-          expect(subject.tile.cities[0].tokens).to eq([Token.new(corp_1, true), nil])
+          expect(subject.tile.cities[0].tokens).to eq([Token.new(corp_1), nil])
         end
 
         it 'preserves 2 placed tokens' do
@@ -90,8 +90,8 @@ module Engine
 
           subject.lay(brown_tile)
 
-          expect(subject.tile.cities[0].tokens[0]).to eq(Token.new(corp_1, true))
-          expect(subject.tile.cities[0].tokens[1]).to eq(Token.new(corp_2, true))
+          expect(subject.tile.cities[0].tokens[0]).to eq(Token.new(corp_1))
+          expect(subject.tile.cities[0].tokens[1]).to eq(Token.new(corp_2))
         end
 
         it 'preserves a placed token and a reservation' do
@@ -100,7 +100,7 @@ module Engine
 
           subject.lay(brown_tile)
 
-          expect(subject.tile.cities[0].tokens).to eq([nil, Token.new(corp_2, true)])
+          expect(subject.tile.cities[0].tokens).to eq([nil, Token.new(corp_2)])
           expect(subject.tile.cities[0].reservations).to eq(['AR'])
         end
       end

@@ -62,7 +62,7 @@ module Engine
         if current_index < self.class::STEPS.size - 1
           case (@step = self.class::STEPS[current_index + 1])
           when :token
-            return next_step! unless @current_entity.tokens.any?(&:unplaced?)
+            return next_step! if @current_entity.tokens.none?
 
             next_step! unless layable_hexes.keys.any? do |hex|
               hex.tile.cities.any? do |city|
@@ -163,6 +163,7 @@ module Engine
           hex = action.hex
           rotation = action.rotation
           @tiles.reject! { |t| tile.equal?(t) }
+          @tiles << hex.tile if hex.tile.color != :white
           tile.rotate!(rotation)
           hex.lay(tile)
           @log << "#{entity.name} lays tile #{tile.name} with rotation #{rotation} on #{hex.name}"
