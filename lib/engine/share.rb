@@ -9,6 +9,12 @@ module Engine
     attr_accessor :index
     attr_reader :corporation, :percent, :president
 
+    def self.price(shares)
+      shares.sum do |share|
+        share.percent / 10 * share.corporation.share_price.price
+      end
+    end
+
     def initialize(corporation, owner: nil, president: false, percent: 10)
       @corporation = corporation
       @president = president

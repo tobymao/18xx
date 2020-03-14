@@ -6,7 +6,8 @@ require 'view/pass_button'
 
 require 'engine/action/buy_share'
 require 'engine/action/par'
-require 'engine/action/sell_share'
+require 'engine/action/sell_shares'
+require 'engine/share'
 
 module View
   class StockRound < Snabberb::Component
@@ -18,11 +19,11 @@ module View
       @round = @game.round
       @current_entity = @round.current_entity
 
-      h(:div, [
-        *render_corporations,
-        render_input,
-        h(PassButton),
-      ])
+      children = render_corporations
+      children << render_input if @selected_corporation
+      children << h(PassButton)
+
+      h(:div, children)
     end
 
     def render_corporations
@@ -32,31 +33,58 @@ module View
     end
 
     def render_input
-      return '' unless @selected_corporation
+      @selected_corporation.ipoed ? render_ipoed : render_pre_ipo
+    end
 
-      if @selected_corporation.ipoed
-        buy = lambda do
-          process_action(Engine::Action::BuyShare.new(@current_entity, @selected_corporation.shares.first))
-        end
+    def render_ipoed
+      selected_share = @selected_corporation.shares.first
 
-        h(:div, [h(:button, { on: { click: buy } }, 'Buy Share')])
-      else
-        style = {
-          cursor: 'pointer',
-          border: 'solid 1px rgba(0,0,0,0.2)',
-          display: 'inline-block',
-        }
-
-        par_values = @game.stock_market.par_prices.map do |share_price|
-          par = lambda do
-            process_action(Engine::Action::Par.new(@current_entity, @selected_corporation, share_price))
-          end
-
-          h(:div, { style: style, on: { click: par } }, share_price.price)
-        end
-
-        h(:div, ['Choose a par price', *par_values])
+      buy = lambda do
+        process_action(Engine::Action::BuyShare.new(@current_entity, selected_share))
       end
+
+      children = []
+      children << h(:button, { on: { click: buy } }, 'Buy Share') if @round.can_buy?(selected_share)
+      children.concat(render_sell)
+
+      h(:div, children)
+    end
+
+    def render_sell
+      shares = @current_entity
+        .shares_of(@selected_corporation)
+        .select { |share| @round.can_sell?(share) }
+        .sort_by(&:price)
+
+      shares.size.times.map do |n|
+        bundle = shares.take(n + 1)
+        num = bundle.size
+        percent = bundle.sum(&:percent)
+        sell = -> { process_action(Engine::Action::SellShares.new(@current_entity, bundle)) }
+        h(
+          :button,
+          { on: { click: sell } },
+          "Sell #{num} share#{num > 1 ? 's' : ''} (%#{percent} - $#{Engine::Share.price(bundle)})",
+        )
+      end
+    end
+
+    def render_pre_ipo
+      style = {
+        cursor: 'pointer',
+        border: 'solid 1px rgba(0,0,0,0.2)',
+        display: 'inline-block',
+      }
+
+      par_values = @game.stock_market.par_prices.map do |share_price|
+        par = lambda do
+          process_action(Engine::Action::Par.new(@current_entity, @selected_corporation, share_price))
+        end
+
+        h(:div, { style: style, on: { click: par } }, share_price.price)
+      end
+
+      h(:div, ['Choose a par price', *par_values])
     end
   end
 end

@@ -229,15 +229,14 @@ module Engine
         @round =
           case @round
           when Round::Auction
-            @turn += 1
             @companies.all?(&:owner) ? new_stock_round : new_operating_round
           when Round::Stock
-            @turn += 1
             new_operating_round
           when Round::Operating
             if @round.round_num < self.class::PHASE_OPERATING_ROUNDS[phase]
               new_operating_round(@round.round_num + 1)
             else
+              @turn += 1
               @companies.all?(&:owner) ? new_stock_round : new_auction_round
             end
           else
@@ -252,7 +251,13 @@ module Engine
 
       def new_stock_round
         @log << "-- Stock Round #{@turn} --"
-        Round::Stock.new(@players, log: @log, share_pool: @share_pool, stock_market: @stock_market)
+        Round::Stock.new(
+          @players,
+          log: @log,
+          can_sell: @turn > 1,
+          share_pool: @share_pool,
+          stock_market: @stock_market,
+        )
       end
 
       def new_operating_round(round_num = 1)

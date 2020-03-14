@@ -73,6 +73,10 @@ module Engine
       def _process(_action)
         raise NotImplementedError
       end
+
+      def log_share_price(entity, from)
+        @log << "#{entity.name}'s share price changes from $#{from} to $#{entity.share_price.price} "
+      end
     end
   end
 end

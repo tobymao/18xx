@@ -46,8 +46,7 @@ module View
         h(EntityOrder, round: @round),
         render_action,
         *players,
-        h(StockMarket, stock_market: @game.stock_market),
-        h(Map),
+        @round.operating? ? h(Map) : h(StockMarket, stock_market: @game.stock_market),
       ])
     end
   end

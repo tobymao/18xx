@@ -215,7 +215,7 @@ module Engine
         name = @current_entity.name
         @log << "#{name} pays out $#{revenue} - $#{per_share} per share"
         @players.each do |player|
-          percent = player.shares_by_corporation[@current_entity].sum(&:percent)
+          percent = player.percent_of(corporation)
           next if percent.zero?
 
           shares = percent / 10
@@ -239,7 +239,7 @@ module Engine
           raise GameError, "Don't know how to move direction #{direction}"
         end
 
-        @log << "#{@current_entity.name}'s share price changes from $#{prev} to $#{@current_entity.share_price.price} "
+        log_share_price(@current_entity, prev)
       end
     end
   end
