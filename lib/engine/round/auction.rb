@@ -6,7 +6,7 @@ require 'engine/round/base'
 module Engine
   module Round
     class Auction < Base
-      attr_reader :bids, :companies, :min_increment
+      attr_reader :bids, :companies, :last_to_act, :min_increment
 
       def initialize(entities, log:, companies:, bank:, min_increment: 5)
         super
@@ -33,7 +33,17 @@ module Engine
         if bids&.any?
           bids.min_by(&:price).player
         else
-          @current_entity = @last_to_act if @last_to_act
+          # if someone bought a share outright, then we find the person right before the last  person who hasn't passed
+          if @last_to_act
+            @current_entity = @last_to_act
+            n = super
+
+            while n.passed? && n != @last_to_act
+              @current_entity = n
+              n = super
+            end
+          end
+
           super
         end
       end
@@ -48,7 +58,6 @@ module Engine
 
       def pass(entity)
         super
-        @last_to_act = nil
         @bids[@auctioning_company]&.reject! { |bid| bid.player == entity }
         resolve_bids
       end

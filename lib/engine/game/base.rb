@@ -229,6 +229,7 @@ module Engine
         @round =
           case @round
           when Round::Auction
+            @players.rotate!(@players.find_index(@round.last_to_act) + 1) if @round.last_to_act
             @companies.all?(&:owner) ? new_stock_round : new_operating_round
           when Round::Stock
             new_operating_round
