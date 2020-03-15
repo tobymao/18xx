@@ -235,12 +235,6 @@ module Engine
             rotate_players(@round.last_to_act)
             new_operating_round
           when Round::Operating
-            @corporations.sort_by! do |corporation|
-              share_price = corporation.share_price
-              _, column = share_price.coordinates
-              [-share_price.price, -column, share_price.corporations.find_index(corporation)]
-            end
-
             if @round.round_num < self.class::PHASE_OPERATING_ROUNDS[phase]
               new_operating_round(@round.round_num + 1)
             else
@@ -274,8 +268,15 @@ module Engine
 
       def new_operating_round(round_num = 1)
         @log << "-- Operating Round #{@turn}.#{round_num} --"
+
+        corps = @corporations.select(&:floated?).sort_by do |corporation|
+          share_price = corporation.share_price
+          _, column = share_price.coordinates
+          [-share_price.price, -column, share_price.corporations.find_index(corporation)]
+        end
+
         Round::Operating.new(
-          @corporations.select(&:floated?),
+          corps,
           log: @log,
           hexes: @hexes,
           tiles: @tiles,
