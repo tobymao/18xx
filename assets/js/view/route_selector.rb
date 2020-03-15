@@ -35,7 +35,12 @@ module View
         h(:div, { style: style, on: { click: onclick } }, "Train: #{train.name}")
       end
 
-      props = {}
+      props = {
+        key: 'route_selector',
+        hook: {
+          destroy: -> { store(:selected_route, skip: true) },
+        }
+      }
 
       h(:div, props, [
         *trains,

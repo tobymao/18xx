@@ -26,6 +26,8 @@ module Engine
       end
 
       def can_buy?(share)
+        return unless share
+
         corporation = share.corporation
 
         @current_entity.cash >= share.price &&
@@ -35,6 +37,7 @@ module Engine
       end
 
       def can_sell?(share)
+        return unless share
         return false unless @can_sell
 
         corporation = share.corporation

@@ -31,7 +31,13 @@ module Engine
       def initialize(entities, log:, hexes:, tiles:, phase:, companies:, bank:,
                      depot:, players:, stock_market:, round_num: 1)
         # rubocop:enable Metrics/ParameterLists
+        entities.sort_by! do |corporation|
+          share_price = corporation.share_price
+          [-share_price.price, share_price.corporations.find_index(corporation)]
+        end
+
         super
+
         @round_num = round_num
         @hexes = hexes
         @tiles = tiles
@@ -79,13 +85,14 @@ module Engine
             # TODO: when :train check limit and money
           end
         else
+          @layable_hexes = nil
           @step = self.class::STEPS.first
           @current_entity.pass!
         end
       end
 
       def next_entity
-        @step == self.class::STEPS.first ? @current_entity : super
+        @step == self.class::STEPS.first ? super : @current_entity
       end
 
       def companies_payout
@@ -167,9 +174,11 @@ module Engine
           tile.rotate!(rotation)
           hex.lay(tile)
           @log << "#{entity.name} lays tile #{tile.name} with rotation #{rotation} on #{hex.name}"
+          @layable_hexes = nil
           next_step!
         when Action::PlaceToken
           action.city.place_token(entity)
+          @layable_hexes = nil
           next_step!
         when Action::RunRoutes
           @current_routes = action.routes
@@ -196,7 +205,6 @@ module Engine
           @log << "#{entity.name} buys a #{train.name} train for $#{price}"
           entity.buy_train(action.train, price)
         end
-        @layable_hexes = nil
       end
 
       def withhold(revenue = nil)
@@ -215,7 +223,7 @@ module Engine
         name = @current_entity.name
         @log << "#{name} pays out $#{revenue} - $#{per_share} per share"
         @players.each do |player|
-          percent = player.percent_of(corporation)
+          percent = player.percent_of(@current_entity)
           next if percent.zero?
 
           shares = percent / 10
