@@ -65,9 +65,11 @@ module Engine
           when :token
             return next_step! if @current_entity.tokens.none?
 
-            next_step! unless layable_hexes.keys.any? do |hex|
-              hex.tile.cities.any? do |city|
-                city.tokenable?(@current_entity)
+            next_step! unless layable_hexes.any? do |hex, exits|
+              hex.tile.paths.any? do |path|
+                path.city &&
+                  (path.exits & exits).any? &&
+                  path.city.tokenable?(@current_entity)
               end
             end
           when :route
@@ -173,6 +175,7 @@ module Engine
           next_step!
         when Action::PlaceToken
           action.city.place_token(entity)
+          @log << "#{entity.name} places a token on #{action.city} TODO hex name..."
           @layable_hexes = nil
           next_step!
         when Action::RunRoutes
