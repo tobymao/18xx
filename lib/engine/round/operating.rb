@@ -200,7 +200,7 @@ module Engine
         when Action::BuyTrain
           train = action.train
           price = action.price
-          @log << "#{entity.name} buys a #{train.name} train for $#{price}"
+          @log << "#{entity.name} buys a #{train.name} train for $#{price} from #{train.owner.name}"
           entity.buy_train(action.train, price)
         end
       end

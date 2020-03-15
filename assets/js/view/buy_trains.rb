@@ -10,11 +10,11 @@ module View
     include Actionable
 
     def render
-      round = @game.round
-      depot = round.depot
+      corporation = @game.round.current_entity
+      depot = @game.round.depot
 
       available = depot.available.map do |train|
-        buy_train = -> { process_action(Engine::Action::BuyTrain.new(round.current_entity, train, train.price)) }
+        buy_train = -> { process_action(Engine::Action::BuyTrain.new(corporation, train, train.price)) }
 
         h(:div, [
           "Train #{train.name} - $#{train.price}",
@@ -22,9 +22,40 @@ module View
         ])
       end
 
+      corporations = @game
+        .corporations
+        .reject { |c| c == corporation }
+        .sort_by { |c| c.owner == corporation.owner ? 0 : 1 }
+
+      others = corporations.flat_map do |other|
+        other.trains.map do |train|
+          input = h(
+            :input,
+            attrs: {
+              type: 'number',
+              min: 1,
+              max: corporation.cash,
+              value: 1,
+            },
+          )
+
+          buy_train = lambda do
+            price = input.JS['elm'].JS['value'].to_i
+            process_action(Engine::Action::BuyTrain.new(corporation, train, price))
+          end
+
+          h(:div, [
+            "Train #{train.name} - from #{other.name}",
+            input,
+            h(:button, { on: { click: buy_train } }, 'Buy'),
+          ])
+        end
+      end
+
       available_chart = h(:div, [
         h(:div, 'Available Trains'),
-        *available
+        *available,
+        *others,
       ])
 
       remaining = depot.upcoming.group_by(&:name).map do |name, trains|

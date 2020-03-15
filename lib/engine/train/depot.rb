@@ -28,6 +28,10 @@ module Engine
       def cash=(new_cash)
         @bank.cash = new_cash
       end
+
+      def name
+        'The Depot'
+      end
     end
   end
 end
