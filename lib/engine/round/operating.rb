@@ -57,6 +57,11 @@ module Engine
         next_step!
       end
 
+      def can_buy_train?
+        @current_entity.trains.size < @phase.train_limit &&
+          @depot.available(@current_entity).any? { |t| @current_entity.cash >= t.min_price }
+      end
+
       def next_step!
         current_index = self.class::STEPS.find_index(@step)
 
@@ -79,7 +84,8 @@ module Engine
               withhold
               next_step!
             end
-            # TODO: when :train check limit and money
+          when :train
+            next_step! unless can_buy_train?
           end
         else
           @layable_hexes = nil
@@ -160,6 +166,7 @@ module Engine
 
       def _process_action(action)
         entity = action.entity
+        skip = false
 
         case action
         when Action::LayTile
@@ -172,19 +179,16 @@ module Engine
           hex.lay(tile)
           @log << "#{entity.name} lays tile #{tile.name} with rotation #{rotation} on #{hex.name}"
           @layable_hexes = nil
-          next_step!
         when Action::PlaceToken
           action.city.place_token(entity)
           @log << "#{entity.name} places a token on #{action.city} TODO hex name..."
           @layable_hexes = nil
-          next_step!
         when Action::RunRoutes
           @current_routes = action.routes
           @current_routes.each do |route|
             hexes = route.hexes.map(&:name).join(', ')
             @log << "#{entity.name} runs a #{route.train.name} train for $#{route.revenue} (#{hexes})"
           end
-          next_step!
         when Action::Dividend
           revenue = @current_routes.sum(&:revenue)
 
@@ -196,13 +200,15 @@ module Engine
           else
             raise GameError, "Unknown dividend type #{action.type}"
           end
-          next_step!
         when Action::BuyTrain
           train = action.train
           price = action.price
           @log << "#{entity.name} buys a #{train.name} train for $#{price} from #{train.owner.name}"
           entity.buy_train(action.train, price)
+          skip = can_buy_train?
         end
+
+        next_step! unless skip
       end
 
       def withhold(revenue = nil)

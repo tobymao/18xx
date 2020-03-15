@@ -13,7 +13,9 @@ module View
       corporation = @game.round.current_entity
       depot = @game.round.depot
 
-      available = depot.available.map do |train|
+      available = depot.available(corporation).group_by(&:owner)
+
+      from_depot = available.delete(depot).map do |train|
         buy_train = -> { process_action(Engine::Action::BuyTrain.new(corporation, train, train.price)) }
 
         h(:div, [
@@ -22,13 +24,10 @@ module View
         ])
       end
 
-      corporations = @game
-        .corporations
-        .reject { |c| c == corporation }
-        .sort_by { |c| c.owner == corporation.owner ? 0 : 1 }
+      corporations = available.sort_by { |c, _| c.owner == corporation.owner ? 0 : 1 }
 
-      others = corporations.flat_map do |other|
-        other.trains.map do |train|
+      others = corporations.flat_map do |other, trains|
+        trains.map do |train|
           input = h(
             :input,
             attrs: {
@@ -52,10 +51,9 @@ module View
         end
       end
 
-      available_chart = h(:div, [
+      from_depot_trains = h(:div, [
         h(:div, 'Available Trains'),
-        *available,
-        *others,
+        *from_depot,
       ])
 
       remaining = depot.upcoming.group_by(&:name).map do |name, trains|
@@ -69,7 +67,8 @@ module View
       ])
 
       h(:div, {}, [
-        available_chart,
+        from_depot_trains,
+        *others,
         h(PassButton),
         remaining_chart,
       ])

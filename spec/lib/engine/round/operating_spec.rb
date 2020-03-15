@@ -3,6 +3,7 @@
 require './spec/spec_helper'
 
 require 'engine/game/g_1889'
+require 'engine/phase'
 require 'engine/round/operating'
 
 module Engine
@@ -22,7 +23,7 @@ module Engine
         [corporation],
         log: [],
         hexes: game.hexes,
-        phase: :yellow,
+        phase: game.phase,
         tiles: game.tiles,
         companies: game.companies,
         bank: game.bank,

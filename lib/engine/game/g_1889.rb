@@ -94,7 +94,7 @@ module Engine
       def init_companies
         [
           Company::Base.new('Takamatsu E-Railroad', sym: 'TR', value: 20, income: 5, blocks_hex: 'K4'),
-          Company::TileLaying.new('Mitsubishi Ferry', value: 30, income: 5),
+          # Company::TileLaying.new('Mitsubishi Ferry', value: 30, income: 5),
           # Company::TileLaying.new('Ehime Railway', sym: 'ER', value: 40, income: 10, blocks_hex: 'C4'),
           # Company::TerrainDiscount.new('Sumitomo Mines Railway', value: 50, income: 15),
         ]
@@ -116,41 +116,41 @@ module Engine
             float_percent: 50,
             coordinates: 'E2',
           ),
-          Corporation::Base.new(
-            'SR',
-            name: 'Sanuki Railway',
-            tokens: 2,
-            float_percent: 50,
-            coordinates: 'I2',
-          ),
-          Corporation::Base.new(
-            'KO',
-            name: 'Takamatsu & Kotohira Electric Railway',
-            tokens: 2,
-            float_percent: 50,
-            coordinates: 'K4',
-          ),
-          Corporation::Base.new(
-            'TR',
-            name: 'Tosa Electric Railway',
-            tokens: 3,
-            float_percent: 50,
-            coordinates: 'F9',
-          ),
-          Corporation::Base.new(
-            'KU',
-            name: 'Tosa Kuroshio Railway',
-            tokens: 1,
-            float_percent: 50,
-            coordinates: 'C10',
-          ),
-          Corporation::Base.new(
-            'UR',
-            name: 'Uwajima Railway',
-            tokens: 3,
-            float_percent: 50,
-            coordinates: 'B7',
-          ),
+          # Corporation::Base.new(
+          #   'SR',
+          #   name: 'Sanuki Railway',
+          #   tokens: 2,
+          #   float_percent: 50,
+          #   coordinates: 'I2',
+          # ),
+          # Corporation::Base.new(
+          #   'KO',
+          #   name: 'Takamatsu & Kotohira Electric Railway',
+          #   tokens: 2,
+          #   float_percent: 50,
+          #   coordinates: 'K4',
+          # ),
+          # Corporation::Base.new(
+          #   'TR',
+          #   name: 'Tosa Electric Railway',
+          #   tokens: 3,
+          #   float_percent: 50,
+          #   coordinates: 'F9',
+          # ),
+          # Corporation::Base.new(
+          #   'KU',
+          #   name: 'Tosa Kuroshio Railway',
+          #   tokens: 1,
+          #   float_percent: 50,
+          #   coordinates: 'C10',
+          # ),
+          # Corporation::Base.new(
+          #   'UR',
+          #   name: 'Uwajima Railway',
+          #   tokens: 3,
+          #   float_percent: 50,
+          #   coordinates: 'B7',
+          # ),
         ]
       end
 

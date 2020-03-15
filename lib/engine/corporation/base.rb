@@ -32,6 +32,7 @@ module Engine
         @ipoed = false
         @trains = []
 
+        @cash = 0
         @float_percent = opts[:float_percent] || 60
         @coordinates = opts[:coordinates]
         @logo = "logos/#{opts[:logo] || sym}.svg"
