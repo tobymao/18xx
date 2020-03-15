@@ -7,6 +7,8 @@ require 'engine/action/sell_shares'
 module Engine
   module Round
     class Stock < Base
+      attr_reader :last_to_act
+
       def initialize(entities, share_pool:, can_sell: true, stock_market:)
         super
 
@@ -15,6 +17,7 @@ module Engine
         @can_sell = can_sell
         @players_sold = Hash.new { |h, k| h[k] = {} }
         @current_actions = []
+        @last_to_act = nil
       end
 
       def description
@@ -68,9 +71,11 @@ module Engine
       private
 
       def _process_action(action)
-        @current_actions << action.class
         entity = action.entity
         corporation = action.corporation
+
+        @current_actions << action.class
+        @last_to_act = entity
 
         case action
         when Action::BuyShare

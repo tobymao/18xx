@@ -229,11 +229,18 @@ module Engine
         @round =
           case @round
           when Round::Auction
-            @players.rotate!(@players.find_index(@round.last_to_act) + 1) if @round.last_to_act
+            rotate_players(@round.last_to_act)
             @companies.all?(&:owner) ? new_stock_round : new_operating_round
           when Round::Stock
+            rotate_players(@round.last_to_act)
             new_operating_round
           when Round::Operating
+            @corporations.sort_by! do |corporation|
+              share_price = corporation.share_price
+              _, column = share_price.coordinates
+              [-share_price.price, -column, share_price.corporations.find_index(corporation)]
+            end
+
             if @round.round_num < self.class::PHASE_OPERATING_ROUNDS[phase]
               new_operating_round(@round.round_num + 1)
             else
@@ -243,6 +250,10 @@ module Engine
           else
             raise "Unexected round type #{@round}"
           end
+      end
+
+      def rotate_players(last_to_act)
+        @players.rotate!(@players.find_index(last_to_act) + 1) if last_to_act
       end
 
       def new_auction_round

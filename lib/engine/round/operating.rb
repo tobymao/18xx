@@ -31,11 +31,6 @@ module Engine
       def initialize(entities, log:, hexes:, tiles:, phase:, companies:, bank:,
                      depot:, players:, stock_market:, round_num: 1)
         # rubocop:enable Metrics/ParameterLists
-        entities.sort_by! do |corporation|
-          share_price = corporation.share_price
-          [-share_price.price, share_price.corporations.find_index(corporation)]
-        end
-
         super
 
         @round_num = round_num
