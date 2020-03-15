@@ -112,7 +112,10 @@ module Engine
         end
 
         prev = corporation.share_price.price
-        shares.each { @stock_market.move_down(corporation) }
+        shares.each do |share|
+          @stock_market.move_down(corporation)
+          @stock_market.move_down(corporation) if share.president
+        end
         log_share_price(corporation, prev)
       end
 
