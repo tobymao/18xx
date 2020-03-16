@@ -15,7 +15,6 @@ module Engine
         @share_pool = share_pool
         @stock_market = stock_market
         @can_sell = can_sell
-        @can_sell = true
         @players_sold = Hash.new { |h, k| h[k] = {} }
         @current_actions = []
         @last_to_act = nil
