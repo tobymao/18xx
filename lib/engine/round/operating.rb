@@ -57,6 +57,10 @@ module Engine
         next_step!
       end
 
+      def must_buy_train?
+        @current_entity.trains.empty? # TODO: check if there's a route
+      end
+
       def can_buy_train?
         @current_entity.trains.size < @phase.train_limit &&
           @depot.available(@current_entity).any? { |t| @current_entity.cash >= t.min_price }
@@ -70,7 +74,7 @@ module Engine
           when :token
             return next_step! if @current_entity.tokens.none?
 
-            next_step! unless layable_hexes.any? do |hex, exits|
+            next_step! unless reachable_hexes.any? do |hex, exits|
               hex.tile.paths.any? do |path|
                 path.city &&
                   (path.exits & exits).any? &&
@@ -85,10 +89,10 @@ module Engine
               next_step!
             end
           when :train
-            next_step! unless can_buy_train?
+            next_step! if !can_buy_train? && !must_buy_train?
           end
         else
-          @layable_hexes = nil
+          clear_route_cache
           @step = self.class::STEPS.first
           @current_entity.pass!
         end
@@ -121,16 +125,26 @@ module Engine
             # hexes is a map hex => exits
             hexes = Hash.new { |h, k| h[k] = [] }
 
-            starting_hexes = @hexes.select do |hex|
-              hex.tile.cities.any? { |c| c.tokened_by?(@current_entity) }
-            end
-            starting_hexes.each { |h| hexes[h] = h.tile.exits }
+            queue = []
+            starting_hexes = []
 
-            queue = starting_hexes.dup
+            @hexes.each do |hex|
+              cities = tokened_cities(hex)
+              next unless cities.any?
+
+              queue << hex
+              starting_hexes << hex
+
+              hexes[hex] = hex
+                .tile
+                .paths
+                .select { |path| cities.include?(path.city) }
+                .flat_map(&:exits)
+                .uniq
+            end
 
             until queue.empty?
               hex = queue.pop
-              next unless hex.tile
 
               hexes[hex].each do |direction|
                 next unless (neighbor = hex.neighbors[direction])
@@ -144,6 +158,37 @@ module Engine
 
             hexes
           end
+      end
+
+      def reachable_hexes
+        @reachable_hexes ||= layable_hexes.select { |hex, exits| (hex.tile.exits & exits).any? }
+      end
+
+      # def routes
+      #   routes = []
+
+      #   reachable_hexes.keys.each do |hex|
+      #     paths_for_cities(hex, tokened_cities(hex)).each do |path|
+      #       path.exits.each { |direction| routes << [hex, direction] }
+      #     end
+      #   end
+
+      #   routes.each do |hex, direction|
+      #     neighbor = hex.neighbors[direction]
+      #     next unless reachable_hexes[neighbor]
+
+      #     neighbor.connected_paths(hex).each do |path|
+      #       path.city || path.town
+      #     end
+      #   end
+      # end
+
+      def paths_for_cities(hex, cities)
+        hex.tile.paths.select { |path| cities.include?(path.city) }
+      end
+
+      def tokened_cities(hex)
+        hex.tile.cities.select { |c| c.tokened_by?(@current_entity) }
       end
 
       def legal_rotations(hex, tile)
@@ -178,11 +223,11 @@ module Engine
           tile.rotate!(rotation)
           hex.lay(tile)
           @log << "#{entity.name} lays tile #{tile.name} with rotation #{rotation} on #{hex.name}"
-          @layable_hexes = nil
+          clear_route_cache
         when Action::PlaceToken
           action.city.place_token(entity)
           @log << "#{entity.name} places a token on #{action.city} TODO hex name..."
-          @layable_hexes = nil
+          clear_route_cache
         when Action::RunRoutes
           @current_routes = action.routes
           @current_routes.each do |route|
@@ -252,6 +297,11 @@ module Engine
         end
 
         log_share_price(@current_entity, prev)
+      end
+
+      def clear_route_cache
+        @layable_hexes = nil
+        @reachable_hexes = nil
       end
     end
   end

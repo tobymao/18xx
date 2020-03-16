@@ -15,6 +15,7 @@ module Engine
         @share_pool = share_pool
         @stock_market = stock_market
         @can_sell = can_sell
+        @can_sell = true
         @players_sold = Hash.new { |h, k| h[k] = {} }
         @current_actions = []
         @last_to_act = nil
@@ -85,29 +86,23 @@ module Engine
         when Action::Par
           share_price = action.share_price
           @stock_market.set_par(corporation, share_price)
-          @log << "#{entity.name} pars #{corporation.name} at $#{corporation.par_price.price} and becomes the president"
-
           share = corporation.shares.first
           buy_share(entity, share)
         end
       end
 
       def sell_shares(entity, shares)
-        num = shares.size
-        percent = shares.sum(&:percent)
         corporation = shares.first.corporation
-        @players_sold[entity][corporation] = true
         old_p = corporation.owner
-
-        shares.each { |share| @share_pool.sell_share(share) }
-        @log << "#{entity.name} sells #{num} share#{num > 1 ? 's' : ''} " \
-          "(%#{percent}) of #{corporation.name} and receives $#{Engine::Share.price(shares)}"
+        @players_sold[entity][corporation] = true
+        @share_pool.sell_shares(shares)
 
         if old_p == entity
           presidential_share_swap(
-            old_p,
+            corporation,
             @entities.min_by { |e| [-e.percent_of(corporation), distance(entity, e)] },
-            shares.find(&:president) || old_p.shares_of(corporation).find(&:president),
+            old_p,
+            shares.find(&:president),
           )
         end
 
@@ -121,24 +116,8 @@ module Engine
 
       def buy_share(entity, share)
         corporation = share.corporation
-        floated = corporation.floated?
         @share_pool.buy_share(entity, share)
-        @log << "#{entity.name} buys a #{share.percent}% share of #{corporation.name} for $#{share.price}"
-
-        old_p = corporation.owner
-
-        if old_p != entity
-          presidential_share_swap(
-            old_p,
-            entity,
-            old_p.shares_of(corporation).find(&:president),
-          )
-        end
-
-        return if floated == corporation.floated?
-
-        corporation.cash = corporation.par_price.price * 10
-        @log << "#{corporation.name} floats with $#{corporation.cash} and tokens #{corporation.coordinates}"
+        presidential_share_swap(corporation, entity) if corporation.owner != entity
       end
 
       def distance(player_a, player_b)
@@ -147,13 +126,12 @@ module Engine
         a < b ? b - a : b - (a - @entities.size)
       end
 
-      def presidential_share_swap(old_p, new_p, p_share)
-        return if old_p.nil? || new_p.nil?
-
-        corporation = p_share.corporation
+      def presidential_share_swap(corporation, new_p, old_p = nil, p_share = nil)
+        old_p ||= corporation.owner
+        return unless new_p
         return if old_p.percent_of(corporation) >= new_p.percent_of(corporation)
 
-        corporation = p_share.corporation
+        p_share ||= old_p.shares_of(corporation).find(&:president)
 
         new_p.shares_of(corporation).take(2).each do |share|
           @share_pool.transfer_share(share, p_share.owner)

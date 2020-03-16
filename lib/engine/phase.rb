@@ -4,34 +4,37 @@ require 'engine/action/buy_train'
 
 module Engine
   class Phase
-    attr_reader :name, :operating_rounds, :train_limit, :no_train_transfers, :tiles
+    attr_reader :name, :operating_rounds, :train_limit, :tiles
 
-    YELLOW = {
-      name: :yellow,
+    TWO = {
+      name: '2',
       operating_rounds: 1,
       train_limit: 4,
-      no_train_transfers: true,
       tiles: :yellow,
     }.freeze
 
-    GREEN = {
-      name: :green,
+    THREE = {
+      name: '3',
       operating_rounds: 2,
       train_limit: 4,
       tiles: %i[yellow green].freeze,
       on: '3',
     }.freeze
 
-    BROWN = {
-      name: :brown,
+    FOUR = THREE.merge(name: '4', on: '4', train_limit: 3, events: { rust: '2' })
+
+    FIVE = {
+      name: '5',
       operating_rounds: 3,
       train_limit: 2,
       tiles: %i[yellow green brown].freeze,
       on: '5',
     }.freeze
 
-    GRAY = {
-      name: :gray,
+    SIX = FIVE.merge(name: '6', on: '6', events: { rust: '3' })
+
+    D = {
+      name: 'D',
       operating_rounds: 3,
       train_limit: 2,
       tiles: %i[yellow green brown brown].freeze,
@@ -60,7 +63,6 @@ module Engine
       @name = phase[:name]
       @operating_rounds = phase[:operating_rounds]
       @train_limit = phase[:train_limit]
-      @no_train_transfers = phase[:no_train_transfers] || false
       @tiles = Array(phase[:tiles])
       @events = phase[:events] || []
       @next_on = @phases[@index + 1]&.dig(:on)

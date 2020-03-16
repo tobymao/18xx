@@ -35,12 +35,12 @@ module Engine
       }.freeze
 
       PHASES = [
-        Phase::YELLOW,
-        Phase::GREEN,
-        Phase::GREEN.merge(on: '4', train_limit: 3, events: { rust: '2' }),
-        Phase::BROWN,
-        Phase::BROWN.merge(on: '6', events: { rusts: '3' }),
-        Phase::GRAY,
+        Phase::TWO,
+        Phase::THREE,
+        Phase::FOUR,
+        Phase::FIVE,
+        Phase::SIX,
+        Phase::D,
       ].freeze
 
       LOCATION_NAMES = {
@@ -62,7 +62,7 @@ module Engine
 
         @depot = init_train_handler(@bank)
         init_starting_cash(@players, @bank)
-        @share_pool = SharePool.new(@corporations, @bank)
+        @share_pool = SharePool.new(@corporations, @bank, @log)
         @hexes = init_hexes(@companies, @corporations)
         @map = Map.new(@hexes)
 

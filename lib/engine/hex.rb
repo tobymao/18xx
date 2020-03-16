@@ -70,7 +70,6 @@ module Engine
     end
 
     def connections(other, direct = false)
-      # this current assumes there's only one valid route to an exit which may not be true
       connected_paths(other, direct) + other.connected_paths(self, direct)
     end
 

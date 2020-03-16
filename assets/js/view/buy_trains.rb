@@ -10,8 +10,9 @@ module View
     include Actionable
 
     def render
-      corporation = @game.round.current_entity
-      depot = @game.round.depot
+      round = @game.round
+      corporation = round.current_entity
+      depot = round.depot
 
       available = depot.available(corporation).group_by(&:owner)
 
@@ -51,27 +52,21 @@ module View
         end
       end
 
-      from_depot_trains = h(:div, [
-        h(:div, 'Available Trains'),
-        *from_depot,
-      ])
+      children = []
+
+      children << h(:div, [h(:div, 'Available Trains'), *from_depot])
+      children.concat(others)
 
       remaining = depot.upcoming.group_by(&:name).map do |name, trains|
         train = trains.first
         h(:div, "Train: #{name} - $#{train.price} x #{trains.size}")
       end
 
-      remaining_chart = h(:div, [
-        h(:div, 'Remaining Trains'),
-        *remaining
-      ])
+      children << h(PassButton) unless round.must_buy_train?
 
-      h(:div, {}, [
-        from_depot_trains,
-        *others,
-        h(PassButton),
-        remaining_chart,
-      ])
+      children << h(:div, [h(:div, 'Remaining Trains'), *remaining])
+
+      h(:div, {}, children)
     end
   end
 end
