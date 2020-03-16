@@ -35,7 +35,7 @@ module Engine
     }.freeze
 
     YELLOW = {
-      '1' => 't=r:10,id:0;p=a:0,b:_0;p=a:_0,b:4;t=r:10,id:1;p=a:1,b:_1;p=a:_1,b:3',
+      '1' => 't=r:10;p=a:0,b:_0;p=a:_0,b:4;t=r:10;p=a:1,b:_1;p=a:_1,b:3',
       '3' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1',
       '4' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3',
       '5' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:1',
@@ -68,7 +68,7 @@ module Engine
       '81A' => 'p=a:0,b:j;p=a:2,b:j;p=a:4,b:j',
       '205' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:3,b:_0',
       '206' => 'c=r:30;p=a:0,b:_0;p=a:3,b:_0;p=a:5,b:_0',
-      '298' => 'c=r:40,id:0;c=r:40,id:1;c=r:40,id:2;c=r:40,id:3;l=Chi;'\
+      '298' => 'c=r:40;c=r:40;c=r:40;c=r:40;l=Chi;'\
                'p=a:1,b:_0;p=a:0,b:_1;p=a:5,b:_2;p=a:4,b:_3;'\
                'p=a:_0,b:3;p=a:_2,b:3;p=a:_3,b:3;p=a:_1,b:3',
       '439' => 'c=r:60,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=H;u=c:80',
@@ -100,9 +100,9 @@ module Engine
 
     COLORS = %i[white yellow green brown gray].freeze
 
-    attr_accessor :id, :legal_rotations, :location_name
+    attr_accessor :legal_rotations, :location_name
     attr_reader :cities, :color, :edges, :junctions, :label, :name,
-                :parts, :rotation, :towns, :upgrades, :offboards, :blockers
+                :parts, :preprinted, :rotation, :towns, :upgrades, :offboards, :blockers
 
     def self.for(name, **opts)
       if (code = WHITE[name])
@@ -156,11 +156,11 @@ module Engine
 
         Part::Path.new(params['a'], params['b'])
       when 'c'
-        city = Part::City.new(params['r'], params.fetch('s', 1), params['id'])
+        city = Part::City.new(params['r'], params.fetch('s', 1), cache.size)
         cache << city
         city
       when 't'
-        town = Part::Town.new(params['r'], params['id'])
+        town = Part::Town.new(params['r'], cache.size)
         cache << town
         town
       when 'l'
@@ -179,7 +179,9 @@ module Engine
     end
 
     # rotation 0-5
-    def initialize(name, color:, parts:, rotation: 0)
+    # rubocop:disable Metrics/ParameterLists
+    def initialize(name, color:, parts:, rotation: 0, preprinted: false, index: 0)
+      # rubocop:enable Metrics/ParameterLists
       @name = name
       @color = color
       @parts = parts
@@ -194,7 +196,13 @@ module Engine
       @offboards = []
       @legal_rotations = []
       @blockers = []
+      @preprinted = preprinted
+      @index = index
       separate_parts
+    end
+
+    def id
+      "#{name}-#{index}"
     end
 
     def rotate!(absolute = nil)

@@ -219,7 +219,7 @@ module Engine
           hex = action.hex
           rotation = action.rotation
           @tiles.reject! { |t| tile.equal?(t) }
-          @tiles << hex.tile if hex.tile.color != :white
+          @tiles << hex.tile unless hex.tile.preprinted
           tile.rotate!(rotation)
           hex.lay(tile)
           @log << "#{entity.name} lays tile #{tile.name} with rotation #{rotation} on #{hex.name}"

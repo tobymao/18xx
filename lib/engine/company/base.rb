@@ -8,16 +8,19 @@ module Engine
     class Base
       include Ownable
 
-      attr_reader :name, :sym, :value, :desc, :income, :blocks_hex
+      attr_reader :name, :value, :desc, :income, :blocks_hex
 
-      def initialize(name, value:, income: 0, desc: '', sym: '', blocks_hex: nil) # rubocop:disable Metrics/ParameterLists
+      def initialize(name, value:, income: 0, desc: '', blocks_hex: nil)
         @name = name
         @value = value
         @desc = desc
         @income = income
-        @sym = sym
         @blocks_hex = blocks_hex
         @open = true
+      end
+
+      def id
+        @name
       end
 
       def min_bid

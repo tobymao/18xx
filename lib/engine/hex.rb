@@ -43,6 +43,10 @@ module Engine
       @tile = tile
     end
 
+    def id
+      @coordinates
+    end
+
     def name
       @coordinates
     end

@@ -43,6 +43,49 @@ module Engine
         }
       }.freeze
 
+      TILES = {
+        '3' => 2,
+        '5' => 2,
+        '6' => 2,
+        '7' => 2,
+        '8' => 5,
+        '9' => 5,
+        '12' => 1,
+        '13' => 1,
+        '14' => 1,
+        '15' => 3,
+        '16' => 1,
+        '19' => 1,
+        '20' => 1,
+        '23' => 2,
+        '24' => 2,
+        '25' => 1,
+        '26' => 1,
+        '27' => 1,
+        '28' => 1,
+        '29' => 1,
+        '39' => 1,
+        '40' => 1,
+        '41' => 1,
+        '42' => 1,
+        '45' => 1,
+        '46' => 1,
+        '47' => 1,
+        '57' => 2,
+        '58' => 3,
+        '205' => 1,
+        '206' => 1,
+        '437' => 1,
+        '438' => 1,
+        '439' => 1,
+        '440' => 1,
+        '448' => 4,
+        '465' => 1,
+        '466' => 1,
+        '492' => 1,
+        '611' => 2,
+      }.freeze
+
       LOCATION_NAMES = {
         'A10' => 'Sukumo',
         'B11' => 'Nakamura',
@@ -93,9 +136,9 @@ module Engine
 
       def init_companies
         [
-          Company::Base.new('Takamatsu E-Railroad', sym: 'TR', value: 20, income: 5, blocks_hex: 'K4'),
+          Company::Base.new('Takamatsu E-Railroad', value: 20, income: 5, blocks_hex: 'K4'),
           # Company::TileLaying.new('Mitsubishi Ferry', value: 30, income: 5),
-          # Company::TileLaying.new('Ehime Railway', sym: 'ER', value: 40, income: 10, blocks_hex: 'C4'),
+          # Company::TileLaying.new('Ehime Railway', value: 40, income: 10, blocks_hex: 'C4'),
           # Company::TerrainDiscount.new('Sumitomo Mines Railway', value: 50, income: 15),
         ]
       end
@@ -152,55 +195,6 @@ module Engine
           #   coordinates: 'B7',
           # ),
         ]
-      end
-
-      def init_tiles
-        tiles = {
-          '3' => 2,
-          '5' => 2,
-          '6' => 2,
-          '7' => 2,
-          '8' => 5,
-          '9' => 5,
-          '12' => 1,
-          '13' => 1,
-          '14' => 1,
-          '15' => 3,
-          '16' => 1,
-          '19' => 1,
-          '20' => 1,
-          '23' => 2,
-          '24' => 2,
-          '25' => 1,
-          '26' => 1,
-          '27' => 1,
-          '28' => 1,
-          '29' => 1,
-          '39' => 1,
-          '40' => 1,
-          '41' => 1,
-          '42' => 1,
-          '45' => 1,
-          '46' => 1,
-          '47' => 1,
-          '57' => 2,
-          '58' => 3,
-          '205' => 1,
-          '206' => 1,
-          '437' => 1,
-          '438' => 1,
-          '439' => 1,
-          '440' => 1,
-          '448' => 4,
-          '465' => 1,
-          '466' => 1,
-          '492' => 1,
-          '611' => 2,
-        }
-
-        tiles.flat_map do |name, num|
-          num.times.map { Tile.for(name) }
-        end
       end
     end
   end

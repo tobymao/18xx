@@ -10,13 +10,13 @@ module Engine
   describe Round::Operating do
     let(:players) { [Player.new('a'), Player.new('b')] }
     let(:game) { Game::G1889.new(players) }
-    let(:corporation) { game.corporation_by_name('Awa Railroad') }
-    let(:hex_j3) { game.hex_by_name('J3') }
-    let(:hex_j5) { game.hex_by_name('J5') }
-    let(:hex_k4) { game.hex_by_name('K4') }
-    let(:hex_k6) { game.hex_by_name('K6') }
-    let(:hex_k8) { game.hex_by_name('K8') }
-    let(:hex_l7) { game.hex_by_name('L7') }
+    let(:corporation) { game.corporation_by_id('AR') }
+    let(:hex_j3) { game.hex_by_id('J3') }
+    let(:hex_j5) { game.hex_by_id('J5') }
+    let(:hex_k4) { game.hex_by_id('K4') }
+    let(:hex_k6) { game.hex_by_id('K6') }
+    let(:hex_k8) { game.hex_by_id('K8') }
+    let(:hex_l7) { game.hex_by_id('L7') }
 
     subject do
       Round::Operating.new(

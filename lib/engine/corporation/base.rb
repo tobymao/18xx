@@ -22,11 +22,11 @@ module Engine
         @sym = sym
         @name = name
         @tokens = tokens.times.map { Token.new(self) }
-        shares = [Share.new(self, president: true, percent: 20)] + 8.times.map { Share.new(self, percent: 10) }
-        shares.each_with_index do |share, index|
-          share.index = index
-          shares_by_corporation[self] << share
-        end
+        [
+          Share.new(self, president: true, percent: 20),
+          *8.times.map { |index| Share.new(self, percent: 10, index: index + 1) }
+        ].each { |share| shares_by_corporation[self] << share }
+
         @share_price = nil
         @par_price = nil
         @ipoed = false
@@ -36,6 +36,10 @@ module Engine
         @float_percent = opts[:float_percent] || 60
         @coordinates = opts[:coordinates]
         @logo = "logos/#{opts[:logo] || sym}.svg"
+      end
+
+      def id
+        @sym
       end
 
       def buy_train(train, price = nil)

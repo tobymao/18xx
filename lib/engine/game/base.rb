@@ -34,6 +34,15 @@ module Engine
         },
       }.freeze
 
+      TRAINS = [
+        *6.times.map { |index| Train::Base.new('2', distance: 2, price: 80, index: index) },
+        *5.times.map { |index| Train::Base.new('3', distance: 3, price: 180, index: index) },
+        *4.times.map { |index| Train::Base.new('4', distance: 4, price: 300, index: index) },
+        *3.times.map { |index| Train::Base.new('5', distance: 5, price: 450, index: index) },
+        *2.times.map { |index| Train::Base.new('6', distance: 6, price: 630, index: index) },
+        *20.times.map { |index| Train::Base.new('D', distance: 999, price: 1100, index: index) },
+      ].freeze
+
       PHASES = [
         Phase::TWO,
         Phase::THREE,
@@ -70,7 +79,6 @@ module Engine
         @operating_rounds = @phase.operating_rounds
 
         @round = init_round
-        set_ids
         connect_hexes
 
         # replay all actions with a copy
@@ -92,24 +100,24 @@ module Engine
         self.class.new(@names, actions: @actions[0...-1])
       end
 
-      def player_by_name(name)
-        @_players ||= @players.map { |p| [p.name, p] }.to_h
-        @_players[name]
+      def player_by_id(id)
+        @_players ||= @players.map { |p| [p.id, p] }.to_h
+        @_players[id]
       end
 
-      def corporation_by_name(name)
-        @_corporations ||= @corporations.map { |c| [c.name, c] }.to_h
-        @_corporations[name]
+      def corporation_by_id(id)
+        @_corporations ||= @corporations.map { |c| [c.id, c] }.to_h
+        @_corporations[id]
       end
 
-      def company_by_name(name)
-        @_companies ||= @companies.map { |c| [c.name, c] }.to_h
-        @_companies[name]
+      def company_by_id(id)
+        @_companies ||= @companies.map { |c| [c.id, c] }.to_h
+        @_companies[id]
       end
 
-      def hex_by_name(name)
-        @_hexes ||= @hexes.map { |h| [h.name, h] }.to_h
-        @_hexes[name]
+      def hex_by_id(id)
+        @_hexes ||= @hexes.map { |h| [h.id, h] }.to_h
+        @_hexes[id]
       end
 
       def tile_by_id(id)
@@ -117,21 +125,16 @@ module Engine
         @_tiles[id]
       end
 
-      def city_by_id(id)
-        @_cities ||= @cities.map { |c| [c.id, c] }.to_h
-        @_cities[id]
-      end
-
       def train_by_id(id)
         @_trains ||= @depot.trains.map { |t| [c.id, t] }.to_h
         @_trains[id]
       end
 
-      def share_by_name(name)
+      def share_by_name(id)
         @_shares ||= @corporations.flat_map do |c|
-          c.shares.map { |s| [s.name, s] }
+          c.shares.map { |s| [s.id, s] }
         end
-        @_shares[name]
+        @_shares[id]
       end
 
       def layout
@@ -164,13 +167,7 @@ module Engine
       end
 
       def init_train_handler(bank)
-        trains = 6.times.map { Train::Base.new('2', distance: 2, price: 80) } +
-          5.times.map { Train::Base.new('3', distance: 3, price: 180) } +
-          4.times.map { Train::Base.new('4', distance: 4, price: 300) } +
-          3.times.map { Train::Base.new('5', distance: 5, price: 450) } +
-          2.times.map { Train::Base.new('6', distance: 6, price: 630) } +
-          20.times.map { Train::Base.new('D', distance: 999, price: 1100) }
-        Train::Depot.new(trains, bank: bank)
+        Train::Depot.new(self.class::TRAINS, bank: bank)
       end
 
       def init_corporations
@@ -183,11 +180,11 @@ module Engine
             coords.map do |coord|
               tile =
                 begin
-                  Tile.for(tile_string)
+                  Tile.for(tile_string, preprinted: true)
                 rescue Engine::GameError
                   name = coords
                   code = tile_string
-                  Tile.from_code(name, color, code)
+                  Tile.from_code(name, color, code, preprinted: true)
                 end
 
               # add private companies that block tile lays on this hex
@@ -208,7 +205,11 @@ module Engine
         end.flatten
       end
 
-      def init_tiles; end
+      def init_tiles
+        self.class::TILES.flat_map do |name, num|
+          num.times.map { |index| Tile.for(name, index: index) }
+        end
+      end
 
       def init_starting_cash(players, bank)
         cash = self.class::STARTING_CASH[players.size]
@@ -299,20 +300,6 @@ module Engine
           stock_market: @stock_market,
           round_num: round_num,
         )
-      end
-
-      def set_ids
-        @tiles.each.with_index do |tile, index|
-          tile.id = index
-        end
-
-        @tiles.flat_map(&:cities).each.with_index do |city, index|
-          city.id = index
-        end
-
-        @depot.upcoming.each.with_index do |train, index|
-          train.id = index
-        end
       end
     end
   end

@@ -18,6 +18,10 @@ module Engine
       @companies = []
     end
 
+    def id
+      @name
+    end
+
     def owner
       self
     end

@@ -8,13 +8,17 @@ module Engine
     class Base
       include Ownable
 
-      attr_accessor :id
       attr_reader :name, :distance, :price
 
-      def initialize(name, distance:, price:)
+      def initialize(name, distance:, price:, index: 0)
         @name = name
         @distance = distance
         @price = price
+        @index = index
+      end
+
+      def id
+        "#{@name}-#{@index}"
       end
 
       def rust!
