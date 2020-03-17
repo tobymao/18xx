@@ -31,7 +31,7 @@ module Engine
       def next_entity
         bids = @bids[@auctioning_company]
         if bids&.any?
-          bids.min_by(&:price).player
+          bids.min_by(&:price).entity
         else
           # if someone bought a share outright, then we find the person right before the last  person who hasn't passed
           if @last_to_act
@@ -58,7 +58,7 @@ module Engine
 
       def pass(entity)
         super
-        @bids[@auctioning_company]&.reject! { |bid| bid.player == entity }
+        @bids[@auctioning_company]&.reject! { |bid| bid.entity == entity }
         resolve_bids
       end
 
@@ -75,7 +75,7 @@ module Engine
       def _process_action(bid)
         if @auctioning_company
           bids = @bids[bid.company]
-          bids.reject! { |b| b.player == bid.player }
+          bids.reject! { |b| b.player == bid.entity }
           bids << bid
         else
           placement_bid(bid)
@@ -84,14 +84,14 @@ module Engine
 
       def placement_bid(bid)
         if @companies.first == bid.company
-          @last_to_act = bid.player
+          @last_to_act = bid.entity
           accept_bid(bid)
           resolve_bids
         else
           min = min_bid(bid.company)
           raise Engine::GameError, "Minimum bid is #{min}" if bid.price < min
 
-          @log << "#{bid.player.name} bids $#{bid.price} for #{bid.company.name}"
+          @log << "#{bid.entity.name} bids $#{bid.price} for #{bid.company.name}"
           @bids[bid.company] << bid
         end
       end
@@ -112,7 +112,7 @@ module Engine
       def accept_bid(bid)
         price = bid.price
         company = bid.company
-        player = bid.player
+        player = bid.entity
         company.owner = player
         player.companies << company
         player.spend(price, @bank)

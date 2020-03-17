@@ -29,5 +29,9 @@ module Engine
       @can_par = can_par
       @corporations = []
     end
+
+    def id
+      "#{@price}-#{@coordinates}"
+    end
   end
 end

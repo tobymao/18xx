@@ -7,7 +7,6 @@ module Engine
     class Path < Base
       attr_reader :a, :b, :branch, :city, :edges, :junction, :offboard, :town
 
-      # rubocop:disable Naming/MethodParameterName
       def initialize(a, b)
         @a = a
         @b = b
@@ -15,7 +14,6 @@ module Engine
 
         separate_parts
       end
-      # rubocop:enable Naming/MethodParameterName
 
       def ==(other)
         other.path? &&

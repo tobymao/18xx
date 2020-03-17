@@ -27,10 +27,16 @@ Metrics/CyclomaticComplexity:
 Metrics/MethodLength:
   Enabled: false
 
+Metrics/ParameterLists:
+  Enabled: false
+
 Naming/MemoizedInstanceVariableName:
   Enabled: false
 
 Metrics/PerceivedComplexity:
+  Enabled: false
+
+Naming/MethodParameterName:
   Enabled: false
 
 Style/ClassVars:

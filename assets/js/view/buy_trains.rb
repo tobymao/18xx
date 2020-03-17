@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'view/actionable'
-require 'view/pass_button'
 
 require 'engine/action/buy_train'
 

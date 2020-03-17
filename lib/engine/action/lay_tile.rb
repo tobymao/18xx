@@ -5,7 +5,7 @@ require 'engine/action/base'
 module Engine
   module Action
     class LayTile < Base
-      attr_reader :entity, :hex, :tile, :rotation
+      attr_reader :hex, :tile, :rotation
 
       def initialize(entity, tile, hex, rotation)
         @entity = entity
@@ -14,13 +14,16 @@ module Engine
         @rotation = rotation
       end
 
-      def copy(game)
-        self.class.new(
-          game.corportation_by_name(@entity.name),
-          game.tile_by_id(@tile.id),
-          game.hex_by_name(@hex.name),
-          @rotation,
-        )
+      def self.h_to_args(h, game)
+        [game.hex_by_id(h['hex']), game.tile_by_id(h['tile']), h['rotation']]
+      end
+
+      def args_to_h
+        {
+          'hex' => @hex.id,
+          'tile' => @tile.id,
+          'rotation' => @rotation,
+        }
       end
     end
   end

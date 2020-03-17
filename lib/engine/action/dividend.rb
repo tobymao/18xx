@@ -5,15 +5,21 @@ require 'engine/action/base'
 module Engine
   module Action
     class Dividend < Base
-      attr_reader :entity, :type
+      attr_reader :type
 
       def initialize(entity, type)
         @entity = entity
         @type = type
       end
 
-      def copy(game)
-        self.class.new(game.corporation_by_name(@entity.name), @type)
+      def self.h_to_args(h, _game)
+        [h['type']]
+      end
+
+      def args_to_h
+        {
+          'train' => @type,
+        }
       end
     end
   end

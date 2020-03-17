@@ -27,10 +27,8 @@ module Engine
         train: 'Buy Trains',
       }.freeze
 
-      # rubocop:disable Metrics/ParameterLists
       def initialize(entities, log:, hexes:, tiles:, phase:, companies:, bank:,
                      depot:, players:, stock_market:, round_num: 1)
-        # rubocop:enable Metrics/ParameterLists
         super
 
         @round_num = round_num

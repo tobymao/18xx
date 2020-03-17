@@ -179,9 +179,7 @@ module Engine
     end
 
     # rotation 0-5
-    # rubocop:disable Metrics/ParameterLists
     def initialize(name, color:, parts:, rotation: 0, preprinted: false, index: 0)
-      # rubocop:enable Metrics/ParameterLists
       @name = name
       @color = color
       @parts = parts
