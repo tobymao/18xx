@@ -3,7 +3,7 @@
 require './spec/spec_helper'
 
 require 'engine/bank'
-require 'engine/corporation/base'
+require 'engine/corporation'
 require 'engine/share'
 require 'engine/share_pool'
 require 'engine/share_price'
@@ -13,7 +13,7 @@ module Engine
   describe SharePool do
     let(:bank) { Bank.new(1000) }
     let(:player) { Player.new('a') }
-    let(:corporation) { Corporation::Base.new('a', name: 'a', tokens: 1) }
+    let(:corporation) { Corporation.new('a', name: 'a', tokens: 1) }
     let(:share_price) { SharePrice.from_code('10', 0, 0) }
     let(:subject) { SharePool.new([corporation], bank, []) }
     let(:share) { Share.new(corporation, owner: subject, president: true, percent: 20) }

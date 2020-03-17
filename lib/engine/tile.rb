@@ -200,7 +200,7 @@ module Engine
     end
 
     def id
-      "#{name}-#{index}"
+      "#{@name}-#{@index}"
     end
 
     def rotate!(absolute = nil)

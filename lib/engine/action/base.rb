@@ -6,7 +6,8 @@ module Engine
       attr_reader :entity
 
       def self.from_h(h, game)
-        new(game.send("#{h['entity_type']}_by_id"), *args(h, game))
+        entity = game.send("#{h['entity_type']}_by_id", h['entity'])
+        new(entity, *h_to_args(h, game))
       end
 
       def self.h_to_args(_h, _game)
@@ -20,8 +21,8 @@ module Engine
       def to_h
         {
           'entity' => entity.id,
-          'entity_type' => entity.class,
-          **args
+          'entity_type' => entity.class.name.split('::').last.downcase,
+          **args_to_h,
         }
       end
 

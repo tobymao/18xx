@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'engine/action/base'
 require 'engine/bank'
 require 'engine/map'
 require 'engine/phase'
@@ -83,7 +82,7 @@ module Engine
         connect_hexes
 
         # replay all actions with a copy
-        actions.each { |action| process_action(Action::Base.from_h(action.to_h)) }
+        actions.each { |action| process_action(action.class.from_h(action.to_h, self)) }
       end
 
       def current_entity
@@ -127,7 +126,7 @@ module Engine
       end
 
       def train_by_id(id)
-        @_trains ||= @depot.trains.map { |t| [c.id, t] }.to_h
+        @_trains ||= @depot.trains.map { |t| [t.id, t] }.to_h
         @_trains[id]
       end
 
@@ -139,7 +138,7 @@ module Engine
       end
 
       def share_price_by_id(id)
-        @_share_prices ||= @stock_market.par_prices.map { |s| [s.id, s] }
+        @_share_prices ||= @stock_market.par_prices.map { |s| [s.id, s] }.to_h
         @_share_prices[id]
       end
 

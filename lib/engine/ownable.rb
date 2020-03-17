@@ -15,7 +15,7 @@ module Engine
     end
 
     def owned_by_corporation?
-      owner.is_a?(Corporation::Base)
+      owner.is_a?(Corporation)
     end
   end
 end

@@ -15,7 +15,7 @@ module Engine
       end
 
       def self.h_to_args(h, game)
-        [game.hex_by_id(h['hex']), game.tile_by_id(h['tile']), h['rotation']]
+        [game.tile_by_id(h['tile']), game.hex_by_id(h['hex']), h['rotation']]
       end
 
       def args_to_h

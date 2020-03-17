@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'engine/corporation/base'
+require 'engine/corporation'
 require 'engine/share'
 require 'engine/share_holder'
 

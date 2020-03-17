@@ -9,6 +9,7 @@ require 'view/operating_round'
 require 'view/player'
 require 'view/stock_round'
 require 'view/stock_market'
+require 'view/undo_button'
 
 require 'engine/round/auction'
 require 'engine/round/operating'
@@ -44,6 +45,7 @@ module View
         h(Log),
         h(EntityOrder, round: @round),
         render_action,
+        h(UndoButton),
         h(:div, 'Players'),
         *@game.players.map { |p| h(Player, player: p) },
         h(:div, 'Corporations'),

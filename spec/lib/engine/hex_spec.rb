@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
-require 'engine/corporation/base'
+require 'engine/corporation'
 require 'engine/hex'
 require 'engine/tile'
 
@@ -41,8 +41,8 @@ module Engine
     describe '#lay' do
       let(:green_tile) { Tile.for('15') }
       let(:brown_tile) { Tile.for('611') }
-      let(:corp_1) { Corporation::Base.new('AR', name: 'Awa Railway', tokens: 2) }
-      let(:corp_2) { Corporation::Base.new('IR', name: 'Iyo Railway', tokens: 2) }
+      let(:corp_1) { Corporation.new('AR', name: 'Awa Railway', tokens: 2) }
+      let(:corp_2) { Corporation.new('IR', name: 'Iyo Railway', tokens: 2) }
 
       context 'laying green' do
         subject { Hex.new('A1', layout: :flat, tile: Tile.for('57')) }

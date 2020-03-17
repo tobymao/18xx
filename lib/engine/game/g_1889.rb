@@ -4,7 +4,7 @@ require 'engine/bank'
 require 'engine/company/base'
 require 'engine/company/tile_laying'
 require 'engine/company/terrain_discount'
-require 'engine/corporation/base'
+require 'engine/corporation'
 require 'engine/game/base'
 require 'engine/hex'
 require 'engine/tile'
@@ -145,49 +145,49 @@ module Engine
 
       def init_corporations
         [
-          Corporation::Base.new(
+          Corporation.new(
             'AR',
             name: 'Awa Railroad',
             tokens: 2,
             float_percent: 50,
             coordinates: 'K8',
           ),
-          Corporation::Base.new(
+          Corporation.new(
             'IR',
             name: 'Iyo Railway',
             tokens: 2,
             float_percent: 50,
             coordinates: 'E2',
           ),
-          # Corporation::Base.new(
+          # Corporation.new(
           #   'SR',
           #   name: 'Sanuki Railway',
           #   tokens: 2,
           #   float_percent: 50,
           #   coordinates: 'I2',
           # ),
-          # Corporation::Base.new(
+          # Corporation.new(
           #   'KO',
           #   name: 'Takamatsu & Kotohira Electric Railway',
           #   tokens: 2,
           #   float_percent: 50,
           #   coordinates: 'K4',
           # ),
-          # Corporation::Base.new(
+          # Corporation.new(
           #   'TR',
           #   name: 'Tosa Electric Railway',
           #   tokens: 3,
           #   float_percent: 50,
           #   coordinates: 'F9',
           # ),
-          # Corporation::Base.new(
+          # Corporation.new(
           #   'KU',
           #   name: 'Tosa Kuroshio Railway',
           #   tokens: 1,
           #   float_percent: 50,
           #   coordinates: 'C10',
           # ),
-          # Corporation::Base.new(
+          # Corporation.new(
           #   'UR',
           #   name: 'Uwajima Railway',
           #   tokens: 3,
