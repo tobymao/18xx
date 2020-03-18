@@ -2,7 +2,6 @@
 
 require 'snabberb/component'
 
-require 'lib/tile'
 require 'view/part/blocker'
 require 'view/part/cities'
 require 'view/part/label'
@@ -17,6 +16,7 @@ module View
     needs :tile
     needs :routes, default: [], store: true
 
+    # helper method to pass @tile and @region_use to every part
     def render_tile_part(part_class, **kwargs)
       h(part_class, region_use: @region_use, tile: @tile, **kwargs)
     end
@@ -25,7 +25,7 @@ module View
       # hash mapping the different regions to a number representing how much
       # they've been used; it gets passed to the different tile parts and is
       # modified before being passed on to the next one
-      @region_use = Lib::Tile::REGIONS.map { |r| [r, 0] }.to_h
+      @region_use = (0..23).map { |r| [r, 0] }.to_h
 
       # parts are rendered in the order in which they appear in this array
       children =

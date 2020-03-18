@@ -13,6 +13,7 @@ require 'engine/game/g_1889'
 class App < Snabberb::Component
   needs :game, store: true
   needs :page, store: true, default: 'game'
+  needs :show_grid, default: false, store: true
 
   def render
     page =
@@ -37,6 +38,7 @@ class App < Snabberb::Component
       h(:button, { on: { click: -> { store(:page, 'game') } } }, 'Game'),
       h(:button, { on: { click: -> { store(:page, 'tiles') } } }, 'All Tiles'),
       h(:button, { on: { click: -> { store(:page, 'tokens') } } }, 'All Tokens'),
+      h(:button, { on: { click: -> { store(:show_grid, !@show_grid) } } }, 'Toggle Tile Grid'),
     ]
   end
 end

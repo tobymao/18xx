@@ -37,14 +37,11 @@ module View
       end
 
       def preferred_render_locations
-        edge_a, edge_b = @exits
-
-        rotation = compute_track_rotation_degrees(edge_a, edge_b)
-
         [
           {
-            regions: { ["edge#{edge_a}", "half_edge#{edge_b}"] => 1 },
-            transform: "rotate(#{rotation})",
+            region_weights: {},
+            x: 0,
+            y: 0,
           }
         ]
       end
@@ -53,6 +50,7 @@ module View
         edge_a, edge_b = @exits
 
         curvilinear_type = compute_curvilinear_type(edge_a, edge_b)
+        rotation = compute_track_rotation_degrees(edge_a, edge_b)
 
         d =
           case curvilinear_type
@@ -69,7 +67,7 @@ module View
         props = {
           attrs: {
             class: 'curvilinear_path',
-            transform: transform,
+            transform: "rotate(#{rotation})",
             d: d,
             stroke: @color,
             'stroke-width' => 8

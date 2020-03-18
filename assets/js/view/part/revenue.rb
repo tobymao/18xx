@@ -12,12 +12,14 @@ module View
         if multi_revenue?
           return [
             {
-              regions: %w[half_edge5 half_edge0 half_edge1],
-              transform: 'translate(-30 20)',
+              region_weights: { [13, 14, 15, 16, 17] => 1.0 },
+              x: -30,
+              y: 20,
             },
             {
-              regions: %w[half_edge2 half_edge3 half_edge4],
-              transform: 'translate(-30 -20)',
+              region_weights: { [6, 7, 8, 9, 10] => 1.0 },
+              x: -30,
+              y: -20,
             },
           ]
         end
@@ -26,46 +28,55 @@ module View
         when 1
           [
             {
-              regions: ['half_corner1.5', 'half_edge1', 'half_edge2'],
-              transform: 'translate(-45 0)',
+              region_weights: { [6, 7, 13, 14] => 1.0 },
+              x: -45,
+              y: 0,
             },
             {
-              regions: ['half_corner4.5', 'half_edge4', 'half_edge5'],
-              transform: 'translate(45 0)',
+              region_weights: { [9, 10, 16, 17] => 1.0 },
+              x: 45,
+              y: 0,
             },
             {
-              regions: %w[half_edge1 edge1],
-              transform: 'translate(-45 25)',
+              region_weights: { [13, 14] => 1.0 },
+              x: -45,
+              y: 5,
             },
             {
-              regions: ['corner1.5'],
-              transform: 'translate(-65 0)',
+              region_weights: { LEFT_CORNER => 1.0 },
+              x: -65,
+              y: 0,
             },
             {
-              regions: ['corner4.5'],
-              transform: 'translate(65 0)',
+              region_weights: { RIGHT_CORNER => 1.0 },
+              x: 65,
+              y: 0,
             },
           ]
         when (2..4)
           [
             {
-              regions: ['corner1.5'],
-              transform: 'translate(-70 0)',
+              region_weights: { LEFT_CORNER => 1.0 },
+              x: -70,
+              y: 0,
             },
             {
-              regions: ['corner4.5'],
-              transform: 'translate(70 0)',
+              region_weights: { RIGHT_CORNER => 1.0 },
+              x: 70,
+              y: 0,
             },
             {
-              regions: ['half_edge1'],
-              transform: 'translate(-45 25)',
+              region_weights: { [13, 14] => 1.0 },
+              x: -45,
+              y: 25,
             },
           ]
         else
           [
             {
-              regions: ['center'],
-              transform: 'translate(0 0)',
+              region_weights: { [7, 8, 9, 14, 15, 16] => 1.0 },
+              x: 0,
+              y: 0,
             }
           ]
         end
@@ -111,12 +122,12 @@ module View
         }
 
         if multi_revenue?
-          h(Part::MultiRevenue, revenues: @revenue, translate: transform)
+          h(Part::MultiRevenue, revenues: @revenue, translate: translate)
         else
           attrs = {
             class: 'revenue',
             'stroke-width': 1,
-            transform: transform,
+            transform: translate,
           }
 
           h(

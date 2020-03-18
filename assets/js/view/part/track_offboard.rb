@@ -13,10 +13,20 @@ module View
       end
 
       def preferred_render_locations
+        regions = {
+          0 => [21],
+          1 => [13],
+          2 => [6],
+          3 => [2],
+          4 => [10],
+          5 => [17],
+        }[@edge_num]
+
         [
           {
-            regions: ["edge#{@edge_num}", "half_edge#{@edge_num}"],
-            transform: '',
+            region_weights: { regions => 1.0 },
+            x: 0,
+            y: 0,
           }
         ]
       end

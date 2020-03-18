@@ -11,12 +11,14 @@ module View
       def preferred_render_locations
         [
           {
-            regions: ['center'],
-            transform: 'translate(0 0)',
+            region_weights: { CENTER => 1.0 },
+            x: 0,
+            y: 0,
           },
           {
-            regions: ['corner3.5'],
-            transform: 'translate(30 -60)',
+            region_weights: { [3, 4] => 1.0 },
+            x: 30,
+            y: -60,
           },
         ]
       end
@@ -43,7 +45,7 @@ module View
         attrs = {
           class: 'upgrade',
           'stroke-width': 1,
-          transform: transform,
+          transform: translate,
         }
 
         h(:g, { attrs: attrs }, children)

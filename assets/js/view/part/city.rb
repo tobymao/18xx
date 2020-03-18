@@ -20,28 +20,32 @@ module View
       }.freeze
 
       def preferred_render_locations
-        regions =
+        region_weights =
           case @city.slots
           when 1
-            ['center']
+            { CENTER => 1.0 }
           when (2..4)
-            ['center', 'half_corner1.5', 'half_corner4.5', 'half_edge1', 'half_edge2', 'half_edge4', 'half_edge5']
+            {
+              CENTER => 1.0,
+              (LEFT_CENTER + RIGHT_CENTER) => 0.5,
+            }
           else
-            ['center']
+            { CENTER => 1.0 }
           end
+
+        x, y = CITY_SLOT_POSITION[@city.slots]
 
         [
           {
-            regions: regions,
-            transform: '',
+            region_weights: region_weights,
+            x: x,
+            y: y,
           }
         ]
       end
 
       # TODO: render white "background" before slots
       def render_part
-        x, y = CITY_SLOT_POSITION[@city.slots]
-
         slot_radius = 25
 
         slots = (0..(@city.slots - 1)).zip(@city.tokens).map do |slot_index, token|
@@ -51,7 +55,7 @@ module View
           # -rotation on the Slot so its contents are rendered without
           # rotation
           h(:g, { attrs: { 'stroke-width': 1, transform: "rotate(#{rotation})" } }, [
-              h(:g, { attrs: { transform: "translate(#{x}, #{y}) rotate(#{rotation})" } }, [
+              h(:g, { attrs: { transform: "#{translate} rotate(#{rotation})" } }, [
                   h(CitySlot, city: @city,
                               token: token,
                               slot_index: slot_index,

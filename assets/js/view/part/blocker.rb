@@ -10,12 +10,14 @@ module View
       def preferred_render_locations
         [
           {
-            regions: ['corner1.5', 'half_corner1.5'],
-            transform: 'translate(-65 5)',
+            region_weights: { LEFT_CORNER => 1.0 },
+            x: -65,
+            y: 5,
           },
           {
-            regions: ['corner0.5', 'half_corner0.5'],
-            transform: 'translate(-35 60)',
+            region_weights: { [19, 20] => 1.0 },
+            x: -35,
+            y: 60,
           },
         ]
       end
@@ -31,7 +33,7 @@ module View
 
       def render_part
         h(:g,
-          { attrs: { transform: transform, class: 'blocker', } },
+          { attrs: { transform: translate, class: 'blocker', } },
           [
             h(:text,
               { attrs: { fill: 'black',

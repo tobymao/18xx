@@ -13,21 +13,33 @@ module View
       end
 
       def preferred_render_locations
-        rotation = 60 * @edge_num
+        regions = {
+          0 => [15, 21],
+          1 => [13, 14],
+          2 => [6, 7],
+          3 => [2, 8],
+          4 => [9, 10],
+          5 => [16, 17],
+        }[@edge_num]
 
         [
           {
-            regions: ['center', "edge#{@edge_num}", "half_edge#{@edge_num}"],
-            transform: "rotate(#{rotation})",
+            region_weights: {
+              regions => 1.0,
+            },
+            x: 0,
+            y: 0,
           }
         ]
       end
 
       def render_part
+        rotation = 60 * @edge_num
+
         props = {
           attrs: {
             class: 'lawson_path',
-            transform: transform,
+            transform: "rotate(#{rotation})",
             d: 'M 0 87 L 0 0',
             stroke: @color,
             'stroke-width' => 8

@@ -11,32 +11,37 @@ module View
         unless @tile.offboards.empty?
           return [
             {
-              regions: { ['half_corner2.5', 'half_edge3', 'half_corner3.5'] => 1,
-                         %w[half_edge2 half_edge4] => 0.25 },
-              transform: 'translate(0 -10)',
+              region_weights: { [7, 8, 9] => 1,
+                                [6, 7, 9, 10] => 0.25 },
+              x: 0,
+              y: -10,
             },
             {
-              regions: { ['half_corner5.5', 'half_edge0', 'half_corner0.5'] => 1,
-                         %w[half_edge5 half_edge1] => 0.25 },
-              transform: 'translate(0 10)',
+              region_weights: { [14, 15, 16] => 1,
+                                [13, 14, 16, 17] => 0.25 },
+              x: 0,
+              y: 10,
             },
           ]
         end
 
         [
           {
-            regions: ['center'],
-            transform: 'translate(0 0)',
+            region_weights: { CENTER => 1.0 },
+            x: 0,
+            y: 0,
           },
           {
-            regions: { ['half_corner2.5', 'half_edge3', 'half_corner3.5'] => 1,
-                       %w[half_edge2 half_edge4] => 0.25 },
-            transform: 'translate(0 -40)',
+            region_weights: { [7, 8, 9] => 1,
+                              [6, 7, 9, 10] => 0.25 },
+            x: 0,
+            y: -40,
           },
           {
-            regions: { ['half_corner5.5', 'half_edge0', 'half_corner0.5'] => 1,
-                       %w[half_edge5 half_edge1] => 0.25 },
-            transform: 'translate(0 40)',
+            region_weights: { [14, 15, 16] => 1,
+                              [13, 14, 16, 17] => 0.25 },
+            x: 0,
+            y: 40,
           },
         ]
       end
@@ -53,7 +58,7 @@ module View
         attrs = {
           class: 'location_name',
           fill: 'black',
-          transform: "scale(1.1) #{transform}",
+          transform: "scale(1.1) #{translate}",
           'text-anchor': 'middle',
           'stroke-width': 0.5,
           'alignment-baseline': 'middle',
