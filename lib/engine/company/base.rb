@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'engine/corporation/base'
+require 'engine/corporation'
 require 'engine/ownable'
 
 module Engine
@@ -10,7 +10,7 @@ module Engine
 
       attr_reader :name, :sym, :value, :desc, :income, :blocks_hex
 
-      def initialize(name, value:, income: 0, desc: '', sym: '', blocks_hex: nil) # rubocop:disable Metrics/ParameterLists
+      def initialize(name, value:, income: 0, desc: '', sym: '', blocks_hex: nil)
         @name = name
         @value = value
         @desc = desc
@@ -18,6 +18,10 @@ module Engine
         @sym = sym
         @blocks_hex = blocks_hex
         @open = true
+      end
+
+      def id
+        @name
       end
 
       def min_bid

@@ -26,6 +26,7 @@ module View
       h(:div, { style: style, on: { click: onclick } }, [
         h(:div, "Corporation: #{@corporation.name}"),
         h(:div, "Available Shares: #{@corporation.shares.size}"),
+        h(:div, "Trains: #{@corporation.trains.map(&:name).join(', ')}"),
       ])
     end
   end

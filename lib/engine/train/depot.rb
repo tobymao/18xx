@@ -3,11 +3,12 @@
 module Engine
   module Train
     class Depot
-      attr_reader :upcoming
+      attr_reader :trains, :upcoming
 
       def initialize(trains, bank:)
-        trains.each { |train| train.owner = self }
-        @upcoming = trains
+        @trains = trains
+        @trains.each { |train| train.owner = self }
+        @upcoming = @trains.dup
         @discarded = []
         @bank = bank
       end
@@ -17,8 +18,12 @@ module Engine
         @discarded.delete(train)
       end
 
-      def available
-        @discarded + [@upcoming.first]
+      def available(corporation)
+        [
+          @upcoming.first,
+          *@discarded,
+          *@trains.reject { |t| [corporation, self, nil].include?(t.owner) }
+        ]
       end
 
       def cash
@@ -27,6 +32,10 @@ module Engine
 
       def cash=(new_cash)
         @bank.cash = new_cash
+      end
+
+      def name
+        'The Depot'
       end
     end
   end

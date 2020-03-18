@@ -12,7 +12,7 @@ module View
 
       shares_div = @player.shares_by_corporation.map do |corporation, shares|
         president = shares.any?(&:president)
-        h(:div, "#{corporation.name} #{president ? '*' : ''}#{shares.map(&:percent).sum}%")
+        h(:div, "#{corporation.name} #{president ? '*' : ''}#{shares.sum(&:percent)}%")
       end
 
       h(:div, { style: style }, [

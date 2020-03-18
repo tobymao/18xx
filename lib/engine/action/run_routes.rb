@@ -6,26 +6,32 @@ require 'engine/route'
 module Engine
   module Action
     class RunRoutes < Base
-      attr_reader :entity, :routes
+      attr_reader :routes
 
       def initialize(entity, routes)
         @entity = entity
         @routes = routes
       end
 
-      def copy(game)
+      def self.h_to_args(h, game)
+        route = Route.new(h['phase'], game.train_by_id(h['train']))
+        h['hexes'].each { |id| route.add_hex(game.hex_by_id(id)) }
+        [route]
+      end
+
+      def args_to_h
         routes = @routes.map do |route|
-          new_route = Route.new(route.phase, game.train_by_id(route.train))
-          route.hexes.each do |hex|
-            new_route.add_hex(hex)
-          end
-          new_route
+          {
+            'phase': route.phase,
+            'train': route.train.id,
+            'hexes': route.hexes.map(&:id),
+          }
         end
 
-        self.class.new(
-          game.corportation_by_name(@entity.name),
-          routes,
-        )
+        {
+          'entity' => @hex.id,
+          'routes' => routes,
+        }
       end
     end
   end

@@ -27,11 +27,10 @@ module Engine
         train: 'Buy Trains',
       }.freeze
 
-      # rubocop:disable Metrics/ParameterLists
       def initialize(entities, log:, hexes:, tiles:, phase:, companies:, bank:,
                      depot:, players:, stock_market:, round_num: 1)
-        # rubocop:enable Metrics/ParameterLists
         super
+
         @round_num = round_num
         @hexes = hexes
         @tiles = tiles
@@ -56,6 +55,15 @@ module Engine
         next_step!
       end
 
+      def must_buy_train?
+        @current_entity.trains.empty? # TODO: check if there's a route
+      end
+
+      def can_buy_train?
+        @current_entity.trains.size < @phase.train_limit &&
+          @depot.available(@current_entity).any? { |t| @current_entity.cash >= t.min_price }
+      end
+
       def next_step!
         current_index = self.class::STEPS.find_index(@step)
 
@@ -64,9 +72,11 @@ module Engine
           when :token
             return next_step! if @current_entity.tokens.none?
 
-            next_step! unless layable_hexes.keys.any? do |hex|
-              hex.tile.cities.any? do |city|
-                city.tokenable?(@current_entity)
+            next_step! unless reachable_hexes.any? do |hex, exits|
+              hex.tile.paths.any? do |path|
+                path.city &&
+                  (path.exits & exits).any? &&
+                  path.city.tokenable?(@current_entity)
               end
             end
           when :route
@@ -76,16 +86,18 @@ module Engine
               withhold
               next_step!
             end
-            # TODO: when :train check limit and money
+          when :train
+            next_step! if !can_buy_train? && !must_buy_train?
           end
         else
+          clear_route_cache
           @step = self.class::STEPS.first
           @current_entity.pass!
         end
       end
 
       def next_entity
-        @step == self.class::STEPS.first ? @current_entity : super
+        @step == self.class::STEPS.first ? super : @current_entity
       end
 
       def companies_payout
@@ -111,16 +123,26 @@ module Engine
             # hexes is a map hex => exits
             hexes = Hash.new { |h, k| h[k] = [] }
 
-            starting_hexes = @hexes.select do |hex|
-              hex.tile.cities.any? { |c| c.tokened_by?(@current_entity) }
-            end
-            starting_hexes.each { |h| hexes[h] = h.tile.exits }
+            queue = []
+            starting_hexes = []
 
-            queue = starting_hexes.dup
+            @hexes.each do |hex|
+              cities = tokened_cities(hex)
+              next unless cities.any?
+
+              queue << hex
+              starting_hexes << hex
+
+              hexes[hex] = hex
+                .tile
+                .paths
+                .select { |path| cities.include?(path.city) }
+                .flat_map(&:exits)
+                .uniq
+            end
 
             until queue.empty?
               hex = queue.pop
-              next unless hex.tile
 
               hexes[hex].each do |direction|
                 next unless (neighbor = hex.neighbors[direction])
@@ -134,6 +156,37 @@ module Engine
 
             hexes
           end
+      end
+
+      def reachable_hexes
+        @reachable_hexes ||= layable_hexes.select { |hex, exits| (hex.tile.exits & exits).any? }
+      end
+
+      # def routes
+      #   routes = []
+
+      #   reachable_hexes.keys.each do |hex|
+      #     paths_for_cities(hex, tokened_cities(hex)).each do |path|
+      #       path.exits.each { |direction| routes << [hex, direction] }
+      #     end
+      #   end
+
+      #   routes.each do |hex, direction|
+      #     neighbor = hex.neighbors[direction]
+      #     next unless reachable_hexes[neighbor]
+
+      #     neighbor.connected_paths(hex).each do |path|
+      #       path.city || path.town
+      #     end
+      #   end
+      # end
+
+      def paths_for_cities(hex, cities)
+        hex.tile.paths.select { |path| cities.include?(path.city) }
+      end
+
+      def tokened_cities(hex)
+        hex.tile.cities.select { |c| c.tokened_by?(@current_entity) }
       end
 
       def legal_rotations(hex, tile)
@@ -156,6 +209,7 @@ module Engine
 
       def _process_action(action)
         entity = action.entity
+        skip = false
 
         case action
         when Action::LayTile
@@ -163,21 +217,21 @@ module Engine
           hex = action.hex
           rotation = action.rotation
           @tiles.reject! { |t| tile.equal?(t) }
-          @tiles << hex.tile if hex.tile.color != :white
+          @tiles << hex.tile unless hex.tile.preprinted
           tile.rotate!(rotation)
           hex.lay(tile)
           @log << "#{entity.name} lays tile #{tile.name} with rotation #{rotation} on #{hex.name}"
-          next_step!
+          clear_route_cache
         when Action::PlaceToken
           action.city.place_token(entity)
-          next_step!
+          @log << "#{entity.name} places a token on #{action.city} TODO hex name..."
+          clear_route_cache
         when Action::RunRoutes
           @current_routes = action.routes
           @current_routes.each do |route|
             hexes = route.hexes.map(&:name).join(', ')
             @log << "#{entity.name} runs a #{route.train.name} train for $#{route.revenue} (#{hexes})"
           end
-          next_step!
         when Action::Dividend
           revenue = @current_routes.sum(&:revenue)
 
@@ -189,14 +243,15 @@ module Engine
           else
             raise GameError, "Unknown dividend type #{action.type}"
           end
-          next_step!
         when Action::BuyTrain
           train = action.train
           price = action.price
-          @log << "#{entity.name} buys a #{train.name} train for $#{price}"
+          @log << "#{entity.name} buys a #{train.name} train for $#{price} from #{train.owner.name}"
           entity.buy_train(action.train, price)
+          skip = can_buy_train?
         end
-        @layable_hexes = nil
+
+        next_step! unless skip
       end
 
       def withhold(revenue = nil)
@@ -215,7 +270,7 @@ module Engine
         name = @current_entity.name
         @log << "#{name} pays out $#{revenue} - $#{per_share} per share"
         @players.each do |player|
-          percent = player.shares_by_corporation[@current_entity].sum(&:percent)
+          percent = player.percent_of(@current_entity)
           next if percent.zero?
 
           shares = percent / 10
@@ -239,7 +294,12 @@ module Engine
           raise GameError, "Don't know how to move direction #{direction}"
         end
 
-        @log << "#{@current_entity.name}'s share price changes from $#{prev} to $#{@current_entity.share_price.price} "
+        log_share_price(@current_entity, prev)
+      end
+
+      def clear_route_cache
+        @layable_hexes = nil
+        @reachable_hexes = nil
       end
     end
   end

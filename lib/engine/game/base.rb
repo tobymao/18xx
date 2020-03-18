@@ -2,6 +2,7 @@
 
 require 'engine/bank'
 require 'engine/map'
+require 'engine/phase'
 require 'engine/player'
 require 'engine/share_pool'
 require 'engine/stock_market'
@@ -15,7 +16,7 @@ module Engine
   module Game
     class Base
       attr_reader :actions, :bank, :companies, :corporations, :depot, :hexes, :log,
-                  :map, :players, :round, :share_pool, :stock_market, :tiles, :turn
+                  :map, :phase, :players, :round, :share_pool, :stock_market, :tiles, :turn
 
       STARTING_CASH = {
         2 => 1200,
@@ -33,12 +34,23 @@ module Engine
         },
       }.freeze
 
-      PHASE_OPERATING_ROUNDS = {
-        yellow: 1,
-        green: 2,
-        brown: 3,
-        gray: 3,
-      }.freeze
+      TRAINS = [
+        *6.times.map { |index| Train::Base.new('2', distance: 2, price: 80, index: index) },
+        *5.times.map { |index| Train::Base.new('3', distance: 3, price: 180, index: index) },
+        *4.times.map { |index| Train::Base.new('4', distance: 4, price: 300, index: index) },
+        *3.times.map { |index| Train::Base.new('5', distance: 5, price: 450, index: index) },
+        *2.times.map { |index| Train::Base.new('6', distance: 6, price: 630, index: index) },
+        *20.times.map { |index| Train::Base.new('D', distance: 999, price: 1100, index: index) },
+      ].freeze
+
+      PHASES = [
+        Phase::TWO,
+        Phase::THREE,
+        Phase::FOUR,
+        Phase::FIVE,
+        Phase::SIX,
+        Phase::D,
+      ].freeze
 
       LOCATION_NAMES = {
         'A3' => 'Exampleville',
@@ -46,26 +58,31 @@ module Engine
 
       def initialize(names, actions: [])
         @turn = 1
+        @log = []
+        @actions = []
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
-        @bank = init_bank
-        @depot = init_train_handler
+
         @companies = init_companies
         @corporations = init_corporations
         @stock_market = init_stock_market
-        @share_pool = SharePool.new(@corporations, @bank)
-        @hexes = init_hexes
+        @bank = init_bank
         @tiles = init_tiles
+
+        @depot = init_train_handler(@bank)
+        init_starting_cash(@players, @bank)
+        @share_pool = SharePool.new(@corporations, @bank, @log)
+        @hexes = init_hexes(@companies, @corporations)
         @map = Map.new(@hexes)
-        @actions = []
-        @log = []
+
+        @phase = init_phase(@depot.trains, @log)
+        @operating_rounds = @phase.operating_rounds
+
         @round = init_round
-        init_starting_cash
-        set_ids
         connect_hexes
 
         # replay all actions with a copy
-        actions.each { |action| process_action(action.copy(self)) }
+        actions.each { |action| process_action(action.class.from_h(action.to_h, self)) }
       end
 
       def current_entity
@@ -74,6 +91,7 @@ module Engine
 
       def process_action(action)
         @round.process_action(action)
+        @phase.process_action(action)
         @actions << action
         next_round! while @round.finished?
       end
@@ -82,24 +100,24 @@ module Engine
         self.class.new(@names, actions: @actions[0...-1])
       end
 
-      def player_by_name(name)
-        @_players ||= @players.map { |p| [p.name, p] }.to_h
-        @_players[name]
+      def player_by_id(id)
+        @_players ||= @players.map { |p| [p.id, p] }.to_h
+        @_players[id]
       end
 
-      def corporation_by_name(name)
-        @_corporations ||= @corporations.map { |c| [c.name, c] }.to_h
-        @_corporations[name]
+      def corporation_by_id(id)
+        @_corporations ||= @corporations.map { |c| [c.id, c] }.to_h
+        @_corporations[id]
       end
 
-      def company_by_name(name)
-        @_companies ||= @companies.map { |c| [c.name, c] }.to_h
-        @_companies[name]
+      def company_by_id(id)
+        @_companies ||= @companies.map { |c| [c.id, c] }.to_h
+        @_companies[id]
       end
 
-      def hex_by_name(name)
-        @_hexes ||= @hexes.map { |h| [h.name, h] }.to_h
-        @_hexes[name]
+      def hex_by_id(id)
+        @_hexes ||= @hexes.map { |h| [h.id, h] }.to_h
+        @_hexes[id]
       end
 
       def tile_by_id(id)
@@ -107,29 +125,25 @@ module Engine
         @_tiles[id]
       end
 
-      def city_by_id(id)
-        @_cities ||= @cities.map { |c| [c.id, c] }.to_h
-        @_cities[id]
-      end
-
       def train_by_id(id)
-        @_trains ||= @depot.trains.map { |t| [c.id, t] }.to_h
+        @_trains ||= @depot.trains.map { |t| [t.id, t] }.to_h
         @_trains[id]
       end
 
-      def share_by_name(name)
+      def share_by_id(id)
         @_shares ||= @corporations.flat_map do |c|
-          c.shares.map { |s| [s.name, s] }
-        end
-        @_shares[name]
+          c.shares.map { |s| [s.id, s] }
+        end.to_h
+        @_shares[id]
+      end
+
+      def share_price_by_id(id)
+        @_share_prices ||= @stock_market.par_prices.map { |s| [s.id, s] }.to_h
+        @_share_prices[id]
       end
 
       def layout
         :flat
-      end
-
-      def phase
-        :yellow
       end
 
       private
@@ -138,12 +152,16 @@ module Engine
         Bank.new(12_000)
       end
 
+      def init_phase(trains, log)
+        Phase.new(self.class::PHASES, trains, log)
+      end
+
       def init_round
         new_auction_round
       end
 
       def init_stock_market
-        StockMarket.new(StockMarket::MARKET)
+        StockMarket.new(self.class::MARKET)
       end
 
       def init_companies
@@ -153,39 +171,33 @@ module Engine
         ]
       end
 
-      def init_train_handler
-        trains = 6.times.map { Train::Base.new('2', distance: 2, price: 80, phase: :yellow) } +
-          5.times.map { Train::Base.new('3', distance: 3, price: 180, phase: :green) } +
-          4.times.map { Train::Base.new('4', distance: 4, price: 300, phase: :green, rusts: '2') } +
-          3.times.map { Train::Base.new('5', distance: 5, price: 450, phase: :brown) } +
-          2.times.map { Train::Base.new('6', distance: 6, price: 630, phase: :brown, rusts: '3') } +
-          20.times.map { Train::Base.new('D', distance: 999, price: 1100, phase: :brown, rusts: '4') }
-        Train::Depot.new(trains, bank: @bank)
+      def init_train_handler(bank)
+        Train::Depot.new(self.class::TRAINS, bank: bank)
       end
 
       def init_corporations
         []
       end
 
-      def init_hexes
+      def init_hexes(companies, corporations)
         self.class::HEXES.map do |color, hexes|
           hexes.map do |coords, tile_string|
             coords.map do |coord|
               tile =
                 begin
-                  Tile.for(tile_string)
+                  Tile.for(tile_string, preprinted: true)
                 rescue Engine::GameError
                   name = coords
                   code = tile_string
-                  Tile.from_code(name, color, code)
+                  Tile.from_code(name, color, code, preprinted: true)
                 end
 
               # add private companies that block tile lays on this hex
-              blocker = @companies.find { |c| c.blocks_hex == coord }
+              blocker = companies.find { |c| c.blocks_hex == coord }
               tile.add_blocker!(blocker) unless blocker.nil?
 
               # reserve corporation home spots
-              @corporations.select { |c| c.coordinates == coord }.each do |c|
+              corporations.select { |c| c.coordinates == coord }.each do |c|
                 tile.cities.first.add_reservation!(c.sym)
               end
 
@@ -198,13 +210,17 @@ module Engine
         end.flatten
       end
 
-      def init_tiles; end
+      def init_tiles
+        self.class::TILES.flat_map do |name, num|
+          num.times.map { |index| Tile.for(name, index: index) }
+        end
+      end
 
-      def init_starting_cash
-        cash = self.class::STARTING_CASH[@players.size]
+      def init_starting_cash(players, bank)
+        cash = self.class::STARTING_CASH[players.size]
 
-        @players.each do |player|
-          @bank.spend(cash, player)
+        players.each do |player|
+          bank.spend(cash, player)
         end
       end
 
@@ -229,20 +245,26 @@ module Engine
         @round =
           case @round
           when Round::Auction
-            @turn += 1
+            rotate_players(@round.last_to_act)
             @companies.all?(&:owner) ? new_stock_round : new_operating_round
           when Round::Stock
-            @turn += 1
+            rotate_players(@round.last_to_act)
             new_operating_round
           when Round::Operating
-            if @round.round_num < self.class::PHASE_OPERATING_ROUNDS[phase]
+            if @round.round_num < @operating_rounds
               new_operating_round(@round.round_num + 1)
             else
+              @turn += 1
+              @operating_rounds = @phase.operating_rounds
               @companies.all?(&:owner) ? new_stock_round : new_auction_round
             end
           else
             raise "Unexected round type #{@round}"
           end
+      end
+
+      def rotate_players(last_to_act)
+        @players.rotate!(@players.find_index(last_to_act) + 1) if last_to_act
       end
 
       def new_auction_round
@@ -252,17 +274,30 @@ module Engine
 
       def new_stock_round
         @log << "-- Stock Round #{@turn} --"
-        Round::Stock.new(@players, log: @log, share_pool: @share_pool, stock_market: @stock_market)
+        Round::Stock.new(
+          @players,
+          log: @log,
+          can_sell: @turn > 1,
+          share_pool: @share_pool,
+          stock_market: @stock_market,
+        )
       end
 
       def new_operating_round(round_num = 1)
         @log << "-- Operating Round #{@turn}.#{round_num} --"
+
+        corps = @corporations.select(&:floated?).sort_by do |corporation|
+          share_price = corporation.share_price
+          _, column = share_price.coordinates
+          [-share_price.price, -column, share_price.corporations.find_index(corporation)]
+        end
+
         Round::Operating.new(
-          @corporations.select(&:floated?),
+          corps,
           log: @log,
           hexes: @hexes,
           tiles: @tiles,
-          phase: phase,
+          phase: @phase,
           companies: @companies,
           bank: @bank,
           depot: @depot,
@@ -270,20 +305,6 @@ module Engine
           stock_market: @stock_market,
           round_num: round_num,
         )
-      end
-
-      def set_ids
-        @tiles.each.with_index do |tile, index|
-          tile.id = index
-        end
-
-        @tiles.flat_map(&:cities).each.with_index do |city, index|
-          city.id = index
-        end
-
-        @depot.upcoming.each.with_index do |train, index|
-          train.id = index
-        end
       end
     end
   end

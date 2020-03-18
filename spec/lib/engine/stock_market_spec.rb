@@ -2,13 +2,14 @@
 
 require './spec/spec_helper'
 
-require 'engine/corporation/base'
+require 'engine/corporation'
+require 'engine/game/g_1830'
 require 'engine/stock_market'
 
 module Engine
   describe StockMarket do
-    let(:subject) { StockMarket.new(StockMarket::MARKET) }
-    let(:corporation) { Corporation::Base.new('a', name: 'a', tokens: 1) }
+    let(:subject) { StockMarket.new(Game::G1830::MARKET) }
+    let(:corporation) { Corporation.new('a', name: 'a', tokens: 1) }
 
     describe '#move_right' do
       it 'moves right' do

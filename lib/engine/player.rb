@@ -1,30 +1,29 @@
 # frozen_string_literal: true
 
 require 'engine/passer'
+require 'engine/share_holder'
 require 'engine/spender'
 
 module Engine
   class Player
     include Passer
+    include ShareHolder
     include Spender
 
-    attr_reader :name, :companies, :shares
+    attr_reader :name, :companies
 
     def initialize(name)
       @name = name
       @cash = 0
-      @shares = []
       @companies = []
     end
 
-    def shares_by_corporation
-      shares = Hash.new { |h, k| h[k] = [] }
+    def id
+      @name
+    end
 
-      @shares.each do |share|
-        shares[share.corporation] << share
-      end
-
-      shares
+    def owner
+      self
     end
 
     def player

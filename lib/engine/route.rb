@@ -34,11 +34,14 @@ module Engine
     end
 
     def stops
-      @paths.flat_map { |path| [path.city, path.town, path.offboard] }.compact
+      @paths
+        .flat_map { |path| [path.city, path.town, path.offboard] }
+        .compact
+        .uniq
     end
 
     def revenue
-      stops.map { |stop| stop.route_revenue(@phase, @train) }.reduce(&:+)
+      stops.map { |stop| stop.route_revenue(@phase, @train) }.sum
     end
   end
 end

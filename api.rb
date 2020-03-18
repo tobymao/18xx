@@ -97,7 +97,7 @@ class Api < Roda
           <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
-            <title>Snabberb Demo</title>
+            <title>18xx.games</title>
           </head>
           <body>
             <div id="app"></div>

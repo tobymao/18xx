@@ -11,7 +11,7 @@ module View
 
     def render
       case @game.round.step
-      when :track
+      when :track, :token
         h(PassButton)
       when :route
         h(RouteSelector)

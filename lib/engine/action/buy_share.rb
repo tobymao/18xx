@@ -16,11 +16,12 @@ module Engine
         @share.corporation
       end
 
-      def copy(game)
-        self.class.new(
-          game.player_by_name(@player.name),
-          game.share_by_name(@share.name),
-        )
+      def self.h_to_args(h, game)
+        [game.share_by_id(h['share'])]
+      end
+
+      def args_to_h
+        { 'share' => @share.id }
       end
     end
   end

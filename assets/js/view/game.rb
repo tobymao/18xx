@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/auction_round'
+require 'view/corporation'
 require 'view/entity_order'
 require 'view/log'
 require 'view/map'
@@ -8,6 +9,7 @@ require 'view/operating_round'
 require 'view/player'
 require 'view/stock_round'
 require 'view/stock_market'
+require 'view/undo_button'
 
 require 'engine/round/auction'
 require 'engine/round/operating'
@@ -38,16 +40,17 @@ module View
     def render
       @round = @game.round
 
-      players = @game.players.map { |player| h(Player, player: player) }
-
       h(:div, { attrs: { id: 'game' } }, [
         render_round,
         h(Log),
         h(EntityOrder, round: @round),
         render_action,
-        *players,
-        h(StockMarket, stock_market: @game.stock_market),
-        h(Map),
+        h(UndoButton),
+        h(:div, 'Players'),
+        *@game.players.map { |p| h(Player, player: p) },
+        h(:div, 'Corporations'),
+        *@game.corporations.map { |c| h(Corporation, corporation: c) },
+        @round.operating? ? h(Map) : h(StockMarket, stock_market: @game.stock_market),
       ])
     end
   end

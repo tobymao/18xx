@@ -5,24 +5,23 @@ require 'engine/action/base'
 module Engine
   module Action
     class Bid < Base
-      attr_reader :player, :company, :price
+      attr_reader :company, :price
 
-      def initialize(player, company, price)
-        @player = player
+      def initialize(entity, company, price)
+        @entity = entity
         @company = company
         @price = price
       end
 
-      def entity
-        @player
+      def self.h_to_args(h, game)
+        [game.company_by_id(h['company']), h['price']]
       end
 
-      def copy(game)
-        self.class.new(
-          game.player_by_name(@player.name),
-          game.company_by_name(@company.name),
-          @price,
-        )
+      def args_to_h
+        {
+          'company' => @company.id,
+          'price' => @price,
+        }
       end
     end
   end

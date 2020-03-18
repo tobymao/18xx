@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
-require 'engine/corporation/base'
+require 'engine/corporation'
 require 'view/part/city_slot'
 require 'view/token'
 
@@ -17,7 +17,7 @@ module View
         context 'with token' do
           it 'renders a View::Token' do
             # setup
-            corp = Engine::Corporation::Base.new('ER', name: 'Example Railroad', tokens: 1)
+            corp = Engine::Corporation.new('ER', name: 'Example Railroad', tokens: 1)
             token = corp.tokens.first
             radius = 1
             slot = described_class.new(nil, token: token, game: nil, city: nil, radius: radius)
