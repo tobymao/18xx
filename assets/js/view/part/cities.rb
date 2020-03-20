@@ -11,7 +11,7 @@ module View
       needs :region_use
 
       def render
-        h(Part::City, region_use: @region_use, city: @tile.cities.first) if @tile.cities.count == 1
+        h(Part::City, region_use: @region_use, tile: @tile) if @tile.cities.count == 1
       end
     end
   end

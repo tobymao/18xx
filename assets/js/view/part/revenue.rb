@@ -6,8 +6,6 @@ require 'view/part/multi_revenue'
 module View
   module Part
     class Revenue < Base
-      needs :tile
-
       def preferred_render_locations
         if multi_revenue?
           return [
@@ -82,7 +80,7 @@ module View
         end
       end
 
-      def parse_tile
+      def load_from_tile
         @slots = @tile.cities.map(&:slots).sum + @tile.towns.size
 
         revenue_stops = @tile.cities + @tile.towns + @tile.offboards

@@ -5,8 +5,6 @@ require 'view/part/base'
 module View
   module Part
     class LocationName < Base
-      needs :tile
-
       def preferred_render_locations
         unless @tile.offboards.empty?
           return [
@@ -46,7 +44,7 @@ module View
         ]
       end
 
-      def parse_tile
+      def load_from_tile
         @name = @tile.location_name
       end
 

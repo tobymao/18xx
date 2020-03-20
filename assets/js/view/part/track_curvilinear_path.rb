@@ -32,10 +32,6 @@ module View
         end
       end
 
-      def parse_tile
-        @exits = @path.exits
-      end
-
       def preferred_render_locations
         [
           {
@@ -47,7 +43,7 @@ module View
       end
 
       def render_part
-        edge_a, edge_b = @exits
+        edge_a, edge_b = @path.exits
 
         curvilinear_type = compute_curvilinear_type(edge_a, edge_b)
         rotation = compute_track_rotation_degrees(edge_a, edge_b)

@@ -8,7 +8,7 @@ module View
       needs :path
       needs :color, default: 'black'
 
-      def parse_tile
+      def load_from_tile
         @edge_num = @path.edges.first.num
       end
 

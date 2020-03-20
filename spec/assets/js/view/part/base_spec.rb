@@ -7,28 +7,31 @@ require 'view/part/base'
 module View
   module Part
     describe Base do
-      subject { described_class.new(nil, region_use: {}) }
+      subject do
+        described_class.new(nil,
+                            tile: nil,
+                            region_use: { 0 => 1,
+                                          1 => 0.25,
+                                          2 => 0.33 })
+      end
 
       describe '#combined_cost' do
         describe 'with a hash of regions mapped to weights' do
           it 'returns the weighted sum of the selected regions' do
-            region_use = { 'center' => 1, 'edge0' => 0.25, 'edge1' => 0.33 }
-            regions = { ['center'] => 2, ['edge0'] => 0.5 }
+            region_weights = { [0] => 2, [1] => 0.5 }
 
-            actual = subject.combined_cost(regions, region_use)
+            actual = subject.combined_cost(region_weights)
             expected = 2.125 # ((1 * 2) + (0.25 * 0.5))
 
             expect(actual).to eq(expected)
           end
-        end
 
-        describe 'with a list of regions' do
-          it 'returns the total use of the selected regions' do
-            region_use = { 'center' => 1, 'edge0' => 0.25, 'edge1' => 0.33 }
-            regions = %w[center edge0]
+          it 'counts the region every time it appears in the keys for '\
+             'region_weights' do
+            region_weights = { [0, 1] => 2, [1] => 0.5 }
 
-            actual = subject.combined_cost(regions, region_use)
-            expected = 1.25
+            actual = subject.combined_cost(region_weights)
+            expected = 2.625 # ((1 + 0.25) * 2) + (0.25 * 0.5))
 
             expect(actual).to eq(expected)
           end

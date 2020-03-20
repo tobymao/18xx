@@ -12,7 +12,7 @@ module View
       needs :region_use
 
       def render
-        @tile.upgrades.flat_map do |upgrade|
+        @tile.upgrades.map do |upgrade|
           h(
             Part::Upgrade,
             region_use: @region_use,

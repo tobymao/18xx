@@ -6,6 +6,7 @@ module View
   module Part
     class Base < Snabberb::Component
       needs :region_use
+      needs :tile, default: nil
 
       CENTER = [7, 8, 9, 14, 15, 16].freeze
 
@@ -34,7 +35,7 @@ module View
 
       def increment_cost
         region_weights = render_location[:region_weights]
-        region_weights = region_weights.keys.flatten
+        region_weights = region_weights.keys.flatten unless region_weights.is_a?(Array)
 
         region_weights.each do |region|
           @region_use[region] += 1
@@ -43,20 +44,20 @@ module View
 
       def render_location
         @render_location ||= preferred_render_locations.min_by.with_index do |t, i|
-          [combined_cost(t[:region_weights], @region_use), i]
+          [combined_cost(t[:region_weights]), i]
         end
       end
 
       # use this method to set instance vars that can be used in the other
       # methods called by render
-      def parse_tile; end
+      def load_from_tile; end
 
       def should_render?
         true
       end
 
       def render
-        parse_tile
+        load_from_tile
 
         return unless should_render?
 
@@ -69,9 +70,9 @@ module View
         raise NotImplementedError
       end
 
-      def combined_cost(region_weights, region_use)
-        region_weights.reduce(0) do |memo, (regions, weight)|
-          memo + weight * regions.reduce(0) { |m, r| m + region_use[r] }
+      def combined_cost(region_weights)
+        region_weights.sum do |regions, weight|
+          weight * regions.sum { |region| @region_use[region] }
         end
       end
     end

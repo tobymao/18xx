@@ -230,8 +230,7 @@ module Engine
       @lawson ||=
         [
           @junctions.any?,
-          [cities.size, towns.size] == [1, 0],
-          [cities.size, towns.size] == [0, 1],
+          cities.size + towns.size == 1,
           # TODO: curvilinear track for towns on yellow tiles
           # ([cities.size, towns.size] == [0, 1]) && (exits.size != 2),
         ].any?

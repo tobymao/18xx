@@ -6,8 +6,6 @@ require 'view/part/city_slot'
 module View
   module Part
     class City < Base
-      needs :city
-
       # key is how many city slots are part of the city; value is the offset for
       # the first city slot
       CITY_SLOT_POSITION = {
@@ -42,6 +40,10 @@ module View
             y: y,
           }
         ]
+      end
+
+      def load_from_tile
+        @city = @tile.cities.first
       end
 
       # TODO: render white "background" before slots

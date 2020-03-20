@@ -6,8 +6,6 @@ module View
   module Part
     # letter label, like "Z", "H", "OO"
     class Label < Base
-      needs :tile
-
       def preferred_render_locations
         [
           {
@@ -33,7 +31,7 @@ module View
         ]
       end
 
-      def parse_tile
+      def load_from_tile
         @label = @tile.label.to_s
       end
 

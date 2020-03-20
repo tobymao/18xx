@@ -5,8 +5,6 @@ require 'view/part/base'
 module View
   module Part
     class Blocker < Base
-      needs :tile
-
       def preferred_render_locations
         [
           {
@@ -22,7 +20,7 @@ module View
         ]
       end
 
-      def parse_tile
+      def load_from_tile
         @blocker = @tile.blockers.first
         @text = @blocker&.sym
       end

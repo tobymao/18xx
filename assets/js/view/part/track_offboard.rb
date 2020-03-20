@@ -8,8 +8,8 @@ module View
       needs :path
       needs :color, default: 'black'
 
-      def parse_tile
-        @edge_num = @path.edges.first.num
+      def edge_num
+        @edge_num ||= @path.edges.first.num
       end
 
       def preferred_render_locations
@@ -20,7 +20,7 @@ module View
           3 => [2],
           4 => [10],
           5 => [17],
-        }[@edge_num]
+        }[edge_num]
 
         [
           {
@@ -32,7 +32,7 @@ module View
       end
 
       def render_part
-        rotate = 60 * @edge_num
+        rotate = 60 * edge_num
 
         props = {
           attrs: {
