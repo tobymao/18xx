@@ -49,7 +49,7 @@ module View
           transform: transform,
           fill: COLOR.fetch(@tile&.color, 'white'),
           stroke: 'black',
-          opacity: layable || @role == :tile_selector ? 1.0 : 0.3,
+          opacity: layable || %i[tile_selector tile_page].include?(@role) ? 1.0 : 0.3,
           cursor: clickable ? 'pointer' : nil,
         },
       }

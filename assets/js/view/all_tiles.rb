@@ -48,7 +48,7 @@ module View
                     h(
                       Hex,
                       hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for(tile_id)),
-                      role: :tile_selector
+                      role: :tile_page
                     )
                   ])
               ])

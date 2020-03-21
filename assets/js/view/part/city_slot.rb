@@ -38,14 +38,16 @@ module View
       end
 
       def on_selected_hex?
-        @tile_selector&.hex&.tile&.cities&.include?(@city)
+        @tile_selector.hex.tile.cities.include?(@city)
       end
 
       def on_white_tile?
-        @tile_selector&.hex&.tile&.color == :white
+        @tile_selector.hex.tile.color == :white
       end
 
       def on_click(event)
+        return unless @tile_selector
+
         # when clicking on a city slot in an unselected hex, do nothing
         return unless on_selected_hex?
 
