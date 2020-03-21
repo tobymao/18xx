@@ -59,7 +59,7 @@ module View
       def render
         load_from_tile
 
-        return unless should_render?
+        return '' unless should_render?
 
         increment_cost
 

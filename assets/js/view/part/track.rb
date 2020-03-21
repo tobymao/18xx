@@ -16,8 +16,6 @@ module View
       needs :routes
 
       def render
-        return if @tile.exits.empty?
-
         # each route has an "entry" in this array; each "entry" is an array of
         # the paths on that route that are also on this tile
         #

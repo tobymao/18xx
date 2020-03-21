@@ -35,10 +35,6 @@ module View
         @label = @tile.label.to_s
       end
 
-      def should_render?
-        !@label.empty?
-      end
-
       def render_part
         attrs = {
           class: 'label',

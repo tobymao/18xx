@@ -24,19 +24,6 @@ module View
         @blocker = @tile.blockers.first
       end
 
-      def should_render?
-        # blocking private company must exist...
-        return false if @blocker.nil?
-
-        # ...and be open
-        return false unless @blocker.open?
-
-        # ...and not have been sold into a corporation yet
-        return false if @blocker.owned_by_corporation?
-
-        true
-      end
-
       def render_part
         h(:g,
           { attrs: { transform: translate, class: 'blocker', } },

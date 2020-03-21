@@ -21,6 +21,20 @@ module View
       h(part_class, region_use: @region_use, tile: @tile, **kwargs)
     end
 
+    def should_render_blocker?
+      blocker = @tile.blockers.first
+
+      return false if blocker.nil?
+
+      # ...and be open
+      return false unless blocker.open?
+
+      # ...and not have been sold into a corporation yet
+      return false if blocker.owned_by_corporation?
+
+      true
+    end
+
     def render
       # hash mapping the different regions to a number representing how much
       # they've been used; it gets passed to the different tile parts and is
@@ -28,17 +42,18 @@ module View
       @region_use = (0..23).map { |r| [r, 0] }.to_h
 
       # parts are rendered in the order in which they appear in this array
-      children =
-        [
-          render_tile_part(Part::Track, routes: @routes),
-          render_tile_part(Part::Cities),
-          render_tile_part(Part::Towns), # TODO: towns on paths
-          render_tile_part(Part::Label),
-          render_tile_part(Part::Revenue),
-          render_tile_part(Part::LocationName),
-          render_tile_part(Part::Upgrades),
-          render_tile_part(Part::Blocker),
-        ].flatten
+      children = []
+
+      children << render_tile_part(Part::Track, routes: @routes) if @tile.exits.any?
+      children << render_tile_part(Part::Cities) if @tile.cities.any?
+      children << render_tile_part(Part::Towns) if @tile.towns.any?
+      children << render_tile_part(Part::Label) if @tile.label
+      children << render_tile_part(Part::Revenue) if (@tile.cities + @tile.towns + @tile.offboards).any?
+      children << render_tile_part(Part::LocationName) if @tile.location_name
+      children << render_tile_part(Part::Upgrades) if @tile.upgrades
+      children << render_tile_part(Part::Blocker) if should_render_blocker?
+
+      children.flatten!
 
       attrs = {
         fill: 'none',

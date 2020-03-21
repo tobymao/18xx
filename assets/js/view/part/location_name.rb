@@ -48,10 +48,6 @@ module View
         @name = @tile.location_name
       end
 
-      def should_render?
-        !!@name
-      end
-
       def render_part
         attrs = {
           class: 'location_name',
