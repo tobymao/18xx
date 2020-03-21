@@ -20,7 +20,7 @@ module View
       needs :reservation, default: nil
 
       def render
-        h(:g, { on: { click: -> { on_click } }, attrs: { class: 'city_slot' } }, [
+        h(:g, { on: { click: ->(e) { on_click(e) } }, attrs: { class: 'city_slot' } }, [
             h(:circle, attrs: { r: @radius, fill: 'white' }),
             reservation,
             (h(Token, corporation: @token.corporation, radius: @radius) unless @token.nil?)
