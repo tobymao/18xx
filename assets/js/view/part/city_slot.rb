@@ -28,7 +28,7 @@ module View
       end
 
       def reservation
-        return if @reservation.nil?
+        return nil if @reservation.nil?
 
         h(
           :text,
