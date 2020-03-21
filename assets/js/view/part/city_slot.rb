@@ -20,16 +20,15 @@ module View
       needs :reservation, default: nil
 
       def render
-        h(:g, { on: { click: ->(e) { on_click(e) } }, attrs: { class: 'city_slot' } }, [
-            h(:circle, attrs: { r: @radius, fill: 'white' }),
-            reservation,
-            (h(Token, corporation: @token.corporation, radius: @radius) unless @token.nil?)
-          ])
+        children = []
+        children << h(:circle, attrs: { r: @radius, fill: 'white' })
+        children << reservation unless @reservation.nil?
+        children << h(Token, corporation: @token.corporation, radius: @radius) unless @token.nil?
+
+        h(:g, { on: { click: ->(e) { on_click(e) } }, attrs: { class: 'city_slot' } }, children)
       end
 
       def reservation
-        return nil if @reservation.nil?
-
         h(
           :text,
           { attrs: { 'text-anchor': 'middle', fill: 'black', transform: 'translate(0 9) scale(1.75)' } },
