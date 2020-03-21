@@ -20,11 +20,11 @@ module View
       needs :reservation, default: nil
 
       def render
-        h(:g, { on: { click: on_click }, attrs: { class: 'city_slot' } }, [
+        h(:g, { on: { click: -> { on_click } }, attrs: { class: 'city_slot' } }, [
             h(:circle, attrs: { r: @radius, fill: 'white' }),
             reservation,
             (h(Token, corporation: @token.corporation, radius: @radius) unless @token.nil?)
-          ].compact)
+          ])
       end
 
       def reservation
@@ -45,25 +45,23 @@ module View
         @tile_selector&.hex&.tile&.color == :white
       end
 
-      def on_click
-        lambda do |event|
-          # when clicking on a city slot in an unselected hex, do nothing
-          next unless on_selected_hex?
+      def on_click(event)
+        # when clicking on a city slot in an unselected hex, do nothing
+        return unless on_selected_hex?
 
-          next if on_white_tile?
+        return if on_white_tile?
 
-          # don't propagate to the hex view's click handler
-          event.JS.stopPropagation
+        # don't propagate to the hex view's click handler
+        event.JS.stopPropagation
 
-          next unless @token.nil?
+        return unless @token.nil?
 
-          action = Engine::Action::PlaceToken.new(
-            @game.current_entity,
-            @city,
-            @slot_index
-          )
-          process_action(action)
-        end
+        action = Engine::Action::PlaceToken.new(
+          @game.current_entity,
+          @city,
+          @slot_index
+        )
+        process_action(action)
       end
     end
   end

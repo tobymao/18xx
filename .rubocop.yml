@@ -63,5 +63,8 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   Enabled: false
 
+Style/DoubleNegation:
+  Enabled: false
+
 AllCops:
   TargetRubyVersion: 2.7

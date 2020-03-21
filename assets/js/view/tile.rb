@@ -38,7 +38,7 @@ module View
           render_tile_part(Part::LocationName),
           render_tile_part(Part::Upgrades),
           render_tile_part(Part::Blocker),
-        ].flatten.compact
+        ].flatten
 
       attrs = {
         fill: 'none',

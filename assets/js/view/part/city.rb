@@ -63,7 +63,7 @@ module View
                               slot_index: slot_index,
                               radius: slot_radius,
                               reservation: @city.reservations[slot_index])
-                ].compact)
+                ])
             ])
         end
 

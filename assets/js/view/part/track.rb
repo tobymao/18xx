@@ -26,7 +26,7 @@ module View
 
         if !@tile.offboards.empty?
           track_class = Part::TrackOffboard
-          paths = @tile.paths.select { |p| [p.a, p.b].any?(&:offboard?) }
+          paths = @tile.paths.select(&:offboard)
         elsif @tile.lawson?
           track_class = Part::TrackLawsonPath
           paths = @tile.paths.select { |p| p.edges.size == 1 }

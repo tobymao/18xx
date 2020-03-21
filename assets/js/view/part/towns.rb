@@ -11,9 +11,9 @@ module View
       needs :region_use
 
       def render
-        @tile.towns.map do |_town|
+        @tile.towns.map do |_|
           h(Part::TownDot, region_use: @region_use) if @tile.lawson?
-        end.compact
+        end
       end
     end
   end

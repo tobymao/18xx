@@ -6,7 +6,7 @@ module View
   module Part
     class LocationName < Base
       def preferred_render_locations
-        unless @tile.offboards.empty?
+        if @tile.offboards.any?
           return [
             {
               region_weights: { [7, 8, 9] => 1,
@@ -49,7 +49,7 @@ module View
       end
 
       def should_render?
-        !@name.nil?
+        !!@name
       end
 
       def render_part

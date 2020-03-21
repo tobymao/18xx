@@ -22,11 +22,19 @@ module View
 
       def load_from_tile
         @blocker = @tile.blockers.first
-        @text = @blocker&.sym
       end
 
       def should_render?
-        !(@blocker.nil? || !@blocker.open? || @blocker.owned_by_corporation?)
+        # blocking private company must exist...
+        return false if @blocker.nil?
+
+        # ...and be open
+        return false unless @blocker.open?
+
+        # ...and not have been sold into a corporation yet
+        return false if @blocker.owned_by_corporation?
+
+        true
       end
 
       def render_part
@@ -39,10 +47,10 @@ module View
                          'text-anchor': 'middle',
                          x: 0,
                          y: -5 } },
-              @text),
-            h(:path, { attrs: { fill: 'white', d: 'M -11 6 A 44 44 0 0 0 11 6' } }, @text),
-            h(:circle, { attrs: { fill: 'white', r: 6, cx: 11, cy: 6 } }, @text),
-            h(:circle, { attrs: { fill: 'white', r: 6, cx: -11, cy: 6 } }, @text),
+              @blocker&.sym),
+            h(:path, attrs: { fill: 'white', d: 'M -11 6 A 44 44 0 0 0 11 6' }),
+            h(:circle, attrs: { fill: 'white', r: 6, cx: 11, cy: 6 }),
+            h(:circle, attrs: { fill: 'white', r: 6, cx: -11, cy: 6 }),
           ])
       end
     end
