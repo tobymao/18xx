@@ -4,6 +4,7 @@ module Engine
   module Action
     class Base
       attr_reader :entity
+      attr_accessor :id
 
       def self.from_h(h, game)
         entity = game.send("#{h['entity_type']}_by_id", h['entity'])
@@ -14,14 +15,21 @@ module Engine
         []
       end
 
-      def initialize(entity)
+      def self.split(klass)
+        klass.name.split('::')
+      end
+
+      def initialize(entity, id: 0)
         @entity = entity
+        @id = id
       end
 
       def to_h
         {
+          'type' => type_s(self),
           'entity' => entity.id,
-          'entity_type' => entity.class.name.split('::').last.downcase,
+          'entity_type' => type_s(entity),
+          'id' => @id,
           **args_to_h,
         }
       end
@@ -32,6 +40,16 @@ module Engine
 
       def pass?
         false
+      end
+
+      def copy(game)
+        self.class.from_h(to_h, game)
+      end
+
+      private
+
+      def type_s(obj)
+        self.class.split(obj.class).last.gsub(/(.)([A-Z])/, '\1_\2').downcase
       end
     end
   end

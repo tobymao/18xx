@@ -4,7 +4,7 @@ require 'engine/game_error'
 
 module Engine
   class Route
-    attr_reader :hexes, :paths, :train
+    attr_reader :hexes, :paths, :phase, :train
 
     def initialize(phase, train)
       @hexes = []

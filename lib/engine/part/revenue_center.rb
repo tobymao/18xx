@@ -18,15 +18,9 @@ module Engine
       end
 
       def route_revenue(phase, train)
-        revenue_type =
-          if train.name.upcase == 'DIESEL'
-            :diesal
-          elsif phase == :green
-            :yellow
-          else
-            phase
-          end
-        @revenue[revenue_type]
+        return @revenue[:diesel] if train.name.upcase == 'DIESEL'
+
+        phase.tiles.reverse.each { |color| return @revenue[color] if @revenue[color] }
       end
     end
   end

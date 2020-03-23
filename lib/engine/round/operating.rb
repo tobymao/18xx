@@ -235,13 +235,13 @@ module Engine
         when Action::Dividend
           revenue = @current_routes.sum(&:revenue)
 
-          case action.type
-          when :payout
+          case action.kind
+          when 'payout'
             payout(revenue)
-          when :withhold
+          when 'withhold'
             withhold(revenue)
           else
-            raise GameError, "Unknown dividend type #{action.type}"
+            raise GameError, "Unknown dividend type #{action.kind}"
           end
         when Action::BuyTrain
           train = action.train

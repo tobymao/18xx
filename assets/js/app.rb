@@ -4,6 +4,7 @@ require 'compiled-opal'
 require 'snabberb'
 require 'polyfill'
 
+require 'lib/connection'
 require 'view/game'
 require 'view/tiles'
 require 'view/tokens'
@@ -13,8 +14,12 @@ require 'engine/game/g_1889'
 class App < Snabberb::Component
   needs :game, store: true
   needs :page, store: true, default: 'game'
+  needs :connection, store: true, default: nil
 
   def render
+    @connection ||= Lib::Connection.new('/game/subscribe', self)
+    store(:connection, @connection, skip: true)
+
     page =
       case @page
       when 'game'
@@ -38,6 +43,21 @@ class App < Snabberb::Component
       h(:button, { on: { click: -> { store(:page, 'tiles') } } }, 'Tiles'),
       h(:button, { on: { click: -> { store(:page, 'tokens') } } }, 'Tokens'),
     ]
+  end
+
+  def on_message(type, data)
+    case type
+    when 'action'
+      n_id = data['id']
+      o_id = @game.actions.size
+      if n_id == o_id
+        store(:game, @game.process_action(data))
+      elsif n_id > o_id
+        @connection.send('refresh')
+      end
+    when 'refresh'
+      store(:game, @game.clone(data))
+    end
   end
 end
 
