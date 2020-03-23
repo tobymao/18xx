@@ -154,12 +154,12 @@ class Api < Roda
         response['X-Accel-Buffering'] = 'no' # for nginx
         response['Transfer-Encoding'] = 'identity'
 
-        stream(async: true, loop: true, callback: -> { on_close(room, q) }) do |out|
+        stream(loop: true, callback: -> { on_close(room, q) }) do |out|
           out << "data: #{q.pop}\n\n"
         end
       end
 
-      r.post 'action' do
+      r.get 'action' do
         action = r.params
         ACTIONS << action
         notify(1, type: 'action', data: action)
