@@ -10,8 +10,11 @@ module View
 
       CENTER = [7, 8, 9, 14, 15, 16].freeze
 
-      LEFT_CENTER = [6, 7, 13, 14].freeze
-      RIGHT_CENTER = [9, 10, 16, 17].freeze
+      LEFT_CENTER = [7, 14].freeze
+      RIGHT_CENTER = [9, 16].freeze
+
+      LEFT_MID = [6, 13].freeze
+      RIGHT_MID = [10, 17].freeze
 
       LEFT_CORNER = [5, 12].freeze
       RIGHT_CORNER = [11, 18].freeze

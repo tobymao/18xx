@@ -26,40 +26,43 @@ module View
         when 1
           [
             {
-              region_weights: [6, 7, 13, 14],
+              # left-center
+              region_weights_in: { LEFT_MID => 1.0, LEFT_CENTER => 0.4 },
+              region_weights_out: { LEFT_CORNER => 0.1, LEFT_MID => 0.2, LEFT_CENTER => 1.0 },
               x: -45,
               y: 0,
             },
             {
-              region_weights: [9, 10, 16, 17],
+              # right-center
+              region_weights_in: { RIGHT_MID => 1.0, RIGHT_CENTER => 0.4 },
+              region_weights_out: { RIGHT_CORNER => 0.1, RIGHT_MID => 0.2, RIGHT_CENTER => 1.0 },
               x: 45,
               y: 0,
             },
             {
+              # between center and edge1
               region_weights: [13, 14],
               x: -45,
-              y: 5,
+              y: 25,
             },
             {
-              region_weights: LEFT_CORNER,
-              x: -65,
-              y: 0,
-            },
-            {
-              region_weights: RIGHT_CORNER,
-              x: 65,
-              y: 0,
+              # between center and edge2
+              region_weights: [6, 7],
+              x: -45,
+              y: -25,
             },
           ]
         when (2..4)
           [
             {
-              region_weights: LEFT_CORNER,
+              region_weights_in: LEFT_CORNER + LEFT_MID,
+              region_weights_out: LEFT_CORNER,
               x: -70,
               y: 0,
             },
             {
-              region_weights: RIGHT_CORNER,
+              region_weights_in: RIGHT_CORNER + RIGHT_MID,
+              region_weights_out: RIGHT_CORNER,
               x: 70,
               y: 0,
             },

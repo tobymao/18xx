@@ -9,22 +9,26 @@ module View
       def preferred_render_locations
         [
           {
-            region_weights: LEFT_CENTER,
+            # left-center
+            region_weights: { (LEFT_MID + LEFT_CORNER) => 1, LEFT_CENTER => 0.5 },
             x: -22,
             y: 0,
           },
           {
-            region_weights: RIGHT_CENTER,
+            # right-center
+            region_weights: { (RIGHT_MID + RIGHT_CORNER) => 1, RIGHT_CENTER => 0.5 },
             x: 22,
             y: 0,
           },
           {
-            region_weights: { LEFT_CORNER => 1.0, LEFT_CENTER => 0.5 },
+            # left-corner
+            region_weights: { LEFT_CORNER => 1.0, (LEFT_CENTER + LEFT_MID) => 0.5 },
             x: -28.5,
             y: 0,
           },
           {
-            region_weights: { RIGHT_CORNER => 1.0, RIGHT_CENTER => 0.5 },
+            # right-corner
+            region_weights: { RIGHT_CORNER => 1.0, (RIGHT_CENTER + RIGHT_MID) => 0.5 },
             x: 28.5,
             y: 0,
           },

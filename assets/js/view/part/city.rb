@@ -25,7 +25,7 @@ module View
           when (2..4)
             {
               CENTER => 1.0,
-              (LEFT_CENTER + RIGHT_CENTER) => 0.5,
+              (LEFT_CENTER + LEFT_MID + RIGHT_CENTER + RIGHT_MID) => 0.5,
             }
           else
             CENTER
