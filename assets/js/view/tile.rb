@@ -48,8 +48,8 @@ module View
       children << render_tile_part(Part::Towns) if @tile.towns.any?
       children << render_tile_part(Part::Label) if @tile.label
       children << render_tile_part(Part::Revenue) if (@tile.cities + @tile.towns + @tile.offboards).any?
-      children << render_tile_part(Part::LocationName) if @tile.location_name
       children << render_tile_part(Part::Upgrades) if @tile.upgrades
+      children << render_tile_part(Part::LocationName) if @tile.location_name
       children << render_tile_part(Part::Blocker) if should_render_blocker?
 
       children.flatten!
