@@ -51,22 +51,32 @@ module View
               x: -45,
               y: -25,
             },
+            {
+              # between center and lower left corner
+              region_weights_in: { [13, 14, 15, 21] => 0.4, [19, 20] => 1.0 },
+              region_weights_out: [13, 14, 15, 19, 20, 21],
+              x: -28,
+              y: 45,
+            },
           ]
         when (2..4)
           [
             {
+              # left-corner
               region_weights_in: LEFT_CORNER + LEFT_MID,
               region_weights_out: LEFT_CORNER,
               x: -70,
               y: 0,
             },
             {
+              # left-corner
               region_weights_in: RIGHT_CORNER + RIGHT_MID,
               region_weights_out: RIGHT_CORNER,
               x: 70,
               y: 0,
             },
             {
+              # between center and edge1
               region_weights: [13, 14],
               x: -45,
               y: 25,
