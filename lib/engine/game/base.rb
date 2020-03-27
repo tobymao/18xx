@@ -1,5 +1,16 @@
 # frozen_string_literal: true
 
+require 'engine/action/bid'
+require 'engine/action/buy_share'
+require 'engine/action/buy_train'
+require 'engine/action/dividend'
+require 'engine/action/lay_tile'
+require 'engine/action/par'
+require 'engine/action/pass'
+require 'engine/action/place_token'
+require 'engine/action/run_routes'
+require 'engine/action/sell_shares'
+
 require 'engine/bank'
 require 'engine/map'
 require 'engine/phase'
@@ -82,7 +93,7 @@ module Engine
         connect_hexes
 
         # replay all actions with a copy
-        actions.each { |action| process_action(action.class.from_h(action.to_h, self)) }
+        actions.each { |action| process_action(action) }
       end
 
       def current_entity
@@ -90,10 +101,47 @@ module Engine
       end
 
       def process_action(action)
+        action = action_from_h(action) if action.is_a?(Hash)
+        action.id = @actions.size
         @round.process_action(action)
         @phase.process_action(action)
         @actions << action
         next_round! while @round.finished?
+        self
+      end
+
+      def action_from_h(h)
+        klass =
+          case h['type']
+          when 'bid'
+            Action::Bid
+          when 'buy_share'
+            Action::BuyShare
+          when 'buy_train'
+            Action::BuyTrain
+          when 'dividend'
+            Action::Dividend
+          when 'lay_tile'
+            Action::LayTile
+          when 'par'
+            Action::Par
+          when 'pass'
+            Action::Pass
+          when 'place_token'
+            Action::PlaceToken
+          when 'run_routes'
+            Action::RunRoutes
+          when 'sell_shares'
+            Action::SellShares
+          else
+            raise GameError, "Unknow action #{h['type']}"
+          end
+
+        klass.from_h(h, self)
+      end
+
+      def clone(actions)
+        self.class.new(@names, actions: actions)
       end
 
       def rollback

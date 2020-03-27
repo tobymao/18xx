@@ -14,24 +14,23 @@ module Engine
       end
 
       def self.h_to_args(h, game)
-        route = Route.new(h['phase'], game.train_by_id(h['train']))
-        h['hexes'].each { |id| route.add_hex(game.hex_by_id(id)) }
-        [route]
+        routes = h['routes'].map do |r|
+          route = Route.new(game.phase, game.train_by_id(r['train']))
+          r['hexes'].each { |id| route.add_hex(game.hex_by_id(id)) }
+          route
+        end
+        [routes]
       end
 
       def args_to_h
         routes = @routes.map do |route|
           {
-            'phase': route.phase,
             'train': route.train.id,
             'hexes': route.hexes.map(&:id),
           }
         end
 
-        {
-          'entity' => @hex.id,
-          'routes' => routes,
-        }
+        { 'routes' => routes }
       end
     end
   end

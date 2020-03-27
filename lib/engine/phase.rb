@@ -37,7 +37,7 @@ module Engine
       name: 'D',
       operating_rounds: 3,
       train_limit: 2,
-      tiles: %i[yellow green brown brown].freeze,
+      tiles: %i[yellow green brown].freeze,
       on: 'D',
       events: { rust: '4' },
     }.freeze

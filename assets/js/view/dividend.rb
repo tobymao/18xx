@@ -10,8 +10,8 @@ module View
 
     def render
       h(:div, [
-        h(:button, { on: { click: -> { dividend(:payout) } } }, 'Payout'),
-        h(:button, { on: { click: -> { dividend(:withhold) } } }, 'Withhold'),
+        h(:button, { on: { click: -> { dividend('payout') } } }, 'Payout'),
+        h(:button, { on: { click: -> { dividend('withhold') } } }, 'Withhold'),
       ])
     end
 

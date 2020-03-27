@@ -4,11 +4,12 @@ module View
   module Actionable
     def self.included(base)
       base.needs :game, store: true
+      base.needs :connection, store: true
     end
 
     def process_action(action)
-      @game.process_action(action)
-      store(:game, @game)
+      store(:game, @game.process_action(action))
+      @connection.send('action', action.to_h)
     end
 
     def rollback

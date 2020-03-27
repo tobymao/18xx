@@ -4,6 +4,7 @@ require 'compiled-opal'
 require 'snabberb'
 require 'polyfill'
 
+require 'lib/connection'
 require 'view/game'
 require 'view/all_tiles'
 require 'view/all_tokens'
@@ -14,8 +15,12 @@ class App < Snabberb::Component
   needs :game, store: true
   needs :page, store: true, default: 'game'
   needs :show_grid, default: false, store: true
+  needs :connection, store: true, default: nil
 
   def render
+    @connection ||= Lib::Connection.new('/game/subscribe', self)
+    store(:connection, @connection, skip: true)
+
     page =
       case @page
       when 'game'
@@ -40,6 +45,21 @@ class App < Snabberb::Component
       h(:button, { on: { click: -> { store(:page, 'tokens') } } }, 'All Tokens'),
       h(:button, { on: { click: -> { store(:show_grid, !@show_grid) } } }, 'Toggle Tile Grid'),
     ]
+  end
+
+  def on_message(type, data)
+    case type
+    when 'action'
+      n_id = data['id']
+      o_id = @game.actions.size
+      if n_id == o_id
+        store(:game, @game.process_action(data))
+      elsif n_id > o_id
+        @connection.send('refresh')
+      end
+    when 'refresh'
+      store(:game, @game.clone(data))
+    end
   end
 end
 
