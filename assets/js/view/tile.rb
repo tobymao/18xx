@@ -41,7 +41,6 @@ module View
       # modified before being passed on to the next one
       @region_use = (0..23).map { |r| [r, 0] }.to_h
 
-      # parts are rendered in the order in which they appear in this array
       children = []
 
       children << render_tile_part(Part::Track, routes: @routes) if @tile.exits.any?

@@ -10,12 +10,12 @@ module View
         if multi_revenue?
           return [
             {
-              region_weights: { [13, 14, 15, 16, 17] => 1.0 },
+              region_weights: [13, 14, 15, 16, 17],
               x: -30,
               y: 20,
             },
             {
-              region_weights: { [6, 7, 8, 9, 10] => 1.0 },
+              region_weights: [6, 7, 8, 9, 10],
               x: -30,
               y: -20,
             },
@@ -26,27 +26,27 @@ module View
         when 1
           [
             {
-              region_weights: { [6, 7, 13, 14] => 1.0 },
+              region_weights: [6, 7, 13, 14],
               x: -45,
               y: 0,
             },
             {
-              region_weights: { [9, 10, 16, 17] => 1.0 },
+              region_weights: [9, 10, 16, 17],
               x: 45,
               y: 0,
             },
             {
-              region_weights: { [13, 14] => 1.0 },
+              region_weights: [13, 14],
               x: -45,
               y: 5,
             },
             {
-              region_weights: { LEFT_CORNER => 1.0 },
+              region_weights: LEFT_CORNER,
               x: -65,
               y: 0,
             },
             {
-              region_weights: { RIGHT_CORNER => 1.0 },
+              region_weights: RIGHT_CORNER,
               x: 65,
               y: 0,
             },
@@ -54,17 +54,17 @@ module View
         when (2..4)
           [
             {
-              region_weights: { LEFT_CORNER => 1.0 },
+              region_weights: LEFT_CORNER,
               x: -70,
               y: 0,
             },
             {
-              region_weights: { RIGHT_CORNER => 1.0 },
+              region_weights: RIGHT_CORNER,
               x: 70,
               y: 0,
             },
             {
-              region_weights: { [13, 14] => 1.0 },
+              region_weights: [13, 14],
               x: -45,
               y: 25,
             },
@@ -72,7 +72,7 @@ module View
         else
           [
             {
-              region_weights: { [7, 8, 9, 14, 15, 16] => 1.0 },
+              region_weights: [7, 8, 9, 14, 15, 16],
               x: 0,
               y: 0,
             }

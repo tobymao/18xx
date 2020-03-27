@@ -21,14 +21,14 @@ module View
         region_weights =
           case @city.slots
           when 1
-            { CENTER => 1.0 }
+            CENTER
           when (2..4)
             {
               CENTER => 1.0,
               (LEFT_CENTER + RIGHT_CENTER) => 0.5,
             }
           else
-            { CENTER => 1.0 }
+            CENTER
           end
 
         x, y = CITY_SLOT_POSITION[@city.slots]

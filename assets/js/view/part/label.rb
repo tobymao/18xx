@@ -9,12 +9,12 @@ module View
       def preferred_render_locations
         [
           {
-            region_weights: { LEFT_CENTER => 1.0 },
+            region_weights: LEFT_CENTER,
             x: -22,
             y: 0,
           },
           {
-            region_weights: { RIGHT_CENTER => 1.0 },
+            region_weights: RIGHT_CENTER,
             x: 22,
             y: 0,
           },

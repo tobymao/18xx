@@ -25,7 +25,7 @@ module View
 
         [
           {
-            region_weights: { CENTER => 1.0 },
+            region_weights: CENTER,
             x: 0,
             y: 0,
           },

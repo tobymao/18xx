@@ -24,7 +24,7 @@ module View
 
         [
           {
-            region_weights: { regions => 1.0 },
+            region_weights: regions,
             x: 0,
             y: 0,
           }

@@ -8,7 +8,7 @@ module View
       def preferred_render_locations
         [
           {
-            region_weights: { [7, 8, 9, 14, 15, 16] => 1.0 },
+            region_weights: [7, 8, 9, 14, 15, 16],
             x: 0,
             y: 0,
           },
