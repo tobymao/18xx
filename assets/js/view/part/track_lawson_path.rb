@@ -14,12 +14,12 @@ module View
 
       def preferred_render_locations
         regions = {
-          0 => [15, 21],
-          1 => [13, 14],
-          2 => [6, 7],
-          3 => [2, 8],
-          4 => [9, 10],
-          5 => [16, 17],
+          0 => TRACK_TO_EDGE_0,
+          1 => TRACK_TO_EDGE_1,
+          2 => TRACK_TO_EDGE_2,
+          3 => TRACK_TO_EDGE_3,
+          4 => TRACK_TO_EDGE_4,
+          5 => TRACK_TO_EDGE_5,
         }[@edge_num]
 
         [

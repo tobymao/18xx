@@ -13,6 +13,9 @@ module View
       UPPER_CENTER_LEFT = [6, 7, 8].freeze
       UPPER_CENTER_RIGHT = [8, 9, 10].freeze
 
+      UPPER_CENTER = [7, 8, 9].freeze
+      LOWER_CENTER = [14, 15, 16].freeze
+
       CENTER = [7, 8, 9, 14, 15, 16].freeze
 
       LEFT_CENTER = [7, 14].freeze
@@ -23,6 +26,16 @@ module View
 
       LEFT_CORNER = [5, 12].freeze
       RIGHT_CORNER = [11, 18].freeze
+
+      TRACK_TO_EDGE_0 = [15, 21].freeze
+      TRACK_TO_EDGE_1 = [13, 14].freeze
+      TRACK_TO_EDGE_2 = [6, 7].freeze
+      TRACK_TO_EDGE_3 = [2, 8].freeze
+      TRACK_TO_EDGE_4 = [9, 10].freeze
+      TRACK_TO_EDGE_5 = [16, 17].freeze
+
+      TOP_ROW = [0, 1, 2, 3, 4].freeze
+      BOTTOM_ROW = [19, 20, 21, 22, 23].freeze
 
       def preferred_render_locations
         [
