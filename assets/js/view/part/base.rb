@@ -8,6 +8,11 @@ module View
       needs :region_use
       needs :tile, default: nil
 
+      UPPER_LEFT = [0, 1, 2].freeze
+      UPPER_RIGHT = [2, 3, 4].freeze
+      UPPER_CENTER = [6, 7, 8].freeze
+      UPPER_CENTER_RIGHT = [8, 9, 10].freeze
+
       CENTER = [7, 8, 9, 14, 15, 16].freeze
 
       LEFT_CENTER = [7, 14].freeze
