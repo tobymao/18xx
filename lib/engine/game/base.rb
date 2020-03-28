@@ -26,7 +26,7 @@ require 'engine/train/depot'
 module Engine
   module Game
     class Base
-      attr_reader :actions, :bank, :companies, :corporations, :depot, :hexes, :log,
+      attr_reader :actions, :bank, :cities, :companies, :corporations, :depot, :hexes, :log,
                   :map, :phase, :players, :round, :share_pool, :stock_market, :tiles, :turn
 
       STARTING_CASH = {
@@ -76,6 +76,7 @@ module Engine
         %i[tiles tile],
         %i[shares share],
         %i[share_prices share_price],
+        %i[cities city],
       ].freeze
 
       def initialize(names, actions: [])
@@ -99,7 +100,7 @@ module Engine
 
         # call here to set up ids for all cities before any tiles from @tiles
         # can be placed onto the map
-        @_cities = init_cities(@hexes, @tiles)
+        @cities = (@hexes.map(&:tile) + @tiles).map(&:cities).flatten
         min_price = @stock_market.par_prices.map(&:price).min
         @corporations.each { |c| c.min_price = min_price }
 
@@ -251,13 +252,6 @@ module Engine
         self.class::TILES.flat_map do |name, num|
           num.times.map { |index| Tile.for(name, index: index) }
         end
-      end
-
-      def init_cities(hexes, tiles)
-        (hexes.map(&:tile) + tiles).map(&:cities).flatten.map.with_index do |city, id|
-          city.id = id
-          [id, city]
-        end.to_h
       end
 
       def init_starting_cash(players, bank)

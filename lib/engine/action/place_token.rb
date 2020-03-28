@@ -14,13 +14,13 @@ module Engine
       end
 
       def self.h_to_args(h, game)
-        [game.city_by_id(h['city']), game.slot_by_id(h['slot'])]
+        [game.city_by_id(h['city']), h['slot']]
       end
 
       def args_to_h
         {
           'city' => @city.id,
-          'slot' => @slot.id,
+          'slot' => @slot,
         }
       end
     end
