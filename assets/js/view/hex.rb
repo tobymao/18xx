@@ -2,6 +2,7 @@
 
 require 'lib/tile_selector'
 require 'view/tile'
+require 'view/triangular_grid'
 
 require 'engine/action/lay_tile'
 require 'engine/route'
@@ -27,6 +28,7 @@ module View
     needs :hex
     needs :selected_route, default: nil, store: true
     needs :tile_selector, default: nil, store: true
+    needs :show_grid, default: false, store: true
     needs :role, default: :map
     needs :operating_round, default: nil
 
@@ -38,6 +40,7 @@ module View
       @tile = @selected && @tile_selector.tile ? @tile_selector.tile : @hex.tile
 
       children << h(Tile, tile: @tile) if @tile
+      children << h(View::TriangularGrid) if @show_grid
       clickable = layable || @role == :tile_selector
 
       props = {
@@ -46,7 +49,7 @@ module View
           transform: transform,
           fill: COLOR.fetch(@tile&.color, 'white'),
           stroke: 'black',
-          opacity: layable || @role == :tile_selector ? 1.0 : 0.3,
+          opacity: layable || %i[tile_selector tile_page].include?(@role) ? 1.0 : 0.3,
           cursor: clickable ? 'pointer' : nil,
         },
       }

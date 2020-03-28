@@ -113,6 +113,23 @@ module Engine
         )
         expect(actual).to eq(expected)
       end
+
+      it 'should render a green town' do
+        actual = Tile.for('87')
+
+        expected = Tile.new(
+          '87',
+          color: :green,
+          parts: [
+            town_a,
+            Path.new(edge0, town_a),
+            Path.new(edge1, town_a),
+            Path.new(edge2, town_a),
+            Path.new(edge3, town_a),
+          ]
+        )
+        expect(actual).to eq(expected)
+      end
     end
 
     describe '.from_code' do

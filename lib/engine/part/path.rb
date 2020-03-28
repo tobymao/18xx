@@ -16,7 +16,7 @@ module Engine
       end
 
       def ==(other)
-        other.path? &&
+        other&.path? &&
           ((@a == other.a && @b == other.b) ||
            (@a == other.b && @b == other.a))
       end

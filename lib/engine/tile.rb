@@ -66,6 +66,7 @@ module Engine
       '28' => 'p=a:0,b:4;p=a:0,b:5',
       '29' => 'p=a:0,b:1;p=a:0,b:2',
       '81A' => 'p=a:0,b:j;p=a:2,b:j;p=a:4,b:j',
+      '87' => 't=r:10;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0',
       '205' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:3,b:_0',
       '206' => 'c=r:30;p=a:0,b:_0;p=a:3,b:_0;p=a:5,b:_0',
       '298' => 'c=r:40;c=r:40;c=r:40;c=r:40;l=Chi;'\
@@ -226,7 +227,13 @@ module Engine
     end
 
     def lawson?
-      @lawson ||= @junctions.any?
+      @lawson ||=
+        [
+          @junctions.any?,
+          cities.size + towns.size == 1,
+          # TODO: curvilinear track for towns on yellow tiles
+          # ([cities.size, towns.size] == [0, 1]) && (exits.size != 2),
+        ].any?
     end
 
     def ==(other)

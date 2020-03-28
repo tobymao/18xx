@@ -5,7 +5,7 @@ require 'snabberb'
 require 'engine/tile'
 
 module View
-  class Tiles < Snabberb::Component
+  class AllTiles < Snabberb::Component
     def render
       tile_ids = [
         Engine::Tile::WHITE.keys,
@@ -48,7 +48,7 @@ module View
                     h(
                       Hex,
                       hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for(tile_id)),
-                      role: :tile_selector
+                      role: :tile_page
                     )
                   ])
               ])
