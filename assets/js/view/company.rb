@@ -11,7 +11,7 @@ module View
     end
 
     def render_bidders
-      names = @bids.map { |bid| "#{bid.player.name} (#{bid.price})" }
+      names = @bids.map { |bid| "#{bid.entity.name} (#{bid.price})" }
       h(:div, "Bidders: #{names}")
     end
 

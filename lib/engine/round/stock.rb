@@ -50,24 +50,6 @@ module Engine
           (!share.president || @entities.any? { |e| e != share.owner && e.percent_of(corporation) > 10 })
       end
 
-      def can_sell_anything?
-        @current_entity.shares.any? { |s| can_sell?(s) }
-      end
-
-      def can_buy_anything?
-        @share_pool.shares.any? { |s| can_buy?(s) }
-      end
-
-      def next_entity
-        if @current_entity.passed? || (!can_buy_anything? && !can_sell_anything?)
-          @current_entity.unpass! if @current_actions.any?
-          @current_actions.clear
-          super
-        else
-          @current_entity
-        end
-      end
-
       private
 
       def _process_action(action)
@@ -87,6 +69,26 @@ module Engine
           @stock_market.set_par(corporation, share_price)
           share = corporation.shares.first
           buy_share(entity, share)
+        end
+      end
+
+      def nothing_to_do?
+        @current_entity.shares.none? { |s| can_sell?(s) } &&
+          @share_pool.shares.none? { |s| can_buy?(s) }
+      end
+
+      def change_entity(_action)
+        return if !@current_entity.passed? && !nothing_to_do?
+
+        @current_entity.unpass! if @current_actions.any?
+        @current_actions.clear
+        @current_entity = next_entity
+      end
+
+      def action_finalized(_action)
+        while !finished? && nothing_to_do?
+          @current_entity.pass!
+          @current_entity = next_entity
         end
       end
 

@@ -15,6 +15,10 @@ module Engine
       @log = log
     end
 
+    def shares
+      @corporations.flat_map(&:shares)
+    end
+
     def buy_share(entity, share)
       corporation = share.corporation
       ipoed = corporation.ipoed

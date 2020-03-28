@@ -159,7 +159,7 @@ class Api < Roda
         end
       end
 
-      r.get 'action' do
+      r.post 'action' do
         action = r.params
         ACTIONS << action
         notify(1, type: 'action', data: action)

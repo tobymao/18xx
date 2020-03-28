@@ -23,21 +23,19 @@ module Lib
 
     def send(type, data = nil)
       %x{
-        setTimeout(function(){
-          fetch(#{"/game/#{type}"}, {
-            method: "POST",
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(#{Native.convert(data)})
-          }).then(res => {
-            return res.text()
-          }).then(data => {
-            this.$on_message(data)
-          }).catch(error => {
-            console.error('Error:', error)
-          })
-        }, 1)
+        fetch(#{"/game/#{type}"}, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(#{Native.convert(data)})
+        }).then(res => {
+          return res.text()
+        }).then(data => {
+          this.$on_message(data)
+        }).catch(error => {
+          console.error('Error:', error)
+        })
       }
     end
 

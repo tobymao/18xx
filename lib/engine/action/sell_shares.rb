@@ -16,11 +16,12 @@ module Engine
         @shares.first.corporation
       end
 
-      def copy(game)
-        self.class.new(
-          game.player_by_name(@player.name),
-          @shares.map { |share| game.share_by_name(share.name) },
-        )
+      def self.h_to_args(h, game)
+        [h['shares'].map { |id| game.share_by_id(id) }]
+      end
+
+      def args_to_h
+        { 'shares' => @shares.map(&:id) }
       end
     end
   end

@@ -28,23 +28,15 @@ module Engine
         @companies.empty? || @entities.all?(&:passed?)
       end
 
-      def next_entity
-        bids = @bids[@auctioning_company]
-        if bids&.any?
-          bids.min_by(&:price).entity
+      def change_entity(_action)
+        if (bids = @bids[@auctioning_company]).any?
+          @current_entity = bids.min_by(&:price).entity
+        elsif @last_to_act
+          # if someone bought a share outright, then we find the next person who hasn't passed
+          @current_entity = @last_to_act
+          @current_entity = next_entity while next_entity.passed? && next_entity != @last_to_act
         else
-          # if someone bought a share outright, then we find the person right before the last  person who hasn't passed
-          if @last_to_act
-            @current_entity = @last_to_act
-            n = super
-
-            while n.passed? && n != @last_to_act
-              @current_entity = n
-              n = super
-            end
-          end
-
-          super
+          @current_entity = next_entity
         end
       end
 
@@ -54,12 +46,6 @@ module Engine
 
         high_bid = @bids[company].max_by(&:price)
         (high_bid ? high_bid.price : company.min_bid) + @min_increment
-      end
-
-      def pass(entity)
-        super
-        @bids[@auctioning_company]&.reject! { |bid| bid.entity == entity }
-        resolve_bids
       end
 
       def auction?
@@ -74,12 +60,15 @@ module Engine
 
       def _process_action(bid)
         if @auctioning_company
-          bids = @bids[bid.company]
-          bids.reject! { |b| b.player == bid.entity }
-          bids << bid
+          add_bid(bid)
         else
           placement_bid(bid)
         end
+      end
+
+      def pass_processed(_action)
+        @bids[@auctioning_company]&.reject! { |bid| bid.entity == @current_entity }
+        resolve_bids
       end
 
       def placement_bid(bid)
@@ -91,8 +80,7 @@ module Engine
           min = min_bid(bid.company)
           raise Engine::GameError, "Minimum bid is #{min}" if bid.price < min
 
-          @log << "#{bid.entity.name} bids $#{bid.price} for #{bid.company.name}"
-          @bids[bid.company] << bid
+          add_bid(bid)
         end
       end
 
@@ -120,6 +108,13 @@ module Engine
         @bids.delete(company)
         @auctioning_company = nil
         @log << "#{player.name} buys #{company.name} for $#{price}"
+      end
+
+      def add_bid(bid)
+        bids = @bids[bid.company]
+        bids.reject! { |b| b.entity == bid.entity }
+        bids << bid
+        @log << "#{bid.entity.name} bids $#{bid.price} for #{bid.company.name}"
       end
     end
   end

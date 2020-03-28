@@ -51,7 +51,7 @@ module Engine
         self.class::STEP_DESCRIPTION[@step]
       end
 
-      def pass(_entity)
+      def pass(_action)
         next_step!
       end
 
@@ -94,10 +94,6 @@ module Engine
           @step = self.class::STEPS.first
           @current_entity.pass!
         end
-      end
-
-      def next_entity
-        @step == self.class::STEPS.first ? super : @current_entity
       end
 
       def companies_payout
@@ -209,7 +205,6 @@ module Engine
 
       def _process_action(action)
         entity = action.entity
-        skip = false
 
         case action
         when Action::LayTile
@@ -248,10 +243,17 @@ module Engine
           price = action.price
           @log << "#{entity.name} buys a #{train.name} train for $#{price} from #{train.owner.name}"
           entity.buy_train(action.train, price)
-          skip = can_buy_train?
         end
+      end
 
-        next_step! unless skip
+      def change_entity(_action)
+        @current_entity = next_entity if @step == self.class::STEPS.first
+      end
+
+      def action_processed(action)
+        return if action.is_a?(Action::BuyTrain) && can_buy_train?
+
+        next_step!
       end
 
       def withhold(revenue = nil)

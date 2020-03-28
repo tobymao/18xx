@@ -67,6 +67,17 @@ module Engine
         'A3' => 'Exampleville',
       }.freeze
 
+      CACHABLE = [
+        %i[players player],
+        %i[corporations corporation],
+        %i[companies company],
+        %i[trains train],
+        %i[hexes hex],
+        %i[tiles tile],
+        %i[shares share],
+        %i[share_prices share_price],
+      ].freeze
+
       def initialize(names, actions: [])
         @turn = 1
         @log = []
@@ -89,11 +100,15 @@ module Engine
         # call here to set up ids for all cities before any tiles from @tiles
         # can be placed onto the map
         @_cities = init_cities(@hexes, @tiles)
+        min_price = @stock_market.par_prices.map(&:price).min
+        @corporations.each { |c| c.min_price = min_price }
 
         @phase = init_phase(@depot.trains, @log)
         @operating_rounds = @phase.operating_rounds
 
         @round = init_round
+
+        cache_objects
         connect_hexes
 
         # replay all actions with a copy
@@ -152,51 +167,16 @@ module Engine
         self.class.new(@names, actions: @actions[0...-1])
       end
 
-      def player_by_id(id)
-        @_players ||= @players.map { |p| [p.id, p] }.to_h
-        @_players[id]
+      def trains
+        @depot.trains
       end
 
-      def city_by_id(id)
-        @_cities ||= init_cities(@hexes, @tiles)
-        @_cities[id]
+      def shares
+        @corporations.flat_map(&:shares)
       end
 
-      def corporation_by_id(id)
-        @_corporations ||= @corporations.map { |c| [c.id, c] }.to_h
-        @_corporations[id]
-      end
-
-      def company_by_id(id)
-        @_companies ||= @companies.map { |c| [c.id, c] }.to_h
-        @_companies[id]
-      end
-
-      def hex_by_id(id)
-        @_hexes ||= @hexes.map { |h| [h.id, h] }.to_h
-        @_hexes[id]
-      end
-
-      def tile_by_id(id)
-        @_tiles ||= @tiles.map { |t| [t.id, t] }.to_h
-        @_tiles[id]
-      end
-
-      def train_by_id(id)
-        @_trains ||= @depot.trains.map { |t| [t.id, t] }.to_h
-        @_trains[id]
-      end
-
-      def share_by_id(id)
-        @_shares ||= @corporations.flat_map do |c|
-          c.shares.map { |s| [s.id, s] }
-        end.to_h
-        @_shares[id]
-      end
-
-      def share_price_by_id(id)
-        @_share_prices ||= @stock_market.par_prices.map { |s| [s.id, s] }.to_h
-        @_share_prices[id]
+      def share_prices
+        @stock_market.par_prices
       end
 
       def layout
@@ -369,6 +349,17 @@ module Engine
           stock_market: @stock_market,
           round_num: round_num,
         )
+      end
+
+      def cache_objects
+        CACHABLE.each do |type, name|
+          ivar = "@_#{type}"
+          instance_variable_set(ivar, send(type).map { |x| [x.id, x] }.to_h)
+
+          self.class.define_method("#{name}_by_id") do |id|
+            instance_variable_get(ivar)[id]
+          end
+        end
       end
     end
   end

@@ -28,7 +28,7 @@ module Engine
 
     def price
       share_price = @owner == corporation ? corporation.par_price : corporation.share_price
-      share_price.price * @percent / 10
+      (share_price&.price || corporation.min_price) * @percent / 10
     end
   end
 end

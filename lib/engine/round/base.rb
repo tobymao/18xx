@@ -30,8 +30,8 @@ module Engine
         index < @entities.size ? @entities[index] : @entities[0]
       end
 
-      def pass(entity)
-        entity.pass!
+      def pass(action)
+        action.entity.pass!
       end
 
       def process_action(action)
@@ -40,12 +40,15 @@ module Engine
 
         if action.pass?
           @log << "#{entity.name} passes"
-          pass(entity)
+          pass(action)
+          pass_processed(action)
         else
           @current_entity.unpass!
           _process_action(action)
+          action_processed(action)
         end
-        @current_entity = next_entity
+        change_entity(action)
+        action_finalized(action)
       end
 
       def finished?
@@ -70,13 +73,24 @@ module Engine
 
       private
 
+      def log_share_price(entity, from)
+        @log << "#{entity.name}'s share price changes from $#{from} to $#{entity.share_price.price} "
+      end
+
+      # methods to override
       def _process(_action)
         raise NotImplementedError
       end
 
-      def log_share_price(entity, from)
-        @log << "#{entity.name}'s share price changes from $#{from} to $#{entity.share_price.price} "
+      def change_entity(_action)
+        @current_entity = next_entity
       end
+
+      def pass_processed(_action); end
+
+      def action_processed(_action); end
+
+      def action_finalized(_action); end
     end
   end
 end

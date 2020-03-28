@@ -14,7 +14,7 @@ module Engine
     include ShareHolder
     include Spender
 
-    attr_accessor :ipoed, :par_price, :share_price, :tokens
+    attr_accessor :ipoed, :min_price, :par_price, :share_price, :tokens
     attr_reader :coordinates, :sym, :name, :logo, :trains
 
     def initialize(sym, name:, tokens:, **opts)
