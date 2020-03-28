@@ -86,6 +86,10 @@ module Engine
         @hexes = init_hexes(@companies, @corporations)
         @map = Map.new(@hexes)
 
+        # call here to set up ids for all cities before any tiles from @tiles
+        # can be placed onto the map
+        @_cities = init_cities(@hexes, @tiles)
+
         @phase = init_phase(@depot.trains, @log)
         @operating_rounds = @phase.operating_rounds
 
@@ -151,6 +155,11 @@ module Engine
       def player_by_id(id)
         @_players ||= @players.map { |p| [p.id, p] }.to_h
         @_players[id]
+      end
+
+      def city_by_id(id)
+        @_cities ||= init_cities(@hexes, @tiles)
+        @_cities[id]
       end
 
       def corporation_by_id(id)
@@ -262,6 +271,13 @@ module Engine
         self.class::TILES.flat_map do |name, num|
           num.times.map { |index| Tile.for(name, index: index) }
         end
+      end
+
+      def init_cities(hexes, tiles)
+        (hexes.map(&:tile) + tiles).map(&:cities).flatten.map.with_index do |city, id|
+          city.id = id
+          [id, city]
+        end.to_h
       end
 
       def init_starting_cash(players, bank)
