@@ -12,8 +12,8 @@ module Engine
 
     context 'on init' do
       it 'starts with correct cash' do
-        expect(subject.bank.cash).to eq(4600)
-        expect(subject.players.map(&:cash)).to eq([1200, 1200])
+        expect(subject.bank.cash).to eq(6160)
+        expect(subject.players.map(&:cash)).to eq([420, 420])
       end
 
       it 'starts with an auction' do

@@ -128,6 +128,14 @@ module Engine
         %w[10o 20o 30o 40y],
       ].freeze
 
+      STARTING_CASH = {
+        2 => 420,
+        3 => 420,
+        4 => 420,
+        5 => 390,
+        6 => 390,
+      }.freeze
+
       private
 
       def init_bank
@@ -138,7 +146,7 @@ module Engine
         [
           Company::Base.new('Takamatsu E-Railroad', value: 20, income: 5, sym: 'TR', blocks_hex: 'K4'),
           # Company::TileLaying.new('Mitsubishi Ferry', value: 30, income: 5, sym: 'ER'),
-          Company::TileLaying.new('Ehime Railway', value: 40, income: 10, blocks_hex: 'C4', sym: 'ER'),
+          # Company::TileLaying.new('Ehime Railway', value: 40, income: 10, blocks_hex: 'C4', sym: 'ER'),
           # Company::TerrainDiscount.new('Sumitomo Mines Railway', value: 50, income: 15),
         ]
       end

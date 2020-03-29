@@ -73,6 +73,17 @@ module Engine
 
       private
 
+      def sell_and_change_price(shares, share_pool, stock_market)
+        share_pool.sell_shares(shares)
+        corporation = shares.first.corporation
+        prev = corporation.share_price.price
+        shares.each do |share|
+          stock_market.move_down(corporation)
+          stock_market.move_down(corporation) if share.president
+        end
+        log_share_price(corporation, prev)
+      end
+
       def log_share_price(entity, from)
         @log << "#{entity.name}'s share price changes from $#{from} to $#{entity.share_price.price} "
       end

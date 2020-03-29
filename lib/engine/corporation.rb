@@ -37,6 +37,10 @@ module Engine
       @logo = "logos/#{opts[:logo] || sym}.svg"
     end
 
+    def share_holders
+      @share_holders ||= Hash.new(0)
+    end
+
     def id
       @sym
     end

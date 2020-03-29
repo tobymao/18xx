@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'engine/action/base'
 require 'engine/action/bid'
 require 'engine/action/buy_share'
 require 'engine/action/buy_train'
@@ -113,7 +114,10 @@ module Engine
         connect_hexes
 
         # replay all actions with a copy
-        actions.each { |action| process_action(action) }
+        actions.each do |action|
+          action = action.copy(self) if action.is_a?(Action::Base)
+          process_action(action)
+        end
       end
 
       def current_entity
@@ -330,19 +334,7 @@ module Engine
           [-share_price.price, -column, share_price.corporations.find_index(corporation)]
         end
 
-        Round::Operating.new(
-          corps,
-          log: @log,
-          hexes: @hexes,
-          tiles: @tiles,
-          phase: @phase,
-          companies: @companies,
-          bank: @bank,
-          depot: @depot,
-          players: @players,
-          stock_market: @stock_market,
-          round_num: round_num,
-        )
+        Round::Operating.new(corps, game: self, round_num: round_num)
       end
 
       def cache_objects

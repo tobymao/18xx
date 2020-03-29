@@ -19,9 +19,8 @@ module Engine
         klass.name.split('::')
       end
 
-      def initialize(entity, id: 0)
+      def initialize(entity)
         @entity = entity
-        @id = id
       end
 
       def to_h

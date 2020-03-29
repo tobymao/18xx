@@ -14,6 +14,7 @@ module View
 
     def rollback
       store(:game, @game.rollback)
+      @connection.send('rollback')
     end
   end
 end

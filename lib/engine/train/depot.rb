@@ -13,6 +13,10 @@ module Engine
         @bank = bank
       end
 
+      def min_price
+        [*@discarded, @upcoming.first].map(&:price).min
+      end
+
       def remove_train(train)
         @upcoming.delete(train)
         @discarded.delete(train)

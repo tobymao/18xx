@@ -27,6 +27,7 @@ module View
         h(:div, "Corporation: #{@corporation.name}"),
         h(:div, "Available Shares: #{@corporation.shares.size}"),
         h(:div, "Trains: #{@corporation.trains.map(&:name).join(', ')}"),
+        h(:div, "Cash: #{@corporation.cash}"),
       ])
     end
   end

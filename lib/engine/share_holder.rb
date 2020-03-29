@@ -11,10 +11,14 @@ module Engine
     end
 
     def shares_of(corporation)
+      return [] unless corporation
+
       shares_by_corporation[corporation]
     end
 
     def percent_of(corporation)
+      return 0 unless corporation
+
       shares_by_corporation[corporation].sum(&:percent)
     end
 

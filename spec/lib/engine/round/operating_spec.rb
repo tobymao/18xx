@@ -19,19 +19,7 @@ module Engine
     let(:hex_l7) { game.hex_by_id('L7') }
 
     subject do
-      Round::Operating.new(
-        [corporation],
-        log: [],
-        hexes: game.hexes,
-        phase: game.phase,
-        tiles: game.tiles,
-        companies: game.companies,
-        bank: game.bank,
-        depot: game.depot,
-        players: game.players,
-        stock_market: game.stock_market,
-        round_num: 1,
-      )
+      Round::Operating.new([corporation], game: game, round_num: 1)
     end
 
     describe '#layable_hexes' do

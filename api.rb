@@ -166,6 +166,12 @@ class Api < Roda
         ''
       end
 
+      r.post 'rollback' do
+        ACTIONS.pop
+        notify(1, type: 'refresh', data: ACTIONS)
+        ''
+      end
+
       r.post 'refresh' do
         { type: 'refresh', data: ACTIONS }
       end

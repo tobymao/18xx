@@ -3,10 +3,10 @@
 require 'view/actionable'
 require 'view/corporation'
 require 'view/pass_button'
+require 'view/sell_shares'
 
 require 'engine/action/buy_share'
 require 'engine/action/par'
-require 'engine/action/sell_shares'
 require 'engine/share'
 
 module View
@@ -45,28 +45,9 @@ module View
 
       children = []
       children << h(:button, { on: { click: buy } }, 'Buy Share') if @round.can_buy?(selected_share)
-      children.concat(render_sell)
+      children << h(SellShares, player: @current_entity)
 
       h(:div, children)
-    end
-
-    def render_sell
-      shares = @current_entity
-        .shares_of(@selected_corporation)
-        .select { |share| @round.can_sell?(share) }
-        .sort_by(&:price)
-
-      shares.size.times.map do |n|
-        bundle = shares.take(n + 1)
-        num = bundle.size
-        percent = bundle.sum(&:percent)
-        sell = -> { process_action(Engine::Action::SellShares.new(@current_entity, bundle)) }
-        h(
-          :button,
-          { on: { click: sell } },
-          "Sell #{num} share#{num > 1 ? 's' : ''} (%#{percent} - $#{Engine::Share.price(bundle)})",
-        )
-      end
     end
 
     def render_pre_ipo

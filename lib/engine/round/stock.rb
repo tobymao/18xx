@@ -39,15 +39,16 @@ module Engine
           (@current_actions & [Action::BuyShare, Action::Par]).none?
       end
 
-      def can_sell?(share)
-        return unless share
+      def can_sell?(shares)
         return false unless @can_sell
+        return false if shares.empty?
 
-        corporation = share.corporation
+        corporation = shares.first.corporation
 
         !@players_sold[@current_entity][corporation] &&
           !(@current_actions.uniq.size == 2 && [Action::BuyShare, Action::Par].include?(@current_actions.last)) &&
-          (!share.president || @entities.any? { |e| e != share.owner && e.percent_of(corporation) > 10 })
+          (shares.none?(&:president) ||
+           corporation.share_holders.reject { |k, _| k == @current_entity }.values.max > 10)
       end
 
       private
@@ -63,7 +64,7 @@ module Engine
         when Action::BuyShare
           buy_share(entity, action.share)
         when Action::SellShares
-          sell_shares(entity, action.shares)
+          sell_shares(action.shares)
         when Action::Par
           share_price = action.share_price
           @stock_market.set_par(corporation, share_price)
@@ -73,7 +74,7 @@ module Engine
       end
 
       def nothing_to_do?
-        @current_entity.shares.none? { |s| can_sell?(s) } &&
+        !can_sell?([@current_entity.shares.min_by(&:price)].compact) &&
           @share_pool.shares.none? { |s| can_buy?(s) }
       end
 
@@ -92,27 +93,22 @@ module Engine
         end
       end
 
-      def sell_shares(entity, shares)
-        corporation = shares.first.corporation
+      def sell_shares(shares)
+        share = shares.first
+        entity = share.owner
+        corporation = share.corporation
         old_p = corporation.owner
         @players_sold[entity][corporation] = true
-        @share_pool.sell_shares(shares)
+        sell_and_change_price(shares, @share_pool, @stock_market)
 
-        if old_p == entity
-          presidential_share_swap(
-            corporation,
-            @entities.min_by { |e| [-e.percent_of(corporation), distance(entity, e)] },
-            old_p,
-            shares.find(&:president),
-          )
-        end
+        return if old_p != entity
 
-        prev = corporation.share_price.price
-        shares.each do |share|
-          @stock_market.move_down(corporation)
-          @stock_market.move_down(corporation) if share.president
-        end
-        log_share_price(corporation, prev)
+        presidential_share_swap(
+          corporation,
+          @entities.min_by { |e| [-e.percent_of(corporation), distance(entity, e)] },
+          old_p,
+          shares.find(&:president),
+        )
       end
 
       def buy_share(entity, share)

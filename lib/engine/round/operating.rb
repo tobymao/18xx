@@ -4,6 +4,7 @@ require 'engine/action/buy_train'
 require 'engine/action/dividend'
 require 'engine/action/lay_tile'
 require 'engine/action/run_routes'
+require 'engine/action/sell_shares'
 require 'engine/round/base'
 
 module Engine
@@ -27,19 +28,22 @@ module Engine
         train: 'Buy Trains',
       }.freeze
 
-      def initialize(entities, log:, hexes:, tiles:, phase:, companies:, bank:,
-                     depot:, players:, stock_market:, round_num: 1)
-        super
+      def initialize(entities, game:, round_num: 1)
+        @entities = entities
+        @log = game.log
+        @current_entity = @entities.first
 
         @round_num = round_num
-        @hexes = hexes
-        @tiles = tiles
-        @phase = phase
-        @companies = companies
-        @bank = bank
-        @depot = depot
-        @players = players
-        @stock_market = stock_market
+        @hexes = game.hexes
+        @tiles = game.tiles
+        @phase = game.phase
+        @companies = game.companies
+        @bank = game.bank
+        @depot = game.depot
+        @players = game.players
+        @stock_market = game.stock_market
+        @share_pool = game.share_pool
+
         @step = self.class::STEPS.first
         @current_routes = []
 
@@ -62,6 +66,31 @@ module Engine
       def can_buy_train?
         @current_entity.trains.size < @phase.train_limit &&
           @depot.available(@current_entity).any? { |t| @current_entity.cash >= t.min_price }
+      end
+
+      def can_act?(entity)
+        return true if @step == :train && active_entities.map(&:owner).include?(entity)
+
+        active_entities.include?(entity)
+      end
+
+      def can_sell?(shares)
+        # can't sell president's share
+        return false if shares.any?(&:president)
+
+        # can only sell as much as you need to afford the train
+        corporation = shares.first.corporation
+        player = corporation.owner
+        value = shares.sum(&:price)
+        percentage = shares.sum(&:percent)
+        price_per_share = value * percentage / 10.0
+        return false if value + player.cash >= @depot.min_price + price_per_share
+
+        # can't swap presidency
+        share_holders = corporation.share_holders
+        remaining = share_holders[player] - percentage
+        next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
+        remaining >= next_highest
       end
 
       def next_step!
@@ -239,10 +268,9 @@ module Engine
             raise GameError, "Unknown dividend type #{action.kind}"
           end
         when Action::BuyTrain
-          train = action.train
-          price = action.price
-          @log << "#{entity.name} buys a #{train.name} train for $#{price} from #{train.owner.name}"
-          entity.buy_train(action.train, price)
+          buy_train(entity, action.train, action.price)
+        when Action::SellShares
+          sell_shares(action.shares)
         end
       end
 
@@ -251,6 +279,7 @@ module Engine
       end
 
       def action_processed(action)
+        return if action.is_a?(Action::SellShares)
         return if action.is_a?(Action::BuyTrain) && can_buy_train?
 
         next_step!
@@ -269,19 +298,22 @@ module Engine
 
       def payout(revenue)
         per_share = revenue / 10
-        name = @current_entity.name
-        @log << "#{name} pays out $#{revenue} - $#{per_share} per share"
+        @log << "#{@current_entity.name} pays out $#{revenue} - $#{per_share} per share"
         @players.each do |player|
-          percent = player.percent_of(@current_entity)
-          next if percent.zero?
-
-          shares = percent / 10
-          player_revenue = shares * per_share
-          @log << "#{player.name} receives $#{player_revenue} - $#{per_share} x #{shares}"
-          @bank.spend(player_revenue, player)
+          payout_entity(player, per_share)
         end
-        # TODO: payout sold shares to corporation
+        payout_entity(@share_pool, per_share, @current_entity)
         change_share_price(:right)
+      end
+
+      def payout_entity(holder, per_share, receiver = nil)
+        return if (percent = holder.percent_of(@current_entity)).zero?
+
+        receiver ||= holder
+        shares = percent / 10
+        amount = shares * per_share
+        @log << "#{receiver.name} receives $#{amount} - $#{per_share} x #{shares}"
+        @bank.spend(amount, receiver)
       end
 
       def change_share_price(direction)
@@ -297,6 +329,21 @@ module Engine
         end
 
         log_share_price(@current_entity, prev)
+      end
+
+      def buy_train(entity, train, price)
+        remaining = price - entity.cash
+        if remaining.positive?
+          player = entity.owner
+          player.spend(remaining, entity)
+          @log << "#{player.name} contributes $#{remaining}"
+        end
+        @log << "#{entity.name} buys a #{train.name} train for $#{price} from #{train.owner.name}"
+        entity.buy_train(train, price)
+      end
+
+      def sell_shares(shares)
+        sell_and_change_price(shares, @share_pool, @stock_market)
       end
 
       def clear_route_cache

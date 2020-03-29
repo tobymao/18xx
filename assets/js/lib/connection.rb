@@ -52,8 +52,6 @@ module Lib
       send('refresh')
     end
 
-    def on_error
-      puts 'event source connection error'
-    end
+    def on_error; end
   end
 end
