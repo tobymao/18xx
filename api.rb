@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'execjs'
+# require 'execjs'
 require 'opal'
 require 'roda'
 require 'snabberb'

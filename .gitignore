@@ -1,5 +1,4 @@
 /.env.rb
-/.bundle/
 /.yardoc
 /_yardoc/
 /coverage/
@@ -8,6 +7,7 @@
 /spec/reports/
 /tmp/
 /build/
+/vendor/
 
 .tags
 .DS_STORE

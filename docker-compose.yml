@@ -1,0 +1,33 @@
+version: '3.5'
+
+services:
+  rack:
+    build: .
+    image: 18xx_rack:dev
+    volumes:
+      - .:/18xx
+      - /18xx/vendor
+    environment:
+      APP_SESSION_SECRET: realHushHushhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+      DATABASE_URL: postgres://root:password@postgres:5432/db_18xx
+    ports:
+      - 9292:9292
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:12.2-alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db_18xx
+    ports:
+      - 5432:5432
+    volumes:
+      - /var/lib/postgresql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
