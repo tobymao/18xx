@@ -10,6 +10,8 @@ require 'engine/tile'
 module Engine
   module Game
     class G1889 < Base
+      BANK_CASH = 7_000
+
       HEXES = {
         white: {
           %w[B5 C8 D3 D9 E8 H3 I8 I10 J3] => 'blank',
@@ -134,79 +136,141 @@ module Engine
         6 => 390,
       }.freeze
 
-      private
+      COMPANIES = [
+        {
+          name: 'Takamatsu E-Railroad',
+          value: 20,
+          income: 5,
+          sym: 'TR',
+          abilities: [
+            { type: :block_hexs, hex: 'K4' },
+          ],
+        },
+        {
+          name: 'Mitsubishi Ferry',
+          value: 30,
+          income: 5,
+          sym: 'ER',
+          desc: '',
+          abilities: [
+            {
+              type: :player_tile_lay,
+              tiles: %w[437],
+              hexes: %w[B11 G10 I12 J9],
+              when: :outside_or,
+            },
+          ],
+        },
+        {
+          name: 'Ehime Railway',
+          value: 40,
+          income: 10,
+          sym: 'ER',
+          abilities: [
+            { type: :block_hexs, hex: 'C4' },
+            {
+              type: :tile_lay,
+              tiles: %w[12 13 14 15 205 206],
+              hexes: %w[C4],
+              when: :sold,
+            },
+          ],
+        },
+        {
+          name: 'Sumitomo Mines Railway',
+          value: 50,
+          income: 15,
+          abilities: [
+            {
+              type: :ignore_terrain,
+              terrain: :mtn,
+            },
+          ],
+        },
+        {
+          name: 'Dougo Railway',
+          value: 60,
+          income: 15,
+          abilities: [
+            {
+              type: :exchange,
+              corporation: 'Iyo Railway',
+            },
+          ],
+        },
+        {
+          name: 'South Iyo Railway',
+          value: 80,
+          income: 20,
+          min_players: 3,
+        },
+        {
+          name: 'Uno-Takamsu Ferry',
+          value: 150,
+          income: 30,
+          min_players: 4,
+          abilities: [
+            { type: :never_closes },
+            {
+              type: :revenue_change,
+              revenue: 50,
+              when: '5',
+            },
+          ],
+        },
+      ].freeze
 
-      def init_bank
-        Bank.new(7000)
-      end
-
-      def init_companies
-        companies = []
-        companies.concat([
-          Company.new('Takamatsu E-Railroad', value: 20, income: 5, sym: 'TR', blocks_hex: 'K4'),
-          Company.new('Mitsubishi Ferry', value: 30, income: 5, sym: 'ER'),
-          Company.new('Ehime Railway', value: 40, income: 10, blocks_hex: 'C4', sym: 'ER'),
-          # Company.new('Sumitomo Mines Railway', value: 50, income: 15),
-        ])
-
-        # companies << Company.new('South Iyo Railway', value: 80, income: 20) if @players.size > 2
-        # companies << Company.new('Uno-Takamsu Ferry', value: 150, income: 30) if @players.size > 3
-        companies
-      end
-
-      def init_corporations
-        [
-          Corporation.new(
-            'AR',
-            name: 'Awa Railroad',
-            tokens: 2,
-            float_percent: 50,
-            coordinates: 'K8',
-          ),
-          Corporation.new(
-            'IR',
-            name: 'Iyo Railway',
-            tokens: 2,
-            float_percent: 50,
-            coordinates: 'E2',
-          ),
-          # Corporation.new(
-          #   'SR',
-          #   name: 'Sanuki Railway',
-          #   tokens: 2,
-          #   float_percent: 50,
-          #   coordinates: 'I2',
-          # ),
-          # Corporation.new(
-          #   'KO',
-          #   name: 'Takamatsu & Kotohira Electric Railway',
-          #   tokens: 2,
-          #   float_percent: 50,
-          #   coordinates: 'K4',
-          # ),
-          # Corporation.new(
-          #   'TR',
-          #   name: 'Tosa Electric Railway',
-          #   tokens: 3,
-          #   float_percent: 50,
-          #   coordinates: 'F9',
-          # ),
-          # Corporation.new(
-          #   'KU',
-          #   name: 'Tosa Kuroshio Railway',
-          #   tokens: 1,
-          #   float_percent: 50,
-          #   coordinates: 'C10',
-          # ),
-          # Corporation.new(
-          #   'UR',
-          #   name: 'Uwajima Railway',
-          #   tokens: 3,
-          #   float_percent: 50,
-          #   coordinates: 'B7',
-          # ),
-        ]
-      end
+      CORPORATIONS = [
+        {
+          sym: 'AR',
+          name: 'Awa Railroad',
+          tokens: 2,
+          float_percent: 50,
+          coordinates: 'K8',
+        },
+        {
+          sym: 'IR',
+          name: 'Iyo Railway',
+          tokens: 2,
+          float_percent: 50,
+          coordinates: 'E2',
+        },
+        {
+          sym: 'SR',
+          name: 'Sanuki Railway',
+          tokens: 2,
+          float_percent: 50,
+          coordinates: 'I2',
+        },
+        {
+          sym: 'KO',
+          name: 'Takamatsu & Kotohira Electric Railway',
+          tokens: 2,
+          float_percent: 50,
+          coordinates: 'K4',
+        },
+        {
+          sym: 'TR',
+          name: 'Tosa Electric Railway',
+          tokens: 3,
+          float_percent: 50,
+          coordinates: 'F9',
+        },
+        {
+          sym: 'KU',
+          name: 'Tosa Kuroshio Railway',
+          tokens: 1,
+          float_percent: 50,
+          coordinates: 'C10',
+        },
+        {
+          sym: 'UR',
+          name: 'Uwajima Railway',
+          tokens: 3,
+          float_percent: 50,
+          coordinates: 'B7',
+        },
+      ].freeze
     end
   end
 end

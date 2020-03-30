@@ -17,7 +17,7 @@ module Engine
     attr_accessor :ipoed, :min_price, :par_price, :share_price, :tokens
     attr_reader :companies, :coordinates, :sym, :name, :logo, :trains
 
-    def initialize(sym, name:, tokens:, **opts)
+    def initialize(sym:, name:, tokens:, **opts)
       @sym = sym
       @name = name
       @tokens = tokens.times.map { Token.new(self) }

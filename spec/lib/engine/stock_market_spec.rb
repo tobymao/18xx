@@ -9,7 +9,7 @@ require 'engine/stock_market'
 module Engine
   describe StockMarket do
     let(:subject) { StockMarket.new(Game::G1830::MARKET) }
-    let(:corporation) { Corporation.new('a', name: 'a', tokens: 1) }
+    let(:corporation) { Corporation.new(sym: 'a', name: 'a', tokens: 1) }
 
     describe '#move_right' do
       it 'moves right' do

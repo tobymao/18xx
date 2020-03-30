@@ -31,6 +31,8 @@ module Engine
       attr_reader :actions, :bank, :cities, :companies, :corporations, :depot, :hexes, :log,
                   :map, :phase, :players, :round, :share_pool, :stock_market, :tiles, :turn
 
+      BANK_CASH = 12_000
+
       STARTING_CASH = {
         2 => 1200,
         3 => 800,
@@ -39,13 +41,7 @@ module Engine
         6 => 400,
       }.freeze
 
-      HEXES = {
-        white: {
-          %w[A1] => 'blank',
-          %w[B2] => 'city',
-          %w[A3] => 'c=r:0;l=A;u=c:30',
-        },
-      }.freeze
+      HEXES = {}.freeze
 
       TRAINS = [
         *6.times.map { |index| Train::Base.new('2', distance: 2, price: 80, index: index) },
@@ -56,6 +52,10 @@ module Engine
         *20.times.map { |index| Train::Base.new('D', distance: 999, price: 1100, index: index) },
       ].freeze
 
+      COMPANIES = [].freeze
+
+      CORPORATIONS = [].freeze
+
       PHASES = [
         Phase::TWO,
         Phase::THREE,
@@ -65,9 +65,7 @@ module Engine
         Phase::D,
       ].freeze
 
-      LOCATION_NAMES = {
-        'A3' => 'Exampleville',
-      }.freeze
+      LOCATION_NAMES = {}.freeze
 
       CACHABLE = [
         %i[players player],
@@ -88,7 +86,7 @@ module Engine
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
 
-        @companies = init_companies
+        @companies = init_companies(@players)
         @corporations = init_corporations
         @stock_market = init_stock_market
         @bank = init_bank
@@ -194,7 +192,7 @@ module Engine
       private
 
       def init_bank
-        Bank.new(12_000)
+        Bank.new(self.class::BANK_CASH)
       end
 
       def init_phase(trains, log)
@@ -209,11 +207,12 @@ module Engine
         StockMarket.new(self.class::MARKET)
       end
 
-      def init_companies
-        [
-          Company.new('Mohawk', value: 20, income: 5),
-          Company.new('PRR', value: 30, income: 5),
-        ]
+      def init_companies(players)
+        self.class::COMPANIES.map do |company|
+          next if players.size < (company[:min_players] || 0)
+
+          Company.new(**company)
+        end.compact
       end
 
       def init_train_handler(bank)
@@ -221,7 +220,9 @@ module Engine
       end
 
       def init_corporations
-        []
+        self.class::CORPORATIONS.map do |corporation|
+          Corporation.new(**corporation)
+        end
       end
 
       def init_hexes(companies, corporations)
