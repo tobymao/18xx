@@ -39,7 +39,7 @@ module View
       # hash mapping the different regions to a number representing how much
       # they've been used; it gets passed to the different tile parts and is
       # modified before being passed on to the next one
-      @region_use = (0..23).map { |r| [r, 0] }.to_h
+      @region_use = Hash.new(0)
 
       children = []
 
