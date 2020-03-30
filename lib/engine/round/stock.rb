@@ -7,7 +7,7 @@ require 'engine/action/sell_shares'
 module Engine
   module Round
     class Stock < Base
-      attr_reader :last_to_act
+      attr_reader :last_to_act, :share_pool, :stock_market
 
       def initialize(entities, share_pool:, can_sell: true, stock_market:)
         super

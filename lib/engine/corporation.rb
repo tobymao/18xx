@@ -15,7 +15,7 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :min_price, :par_price, :share_price, :tokens
-    attr_reader :coordinates, :sym, :name, :logo, :trains
+    attr_reader :companies, :coordinates, :sym, :name, :logo, :trains
 
     def initialize(sym, name:, tokens:, **opts)
       @sym = sym
@@ -30,6 +30,7 @@ module Engine
       @par_price = nil
       @ipoed = false
       @trains = []
+      @companies = []
 
       @cash = 0
       @float_percent = opts[:float_percent] || 60

@@ -2,6 +2,7 @@
 
 require 'engine/action/base'
 require 'engine/action/bid'
+require 'engine/action/buy_company'
 require 'engine/action/buy_share'
 require 'engine/action/buy_train'
 require 'engine/action/dividend'
@@ -139,6 +140,8 @@ module Engine
           case h['type']
           when 'bid'
             Action::Bid
+          when 'buy_company'
+            Action::BuyCompany
           when 'buy_share'
             Action::BuyShare
           when 'buy_train'
@@ -208,8 +211,8 @@ module Engine
 
       def init_companies
         [
-          Company::Base.new('Mohawk', value: 20, income: 5),
-          Company::TileLaying.new('PRR', value: 30, income: 5),
+          Company.new('Mohawk', value: 20, income: 5),
+          Company.new('PRR', value: 30, income: 5),
         ]
       end
 

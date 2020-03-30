@@ -3,7 +3,7 @@
 module View
   class Company < Snabberb::Component
     needs :company
-    needs :bids
+    needs :bids, default: nil
     needs :selected_company, default: nil, store: true
 
     def selected?
@@ -11,6 +11,8 @@ module View
     end
 
     def render_bidders
+      return unless @bids
+
       names = @bids.map { |bid| "#{bid.entity.name} (#{bid.price})" }
       h(:div, "Bidders: #{names}")
     end
@@ -35,7 +37,7 @@ module View
         h(:div, "Value: #{@company.value}"),
         h(:div, "Income: #{@company.income}"),
         render_bidders,
-      ])
+      ].compact)
     end
   end
 end

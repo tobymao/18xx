@@ -31,12 +31,12 @@ module Engine
       def change_entity(_action)
         if (bids = @bids[@auctioning_company]).any?
           @current_entity = bids.min_by(&:price).entity
-        elsif @last_to_act
-          # if someone bought a share outright, then we find the next person who hasn't passed
-          @current_entity = @last_to_act
-          @current_entity = next_entity while next_entity.passed? && next_entity != @last_to_act
         else
-          @current_entity = next_entity
+          # if someone bought a share outright, then we find the next person who hasn't passed
+          loop do
+            @current_entity = next_entity
+            break if !@current_entity.passed? || finished?
+          end
         end
       end
 

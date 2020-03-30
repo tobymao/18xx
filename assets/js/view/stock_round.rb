@@ -13,10 +13,10 @@ module View
   class StockRound < Snabberb::Component
     include Actionable
 
+    needs :round
     needs :selected_corporation, default: nil, store: true
 
     def render
-      @round = @game.round
       @current_entity = @round.current_entity
 
       children = render_corporations
@@ -27,7 +27,7 @@ module View
     end
 
     def render_corporations
-      @game.share_pool.corporations.map do |corporation|
+      @round.share_pool.corporations.map do |corporation|
         h(Corporation, corporation: corporation)
       end
     end
@@ -57,7 +57,7 @@ module View
         display: 'inline-block',
       }
 
-      par_values = @game.stock_market.par_prices.map do |share_price|
+      par_values = @round.stock_market.par_prices.map do |share_price|
         par = lambda do
           process_action(Engine::Action::Par.new(@current_entity, @selected_corporation, share_price))
         end

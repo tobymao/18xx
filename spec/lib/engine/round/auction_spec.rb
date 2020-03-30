@@ -10,8 +10,8 @@ module Engine
     let(:bank) { Bank.new(1000) }
     let(:player_1) { Player.new('a') }
     let(:player_2) { Player.new('b') }
-    let(:private_1) { Company::Base.new('c_1', value: 10, income: 5) }
-    let(:private_2) { Company::Base.new('c_2', value: 20, income: 10) }
+    let(:private_1) { Company.new('c_1', value: 10, income: 5) }
+    let(:private_2) { Company.new('c_2', value: 20, income: 10) }
 
     subject { Round::Auction.new([player_1, player_2], log: [], bank: bank, companies: [private_1, private_2]) }
 

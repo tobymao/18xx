@@ -1,6 +1,9 @@
 Layout/FirstArrayElementIndentation:
   Enabled: false
 
+Layout/FirstHashElementIndentation:
+  Enabled: False
+
 Layout/LineLength:
   Max: 120
   Exclude:

@@ -4,12 +4,13 @@ require 'engine/action/buy_train'
 
 module Engine
   class Phase
-    attr_reader :name, :operating_rounds, :train_limit, :tiles
+    attr_reader :buy_companies, :name, :operating_rounds, :train_limit, :tiles
 
     TWO = {
       name: '2',
       operating_rounds: 1,
       train_limit: 4,
+      buy_companies: false,
       tiles: :yellow,
     }.freeze
 
@@ -29,6 +30,7 @@ module Engine
       train_limit: 2,
       tiles: %i[yellow green brown].freeze,
       on: '5',
+      events: { close_companies: true },
     }.freeze
 
     SIX = FIVE.merge(name: '6', on: '6', events: { rust: '3' })
@@ -62,6 +64,7 @@ module Engine
 
       @name = phase[:name]
       @operating_rounds = phase[:operating_rounds]
+      @buy_companies = phase[:buy_companies] || true
       @train_limit = phase[:train_limit]
       @tiles = Array(phase[:tiles])
       @events = phase[:events] || []

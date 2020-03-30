@@ -29,11 +29,11 @@ module View
     def render_action
       case @round
       when Engine::Round::Auction
-        h(AuctionRound)
+        h(AuctionRound, round: @round)
       when Engine::Round::Stock
-        h(StockRound)
+        h(StockRound, round: @round)
       when Engine::Round::Operating
-        h(OperatingRound)
+        h(OperatingRound, round: @round)
       end
     end
 

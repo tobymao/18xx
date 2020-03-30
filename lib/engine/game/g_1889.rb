@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 require 'engine/bank'
-require 'engine/company/base'
-require 'engine/company/tile_laying'
-require 'engine/company/terrain_discount'
+require 'engine/company'
 require 'engine/corporation'
 require 'engine/game/base'
 require 'engine/hex'
@@ -143,12 +141,17 @@ module Engine
       end
 
       def init_companies
-        [
-          Company::Base.new('Takamatsu E-Railroad', value: 20, income: 5, sym: 'TR', blocks_hex: 'K4'),
-          # Company::TileLaying.new('Mitsubishi Ferry', value: 30, income: 5, sym: 'ER'),
-          # Company::TileLaying.new('Ehime Railway', value: 40, income: 10, blocks_hex: 'C4', sym: 'ER'),
-          # Company::TerrainDiscount.new('Sumitomo Mines Railway', value: 50, income: 15),
-        ]
+        companies = []
+        companies.concat([
+          Company.new('Takamatsu E-Railroad', value: 20, income: 5, sym: 'TR', blocks_hex: 'K4'),
+          Company.new('Mitsubishi Ferry', value: 30, income: 5, sym: 'ER'),
+          Company.new('Ehime Railway', value: 40, income: 10, blocks_hex: 'C4', sym: 'ER'),
+          # Company.new('Sumitomo Mines Railway', value: 50, income: 15),
+        ])
+
+        # companies << Company.new('South Iyo Railway', value: 80, income: 20) if @players.size > 2
+        # companies << Company.new('Uno-Takamsu Ferry', value: 150, income: 30) if @players.size > 3
+        companies
       end
 
       def init_corporations

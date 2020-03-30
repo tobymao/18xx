@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require 'engine/action/buy_company'
 require 'engine/action/buy_train'
 require 'engine/action/dividend'
 require 'engine/action/lay_tile'
 require 'engine/action/run_routes'
 require 'engine/action/sell_shares'
+require 'engine/corporation'
 require 'engine/round/base'
 
 module Engine
@@ -57,6 +59,11 @@ module Engine
 
       def pass(_action)
         next_step!
+      end
+
+      def can_buy_companies?
+        @phase.buy_companies
+        true && @current_entity.owner.companies.any?
       end
 
       def must_buy_train?
@@ -271,14 +278,20 @@ module Engine
           buy_train(entity, action.train, action.price)
         when Action::SellShares
           sell_shares(action.shares)
+        when Action::BuyCompany
+          buy_company(action.company, action.price)
         end
       end
 
-      def change_entity(_action)
-        @current_entity = next_entity if @step == self.class::STEPS.first
+      def change_entity(action)
+        return if action.is_a?(Action::BuyCompany)
+        return if @step != self.class::STEPS.first
+
+        @current_entity = next_entity
       end
 
       def action_processed(action)
+        return if action.is_a?(Action::BuyCompany)
         return if action.is_a?(Action::SellShares)
         return if action.is_a?(Action::BuyTrain) && can_buy_train?
 
@@ -344,6 +357,17 @@ module Engine
 
       def sell_shares(shares)
         sell_and_change_price(shares, @share_pool, @stock_market)
+      end
+
+      def buy_company(company, price)
+        player = company.owner
+        raise GameError, "Cannot buy #{company.name} from #{player.name}" if player.is_a?(Corporation)
+
+        company.owner = @current_entity
+        player.companies.delete(company)
+        @current_entity.companies << company
+        @current_entity.spend(price, player)
+        @log << "#{@current_entity.name} buys #{company.name} from #{player.name} for $#{price}"
       end
 
       def clear_route_cache
