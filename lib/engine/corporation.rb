@@ -14,8 +14,8 @@ module Engine
     include ShareHolder
     include Spender
 
-    attr_accessor :ipoed, :min_price, :par_price, :share_price, :tokens
-    attr_reader :companies, :coordinates, :sym, :name, :logo, :trains
+    attr_accessor :ipoed, :par_price, :share_price, :tokens
+    attr_reader :companies, :coordinates, :min_price, :sym, :name, :logo, :trains
 
     def initialize(sym:, name:, tokens:, **opts)
       @sym = sym
@@ -35,6 +35,7 @@ module Engine
       @cash = 0
       @float_percent = opts[:float_percent] || 60
       @coordinates = opts[:coordinates]
+      @min_price = opts[:min_price]
       @logo = "logos/#{opts[:logo] || sym}.svg"
     end
 

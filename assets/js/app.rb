@@ -6,6 +6,7 @@ require 'polyfill'
 
 require 'lib/connection'
 require 'view/game'
+require 'view/map'
 require 'view/all_tiles'
 require 'view/all_tokens'
 require 'engine/game/base'
@@ -24,23 +25,25 @@ class App < Snabberb::Component
     page =
       case @page
       when 'game'
-        [h(View::Game)]
+        h(View::Game)
+      when 'map'
+        h(View::Map)
       when 'tiles'
-        [h(View::AllTiles)]
+        h(View::AllTiles)
       when 'tokens'
-        [h(View::AllTokens)]
-      else
-        []
+        h(View::AllTokens)
       end
 
-    children = tabs + page
-
-    h(:div, { props: { id: 'app' } }, children)
+    h(:div, { props: { id: 'app' } }, [
+      *tabs,
+      page,
+    ])
   end
 
   def tabs
     [
       h(:button, { on: { click: -> { store(:page, 'game') } } }, 'Game'),
+      h(:button, { on: { click: -> { store(:page, 'map') } } }, 'Map'),
       h(:button, { on: { click: -> { store(:page, 'tiles') } } }, 'All Tiles'),
       h(:button, { on: { click: -> { store(:page, 'tokens') } } }, 'All Tokens'),
       h(:button, { on: { click: -> { store(:show_grid, !@show_grid) } } }, 'Toggle Tile Grid'),
@@ -86,7 +89,8 @@ class Index < Snabberb::Layout
   end
 end
 
-players = %w[Ambie Talbot Toby]
+#players = %w[Ambie Talbot Toby]
+players = %w[Ambie Toby]
 
 game = Engine::Game::G1889.new(players)
 

@@ -21,6 +21,7 @@ require 'engine/share_pool'
 require 'engine/stock_market'
 require 'engine/round/auction'
 require 'engine/round/operating'
+require 'engine/round/special'
 require 'engine/round/stock'
 require 'engine/train/base'
 require 'engine/train/depot'
@@ -87,8 +88,8 @@ module Engine
         @players = @names.map { |name| Player.new(name) }
 
         @companies = init_companies(@players)
-        @corporations = init_corporations
         @stock_market = init_stock_market
+        @corporations = init_corporations(@stock_market)
         @bank = init_bank
         @tiles = init_tiles
 
@@ -101,13 +102,12 @@ module Engine
         # call here to set up ids for all cities before any tiles from @tiles
         # can be placed onto the map
         @cities = (@hexes.map(&:tile) + @tiles).map(&:cities).flatten
-        min_price = @stock_market.par_prices.map(&:price).min
-        @corporations.each { |c| c.min_price = min_price }
 
         @phase = init_phase(@depot.trains, @log)
         @operating_rounds = @phase.operating_rounds
 
         @round = init_round
+        @special = Round::Special.new(@companies, log: log)
 
         cache_objects
         connect_hexes
@@ -126,7 +126,12 @@ module Engine
       def process_action(action)
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = @actions.size
-        @round.process_action(action)
+        # company special power actions are processed by a different round handler
+        if action.entity.is_a?(Company)
+          @special.process_action(action)
+        else
+          @round.process_action(action)
+        end
         @phase.process_action(action)
         @actions << action
         next_round! while @round.finished?
@@ -219,9 +224,11 @@ module Engine
         Train::Depot.new(self.class::TRAINS, bank: bank)
       end
 
-      def init_corporations
+      def init_corporations(stock_market)
+        min_price = stock_market.par_prices.map(&:price).min
+
         self.class::CORPORATIONS.map do |corporation|
-          Corporation.new(**corporation)
+          Corporation.new(min_price: min_price, **corporation)
         end
       end
 

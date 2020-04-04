@@ -90,7 +90,7 @@ class Api < Roda
   Thread.new do
     loop do
       PING_FUNC.call
-      sleep(10)
+      sleep(1)
     end
   end
 

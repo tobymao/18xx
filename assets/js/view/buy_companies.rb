@@ -41,6 +41,7 @@ module View
       buy = lambda do
         price = input.JS['elm'].JS['value'].to_i
         process_action(Engine::Action::BuyCompany.new(@corporation, @selected_company, price))
+        store(:selected_company, nil, skip: true)
       end
 
       [
