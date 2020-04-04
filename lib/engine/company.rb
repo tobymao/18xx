@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require 'engine/ownable'
+
 module Engine
   class Company
     include Ownable
 
-    attr_reader :name, :sym, :value, :desc, :income, :blocks_hex
+    attr_reader :abilities, :name, :sym, :value, :desc, :income
 
     def initialize(name:, value:, income: 0, desc: '', sym: '', abilities: [])
       @name = name
@@ -14,7 +16,13 @@ module Engine
       @sym = sym
       @open = true
 
-      init_abilities(abilities)
+      @abilities = abilities
+        .group_by { |ability| ability[:type] }
+        .transform_values(&:first)
+    end
+
+    def remove_ability(type)
+      @abilities.delete(type)
     end
 
     def id
@@ -39,17 +47,6 @@ module Engine
 
     def close!
       @open = false
-    end
-
-    private
-
-    def init_abilities(abilities)
-      abilities.each do |ability|
-        case ability[:type]
-        when :blocks_hex
-          @blocks_hex = ability[:hex]
-        end
-      end
     end
   end
 end

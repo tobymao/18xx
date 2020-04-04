@@ -241,7 +241,7 @@ module Engine
     end
 
     def upgrade_tiles(tiles)
-      tiles.select { |t| upgrades_to?(t) }.uniq(&:name)
+      tiles.uniq(&:name).select { |t| upgrades_to?(t) }
     end
 
     def upgrades_to?(other)

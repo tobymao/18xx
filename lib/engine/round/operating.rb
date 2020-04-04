@@ -31,13 +31,9 @@ module Engine
       }.freeze
 
       def initialize(entities, game:, round_num: 1)
-        @entities = entities
-        @log = game.log
-        @current_entity = @entities.first
-
+        super
         @round_num = round_num
         @hexes = game.hexes
-        @tiles = game.tiles
         @phase = game.phase
         @companies = game.companies
         @bank = game.bank
@@ -244,14 +240,7 @@ module Engine
 
         case action
         when Action::LayTile
-          tile = action.tile
-          hex = action.hex
-          rotation = action.rotation
-          @tiles.reject! { |t| tile.equal?(t) }
-          @tiles << hex.tile unless hex.tile.preprinted
-          tile.rotate!(rotation)
-          hex.lay(tile)
-          @log << "#{entity.name} lays tile #{tile.name} with rotation #{rotation} on #{hex.name}"
+          lay_tile(action)
           clear_route_cache
         when Action::PlaceToken
           action.city.place_token(entity)
@@ -365,6 +354,11 @@ module Engine
 
         company.owner = @current_entity
         player.companies.delete(company)
+
+        company.abilities.dup.each do |type, ability|
+          company.remove_ability(type) if ability[:player_owned]
+        end
+
         @current_entity.companies << company
         @current_entity.spend(price, player)
         @log << "#{@current_entity.name} buys #{company.name} from #{player.name} for $#{price}"

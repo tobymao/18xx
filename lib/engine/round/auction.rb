@@ -8,11 +8,10 @@ module Engine
     class Auction < Base
       attr_reader :bids, :companies, :last_to_act, :min_increment
 
-      def initialize(entities, log:, companies:, bank:, min_increment: 5)
+      def initialize(entities, game:, min_increment: 5)
         super
-
-        @companies = companies.reject(&:owner).sort_by(&:value)
-        @bank = bank
+        @companies = game.companies.reject(&:owner).sort_by(&:value)
+        @bank = game.bank
         @min_increment = min_increment
 
         @bids = Hash.new { |h, k| h[k] = [] }
@@ -64,6 +63,10 @@ module Engine
         else
           placement_bid(bid)
         end
+      end
+
+      def action_processed(action)
+        action.entity.unpass!
       end
 
       def pass_processed(_action)

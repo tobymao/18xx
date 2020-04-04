@@ -7,9 +7,10 @@ module Engine
     class Base
       attr_reader :entities, :current_entity
 
-      def initialize(entities, log:, **_kwargs)
+      def initialize(entities, game:, **_kwargs)
+        @game = game
         @entities = entities
-        @log = log
+        @log = game.log
         @current_entity = @entities.first
       end
 
@@ -43,7 +44,6 @@ module Engine
           pass(action)
           pass_processed(action)
         else
-          @current_entity.unpass!
           _process_action(action)
           action_processed(action)
         end
@@ -82,6 +82,17 @@ module Engine
           stock_market.move_down(corporation) if share.president
         end
         log_share_price(corporation, prev)
+      end
+
+      def lay_tile(action)
+        tile = action.tile
+        hex = action.hex
+        rotation = action.rotation
+        @game.tiles.reject! { |t| tile.equal?(t) }
+        @game.tiles << hex.tile unless hex.tile.preprinted
+        tile.rotate!(rotation)
+        hex.lay(tile)
+        @log << "#{action.entity.name} lays tile #{tile.name} with rotation #{rotation} on #{hex.name}"
       end
 
       def log_share_price(entity, from)

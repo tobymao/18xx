@@ -9,12 +9,11 @@ module Engine
     class Stock < Base
       attr_reader :last_to_act, :share_pool, :stock_market
 
-      def initialize(entities, share_pool:, can_sell: true, stock_market:)
+      def initialize(entities, game:)
         super
-
-        @share_pool = share_pool
-        @stock_market = stock_market
-        @can_sell = can_sell
+        @share_pool = game.share_pool
+        @stock_market = game.stock_market
+        @can_sell = game.turn > 1
         @players_sold = Hash.new { |h, k| h[k] = {} }
         @current_actions = []
         @last_to_act = nil
@@ -48,7 +47,7 @@ module Engine
         !@players_sold[@current_entity][corporation] &&
           !(@current_actions.uniq.size == 2 && [Action::BuyShare, Action::Par].include?(@current_actions.last)) &&
           (shares.none?(&:president) ||
-           corporation.share_holders.reject { |k, _| k == @current_entity }.values.max > 10)
+           (corporation.share_holders.reject { |k, _| k == @current_entity }.values.max || 0) > 10)
       end
 
       private
@@ -71,6 +70,10 @@ module Engine
           share = corporation.shares.first
           buy_share(entity, share)
         end
+      end
+
+      def action_processed(action)
+        action.entity.unpass!
       end
 
       def nothing_to_do?

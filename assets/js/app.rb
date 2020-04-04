@@ -89,7 +89,7 @@ class Index < Snabberb::Layout
   end
 end
 
-#players = %w[Ambie Talbot Toby]
+# players = %w[Ambie Talbot Toby]
 players = %w[Ambie Toby]
 
 game = Engine::Game::G1889.new(players)

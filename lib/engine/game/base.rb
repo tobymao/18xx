@@ -14,7 +14,6 @@ require 'engine/action/run_routes'
 require 'engine/action/sell_shares'
 
 require 'engine/bank'
-require 'engine/map'
 require 'engine/phase'
 require 'engine/player'
 require 'engine/share_pool'
@@ -29,8 +28,9 @@ require 'engine/train/depot'
 module Engine
   module Game
     class Base
-      attr_reader :actions, :bank, :cities, :companies, :corporations, :depot, :hexes, :log,
-                  :map, :phase, :players, :round, :share_pool, :stock_market, :tiles, :turn
+      attr_reader :actions, :bank, :cities, :companies, :corporations, :depot,
+                  :hexes, :log, :phase, :players, :round, :share_pool,
+                  :special, :stock_market, :tiles, :turn
 
       BANK_CASH = 12_000
 
@@ -97,7 +97,6 @@ module Engine
         init_starting_cash(@players, @bank)
         @share_pool = SharePool.new(@corporations, @bank, @log)
         @hexes = init_hexes(@companies, @corporations)
-        @map = Map.new(@hexes)
 
         # call here to set up ids for all cities before any tiles from @tiles
         # can be placed onto the map
@@ -107,7 +106,7 @@ module Engine
         @operating_rounds = @phase.operating_rounds
 
         @round = init_round
-        @special = Round::Special.new(@companies, log: log)
+        @special = Round::Special.new(@companies, game: self)
 
         cache_objects
         connect_hexes
@@ -246,7 +245,7 @@ module Engine
                 end
 
               # add private companies that block tile lays on this hex
-              blocker = companies.find { |c| c.blocks_hex == coord }
+              blocker = companies.find { |c| c.abilities[:blocks_hex]&.dig(:hex) == coord }
               tile.add_blocker!(blocker) unless blocker.nil?
 
               # reserve corporation home spots
@@ -322,18 +321,12 @@ module Engine
 
       def new_auction_round
         @log << "-- Auction Round #{@turn} --"
-        Round::Auction.new(@players, log: @log, companies: @companies, bank: @bank)
+        Round::Auction.new(@players, game: self)
       end
 
       def new_stock_round
         @log << "-- Stock Round #{@turn} --"
-        Round::Stock.new(
-          @players,
-          log: @log,
-          can_sell: @turn > 1,
-          share_pool: @share_pool,
-          stock_market: @stock_market,
-        )
+        Round::Stock.new(@players, game: self)
       end
 
       def new_operating_round(round_num = 1)

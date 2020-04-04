@@ -19,6 +19,7 @@ module View
       h(:div, 'Private Company Auction', [
         *render_companies,
         render_input,
+        h(PassButton),
       ].compact)
     end
 
@@ -62,10 +63,7 @@ module View
           ]
         end
 
-      h(:div, [
-        *company_actions,
-        h(PassButton),
-      ])
+      h(:div, company_actions)
     end
   end
 end
