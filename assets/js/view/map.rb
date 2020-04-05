@@ -18,37 +18,30 @@ module View
       @cols = @hexes.map(&:x).uniq.sort.map(&:next)
       @rows = @hexes.map(&:y).uniq.sort.map(&:next)
       @layout = @game.layout
-      @round = @game.round
+
+      @game.special.current_entity = @selected_company
+
+      round =
+        if @game.special.tile_laying_ability.any?
+          @game.special
+        elsif @game.round.operating?
+          @game.round
+        end
 
       # move the selected hex to the back so it renders highest in z space
       @hexes << @hexes.delete(@tile_selector.hex) if @tile_selector
-      special_hexes, special_tiles = @game.special.layable_hexes(@selected_company)
 
       @hexes.map! do |hex|
-        layable =
-          if special_hexes
-            special_hexes.key?(hex)
-          elsif @round.operating?
-            @round.layable_hexes.key?(hex)
-          else
-            false
-          end
-        h(Hex, hex: hex, layable: layable)
+        h(Hex, hex: hex, round: round)
       end
 
       children = [render_map]
 
-      if @tile_selector
-        tiles =
-          if special_tiles
-            special_tiles
-          else
-            colors = game.phase.tiles
-            potential = @game.tiles.select { |tile| colors.include?(tile.color) }
-            @tile_selector.tile.upgrade_tiles(potential)
-          end
-
-        children << render_tile_selector(tiles, special_tiles ? @game.special : @round)
+      if @tile_selector && @tile_selector.hex.tile != @tile_selector.tile
+        children << h(TileConfirmation)
+      elsif @tile_selector
+        tiles = round.upgradeable_tiles(@tile_selector.hex)
+        children << h(TileSelector, tiles: tiles)
       end
 
       h(:div, { style: { overflow: 'auto' } }, children)
@@ -65,22 +58,6 @@ module View
           h(Axis, cols: @cols, rows: @rows, layout: @layout, gap: GAP),
         ])
       ])
-    end
-
-    def render_tile_selector(tiles, rotation_checker)
-      if @tile_selector.hex.tile == @tile_selector.tile
-        tiles.each do |tile|
-          tile.rotate!(0) # reset tile to no rotation since calculations are absolute
-          tile.legal_rotations = rotation_checker.legal_rotations(@tile_selector.hex, tile)
-          tile.rotate!
-        end
-
-        tiles.reject! { |tile| tile.legal_rotations.empty? }
-
-        h(TileSelector, tiles: tiles)
-      else
-        h(TileConfirmation)
-      end
     end
   end
 end

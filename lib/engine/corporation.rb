@@ -61,5 +61,17 @@ module Engine
     def floated?
       percent_of(self) <= 100 - @float_percent
     end
+
+    def player?
+      false
+    end
+
+    def company?
+      false
+    end
+
+    def corporation?
+      true
+    end
   end
 end

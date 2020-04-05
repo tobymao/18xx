@@ -1,32 +1,29 @@
 # frozen_string_literal: true
 
 require 'engine/action/lay_tile'
+require 'engine/corporation'
+require 'engine/player'
 require 'engine/round/base'
 
 module Engine
   module Round
     class Special < Base
-      def active_entities
-        @entities.select do |company|
-          company.abilities[:tile_lay]
-        end
+      def current_entity=(new_entity)
+        @current_entity = new_entity
+        @layable_hexes = nil
       end
 
-      def layable_hexes(company)
-        return nil unless company&.owner
-        return nil unless (ability = company.abilities[:tile_lay])
+      def tile_laying_ability
+        return {} unless (ability = @current_entity&.abilities(:tile_lay))
 
-        hexes = ability[:hexes].map do |coordinates|
+        ability
+      end
+
+      def layable_hexes
+        @layable_hexes ||= tile_laying_ability[:hexes]&.map do |coordinates|
           hex = @game.hex_by_id(coordinates)
           [hex, hex.neighbors.keys]
         end.to_h
-
-        tiles = ability[:tiles].map do |name|
-          # this is shit
-          @game.tiles.find { |t| t.name == name }
-        end
-
-        [hexes, tiles]
       end
 
       def legal_rotations(hex, tile)
@@ -42,10 +39,26 @@ module Engine
       private
 
       def _process_action(action)
+        company = action.entity
         case action
         when Action::LayTile
           lay_tile(action)
-          action.entity.remove_ability(:tile_lay)
+          company.remove_ability(:tile_lay)
+        when Action::BuyShare
+          owner = company.owner
+          share = action.share
+          corporation = share.corporation
+          @game.share_pool.transfer_share(share, owner)
+          @log << "#{owner.name} exchanges #{company.name} for a share of #{corporation.name}"
+          presidential_share_swap(corporation, owner) if corporation.owner != owner
+          company.close!
+        end
+      end
+
+      def potential_tiles
+        tile_laying_ability[:tiles]&.map do |name|
+          # this is shit
+          @game.tiles.find { |t| t.name == name }
         end
       end
     end

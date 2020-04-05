@@ -24,6 +24,13 @@ module Engine
 
     def transfer_share(share, to_entity, spender = nil, receiver = nil)
       corporation = share.corporation
+
+      if to_entity.player?
+        corporation.share_holders[to_entity] += share.percent
+      else
+        corporation.share_holders[to_entity] -= share.percent
+      end
+
       owner = share.owner
       owner.shares_by_corporation[corporation].delete(share)
 

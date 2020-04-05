@@ -140,7 +140,7 @@ module Engine
         {
           name: 'Takamatsu E-Railroad',
           value: 20,
-          income: 5,
+          revenue: 5,
           sym: 'TR',
           abilities: [
             { type: :blocks_hex, hex: 'K4' },
@@ -149,7 +149,7 @@ module Engine
         {
           name: 'Mitsubishi Ferry',
           value: 30,
-          income: 5,
+          revenue: 5,
           sym: 'ER',
           desc: '',
           abilities: [
@@ -157,67 +157,74 @@ module Engine
               type: :tile_lay,
               tiles: %w[437],
               hexes: %w[B11 G10 I12 J9],
-              player_owned: true,
+              owner_type: :player,
             },
           ],
         },
-        # {
-        #   name: 'Ehime Railway',
-        #   value: 40,
-        #   income: 10,
-        #   sym: 'ER',
-        #   abilities: [
-        #     { type: :blocks_hex, hex: 'C4' },
-        #     {
-        #       type: :tile_lay,
-        #       tiles: %w[12 13 14 15 205 206],
-        #       hexes: %w[C4],
-        #       when: :sold,
-        #     },
-        #   ],
-        # },
-        # {
-        #   name: 'Sumitomo Mines Railway',
-        #   value: 50,
-        #   income: 15,
-        #   abilities: [
-        #     {
-        #       type: :ignore_terrain,
-        #       terrain: :mtn,
-        #     },
-        #   ],
-        # },
-        # {
-        #   name: 'Dougo Railway',
-        #   value: 60,
-        #   income: 15,
-        #   abilities: [
-        #     {
-        #       type: :exchange,
-        #       corporation: 'Iyo Railway',
-        #     },
-        #   ],
-        # },
-        # {
-        #   name: 'South Iyo Railway',
-        #   value: 80,
-        #   income: 20,
-        #   min_players: 3,
-        # },
-        # {
-        #   name: 'Uno-Takamsu Ferry',
-        #   value: 150,
-        #   income: 30,
-        #   min_players: 4,
-        #   abilities: [
-        #     { type: :never_closes },
-        #     {
-        #       type: :revenue_change,
-        #       revenue: 50,
-        #       when: '5',
-        #     },
-        #   ],
-        # },
+        {
+          name: 'Ehime Railway',
+          value: 40,
+          revenue: 10,
+          sym: 'ER',
+          abilities: [
+            { type: :blocks_hex, hex: 'C4' },
+            {
+              type: :tile_lay,
+              tiles: %w[12 13 14 15 205 206],
+              hexes: %w[C4],
+              when: :sold,
+              owner_type: :corporation,
+            },
+          ],
+        },
+        {
+          name: 'Sumitomo Mines Railway',
+          value: 50,
+          revenue: 15,
+          abilities: [
+            {
+              type: :ignore_terrain,
+              terrain: :mtn,
+              owner_type: :corporation,
+            },
+          ],
+        },
+        {
+          name: 'Dougo Railway',
+          value: 60,
+          revenue: 15,
+          abilities: [
+            {
+              type: :exchange,
+              corporation: 'IR',
+              owner_type: :player,
+            },
+          ],
+        },
+        {
+          name: 'South Iyo Railway',
+          value: 80,
+          revenue: 20,
+          min_players: 3,
+        },
+        {
+          name: 'Uno-Takamsu Ferry',
+          value: 150,
+          revenue: 30,
+          min_players: 4,
+          abilities: [
+            {
+              type: :never_closes,
+              owner_type: :player,
+            },
+            {
+              type: :revenue_change,
+              revenue: 50,
+              when: '5',
+              owner_type: :player,
+            },
+          ],
+        },
       ].freeze
 
       CORPORATIONS = [
@@ -235,41 +242,41 @@ module Engine
           float_percent: 50,
           coordinates: 'E2',
         },
-        # {
-        #   sym: 'SR',
-        #   name: 'Sanuki Railway',
-        #   tokens: 2,
-        #   float_percent: 50,
-        #   coordinates: 'I2',
-        # },
-        # {
-        #   sym: 'KO',
-        #   name: 'Takamatsu & Kotohira Electric Railway',
-        #   tokens: 2,
-        #   float_percent: 50,
-        #   coordinates: 'K4',
-        # },
-        # {
-        #   sym: 'TR',
-        #   name: 'Tosa Electric Railway',
-        #   tokens: 3,
-        #   float_percent: 50,
-        #   coordinates: 'F9',
-        # },
-        # {
-        #   sym: 'KU',
-        #   name: 'Tosa Kuroshio Railway',
-        #   tokens: 1,
-        #   float_percent: 50,
-        #   coordinates: 'C10',
-        # },
-        # {
-        #   sym: 'UR',
-        #   name: 'Uwajima Railway',
-        #   tokens: 3,
-        #   float_percent: 50,
-        #   coordinates: 'B7',
-        # },
+        {
+          sym: 'SR',
+          name: 'Sanuki Railway',
+          tokens: 2,
+          float_percent: 50,
+          coordinates: 'I2',
+        },
+        {
+          sym: 'KO',
+          name: 'Takamatsu & Kotohira Electric Railway',
+          tokens: 2,
+          float_percent: 50,
+          coordinates: 'K4',
+        },
+        {
+          sym: 'TR',
+          name: 'Tosa Electric Railway',
+          tokens: 3,
+          float_percent: 50,
+          coordinates: 'F9',
+        },
+        {
+          sym: 'KU',
+          name: 'Tosa Kuroshio Railway',
+          tokens: 1,
+          float_percent: 50,
+          coordinates: 'C10',
+        },
+        {
+          sym: 'UR',
+          name: 'Uwajima Railway',
+          tokens: 3,
+          float_percent: 50,
+          coordinates: 'B7',
+        },
       ].freeze
     end
   end

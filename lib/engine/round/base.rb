@@ -71,7 +71,24 @@ module Engine
         false
       end
 
+      def upgradeable_tiles(hex)
+        potential_tiles(hex).map do |tile|
+          tile.rotate!(0) # reset tile to no rotation since calculations are absolute
+          tile.legal_rotations = legal_rotations(hex, tile)
+          next if tile.legal_rotations.empty?
+
+          tile.rotate!
+          tile
+        end.compact
+      end
+
       private
+
+      def potential_tiles(hex)
+        colors = @game.phase.tiles
+        tiles = @game.tiles.select { |tile| colors.include?(tile.color) }
+        hex.tile.upgrade_tiles(tiles)
+      end
 
       def sell_and_change_price(shares, share_pool, stock_market)
         share_pool.sell_shares(shares)
@@ -85,14 +102,46 @@ module Engine
       end
 
       def lay_tile(action)
+        entity = action.entity
         tile = action.tile
         hex = action.hex
         rotation = action.rotation
+        old_tile = hex.tile
+
         @game.tiles.reject! { |t| tile.equal?(t) }
-        @game.tiles << hex.tile unless hex.tile.preprinted
+        @game.tiles << old_tile unless old_tile.preprinted
+
         tile.rotate!(rotation)
         hex.lay(tile)
-        @log << "#{action.entity.name} lays tile #{tile.name} with rotation #{rotation} on #{hex.name}"
+
+        abilities =
+          if entity.respond_to?(:companies)
+            entity.companies.flat_map(&:all_abilities)
+          else
+            []
+          end
+
+        cost = old_tile.upgrade_cost(abilities)
+        entity.spend(cost, @game.bank) unless cost.zero?
+
+        @log << "#{action.entity.name}"\
+          "#{cost.zero? ? '' : "spends $#{cost} and"}"\
+          " lays tile #{tile.name}"\
+         " with rotation #{rotation} on #{hex.name}"
+      end
+
+      def presidential_share_swap(corporation, new_p, old_p = nil, p_share = nil)
+        old_p ||= corporation.owner
+        return unless new_p
+        return if old_p.percent_of(corporation) >= new_p.percent_of(corporation)
+
+        p_share ||= old_p.shares_of(corporation).find(&:president)
+
+        new_p.shares_of(corporation).take(2).each do |share|
+          @game.share_pool.transfer_share(share, p_share.owner)
+        end
+        @game.share_pool.transfer_share(p_share, new_p)
+        @log << "#{new_p.name} becomes the president of #{corporation.name}"
       end
 
       def log_share_price(entity, from)

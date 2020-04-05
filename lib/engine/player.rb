@@ -33,5 +33,17 @@ module Engine
     def ==(other)
       @name == other.name
     end
+
+    def player?
+      true
+    end
+
+    def company?
+      false
+    end
+
+    def corporation?
+      false
+    end
   end
 end

@@ -18,9 +18,7 @@ module Engine
     # * [p]ath     - endpoints [a] and [b]; the endpoints can be an edge number,
     #                town/city/offboard reference, or a lawson-style [j]unction
     # * [l]abel    - large letters on tile
-    # * [u]pgrade  - [c]ost, [t]errain (multiple terrain types separated
-    #                by "+"), [e]dge (if not specified, then the upgrade applies
-    #                to the tile and is rendered in the center)
+    # * [u]pgrade  - [c]ost, [t]errain (multiple terrain types separated by "+"),
 
     # [r]evenue    - number, list of numbers separated by "/", or something like
     #                yellow_30|brown_60|diesel_100
@@ -238,6 +236,16 @@ module Engine
 
     def ==(other)
       @name == other.name && @color == other.color && @parts == other.parts
+    end
+
+    def upgrade_cost(abilities)
+      ignore = abilities.find { |a| a[:type] == :ignore_terrain }
+
+      @upgrades.sum do |upgrade|
+        cost = upgrade.cost
+        cost = 0 if ignore && upgrade.terrains.uniq == [ignore[:terrain]]
+        cost
+      end
     end
 
     def upgrade_tiles(tiles)

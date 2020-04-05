@@ -102,7 +102,7 @@ module Engine
         # can be placed onto the map
         @cities = (@hexes.map(&:tile) + @tiles).map(&:cities).flatten
 
-        @phase = init_phase(@depot.trains, @log)
+        @phase = init_phase
         @operating_rounds = @phase.operating_rounds
 
         @round = init_round
@@ -199,8 +199,8 @@ module Engine
         Bank.new(self.class::BANK_CASH)
       end
 
-      def init_phase(trains, log)
-        Phase.new(self.class::PHASES, trains, log)
+      def init_phase
+        Phase.new(self.class::PHASES, self)
       end
 
       def init_round
@@ -245,7 +245,7 @@ module Engine
                 end
 
               # add private companies that block tile lays on this hex
-              blocker = companies.find { |c| c.abilities[:blocks_hex]&.dig(:hex) == coord }
+              blocker = companies.find { |c| c.abilities(:blocks_hex)&.dig(:hex) == coord }
               tile.add_blocker!(blocker) unless blocker.nil?
 
               # reserve corporation home spots

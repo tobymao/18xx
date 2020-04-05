@@ -27,8 +27,6 @@ module Engine
       corporation.ipoed = true
       transfer_share(share, entity, entity, @bank)
 
-      corporation.share_holders[entity] += share.percent
-
       if ipoed != corporation.ipoed
         @log << "#{entity.name} pars #{corporation.name} at $#{corporation.par_price.price} and becomes the president"
       end
@@ -48,12 +46,22 @@ module Engine
       num = shares.size
       percent = shares.sum(&:percent)
 
-      corporation.share_holders[entity] -= share.percent
-
       shares.each { |s| transfer_share(s, self, @bank, entity) }
 
       @log << "#{entity.name} sells #{num} share#{num > 1 ? 's' : ''} " \
         "(%#{percent}) of #{corporation.name} and receives $#{Engine::Share.price(shares)}"
+    end
+
+    def player?
+      false
+    end
+
+    def corporation?
+      false
+    end
+
+    def company?
+      false
     end
   end
 end

@@ -125,20 +125,6 @@ module Engine
         b = @entities.find_index(player_b)
         a < b ? b - a : b - (a - @entities.size)
       end
-
-      def presidential_share_swap(corporation, new_p, old_p = nil, p_share = nil)
-        old_p ||= corporation.owner
-        return unless new_p
-        return if old_p.percent_of(corporation) >= new_p.percent_of(corporation)
-
-        p_share ||= old_p.shares_of(corporation).find(&:president)
-
-        new_p.shares_of(corporation).take(2).each do |share|
-          @share_pool.transfer_share(share, p_share.owner)
-        end
-        @share_pool.transfer_share(p_share, new_p)
-        @log << "#{new_p.name} becomes the president of #{corporation.name}"
-      end
     end
   end
 end

@@ -44,11 +44,11 @@ module Engine
       events: { rust: '4' },
     }.freeze
 
-    def initialize(phases, trains, log)
+    def initialize(phases, game)
       @index = 0
       @phases = phases
-      @trains = trains
-      @log = log
+      @game = game
+      @log = @game.log
       setup_phase!
     end
 
@@ -81,6 +81,23 @@ module Engine
         case type
         when :rust
           rust!(value)
+        when :close_companies
+          close_companies!
+        end
+      end
+
+      @game.companies.each do |company|
+        next unless company.open?
+
+        abilities = company
+          .all_abilities
+          .select { |a| a[:when] == @name }
+
+        abilities.each do |ability|
+          case ability[:type]
+          when :revenue_change
+            company.revenue = ability[:revenue]
+          end
         end
       end
     end
@@ -88,8 +105,16 @@ module Engine
     def rust!(value)
       @log << "-- Event: #{value} trains rust --"
 
-      @trains.each do |train|
+      @game.trains.each do |train|
         train.rust! if train.name == value
+      end
+    end
+
+    def close_companies!
+      @log << '-- Event: private companies close --'
+
+      @game.companies.each do |company|
+        company.close! unless company.abilities(:never_closes)
       end
     end
 

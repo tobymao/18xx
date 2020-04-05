@@ -3,6 +3,7 @@
 require 'view/auction_round'
 require 'view/corporation'
 require 'view/entity_order'
+require 'view/exchange'
 require 'view/log'
 require 'view/map'
 require 'view/operating_round'
@@ -18,6 +19,7 @@ require 'engine/round/stock'
 module View
   class Game < Snabberb::Component
     needs :game, store: true
+    needs :selected_company, default: nil, store: true
 
     def render_round
       name = @round.class.name.split(':').last
@@ -45,6 +47,7 @@ module View
         h(Log),
         h(EntityOrder, round: @round),
         render_action,
+        h(Exchange),
         h(UndoButton),
         h(:div, 'Players'),
         *@game.players.map { |p| h(Player, player: p) },

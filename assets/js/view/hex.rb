@@ -26,11 +26,11 @@ module View
     }.freeze
 
     needs :hex
+    needs :round, default: nil
     needs :selected_route, default: nil, store: true
     needs :tile_selector, default: nil, store: true
     needs :show_grid, default: false, store: true
     needs :role, default: :map
-    needs :layable, default: true
 
     def render
       children = [h(:polygon, attrs: { points: self.class::POINTS })]
@@ -40,7 +40,8 @@ module View
 
       children << h(Tile, tile: @tile) if @tile
       children << h(View::TriangularGrid) if @show_grid
-      clickable = @layable || @role == :tile_selector
+      layable = @round.layable_hexes.key?(@hex) if @round.respond_to?(:layable_hexes)
+      clickable = layable || @role == :tile_selector
 
       props = {
         attrs: {
@@ -48,7 +49,7 @@ module View
           transform: transform,
           fill: COLOR.fetch(@tile&.color, 'white'),
           stroke: 'black',
-          opacity: @layable || %i[tile_selector tile_page].include?(@role) ? 1.0 : 0.3,
+          opacity: layable || %i[tile_selector tile_page].include?(@role) ? 1.0 : 0.3,
           cursor: clickable ? 'pointer' : nil,
         },
       }
@@ -79,7 +80,10 @@ module View
 
       case @role
       when :map
-        store(:tile_selector, Lib::TileSelector.new(@hex, @tile, event, root))
+        store(
+          :tile_selector,
+          Lib::TileSelector.new(@hex, @tile, event, root, @round.current_entity),
+        )
       when :tile_selector
         @tile_selector.tile = @tile
       end

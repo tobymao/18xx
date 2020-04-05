@@ -7,7 +7,7 @@ module Engine
     class Upgrade < Base
       attr_reader :cost, :terrains
 
-      def initialize(cost, terrains = [])
+      def initialize(cost, terrains = nil)
         @cost = cost.to_i
         @terrains = terrains&.map(&:to_sym) || []
       end

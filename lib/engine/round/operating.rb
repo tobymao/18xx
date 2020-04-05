@@ -41,6 +41,7 @@ module Engine
         @players = game.players
         @stock_market = game.stock_market
         @share_pool = game.share_pool
+        @just_sold_company = nil
 
         @step = self.class::STEPS.first
         @current_routes = []
@@ -58,8 +59,7 @@ module Engine
       end
 
       def can_buy_companies?
-        @phase.buy_companies
-        true && @current_entity.owner.companies.any?
+        @phase.buy_companies && @current_entity.owner.companies.any?
       end
 
       def must_buy_train?
@@ -131,9 +131,9 @@ module Engine
       def companies_payout
         @companies.select(&:owner).each do |company|
           owner = company.owner
-          income = company.income
-          @bank.spend(income, owner)
-          @log << "#{owner.name} collects $#{income} from #{company.name}"
+          revenue = company.revenue
+          @bank.spend(revenue, owner)
+          @log << "#{owner.name} collects $#{revenue} from #{company.name}"
         end
       end
 
@@ -280,6 +280,7 @@ module Engine
       end
 
       def action_processed(action)
+        remove_just_sold_company_abilities unless action.is_a?(Action::BuyCompany)
         return if action.is_a?(Action::BuyCompany)
         return if action.is_a?(Action::SellShares)
         return if action.is_a?(Action::BuyTrain) && can_buy_train?
@@ -355,13 +356,19 @@ module Engine
         company.owner = @current_entity
         player.companies.delete(company)
 
-        company.abilities.dup.each do |type, ability|
-          company.remove_ability(type) if ability[:player_owned]
-        end
+        remove_just_sold_company_abilities
+        @just_sold_company = company
 
         @current_entity.companies << company
         @current_entity.spend(price, player)
         @log << "#{@current_entity.name} buys #{company.name} from #{player.name} for $#{price}"
+      end
+
+      def remove_just_sold_company_abilities
+        return unless @just_sold_company
+
+        @just_sold_company.remove_ability_when(:sold)
+        @just_sold_company = nil
       end
 
       def clear_route_cache

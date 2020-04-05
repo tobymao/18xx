@@ -25,6 +25,7 @@ module Engine
     describe '#layable_hexes' do
       before :each do
         game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
+        corporation.cash = 100
       end
 
       it 'returns the layable hexes' do

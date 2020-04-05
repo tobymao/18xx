@@ -7,7 +7,6 @@ module View
     include Actionable
 
     needs :tile_selector, store: true
-    needs :selected_company, default: nil, store: true
 
     def render
       style = {
@@ -47,7 +46,7 @@ module View
 
     def lay_tile
       action = Engine::Action::LayTile.new(
-        @selected_company || @game.current_entity,
+        @tile_selector.entity,
         @tile_selector.tile,
         @tile_selector.hex,
         @tile_selector.tile.rotation,

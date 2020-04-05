@@ -35,7 +35,7 @@ module View
         h(:div, "Company: #{@company.name}"),
         h(:div, "Desc: #{@company.desc}"),
         h(:div, "Value: #{@company.value}"),
-        h(:div, "Income: #{@company.income}"),
+        h(:div, "Revenue: #{@company.revenue}"),
         render_bidders,
       ].compact)
     end
