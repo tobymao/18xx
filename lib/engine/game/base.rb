@@ -28,8 +28,8 @@ require 'engine/train/depot'
 module Engine
   module Game
     class Base
-      attr_reader :actions, :bank, :cities, :companies, :corporations, :depot,
-                  :hexes, :log, :phase, :players, :round, :share_pool,
+      attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
+                  :depot, :hexes, :log, :phase, :players, :round, :share_pool,
                   :special, :stock_market, :tiles, :turn
 
       BANK_CASH = 12_000
@@ -52,6 +52,14 @@ module Engine
         *2.times.map { |index| Train::Base.new('6', distance: 6, price: 630, index: index) },
         *20.times.map { |index| Train::Base.new('D', distance: 999, price: 1100, index: index) },
       ].freeze
+
+      CERT_LIMIT = {
+        2 => 28,
+        3 => 20,
+        4 => 16,
+        5 => 13,
+        6 => 11,
+      }.freeze
 
       COMPANIES = [].freeze
 
@@ -92,6 +100,7 @@ module Engine
         @corporations = init_corporations(@stock_market)
         @bank = init_bank
         @tiles = init_tiles
+        @cert_limit = self.class::CERT_LIMIT[@players.size]
 
         @depot = init_train_handler(@bank)
         init_starting_cash(@players, @bank)

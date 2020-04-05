@@ -11,6 +11,8 @@ module Engine
       can_par = code.include?('p')
       color =
         case
+        when can_par
+          :red
         when code.include?('b')
           :brown
         when code.include?('o')

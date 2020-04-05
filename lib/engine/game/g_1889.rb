@@ -12,6 +12,14 @@ module Engine
     class G1889 < Base
       BANK_CASH = 7_000
 
+      CERT_LIMIT = {
+        2 => 25,
+        3 => 19,
+        4 => 14,
+        5 => 12,
+        6 => 11,
+      }.freeze
+
       HEXES = {
         white: {
           %w[B5 C8 D3 D9 E8 H3 I8 I10 J3] => 'blank',

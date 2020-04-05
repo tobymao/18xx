@@ -8,6 +8,10 @@ require 'engine/round/base'
 module Engine
   module Round
     class Special < Base
+      def active_entities
+        @entities
+      end
+
       def current_entity=(new_entity)
         @current_entity = new_entity
         @layable_hexes = nil

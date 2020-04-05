@@ -145,7 +145,8 @@ module Engine
       end
 
       def log_share_price(entity, from)
-        @log << "#{entity.name}'s share price changes from $#{from} to $#{entity.share_price.price} "
+        to = entity.share_price.price
+        @log << "#{entity.name}'s share price changes from $#{from} to $#{to}" if from != to
       end
 
       # methods to override

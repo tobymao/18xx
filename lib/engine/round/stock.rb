@@ -9,6 +9,8 @@ module Engine
     class Stock < Base
       attr_reader :last_to_act, :share_pool, :stock_market
 
+      CERT_LIMIT_COLORS = %w[brown orange yellow].freeze
+
       def initialize(entities, game:)
         super
         @share_pool = game.share_pool
@@ -33,9 +35,18 @@ module Engine
         corporation = share.corporation
 
         @current_entity.cash >= share.price &&
-          @current_entity.percent_of(corporation) < 60 &&
+          (corporation.share_price&.color == :brown || @current_entity.percent_of(corporation) < 60) &&
           !@players_sold[@current_entity][corporation] &&
           (@current_actions & [Action::BuyShare, Action::Par]).none?
+      end
+
+      def must_sell?
+        num_certs = 0
+        @current_entity.shares.each do |share|
+          num_certs += 1 unless self.class::CERT_LIMIT_COLORS.include?(share.corporation.share_price.color)
+        end
+
+        num_certs > @game.cert_limit
       end
 
       def can_sell?(shares)
@@ -93,6 +104,16 @@ module Engine
         while !finished? && nothing_to_do?
           @current_entity.pass!
           @current_entity = next_entity
+        end
+
+        return unless finished?
+
+        @game.corporations.each do |corporation|
+          next if corporation.share_holders.values.sum < 100
+
+          prev = corporation.share_price.price
+          @stock_market.move_up(corporation)
+          log_share_price(corporation, prev)
         end
       end
 
