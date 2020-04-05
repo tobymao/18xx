@@ -3,6 +3,7 @@
 require 'snabberb/component'
 
 require 'view/part/track_curvilinear_path'
+require 'view/part/track_curvilinear_half_path'
 require 'view/part/track_lawson_path'
 require 'view/part/track_offboard'
 
@@ -28,6 +29,8 @@ module View
         elsif @tile.lawson?
           track_class = Part::TrackLawsonPath
           paths = @tile.paths.select { |p| p.edges.size == 1 }
+        elsif @tile.towns.any?
+          return render_track_for_curvilinear_town
         else
           track_class = Part::TrackCurvilinearPath
           paths = @tile.paths.select { |p| p.edges.size == 2 }
@@ -39,6 +42,24 @@ module View
       end
 
       private
+
+      def render_track_for_curvilinear_town
+        @tile.towns.flat_map do |town|
+          paths = @tile.paths.select { |p| p.town == town }
+          puts 'unexpected number of paths' if paths.size != 2
+          exits = paths.flat_map(&:exits)
+
+          paths.map do |path|
+            h(
+              Part::TrackCurvilinearHalfPath,
+              region_use: @region_use,
+              exits: exits,
+              path: path,
+              color: color_for(path),
+            )
+          end
+        end
+      end
 
       def color_for(path)
         index = @routes_paths.find_index do |route_paths|

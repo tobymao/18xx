@@ -34,6 +34,7 @@ module Engine
 
     YELLOW = {
       '1' => 't=r:10;p=a:0,b:_0;p=a:_0,b:4;t=r:10;p=a:1,b:_1;p=a:_1,b:3',
+      '2' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3;t=r:10;p=a:4,b:_1;p=a:_1,b:5',
       '3' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1',
       '4' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3',
       '5' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:1',
@@ -41,10 +42,17 @@ module Engine
       '7' => 'p=a:0,b:5',
       '8' => 'p=a:0,b:4',
       '9' => 'p=a:0,b:3',
+      '55' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3;t=r:10;p=a:2,b:_1;p=a:_1,b:5',
+      '56' => 't=r:10;p=a:0,b:_0;p=a:_0,b:4;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
       '57' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3',
       '58' => 't=r:10;p=a:0,b:_0;p=a:_0,b:2',
+      '69' => 't=r:10;p=a:1,b:_0;p=a:_0,b:4;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
       '437' => 't=r:30;p=a:0,b:_0;p=a:_0,b:2;l=P',
       '438' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:2;l=H;u=c:80',
+      '630' => 't=r:10;p=a:1,b:_0;p=a:_0,b:2;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
+      '631' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
+      '632' => 't=r:10;p=a:0,b:_0;p=a:_0,b:5;t=r:10;p=a:3,b:_1;p=a:_1,b:4',
+      '633' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1;t=r:10;p=a:3,b:_1;p=a:_1,b:4',
     }.freeze
 
     GREEN = {
@@ -228,9 +236,8 @@ module Engine
       @lawson ||=
         [
           @junctions.any?,
-          cities.size + towns.size == 1,
-          # TODO: curvilinear track for towns on yellow tiles
-          # ([cities.size, towns.size] == [0, 1]) && (exits.size != 2),
+          [cities.size, towns.size] == [1, 0],
+          ([cities.size, towns.size] == [0, 1]) && ![1, 2].include?(exits.size),
         ].any?
     end
 

@@ -133,6 +133,41 @@ module View
           weight * regions.sum { |region| @region_use[region] }
         end
       end
+
+      def rotate_region(region, rotations: nil, degrees: nil)
+        rotations ||= (degrees / 60).to_i
+
+        regions = {
+          0 => 3,
+          1 => 4,
+          2 => 10,
+          3 => 11,
+          4 => 18,
+          5 => 1,
+          6 => 2,
+          7 => 8,
+          8 => 9,
+          9 => 16,
+          10 => 17,
+          11 => 23,
+          12 => 0,
+          13 => 6,
+          14 => 7,
+          15 => 14,
+          16 => 15,
+          17 => 21,
+          18 => 22,
+          19 => 5,
+          20 => 12,
+          21 => 13,
+          22 => 19,
+          23 => 20,
+        }
+        (1..rotations).each do |_|
+          region = regions[region]
+        end
+        region
+      end
     end
   end
 end

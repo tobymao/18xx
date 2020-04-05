@@ -32,10 +32,31 @@ module View
         end
       end
 
+      def load_from_tile
+        edge_a, edge_b = @path.exits
+
+        @curvilinear_type = compute_curvilinear_type(edge_a, edge_b)
+        @rotation = compute_track_rotation_degrees(edge_a, edge_b)
+      end
+
       def preferred_render_locations
+        regions =
+          case @curvilinear_type
+          when SHARP
+            [13, 14, 15, 21]
+          when GENTLE
+            [6, 7, 14, 15, 21]
+          when STRAIGHT
+            [2, 8, 15, 21]
+          end
+
+        regions = regions.map do |region|
+          rotate_region(region, degrees: @rotation)
+        end
+
         [
           {
-            region_weights: {},
+            region_weights: regions,
             x: 0,
             y: 0,
           }
@@ -43,19 +64,21 @@ module View
       end
 
       def render_part
-        edge_a, edge_b = @path.exits
-
-        curvilinear_type = compute_curvilinear_type(edge_a, edge_b)
-        rotation = compute_track_rotation_degrees(edge_a, edge_b)
-
         d =
-          case curvilinear_type
+          case @curvilinear_type
           when SHARP
-            'm 0 85 L 0 75 A 43.30125 43.30125 0 0 0 -64.951875 37.5 L -73.612125 42.5'
+            'M 0 87 '\
+            'L 0 75 '\
+            'A 43.30125 43.30125 0 0 0 -64.951875 37.5 '\
+            'L -75 43.5'
           when GENTLE
-            'm 0 85 L 0 75 A 129.90375 129.90375 0 0 0 -64.951875 -37.5 L -73.612125 -42.5'
+            'M 0 87 '\
+            'L 0 75 '\
+            'A 129.90375 129.90375 0 0 0 -64.951875 -37.5 '\
+            'L -75 -43.5'
           when STRAIGHT
-            'm 0 87 L 0 -87'
+            'M 0 87 '\
+            'L 0 -87'
           else
             raise
           end
@@ -63,7 +86,7 @@ module View
         props = {
           attrs: {
             class: 'curvilinear_path',
-            transform: "rotate(#{rotation})",
+            transform: "rotate(#{@rotation})",
             d: d,
             stroke: @color,
             'stroke-width' => 8
