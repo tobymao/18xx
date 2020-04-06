@@ -41,7 +41,7 @@ module View
       if @mode == :solo
         @num_players.times do |index|
           num = index + 1
-          inputs << render_input("Players #{num}", id: "player_#{num}", value: num)
+          inputs << render_input("Player #{num}", id: "player_#{num}", value: num)
         end
       end
 
