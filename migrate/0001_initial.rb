@@ -45,7 +45,7 @@ Sequel.migration do
     create_table :actions do
       foreign_key :game_id, :games, null: false, index: true, on_delete: :cascade
       Integer :id, null: false
-      primary_key %w[game_id id]
+      primary_key %i[game_id id]
 
       String :round, null: false
       Integer :turn, null: false
