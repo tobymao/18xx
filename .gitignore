@@ -8,6 +8,7 @@
 /tmp/
 /build/
 /vendor/
+/public/assets/*
 
 .tags
 .DS_STORE
