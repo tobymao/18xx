@@ -50,9 +50,11 @@ module Engine
       end
 
       def tokenable?(corporation)
-        slot = slot(corporation)
+        slot = get_slot(corporation)
         # corporation already placed all their tokens
         return false if corporation.tokens.empty?
+
+        return false unless slot
 
         # a token is already in this slot
         return false unless @tokens[slot].nil?
@@ -66,7 +68,7 @@ module Engine
         true
       end
 
-      def slot(corporation)
+      def get_slot(corporation)
         @reservations.index(corporation.sym) || @tokens.find_index.with_index do |t, i|
           t.nil? && @reservations[i].nil?
         end
@@ -80,7 +82,7 @@ module Engine
       end
 
       def exchange_token(token)
-        @tokens[slot(token.corporation)] = token
+        @tokens[get_slot(token.corporation)] = token
       end
     end
   end

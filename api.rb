@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
-# require 'execjs'
+require 'execjs'
 require 'opal'
 require 'roda'
 require 'snabberb'
 
 require_relative 'models'
 require_relative 'lib/tilt/opal_template'
+
+Dir['./models/**/*.rb'].sort.each { |file| require file }
 
 class Api < Roda
   opts[:check_dynamic_arity] = false
@@ -29,31 +31,17 @@ class Api < Roda
     csp.frame_ancestors :none
   end
 
-  plugin :public
-  plugin :hash_routes
-
   plugin :not_found do
     @page_title = 'File Not Found'
     ''
   end
 
-  if ENV['RACK_ENV'] == 'development'
-    plugin :exception_page
-    class RodaRequest
-      def assets
-        exception_page_assets
-        super
-      end
-    end
-  end
+  plugin :error_handler
 
-  plugin :error_handler do |e|
-    $stderr.print "#{e.class}: #{e.message}\n"
-    warn e.backtrace
-    next exception_page(e, assets: true) if ENV['RACK_ENV'] == 'development'
-
-    @page_title = 'Internal Server Error'
-    ''
+  error do |e|
+    $stderr.warn e.backtrace
+    $stderr.warn "#{e.class}: #{e.message}"
+    { code: 500, message: e }
   end
 
   plugin :sessions,
@@ -62,18 +50,18 @@ class Api < Roda
     secret: ENV.send((ENV['RACK_ENV'] == 'development' ? :[] : :delete), 'APP_SESSION_SECRET')
 
   plugin :assets, js: 'app.rb'
-  # compile_assets
-  # context = ExecJS.compile(File.read("#{assets_opts[:compiled_js_path]}.#{assets_opts[:compiled]['js']}.js"))
 
+  compile_assets
+  APP_JS_PATH = assets_opts[:compiled_js_path]
+  APP_JS = "#{APP_JS_PATH}.#{assets_opts[:compiled]['js']}.js"
+  Dir[APP_JS_PATH + '*'].sort.each { |file| File.delete(file) if file != APP_JS }
+  CONTEXT = ExecJS.compile(File.read(APP_JS))
+
+  plugin :public
+  plugin :multi_route
   plugin :streaming
   plugin :json
   plugin :json_parser
-
-  # require_relative 'routes'
-
-  hash_branch 'api' do |_r|
-    'test'
-  end
 
   ROOMS = Hash.new { |h, k| h[k] = [] }
   # TODO: this is a hack
@@ -116,65 +104,27 @@ class Api < Roda
     room.delete(q)
   end
 
+  Dir['./routes/*'].sort.each { |file| require file }
+
+  def render(**needs)
+    script = Snabberb.prerender_script(
+      'Index',
+      'App',
+      'app',
+      javascript_include_tags: assets(:js),
+      **needs,
+    )
+
+    CONTEXT.eval(script)
+  end
+
   route do |r|
     r.public
     r.assets
-    r.hash_routes('')
+    r.multi_route
 
     r.root do
-      #  Snabberb.prerender_script(
-      #    'Index',
-      #    'App',
-      #    'app',
-      #    javascript_include_tags: assets(:js),
-      #  )
-      # )
-      <<~HTML
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
-            <title>18xx.games</title>
-          </head>
-          <body>
-            <div id="app"></div>
-            #{assets(:js)}
-          </body>
-        </html>
-      HTML
-    end
-
-    r.on 'game' do
-      r.is 'subscribe' do
-        room = ROOMS[1]
-        q = Queue.new
-        room << q
-
-        response['Content-Type'] = 'text/event-stream;charset=UTF-8'
-        response['X-Accel-Buffering'] = 'no' # for nginx
-        response['Transfer-Encoding'] = 'identity'
-
-        stream(loop: true, callback: -> { on_close(room, q) }) do |out|
-          out << "data: #{q.pop}\n\n"
-        end
-      end
-
-      r.post 'action' do
-        action = r.params
-        ACTIONS << action
-        notify(1, type: 'action', data: action)
-        ''
-      end
-
-      r.post 'rollback' do
-        ACTIONS.pop
-        notify(1, type: 'refresh', data: ACTIONS)
-        ''
-      end
-
-      r.post 'refresh' do
-        { type: 'refresh', data: ACTIONS }
-      end
+      render
     end
   end
 end

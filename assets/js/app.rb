@@ -4,81 +4,80 @@ require 'compiled-opal'
 require 'snabberb'
 require 'polyfill'
 
-require 'lib/connection'
+require 'view/home'
 require 'view/game'
-require 'view/map'
-require 'view/all_tiles'
-require 'view/all_tokens'
-require 'engine/game/base'
-require 'engine/game/g_1889'
+require 'view/navigation'
 
 class App < Snabberb::Component
-  needs :game, store: true
-  needs :page, store: true, default: 'game'
-  needs :show_grid, default: false, store: true
-  needs :connection, store: true, default: nil
+  needs :app_route, default: '/', store: true
 
   def render
-    @connection ||= Lib::Connection.new('/game/subscribe', self)
-    store(:connection, @connection, skip: true)
-
-    page =
-      case @page
-      when 'game'
-        h(View::Game)
-      when 'map'
-        h(View::Map)
-      when 'tiles'
-        h(View::AllTiles)
-      when 'tokens'
-        h(View::AllTokens)
-      end
-
     h(:div, { props: { id: 'app' } }, [
-      *tabs,
-      page,
+      h(View::Navigation),
+      render_content,
     ])
   end
 
-  def tabs
-    [
-      h(:button, { on: { click: -> { store(:page, 'game') } } }, 'Game'),
-      h(:button, { on: { click: -> { store(:page, 'map') } } }, 'Map'),
-      h(:button, { on: { click: -> { store(:page, 'tiles') } } }, 'All Tiles'),
-      h(:button, { on: { click: -> { store(:page, 'tokens') } } }, 'All Tokens'),
-      h(:button, { on: { click: -> { store(:show_grid, !@show_grid) } } }, 'Toggle Tile Grid'),
-    ]
+  def render_content
+    path = @app_route.split('/').reject(&:empty?).first
+
+    handle_history
+
+    page =
+      case path
+      when nil
+        h(View::Home)
+      when 'game'
+        h(View::Game)
+      end
+
+    props = {
+      style: {
+        padding: '1rem',
+      },
+    }
+
+    h(:div, props, [page])
   end
 
-  def on_message(type, data)
-    case type
-    when 'action'
-      n_id = data['id']
-      o_id = @game.actions.size
-      if n_id == o_id
-        store(:game, @game.process_action(data))
-      elsif n_id > o_id
-        @connection.send('refresh')
-      end
-    when 'refresh'
-      store(:game, @game.clone(data))
-    end
+  def handle_history
+    %x{
+      var self = this
+
+      if (!window.onpopstate) {
+        window.onpopstate = function() { self.$on_hash_change() }
+      }
+
+      if (window.location.pathname != #{@app_route}) {
+        window.history.pushState('', '', #{@app_route})
+      }
+    }
+  end
+
+  def on_hash_change
+    store(:app_route, `window.location.pathname`)
   end
 end
 
 class Index < Snabberb::Layout
   def render
+    css = <<~CSS
+      * { font-family: Arial; }
+    CSS
+
+    view_port = {
+      name: 'viewport',
+      content: 'width=device-width, initial-scale=1, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0',
+    }
+
     h(:html, [
       h(:head, [
         h(:meta, props: { charset: 'utf-8' }),
-        h(
-          :meta,
-          props: {
-            name: 'viewport',
-            content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0'
-          },
-        ),
-        h(:title, 'Title'),
+        h(:meta, props: view_port),
+        h(:title, '18xx.games'),
+        h(:link, attrs: { rel: 'stylesheet', href: 'https://unpkg.com/purecss@1.0.1/build/pure-min.css' }),
+        h(:link, attrs: { rel: 'stylesheet', href: 'https://unpkg.com/purecss@1.0.1/build/grids-responsive-min.css' }),
+        h(:style, props: { innerHTML: css }),
       ]),
       h(:body, [
         @application,
@@ -88,10 +87,3 @@ class Index < Snabberb::Layout
     ])
   end
 end
-
-# players = %w[Ambie Talbot Toby]
-players = %w[Ambie Toby]
-
-game = Engine::Game::G1889.new(players)
-
-App.attach('app', game: game)

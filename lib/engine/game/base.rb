@@ -29,7 +29,7 @@ module Engine
   module Game
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
-                  :depot, :hexes, :log, :phase, :players, :round, :share_pool,
+                  :depot, :hexes, :log, :mode, :phase, :players, :round, :share_pool,
                   :special, :stock_market, :tiles, :turn
 
       BANK_CASH = 12_000
@@ -88,12 +88,13 @@ module Engine
         %i[cities city],
       ].freeze
 
-      def initialize(names, actions: [])
+      def initialize(names, mode: :multi, actions: [])
         @turn = 1
         @log = []
         @actions = []
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
+        @mode = mode
 
         @companies = init_companies(@players)
         @stock_market = init_stock_market
