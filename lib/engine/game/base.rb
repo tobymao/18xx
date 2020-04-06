@@ -184,7 +184,7 @@ module Engine
       end
 
       def rollback
-        self.class.new(@names, actions: @actions[0...-1])
+        clone(@actions[0...-1])
       end
 
       def trains
