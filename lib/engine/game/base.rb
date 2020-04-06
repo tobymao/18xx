@@ -180,7 +180,7 @@ module Engine
       end
 
       def clone(actions)
-        self.class.new(@names, actions: actions)
+        self.class.new(@names, mode: @mode, actions: actions)
       end
 
       def rollback
