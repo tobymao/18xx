@@ -28,12 +28,12 @@ module View
           paths = @tile.paths.select(&:offboard)
         elsif @tile.lawson?
           track_class = Part::TrackLawsonPath
-          paths = @tile.paths.select { |p| p.edges.size == 1 }
+          paths = @tile.paths_with(%w[edges size], 1)
         elsif @tile.towns.any?
           return render_track_for_curvilinear_town
         else
           track_class = Part::TrackCurvilinearPath
-          paths = @tile.paths.select { |p| p.edges.size == 2 }
+          paths = @tile.paths_with(%w[edges size], 2)
         end
 
         paths.map do |path|
@@ -45,7 +45,7 @@ module View
 
       def render_track_for_curvilinear_town
         @tile.towns.flat_map do |town|
-          paths = @tile.paths.select { |p| p.town == town }
+          paths = @tile.paths_with(%w[town], town)
           puts 'unexpected number of paths' if paths.size != 2
           exits = paths.flat_map(&:exits)
 

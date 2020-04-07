@@ -258,6 +258,103 @@ module Engine
         end
       end
     end
+
+    describe '#paths_with' do
+      context 'selecting a town' do
+        [
+          {
+            tile_ids: %w[1 2 55 56 69 630 631 632 633],
+            town_paths: {
+              0 => [0, 1],
+              1 => [2, 3],
+            }
+          },
+          {
+            tile_ids: %w[3 4 58 437],
+            town_paths: {
+              0 => [0, 1],
+            }
+          },
+          {
+            tile_ids: %w[87],
+            town_paths: {
+              0 => [0, 1, 2, 3],
+            }
+          },
+        ].each do |spec|
+          spec[:tile_ids].each do |tile_id|
+            tile = Tile.for(tile_id)
+
+            spec[:town_paths].each do |town_id, expected_path_ids|
+              town = tile.towns[town_id]
+
+              it "selects the correct paths for town #{town_id} on tile #{tile_id}" do
+                filtered_paths = tile.paths_with(%w[town], town)
+
+                expected_paths = expected_path_ids.map { |id| tile.paths[id] }
+
+                expect(filtered_paths).to eq(expected_paths)
+              end
+            end
+          end
+        end
+      end
+
+      context 'selecting for edge count' do
+        [
+          {
+            tile_ids: %w[1 2 55 56 69 630 631 632 633],
+            paths_edges: {
+              [0, 1, 2, 3] => 1
+            }
+          },
+          {
+            tile_ids: %w[3 4 5 6 57 58 437],
+            paths_edges: {
+              [0, 1] => 1
+            }
+          },
+          {
+            tile_ids: %w[12 13],
+            paths_edges: {
+              [0, 1, 2] => 1,
+            }
+          },
+          {
+            tile_ids: %w[14 15 87],
+            paths_edges: {
+              [0, 1, 2, 3] => 1,
+            }
+          },
+          {
+            tile_ids: %w[7 8 9],
+            paths_edges: {
+              [0] => 2,
+            }
+          },
+          {
+            tile_ids: %w[16 18 19 20 23 24 25 26 27 28 29],
+            paths_edges: {
+              [0, 1] => 2,
+            }
+          },
+        ].each do |spec|
+          spec[:tile_ids].each do |tile_id|
+            tile = Tile.for(tile_id)
+
+            spec[:paths_edges].each do |expected_path_ids, edge_count|
+              it "selects the paths with #{edge_count} edges on tile #{tile_id}" do
+                filtered_paths = tile.paths_with(%w[edges size], edge_count)
+
+                expected_paths = expected_path_ids.map { |id| tile.paths[id] }
+
+                expect(filtered_paths).to eq(expected_paths)
+              end
+            end
+          end
+        end
+      end
+    end
   end
 end
 # rubocop: enable Metrics/ModuleLength

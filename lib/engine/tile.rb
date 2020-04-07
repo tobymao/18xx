@@ -193,6 +193,7 @@ module Engine
       @rotation = rotation
       @cities = []
       @paths = []
+      @_paths_with = {}
       @towns = []
       @edges = nil
       @junctions = nil
@@ -226,6 +227,21 @@ module Engine
 
     def paths
       @_paths ||= @paths.map { |path| path.rotate(@rotation) }
+    end
+
+    def paths_with(props, value)
+      cached_val = @_paths_with[[props, value]]
+      return cached_val unless cached_val.nil?
+
+      filtered_paths = paths.select do |path_prop|
+        props.each do |prop|
+          path_prop = path_prop.send(prop)
+        end
+
+        path_prop == value
+      end
+
+      @_paths_with[[props, value]] = filtered_paths
     end
 
     def exits
