@@ -37,6 +37,33 @@ module View
       TOP_ROW = [0, 1, 2, 3, 4].freeze
       BOTTOM_ROW = [19, 20, 21, 22, 23].freeze
 
+      REGIONS_ROTATED_ONCE = {
+        0 => 3,
+        1 => 4,
+        2 => 10,
+        3 => 11,
+        4 => 18,
+        5 => 1,
+        6 => 2,
+        7 => 8,
+        8 => 9,
+        9 => 16,
+        10 => 17,
+        11 => 23,
+        12 => 0,
+        13 => 6,
+        14 => 7,
+        15 => 14,
+        16 => 15,
+        17 => 21,
+        18 => 22,
+        19 => 5,
+        20 => 12,
+        21 => 13,
+        22 => 19,
+        23 => 20,
+      }.freeze
+
       def preferred_render_locations
         [
           {
@@ -137,34 +164,8 @@ module View
       def rotate_region(region, rotations: nil, degrees: nil)
         rotations ||= (degrees / 60).to_i
 
-        regions = {
-          0 => 3,
-          1 => 4,
-          2 => 10,
-          3 => 11,
-          4 => 18,
-          5 => 1,
-          6 => 2,
-          7 => 8,
-          8 => 9,
-          9 => 16,
-          10 => 17,
-          11 => 23,
-          12 => 0,
-          13 => 6,
-          14 => 7,
-          15 => 14,
-          16 => 15,
-          17 => 21,
-          18 => 22,
-          19 => 5,
-          20 => 12,
-          21 => 13,
-          22 => 19,
-          23 => 20,
-        }
         (1..rotations).each do |_|
-          region = regions[region]
+          region = REGIONS_ROTATED_ONCE[region]
         end
         region
       end
