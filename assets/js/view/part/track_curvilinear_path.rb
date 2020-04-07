@@ -9,6 +9,25 @@ module View
       GENTLE = 2
       STRAIGHT = 3
 
+      REGIONS = {
+        SHARP => [13, 14, 15, 21],
+        GENTLE => [6, 7, 14, 15, 21],
+        STRAIGHT => [2, 8, 15, 21],
+      }.freeze
+
+      SVG_PATH_STRINGS = {
+        SHARP => 'M 0 87 '\
+                 'L 0 75 '\
+                 'A 43.30125 43.30125 0 0 0 -64.951875 37.5 '\
+                 'L -75 43.5',
+        GENTLE => 'M 0 87 '\
+                  'L 0 75 '\
+                  'A 129.90375 129.90375 0 0 0 -64.951875 -37.5 '\
+                  'L -75 -43.5',
+        STRAIGHT => 'M 0 87 '\
+                    'L 0 -87',
+      }.freeze
+
       needs :path
       needs :color, default: 'black'
 
@@ -40,17 +59,7 @@ module View
       end
 
       def preferred_render_locations
-        regions =
-          case @curvilinear_type
-          when SHARP
-            [13, 14, 15, 21]
-          when GENTLE
-            [6, 7, 14, 15, 21]
-          when STRAIGHT
-            [2, 8, 15, 21]
-          end
-
-        regions = regions.map do |region|
+        regions = REGIONS[@curvilinear_type].map do |region|
           rotate_region(region, degrees: @rotation)
         end
 
@@ -64,30 +73,11 @@ module View
       end
 
       def render_part
-        d =
-          case @curvilinear_type
-          when SHARP
-            'M 0 87 '\
-            'L 0 75 '\
-            'A 43.30125 43.30125 0 0 0 -64.951875 37.5 '\
-            'L -75 43.5'
-          when GENTLE
-            'M 0 87 '\
-            'L 0 75 '\
-            'A 129.90375 129.90375 0 0 0 -64.951875 -37.5 '\
-            'L -75 -43.5'
-          when STRAIGHT
-            'M 0 87 '\
-            'L 0 -87'
-          else
-            raise
-          end
-
         props = {
           attrs: {
             class: 'curvilinear_path',
             transform: "rotate(#{@rotation})",
-            d: d,
+            d: SVG_PATH_STRINGS[@curvilinear_type],
             stroke: @color,
             'stroke-width' => 8
           }
