@@ -14,6 +14,7 @@ gem 'snabberb'
 gem 'tilt'
 
 group :development do
+  gem 'pry-byebug'
   gem 'rake'
   gem 'rerun'
   gem 'rubocop'

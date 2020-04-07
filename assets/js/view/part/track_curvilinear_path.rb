@@ -9,6 +9,25 @@ module View
       GENTLE = 2
       STRAIGHT = 3
 
+      REGIONS = {
+        SHARP => [13, 14, 15, 21],
+        GENTLE => [6, 7, 14, 15, 21],
+        STRAIGHT => [2, 8, 15, 21],
+      }.freeze
+
+      SVG_PATH_STRINGS = {
+        SHARP => 'M 0 87 '\
+                 'L 0 75 '\
+                 'A 43.30125 43.30125 0 0 0 -64.951875 37.5 '\
+                 'L -75 43.5',
+        GENTLE => 'M 0 87 '\
+                  'L 0 75 '\
+                  'A 129.90375 129.90375 0 0 0 -64.951875 -37.5 '\
+                  'L -75 -43.5',
+        STRAIGHT => 'M 0 87 '\
+                    'L 0 -87',
+      }.freeze
+
       needs :path
       needs :color, default: 'black'
 
@@ -32,10 +51,21 @@ module View
         end
       end
 
+      def load_from_tile
+        edge_a, edge_b = @path.exits
+
+        @curvilinear_type = compute_curvilinear_type(edge_a, edge_b)
+        @rotation = compute_track_rotation_degrees(edge_a, edge_b)
+      end
+
       def preferred_render_locations
+        regions = REGIONS[@curvilinear_type].map do |region|
+          rotate_region(region, degrees: @rotation)
+        end
+
         [
           {
-            region_weights: {},
+            region_weights: regions,
             x: 0,
             y: 0,
           }
@@ -43,28 +73,11 @@ module View
       end
 
       def render_part
-        edge_a, edge_b = @path.exits
-
-        curvilinear_type = compute_curvilinear_type(edge_a, edge_b)
-        rotation = compute_track_rotation_degrees(edge_a, edge_b)
-
-        d =
-          case curvilinear_type
-          when SHARP
-            'm 0 85 L 0 75 A 43.30125 43.30125 0 0 0 -64.951875 37.5 L -73.612125 42.5'
-          when GENTLE
-            'm 0 85 L 0 75 A 129.90375 129.90375 0 0 0 -64.951875 -37.5 L -73.612125 -42.5'
-          when STRAIGHT
-            'm 0 87 L 0 -87'
-          else
-            raise
-          end
-
         props = {
           attrs: {
             class: 'curvilinear_path',
-            transform: "rotate(#{rotation})",
-            d: d,
+            transform: "rotate(#{@rotation})",
+            d: SVG_PATH_STRINGS[@curvilinear_type],
             stroke: @color,
             'stroke-width' => 8
           }

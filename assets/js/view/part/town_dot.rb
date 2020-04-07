@@ -5,6 +5,8 @@ require 'view/part/base'
 module View
   module Part
     class TownDot < Base
+      needs :color, default: 'black'
+
       def preferred_render_locations
         [
           {
@@ -18,7 +20,7 @@ module View
       def render_part
         attrs = {
           class: 'town_dot',
-          fill: '#000',
+          fill: @color,
           cx: '0',
           cy: '0',
           r: '10',

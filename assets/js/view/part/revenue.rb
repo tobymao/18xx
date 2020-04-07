@@ -58,6 +58,13 @@ module View
               x: -28,
               y: 45,
             },
+            {
+              # between center and lower right corner
+              region_weights_in: { [15, 16, 17, 21] => 0.4, [22, 23] => 1.0 },
+              region_weights_out: [15, 16, 17, 21, 22, 34],
+              x: 28,
+              y: 45,
+            },
           ]
         when (2..4)
           [

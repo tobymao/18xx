@@ -45,7 +45,7 @@ module View
 
       children << render_tile_part(Part::Track, routes: @routes) if @tile.exits.any?
       children << render_tile_part(Part::Cities) if @tile.cities.any?
-      children << render_tile_part(Part::Towns) if @tile.towns.any?
+      children << render_tile_part(Part::Towns, routes: @routes) if @tile.towns.any?
       children << render_tile_part(Part::Label) if @tile.label
       children << render_tile_part(Part::Revenue) if (@tile.cities + @tile.towns + @tile.offboards).any?
       children << render_tile_part(Part::Upgrades) if @tile.upgrades
