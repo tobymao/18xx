@@ -55,7 +55,7 @@ class Api < Roda
   APP_JS_PATH = assets_opts[:compiled_js_path]
   APP_JS = "#{APP_JS_PATH}.#{assets_opts[:compiled]['js']}.js"
   Dir[APP_JS_PATH + '*'].sort.each { |file| File.delete(file) if file != APP_JS }
-  CONTEXT = ExecJS.compile(File.read(APP_JS))
+  CONTEXT = ExecJS.compile(File.open(APP_JS, 'r:UTF-8', &:read))
 
   plugin :public
   plugin :multi_route
