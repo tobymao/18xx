@@ -12,8 +12,8 @@ Sequel.migration do
       DateTime :created_at, null: false
       DateTime :updated_at, null: false
 
-      index Sequel.lit('lower(name)'), type: :btree
-      index Sequel.lit('lower(email)'), type: :btree
+      index Sequel.lit('lower(name)'), type: :btree, unique: true
+      index Sequel.lit('lower(email)'), type: :btree, unique: true
     end
 
     create_table :sessions do

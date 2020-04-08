@@ -2,6 +2,8 @@
 
 require 'json'
 
+require 'lib/storage'
+
 module Lib
   module Request
     def self.get(path, &block)
@@ -16,7 +18,10 @@ module Lib
       %x{
         var payload = {
           method: #{method},
-          headers: { 'Content-Type': 'application/json' }
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': #{Lib::Storage['auth_token']},
+          }
         }
 
         if (method == 'POST') {
@@ -27,7 +32,7 @@ module Lib
           return res.text()
         }).then(data => {
           if (typeof block === 'function') {
-            block(data)
+            block(#{JSON.parse(data)})
           }
         }).catch(error => {
           console.error('Error:', error)

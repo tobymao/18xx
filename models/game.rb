@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require './models/base'
+require_relative 'base'
 
-class Game < Sequel::Model
+class Game < Base
 end

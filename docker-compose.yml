@@ -8,7 +8,6 @@ services:
       - .:/18xx
       - /18xx/vendor
     environment:
-      APP_SESSION_SECRET: realHushHushhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
       DATABASE_URL: postgres://root:password@postgres:5432/db_18xx
     ports:
       - 9292:9292
