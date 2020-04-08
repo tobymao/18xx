@@ -29,9 +29,7 @@ module View
         end
       end
 
-      props = { style: { 'max-width': '750px' }, }
-
-      h('div.pure-u-1', props, [
+      h('div.pure-u-1', [
         render_form('Create New Game', inputs)
       ])
     end

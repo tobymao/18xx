@@ -29,7 +29,7 @@ module View
 
       h('form.pure-form.pure-form-stacked', { on: { keyup: enter } }, [
         h(:legend, name),
-        h('div.pure-g', inputs),
+        h('div.pure-g', { style: { 'max-width': '750px' } }, inputs),
         h(:input, attrs: { type: :text }, style: { display: 'none' }),
       ])
     end
