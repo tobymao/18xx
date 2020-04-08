@@ -38,7 +38,7 @@ class Api
     end
 
     r.get do
-      render(app_route: r.path)
+      render
     end
   end
 end

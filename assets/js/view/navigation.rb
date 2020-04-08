@@ -5,10 +5,7 @@ require 'view/create_game'
 module View
   class Navigation < Snabberb::Component
     needs :app_route, default: '/', store: true
-
-    LINKS = [
-      %w[18xx.games /],
-    ].freeze
+    needs :user, default: nil, store: true
 
     def render
       props = {
@@ -18,9 +15,18 @@ module View
         }
       }
 
-      items = LINKS.map { |name, href| item(name, href) }
+      children = [
+        h('a.pure-menu-heading', { attrs: { href: '/' } }, '18xx.games')
+      ]
 
-      h('div.pure-menu', props, items)
+      if @user
+        children << item("Profile (#{@user})", '/profile')
+      else
+        children << item('Signup', '/signup')
+        children << item('Login', '/login')
+      end
+
+      h('div.pure-menu.pure-menu-horizontal', props, children)
     end
 
     def item(name, href)

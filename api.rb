@@ -22,7 +22,7 @@ class Api < Roda
          'X-XSS-Protection' => '1; mode=block'
 
   plugin :content_security_policy do |csp|
-    csp.default_src :none
+    csp.default_src :self
     csp.style_src :self
     csp.form_action :self
     csp.script_src :self
@@ -39,15 +39,10 @@ class Api < Roda
   plugin :error_handler
 
   error do |e|
-    $stderr.warn e.backtrace
-    $stderr.warn "#{e.class}: #{e.message}"
+    puts e.backtrace.reverse
+    puts "#{e.class}: #{e.message}"
     { code: 500, message: e }
   end
-
-  plugin :sessions,
-    key: '_app.session', # rubocop:disable Layout/ArgumentAlignment
-    # cookie_options: {secure: ENV['RACK_ENV'] != 'test'}, # Uncomment if only allowing https:// access
-    secret: ENV.send((ENV['RACK_ENV'] == 'development' ? :[] : :delete), 'APP_SESSION_SECRET')
 
   plugin :assets, js: 'app.rb'
 
@@ -64,8 +59,6 @@ class Api < Roda
   plugin :json_parser
 
   ROOMS = Hash.new { |h, k| h[k] = [] }
-  # TODO: this is a hack
-  ACTIONS = [] # rubocop:disable Style/MutableConstant
 
   PING_FUNC = lambda do |*|
     ROOMS
@@ -106,18 +99,6 @@ class Api < Roda
 
   Dir['./routes/*'].sort.each { |file| require file }
 
-  def render(**needs)
-    script = Snabberb.prerender_script(
-      'Index',
-      'App',
-      'app',
-      javascript_include_tags: assets(:js),
-      **needs,
-    )
-
-    CONTEXT.eval(script)
-  end
-
   route do |r|
     r.public
     r.assets
@@ -126,5 +107,32 @@ class Api < Roda
     r.root do
       render
     end
+
+    r.on %w[signup login profile] do
+      render
+    end
+  end
+
+  def render(**needs)
+    script = Snabberb.prerender_script(
+      'Index',
+      'App',
+      'app',
+      javascript_include_tags: assets(:js),
+      app_route: request.path,
+      **needs,
+    )
+
+    CONTEXT.eval(script)
+  end
+
+  def session
+    return unless (token = request.env['HTTP_AUTHORIZATION'])
+
+    @session ||= Session.find(token: token)
+  end
+
+  def user
+    session&.valid? ? session.user : nil
   end
 end

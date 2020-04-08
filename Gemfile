@@ -2,6 +2,7 @@
 
 source 'https://rubygems.org'
 
+gem 'argon2'
 gem 'c_lexer'
 gem 'execjs'
 gem 'mini_racer'

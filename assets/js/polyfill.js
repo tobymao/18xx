@@ -14,3 +14,10 @@ if (typeof window == 'undefined') {
     }
   }
 }
+
+if (typeof localStorage == 'undefined') {
+  localStorage = {
+    getItem: function() {},
+    setItem: function() {}
+  }
+}

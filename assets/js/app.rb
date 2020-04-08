@@ -4,11 +4,16 @@ require 'compiled-opal'
 require 'snabberb'
 require 'polyfill'
 
+require 'user_manager'
+require 'lib/storage'
 require 'view/home'
 require 'view/game'
 require 'view/navigation'
+require 'view/user'
 
 class App < Snabberb::Component
+  include UserManager
+
   needs :app_route, default: '/', store: true
 
   def render
@@ -21,6 +26,7 @@ class App < Snabberb::Component
   def render_content
     path = @app_route.split('/').reject(&:empty?).first
 
+    refresh_user
     handle_history
 
     page =
@@ -29,6 +35,14 @@ class App < Snabberb::Component
         h(View::Home)
       when 'game'
         h(View::Game)
+      when 'signup'
+        h(View::User, type: :signup)
+      when 'login'
+        h(View::User, type: :login)
+      when 'profile'
+        h(View::User, type: :profile)
+      else
+        raise "404 - Unknown path #{path}"
       end
 
     props = {
