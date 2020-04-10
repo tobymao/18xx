@@ -96,6 +96,10 @@ module Engine
         remaining >= next_highest
       end
 
+      def can_lay_track?
+        @step == :track
+      end
+
       def next_step!
         current_index = self.class::STEPS.find_index(@step)
 
