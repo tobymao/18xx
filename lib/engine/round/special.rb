@@ -23,6 +23,10 @@ module Engine
         ability
       end
 
+      def can_lay_track?
+        !!tile_laying_ability
+      end
+
       def layable_hexes
         @layable_hexes ||= tile_laying_ability[:hexes]&.map do |coordinates|
           hex = @game.hex_by_id(coordinates)
