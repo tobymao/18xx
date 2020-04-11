@@ -55,6 +55,10 @@ module Engine
         !@auctioning_company && company == companies.first
       end
 
+      def may_bid?(company)
+        !@auctioning_company || company == @auctioning_company
+      end
+
       private
 
       def _process_action(bid)
