@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'engine/part/base'
-require 'engine/part/revenue_center'
+require_relative 'base'
+require_relative 'revenue_center'
 
 module Engine
   module Part

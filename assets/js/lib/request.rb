@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'json'
-
 require 'lib/storage'
 
 module Lib
@@ -25,10 +24,10 @@ module Lib
         }
 
         if (method == 'POST') {
-          payload['body'] = JSON.stringify(#{Native.convert(data)})
+          payload['body'] = JSON.stringify(#{data.to_n})
         }
 
-        fetch(#{path}, payload).then(res => {
+        fetch(#{'/api' + path}, payload).then(res => {
           return res.text()
         }).then(data => {
           if (typeof block === 'function') {

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'engine/ownable'
-require 'engine/train/depot'
+require_relative '../ownable'
+require_relative 'depot'
 
 module Engine
   module Train

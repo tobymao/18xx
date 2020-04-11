@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'engine/action/base'
-require 'engine/route'
+require_relative 'base'
+require_relative '../route'
 
 module Engine
   module Action

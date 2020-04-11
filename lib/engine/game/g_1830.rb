@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'engine/game/base'
+require_relative 'base'
 
 module Engine
   module Game

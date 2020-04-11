@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'engine/game_error'
+require_relative 'game_error'
 
 module Engine
   module Spender

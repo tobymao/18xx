@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'engine/ownable'
+require_relative 'ownable'
 
 module Engine
   class Share

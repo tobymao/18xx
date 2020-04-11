@@ -4,7 +4,9 @@ require 'compiled-opal'
 require 'snabberb'
 require 'polyfill'
 
+require 'index'
 require 'user_manager'
+require 'engine/game/g_1889'
 require 'lib/storage'
 require 'view/home'
 require 'view/game'
@@ -12,12 +14,20 @@ require 'view/navigation'
 require 'view/user'
 
 class App < Snabberb::Component
+  include GameManager
   include UserManager
 
-  needs :app_route, default: '/', store: true
-
   def render
-    h(:div, { props: { id: 'app' } }, [
+    props = {
+      props: { id: 'app' },
+      style: {
+        padding: '1rem',
+        margin: :auto,
+        'max-width': '1024px',
+      },
+    }
+
+    h('div.pure-g', props, [
       h(View::Navigation),
       render_content,
     ])
@@ -34,7 +44,7 @@ class App < Snabberb::Component
       when nil
         h(View::Home)
       when 'game'
-        h(View::Game)
+        render_game
       when 'signup'
         h(View::User, type: :signup)
       when 'login'
@@ -47,11 +57,16 @@ class App < Snabberb::Component
 
     props = {
       style: {
-        padding: '1rem',
+        padding: '0 1em',
       },
     }
 
     h(:div, props, [page])
+  end
+
+  def render_game
+    @game_data['mode'] ||= :multi
+    h(View::Game, game_data: @game_data)
   end
 
   def handle_history
@@ -70,34 +85,5 @@ class App < Snabberb::Component
 
   def on_hash_change
     store(:app_route, `window.location.pathname`)
-  end
-end
-
-class Index < Snabberb::Layout
-  def render
-    css = <<~CSS
-      * { font-family: Arial; }
-    CSS
-
-    view_port = {
-      name: 'viewport',
-      content: 'width=device-width, initial-scale=1, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0',
-    }
-
-    h(:html, [
-      h(:head, [
-        h(:meta, props: { charset: 'utf-8' }),
-        h(:meta, props: view_port),
-        h(:title, '18xx.games'),
-        h(:link, attrs: { rel: 'stylesheet', href: 'https://unpkg.com/purecss@1.0.1/build/pure-min.css' }),
-        h(:link, attrs: { rel: 'stylesheet', href: 'https://unpkg.com/purecss@1.0.1/build/grids-responsive-min.css' }),
-        h(:style, props: { innerHTML: css }),
-      ]),
-      h(:body, [
-        @application,
-        h(:div, props: { innerHTML: @javascript_include_tags }),
-        h(:script, props: { innerHTML: @attach_func }),
-      ]),
-    ])
   end
 end

@@ -7,7 +7,6 @@ module View
   class User < Form
     include UserManager
 
-    needs :app_route, default: nil, store: true
     needs :type
 
     def render_content

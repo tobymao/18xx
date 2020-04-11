@@ -1,57 +1,37 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'lib/request'
 
 module Lib
   class Connection
-    def initialize(path, handler)
-      @path = path
+    def initialize(game_id, handler)
+      @game_id = game_id
       @handler = handler
       @source = `new EventSource(#{path})`
       add_event_listeners
     end
 
-    def url
-      `window.location.protocol + window.location.host + #{@path}`
+    def path
+      "/api/game/#{@game_id}/subscribe"
+    end
+
+    def close
+      @source.JS.close
     end
 
     def add_event_listeners
-      @source.JS.onmessage = ->(event) { on_message(event.JS['data']) }
-      @source.JS.onopen = -> { on_open }
-      @source.JS.onerror = -> { on_error }
+      @source.JS.onmessage = lambda do |event|
+        @handler.on_message(JSON.parse(event.JS['data']))
+      end
     end
 
     def send(type, data = nil)
-      %x{
-        fetch(#{"/game/#{type}"}, {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(#{Native.convert(data)})
-        }).then(res => {
-          return res.text()
-        }).then(data => {
-          this.$on_message(data)
-        }).catch(error => {
-          console.error('Error:', error)
-        })
-      }
+      Request.post("/game/#{@game_id}/#{type}", data) do |resp|
+        next unless data
+
+        @handler.on_message(resp)
+      end
     end
-
-    def on_message(data)
-      return if data.empty?
-
-      data = JSON.parse(data)
-      type = data['type']
-      data = data['data']
-      @handler.on_message(type, data)
-    end
-
-    def on_open
-      send('refresh')
-    end
-
-    def on_error; end
   end
 end

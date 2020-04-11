@@ -53,11 +53,13 @@ class Api < Roda
   CONTEXT = ExecJS.compile(File.open(APP_JS, 'r:UTF-8', &:read))
 
   plugin :public
-  plugin :multi_route
+  plugin :hash_routes
   plugin :streaming
   plugin :json
   plugin :json_parser
+  plugin :halt
 
+  PAGE_LIMIT = 10
   ROOMS = Hash.new { |h, k| h[k] = [] }
 
   PING_FUNC = lambda do |*|
@@ -71,7 +73,7 @@ class Api < Roda
   Thread.new do
     loop do
       PING_FUNC.call
-      sleep(1)
+      sleep(10)
     end
   end
 
@@ -99,18 +101,42 @@ class Api < Roda
 
   Dir['./routes/*'].sort.each { |file| require file }
 
+  hash_routes do
+    on 'api' do |hr|
+      hr.hash_routes :api
+    end
+  end
+
   route do |r|
     r.public
     r.assets
-    r.multi_route
+    puts "************** #{r.path} *************"
+
+    r.hash_branches
 
     r.root do
-      render
+      render_with_games
     end
 
-    r.on %w[signup login profile] do
-      render
+    r.on %w[/ signup login profile] do
+      render_with_games
     end
+
+    r.on 'game', Integer do |id|
+      r.halt 404 unless (game = Game[id])
+      render(game_data: game.to_h(include_actions: true))
+    end
+  end
+
+  def render_with_games
+    p = 1
+    games = Game
+      .eager(:user, :players)
+      .reverse_order(:id)
+      .limit(PAGE_LIMIT + 1)
+      .offset((p - 1) * PAGE_LIMIT)
+      .all
+    render(games: games.map(&:to_h))
   end
 
   def render(**needs)

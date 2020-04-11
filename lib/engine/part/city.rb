@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'engine/game_error'
-require 'engine/part/base'
-require 'engine/part/revenue_center'
+require_relative '../game_error'
+require_relative 'base'
+require_relative 'revenue_center'
 
 module Engine
   module Part

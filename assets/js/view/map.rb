@@ -7,7 +7,7 @@ require 'view/tile_selector'
 
 module View
   class Map < Snabberb::Component
-    needs :game, store: true
+    needs :game
     needs :tile_selector, default: nil, store: true
     needs :selected_company, default: nil, store: true
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'engine/spender'
+require_relative 'spender'
 
 module Engine
   class Bank

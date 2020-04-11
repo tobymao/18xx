@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'engine/action/buy_share'
-require 'engine/action/par'
-require 'engine/action/sell_shares'
+require_relative '../action/buy_share'
+require_relative '../action/par'
+require_relative '../action/sell_shares'
 
 module Engine
   module Round
@@ -19,6 +19,10 @@ module Engine
         @players_sold = Hash.new { |h, k| h[k] = {} }
         @current_actions = []
         @last_to_act = nil
+      end
+
+      def name
+        'Stock Round'
       end
 
       def description

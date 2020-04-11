@@ -6,6 +6,7 @@ require 'lib/storage'
 module UserManager
   def self.included(base)
     base.needs :user, default: nil, store: true
+    base.needs :app_route, default: '/', store: true
   end
 
   def create_user(params)
@@ -18,8 +19,9 @@ module UserManager
     return if @user || !Lib::Storage['auth_token']
 
     Lib::Request.post('/user/refresh') do |data|
-      if (name = data['user']['name'])
-        store(:user, name)
+      if data
+        store(:user, data, skip: true)
+        update # for some reason this causes an infinite loop
       else
         Lib::Storage['auth_token'] = nil
       end
@@ -43,8 +45,7 @@ module UserManager
 
   def login_user(data)
     Lib::Storage['auth_token'] = data['auth_token']
-    store(:user, data['user']['name'], skip: true)
-    # store(:email, data['user']['email'], skip: true)
+    store(:user, data['user'], skip: true)
     store(:app_route, '/')
   end
 end

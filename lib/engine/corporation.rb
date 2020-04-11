@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'engine/ownable'
-require 'engine/passer'
-require 'engine/share'
-require 'engine/share_holder'
-require 'engine/spender'
-require 'engine/token'
+require_relative 'ownable'
+require_relative 'passer'
+require_relative 'share'
+require_relative 'share_holder'
+require_relative 'spender'
+require_relative 'token'
 
 module Engine
   class Corporation

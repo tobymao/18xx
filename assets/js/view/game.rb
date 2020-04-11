@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'lib/connection'
+
 require 'view/auction_round'
 require 'view/corporation'
 require 'view/entity_order'
@@ -15,30 +17,31 @@ require 'view/undo_button'
 require 'view/all_tiles'
 require 'view/all_tokens'
 
-require 'lib/connection'
-
-require 'engine/game/g_1889'
 require 'engine/round/auction'
 require 'engine/round/operating'
 require 'engine/round/stock'
 
 module View
   class Game < Snabberb::Component
+    needs :game_data
+    needs :game, default: nil, store: true
+    needs :connection, default: nil, store: true
     needs :page, store: true, default: 'game'
     needs :show_grid, default: false, store: true
-    needs :connection, store: true, default: nil
-    needs :game, store: true, default: nil
-    needs :app_route, store: true, default: nil
     needs :selected_company, default: nil, store: true
 
     def render
       unless @game
-        store(:app_route, '/')
-        return h(:div, 'game not loaded')
+        @game = Engine::Game::G1889.new(
+          @game_data['players'].map { |p| p['name'] },
+          actions: @game_data['actions'],
+        )
+        store(:game, @game, skip: true)
       end
-      if @game.mode == :multi
-        @connection ||= Lib::Connection.new('/game/subscribe', self)
-        store(:connection, @connection, skip: true)
+
+      if @game_data['mode'] == :multi && !@connection
+        connection = Lib::Connection.new(@game_data['id'], self)
+        store(:connection, connection, skip: true)
       end
 
       page =
@@ -46,17 +49,44 @@ module View
         when 'game'
           render_game
         when 'map'
-          h(View::Map)
+          h(View::Map, game: @game)
         when 'tiles'
           h(View::AllTiles)
         when 'tokens'
           h(View::AllTokens)
         end
 
-      h(:div, { props: { id: 'app' } }, [
+      destroy = lambda do
+        @connection.close
+        store(:connection, skip: nil)
+      end
+
+      props = {
+        hook: {
+          destroy: destroy,
+        }
+      }
+
+      h('div.pure-u', props, [
         *tabs,
         page,
       ])
+    end
+
+    def on_message(data)
+      case data['type']
+      when 'action'
+        data = data['data']
+        n_id = data['id']
+        o_id = @game.actions.size
+        if n_id == o_id
+          store(:game, @game.process_action(data))
+        elsif n_id > o_id
+          @connection.send('refresh')
+        end
+      when 'refresh'
+        store(:game, @game.clone(data['data']))
+      end
     end
 
     def tabs
@@ -69,21 +99,6 @@ module View
       ]
     end
 
-    def on_message(type, data)
-      case type
-      when 'action'
-        n_id = data['id']
-        o_id = @game.actions.size
-        if n_id == o_id
-          store(:game, @game.process_action(data))
-        elsif n_id > o_id
-          @connection.send('refresh')
-        end
-      when 'refresh'
-        store(:game, @game.clone(data))
-      end
-    end
-
     def render_round
       name = @round.class.name.split(':').last
       description = @round.operating? ? "#{@game.turn}.#{@round.round_num}" : @game.turn
@@ -94,9 +109,9 @@ module View
     def render_action
       case @round
       when Engine::Round::Auction
-        h(AuctionRound, round: @round)
+        h(AuctionRound, game: @game, round: @round)
       when Engine::Round::Stock
-        h(StockRound, round: @round)
+        h(StockRound, game: @game, round: @round)
       when Engine::Round::Operating
         h(OperatingRound, round: @round)
       end
@@ -107,7 +122,7 @@ module View
 
       h(:div, { attrs: { id: 'game' } }, [
         render_round,
-        h(Log),
+        h(Log, log: @game.log),
         h(EntityOrder, round: @round),
         render_action,
         h(Exchange),

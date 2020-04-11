@@ -33,7 +33,7 @@ module Engine
     end
 
     def id
-      "#{@price}-#{@coordinates}"
+      "#{@price},#{@coordinates.join(',')}"
     end
   end
 end

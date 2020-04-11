@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require 'engine/game_error'
-require 'engine/part/city'
-require 'engine/part/town'
-require 'engine/part/edge'
-require 'engine/part/junction'
-require 'engine/part/label'
-require 'engine/part/offboard'
-require 'engine/part/path'
-require 'engine/part/upgrade'
+require_relative 'game_error'
+require_relative 'part/city'
+require_relative 'part/town'
+require_relative 'part/edge'
+require_relative 'part/junction'
+require_relative 'part/label'
+require_relative 'part/offboard'
+require_relative 'part/path'
+require_relative 'part/upgrade'
 
 module Engine
   class Tile

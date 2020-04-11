@@ -2,7 +2,7 @@
 
 module View
   class Log < Snabberb::Component
-    needs :game, store: true
+    needs :log
 
     def render
       reverse_scroll = lambda do |event|
@@ -24,7 +24,7 @@ module View
         },
       }
 
-      lines = @game.log.reverse.map do |line|
+      lines = @log.reverse.map do |line|
         h(:div, { style: { transform: 'scaleY(-1)' } }, line)
       end
 

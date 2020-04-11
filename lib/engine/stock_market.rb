@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'engine/share_price'
+require_relative 'share_price'
 
 module Engine
   class StockMarket

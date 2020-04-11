@@ -6,17 +6,12 @@ require 'argon2'
 class User < Base
   one_to_many :games
   one_to_many :session
+  one_to_many :game_users
 
   RESET_WINDOW = 60 * 15 # 15 minutes
 
   def self.by_email(email)
     self[Sequel.function(:lower, :email) => email.downcase]
-  end
-
-  def validate
-    super
-    validates_presence(%i[name email password])
-    validates_unique(%i[name email])
   end
 
   def reset_hashes
@@ -28,5 +23,14 @@ class User < Base
     raise 'Password cannot be empty' if new_password.empty?
 
     super Argon2::Password.create(new_password)
+  end
+
+  def to_h
+    {
+      id: id,
+      name: name,
+      created_at: pp_created_at,
+      updated_at: pp_updated_at,
+    }
   end
 end

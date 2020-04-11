@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'engine/action/lay_tile'
-require 'engine/corporation'
-require 'engine/player'
-require 'engine/round/base'
+require_relative '../action/lay_tile'
+require_relative '../corporation'
+require_relative '../player'
+require_relative 'base'
 
 module Engine
   module Round

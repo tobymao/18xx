@@ -1,30 +1,37 @@
 # frozen_string_literal: true
 
 class Api
-  route 'user' do |r|
-    r.post 'refresh' do
-      { user: { name: user&.name } }
-    end
+  hash_routes :api do |hr|
+    hr.on 'user' do |r|
+      r.post do
+        r.is 'login' do
+          user = User.by_email(r['email'])
+          r.halt(403) unless Argon2::Password.verify_password(r['password'], user&.password)
 
-    r.post 'login' do
-      user = User.by_email(r['email'])
-      login_user(user) if user && Argon2::Password.verify_password(r['password'], user.password)
-      ''
-    end
+          login_user(user)
+        end
 
-    r.post 'logout' do
-      session.destroy
-      ''
-    end
+        r.is do
+          params = {
+            name: r['name'],
+            email: r['email'],
+            password: r['password'],
+          }
 
-    r.post do
-      params = {
-        name: r['name'],
-        email: r['email'],
-        password: r['password'],
-      }
+          login_user(User.create(params))
+        end
 
-      login_user(User.create(params))
+        r.halt(403) unless user
+
+        r.post 'logout' do
+          session.destroy
+          ''
+        end
+
+        r.is 'refresh' do
+          user.to_h
+        end
+      end
     end
   end
 
@@ -33,7 +40,7 @@ class Api
 
     {
       auth_token: session.token,
-      user: { name: user.name }
+      user: user.to_h,
     }
   end
 end

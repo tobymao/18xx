@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'engine/part/base'
+require_relative 'base'
 
 module Engine
   module Part

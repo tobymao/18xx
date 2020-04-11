@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'engine/corporation'
-require 'engine/share'
-require 'engine/share_holder'
+require_relative 'corporation'
+require_relative 'share'
+require_relative 'share_holder'
 
 module Engine
   class SharePool

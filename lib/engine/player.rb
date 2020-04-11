@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'engine/passer'
-require 'engine/share_holder'
-require 'engine/spender'
+require_relative 'passer'
+require_relative 'share_holder'
+require_relative 'spender'
 
 module Engine
   class Player

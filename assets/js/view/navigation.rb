@@ -10,27 +10,41 @@ module View
     def render
       props = {
         style: {
-          padding: '1rem 0',
           'box-shadow' => '0 2px 0 0 #f5f5f5',
         }
       }
 
-      children = [
-        h('a.pure-menu-heading', { attrs: { href: '/' } }, '18xx.games')
-      ]
+      other_links = []
 
       if @user
-        children << item("Profile (#{@user})", '/profile')
+        other_links << item("Profile (#{@user['name']})", '/profile')
       else
-        children << item('Signup', '/signup')
-        children << item('Login', '/login')
+        other_links << item('Signup', '/signup')
+        other_links << item('Login', '/login')
       end
 
-      h('div.pure-menu.pure-menu-horizontal', props, children)
+      h('div.pure-menu.pure-menu-horizontal.pure-u-1', props, [
+        h('a.pure-menu-link.pure-menu-heading', { attrs: { href: '/' } }, '18xx.games'),
+        render_other_links(other_links),
+      ])
     end
 
     def item(name, href)
-      h('a.pure-menu-heading', { attrs: { href: href } }, name)
+      h('a.pure-menu-link', { attrs: { href: href } }, name)
+    end
+
+    def render_other_links(other_links)
+      children = other_links.map do |link|
+        h('li.pure-menu-item', [link])
+      end
+
+      props = {
+        style: {
+          float: :right,
+        },
+      }
+
+      h('ul.pure-menu-list', props, children)
     end
   end
 end

@@ -1,35 +1,35 @@
 # frozen_string_literal: true
 
-require 'engine/action/base'
-require 'engine/action/bid'
-require 'engine/action/buy_company'
-require 'engine/action/buy_share'
-require 'engine/action/buy_train'
-require 'engine/action/dividend'
-require 'engine/action/lay_tile'
-require 'engine/action/par'
-require 'engine/action/pass'
-require 'engine/action/place_token'
-require 'engine/action/run_routes'
-require 'engine/action/sell_shares'
+require_relative '../action/base'
+require_relative '../action/bid'
+require_relative '../action/buy_company'
+require_relative '../action/buy_share'
+require_relative '../action/buy_train'
+require_relative '../action/dividend'
+require_relative '../action/lay_tile'
+require_relative '../action/par'
+require_relative '../action/pass'
+require_relative '../action/place_token'
+require_relative '../action/run_routes'
+require_relative '../action/sell_shares'
 
-require 'engine/bank'
-require 'engine/phase'
-require 'engine/player'
-require 'engine/share_pool'
-require 'engine/stock_market'
-require 'engine/round/auction'
-require 'engine/round/operating'
-require 'engine/round/special'
-require 'engine/round/stock'
-require 'engine/train/base'
-require 'engine/train/depot'
+require_relative '../bank'
+require_relative '../phase'
+require_relative '../player'
+require_relative '../share_pool'
+require_relative '../stock_market'
+require_relative '../round/auction'
+require_relative '../round/operating'
+require_relative '../round/special'
+require_relative '../round/stock'
+require_relative '../train/base'
+require_relative '../train/depot'
 
 module Engine
   module Game
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
-                  :depot, :hexes, :log, :mode, :phase, :players, :round, :share_pool,
+                  :depot, :hexes, :log, :phase, :players, :round, :share_pool,
                   :special, :stock_market, :tiles, :turn
 
       BANK_CASH = 12_000
@@ -88,13 +88,12 @@ module Engine
         %i[cities city],
       ].freeze
 
-      def initialize(names, mode: :multi, actions: [])
+      def initialize(names, actions: [])
         @turn = 1
         @log = []
         @actions = []
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
-        @mode = mode
 
         @companies = init_companies(@players)
         @stock_market = init_stock_market
@@ -180,7 +179,7 @@ module Engine
       end
 
       def clone(actions)
-        self.class.new(@names, mode: @mode, actions: actions)
+        self.class.new(@names, actions: actions)
       end
 
       def rollback
@@ -330,18 +329,14 @@ module Engine
       end
 
       def new_auction_round
-        @log << "-- Auction Round #{@turn} --"
         Round::Auction.new(@players, game: self)
       end
 
       def new_stock_round
-        @log << "-- Stock Round #{@turn} --"
         Round::Stock.new(@players, game: self)
       end
 
       def new_operating_round(round_num = 1)
-        @log << "-- Operating Round #{@turn}.#{round_num} --"
-
         corps = @corporations.select(&:floated?).sort_by do |corporation|
           share_price = corporation.share_price
           _, column = share_price.coordinates

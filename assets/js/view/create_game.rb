@@ -2,15 +2,16 @@
 
 require 'lib/request'
 
+require 'game_manager'
 require 'view/form'
 require 'engine/game/g_1889'
 
 module View
   class CreateGame < Form
-    needs :mode, default: :solo, store: true
+    include GameManager
+
+    needs :mode, default: :multi, store: true
     needs :num_players, default: 3, store: true
-    needs :app_route, default: nil, store: true
-    needs :game, default: nil, store: true
 
     def render_content
       inputs = [
@@ -20,6 +21,7 @@ module View
           h(:option, '1889'),
         ]),
         render_input('Description', id: :description),
+        render_input('Max Players', id: :max_players, type: :number, attrs: { value: 6 }),
       ]
 
       if @mode == :solo
@@ -68,13 +70,21 @@ module View
 
     def submit
       if @mode == :solo
-        players = params.select { |k, _| k.start_with?('player_') }.values
-        store(:game, Engine::Game::G1889.new(players, mode: @mode), skip: true)
+        players = params
+          .select { |k, _| k.start_with?('player_') }
+          .values
+          .map { |name| [:name, name] }
+          .to_h
+        game_data = {
+          title: params[:title],
+          players: players,
+          actions: [],
+          mode: :solo,
+        }
+        store(:game_data, game_data, skip: true)
         store(:app_route, '/game/1')
       else
-        Lib::Request.post('/game', params) do |data|
-          puts "** data #{data}"
-        end
+        create_game(params)
       end
     end
   end

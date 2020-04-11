@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'engine/action/buy_company'
-require 'engine/action/buy_train'
-require 'engine/action/dividend'
-require 'engine/action/lay_tile'
-require 'engine/action/run_routes'
-require 'engine/action/sell_shares'
-require 'engine/corporation'
-require 'engine/round/base'
+require_relative '../action/buy_company'
+require_relative '../action/buy_train'
+require_relative '../action/dividend'
+require_relative '../action/lay_tile'
+require_relative '../action/run_routes'
+require_relative '../action/sell_shares'
+require_relative '../corporation'
+require_relative 'base'
 
 module Engine
   module Round
@@ -48,6 +48,14 @@ module Engine
 
         companies_payout
         place_home_stations
+      end
+
+      def log_new_round
+        @log << "-- #{name} #{@turn}.#{round_num} --"
+      end
+
+      def name
+        'Operating Round'
       end
 
       def description

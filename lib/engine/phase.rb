@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'engine/action/buy_train'
+require_relative 'action/buy_train'
 
 module Engine
   class Phase

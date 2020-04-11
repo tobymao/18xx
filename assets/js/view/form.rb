@@ -25,11 +25,14 @@ module View
     end
 
     def render_form(name, inputs)
-      enter = ->(event) { submit if event.JS['keyCode'] == 13 }
+      enter = lambda do |event|
+        code = event.JS['keyCode']
+        submit if code && code == 13
+      end
 
       h('form.pure-form.pure-form-stacked', { on: { keyup: enter } }, [
         h(:legend, name),
-        h('div.pure-g', { style: { 'max-width': '750px' } }, inputs),
+        h('div.pure-g', inputs),
         h(:input, attrs: { type: :text }, style: { display: 'none' }),
       ])
     end

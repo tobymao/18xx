@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'engine/game_error'
-require 'engine/round/base'
+require_relative '../game_error'
+require_relative 'base'
 
 module Engine
   module Round
@@ -17,6 +17,10 @@ module Engine
         @bids = Hash.new { |h, k| h[k] = [] }
         @auctioning_company = nil
         @last_to_act = nil
+      end
+
+      def name
+        'Auction Round'
       end
 
       def description

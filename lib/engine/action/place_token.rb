@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'engine/action/base'
+require_relative 'base'
 
 module Engine
   module Action

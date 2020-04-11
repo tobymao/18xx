@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'engine/game_error'
+require_relative '../game_error'
 
 module Engine
   module Round
@@ -12,6 +12,14 @@ module Engine
         @entities = entities
         @log = game.log
         @current_entity = @entities.first
+      end
+
+      def log_new_round
+        @log << "-- #{name} #{game.turn} --"
+      end
+
+      def name
+        raise NotImplementedError
       end
 
       def description

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'engine/bank'
-require 'engine/company'
-require 'engine/corporation'
-require 'engine/game/base'
-require 'engine/hex'
-require 'engine/tile'
+require_relative '../bank'
+require_relative '../company'
+require_relative '../corporation'
+require_relative '../game/base'
+require_relative '../hex'
+require_relative '../tile'
 
 module Engine
   module Game

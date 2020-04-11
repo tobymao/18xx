@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require 'engine/action/base'
-require 'engine/corporation'
-require 'engine/player'
+require_relative 'base'
 
 module Engine
   module Action
