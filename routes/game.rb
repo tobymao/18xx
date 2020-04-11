@@ -41,6 +41,7 @@ class Api
           r.is 'action' do
             params = {
               game: game,
+              user: user,
               action_id: r.params['id'],
               turn: engine.turn,
               round: engine.round.name,
