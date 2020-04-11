@@ -27,7 +27,7 @@ module View
       if @mode == :solo
         @num_players.times do |index|
           num = index + 1
-          inputs << render_input("Player #{num}", id: "player_#{num}", value: num)
+          inputs << render_input("Player #{num}", id: "player_#{num}", attrs: { value: num })
         end
       end
 
@@ -73,8 +73,8 @@ module View
         players = params
           .select { |k, _| k.start_with?('player_') }
           .values
-          .map { |name| [:name, name] }
-          .to_h
+          .map { |name| { name: name } }
+
         game_data = {
           title: params[:title],
           players: players,
@@ -82,7 +82,7 @@ module View
           mode: :solo,
         }
         store(:game_data, game_data, skip: true)
-        store(:app_route, '/game/1')
+        store(:app_route, '/game')
       else
         create_game(params)
       end
