@@ -3,6 +3,12 @@
 module Engine
   module Part
     class Base
+      attr_accessor :index, :tile
+
+      def id
+        "#{tile.id}-#{index}"
+      end
+
       def <=>(other)
         if edge? && other.edge?
           num <=> other.num

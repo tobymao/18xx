@@ -107,7 +107,7 @@ module Engine
 
     COLORS = %i[white yellow green brown gray].freeze
 
-    attr_accessor :legal_rotations, :location_name
+    attr_accessor :hex, :legal_rotations, :location_name
     attr_reader :cities, :color, :edges, :junctions, :label, :name,
                 :parts, :preprinted, :rotation, :towns, :upgrades, :offboards, :blockers
 
@@ -163,11 +163,11 @@ module Engine
 
         Part::Path.new(params['a'], params['b'])
       when 'c'
-        city = Part::City.new(params['r'], params.fetch('s', 1), cache.size)
+        city = Part::City.new(params['r'], params.fetch('s', 1))
         cache << city
         city
       when 't'
-        town = Part::Town.new(params['r'], cache.size)
+        town = Part::Town.new(params['r'])
         cache << town
         town
       when 'l'
@@ -193,7 +193,6 @@ module Engine
       @rotation = rotation
       @cities = []
       @paths = []
-      @_paths_with = {}
       @towns = []
       @edges = nil
       @junctions = nil
@@ -204,6 +203,8 @@ module Engine
       @blockers = []
       @preprinted = preprinted
       @index = index
+
+      tag_parts
       separate_parts
     end
 
@@ -219,7 +220,6 @@ module Engine
       @rotation = new_rotation
       @_paths = nil
       @_exits = nil
-      @_paths_with.clear
     end
 
     def rotate(num, ticks = 1)
@@ -228,16 +228,6 @@ module Engine
 
     def paths
       @_paths ||= @paths.map { |path| path.rotate(@rotation) }
-    end
-
-    def paths_with(props, value)
-      @_paths_with[[props, value]] ||= paths.select do |path_prop|
-        props.each do |prop|
-          path_prop = path_prop.send(prop)
-        end
-
-        path_prop == value
-      end
     end
 
     def exits
@@ -305,6 +295,15 @@ module Engine
     end
 
     private
+
+    def tag_parts
+      @parts.each.group_by(&:class).values.each do |parts|
+        parts.each.with_index do |part, index|
+          part.index = index
+          part.tile = self
+        end
+      end
+    end
 
     def separate_parts
       @parts.each do |part|

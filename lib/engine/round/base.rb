@@ -79,6 +79,14 @@ module Engine
         false
       end
 
+      def can_lay_track?
+        false
+      end
+
+      def layable_hexes
+        {}
+      end
+
       def upgradeable_tiles(hex)
         potential_tiles(hex).map do |tile|
           tile.rotate!(0) # reset tile to no rotation since calculations are absolute

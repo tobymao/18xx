@@ -8,19 +8,18 @@ module Engine
     class Town < Base
       include Part::RevenueCenter
 
-      attr_reader :local_id, :revenue
+      attr_reader :revenue
 
-      def initialize(revenue, local_id = 0)
-        @local_id = local_id.to_i
+      def initialize(revenue)
         @revenue = parse_revenue(revenue)
       end
 
       def ==(other)
-        other.town? && (@revenue == other.revenue) && (@local_id == other.local_id)
+        other.town? && (@revenue == other.revenue)
       end
 
       def <=(other)
-        other.town? && (@local_id == other.local_id)
+        other.town?
       end
 
       def town?

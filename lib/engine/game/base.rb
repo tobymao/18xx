@@ -247,14 +247,12 @@ module Engine
       def init_hexes(companies, corporations)
         self.class::HEXES.map do |color, hexes|
           hexes.map do |coords, tile_string|
-            coords.map do |coord|
+            coords.map.with_index do |coord, index|
               tile =
                 begin
-                  Tile.for(tile_string, preprinted: true)
+                  Tile.for(tile_string, preprinted: true, index: index)
                 rescue Engine::GameError
-                  name = coords
-                  code = tile_string
-                  Tile.from_code(name, color, code, preprinted: true)
+                  Tile.from_code(coord, color, tile_string, preprinted: true, index: index)
                 end
 
               # add private companies that block tile lays on this hex

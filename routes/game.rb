@@ -49,6 +49,7 @@ class Api
               turn: engine.turn,
               round: engine.round.name,
             }
+
             action = engine.process_action(r.params).actions.last.to_h
             params[:action] = action
             Action.create(params)

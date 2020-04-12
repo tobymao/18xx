@@ -19,8 +19,7 @@ module View
           if @tile.lawson?
             h(Part::TownDot, region_use: @region_use, color: color_for(town))
           else
-            paths = @tile.paths_with(%w[town], town)
-            edges = paths.flat_map(&:exits)
+            edges = @tile.paths.select { |path| path.town.equal?(town) }.flat_map(&:exits)
             h(Part::TownRect, region_use: @region_use, color: color_for(town), edges: edges)
           end
         end

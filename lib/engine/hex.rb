@@ -41,6 +41,7 @@ module Engine
       @location_name = location_name
       tile.location_name = location_name
       @tile = tile
+      @tile.hex = self
     end
 
     def id
@@ -61,6 +62,9 @@ module Engine
           tile.cities[i].exchange_token(token) if token
         end
       end
+
+      @tile.hex = nil
+      tile.hex = self
 
       # give the city/town name of this hex to the new tile; remove it from the
       # old one

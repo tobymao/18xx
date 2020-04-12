@@ -184,6 +184,7 @@ module Engine
             end
 
             starting_hexes.each { |h| hexes[h] |= h.neighbors.keys }
+            hexes.default = nil
 
             hexes
           end
@@ -246,9 +247,7 @@ module Engine
           lay_tile(action)
           clear_route_cache
         when Action::PlaceToken
-          action.city.place_token(entity)
-          @log << "#{entity.name} places a token on #{action.city} TODO hex name..."
-          clear_route_cache
+          place_token(action)
         when Action::RunRoutes
           @current_routes = action.routes
           @current_routes.each do |route|
@@ -365,6 +364,18 @@ module Engine
         @current_entity.companies << company
         @current_entity.spend(price, player)
         @log << "#{@current_entity.name} buys #{company.name} from #{player.name} for $#{price}"
+      end
+
+      def place_token(action)
+        entity = action.entity
+        hex = action.city.hex
+        unless layable_hexes[action.city.hex]
+          raise GameError, "Cannot place token on #{hex.name} because it is not connected"
+        end
+
+        action.city.place_token(entity)
+        @log << "#{entity.name} places a token on #{action.city.hex.name}"
+        clear_route_cache
       end
 
       def remove_just_sold_company_abilities

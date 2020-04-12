@@ -9,13 +9,12 @@ module Engine
     class City < Base
       include Part::RevenueCenter
 
-      attr_accessor :id, :reservations
-      attr_reader :local_id, :slots, :tokens, :revenue
+      attr_accessor :reservations
+      attr_reader :slots, :tokens, :revenue
 
-      def initialize(revenue, slots = 1, local_id = 0)
+      def initialize(revenue, slots = 1)
         @revenue = parse_revenue(revenue)
         @slots = slots.to_i
-        @local_id = local_id.to_i
         @tokens = Array.new(@slots)
         @reservations = []
       end
@@ -24,9 +23,12 @@ module Engine
         other.city? &&
           @revenue == other.revenue &&
           @slots == other.slots &&
-          @local_id == other.local_id &&
           @tokens == other.tokens &&
           @reservations == other.reservations
+      end
+
+      def hex
+        @tile&.hex
       end
 
       def <=(other)
@@ -50,19 +52,9 @@ module Engine
       end
 
       def tokenable?(corporation)
-        slot = get_slot(corporation)
-        # corporation already placed all their tokens
+        return false unless (slot = get_slot(corporation))
         return false if corporation.tokens.empty?
-
-        return false unless slot
-
-        # a token is already in this slot
-        return false unless @tokens[slot].nil?
-
-        # corporation has a reservation for a different spot in the city
-        return false unless [nil, slot].include?(@reservations.index(corporation.sym))
-
-        # corporation already placed a token in this city
+        return false if @tokens[slot]
         return false if @tokens.compact.map(&:corporation).include?(corporation)
 
         true
@@ -75,7 +67,6 @@ module Engine
       end
 
       def place_token(corporation)
-        # the slot is reserved for a different corporation
         raise GameError, 'Cannot lay token' unless tokenable?(corporation)
 
         exchange_token(corporation.tokens.pop)
