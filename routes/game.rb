@@ -39,10 +39,13 @@ class Api
           )
 
           r.is 'action' do
+            action_id = r.params['id']
+            r.halt 400 unless engine.actions.last.id + 1 == action_id
+
             params = {
               game: game,
               user: user,
-              action_id: r.params['id'],
+              action_id: action_id,
               turn: engine.turn,
               round: engine.round.name,
             }
@@ -110,6 +113,6 @@ class Api
   end
 
   def actions_h(game)
-    game.actions.map(&:to_h)
+    game.actions(reload: true).map(&:to_h)
   end
 end
