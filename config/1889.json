@@ -655,7 +655,7 @@
       "name": "Takamatsu E-Railroad",
       "price": "¥20",
       "revenue": "¥5",
-      "desription": "Blocks Takamatsu (K4)."
+      "description": "Blocks Takamatsu (K4)."
     },
     {
       "name": "Mitsubishi Ferry",
@@ -685,7 +685,8 @@
       "name": "South Iyo Railway",
       "price": "¥80",
       "revenue": "¥20",
-      "players": "Players: 3+"
+      "players": "Players: 3+",
+      "description" : "No special abilities"
     },
     {
       "name": "Uno-Takamatsu Ferry",

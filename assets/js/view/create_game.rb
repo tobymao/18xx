@@ -61,8 +61,8 @@ module View
       buttons << render_button('Create') { submit }
 
       if @mode == :solo
-        buttons << render_button('+ Player') { store(:num_players, @num_players + 1) }
-        buttons << render_button('- Player') { store(:num_players, @num_players - 1) }
+        buttons << render_button('+ Player') { store(:num_players, @num_players + 1) if @num_players + 1 <= 6 }
+        buttons << render_button('- Player') { store(:num_players, @num_players - 1) if @num_players - 1 >= 2 }
       end
 
       buttons
