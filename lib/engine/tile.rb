@@ -219,6 +219,7 @@ module Engine
       @rotation = new_rotation
       @_paths = nil
       @_exits = nil
+      @_paths_with.clear
     end
 
     def rotate(num, ticks = 1)
