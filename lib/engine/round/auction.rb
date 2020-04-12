@@ -147,7 +147,11 @@ module Engine
         bids = @bids[bid.company]
         bids.reject! { |b| b.entity == bid.entity }
         bids << bid
-        @log << "#{bid.entity.name} bids $#{bid.price} for #{bid.company.name}"
+        entity = bid.entity
+        price = bid.price
+        raise GameError, 'Cannot afford bid' if bids_for_player(entity).sum(&:price) > entity.cash
+
+        @log << "#{entity.name} bids $#{price} for #{bid.company.name}"
       end
 
       def buy_company(player, company, price)
@@ -156,6 +160,12 @@ module Engine
         player.spend(price, @bank)
         @companies.delete(company)
         @log << "#{player.name} buys #{company.name} for $#{price}"
+      end
+
+      def bids_for_player(player)
+        @bids.values.map do |bids|
+          bids.find { |bid| bid.entity == player }
+        end.compact
       end
     end
   end
