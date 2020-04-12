@@ -18,6 +18,7 @@ module View
       needs :radius
       needs :tile_selector, default: nil, store: true
       needs :reservation, default: nil
+      needs :game, default: nil, store: true
 
       def render
         children = []
@@ -38,6 +39,7 @@ module View
 
       def on_click
         return if @token
+        return unless @game.round.can_place_token?
 
         action = Engine::Action::PlaceToken.new(
           @game.current_entity,

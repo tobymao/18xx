@@ -83,6 +83,10 @@ module Engine
         false
       end
 
+      def can_place_token?
+        false
+      end
+
       def layable_hexes
         {}
       end

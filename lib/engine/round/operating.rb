@@ -108,6 +108,10 @@ module Engine
         @step == :track
       end
 
+      def can_place_token?
+        @step == :token
+      end
+
       def next_step!
         current_index = self.class::STEPS.find_index(@step)
 
