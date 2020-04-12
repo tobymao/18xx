@@ -212,6 +212,10 @@ module Engine
       "#{@name}-#{@index}"
     end
 
+    def <=>(other)
+      [COLORS.index(@color), @name.to_i] <=> [COLORS.index(other.color), other.name.to_i]
+    end
+
     def rotate!(absolute = nil)
       new_rotation = absolute ||
         @legal_rotations.find { |r| r > @rotation } ||

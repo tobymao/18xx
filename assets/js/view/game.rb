@@ -12,9 +12,11 @@ require 'view/operating_round'
 require 'view/player'
 require 'view/stock_round'
 require 'view/stock_market'
+require 'view/tile_manifest'
 require 'view/undo_button'
 
-require 'view/all_tiles'
+# debugging views
+# require 'view/all_tiles'
 require 'view/all_tokens'
 
 require 'engine/round/auction'
@@ -51,7 +53,7 @@ module View
         when 'map'
           h(View::Map, game: @game)
         when 'tiles'
-          h(View::AllTiles)
+          h(View::TileManifest, tiles: @game.tiles)
         when 'tokens'
           h(View::AllTokens)
         end
