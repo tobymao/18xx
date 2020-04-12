@@ -160,7 +160,7 @@ module Engine
           name: 'Mitsubishi Ferry',
           value: 30,
           revenue: 5,
-          sym: 'ER',
+          sym: 'MF',
           desc: 'Player owner may place the port tile on a coastal village (B11, G10, I12 or J9).  This does not close
           the company.',
           abilities: [
@@ -249,6 +249,7 @@ module Engine
       CORPORATIONS = [
         {
           sym: 'AR',
+          logo: '1889/AR',
           name: 'Awa Railroad',
           tokens: 2,
           float_percent: 50,
@@ -256,6 +257,7 @@ module Engine
         },
         {
           sym: 'IR',
+          logo: '1889/IR',
           name: 'Iyo Railway',
           tokens: 2,
           float_percent: 50,
@@ -263,6 +265,7 @@ module Engine
         },
         {
           sym: 'SR',
+          logo: '1889/SR',
           name: 'Sanuki Railway',
           tokens: 2,
           float_percent: 50,
@@ -270,6 +273,7 @@ module Engine
         },
         {
           sym: 'KO',
+          logo: '1889/KO',
           name: 'Takamatsu & Kotohira Electric Railway',
           tokens: 2,
           float_percent: 50,
@@ -277,6 +281,7 @@ module Engine
         },
         {
           sym: 'TR',
+          logo: '1889/TR',
           name: 'Tosa Electric Railway',
           tokens: 3,
           float_percent: 50,
@@ -284,6 +289,7 @@ module Engine
         },
         {
           sym: 'KU',
+          logo: '1889/KU',
           name: 'Tosa Kuroshio Railway',
           tokens: 1,
           float_percent: 50,
@@ -291,6 +297,7 @@ module Engine
         },
         {
           sym: 'UR',
+          logo: '1889/UR',
           name: 'Uwajima Railway',
           tokens: 3,
           float_percent: 50,

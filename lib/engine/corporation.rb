@@ -36,7 +36,7 @@ module Engine
       @float_percent = opts[:float_percent] || 60
       @coordinates = opts[:coordinates]
       @min_price = opts[:min_price]
-      @logo = "/logos/#{opts[:logo] || sym}.svg"
+      @logo = "/logos/#{opts[:logo]}.svg"
     end
 
     def share_holders

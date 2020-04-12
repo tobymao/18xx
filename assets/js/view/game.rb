@@ -17,7 +17,7 @@ require 'view/undo_button'
 
 # debugging views
 # require 'view/all_tiles'
-require 'view/all_tokens'
+# require 'view/all_tokens'
 
 require 'engine/round/auction'
 require 'engine/round/operating'
@@ -54,8 +54,6 @@ module View
           h(View::Map, game: @game)
         when 'tiles'
           h(View::TileManifest, tiles: @game.tiles)
-        when 'tokens'
-          h(View::AllTokens)
         end
 
       destroy = lambda do
