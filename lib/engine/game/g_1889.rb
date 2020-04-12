@@ -150,9 +150,8 @@ module Engine
           value: 20,
           revenue: 5,
           sym: 'TR',
-          desc: 'No special abilities. 
-          If all players pass during the initial stock round and this company has not been purchased, 
-          its price is reduced by 5.  If it is reduced to 0, the next player must take it for free.',
+          desc: 'No special abilities.  If all players pass during the initial stock round and this company has not
+          been purchased, its price is reduced by 5.  If it is reduced to 0, the next player must take it for free.',
           abilities: [
             { type: :blocks_hex, hex: 'K4' },
           ],
@@ -162,8 +161,8 @@ module Engine
           value: 30,
           revenue: 5,
           sym: 'ER',
-          desc: 'Player owner may place the port tile on a coastal village (B11, G10, I12 or J9).  
-          This does not close the company.',
+          desc: 'Player owner may place the port tile on a coastal village (B11, G10, I12 or J9).  This does not close
+          the company.',
           abilities: [
             {
               type: :tile_lay,
@@ -178,8 +177,8 @@ module Engine
           value: 40,
           revenue: 10,
           sym: 'ER',
-          desc: 'When this company is sold to a corporation, the selling player may place a green tile on Ohzu.  
-          This does not close the company.',
+          desc: 'When this company is sold to a corporation, the selling player may place a green tile on Ohzu.  This
+          does not close the company.',
           abilities: [
             { type: :blocks_hex, hex: 'C4' },
             {
@@ -195,8 +194,8 @@ module Engine
           name: 'Sumitomo Mines Railway',
           value: 50,
           revenue: 15,
-          desc: 'Owning corporation may ignore building costs for mountain hexes which do not contain rivers.  
-          This does not close the company.',
+          desc: 'Owning corporation may ignore building costs for mountain hexes which do not contain rivers.  This
+          does not close the company.',
           abilities: [
             {
               type: :ignore_terrain,
@@ -230,9 +229,8 @@ module Engine
           value: 150,
           revenue: 30,
           min_players: 4,
-          desc: 'Does not close while owned by a player.
-            After the purchase of the first 5-train, 
-            revenue becomes 50 and this comapny may no longer be sold to a corporation.',
+          desc: 'Does not close while owned by a player.  After the purchase of the first 5-train, revenue becomes 50
+          and this comapny may no longer be sold to a corporation.',
           abilities: [
             {
               type: :never_closes,
