@@ -307,7 +307,7 @@ module Engine
           case @round
           when Round::Auction
             rotate_players(@round.last_to_act)
-            @companies.all?(&:owner) ? new_stock_round : new_operating_round
+            new_stock_round
           when Round::Stock
             rotate_players(@round.last_to_act)
             new_operating_round
@@ -317,7 +317,7 @@ module Engine
             else
               @turn += 1
               @operating_rounds = @phase.operating_rounds
-              @companies.all?(&:owner) ? new_stock_round : new_auction_round
+              new_stock_round
             end
           else
             raise "Unexected round type #{@round}"

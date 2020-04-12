@@ -6,8 +6,8 @@ module Engine
   class Company
     include Ownable
 
-    attr_accessor :revenue
-    attr_reader :name, :sym, :value, :desc
+    attr_accessor :revenue, :value
+    attr_reader :name, :sym, :desc
 
     def initialize(name:, value:, revenue: 0, desc: '', sym: '', abilities: [])
       @name = name

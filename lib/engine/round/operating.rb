@@ -46,7 +46,7 @@ module Engine
         @step = self.class::STEPS.first
         @current_routes = []
 
-        companies_payout
+        payout_companies
         place_home_stations
       end
 
@@ -137,15 +137,6 @@ module Engine
           clear_route_cache
           @step = self.class::STEPS.first
           @current_entity.pass!
-        end
-      end
-
-      def companies_payout
-        @companies.select(&:owner).each do |company|
-          owner = company.owner
-          revenue = company.revenue
-          @bank.spend(revenue, owner)
-          @log << "#{owner.name} collects $#{revenue} from #{company.name}"
         end
       end
 

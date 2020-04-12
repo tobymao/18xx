@@ -152,6 +152,15 @@ module Engine
         @log << "#{new_p.name} becomes the president of #{corporation.name}"
       end
 
+      def payout_companies
+        @game.companies.select(&:owner).each do |company|
+          owner = company.owner
+          revenue = company.revenue
+          @game.bank.spend(revenue, owner)
+          @log << "#{owner.name} collects $#{revenue} from #{company.name}"
+        end
+      end
+
       def log_share_price(entity, from)
         to = entity.share_price.price
         @log << "#{entity.name}'s share price changes from $#{from} to $#{to}" if from != to

@@ -10,7 +10,8 @@ module Engine
 
       def initialize(entities, game:, min_increment: 5)
         super
-        @companies = game.companies.reject(&:owner).sort_by(&:value)
+        @companies = game.companies.sort_by(&:value)
+        @cheapest = @companies.first
         @bank = game.bank
         @min_increment = min_increment
 
@@ -28,19 +29,7 @@ module Engine
       end
 
       def finished?
-        @companies.empty? || @entities.all?(&:passed?)
-      end
-
-      def change_entity(_action)
-        if (bids = @bids[@auctioning_company]).any?
-          @current_entity = bids.min_by(&:price).entity
-        else
-          # if someone bought a share outright, then we find the next person who hasn't passed
-          loop do
-            @current_entity = next_entity
-            break if !@current_entity.passed? || finished?
-          end
-        end
+        @companies.empty?
       end
 
       def min_bid(company)
@@ -65,6 +54,10 @@ module Engine
 
       private
 
+      def all_passed?
+        @entities.all?(&:passed?)
+      end
+
       def _process_action(bid)
         if @auctioning_company
           add_bid(bid)
@@ -75,6 +68,39 @@ module Engine
 
       def action_processed(action)
         action.entity.unpass!
+      end
+
+      def change_entity(_action)
+        if (bids = @bids[@auctioning_company]).any?
+          @current_entity = bids.min_by(&:price).entity
+        else
+          # if someone bought a share outright, then we find the next person who hasn't passed
+          loop do
+            @current_entity = next_entity
+            break if !@current_entity.passed? || all_passed?
+          end
+        end
+      end
+
+      def action_finalized(_action)
+        return if !all_passed? || finished?
+
+        @entities.each(&:unpass!)
+
+        if @companies.include?(@cheapest)
+          value = @cheapest.value
+          @cheapest.value -= 5
+          new_value = @cheapest.value
+          @log << "#{@cheapest.name} value decreases from $#{value} to $#{new_value}"
+
+          if new_value <= 0
+            buy_company(@current_entity, @cheapest, 0)
+            resolve_bids
+            change_entity(nil)
+          end
+        else
+          payout_companies
+        end
       end
 
       def pass_processed(_action)
@@ -112,13 +138,9 @@ module Engine
         price = bid.price
         company = bid.company
         player = bid.entity
-        company.owner = player
-        player.companies << company
-        player.spend(price, @bank)
-        @companies.delete(company)
+        buy_company(player, company, price)
         @bids.delete(company)
         @auctioning_company = nil
-        @log << "#{player.name} buys #{company.name} for $#{price}"
       end
 
       def add_bid(bid)
@@ -126,6 +148,14 @@ module Engine
         bids.reject! { |b| b.entity == bid.entity }
         bids << bid
         @log << "#{bid.entity.name} bids $#{bid.price} for #{bid.company.name}"
+      end
+
+      def buy_company(player, company, price)
+        company.owner = player
+        player.companies << company
+        player.spend(price, @bank)
+        @companies.delete(company)
+        @log << "#{player.name} buys #{company.name} for $#{price}"
       end
     end
   end
