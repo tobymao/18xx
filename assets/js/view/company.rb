@@ -19,7 +19,7 @@ module View
       names = @bids
         .sort_by(&:price)
         .reverse.map { |bid| "#{bid.entity.name} ($#{bid.price})" }
-        .join(", ")
+        .join(', ')
       h(:div, { style: bidders_style }, names)
     end
 
