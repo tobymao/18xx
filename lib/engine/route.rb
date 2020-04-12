@@ -19,7 +19,7 @@ module Engine
     end
 
     def add_hex(hex)
-      if (prev = @hexes.last) && !hex.connected?(prev, true)
+      if (prev = @hexes.last) && !hex.connected?(prev)
         raise GameError, "Cannot use #{hex.name} in route because it is not connected"
       end
 
@@ -41,7 +41,10 @@ module Engine
     end
 
     def revenue
-      stops.map { |stop| stop.route_revenue(@phase, @train) }.sum
+      stops_ = stops
+      raise GameError, 'Too many stops' if @train.distance < stops_.size
+
+      stops_.map { |stop| stop.route_revenue(@phase, @train) }.sum
     end
   end
 end

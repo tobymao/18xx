@@ -41,7 +41,6 @@ module View
       children << h(Tile, tile: @tile) if @tile
       children << h(View::TriangularGrid) if @show_grid
       layable = @round.layable_hexes.key?(@hex) if @round.respond_to?(:layable_hexes)
-      layable &&= @round.can_lay_track? if @round.respond_to?(:can_lay_track?)
 
       clickable = layable || @role == :tile_selector
 
@@ -82,6 +81,8 @@ module View
 
       case @role
       when :map
+        return unless @round.respond_to?(:can_lay_track?) && @round.can_lay_track?
+
         store(
           :tile_selector,
           Lib::TileSelector.new(@hex, @tile, event, root, @round.current_entity),
