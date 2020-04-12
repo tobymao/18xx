@@ -88,8 +88,8 @@ module View
       buttons << render_button('Create Game') { create_game }
 
       if @mode == :solo
-        buttons << render_button('+ Player') { store(:num_players, @num_players + 1) }
-        buttons << render_button('- Player') { store(:num_players, @num_players - 1) }
+        buttons << render_button('+ Player') { store(:num_players, @num_players + 1) if @num_players + 1 <= 6 }
+        buttons << render_button('- Player') { store(:num_players, @num_players - 1) if @num_players - 1 >= 2 }
       end
 
       h('div.pure-g', buttons)
