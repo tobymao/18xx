@@ -19,7 +19,7 @@ module View
       h(:div, 'Private Company Auction', [
         *render_companies,
         render_input,
-        h(PassButton),
+        h(:div, [h(PassButton)]),
       ].compact)
     end
 

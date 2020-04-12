@@ -23,11 +23,10 @@ class App < Snabberb::Component
       style: {
         padding: '1rem',
         margin: :auto,
-        'max-width': '1024px',
       },
     }
 
-    h('div.pure-g', props, [
+    h(:div, props, [
       h(View::Navigation),
       render_content,
     ])
@@ -57,7 +56,8 @@ class App < Snabberb::Component
 
     props = {
       style: {
-        padding: '0 1em',
+        padding: '0 1rem',
+        margin: '1rem 0',
       },
     }
 

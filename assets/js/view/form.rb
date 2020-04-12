@@ -30,28 +30,43 @@ module View
         submit if code && code == 13
       end
 
-      h('form.pure-form.pure-form-stacked', { on: { keyup: enter } }, [
+      props = {
+        on: { keyup: enter },
+      }
+
+      h(:form, props, [
         h(:legend, name),
-        h('div.pure-g', inputs),
+        h(:div, inputs),
         h(:input, attrs: { type: :text }, style: { display: 'none' }),
       ])
     end
 
     def render_input(label, id:, el: 'input', type: 'text', attrs: {}, children: [])
-      props = { attrs: { type: type, **attrs } }
-      input = h("#{el}.pure-u-23-24", props, children)
+      props = {
+        style: {
+          margin: '1rem',
+        },
+        attrs: {
+          placeholder: label,
+          type: type,
+          **attrs,
+        },
+      }
+      input = h(el, props, children)
       @inputs[id] = input
-      h('div.pure-u-1.pure-u-md-1-2', [label, input])
+      h(:div, { style: { display: 'inline-block' } }, [label, input])
     end
 
     def render_button(text, &block)
-      h('div.pure-u-1-3', { style: { margin: '1rem 0 1rem 0' } }, [
-        h(
-          'button.pure-button.pure-button-primary.pure-u-23-24',
-          { attrs: { type: :button }, on: { click: block } },
-          text,
-        )
-      ])
+      props = {
+        style: {
+          margin: '0.5rem 0.5rem 0 0',
+        },
+        attrs: { type: :button },
+        on: { click: block },
+      }
+
+      h(:button, props, text)
     end
   end
 end

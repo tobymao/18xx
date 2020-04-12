@@ -10,7 +10,8 @@ module View
     def render
       props = {
         style: {
-          'box-shadow' => '0 2px 0 0 #f5f5f5',
+          padding: '1rem',
+          'box-shadow': '0 2px 0 0 gainsboro',
         }
       }
 
@@ -23,19 +24,26 @@ module View
         other_links << item('Login', '/login')
       end
 
-      h('div.pure-menu.pure-menu-horizontal.pure-u-1', props, [
-        h('a.pure-menu-link.pure-menu-heading', { attrs: { href: '/' } }, '18xx.games'),
+      h(:div, props, [
+        h(:a, { attrs: { href: '/' } }, '18xx.games'),
         render_other_links(other_links),
       ])
     end
 
     def item(name, href)
-      h('a.pure-menu-link', { attrs: { href: href } }, name)
+      props = {
+        attrs: { href: href },
+        style: {
+          margin: '0 1rem',
+        },
+      }
+
+      h(:a, props, name)
     end
 
     def render_other_links(other_links)
       children = other_links.map do |link|
-        h('li.pure-menu-item', [link])
+        link
       end
 
       props = {
@@ -44,7 +52,7 @@ module View
         },
       }
 
-      h('ul.pure-menu-list', props, children)
+      h(:div, props, children)
     end
   end
 end

@@ -14,7 +14,7 @@ module View
         case @type
         when :signup
           ['Signup', [
-            h('div.pure-u-1', [render_button('Create Account') { submit }]),
+            h(:div, [render_button('Create Account') { submit }]),
             render_input('User Name', id: :name),
             render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
             render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
@@ -27,13 +27,11 @@ module View
           ]]
         when :profile
           ['Edit Profile (Coming Soon)', [
-            h('div.pure-u-1', [render_button('Logout') { submit }]),
+            h(:div, [render_button('Logout') { submit }]),
           ]]
         end
 
-      h('div.pure-u-1', [
-        render_form(title, inputs)
-      ])
+      render_form(title, inputs)
     end
 
     def submit

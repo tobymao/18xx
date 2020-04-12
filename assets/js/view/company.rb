@@ -16,7 +16,10 @@ module View
       bidders_style = {
         'font-weight': 'normal'
       }
-      names = @bids.sort_by(&:price).reverse.map { |bid| h(:div, "#{bid.entity.name} (#{bid.price})") }
+      names = @bids
+        .sort_by(&:price)
+        .reverse.map { |bid| "#{bid.entity.name} ($#{bid.price})" }
+        .join(", ")
       h(:div, { style: bidders_style }, names)
     end
 
@@ -27,49 +30,62 @@ module View
         # TODO: Move Bid Input into Private
       end
 
-      style = {
-        cursor: 'pointer',
-        border: 'solid 1px rgba(0,0,0,0.2)',
-        display: 'block',
-        margin: '5px 0px',
-        'text-align': 'center',
-        'font-weight': 'bold'
-      }
-
       header_style = {
         background: 'yellow',
         border: '1px solid',
+        'margin-bottom': '0.5rem',
         'font-size': '90%'
       }
 
       description_style = {
+        margin: '0.5rem 0 0.5rem 0',
         'font-size': '80%',
         'text-align': 'left',
-        'font-weight': 'normal'
+        'font-weight': 'normal',
       }
 
       value_style = {
-        'float': 'left'
+        display: 'inline-block',
+        width: '50%',
+        'text-align': 'left'
       }
 
       revenue_style = {
-        'float': 'right'
+        display: 'inline-block',
+        width: '50%',
+        'text-align': 'right'
       }
 
       bidders_style = {
-        'margin': '20px 0px 0px 0px'
+        'margin-top': '1rem'
       }
 
-      style['background-color'] = 'lightblue' if selected?
+      props = {
+        style: {
+          display: 'inline-block',
+          cursor: 'pointer',
+          border: 'solid 1px gainsboro',
+          padding: '0.5rem',
+          margin: '0.5rem 0.5rem 0 0',
+          width: '300px',
+          'text-align': 'center',
+          'font-weight': 'bold',
+        },
+        on: { click: onclick },
+      }
 
-      h(:div, { style: style, on: { click: onclick } }, [
+      props[:style]['background-color'] = 'lightblue' if selected?
+
+      h(:div, props, [
         h(:div, { style: header_style }, 'PRIVATE COMPANY'),
         h(:div, @company.name),
         h(:div, { style: description_style }, @company.desc),
-        h(:div, { style: value_style }, "Value: #{@company.value}"),
-        h(:div, { style: revenue_style }, "Revenue: #{@company.revenue}"),
+        h(:div, [
+          h(:div, { style: value_style }, "Value: #{@company.value}"),
+          h(:div, { style: revenue_style }, "Revenue: #{@company.revenue}"),
+        ]),
         h(:div, { style: bidders_style }, 'Bidders:'),
-        render_bidders
+        render_bidders,
       ].compact)
     end
   end

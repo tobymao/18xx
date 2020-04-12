@@ -67,7 +67,7 @@ module View
         }
       }
 
-      h('div.pure-u', props, [
+      h(:div, props, [
         *tabs,
         page,
       ])

@@ -10,7 +10,7 @@ module View
     needs :user, default: nil, store: true
 
     def render
-      h('div.pure-u-1', [
+      h(:div, [
         h(CreateGame),
         render_new_games,
       ])
@@ -21,14 +21,14 @@ module View
         render_game_box(game)
       end
 
-      h('div.pure-u-1', boxes)
+      h(:div, boxes)
     end
 
     def render_game_box(game)
       props = {
         style: {
           'text-align': 'center',
-          'border-bottom': '1px solid gainsboro',
+          'border-top': '1px solid gainsboro',
         }
       }
 
@@ -38,10 +38,9 @@ module View
         line('Description', "Id: #{game['id']} #{game['description']}"),
         line('Players', game['players'].map { |p| p['name'] }.join(', ')),
         line('Created', game['created_at']),
-        line('Updated', game['updated_at']),
       ]
 
-      box = h('div.pure-u-1-2.pure-u-md-1-3.pure-u-lg-1-4', props, children)
+      box = h(:div, props, children)
 
       if game['status'] != 'new'
         children << button('Enter', -> { enter_game(game) })
@@ -66,12 +65,13 @@ module View
       props = {
         style: {
           margin: '0.2em',
+          display: 'inline-block',
         },
       }
 
-      h('div.pure-u-1', props, [
-        h('div.pure-u-1-2', "#{key}:"),
-        h('div.pure-u-1-2', value),
+      h(:div, props, [
+        h(:div, "#{key}:"),
+        h(:div, value),
       ])
     end
 
@@ -84,7 +84,7 @@ module View
         }
       }
 
-      h('button.pure-button.pure-button-secondary', props, name)
+      h(:button, props, name)
     end
   end
 end

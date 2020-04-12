@@ -15,13 +15,9 @@ module View
 
     def render_content
       inputs = [
-        *render_buttons,
         mode_selector,
-        render_input('Game Title', id: :title, el: 'select', children: [
-          h(:option, '1889'),
-        ]),
-        render_input('Description', id: :description),
-        render_input('Max Players', id: :max_players, type: :number, attrs: { value: 6 }),
+        *render_buttons,
+        render_inputs,
       ]
 
       if @mode == :solo
@@ -31,13 +27,23 @@ module View
         end
       end
 
-      h('div.pure-u-1', [
+      h(:div, [
         render_form('Create New Game', inputs)
       ])
     end
 
+    def render_inputs
+      h(:div, [
+        render_input('Game Title', id: :title, el: 'select', children: [
+          h(:option, '1889'),
+        ]),
+        render_input('Description', id: :description),
+        render_input('Max Players', id: :max_players, type: :number, attrs: { value: 6 }),
+      ])
+    end
+
     def mode_selector
-      h('label.pure-radio.pure-u-23-24', [
+      h(:div, { style: { margin: '1rem 0' } }, [
         *mode_input(:multi, 'Multiplayer'),
         *mode_input(:solo, 'Solo'),
       ])

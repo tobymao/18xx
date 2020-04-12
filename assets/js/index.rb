@@ -16,8 +16,7 @@ class Index < Snabberb::Layout
         h(:meta, props: { charset: 'utf-8' }),
         h(:meta, props: view_port),
         h(:title, '18xx.games'),
-        h(:link, attrs: { rel: 'stylesheet', href: 'https://unpkg.com/purecss@1.0.1/build/pure-min.css' }),
-        h(:link, attrs: { rel: 'stylesheet', href: 'https://unpkg.com/purecss@1.0.1/build/grids-responsive-min.css' }),
+        h(:link, attrs: { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css' }), # rubocop:disable Layout/LineLength
         h(:style, props: { innerHTML: css }),
       ]),
       h(:body, [
