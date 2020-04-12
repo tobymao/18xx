@@ -40,7 +40,7 @@ class Api
 
           r.is 'action' do
             action_id = r.params['id']
-            r.halt 400 unless engine.actions.last.id + 1 == action_id
+            r.halt 400 unless engine.actions.size + 1 == action_id
 
             params = {
               game: game,

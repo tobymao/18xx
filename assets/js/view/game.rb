@@ -78,7 +78,7 @@ module View
       when 'action'
         data = data['data']
         n_id = data['id']
-        o_id = @game.actions.size
+        o_id = @game.current_action_id
         if n_id == o_id
           store(:game, @game.process_action(data))
         elsif n_id > o_id
