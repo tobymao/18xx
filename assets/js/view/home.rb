@@ -54,7 +54,7 @@ module View
         children << button('Delete', -> { delete_game(game) })
       elsif game['players'].any? { |p| p['id'] == @user['id'] }
         children << button('Leave', -> { leave_game(game) })
-      else
+      elsif game['max_player'] > game['players'].size
         children << button('Join', -> { join_game(game) })
       end
 

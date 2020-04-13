@@ -9,7 +9,7 @@ module Engine
     attr_accessor :revenue, :value
     attr_reader :name, :sym, :desc
 
-    def initialize(name:, value:, revenue: 0, desc: '', sym: '', abilities: [])
+    def initialize(name:, value:, revenue: 0, desc: '', sym: '', abilities: [], **_opts)
       @name = name
       @value = value
       @desc = desc
