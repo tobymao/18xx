@@ -50,7 +50,7 @@ module View
       return box unless @user
 
       if game['user']['id'] == @user['id']
-        children << button('Start', -> { start_game(game) })
+        children << button('Start', -> { start_game(game) }) if game['players'].size > 1
         children << button('Delete', -> { delete_game(game) })
       elsif game['players'].any? { |p| p['id'] == @user['id'] }
         children << button('Leave', -> { leave_game(game) })
