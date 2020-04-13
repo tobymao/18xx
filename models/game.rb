@@ -13,6 +13,7 @@ class Game < Base
       id: id,
       user: user.to_h,
       players: players.map(&:to_h),
+      max_players: max_players,
       title: title,
       settings: settings,
       status: status,
