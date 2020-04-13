@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/actionable'
+require 'view/undo_and_pass'
 
 require 'engine/action/dividend'
 
@@ -10,6 +11,7 @@ module View
 
     def render
       h(:div, [
+        h(UndoAndPass, pass: false),
         h(:button, { on: { click: -> { dividend('payout') } } }, 'Payout'),
         h(:button, { on: { click: -> { dividend('withhold') } } }, 'Withhold'),
       ])
