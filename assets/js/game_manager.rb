@@ -7,7 +7,7 @@ module GameManager
   def self.included(base)
     base.needs :game_data, default: nil, store: true
     base.needs :games, default: [], store: true
-    base.needs :app_route, default: '/', store: true
+    base.needs :app_route, default: nil, store: true
   end
 
   def create_game(params)

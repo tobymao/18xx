@@ -4,7 +4,7 @@ require 'view/create_game'
 
 module View
   class Navigation < Snabberb::Component
-    needs :app_route, default: '/', store: true
+    needs :app_route, default: nil, store: true
     needs :user, default: nil, store: true
 
     def render

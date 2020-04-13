@@ -7,7 +7,8 @@ if (typeof window == 'undefined') {
     requestAnimationFrame: function() {},
     addEventListener: function() {},
     location: {
-      pathname: ''
+      pathname: '',
+      hash: ''
     },
     history: {
       pushState: function() {}

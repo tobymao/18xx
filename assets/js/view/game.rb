@@ -31,6 +31,7 @@ module View
     needs :page, store: true, default: 'game'
     needs :show_grid, default: false, store: true
     needs :selected_company, default: nil, store: true
+    needs :app_route, store: true
 
     def render
       unless @game
@@ -47,11 +48,13 @@ module View
       end
 
       page =
-        case @page
-        when 'game'
+        case route_anchor
+        when nil
           render_game
         when 'map'
           h(View::Map, game: @game)
+        when 'market'
+          h(StockMarket, stock_market: @game.stock_market)
         when 'tiles'
           h(View::TileManifest, tiles: @game.tiles)
         end
@@ -89,14 +92,40 @@ module View
       end
     end
 
+    private
+
     def tabs
       [
-        h(:button, { on: { click: -> { store(:page, 'game') } } }, 'Game'),
-        h(:button, { on: { click: -> { store(:page, 'map') } } }, 'Map'),
-        h(:button, { on: { click: -> { store(:page, 'tiles') } } }, 'All Tiles'),
-        h(:button, { on: { click: -> { store(:page, 'tokens') } } }, 'All Tokens'),
-        h(:button, { on: { click: -> { store(:show_grid, !@show_grid) } } }, 'Toggle Tile Grid'),
+        tab_button('Game'),
+        tab_button('Map', '#map'),
+        tab_button('Market', '#market'),
+        tab_button('Tiles', '#tiles'),
       ]
+    end
+
+    def tab_button(name, anchor = '')
+      onclick = lambda do
+        path = @app_route.split('#').first
+        store(:app_route, path + anchor)
+      end
+
+      props = {
+        on: { click: onclick },
+        style: {
+          'outline-style': 'none',
+          'margin': '0 1rem 1rem 0',
+        },
+      }
+
+      if anchor == "##{route_anchor}" || anchor == '' && !route_anchor # rubocop:disable Style/IfUnlessModifier
+        props[:style]['background-color'] = 'lightgray'
+      end
+
+      h(:button, props, name)
+    end
+
+    def route_anchor
+      @app_route.split('#')[1]
     end
 
     def render_round
@@ -120,7 +149,7 @@ module View
     def render_game
       @round = @game.round
 
-      h(:div, { attrs: { id: 'game' } }, [
+      h('div.game', [
         render_round,
         h(Log, log: @game.log),
         h(EntityOrder, round: @round),

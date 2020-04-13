@@ -6,7 +6,7 @@ require 'lib/storage'
 module UserManager
   def self.included(base)
     base.needs :user, default: nil, store: true
-    base.needs :app_route, default: '/', store: true
+    base.needs :app_route, default: nil, store: true
   end
 
   def create_user(params)

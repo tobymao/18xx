@@ -33,10 +33,10 @@ class App < Snabberb::Component
   end
 
   def render_content
-    path = @app_route.split('/').reject(&:empty?).first
-
     refresh_user
     handle_history
+
+    path = @app_route.split('/').reject(&:empty?).first
 
     page =
       case path
@@ -75,15 +75,21 @@ class App < Snabberb::Component
 
       if (!window.onpopstate) {
         window.onpopstate = function() { self.$on_hash_change() }
+        self.$store_app_route()
       }
 
-      if (window.location.pathname != #{@app_route}) {
+      if (window.location.pathname + window.location.hash != #{@app_route}) {
         window.history.pushState('', '', #{@app_route})
       }
     }
   end
 
   def on_hash_change
-    store(:app_route, `window.location.pathname`)
+    store_app_route(skip: false)
+  end
+
+  def store_app_route(skip: true)
+    window_route = `window.location.pathname + window.location.hash`
+    store(:app_route, window_route, skip: skip)
   end
 end
