@@ -2,8 +2,8 @@
 
 require 'view/actionable'
 require 'view/corporation'
-require 'view/pass_button'
 require 'view/sell_shares'
+require 'view/undo_and_pass'
 
 require 'engine/action/buy_share'
 require 'engine/action/par'
@@ -19,9 +19,11 @@ module View
     def render
       @current_entity = @round.current_entity
 
-      children = render_corporations
+      children = [
+        h(UndoAndPass),
+        *render_corporations,
+      ]
       children << render_input if @selected_corporation
-      children << h(PassButton)
 
       h(:div, children)
     end

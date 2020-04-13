@@ -70,6 +70,7 @@ module View
           width: '300px',
           'text-align': 'center',
           'font-weight': 'bold',
+          'vertical-align': 'top',
         },
         on: { click: onclick },
       }

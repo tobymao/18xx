@@ -9,7 +9,10 @@ module View
     def render
       props = {
         on: {
-          click: -> { rollback }
+          click: -> { rollback },
+        },
+        style: {
+          'margin-right': '1em',
         },
       }
 

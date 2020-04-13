@@ -3,7 +3,7 @@
 require 'view/buy_companies'
 require 'view/buy_trains'
 require 'view/dividend'
-require 'view/pass_button'
+require 'view/undo_and_pass'
 require 'view/route_selector'
 
 module View
@@ -17,7 +17,7 @@ module View
       action =
         case @round.step
         when :track, :token
-          h(PassButton)
+          h(UndoAndPass)
         when :route
           h(RouteSelector)
         when :dividend

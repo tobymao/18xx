@@ -2,7 +2,7 @@
 
 require 'view/actionable'
 require 'view/company'
-require 'view/pass_button'
+require 'view/undo_and_pass'
 
 require 'engine/action/bid'
 
@@ -16,10 +16,10 @@ module View
     def render
       @current_entity = @round.current_entity
 
-      h(:div, 'Private Company Auction', [
+      h(:div, [
+        h(UndoAndPass, undo: @game.actions.size.positive?),
         *render_companies,
         render_input,
-        h(:div, [h(PassButton)]),
       ].compact)
     end
 

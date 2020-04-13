@@ -3,6 +3,7 @@
 require 'view/actionable'
 require 'view/corporation'
 require 'view/sell_shares'
+require 'view/undo_and_pass'
 
 require 'engine/action/buy_train'
 
@@ -20,13 +21,16 @@ module View
       other_corp_trains = available.sort_by { |c, _| c.owner == @corporation.owner ? 0 : 1 }
       children = []
 
+      must_buy_train = round.must_buy_train?
+
       children << h(:div, [
+        h(UndoAndPass, pass: !must_buy_train),
         h(:div, 'Available Trains'),
         *from_depot(depot_trains),
         *other_trains(other_corp_trains),
       ])
 
-      if round.must_buy_train?
+      if must_buy_train
         player = @corporation.owner
 
         if @corporation.cash + player.cash < @depot.min_price
@@ -37,8 +41,6 @@ module View
           end
           children << h(SellShares, player: @corporation.owner)
         end
-      else
-        children << h(PassButton)
       end
 
       children << h(:div, [h(:div, 'Remaining Trains'), *remaining_trains])
