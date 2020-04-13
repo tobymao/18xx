@@ -27,7 +27,6 @@ module View
     needs :game_data
     needs :game, default: nil, store: true
     needs :connection, default: nil, store: true
-    needs :page, store: true, default: 'game'
     needs :show_grid, default: false, store: true
     needs :selected_company, default: nil, store: true
     needs :app_route, store: true
@@ -59,11 +58,15 @@ module View
         end
 
       destroy = lambda do
-        @connection.close
-        store(:connection, skip: nil)
+        @connection&.close
+        store(:connection, nil, skip: true)
+        store(:game, nil, skip: true)
+        store(:show_grid, false, skip: true)
+        store(:selected_company, nil, skip: true)
       end
 
       props = {
+        key: 'game_page',
         hook: {
           destroy: destroy,
         }
