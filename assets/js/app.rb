@@ -38,7 +38,8 @@ class App < Snabberb::Component
     refresh_user
     handle_history
 
-    path = @app_route.split('/').reject(&:empty?).first
+    path = @app_route.split('#').first || ''
+    path = path.split('/').reject(&:empty?).first
 
     page =
       case path
