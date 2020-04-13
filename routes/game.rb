@@ -36,7 +36,8 @@ class Api
 
         # POST '/api/game/<game_id>'
         r.post do
-          not_authorized! unless GameUser.where(game: game, user: user).exists
+          not_authorized! unless user
+          not_authorized! if GameUser.where(game: game, user: user).empty?
 
           engine = Engine::Game::G1889.new(
             game.players.map(&:name),
