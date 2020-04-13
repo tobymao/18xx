@@ -5,13 +5,16 @@ require_relative '../lib/engine/game/g_1889'
 class Api
   hash_routes :api do |hr|
     hr.on 'game' do |r|
+      # '/api/game/<game_id>/*'
       r.on Integer do |id|
         game = Game[id]
 
+        # '/api/game/<game_id>/'
         r.is do
           game.to_h(include_actions: true)
         end
 
+        # '/api/game/<game_id>/subscribe'
         r.is 'subscribe' do
           room = ROOMS[id]
           q = Queue.new
@@ -26,10 +29,12 @@ class Api
           end
         end
 
+        # '/api/game/<game_id>/refresh'
         r.is 'refresh' do
           { type: 'refresh', data: actions_h(game) }
         end
 
+        # POST '/api/game/<game_id>'
         r.post do
           r.halt 403 unless GameUser.where(game: game, user: user).exists
 
@@ -38,6 +43,7 @@ class Api
             actions: actions_h(game),
           )
 
+          # POST '/api/game/<game_id>/action'
           r.is 'action' do
             action_id = r.params['id']
             r.halt 400 unless engine.actions.size + 1 == action_id
@@ -57,6 +63,7 @@ class Api
             {}
           end
 
+          # POST '/api/game/<game_id>/rollback'
           r.is 'rollback' do
             game.actions.last.destroy
             notify(id, type: 'refresh', data: actions_h(game))
@@ -65,9 +72,11 @@ class Api
         end
       end
 
+      # POST '/api/game[/*]'
       r.post do
         r.halt 403 unless user
 
+        # POST '/api/game'
         r.is do
           title = r['title']
 
@@ -86,6 +95,7 @@ class Api
 
         r.halt 404 unless (game = Game[r.params['id']])
 
+        # POST '/api/game/join?id=<game_id>'
         r.is 'join' do
           GameUser.create(game: game, user: user) if GameUser.where(game: game).count < game.max_players
           game.to_h
@@ -93,6 +103,7 @@ class Api
 
         r.halt 403 unless GameUser.where(game: game, user: user).exists
 
+        # POST '/api/game/leave?id=<game_id>'
         r.is 'leave' do
           game.remove_player(user)
           game.to_h
@@ -100,11 +111,13 @@ class Api
 
         r.halt 403 unless game.user_id == user.id
 
+        # POST '/api/game/delete?id=<game_id>'
         r.is 'delete' do
           game.destroy
           game.to_h
         end
 
+        # POST '/api/game/start?id=<game_id>'
         r.is 'start' do
           game.update(status: 'active')
           game.to_h

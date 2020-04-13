@@ -2,8 +2,11 @@
 
 class Api
   hash_routes :api do |hr|
+    # '/api/user[/*]'
     hr.on 'user' do |r|
+      # POST '/api/user[/*]'
       r.post do
+        # POST '/api/user/login'
         r.is 'login' do
           user = User.by_email(r['email'])
           r.halt(403) unless Argon2::Password.verify_password(r['password'], user&.password)
@@ -11,6 +14,7 @@ class Api
           login_user(user)
         end
 
+        # POST '/api/user/'
         r.is do
           params = {
             name: r['name'],
@@ -23,11 +27,13 @@ class Api
 
         r.halt(403) unless user
 
+        # POST '/api/user/logout'
         r.post 'logout' do
           session.destroy
           ''
         end
 
+        # POST '/api/user/refresh'
         r.is 'refresh' do
           user.to_h
         end
