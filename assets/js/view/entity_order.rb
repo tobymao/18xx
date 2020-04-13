@@ -9,20 +9,27 @@ class EntityOrder < Snabberb::Component
     divs = @round.entities.map.with_index do |entity, index|
       style = {
         display: 'inline-block',
-        margin: '0 5px 5px 0',
-        'padding-left': '5px',
+        'margin-right': '1rem',
       }
       style['text-decoration'] = 'underline' if @round.can_act?(entity)
-      style['border-left'] = 'black solid thin' if index.positive?
 
-      owner = ''
-      unless entity.is_a?(Engine::Player)
-        owner = " (#{entity.owner.name})" if entity.respond_to?(:owner) && entity.owner
+      if index.positive?
+        style['border-left'] = 'black solid thin'
+        style['padding-left'] = '1rem'
       end
+
+      owner = " (#{entity.owner.name})" if !entity.is_a?(Engine::Player) && entity.owner
 
       h(:div, { style: style }, "#{entity.name}#{owner}")
     end
 
-    h(:div, divs)
+    props = {
+      style: {
+        margin: '1rem 0 1rem 0',
+        'font-size': 'large',
+      }
+    }
+
+    h(:div, props, divs)
   end
 end

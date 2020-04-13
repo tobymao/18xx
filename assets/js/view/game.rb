@@ -132,7 +132,7 @@ module View
       name = @round.class.name.split(':').last
       description = @round.operating? ? "#{@game.turn}.#{@round.round_num}" : @game.turn
       description = "#{description} - #{@round.description}"
-      h(:div, "#{name} Round #{description}")
+      h(:div, { style: { 'font-weight': 'bold' } }, "#{name} Round #{description}")
     end
 
     def render_action

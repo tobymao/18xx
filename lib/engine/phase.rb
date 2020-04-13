@@ -64,7 +64,7 @@ module Engine
 
       @name = phase[:name]
       @operating_rounds = phase[:operating_rounds]
-      @buy_companies = phase[:buy_companies] || true
+      @buy_companies = !!phase[:buy_companies]
       @train_limit = phase[:train_limit]
       @tiles = Array(phase[:tiles])
       @events = phase[:events] || []
