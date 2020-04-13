@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/actionable'
+require 'view/undo_and_pass'
 
 require 'engine/action/run_routes'
 
@@ -43,6 +44,7 @@ module View
       }
 
       h(:div, props, [
+        h(UndoAndPass, pass: false),
         *trains,
         actions,
       ])
