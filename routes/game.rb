@@ -36,7 +36,7 @@ class Api
 
         # POST '/api/game/<game_id>'
         r.post do
-          r.halt 403 unless GameUser.where(game: game, user: user).exists
+          not_authorized! unless GameUser.where(game: game, user: user).exists
 
           engine = Engine::Game::G1889.new(
             game.players.map(&:name),
@@ -46,7 +46,7 @@ class Api
           # POST '/api/game/<game_id>/action'
           r.is 'action' do
             action_id = r.params['id']
-            r.halt 400 unless engine.actions.size + 1 == action_id
+            halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
 
             params = {
               game: game,
@@ -74,7 +74,7 @@ class Api
 
       # POST '/api/game[/*]'
       r.post do
-        r.halt 403 unless user
+        not_authorized! unless user
 
         # POST '/api/game'
         r.is do
@@ -93,7 +93,7 @@ class Api
           game.to_h
         end
 
-        r.halt 404 unless (game = Game[r.params['id']])
+        halt(404, 'Game does not exist') unless (game = Game[r.params['id']])
 
         # POST '/api/game/join?id=<game_id>'
         r.is 'join' do
@@ -101,7 +101,7 @@ class Api
           game.to_h
         end
 
-        r.halt 403 unless GameUser.where(game: game, user: user).exists
+        not_authorized! unless GameUser.where(game: game, user: user).exists
 
         # POST '/api/game/leave?id=<game_id>'
         r.is 'leave' do
@@ -109,7 +109,7 @@ class Api
           game.to_h
         end
 
-        r.halt 403 unless game.user_id == user.id
+        not_authorized! unless game.user_id == user.id
 
         # POST '/api/game/delete?id=<game_id>'
         r.is 'delete' do

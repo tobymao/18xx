@@ -34,7 +34,7 @@ module Lib
             block(#{JSON.parse(data)})
           }
         }).catch(error => {
-          console.error('Error:', error)
+          block(Opal.hash('error', error))
         })
       }
     end

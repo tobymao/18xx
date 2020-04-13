@@ -9,6 +9,7 @@ require 'user_manager'
 require 'engine/game/g_1889'
 require 'lib/storage'
 require 'view/home'
+require 'view/flash'
 require 'view/game'
 require 'view/navigation'
 require 'view/user'
@@ -28,6 +29,7 @@ class App < Snabberb::Component
 
     h(:div, props, [
       h(View::Navigation),
+      h(View::Flash),
       render_content,
     ])
   end

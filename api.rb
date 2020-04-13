@@ -42,7 +42,7 @@ class Api < Roda
   error do |e|
     puts e.backtrace.reverse
     puts "#{e.class}: #{e.message}"
-    { code: 500, message: e }
+    { error: e.message }
   end
 
   plugin :assets, js: 'app.rb'
@@ -161,5 +161,13 @@ class Api < Roda
 
   def user
     session&.valid? ? session.user : nil
+  end
+
+  def halt(code, message)
+    request.halt(code, error: message)
+  end
+
+  def not_authorized!
+    halt(401, 'You are not authorized to make this request')
   end
 end
