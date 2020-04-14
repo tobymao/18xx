@@ -15,6 +15,7 @@ module Engine
         super
         @share_pool = game.share_pool
         @stock_market = game.stock_market
+        @corporations = game.corporations
         @can_sell = game.turn > 1
         @players_sold = Hash.new { |h, k| h[k] = {} }
         @current_actions = []
@@ -60,6 +61,7 @@ module Engine
         corporation = shares.first.corporation
 
         !@players_sold[@current_entity][corporation] &&
+          (shares.sum(&:percent) + @share_pool.percent_of(corporation)) <= 50 &&
           !(@current_actions.uniq.size == 2 && [Action::BuyShare, Action::Par].include?(@current_actions.last)) &&
           (shares.none?(&:president) ||
            (corporation.share_holders.reject { |k, _| k == @current_entity }.values.max || 0) > 10)
@@ -93,7 +95,8 @@ module Engine
 
       def nothing_to_do?
         !can_sell?([@current_entity.shares.min_by(&:price)].compact) &&
-          @share_pool.shares.none? { |s| can_buy?(s) }
+          @share_pool.shares.none? { |s| can_buy?(s) } &&
+          @corporations.none? { |c| can_buy?(c.shares.first) }
       end
 
       def change_entity(_action)
@@ -112,7 +115,7 @@ module Engine
 
         return unless finished?
 
-        @game.corporations.each do |corporation|
+        @corporations.each do |corporation|
           next if corporation.share_holders.values.sum < 100
 
           prev = corporation.share_price.price

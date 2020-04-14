@@ -39,14 +39,20 @@ module View
     end
 
     def render_ipoed
-      selected_share = @selected_corporation.shares.first
+      ipo_share = @selected_corporation.shares.first
+      pool_share = @round.share_pool.shares_by_corporation[@selected_corporation]&.first
 
-      buy = lambda do
-        process_action(Engine::Action::BuyShare.new(@current_entity, selected_share))
+      buy_ipo = lambda do
+        process_action(Engine::Action::BuyShare.new(@current_entity, ipo_share))
+      end
+
+      buy_pool = lambda do
+        process_action(Engine::Action::BuyShare.new(@current_entity, pool_share))
       end
 
       children = []
-      children << h(:button, { on: { click: buy } }, 'Buy Share') if @round.can_buy?(selected_share)
+      children << h(:button, { on: { click: buy_ipo } }, 'Buy Ipo Share') if @round.can_buy?(ipo_share)
+      children << h(:button, { on: { click: buy_pool } }, 'Buy Pool Share') if @round.can_buy?(pool_share)
       children << h(SellShares, player: @current_entity)
 
       h(:div, children)

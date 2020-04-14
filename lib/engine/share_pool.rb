@@ -15,8 +15,8 @@ module Engine
       @log = log
     end
 
-    def shares
-      @corporations.flat_map(&:shares)
+    def name
+      'Sharepool'
     end
 
     def buy_share(entity, share)
@@ -25,17 +25,18 @@ module Engine
       floated = corporation.floated?
 
       corporation.ipoed = true
+      price = share.price
       transfer_share(share, entity, entity, @bank)
 
       if ipoed != corporation.ipoed
-        @log << "#{entity.name} pars #{corporation.name} at $#{corporation.par_price.price} and becomes the president"
+        @log << "#{entity.name} pars #{corporation.name} at $#{price} and becomes the president"
       end
 
-      @log << "#{entity.name} buys a #{share.percent}% share of #{corporation.name} for $#{share.price}"
+      @log << "#{entity.name} buys a #{share.percent}% share of #{corporation.name} for $#{price}"
 
       return if floated == corporation.floated?
 
-      @bank.spend(corporation.par_price.price * 10, corporation)
+      @bank.spend(price * 10, corporation)
       @log << "#{corporation.name} floats with $#{corporation.cash} and tokens #{corporation.coordinates}"
     end
 

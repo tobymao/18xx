@@ -22,12 +22,12 @@ module UserManager
   def refresh_user
     return if @user || !Lib::Storage['auth_token']
 
-    safe_post('/user/refresh') do |data|
-      if data
+    Lib::Request.post('/user/refresh') do |data|
+      if data['error']
+        Lib::Storage['auth_token'] = nil
+      else
         store(:user, data, skip: true)
         update # for some reason this causes an infinite loop
-      else
-        Lib::Storage['auth_token'] = nil
       end
     end
   end
