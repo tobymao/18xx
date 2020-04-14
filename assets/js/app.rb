@@ -29,9 +29,27 @@ class App < Snabberb::Component
 
     h(:div, props, [
       h(View::Navigation),
+      render_banner,
       h(View::Flash),
       render_content,
     ])
+  end
+
+  def render_banner
+    props = {
+      style: {
+        'background-color': 'lightgreen',
+        'padding': '1em',
+      }
+    }
+
+    message = <<~MESSAGE
+      Thanks for participating in the beta! I've had to drop the current games due to big
+      changes and bug fixes. Thanks to everyone who's provided feedback so far!
+      Please join me in the 18xx slack #18xxgames channel
+    MESSAGE
+
+    h(:div, props, message)
   end
 
   def render_content
