@@ -60,7 +60,7 @@ class Api < Roda
   plugin :json_parser
   plugin :halt
 
-  PAGE_LIMIT = 10
+  PAGE_LIMIT = 100
   ROOMS = Hash.new { |h, k| h[k] = [] }
 
   PING_FUNC = lambda do |*|

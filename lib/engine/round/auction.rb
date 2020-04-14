@@ -88,10 +88,10 @@ module Engine
         @entities.each(&:unpass!)
 
         if @companies.include?(@cheapest)
-          value = @cheapest.value
-          @cheapest.value -= 5
-          new_value = @cheapest.value
-          @log << "#{@cheapest.name} value decreases from $#{value} to $#{new_value}"
+          value = @cheapest.min_bid
+          @cheapest.discount += 5
+          new_value = @cheapest.min_bid
+          @log << "#{@cheapest.name} minimum bid decreases from $#{value} to $#{new_value}"
 
           if new_value <= 0
             buy_company(@current_entity, @cheapest, 0)

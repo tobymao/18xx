@@ -20,6 +20,7 @@ module Engine
         route
         dividend
         train
+        company
       ].freeze
 
       STEP_DESCRIPTION = {
@@ -28,6 +29,7 @@ module Engine
         route: 'Run Routes',
         dividend: 'Pay or Withold Dividends',
         train: 'Buy Trains',
+        company: 'Purchase Companies',
       }.freeze
 
       def initialize(entities, game:, round_num: 1)
@@ -67,7 +69,11 @@ module Engine
       end
 
       def can_buy_companies?
-        @phase.buy_companies && @current_entity.owner.companies.any?
+        return unless (companies = @current_entity.owner&.companies)
+
+        @phase.buy_companies &&
+          companies.any? &&
+          companies.map(&:min_price).min <= @current_entity.cash
       end
 
       def must_buy_train?
@@ -136,6 +142,8 @@ module Engine
             end
           when :train
             next_step! if !can_buy_train? && !must_buy_train?
+          when :company
+            next_step! unless can_buy_companies?
           end
         else
           clear_route_cache
@@ -287,7 +295,7 @@ module Engine
 
       def action_processed(action)
         remove_just_sold_company_abilities unless action.is_a?(Action::BuyCompany)
-        return if action.is_a?(Action::BuyCompany)
+        return if action.is_a?(Action::BuyCompany) && (@step != :company || can_buy_companies?)
         return if action.is_a?(Action::SellShares)
         return if action.is_a?(Action::BuyTrain) && can_buy_train?
 

@@ -6,8 +6,8 @@ module Engine
   class Company
     include Ownable
 
-    attr_accessor :revenue, :value
-    attr_reader :name, :sym, :desc
+    attr_accessor :revenue, :discount
+    attr_reader :desc, :name, :sym, :value
 
     def initialize(name:, value:, revenue: 0, desc: '', sym: '', abilities: [], **_opts)
       @name = name
@@ -15,6 +15,7 @@ module Engine
       @desc = desc
       @revenue = revenue
       @sym = sym
+      @discount = 0
       @open = true
 
       @abilities = abilities
@@ -57,7 +58,7 @@ module Engine
     end
 
     def min_bid
-      @value
+      @value - @discount
     end
 
     def min_price

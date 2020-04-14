@@ -16,7 +16,7 @@ module View
 
       action =
         case @round.step
-        when :track, :token
+        when :company, :track, :token
           h(UndoAndPass)
         when :route
           h(RouteSelector)
