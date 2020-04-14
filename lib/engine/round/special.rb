@@ -58,7 +58,7 @@ module Engine
           corporation = share.corporation
           @game.share_pool.transfer_share(share, owner)
           @log << "#{owner.name} exchanges #{company.name} for a share of #{corporation.name}"
-          presidential_share_swap(corporation, owner) if corporation.owner != owner
+          presidential_share_swap(corporation, owner) if corporation.owner && corporation.owner != owner
           company.close!
         end
       end

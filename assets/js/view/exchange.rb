@@ -18,11 +18,12 @@ module View
 
       return h(:div) unless share
 
-      h(
-        :button,
-        { on: { click: -> { Action::BuyShare.new(@selected_company, share) } } },
-        "Exchange for a share of #{corporation.name}",
-      )
+      exchange = lambda do
+        process_action(Engine::Action::BuyShare.new(@selected_company, share))
+        store(:selected_company, nil, skip: true)
+      end
+
+      h(:button, { on: { click: exchange } }, "Exchange for a share of #{corporation.name}")
     end
   end
 end

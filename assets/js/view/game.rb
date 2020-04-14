@@ -3,6 +3,7 @@
 require 'lib/connection'
 
 require 'view/auction_round'
+require 'view/companies'
 require 'view/corporation'
 require 'view/entity_order'
 require 'view/exchange'
@@ -55,6 +56,8 @@ module View
           h(StockMarket, stock_market: @game.stock_market)
         when 'tiles'
           h(View::TileManifest, tiles: @game.tiles)
+        when 'companies'
+          h(View::Companies)
         end
 
       destroy = lambda do
@@ -102,6 +105,7 @@ module View
         tab_button('Map', '#map'),
         tab_button('Market', '#market'),
         tab_button('Tiles', '#tiles'),
+        tab_button('Companies', '#companies'),
       ]
     end
 
