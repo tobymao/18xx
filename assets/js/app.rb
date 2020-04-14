@@ -44,7 +44,7 @@ class App < Snabberb::Component
     }
 
     message = <<~MESSAGE
-      Thanks for participating in the beta! I've had to drop 1 game due to big
+      Thanks for participating in the beta! I've had to drop a couple games due to big
       changes and bug fixes. Thanks to everyone who's provided feedback so far!
       Please join me in the 18xx slack #18xxgames channel
     MESSAGE

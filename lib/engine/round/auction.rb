@@ -75,6 +75,8 @@ module Engine
           @current_entity = bids.min_by(&:price).entity
         else
           # if someone bought a share outright, then we find the next person who hasn't passed
+          @current_entity = @last_to_act if @last_to_act
+
           loop do
             @current_entity = next_entity
             break if !@current_entity.passed? || all_passed?
@@ -83,6 +85,7 @@ module Engine
       end
 
       def action_finalized(_action)
+        @last_to_act = nil unless finished?
         return if !all_passed? || finished?
 
         @entities.each(&:unpass!)
