@@ -28,15 +28,17 @@ module View
           if price
             style = box_style.merge('background-color' => price.color)
 
-            spacing = 35 / price.corporations.size
+            corporations = price.corporations
+            num_corps = corporations.size
+            spacing = 35 / num_corps
 
-            tokens = price.corporations.map.with_index do |corporation, index|
+            tokens = corporations.map.with_index do |corporation, index|
               props = {
                 attrs: { data: corporation.logo, width: '25px' },
                 style: {
                   position: 'absolute',
                   left: "#{index * spacing}px",
-                  'z-index' => -index,
+                  'z-index' => num_corps - index,
                 }
               }
               h(:object, props)
