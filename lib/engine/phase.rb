@@ -10,7 +10,7 @@ module Engine
       name: '2',
       operating_rounds: 1,
       train_limit: 4,
-      buy_companies: false,
+      no_buy_in: true,
       tiles: :yellow,
     }.freeze
 
@@ -64,7 +64,7 @@ module Engine
 
       @name = phase[:name]
       @operating_rounds = phase[:operating_rounds]
-      @buy_companies = !!phase[:buy_companies]
+      @buy_companies = !phase[:no_buy_in]
       @train_limit = phase[:train_limit]
       @tiles = Array(phase[:tiles])
       @events = phase[:events] || []

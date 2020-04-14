@@ -134,13 +134,13 @@ module Engine
       def process_action(action)
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
+        @phase.process_action(action)
         # company special power actions are processed by a different round handler
         if action.entity.is_a?(Company)
           @special.process_action(action)
         else
           @round.process_action(action)
         end
-        @phase.process_action(action)
         @actions << action
         next_round! while @round.finished?
         self
