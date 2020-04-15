@@ -9,7 +9,7 @@ class Game < Base
   many_to_many :players, class: :User, right_key: :user_id, join_table: :game_users
 
   def to_h(include_actions: false)
-    seed = settings['seed']' || 1
+    seed = settings['seed'] || 1
 
     h = {
       id: id,
