@@ -45,9 +45,9 @@ module View
 
     def actions
       submit = lambda do
+        process_action(Engine::Action::RunRoutes.new(@game.current_entity, @routes))
         store(:routes, [], skip: true)
         store(:selected_route, nil, skip: true)
-        process_action(Engine::Action::RunRoutes.new(@game.current_entity, @routes))
       end
 
       reset = lambda do
