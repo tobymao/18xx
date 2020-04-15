@@ -254,6 +254,7 @@ module Engine
           tokens: 2,
           float_percent: 50,
           coordinates: 'K8',
+          color: '#38383a'
         },
         {
           sym: 'IR',
@@ -262,6 +263,7 @@ module Engine
           tokens: 2,
           float_percent: 50,
           coordinates: 'E2',
+          color: '#f68121'
         },
         {
           sym: 'SR',
@@ -270,6 +272,7 @@ module Engine
           tokens: 2,
           float_percent: 50,
           coordinates: 'I2',
+          color: '#79a242'
         },
         {
           sym: 'KO',
@@ -278,6 +281,7 @@ module Engine
           tokens: 2,
           float_percent: 50,
           coordinates: 'K4',
+          color: '#da1f3e'
         },
         {
           sym: 'TR',
@@ -286,6 +290,7 @@ module Engine
           tokens: 3,
           float_percent: 50,
           coordinates: 'F9',
+          color: '#01a89e'
         },
         {
           sym: 'KU',
@@ -294,6 +299,7 @@ module Engine
           tokens: 1,
           float_percent: 50,
           coordinates: 'C10',
+          color: '#0089d1'
         },
         {
           sym: 'UR',
@@ -302,6 +308,7 @@ module Engine
           tokens: 3,
           float_percent: 50,
           coordinates: 'B7',
+          color: '#7d3529'
         },
       ].freeze
     end
