@@ -251,7 +251,7 @@ module Engine
           sym: 'AR',
           logo: '1889/AR',
           name: 'Awa Railroad',
-          tokens: 2,
+          tokens: [0, 40],
           float_percent: 50,
           coordinates: 'K8',
           color: '#38383a'
@@ -260,7 +260,7 @@ module Engine
           sym: 'IR',
           logo: '1889/IR',
           name: 'Iyo Railway',
-          tokens: 2,
+          tokens: [0, 40],
           float_percent: 50,
           coordinates: 'E2',
           color: '#f68121'
@@ -269,7 +269,7 @@ module Engine
           sym: 'SR',
           logo: '1889/SR',
           name: 'Sanuki Railway',
-          tokens: 2,
+          tokens: [0, 40],
           float_percent: 50,
           coordinates: 'I2',
           color: '#79a242'
@@ -278,7 +278,7 @@ module Engine
           sym: 'KO',
           logo: '1889/KO',
           name: 'Takamatsu & Kotohira Electric Railway',
-          tokens: 2,
+          tokens: [0, 40],
           float_percent: 50,
           coordinates: 'K4',
           color: '#da1f3e'
@@ -287,7 +287,7 @@ module Engine
           sym: 'TR',
           logo: '1889/TR',
           name: 'Tosa Electric Railway',
-          tokens: 3,
+          tokens: [0, 40, 40],
           float_percent: 50,
           coordinates: 'F9',
           color: '#01a89e'
@@ -296,7 +296,7 @@ module Engine
           sym: 'KU',
           logo: '1889/KU',
           name: 'Tosa Kuroshio Railway',
-          tokens: 1,
+          tokens: [0],
           float_percent: 50,
           coordinates: 'C10',
           color: '#0089d1'
@@ -305,7 +305,7 @@ module Engine
           sym: 'UR',
           logo: '1889/UR',
           name: 'Uwajima Railway',
-          tokens: 3,
+          tokens: [0, 40, 40],
           float_percent: 50,
           coordinates: 'B7',
           color: '#7d3529'

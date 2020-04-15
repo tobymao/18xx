@@ -10,7 +10,7 @@ module View
     end
 
     def render_trains
-      if @corporation.trains.length.zero?
+      if @corporation.trains.empty?
         h(:div, 'Trains: None')
       else
         h(:div, "Trains: #{@corporation.trains.map(&:name).join(', ')}")
@@ -26,8 +26,6 @@ module View
     end
 
     def render_tokens
-      tokens_used = @corporation.max_tokens - @corporation.tokens.length
-      token_display_array = []
       token_cost_style = {
         'text-align': 'center'
       }
@@ -38,36 +36,18 @@ module View
 
       props = {
         attrs: { data: @corporation.logo, width: '25px' },
-        style: {}
       }
 
-      invert_props = {
-        attrs: {
-          data: @corporation.logo,
-          width: '25px',
-          style: 'filter: contrast(15%) grayscale(100%)'
-        },
-      }
+      inverted = props.merge(style: { filter: 'contrast(15%) grayscale(100%)' })
 
-      @corporation.max_tokens.times do |i|
-        # Show Token or don't
-        if tokens_used.positive?
-          props_used = invert_props
-          tokens_used -= 1
-        else
-          props_used = props
-        end
-        # Show Home Coordinates or Cost
-        token_text = if i.zero?
-                       @corporation.coordinates
-                     else
-                       '40'
-                     end
-        token_display_array.push(h(:div, { style: standard_list_style }, [
-          h(:object, props_used), h(:div, { style: token_cost_style }, token_text)
-        ]))
+      @corporation.tokens.map.with_index do |token, i|
+        token_text = i.zero? ? @corporation.coordinates : token.price
+
+        h(:div, { style: standard_list_style }, [
+          h(:object, token.used? ? inverted : props),
+          h(:div, { style: token_cost_style }, token_text),
+        ])
       end
-      token_display_array
     end
 
     def render

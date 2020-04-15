@@ -385,8 +385,13 @@ module Engine
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 
+        price = entity.next_token&.price || 0
         action.city.place_token(entity)
-        @log << "#{entity.name} places a token on #{action.city.hex.name}"
+        if price.positive?
+          entity.spend(price, @bank)
+          price_log = " for $#{price}"
+        end
+        @log << "#{entity.name} places a token on #{action.city.hex.name}#{price_log}"
         clear_route_cache
       end
 

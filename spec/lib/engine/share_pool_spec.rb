@@ -13,7 +13,7 @@ module Engine
   describe SharePool do
     let(:bank) { Bank.new(1000) }
     let(:player) { Player.new('a') }
-    let(:corporation) { Corporation.new(sym: 'a', name: 'a', tokens: 1) }
+    let(:corporation) { Corporation.new(sym: 'a', name: 'a', tokens: [0]) }
     let(:share_price) { SharePrice.from_code('10', 0, 0) }
     let(:subject) { SharePool.new([corporation], bank, []) }
     let(:share) { Share.new(corporation, owner: subject, president: true, percent: 20) }

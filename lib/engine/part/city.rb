@@ -53,7 +53,8 @@ module Engine
 
       def tokenable?(corporation)
         return false unless (slot = get_slot(corporation))
-        return false if corporation.tokens.empty?
+        return false unless (token = corporation.next_token)
+        return false unless token.price <= corporation.cash
         return false if @tokens[slot]
         return false if @tokens.compact.map(&:corporation).include?(corporation)
 
@@ -69,7 +70,9 @@ module Engine
       def place_token(corporation)
         raise GameError, 'Cannot lay token' unless tokenable?(corporation)
 
-        exchange_token(corporation.tokens.pop)
+        token = corporation.next_token
+        token.use!
+        exchange_token(token)
       end
 
       def exchange_token(token)

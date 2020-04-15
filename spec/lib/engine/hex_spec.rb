@@ -41,8 +41,8 @@ module Engine
     describe '#lay' do
       let(:green_tile) { Tile.for('15') }
       let(:brown_tile) { Tile.for('611') }
-      let(:corp_1) { Corporation.new(sym: 'AR', name: 'Awa Railway', tokens: 2) }
-      let(:corp_2) { Corporation.new(sym: 'IR', name: 'Iyo Railway', tokens: 2) }
+      let(:corp_1) { Corporation.new(sym: 'AR', name: 'Awa Railway', tokens: [0, 40]) }
+      let(:corp_2) { Corporation.new(sym: 'IR', name: 'Iyo Railway', tokens: [0, 40]) }
 
       context 'laying green' do
         subject { Hex.new('A1', layout: :flat, tile: Tile.for('57')) }

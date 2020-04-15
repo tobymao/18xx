@@ -17,7 +17,7 @@ module View
         context 'with token' do
           it 'renders a View::Token' do
             # setup
-            corp = Engine::Corporation.new(sym: 'ER', name: 'Example Railroad', tokens: 1)
+            corp = Engine::Corporation.new(sym: 'ER', name: 'Example Railroad', tokens: [0])
             token = corp.tokens.first
             radius = 1
             slot = described_class.new(nil, token: token, game: nil, city: nil, radius: radius, connection: double)
