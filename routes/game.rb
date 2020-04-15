@@ -120,6 +120,7 @@ class Api
 
         # POST '/api/game/start?id=<game_id>'
         r.is 'start' do
+          halt(400, 'Cannot play 1 player') if game.players < 2
           game.update(settings: { seed: Random.new_seed }, status: 'active')
           game.to_h
         end
