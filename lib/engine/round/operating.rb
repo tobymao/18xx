@@ -268,6 +268,7 @@ module Engine
           end
         when Action::Dividend
           revenue = @current_routes.sum(&:revenue)
+          @current_routes = []
 
           case action.kind
           when 'payout'

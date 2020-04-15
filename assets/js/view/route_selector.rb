@@ -36,14 +36,7 @@ module View
         h(:div, { style: style, on: { click: onclick } }, "Train: #{train.name}")
       end
 
-      props = {
-        key: 'route_selector',
-        hook: {
-          destroy: -> { store(:selected_route, skip: true) },
-        }
-      }
-
-      h(:div, props, [
+      h(:div, [
         h(UndoAndPass, pass: false),
         *trains,
         actions,
@@ -52,8 +45,9 @@ module View
 
     def actions
       submit = lambda do
+        store(:routes, [], skip: true)
+        store(:selected_route, nil, skip: true)
         process_action(Engine::Action::RunRoutes.new(@game.current_entity, @routes))
-        store(:routes, [])
       end
 
       reset = lambda do
