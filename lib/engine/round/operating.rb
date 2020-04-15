@@ -303,9 +303,9 @@ module Engine
         next_step!
       end
 
-      def withhold(revenue = nil)
+      def withhold(revenue = 0)
         name = @current_entity.name
-        if revenue
+        if revenue.positive?
           @log << "#{name} withholds $#{revenue}"
           @bank.spend(revenue, @current_entity)
         else
@@ -396,6 +396,21 @@ module Engine
 
         @just_sold_company.remove_ability_when(:sold)
         @just_sold_company = nil
+      end
+
+      def log_pass(entity)
+        case @step
+        when :track
+          @log << "#{entity.name} passes laying track"
+        when :token
+          @log << "#{entity.name} passes placing a token"
+        when :train
+          @log << "#{entity.name} passes buying trains"
+        when :company
+          @log << "#{entity.name} passes buying companies"
+        else
+          super
+        end
       end
 
       def clear_route_cache
