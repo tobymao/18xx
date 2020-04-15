@@ -40,7 +40,7 @@ class Api
           not_authorized! if GameUser.where(game: game, user: user).empty?
 
           engine = Engine::Game::G1889.new(
-            game.players.map(&:name),
+            game.ordered_players.map(&:name),
             actions: actions_h(game),
           )
 
@@ -120,7 +120,7 @@ class Api
 
         # POST '/api/game/start?id=<game_id>'
         r.is 'start' do
-          halt(400, 'Cannot play 1 player') if game.players < 2
+          halt(400, 'Cannot play 1 player') if game.players.size < 2
           game.update(settings: { seed: Random.new_seed }, status: 'active')
           game.to_h
         end
