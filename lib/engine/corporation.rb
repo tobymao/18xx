@@ -15,12 +15,13 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :par_price, :share_price, :tokens
-    attr_reader :companies, :coordinates, :min_price, :sym, :name, :logo, :trains
+    attr_reader :companies, :coordinates, :min_price, :sym, :name, :logo, :trains, :color, :max_tokens
 
     def initialize(sym:, name:, tokens:, **opts)
       @sym = sym
       @name = name
       @tokens = tokens.times.map { Token.new(self) }
+      @max_tokens = tokens
       [
         Share.new(self, president: true, percent: 20),
         *8.times.map { |index| Share.new(self, percent: 10, index: index + 1) }
@@ -37,6 +38,7 @@ module Engine
       @coordinates = opts[:coordinates]
       @min_price = opts[:min_price]
       @logo = "/logos/#{opts[:logo]}.svg"
+      @color = opts[:color]
     end
 
     def share_holders
