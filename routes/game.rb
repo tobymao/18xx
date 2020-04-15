@@ -120,7 +120,7 @@ class Api
 
         # POST '/api/game/start?id=<game_id>'
         r.is 'start' do
-          game.update(status: 'active')
+          game.update(settings: { seed: Random.new_seed }, status: 'active')
           game.to_h
         end
       end
