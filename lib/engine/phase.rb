@@ -87,7 +87,7 @@ module Engine
       end
 
       @game.companies.each do |company|
-        next unless company.open?
+        next unless company.owner
 
         abilities = company
           .all_abilities

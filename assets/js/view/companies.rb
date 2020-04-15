@@ -10,7 +10,7 @@ module View
     def render
       children = @game
         .companies
-        .select { |company| company.owner && company.open? }
+        .select(&:owner)
         .group_by(&:owner)
         .sort_by { |owner, _| owner.name == @user&.dig(:name) ? '' : owner.name }
         .map { |owner, companies| render_companies(owner, companies) }

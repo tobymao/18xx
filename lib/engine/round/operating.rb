@@ -37,7 +37,6 @@ module Engine
         @round_num = round_num
         @hexes = game.hexes
         @phase = game.phase
-        @companies = game.companies
         @bank = game.bank
         @depot = game.depot
         @players = game.players

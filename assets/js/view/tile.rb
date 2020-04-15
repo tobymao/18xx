@@ -27,7 +27,7 @@ module View
       return false if blocker.nil?
 
       # ...and be open
-      return false unless blocker.open?
+      return false unless blocker.owner
 
       # ...and not have been sold into a corporation yet
       return false if blocker.owned_by_corporation?
