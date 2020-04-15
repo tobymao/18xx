@@ -335,10 +335,12 @@ module Engine
       end
 
       def new_stock_round
+        @log << "-- Stock Round #{@turn} --"
         Round::Stock.new(@players, game: self)
       end
 
       def new_operating_round(round_num = 1)
+        @log << "-- Operating Round #{@turn}.#{round_num} --"
         corps = @corporations.select(&:floated?).sort_by do |corporation|
           share_price = corporation.share_price
           _, column = share_price.coordinates

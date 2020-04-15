@@ -48,7 +48,7 @@ module Engine
         raise GameError, "It is not #{entity.name}'s turn" unless can_act?(entity)
 
         if action.pass?
-          @log << "#{entity.name} passes"
+          log_pass(entity)
           pass(action)
           pass_processed(action)
         else
@@ -176,6 +176,10 @@ module Engine
       def log_share_price(entity, from)
         to = entity.share_price.price
         @log << "#{entity.name}'s share price changes from $#{from} to $#{to}" if from != to
+      end
+
+      def log_pass(entity)
+        @log << "#{entity.name} passes"
       end
 
       # methods to override

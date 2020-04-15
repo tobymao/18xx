@@ -10,6 +10,7 @@ module Engine
       attr_reader :last_to_act, :share_pool, :stock_market
 
       CERT_LIMIT_COLORS = %w[brown orange yellow].freeze
+      PURCHASE_ACTIONS = [Action::BuyShare, Action::Par].freeze
 
       def initialize(entities, game:)
         super
@@ -42,7 +43,7 @@ module Engine
         @current_entity.cash >= share.price &&
           (corporation.share_price&.color == :brown || @current_entity.percent_of(corporation) < 60) &&
           !@players_sold[@current_entity][corporation] &&
-          (@current_actions & [Action::BuyShare, Action::Par]).none?
+          (@current_actions & self.class::PURCHASE_ACTIONS).none?
       end
 
       def must_sell?
@@ -62,7 +63,7 @@ module Engine
 
         !@players_sold[@current_entity][corporation] &&
           (shares.sum(&:percent) + @share_pool.percent_of(corporation)) <= 50 &&
-          !(@current_actions.uniq.size == 2 && [Action::BuyShare, Action::Par].include?(@current_actions.last)) &&
+          !(@current_actions.uniq.size == 2 && self.class::PURCHASE_ACTIONS.include?(@current_actions.last)) &&
           (shares.none?(&:president) ||
            (corporation.share_holders.reject { |k, _| k == @current_entity }.values.max || 0) > 10)
       end
@@ -152,6 +153,13 @@ module Engine
         a = @entities.find_index(player_a)
         b = @entities.find_index(player_b)
         a < b ? b - a : b - (a - @entities.size)
+      end
+
+      def log_pass(entity)
+        return super if @current_actions.empty?
+
+        action = @current_actions.include?(Action::SellShares) ? 'buying' : 'selling'
+        @log << "#{entity.name} passes #{action} shares"
       end
     end
   end
