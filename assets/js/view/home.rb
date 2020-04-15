@@ -64,7 +64,7 @@ module View
     def line(key, value)
       props = {
         style: {
-          margin: '0.2em',
+          margin: '0.5em',
           display: 'inline-block',
         },
       }

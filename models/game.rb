@@ -17,6 +17,7 @@ class Game < Base
   def to_h(include_actions: false)
     h = {
       id: id,
+      description: description,
       user: user.to_h,
       players: ordered_players.map(&:to_h),
       max_players: max_players,
