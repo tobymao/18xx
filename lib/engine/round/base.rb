@@ -145,7 +145,7 @@ module Engine
         entity.spend(cost, @game.bank) unless cost.zero?
 
         @log << "#{action.entity.name}"\
-          "#{cost.zero? ? '' : "spends $#{cost} and"}"\
+          "#{cost.zero? ? '' : "spends #{@game.format_currency(cost)} and"}"\
           " lays tile #{tile.name}"\
          " with rotation #{rotation} on #{hex.name}"
       end
@@ -169,13 +169,16 @@ module Engine
           owner = company.owner
           revenue = company.revenue
           @game.bank.spend(revenue, owner)
-          @log << "#{owner.name} collects $#{revenue} from #{company.name}"
+          @log << "#{owner.name} collects #{@game.format_currency(revenue)} from #{company.name}"
         end
       end
 
       def log_share_price(entity, from)
         to = entity.share_price.price
-        @log << "#{entity.name}'s share price changes from $#{from} to $#{to}" if from != to
+        return unless from != to
+
+        @log << "#{entity.name}'s share price changes from #{@game.format_currency(from)} "\
+                "to #{@game.format_currency(to)}"
       end
 
       def log_pass(entity)

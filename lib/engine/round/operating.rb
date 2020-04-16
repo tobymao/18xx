@@ -263,7 +263,8 @@ module Engine
           @current_routes = action.routes
           @current_routes.each do |route|
             hexes = route.hexes.map(&:name).join(', ')
-            @log << "#{entity.name} runs a #{route.train.name} train for $#{route.revenue} (#{hexes})"
+            @log << "#{entity.name} runs a #{route.train.name} train for "\
+                    "#{@game.format_currency(route.revenue)} (#{hexes})"
           end
         when Action::Dividend
           revenue = @current_routes.sum(&:revenue)
@@ -305,7 +306,7 @@ module Engine
       def withhold(revenue = 0)
         name = @current_entity.name
         if revenue.positive?
-          @log << "#{name} withholds $#{revenue}"
+          @log << "#{name} withholds #{@game.format_currency(revenue)}"
           @bank.spend(revenue, @current_entity)
         else
           @log << "#{name} does not run"
@@ -315,7 +316,8 @@ module Engine
 
       def payout(revenue)
         per_share = revenue / 10
-        @log << "#{@current_entity.name} pays out $#{revenue} - $#{per_share} per share"
+        @log << "#{@current_entity.name} pays out #{@game.format_currency(revenue)} - "\
+                "#{@game.format_currency(per_share)} per share"
         @players.each do |player|
           payout_entity(player, per_share)
         end
@@ -329,7 +331,8 @@ module Engine
         receiver ||= holder
         shares = percent / 10
         amount = shares * per_share
-        @log << "#{receiver.name} receives $#{amount} - $#{per_share} x #{shares}"
+        @log << "#{receiver.name} receives #{@game.format_currency(amount)} - "\
+                "#{@game.format_currency(per_share)} x #{shares}"
         @bank.spend(amount, receiver)
       end
 
@@ -353,9 +356,9 @@ module Engine
         if remaining.positive?
           player = entity.owner
           player.spend(remaining, entity)
-          @log << "#{player.name} contributes $#{remaining}"
+          @log << "#{player.name} contributes #{@game.format_currency(remaining)}"
         end
-        @log << "#{entity.name} buys a #{train.name} train for $#{price} from #{train.owner.name}"
+        @log << "#{entity.name} buys a #{train.name} train for #{@game.format_currency(price)} from #{train.owner.name}"
         entity.buy_train(train, price)
       end
 
@@ -375,7 +378,7 @@ module Engine
 
         @current_entity.companies << company
         @current_entity.spend(price, player)
-        @log << "#{@current_entity.name} buys #{company.name} from #{player.name} for $#{price}"
+        @log << "#{@current_entity.name} buys #{company.name} from #{player.name} for #{@game.format_currency(price)}"
       end
 
       def place_token(action)
@@ -389,7 +392,7 @@ module Engine
         action.city.place_token(entity)
         if price.positive?
           entity.spend(price, @bank)
-          price_log = " for $#{price}"
+          price_log = " for #{@game.format_currency(price)}"
         end
         @log << "#{entity.name} places a token on #{action.city.hex.name}#{price_log}"
         clear_route_cache

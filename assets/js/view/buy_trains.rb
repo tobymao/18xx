@@ -53,7 +53,7 @@ module View
         buy_train = -> { process_action(Engine::Action::BuyTrain.new(@corporation, train, train.price)) }
 
         h(:div, [
-          "Train #{train.name} - $#{train.price}",
+          "Train #{train.name} - #{@game.format_currency(train.price)}",
           h(:button, { on: { click: buy_train } }, 'Buy'),
         ])
       end
@@ -89,7 +89,7 @@ module View
     def remaining_trains
       @depot.upcoming.group_by(&:name).map do |name, trains|
         train = trains.first
-        h(:div, "Train: #{name} - $#{train.price} x #{trains.size}")
+        h(:div, "Train: #{name} - #{@game.format_currency(train.price)} x #{trains.size}")
       end
     end
   end

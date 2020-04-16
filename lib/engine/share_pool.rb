@@ -9,10 +9,11 @@ module Engine
     include ShareHolder
     attr_reader :corporations
 
-    def initialize(corporations, bank, log)
-      @corporations = corporations
-      @bank = bank
-      @log = log
+    def initialize(game)
+      @game = game
+      @corporations = game.corporations # used by View::StockRound::render_corporations
+      @bank = game.bank
+      @log = game.log
     end
 
     def name
@@ -29,15 +30,16 @@ module Engine
       transfer_share(share, entity, entity, @bank)
 
       if ipoed != corporation.ipoed
-        @log << "#{entity.name} pars #{corporation.name} at $#{price} and becomes the president"
+        @log << "#{entity.name} pars #{corporation.name} at #{@game.format_currency(price)} and becomes the president"
       end
 
-      @log << "#{entity.name} buys a #{share.percent}% share of #{corporation.name} for $#{price}"
+      @log << "#{entity.name} buys a #{share.percent}% share of #{corporation.name} for #{@game.format_currency(price)}"
 
       return if floated == corporation.floated?
 
       @bank.spend(price * 10, corporation)
-      @log << "#{corporation.name} floats with $#{corporation.cash} and tokens #{corporation.coordinates}"
+      @log << "#{corporation.name} floats with #{@game.format_currency(corporation.cash)} "\
+              "and tokens #{corporation.coordinates}"
     end
 
     def sell_shares(shares)
@@ -50,7 +52,7 @@ module Engine
       shares.each { |s| transfer_share(s, self, @bank, entity) }
 
       @log << "#{entity.name} sells #{num} share#{num > 1 ? 's' : ''} " \
-        "(%#{percent}) of #{corporation.name} and receives $#{Engine::Share.price(shares)}"
+        "(%#{percent}) of #{corporation.name} and receives #{@game.format_currency(Engine::Share.price(shares))}"
     end
 
     def player?
