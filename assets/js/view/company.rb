@@ -12,8 +12,6 @@ module View
     end
 
     def render_bidders
-      return unless @bids
-
       bidders_style = {
         'font-weight': 'normal'
       }
@@ -78,7 +76,7 @@ module View
 
       props[:style]['background-color'] = 'lightblue' if selected?
 
-      h(:div, props, [
+      children = [
         h(:div, { style: header_style }, 'PRIVATE COMPANY'),
         h(:div, @company.name),
         h(:div, { style: description_style }, @company.desc),
@@ -86,9 +84,16 @@ module View
           h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}"),
           h(:div, { style: revenue_style }, "Revenue: #{@game.format_currency(@company.revenue)}"),
         ]),
-        h(:div, { style: bidders_style }, 'Bidders:'),
-        render_bidders,
-      ].compact)
+      ]
+
+      if @bids
+        children << h(:div, { style: bidders_style }, 'Bidders:')
+        children << render_bidders
+      end
+
+      children << h(:div, { style: bidders_style }, "Owner: #{@company.owner.name}") if @company.owner
+
+      h(:div, props, children)
     end
   end
 end

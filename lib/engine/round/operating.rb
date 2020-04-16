@@ -68,11 +68,10 @@ module Engine
       end
 
       def can_buy_companies?
-        return unless (companies = @current_entity.owner&.companies)
+        return false unless @phase.buy_companies
 
-        @phase.buy_companies &&
-          companies.any? &&
-          companies.map(&:min_price).min <= @current_entity.cash
+        companies = @game.purchasable_companies
+        companies.any? && companies.map(&:min_price).min <= @current_entity.cash
       end
 
       def must_buy_train?
@@ -288,8 +287,8 @@ module Engine
       end
 
       def change_entity(action)
-        return if action.is_a?(Action::BuyCompany)
         return if @step != self.class::STEPS.first
+        return if action.is_a?(Action::BuyCompany) && can_buy_companies?
 
         @current_entity = next_entity
       end

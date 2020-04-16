@@ -212,6 +212,10 @@ module Engine
         self.class::CURRENCY_FORMAT_STR % val
       end
 
+      def purchasable_companies
+        @companies.select { |c| c.owner.player? }
+      end
+
       private
 
       def init_bank

@@ -12,9 +12,7 @@ module View
     needs :selected_company, default: nil, store: true
 
     def render
-      @round = @game.round
-      @corporation = @round.current_entity
-      @player = @corporation.owner
+      @corporation = @game.current_entity
 
       h(:div, 'Buy Private Companies', [
         *render_companies,
@@ -23,9 +21,10 @@ module View
     end
 
     def render_companies
-      @player.companies.map do |company|
-        h(Company, company: company)
+      companies = @game.purchasable_companies.sort_by do |company|
+        [company.owner == @corporation.owner ? 0 : 1, company.value]
       end
+      companies.map { |company| h(Company, company: company) }
     end
 
     def render_input
