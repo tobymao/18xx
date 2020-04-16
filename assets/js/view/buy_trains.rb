@@ -68,17 +68,17 @@ module View
 
     def other_trains(other_corp_trains)
       other_corp_trains.flat_map do |other, trains|
-        input = h(
-          :input,
-          attrs: {
-            type: 'number',
-            min: 1,
-            max: @corporation.cash,
-            value: 1,
-          },
-        )
-
         trains.map do |train|
+          input = h(
+            :input,
+            attrs: {
+              type: 'number',
+              min: 1,
+              max: @corporation.cash,
+              value: 1,
+            },
+          )
+
           buy_train = lambda do
             price = input.JS['elm'].JS['value'].to_i
             process_action(Engine::Action::BuyTrain.new(@corporation, train, price))
