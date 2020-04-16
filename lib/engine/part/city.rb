@@ -27,6 +27,10 @@ module Engine
           @reservations == other.reservations
       end
 
+      def remove_tokens!
+        @tokens.map! { nil }
+      end
+
       def blocks?(corporation)
         return false unless corporation
         return false if tokened_by?(corporation)

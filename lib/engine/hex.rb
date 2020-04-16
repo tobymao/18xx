@@ -61,6 +61,7 @@ module Engine
         city.tokens.each do |token|
           tile.cities[i].exchange_token(token) if token
         end
+        city.remove_tokens!
       end
 
       @tile.hex = nil
