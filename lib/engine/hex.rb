@@ -77,21 +77,29 @@ module Engine
       DIRECTIONS[@layout][[other.x - @x, other.y - @y]]
     end
 
-    def connections(other, direct = false)
-      connected_paths(other, direct) + other.connected_paths(self, direct)
+    def connections(other, direct: false, corporation: nil)
+      connected_paths(other, direct: direct, corporation: corporation) +
+        other.connected_paths(self, direct: direct, corporation: corporation)
     end
 
-    def connected_paths(other, direct = false)
+    def connected_paths(other, direct: false, corporation: nil)
       dir = neighbor_direction(other)
-      direct_paths = @tile.paths.select { |p| p.exits.include?(dir) }
+      direct_paths, indirect_paths = @tile.paths.partition { |p| p.exits.include?(dir) }
       return direct_paths if direct
 
       branches = direct_paths.map(&:branch).compact
-      direct_paths + @tile.paths.select { |path| branches.include?(path.branch) }
+
+      direct_paths + indirect_paths.select do |path|
+        branch = path.branch
+        branches.include?(branch) && !branch.blocks?(corporation)
+      end
     end
 
-    def connected_exits(other, direct = false)
-      connected_paths(other, direct).map(&:exits).flatten.uniq
+    def connected_exits(other, direct: false, corporation: nil)
+      connected_paths(other, direct: direct, corporation: corporation)
+        .map(&:exits)
+        .flatten
+        .uniq
     end
 
     def connected?(other)

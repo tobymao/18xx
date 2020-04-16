@@ -189,7 +189,7 @@ module Engine
                 next unless (neighbor = hex.neighbors[direction])
 
                 queue << neighbor if !hexes.key?(neighbor) && hex.connected?(neighbor)
-                hexes[neighbor] |= neighbor.connected_exits(hex) | [Hex.invert(direction)]
+                hexes[neighbor] |= neighbor.connected_exits(hex, corporation: @current_entity) | [Hex.invert(direction)]
               end
             end
 

@@ -27,6 +27,14 @@ module Engine
           @reservations == other.reservations
       end
 
+      def blocks?(corporation)
+        return false unless corporation
+        return false if tokened_by?(corporation)
+        return false if @tokens.include?(nil)
+
+        true
+      end
+
       def hex
         @tile&.hex
       end
@@ -52,11 +60,10 @@ module Engine
       end
 
       def tokenable?(corporation)
-        return false unless (slot = get_slot(corporation))
+        return false unless get_slot(corporation)
         return false unless (token = corporation.next_token)
         return false unless token.price <= corporation.cash
-        return false if @tokens[slot]
-        return false if @tokens.compact.map(&:corporation).include?(corporation)
+        return false if tokened_by?(corporation)
 
         true
       end

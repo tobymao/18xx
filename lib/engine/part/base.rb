@@ -29,6 +29,10 @@ module Engine
         self
       end
 
+      def blocks?(_corporation)
+        false
+      end
+
       def city?
         false
       end

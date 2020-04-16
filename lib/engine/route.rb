@@ -26,7 +26,7 @@ module Engine
       @hexes << hex
       return unless prev
 
-      @paths.concat(hex.connections(prev, true))
+      @paths.concat(hex.connections(prev, direct: true))
     end
 
     def paths_for(paths)
