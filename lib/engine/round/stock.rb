@@ -18,6 +18,9 @@ module Engine
         @stock_market = game.stock_market
         @corporations = game.corporations
         @can_sell = game.turn > 1
+        # player => corporation => :now or :prev
+        # this differentiates between preventing users from buying shares they sold
+        # and preventing users from selling the same shares separately in the some action
         @players_sold = Hash.new { |h, k| h[k] = {} }
         @current_actions = []
         @last_to_act = nil
@@ -61,7 +64,7 @@ module Engine
 
         corporation = shares.first.corporation
 
-        !@players_sold[@current_entity][corporation] &&
+        @players_sold[@current_entity][corporation] != :now &&
           (shares.sum(&:percent) + @share_pool.percent_of(corporation)) <= 50 &&
           !(@current_actions.uniq.size == 2 && self.class::PURCHASE_ACTIONS.include?(@current_actions.last)) &&
           (shares.none?(&:president) ||
@@ -105,6 +108,9 @@ module Engine
 
         @current_entity.unpass! if @current_actions.any?
         @current_actions.clear
+        @players_sold[@current_entity].each do |k, _|
+          @players_sold[@current_entity][k] = :prev
+        end
         @current_entity = next_entity
       end
 
@@ -130,7 +136,7 @@ module Engine
         entity = share.owner
         corporation = share.corporation
         old_p = corporation.owner
-        @players_sold[entity][corporation] = true
+        @players_sold[entity][corporation] = :now
         sell_and_change_price(shares, @share_pool, @stock_market)
 
         return if old_p != entity
