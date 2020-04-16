@@ -3,6 +3,7 @@
 module View
   class Player < Snabberb::Component
     needs :player
+    needs :game, store: true
 
     def render
       style = {
@@ -17,7 +18,7 @@ module View
 
       h(:div, { style: style }, [
         h(:div, "name: #{@player.name}"),
-        h(:div, "cash: #{@player.cash}"),
+        h(:div, "cash: #{@game.format_currency(@player.cash)}"),
         h(:div, "companies: #{@player.companies.map(&:name)}"),
         *shares_div,
       ])

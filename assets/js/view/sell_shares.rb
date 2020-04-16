@@ -24,7 +24,8 @@ module View
         num = bundle.size
         percent = bundle.sum(&:percent)
         sell = -> { process_action(Engine::Action::SellShares.new(@player, bundle)) }
-        text = "Sell #{num} share#{num > 1 ? 's' : ''} (%#{percent} - $#{Engine::Share.price(bundle)})"
+        text = "Sell #{num} share#{num > 1 ? 's' : ''} (#{percent}% - "\
+               "#{@game.format_currency(Engine::Share.price(bundle))})"
         h(:button, { on: { click: sell } }, text)
       end
 

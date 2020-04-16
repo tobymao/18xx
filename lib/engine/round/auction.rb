@@ -94,7 +94,8 @@ module Engine
           value = @cheapest.min_bid
           @cheapest.discount += 5
           new_value = @cheapest.min_bid
-          @log << "#{@cheapest.name} minimum bid decreases from $#{value} to $#{new_value}"
+          @log << "#{@cheapest.name} minimum bid decreases from "\
+                  "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
 
           if new_value <= 0
             buy_company(@current_entity, @cheapest, 0)
@@ -154,7 +155,7 @@ module Engine
         price = bid.price
         raise GameError, 'Cannot afford bid' if bids_for_player(entity).sum(&:price) > entity.cash
 
-        @log << "#{entity.name} bids $#{price} for #{bid.company.name}"
+        @log << "#{entity.name} bids #{@game.format_currency(price)} for #{bid.company.name}"
       end
 
       def buy_company(player, company, price)
@@ -162,7 +163,7 @@ module Engine
         player.companies << company
         player.spend(price, @bank)
         @companies.delete(company)
-        @log << "#{player.name} buys #{company.name} for $#{price}"
+        @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
       end
 
       def bids_for_player(player)

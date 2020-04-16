@@ -34,6 +34,8 @@ module Engine
 
       BANK_CASH = 12_000
 
+      CURRENCY_FORMAT_STR = '$%d'
+
       STARTING_CASH = {
         2 => 1200,
         3 => 800,
@@ -104,7 +106,7 @@ module Engine
 
         @depot = init_train_handler(@bank)
         init_starting_cash(@players, @bank)
-        @share_pool = SharePool.new(@corporations, @bank, @log)
+        @share_pool = SharePool.new(self)
         @hexes = init_hexes(@companies, @corporations)
 
         # call here to set up ids for all cities before any tiles from @tiles
@@ -204,6 +206,10 @@ module Engine
 
       def layout
         :flat
+      end
+
+      def format_currency(val)
+        self.class::CURRENCY_FORMAT_STR % val
       end
 
       private

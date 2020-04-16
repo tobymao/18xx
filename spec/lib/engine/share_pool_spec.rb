@@ -4,6 +4,7 @@ require './spec/spec_helper'
 
 require 'engine/bank'
 require 'engine/corporation'
+require 'engine/game/g_1889'
 require 'engine/share'
 require 'engine/share_pool'
 require 'engine/share_price'
@@ -11,11 +12,12 @@ require 'engine/player'
 
 module Engine
   describe SharePool do
-    let(:bank) { Bank.new(1000) }
+    let(:game) { Game::G1889.new([]) }
+    let(:bank) { game.bank }
     let(:player) { Player.new('a') }
     let(:corporation) { Corporation.new(sym: 'a', name: 'a', tokens: [0]) }
     let(:share_price) { SharePrice.from_code('10', 0, 0) }
-    let(:subject) { SharePool.new([corporation], bank, []) }
+    let(:subject) { SharePool.new(game) }
     let(:share) { Share.new(corporation, owner: subject, president: true, percent: 20) }
 
     before :each do

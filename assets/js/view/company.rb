@@ -5,6 +5,7 @@ module View
     needs :company
     needs :bids, default: nil
     needs :selected_company, default: nil, store: true
+    needs :game, store: true
 
     def selected?
       @company == @selected_company
@@ -18,7 +19,7 @@ module View
       }
       names = @bids
         .sort_by(&:price)
-        .reverse.map { |bid| "#{bid.entity.name} ($#{bid.price})" }
+        .reverse.map { |bid| "#{bid.entity.name} (#{@game.format_currency(bid.price)})" }
         .join(', ')
       h(:div, { style: bidders_style }, names)
     end
@@ -82,8 +83,8 @@ module View
         h(:div, @company.name),
         h(:div, { style: description_style }, @company.desc),
         h(:div, [
-          h(:div, { style: value_style }, "Value: #{@company.value}"),
-          h(:div, { style: revenue_style }, "Revenue: #{@company.revenue}"),
+          h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}"),
+          h(:div, { style: revenue_style }, "Revenue: #{@game.format_currency(@company.revenue)}"),
         ]),
         h(:div, { style: bidders_style }, 'Bidders:'),
         render_bidders,

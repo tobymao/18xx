@@ -12,6 +12,8 @@ module Engine
     class G1889 < Base
       BANK_CASH = 7_000
 
+      CURRENCY_FORMAT_STR = '¥%d'
+
       CERT_LIMIT = {
         2 => 25,
         3 => 19,
