@@ -4,6 +4,7 @@ module View
   class Corporation < Snabberb::Component
     needs :corporation
     needs :selected_corporation, default: nil, store: true
+    needs :game, store: true
 
     def selected?
       @corporation == @selected_corporation
@@ -87,7 +88,7 @@ module View
         h(:div, { style: title_style }, @corporation.name),
         h(:div, { style: token_style }, render_tokens),
         render_trains,
-        h(:div, "Treasury: #{@corporation.cash}"),
+        h(:div, "Treasury: #{@game.format_currency(@corporation.cash)}"),
         render_private_companies,
         h(:div, "Available Shares: #{@corporation.shares.size}")
       ])
