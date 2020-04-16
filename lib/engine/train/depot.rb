@@ -13,6 +13,12 @@ module Engine
         @bank = bank
       end
 
+      def reclaim_train(train)
+        train.owner.remove_train(train)
+        train.owner = self
+        @discarded << train
+      end
+
       def min_price
         [*@discarded, @upcoming.first].map(&:price).min
       end

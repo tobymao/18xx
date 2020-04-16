@@ -12,7 +12,6 @@ module View
 
     def render
       children = []
-      children << h(BuyCompanies) if @round.can_buy_companies?
 
       action =
         case @round.step
@@ -27,6 +26,7 @@ module View
         end
 
       children << action
+      children << h(BuyCompanies) if @round.can_buy_companies?
 
       h(:div, children)
     end

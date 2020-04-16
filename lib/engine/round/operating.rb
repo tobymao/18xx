@@ -78,6 +78,15 @@ module Engine
         @current_entity.trains.empty? # TODO: check if there's a route
       end
 
+      def active_entities
+        corps = crowded_corps
+        corps.any? ? corps : super
+      end
+
+      def crowded_corps
+        @entities.select { |e| e.trains.size > @phase.train_limit }
+      end
+
       def can_buy_train?
         @current_entity.trains.size < @phase.train_limit &&
           @depot.available(@current_entity).any? { |t| @current_entity.cash >= t.min_price }
@@ -279,6 +288,10 @@ module Engine
           end
         when Action::BuyTrain
           buy_train(entity, action.train, action.price)
+        when Action::DiscardTrain
+          train = action.train
+          @depot.reclaim_train(train)
+          @log << "#{entity.name} discards #{train.name}"
         when Action::SellShares
           sell_shares(action.shares)
         when Action::BuyCompany
@@ -298,6 +311,7 @@ module Engine
         return if action.is_a?(Action::BuyCompany) && (@step != :company || can_buy_companies?)
         return if action.is_a?(Action::SellShares)
         return if action.is_a?(Action::BuyTrain) && can_buy_train?
+        return if crowded_corps.any?
 
         next_step!
       end

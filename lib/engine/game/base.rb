@@ -5,6 +5,7 @@ require_relative '../action/bid'
 require_relative '../action/buy_company'
 require_relative '../action/buy_share'
 require_relative '../action/buy_train'
+require_relative '../action/discard_train'
 require_relative '../action/dividend'
 require_relative '../action/lay_tile'
 require_relative '../action/par'
@@ -163,6 +164,8 @@ module Engine
             Action::BuyShare
           when 'buy_train'
             Action::BuyTrain
+          when 'discard_train'
+            Action::DiscardTrain
           when 'dividend'
             Action::Dividend
           when 'lay_tile'
@@ -213,7 +216,7 @@ module Engine
       end
 
       def purchasable_companies
-        @companies.select { |c| c.owner.player? }
+        @companies.select { |c| c.owner&.player? }
       end
 
       private
