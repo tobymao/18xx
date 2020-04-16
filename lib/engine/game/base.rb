@@ -321,10 +321,10 @@ module Engine
         @round =
           case @round
           when Round::Auction
-            rotate_players(@round.last_to_act)
+            calculate_priority_deal
             new_stock_round
           when Round::Stock
-            rotate_players(@round.last_to_act)
+            calculate_priority_deal
             new_operating_round
           when Round::Operating
             if @round.round_num < @operating_rounds
@@ -337,6 +337,11 @@ module Engine
           else
             raise "Unexected round type #{@round}"
           end
+      end
+
+      def calculate_priority_deal
+        rotate_players(@round.last_to_act)
+        @log << "#{current_entity.name} has priority deal"
       end
 
       def rotate_players(last_to_act)
