@@ -25,7 +25,7 @@ module View
           bottom: Hex::SIZE * Math.sin(index * theta) + 80,
           width: 60,
           height: 60,
-          filter: "drop-shadow( 5px 5px 2px #888)",
+          filter: 'drop-shadow(5px 5px 2px #888)',
           'pointer-events' => 'auto',
         }
         h(:svg, { style: style }, [h(:g, { attrs: { transform: 'scale(0.3)' } }, [hex])])
