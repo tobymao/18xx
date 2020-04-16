@@ -201,7 +201,7 @@ module Engine
           abilities: [
             {
               type: :ignore_terrain,
-              terrain: :mtn,
+              terrain: :mountain,
               owner_type: :corporation,
             },
           ],

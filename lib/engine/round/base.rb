@@ -145,7 +145,7 @@ module Engine
         entity.spend(cost, @game.bank) unless cost.zero?
 
         @log << "#{action.entity.name}"\
-          "#{cost.zero? ? '' : "spends #{@game.format_currency(cost)} and"}"\
+          "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile #{tile.name}"\
          " with rotation #{rotation} on #{hex.name}"
       end
