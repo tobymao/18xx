@@ -85,7 +85,7 @@ module Engine
       end
 
       def action_finalized(_action)
-        @last_to_act = nil unless finished?
+        @last_to_act = nil if @bids[@companies.first].empty? && !finished?
         return if !all_passed? || finished?
 
         @entities.each(&:unpass!)
@@ -108,7 +108,10 @@ module Engine
       end
 
       def pass_processed(_action)
-        @bids[@auctioning_company]&.reject! { |bid| bid.entity == @current_entity }
+        @bids[@auctioning_company]&.reject! do |bid|
+          @current_entity.unpass!
+          bid.entity == @current_entity
+        end
         resolve_bids
       end
 
@@ -118,9 +121,6 @@ module Engine
           accept_bid(bid)
           resolve_bids
         else
-          min = min_bid(bid.company)
-          raise Engine::GameError, "Minimum bid is #{min}" if bid.price < min
-
           add_bid(bid)
         end
       end
@@ -148,12 +148,16 @@ module Engine
       end
 
       def add_bid(bid)
-        bids = @bids[bid.company]
-        bids.reject! { |b| b.entity == bid.entity }
-        bids << bid
+        company = bid.company
         entity = bid.entity
         price = bid.price
+        min = min_bid(company)
+        raise Engine::GameError, "Minimum bid is #{min} #{@current_entity.name} #{company.name}" if bid.price < min
         raise GameError, 'Cannot afford bid' if bids_for_player(entity).sum(&:price) > entity.cash
+
+        bids = @bids[company]
+        bids.reject! { |b| b.entity == entity }
+        bids << bid
 
         @log << "#{entity.name} bids #{@game.format_currency(price)} for #{bid.company.name}"
       end
