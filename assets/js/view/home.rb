@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require 'game_manager'
-require 'view/create_game'
+require 'view/game_row'
+require 'view/welcome'
 
 module View
   class Home < Snabberb::Component
@@ -10,18 +11,31 @@ module View
     needs :user, default: nil, store: true
 
     def render
-      h(:div, [
-        h(CreateGame),
-        render_new_games,
-      ])
-    end
+      children = [
+        h(Welcome, user: @user),
+      ]
 
-    def render_new_games
-      boxes = @games.map do |game|
-        render_game_box(game)
+      grouped = @games.group_by { |game| game['status'] }
+
+      your_games, active_games = grouped['active'].partition do |game|
+        user_in_game?(@user, game)
       end
 
-      h(:div, boxes)
+      if @user
+        render_row(children, 'Your Games', your_games)
+        render_row(children, 'New Games', grouped['new'])
+      end
+
+      render_row(children, 'Active Games', active_games)
+      render_row(children, 'Finished Games', grouped['finished'])
+
+      h(:div, children)
+    end
+
+    def render_row(children, header, games)
+      return unless games&.any?
+
+      children << h(GameRow, header: header, games: games, user: @user)
     end
 
     def render_game_box(game)

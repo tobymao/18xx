@@ -17,6 +17,7 @@ module GameManager
   def create_game(params)
     safe_post('/game', params) do |data|
       store(:games, [data] + @games)
+      store(:app_route, '/', skip: true)
     end
   end
 
@@ -50,6 +51,14 @@ module GameManager
       store(:game_data, data, skip: true)
       store(:app_route, url)
     end
+  end
+
+  def user_in_game?(user, game)
+    game['players'].map { |p| p['id'] }.include?(user&.dig('id'))
+  end
+
+  def user_owns_game?(user, game)
+    game['user']['id'] == user&.dig(:id)
   end
 
   private

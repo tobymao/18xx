@@ -3,7 +3,32 @@
 class Index < Snabberb::Layout
   def render
     css = <<~CSS
-      * { font-family: Arial; }
+      * { font-family: 'Inconsolata', monospace; }
+
+      .card_header {
+        font-size: 15px;
+        font-weight: bold;
+        margin: 1rem 0;
+      }
+
+      .back {
+        font-size: 15px;
+        font-weight: bold;
+        margin: 1rem 0;
+      }
+
+      .button {
+        font-size: 14px;
+        border: solid 1px black;
+        padding: 0.2rem 1rem;
+        cursor: pointer;
+        outline-style: none;
+      }
+
+      .button:hover {
+        background-color: black;
+        color: white;
+      }
     CSS
 
     view_port = {
@@ -16,7 +41,10 @@ class Index < Snabberb::Layout
         h(:meta, props: { charset: 'utf-8' }),
         h(:meta, props: view_port),
         h(:title, '18xx.games'),
-        h(:link, attrs: { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css' }), # rubocop:disable Layout/LineLength
+        # rubocop:disable Layout/LineLength
+        h(:link, attrs: { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css' }),
+        h(:link, attrs: { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap' }),
+        # rubocop:enable Layout/LineLength
         h(:style, props: { innerHTML: css }),
       ]),
       h(:body, [

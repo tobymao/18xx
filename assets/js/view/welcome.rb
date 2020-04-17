@@ -3,6 +3,7 @@
 module View
   class Welcome < Snabberb::Component
     needs :user
+    needs :app_route, default: nil, store: true
 
     def render
       h(:div, [
@@ -59,8 +60,14 @@ module View
         }
       }
 
+      create_props = {
+        on: {
+          click: -> { store(:app_route, '/new_game') },
+        }
+      }
+
       h(:div, props, [
-        h('button.button', 'CREATE A NEW GAME'),
+        h('button.button', create_props, 'CREATE A NEW GAME'),
         h('button.button', { style: { 'margin-left': '1rem' } }, 'TUTORIAL'),
       ])
     end

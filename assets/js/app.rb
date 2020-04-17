@@ -29,28 +29,8 @@ class App < Snabberb::Component
 
     h(:div, props, [
       h(View::Navigation),
-      render_banner,
       h(View::Flash),
       render_content,
-    ])
-  end
-
-  def render_banner
-    props = {
-      style: {
-        'background-color': 'lightgreen',
-        'padding': '1em',
-      }
-    }
-
-    message = <<~MESSAGE
-      Thanks for participating in the beta! Big updates just got launched so many of your games are now invalid.
-      Please join me in the 18xx slack #18xxgames channel
-    MESSAGE
-
-    h(:div, props, [
-      h(:span, message),
-      h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues' } }, 'Please file issues here'),
     ])
   end
 
@@ -73,8 +53,12 @@ class App < Snabberb::Component
         h(View::User, type: :login)
       when 'profile'
         h(View::User, type: :profile)
+      when 'new_game'
+        h(View::CreateGame)
       else
-        raise "404 - Unknown path #{path}"
+        store(:flash_opts, "Unknown path #{path}")
+        store(:app_route, '/', skip: true)
+        raise
       end
 
     props = {

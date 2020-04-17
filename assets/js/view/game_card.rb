@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require 'view/game_row'
+
 module View
   class GameCard < Snabberb::Component
+    include GameManager
+
     needs :user
     needs :game
 
@@ -29,14 +33,20 @@ module View
     end
 
     def render_header
-      color, button_text =
+      color, button_text, action =
         case @game['status']
         when 'new'
-          [JOIN_YELLOW, 'Join']
+          if user_owns_game?(@user, @game)
+            [JOIN_YELLOW, 'Delete', -> { delete_game(@game) }]
+          elsif user_in_game?(@user, @game)
+            [JOIN_YELLOW, 'Leave', -> { leave_game(@game) }]
+          else
+            [JOIN_YELLOW, 'Join', -> { join_game(@game) }]
+          end
         when 'active'
-          [ENTER_GREEN, 'Enter']
+          [ENTER_GREEN, 'Enter', -> { enter_game(@game) }]
         when 'finished'
-          [FINISHED_GREY, 'Review']
+          [FINISHED_GREY, 'Review', -> { enter_game(@game) }]
         end
 
       props = {
@@ -60,7 +70,10 @@ module View
           position: 'absolute',
           top: '1em',
           right: '1em',
-        }
+        },
+        on: {
+          click: action,
+        },
       }
 
       h('div', props, [
@@ -77,17 +90,14 @@ module View
         style: {
           'margin-top': '0.5rem',
           'line-height': '1.2rem',
-          'text-overflow': 'ellipsis',
-          'white-space': 'nowrap',
-          overflow: 'hidden',
         }
       }
 
       h(:div, props, [
-        h(:div, "Name: #{@game['description']}"),
-        h(:div, "Max Players: #{@game['max_players']}"),
-        h(:div, "Players: #{@game['players'].map { |p| p['name'] }.join(', ')}"),
-        h(:div, "Created: #{@game['created_at']}"),
+        h(:div, [h(:b, 'Description: '), @game['description']]),
+        h(:div, [h(:b, 'Max Players: '), @game['max_players']]),
+        h(:div, [h(:b, 'Players: '), @game['players'].map { |p| p['name'] }.join(', ')]),
+        h(:div, [h(:b, 'Created: '), @game['created_at']]),
       ])
     end
   end
