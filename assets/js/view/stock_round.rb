@@ -19,7 +19,7 @@ module View
 
     def render
       @current_entity = @round.current_entity
-      if @last_player.nil? || !@last_player.equal?(@current_entity)
+      if @last_player != @current_entity
         store(:selected_corporation, nil, skip: true)
         store(:last_player, @current_entity, skip: true)
       end
