@@ -63,7 +63,7 @@ module View
         border: 'solid 1px gainsboro',
         padding: '0.5rem',
         margin: '0.5rem 0.5rem 0 0',
-        width: '300px',
+        width: '350px',
         'text-align': 'center',
         'font-weight': 'bold',
         'vertical-align': 'top',
@@ -85,7 +85,7 @@ module View
       }
 
       h(:div, { style: style, on: { click: onclick } }, [
-        h(:div, { style: title_style }, @corporation.name),
+        h(:div, { style: title_style }, "#{@corporation.name} (#{@corporation.sym})"),
         h(:div, { style: token_style }, render_tokens),
         render_trains,
         h(:div, "Treasury: #{@game.format_currency(@corporation.cash)}"),
