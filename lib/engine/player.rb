@@ -35,7 +35,7 @@ module Engine
     end
 
     def ==(other)
-      @name == other.name
+      @name == other&.name
     end
 
     def player?
