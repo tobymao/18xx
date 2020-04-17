@@ -18,6 +18,10 @@ module Engine
       @companies = []
     end
 
+    def value
+      @cash + shares.sum(&:price) + @companies.sum(&:value)
+    end
+
     def id
       @name
     end

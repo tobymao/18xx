@@ -30,8 +30,8 @@ module Engine
   module Game
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
-                  :depot, :hexes, :log, :phase, :players, :round, :share_pool,
-                  :special, :stock_market, :tiles, :turn
+                  :depot, :finished, :hexes, :log, :phase, :players, :round,
+                  :share_pool, :special, :stock_market, :tiles, :turn
 
       BANK_CASH = 12_000
 
@@ -93,6 +93,7 @@ module Engine
 
       def initialize(names, actions: [])
         @turn = 1
+        @finished = false
         @log = []
         @actions = []
         @names = names.freeze
@@ -135,6 +136,8 @@ module Engine
       end
 
       def process_action(action)
+        return self if @finished
+
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
         @phase.process_action(action)
@@ -222,7 +225,7 @@ module Engine
       private
 
       def init_bank
-        Bank.new(self.class::BANK_CASH)
+        Bank.new(self.class::BANK_CASH, log: @log)
       end
 
       def init_phase
@@ -329,6 +332,14 @@ module Engine
           when Round::Operating
             if @round.round_num < @operating_rounds
               new_operating_round(@round.round_num + 1)
+            elsif @bank.broken?
+              @finished = true
+              results = @players
+                .sort_by(&:value)
+                .reverse
+                .map { |p| "#{p.name} (#{format_currency(p.value)})" }
+              @log << "Game over: #{results.join(', ')}"
+              @round
             else
               @turn += 1
               @operating_rounds = @phase.operating_rounds
