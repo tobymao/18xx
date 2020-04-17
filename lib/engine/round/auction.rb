@@ -66,7 +66,7 @@ module Engine
         end
       end
 
-      def action_processed(action)
+      def action_processed(_action)
         @entities.each(&:unpass!)
       end
 

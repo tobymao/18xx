@@ -29,8 +29,8 @@ module View
       }
 
       message = <<~MESSAGE
-      Thanks for participating in the beta! Big updates just got launched so many of your games are now invalid.
-      Please join me in the 18xx slack #18xxgames channel
+        Thanks for participating in the beta! Big updates just got launched so many of your games are now invalid.
+        Please join me in the 18xx slack #18xxgames channel
       MESSAGE
 
       h(:div, props, [
@@ -44,7 +44,12 @@ module View
         margin: '1rem 0'
       }
 
-      h(:div, props, 'This is a paragraph explaining what 18xx.games is all about, and how to get into a game or start one maybe. Also probably something about how you can create a solo game without creating an account.')
+      message = <<~MESSAGE
+        This is a paragraph explaining what 18xx.games is all about, and how to get into a game or start one maybe.
+        Also probably something about how you can create a solo game without creating an account.
+      MESSAGE
+
+      h(:div, props, message)
     end
 
     def render_buttons

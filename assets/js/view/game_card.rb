@@ -5,10 +5,10 @@ module View
     needs :user
     needs :game
 
-    ENTER_GREEN = '#3CB371'.freeze
-    JOIN_YELLOW = '#F0E58C'.freeze
-    YOUR_TURN_ORANGE = '#FF8C00'.freeze
-    FINISHED_GREY = '#D3D3D3'.freeze
+    ENTER_GREEN = '#3CB371'
+    JOIN_YELLOW = '#F0E58C'
+    YOUR_TURN_ORANGE = '#FF8C00'
+    FINISHED_GREY = '#D3D3D3'
 
     def render
       props = {
@@ -28,7 +28,7 @@ module View
       ])
     end
 
-    def render_header(header)
+    def render_header
       color, button_text =
         case @game['status']
         when 'new'
