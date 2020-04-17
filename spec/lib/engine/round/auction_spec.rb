@@ -84,6 +84,23 @@ module Engine
         subject.process_action(Action::Bid.new(player_3, private_3, 40))
         expect(subject.last_to_act).to eq(player_3)
       end
+
+      it 'allows passers to come back in' do
+        subject.process_action(Action::Bid.new(player_1, private_2, 35))
+        subject.process_action(Action::Bid.new(player_2, private_2, 40))
+        subject.process_action(Action::Pass.new(player_3))
+        subject.process_action(Action::Bid.new(player_1, private_3, 45))
+        subject.process_action(Action::Bid.new(player_2, private_3, 50))
+        expect(subject.current_entity).to eq(player_3)
+      end
+
+      it 'all passing should decrease private value' do
+        subject.process_action(Action::Pass.new(player_1))
+        subject.process_action(Action::Pass.new(player_2))
+        subject.process_action(Action::Pass.new(player_3))
+        expect(subject.current_entity).to eq(player_1)
+        expect(private_1.min_bid).to eq(15)
+      end
     end
   end
 end

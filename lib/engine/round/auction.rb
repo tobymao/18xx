@@ -67,7 +67,7 @@ module Engine
       end
 
       def action_processed(action)
-        action.entity.unpass!
+        @entities.each(&:unpass!)
       end
 
       def change_entity(_action)
@@ -87,8 +87,6 @@ module Engine
       def action_finalized(_action)
         @last_to_act = nil if @bids[@companies.first].empty? && !finished?
         return if !all_passed? || finished?
-
-        @entities.each(&:unpass!)
 
         if @companies.include?(@cheapest)
           value = @cheapest.min_bid
