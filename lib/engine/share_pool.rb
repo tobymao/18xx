@@ -29,7 +29,8 @@ module Engine
       price = share.price
 
       if ipoed != corporation.ipoed
-        @log << "#{entity.name} pars #{corporation.name} at #{@game.format_currency(price)} and becomes the president"
+        @log << "#{entity.name} pars #{corporation.name} at "\
+                "#{@game.format_currency(corporation.par_price.price)} and becomes the president"
       end
 
       if exchange
