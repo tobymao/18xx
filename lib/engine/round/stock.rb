@@ -117,6 +117,7 @@ module Engine
       def action_finalized(_action)
         while !finished? && nothing_to_do?
           @current_entity.pass!
+          @log << "#{@current_entity.name} has no valid actions and passes"
           @current_entity = next_entity
         end
 
