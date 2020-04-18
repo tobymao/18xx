@@ -33,10 +33,11 @@ module View
     end
 
     def render_header
+      owner = user_owns_game?(@user, @game)
       color, button_text, action =
         case @game['status']
         when 'new'
-          if user_owns_game?(@user, @game)
+          if owner
             [JOIN_YELLOW, 'Delete', -> { delete_game(@game) }]
           elsif user_in_game?(@user, @game)
             [JOIN_YELLOW, 'Leave', -> { leave_game(@game) }]
@@ -68,20 +69,36 @@ module View
       button_props = {
         style: {
           position: 'absolute',
-          top: '1em',
-          right: '1em',
+          top: '1rem',
+          right: '1rem',
         },
         on: {
           click: action,
         },
       }
 
+      buttons = [
+        h('button.button', button_props, button_text),
+      ]
+
+      if owner && @game['status'] == 'new' && @game['players'].size > 1
+        start_props = {
+          style: {
+            position: 'absolute',
+            top: '1rem',
+            right: '90px',
+          },
+          on: { click: -> { start_game(@game) } },
+        }
+        buttons << h('button.button', start_props, 'Start')
+      end
+
       h('div', props, [
         h(:div, text_props, [
           h(:div, "Game: #{@game['title']}"),
           h(:div, "Owner: #{@game['user']['name']}"),
+          *buttons,
         ]),
-        h('button.button', button_props, button_text),
       ])
     end
 
