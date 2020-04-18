@@ -6,35 +6,38 @@ module View
     needs :game
 
     def render
-      props = {
-        style: {
-          display: 'inline-block',
-          position: 'relative',
-          border: 'solid 1px gainsboro',
-          padding: '0.5rem',
-          margin: '0.5rem 0.5rem 0 0',
-          width: '320px',
-          'vertical-align': 'top',
-        },
+      card_style = {
+        display: 'inline-block',
+        position: 'relative',
+        border: 'solid 1px gainsboro',
+        padding: '0.5rem',
+        margin: '0.5rem 0.5rem 0 0',
+        width: '320px',
+        'vertical-align': 'top',
       }
 
-      h(:div, props, [
+      if @game.round.can_act?(@player)
+        card_style['border'] = 'solid 1px black'
+        card_style['background-color'] = '#dfd'
+      end
+
+      h(:div, { style: card_style }, [
         render_header,
         render_body,
       ])
     end
 
     def render_header
-      props = {
-        style: {
-          margin: '-0.5em',
-          'text-align': 'center',
-          'white-space': 'nowrap',
-          'background-color': 'lightgray',
-        }
+      header_style = {
+         margin: '-0.5em',
+         'text-align': 'center',
+         'white-space': 'nowrap',
+         'background-color': 'lightgray',
       }
 
-      h(:div, props, [
+      header_style['background-color'] = '#9b9' if @game.round.can_act?(@player)
+
+      h(:div, { style: header_style }, [
         render_header_segment(@player.name, 'Player'),
         render_header_segment(@game.format_currency(@player.cash), 'Cash'),
         render_header_segment(@game.format_currency(@player.value), 'Value'),
