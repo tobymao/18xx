@@ -8,26 +8,27 @@ services:
       - .:/18xx
       - /18xx/vendor
     environment:
-      DATABASE_URL: postgres://root:password@postgres:5432/db_18xx
+      DATABASE_URL: postgres://root:password@db:5432/db_18xx
     depends_on:
-      - postgres
+      - db
 
-  postgres:
-    image: postgres:12.2
+  db:
+    build: ./db/
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
       POSTGRES_DB: db_18xx
-    ports:
-      - 5432:5432
     volumes:
-      - /var/lib/postgresql
+      - ./db/data:/var/lib/postgresql/data
+      - ./log/db:/var/log/postgresql
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
+    depends_on:
+      - db
 
   nginx:
     image: nginx:1.17
