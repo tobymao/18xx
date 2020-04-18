@@ -158,23 +158,13 @@ module View
     def render_game
       @round = @game.round
 
-      padding = {
-        margin: '20px 0px 20px 0px'
-      }
-
       h('div.game', [
         render_round,
-        h(:div, style: padding),
         h(Log, log: @game.log),
-        h(:div, style: padding),
         h(EntityOrder, round: @round),
-        h(:div, style: padding),
         render_action,
-        h(:div, style: padding),
         h(Exchange),
-        h(:div, style: padding),
-        *@game.players.map { |p| h(Player, player: p, game: @game) },
-        h(:div, style: padding),
+        h(:div, { style: { margin: '1rem 0 1.5rem 0' } }, @game.players.map { |p| h(Player, player: p, game: @game) }),
         @round.operating? ? h(Map, game: @game) : h(StockMarket, stock_market: @game.stock_market),
       ])
     end
