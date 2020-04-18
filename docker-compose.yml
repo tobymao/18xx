@@ -9,8 +9,6 @@ services:
       - /18xx/vendor
     environment:
       DATABASE_URL: postgres://root:password@postgres:5432/db_18xx
-    ports:
-      - 9292:9292
     depends_on:
       - postgres
 
@@ -30,3 +28,14 @@ services:
     restart: always
     ports:
       - 8080:8080
+
+  nginx:
+    image: nginx:1.17
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - rack
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./log/nginx:/var/log/nginx
