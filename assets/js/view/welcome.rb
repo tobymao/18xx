@@ -47,7 +47,7 @@ module View
 
       message = <<~MESSAGE
         This is a paragraph explaining what 18xx.games is all about, and how to get into a game or start one maybe.
-        Also probably something about how you can create a solo game without creating an account.
+        Also probably something about how you can create a hotseat game without creating an account.
       MESSAGE
 
       h(:div, props, message)

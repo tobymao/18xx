@@ -57,7 +57,7 @@ module View
       end
 
       children = []
-      children << h(:button, { on: { click: buy_ipo } }, 'Buy Ipo Share') if @round.can_buy?(ipo_share)
+      children << h(:button, { on: { click: buy_ipo } }, 'Buy IPO Share') if @round.can_buy?(ipo_share)
       children << h(:button, { on: { click: buy_pool } }, 'Buy Pool Share') if @round.can_buy?(pool_share)
       children << h(SellShares, player: @current_entity)
 
