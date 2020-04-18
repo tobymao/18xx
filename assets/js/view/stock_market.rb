@@ -23,10 +23,17 @@ module View
         border: 'solid 1px rgba(0,0,0,0.2)',
       )
 
+      color_map = {
+        red: '#ffaaaa',
+        brown: '#8b4513',
+        orange: '#ffbb55',
+        yellow: '#ffff99'
+      }
+
       grid = @stock_market.market.flat_map do |prices|
         rows = prices.map do |price|
           if price
-            style = box_style.merge('background-color' => price.color)
+            style = box_style.merge('background-color' => color_map[price.color])
 
             corporations = price.corporations
             num_corps = corporations.size
@@ -45,7 +52,7 @@ module View
             end
 
             h(:div, { style: style }, [
-              h(:div, price.price),
+              h(:div, { style: { 'font-size': '80%' } }, price.price),
               h(:div, tokens),
             ])
           else
