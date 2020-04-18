@@ -20,20 +20,26 @@ module Engine
       'Sharepool'
     end
 
-    def buy_share(entity, share)
+    def buy_share(entity, share, exchange: nil)
       corporation = share.corporation
       ipoed = corporation.ipoed
       floated = corporation.floated?
 
-      corporation.ipoed = true
+      corporation.ipoed = true if share.president
       price = share.price
-      transfer_share(share, entity, entity, @bank)
 
       if ipoed != corporation.ipoed
         @log << "#{entity.name} pars #{corporation.name} at #{@game.format_currency(price)} and becomes the president"
       end
 
-      @log << "#{entity.name} buys a #{share.percent}% share of #{corporation.name} for #{@game.format_currency(price)}"
+      if exchange
+        transfer_share(share, entity)
+        @log << "#{entity.name} exchanges #{exchange.name} for a share of #{corporation.name}"
+      else
+        transfer_share(share, entity, entity, @bank)
+        @log << "#{entity.name} buys a #{share.percent}% share of #{corporation.name} "\
+          "for #{@game.format_currency(price)}"
+      end
 
       return if floated == corporation.floated?
 

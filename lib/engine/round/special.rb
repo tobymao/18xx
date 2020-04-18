@@ -56,19 +56,9 @@ module Engine
           owner = company.owner
           share = action.share
           corporation = share.corporation
-
-          floated_before = corporation.floated?
-
-          @game.share_pool.transfer_share(share, owner)
-          @log << "#{owner.name} exchanges #{company.name} for a share of #{corporation.name}"
+          @game.share_pool.buy_share(owner, share, exchange: company)
           presidential_share_swap(corporation, owner) if corporation.owner && corporation.owner != owner
           company.close!
-
-          return if floated_before == corporation.floated?
-
-          price = share.price
-          @game.bank.spend(price * 10, corporation)
-          @log << "#{corporation.name} floats with $#{corporation.cash} and tokens #{corporation.coordinates}"
         end
       end
 

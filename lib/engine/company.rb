@@ -69,6 +69,8 @@ module Engine
     end
 
     def close!
+      return unless owner
+
       owner.companies.delete(self)
       @owner = nil
     end

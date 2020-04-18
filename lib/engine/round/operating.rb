@@ -79,8 +79,7 @@ module Engine
       end
 
       def active_entities
-        corps = crowded_corps
-        corps.any? ? corps : super
+        super + crowded_corps
       end
 
       def crowded_corps
