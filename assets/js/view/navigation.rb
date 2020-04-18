@@ -24,8 +24,21 @@ module View
         other_links << item('Login', '/login')
       end
 
+      logo_props = {
+        attrs: {
+          src: '/images/logo.svg',
+        },
+        style: {
+          position: 'absolute',
+          top: '16px',
+          width: '80px',
+        }
+      }
+
       h(:div, props, [
-        h(:a, { attrs: { href: '/' } }, '18xx.games'),
+        h(:a, { attrs: { href: '/' } }, [
+          h(:img, logo_props),
+        ]),
         render_other_links(other_links),
       ])
     end
@@ -48,7 +61,7 @@ module View
 
       props = {
         style: {
-          float: :right,
+          'text-align': 'right',
         },
       }
 

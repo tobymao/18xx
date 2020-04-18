@@ -165,7 +165,7 @@ module View
         render_action,
         h(Exchange),
         h(:div, 'Players'),
-        *@game.players.map { |p| h(Player, player: p) },
+        *@game.players.map { |p| h(Player, player: p, game: @game) },
         @round.operating? ? h(Map, game: @game) : h(StockMarket, stock_market: @game.stock_market),
       ])
     end

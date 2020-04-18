@@ -5,55 +5,164 @@ module View
     needs :player
     needs :game
 
-    def render_shares
-      owned_shares = @player.shares_by_corporation.select { |_corporation, shares| shares.any? }
+    def render
+      props = {
+        style: {
+          display: 'inline-block',
+          position: 'relative',
+          border: 'solid 1px gainsboro',
+          padding: '0.5rem',
+          margin: '0.5rem 0.5rem 0 0',
+          width: '320px',
+          'vertical-align': 'top',
+        },
+      }
 
-      return 'Shares: None' if owned_shares.empty?
-
-      shares_div = owned_shares.map do |corporation, shares|
-        president = shares.any?(&:president)
-        corp_style = {
-          background: corporation.color,
-          color: 'white',
-          padding: '0.25rem'
-        }
-        h(:div, { style: corp_style }, "#{corporation.name} #{president ? '*' : ''}#{shares.sum(&:percent)}%")
-      end
-      [h(:div, 'Shares:'), *shares_div]
+      h(:div, props, [
+        render_header,
+        render_body,
+      ])
     end
 
-    def render
-      style = {
-        display: 'inline-block',
-        cursor: 'pointer',
-        border: 'solid 1px gainsboro',
-        padding: '0.5rem',
-        margin: '0.5rem 0.5rem 0 0',
-        width: '300px',
-        'text-align': 'center',
-        'font-weight': 'bold',
-        'vertical-align': 'top',
+    def render_header
+      props = {
+        style: {
+          margin: '-0.5em',
+          'text-align': 'center',
+          'white-space': 'nowrap',
+          'background-color': 'lightgray',
+        }
       }
 
-      name_style = {
-        border: '1px solid gainsboro',
-        padding: '0.5rem',
-        'font-size': '150%'
+      h(:div, props, [
+        render_header_segment(@player.name, 'Player'),
+        render_header_segment(@game.format_currency(@player.cash), 'Cash'),
+        render_header_segment(@game.format_currency(@player.value), 'Value'),
+        render_header_segment("#{@player.shares.count}/#{@game.cert_limit}", 'Certs'),
+      ])
+    end
+
+    def render_header_segment(value, key)
+      props = {
+        style: {
+          display: 'inline-block',
+          margin: '0.5em',
+          'text-align': 'right',
+        },
       }
 
-      cash_style = {
-        margin: '0.5rem 0'
+      value_props = {
+        style: {
+          'font-size': '16px',
+          'font-weight': 'bold',
+          'max-width': '120px',
+          'white-space': 'nowrap',
+          'text-overflow': 'ellipsis',
+          overflow: 'hidden',
+        }
+      }
+      h(:div, props, [
+        h(:div, value_props, value),
+        h(:div, key),
+      ])
+    end
+
+    def render_body
+      props = {
+        style: {
+          'margin-top': '1rem',
+        },
       }
 
-      shares_title_style = {
-        margin: '1rem 0'
+      h(:div, props, [
+        render_shares,
+        render_companies,
+      ])
+    end
+
+    def render_shares
+      shares = @player
+        .shares_by_corporation.reject { |_, s| s.empty? }
+        .sort_by { |c, s| [s.sum(&:percent), c.president?(@player) ? 1 : 0, c.sym] }
+        .reverse
+        .map { |c, s| render_corporation_shares(c, s) }
+
+      props = {
+        style: {
+          display: 'inline-block',
+          'text-align': 'right',
+        }
       }
 
-      h(:div, { style: style }, [
-        h(:div, { style: name_style }, @player.name),
-        h(:div, { style: cash_style }, "Cash: #{@game.format_currency(@player.cash)}"),
-        h(:div, { style: shares_title_style }, render_shares),
-        h(:div, "Companies: #{@player.companies.map(&:name)}"),
+      h(:table, props, [
+        h(:tr, [
+          h(:th, { style: { width: '20px' } }, ''),
+          h(:th, 'Corp'),
+          h(:th, 'Share'),
+        ]),
+        *shares
+      ])
+    end
+
+    def render_corporation_shares(corporation, shares)
+      logo_props = {
+        attrs: {
+          src: corporation.logo,
+        },
+        style: {
+          position: 'absolute',
+          width: '20px',
+          top: '0',
+          left: '0',
+        },
+      }
+
+      president_marker = corporation.owner == @player ? '*' : ''
+
+      h(:tr, [
+        h(:td, { style: { position: 'relative' } }, [h(:img, logo_props)]),
+        h(:td, corporation.sym + president_marker),
+        h(:td, "%#{shares.sum(&:percent)}"),
+      ])
+    end
+
+    def render_companies
+      props = {
+        style: {
+          display: 'inline-block',
+          float: 'right',
+          'text-align': 'right',
+        }
+      }
+
+      companies = @player.companies.map do |company|
+        render_company(company)
+      end
+
+      h(:table, props, [
+        h(:tr, [
+          h(:th, 'Company'),
+          h(:th, 'Value'),
+          h(:th, 'Income'),
+        ]),
+        *companies
+      ])
+    end
+
+    def render_company(company)
+      name_props = {
+        style: {
+          overflow: 'hidden',
+          'max-width': '30px',
+          'white-space': 'nowrap',
+          'text-overflow': 'ellipsis',
+        }
+      }
+
+      h(:tr, [
+        h(:td, name_props, company.name),
+        h(:td, @game.format_currency(company.value)),
+        h(:td, @game.format_currency(company.revenue)),
       ])
     end
   end

@@ -63,6 +63,12 @@ module Engine
       @trains.delete(train)
     end
 
+    def president?(player)
+      return false unless player
+
+      owner == player
+    end
+
     def floated?
       percent_of(self) <= 100 - @float_percent
     end
