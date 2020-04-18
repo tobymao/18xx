@@ -22,7 +22,7 @@ class App < Snabberb::Component
     props = {
       props: { id: 'app' },
       style: {
-        padding: '1rem',
+        padding: '0.5rem',
         margin: :auto,
       },
     }

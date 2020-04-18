@@ -17,7 +17,7 @@ module View
 
       grouped = @games.group_by { |game| game['status'] }
 
-      your_games, active_games = grouped['active'].partition do |game|
+      your_games, active_games = grouped['active']&.partition do |game|
         user_in_game?(@user, game)
       end
 
