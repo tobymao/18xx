@@ -210,7 +210,7 @@ module Engine
           name: 'Dougo Railway',
           value: 60,
           revenue: 15,
-          desc: 'Owning player may exchange this private company for a 10% share of Iyo Railway in IO.',
+          desc: 'Owning player may exchange this private company for a 10% share of Iyo Railway from IPO.',
           abilities: [
             {
               type: :exchange,

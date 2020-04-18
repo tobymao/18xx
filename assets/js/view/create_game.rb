@@ -20,10 +20,10 @@ module View
         render_inputs,
       ]
 
-      if @mode == :solo
+      if @mode == :hotseat
         @num_players.times do |index|
           num = index + 1
-          inputs << render_input("Player #{num}", id: "player_#{num}", attrs: { value: num })
+          inputs << render_input("Player #{num}", id: "player_#{num}", attrs: { value: "Player #{num}" })
         end
       end
 
@@ -45,7 +45,7 @@ module View
     def mode_selector
       h(:div, { style: { margin: '1rem 0' } }, [
         *mode_input(:multi, 'Multiplayer'),
-        *mode_input(:solo, 'Solo'),
+        *mode_input(:hotseat, 'Hotseat'),
       ])
     end
 
@@ -66,7 +66,7 @@ module View
 
       buttons << render_button('Create') { submit }
 
-      if @mode == :solo
+      if @mode == :hotseat
         buttons << render_button('+ Player') { store(:num_players, @num_players + 1) if @num_players + 1 <= 6 }
         buttons << render_button('- Player') { store(:num_players, @num_players - 1) if @num_players - 1 >= 2 }
       end
@@ -75,7 +75,7 @@ module View
     end
 
     def submit
-      if @mode == :solo
+      if @mode == :hotseat
         players = params
           .select { |k, _| k.start_with?('player_') }
           .values
@@ -85,7 +85,7 @@ module View
           title: params[:title],
           players: players,
           actions: [],
-          mode: :solo,
+          mode: :hotseat,
         }
         store(:game_data, game_data, skip: true)
         store(:app_route, '/game')
