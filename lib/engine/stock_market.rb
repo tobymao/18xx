@@ -48,14 +48,21 @@ module Engine
 
     def move_left(corporation)
       r, c = corporation.share_price.coordinates
-      c -= 1 if c - 1 >= 0 && share_price(r, c - 1)
-      move(corporation, r, c)
+
+      if c - 1 >= 0 && share_price(r, c - 1)
+        c -= 1
+        move(corporation, r, c)
+      else
+        move_down(corporation)
+      end
     end
 
     private
 
     def move(corporation, row, column)
       share_price = share_price(row, column)
+      return if share_price == corporation.share_price
+
       corporation.share_price.corporations.delete(corporation)
       corporation.share_price = share_price
       share_price.corporations << corporation
