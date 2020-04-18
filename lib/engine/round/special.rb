@@ -64,10 +64,12 @@ module Engine
       end
 
       def potential_tiles
-        tile_laying_ability[:tiles]&.map do |name|
+        return [] unless (tiles = tile_laying_ability[:tiles])
+
+        tiles.map do |name|
           # this is shit
           @game.tiles.find { |t| t.name == name }
-        end
+        end.compact
       end
     end
   end
