@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'corporation'
-require_relative 'share'
+require_relative 'share_bundle'
 require_relative 'share_holder'
 
 module Engine
@@ -21,11 +21,12 @@ module Engine
     end
 
     def buy_share(entity, share, exchange: nil)
+      share = ShareBundle.new(share)
       corporation = share.corporation
       ipoed = corporation.ipoed
       floated = corporation.floated?
 
-      corporation.ipoed = true if share.president
+      corporation.ipoed = true if share.presidents_share
       price = share.price
 
       if ipoed != corporation.ipoed
@@ -34,12 +35,12 @@ module Engine
       end
 
       if exchange
-        transfer_share(share, entity)
         @log << "#{entity.name} exchanges #{exchange.name} for a share of #{corporation.name}"
+        transfer_shares(share, entity)
       else
-        transfer_share(share, entity, entity, @bank)
         @log << "#{entity.name} buys a #{share.percent}% share of #{corporation.name} "\
           "for #{@game.format_currency(price)}"
+        transfer_shares(share, entity, spender: entity, receiver: @bank)
       end
 
       return if floated == corporation.floated?
@@ -49,17 +50,14 @@ module Engine
               "and tokens #{corporation.coordinates}"
     end
 
-    def sell_shares(shares)
-      share = shares.first
-      entity = share.owner
-      corporation = share.corporation
-      num = shares.size
-      percent = shares.sum(&:percent)
+    def sell_shares(bundle)
+      entity = bundle.owner
+      num_shares = bundle.num_shares
 
-      shares.each { |s| transfer_share(s, self, @bank, entity) }
+      @log << "#{entity.name} sells #{num_shares} share#{num_shares > 1 ? 's' : ''} " \
+        "#{bundle.corporation.name} and receives #{@game.format_currency(bundle.price)}"
 
-      @log << "#{entity.name} sells #{num} share#{num > 1 ? 's' : ''} " \
-        "(%#{percent}) of #{corporation.name} and receives #{@game.format_currency(Engine::Share.price(shares))}"
+      transfer_shares(bundle, self, spender: @bank, receiver: entity)
     end
 
     def player?
@@ -72,6 +70,73 @@ module Engine
 
     def company?
       false
+    end
+
+    private
+
+    def distance(player_a, player_b)
+      return 0 if !player_a || !player_b
+
+      entities = @game.round.entities
+      a = entities.find_index(player_a)
+      b = entities.find_index(player_b)
+      a < b ? b - a : b - (a - entities.size)
+    end
+
+    def transfer_shares(bundle, to_entity, spender: nil, receiver: nil)
+      corporation = bundle.corporation
+      owner = bundle.owner
+      previous_president = bundle.president
+      percent = bundle.percent
+
+      corporation.share_holders[owner] -= percent if owner.player?
+      corporation.share_holders[to_entity] += percent if to_entity.player?
+
+      spender.spend(bundle.price, receiver) if spender && receiver
+      bundle.shares.each { |s| move_share(s, to_entity) }
+
+      # check if we need to change presidency
+      max_shares = corporation.share_holders.values.max
+
+      majority_share_holders = corporation
+        .share_holders
+        .select { |_, p| p == max_shares }
+        .keys
+
+      return if majority_share_holders.any? { |player| player == previous_president }
+
+      president = majority_share_holders
+        .select { |p| p.num_shares_of(corporation) > 1 }
+        .min_by { |p| distance(previous_president, p) }
+      return unless president
+
+      corporation.owner = president
+      @log << "#{president.name} becomes the president of #{corporation.name}"
+
+      # skip the president's share swap if the iniator is already the president
+      # or there was no previous president. this is because there is no one to swap with
+      return if owner == president || !previous_president
+
+      presidents_share = bundle.presidents_share || previous_president.shares_of(corporation).find(&:president)
+
+      # take two shares away from the current president and give it to the
+      # previous president if they haven't sold the president's share
+      # give the president the president's share
+      # if the owner only sold half of their president's share, take one away
+      swap_to = previous_president.percent_of(corporation) > 10 ? previous_president : self
+
+      president
+        .shares_of(corporation)
+        .take(2).each { |s| move_share(s, swap_to) }
+      move_share(presidents_share, president)
+      move_share(shares_of(corporation).first, owner) if bundle.partial?
+    end
+
+    def move_share(share, to_entity)
+      corporation = share.corporation
+      share.owner.shares_by_corporation[corporation].delete(share)
+      to_entity.shares_by_corporation[corporation] << share
+      share.owner = to_entity
     end
   end
 end

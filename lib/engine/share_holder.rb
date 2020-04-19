@@ -22,19 +22,8 @@ module Engine
       shares_by_corporation[corporation].sum(&:percent)
     end
 
-    def transfer_share(share, to_entity, spender = nil, receiver = nil)
-      corporation = share.corporation
-      owner = share.owner
-
-      corporation.share_holders[owner] -= share.percent if owner.player?
-      corporation.share_holders[to_entity] += share.percent if to_entity.player?
-      owner.shares_by_corporation[corporation].delete(share)
-
-      spender.spend(share.price, receiver) if spender && receiver
-
-      to_entity.shares_by_corporation[corporation] << share
-      share.owner = to_entity
-      share.corporation.owner = to_entity if share.president
+    def num_shares_of(corporation)
+      percent_of(corporation) / 10
     end
   end
 end

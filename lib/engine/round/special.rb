@@ -55,9 +55,7 @@ module Engine
         when Action::BuyShare
           owner = company.owner
           share = action.share
-          corporation = share.corporation
           @game.share_pool.buy_share(owner, share, exchange: company)
-          presidential_share_swap(corporation, owner) if corporation.owner && corporation.owner != owner
           company.close!
         end
       end

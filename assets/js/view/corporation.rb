@@ -90,7 +90,8 @@ module View
         render_trains,
         h(:div, "Treasury: #{@game.format_currency(@corporation.cash)}"),
         render_private_companies,
-        h(:div, "Available Shares: #{@corporation.shares.size}")
+        h(:div, "IPO Shares: #{@corporation.num_shares_of(@corporation)}"),
+        h(:div, "Bank Shares: #{@game.share_pool.percent_of(@corporation) / 10}"),
       ])
     end
   end

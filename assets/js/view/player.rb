@@ -120,7 +120,7 @@ module View
         },
       }
 
-      president_marker = corporation.owner == @player ? '*' : ''
+      president_marker = corporation.president?(@player) ? '*' : ''
 
       h(:tr, [
         h(:td, { style: { position: 'relative' } }, [h(:img, logo_props)]),

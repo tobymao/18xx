@@ -110,14 +110,11 @@ module Engine
         hex.tile.upgrade_tiles(tiles)
       end
 
-      def sell_and_change_price(shares, share_pool, stock_market)
-        share_pool.sell_shares(shares)
-        corporation = shares.first.corporation
+      def sell_and_change_price(bundle, share_pool, stock_market)
+        share_pool.sell_shares(bundle)
+        corporation = bundle.corporation
         prev = corporation.share_price.price
-        shares.each do |share|
-          stock_market.move_down(corporation)
-          stock_market.move_down(corporation) if share.president
-        end
+        bundle.num_shares.times { stock_market.move_down(corporation) }
         log_share_price(corporation, prev)
       end
 
@@ -148,20 +145,6 @@ module Engine
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile #{tile.name}"\
          " with rotation #{rotation} on #{hex.name}"
-      end
-
-      def presidential_share_swap(corporation, new_p, old_p = nil, p_share = nil)
-        old_p ||= corporation.owner
-        return unless new_p
-        return if old_p.percent_of(corporation) >= new_p.percent_of(corporation)
-
-        p_share ||= old_p.shares_of(corporation).find(&:president)
-
-        new_p.shares_of(corporation).take(2).each do |share|
-          @game.share_pool.transfer_share(share, p_share.owner)
-        end
-        @game.share_pool.transfer_share(p_share, new_p)
-        @log << "#{new_p.name} becomes the president of #{corporation.name}"
       end
 
       def payout_companies
