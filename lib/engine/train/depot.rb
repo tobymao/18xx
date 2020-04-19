@@ -3,7 +3,7 @@
 module Engine
   module Train
     class Depot
-      attr_reader :trains, :upcoming
+      attr_reader :trains, :upcoming, :discarded
 
       def initialize(trains, bank:)
         @trains = trains

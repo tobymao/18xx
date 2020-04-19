@@ -19,12 +19,22 @@ module View
         },
       }
 
-      h(:div, props, [
-        remaining_trains
+      children = []
+
+      children << h(:div, props, [
+        upcoming_trains
       ])
+
+      unless @depot.discarded.empty?
+        children << h(:div, props, [
+            discarded_trains,
+          ])
+      end
+
+      h(:div, {}, children)
     end
 
-    def remaining_trains
+    def upcoming_trains
       td_props = {
         style: {
           padding: '0 1rem'
@@ -48,6 +58,32 @@ module View
         ]),
         *rows
       ])
+    end
+
+    def discarded_trains
+      td_props = {
+        style: {
+          padding: '0 1rem'
+        }
+      }
+
+      rows = @depot.discarded.map do |train|
+        h(:tr, [
+            h(:td, td_props, train.name),
+            h(:td, td_props, @game.format_currency(train.price)),
+         ])
+      end
+
+      h(:div, [
+          h(:div, 'In bank pool:'),
+          h(:table, [
+              h(:tr, [
+                  h(:th, td_props, 'Type'),
+                  h(:th, td_props, 'Price'),
+                ]),
+              *rows
+            ])
+        ])
     end
   end
 end
