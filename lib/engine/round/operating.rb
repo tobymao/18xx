@@ -91,7 +91,7 @@ module Engine
 
       def can_buy_train?
         @current_entity.trains.size < @phase.train_limit &&
-          @depot.available(@current_entity).any? { |t| @current_entity.cash >= t.min_price }
+          @current_entity.cash >= @depot.min_price(@current_entity)
       end
 
       def can_act?(entity)
@@ -108,7 +108,7 @@ module Engine
         corporation = bundle.corporation
         player = corporation.owner
         percentage = bundle.percent
-        return false if bundle.price + player.cash >= @depot.min_price + bundle.price_per_share
+        return false if bundle.price + player.cash >= @depot.min_price(corporation) + bundle.price_per_share
 
         # can't swap presidency
         share_holders = corporation.share_holders
@@ -264,7 +264,7 @@ module Engine
             raise GameError, "Unknown dividend type #{action.kind}"
           end
         when Action::BuyTrain
-          buy_train(entity, action.train, action.price)
+          buy_train(entity, action.train, action.price, action.exchange)
         when Action::DiscardTrain
           train = action.train
           @depot.reclaim_train(train)
@@ -341,14 +341,23 @@ module Engine
         log_share_price(@current_entity, prev)
       end
 
-      def buy_train(entity, train, price)
+      def buy_train(entity, train, price, exchange)
         remaining = price - entity.cash
         if remaining.positive?
           player = entity.owner
           player.spend(remaining, entity)
           @log << "#{player.name} contributes #{@game.format_currency(remaining)}"
         end
-        @log << "#{entity.name} buys a #{train.name} train for #{@game.format_currency(price)} from #{train.owner.name}"
+
+        if exchange
+          verb = "exchanges a #{exchange.name} for"
+          @depot.reclaim_train(exchange)
+        else
+          verb = 'buys'
+        end
+
+        @log << "#{entity.name} #{verb} a #{train.name} train for "\
+          "#{@game.format_currency(price)} from #{train.owner.name}"
         entity.buy_train(train, price)
       end
 

@@ -35,10 +35,43 @@ module View
         children.concat(other_trains(other_corp_trains))
       end
 
+      discountable_trains = @depot.new_trains.select(&:discount)
+
+      discounts = @corporation.trains.flat_map do |train|
+        discountable_trains.map do |discount_train|
+          next if discount_train.price == discount_train.price(train)
+
+          [train, discount_train]
+        end.compact
+      end
+
+      if discounts.any?
+        children << h(:div, 'Exchange Trains')
+
+        discounts.each do |train, discount_train|
+          price = discount_train.price(train)
+          exchange_train = lambda do
+            process_action(
+              Engine::Action::BuyTrain.new(
+                @corporation,
+                discount_train,
+                price,
+                train,
+              )
+            )
+          end
+
+          children << h(:div, [
+            "#{train.name} -> #{discount_train.name} #{@game.format_currency(price)}",
+            h(:button, { on: { click: exchange_train } }, 'Exchange'),
+          ])
+        end
+      end
+
       if must_buy_train
         player = @corporation.owner
 
-        if @corporation.cash + player.cash < @depot.min_price
+        if @corporation.cash + player.cash < @depot.min_price(@corporation)
           player.shares_by_corporation.each do |corporation, shares|
             next if shares.empty?
 

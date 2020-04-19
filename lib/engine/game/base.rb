@@ -15,6 +15,7 @@ require_relative '../action/run_routes'
 require_relative '../action/sell_shares'
 
 require_relative '../bank'
+require_relative '../depot'
 require_relative '../phase'
 require_relative '../player'
 require_relative '../share_pool'
@@ -23,8 +24,7 @@ require_relative '../round/auction'
 require_relative '../round/operating'
 require_relative '../round/special'
 require_relative '../round/stock'
-require_relative '../train/base'
-require_relative '../train/depot'
+require_relative '../train'
 
 module Engine
   module Game
@@ -48,12 +48,52 @@ module Engine
       HEXES = {}.freeze
 
       TRAINS = [
-        *6.times.map { |index| Train::Base.new('2', distance: 2, price: 80, index: index) },
-        *5.times.map { |index| Train::Base.new('3', distance: 3, price: 180, index: index) },
-        *4.times.map { |index| Train::Base.new('4', distance: 4, price: 300, index: index) },
-        *3.times.map { |index| Train::Base.new('5', distance: 5, price: 450, index: index) },
-        *2.times.map { |index| Train::Base.new('6', distance: 6, price: 630, index: index) },
-        *20.times.map { |index| Train::Base.new('D', distance: 999, price: 1100, index: index) },
+        {
+          name: '2',
+          distance: 2,
+          price: 80,
+          rusts_on: '4',
+          num: 6,
+        },
+        {
+          name: '3',
+          distance: 3,
+          price: 180,
+          rusts_on: '6',
+          num: 5,
+        },
+        {
+          name: '4',
+          distance: 4,
+          price: 300,
+          rusts_on: 'D',
+          num: 4,
+        },
+        {
+          name: '5',
+          distance: 5,
+          price: 450,
+          num: 3,
+        },
+        {
+          name: '6',
+          distance: 6,
+          price: 630,
+          num: 2,
+        },
+        {
+          name: 'D',
+          distance: 999,
+          price: 1100,
+          available_on: '6',
+          discount: {
+            '4': 300,
+            '5': 300,
+            '6': 300,
+            'D': 300,
+          },
+          num: 20,
+        },
       ].freeze
 
       CERT_LIMIT = {
@@ -106,7 +146,7 @@ module Engine
         @tiles = init_tiles
         @cert_limit = self.class::CERT_LIMIT[@players.size]
 
-        @depot = init_train_handler(@bank)
+        @depot = init_train_handler
         init_starting_cash(@players, @bank)
         @share_pool = SharePool.new(self)
         @hexes = init_hexes(@companies, @corporations)
@@ -248,8 +288,14 @@ module Engine
         end.compact
       end
 
-      def init_train_handler(bank)
-        Train::Depot.new(self.class::TRAINS, bank: bank)
+      def init_train_handler
+        trains = self.class::TRAINS.flat_map do |train|
+          train[:num].times.map do |index|
+            Train.new(**train, index: index)
+          end
+        end
+
+        Depot.new(trains, self)
       end
 
       def init_corporations(stock_market)

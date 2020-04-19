@@ -22,7 +22,7 @@ module Engine
       on: '3',
     }.freeze
 
-    FOUR = THREE.merge(name: '4', on: '4', train_limit: 3, events: { rust: '2' })
+    FOUR = THREE.merge(name: '4', on: '4', train_limit: 3)
 
     FIVE = {
       name: '5',
@@ -33,7 +33,7 @@ module Engine
       events: { close_companies: true },
     }.freeze
 
-    SIX = FIVE.merge(name: '6', on: '6', events: { rust: '3' })
+    SIX = FIVE.merge(name: '6', on: '6')
 
     D = {
       name: 'D',
@@ -41,7 +41,6 @@ module Engine
       train_limit: 2,
       tiles: %i[yellow green brown].freeze,
       on: 'D',
-      events: { rust: '4' },
     }.freeze
 
     def initialize(phases, game)
@@ -57,6 +56,12 @@ module Engine
       when Action::BuyTrain
         next! if action.train.name == @next_on
       end
+    end
+
+    def available?(phase_name)
+      return false unless phase_name
+
+      @phases.find_index { |phase| phase[:name] == phase_name } <= @index
     end
 
     def setup_phase!
@@ -77,10 +82,10 @@ module Engine
     end
 
     def trigger_events!
-      @events.each do |type, value|
+      rust_trains!
+
+      @events.each do |type, _value|
         case type
-        when :rust
-          rust!(value)
         when :close_companies
           close_companies!
         end
@@ -102,16 +107,21 @@ module Engine
       end
     end
 
-    def rust!(value)
-      @log << "-- Event: #{value} trains rust --"
+    def rust_trains!
+      rusted_trains = []
 
       @game.trains.each do |train|
-        train.rust! if train.name == value
+        if train.rusts_on == @name
+          rusted_trains << train.name
+          train.rust!
+        end
       end
+
+      @log << "-- Event: #{rusted_trains.join(', ')} trains rust --" if rusted_trains.any?
     end
 
     def close_companies!
-      @log << '-- Event: private companies close --'
+      @log << '-- Event: Private companies close --'
 
       @game.companies.each do |company|
         company.close! unless company.abilities(:never_closes)
