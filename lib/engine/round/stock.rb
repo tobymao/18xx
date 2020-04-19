@@ -58,16 +58,15 @@ module Engine
         num_certs > @game.cert_limit
       end
 
-      def can_sell?(shares)
+      def can_sell?(bundle)
         return false unless @can_sell
-        return false if shares.empty?
 
-        corporation = shares.first.corporation
+        corporation = bundle.corporation
 
         @players_sold[@current_entity][corporation] != :now &&
-          (shares.sum(&:percent) + @share_pool.percent_of(corporation)) <= 50 &&
+          (bundle.percent + @share_pool.percent_of(corporation)) <= 50 &&
           !(@current_actions.uniq.size == 2 && self.class::PURCHASE_ACTIONS.include?(@current_actions.last)) &&
-          (shares.none?(&:president) ||
+          (!bundle.presidents_share ||
            (corporation.share_holders.reject { |k, _| k == @current_entity }.values.max || 0) > 10)
       end
 
@@ -75,7 +74,6 @@ module Engine
 
       def _process_action(action)
         entity = action.entity
-        corporation = action.corporation
 
         @current_actions << action.class
         @last_to_act = entity
@@ -87,6 +85,7 @@ module Engine
           sell_shares(action.shares)
         when Action::Par
           share_price = action.share_price
+          corporation = action.corporation
           @stock_market.set_par(corporation, share_price)
           share = corporation.shares.first
           buy_share(entity, share)
@@ -98,7 +97,12 @@ module Engine
       end
 
       def nothing_to_do?
-        !can_sell?([@current_entity.shares.min_by(&:price)].compact) &&
+        bundles = @current_entity
+          .shares
+          .uniq { |share| [share.corporation.id, share.president] }
+          .map { |share| ShareBundle.new(share, 10) }
+
+        bundles.none? { |bundle| can_sell?(bundle) } &&
           @share_pool.shares.none? { |s| can_buy?(s) } &&
           @corporations.none? { |c| can_buy?(c.shares.first) }
       end
@@ -133,27 +137,12 @@ module Engine
       end
 
       def sell_shares(shares)
-        share = shares.first
-        entity = share.owner
-        corporation = share.corporation
-        old_p = corporation.owner
-        @players_sold[entity][corporation] = :now
+        @players_sold[shares.owner][shares.corporation] = :now
         sell_and_change_price(shares, @share_pool, @stock_market)
-
-        return if old_p != entity
-
-        presidential_share_swap(
-          corporation,
-          @entities.min_by { |e| [-e.percent_of(corporation), distance(entity, e)] },
-          old_p,
-          shares.find(&:president),
-        )
       end
 
       def buy_share(entity, share)
-        corporation = share.corporation
         @share_pool.buy_share(entity, share)
-        presidential_share_swap(corporation, entity) if corporation.owner != entity
       end
 
       def distance(player_a, player_b)

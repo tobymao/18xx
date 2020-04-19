@@ -16,6 +16,7 @@ module View
     needs :round
     needs :selected_corporation, default: nil, store: true
     needs :last_player, default: nil, store: true
+    needs :game, store: true
 
     def render
       @current_entity = @round.current_entity
@@ -56,7 +57,7 @@ module View
       end
 
       children = []
-      children << h(:button, { on: { click: buy_ipo } }, 'Buy Ipo Share') if @round.can_buy?(ipo_share)
+      children << h(:button, { on: { click: buy_ipo } }, 'Buy IPO Share') if @round.can_buy?(ipo_share)
       children << h(:button, { on: { click: buy_pool } }, 'Buy Pool Share') if @round.can_buy?(pool_share)
       children << h(SellShares, player: @current_entity)
 
@@ -68,6 +69,7 @@ module View
         cursor: 'pointer',
         border: 'solid 1px rgba(0,0,0,0.2)',
         display: 'inline-block',
+        margin: '0.5rem 0 0.5rem 0.5rem'
       }
 
       par_values = @round.stock_market.par_prices.map do |share_price|
@@ -75,10 +77,10 @@ module View
           process_action(Engine::Action::Par.new(@current_entity, @selected_corporation, share_price))
         end
 
-        h(:div, { style: style, on: { click: par } }, share_price.price)
+        h(:div, { style: style, on: { click: par } }, @game.format_currency(share_price.price))
       end
 
-      h(:div, ['Choose a par price', *par_values])
+      h(:div, ['Choose a par price:', *par_values])
     end
   end
 end
