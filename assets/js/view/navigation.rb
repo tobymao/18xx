@@ -15,7 +15,7 @@ module View
         }
       }
 
-      other_links = []
+      other_links = [item('About', '/about')]
 
       if @user
         other_links << item("Profile (#{@user['name']})", '/profile')

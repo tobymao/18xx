@@ -8,6 +8,7 @@ require 'index'
 require 'user_manager'
 require 'engine/game/g_1889'
 require 'lib/storage'
+require 'view/about'
 require 'view/home'
 require 'view/flash'
 require 'view/game'
@@ -55,6 +56,8 @@ class App < Snabberb::Component
         h(View::User, type: :profile)
       when 'new_game'
         h(View::CreateGame)
+      when 'about'
+        h(View::About)
       else
         store(:flash_opts, "Unknown path #{path}")
         store(:app_route, '/', skip: true)
