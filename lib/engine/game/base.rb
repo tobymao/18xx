@@ -104,7 +104,7 @@ module Engine
         6 => 11,
       }.freeze
 
-      CERT_LIMIT_COLORS = %w[brown orange yellow].freeze
+      CERT_LIMIT_COLORS = %i[brown orange yellow].freeze
 
       COMPANIES = [].freeze
 
