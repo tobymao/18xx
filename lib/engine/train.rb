@@ -28,12 +28,16 @@ module Engine
     end
 
     def rust!
-      owner.remove_train(self)
+      owner&.remove_train(self)
       @owner = nil
     end
 
     def min_price
-      owner.is_a?(Depot) ? @price : 1
+      from_depot? ? @price : 1
+    end
+
+    def from_depot?
+      owner.is_a?(Depot)
     end
   end
 end

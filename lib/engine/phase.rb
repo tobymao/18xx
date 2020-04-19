@@ -82,8 +82,6 @@ module Engine
     end
 
     def trigger_events!
-      rust_trains!
-
       @events.each do |type, _value|
         case type
         when :close_companies
@@ -105,19 +103,6 @@ module Engine
           end
         end
       end
-    end
-
-    def rust_trains!
-      rusted_trains = []
-
-      @game.trains.each do |train|
-        if train.rusts_on == @name
-          rusted_trains << train.name
-          train.rust!
-        end
-      end
-
-      @log << "-- Event: #{rusted_trains.join(', ')} trains rust --" if rusted_trains.any?
     end
 
     def close_companies!

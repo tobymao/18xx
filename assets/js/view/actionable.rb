@@ -14,6 +14,7 @@ module View
       store(:game, @game.process_action(action))
       @connection&.send('action', action.to_h)
     rescue StandardError => e
+      store(:game, @game.clone(@game.actions), skip: true)
       store(:flash_opts, e.message)
       e.backtrace.each { |line| puts line }
     end

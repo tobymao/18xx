@@ -343,7 +343,8 @@ module Engine
 
       def buy_train(entity, train, price, exchange)
         remaining = price - entity.cash
-        if remaining.positive?
+
+        if train.from_depot? && remaining.positive? && must_buy_train?
           player = entity.owner
           player.spend(remaining, entity)
           @log << "#{player.name} contributes #{@game.format_currency(remaining)}"
@@ -359,6 +360,7 @@ module Engine
         @log << "#{entity.name} #{verb} a #{train.name} train for "\
           "#{@game.format_currency(price)} from #{train.owner.name}"
         entity.buy_train(train, price)
+        rust_trains!(train)
       end
 
       def sell_shares(shares)
@@ -422,6 +424,19 @@ module Engine
       def clear_route_cache
         @layable_hexes = nil
         @reachable_hexes = nil
+      end
+
+      def rust_trains!(train)
+        rusted_trains = []
+
+        @game.trains.each do |t|
+          if t.owner && t.rusts_on == train.name
+            rusted_trains << t.name
+            t.rust!
+          end
+        end
+
+        @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --" if rusted_trains.any?
       end
     end
   end
