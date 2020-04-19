@@ -6,7 +6,7 @@ module View
   class TileConfirmation < Snabberb::Component
     include Actionable
 
-    needs :selected_company, store: true
+    needs :selected_company, store: true, default: nil
     needs :tile_selector, store: true
 
     def render
