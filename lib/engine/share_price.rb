@@ -37,7 +37,7 @@ module Engine
       "#{@price},#{@coordinates.join(',')}"
     end
 
-    def counts_for_cert_limit
+    def counts_for_limit
       !@unlimited_colors.include?(@color)
     end
   end
