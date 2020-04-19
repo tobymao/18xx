@@ -75,9 +75,6 @@ module Engine
       def _process_action(action)
         entity = action.entity
 
-        @current_actions << action.class
-        @last_to_act = entity
-
         case action
         when Action::BuyShare
           buy_share(entity, action.share)
@@ -93,7 +90,10 @@ module Engine
       end
 
       def action_processed(action)
-        action.entity.unpass!
+        entity = action.entity
+        @current_actions << action.class
+        @last_to_act = entity
+        entity.unpass!
       end
 
       def nothing_to_do?
@@ -137,11 +137,15 @@ module Engine
       end
 
       def sell_shares(shares)
+        raise GameError, "Cannot sell shares of #{shares.corporation.name}" unless can_sell?(shares)
+
         @players_sold[shares.owner][shares.corporation] = :now
         sell_and_change_price(shares, @share_pool, @stock_market)
       end
 
       def buy_share(entity, share)
+        raise GameError, "Cannot buy a share of #{share.name}" unless can_buy?(share)
+
         @share_pool.buy_share(entity, share)
       end
 
