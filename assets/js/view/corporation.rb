@@ -35,17 +35,22 @@ module View
         width: '2rem'
       }
 
-      props = {
-        attrs: { data: @corporation.logo, width: '25px' },
-      }
-
-      inverted = props.merge(style: { filter: 'contrast(15%) grayscale(100%)' })
-
       @corporation.tokens.map.with_index do |token, i|
+        props = {
+          attrs: {
+            src: @corporation.logo
+          },
+          style: {
+            width: '25px'
+          },
+        }
+
+        props[:style][:filter] = 'contrast(15%) grayscale(100%)' if token.used?
+
         token_text = i.zero? ? @corporation.coordinates : token.price
 
         h(:div, { style: standard_list_style }, [
-          h(:object, token.used? ? inverted : props),
+          h(:img, props),
           h(:div, { style: token_cost_style }, token_text),
         ])
       end
@@ -84,7 +89,7 @@ module View
         padding: '0.5rem 0px'
       }
 
-      h(:div, { style: style, on: { click: onclick } }, [
+      children = [
         h(:div, { style: title_style }, @corporation.name),
         h(:div, { style: token_style }, render_tokens),
         render_trains,
@@ -92,7 +97,19 @@ module View
         render_private_companies,
         h(:div, "IPO Shares: #{@corporation.num_shares_of(@corporation)}"),
         h(:div, "Bank Shares: #{@game.share_pool.num_shares_of(@corporation)}"),
-      ])
+      ]
+
+      # rubocop:disable Style/IfUnlessModifier
+      if @corporation.share_price
+        children << h(:div, "Market Price: #{@game.format_currency(@corporation.share_price.price)}")
+      end
+
+      if @corporation.par_price
+        children << h(:div, "Par Price: #{@game.format_currency(@corporation.par_price.price)}")
+      end
+      # rubocop:enable Style/IfUnlessModifier
+
+      h(:div, { style: style, on: { click: onclick } }, children)
     end
   end
 end
