@@ -197,14 +197,14 @@ module Engine
               hexes[hex].each do |direction|
                 next unless (neighbor = hex.neighbors[direction])
 
-                queue << neighbor if !hexes.key?(neighbor) && hex.connected?(neighbor)
-                hexes[neighbor] |= neighbor.connected_exits(hex, corporation: @current_entity) | [Hex.invert(direction)]
+                connected_exits = neighbor.connected_exits(hex, corporation: @current_entity)
+                queue << neighbor if (hexes[neighbor] & connected_exits).none?
+                hexes[neighbor] |= connected_exits | [Hex.invert(direction)]
               end
             end
 
             starting_hexes.each { |h| hexes[h] |= h.neighbors.keys }
             hexes.default = nil
-
             hexes
           end
       end
@@ -231,6 +231,11 @@ module Engine
 
       def operating?
         true
+      end
+
+      def clear_route_cache
+        @layable_hexes = nil
+        @reachable_hexes = nil
       end
 
       private
@@ -419,11 +424,6 @@ module Engine
         else
           super
         end
-      end
-
-      def clear_route_cache
-        @layable_hexes = nil
-        @reachable_hexes = nil
       end
 
       def rust_trains!(train)

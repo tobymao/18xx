@@ -52,6 +52,7 @@ module Engine
         when Action::LayTile
           lay_tile(action)
           company.remove_ability(:tile_lay)
+          @game.round.clear_route_cache if @game.round.operating?
         when Action::BuyShare
           owner = company.owner
           share = action.share

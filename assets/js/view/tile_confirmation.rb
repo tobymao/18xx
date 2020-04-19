@@ -6,6 +6,7 @@ module View
   class TileConfirmation < Snabberb::Component
     include Actionable
 
+    needs :selected_company, store: true
     needs :tile_selector, store: true
 
     def render
@@ -51,8 +52,9 @@ module View
         @tile_selector.hex,
         @tile_selector.tile.rotation,
       )
+      store(:tile_selector, nil, skip: true)
+      store(:selected_company, nil, skip: true)
       process_action(action)
-      store(:tile_selector, nil)
     end
   end
 end
