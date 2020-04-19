@@ -6,11 +6,11 @@ module Engine
   class StockMarket
     attr_reader :market, :par_prices
 
-    def initialize(market)
+    def initialize(market, unlimited_colors)
       @par_prices = []
       @market = market.map.with_index do |row, r_index|
         row.map.with_index do |code, c_index|
-          price = SharePrice.from_code(code, r_index, c_index)
+          price = SharePrice.from_code(code, r_index, c_index, unlimited_colors)
           @par_prices << price if price&.can_par
           price
         end
