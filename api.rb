@@ -119,17 +119,13 @@ class Api < Roda
       render_with_games
     end
 
-    r.on %w[/ signup login profile] do
+    r.on %w[/ about signup login profile] do
       render_with_games
     end
 
     r.on 'game', Integer do |id|
       r.halt 404 unless (game = Game[id])
       render(game_data: game.to_h(include_actions: true))
-    end
-
-    r.on 'about' do
-      render
     end
   end
 
