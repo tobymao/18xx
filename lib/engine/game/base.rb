@@ -104,6 +104,8 @@ module Engine
         6 => 11,
       }.freeze
 
+      CERT_LIMIT_COLORS = %w[brown orange yellow].freeze
+
       COMPANIES = [].freeze
 
       CORPORATIONS = [].freeze
@@ -277,7 +279,7 @@ module Engine
       end
 
       def init_stock_market
-        StockMarket.new(self.class::MARKET)
+        StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_COLORS)
       end
 
       def init_companies(players)

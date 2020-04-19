@@ -41,7 +41,7 @@ module View
         render_header_segment(@player.name, 'Player'),
         render_header_segment(@game.format_currency(@player.cash), 'Cash'),
         render_header_segment(@game.format_currency(@player.value), 'Value'),
-        render_header_segment("#{@player.shares.count}/#{@game.cert_limit}", 'Certs'),
+        render_header_segment("#{@player.num_certs}/#{@game.cert_limit}", 'Certs'),
       ])
     end
 

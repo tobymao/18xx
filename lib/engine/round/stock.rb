@@ -9,7 +9,6 @@ module Engine
     class Stock < Base
       attr_reader :last_to_act, :share_pool, :stock_market
 
-      CERT_LIMIT_COLORS = %w[brown orange yellow].freeze
       PURCHASE_ACTIONS = [Action::BuyShare, Action::Par].freeze
 
       def initialize(entities, game:)
@@ -50,12 +49,7 @@ module Engine
       end
 
       def must_sell?
-        num_certs = 0
-        @current_entity.shares.each do |share|
-          num_certs += 1 unless self.class::CERT_LIMIT_COLORS.include?(share.corporation.share_price.color)
-        end
-
-        num_certs > @game.cert_limit
+        @current_entity.num_certs > @game.cert_limit
       end
 
       def can_sell?(bundle)

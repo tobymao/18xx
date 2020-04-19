@@ -49,5 +49,9 @@ module Engine
     def corporation?
       false
     end
+
+    def num_certs
+      companies.count + shares.count { |s| s.corporation.share_price.counts_for_cert_limit }
+    end
   end
 end

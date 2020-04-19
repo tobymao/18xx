@@ -17,7 +17,7 @@ module Engine
     let(:bank) { game.bank }
     let(:corporation) { game.corporations.first }
     let(:company) { game.companies.first }
-    let(:share_price) { SharePrice.from_code('10', 0, 0) }
+    let(:share_price) { SharePrice.from_code('10', 0, 0, []) }
     let(:subject) { game.share_pool }
 
     before :each do
