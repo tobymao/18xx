@@ -91,7 +91,7 @@ module View
         h(:div, "Treasury: #{@game.format_currency(@corporation.cash)}"),
         render_private_companies,
         h(:div, "IPO Shares: #{@corporation.num_shares_of(@corporation)}"),
-        h(:div, "Bank Shares: #{@game.share_pool.percent_of(@corporation) / 10}"),
+        h(:div, "Bank Shares: #{@game.share_pool.num_shares_of(@corporation)}"),
       ])
     end
   end
