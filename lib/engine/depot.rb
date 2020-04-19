@@ -27,7 +27,7 @@ module Engine
     end
 
     def min_price(corporation)
-      available(corporation).map(&:price).min
+      available(corporation).map(&:min_price).min
     end
 
     def remove_train(train)
