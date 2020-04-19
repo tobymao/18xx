@@ -14,6 +14,7 @@ require 'view/player'
 require 'view/stock_round'
 require 'view/stock_market'
 require 'view/tile_manifest'
+require 'view/train_roster'
 
 # debugging views
 # require 'view/all_tiles'
@@ -60,6 +61,8 @@ module View
           h(View::Companies)
         when 'corporations'
           h(View::Corporations)
+        when 'trains'
+          h(View::TrainRoster)
         end
 
       destroy = lambda do
@@ -108,6 +111,7 @@ module View
         tab_button('Market', '#market'),
         tab_button('Corporations', '#corporations'),
         tab_button('Companies', '#companies'),
+        tab_button('Trains', '#trains'),
         tab_button('Tiles', '#tiles'),
       ]
     end
