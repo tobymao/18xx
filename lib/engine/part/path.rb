@@ -5,7 +5,7 @@ require_relative 'base'
 module Engine
   module Part
     class Path < Base
-      attr_reader :a, :b, :branch, :city, :edges, :junction, :offboard, :town
+      attr_reader :a, :b, :branch, :city, :edges, :junction, :offboard, :stop, :town
 
       def initialize(a, b)
         @a = a
@@ -42,17 +42,23 @@ module Engine
 
       def separate_parts
         [@a, @b].each do |part|
-          next @edges << part if part.edge?
-          next @offboard = part if part.offboard?
-
-          @branch = part
-
-          if part.city?
+          case
+          when part.edge?
+            @edges << part
+          when part.offboard?
+            @offboard = part
+            @stop = part
+          when part.city?
             @city = part
-          elsif part.junction?
+            @branch = part
+            @stop = part
+          when part.junction?
             @junction = part
-          elsif part.town?
+            @branch = part
+          when part.town?
             @town = part
+            @branch = part
+            @stop = part
           end
         end
       end

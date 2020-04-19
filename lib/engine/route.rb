@@ -34,10 +34,7 @@ module Engine
     end
 
     def stops
-      @paths
-        .flat_map { |path| [path.city, path.town, path.offboard] }
-        .compact
-        .uniq
+      @paths.map(&:stop).compact.uniq
     end
 
     def revenue

@@ -75,7 +75,10 @@ module Engine
       end
 
       def must_buy_train?
-        @current_entity.trains.empty? # TODO: check if there's a route
+        # TODO: this is a hack and doesn't actually check reachable cities
+        # OO tiles and other complex track will break this
+        @current_entity.trains.empty? &&
+          reachable_hexes.keys.map(&:tile).flat_map(&:paths).map(&:stop).compact.size > 1
       end
 
       def active_entities
@@ -97,17 +100,15 @@ module Engine
         active_entities.include?(entity)
       end
 
-      def can_sell?(shares)
+      def can_sell?(bundle)
         # can't sell president's share
-        return false if shares.any?(&:president)
+        return false if bundle.presidents_share
 
         # can only sell as much as you need to afford the train
-        corporation = shares.first.corporation
+        corporation = bundle.corporation
         player = corporation.owner
-        value = shares.sum(&:price)
-        percentage = shares.sum(&:percent)
-        price_per_share = value * percentage / 10.0
-        return false if value + player.cash >= @depot.min_price + price_per_share
+        percentage = bundle.percent
+        return false if bundle.price + player.cash >= @depot.min_price + bundle.price_per_share
 
         # can't swap presidency
         share_holders = corporation.share_holders
@@ -210,29 +211,6 @@ module Engine
 
       def reachable_hexes
         @reachable_hexes ||= layable_hexes.select { |hex, exits| (hex.tile.exits & exits).any? }
-      end
-
-      # def routes
-      #   routes = []
-
-      #   reachable_hexes.keys.each do |hex|
-      #     paths_for_cities(hex, tokened_cities(hex)).each do |path|
-      #       path.exits.each { |direction| routes << [hex, direction] }
-      #     end
-      #   end
-
-      #   routes.each do |hex, direction|
-      #     neighbor = hex.neighbors[direction]
-      #     next unless reachable_hexes[neighbor]
-
-      #     neighbor.connected_paths(hex).each do |path|
-      #       path.city || path.town
-      #     end
-      #   end
-      # end
-
-      def paths_for_cities(hex, cities)
-        hex.tile.paths.select { |path| cities.include?(path.city) }
       end
 
       def tokened_cities(hex)

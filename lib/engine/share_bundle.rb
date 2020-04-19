@@ -36,8 +36,12 @@ module Engine
       @shares.find(&:president)
     end
 
+    def price_per_share
+      @shares.first.price_per_share
+    end
+
     def price
-      @shares.first.price_per_share * num_shares
+      price_per_share * num_shares
     end
   end
 end
