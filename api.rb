@@ -117,6 +117,10 @@ class Api < Roda
       r.halt 404 unless (game = Game[id])
       render(game_data: game.to_h(include_actions: true))
     end
+
+    r.on 'all_tiles' do
+      render(app_route: 'all_tiles')
+    end
   end
 
   def render_with_games
