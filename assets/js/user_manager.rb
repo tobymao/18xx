@@ -1,20 +1,17 @@
 # frozen_string_literal: true
 
-require 'api'
-require 'lib/request'
 require 'lib/storage'
 
 module UserManager
-  include Api
-
   def self.included(base)
     base.needs :user, default: nil, store: true
     base.needs :app_route, default: nil, store: true
     base.needs :flash_opts, default: {}, store: true
+    base.needs :connection, default: nil, store: true
   end
 
   def create_user(params)
-    safe_post('/user', params) do |data|
+    @connection.safe_post('/user', params) do |data|
       login_user(data)
     end
   end
@@ -22,9 +19,10 @@ module UserManager
   def refresh_user
     return if @user || !Lib::Storage['auth_token']
 
-    Lib::Request.post('/user/refresh') do |data|
+    @connection.post('/user/refresh') do |data|
       if data['error']
-        Lib::Storage['auth_token'] = nil
+        invalidate_user
+        store(:flash_opts, 'Credentials expired please re-login')
       else
         store(:user, data, skip: true)
         update # for some reason this causes an infinite loop
@@ -33,15 +31,14 @@ module UserManager
   end
 
   def login(params)
-    safe_post('/user/login', params) do |data|
+    @connection.safe_post('/user/login', params) do |data|
       login_user(data)
     end
   end
 
   def logout
-    safe_post('/user/logout')
-    Lib::Storage['auth_token'] = nil
-    store(:user, nil, skip: true)
+    @connection.safe_post('/user/logout')
+    invalidate_user
     store(:app_route, '/')
   end
 
@@ -51,5 +48,10 @@ module UserManager
     Lib::Storage['auth_token'] = data['auth_token']
     store(:user, data['user'], skip: true)
     store(:app_route, '/')
+  end
+
+  def invalidate_user
+    Lib::Storage['auth_token'] = nil
+    store(:user, nil, skip: true)
   end
 end

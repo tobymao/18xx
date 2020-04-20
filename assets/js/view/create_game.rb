@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/request'
-
 require 'game_manager'
 require 'view/form'
 require 'engine/game/g_1889'

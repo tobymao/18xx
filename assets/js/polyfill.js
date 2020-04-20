@@ -23,3 +23,18 @@ if (typeof localStorage === 'undefined') {
     setItem: function() {}
   }
 }
+
+if (typeof document === 'undefined') {
+  document = {
+  }
+}
+
+if (typeof XMLHttpRequest === 'undefined') { function XMLHttpRequest() {} }
+
+if (typeof MessageBus === 'undefined') {
+  MessageBus = {
+    start: function() {},
+    callbackInterval: function() {},
+    subscribe: function() {}
+  }
+}

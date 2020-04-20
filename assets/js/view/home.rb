@@ -15,6 +15,10 @@ module View
         h(Welcome, user: @user),
       ]
 
+      @connection.subscribe('/games') do |data|
+        puts data
+      end
+
       grouped = @games.group_by { |game| game['status'] }
 
       your_games, active_games = grouped['active']&.partition do |game|
