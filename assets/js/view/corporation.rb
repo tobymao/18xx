@@ -6,36 +6,112 @@ module View
     needs :selected_corporation, default: nil, store: true
     needs :game, store: true
 
-    def selected?
-      @corporation == @selected_corporation
+    def render
+      onclick = lambda do
+        selected_corporation = selected? ? nil : @corporation
+        store(:selected_corporation, selected_corporation)
+      end
+
+      card_style = {
+        display: 'inline-block',
+        position: 'relative',
+        border: 'solid 1px gainsboro',
+        padding: '0.5rem',
+        margin: '0.5rem 0.5rem 0 0',
+        width: '320px',
+        'vertical-align': 'top',
+      }
+
+      card_style['background-color'] = 'lightblue' if selected?
+
+      if @game.round.can_act?(@corporation)
+        card_style['border'] = 'solid 1px black'
+        card_style['background-color'] = '#dfd'
+      end
+      h(:div, { style: card_style, on: { click: onclick } }, [
+        render_title,
+        render_holdings,
+        render_shares,
+        render_companies
+      ])
+    end
+
+    def render_title
+      title_style = {
+        background: @corporation.color,
+        'text-align': 'center',
+        color: '#ffffff',
+        padding: '0.5rem 0px',
+        'font-weight': 'bold',
+        margin: '-0.5rem -0.5rem 0 -0.5rem'
+      }
+      h(:div, { style: title_style }, @corporation.name)
+    end
+
+    def render_holdings
+      holdings_style = {
+        'text-align': 'center',
+        'white-space': 'nowrap',
+        'background-color': 'lightgray',
+        display: 'flex',
+        'justify-content': 'center',
+        margin: '0 -0.5rem'
+      }
+
+      holdings_style['background-color'] = '#9b9' if @game.round.can_act?(@corporation)
+
+      h(:div, { style: holdings_style }, [
+        render_trains,
+        render_header_segment(@game.format_currency(@corporation.cash), 'Cash'),
+        render_tokens
+      ])
     end
 
     def render_trains
-      if @corporation.trains.empty?
-        h(:div, 'Trains: None')
-      else
-        h(:div, "Trains: #{@corporation.trains.map(&:name).join(', ')}")
-      end
+      train_value = @corporation.trains.empty? ? 'None' : @corporation.trains.map(&:name).join(',')
+      render_header_segment(train_value, 'Trains')
     end
 
-    def render_private_companies
-      if @corporation.companies.empty?
-        h(:div, 'Private Companies: None')
-      else
-        h(:div, "Private Companies: #{@corporation.companies.map(&:name).join(', ')}")
-      end
+    def render_header_segment(value, key)
+      props = {
+        style: {
+          display: 'inline-block',
+          margin: '0.5em',
+          'text-align': 'right',
+        },
+      }
+
+      value_props = {
+        style: {
+          'font-size': '16px',
+          'font-weight': 'bold',
+          'max-width': '120px',
+          'white-space': 'nowrap',
+          'text-overflow': 'ellipsis',
+          overflow: 'hidden',
+        }
+      }
+      h(:div, props, [
+        h(:div, value_props, value),
+        h(:div, key),
+      ])
+    end
+
+    def render_treasury
+      h(:div, "Treasury: #{@game.format_currency(@corporation.cash)}")
     end
 
     def render_tokens
-      token_cost_style = {
+      token_style = {
+        margin: '0.5rem',
         'text-align': 'center'
       }
-
-      standard_list_style = {
-        width: '2rem'
+      token_list_style = {
+        width: '2rem',
+        float: 'left'
       }
 
-      @corporation.tokens.map.with_index do |token, i|
+      tokens_body = @corporation.tokens.map.with_index do |token, i|
         props = {
           attrs: {
             src: @corporation.logo
@@ -49,67 +125,109 @@ module View
 
         token_text = i.zero? ? @corporation.coordinates : token.price
 
-        h(:div, { style: standard_list_style }, [
+        h(:div, { style: token_list_style }, [
           h(:img, props),
-          h(:div, { style: token_cost_style }, token_text),
+          h(:div, token_text),
         ])
       end
+      h(:div, { style: token_style }, tokens_body)
     end
 
-    def render
-      onclick = lambda do
-        selected_corporation = selected? ? nil : @corporation
-        store(:selected_corporation, selected_corporation)
-      end
+    def render_shares
+      shares_style = {
+        margin: '0.5rem',
+        'text-align': 'center'
+      }
 
-      style = {
+      share_price = @corporation.share_price ? @corporation.share_price.price : 0
+      par_price = @corporation.par_price ? @corporation.par_price.price : 0
+
+      h(:div, { style: shares_style }, [
+        h(:div, 'Shares'),
+        render_share_type('Market', @game.share_pool.num_shares_of(@corporation), share_price),
+        render_share_type('IPO', @corporation.num_shares_of(@corporation), par_price)
+      ])
+    end
+
+    def render_share_type(source_name, quantity, price)
+      share_style = {
         display: 'inline-block',
-        cursor: 'pointer',
-        border: 'solid 1px gainsboro',
-        padding: '0.5rem',
-        margin: '0.5rem 0.5rem 0 0',
-        width: '300px',
-        'text-align': 'center',
+        margin: '0.2em 0.5em'
+      }
+      h(:div, { style: share_style }, [
+        h(:div, source_name),
+        render_number('Number', quantity),
+        render_number('Price', @game.format_currency(price))
+      ])
+    end
+
+    def render_number(title, number)
+      number_box_style = {
+        display: 'inline-block',
+        margin: '0 0.5em'
+      }
+      number_style = {
+        'font-size': '16px',
         'font-weight': 'bold',
-        'vertical-align': 'top',
+        'max-width': '120px',
+        'white-space': 'nowrap',
+        'text-overflow': 'ellipsis',
+        'overflow': 'hidden'
+      }
+      h(:div, { style: number_box_style }, [
+        h(:div, { style: number_style }, number),
+        h(:div, title)
+      ])
+    end
+
+    def render_companies
+      return h(:div, '') if @corporation.companies.empty?
+
+      props = {
+        style: {
+          'text-align': 'center'
+        }
       }
 
-      style['background-color'] = 'lightblue' if selected?
-
-      title_style = {
-        background: @corporation.color,
-        'text-align': 'center',
-        color: '#ffffff',
-        padding: '0.5rem 0px'
-      }
-
-      token_style = {
-        display: 'flex',
-        'justify-content': 'center',
-        padding: '0.5rem 0px'
-      }
-
-      children = [
-        h(:div, { style: title_style }, @corporation.name),
-        h(:div, { style: token_style }, render_tokens),
-        render_trains,
-        h(:div, "Treasury: #{@game.format_currency(@corporation.cash)}"),
-        render_private_companies,
-        h(:div, "IPO Shares: #{@corporation.num_shares_of(@corporation)}"),
-        h(:div, "Bank Shares: #{@game.share_pool.num_shares_of(@corporation)}"),
-      ]
-
-      # rubocop:disable Style/IfUnlessModifier
-      if @corporation.share_price
-        children << h(:div, "Market Price: #{@game.format_currency(@corporation.share_price.price)}")
+      companies = @corporation.companies.map do |company|
+        render_company(company)
       end
 
-      if @corporation.par_price
-        children << h(:div, "Par Price: #{@game.format_currency(@corporation.par_price.price)}")
-      end
-      # rubocop:enable Style/IfUnlessModifier
+      h(:table, props, [
+        h(:tr, [
+          h(:th, 'Company'),
+          h(:th, 'Value'),
+          h(:th, 'Income'),
+        ]),
+        *companies
+      ])
+    end
 
-      h(:div, { style: style, on: { click: onclick } }, children)
+    def render_company(company)
+      name_props = {
+        style: {
+          overflow: 'hidden',
+          'width': '200px',
+          'white-space': 'nowrap',
+          'text-overflow': 'ellipsis',
+        }
+      }
+
+      number_props = {
+        style: {
+          'width': '50px'
+        }
+      }
+
+      h(:tr, [
+        h(:td, name_props, company.name),
+        h(:td, number_props, @game.format_currency(company.value)),
+        h(:td, number_props, @game.format_currency(company.revenue)),
+      ])
+    end
+
+    def selected?
+      @corporation == @selected_corporation
     end
   end
 end
