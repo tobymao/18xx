@@ -390,7 +390,7 @@ module Engine
       def place_token(action)
         entity = action.entity
         hex = action.city.hex
-        unless layable_hexes[action.city.hex]
+        unless reachable_hexes[action.city.hex]
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 
