@@ -53,14 +53,8 @@ module View
 
             # add private companies that block tile lays on this hex
             blocker = companies.find do |c|
-              if %w[C4 K4].include?(coord)
-                puts "#{c.name} hex: #{c.abilities(:blocks_hex)&.dig(:hex)}"
-                puts "coord: #{coord}"
-              end
-
               c.abilities(:blocks_hex)&.dig(:hex) == coord
             end
-            puts blocker unless blocker.nil?
             tile.add_blocker!(blocker) unless blocker.nil?
 
             # reserve corporation home spots
