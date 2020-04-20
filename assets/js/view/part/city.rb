@@ -6,13 +6,15 @@ require 'view/part/city_slot'
 module View
   module Part
     class City < Base
+      SLOT_RADIUS = 25
+
       # key is how many city slots are part of the city; value is the offset for
       # the first city slot
       CITY_SLOT_POSITION = {
         1 => [0, 0],
-        2 => [-25, 0],
+        2 => [-SLOT_RADIUS, 0],
         3 => [0, -29],
-        4 => [-25, -25],
+        4 => [-SLOT_RADIUS, -SLOT_RADIUS],
         5 => [0, -43],
         6 => [0, -50],
       }.freeze
@@ -48,7 +50,7 @@ module View
 
       # TODO: render white "background" before slots
       def render_part
-        slot_radius = 25
+        slot_radius = SLOT_RADIUS
 
         slots = (0..(@city.slots - 1)).zip(@city.tokens).map do |slot_index, token|
           rotation = (360 / @city.slots) * slot_index
@@ -69,15 +71,47 @@ module View
 
         children = []
 
-        children << render_box if slots.size > 1
+        children << render_box(slots.size) if slots.size > 1
 
         children += slots
 
         h(:g, { attrs: { class: 'city' } }, children)
       end
 
-      def render_box
-        h(:g, {attrs: {class: 'city-box'}}, [])
+      # TODO:
+      # - do actual math and get points for the 3-slot hexagon, rather than
+      #   scaling the full-size hexagon
+      # - implement for 4, 5, and 6 slot cities
+      def render_box(slots)
+        box =
+          case slots
+          when 2
+            h(
+              :rect,
+              attrs: {
+                width: 2 * SLOT_RADIUS,
+                height: 2 * SLOT_RADIUS,
+                fill: 'white',
+                x: -SLOT_RADIUS,
+                y: -SLOT_RADIUS,
+              }
+            )
+          when 3
+            h(
+              :polygon,
+              attrs: {
+                points: '100,0 50,-87 -50,-87 -100,-0 -50,87 50,87',
+                fill: 'white',
+                transform: 'scale(0.458)',
+              }
+            )
+          else
+            nil
+          end
+
+        h(:g, {attrs: {class: 'city-box'}}, [
+            box
+          ])
       end
     end
   end
