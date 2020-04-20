@@ -44,15 +44,31 @@ module View
         children << h(TileSelector, tiles: tiles)
       end
 
-      h(:div, { style: { overflow: 'auto' } }, children)
+      props = {
+         style: {
+           overflow: 'auto',
+           margin: '0 -1rem',
+         }
+      }
+
+      h(:div, props, children)
     end
 
     def render_map
       w_size, h_size = @layout == :flat ? [100, 50] : [50, 100]
       width = @cols.size * w_size
       height = @rows.size * h_size
+      props = {
+        attrs: {
+          id: 'map',
+        },
+        style: {
+          width: width,
+          height: height,
+        },
+      }
 
-      h(:svg, { attrs: { id: 'map' }, style: { width: width, height: height } }, [
+      h(:svg, props, [
         h(:g, { attrs: { transform: 'scale(0.5)' } }, [
           h(:g, { attrs: { id: 'map-hexes', transform: "translate(#{25 + GAP} #{12.5 + GAP})" } }, @hexes),
           h(Axis, cols: @cols, rows: @rows, layout: @layout, gap: GAP),
