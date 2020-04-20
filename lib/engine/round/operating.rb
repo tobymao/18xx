@@ -105,14 +105,13 @@ module Engine
         return false if bundle.presidents_share
 
         # can only sell as much as you need to afford the train
-        corporation = bundle.corporation
-        player = corporation.owner
-        percentage = bundle.percent
-        return false if bundle.price + player.cash >= @depot.min_price(corporation) + bundle.price_per_share
+        player = bundle.owner
+        total_cash = bundle.price + player.cash + @current_entity.cash
+        return false if total_cash >= @depot.min_depot_price + bundle.price_per_share
 
         # can't swap presidency
-        share_holders = corporation.share_holders
-        remaining = share_holders[player] - percentage
+        share_holders = bundle.corporation.share_holders
+        remaining = share_holders[player] - bundle.percent
         next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
         remaining >= next_highest
       end

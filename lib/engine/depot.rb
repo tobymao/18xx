@@ -30,20 +30,24 @@ module Engine
       available(corporation).map(&:min_price).min
     end
 
+    def min_depot_price
+      depot_trains.map(&:price).min
+    end
+
     def remove_train(train)
       @upcoming.delete(train)
       @discarded.delete(train)
     end
 
-    def new_trains
+    def depot_trains
       [
         @upcoming.first,
         *@upcoming.select { |t| @game.phase.available?(t.available_on) },
+        *@discarded,
       ].uniq(&:name)
     end
 
     def available(corporation)
-      depot_trains = (new_trains + @discarded).uniq(&:name)
       other_trains = @trains.reject { |t| [corporation, self, nil].include?(t.owner) }
       depot_trains + other_trains
     end

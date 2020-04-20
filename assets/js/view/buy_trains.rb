@@ -35,7 +35,7 @@ module View
         children.concat(other_trains(other_corp_trains))
       end
 
-      discountable_trains = @depot.new_trains.select(&:discount)
+      discountable_trains = @depot.depot_trains.select(&:discount)
 
       discounts = @corporation.trains.flat_map do |train|
         discountable_trains.map do |discount_train|
@@ -71,7 +71,7 @@ module View
       if must_buy_train
         player = @corporation.owner
 
-        if @corporation.cash + player.cash < @depot.min_price(@corporation)
+        if @corporation.cash + player.cash < @depot.min_depot_price
           player.shares_by_corporation.each do |corporation, shares|
             next if shares.empty?
 
