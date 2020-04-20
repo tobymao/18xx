@@ -37,7 +37,7 @@ class App < Snabberb::Component
 
   def render_content
     refresh_user
-    handle_history
+    js_handlers
 
     path = @app_route.split('#').first || ''
     path = path.split('/').reject(&:empty?).first
@@ -79,8 +79,10 @@ class App < Snabberb::Component
     h(View::Game, game_data: @game_data)
   end
 
-  def handle_history
+  def js_handlers
     %x{
+      window.scrollTo(0, 0)
+
       var self = this
 
       if (!window.onpopstate) {

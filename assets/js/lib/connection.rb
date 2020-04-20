@@ -8,6 +8,7 @@ module Lib
     def initialize(game_id, handler)
       @game_id = game_id
       @handler = handler
+      puts "** coming here ***"
       @source = `new EventSource(#{path})`
       add_event_listeners
     end
@@ -17,7 +18,11 @@ module Lib
     end
 
     def close
-      @source.JS.close
+      %x{
+        if (typeof self.source.close !== 'undefined') {
+          self.source.close()
+        }
+      }
     end
 
     def add_event_listeners
