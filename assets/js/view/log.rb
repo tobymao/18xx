@@ -19,8 +19,9 @@ module View
           transform: 'scaleY(-1)',
           overflow: 'auto',
           height: '200px',
-          margin: '5px 0',
+          padding: '0.5rem',
           'background-color': 'lightgray',
+          'word-break': 'break-all',
         },
       }
 

@@ -16,34 +16,39 @@ module GameManager
   end
 
   def delete_game(game)
-    @connection.safe_post('/game/delete', game) do |data|
-      store(:games, @games.reject { |g| g['id'] == data['id'] })
+    @connection.safe_post(url(game, '/delete'), game) do |data|
+      update_game(data)
     end
   end
 
   def join_game(game)
-    @connection.safe_post('/game/join', game) do |data|
+    @connection.safe_post(url(game, '/join')) do |data|
       update_game(data)
     end
   end
 
   def leave_game(game)
-    @connection.safe_post('/game/leave', game) do |data|
+    @connection.safe_post(url(game, '/leave')) do |data|
       update_game(data)
     end
   end
 
   def start_game(game)
-    @connection.safe_post('/game/start', game) do |data|
+    @connection.safe_post(url(game, '/start')) do |data|
       update_game(data)
     end
   end
 
   def enter_game(game)
-    url = "/game/#{game['id']}"
-    @connection.safe_post(url) do |data|
+    @connection.safe_post(url(game)) do |data|
       store(:game_data, data, skip: true)
-      store(:app_route, url)
+      store(:app_route, url(game))
+    end
+  end
+
+  def kick(game, player)
+    @connection.safe_post(url(game, '/kick'), player) do |data|
+      update_game(data)
     end
   end
 
@@ -55,9 +60,20 @@ module GameManager
     game['user']['id'] == user&.dig(:id)
   end
 
-  private
+  def unsubscribe
+    @connection.unsubscribe('/games')
+  end
+
+  protected
+
+  def url(game, path = '')
+    "/game/#{game['id']}#{path}"
+  end
 
   def update_game(game)
-    store(:games, @games.map { |g| g['id'] == game['id'] ? game : g })
+    @games += game if @games.none? { |g| g['id'] == game['id'] }
+    @games.reject! { |g| g['id'] == game['id'] } if game['deleted']
+    @games.map! { |g| g['id'] == game['id'] ? game : g }
+    store(:games, @games)
   end
 end

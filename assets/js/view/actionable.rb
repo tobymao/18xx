@@ -5,6 +5,7 @@ require 'engine/game_error'
 module View
   module Actionable
     def self.included(base)
+      base.needs :game_data, default: {}, store: true
       base.needs :game, store: true
       base.needs :flash_opts, default: {}, store: true
       base.needs :connection, store: true, default: nil
@@ -12,7 +13,7 @@ module View
 
     def process_action(action)
       store(:game, @game.process_action(action))
-      @connection&.send('action', action.to_h)
+      @connection.safe_post("/game/#{@game_data['id']}/action", action.to_h) if @game_data[:mode] == :multi
     rescue StandardError => e
       store(:game, @game.clone(@game.actions), skip: true)
       store(:flash_opts, e.message)
@@ -21,7 +22,7 @@ module View
 
     def rollback
       store(:game, @game.rollback)
-      @connection&.send('rollback')
+      @connection&.safe_post("/game/#{@game_data['id']}/action/rollback") if @game_data[:mode] == :multi
     end
   end
 end

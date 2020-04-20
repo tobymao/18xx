@@ -47,15 +47,15 @@ class App < Snabberb::Component
     page =
       case path
       when nil
-        h(View::Home)
+        h(View::Home, user: @user)
       when 'game'
         render_game
       when 'signup'
-        h(View::User, type: :signup)
+        h(View::User, user: @user, type: :signup)
       when 'login'
-        h(View::User, type: :login)
+        h(View::User, user: @user, type: :login)
       when 'profile'
-        h(View::User, type: :profile)
+        h(View::User, user: @user, type: :profile)
       when 'new_game'
         h(View::CreateGame)
       when 'about'
@@ -77,8 +77,8 @@ class App < Snabberb::Component
   end
 
   def render_game
-    @game_data['mode'] ||= :multi
-    h(View::Game, game_data: @game_data)
+    @game_data[:mode] ||= :multi
+    h(View::Game, connection: @connection, game_data: @game_data)
   end
 
   def js_handlers

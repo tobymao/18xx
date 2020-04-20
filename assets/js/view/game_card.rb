@@ -32,12 +32,23 @@ module View
       ])
     end
 
+    def new?
+      @game['status'] == 'new'
+    end
+
+    def owner?
+      user_owns_game?(@user, @game)
+    end
+
+    def players
+      @game['players']
+    end
+
     def render_header
-      owner = user_owns_game?(@user, @game)
       color, button_text, action =
         case @game['status']
         when 'new'
-          if owner
+          if owner?
             [JOIN_YELLOW, 'Delete', -> { delete_game(@game) }]
           elsif user_in_game?(@user, @game)
             [JOIN_YELLOW, 'Leave', -> { leave_game(@game) }]
@@ -81,7 +92,7 @@ module View
         h('button.button', button_props, button_text),
       ]
 
-      if owner && @game['status'] == 'new' && @game['players'].size > 1
+      if owner? && new? && players.size > 1
         start_props = {
           style: {
             position: 'absolute',
@@ -110,10 +121,29 @@ module View
         }
       }
 
+      p_elm = players.map { |p| p['name'] }.join(', ')
+
+      if owner? && new?
+        p_elm = players.map do |player|
+          if player['id'] == @user['id']
+            player['name']
+          else
+            button_props = {
+               on: { click: -> { kick(@game, player) } },
+               style: {
+                 'margin-left': '0.5rem',
+               },
+            }
+            h('button.button', button_props, player['name'])
+          end
+        end
+      end
+
       h(:div, props, [
+        h(:div, [h(:b, 'Id: '), @game['id']]),
         h(:div, [h(:b, 'Description: '), @game['description']]),
         h(:div, [h(:b, 'Max Players: '), @game['max_players']]),
-        h(:div, [h(:b, 'Players: '), @game['players'].map { |p| p['name'] }.join(', ')]),
+        h(:div, [h(:b, 'Players: '), *p_elm]),
         h(:div, [h(:b, 'Created: '), @game['created_at']]),
       ])
     end

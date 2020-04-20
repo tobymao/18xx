@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
+require 'CGI'
 require 'execjs'
+require 'message_bus'
 require 'opal'
 require 'roda'
 require 'snabberb'
@@ -9,6 +11,17 @@ require_relative 'models'
 require_relative 'lib/tilt/opal_template'
 
 Dir['./models/**/*.rb'].sort.each { |file| require file }
+
+MessageBus.configure(
+  backend: :postgres,
+  backend_options: {
+    user: CGI.parse(URI.parse(DB.uri).query)['user'][0],
+    dbname: URI.parse(DB.uri).path.gsub('/', ''),
+  },
+  clear_every: 10,
+)
+
+MessageBus.reliable_pub_sub.max_backlog_size = 20
 
 class Api < Roda
   opts[:check_dynamic_arity] = false
@@ -33,8 +46,7 @@ class Api < Roda
   end
 
   plugin :not_found do
-    @page_title = 'File Not Found'
-    ''
+    halt(404, 'Page not found')
   end
 
   plugin :error_handler
@@ -60,51 +72,26 @@ class Api < Roda
   plugin :json_parser
   plugin :halt
 
+  use MessageBus::Rack::Middleware
+
   PAGE_LIMIT = 100
-  ROOMS = Hash.new { |h, k| h[k] = [] }
-
-  PING_FUNC = lambda do |*|
-    ROOMS
-      .values
-      .flatten
-      .select(&:empty?)
-      .each { |q| q.push('{"type":"ping"}') }
-  end
-
-  Thread.new do
-    loop do
-      PING_FUNC.call
-      sleep(10)
-    end
-  end
-
-  Thread.new do
-    DB.listen(:channel, loop: PING_FUNC) do |_, _, payload|
-      notification = JSON.parse(payload)
-      message = JSON.dump(notification['message'])
-      room = ROOMS[notification['room_id']]
-      room.each { |q| q.push(message) }
-    end
-  end
-
-  def notify(room_id, message)
-    notification = {
-      'room_id' => room_id,
-      'message' => message,
-    }
-
-    DB.notify(:channel, payload: JSON.dump(notification))
-  end
-
-  def on_close(room, q)
-    room.delete(q)
-  end
 
   Dir['./routes/*'].sort.each { |file| require file }
 
   hash_routes do
     on 'api' do |hr|
       hr.hash_routes :api
+
+      hr.is 'chat', method: 'post' do
+        not_authorized! unless user
+
+        publish(
+          '/chat',
+          user: user.to_h,
+          message: hr.params['message'],
+          created_at: Time.now.strftime('%m/%d %H:%M:%S'),
+        )
+      end
     end
   end
 
@@ -169,5 +156,10 @@ class Api < Roda
 
   def not_authorized!
     halt(401, 'You are not authorized to make this request')
+  end
+
+  def publish(channel, **data)
+    MessageBus.publish(channel, data)
+    {}
   end
 end
