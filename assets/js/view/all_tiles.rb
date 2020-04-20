@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'engine/company'
+require 'engine/corporation'
 require 'engine/game/g_1889'
 require 'engine/tile'
 
@@ -34,6 +36,9 @@ module View
       game_hexes = game_class::HEXES
       location_names = game_class::LOCATION_NAMES
 
+      companies = game_class::COMPANIES.map { |c| Engine::Company.new(**c) }
+      corporations = game_class::CORPORATIONS.map { |c| Engine::Corporation.new(**c) }
+
       rendered_tiles = game_hexes.map do |color, hexes|
         hexes.map do |coords, tile_string|
           coords.map.with_index do |coord, index|
@@ -44,6 +49,23 @@ module View
               tile_string,
               location_name: location_names[coord]
             )
+
+            # add private companies that block tile lays on this hex
+            blocker = companies.find do |c|
+              if %w[C4 K4].include?(coord)
+                puts "#{c.name} hex: #{c.abilities(:blocks_hex)&.dig(:hex)}"
+                puts "coord: #{coord}"
+              end
+
+              c.abilities(:blocks_hex)&.dig(:hex) == coord
+            end
+            puts blocker unless blocker.nil?
+            tile.add_blocker!(blocker) unless blocker.nil?
+
+            # reserve corporation home spots
+            corporations.select { |c| c.coordinates == coord }.each do |c|
+              tile.cities.first.add_reservation!(c.sym)
+            end
 
             render_tile_block(
               tile.name,
