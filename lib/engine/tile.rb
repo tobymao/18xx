@@ -186,7 +186,7 @@ module Engine
     end
 
     # rotation 0-5
-    def initialize(name, color:, parts:, rotation: 0, preprinted: false, index: 0)
+    def initialize(name, color:, parts:, rotation: 0, preprinted: false, index: 0, location_name: nil)
       @name = name
       @color = color
       @parts = parts
@@ -197,7 +197,7 @@ module Engine
       @edges = nil
       @junctions = nil
       @upgrades = []
-      @location_name = nil
+      @location_name = location_name
       @offboards = []
       @legal_rotations = []
       @blockers = []
