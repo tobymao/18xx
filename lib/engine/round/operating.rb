@@ -91,7 +91,7 @@ module Engine
 
       def can_buy_train?
         @current_entity.trains.size < @phase.train_limit &&
-          @current_entity.cash >= @depot.min_price(@current_entity)
+          (@current_entity.cash + @current_entity.owner.cash) >= @depot.min_price(@current_entity)
       end
 
       def can_act?(entity)
