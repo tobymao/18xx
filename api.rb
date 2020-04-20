@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'CGI'
+require 'cgi'
 require 'execjs'
 require 'message_bus'
 require 'opal'
