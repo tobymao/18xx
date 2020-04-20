@@ -33,7 +33,7 @@ module Engine
       events: { close_companies: true },
     }.freeze
 
-    SIX = FIVE.merge(name: '6', on: '6')
+    SIX = FIVE.merge(name: '6', on: '6', events: nil)
 
     D = {
       name: 'D',
