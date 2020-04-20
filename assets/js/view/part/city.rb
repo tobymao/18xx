@@ -67,7 +67,17 @@ module View
             ])
         end
 
-        h(:g, { attrs: { class: 'city' } }, slots)
+        children = []
+
+        children << render_box if slots.size > 1
+
+        children += slots
+
+        h(:g, { attrs: { class: 'city' } }, children)
+      end
+
+      def render_box
+        h(:g, {attrs: {class: 'city-box'}}, [])
       end
     end
   end
