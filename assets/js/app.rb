@@ -81,8 +81,6 @@ class App < Snabberb::Component
 
   def js_handlers
     %x{
-      window.scrollTo(0, 0)
-
       var self = this
 
       if (!window.onpopstate) {
@@ -91,6 +89,7 @@ class App < Snabberb::Component
       }
 
       if (window.location.pathname + window.location.hash != #{@app_route}) {
+        window.scrollTo(0, 0)
         window.history.pushState('', '', #{@app_route})
       }
     }
