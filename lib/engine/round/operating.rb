@@ -89,9 +89,17 @@ module Engine
         @entities.select { |e| e.trains.size > @phase.train_limit }
       end
 
+      def corp_has_room?
+        @current_entity.trains.size < @phase.train_limit
+      end
+
       def can_buy_train?
-        @current_entity.trains.size < @phase.train_limit &&
+        can_buy_normal = corp_has_room? &&
           @current_entity.cash >= @depot.min_price(@current_entity)
+
+        can_buy_normal || @depot
+          .discountable_trains_for(@current_entity)
+          .any? { |_, _, price| @current_entity.cash >= price }
       end
 
       def can_act?(entity)

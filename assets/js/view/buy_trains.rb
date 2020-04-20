@@ -7,6 +7,7 @@ require 'view/sell_shares'
 require 'view/undo_and_pass'
 
 require 'engine/action/buy_train'
+require 'engine/action/sell_shares'
 
 module View
   class BuyTrains < Snabberb::Component
@@ -29,27 +30,18 @@ module View
         h(UndoAndPass, pass: !must_buy_train && crowded_corps.none?),
       ])
 
-      if round.can_buy_train? || round.must_buy_train?
+      if (round.can_buy_train? && round.corp_has_room?) || round.must_buy_train?
         children << h(:div, 'Available Trains')
         children.concat(from_depot(depot_trains))
-        children.concat(other_trains(other_corp_trains))
+        children.concat(other_trains(other_corp_trains)) unless @game.actions.last.is_a?(SellShares)
       end
 
-      discountable_trains = @depot.depot_trains.select(&:discount)
+      discountable_trains = @depot.discountable_trains_for(@corporation)
 
-      discounts = @corporation.trains.flat_map do |train|
-        discountable_trains.map do |discount_train|
-          next if discount_train.price == discount_train.price(train)
-
-          [train, discount_train]
-        end.compact
-      end
-
-      if discounts.any?
+      if discountable_trains.any?
         children << h(:div, 'Exchange Trains')
 
-        discounts.each do |train, discount_train|
-          price = discount_train.price(train)
+        discountable_trains.each do |train, discount_train, price|
           exchange_train = lambda do
             process_action(
               Engine::Action::BuyTrain.new(

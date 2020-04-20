@@ -47,6 +47,19 @@ module Engine
       ].uniq(&:name)
     end
 
+    def discountable_trains_for(corporation)
+      discountable_trains = depot_trains.select(&:discount)
+
+      corporation.trains.flat_map do |train|
+        discountable_trains.map do |discount_train|
+          discounted_price = discount_train.price(train)
+          next if discount_train.price == discounted_price
+
+          [train, discount_train, discounted_price]
+        end.compact
+      end
+    end
+
     def available(corporation)
       other_trains = @trains.reject { |t| [corporation, self, nil].include?(t.owner) }
       depot_trains + other_trains
