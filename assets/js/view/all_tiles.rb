@@ -10,7 +10,7 @@ require 'view/tiles'
 module View
   class AllTiles < Tiles
     # TODO: can this automatically discover all defined games?
-    GAMES = %w[1889]
+    GAMES = %w[1889].freeze
 
     TILE_IDS = [
       Engine::Tile::WHITE.keys,
@@ -27,7 +27,7 @@ module View
               *TILE_IDS.map { |t| render_tile_block(t) }
             ]),
 
-          *GAMES.map { |g| map_hexes_for(g)}
+          *GAMES.map { |g| map_hexes_for(g) }
         ])
     end
 
@@ -41,8 +41,9 @@ module View
 
       rendered_tiles = game_hexes.map do |color, hexes|
         hexes.map do |coords, tile_string|
-          coords.map.with_index do |coord, index|
+          coords.map.with_index do |coord, _index|
             next if TILE_IDS.include?(tile_string)
+
             tile = Engine::Tile.from_code(
               coord,
               color,

@@ -78,7 +78,7 @@ module View
         h(:g, { attrs: { class: 'city' } }, children)
       end
 
-      # TODO:
+      # TODOS:
       # - do actual math and get points for the 3-slot hexagon, rather than
       #   scaling the full-size hexagon
       # - implement for 4, 5, and 6 slot cities
@@ -105,11 +105,9 @@ module View
                 transform: 'scale(0.458)',
               }
             )
-          else
-            nil
           end
 
-        h(:g, {attrs: {class: 'city-box'}}, [
+        h(:g, { attrs: { class: 'city-box' } }, [
             box
           ])
       end
