@@ -13,6 +13,7 @@ require 'view/home'
 require 'view/flash'
 require 'view/game'
 require 'view/navigation'
+require 'view/all_tiles'
 require 'view/user'
 
 class App < Snabberb::Component
@@ -58,6 +59,8 @@ class App < Snabberb::Component
         h(View::CreateGame)
       when 'about'
         h(View::About)
+      when 'all_tiles'
+        h(View::AllTiles)
       else
         store(:flash_opts, "Unknown path #{path}")
         store(:app_route, '/', skip: true)
