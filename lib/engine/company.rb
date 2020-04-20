@@ -16,6 +16,7 @@ module Engine
       @revenue = revenue
       @sym = sym
       @discount = 0
+      @closed = false
 
       @abilities = abilities
         .group_by { |ability| ability[:type] }
@@ -69,10 +70,15 @@ module Engine
     end
 
     def close!
+      @closed = true
       return unless owner
 
       owner.companies.delete(self)
       @owner = nil
+    end
+
+    def closed?
+      @closed
     end
 
     def player?
