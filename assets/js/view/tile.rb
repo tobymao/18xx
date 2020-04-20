@@ -24,10 +24,11 @@ module View
     def should_render_blocker?
       blocker = @tile.blockers.first
 
+      # blocking company should exist...
       return false if blocker.nil?
 
       # ...and be open
-      return false unless blocker.owner
+      return false if blocker.closed?
 
       # ...and not have been sold into a corporation yet
       return false if blocker.owned_by_corporation?
