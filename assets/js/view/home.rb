@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'game_manager'
+require 'view/chat'
 require 'view/game_row'
 require 'view/welcome'
 
@@ -8,16 +9,13 @@ module View
   class Home < Snabberb::Component
     include GameManager
 
-    needs :user, default: nil, store: true
+    needs :user
 
     def render
       children = [
         h(Welcome, user: @user),
+        h(Chat, user: @user, connection: @connection),
       ]
-
-      @connection.subscribe('/games') do |data|
-        puts data
-      end
 
       grouped = @games.group_by { |game| game['status'] }
 
@@ -33,7 +31,22 @@ module View
       render_row(children, 'Active Games', active_games)
       render_row(children, 'Finished Games', grouped['finished'])
 
-      h(:div, children)
+      @connection.subscribe('/games') do |data|
+        update_game(data)
+      end
+
+      destroy = lambda do
+        @connection.unsubscribe('/games')
+      end
+
+      props = {
+        key: 'home_page',
+        hook: {
+          destroy: destroy,
+        }
+      }
+
+      h(:div, props, children)
     end
 
     def render_row(children, header, games)

@@ -6,7 +6,14 @@ module View
     needs :app_route, default: nil, store: true
 
     def render
-      h(:div, [
+      props = {
+        style: {
+          display: 'inline-block',
+          'margin-right': '1rem',
+        }
+      }
+
+      h('div.half', props, [
         render_header,
         render_notification,
         render_introduction,
@@ -30,7 +37,7 @@ module View
       }
 
       message = <<~MESSAGE
-        Thanks for participating in the beta! Big updates just got launched so many of your games are now invalid.
+        Thanks for participating in the beta! I've rewritten the networking code so iPhones should work now!
         Please join me in the 18xx slack #18xxgames channel
       MESSAGE
 

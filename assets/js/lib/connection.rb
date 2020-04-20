@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'json'
 require 'lib/storage'
 require 'vendor/message-bus'
 require 'vendor/message-bus-ajax'
@@ -8,17 +7,28 @@ require 'vendor/message-bus-ajax'
 module Lib
   class Connection
     def initialize(root)
-      puts "** init connection **"
       @root = root
+      @subs = Hash.new(0)
       start_message_bus
     end
 
-    def subscribe(channel, message_id = -1, &block)
+    # rubocop:disable Lint/UnusedMethodArgument
+    def subscribe(channel, message_id = -1, multi: false, &block)
+      return if @subs[channel].positive? && !multi
+
+      @subs[channel] += 1
+
       %x{
-        MessageBus.subscribe(#{channel}, function(data) {
-          block(data)
+        window.MessageBus.subscribe(#{channel}, function(data) {
+          block.$call(Opal.Hash.$new(data))
         }, message_id)
       }
+    end
+    # rubocop:enable Lint/UnusedMethodArgument
+
+    def unsubscribe(channel)
+      @subs[channel] = 0
+      `window.MessageBus.unsubscribe(#{channel})`
     end
 
     def get(path, &block)
@@ -59,18 +69,20 @@ module Lib
           return res.text()
         }).then(data => {
           if (typeof block === 'function') {
-            block(#{JSON.parse(data)})
+            block.$call(Opal.Hash.$new(JSON.parse(data)))
           }
         }).catch(error => {
-          block(Opal.hash('error', error))
+          if (typeof block === 'function') {
+            block(Opal.hash('error', error))
+          }
         })
       }
     end
 
     def start_message_bus
       %x{
-        MessageBus.start()
-        MessageBus.callbackInterval = 1000
+        window.MessageBus.start()
+        window.MessageBus.callbackInterval = 1000
       }
     end
   end

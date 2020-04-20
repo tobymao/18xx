@@ -7,71 +7,90 @@ class Api
     hr.on 'game' do |r|
       # '/api/game/<game_id>/*'
       r.on Integer do |id|
-        game = Game[id]
+        halt(404, 'Game does not exist') unless (game = Game[id])
 
         # '/api/game/<game_id>/'
         r.is do
           game.to_h(include_actions: true)
         end
 
-        # '/api/game/<game_id>/subscribe'
-        r.is 'subscribe' do
-
-          #room = ROOMS[id]
-          #q = Queue.new
-          #room << q
-
-          #response['Content-Type'] = 'text/event-stream;charset=UTF-8'
-          #response['X-Accel-Buffering'] = 'no' # for nginx
-          #response['Transfer-Encoding'] = 'identity'
-
-          #stream(loop: true, callback: -> { on_close(room, q) }) do |out|
-          #  out << "data: #{q.pop}\n\n"
-          #end
-        end
-
-        # '/api/game/<game_id>/refresh'
-        r.is 'refresh' do
-          { type: 'refresh', data: actions_h(game) }
-        end
-
         # POST '/api/game/<game_id>'
         r.post do
           not_authorized! unless user
-          not_authorized! if GameUser.where(game: game, user: user).empty?
 
-          engine = Engine::Game::G1889.new(
-            game.ordered_players.map(&:name),
-            actions: actions_h(game),
-          )
+          # POST '/api/game/<game_id>/join'
+          r.is 'join' do
+            halt(400, 'Cannot join game because it is full') if GameUser.where(game: game).count >= game.max_players
 
-          # POST '/api/game/<game_id>/action'
-          r.is 'action' do
-            action_id = r.params['id']
-            halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
-
-            params = {
-              game: game,
-              user: user,
-              action_id: action_id,
-              turn: engine.turn,
-              round: engine.round.name,
-            }
-
-            action = engine.process_action(r.params).actions.last.to_h
-            params[:action] = action
-            Action.create(params)
-            MessageBus.publish "/channel", "message"
-            puts "** coming here"
-            # notify(id, type: 'action', data: action)
-            {}
+            GameUser.create(game: game, user: user)
+            return_and_notify(game)
           end
 
-          # POST '/api/game/<game_id>/rollback'
-          r.is 'rollback' do
-            game.actions.last.destroy
-            notify(id, type: 'refresh', data: actions_h(game))
-            {}
+          not_authorized! if GameUser.where(game: game, user: user).empty?
+
+          r.is 'leave' do
+            game.remove_player(user)
+            return_and_notify(game)
+          end
+
+          r.on 'action' do
+            engine = Engine::Game::G1889.new(
+              game.ordered_players.map(&:name),
+              actions: actions_h(game),
+            )
+            channel = "/game/#{game.id}"
+
+            # POST '/api/game/<game_id>/action'
+            r.is do
+              action_id = r.params['id']
+              halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
+
+              params = {
+                game: game,
+                user: user,
+                action_id: action_id,
+                turn: engine.turn,
+                round: engine.round.name,
+              }
+
+              action = engine.process_action(r.params).actions.last.to_h
+              params[:action] = action
+              Action.create(params)
+              publish(channel, **action)
+            end
+
+            # POST '/api/game/<game_id>//action/rollback'
+            r.is 'rollback' do
+              game.actions.last.destroy
+              publish(channel, actions: actions_h(game))
+            end
+          end
+
+          not_authorized! unless game.user_id == user.id
+
+          # POST '/api/game/<game_id>/delete
+          r.is 'delete' do
+            game_h = game.to_h.merge(deleted: true)
+            game.destroy
+            publish('/games', game_h)
+            game_h
+          end
+
+          # POST '/api/game/<game_id>/start
+          r.is 'start' do
+            halt(400, 'Cannot play 1 player') if game.players.size < 2
+
+            game.update(settings: { seed: Random.new_seed }, status: 'active')
+            return_and_notify(game)
+          end
+
+          # POST '/api/game/<game_id>/kick
+          r.is 'kick' do
+            game_user = GameUser.find(game: game, user_id: r.params['id'])
+            halt(400, 'Cannot kick player') if !game_user || game_user == user
+
+            game_user.destroy
+            return_and_notify(game)
           end
         end
       end
@@ -94,37 +113,6 @@ class Api
 
           game = Game.create(params)
           GameUser.create(game: game, user: user)
-          game.to_h
-        end
-
-        halt(404, 'Game does not exist') unless (game = Game[r.params['id']])
-
-        # POST '/api/game/join?id=<game_id>'
-        r.is 'join' do
-          GameUser.create(game: game, user: user) if GameUser.where(game: game).count < game.max_players
-          return_and_notify(game)
-        end
-
-        not_authorized! unless GameUser.where(game: game, user: user).exists
-
-        # POST '/api/game/leave?id=<game_id>'
-        r.is 'leave' do
-          game.remove_player(user)
-          return_and_notify(game)
-        end
-
-        not_authorized! unless game.user_id == user.id
-
-        # POST '/api/game/delete?id=<game_id>'
-        r.is 'delete' do
-          game.destroy
-          return_and_notify(game)
-        end
-
-        # POST '/api/game/start?id=<game_id>'
-        r.is 'start' do
-          halt(400, 'Cannot play 1 player') if game.players.size < 2
-          game.update(settings: { seed: Random.new_seed }, status: 'active')
           return_and_notify(game)
         end
       end

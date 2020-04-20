@@ -29,6 +29,15 @@ class Index < Snabberb::Layout
         background-color: black;
         color: white;
       }
+
+      .half {
+        width: 100%;
+        display: inline-block;
+      }
+
+      @media only screen and (min-width: 800px) {
+        .half { width: 47%; }
+      }
     CSS
 
     view_port = {

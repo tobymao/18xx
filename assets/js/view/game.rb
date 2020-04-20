@@ -42,11 +42,6 @@ module View
         store(:game, @game, skip: true)
       end
 
-      if @game_data['mode'] == :multi && !@connection
-        connection = Lib::Connection.new(@game_data['id'], self)
-        store(:connection, connection, skip: true)
-      end
-
       page =
         case route_anchor
         when nil
@@ -65,9 +60,25 @@ module View
           h(View::TrainRoster)
         end
 
+      @connection.subscribe(game_path) do |data|
+        if (actions = data['actions'])
+          next store(:game, @game.clone(actions))
+        end
+
+        n_id = data['id']
+        o_id = @game.current_action_id
+
+        if n_id == o_id
+          store(:game, @game.process_action(data))
+        elsif n_id > o_id
+          @connection.get(game_path) do |new_data|
+            store(:game, @game.clone(new_data['actions']))
+          end
+        end
+      end
+
       destroy = lambda do
-        @connection&.close
-        store(:connection, nil, skip: true)
+        @connection.unsubscribe(game_path)
         store(:game, nil, skip: true)
         store(:show_grid, false, skip: true)
         store(:selected_company, nil, skip: true)
@@ -86,20 +97,8 @@ module View
       ])
     end
 
-    def on_message(data)
-      case data['type']
-      when 'action'
-        data = data['data']
-        n_id = data['id']
-        o_id = @game.current_action_id
-        if n_id == o_id
-          store(:game, @game.process_action(data))
-        elsif n_id > o_id
-          @connection.send('refresh')
-        end
-      when 'refresh'
-        store(:game, @game.clone(data['data']))
-      end
+    def game_path
+      "/game/#{@game_data['id']}"
     end
 
     private
@@ -164,7 +163,9 @@ module View
 
       h('div.game', [
         render_round,
-        h(Log, log: @game.log),
+        h(:div, { style: { margin: '1rem 0 1rem 0' } }, [
+          h(Log, log: @game.log),
+        ]),
         h(EntityOrder, round: @round),
         render_action,
         h(Exchange),
