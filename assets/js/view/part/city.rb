@@ -50,8 +50,6 @@ module View
 
       # TODO: render white "background" before slots
       def render_part
-        slot_radius = SLOT_RADIUS
-
         slots = (0..(@city.slots - 1)).zip(@city.tokens).map do |slot_index, token|
           rotation = (360 / @city.slots) * slot_index
 
@@ -63,7 +61,7 @@ module View
                   h(CitySlot, city: @city,
                               token: token,
                               slot_index: slot_index,
-                              radius: slot_radius,
+                              radius: SLOT_RADIUS,
                               reservation: @city.reservations[slot_index])
                 ])
             ])
