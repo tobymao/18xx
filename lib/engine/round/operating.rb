@@ -200,7 +200,8 @@ module Engine
                 next unless (neighbor = hex.neighbors[direction])
 
                 connected_exits = neighbor.connected_exits(hex, corporation: @current_entity)
-                queue << neighbor if (hexes[neighbor] & connected_exits).none?
+                explored = hexes[neighbor]
+                queue << neighbor if (explored | connected_exits).size > explored.size
                 hexes[neighbor] |= connected_exits | [Hex.invert(direction)]
               end
             end
