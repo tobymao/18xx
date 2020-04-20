@@ -29,7 +29,7 @@ module View
         h(UndoAndPass, pass: !must_buy_train && crowded_corps.none?),
       ])
 
-      if round.can_buy_train?
+      if round.can_buy_train? || round.must_buy_train?
         children << h(:div, 'Available Trains')
         children.concat(from_depot(depot_trains))
         children.concat(other_trains(other_corp_trains))
