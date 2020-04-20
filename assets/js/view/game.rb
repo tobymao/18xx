@@ -28,7 +28,7 @@ module View
   class Game < Snabberb::Component
     needs :game_data
     needs :game, default: nil, store: true
-    needs :connection, default: nil, store: true
+    needs :connection
     needs :show_grid, default: false, store: true
     needs :selected_company, default: nil, store: true
     needs :app_route, store: true

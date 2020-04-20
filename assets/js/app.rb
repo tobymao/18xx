@@ -7,7 +7,7 @@ require 'polyfill'
 require 'index'
 require 'user_manager'
 require 'engine/game/g_1889'
-require 'lib/storage'
+require 'lib/connection'
 require 'view/about'
 require 'view/home'
 require 'view/flash'
@@ -36,6 +36,8 @@ class App < Snabberb::Component
   end
 
   def render_content
+    store(:connection, Lib::Connection.new(root), skip: true) unless @connection
+
     refresh_user
     js_handlers
 

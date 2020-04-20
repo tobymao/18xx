@@ -16,17 +16,18 @@ class Api
 
         # '/api/game/<game_id>/subscribe'
         r.is 'subscribe' do
-          room = ROOMS[id]
-          q = Queue.new
-          room << q
 
-          response['Content-Type'] = 'text/event-stream;charset=UTF-8'
-          response['X-Accel-Buffering'] = 'no' # for nginx
-          response['Transfer-Encoding'] = 'identity'
+          #room = ROOMS[id]
+          #q = Queue.new
+          #room << q
 
-          stream(loop: true, callback: -> { on_close(room, q) }) do |out|
-            out << "data: #{q.pop}\n\n"
-          end
+          #response['Content-Type'] = 'text/event-stream;charset=UTF-8'
+          #response['X-Accel-Buffering'] = 'no' # for nginx
+          #response['Transfer-Encoding'] = 'identity'
+
+          #stream(loop: true, callback: -> { on_close(room, q) }) do |out|
+          #  out << "data: #{q.pop}\n\n"
+          #end
         end
 
         # '/api/game/<game_id>/refresh'
@@ -60,7 +61,9 @@ class Api
             action = engine.process_action(r.params).actions.last.to_h
             params[:action] = action
             Action.create(params)
-            notify(id, type: 'action', data: action)
+            MessageBus.publish "/channel", "message"
+            puts "** coming here"
+            # notify(id, type: 'action', data: action)
             {}
           end
 
@@ -99,7 +102,7 @@ class Api
         # POST '/api/game/join?id=<game_id>'
         r.is 'join' do
           GameUser.create(game: game, user: user) if GameUser.where(game: game).count < game.max_players
-          game.to_h
+          return_and_notify(game)
         end
 
         not_authorized! unless GameUser.where(game: game, user: user).exists
@@ -107,7 +110,7 @@ class Api
         # POST '/api/game/leave?id=<game_id>'
         r.is 'leave' do
           game.remove_player(user)
-          game.to_h
+          return_and_notify(game)
         end
 
         not_authorized! unless game.user_id == user.id
@@ -115,14 +118,14 @@ class Api
         # POST '/api/game/delete?id=<game_id>'
         r.is 'delete' do
           game.destroy
-          game.to_h
+          return_and_notify(game)
         end
 
         # POST '/api/game/start?id=<game_id>'
         r.is 'start' do
           halt(400, 'Cannot play 1 player') if game.players.size < 2
           game.update(settings: { seed: Random.new_seed }, status: 'active')
-          game.to_h
+          return_and_notify(game)
         end
       end
     end
@@ -130,5 +133,11 @@ class Api
 
   def actions_h(game)
     game.actions(reload: true).map(&:to_h)
+  end
+
+  def return_and_notify(game)
+    game_h = game.to_h
+    MessageBus.publish('/games', game_h)
+    game_h
   end
 end
