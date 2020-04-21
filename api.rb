@@ -15,6 +15,7 @@ Dir['./models/**/*.rb'].sort.each { |file| require file }
 MessageBus.configure(
   backend: :postgres,
   backend_options: {
+    host: DB.opts[:host],
     user: DB.opts[:user],
     dbname: DB.opts[:database],
     password: DB.opts[:password],
