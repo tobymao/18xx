@@ -18,7 +18,7 @@ class EntityOrder < Snabberb::Component
         style['padding-left'] = '1rem'
       end
 
-      owner = " (#{entity.owner.name})" if !entity.is_a?(Engine::Player) && entity.owner
+      owner = " (#{entity.owner.name})" if !entity.player? && entity.owner
 
       h(:div, { style: style }, "#{entity.name}#{owner}")
     end

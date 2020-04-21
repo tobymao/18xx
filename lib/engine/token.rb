@@ -19,7 +19,7 @@ module Engine
     end
 
     def ==(other)
-      other.class == Token && @corporation.sym == other.corporation.sym
+      other.class == Token && @corporation.name == other.corporation.name
     end
   end
 end

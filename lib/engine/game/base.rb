@@ -325,7 +325,7 @@ module Engine
 
               # reserve corporation home spots
               corporations.select { |c| c.coordinates == coord }.each do |c|
-                tile.cities.first.add_reservation!(c.sym)
+                tile.cities.first.add_reservation!(c.name)
               end
 
               # name the location (city/town)

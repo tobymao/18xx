@@ -31,7 +31,7 @@ module View
           'margin-top': '10px',
           'margin-right': '1px',
         } }, [
-          h(:div, { style: { 'text-align': 'center' } }, corporation.sym),
+          h(:div, { style: { 'text-align': 'center' } }, corporation.name),
           h(:svg, { attrs: { width: (2 * radius), height: (2 * radius) } }, [
               h(:g, { attrs: { transform: "translate(#{radius} #{radius})" } }, [
                   h(View::Token, corporation: corporation, radius: radius),

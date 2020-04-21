@@ -34,7 +34,7 @@ module View
                          'text-anchor': 'middle',
                          x: 0,
                          y: -5 } },
-              @blocker.sym),
+              @blocker.name),
             h(:path, attrs: { fill: 'white', d: 'M -11 6 A 44 44 0 0 0 11 6' }),
             h(:circle, attrs: { fill: 'white', r: 6, cx: 11, cy: 6 }),
             h(:circle, attrs: { fill: 'white', r: 6, cx: -11, cy: 6 }),

@@ -14,6 +14,7 @@ module View
 
       card_style = {
         display: 'inline-block',
+        cursor: 'pointer',
         position: 'relative',
         border: 'solid 1px gainsboro',
         padding: '0.5rem',
@@ -45,7 +46,7 @@ module View
         'font-weight': 'bold',
         margin: '-0.5rem -0.5rem 0 -0.5rem'
       }
-      h(:div, { style: title_style }, @corporation.name)
+      h(:div, { style: title_style }, @corporation.full_name)
     end
 
     def render_holdings
@@ -61,6 +62,7 @@ module View
       holdings_style['background-color'] = '#9b9' if @game.round.can_act?(@corporation)
 
       h(:div, { style: holdings_style }, [
+        render_header_segment('Sym', @corporation.name),
         render_trains,
         render_header_segment(@game.format_currency(@corporation.cash), 'Cash'),
         render_tokens

@@ -15,11 +15,11 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :par_price, :share_price, :tokens
-    attr_reader :companies, :coordinates, :min_price, :sym, :name, :logo, :trains, :color
+    attr_reader :companies, :coordinates, :min_price, :name, :full_name, :logo, :trains, :color
 
     def initialize(sym:, name:, tokens:, **opts)
-      @sym = sym
-      @name = name
+      @name = sym
+      @full_name = name
       @tokens = tokens.map { |price| Token.new(self, price: price) }
       [
         Share.new(self, president: true, percent: 20),
@@ -49,7 +49,7 @@ module Engine
     end
 
     def id
-      @sym
+      @name
     end
 
     def buy_train(train, price = nil)

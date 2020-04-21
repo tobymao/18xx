@@ -86,7 +86,7 @@ module View
     def render_shares
       shares = @player
         .shares_by_corporation.reject { |_, s| s.empty? }
-        .sort_by { |c, s| [s.sum(&:percent), c.president?(@player) ? 1 : 0, c.sym] }
+        .sort_by { |c, s| [s.sum(&:percent), c.president?(@player) ? 1 : 0, c.name] }
         .reverse
         .map { |c, s| render_corporation_shares(c, s) }
 
@@ -124,7 +124,7 @@ module View
 
       h(:tr, [
         h(:td, { style: { position: 'relative' } }, [h(:img, logo_props)]),
-        h(:td, corporation.sym + president_marker),
+        h(:td, corporation.name + president_marker),
         h(:td, "%#{shares.sum(&:percent)}"),
       ])
     end
