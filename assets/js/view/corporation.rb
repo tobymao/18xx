@@ -29,12 +29,17 @@ module View
         card_style['border'] = 'solid 1px black'
         card_style['background-color'] = '#dfd'
       end
-      h(:div, { style: card_style, on: { click: onclick } }, [
+
+      children = [
         render_title,
         render_holdings,
         render_shares,
-        render_companies
-      ])
+      ]
+
+      children << render_companies if @corporation.companies.any?
+      children << render_president if @corporation.owner
+
+      h(:div, { style: card_style, on: { click: onclick } }, children)
     end
 
     def render_title
@@ -183,8 +188,6 @@ module View
     end
 
     def render_companies
-      return h(:div, '') if @corporation.companies.empty?
-
       props = {
         style: {
           'text-align': 'center'
@@ -226,6 +229,17 @@ module View
         h(:td, number_props, @game.format_currency(company.value)),
         h(:td, number_props, @game.format_currency(company.revenue)),
       ])
+    end
+
+    def render_president
+      props = {
+        style: {
+          'text-align': 'center',
+          'font-weight': 'bold',
+        }
+      }
+
+      h(:div, props, "President: #{@corporation.owner.name}")
     end
 
     def selected?

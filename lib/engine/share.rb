@@ -17,7 +17,7 @@ module Engine
     end
 
     def id
-      "#{@corporation.name}_#{@index}"
+      "#{@corporation.id}_#{@index}"
     end
 
     def num_shares

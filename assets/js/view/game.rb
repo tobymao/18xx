@@ -10,7 +10,7 @@ require 'view/exchange'
 require 'view/log'
 require 'view/map'
 require 'view/operating_round'
-require 'view/player'
+require 'view/players'
 require 'view/stock_round'
 require 'view/stock_market'
 require 'view/tile_manifest'
@@ -47,17 +47,19 @@ module View
         when nil
           render_game
         when 'map'
-          h(View::Map, game: @game)
+          h(Map, game: @game)
         when 'market'
-          h(StockMarket, stock_market: @game.stock_market)
+          h(StockMarket, game: @game, show_bank: true)
         when 'tiles'
-          h(View::TileManifest, tiles: @game.tiles)
+          h(TileManifest, tiles: @game.tiles)
         when 'companies'
-          h(View::Companies)
+          h(Companies, game: @game, user: @user)
         when 'corporations'
-          h(View::Corporations)
+          h(Corporations, game: @game, user: @user)
         when 'trains'
-          h(View::TrainRoster)
+          h(TrainRoster, game: @game)
+        when 'players'
+          h(Players, game: @game)
         end
 
       @connection.subscribe(game_path) do |data|
@@ -85,7 +87,7 @@ module View
       }
 
       h(:div, props, [
-        *tabs,
+        tabs,
         page,
       ])
     end
@@ -97,36 +99,41 @@ module View
     private
 
     def tabs
-      [
-        tab_button('Game'),
-        tab_button('Map', '#map'),
-        tab_button('Market', '#market'),
-        tab_button('Corporations', '#corporations'),
-        tab_button('Companies', '#companies'),
-        tab_button('Trains', '#trains'),
-        tab_button('Tiles', '#tiles'),
-      ]
-    end
-
-    def tab_button(name, anchor = '')
-      onclick = lambda do
-        path = @app_route.split('#').first
-        store(:app_route, path + anchor)
-      end
-
       props = {
-        on: { click: onclick },
         style: {
-          'outline-style': 'none',
-          'margin': '0 1rem 1rem 0',
+          overflow: 'auto',
+          'margin-bottom': '1rem',
+          'font-size': '105%',
         },
       }
 
-      if anchor == "##{route_anchor}" || anchor == '' && !route_anchor # rubocop:disable Style/IfUnlessModifier
-        props[:style]['background-color'] = 'lightgray'
-      end
+      h(:div, props, [
+        h(:div, { style: { width: 'max-content' } }, [
+          tab_button('Game'),
+          tab_button('Players', 'players'),
+          tab_button('Corporations', 'corporations'),
+          tab_button('Map', 'map'),
+          tab_button('Market', 'market'),
+          tab_button('Trains', 'trains'),
+          tab_button('Tiles', 'tiles'),
+          tab_button('Companies', 'companies'),
+        ]),
+      ])
+    end
 
-      h(:button, props, name)
+    def tab_button(name, anchor = '')
+      props = {
+        attrs: {
+          href: "##{anchor}",
+        },
+        style: {
+          'margin': '0 1rem 1rem 0',
+          'color': 'black',
+          'text-decoration': (route_anchor || '') == anchor ? '' : 'none',
+        },
+      }
+
+      h(:a, props, name)
     end
 
     def route_anchor
@@ -143,11 +150,11 @@ module View
     def render_action
       case @round
       when Engine::Round::Auction
-        h(AuctionRound, game: @game, round: @round)
+        h(AuctionRound, game: @game)
       when Engine::Round::Stock
-        h(StockRound, game: @game, round: @round)
+        h(StockRound, game: @game)
       when Engine::Round::Operating
-        h(OperatingRound, round: @round)
+        h(OperatingRound, game: @game)
       end
     end
 
@@ -160,10 +167,8 @@ module View
           h(Log, log: @game.log),
         ]),
         h(EntityOrder, round: @round),
-        render_action,
         h(Exchange),
-        h(:div, { style: { margin: '1rem 0 1.5rem 0' } }, @game.players.map { |p| h(Player, player: p, game: @game) }),
-        @round.operating? ? h(Map, game: @game) : h(StockMarket, stock_market: @game.stock_market),
+        render_action,
       ])
     end
   end

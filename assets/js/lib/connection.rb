@@ -54,13 +54,14 @@ module Lib
     private
 
     def send(path, method, data, block) # rubocop:disable Lint/UnusedMethodArgument
+      data = data&.merge('_client_id': `MessageBus.clientId`)
+
       %x{
         var payload = {
           method: #{method},
           headers: {
             'Content-Type': 'application/json',
             'Authorization': #{Lib::Storage['auth_token']},
-            'CLIENT_ID': MessageBus.clientId,
           }
         }
 
@@ -76,7 +77,7 @@ module Lib
           }
         }).catch(error => {
           if (typeof block === 'function') {
-            block(Opal.hash('error', error))
+            block(Opal.hash('error', JSON.stringify(error)))
           }
         })
       }

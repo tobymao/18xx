@@ -164,7 +164,7 @@ class Api < Roda
   def publish(channel, **data)
     MessageBus.publish(
       channel,
-      data.merge('_client_id': request.env['HTTP_CLIENT_ID']),
+      data.merge('_client_id': request.params['_client_id'])
     )
     {}
   end
