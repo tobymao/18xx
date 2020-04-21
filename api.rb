@@ -106,6 +106,10 @@ class Api < Roda
     on 'api' do |hr|
       hr.hash_routes :api
     end
+
+    on 'all_tiles' do
+      render(app_route: 'all_tiles')
+    end
   end
 
   route do |r|
@@ -126,10 +130,6 @@ class Api < Roda
     r.on 'game', Integer do |id|
       r.halt 404 unless (game = Game[id])
       render(game_data: game.to_h(include_actions: true))
-    end
-
-    r.on 'all_tiles' do
-      render(app_route: 'all_tiles')
     end
   end
 
