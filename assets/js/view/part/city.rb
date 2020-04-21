@@ -22,7 +22,7 @@ module View
       }.freeze
 
       # key: number of slots in city
-      # value: attrs for svg polygon (or rect, for 2 slots)
+      # value: [element name (sym), element attrs]
       BOX_ATTRS = {
         2 => [:rect, {
           fill: 'white',
@@ -87,7 +87,7 @@ module View
 
         children = []
 
-        children << render_box(slots.size) if slots.size > 1
+        children << render_box(slots.size) if (2..3).include?(slots.size)
 
         children += slots
 
