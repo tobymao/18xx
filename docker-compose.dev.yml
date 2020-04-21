@@ -16,6 +16,14 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: db_18xx
 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+
   nginx:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d

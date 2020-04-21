@@ -12,14 +12,6 @@ services:
       - ./db/data:/var/lib/postgresql/data
       - ./log/db:/var/log/postgresql
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
-    depends_on:
-      - db
-
   nginx:
     image: nginx:1.17
     ports:
