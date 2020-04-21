@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/hex'
 require 'view/part/base'
 require 'view/part/city_slot'
 
@@ -7,6 +8,7 @@ module View
   module Part
     class City < Base
       SLOT_RADIUS = 25
+      SLOT_DIAMETER = 2 * SLOT_RADIUS
 
       # key is how many city slots are part of the city; value is the offset for
       # the first city slot
@@ -18,6 +20,23 @@ module View
         5 => [0, -43],
         6 => [0, -50],
       }.freeze
+
+      # key: number of slots in city
+      # value: attrs for svg polygon (or rect, for 2 slots)
+      BOX_ATTRS = {
+        2 => [:rect, {
+          fill: 'white',
+          width: SLOT_DIAMETER,
+          height: SLOT_DIAMETER,
+          x: -SLOT_RADIUS,
+          y: -SLOT_RADIUS,
+        }],
+        3 => [:polygon, {
+          fill: 'white',
+          points: Lib::Hex::POINTS,
+          transform: 'scale(0.458)',
+        }]
+      }
 
       def preferred_render_locations
         region_weights =
@@ -48,7 +67,6 @@ module View
         @city = @tile.cities.first
       end
 
-      # TODO: render white "background" before slots
       def render_part
         slots = (0..(@city.slots - 1)).zip(@city.tokens).map do |slot_index, token|
           rotation = (360 / @city.slots) * slot_index
@@ -81,31 +99,8 @@ module View
       #   scaling the full-size hexagon
       # - implement for 4, 5, and 6 slot cities
       def render_box(slots)
-        box =
-          case slots
-          when 2
-            h(
-              :rect,
-              attrs: {
-                width: 2 * SLOT_RADIUS,
-                height: 2 * SLOT_RADIUS,
-                fill: 'white',
-                x: -SLOT_RADIUS,
-                y: -SLOT_RADIUS,
-              }
-            )
-          when 3
-            h(
-              :polygon,
-              attrs: {
-                points: '100,0 50,-87 -50,-87 -100,-0 -50,87 50,87',
-                fill: 'white',
-                transform: 'scale(0.458)',
-              }
-            )
-          end
-
-        h('g.city_box', [box])
+        element, attrs = BOX_ATTRS[slots]
+        h("#{element}.city_box", attrs: attrs)
       end
     end
   end
