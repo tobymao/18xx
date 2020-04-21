@@ -14,14 +14,13 @@ module View
       end
 
       attrs = {
-        class: 'triangular-grid',
         fill: 'none',
         opacity: 0.5,
         stroke: 'black',
         'stroke-width' => 2,
       }
 
-      h(:g, { attrs: attrs }, children)
+      h('g.triangular_grid', { attrs: attrs }, children)
     end
   end
 end
