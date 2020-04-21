@@ -60,12 +60,12 @@ class Api < Roda
     { error: e.message }
   end
 
-  plugin :assets, js: 'app.rb'
+  plugin :assets, js: 'app.rb', gzip: true
 
   compile_assets
   APP_JS_PATH = assets_opts[:compiled_js_path]
   APP_JS = "#{APP_JS_PATH}.#{assets_opts[:compiled]['js']}.js"
-  Dir[APP_JS_PATH + '*'].sort.each { |file| File.delete(file) if file != APP_JS }
+  Dir[APP_JS_PATH + '*'].sort.each { |file| File.delete(file) unless file.include?(APP_JS) }
   CONTEXT = ExecJS.compile(File.open(APP_JS, 'r:UTF-8', &:read))
 
   plugin :public
