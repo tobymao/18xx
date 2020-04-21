@@ -109,7 +109,7 @@ class Api < Roda
       render_with_games
     end
 
-    r.on %w[/ about signup login profile] do
+    r.on %w[/ about signup login profile all_tiles] do
       render_with_games
     end
 

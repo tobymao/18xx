@@ -2,7 +2,7 @@
 
 module View
   class Tiles < Snabberb::Component
-    def render_tile_block(name, num: nil)
+    def render_tile_block(name, num: nil, tile: nil, location_name: nil)
       props = {
         style: {
           display: 'inline-block',
@@ -23,7 +23,10 @@ module View
           h(:g, { attrs: { transform: 'scale(0.4)' } }, [
             h(
               Hex,
-              hex: Engine::Hex.new('A1', layout: 'flat', tile: Engine::Tile.for(name)),
+              hex: Engine::Hex.new('A1',
+                                   layout: 'flat',
+                                   location_name: location_name,
+                                   tile: tile || Engine::Tile.for(name)),
               role: :tile_page
             )
           ])

@@ -1,20 +1,41 @@
 # frozen_string_literal: true
 
+require 'lib/hex'
 require 'view/part/base'
 require 'view/part/city_slot'
 
 module View
   module Part
     class City < Base
+      SLOT_RADIUS = 25
+      SLOT_DIAMETER = 2 * SLOT_RADIUS
+
       # key is how many city slots are part of the city; value is the offset for
       # the first city slot
       CITY_SLOT_POSITION = {
         1 => [0, 0],
-        2 => [-25, 0],
+        2 => [-SLOT_RADIUS, 0],
         3 => [0, -29],
-        4 => [-25, -25],
+        4 => [-SLOT_RADIUS, -SLOT_RADIUS],
         5 => [0, -43],
         6 => [0, -50],
+      }.freeze
+
+      # key: number of slots in city
+      # value: [element name (sym), element attrs]
+      BOX_ATTRS = {
+        2 => [:rect, {
+          fill: 'white',
+          width: SLOT_DIAMETER,
+          height: SLOT_DIAMETER,
+          x: -SLOT_RADIUS,
+          y: -SLOT_RADIUS,
+        }],
+        3 => [:polygon, {
+          fill: 'white',
+          points: Lib::Hex::POINTS,
+          transform: 'scale(0.458)',
+        }]
       }.freeze
 
       def preferred_render_locations
@@ -46,10 +67,7 @@ module View
         @city = @tile.cities.first
       end
 
-      # TODO: render white "background" before slots
       def render_part
-        slot_radius = 25
-
         slots = (0..(@city.slots - 1)).zip(@city.tokens).map do |slot_index, token|
           rotation = (360 / @city.slots) * slot_index
 
@@ -61,13 +79,28 @@ module View
                   h(CitySlot, city: @city,
                               token: token,
                               slot_index: slot_index,
-                              radius: slot_radius,
+                              radius: SLOT_RADIUS,
                               reservation: @city.reservations[slot_index])
                 ])
             ])
         end
 
-        h(:g, { attrs: { class: 'city' } }, slots)
+        children = []
+
+        children << render_box(slots.size) if (2..3).include?(slots.size)
+
+        children += slots
+
+        h('g.city', children)
+      end
+
+      # TODOS:
+      # - do actual math and get points for the 3-slot hexagon, rather than
+      #   scaling the full-size hexagon
+      # - implement for 4, 5, and 6 slot cities
+      def render_box(slots)
+        element, attrs = BOX_ATTRS[slots]
+        h("#{element}.city_box", attrs: attrs)
       end
     end
   end

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/hex'
 require 'lib/tile_selector'
 require 'view/tile'
 require 'view/triangular_grid'
@@ -10,7 +11,7 @@ require 'engine/route'
 module View
   class Hex < Snabberb::Component
     SIZE = 100
-    POINTS = '100,0 50,-87 -50,-87 -100,-0 -50,87 50,87'
+
     LAYOUT = {
       flat: [SIZE * 3 / 2, SIZE * Math.sqrt(3) / 2],
       pointy: [SIZE * Math.sqrt(3) / 2, SIZE * 3 / 2],
@@ -33,7 +34,7 @@ module View
     needs :role, default: :map
 
     def render
-      children = [h(:polygon, attrs: { points: self.class::POINTS })]
+      children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
 
       @selected = @hex == @tile_selector&.hex
       @tile = @selected && @tile_selector.tile ? @tile_selector.tile : @hex.tile
