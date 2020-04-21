@@ -29,7 +29,11 @@ If you don't have a `./db/data/` directory, you should create it before starting
 the stack. It is used as the mountpoint for the database, so that everything can
 persist on the host machine.
 
-If it does not exist, the db can only persist in a docker volume.
+If it does not exist when `docker-compose up` is run, Docker will create
+`./db/data/`, it will be owned by root, and the postgres container will hit an
+error, leaving empty `./db/data/`. In that scenario, it should be `chown`ed to
+be owned by you instead of root, and then you can the `docker-compose up`
+command again.
 
 If a file like `./db/data/.keep` is added so that git keeps that directory
 around for everyone, postgres initialization fails due to the data directory not
