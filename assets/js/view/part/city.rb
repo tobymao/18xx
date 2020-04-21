@@ -36,7 +36,7 @@ module View
           points: Lib::Hex::POINTS,
           transform: 'scale(0.458)',
         }]
-      }
+      }.freeze
 
       def preferred_render_locations
         region_weights =
