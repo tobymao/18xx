@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+PRODUCTION = ENV['RACK_ENV'] == 'production'
+
 require 'cgi'
 require 'execjs'
 require 'message_bus'
@@ -75,6 +77,7 @@ class Api < Roda
   plugin :json_parser
   plugin :halt
 
+  use Rack::Deflater unless PRODUCTION
   use MessageBus::Rack::Middleware
 
   PAGE_LIMIT = 100
