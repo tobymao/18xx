@@ -4,7 +4,7 @@ services:
   rack:
     image: 18xx_rack:dev
     environment:
-      DATABASE_URL: postgres://root:password@db:5432/db_18xx
+      DATABASE_URL: postgres://root:password@db:5432/18xx_development
     volumes:
       - .:/18xx
       - /18xx/vendor
@@ -14,7 +14,7 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: db_18xx
+      POSTGRES_DB: 18xx_development
 
   adminer:
     image: adminer
