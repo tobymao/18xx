@@ -2,7 +2,7 @@
 
 module View
   class TrainRoster < Snabberb::Component
-    needs :game, store: true
+    needs :game
 
     def render
       @depot = @game.depot
@@ -13,22 +13,18 @@ module View
     end
 
     def render_body
-      props = {
-        style: {
-          'margin-top': '1rem',
-        },
-      }
-
-      children = []
-
-      children << h(:div, props, [
-        upcoming_trains
-      ])
+      children = [h(:div, [upcoming_trains])]
 
       unless @depot.discarded.empty?
+        props = {
+          style: {
+            'margin-top': '1rem',
+          },
+        }
+
         children << h(:div, props, [
-            discarded_trains,
-          ])
+          discarded_trains,
+        ])
       end
 
       h(:div, {}, children)
@@ -44,10 +40,10 @@ module View
       rows = @depot.upcoming.group_by(&:name).map do |name, trains|
         train = trains.first
         h(:tr, [
-            h(:td, td_props, name),
-            h(:td, td_props, @game.format_currency(train.price)),
-            h(:td, td_props, trains.size),
-          ])
+          h(:td, td_props, name),
+          h(:td, td_props, @game.format_currency(train.price)),
+          h(:td, td_props, trains.size),
+        ])
       end
 
       h(:table, [
@@ -69,21 +65,21 @@ module View
 
       rows = @depot.discarded.map do |train|
         h(:tr, [
-            h(:td, td_props, train.name),
-            h(:td, td_props, @game.format_currency(train.price)),
-         ])
+          h(:td, td_props, train.name),
+          h(:td, td_props, @game.format_currency(train.price)),
+        ])
       end
 
       h(:div, [
-          h(:div, 'In bank pool:'),
-          h(:table, [
-              h(:tr, [
-                  h(:th, td_props, 'Type'),
-                  h(:th, td_props, 'Price'),
-                ]),
-              *rows
-            ])
+        h(:div, 'In bank pool:'),
+        h(:table, [
+          h(:tr, [
+            h(:th, td_props, 'Type'),
+            h(:th, td_props, 'Price'),
+          ]),
+          *rows
         ])
+      ])
     end
   end
 end

@@ -2,6 +2,7 @@
 
 require 'view/actionable'
 require 'view/company'
+require 'view/players'
 require 'view/undo_and_pass'
 
 require 'engine/action/bid'
@@ -10,16 +11,17 @@ module View
   class AuctionRound < Snabberb::Component
     include Actionable
 
-    needs :round
     needs :selected_company, default: nil, store: true
 
     def render
+      @round = @game.round
       @current_entity = @round.current_entity
 
       h(:div, [
         h(UndoAndPass, undo: @game.actions.size.positive?),
         *render_companies,
         render_input,
+        h(View::Players, game: @game),
       ].compact)
     end
 

@@ -52,7 +52,7 @@ module Engine
       end
 
       def reserved_by?(corporation)
-        @reservations.any? { |r| r == corporation.sym }
+        @reservations.any? { |r| r == corporation.name }
       end
 
       def add_reservation!(corporation_sym)
@@ -73,7 +73,7 @@ module Engine
       end
 
       def get_slot(corporation)
-        @reservations.index(corporation.sym) || @tokens.find_index.with_index do |t, i|
+        @reservations.index(corporation.name) || @tokens.find_index.with_index do |t, i|
           t.nil? && @reservations[i].nil?
         end
       end

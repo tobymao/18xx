@@ -4,8 +4,8 @@ require 'view/corporation'
 
 module View
   class Corporations < Snabberb::Component
-    needs :game, store: true
-    needs :user, default: nil, store: true
+    needs :game
+    needs :user, default: nil
 
     def render
       player_owned, bank_owned = @game.corporations.partition(&:owner)

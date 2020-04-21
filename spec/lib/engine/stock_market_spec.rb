@@ -89,7 +89,7 @@ module Engine
         subject.set_par(corporation_2, current_price)
         subject.move_down(corporation)
         expect(corporation.share_price).to be(current_price)
-        expect(current_price.corporations.map(&:sym)).to eq(%w[a b])
+        expect(current_price.corporations.map(&:name)).to eq(%w[a b])
       end
     end
   end

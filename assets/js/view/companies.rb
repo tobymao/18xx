@@ -4,8 +4,8 @@ require 'view/company'
 
 module View
   class Companies < Snabberb::Component
-    needs :game, store: true
-    needs :user, default: nil, store: true
+    needs :game
+    needs :user, default: nil
 
     def render
       children = @game

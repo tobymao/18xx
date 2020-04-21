@@ -4,7 +4,8 @@ require 'view/token'
 
 module View
   class StockMarket < Snabberb::Component
-    needs :stock_market
+    needs :game
+    needs :show_bank, default: false
 
     COLOR_MAP = {
       red: '#ffaaaa',
@@ -30,7 +31,7 @@ module View
         border: 'solid 1px rgba(0,0,0,0.2)',
       )
 
-      grid = @stock_market.market.flat_map do |prices|
+      grid = @game.stock_market.market.flat_map do |prices|
         rows = prices.map do |price|
           if price
             style = box_style.merge('background-color' => COLOR_MAP[price.color])
@@ -63,13 +64,25 @@ module View
         h(:div, { style: { width: 'max-content' } }, rows)
       end
 
+      bank_props = {
+        style: {
+          'margin-bottom': '1rem'
+        }
+      }
+
+      children = []
+
+      children << h(:div, bank_props, "Bank Cash: #{@game.format_currency(@game.bank.cash)}") if @show_bank
+      children.concat(grid)
+
       props = {
         style: {
           width: '100%',
           overflow: 'auto',
         },
       }
-      h(:div, props, grid)
+
+      h(:div, props, children)
     end
   end
 end

@@ -14,6 +14,7 @@ module View
 
       card_style = {
         display: 'inline-block',
+        cursor: 'pointer',
         position: 'relative',
         border: 'solid 1px gainsboro',
         padding: '0.5rem',
@@ -28,12 +29,17 @@ module View
         card_style['border'] = 'solid 1px black'
         card_style['background-color'] = '#dfd'
       end
-      h(:div, { style: card_style, on: { click: onclick } }, [
+
+      children = [
         render_title,
         render_holdings,
         render_shares,
-        render_companies
-      ])
+      ]
+
+      children << render_companies if @corporation.companies.any?
+      children << render_president if @corporation.owner
+
+      h(:div, { style: card_style, on: { click: onclick } }, children)
     end
 
     def render_title
@@ -45,7 +51,7 @@ module View
         'font-weight': 'bold',
         margin: '-0.5rem -0.5rem 0 -0.5rem'
       }
-      h(:div, { style: title_style }, @corporation.name)
+      h(:div, { style: title_style }, @corporation.full_name)
     end
 
     def render_holdings
@@ -61,6 +67,7 @@ module View
       holdings_style['background-color'] = '#9b9' if @game.round.can_act?(@corporation)
 
       h(:div, { style: holdings_style }, [
+        render_header_segment('Sym', @corporation.name),
         render_trains,
         render_header_segment(@game.format_currency(@corporation.cash), 'Cash'),
         render_tokens
@@ -181,8 +188,6 @@ module View
     end
 
     def render_companies
-      return h(:div, '') if @corporation.companies.empty?
-
       props = {
         style: {
           'text-align': 'center'
@@ -224,6 +229,17 @@ module View
         h(:td, number_props, @game.format_currency(company.value)),
         h(:td, number_props, @game.format_currency(company.revenue)),
       ])
+    end
+
+    def render_president
+      props = {
+        style: {
+          'text-align': 'center',
+          'font-weight': 'bold',
+        }
+      }
+
+      h(:div, props, "President: #{@corporation.owner.name}")
     end
 
     def selected?

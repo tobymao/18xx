@@ -55,7 +55,7 @@ module View
     end
 
     def render_map
-      w_size, h_size = @layout == :flat ? [100, 50] : [50, 100]
+      w_size, h_size = @layout == :flat ? [85, 50] : [50, 85]
       width = @cols.size * w_size
       height = @rows.size * h_size
       props = {

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module View
-  class Player < Snabberb::Component
+  class Bank < Snabberb::Component
     needs :player
     needs :game
 

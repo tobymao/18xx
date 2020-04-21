@@ -2,7 +2,9 @@
 
 require 'view/actionable'
 require 'view/corporation'
+require 'view/players'
 require 'view/sell_shares'
+require 'view/stock_market'
 require 'view/undo_and_pass'
 
 require 'engine/action/buy_share'
@@ -13,12 +15,12 @@ module View
   class StockRound < Snabberb::Component
     include Actionable
 
-    needs :round
     needs :selected_corporation, default: nil, store: true
     needs :last_player, default: nil, store: true
-    needs :game, store: true
 
     def render
+      @round = @game.round
+
       @current_entity = @round.current_entity
       if @last_player != @current_entity
         store(:selected_corporation, nil, skip: true)
@@ -29,7 +31,10 @@ module View
         h(UndoAndPass),
         *render_corporations,
       ]
+
       children << render_input if @selected_corporation
+      children << h(View::Players, game: @game)
+      children << h(View::StockMarket, game: @game)
 
       h(:div, children)
     end

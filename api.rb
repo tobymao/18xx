@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+PRODUCTION = ENV['RACK_ENV'] == 'production'
+
 require 'cgi'
 require 'execjs'
 require 'message_bus'
@@ -60,12 +62,12 @@ class Api < Roda
     { error: e.message }
   end
 
-  plugin :assets, js: 'app.rb'
+  plugin :assets, js: 'app.rb', gzip: true
 
   compile_assets
   APP_JS_PATH = assets_opts[:compiled_js_path]
   APP_JS = "#{APP_JS_PATH}.#{assets_opts[:compiled]['js']}.js"
-  Dir[APP_JS_PATH + '*'].sort.each { |file| File.delete(file) if file != APP_JS }
+  Dir[APP_JS_PATH + '*'].sort.each { |file| File.delete(file) unless file.include?(APP_JS) }
   CONTEXT = ExecJS.compile(File.open(APP_JS, 'r:UTF-8', &:read))
 
   plugin :public
@@ -75,6 +77,7 @@ class Api < Roda
   plugin :json_parser
   plugin :halt
 
+  use Rack::Deflater unless PRODUCTION
   use MessageBus::Rack::Middleware
 
   PAGE_LIMIT = 100
@@ -114,7 +117,9 @@ class Api < Roda
     end
 
     r.on 'game', Integer do |id|
-      r.halt 404 unless (game = Game[id])
+      halt(404, 'Game not found') unless (game = Game[id])
+      halt(400, 'Game has not started yet') if game.status == 'new'
+
       render(game_data: game.to_h(include_actions: true))
     end
   end
@@ -164,7 +169,7 @@ class Api < Roda
   def publish(channel, **data)
     MessageBus.publish(
       channel,
-      data.merge('_client_id': request.env['HTTP_CLIENT_ID']),
+      data.merge('_client_id': request.params['_client_id'])
     )
     {}
   end

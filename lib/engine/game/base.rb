@@ -87,10 +87,10 @@ module Engine
           price: 1100,
           available_on: '6',
           discount: {
-            '4': 300,
-            '5': 300,
-            '6': 300,
-            'D': 300,
+            '4' => 300,
+            '5' => 300,
+            '6' => 300,
+            'D' => 300,
           },
           num: 20,
         },
@@ -325,7 +325,7 @@ module Engine
 
               # reserve corporation home spots
               corporations.select { |c| c.coordinates == coord }.each do |c|
-                tile.cities.first.add_reservation!(c.sym)
+                tile.cities.first.add_reservation!(c.name)
               end
 
               # name the location (city/town)
