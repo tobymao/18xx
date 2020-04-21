@@ -114,7 +114,9 @@ class Api < Roda
     end
 
     r.on 'game', Integer do |id|
-      r.halt 404 unless (game = Game[id])
+      halt(404, 'Game not found') unless (game = Game[id])
+      halt(400, 'Game has not started yet') if game.status == 'new'
+
       render(game_data: game.to_h(include_actions: true))
     end
   end
