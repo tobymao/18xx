@@ -44,7 +44,7 @@ module Engine
 
         @current_entity.cash >= share.price &&
           (corporation.share_price&.color == :brown || @current_entity.percent_of(corporation) < 60) &&
-          !(corporation.share_price.counts_for_limit && @current_entity.num_certs == @game.cert_limit) &&
+          !(!!corporation.share_price&.counts_for_limit && @current_entity.num_certs >= @game.cert_limit) &&
           !@players_sold[@current_entity][corporation] &&
           (@current_actions & self.class::PURCHASE_ACTIONS).none?
       end

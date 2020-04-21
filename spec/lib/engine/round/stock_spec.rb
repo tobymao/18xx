@@ -18,7 +18,7 @@ module Engine
     let(:player_0) { game.players[0] }
     let(:subject) { Round::Stock.new(game.players, game: game) }
 
-    describe '#can_buy' do
+    describe '#can_buy?' do
       it 'can buy yellow at limit' do
         player_0.cash = 10_000
         market.set_par(corp_0, market.market[2][4])
@@ -30,6 +30,10 @@ module Engine
         1.times { game.share_pool.buy_share(player_0, corp_2.shares[0]) } # at 6-player cert limit
         expect(subject.can_buy?(corp_2.shares[0])).to eq(false)
         expect(subject.can_buy?(corp_3.shares[0])).to eq(true)
+      end
+
+      it 'works with no par' do
+        expect(subject.can_buy?(corp_0.shares[0])).to be_truthy
       end
     end
   end
