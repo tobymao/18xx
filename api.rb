@@ -159,7 +159,10 @@ class Api < Roda
   end
 
   def publish(channel, **data)
-    MessageBus.publish(channel, data)
+    MessageBus.publish(
+      channel,
+      data.merge('_client_id': request.env['HTTP_CLIENT_ID']),
+    )
     {}
   end
 end

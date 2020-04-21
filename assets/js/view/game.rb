@@ -61,16 +61,9 @@ module View
         end
 
       @connection.subscribe(game_path) do |data|
-        if (actions = data['actions'])
-          next store(:game, @game.clone(actions))
-        end
-
-        n_id = data['id']
-        o_id = @game.current_action_id
-
-        if n_id == o_id
+        if data['id'] == @game.current_action_id
           store(:game, @game.process_action(data))
-        elsif n_id > o_id
+        else
           @connection.get(game_path) do |new_data|
             store(:game, @game.clone(new_data['actions']))
           end

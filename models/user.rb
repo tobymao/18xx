@@ -29,8 +29,6 @@ class User < Base
     {
       id: id,
       name: name,
-      created_at: pp_created_at,
-      updated_at: pp_updated_at,
     }
   end
 end

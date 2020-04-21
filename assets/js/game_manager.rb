@@ -71,9 +71,9 @@ module GameManager
   end
 
   def update_game(game)
-    @games += game if @games.none? { |g| g['id'] == game['id'] }
+    @games += [game] if @games.none? { |g| g['id'] == game['id'] }
     @games.reject! { |g| g['id'] == game['id'] } if game['deleted']
     @games.map! { |g| g['id'] == game['id'] ? game : g }
-    store(:games, @games)
+    store(:games, @games.sort_by { |g| g['id'] }.reverse)
   end
 end

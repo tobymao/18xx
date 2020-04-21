@@ -20,7 +20,9 @@ module Lib
 
       %x{
         window.MessageBus.subscribe(#{channel}, function(data) {
-          block.$call(Opal.Hash.$new(data))
+          if (data['_client_id'] != MessageBus.clientId) {
+            block.$call(Opal.Hash.$new(data))
+          }
         }, message_id)
       }
     end
@@ -58,6 +60,7 @@ module Lib
           headers: {
             'Content-Type': 'application/json',
             'Authorization': #{Lib::Storage['auth_token']},
+            'CLIENT_ID': MessageBus.clientId,
           }
         }
 

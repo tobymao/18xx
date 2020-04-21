@@ -11,10 +11,7 @@ module View
 
     def render
       @connection.subscribe('/chat', 0) do |data|
-        name = data[:user][:name]
-        ts = data[:created_at]
-        message = data[:message]
-        store(:log, @log + ["#{ts} #{name}: #{message}"])
+        add_line(data)
       end
 
       destroy = lambda do
@@ -29,8 +26,10 @@ module View
         code = event.JS['keyCode']
 
         if code && code == 13
-          @connection.post('/chat', message: event.JS['target'].JS['value'])
+          message = event.JS['target'].JS['value']
+          add_line(user: @user, created_at: Time.now.strftime('%m/%d %H:%M:%S'), message: message)
           event.JS['target'].JS['value'] = ''
+          @connection.post('/chat', message: message)
         end
       end
 
@@ -47,6 +46,13 @@ module View
       }
 
       h('div.half', props, children)
+    end
+
+    def add_line(data)
+      name = data[:user][:name]
+      ts = data[:created_at]
+      message = data[:message]
+      store(:log, @log + ["#{ts} #{name}: #{message}"])
     end
   end
 end

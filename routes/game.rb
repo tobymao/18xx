@@ -62,7 +62,7 @@ class Api
             # POST '/api/game/<game_id>//action/rollback'
             r.is 'rollback' do
               game.actions.last.destroy
-              publish(channel, actions: actions_h(game))
+              publish(channel, id: -1)
             end
           end
 
@@ -125,7 +125,7 @@ class Api
 
   def return_and_notify(game)
     game_h = game.to_h
-    MessageBus.publish('/games', game_h)
+    publish('/games', game_h)
     game_h
   end
 end

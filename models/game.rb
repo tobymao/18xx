@@ -15,7 +15,9 @@ class Game < Base
   end
 
   def to_h(include_actions: false)
-    h = {
+    actions_h = include_actions ? actions.map(&:to_h) : []
+
+    {
       id: id,
       description: description,
       user: user.to_h,
@@ -28,12 +30,9 @@ class Game < Base
       round: round,
       acting: acting,
       result: result,
+      actions: actions_h,
       created_at: pp_created_at,
       updated_at: pp_updated_at,
     }
-
-    h[:actions] = actions.map(&:to_h) if include_actions
-
-    h
   end
 end
