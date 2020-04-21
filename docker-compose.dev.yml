@@ -5,6 +5,7 @@ services:
     image: 18xx_rack:dev
     environment:
       DATABASE_URL: postgres://root:password@db:5432/18xx_development
+      RACK_ENV: development
     volumes:
       - .:/18xx
       - /18xx/vendor
