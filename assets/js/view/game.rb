@@ -102,8 +102,13 @@ module View
       props = {
         style: {
           overflow: 'auto',
-          'margin-bottom': '1rem',
-          'font-size': '105%',
+          position: 'sticky',
+          padding: '1.5rem',
+          margin: '-16px -1.5rem 1.5rem -1.5rem',
+          top: '0',
+          'background-color': 'gainsboro',
+          'font-size': 'large',
+          'z-index': '9999',
         },
       }
 
