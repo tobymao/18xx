@@ -15,8 +15,10 @@ Dir['./models/**/*.rb'].sort.each { |file| require file }
 MessageBus.configure(
   backend: :postgres,
   backend_options: {
-    user: CGI.parse(URI.parse(DB.uri).query)['user'][0],
-    dbname: URI.parse(DB.uri).path.gsub('/', ''),
+    user: DB.opts[:user],
+    dbname: DB.opts[:database],
+    password: DB.opts[:password],
+    port: DB.opts[:port],
   },
   clear_every: 10,
 )

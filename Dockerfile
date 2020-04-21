@@ -17,4 +17,4 @@ COPY . .
 # properly waiting for the db to be ready
 CMD sleep 10 && \
     bundle exec rake dev_up && \
-    bundle exec rerun --background -i 'build/*' -i 'public/*' 'puma -t 0:128 --bind tcp://0.0.0.0:9292'
+    bundle exec rerun --background -i 'build/*' -i 'public/*' 'puma'
