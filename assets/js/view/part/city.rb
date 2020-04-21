@@ -73,7 +73,7 @@ module View
 
         children += slots
 
-        h(:g, { attrs: { class: 'city' } }, children)
+        h('g.city', children)
       end
 
       # TODOS:
@@ -105,9 +105,7 @@ module View
             )
           end
 
-        h(:g, { attrs: { class: 'city-box' } }, [
-            box
-          ])
+        h('g.city_box', [box])
       end
     end
   end
