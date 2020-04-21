@@ -96,10 +96,6 @@ class Api < Roda
         )
       end
     end
-
-    on 'all_tiles' do
-      render(app_route: 'all_tiles')
-    end
   end
 
   route do |r|
@@ -113,7 +109,7 @@ class Api < Roda
       render_with_games
     end
 
-    r.on %w[/ about signup login profile] do
+    r.on %w[/ about signup login profile all_tiles] do
       render_with_games
     end
 
