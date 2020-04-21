@@ -20,8 +20,8 @@ module View
       h(:div, [
         h(UndoAndPass, undo: @game.actions.size.positive?),
         *render_companies,
-        h(View::Players, game: @game),
         render_input,
+        h(View::Players, game: @game),
       ].compact)
     end
 
