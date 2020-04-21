@@ -3,21 +3,11 @@ version: '3.5'
 services:
   rack:
     build: .
-    image: 18xx_rack:dev
-    volumes:
-      - .:/18xx
-      - /18xx/vendor
-    environment:
-      DATABASE_URL: postgres://root:password@db:5432/db_18xx
     depends_on:
       - db
 
   db:
     build: ./db/
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: db_18xx
     volumes:
       - ./db/data:/var/lib/postgresql/data
       - ./log/db:/var/log/postgresql
@@ -35,8 +25,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - ./log/nginx:/var/log/nginx
     depends_on:
       - rack
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./log/nginx:/var/log/nginx

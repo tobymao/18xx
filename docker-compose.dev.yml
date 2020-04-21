@@ -1,0 +1,22 @@
+version: '3.5'
+
+services:
+  rack:
+    image: 18xx_rack:dev
+    environment:
+      DATABASE_URL: postgres://root:password@db:5432/db_18xx
+    volumes:
+      - .:/18xx
+      - /18xx/vendor
+
+  db:
+    build: ./db/
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db_18xx
+
+  nginx:
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./log/nginx:/var/log/nginx
