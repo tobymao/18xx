@@ -39,7 +39,7 @@ module View
 
       h(:div, { style: header_style }, [
         render_header_segment(@player.name, 'Player'),
-        render_header_segment(get_order_number, 'Order'),
+        render_header_segment(order_number, 'Order'),
         render_header_segment(@game.format_currency(@player.cash), 'Cash'),
         render_header_segment(@game.format_currency(@player.value), 'Value'),
         render_header_segment("#{@player.num_certs}/#{@game.cert_limit}", 'Certs'),
@@ -71,17 +71,13 @@ module View
       ])
     end
 
-    def get_order_number
-      number = @game.players.find_index( @player ) + 1
-      if number == 1
-        return '1st'
-      elsif number == 2
-        return '2nd'
-      elsif number == 3
-        return '3rd'
-      else
-        return number.to_s + 'th'
-      end
+    def order_number
+      number = @game.players.find_index(@player) + 1
+      return '1st' if number == 1
+      return '2nd' if number == 2
+      return '3rd' if number == 3
+
+      number.to_s + 'th'
     end
 
     def render_body
