@@ -1,6 +1,13 @@
-# App
+# Development
 
-## Development
+### Droplet configuration
+
+If configuring the droplet from scratch, these are the requirements:
+
+* `docker`
+* `docker-compose`
+* `make`
+* this repo (via `git clone`)
 
 ### Anatomy of a Tile
 
@@ -26,6 +33,9 @@ To start the stack with production config, run:
 ```
 make prod_up
 ```
+
+As with dev, `make prod_up_b` will add `--build` to the compose command ran by
+`make prod_up`.
 
 * access the site at http://localhost
 * access Adminer at http://localhost:8080/?pgsql=db&username=root&db=db_18xx
