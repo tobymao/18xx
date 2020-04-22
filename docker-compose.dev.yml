@@ -6,12 +6,13 @@ services:
     environment:
       DATABASE_URL: postgres://root:password@db:5432/18xx_development
       RACK_ENV: development
+    ports:
+      - 9292:9292
     volumes:
       - .:/18xx
       - /18xx/vendor
 
   db:
-    build: ./db/
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
@@ -24,8 +25,3 @@ services:
       - 8080:8080
     depends_on:
       - db
-
-  nginx:
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./log/nginx:/var/log/nginx

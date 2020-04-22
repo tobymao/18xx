@@ -14,6 +14,14 @@ services:
       - POSTGRES_PASSWORD
       - POSTGRES_DB
 
-  # use Dockerfile to copy nginx conf into place instead of using volume
   nginx:
     build: ./nginx/
+    image: nginx:1.17
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./log/nginx:/var/log/nginx
+      - /etc/18xxgames/ssl:/etc/18xxgames/ssl
+    depends_on:
+      - rack

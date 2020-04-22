@@ -11,13 +11,3 @@ services:
     volumes:
       - ./db/data:/var/lib/postgresql/data
       - ./log/db:/var/log/postgresql
-
-  nginx:
-    image: nginx:1.17
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./log/nginx:/var/log/nginx
-    depends_on:
-      - rack
