@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
-require 'rspec/core/rake_task'
-require 'rubocop/rake_task'
+unless ENV['RACK_ENV'] == 'production'
+  require 'rspec/core/rake_task'
+  require 'rubocop/rake_task'
 
-# Specs
-RSpec::Core::RakeTask.new(:spec)
-RuboCop::RakeTask.new
+  # Specs
+  RSpec::Core::RakeTask.new(:spec)
+  RuboCop::RakeTask.new
 
-task default: %i[spec rubocop]
+  task default: %i[spec rubocop]
+end
 
 # Migrate
-
 migrate = lambda do |env, version|
   ENV['RACK_ENV'] = env
   require_relative 'db'
