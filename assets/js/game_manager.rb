@@ -40,7 +40,7 @@ module GameManager
   end
 
   def enter_game(game)
-    @connection.safe_post(url(game)) do |data|
+    @connection.safe_get(url(game)) do |data|
       store(:game_data, data, skip: true)
       store(:app_route, url(game))
     end

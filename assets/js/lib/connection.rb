@@ -41,7 +41,17 @@ module Lib
       send(path, 'POST', data, block)
     end
 
-    def safe_post(path, params, &block)
+    def safe_get(path, &block)
+      get(path) do |data|
+        if (error = data['error'])
+          @root.store(:flash_opts, error)
+        elsif block
+          block.call(data)
+        end
+      end
+    end
+
+    def safe_post(path, params = nil, &block)
       post(path, params) do |data|
         if (error = data['error'])
           @root.store(:flash_opts, error)
