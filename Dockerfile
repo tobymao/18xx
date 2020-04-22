@@ -6,9 +6,9 @@ WORKDIR /18xx
 
 COPY Gemfile Gemfile.lock ./
 RUN if [ "$RACK_ENV" = "production" ]; \
-    then bundle install --without test development; \
-    else bundle install; \
-    fi
+    then bundle config set without 'test development'; \
+    fi; \
+    bundle install
 COPY . .
 
 CMD bundle exec rake dev_up && \
