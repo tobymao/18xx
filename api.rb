@@ -62,7 +62,7 @@ class Api < Roda
     { error: e.message }
   end
 
-  compress = lambda do |file, type, content|
+  compress = lambda do |_, type, content|
     type == :js && PRODUCTION ? Uglifier.compile(content, harmony: true) : content
   end
   plugin :assets, js: 'app.rb', gzip: true, concat_only: true, postprocessor: compress
