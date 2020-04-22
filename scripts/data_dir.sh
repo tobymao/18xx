@@ -14,4 +14,4 @@
 
 mkdir -p db/data
 
-[ $(stat -c '%U' db/data) = 'root' ] && sudo chown -R $USER:$USER db/data || true
+[ $(ls -l db/ | grep data | awk '{print $3}' | head -1) = 'root' ] && sudo chown -R $USER:$USER db/data || true

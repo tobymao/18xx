@@ -1,2 +1,4 @@
 vendor/
 db/data/
+log/
+.git*
