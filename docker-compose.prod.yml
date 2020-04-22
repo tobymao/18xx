@@ -2,11 +2,11 @@ version: '3.5'
 
 services:
   rack:
-    command: bundle exec rake prod_up && bundle exec puma
+    command: bash -c "bundle exec rake prod_up && bundle exec puma"
     image: 18xx_rack:prod
     environment:
       RACK_ENV: production
-      - DATABASE_URL
+      DATABASE_URL: $DATABASE_URL
 
   db:
     environment:
