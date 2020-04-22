@@ -72,7 +72,7 @@ class Api
           r.is 'delete' do
             game_h = game.to_h.merge(deleted: true)
             game.destroy
-            publish('/games', game_h)
+            publish('/games', **game_h)
             game_h
           end
 
@@ -125,7 +125,7 @@ class Api
 
   def return_and_notify(game)
     game_h = game.to_h
-    publish('/games', game_h)
+    publish('/games', **game_h)
     game_h
   end
 end
