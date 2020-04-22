@@ -67,7 +67,7 @@ module View
       holdings_style['background-color'] = '#9b9' if @game.round.can_act?(@corporation)
 
       h(:div, { style: holdings_style }, [
-        render_header_segment('Sym', @corporation.name),
+        render_header_segment(@corporation.name, 'Sym'),
         render_trains,
         render_header_segment(@game.format_currency(@corporation.cash), 'Cash'),
         render_tokens
