@@ -1,4 +1,4 @@
-# App
+# 18xx.games
 
 ## Development
 
