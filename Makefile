@@ -32,3 +32,7 @@ prod_up : prod_link data_dir ensure_prod_env
 	docker-compose up
 prod_up_b : prod_link data_dir ensure_prod_env
 	docker-compose up --build
+
+# remotely deploy latest master in prod
+prod_deploy :
+	./scripts/deploy_prod.sh

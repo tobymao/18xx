@@ -37,6 +37,13 @@ make prod_up
 As with dev, `make prod_up_b` will add `--build` to the compose command ran by
 `make prod_up`.
 
+To update the code on the server with the latest master and rerun
+`docker-compose up --build`:
+
+```
+make prod_deploy
+```
+
 * access the site at http://localhost
 * access Adminer at http://localhost:8080/?pgsql=db&username=root&db=db_18xx
 
