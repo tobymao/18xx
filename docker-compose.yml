@@ -11,3 +11,5 @@ services:
     volumes:
       - ./db/data:/var/lib/postgresql/data
       - ./log/db:/var/log/postgresql
+    ports:
+      - 5432:5432
