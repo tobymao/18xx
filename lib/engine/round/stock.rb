@@ -139,7 +139,7 @@ module Engine
       end
 
       def buy_share(entity, share)
-        raise GameError, "Cannot buy a share of #{share.name}" unless can_buy?(share)
+        raise GameError, "Cannot buy a share of #{share&.corporation&.name}" unless can_buy?(share)
 
         @share_pool.buy_share(entity, share)
       end
