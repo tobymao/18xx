@@ -14,6 +14,7 @@ gem 'sequel'
 gem 'sequel_pg'
 gem 'snabberb'
 gem 'tilt'
+gem 'uglifier'
 
 group :development do
   gem 'pry-byebug'

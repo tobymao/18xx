@@ -22,6 +22,7 @@ services:
       - "443:443"
     volumes:
       - ./log/nginx:/var/log/nginx
+      - ./public:/public
       - /etc/18xxgames/ssl:/etc/18xxgames/ssl
     depends_on:
       - rack

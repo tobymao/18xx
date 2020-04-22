@@ -82,6 +82,8 @@ GEM
     snabberb (0.3.0)
       opal (~> 1.0)
     tilt (2.0.10)
+    uglifier (4.2.0)
+      execjs (>= 0.3.0, < 3)
     unicode-display_width (1.6.1)
 
 PLATFORMS
@@ -106,6 +108,7 @@ DEPENDENCIES
   sequel_pg
   snabberb
   tilt
+  uglifier
 
 BUNDLED WITH
-   2.1.2
+   2.1.4

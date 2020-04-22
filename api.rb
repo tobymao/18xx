@@ -2,12 +2,12 @@
 
 PRODUCTION = ENV['RACK_ENV'] == 'production'
 
-require 'cgi'
 require 'execjs'
 require 'message_bus'
 require 'opal'
 require 'roda'
 require 'snabberb'
+require 'uglifier'
 
 require_relative 'models'
 require_relative 'lib/tilt/opal_template'
@@ -62,8 +62,10 @@ class Api < Roda
     { error: e.message }
   end
 
-  plugin :assets, js: 'app.rb', gzip: true
-
+  compress = lambda do |file, type, content|
+    type == :js && PRODUCTION ? Uglifier.compile(content, harmony: true) : content
+  end
+  plugin :assets, js: 'app.rb', gzip: true, concat_only: true, postprocessor: compress
   compile_assets
   APP_JS_PATH = assets_opts[:compiled_js_path]
   APP_JS = "#{APP_JS_PATH}.#{assets_opts[:compiled]['js']}.js"
@@ -77,8 +79,8 @@ class Api < Roda
   plugin :json_parser
   plugin :halt
 
-  use Rack::Deflater unless PRODUCTION
   use MessageBus::Rack::Middleware
+  use Rack::Deflater unless PRODUCTION
 
   PAGE_LIMIT = 100
 
@@ -102,8 +104,11 @@ class Api < Roda
   end
 
   route do |r|
-    r.public
-    r.assets
+    unless PRODUCTION
+      r.public
+      r.assets
+    end
+
     puts "************** #{r.path} *************"
 
     r.hash_branches
