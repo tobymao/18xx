@@ -15,7 +15,7 @@ class OpalTemplate < Opal::TiltTemplate
     File.binwrite(OPAL_PATH, Opal::Builder.build('opal')) unless File.exist?(OPAL_PATH)
     content = builder.build(file).to_s
 
-    return content if ENV["RACK_ENV"] == 'production'
+    return content if ENV['RACK_ENV'] == 'production'
 
     map_json = builder.source_map.to_json
     "#{content}\n#{to_data_uri_comment(map_json)}"
