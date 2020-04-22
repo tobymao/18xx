@@ -102,6 +102,7 @@ module Engine
           end
         else
           payout_companies
+          @entities.each(&:unpass!)
         end
       end
 
