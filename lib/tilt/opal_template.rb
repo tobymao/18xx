@@ -4,16 +4,19 @@ require 'opal'
 require 'tilt/opal'
 
 class OpalTemplate < Opal::TiltTemplate
+  OPAL_PATH = 'build/compiled-opal.js'
+
   def evaluate(_scope, _locals)
     builder = Opal::Builder.new(stubs: 'opal')
     builder.append_paths('assets/js')
     builder.append_paths('lib')
     builder.append_paths('build')
 
-    opal_path = 'build/compiled-opal.js'
-    File.write(opal_path, Opal::Builder.build('opal')) unless File.exist?(opal_path)
-
+    File.binwrite(OPAL_PATH, Opal::Builder.build('opal')) unless File.exist?(OPAL_PATH)
     content = builder.build(file).to_s
+
+    return content if ENV["RACK_ENV"] == 'production'
+
     map_json = builder.source_map.to_json
     "#{content}\n#{to_data_uri_comment(map_json)}"
   end

@@ -34,9 +34,8 @@ class Api < Roda
 
   plugin :default_headers,
          'Content-Type' => 'text/html',
-         # 'Strict-Transport-Security'=>'max-age=16070400;', # Uncomment if only allowing https:// access
          'X-Frame-Options' => 'deny',
-         # 'X-Content-Type-Options' => 'nosniff',
+         'X-Content-Type-Options' => 'nosniff',
          'Cache-Control' => 'no-store',
          'X-XSS-Protection' => '1; mode=block'
 
@@ -65,7 +64,15 @@ class Api < Roda
   compress = lambda do |_, type, content|
     type == :js && PRODUCTION ? Uglifier.compile(content, harmony: true) : content
   end
-  plugin :assets, js: 'app.rb', gzip: true, concat_only: true, postprocessor: compress
+
+  plugin(
+    :assets,
+    js: 'app.rb',
+    gzip: PRODUCTION,
+    concat_only: true,
+    postprocessor: compress,
+  )
+
   compile_assets
   APP_JS_PATH = assets_opts[:compiled_js_path]
   APP_JS = "#{APP_JS_PATH}.#{assets_opts[:compiled]['js']}.js"

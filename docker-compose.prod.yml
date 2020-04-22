@@ -7,6 +7,8 @@ services:
     environment:
       RACK_ENV: production
       DATABASE_URL: $DATABASE_URL
+    volumes:
+      - ./public:/18xx/public
 
   db:
     environment:
