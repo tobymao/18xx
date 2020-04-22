@@ -49,6 +49,8 @@ class Api < Roda
     csp.frame_ancestors :none
   end
 
+  plugin :common_logger, Logger.new('log/rack/rack.log')
+
   plugin :not_found do
     halt(404, 'Page not found')
   end

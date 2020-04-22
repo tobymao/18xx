@@ -9,6 +9,7 @@ services:
       DATABASE_URL: $DATABASE_URL
     volumes:
       - ./public:/18xx/public
+      - ./log/rack:/18xx/log/rack
 
   db:
     environment:
