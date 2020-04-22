@@ -227,7 +227,7 @@ module Engine
           desc: 'No special abilities.'
         },
         {
-          name: 'Uno-Takamsu Ferry',
+          name: 'Uno-Takamatsu Ferry',
           value: 150,
           revenue: 30,
           min_players: 4,

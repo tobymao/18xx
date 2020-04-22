@@ -2,4 +2,4 @@
 
 ## Development
 
-See DEVELOPMENT.md
+See [`DEVELOPMENT.md`](DEVELOPMENT.md).

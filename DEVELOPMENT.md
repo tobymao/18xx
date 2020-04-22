@@ -68,28 +68,3 @@ Compose documentation:
 
 * https://docs.docker.com/compose/
 * https://docs.docker.com/compose/compose-file/
-
-#### Deployment
-
-By default, `docker-compose.override.yml` points to the dev config. To configure `docker-compose` for prod, update the link:
-
-```
-ln -s -f docker-compose.prod.yml docker-compose.override.yml
-```
-
-(note: the symlink is checked into git, so be sure to not commit that change)
-
-Differences betweeen the configs:
-
-* The dev config provides basic "fake" values for database-related environment
-  variables. The prod config requires those variables to be defined in your
-  environment.
-* The dev config uses mounted volumes to get the app source code and some nginx
-  config into the container. The prod config copies those files and does not use
-  those mounts; the prod config builds the nginx container using
-  `./nginx/Dockerfile` to accomplish this. (Both configs do use mounts for nginx
-  and postgres logs, as well as postgres data)
-* The prod config overrides the `rack` service's `command`, so that it runs the
-  server without `rerun`.
-* The tags given to the built rack container are different (the tags are named
-  "prod" and "dev)
