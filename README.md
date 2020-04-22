@@ -11,11 +11,21 @@
 Start the Docker stack for this project:
 
 ```
-docker-compose up
+make
 ```
 
-To ensure a rebuild of one or more of the containers, add `--build` to the above
-command.
+To ensure a rebuild of one or more of the containers, this make task will add
+`--build` to the `docker-compose up` command that is run by the default task:
+
+```
+make dev_up_b
+```
+
+To start the stack with production config, run:
+
+```
+make prod_up
+```
 
 * access the site at http://localhost
 * access Adminer at http://localhost:8080/?pgsql=db&username=root&db=db_18xx
@@ -25,29 +35,8 @@ refresh your browser to load the new app.
 
 #### Database
 
-If you don't have a `./db/data/` directory, you should create it before starting
-the stack. It is used as the mountpoint for the database, so that everything can
-persist on the host machine.
-
-If it does not exist when `docker-compose up` is run, Docker will create
-`./db/data/`, it will be owned by root, and the postgres container will hit an
-error, leaving empty `./db/data/`. In that scenario, it should be `chown`ed to
-be owned by you instead of root, and then you can the `docker-compose up`
-command again.
-
-If a file like `./db/data/.keep` is added so that git keeps that directory
-around for everyone, postgres initialization fails due to the data directory not
-being empty.
-
-If you already have a data directory that you would like the postgres container
-to use, you can copy its contents to `./db/data/`, or change the host path for
-the volume defined in `docker-compose.yml`:
-
-```
-db:
-  volumes:
-    - /your/relative/or/absolute/path/here:/var/lib/postgresql/data
-```
+`./db/data` is mounted to `/var/lib/postgresql/data` on the db container, giving
+the host easy access to all of the data.
 
 The database container is configured (in `./db/Dockerfile`) to run as a user
 with UID 1000. The default Unix UID is 1000, so if you were the first user
@@ -69,7 +58,6 @@ Compose documentation:
 
 * https://docs.docker.com/compose/
 * https://docs.docker.com/compose/compose-file/
-
 
 #### Deployment
 

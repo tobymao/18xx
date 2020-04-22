@@ -20,3 +20,5 @@
 
 /log/
 /db/data/
+
+docker-compose.override.yml
