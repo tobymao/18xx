@@ -15,6 +15,7 @@ module View
       end
 
       destroy = lambda do
+        store(:log, [], skip: true)
         @connection.unsubscribe('/chat')
       end
 

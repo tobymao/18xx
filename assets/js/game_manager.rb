@@ -1,11 +1,35 @@
 # frozen_string_literal: true
 
+require 'lib/storage'
+
 module GameManager
   def self.included(base)
+    base.needs :game, default: nil, store: true
     base.needs :game_data, default: nil, store: true
     base.needs :games, default: [], store: true
     base.needs :app_route, default: nil, store: true
     base.needs :connection, default: nil, store: true
+  end
+
+  def create_hotseat(**opts)
+    time = Time.now
+
+    game_data = {
+      status: 'active',
+      actions: [],
+      **opts,
+      id: "hs_#{time.to_i}",
+      mode: :hotseat,
+      user: { id: 0, name: 'You' },
+      created_at: time.strftime('%Y-%m-%-d'),
+    }
+
+    game_id = game_data[:id]
+    Lib::Storage[game_id] = game_data
+
+    store(:game, nil, skip: true)
+    store(:game_data, game_data, skip: true)
+    store(:app_route, "/hotseat/#{game_id}")
   end
 
   def create_game(params)
@@ -16,6 +40,11 @@ module GameManager
   end
 
   def delete_game(game)
+    if game[:mode] == :hotseat
+      Lib::Storage.delete(game[:id])
+      return update
+    end
+
     @connection.safe_post(url(game, '/delete'), game) do |data|
       update_game(data)
     end
@@ -40,6 +69,14 @@ module GameManager
   end
 
   def enter_game(game)
+    store(:game, nil, skip: true)
+
+    if game[:mode] == :hotseat
+      store(:game_data, Lib::Storage[game[:id]], skip: true)
+      store(:app_route, hs_url(game))
+      return
+    end
+
     @connection.safe_get(url(game)) do |data|
       store(:game_data, data, skip: true)
       store(:app_route, url(game))
@@ -57,7 +94,7 @@ module GameManager
   end
 
   def user_owns_game?(user, game)
-    game['user']['id'] == user&.dig(:id)
+    game[:mode] == :hotseat || game[:user][:id] == user&.dig(:id)
   end
 
   def unsubscribe
@@ -68,6 +105,10 @@ module GameManager
 
   def url(game, path = '')
     "/game/#{game['id']}#{path}"
+  end
+
+  def hs_url(game)
+    "/hotseat/#{game['id']}"
   end
 
   def update_game(game)

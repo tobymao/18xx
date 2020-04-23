@@ -21,7 +21,7 @@ module Engine
   module Game
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
-                  :depot, :finished, :hexes, :log, :phase, :players, :round,
+                  :depot, :finished, :hexes, :id, :log, :phase, :players, :round,
                   :share_pool, :special, :stock_market, :tiles, :turn
 
       BANK_CASH = 12_000
@@ -124,7 +124,8 @@ module Engine
         %i[cities city],
       ].freeze
 
-      def initialize(names, actions: [])
+      def initialize(names, id: 0, actions: [])
+        @id = id
         @turn = 1
         @finished = false
         @log = []
@@ -236,7 +237,7 @@ module Engine
       end
 
       def clone(actions)
-        self.class.new(@names, actions: actions)
+        self.class.new(@names, id: @id, actions: actions)
       end
 
       def rollback

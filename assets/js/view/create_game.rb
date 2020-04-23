@@ -3,6 +3,7 @@
 require 'game_manager'
 require 'view/form'
 require 'engine/game/g_1889'
+require 'json'
 
 module View
   class CreateGame < Form
@@ -10,6 +11,7 @@ module View
 
     needs :mode, default: :multi, store: true
     needs :num_players, default: 3, store: true
+    needs :flash_opts, default: {}, store: true
 
     def render_content
       inputs = [
@@ -23,10 +25,20 @@ module View
           num = index + 1
           inputs << render_input("Player #{num}", id: "player_#{num}", attrs: { value: "Player #{num}" })
         end
+        inputs << render_input(
+          '',
+          id: :game_data,
+          el: :textarea,
+          attrs: {
+            placeholder: 'Paste JSON Game Data. Will override settings',
+            rows: 50,
+            cols: 50,
+          },
+        )
       end
 
       h(:div, [
-        render_form('Create New Game', inputs)
+        render_form('Create New Game - You need an account to play multiplayer', inputs)
       ])
     end
 
@@ -79,14 +91,25 @@ module View
           .values
           .map { |name| { name: name } }
 
-        game_data = {
-          title: params[:title],
+        game_data = params['game_data']
+
+        if game_data.empty?
+          game_data = {}
+        else
+          begin
+            game_data = JSON.parse(game_data)
+          rescue JSON::ParserError => e
+            return store(:flash_opts, e.message)
+          end
+        end
+
+        create_hotseat(
           players: players,
-          actions: [],
-          mode: :hotseat,
-        }
-        store(:game_data, game_data, skip: true)
-        store(:app_route, '/game')
+          title: params[:title],
+          description: params[:description],
+          max_players: params[:max_players],
+          **game_data,
+        )
       else
         create_game(params)
       end

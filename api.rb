@@ -93,6 +93,10 @@ class Api < Roda
 
   PAGE_LIMIT = 100
 
+  STANDARD_ROUTES = %w[
+    / about all_tiles hotseat login new_game profile signup
+  ].freeze
+
   Dir['./routes/*'].sort.each { |file| require file }
 
   hash_routes do
@@ -126,7 +130,7 @@ class Api < Roda
       render_with_games
     end
 
-    r.on %w[/ about signup login profile all_tiles] do
+    r.on STANDARD_ROUTES do
       render_with_games
     end
 

@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../action/buy_company'
-require_relative '../action/buy_train'
-require_relative '../action/dividend'
-require_relative '../action/lay_tile'
-require_relative '../action/run_routes'
-require_relative '../action/sell_shares'
+if RUBY_ENGINE == 'opal'
+  require_tree '../action'
+else
+  require 'require_all'
+  require_rel '../action'
+end
+
 require_relative '../corporation'
 require_relative 'base'
 

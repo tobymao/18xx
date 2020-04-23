@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'game_manager'
+require 'lib/storage'
 require 'view/chat'
 require 'view/game_row'
 require 'view/welcome'
@@ -27,6 +28,15 @@ module View
         render_row(children, 'Your Games', your_games)
         render_row(children, 'New Games', grouped['new'])
       end
+
+      hotseat = Lib::Storage
+        .all_keys
+        .select { |k| k.start_with?('hs_') }
+        .map { |k| Lib::Storage[k] }
+        .sort_by { |gd| gd[:id] }
+        .reverse
+
+      render_row(children, 'Hotseat Games', hotseat) if hotseat.any?
 
       render_row(children, 'Active Games', active_games)
       render_row(children, 'Finished Games', grouped['finished'])

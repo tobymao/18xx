@@ -7,7 +7,7 @@ module View
     include GameManager
 
     needs :user
-    needs :game
+    needs :gdata # can't conflict with game_data
 
     ENTER_GREEN = '#3CB371'
     JOIN_YELLOW = '#F0E58C'
@@ -33,33 +33,40 @@ module View
     end
 
     def new?
-      @game['status'] == 'new'
+      @gdata['status'] == 'new'
     end
 
     def owner?
-      user_owns_game?(@user, @game)
+      user_owns_game?(@user, @gdata)
     end
 
     def players
-      @game['players']
+      @gdata['players']
     end
 
     def render_header
-      color, button_text, action =
-        case @game['status']
+      buttons = []
+      buttons << render_button('Delete', -> { delete_game(@gdata) }) if owner?
+
+      color =
+        case @gdata['status']
         when 'new'
           if owner?
-            [JOIN_YELLOW, 'Delete', -> { delete_game(@game) }]
-          elsif user_in_game?(@user, @game)
-            [JOIN_YELLOW, 'Leave', -> { leave_game(@game) }]
+          elsif user_in_game?(@user, @gdata)
+            buttons << render_button('Leave', -> { leave_game(@gdata) })
           else
-            [JOIN_YELLOW, 'Join', -> { join_game(@game) }]
+            buttons << render_button('Join', -> { join_game(@gdata) })
           end
+          JOIN_YELLOW
         when 'active'
-          [ENTER_GREEN, 'Enter', -> { enter_game(@game) }]
+          buttons << render_button('Enter', -> { enter_game(@gdata) })
+          ENTER_GREEN
         when 'finished'
-          [FINISHED_GREY, 'Review', -> { enter_game(@game) }]
+          buttons << render_button('Review', -> { enter_game(@gdata) })
+          FINISHED_GREY
         end
+
+      buttons << render_button('Start', -> { start_game(@gdata) }) if owner? && new? && players.size > 1
 
       props = {
         style: {
@@ -73,44 +80,31 @@ module View
       text_props = {
         style: {
           display: 'inline-block',
-          width: '240px',
+          width: '160px',
         }
       }
 
-      button_props = {
+      h('div', props, [
+        h(:div, text_props, [
+          h(:div, "Game: #{@gdata['title']}"),
+          h(:div, "Owner: #{@gdata['user']['name']}"),
+        ]),
+        *buttons,
+      ])
+    end
+
+    def render_button(text, action)
+      props = {
         style: {
-          position: 'absolute',
           top: '1rem',
-          right: '1rem',
+          float: 'right',
         },
         on: {
           click: action,
         },
       }
 
-      buttons = [
-        h('button.button', button_props, button_text),
-      ]
-
-      if owner? && new? && players.size > 1
-        start_props = {
-          style: {
-            position: 'absolute',
-            top: '1rem',
-            right: '90px',
-          },
-          on: { click: -> { start_game(@game) } },
-        }
-        buttons << h('button.button', start_props, 'Start')
-      end
-
-      h('div', props, [
-        h(:div, text_props, [
-          h(:div, "Game: #{@game['title']}"),
-          h(:div, "Owner: #{@game['user']['name']}"),
-          *buttons,
-        ]),
-      ])
+      h('button.button', props, text)
     end
 
     def render_body
@@ -129,7 +123,7 @@ module View
             player['name']
           else
             button_props = {
-               on: { click: -> { kick(@game, player) } },
+               on: { click: -> { kick(@gdata, player) } },
                style: {
                  'margin-left': '0.5rem',
                },
@@ -140,11 +134,11 @@ module View
       end
 
       h(:div, props, [
-        h(:div, [h(:b, 'Id: '), @game['id']]),
-        h(:div, [h(:b, 'Description: '), @game['description']]),
-        h(:div, [h(:b, 'Max Players: '), @game['max_players']]),
+        h(:div, [h(:b, 'Id: '), @gdata['id']]),
+        h(:div, [h(:b, 'Description: '), @gdata['description']]),
+        h(:div, [h(:b, 'Max Players: '), @gdata['max_players']]),
         h(:div, [h(:b, 'Players: '), *p_elm]),
-        h(:div, [h(:b, 'Created: '), @game['created_at']]),
+        h(:div, [h(:b, 'Created: '), @gdata['created_at']]),
       ])
     end
   end

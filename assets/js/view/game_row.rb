@@ -23,7 +23,7 @@ module View
       props = {
       }
 
-      h(:div, props, @games.map { |game| h(GameCard, game: game, user: @user) })
+      h(:div, props, @games.map { |game| h(GameCard, gdata: game, user: @user) })
     end
   end
 end

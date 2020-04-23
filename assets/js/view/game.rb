@@ -14,6 +14,7 @@ require 'view/players'
 require 'view/stock_round'
 require 'view/stock_market'
 require 'view/tile_manifest'
+require 'view/tools'
 require 'view/train_roster'
 
 # debugging views
@@ -34,9 +35,11 @@ module View
     needs :app_route, store: true
 
     def render
-      unless @game
+      game_id = @game_data[:id]
+      if game_id != @game&.id
         @game = Engine::Game::G1889.new(
           @game_data['players'].map { |p| p['name'] },
+          id: game_id,
           actions: @game_data['actions'],
         )
         store(:game, @game, skip: true)
@@ -60,6 +63,8 @@ module View
           h(TrainRoster, game: @game)
         when 'players'
           h(Players, game: @game)
+        when 'tools'
+          h(Tools, game: @game, game_data: @game_data)
         end
 
       @connection.subscribe(game_path) do |data|
@@ -74,7 +79,6 @@ module View
 
       destroy = lambda do
         @connection.unsubscribe(game_path)
-        store(:game, nil, skip: true)
         store(:show_grid, false, skip: true)
         store(:selected_company, nil, skip: true)
       end
@@ -122,20 +126,27 @@ module View
           tab_button('Trains', 'trains'),
           tab_button('Tiles', 'tiles'),
           tab_button('Companies', 'companies'),
+          tab_button('Tools', 'tools'),
         ]),
       ])
     end
 
     def tab_button(name, anchor = '')
+      change_anchor = lambda do
+        store(:app_route, "#{@app_route.split('#').first}##{anchor}")
+      end
+
       props = {
         attrs: {
           href: "##{anchor}",
+          onclick: 'return false',
         },
         style: {
           'margin': '0 1rem 1rem 0',
           'color': 'black',
           'text-decoration': (route_anchor || '') == anchor ? '' : 'none',
         },
+        on: { click: change_anchor },
       }
 
       h(:a, props, name)

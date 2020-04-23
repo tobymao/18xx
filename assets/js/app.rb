@@ -5,9 +5,10 @@ require 'snabberb'
 require 'polyfill'
 
 require 'index'
+require 'game_manager'
 require 'user_manager'
-require 'engine/game/g_1889'
 require 'lib/connection'
+require 'lib/storage'
 require 'view/about'
 require 'view/home'
 require 'view/flash'
@@ -15,6 +16,8 @@ require 'view/game'
 require 'view/navigation'
 require 'view/all_tiles'
 require 'view/user'
+
+require_tree 'engine/game'
 
 class App < Snabberb::Component
   include GameManager
@@ -49,8 +52,8 @@ class App < Snabberb::Component
       case path
       when nil
         h(View::Home, user: @user)
-      when 'game'
-        render_game
+      when 'game', 'hotseat'
+        render_game(path)
       when 'signup'
         h(View::User, user: @user, type: :signup)
       when 'login'
@@ -79,8 +82,15 @@ class App < Snabberb::Component
     h(:div, props, [page])
   end
 
-  def render_game
-    @game_data[:mode] ||= :multi
+  def render_game(path)
+    game_id = @app_route.split('/').last
+
+    unless @game_data # this only happens when refreshing a hotseat game
+      # this happens async
+      enter_game(id: game_id, mode: path == 'game' ? :muti : :hotseat)
+      return h(View::Home, user: @user)
+    end
+
     h(View::Game, connection: @connection, game_data: @game_data)
   end
 
@@ -89,18 +99,20 @@ class App < Snabberb::Component
       var self = this
 
       if (!window.onpopstate) {
-        window.onpopstate = function() { self.$on_hash_change() }
+        window.onpopstate = function(event) { self.$on_hash_change(event.state) }
         self.$store_app_route()
       }
 
       if (window.location.pathname + window.location.hash != #{@app_route}) {
         window.scrollTo(0, 0)
-        window.history.pushState('', '', #{@app_route})
+        window.history.pushState(#{@game_data.to_n}, #{@app_route}, #{@app_route})
       }
     }
   end
 
-  def on_hash_change
+  def on_hash_change(state)
+    game_data = Hash.new(state)
+    store(:game_data, game_data, skip: true) if game_data.any?
     store_app_route(skip: false)
   end
 

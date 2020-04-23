@@ -51,7 +51,7 @@ module Lib
       end
     end
 
-    def safe_post(path, params = nil, &block)
+    def safe_post(path, params = {}, &block)
       post(path, params) do |data|
         if (error = data['error'])
           @root.store(:flash_opts, error)
@@ -79,17 +79,19 @@ module Lib
           payload['body'] = JSON.stringify(#{data.to_n})
         }
 
-        fetch(#{'/api' + path}, payload).then(res => {
-          return res.text()
-        }).then(data => {
-          if (typeof block === 'function') {
-            block.$call(Opal.Hash.$new(JSON.parse(data)))
-          }
-        }).catch(error => {
-          if (typeof block === 'function') {
-            block(Opal.hash('error', JSON.stringify(error)))
-          }
-        })
+        if (typeof fetch !== 'undefined') {
+          fetch(#{'/api' + path}, payload).then(res => {
+            return res.text()
+          }).then(data => {
+            if (typeof block === 'function') {
+              block.$call(Opal.Hash.$new(JSON.parse(data)))
+            }
+          }).catch(error => {
+            if (typeof block === 'function') {
+              block(Opal.hash('error', JSON.stringify(error)))
+            }
+          })
+        }
       }
     end
 
