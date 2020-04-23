@@ -11,5 +11,5 @@ RUN if [ "$RACK_ENV" = "production" ]; \
     bundle install
 COPY . .
 
-CMD sleep 1 && bundle exec rake dev_up && \
+CMD bundle exec rake dev_up && \
     bundle exec rerun --background -i 'build/*' -i 'public/*' 'puma'
