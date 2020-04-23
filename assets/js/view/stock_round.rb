@@ -28,7 +28,7 @@ module View
       end
 
       children = [
-        h(UndoAndPass),
+        h(UndoAndPass, pass: !@round.must_sell?),
         *render_corporations,
       ]
 
@@ -62,30 +62,34 @@ module View
       end
 
       children = []
-      children << h(:button, { on: { click: buy_ipo } }, 'Buy IPO Share') if @round.can_buy?(ipo_share)
-      children << h(:button, { on: { click: buy_pool } }, 'Buy Pool Share') if @round.can_buy?(pool_share)
+      unless @round.must_sell?
+        children << h(:button, { on: { click: buy_ipo } }, 'Buy IPO Share') if @round.can_buy?(ipo_share)
+        children << h(:button, { on: { click: buy_pool } }, 'Buy Pool Share') if @round.can_buy?(pool_share)
+      end
       children << h(SellShares, player: @current_entity)
 
       h(:div, children)
     end
 
     def render_pre_ipo
-      style = {
-        cursor: 'pointer',
-        border: 'solid 1px rgba(0,0,0,0.2)',
-        display: 'inline-block',
-        margin: '0.5rem 0 0.5rem 0.5rem'
-      }
+      unless @round.must_sell?
+        style = {
+          cursor: 'pointer',
+          border: 'solid 1px rgba(0,0,0,0.2)',
+          display: 'inline-block',
+          margin: '0.5rem 0 0.5rem 0.5rem'
+        }
 
-      par_values = @round.stock_market.par_prices.map do |share_price|
-        par = lambda do
-          process_action(Engine::Action::Par.new(@current_entity, @selected_corporation, share_price))
+        par_values = @round.stock_market.par_prices.map do |share_price|
+          par = lambda do
+            process_action(Engine::Action::Par.new(@current_entity, @selected_corporation, share_price))
+          end
+
+          h(:div, { style: style, on: { click: par } }, @game.format_currency(share_price.price))
         end
 
-        h(:div, { style: style, on: { click: par } }, @game.format_currency(share_price.price))
+        h(:div, ['Choose a par price:', *par_values])
       end
-
-      h(:div, ['Choose a par price:', *par_values])
     end
   end
 end
