@@ -72,24 +72,24 @@ module View
     end
 
     def render_pre_ipo
-      unless @round.must_sell?
-        style = {
-          cursor: 'pointer',
-          border: 'solid 1px rgba(0,0,0,0.2)',
-          display: 'inline-block',
-          margin: '0.5rem 0 0.5rem 0.5rem'
-        }
+      return if @round.must_sell?
 
-        par_values = @round.stock_market.par_prices.map do |share_price|
-          par = lambda do
-            process_action(Engine::Action::Par.new(@current_entity, @selected_corporation, share_price))
-          end
+      style = {
+        cursor: 'pointer',
+        border: 'solid 1px rgba(0,0,0,0.2)',
+        display: 'inline-block',
+        margin: '0.5rem 0 0.5rem 0.5rem'
+      }
 
-          h(:div, { style: style, on: { click: par } }, @game.format_currency(share_price.price))
+      par_values = @round.stock_market.par_prices.map do |share_price|
+        par = lambda do
+          process_action(Engine::Action::Par.new(@current_entity, @selected_corporation, share_price))
         end
 
-        h(:div, ['Choose a par price:', *par_values])
+        h(:div, { style: style, on: { click: par } }, @game.format_currency(share_price.price))
       end
+
+      h(:div, ['Choose a par price:', *par_values])
     end
   end
 end
