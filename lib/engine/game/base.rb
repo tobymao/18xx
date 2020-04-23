@@ -1,18 +1,13 @@
 # frozen_string_literal: true
 
-require_relative '../action/base'
-require_relative '../action/bid'
-require_relative '../action/buy_company'
-require_relative '../action/buy_share'
-require_relative '../action/buy_train'
-require_relative '../action/discard_train'
-require_relative '../action/dividend'
-require_relative '../action/lay_tile'
-require_relative '../action/par'
-require_relative '../action/pass'
-require_relative '../action/place_token'
-require_relative '../action/run_routes'
-require_relative '../action/sell_shares'
+if RUBY_ENGINE == 'opal'
+  require_tree '../action'
+  require_tree '../round'
+else
+  require 'require_all'
+  require_rel '../action'
+  require_rel '../round'
+end
 
 require_relative '../bank'
 require_relative '../depot'
@@ -20,10 +15,6 @@ require_relative '../phase'
 require_relative '../player'
 require_relative '../share_pool'
 require_relative '../stock_market'
-require_relative '../round/auction'
-require_relative '../round/operating'
-require_relative '../round/special'
-require_relative '../round/stock'
 require_relative '../train'
 
 module Engine
