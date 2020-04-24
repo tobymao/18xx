@@ -29,11 +29,6 @@ module Engine
           'RJ_E' => 8172,
           'Vorrt' => 8564,
         },
-        90 => {
-          'Jon_G' => 3580,
-          'Spaul' => 335,
-          'bentmeeple' => 3705,
-        },
         104 => {
           'Gandhalf' => 6786,
           'hoffmansthal' => 6469,

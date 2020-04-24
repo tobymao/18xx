@@ -46,7 +46,7 @@ module View
 
     def acting?(player)
       return false unless player
-      return false unless acting = @gdata['acting']
+      return false unless (acting = @gdata['acting'])
 
       acting.include?(player[:id])
     end
