@@ -45,7 +45,10 @@ module View
     end
 
     def acting?(player)
-      @gdata['acting']&.include?(player&.dig(:id))
+      return false unless player
+      return false unless acting = @gdata['acting']
+
+      acting.include?(player[:id])
     end
 
     def render_header
@@ -150,7 +153,15 @@ module View
         children << h(:div, [h(:b, 'Max Players: '), @gdata['max_players']])
         children << h(:div, [h(:b, 'Created: '), @gdata['created_at']])
       elsif @gdata['status'] == 'finished'
-        children << h(:div, [h(:b, 'Result: '), @gdata['result_str']])
+        result = @gdata['result']
+          .sort_by { |_, v| -v }
+          .map { |k, v| "#{k} (#{v})" }
+          .join(', ')
+
+        children << h(:div, [
+          h(:b, 'Result: '),
+          result,
+        ])
       else
         children << h(:div, [h(:b, 'Updated: '), @gdata['updated_at']])
       end

@@ -102,8 +102,8 @@ module Engine
           end
         else
           payout_companies
-          @entities.each(&:unpass!)
         end
+        @entities.each(&:unpass!)
       end
 
       def pass_processed(_action)
