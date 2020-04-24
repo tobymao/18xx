@@ -169,7 +169,7 @@ module Engine
         "#{self.class.name} - #{@players.map(&:name)}"
       end
 
-      def results
+      def result
         @players
           .sort_by(&:value)
           .reverse
@@ -179,6 +179,10 @@ module Engine
 
       def current_entity
         @round.current_entity
+      end
+
+      def active_players
+        @round.active_entities.map(&:owner)
       end
 
       def process_action(action)
@@ -358,7 +362,7 @@ module Engine
               new_operating_round(@round.round_num + 1)
             elsif @bank.broken?
               @finished = true
-              scores = results.map { |name, value| "#{name} (#{format_currency(value)})" }
+              scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
               @log << "Game over: #{scores.join(', ')}"
               @round
             else

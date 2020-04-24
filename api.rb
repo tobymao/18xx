@@ -5,6 +5,7 @@ PRODUCTION = ENV['RACK_ENV'] == 'production'
 require 'execjs'
 require 'message_bus'
 require 'opal'
+require 'require_all'
 require 'roda'
 require 'snabberb'
 require 'uglifier'
@@ -12,7 +13,7 @@ require 'uglifier'
 require_relative 'models'
 require_relative 'lib/tilt/opal_template'
 
-Dir['./models/**/*.rb'].sort.each { |file| require file }
+require_rel './models'
 
 MessageBus.configure(
   backend: :postgres,

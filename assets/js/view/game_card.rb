@@ -44,6 +44,10 @@ module View
       @gdata['players']
     end
 
+    def acting?(player)
+      @gdata['acting']&.include?(player&.dig(:id))
+    end
+
     def render_header
       buttons = []
       buttons << render_button('Delete', -> { delete_game(@gdata) }) if owner?
@@ -60,7 +64,7 @@ module View
           JOIN_YELLOW
         when 'active'
           buttons << render_button('Enter', -> { enter_game(@gdata) })
-          ENTER_GREEN
+          acting?(@user) ? YOUR_TURN_ORANGE : ENTER_GREEN
         when 'finished'
           buttons << render_button('Review', -> { enter_game(@gdata) })
           FINISHED_GREY
@@ -112,34 +116,46 @@ module View
         style: {
           'margin-top': '0.5rem',
           'line-height': '1.2rem',
+          'word-break': 'break-all',
         }
       }
 
-      p_elm = players.map { |p| p['name'] }.join(', ')
+      p_elm = players.map do |player|
+        elm = h(
+          acting?(player) ? :u : :span,
+          { style: { 'margin-right': '0.5rem' } },
+          player['name'],
+        )
 
-      if owner? && new?
-        p_elm = players.map do |player|
-          if player['id'] == @user['id']
-            player['name']
-          else
-            button_props = {
-               on: { click: -> { kick(@gdata, player) } },
-               style: {
-                 'margin-left': '0.5rem',
-               },
-            }
-            h('button.button', button_props, player['name'])
-          end
+        if owner? && new? && player['id'] != @user['id']
+          button_props = {
+            on: { click: -> { kick(@gdata, player) } },
+            style: {
+              'margin-left': '0.5rem',
+            },
+          }
+          elm = h('button.button', button_props, [elm])
         end
+
+        elm
       end
 
-      h(:div, props, [
+      children = [
         h(:div, [h(:b, 'Id: '), @gdata['id']]),
         h(:div, [h(:b, 'Description: '), @gdata['description']]),
-        h(:div, [h(:b, 'Max Players: '), @gdata['max_players']]),
         h(:div, [h(:b, 'Players: '), *p_elm]),
-        h(:div, [h(:b, 'Created: '), @gdata['created_at']]),
-      ])
+      ]
+
+      if new?
+        children << h(:div, [h(:b, 'Max Players: '), @gdata['max_players']])
+        children << h(:div, [h(:b, 'Created: '), @gdata['created_at']])
+      elsif @gdata['status'] == 'finished'
+        children << h(:div, [h(:b, 'Result: '), @gdata['result_str']])
+      else
+        children << h(:div, [h(:b, 'Updated: '), @gdata['updated_at']])
+      end
+
+      h(:div, props, children)
     end
   end
 end

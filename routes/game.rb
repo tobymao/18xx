@@ -18,15 +18,21 @@ class Api
         r.post do
           not_authorized! unless user
 
+          users = User
+            .association_join(:game_users)
+            .where(game_id: game.id)
+            .select(Sequel[:users][:id], Sequel[:users][:name])
+            .all
+
           # POST '/api/game/<game_id>/join'
           r.is 'join' do
-            halt(400, 'Cannot join game because it is full') if GameUser.where(game: game).count >= game.max_players
+            halt(400, 'Cannot join game because it is full') if users.size >= game.max_players
 
             GameUser.create(game: game, user: user)
             return_and_notify(game)
           end
 
-          not_authorized! if GameUser.where(game: game, user: user).empty?
+          not_authorized! unless users.any? { |u| u.id == user.id }
 
           r.is 'leave' do
             game.remove_player(user)
@@ -56,13 +62,26 @@ class Api
               action = engine.process_action(r.params).actions.last.to_h
               params[:action] = action
               Action.create(params)
+
+              active_players = engine.active_players.map(&:name)
+
+              game.acting = users
+                .select { |user| active_players.include?(user.name) }
+                .map(&:id)
+              if engine.finished
+                game.result = engine.result
+                game.status = 'finished'
+              end
+              game.save
               publish(channel, **action)
+              return_and_notify(game)
             end
 
             # POST '/api/game/<game_id>//action/rollback'
             r.is 'rollback' do
               game.actions.last.destroy
               publish(channel, id: -1)
+              return_and_notify(game)
             end
           end
 
@@ -80,7 +99,13 @@ class Api
           r.is 'start' do
             halt(400, 'Cannot play 1 player') if game.players.size < 2
 
-            game.update(settings: { seed: Random.new_seed }, status: 'active')
+            player = game.ordered_players.first.name
+
+            game.update(
+              settings: { seed: Random.new_seed },
+              status: 'active',
+              acting: [users.find { |u| u.name == player }.id],
+            )
             return_and_notify(game)
           end
 

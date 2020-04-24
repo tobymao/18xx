@@ -46,10 +46,10 @@ module Engine
         },
       }.freeze
 
-      GAMES.each do |game_id, results|
-        it "#{game_id} matches results exactly" do
+      GAMES.each do |game_id, result|
+        it "#{game_id} matches result exactly" do
           data = JSON.parse(File.read("spec/fixtures/1889/#{game_id}.json"))
-          expect(subject.class.new(data['players'], actions: data['actions']).results).to eq(results)
+          expect(subject.class.new(data['players'], actions: data['actions']).result).to eq(result)
         end
       end
     end

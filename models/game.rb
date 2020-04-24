@@ -29,7 +29,8 @@ class Game < Base
       turn: turn,
       round: round,
       acting: acting,
-      result: result,
+      # can't get result hash to compile in minijs
+      result_str: result&.sort_by { |_, v| -v }&.map { |p, v| "#{p} (#{v})" }&.join(', '),
       actions: actions_h,
       created_at: pp_created_at,
       updated_at: pp_updated_at,
