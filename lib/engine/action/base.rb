@@ -6,6 +6,10 @@ module Engine
       attr_reader :entity
       attr_accessor :id
 
+      def self.type(type)
+        type.split('_').map(&:capitalize).join
+      end
+
       def self.from_h(h, game)
         entity = game.send("#{h['entity_type']}_by_id", h['entity'])
         new(entity, *h_to_args(h, game))

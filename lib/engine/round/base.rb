@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../action/message'
 require_relative '../game_error'
 
 module Engine
@@ -45,6 +46,7 @@ module Engine
 
       def process_action(action)
         entity = action.entity
+        return @log << "#{entity.name}: #{action.message}" if action.is_a?(Action::Message)
         raise GameError, "It is not #{entity.name}'s turn" unless can_act?(entity)
 
         if action.pass?

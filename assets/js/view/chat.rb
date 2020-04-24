@@ -6,7 +6,6 @@ module View
   class Chat < Snabberb::Component
     needs :user
     needs :connection
-    needs :type, default: :global
     needs :log, default: [], store: true
 
     def render
@@ -24,12 +23,13 @@ module View
       ]
 
       enter = lambda do |event|
-        code = event.JS['keyCode']
+        event = Native(event)
+        code = event['keyCode']
 
         if code && code == 13
-          message = event.JS['target'].JS['value']
+          message = event['target']['value']
           add_line(user: @user, created_at: Time.now.strftime('%m/%d %H:%M:%S'), message: message)
-          event.JS['target'].JS['value'] = ''
+          event['target']['value'] = ''
           @connection.post('/chat', message: message)
         end
       end
@@ -37,7 +37,7 @@ module View
       children << h(:input, style: { width: '100%' }, on: { keyup: enter }) if @user
 
       props = {
-        key: "#{@type}_chat",
+        key: 'global_chat',
         hook: {
           destroy: destroy,
         },

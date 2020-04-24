@@ -91,7 +91,7 @@ class App < Snabberb::Component
       return h(View::Home, user: @user)
     end
 
-    h(View::Game, connection: @connection, game_data: @game_data)
+    h(View::Game, connection: @connection, game_data: @game_data, user: @user)
   end
 
   def js_handlers

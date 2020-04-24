@@ -203,37 +203,9 @@ module Engine
       end
 
       def action_from_h(h)
-        klass =
-          case h['type']
-          when 'bid'
-            Action::Bid
-          when 'buy_company'
-            Action::BuyCompany
-          when 'buy_share'
-            Action::BuyShare
-          when 'buy_train'
-            Action::BuyTrain
-          when 'discard_train'
-            Action::DiscardTrain
-          when 'dividend'
-            Action::Dividend
-          when 'lay_tile'
-            Action::LayTile
-          when 'par'
-            Action::Par
-          when 'pass'
-            Action::Pass
-          when 'place_token'
-            Action::PlaceToken
-          when 'run_routes'
-            Action::RunRoutes
-          when 'sell_shares'
-            Action::SellShares
-          else
-            raise GameError, "Unknow action #{h['type']}"
-          end
-
-        klass.from_h(h, self)
+        Object
+          .const_get("Engine::Action::#{Action::Base.type(h['type'])}")
+          .from_h(h, self)
       end
 
       def clone(actions)

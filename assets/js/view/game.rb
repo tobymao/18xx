@@ -7,7 +7,7 @@ require 'view/companies'
 require 'view/corporations'
 require 'view/entity_order'
 require 'view/exchange'
-require 'view/log'
+require 'view/game_log'
 require 'view/map'
 require 'view/operating_round'
 require 'view/players'
@@ -33,6 +33,7 @@ module View
     needs :show_grid, default: false, store: true
     needs :selected_company, default: nil, store: true
     needs :app_route, store: true
+    needs :user
 
     def render
       game_id = @game_data[:id]
@@ -179,9 +180,7 @@ module View
 
       h('div.game', [
         render_round,
-        h(:div, { style: { margin: '1rem 0 1rem 0' } }, [
-          h(Log, log: @game.log),
-        ]),
+        h(GameLog, user: @user),
         h(EntityOrder, round: @round),
         h(Exchange),
         render_action,
