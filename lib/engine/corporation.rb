@@ -40,6 +40,12 @@ module Engine
       @color = opts[:color]
     end
 
+    def counts_for_limit
+      # if no share price, like when you exchange a share pre-ipo
+      # it still counts
+      @share_price ? @share_price.counts_for_limit : true
+    end
+
     def next_token
       @tokens.find { |t| !t.used? }
     end
