@@ -153,7 +153,7 @@ module Engine
           revenue: 5,
           sym: 'TR',
           desc: 'No special abilities.  If all players pass during the initial stock round and this company has not
-          been purchased, its price is reduced by 5.  If it is reduced to 0, the next player must take it for free.',
+          been purchased, its price is reduced by ¥5.  If it is reduced to ¥0, the next player must take it for free.',
           abilities: [
             { type: :blocks_hex, hex: 'K4' },
           ],
@@ -231,8 +231,8 @@ module Engine
           value: 150,
           revenue: 30,
           min_players: 4,
-          desc: 'Does not close while owned by a player.  After the purchase of the first 5-train, revenue becomes 50
-          and this comapny may no longer be sold to a corporation.',
+          desc: 'Does not close while owned by a player.  After the purchase of the first 5-train, revenue becomes ¥50
+          and this company may no longer be sold to a corporation.',
           abilities: [
             {
               type: :never_closes,
