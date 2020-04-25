@@ -25,14 +25,14 @@ module Engine
     context 'full game' do
       GAMES = {
         104 => {
-          'Gandhalf' => 6982,
-          'hoffmansthal' => 6603,
-          'sharunasbresson' => 7306,
+          'Gandhalf' => 7174,
+          'hoffmansthal' => 6627,
+          'sharunasbresson' => 7490,
         },
         105 => {
-          'Batto' => 7416,
-          'XB' => 8748,
-          'akramer16' => 8443,
+          'Batto' => 7464,
+          'XB' => 9036,
+          'akramer16' => 8587,
         },
       }.freeze
 
