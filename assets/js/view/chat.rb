@@ -43,6 +43,7 @@ module View
         },
         style: {
           display: 'inline-block',
+          'vertical-align': 'top',
         }
       }
 
