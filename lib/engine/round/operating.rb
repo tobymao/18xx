@@ -79,7 +79,7 @@ module Engine
         # TODO: this is a hack and doesn't actually check reachable cities
         # OO tiles and other complex track will break this
         @current_entity.trains.empty? &&
-          reachable_hexes.keys.map(&:tile).flat_map(&:paths).map(&:stop).compact.size > 1
+          reachable_hexes.keys.count { |hex| hex.tile.paths.any?(&:stop) } > 1
       end
 
       def active_entities
