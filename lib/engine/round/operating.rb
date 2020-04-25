@@ -385,18 +385,23 @@ module Engine
       end
 
       def buy_company(company, price)
-        player = company.owner
-        raise GameError, "Cannot buy #{company.name} from #{player.name}" if player.is_a?(Corporation)
+        entity = company.owner
+        raise GameError, "Cannot buy #{company.name} from #{entity.name}" if entity.is_a?(Corporation)
+
+        min, max = [company.min_price, company.max_price]
+        unless price.between?(min, max)
+          raise GameError, "Price must be between #{@game.format_currency(min)} and #{@game.format_currency(max)}"
+        end
 
         company.owner = @current_entity
-        player.companies.delete(company)
+        entity.companies.delete(company)
 
         remove_just_sold_company_abilities
         @just_sold_company = company
 
         @current_entity.companies << company
-        @current_entity.spend(price, player)
-        @log << "#{@current_entity.name} buys #{company.name} from #{player.name} for #{@game.format_currency(price)}"
+        @current_entity.spend(price, entity)
+        @log << "#{@current_entity.name} buys #{company.name} from #{entity.name} for #{@game.format_currency(price)}"
       end
 
       def place_token(action)
