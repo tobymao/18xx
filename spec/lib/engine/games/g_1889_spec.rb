@@ -34,6 +34,12 @@ module Engine
           'XB' => 9036,
           'akramer16' => 8587,
         },
+        133 => {
+          'Michaël' => 3280,
+          'Musashi_Daryl' => 4131,
+          'Rannek' => 3153,
+          'franssua' => 1697,
+        },
       }.freeze
 
       GAMES.each do |game_id, result|
