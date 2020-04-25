@@ -34,6 +34,9 @@ module View
             rows: 50,
             cols: 50,
           },
+          container_style: {
+            display: 'block',
+          },
         )
       end
 

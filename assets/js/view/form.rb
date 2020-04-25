@@ -41,10 +41,13 @@ module View
       ])
     end
 
-    def render_input(label, id:, el: 'input', type: 'text', attrs: {}, children: [])
+    # rubocop:disable Layout/LineLength
+    def render_input(label, id:, el: 'input', type: 'text', attrs: {}, container_style: {}, input_style: {}, children: [])
+      # rubocop:enable Layout/LineLength
       props = {
         style: {
           margin: '1rem',
+          **input_style,
         },
         attrs: {
           placeholder: label,
@@ -54,7 +57,11 @@ module View
       }
       input = h(el, props, children)
       @inputs[id] = input
-      h(:div, { style: { display: 'inline-block' } }, [label, input])
+      h(
+        :div,
+        { style: { display: 'inline-block', **container_style } },
+        [label, input],
+      )
     end
 
     def render_button(text, &block)
