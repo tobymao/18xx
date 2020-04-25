@@ -6,8 +6,9 @@ times = 0
 
 begin
   times += 1
-  DB = Sequel.connect(ENV.delete('APP_DATABASE_URL') || ENV.delete('DATABASE_URL'))
-rescue Exception # rubocop:disable Lint/RescueException
+  DB = Sequel.connect(ENV['APP_DATABASE_URL'] || ENV['DATABASE_URL'])
+rescue Exception => e # rubocop:disable Lint/RescueException
+  puts "Sequel failed to connect: #{e}"
   sleep(5)
   retry if times < 3
 end

@@ -24,6 +24,7 @@ module UserManager
         invalidate_user
         store(:flash_opts, 'Credentials expired please re-login')
       else
+        @connection.authenticate!
         store(:user, data, skip: true)
         update # for some reason this causes an infinite loop
       end
@@ -46,12 +47,14 @@ module UserManager
 
   def login_user(data)
     Lib::Storage['auth_token'] = data['auth_token']
+    @connection.authenticate!
     store(:user, data['user'], skip: true)
     store(:app_route, '/')
   end
 
   def invalidate_user
     Lib::Storage['auth_token'] = nil
+    @connection.invalidate!
     store(:user, nil, skip: true)
   end
 end

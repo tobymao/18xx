@@ -11,6 +11,7 @@ require 'snabberb'
 require 'uglifier'
 
 require_relative 'models'
+require_relative 'lib/mail'
 require_relative 'lib/tilt/opal_template'
 
 require_rel './models'
@@ -81,6 +82,9 @@ class Api < Roda
   APP_JS = "#{APP_JS_PATH}.#{assets_opts[:compiled]['js']}.js"
   Dir[APP_JS_PATH + '*'].sort.each { |file| File.delete(file) unless file.include?(APP_JS) }
   CONTEXT = ExecJS.compile(File.open(APP_JS, 'r:UTF-8', &:read))
+  RENDER_HTML = lambda do |script, **needs|
+    CONTEXT.eval(Snabberb.html_script(script, **needs))
+  end
 
   plugin :public
   plugin :hash_routes
@@ -191,5 +195,12 @@ class Api < Roda
       data.merge('_client_id': request.params['_client_id'])
     )
     {}
+  end
+
+  MessageBus.user_id_lookup do |env|
+    next unless (token = env['HTTP_AUTHORIZATION'])
+
+    Session.where(token: token).update(updated_at: Sequel::CURRENT_TIMESTAMP)
+    nil
   end
 end

@@ -6,6 +6,10 @@ if [ -z "${DATABASE_URL}" ]; then
     bad_vars_msg="${bad_vars_msg}\n- DATABASE_URL"
 fi
 
+if [ -z "${MAIL_GUN_KEY}" ]; then
+    bad_vars_msg="${bad_vars_msg}\n- MAIL_GUN_KEY"
+fi
+
 if [ -z "${POSTGRES_USER}" ]; then
     bad_vars_msg="${bad_vars_msg}\n- POSTGRES_USER"
 fi

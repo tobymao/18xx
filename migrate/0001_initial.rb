@@ -45,8 +45,8 @@ Sequel.migration do
       DateTime :created_at, null: false
       DateTime :updated_at, null: false
 
-      index :acting, type: 'gin'
-      index :result, type: 'gin'
+      index :acting, type: :gin
+      index :result, type: :gin
     end
 
     create_table :game_users do
