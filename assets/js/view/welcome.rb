@@ -37,8 +37,7 @@ module View
       }
 
       message = <<~MESSAGE
-        Thanks for participating in the beta! I've rewritten the networking code so iPhones should work now!
-        Please join me in the 18xx slack #18xxgames channel
+        Welcome to the open beta! Please join me in the 18xx slack #18xxgames channel.
       MESSAGE
 
       h(:div, props, [
@@ -48,16 +47,27 @@ module View
     end
 
     def render_introduction
-      props = {
-        margin: '1rem 0'
-      }
-
       message = <<~MESSAGE
-        This is a paragraph explaining what 18xx.games is all about, and how to get into a game or start one maybe.
-        Also probably something about how you can create a hotseat game without creating an account.
+        <p>18xx.games is a website where you can play async or real-time 18xx games! Right now only 1889 is implemented
+        but I'm planning on doing many more in the future.</p>
+
+        <p>You can play locally with hot seat mode without an account. If you want to play multiplayer, you'll need to create an account.</p>
+
+        <p>If you look at other people's games, you can make moves to play around but it won't affect them and changes won't be saved.
+        You can clone games in the tools tab and then play around locally.</p>
+
+        <p>In multiplayer games, you'll also be able to make moves for other players, this is so people can say 'pass me this SR' and you don't
+        need to wait. Please use this feature politely! I'm also planning on adding a toggle to disable or enable this in the future. </p>
       MESSAGE
 
-      h(:div, props, message)
+      props = {
+        props: { innerHTML: message },
+        style: {
+          margin: '1rem 0',
+        },
+      }
+
+      h(:div, props)
     end
 
     def render_buttons
@@ -75,7 +85,7 @@ module View
 
       h(:div, props, [
         h('button.button', create_props, 'CREATE A NEW GAME'),
-        h('button.button', { style: { 'margin-left': '1rem' } }, 'TUTORIAL'),
+        # h('button.button', { style: { 'margin-left': '1rem' } }, 'TUTORIAL'),
       ])
     end
   end
