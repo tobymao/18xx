@@ -45,31 +45,24 @@ class App < Snabberb::Component
     refresh_user
     js_handlers
 
-    path = @app_route.split('#').first || ''
-    path = path.split('/').reject(&:empty?).first
-
     page =
-      case path
-      when nil
-        h(View::Home, user: @user)
-      when 'game', 'hotseat'
-        render_game(path)
-      when 'signup'
-        h(View::User, user: @user, type: :signup)
-      when 'login'
-        h(View::User, user: @user, type: :login)
-      when 'profile'
-        h(View::User, user: @user, type: :profile)
-      when 'new_game'
+      case @app_route
+      when /new_game/
         h(View::CreateGame)
-      when 'about'
+      when /game|hotseat/
+        render_game
+      when /signup/
+        h(View::User, user: @user, type: :signup)
+      when /login/
+        h(View::User, user: @user, type: :login)
+      when /profile/
+        h(View::User, user: @user, type: :profile)
+      when /about/
         h(View::About)
-      when 'all_tiles'
+      when /all_tiles/
         h(View::AllTiles)
       else
-        store(:flash_opts, "Unknown path #{path}")
-        store(:app_route, '/', skip: true)
-        raise
+        h(View::Home, user: @user)
       end
 
     props = {
@@ -82,12 +75,12 @@ class App < Snabberb::Component
     h(:div, props, [page])
   end
 
-  def render_game(path)
-    game_id = @app_route.split('/').last
+  def render_game
+    match = @app_route.match(%r{(hotseat|game)\/((hs_)?\d+)})
 
     unless @game_data # this only happens when refreshing a hotseat game
       # this happens async
-      enter_game(id: game_id, mode: path == 'game' ? :muti : :hotseat)
+      enter_game(id: match[2], mode: match[1] == 'game' ? :muti : :hotseat)
       return h(View::Home, user: @user)
     end
 

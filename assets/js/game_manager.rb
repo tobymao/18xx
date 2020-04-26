@@ -9,6 +9,7 @@ module GameManager
     base.needs :games, default: [], store: true
     base.needs :app_route, default: nil, store: true
     base.needs :connection, default: nil, store: true
+    base.needs :flash_opts, default: {}, store: true
   end
 
   def create_hotseat(**opts)
@@ -72,9 +73,12 @@ module GameManager
     store(:game, nil, skip: true)
 
     if game[:mode] == :hotseat
-      store(:game_data, Lib::Storage[game[:id]], skip: true)
-      store(:app_route, hs_url(game))
-      return
+      game_id = game[:id]
+      game_data = Lib::Storage[game_id]
+      return store(:flash_opts, "Hotseat game #{game_id} not found") unless game_data
+
+      store(:game_data, game_data, skip: true)
+      return @app_route.include?(hs_url(game)) ? update : store(:app_route, hs_url(game))
     end
 
     @connection.safe_get(url(game)) do |data|
