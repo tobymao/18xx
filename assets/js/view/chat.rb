@@ -6,17 +6,19 @@ module View
   class Chat < Snabberb::Component
     needs :user
     needs :connection
-    needs :log, default: [], store: true
+    needs :log, default: nil, store: true
 
     def render
-      @connection.subscribe('/chat', 0) do |data|
+      @connection.subscribe('/chat', @log ? -1 : 0) do |data|
         add_line(data)
       end
 
       destroy = lambda do
-        store(:log, [], skip: true)
+        store(:log, nil, skip: true)
         @connection.unsubscribe('/chat')
       end
+
+      @log ||= []
 
       children = [
         h(Log, log: @log),

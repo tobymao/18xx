@@ -8,7 +8,7 @@ module UserManager
     base.needs :app_route, default: nil, store: true
     base.needs :flash_opts, default: {}, store: true
     base.needs :connection, default: nil, store: true
-    base.needs :games, default: nil, store: true
+    base.needs :games, default: [], store: true
   end
 
   def create_user(params)

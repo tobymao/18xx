@@ -8,15 +8,12 @@ module Lib
   class Connection
     def initialize(root)
       @root = root
-      @subs = Hash.new(0)
       start_message_bus
     end
 
     # rubocop:disable Lint/UnusedMethodArgument
-    def subscribe(channel, message_id = -1, multi: false, &block)
-      return if @subs[channel].positive? && !multi
-
-      @subs[channel] += 1
+    def subscribe(channel, message_id = -1, &block)
+      unsubscribe(channel)
 
       %x{
         window.MessageBus.subscribe(#{channel}, function(data) {
@@ -29,7 +26,6 @@ module Lib
     # rubocop:enable Lint/UnusedMethodArgument
 
     def unsubscribe(channel)
-      @subs[channel] = 0
       `window.MessageBus.unsubscribe(#{channel})`
     end
 
