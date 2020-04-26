@@ -21,9 +21,9 @@ module View
           ]]
         when :login
           ['Login', [
-            h('div.pure-u-1', [render_button('Login') { submit }]),
             render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
             render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
+            h(:div, [render_button('Login') { submit }]),
           ]]
         when :profile
           ['Edit Profile (Coming Soon)', [
