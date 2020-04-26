@@ -18,16 +18,8 @@ module View
         h(Chat, user: @user, connection: @connection),
       ]
 
-      grouped = @games.group_by { |game| game['status'] }
-
-      your_games, active_games = grouped['active']&.partition do |game|
-        user_in_game?(@user, game)
-      end
-
-      if @user
-        render_row(children, 'Your Games', your_games)
-        render_row(children, 'New Games', grouped['new'])
-      end
+      your_games, other_games = @games.partition { |game| user_in_game?(@user, game) }
+      grouped = other_games.group_by { |game| game['status'] }
 
       hotseat = Lib::Storage
         .all_keys
@@ -36,10 +28,11 @@ module View
         .sort_by { |gd| gd[:id] }
         .reverse
 
-      render_row(children, 'Hotseat Games', hotseat) if hotseat.any?
-
-      render_row(children, 'Active Games', active_games)
-      render_row(children, 'Finished Games', grouped['finished'])
+      render_row(children, 'Your Games', your_games, :personal) if @user
+      render_row(children, 'Hotseat Games', hotseat, :hotseat) if hotseat.any?
+      render_row(children, 'New Games', grouped['new'], :new) if @user
+      render_row(children, 'Active Games', grouped['active'], :active)
+      render_row(children, 'Finished Games', grouped['finished'], :finished)
 
       @connection.subscribe('/games') do |data|
         update_game(data)
@@ -59,10 +52,16 @@ module View
       h(:div, props, children)
     end
 
-    def render_row(children, header, games)
+    def render_row(children, header, games, type)
       return unless games&.any?
 
-      children << h(GameRow, header: header, games: games, user: @user)
+      children << h(
+        GameRow,
+        header: header,
+        game_row_games: games,
+        type: type,
+        user: @user,
+      )
     end
 
     def render_game_box(game)

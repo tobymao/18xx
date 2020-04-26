@@ -121,6 +121,10 @@ class Api
         end
       end
 
+      r.get do
+        { games: Game.home_games(user, **r.params).map(&:to_h) }
+      end
+
       # POST '/api/game[/*]'
       r.post do
         not_authorized! unless user

@@ -33,6 +33,12 @@ module GameManager
     store(:app_route, "/hotseat/#{game_id}")
   end
 
+  def get_games(params)
+    @connection.safe_get("/game#{params}") do |data|
+      store(:games, data[:games])
+    end
+  end
+
   def create_game(params)
     @connection.safe_post('/game', params) do |data|
       store(:games, [data] + @games)

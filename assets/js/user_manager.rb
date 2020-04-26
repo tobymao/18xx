@@ -8,6 +8,7 @@ module UserManager
     base.needs :app_route, default: nil, store: true
     base.needs :flash_opts, default: {}, store: true
     base.needs :connection, default: nil, store: true
+    base.needs :games, default: nil, store: true
   end
 
   def create_user(params)
@@ -25,7 +26,8 @@ module UserManager
         store(:flash_opts, 'Credentials expired please re-login')
       else
         @connection.authenticate!
-        store(:user, data, skip: true)
+        store(:games, data['games'], skip: true)
+        store(:user, data['user'], skip: true)
         update # for some reason this causes an infinite loop
       end
     end
@@ -49,6 +51,7 @@ module UserManager
     Lib::Storage['auth_token'] = data['auth_token']
     @connection.authenticate!
     store(:user, data['user'], skip: true)
+    store(:games, data['games'], skip: true)
     store(:app_route, '/')
   end
 

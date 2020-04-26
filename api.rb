@@ -148,14 +148,7 @@ class Api < Roda
   end
 
   def render_with_games
-    p = 1
-    games = Game
-      .eager(:user, :players)
-      .reverse_order(:id)
-      .limit(PAGE_LIMIT + 1)
-      .offset((p - 1) * PAGE_LIMIT)
-      .all
-    render(games: games.map(&:to_h))
+    render(games: Game.home_games(user, **request.params).map(&:to_h))
   end
 
   def render(**needs)

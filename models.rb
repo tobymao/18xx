@@ -7,6 +7,7 @@ Sequel::Model.cache_associations = false if ENV['RACK_ENV'] == 'development'
 
 Sequel::Model.plugin :auto_validations
 Sequel::Model.plugin :prepared_statements
+Sequel::Model.plugin :tactical_eager_loading
 Sequel::Model.plugin :timestamps, update_on_create: true
 Sequel::Model.plugin :touch
 Sequel::Model.plugin :subclasses unless ENV['RACK_ENV'] == 'development'

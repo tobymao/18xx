@@ -30,23 +30,25 @@ class Api
         # POST '/api/user/logout'
         r.post 'logout' do
           session.destroy
-          {}
+
+          { games: Game.home_games(nil, **r.params).map(&:to_h) }
         end
 
         # POST '/api/user/refresh'
         r.is 'refresh' do
-          user.to_h
+          login_user(user, new_session: false)
         end
       end
     end
   end
 
-  def login_user(user)
-    session = Session.create(token: SecureRandom.hex, user: user)
+  def login_user(user, new_session: true)
+    token = (new_session ? Session.create(token: SecureRandom.hex, user: user) : session).token
 
     {
-      auth_token: session.token,
+      auth_token: token,
       user: user.to_h,
+      games: Game.home_games(user, **request.params).map(&:to_h),
     }
   end
 end

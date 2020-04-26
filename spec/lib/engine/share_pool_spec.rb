@@ -7,7 +7,6 @@ require 'engine/share_pool'
 require 'engine/share_price'
 require 'engine/player'
 
-# rubocop:disable Metrics/ModuleLength
 module Engine
   describe SharePool do
     let(:game) { Game::G1889.new(%w[a b c]) }
@@ -188,4 +187,3 @@ module Engine
     end
   end
 end
-# rubocop:enable Metrics/ModuleLength

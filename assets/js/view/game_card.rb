@@ -144,7 +144,7 @@ module View
       end
 
       children = [
-        h(:div, [h(:b, 'Id: '), @gdata['id']]),
+        h(:div, [h(:b, 'Id: '), @gdata['id'].to_s]),
         h(:div, [h(:b, 'Description: '), @gdata['description']]),
         h(:div, [h(:b, 'Players: '), *p_elm]),
       ]

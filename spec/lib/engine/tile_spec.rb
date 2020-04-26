@@ -12,7 +12,6 @@ require 'engine/part/town'
 require 'engine/part/upgrade'
 require 'engine/tile'
 
-# rubocop: disable Metrics/ModuleLength
 module Engine
   include Engine::Part
 
@@ -260,4 +259,3 @@ module Engine
     end
   end
 end
-# rubocop: enable Metrics/ModuleLength
