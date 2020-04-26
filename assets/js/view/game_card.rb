@@ -62,7 +62,7 @@ module View
           elsif user_in_game?(@user, @gdata)
             buttons << render_button('Leave', -> { leave_game(@gdata) })
           else
-            buttons << render_button('Join', -> { join_game(@gdata) })
+            buttons << render_button('Join', -> { join_game(@gdata) }) if players.size < @gdata['max_players']
           end
           JOIN_YELLOW
         when 'active'
