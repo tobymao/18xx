@@ -1,17 +1,12 @@
 # frozen_string_literal: true
 
-require 'view/actionable'
 require 'view/company'
 require 'view/players'
 require 'view/undo_and_pass'
 
-require 'engine/action/bid'
-
 module View
   class AuctionRound < Snabberb::Component
-    include Actionable
-
-    needs :selected_company, default: nil, store: true
+    needs :game, store: true
 
     def render
       @round = @game.round
