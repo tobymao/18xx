@@ -10,5 +10,5 @@ begin
 rescue Exception => e # rubocop:disable Lint/RescueException
   puts "Sequel failed to connect: #{e}"
   sleep(5)
-  retry if times < 3
+  retry if times < 5
 end

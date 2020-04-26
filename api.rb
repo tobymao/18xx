@@ -2,7 +2,6 @@
 
 PRODUCTION = ENV['RACK_ENV'] == 'production'
 
-require 'execjs'
 require 'message_bus'
 require 'opal'
 require 'require_all'
@@ -11,6 +10,7 @@ require 'snabberb'
 require 'uglifier'
 
 require_relative 'models'
+require_relative 'lib/js_context'
 require_relative 'lib/mail'
 require_relative 'lib/tilt/opal_template'
 
@@ -81,7 +81,7 @@ class Api < Roda
   APP_JS_PATH = assets_opts[:compiled_js_path]
   APP_JS = "#{APP_JS_PATH}.#{assets_opts[:compiled]['js']}.js"
   Dir[APP_JS_PATH + '*'].sort.each { |file| File.delete(file) unless file.include?(APP_JS) }
-  CONTEXT = ExecJS.compile(File.open(APP_JS, 'r:UTF-8', &:read))
+  CONTEXT = JsContext.new(APP_JS)
   RENDER_HTML = lambda do |script, **needs|
     CONTEXT.eval(Snabberb.html_script(script, **needs))
   end
