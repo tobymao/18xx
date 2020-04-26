@@ -79,9 +79,8 @@ class App < Snabberb::Component
     match = @app_route.match(%r{(hotseat|game)\/((hs_)?\d+)})
 
     unless @game_data # this only happens when refreshing a hotseat game
-      # this happens async
       enter_game(id: match[2], mode: match[1] == 'game' ? :muti : :hotseat)
-      return h(View::Home, user: @user)
+      return h(:div, 'Loading game...') unless @game_data
     end
 
     h(View::Game, connection: @connection, game_data: @game_data, user: @user)

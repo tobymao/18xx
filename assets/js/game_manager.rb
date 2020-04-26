@@ -84,7 +84,8 @@ module GameManager
       return store(:flash_opts, "Hotseat game #{game_id} not found") unless game_data
 
       store(:game_data, game_data, skip: true)
-      return @app_route.include?(hs_url(game)) ? update : store(:app_route, hs_url(game))
+      store(:app_route, hs_url(game)) unless @app_route.include?(hs_url(game))
+      return
     end
 
     @connection.safe_get(url(game)) do |data|
