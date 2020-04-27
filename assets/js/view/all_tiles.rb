@@ -1,17 +1,11 @@
 # frozen_string_literal: true
 
-require 'engine/company'
-require 'engine/corporation'
-require 'engine/game/g_1889'
-require 'engine/tile'
+require_tree 'engine'
 
 require 'view/tiles'
 
 module View
   class AllTiles < Tiles
-    # TODO: can this automatically discover all defined games?
-    GAMES = %w[1889].freeze
-
     TILE_IDS = [
       Engine::Tile::WHITE.keys,
       Engine::Tile::YELLOW.keys,
@@ -27,12 +21,11 @@ module View
               *TILE_IDS.map { |t| render_tile_block(t) }
             ]),
 
-          *GAMES.map { |g| map_hexes_for(g) }
+          *Engine::GAMES.map { |g| map_hexes_for(g) }
         ])
     end
 
-    def map_hexes_for(game_name)
-      game_class = Object.const_get("Engine::Game::G#{game_name}")
+    def map_hexes_for(game_class)
       game_hexes = game_class::HEXES
       location_names = game_class::LOCATION_NAMES
 
@@ -71,10 +64,10 @@ module View
         end
       end.flatten
 
-      h("div#map_hexes_#{game_name}", [
-          h(:h1, "#{game_name} Map Hexes"),
-          *rendered_tiles,
-        ])
+      h("div#map_hexes_#{game_class.title}", [
+        h(:h1, "#{game_class.title} Map Hexes"),
+        *rendered_tiles,
+      ])
     end
   end
 end
