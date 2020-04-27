@@ -31,6 +31,8 @@ module View
           border: "solid #{selected ? '3px' : '1px'} rgba(0,0,0,0.2)",
           display: 'inline-block',
           cursor: selected ? 'none' : 'pointer',
+          margin: '0.5rem 0.5rem 0.5rem 0',
+          padding: '0.5rem',
         }
 
         h(:div, { style: style, on: { click: onclick } }, "Train: #{train.name}")
@@ -57,7 +59,7 @@ module View
 
       h(:div, [
         h(:button, { on: { click: submit } }, 'Submit'),
-        h(:button, { on: { click: reset } }, 'Reset'),
+        h(:button, { style: { 'margin-left': '1rem' }, on: { click: reset } }, 'Reset'),
       ])
     end
   end

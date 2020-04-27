@@ -31,8 +31,6 @@ module View
         h(UndoAndPass, pass: !@round.must_sell?),
         *render_corporations,
       ]
-
-      children << render_input if @selected_corporation
       children << h(View::Players, game: @game)
       children << h(View::StockMarket, game: @game)
 
@@ -40,13 +38,23 @@ module View
     end
 
     def render_corporations
+      props = {
+        style: {
+          display: 'inline-block',
+          'vertical-align': 'top',
+        }
+      }
+
       @round.share_pool.corporations.map do |corporation|
-        h(Corporation, corporation: corporation)
+        children = [h(Corporation, corporation: corporation)]
+        children << render_input if @selected_corporation == corporation
+        h(:div, props, children)
       end
     end
 
     def render_input
-      @selected_corporation.ipoed ? render_ipoed : render_pre_ipo
+      input = @selected_corporation.ipoed ? render_ipoed : render_pre_ipo
+      h(:div, { style: { 'margin-top': '0.5rem' } }, [input].compact)
     end
 
     def render_ipoed
@@ -76,9 +84,10 @@ module View
 
       style = {
         cursor: 'pointer',
-        border: 'solid 1px rgba(0,0,0,0.2)',
+        border: 'solid 1px gainsboro',
         display: 'inline-block',
-        margin: '0.5rem 0 0.5rem 0.5rem'
+        padding: '0.5rem',
+        margin: '0.5rem 0.5rem 0.5rem 0',
       }
 
       par_values = @round.stock_market.par_prices.map do |share_price|
@@ -89,7 +98,10 @@ module View
         h(:div, { style: style, on: { click: par } }, @game.format_currency(share_price.price))
       end
 
-      h(:div, ['Choose a par price:', *par_values])
+      h(:div, [
+        h(:div, 'Par Price:'),
+        *par_values,
+      ])
     end
   end
 end

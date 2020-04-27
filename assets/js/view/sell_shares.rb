@@ -40,7 +40,7 @@ module View
         h(:button, { on: { click: sell } }, text)
       end
 
-      h(:div, buttons.compact)
+      h(:div, { style: { 'margin-top': '1rem' } }, buttons.compact)
     end
   end
 end
