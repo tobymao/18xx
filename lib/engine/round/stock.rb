@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'base'
 require_relative '../action/buy_share'
 require_relative '../action/par'
 require_relative '../action/sell_shares'
