@@ -44,14 +44,15 @@ module Engine
         corporation = share.corporation
 
         @current_entity.cash >= share.price &&
-          (corporation.share_price&.color == :brown || @current_entity.percent_of(corporation) < 60) &&
+          corporation_holding_ok?(corporation, @current_entity.percent_of(corporation) + share.percent) &&
           (!corporation.counts_for_limit || @current_entity.num_certs < @game.cert_limit) &&
           !@players_sold[@current_entity][corporation] &&
           (@current_actions & self.class::PURCHASE_ACTIONS).none?
       end
 
       def must_sell?
-        @current_entity.num_certs > @game.cert_limit
+        @current_entity.num_certs > @game.cert_limit ||
+          !@corporations.all? { |corp| corporation_holding_ok?(corp, @current_entity.percent_of(corp)) }
       end
 
       def can_sell?(bundle)
@@ -156,6 +157,10 @@ module Engine
 
         action = @current_actions.include?(Action::SellShares) ? 'buying' : 'selling'
         @log << "#{entity.name} passes #{action} shares"
+      end
+
+      def corporation_holding_ok?(corporation, percent)
+        %i[orange brown].include?(corporation.share_price&.color) || percent <= 60
       end
     end
   end

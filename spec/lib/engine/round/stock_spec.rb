@@ -35,6 +35,34 @@ module Engine
       it 'works with no par' do
         expect(subject.can_buy?(corp_0.shares[0])).to be_truthy
       end
+
+      it 'can\'t buy over 60%' do
+        player_0.cash = 10_000
+        market.set_par(corp_0, market.market[7][0])
+        6.times { game.share_pool.buy_share(player_0, corp_0.shares[0]) }
+        expect(subject.can_buy?(corp_0.shares[0])).to eq(false)
+      end
+
+      it 'can buy orange over 60%' do
+        player_0.cash = 10_000
+        market.set_par(corp_0, market.market[8][0])
+        6.times { game.share_pool.buy_share(player_0, corp_0.shares[0]) }
+        expect(subject.can_buy?(corp_0.shares[0])).to eq(true)
+      end
+
+      it 'must sell when over 60%' do
+        player_0.cash = 10_000
+        market.set_par(corp_0, market.market[7][0])
+        7.times { game.share_pool.buy_share(player_0, corp_0.shares[0]) }
+        expect(subject.must_sell?).to eq(true)
+      end
+
+      it 'needn\'t sell orange when over 60%' do
+        player_0.cash = 10_000
+        market.set_par(corp_0, market.market[8][0])
+        7.times { game.share_pool.buy_share(player_0, corp_0.shares[0]) }
+        expect(subject.must_sell?).to eq(false)
+      end
     end
   end
 end
