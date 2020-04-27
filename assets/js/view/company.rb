@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'view/actionable'
-
 module View
   class Company < Snabberb::Component
     include Actionable
@@ -89,7 +87,7 @@ module View
         ]),
       ]
 
-      if @bids&.any?
+      if @bids&.length&.positive?
         children << h(:div, { style: bidders_style }, 'Bidders:')
         children << render_bidders
       end
@@ -103,7 +101,7 @@ module View
     end
 
     def render_actions
-      return h(:div) if !selected? || !@game.round.auction?
+      return h(:div) unless selected? && @game.round.auction?
 
       @round = @game.round
       @current_entity = @round.current_entity
