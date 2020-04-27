@@ -17,13 +17,7 @@ require 'view/tile_manifest'
 require 'view/tools'
 require 'view/train_roster'
 
-# debugging views
-# require 'view/all_tiles'
-# require 'view/all_tokens'
-
-require 'engine/round/auction'
-require 'engine/round/operating'
-require 'engine/round/stock'
+require 'engine'
 
 module View
   class Game < Snabberb::Component
@@ -36,9 +30,9 @@ module View
     needs :user
 
     def render
-      game_id = @game_data[:id]
+      game_id = @game_data['id']
       if game_id != @game&.id
-        @game = Engine::Game::G1889.new(
+        @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
           @game_data['players'].map { |p| p['name'] },
           id: game_id,
           actions: @game_data['actions'],

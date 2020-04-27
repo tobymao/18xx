@@ -2,7 +2,7 @@
 
 require 'snabberb/component'
 
-require 'engine/game/g_1889'
+require 'engine'
 require 'view/token'
 
 module View
