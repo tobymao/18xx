@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_rel '../lib/engine'
+require_relative '../lib/engine'
 
 class Api
   TURN_CHANNEL = '/turn'
