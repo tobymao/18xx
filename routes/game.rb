@@ -83,7 +83,7 @@ class Api
               return_and_notify(game)
             end
 
-            # POST '/api/game/<game_id>//action/rollback'
+            # POST '/api/game/<game_id>/action/rollback'
             r.is 'rollback' do
               game.actions.last.destroy
               publish(channel, id: -1)
