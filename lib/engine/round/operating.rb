@@ -295,23 +295,19 @@ module Engine
 
       def change_entity(action)
         return if @step != self.class::STEPS.first
-        return if ignore_action?(action)
+        return if action.is_a?(Action::BuyCompany) && can_buy_companies?
 
         @current_entity = next_entity
       end
 
       def action_processed(action)
         remove_just_sold_company_abilities unless action.is_a?(Action::BuyCompany)
-        return if ignore_action?(action)
+        return if action.is_a?(Action::BuyCompany) && (@step != :company || can_buy_companies?)
         return if action.is_a?(Action::SellShares)
         return if action.is_a?(Action::BuyTrain) && can_buy_train?
         return if crowded_corps.any?
 
         next_step!
-      end
-
-      def ignore_action?(action)
-        action.is_a?(Action::BuyCompany) && (@step != :company || can_buy_companies?)
       end
 
       def withhold(revenue = 0)
