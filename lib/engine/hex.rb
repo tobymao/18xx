@@ -121,7 +121,7 @@ module Engine
     end
 
     def inspect
-      "<Hex: #{name}, tile: #{@tile.name}>"
+      "<#{self.class.name}: #{name}, tile: #{@tile.name}>"
     end
   end
 end

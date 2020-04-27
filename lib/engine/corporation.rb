@@ -40,6 +40,14 @@ module Engine
       @color = opts[:color]
     end
 
+    def <=>(other)
+      # corporation with higher share price, farthest on the right, and first position on the share price goes first
+      sp = share_price
+      ops = other.share_price
+      [ops.price, ops.coordinates&.last, -ops.corporations.find_index(other)] <=>
+      [sp.price, sp.coordinates.last, -sp.corporations.find_index(self)]
+    end
+
     def counts_for_limit
       # if no share price, like when you exchange a share pre-ipo
       # it still counts
@@ -89,6 +97,10 @@ module Engine
 
     def corporation?
       true
+    end
+
+    def inspect
+      "<#{self.class.name}: #{id}>"
     end
   end
 end

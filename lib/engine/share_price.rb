@@ -40,5 +40,9 @@ module Engine
     def counts_for_limit
       !@unlimited_colors.include?(@color)
     end
+
+    def to_s
+      "#{self.class.name} - #{@price} #{@coordinates}"
+    end
   end
 end

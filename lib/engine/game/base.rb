@@ -169,8 +169,8 @@ module Engine
         end
       end
 
-      def to_s
-        "#{self.class.name} - #{@players.map(&:name)}"
+      def inspect
+        "#{self.class.name} - #{self.class.title} #{@players.map(&:name)}"
       end
 
       def result
@@ -399,13 +399,11 @@ module Engine
 
       def new_operating_round(round_num = 1)
         @log << "-- Operating Round #{@turn}.#{round_num} --"
-        corps = @corporations.select(&:floated?).sort_by do |corporation|
-          share_price = corporation.share_price
-          _, column = share_price.coordinates
-          [-share_price.price, -column, share_price.corporations.find_index(corporation)]
-        end
-
-        Round::Operating.new(corps, game: self, round_num: round_num)
+        Round::Operating.new(
+          @corporations.select(&:floated?).sort,
+          game: self,
+          round_num: round_num,
+        )
       end
 
       def cache_objects

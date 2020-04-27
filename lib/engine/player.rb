@@ -53,5 +53,9 @@ module Engine
     def num_certs
       companies.count + shares.count { |s| s.corporation.counts_for_limit }
     end
+
+    def to_s
+      "#{self.class.name} - #{@name}"
+    end
   end
 end

@@ -92,5 +92,9 @@ module Engine
     def corporation?
       false
     end
+
+    def inspect
+      "<#{self.class.name}: #{id}>"
+    end
   end
 end

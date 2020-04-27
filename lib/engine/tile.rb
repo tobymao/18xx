@@ -312,6 +312,10 @@ module Engine
       @blockers << private_company
     end
 
+    def to_s
+      "#{self.class.name} - #{@name}"
+    end
+
     private
 
     def tag_parts
