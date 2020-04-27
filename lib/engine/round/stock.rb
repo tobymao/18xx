@@ -101,7 +101,8 @@ module Engine
 
         bundles.none? { |bundle| can_sell?(bundle) } &&
           @share_pool.shares.none? { |s| can_buy?(s) } &&
-          @corporations.none? { |c| can_buy?(c.shares.first) }
+          @corporations.none? { |c| can_buy?(c.shares.first) } &&
+          !must_sell? # this forces a deadlock and a user must undo
       end
 
       def change_entity(_action)
