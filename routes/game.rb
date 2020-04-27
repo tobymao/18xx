@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_rel '../lib/engine'
+require_relative '../lib/engine/game/g_1889'
 
 class Api
   TURN_CHANNEL = '/turn'
@@ -39,7 +39,7 @@ class Api
           end
 
           r.on 'action' do
-            engine = Engine::GAMES_BY_TITLE[game.title].new(
+            engine = Engine::Game::G1889.new(
               users.map(&:name),
               actions: actions_h(game),
             )
@@ -138,7 +138,7 @@ class Api
             description: r['description'],
             max_players: r['max_players'],
             title: title,
-            round: Engine::GAMES_BY_TITLE[title].new([]).round.name,
+            round: Engine::Game::G1889.new([]).round.name,
           }
 
           game = Game.create(params)
