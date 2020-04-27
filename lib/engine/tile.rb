@@ -27,7 +27,6 @@ module Engine
       'blank' => '',
       'town' => 't=r:0',
       'city' => 'c=r:0',
-      'wtr40' => 'u=c:40,t:water',
       'mtn80' => 'u=c:80,t:mountain',
       'wtr80' => 'u=c:80,t:water',
       'mtn+wtr80' => 'u=c:80,t:mountain+water',

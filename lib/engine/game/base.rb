@@ -124,10 +124,6 @@ module Engine
         %i[cities city],
       ].freeze
 
-      def self.title
-        name.split('::').last.slice(1..-1)
-      end
-
       def initialize(names, id: 0, actions: [])
         @id = id
         @turn = 1
