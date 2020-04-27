@@ -15,18 +15,20 @@ module View
       @company == @selected_company
     end
 
-    def render_bidders
-      bidders_style = {
-        'font-weight': 'normal'
+    def render
+      props = {
+        style: {
+          display: 'inline-block',
+          'vertical-align': 'top',
+        },
       }
-      names = @bids
-        .sort_by(&:price)
-        .reverse.map { |bid| "#{bid.entity.name} (#{@game.format_currency(bid.price)})" }
-        .join(', ')
-      h(:div, { style: bidders_style }, names)
+      children = [render_company]
+      children << render_actions if selected? && @game.round.auction?
+
+      h(:div, props, children)
     end
 
-    def render
+    def render_company
       onclick = lambda do
         selected_company = selected? ? nil : @company
         store(:selected_company, selected_company)
@@ -64,7 +66,6 @@ module View
 
       props = {
         style: {
-          display: 'inline-block',
           cursor: 'pointer',
           border: 'solid 1px gainsboro',
           padding: '0.5rem',
@@ -72,7 +73,6 @@ module View
           width: '300px',
           'text-align': 'center',
           'font-weight': 'bold',
-          'vertical-align': 'top',
         },
         on: { click: onclick },
       }
@@ -96,20 +96,26 @@ module View
 
       children << h(:div, { style: bidders_style }, "Owner: #{@company.owner.name}") if @company.owner
 
-      h(:div, [
-        h(:div, props, children),
-        render_actions
-      ])
+      h(:div, props, children)
+    end
+
+    def render_bidders
+      bidders_style = {
+        'font-weight': 'normal',
+      }
+      names = @bids
+        .sort_by(&:price)
+        .reverse.map { |bid| "#{bid.entity.name} (#{@game.format_currency(bid.price)})" }
+        .join(', ')
+      h(:div, { style: bidders_style }, names)
     end
 
     def render_actions
-      return h(:div) if !selected? || !@game.round.auction?
-
       @round = @game.round
       @current_entity = @round.current_entity
       step = @round.min_increment
 
-      input = h(:input, props: {
+      input = h(:input, style: { 'margin-right': '1rem' }, props: {
         value: @round.min_bid(@company),
         step: step,
         min: @company.min_bid + step,

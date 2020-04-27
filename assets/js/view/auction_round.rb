@@ -6,7 +6,7 @@ require 'view/undo_and_pass'
 
 module View
   class AuctionRound < Snabberb::Component
-    needs :game, store: true
+    needs :game
 
     def render
       @round = @game.round
