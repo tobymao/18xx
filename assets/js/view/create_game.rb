@@ -2,8 +2,9 @@
 
 require 'game_manager'
 require 'view/form'
-require 'engine/game/g_1889'
 require 'json'
+
+require 'engine'
 
 module View
   class CreateGame < Form
@@ -46,10 +47,13 @@ module View
     end
 
     def render_inputs
+      games = Engine::GAMES.map do |game|
+        next unless game.title == '1889'
+
+        h(:option, game.title)
+      end
       h(:div, [
-        render_input('Game Title', id: :title, el: 'select', children: [
-          h(:option, '1889'),
-        ]),
+        render_input('Game Title', id: :title, el: 'select', children: games),
         render_input('Description', id: :description),
         render_input('Max Players', id: :max_players, type: :number, attrs: { value: 6 }),
       ])
