@@ -2,8 +2,6 @@
 
 module View
   class Company < Snabberb::Component
-    include Actionable
-
     needs :company
     needs :bids, default: nil
     needs :selected_company, default: nil, store: true
@@ -28,6 +26,7 @@ module View
       onclick = lambda do
         selected_company = selected? ? nil : @company
         store(:selected_company, selected_company)
+        # TODO: Move Bid Input into Private
       end
 
       header_style = {
@@ -87,62 +86,14 @@ module View
         ]),
       ]
 
-      if @bids&.length&.positive?
+      if @bids
         children << h(:div, { style: bidders_style }, 'Bidders:')
         children << render_bidders
       end
 
       children << h(:div, { style: bidders_style }, "Owner: #{@company.owner.name}") if @company.owner
 
-      h(:div, [
-        h(:div, props, children),
-        render_actions
-      ])
-    end
-
-    def render_actions
-      return h(:div) unless selected? && @game.round.auction?
-
-      @round = @game.round
-      @current_entity = @round.current_entity
-      step = @round.min_increment
-
-      input = h(:input, props: {
-        value: @round.min_bid(@company),
-        step: step,
-        min: @company.min_bid + step,
-        max: @current_entity.cash,
-        type: 'number',
-      })
-
-      create_bid = lambda do
-        price = input.JS['elm'].JS['value'].to_i
-        process_action(Engine::Action::Bid.new(@current_entity, @selected_company, price))
-        store(:selected_company, nil, skip: true)
-      end
-
-      buy = lambda do
-        process_action(Engine::Action::Bid.new(@current_entity, @selected_company, @round.min_bid(@selected_company)))
-        store(:selected_company, nil, skip: true)
-      end
-
-      company_actions =
-        if @round.may_purchase?(@company)
-          [h(:button, { on: { click: buy } }, 'Buy')]
-        elsif @company && @round.may_bid?(@company)
-          [
-            input,
-            h(:button, { on: { click: create_bid } }, 'Place Bid'),
-          ]
-        end
-
-      action_style = {
-        margin: '0.5rem 0 1rem 0',
-        width: '300px',
-        'text-align': 'center'
-      }
-
-      h(:div, { style: action_style }, company_actions)
+      h(:div, props, children)
     end
   end
 end
