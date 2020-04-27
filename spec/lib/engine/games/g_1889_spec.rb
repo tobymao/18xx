@@ -29,17 +29,6 @@ module Engine
           'hoffmansthal' => 6627,
           'sharunasbresson' => 7490,
         },
-        105 => {
-          'Batto' => 7464,
-          'XB' => 9036,
-          'akramer16' => 8587,
-        },
-        224 => {
-          'Alli' => 4405,
-          'Kashuno' => 6040,
-          'Max' => 5034,
-          'Mr. Steak' => 4783,
-        },
         233 => {
           'dionhut' => 7844,
           'hhlodesign' => 7655,

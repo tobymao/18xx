@@ -123,9 +123,9 @@ module Engine
 
         return unless finished?
 
-        @corporations.each do |corporation|
-          next if corporation.share_holders.values.sum < 100
+        sold_out = @corporations.select { |c| c.share_holders.values.sum == 100 }
 
+        sold_out.sort.each do |corporation|
           prev = corporation.share_price.price
           @stock_market.move_up(corporation)
           log_share_price(corporation, prev)
