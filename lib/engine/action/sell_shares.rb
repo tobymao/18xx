@@ -19,8 +19,8 @@ module Engine
 
       def args_to_h
         {
-          'shares': @shares.shares.map(&:id),
-          'percent': @shares.percent,
+          'shares' => @shares.shares.map(&:id),
+          'percent' => @shares.percent,
         }
       end
     end

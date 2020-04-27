@@ -10,7 +10,6 @@ module Engine
       name: '2',
       operating_rounds: 1,
       train_limit: 4,
-      no_buy_in: true,
       tiles: :yellow,
     }.freeze
 
@@ -19,10 +18,18 @@ module Engine
       operating_rounds: 2,
       train_limit: 4,
       tiles: %i[yellow green].freeze,
+      buy_companies: true,
       on: '3',
     }.freeze
 
-    FOUR = THREE.merge(name: '4', on: '4', train_limit: 3)
+    FOUR = {
+      name: '4',
+      operating_rounds: 2,
+      train_limit: 3,
+      tiles: %i[yellow green].freeze,
+      buy_companies: true,
+      on: '4',
+    }.freeze
 
     FIVE = {
       name: '5',
@@ -33,7 +40,13 @@ module Engine
       events: { close_companies: true },
     }.freeze
 
-    SIX = FIVE.merge(name: '6', on: '6', events: nil)
+    SIX = {
+      name: '6',
+      operating_rounds: 3,
+      train_limit: 2,
+      tiles: %i[yellow green brown].freeze,
+      on: '6',
+    }.freeze
 
     D = {
       name: 'D',
@@ -69,7 +82,7 @@ module Engine
 
       @name = phase[:name]
       @operating_rounds = phase[:operating_rounds]
-      @buy_companies = !phase[:no_buy_in]
+      @buy_companies = !!phase[:buy_companies]
       @train_limit = phase[:train_limit]
       @tiles = Array(phase[:tiles])
       @events = phase[:events] || []

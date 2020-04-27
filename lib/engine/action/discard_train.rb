@@ -17,7 +17,7 @@ module Engine
       end
 
       def args_to_h
-        { 'train': @train.id }
+        { 'train' => @train.id }
       end
     end
   end
