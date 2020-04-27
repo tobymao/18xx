@@ -114,26 +114,26 @@ module View
       h(:div, props, [
         h(:div, { style: { width: 'max-content' } }, [
           tab_button('Game'),
-          tab_button('Players', 'players'),
-          tab_button('Corporations', 'corporations'),
-          tab_button('Map', 'map'),
-          tab_button('Market', 'market'),
-          tab_button('Trains', 'trains'),
-          tab_button('Tiles', 'tiles'),
-          tab_button('Companies', 'companies'),
-          tab_button('Tools', 'tools'),
+          tab_button('Players', '#players'),
+          tab_button('Corporations', '#corporations'),
+          tab_button('Map', '#map'),
+          tab_button('Market', '#market'),
+          tab_button('Trains', '#trains'),
+          tab_button('Tiles', '#tiles'),
+          tab_button('Companies', '#companies'),
+          tab_button('Tools', '#tools'),
         ]),
       ])
     end
 
     def tab_button(name, anchor = '')
       change_anchor = lambda do
-        store(:app_route, "#{@app_route.split('#').first}##{anchor}")
+        store(:app_route, "#{@app_route.split('#').first}#{anchor}")
       end
 
       props = {
         attrs: {
-          href: "##{anchor}",
+          href: anchor,
           onclick: 'return false',
         },
         style: {
