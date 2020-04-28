@@ -293,9 +293,8 @@ module Engine
         end
       end
 
-      def change_entity(action)
-        return if @step != self.class::STEPS.first
-        return if ignore_action?(action)
+      def change_entity(_action)
+        return unless @current_entity.passed?
 
         @current_entity = next_entity
       end
