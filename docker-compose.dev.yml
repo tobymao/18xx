@@ -1,27 +1,20 @@
-version: '3.5'
+version: '3.7'
 
 services:
   rack:
     image: 18xx_rack:dev
-    environment:
-      DATABASE_URL: postgres://root:password@db:5432/18xx_development
-      RACK_ENV: development
+    command: bash -c "bundle exec rake dev_up && bundle exec rerun --background -i 'build/*' -i 'public/*' 'puma'"
     ports:
       - 9292:9292
     volumes:
       - .:/18xx
-      - /18xx/vendor
+    depends_on:
+      - db
 
   db:
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: 18xx_development
+    image: 18xx_postgres:dev
 
   adminer:
     image: adminer
-    restart: always
     ports:
       - 8080:8080
-    depends_on:
-      - db

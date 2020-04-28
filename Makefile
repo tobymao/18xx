@@ -1,40 +1,38 @@
-.DEFAULT_GOAL := dev_up
+.PHONY: ensure_env_prod build dev_up prod_up prod_deploy down
 
+# validate required variables in .env
+ensure_env_prod:
+	./scripts/ensure_env.sh production
 
-# ensure ./db/data exists and is not owned by root
-data_dir:
-	./scripts/data_dir.sh
+# build docker images
+build:
+	./scripts/build_images.sh development
+build_prod:
+	./scripts/build_images.sh production
 
-# ensure the required environment variables exist when running with prod config
-ensure_prod_env:
-	./scripts/ensure_prod_env.sh
+# start docker stack
+dev_up:
+	./scripts/ensure_env.sh development
+	./scripts/data_dir.sh development
+	./scripts/stack_up.sh development
+prod_up:
+	./scripts/ensure_env.sh production
+	./scripts/data_dir.sh production
+	./scripts/stack_up.sh production
 
-# manage the override symlink
-clean_link:
-	rm -f docker-compose.override.yml
-dev_link : clean_link
-	ln -s docker-compose.dev.yml docker-compose.override.yml
-prod_link : clean_link
-	ln -s docker-compose.prod.yml docker-compose.override.yml
+# bring down docker stack, prod or dev
+down:
+	docker stack rm 18xx
 
-# dev config, run locally
-dev_build : dev_link data_dir
-	docker-compose build
-dev_up : dev_link data_dir
-	docker-compose up
-dev_up_b : dev_link data_dir
-	docker-compose up --build
+# manage dev stack with compose instead of swarm
+dev_up_c:
+	./scripts/ensure_env.sh development
+	./scripts/data_dir.sh development
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+down_c:
+	docker-compose down
 
-# prod config, run locally
-prod_build : prod_link data_dir ensure_prod_env
-	docker-compose build
-prod_up : prod_link data_dir ensure_prod_env
-	docker-compose up
-prod_up_b : prod_link data_dir ensure_prod_env
-	docker-compose up --build
-prod_up_b_d : prod_link data_dir ensure_prod_env
-	docker-compose up --build --detach
 
 # remotely deploy latest master in prod
-prod_deploy :
-	./scripts/deploy_prod.sh
+prod_deploy:
+	./scripts/prod_deploy.sh

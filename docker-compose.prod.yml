@@ -1,29 +1,38 @@
-version: '3.5'
+version: '3.7'
+
+x-zero-downtime: &zero-downtime
+  deploy:
+    update_config:
+      order: start-first
+      failure_action: rollback
+      delay: 10s
+    rollback_config:
+      parallelism: 0
+      order: stop-first
+    restart_policy:
+      condition: any
+      delay: 5s
+      max_attempts: 5
+      window: 120s
 
 services:
   rack:
-    command: bash -c "bundle exec rake prod_up && bundle exec puma"
-    image: 18xx_rack:prod
-    environment:
-      RACK_ENV: production
-      DATABASE_URL: $DATABASE_URL
-      MAIL_GUN_KEY: $MAIL_GUN_KEY
-    build:
-      args:
-        RACK_ENV: production
+    <<: *zero-downtime
+    image: 18xx_rack:${RACK_TAG} # defined via ./scripts/get_image_tags.sh
     volumes:
       - ./public:/18xx/public
-      - ./log/rack:/18xx/log/rack
+    healthcheck:
+      test: ["CMD", "/18xx/scripts/healthcheck_rack.rb"]
 
   db:
-    environment:
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
+    <<: *zero-downtime
+    image: 18xx_postgres:${POSTGRES_TAG} # defined via ./scripts/get_image_tags.sh
+    healthcheck:
+      test: ["CMD", "/home/db/healthcheck_postgres.sh"]
 
   nginx:
-    build: ./nginx/
-    image: nginx:1.17
+    <<: *zero-downtime
+    image: 18xx_nginx:${NGINX_TAG} # defined via ./scripts/get_image_tags.sh
     ports:
       - "80:80"
       - "443:443"
@@ -31,5 +40,5 @@ services:
       - ./log/nginx:/var/log/nginx
       - ./public:/public
       - /etc/18xxgames/ssl:/etc/18xxgames/ssl
-    depends_on:
-      - rack
+    healthcheck:
+      test: ["CMD", "service", "nginx", "status"]

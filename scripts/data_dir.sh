@@ -12,6 +12,36 @@
 #   like ./db/data/.keep is checked into the repo, it will error out instead of
 #   initializing properly
 
-mkdir -p db/data
+TARGET_ENV=$1
+if [ "${TARGET_ENV}" = "production" ]; then
+    ENV_SHORT="prod"
+elif [ "${TARGET_ENV}" = "development" ]; then
+    ENV_SHORT="dev"
+else
+    echo "Must specify a target environment of either \"development\" or \"production\"; got \"${TARGET_ENV}\""
+    exit 1
+fi
 
-[ $(ls -l db/ | grep data | awk '{print $3}' | head -1) = 'root' ] && sudo chown -R $USER:$USER db/data || true
+# manage db/data as a symlink for seamlessly handling dev and prod setup
+if [ -L db/data ]; then
+    link_target=$(readlink -f db/data)
+    if [[ ! "${link_target}" =~ "${ENV_SHORT}" ]]; then
+        echo "ERROR: Deploying to ${TARGET_ENV} but db/data points to ${link_target}"
+        read -p "Fix link and continue? NOT RECOMMENDED if it is already mounted to a running container. [y/N] " fix
+        if [[ "${fix}" =~ ^[yY].*$ ]]; then
+            rm db/data
+            ln -f -s "data_${ENV_SHORT}" db/data
+        else
+            exit 1
+        fi
+    fi
+
+elif [ -d "db/data_dev" ] && [ -d "db/data_prod" ]; then
+    ln -s "data_${ENV_SHORT}" db/data
+
+else
+    mkdir -p db/data
+
+    [ $(ls -l db/ | grep data | awk '{print $3}' | head -1) = 'root' ] && sudo chown -R $USER:$USER db/data || true
+
+fi

@@ -1,77 +1,124 @@
 # Development
 
-### Droplet configuration
-
-If configuring the droplet from scratch, these are the requirements:
+## Requirements
 
 * `docker`
 * `docker-compose`
 * `make`
-* this repo (via `git clone`)
 
-### Anatomy of a Tile
+## Anatomy of a Tile
 
 ![Anatomy of a Tile](/public/images/tile_anatomy.png?raw=true "Anatomy of a Tile")
 
-### Docker
+## Docker
 
-Start the Docker stack for this project:
+### Development
+
+To develop with an environment more similar to production, use Swarm. (You will first need to run `docker swarm init`).
+
+For an environment that gets started more quickly, use Compose.
+
+In either case, when code changes are made, the rack is restarted, and after a
+few seconds your changes should be visible in the browser with a refresh.
+
+#### Swarm
+
+First, build the `dev` Docker images:
 
 ```
-make
+make build
 ```
 
-To ensure a rebuild of one or more of the containers, this make task will add
-`--build` to the `docker-compose up` command that is run by the default task:
+Then start the Docker stack in "development" mode:
 
 ```
-make dev_up_b
+make dev_up
 ```
 
-To start the stack with production config, run:
+After the first `make build`, you shouldn't need to rebuild the images if your
+changes are limited to the code under `lib/`, but if you change stuff like
+`Gemfile`, you'll need a rebuild.
+
+* access the dev site at http://127.0.0.1:9292
+* access Adminer (to manage the db) at http://127.0.0.1:8080/?pgsql=db&username=18xx&db=18xx_development
+
+To bring down the stack:
+
+```
+make down
+```
+
+#### Compose
+
+The above dev configuration uses docker swarm/stack. The biggest downside is
+slow initialization time (though it provides nice features for zero-downtime
+deployment).
+
+These make tasks will manage the dev stack using compose:
+
+```
+make dev_up_c
+```
+
+```
+make down_c
+```
+
+In this mode, the app can be reached at http://localhost:9292/
+
+### Production
+
+To build the images for production, all your changes must be committed or stashed. Then, run:
+
+```
+make build_prod
+```
+
+Images built with the above command will be tagged with the latest commit
+SHA.
+
+If an image is the same as a previously built image tagged with a diffrent
+commit SHA, the new tag is not added. This means that the docker build cache had
+every step of the build cached, meaning no changes for that image have been made
+since the previous time it was built. By not adding a second commit tag, `docker
+stack` is prevented from needlessly swapping identical containers.
+
+To start the stack with production config and the latest production images that
+have been built, run:
 
 ```
 make prod_up
 ```
+In production mode, after you make changes, you need to rebuild and deploy to
+see the new changes running; just run `make prod_up` and `docker stack` and
+wait.
 
-As with dev, `make prod_up_b` will add `--build` to the compose command ran by
-`make prod_up`.
+* access the prod site at https://127.0.0.1
 
-To update the code on the server with the latest master and rerun
-`docker-compose up --build`:
+To bring down the stack:
+
+```
+make down
+```
+
+#### Deploying
+
+This task simply SSHes to the production server (assuming you have the right SSH
+configuration) and runs `git pull` and `make prod_up`:
 
 ```
 make prod_deploy
 ```
 
-* access the site at http://localhost:9292
-* access Adminer at http://localhost:8080/?pgsql=db&username=root&db=db_18xx
+Within a few minutes, the new version of the app should be live at
+[18xx.games](https://www.18xx.games).
 
-Make code changes, and within a few seconds the app should restart. Manually
-refresh your browser to load the new app.
+### Both modes
 
-#### Database
+If you want to easily switch between "production" mode and "development" mode,
+you can put dev environment variables in `.env_dev` and production variables in
+`.env_prod`, and the scripts will manage `.env` as a symlink, pointing to the
+file appropriate for the environment.
 
-`./db/data` is mounted to `/var/lib/postgresql/data` on the db container, giving
-the host easy access to all of the data.
-
-The database container is configured (in `./db/Dockerfile`) to run as a user
-with UID 1000. The default Unix UID is 1000, so if you were the first user
-created on your host machine, you are probably 1000. This means that any data
-postgres writes in the container should be owned by you, and you should have no
-trouble reading/writing it.
-
-#### Docker Documentation
-
-https://docs.docker.com/get-started/
-
-If `docker-compose up` requires login, you probably need to create an access
-token and login with the Docker CLI:
-
-* https://docs.docker.com/docker-hub/access-tokens/
-* https://docs.docker.com/engine/reference/commandline/login/
-
-Compose documentation:
-
-* https://docs.docker.com/compose/
-* https://docs.docker.com/compose/compose-file/
+Similarly, if you have directories `db/data_dev` and `db/data_prod`, the scripts
+will manage `db/data` as a symlink.
