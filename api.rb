@@ -25,7 +25,7 @@ MessageBus.configure(
     password: DB.opts[:password],
     port: DB.opts[:port],
   },
-  clear_every: 10,
+  clear_every: 1,
 )
 
 MessageBus.reliable_pub_sub.max_backlog_size = 1
