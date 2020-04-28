@@ -464,6 +464,8 @@ module Engine
           sell_shares(bundle)
         end
 
+        player.spend(player.cash, @bank)
+
         @bankrupt = true
       end
 
