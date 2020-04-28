@@ -16,7 +16,7 @@ module View
           ['Signup', [
             render_input('User Name', id: :name),
             render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
-            render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
+            render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'new-password' }),
             h(:div, [render_button('Create Account') { submit }]),
           ]]
         when :login
