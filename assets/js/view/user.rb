@@ -26,8 +26,12 @@ module View
             h(:div, [render_button('Login') { submit }]),
           ]]
         when :profile
-          ['Edit Profile (Coming Soon)', [
-            h(:div, [render_button('Logout') { submit }]),
+          ['Profile Settings', [
+            h(:div, [
+              render_input('Toggle Email Notifications', id: :notifications, type: :checkbox),
+              render_button('Save Changes') { logout },
+            ]),
+            render_button('Logout') { logout },
           ]]
         end
 
