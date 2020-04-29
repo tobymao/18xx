@@ -11,12 +11,12 @@ module View
           return [
             {
               region_weights: [13, 14, 15, 16, 17],
-              x: -30,
+              x: 2,
               y: 20,
             },
             {
               region_weights: [6, 7, 8, 9, 10],
-              x: -30,
+              x: 2,
               y: -20,
             },
           ]

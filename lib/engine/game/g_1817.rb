@@ -24,11 +24,11 @@ module Engine
 
       HEXES = {
         red: {
-          %w[A20] => 'o=yellow_20|green_30|brown_50|gray_60;p=a:4,b:_0;p=a:5,b:_0',
-          %w[A28] => 'o=yellow_20|green_30|brown_50|gray_60;p=a:5,b:_0',
-          %w[D1] => 'o=yellow_20|green_30|brown_50|gray_60;p=a:3,b:_0;p=a:4,b:_0',
-          %w[H1] => 'o=yellow_20|green_30|brown_50|gray_60;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
-          %w[J7 J15] => 'o=yellow_20|green_30|brown_50|gray_60;p=a:1,b:_0;p=a:2,b:_0',
+          %w[A20] => 'o=r:yellow_20|green_30|brown_50|gray_60;p=a:4,b:_0;p=a:5,b:_0',
+          %w[A28] => 'o=r:yellow_20|green_30|brown_50|gray_60;p=a:5,b:_0',
+          %w[D1] => 'o=r:yellow_20|green_30|brown_50|gray_60;p=a:3,b:_0;p=a:4,b:_0',
+          %w[H1] => 'o=r:yellow_20|green_30|brown_50|gray_60;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
+          %w[J7 J15] => 'o=r:yellow_20|green_30|brown_50|gray_60;p=a:1,b:_0;p=a:2,b:_0',
         },
         white: {
           %w[B5 B17 C14 C22 F3 F13 F19 I16] => 'city',
