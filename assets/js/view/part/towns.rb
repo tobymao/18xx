@@ -17,7 +17,10 @@ module View
       def render
         @tile.towns.map do |town|
           if @tile.lawson?
-            h(Part::TownDot, region_use: @region_use, color: color_for(town))
+            h(Part::TownDot, tile: @tile, region_use: @region_use, color: color_for(town))
+          elsif @tile.paths.empty?
+            # This town is all alone, no routes to it
+            h(Part::TownDot, tile: @tile, region_use: @region_use, color: color_for(town))
           else
             edges = @tile.paths.select { |path| path.town.equal?(town) }.flat_map(&:exits)
             h(Part::TownRect, region_use: @region_use, color: color_for(town), edges: edges)
