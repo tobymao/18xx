@@ -28,6 +28,10 @@ module Engine
         raise NotImplementedError
       end
 
+      def pass_description
+        raise NotImplementedError
+      end
+
       def current_player
         @current_entity.player
       end
