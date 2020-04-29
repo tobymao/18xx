@@ -23,26 +23,33 @@ module Engine
     end
 
     context 'full game' do
-      GAMES = {
+      RESULTS = {
         104 => {
           'Gandhalf' => 7174,
           'hoffmansthal' => 6627,
           'sharunasbresson' => 7490,
         },
-        105 => {
-          'Batto' => 7464,
-          'XB' => 9036,
-          'akramer16' => 8587,
+        233 => {
+          'dionhut' => 7844,
+          'hhlodesign' => 7655,
+          'raj' => 8050,
         },
-        133 => {
-          'Michaël' => 3280,
-          'Musashi_Daryl' => 4131,
-          'Rannek' => 3153,
-          'franssua' => 1697,
+        352 => {
+          'Eonthar' => 4711,
+          'Jasonbartfast' => 4687,
+          'badlywho' => 4992,
+          'philcampeau' => 5259,
+          'ynottony105' => 5138,
+        },
+        361 => {
+          'kouchan' => 4486,
+          'moesugikenshin' => 5361,
+          'yamadasan' => 5138,
+          'yuji' => 5803,
         },
       }.freeze
 
-      GAMES.each do |game_id, result|
+      RESULTS.each do |game_id, result|
         it "#{game_id} matches result exactly" do
           data = JSON.parse(File.read("spec/fixtures/1889/#{game_id}.json"))
           expect(subject.class.new(data['players'], actions: data['actions']).result).to eq(result)

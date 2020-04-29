@@ -35,6 +35,10 @@ class Index < Snabberb::Layout
         display: inline-block;
       }
 
+      .margined {
+        margin: 1rem 1rem 1rem 0;
+      }
+
       @media only screen and (min-width: 900px) {
         .half { width: 49%; }
       }

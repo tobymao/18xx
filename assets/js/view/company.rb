@@ -26,7 +26,6 @@ module View
       onclick = lambda do
         selected_company = selected? ? nil : @company
         store(:selected_company, selected_company)
-        # TODO: Move Bid Input into Private
       end
 
       header_style = {
@@ -86,7 +85,7 @@ module View
         ]),
       ]
 
-      if @bids
+      if @bids&.any?
         children << h(:div, { style: bidders_style }, 'Bidders:')
         children << render_bidders
       end

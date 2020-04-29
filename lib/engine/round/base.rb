@@ -2,6 +2,7 @@
 
 require_relative '../action/message'
 require_relative '../game_error'
+require_relative '../share_bundle.rb'
 
 module Engine
   module Round
@@ -102,6 +103,22 @@ module Engine
           tile.rotate!
           tile
         end.compact
+      end
+
+      def sellable_bundles(player, corporation)
+        shares = player
+          .shares_of(corporation)
+          .sort_by(&:price)
+
+        bundles = shares.flat_map.with_index do |share, index|
+          bundle = shares.take(index + 1)
+          percent = bundle.sum(&:percent)
+          bundles = [Engine::ShareBundle.new(bundle, percent)]
+          bundles.insert(0, Engine::ShareBundle.new(bundle, percent - 10)) if share.president
+          bundles
+        end
+
+        bundles.select { |bundle| can_sell?(bundle) }
       end
 
       private

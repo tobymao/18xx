@@ -25,8 +25,8 @@ module Engine
       def args_to_h
         routes = @routes.map do |route|
           {
-            'train': route.train.id,
-            'hexes': route.hexes.map(&:id),
+            'train' => route.train.id,
+            'hexes' => route.hexes.map(&:id),
           }
         end
 

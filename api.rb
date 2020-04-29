@@ -25,10 +25,10 @@ MessageBus.configure(
     password: DB.opts[:password],
     port: DB.opts[:port],
   },
-  clear_every: 10,
+  clear_every: 1,
 )
 
-MessageBus.reliable_pub_sub.max_backlog_size = 20
+MessageBus.reliable_pub_sub.max_backlog_size = 1
 
 class Api < Roda
   opts[:check_dynamic_arity] = false
@@ -38,7 +38,7 @@ class Api < Roda
          'Content-Type' => 'text/html',
          'X-Frame-Options' => 'deny',
          'X-Content-Type-Options' => 'nosniff',
-         'Cache-Control' => 'no-store',
+         'Cache-Control' => 'no-cache, max-age=0, must-revalidate, no-store',
          'X-XSS-Protection' => '1; mode=block'
 
   plugin :content_security_policy do |csp|
@@ -96,8 +96,6 @@ class Api < Roda
   use MessageBus::Rack::Middleware
   use Rack::Deflater unless PRODUCTION
 
-  PAGE_LIMIT = 100
-
   STANDARD_ROUTES = %w[
     / about all_tiles hotseat login new_game profile signup
   ].freeze
@@ -113,6 +111,7 @@ class Api < Roda
 
         publish(
           '/chat',
+          50,
           user: user.to_h,
           message: hr.params['message'],
           created_at: Time.now.strftime('%m/%d %H:%M:%S'),
@@ -182,10 +181,11 @@ class Api < Roda
     halt(401, 'You are not authorized to make this request')
   end
 
-  def publish(channel, **data)
+  def publish(channel, limit = nil, **data)
     MessageBus.publish(
       channel,
-      data.merge('_client_id': request.params['_client_id'])
+      data.merge('_client_id': request.params['_client_id']),
+      max_backlog_size: limit,
     )
     {}
   end

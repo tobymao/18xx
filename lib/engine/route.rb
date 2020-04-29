@@ -39,7 +39,8 @@ module Engine
 
     def revenue
       stops_ = stops
-      raise GameError, 'Too many stops' if @train.distance < stops_.size
+      raise GameError, 'Route must have at least 2 stops' if stops_.size < 2
+      raise GameError, "#{stops_.size} is too many stops for #{@train.distance} train" if @train.distance < stops_.size
 
       stops_.map { |stop| stop.route_revenue(@phase, @train) }.sum
     end

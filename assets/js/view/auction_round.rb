@@ -20,23 +20,29 @@ module View
       h(:div, [
         h(UndoAndPass, undo: @game.actions.size.positive?),
         *render_companies,
-        render_input,
         h(View::Players, game: @game),
       ].compact)
     end
 
     def render_companies
+      props = {
+        style: {
+          display: 'inline-block',
+          'vertical-align': 'top',
+        }
+      }
+
       @round.companies.map do |company|
-        h(Company, company: company, bids: @round.bids[company])
+        children = [h(Company, company: company, bids: @round.bids[company])]
+        children << render_input if @selected_company == company
+        h(:div, props, children)
       end
     end
 
     def render_input
-      return unless @selected_company
-
       step = @round.min_increment
 
-      input = h(:input, props: {
+      input = h(:input, style: { 'margin-right': '1rem' }, props: {
         value: @round.min_bid(@selected_company),
         step: step,
         min: @selected_company.min_bid + step,
@@ -65,7 +71,7 @@ module View
           ]
         end
 
-      h(:div, company_actions)
+      h(:div, { style: { 'text-align': 'center', 'margin': '1rem' } }, company_actions)
     end
   end
 end

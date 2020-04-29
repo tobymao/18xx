@@ -16,21 +16,30 @@ module View
 
       h(:div, 'Buy Private Companies', [
         *render_companies,
-        *render_input,
       ].compact)
     end
 
     def render_companies
+      props = {
+        style: {
+          display: 'inline-block',
+          'vertical-align': 'top',
+        }
+      }
+
       companies = @game.purchasable_companies.sort_by do |company|
         [company.owner == @corporation.owner ? 0 : 1, company.value]
       end
-      companies.map { |company| h(Company, company: company) }
+
+      companies.map do |company|
+        children = [h(Company, company: company)]
+        children << render_input if @selected_company == company
+        h(:div, props, children)
+      end
     end
 
     def render_input
-      return unless @selected_company
-
-      input = h(:input, props: {
+      input = h(:input, style: { 'margin-right': '1rem' }, props: {
         value: @selected_company.max_price,
         type: 'number',
         min: @selected_company.min_price,
@@ -43,10 +52,17 @@ module View
         store(:selected_company, nil, skip: true)
       end
 
-      [
+      props = {
+        style: {
+          'text-align': 'center',
+          'margin': '1rem',
+        },
+      }
+
+      h(:div, props, [
         input,
         h(:button, { on: { click: buy } }, 'Buy')
-      ]
+      ])
     end
   end
 end

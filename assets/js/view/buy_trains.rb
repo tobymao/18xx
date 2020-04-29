@@ -6,6 +6,7 @@ require 'view/discard_trains'
 require 'view/sell_shares'
 require 'view/undo_and_pass'
 
+require 'engine/action/bankrupt'
 require 'engine/action/buy_train'
 require 'engine/action/sell_shares'
 
@@ -31,7 +32,7 @@ module View
       ])
 
       if (round.can_buy_train? && round.corp_has_room?) || round.must_buy_train?
-        children << h(:div, 'Available Trains')
+        children << h('div.margined', 'Available Trains')
         children.concat(from_depot(depot_trains))
         children.concat(other_trains(other_corp_trains)) unless @game.actions.last.is_a?(SellShares)
       end
@@ -39,7 +40,7 @@ module View
       discountable_trains = @depot.discountable_trains_for(@corporation)
 
       if discountable_trains.any?
-        children << h(:div, 'Exchange Trains')
+        children << h('div.margined', 'Exchange Trains')
 
         discountable_trains.each do |train, discount_train, price|
           exchange_train = lambda do
@@ -55,7 +56,7 @@ module View
 
           children << h(:div, [
             "#{train.name} -> #{discount_train.name} #{@game.format_currency(price)}",
-            h(:button, { on: { click: exchange_train } }, 'Exchange'),
+            h('button.margined', { on: { click: exchange_train } }, 'Exchange'),
           ])
         end
       end
@@ -64,6 +65,7 @@ module View
         player = @corporation.owner
 
         if @corporation.cash + player.cash < @depot.min_depot_price
+          children << render_bankruptcy
           player.shares_by_corporation.each do |corporation, shares|
             next if shares.empty?
 
@@ -86,7 +88,7 @@ module View
 
         h(:div, [
           "Train #{train.name} - #{@game.format_currency(train.price)}",
-          h(:button, { on: { click: buy_train } }, 'Buy'),
+          h('button', { style: { margin: '1rem' }, on: { click: buy_train } }, 'Buy'),
         ])
       end
     end
@@ -96,6 +98,9 @@ module View
         trains.map do |train|
           input = h(
             :input,
+            style: {
+              'margin-left': '1rem',
+            },
             attrs: {
               type: 'number',
               min: 1,
@@ -112,7 +117,7 @@ module View
           h(:div, [
             "Train #{train.name} - from #{other.name}",
             input,
-            h(:button, { on: { click: buy_train } }, 'Buy'),
+            h('button.margined', { on: { click: buy_train } }, 'Buy'),
           ])
         end
       end
@@ -123,6 +128,21 @@ module View
         train = trains.first
         h(:div, "Train: #{name} - #{@game.format_currency(train.price)} x #{trains.size}")
       end
+    end
+
+    def render_bankruptcy
+      resign = lambda do
+        process_action(Engine::Action::Bankrupt.new(@corporation))
+      end
+
+      props = {
+        style: {
+          display: 'block',
+        },
+        on: { click: resign },
+      }
+
+      h(:button, props, 'Declare Bankruptcy')
     end
   end
 end

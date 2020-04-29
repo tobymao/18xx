@@ -23,10 +23,12 @@ module Engine
     # [r]evenue    - number, list of numbers separated by "/", or something like
     #                yellow_30|brown_60|diesel_100
 
+    # rubocop:disable Layout/LineLength
     WHITE = {
       'blank' => '',
       'town' => 't=r:0',
       'city' => 'c=r:0',
+      'wtr40' => 'u=c:40,t:water',
       'mtn80' => 'u=c:80,t:mountain',
       'wtr80' => 'u=c:80,t:water',
       'mtn+wtr80' => 'u=c:80,t:mountain+water',
@@ -47,12 +49,16 @@ module Engine
       '57' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3',
       '58' => 't=r:10;p=a:0,b:_0;p=a:_0,b:2',
       '69' => 't=r:10;p=a:1,b:_0;p=a:_0,b:4;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
+      '291' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:1;l=Z',
+      '292' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:2;l=Z',
+      '293' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3;l=Z',
       '437' => 't=r:30;p=a:0,b:_0;p=a:_0,b:2;l=P',
       '438' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:2;l=H;u=c:80',
       '630' => 't=r:10;p=a:1,b:_0;p=a:_0,b:2;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
       '631' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
       '632' => 't=r:10;p=a:0,b:_0;p=a:_0,b:5;t=r:10;p=a:3,b:_1;p=a:_1,b:4',
       '633' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1;t=r:10;p=a:3,b:_1;p=a:_1,b:4',
+      'X00' => 'c=r:30,s:1;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
       'X1' => 'c=r:30;p=a:0,b:_0;p=a:_0,b:4;l=DC',
     }.freeze
 
@@ -62,9 +68,12 @@ module Engine
       '14' => 'c=r:30,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:3,b:_0;p=a:4,b:_0',
       '15' => 'c=r:30,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0',
       '16' => 'p=a:0,b:4;p=a:1,b:5',
+      '17' => 'p=a:0,b:2;p=a:3,b:5',
       '18' => 'p=a:0,b:3;p=a:1,b:2',
       '19' => 'p=a:0,b:3;p=a:1,b:5',
       '20' => 'p=a:0,b:3;p=a:1,b:4',
+      '21' => 'p=a:0,b:2;p=a:3,b:4',
+      '22' => 'p=a:0,b:4;p=a:2,b:3',
       '23' => 'p=a:0,b:3;p=a:0,b:4',
       '24' => 'p=a:0,b:3;p=a:0,b:2',
       '25' => 'p=a:0,b:2;p=a:0,b:4',
@@ -72,15 +81,28 @@ module Engine
       '27' => 'p=a:0,b:3;p=a:0,b:1',
       '28' => 'p=a:0,b:4;p=a:0,b:5',
       '29' => 'p=a:0,b:1;p=a:0,b:2',
+      '30' => 'p=a:0,b:1;p=a:0,b:4',
+      '31' => 'p=a:0,b:2;p=a:0,b:5',
+      '54' => 'c=r:60,s:2;c=r:60,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:4,b:_1;p=a:5,b:_1;l=NY',
+      '59' => 'c=r:40;c=r:40;p=a:0,b:_0;p=a:4,b:_1;l=OO',
+      '80' => 'p=a:0,b:j;p=a:4,b:j;p=a:5,b:j',
+      '81' => 'p=a:0,b:j;p=a:2,b:j;p=a:4,b:j',
       '81A' => 'p=a:0,b:j;p=a:2,b:j;p=a:4,b:j',
+      '82' => 'p=a:0,b:j;p=a:3,b:j;p=a:4,b:j',
+      '83' => 'p=a:0,b:j;p=a:3,b:j;p=a:5,b:j',
       '87' => 't=r:10;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0',
       '205' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:3,b:_0',
       '206' => 'c=r:30;p=a:0,b:_0;p=a:3,b:_0;p=a:5,b:_0',
+      '294' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:4,b:_0;p=a:3,b:_0;l=Z',
+      '295' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;l=Z',
+      '296' => 'c=r:40,s:2;p=a:0,b:_0;p=a:4,b:_0;p=a:2,b:_0;p=a:3,b:_0;l=Z',
       '298' => 'c=r:40;c=r:40;c=r:40;c=r:40;l=Chi;'\
                'p=a:1,b:_0;p=a:0,b:_1;p=a:5,b:_2;p=a:4,b:_3;'\
                'p=a:_0,b:3;p=a:_2,b:3;p=a:_3,b:3;p=a:_1,b:3',
       '439' => 'c=r:60,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=H;u=c:80',
       '440' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
+      '592' => 'c=r:50,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
+      '619' => 'c=r:30,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
       'X2' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC',
       'X3' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:2;c=r:40;p=a:3,b:_1;p=a:_1,b:5;l=OO',
       'X4' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:1;c=r:40;p=a:2,b:_1;p=a:_1,b:3;l=OO',
@@ -97,11 +119,24 @@ module Engine
       '45' => 'p=a:0,b:3;p=a:0,b:5;p=a:1,b:3;p=a:1,b:5',
       '46' => 'p=a:0,b:1;p=a:0,b:3;p=a:1,b:5;p=a:3,b:5',
       '47' => 'p=a:0,b:2;p=a:0,b:3;p=a:2,b:5;p=a:3,b:5',
+      '62' => 'c=r:80,s:2;c=r:80,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:4,b:_1;p=a:5,b:_1;l=NY',
+      '63' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
+      '64' => 'c=r:50;c=r:50;p=a:0,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=OO',
+      '65' => 'c=r:50;c=r:50;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=OO',
+      '66' => 'c=r:50;c=r:50;p=a:1,b:_0;p=a:2,b:_0;p=a:0,b:_0;p=a:3,b:_0;l=OO',
+      '67' => 'c=r:50;c=r:50;p=a:1,b:_0;p=a:5,b:_0;p=a:0,b:_0;p=a:3,b:_0;l=OO',
+      '68' => 'c=r:50;c=r:50;p=a:2,b:_0;p=a:5,b:_0;p=a:0,b:_0;p=a:3,b:_0;l=OO',
       '70' => 'p=a:0,b:2;p=a:0,b:1;p=a:1,b:3;p=a:2,b:3',
+      '297' => 'c=r:60,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=Z',
+      '299' => 'c=r:70;c=r:70;c=r:70;c=r:70;p=a:1,b:_0;p=a:2,b:_0;p=a:1,b:_1;p=a:3,b:_1;p=a:1,b:_2;p=a:4,b:_2;p=a:1,b:_3;p=a:5,b:_3;l=Chi',
       '448' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0',
       '465' => 'c=r:60,s:3;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K',
       '466' => 'c=r:60,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
       '492' => 'c=r:80,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=H',
+      '544' => 'p=a:0,b:j;p=a:1,b:j;p=a:3,b:j;p=a:4,b:j',
+      '545' => 'p=a:0,b:j;p=a:1,b:j;p=a:2,b:j;p=a:3,b:j',
+      '546' => 'p=a:0,b:j;p=a:2,b:j;p=a:3,b:j;p=a:4,b:j',
+      '593' => 'c=r:60,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
       '611' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;',
       'W5' => 'c=r:50,s:6;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
       'X6' => 'c=r:70,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC',
@@ -109,14 +144,20 @@ module Engine
     }.freeze
 
     GRAY = {
+      '51' => 'c=r:50,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0;p=a:5,b:_0',
+      '290' => 'c=r:70,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=Z',
+      '300' => 'c=r:90;c=r:90;c=r:90;c=r:90;p=a:1,b:_0;p=a:2,b:_0;p=a:1,b:_1;p=a:3,b:_1;p=a:1,b:_2;p=a:4,b:_2;p=a:1,b:_3;p=a:5,b:_3;l=Chi',
       '456' => 'c=r:70,s:5;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
+      '597' => 'c=r:80,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=B',
       '639' => 'c=r:100,s:4;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
       '915' => 'c=r:50,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
       'X8' => 'c=r:100,s:4;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC',
       'X9' => 'c=r:70,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=OO',
+      'X30' => 'c=r:100,s:4;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=NY',
     }.freeze
 
     RED = {}.freeze
+    # rubocop:enable Layout/LineLength
 
     COLORS = %i[white yellow green brown gray].freeze
 
@@ -309,6 +350,10 @@ module Engine
     def add_blocker!(private_company)
       @parts << private_company
       @blockers << private_company
+    end
+
+    def to_s
+      "#{self.class.name} - #{@name}"
     end
 
     private

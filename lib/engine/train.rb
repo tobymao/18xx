@@ -39,5 +39,9 @@ module Engine
     def from_depot?
       owner.is_a?(Depot)
     end
+
+    def inspect
+      "<Train: #{id}>"
+    end
   end
 end

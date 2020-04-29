@@ -17,13 +17,7 @@ require 'view/tile_manifest'
 require 'view/tools'
 require 'view/train_roster'
 
-# debugging views
-# require 'view/all_tiles'
-# require 'view/all_tokens'
-
-require 'engine/round/auction'
-require 'engine/round/operating'
-require 'engine/round/stock'
+require 'engine'
 
 module View
   class Game < Snabberb::Component
@@ -36,9 +30,9 @@ module View
     needs :user
 
     def render
-      game_id = @game_data[:id]
+      game_id = @game_data['id']
       if game_id != @game&.id
-        @game = Engine::Game::G1889.new(
+        @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
           @game_data['players'].map { |p| p['name'] },
           id: game_id,
           actions: @game_data['actions'],
@@ -120,26 +114,26 @@ module View
       h(:div, props, [
         h(:div, { style: { width: 'max-content' } }, [
           tab_button('Game'),
-          tab_button('Players', 'players'),
-          tab_button('Corporations', 'corporations'),
-          tab_button('Map', 'map'),
-          tab_button('Market', 'market'),
-          tab_button('Trains', 'trains'),
-          tab_button('Tiles', 'tiles'),
-          tab_button('Companies', 'companies'),
-          tab_button('Tools', 'tools'),
+          tab_button('Players', '#players'),
+          tab_button('Corporations', '#corporations'),
+          tab_button('Map', '#map'),
+          tab_button('Market', '#market'),
+          tab_button('Trains', '#trains'),
+          tab_button('Tiles', '#tiles'),
+          tab_button('Companies', '#companies'),
+          tab_button('Tools', '#tools'),
         ]),
       ])
     end
 
     def tab_button(name, anchor = '')
       change_anchor = lambda do
-        store(:app_route, "#{@app_route.split('#').first}##{anchor}")
+        store(:app_route, "#{@app_route.split('#').first}#{anchor}")
       end
 
       props = {
         attrs: {
-          href: "##{anchor}",
+          href: anchor,
           onclick: 'return false',
         },
         style: {

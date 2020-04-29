@@ -32,5 +32,9 @@ module Engine
     def price
       price_per_share * num_shares
     end
+
+    def to_s
+      "#{self.class.name} - #{id}"
+    end
   end
 end

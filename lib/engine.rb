@@ -1,6 +1,19 @@
 # frozen_string_literal: true
 
-require 'engine/game/g_1889'
+if RUBY_ENGINE == 'opal'
+  require_tree 'engine/game'
+else
+  require 'require_all'
+  require_rel 'engine/game'
+end
 
 module Engine
+  GAMES = Game.constants.map do |c|
+    klass = Game.const_get(c)
+    next if !klass.is_a?(Class) || klass == Game::Base
+
+    klass
+  end.compact
+
+  GAMES_BY_TITLE = GAMES.map { |game| [game.title, game] }.to_h
 end

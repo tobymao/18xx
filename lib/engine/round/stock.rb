@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'base'
 require_relative '../action/buy_share'
 require_relative '../action/par'
 require_relative '../action/sell_shares'
@@ -43,14 +44,15 @@ module Engine
         corporation = share.corporation
 
         @current_entity.cash >= share.price &&
-          (corporation.share_price&.color == :brown || @current_entity.percent_of(corporation) < 60) &&
+          corporation_holding_ok?(corporation, @current_entity.percent_of(corporation) + share.percent) &&
           (!corporation.counts_for_limit || @current_entity.num_certs < @game.cert_limit) &&
           !@players_sold[@current_entity][corporation] &&
           (@current_actions & self.class::PURCHASE_ACTIONS).none?
       end
 
       def must_sell?
-        @current_entity.num_certs > @game.cert_limit
+        @current_entity.num_certs > @game.cert_limit ||
+          !@corporations.all? { |corp| corporation_holding_ok?(corp, @current_entity.percent_of(corp)) }
       end
 
       def can_sell?(bundle)
@@ -99,7 +101,8 @@ module Engine
 
         bundles.none? { |bundle| can_sell?(bundle) } &&
           @share_pool.shares.none? { |s| can_buy?(s) } &&
-          @corporations.none? { |c| can_buy?(c.shares.first) }
+          @corporations.none? { |c| can_buy?(c.shares.first) } &&
+          !must_sell? # this forces a deadlock and a user must undo
       end
 
       def change_entity(_action)
@@ -122,9 +125,9 @@ module Engine
 
         return unless finished?
 
-        @corporations.each do |corporation|
-          next if corporation.share_holders.values.sum < 100
+        sold_out = @corporations.select { |c| c.share_holders.values.sum == 100 }
 
+        sold_out.sort.each do |corporation|
           prev = corporation.share_price.price
           @stock_market.move_up(corporation)
           log_share_price(corporation, prev)
@@ -155,6 +158,10 @@ module Engine
 
         action = @current_actions.include?(Action::SellShares) ? 'buying' : 'selling'
         @log << "#{entity.name} passes #{action} shares"
+      end
+
+      def corporation_holding_ok?(corporation, percent)
+        %i[orange brown].include?(corporation.share_price&.color) || percent <= 60
       end
     end
   end

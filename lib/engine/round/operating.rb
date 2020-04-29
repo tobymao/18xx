@@ -13,7 +13,7 @@ require_relative 'base'
 module Engine
   module Round
     class Operating < Base
-      attr_reader :depot, :phase, :round_num, :step
+      attr_reader :bankrupt, :depot, :phase, :round_num, :step
 
       STEPS = %i[
         track
@@ -44,6 +44,7 @@ module Engine
         @stock_market = game.stock_market
         @share_pool = game.share_pool
         @just_sold_company = nil
+        @bankrupt = false
 
         @step = self.class::STEPS.first
         @current_routes = []
@@ -66,6 +67,10 @@ module Engine
 
       def pass(_action)
         next_step!
+      end
+
+      def finished?
+        @bankrupt || super
       end
 
       def can_buy_companies?
@@ -290,24 +295,30 @@ module Engine
           sell_shares(action.shares)
         when Action::BuyCompany
           buy_company(action.company, action.price)
+        when Action::Bankrupt
+          liquidate(entity.owner)
         end
       end
 
-      def change_entity(action)
-        return if @step != self.class::STEPS.first
-        return if action.is_a?(Action::BuyCompany) && can_buy_companies?
+      def change_entity(_action)
+        return unless @current_entity.passed?
 
         @current_entity = next_entity
       end
 
       def action_processed(action)
         remove_just_sold_company_abilities unless action.is_a?(Action::BuyCompany)
-        return if action.is_a?(Action::BuyCompany) && (@step != :company || can_buy_companies?)
+        return if @bankrupt
+        return if ignore_action?(action)
         return if action.is_a?(Action::SellShares)
         return if action.is_a?(Action::BuyTrain) && can_buy_train?
         return if crowded_corps.any?
 
         next_step!
+      end
+
+      def ignore_action?(action)
+        action.is_a?(Action::BuyCompany) && (@step != :company || can_buy_companies?)
       end
 
       def withhold(revenue = 0)
@@ -442,6 +453,20 @@ module Engine
         else
           super
         end
+      end
+
+      def liquidate(player)
+        @log << "#{player.name} goes bankrupt and sells remaining shares"
+
+        player.shares_by_corporation.each do |corporation, _|
+          next unless (bundle = sellable_bundles(player, corporation).max_by(&:price))
+
+          sell_shares(bundle)
+        end
+
+        player.spend(player.cash, @bank)
+
+        @bankrupt = true
       end
 
       def rust_trains!(train)

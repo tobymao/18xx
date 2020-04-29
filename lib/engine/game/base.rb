@@ -124,6 +124,10 @@ module Engine
         %i[cities city],
       ].freeze
 
+      def self.title
+        name.split('::').last.slice(1..-1)
+      end
+
       def initialize(names, id: 0, actions: [])
         @id = id
         @turn = 1
@@ -138,7 +142,7 @@ module Engine
         @corporations = init_corporations(@stock_market)
         @bank = init_bank
         @tiles = init_tiles
-        @cert_limit = self.class::CERT_LIMIT[@players.size]
+        @cert_limit = init_cert_limit
 
         @depot = init_train_handler
         init_starting_cash(@players, @bank)
@@ -165,8 +169,8 @@ module Engine
         end
       end
 
-      def to_s
-        "#{self.class.name} - #{@players.map(&:name)}"
+      def inspect
+        "#{self.class.name} - #{self.class.title} #{@players.map(&:name)}"
       end
 
       def result
@@ -198,7 +202,7 @@ module Engine
           @round.process_action(action)
         end
         @actions << action
-        next_round! while @round.finished?
+        next_round! while @round.finished? && !@finished
         self
       end
 
@@ -247,7 +251,15 @@ module Engine
       private
 
       def init_bank
-        Bank.new(self.class::BANK_CASH, log: @log)
+        cash = self.class::BANK_CASH
+        cash = cash[players.size] if cash.is_a?(Hash)
+
+        Bank.new(cash, log: @log)
+      end
+
+      def init_cert_limit
+        cert_limit = self.class::CERT_LIMIT
+        cert_limit.is_a?(Hash) ? cert_limit[players.size] : cert_limit
       end
 
       def init_phase
@@ -324,7 +336,8 @@ module Engine
       end
 
       def init_starting_cash(players, bank)
-        cash = self.class::STARTING_CASH[players.size]
+        cash = self.class::STARTING_CASH
+        cash = cash[players.size] if cash.is_a?(Hash)
 
         players.each do |player|
           bank.spend(cash, player)
@@ -358,13 +371,12 @@ module Engine
             calculate_priority_deal
             new_operating_round
           when Round::Operating
+            return end_game if @round.bankrupt
+
             if @round.round_num < @operating_rounds
               new_operating_round(@round.round_num + 1)
             elsif @bank.broken?
-              @finished = true
-              scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
-              @log << "Game over: #{scores.join(', ')}"
-              @round
+              end_game
             else
               @turn += 1
               @operating_rounds = @phase.operating_rounds
@@ -373,6 +385,13 @@ module Engine
           else
             raise "Unexected round type #{@round}"
           end
+      end
+
+      def end_game
+        @finished = true
+        scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
+        @log << "Game over: #{scores.join(', ')}"
+        @round
       end
 
       def calculate_priority_deal
@@ -395,13 +414,11 @@ module Engine
 
       def new_operating_round(round_num = 1)
         @log << "-- Operating Round #{@turn}.#{round_num} --"
-        corps = @corporations.select(&:floated?).sort_by do |corporation|
-          share_price = corporation.share_price
-          _, column = share_price.coordinates
-          [-share_price.price, -column, share_price.corporations.find_index(corporation)]
-        end
-
-        Round::Operating.new(corps, game: self, round_num: round_num)
+        Round::Operating.new(
+          @corporations.select(&:floated?).sort,
+          game: self,
+          round_num: round_num,
+        )
       end
 
       def cache_objects

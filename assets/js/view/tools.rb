@@ -12,6 +12,7 @@ module View
 
     def render
       @game_data = @game_data.merge(actions: @game.actions.map(&:to_h))
+      @json = `JSON.stringify(#{@game_data.to_n}, null, 2)`
 
       props = {
         style: {
@@ -21,7 +22,7 @@ module View
 
       h(:div, props, [
         render_clone_game,
-        `JSON.stringify(#{@game_data.to_n}, null, 2)`,
+        @json,
       ])
     end
 
@@ -31,24 +32,32 @@ module View
         create_hotseat(**@game_data, description: "Cloned from game #{@game_data[:id]}")
       end
 
-      props = {
-        style: {
-          'margin-bottom': '1rem',
-        }
-      }
+      copy_data = lambda do
+        `navigator.clipboard.writeText(self.json)`
 
-      button_props = {
-        style: {
-          'margin-left': '1rem',
-        },
-        on: {
-          click: clone_game,
-        },
-      }
+        store(
+          :flash_opts,
+          { message: 'Copied Data', color: 'lightgreen' },
+          skip: false,
+        )
+      end
 
-      h(:div, props, [
+      clone_button = h(
+        'button.button',
+        { style: { margin: '1rem' }, on: { click: clone_game } },
+        'Clone Game',
+      )
+
+      copy_button = h(
+        'button.button.margined',
+        { on: { click: copy_data } },
+        'Copy Data',
+      )
+
+      h('div.margined', [
         h(:span, 'Clone this game to play around in hotseat mode'),
-        h('button.button', button_props, 'Clone Game'),
+        clone_button,
+        copy_button,
       ])
     end
   end
