@@ -23,10 +23,10 @@ module Engine
 
       HEXES = {
         red: {
-          %w[I1] => 'p=a:3,b:_0',
+          # %w[I1] => 'p=a:3,b:_0',
           %w[F2] => 'o=yellow_40|brown_70;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
           %w[J2] => 'o=yellow_30|brown_60;p=a:2,b:_0;p=a:3,b:_0',
-          %w[A9] => 'p=a:4,b:_0',
+          # %w[A9] => 'p=a:4,b:_0',
           %w[A11] => 'o=yellow_30|brown_50;p=a:4,b:_0;p=a:5,b:_0',
           %w[K13] => 'o=yellow_30|brown_40;p=a:1,b:_0;p=a:2,b:_0',
           %w[B24] => 'o=yellow_20|brown_30;p=a:0,b:_0;p=a:5,b:_0',
@@ -52,7 +52,7 @@ module Engine
           %w[G15 C17 C21 D22 E17 E21 G13 I11 J10 J12] => 'u=c:120,t:mountain',
           %w[B16 E19 H4 B10 H10 H16] => 'city',
           %w[F16] => 'c=r:0;u=c:120,t:mountain',
-          %w[G7 G17 F20] => 't=r:0;t=r:0',
+          # %w[G7 G17 F20] => 't=r:0;t=r:0',
           %w[D6 I17 B18 C19] => 'u=c:80,t:water',
         },
         yellow: {

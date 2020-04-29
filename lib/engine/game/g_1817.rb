@@ -44,7 +44,7 @@ module Engine
         gray: {
           %w[B13] => 't=r:yellow_20|green_30|brown_40;p=a:0,b:_0;p=a:3,b:_0;p=a:4,b:_0',
           %w[D9] => 'c=r:yellow_30|green_40|brown_50|gray_60,s:2;p=a:4,b:_0;p=a:5,b:_0',
-          %w[F1] => 'p=a:3,b:j;p=a:4,b:j;p=a:5,b=j',
+          # %w[F1] => 'p=a:3,b:j;p=a:4,b:j;p=a:5,b=j',
         },
         yellow: {
           %w[C8] => 'c=r:30;p=a:3,b:_0;p=a:5,b:_0;l=B;u=c:20,t:water',
