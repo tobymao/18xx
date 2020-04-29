@@ -152,7 +152,7 @@ module Engine
           value: 20,
           revenue: 5,
           sym: 'TR',
-          desc: 'No special abilities.  If all players pass during the initial stock round and this company has not
+          desc: 'Blocks laying track in Takamatsu (K4).  If all players pass during the initial stock round and this company has not
           been purchased, its price is reduced by ¥5.  If it is reduced to ¥0, the next player must take it for free.',
           abilities: [
             { type: :blocks_hex, hex: 'K4' },
