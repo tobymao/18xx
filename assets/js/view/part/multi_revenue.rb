@@ -15,19 +15,30 @@ module View
       }.freeze
 
       needs :revenues
-      needs :translate, default: 'translate(-30 0)'
+      needs :translate, default: 'translate(0 0)'
 
       def render
-        children = @revenues.flat_map.with_index do |rev, index|
+        # Compute text and width first in order to get total_width
+        computed_revenues = @revenues.map do |rev|
           phase, revenue = rev
           text = "#{'D' if phase == :diesel}#{revenue}"
 
-          color = phase == :diesel ? :gray : phase
-          fill = COLOR[color]
+          {
+            text: text,
+            width: text.size * 13,
+            color: phase == :diesel ? :gray : phase
+          }
+        end
 
-          width = text.size * 13
+        # Compute total width of rectangles so we can center
+        total_width = computed_revenues.inject(0) do |width, revenue|
+          width + revenue['width']
+        end
 
-          t_x = 26 * index
+        children = computed_revenues.flat_map.with_index do |rev, index|
+          fill = COLOR[rev['color']]
+          width = rev['width']
+          t_x = (26 * index) - (total_width * 0.5)
 
           rect_attrs = {
             fill: fill,
@@ -39,14 +50,16 @@ module View
           }
 
           text_attrs = {
-            transform: "translate(#{t_x} 0)",
+            transform: "translate(#{t_x + (width * 0.5) - 2} -7)",
             fill: 'black',
+            'text-anchor': 'middle',
+            'dominant-baseline': 'central',
             'font-size': 20,
           }
 
           [
             h(:rect, attrs: rect_attrs),
-            h(:text, { attrs: text_attrs }, text),
+            h(:text, { attrs: text_attrs }, rev['text']),
           ]
         end
 
