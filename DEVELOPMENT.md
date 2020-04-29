@@ -75,3 +75,7 @@ Compose documentation:
 
 * https://docs.docker.com/compose/
 * https://docs.docker.com/compose/compose-file/
+
+#### Before filing a pull request
+
+Run `docker-compose exec rack rubocop` while a docker instance is running to run rubocop locally and ensure your changes meet the project's code formatting guidelines.
