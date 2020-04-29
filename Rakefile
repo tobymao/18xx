@@ -58,15 +58,6 @@ task :prod_up do
   migrate.call('production', nil)
 end
 
-desc 'Invoke prod_up if RACK_ENV is "production", otherwise invoke dev_up'
-task :db_up do
-  if ENV['RACK_ENV'] == 'production'
-    Rake::Task['prod_up'].invoke
-  else
-    Rake::Task['dev_up'].invoke
-  end
-end
-
 desc 'irb with -I lib/ -I assets/js/'
 task :irb do
   sh 'irb -I lib/ -I assets/js/'
