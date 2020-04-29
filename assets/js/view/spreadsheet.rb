@@ -21,14 +21,13 @@ module View
         render_player_certs,
       ])
 
-      #TODO consider adding OR information (could do both company OR revenue and player change in value)
-      #TODO consider adding train availability
-
+      # TODO: consider adding OR information (could do both company OR revenue and player change in value)
+      # TODO: consider adding train availability
     end
 
     def render_title
       [
-         h(:tr, [
+        h(:tr, [
           h(:th, { style: { width: '20px' } }, ''),
           h(:th, { attrs: { colspan: @game.players.length } }, 'Players'),
           h(:th, { attrs: { colspan: 2 } }, 'Bank shares'),
@@ -65,20 +64,18 @@ module View
           }
         }
       props = { style: {} }
-      if not corporation.floated?
-        props[:style]['background-color'] = 'rgba(220,220,220,0.4)'
-      end
+      props[:style]['background-color'] = 'rgba(220,220,220,0.4)' unless corporation.floated?
       h(:tr, props, [
         h(:td, corporation_color, corporation.name),
-        *@game.players.map { |p|
+        *@game.players.map do |p|
           h(:td, p.num_shares_of(corporation).to_s + (corporation.president?(p) ? '*' : ''))
-        },
+        end,
         h(:td, corporation.num_shares_of(corporation)),
         h(:td, @game.share_pool.num_shares_of(corporation)),
         h(:td, corporation.par_price ? corporation.par_price.price : ''),
         h(:td, corporation.share_price ? corporation.share_price.price : ''),
         h(:td, corporation.cash),
-        h(:td, corporation.trains.map { |t| t.name }),
+        h(:td, corporation.trains.map(&:name)),
         h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.length}"),
         render_companies(corporation),
         h(:td, corporation_color, corporation.name),
@@ -89,8 +86,8 @@ module View
       h(:td, entity.companies.map { |c| company_short_name(c.name) }.join(','))
     end
 
-    #TODO we need a better way of referring to companies...numerical index?
-    #     we could just make an ad hoc index and show it on the page
+    # TODO: we need a better way of referring to companies...numerical index?
+    #       we could just make an ad hoc index and show it on the page
     def company_short_name(name)
       name.gsub('-', ' ').split(' ').map { |w| w[0] }.join
     end
