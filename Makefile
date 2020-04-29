@@ -1,3 +1,5 @@
+.DEFAULT_GOAL := dev_up
+
 .PHONY: ensure_env_prod build dev_up prod_up prod_deploy down
 
 # validate required variables in .env
@@ -11,7 +13,7 @@ build_prod:
 	./scripts/build_images.sh production
 
 # start docker stack
-dev_up:
+dev_up_s:
 	./scripts/ensure_env.sh development
 	./scripts/data_dir.sh development
 	./scripts/stack_up.sh development
@@ -25,11 +27,11 @@ down:
 	docker stack rm 18xx
 
 # manage dev stack with compose instead of swarm
-dev_up_c:
+dev_up:
 	./scripts/ensure_env.sh development
 	./scripts/data_dir.sh development
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
-down_c:
+down:
 	docker-compose down
 
 
