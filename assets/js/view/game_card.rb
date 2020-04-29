@@ -66,7 +66,7 @@ module View
           end
           JOIN_YELLOW
         when 'active'
-          buttons << render_button('Enter', -> { enter_game(@gdata) })
+          buttons << h('a.button', { style: { top: '1rem', float: 'right', 'text-decoration': 'none', }, attrs: { href: url(@gdata) } }, 'Enter')
           acting?(@user) ? YOUR_TURN_ORANGE : ENTER_GREEN
         when 'finished'
           buttons << render_button('Review', -> { enter_game(@gdata) })
