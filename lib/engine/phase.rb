@@ -6,41 +6,6 @@ module Engine
   class Phase
     attr_reader :buy_companies, :name, :operating_rounds, :train_limit, :tiles
 
-    YELLOW = {
-      name: 'Yellow',
-      operating_rounds: 2,
-      train_limit: 4,
-      tiles: :yellow,
-      buy_companies: true,
-    }.freeze
-
-    GREEN = {
-      name: 'Green',
-      operating_rounds: 2,
-      train_limit: 3,
-      tiles: %i[yellow green].freeze,
-      buy_companies: true,
-      on: ['3/5', '4'],
-    }.freeze
-
-    BROWN = {
-      name: 'Brown',
-      operating_rounds: 2,
-      train_limit: 2,
-      tiles: %i[yellow green brown].freeze,
-      on: ['4/6', '5'],
-      events: { close_companies: true },
-    }.freeze
-
-    GRAY = {
-      name: 'Brown',
-      operating_rounds: 2,
-      train_limit: 2,
-      tiles: %i[yellow green brown gray].freeze,
-      on: ['6', '7/8'],
-      events: { remove_tokens: true },
-    }.freeze
-
     TWO = {
       name: '2',
       operating_rounds: 1,

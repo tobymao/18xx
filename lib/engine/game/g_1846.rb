@@ -155,25 +155,40 @@ module Engine
       }.freeze
 
       PHASES = [
-        Phase::YELLOW,
-        Phase::GREEN,
-        Phase::BROWN,
-        Phase::GRAY,
+        {
+          name: 'Yellow',
+          operating_rounds: 2,
+          train_limit: 4,
+          tiles: :yellow,
+          buy_companies: true,
+        },
+        {
+          name: 'Green',
+          operating_rounds: 2,
+          train_limit: 3,
+          tiles: %i[yellow green].freeze,
+          buy_companies: true,
+          on: ['3/5', '4'],
+        },
+        {
+          name: 'Brown',
+          operating_rounds: 2,
+          train_limit: 2,
+          tiles: %i[yellow green brown].freeze,
+          on: ['4/6', '5'],
+          events: { close_companies: true },
+        },
+        {
+          name: 'Brown',
+          operating_rounds: 2,
+          train_limit: 2,
+          tiles: %i[yellow green brown gray].freeze,
+          on: ['6', '7/8'],
+          events: { remove_tokens: true },
+        },
       ].freeze
 
       TRAINS = [
-        {
-          name: '2: Big 4',
-          distance: 2,
-          price: 0,
-          num: 1,
-        },
-        {
-          name: '2: MS',
-          distance: 2,
-          price: 0,
-          num: 1,
-        },
         {
           name: '2',
           distance: 2,
