@@ -1,15 +1,13 @@
-version: '3.5'
+version: '3.7'
 
 services:
   rack:
-    build: .
-    depends_on:
-      - db
+    env_file: .env
+    volumes:
+      - ./log/rack:/18xx/log/rack
 
   db:
-    build: ./db/
+    env_file: .env
     volumes:
       - ./db/data:/var/lib/postgresql/data
       - ./log/db:/var/log/postgresql
-    ports:
-      - 127.0.0.1:5433:5432

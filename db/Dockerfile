@@ -9,5 +9,6 @@ RUN chown db:db /var/lib/postgresql/data && \
 USER db:db
 
 COPY ./postgresql.conf /etc/postgresql/postgresql.conf
+COPY ./healthcheck_postgres.sh /home/db/
 
 CMD ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]

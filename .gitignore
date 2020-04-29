@@ -1,4 +1,4 @@
-/.env.rb
+/.env*
 /.yardoc
 /_yardoc/
 /coverage/
@@ -19,6 +19,6 @@
 .rspec_status
 
 /log/
-/db/data/
+/db/data*
 
 docker-compose.override.yml
