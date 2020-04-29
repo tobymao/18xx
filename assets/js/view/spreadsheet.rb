@@ -21,7 +21,7 @@ module View
         render_player_certs,
       ])
 
-      # TODO: consider adding OR information (could do both company OR revenue and player change in value)
+      # TODO: consider adding OR information (could do both corporation OR revenue and player change in value)
       # TODO: consider adding train availability
     end
 
@@ -32,7 +32,7 @@ module View
           h(:th, { attrs: { colspan: @game.players.length } }, 'Players'),
           h(:th, { attrs: { colspan: 2 } }, 'Bank shares'),
           h(:th, { attrs: { colspan: 2 } }, 'Prices'),
-          h(:th, { attrs: { colspan: 4 } }, 'Company'),
+          h(:th, { attrs: { colspan: 4 } }, 'Corporation'),
           h(:th, { style: { width: '20px' } }, ''),
         ]),
         h(:tr, [
