@@ -159,7 +159,7 @@ module Engine
         bids = @bids[company]
         bids.reject! { |b| b.entity == entity }
         bids << bid
-        @bidders[company] << entity unless @bidders[company].include?(company)
+        @bidders[company] |= [entity]
 
         @log << "#{entity.name} bids #{@game.format_currency(price)} for #{bid.company.name}"
       end
@@ -169,7 +169,7 @@ module Engine
         player.companies << company
         player.spend(price, @bank)
         @companies.delete(company)
-        only_bidder = @bidders[company].length == 1
+        only_bidder = @bidders[company].size == 1
         @log << "#{player.name} wins the auction for #{company.name} "\
                 "with #{only_bidder ? 'the only' : 'a'} bid of #{@game.format_currency(price)}"
       end
