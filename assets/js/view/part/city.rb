@@ -103,7 +103,7 @@ module View
 
         children = []
 
-        children << render_box(slots.size) if (2..6).include?(slots.size)
+        children << render_box(slots.size) if slots.size.between?(2, 6)
 
         children += slots
 
