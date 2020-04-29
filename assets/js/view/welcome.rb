@@ -37,7 +37,7 @@ module View
       }
 
       message = <<~MESSAGE
-        Welcome to the open alpha! Please join me in the 18xx slack #18xxgames channel.
+        Welcome to the open beta! Please join me in the 18xx slack #18xxgames channel.
       MESSAGE
 
       h(:div, props, [
