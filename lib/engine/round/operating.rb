@@ -61,7 +61,7 @@ module Engine
         @bankrupt = false
 
         @step = self.class::STEPS.first
-        @lastactionstep = self.class::STEPS.last
+        @last_action_step = self.class::STEPS.last
         @current_routes = []
 
         payout_companies
@@ -82,7 +82,7 @@ module Engine
 
       def pass_description
         # If the user is continuing an action change the phrasing from Don't to Done
-        if @step == @lastactionstep
+        if @step == @last_action_step
           return self.class::ACTIVE_PASS_DESCRIPTION[@step] if self.class::ACTIVE_PASS_DESCRIPTION.include?(@step)
         elsif self.class::INACTIVE_PASS_DESCRIPTION.include?(@step)
           return self.class::INACTIVE_PASS_DESCRIPTION[@step]
@@ -332,7 +332,7 @@ module Engine
       end
 
       def action_processed(action)
-        @lastactionstep = @step
+        @last_action_step = @step
         remove_just_sold_company_abilities unless action.is_a?(Action::BuyCompany)
         return if @bankrupt
         return if ignore_action?(action)
