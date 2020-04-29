@@ -86,10 +86,6 @@ class App < Snabberb::Component
     h(View::Game, connection: @connection, game_data: @game_data, user: @user)
   end
 
-  def app_path
-    @app_route.split('#').first.split('?').first
-  end
-
   def js_handlers
     %x{
       var self = this
@@ -100,7 +96,6 @@ class App < Snabberb::Component
       }
 
       if (window.location.pathname + window.location.hash != #{@app_route}) {
-        if (#{(app_path != '/').to_n}) window.scrollTo(0, 0)
         window.history.pushState(#{@game_data.to_n}, #{@app_route}, #{@app_route})
       }
     }
