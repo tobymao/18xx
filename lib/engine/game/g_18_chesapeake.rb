@@ -108,6 +108,11 @@ module Engine
       }.freeze
 
       LOCATION_NAMES = {
+        'A3' => 'Pittsburgh',
+        'B2' => 'Pittsburgh',
+        'A7' => 'Ohio',
+        'A13' => 'West Virginia Coal',
+        'B14' => 'West Virginia Coal',
         'B4' => 'Charleroi & Connellsville',
         'C5' => 'Green Spring',
         'C13' => 'Lynchburg',
@@ -122,12 +127,14 @@ module Engine
         'G13' => 'Richmond',
         'H4' => 'Strasburg',
         'H6' => 'Baltimore',
+        'H14' => 'Norfolk',
         'I5' => 'Wilmington',
         'J2' => 'Allentown',
         'J4' => 'Philadelphia',
         'J6' => 'Camden',
         'K3' => 'Trenton & Amboy',
         'K5' => 'Burlington & Princeton',
+        'L2' => 'New York',
       }.freeze
 
       MARKET = [

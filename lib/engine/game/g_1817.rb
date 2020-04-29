@@ -87,6 +87,8 @@ module Engine
       }.freeze
 
       LOCATION_NAMES = {
+        'A20' => 'Montréal',
+        'A28' => 'Maritime Prov.',
         'B5' => 'Lansing',
         'B13' => 'Toronto',
         'B17' => 'Rochester',
@@ -94,6 +96,7 @@ module Engine
         'C14' => 'Buffalo',
         'C22' => 'Albany',
         'C26' => 'Boston',
+        'D1' => 'Chicago',
         'D7' => 'Toledo',
         'D9' => 'Cleveland',
         'D19' => 'Scranton',
@@ -102,10 +105,13 @@ module Engine
         'F19' => 'Philadelphia',
         'G6' => 'Cincinnati',
         'G18' => 'Baltimore',
+        'H1' => 'St. Louis',
         'H3' => 'Louisville',
         'H9' => 'Charleston',
         'I12' => 'Blacksburg',
         'I16' => 'Richmond',
+        'J7' => 'Atlanta',
+        'J15' => 'Raleigh-Durham',
       }.freeze
 
       MARKET = [].freeze
