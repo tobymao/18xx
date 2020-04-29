@@ -54,8 +54,8 @@ module Engine
           %w[K7] => 'p=a:2,b:3',
         },
         yellow: {
-          %w[H6] => 'c=r:30;c=r:30;p=a:1,b:_0;p=a:4,b:_0;l=OO;u=c:40,t:water',
-          %w[J4] => 'c=r:30;c=r:30;p=a:0,b:_0;p=a:3,b:_0;l=OO',
+          %w[H6] => 'c=r:30;c=r:30;p=a:1,b:_0;p=a:4,b:_1;l=OO;u=c:40,t:water',
+          %w[J4] => 'c=r:30;c=r:30;p=a:0,b:_0;p=a:3,b:_1;l=OO',
         }
       }.freeze
 

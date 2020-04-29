@@ -34,9 +34,18 @@ module Engine
           'hhlodesign' => 7655,
           'raj' => 8050,
         },
-        239 => {
-          'Cheesy Crackers' => 4900,
-          'Notsem' => 5027,
+        352 => {
+          'Eonthar' => 4711,
+          'Jasonbartfast' => 4687,
+          'badlywho' => 4992,
+          'philcampeau' => 5259,
+          'ynottony105' => 5138,
+        },
+        361 => {
+          'kouchan' => 4486,
+          'moesugikenshin' => 5361,
+          'yamadasan' => 5138,
+          'yuji' => 5803,
         },
       }.freeze
 
