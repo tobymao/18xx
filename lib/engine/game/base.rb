@@ -251,15 +251,15 @@ module Engine
       private
 
       def init_bank
-        return Bank.new(self.class::BANK_CASH[players.size], log: @log) if self.class::BANK_CASH.is_a?(Hash)
+        cash = self.class::BANK_CASH
+        cash = cash[players.size] if cash.is_a?(Hash)
 
-        Bank.new(self.class::BANK_CASH, log: @log)
+        Bank.new(cash, log: @log)
       end
 
       def init_cert_limit
-        return self.class::CERT_LIMIT[players.size] if self.class::CERT_LIMIT.is_a?(Hash)
-
-        self.class::CERT_LIMIT
+        cert_limit = self.class::CERT_LIMIT
+        cert_limit.is_a?(Hash) ? cert_limit[players.size] : cert_limit
       end
 
       def init_phase
@@ -336,11 +336,8 @@ module Engine
       end
 
       def init_starting_cash(players, bank)
-        cash = if self.class::STARTING_CASH.is_a?(Hash)
-                 self.class::STARTING_CASH[players.size]
-               else
-                 self.class::STARTING_CASH
-               end
+        cash = self.class::STARTING_CASH
+        cash = cash[players.size] if cash.is_a?(Hash)
 
         players.each do |player|
           bank.spend(cash, player)
