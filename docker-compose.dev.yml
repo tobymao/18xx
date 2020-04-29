@@ -2,7 +2,6 @@ version: '3.7'
 
 services:
   rack:
-    build: .
     image: 18xx_rack:dev
     command: bash -c "bundle exec rake dev_up && bundle exec rerun --background -i 'build/*' -i 'public/*' 'puma'"
     ports:
@@ -13,7 +12,6 @@ services:
       - db
 
   db:
-    build: .
     image: 18xx_postgres:dev
 
   adminer:
