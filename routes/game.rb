@@ -66,19 +66,25 @@ class Api
               set_game_state(game, acting, engine)
 
               type, user_ids =
-                if r.params['type'] == 'message'
-                  ['Received Message', users.map(&:id)]
+                if action['type'] == 'message'
+                  pinged = users.select do |user|
+                    action['message'].include?("@#{user.name}")
+                  end
+                  ['Received Message', pinged.map(&:id)]
                 else
                   ['Your Turn', acting.map(&:id)]
                 end
 
-              MessageBus.publish(
-                TURN_CHANNEL,
-                user_ids: user_ids,
-                game_id: game.id,
-                game_url: "#{r.base_url}/game/#{game.id}",
-                type: type,
-              )
+              if user_ids.any?
+                MessageBus.publish(
+                  TURN_CHANNEL,
+                  user_ids: user_ids,
+                  game_id: game.id,
+                  game_url: "#{r.base_url}/game/#{game.id}",
+                  type: type,
+                )
+              end
+
               publish(channel, **action)
               return_and_notify(game)
             end
@@ -174,7 +180,7 @@ class Api
 
   MessageBus.subscribe TURN_CHANNEL do |msg|
     data = msg.data
-    users = User.where(id: data['user_ids']).select(:id, :email).all
+    users = User.where(id: data['user_ids']).select(:id, :email, :settings).all
     game = Game[data['game_id']]
 
     connected = Session
@@ -185,6 +191,12 @@ class Api
       .all
       .map(&:user_id)
 
+    users = users.reject do |user|
+      connected.include?(user.id) || user.settings['notifications'] == false
+    end
+
+    next if users.empty?
+
     html = RENDER_HTML.call(
       'assets/js/mail/turn.rb',
       game_data: game.to_h(include_actions: true),
@@ -192,8 +204,6 @@ class Api
     )
 
     users.each do |user|
-      next if connected.include?(user.id)
-
       Mail.send(user, "18xx.games Game: #{game.title} - #{game.id} - #{data['type']}", html)
     end
   end

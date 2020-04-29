@@ -33,10 +33,8 @@ module UserManager
     end
   end
 
-  def edit(params)
-    @connection.safe_post('/user/edit', params) do |data|
-      puts "** got data #{data}"
-    end
+  def edit_user(params)
+    @connection.safe_post('/user/edit', params)
   end
 
   def login(params)
