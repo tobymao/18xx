@@ -72,9 +72,9 @@ module View
         end,
         h(:td, corporation.num_shares_of(corporation)),
         h(:td, @game.share_pool.num_shares_of(corporation)),
-        h(:td, corporation.par_price ? corporation.par_price.price : ''),
-        h(:td, corporation.share_price ? corporation.share_price.price : ''),
-        h(:td, corporation.cash),
+        h(:td, corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
+        h(:td, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
+        h(:td, @game.format_currency(corporation.cash)),
         h(:td, corporation.trains.map(&:name)),
         h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.length}"),
         render_companies(corporation),
@@ -102,14 +102,14 @@ module View
     def render_player_cash
       h(:tr, [
         h(:td, 'Cash'),
-        *@game.players.map { |p| h(:td, p.cash) }
+        *@game.players.map { |p| h(:td, @game.format_currency(p.cash)) }
       ])
     end
 
     def render_player_worth
       h(:tr, [
         h(:td, 'Worth'),
-        *@game.players.map { |p| h(:td, p.value) }
+        *@game.players.map { |p| h(:td, @game.format_currency(p.value)) }
       ])
     end
 
