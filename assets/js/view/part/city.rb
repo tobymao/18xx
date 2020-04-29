@@ -35,7 +35,23 @@ module View
           fill: 'white',
           points: Lib::Hex::POINTS,
           transform: 'scale(0.458)',
-        }]
+        }],
+        4 => [:rect, {
+          fill: 'white',
+          width: SLOT_DIAMETER * 2,
+          height: SLOT_DIAMETER * 2,
+          x: -SLOT_DIAMETER,
+          y: -SLOT_DIAMETER,
+          rx: SLOT_RADIUS
+        }],
+        5 => [:circle, {
+          fill: 'white',
+          r: 1.36 * SLOT_DIAMETER
+        }],
+        6 => [:circle, {
+          fill: 'white',
+          r: 1.5 * SLOT_DIAMETER
+        }],
       }.freeze
 
       def preferred_render_locations
@@ -87,7 +103,7 @@ module View
 
         children = []
 
-        children << render_box(slots.size) if (2..3).include?(slots.size)
+        children << render_box(slots.size) if (2..6).include?(slots.size)
 
         children += slots
 
