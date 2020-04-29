@@ -42,8 +42,8 @@ module Engine
              E6 E8 E10 E14 E20 F5 F7 F9 F17 F21 G2 G8 G16 H5 I2 I4 I6 I14] => 'blank',
         },
         gray: {
-          %w[B13] => 'o=yellow_20|green_30|brown_40;t=r:0;p=a:0,b:_0;p=a:3,b:_0;p=a:4,b:_0',
-          %w[D9] => 'o=yellow_30|green_40|brown_50|gray_60;c=r:0,s:2;p=a:4,b:_0;p=a:5,b:_0',
+          %w[B13] => 't=r:yellow_20|green_30|brown_40;p=a:0,b:_0;p=a:3,b:_0;p=a:4,b:_0',
+          %w[D9] => 'c=r:yellow_30|green_40|brown_50|gray_60,s:2;p=a:4,b:_0;p=a:5,b:_0',
           %w[F1] => 'p=a:3,b:j;p=a:4,b:j;p=a:5,b=j',
         },
         yellow: {
