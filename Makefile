@@ -31,7 +31,13 @@ dev_up:
 	./scripts/ensure_env.sh development
 	./scripts/data_dir.sh development
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
-down:
+dev_up_b:
+	./scripts/ensure_env.sh development
+	./scripts/data_dir.sh development
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+build_dev:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build
+dev_down:
 	docker-compose down
 
 
