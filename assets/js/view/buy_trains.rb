@@ -6,6 +6,7 @@ require 'view/discard_trains'
 require 'view/sell_shares'
 require 'view/undo_and_pass'
 
+require 'engine/action/bankrupt'
 require 'engine/action/buy_train'
 require 'engine/action/sell_shares'
 
@@ -64,6 +65,7 @@ module View
         player = @corporation.owner
 
         if @corporation.cash + player.cash < @depot.min_depot_price
+          children << render_bankruptcy
           player.shares_by_corporation.each do |corporation, shares|
             next if shares.empty?
 
@@ -126,6 +128,21 @@ module View
         train = trains.first
         h(:div, "Train: #{name} - #{@game.format_currency(train.price)} x #{trains.size}")
       end
+    end
+
+    def render_bankruptcy
+      resign = lambda do
+        process_action(Engine::Action::Bankrupt.new(@corporation))
+      end
+
+      props = {
+        style: {
+          display: 'block',
+        },
+        on: { click: resign },
+      }
+
+      h(:button, props, 'Declare Bankruptcy')
     end
   end
 end

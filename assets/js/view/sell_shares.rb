@@ -3,7 +3,6 @@
 require 'view/actionable'
 
 require 'engine/action/sell_shares'
-require 'engine/share'
 
 module View
   class SellShares < Snabberb::Component
@@ -13,21 +12,7 @@ module View
     needs :selected_corporation, default: nil, store: true
 
     def render
-      shares = @player
-        .shares_of(@selected_corporation)
-        .sort_by(&:price)
-
-      bundles = shares.flat_map.with_index do |share, index|
-        bundle = shares.take(index + 1)
-        percent = bundle.sum(&:percent)
-        bundles = [Engine::ShareBundle.new(bundle, percent)]
-        bundles.insert(0, Engine::ShareBundle.new(bundle, percent - 10)) if share.president
-        bundles
-      end
-
-      buttons = bundles.map do |bundle|
-        next unless @game.round.can_sell?(bundle)
-
+      buttons = @game.round.sellable_bundles(@player, @selected_corporation).map do |bundle|
         sell = lambda do
           process_action(Engine::Action::SellShares.new(@player, bundle.shares, bundle.percent))
         end

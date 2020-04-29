@@ -202,7 +202,7 @@ module Engine
           @round.process_action(action)
         end
         @actions << action
-        next_round! while @round.finished?
+        next_round! while @round.finished? && !@finished
         self
       end
 
@@ -362,13 +362,12 @@ module Engine
             calculate_priority_deal
             new_operating_round
           when Round::Operating
+            return end_game if @round.bankrupt
+
             if @round.round_num < @operating_rounds
               new_operating_round(@round.round_num + 1)
             elsif @bank.broken?
-              @finished = true
-              scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
-              @log << "Game over: #{scores.join(', ')}"
-              @round
+              end_game
             else
               @turn += 1
               @operating_rounds = @phase.operating_rounds
@@ -377,6 +376,13 @@ module Engine
           else
             raise "Unexected round type #{@round}"
           end
+      end
+
+      def end_game
+        @finished = true
+        scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
+        @log << "Game over: #{scores.join(', ')}"
+        @round
       end
 
       def calculate_priority_deal
