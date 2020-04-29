@@ -31,8 +31,8 @@ module View
         end
 
         # Compute total width of rectangles so we can center
-        total_width = computed_revenues.inject(0) do |width, revenue|
-          width + revenue['width']
+        total_width = computed_revenues.sum do |revenue|
+          revenue['width']
         end
 
         children = computed_revenues.flat_map.with_index do |rev, index|
