@@ -38,12 +38,12 @@ module Engine
         red: {
           %w[A1 A15] => 'blank',
           %w[A3] => 'c=r:0;p=a:5,b:_0',
-          %w[B2] => 'o=yellow_40|green_50|brown_60|gray_80;p=a:0,b:_0',
-          %w[A7] => 'o=yellow_40|green_60|brown_80|gray_100;p=a:4,b:_0;p=a:5,b:_0',
-          %w[A13] => 'o=yellow_40|green_60|brown_80|gray_100;p=a:4,b:_0',
-          %w[B14] => 'o=yellow_40|green_60|brown_90|gray_100;p=a:3,b:_0;p=a:4,b:_0',
-          %w[H14] => 'o=yellow_20|green_40|brown_50|gray_60;p=a:2,b:_0',
-          %w[L2] => 'o=yellow_40|green_60|brown_80|gray_100;p=a:0,b:_0;p=a:1,b:_0',
+          %w[B2] => 'o=r:yellow_40|green_50|brown_60|gray_80;p=a:0,b:_0',
+          %w[A7] => 'o=r:yellow_40|green_60|brown_80|gray_100;p=a:4,b:_0;p=a:5,b:_0',
+          %w[A13] => 'o=r:yellow_40|green_60|brown_80|gray_100;p=a:4,b:_0',
+          %w[B14] => 'o=r:yellow_40|green_60|brown_90|gray_100;p=a:3,b:_0;p=a:4,b:_0',
+          %w[H14] => 'o=r:yellow_20|green_40|brown_50|gray_60;p=a:2,b:_0',
+          %w[L2] => 'o=r:yellow_40|green_60|brown_80|gray_100;p=a:0,b:_0;p=a:1,b:_0',
         },
         gray: {
           %w[E1] => 'p=a:1,b:5',

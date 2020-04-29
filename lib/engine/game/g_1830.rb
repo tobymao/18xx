@@ -23,13 +23,13 @@ module Engine
 
       HEXES = {
         red: {
-          # %w[I1] => 'p=a:3,b:_0',
-          %w[F2] => 'o=yellow_40|brown_70;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
-          %w[J2] => 'o=yellow_30|brown_60;p=a:2,b:_0;p=a:3,b:_0',
-          # %w[A9] => 'p=a:4,b:_0',
-          %w[A11] => 'o=yellow_30|brown_50;p=a:4,b:_0;p=a:5,b:_0',
-          %w[K13] => 'o=yellow_30|brown_40;p=a:1,b:_0;p=a:2,b:_0',
-          %w[B24] => 'o=yellow_20|brown_30;p=a:0,b:_0;p=a:5,b:_0',
+          %w[F2] => 'o=r:yellow_40|brown_70;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
+          %w[J2] => 'o=r:yellow_30|brown_60;p=a:2,b:_0;p=a:3,b:_0',
+          %w[I1] => 'o=r:yellow_30|brown_60;p=a:3,b:_0',
+          %w[A9] => 'o=r:yellow_30|brown_50;p=a:4,b:_0',
+          %w[A11] => 'o=r:yellow_30|brown_50;p=a:4,b:_0;p=a:5,b:_0',
+          %w[K13] => 'o=r:yellow_30|brown_40;p=a:1,b:_0;p=a:2,b:_0',
+          %w[B24] => 'o=r:yellow_20|brown_30;p=a:0,b:_0;p=a:5,b:_0',
         },
         gray: {
           %w[D2] => 'c=r:20;p=a:3,b:_0;p=a:4,b:_0',
