@@ -157,18 +157,18 @@ module View
     end
 
     def round_info
-      name = @round.class.name.split(':').last
-      num = @round.operating? ? "#{@game.turn}.#{@round.round_num}" : @game.turn
+      name = @game.round.class.name.split(':').last
+      num = @game.round.operating? ? "#{@game.turn}.#{@game.round.round_num}" : @game.turn
       [name, num]
     end
 
     def render_round
       name, num = round_info
-      h(:div, { style: { 'font-weight': 'bold' } }, "#{name} Round #{num} - #{@round.description}")
+      h(:div, { style: { 'font-weight': 'bold' } }, "#{name} Round #{num} - #{@game.round.description}")
     end
 
     def render_action
-      case @round
+      case @game.round
       when Engine::Round::Auction
         h(AuctionRound, game: @game)
       when Engine::Round::Stock
@@ -179,12 +179,10 @@ module View
     end
 
     def render_game
-      @round = @game.round
-
       h('div.game', [
         render_round,
         h(GameLog, user: @user),
-        h(EntityOrder, round: @round),
+        h(EntityOrder, round: @game.round),
         h(Exchange),
         render_action,
       ])
