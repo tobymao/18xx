@@ -43,6 +43,8 @@ module Engine
 
       # Pass Descriptions for steps players can take more than one action
       ACTIVE_PASS_DESCRIPTION = {
+        track: 'Done Laying Track',
+        token: 'Done Placing a Token',
         train: 'Done Buying Trains',
         company: 'Done Purchasing Companies',
       }.freeze
@@ -81,13 +83,7 @@ module Engine
       end
 
       def pass_description
-        # If the user is continuing an action change the phrasing from Don't to Done
-        if @step == @last_action_step
-          return self.class::ACTIVE_PASS_DESCRIPTION[@step] if self.class::ACTIVE_PASS_DESCRIPTION.include?(@step)
-        elsif self.class::INACTIVE_PASS_DESCRIPTION.include?(@step)
-          return self.class::INACTIVE_PASS_DESCRIPTION[@step]
-        end
-        raise NotImplementedError
+        self.class::ACTIVE_PASS_DESCRIPTION[@step == @last_action_step ? @step : nil] || self.class::INACTIVE_PASS_DESCRIPTION[@step] || 'Pass'
       end
 
       def pass(_action)
