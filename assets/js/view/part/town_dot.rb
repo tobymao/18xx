@@ -41,9 +41,9 @@ module View
 
       def preferred_render_locations
         if @tile.towns.size > 1
-          CENTER_TOWN
-        else
           OFFSET_TOWNS
+        else
+          CENTER_TOWN
         end
       end
 
