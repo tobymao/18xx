@@ -39,7 +39,7 @@ module Engine
         transfer_shares(share, entity)
       else
         @log << "#{entity.name} buys a #{share.percent}% share of #{corporation.name} "\
-          "from #{share.owner.corporation? ? 'the IPO' : 'the market' } "\
+          "from #{share.owner.corporation? ? 'the IPO' : 'the market'} "\
           "for #{@game.format_currency(price)}"
         transfer_shares(share, entity, spender: entity, receiver: @bank)
       end
