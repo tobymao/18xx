@@ -29,6 +29,10 @@ module Engine
         'Bid on Companies'
       end
 
+      def pass_description
+        'Pass on Bidding on Companies'
+      end
+
       def finished?
         @companies.empty?
       end
