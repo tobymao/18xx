@@ -95,7 +95,7 @@ module View
 
     def other_trains(other_corp_trains)
       other_corp_trains.flat_map do |other, trains|
-        trains.map do |train|
+        trains.uniq(&:name).map do |train|
           input = h(
             :input,
             style: {
@@ -114,8 +114,10 @@ module View
             process_action(Engine::Action::BuyTrain.new(@corporation, train, price))
           end
 
+          count = trains.count { |train2| train2.name == train.name }
+
           h(:div, [
-            "Train #{train.name} - from #{other.name}",
+            "Train #{train.name} - from #{other.name}" + (count>1?" (has #{count})":""),
             input,
             h('button.margined', { on: { click: buy_train } }, 'Buy'),
           ])
