@@ -9,16 +9,19 @@ module View
         if @tile.offboards.any?
           return [
             {
-              region_weights: { [7, 8, 9] => 1,
-                                [6, 7, 9, 10] => 0.25 },
+              region_weights: CENTER,
               x: 0,
-              y: -10,
+              y: 0,
             },
             {
-              region_weights: { [14, 15, 16] => 1,
-                                [13, 14, 16, 17] => 0.25 },
+              region_weights: TOP_MIDDLE_ROW,
               x: 0,
-              y: 10,
+              y: -24,
+            },
+            {
+              region_weights: BOTTOM_MIDDLE_ROW,
+              x: 0,
+              y: 24,
             },
           ]
         end

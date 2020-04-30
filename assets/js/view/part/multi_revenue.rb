@@ -45,12 +45,12 @@ module View
             transform: "translate(#{t_x} 0)",
             height: 24,
             width: width,
-            x: -2,
-            y: -18,
+            x: 0,
+            y: -12,
           }
 
           text_attrs = {
-            transform: "translate(#{t_x + (width * 0.5) - 2} -7)",
+            transform: "translate(#{t_x + (width * 0.5)} -1)",
             fill: 'black',
             'text-anchor': 'middle',
             'dominant-baseline': 'central',

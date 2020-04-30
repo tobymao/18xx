@@ -52,7 +52,7 @@ module Engine
           %w[G15 C17 C21 D22 E17 E21 G13 I11 J10 J12] => 'u=c:120,t:mountain',
           %w[B16 E19 H4 B10 H10 H16] => 'city',
           %w[F16] => 'c=r:0;u=c:120,t:mountain',
-          # %w[G7 G17 F20] => 't=r:0;t=r:0',
+          %w[G7 G17 F20] => 't=r:0;t=r:0',
           %w[D6 I17 B18 C19] => 'u=c:80,t:water',
         },
         yellow: {
