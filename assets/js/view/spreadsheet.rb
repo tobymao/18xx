@@ -5,14 +5,17 @@ module View
     needs :game
 
     def render
-      props = {
-         style: {
-          margin: '1rem 0 1.5rem 0',
-          'text-align': 'center'
-        }
-      }
+      h(:div, {style: {
+        overflow: 'auto',
+        margin: '0 -1rem'
+      }}, [render_table])
+    end
 
-      h(:table, props, [
+    def render_table
+      h(:table, {style: {
+        margin: '1rem 0 1.5rem 0',
+        'text-align': 'center',
+      }}, [
         *render_title,
         *render_corporations,
         render_player_cash,
@@ -20,7 +23,6 @@ module View
         render_player_worth,
         render_player_certs,
       ])
-
       # TODO: consider adding OR information (could do both corporation OR revenue and player change in value)
       # TODO: consider adding train availability
     end
@@ -34,7 +36,7 @@ module View
           h(:th, { attrs: { colspan: 2 } }, 'Prices'),
           h(:th, { attrs: { colspan: 4 } }, 'Corporation'),
           h(:th, { style: { width: '20px' } }, ''),
-        ]),
+          ]),
         h(:tr, [
           h(:th, { style: { width: '20px' } }, ''),
           *@game.players.map { |p| h(:th, p.name) },
@@ -83,13 +85,7 @@ module View
     end
 
     def render_companies(entity)
-      h(:td, entity.companies.map { |c| company_short_name(c.name) }.join(','))
-    end
-
-    # TODO: we need a better way of referring to companies...numerical index?
-    #       we could just make an ad hoc index and show it on the page
-    def company_short_name(name)
-      name.gsub('-', ' ').split(' ').map { |w| w[0] }.join
+      h(:td, entity.companies.map(&:short_name).join(','))
     end
 
     def render_player_privates
