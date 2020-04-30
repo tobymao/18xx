@@ -73,6 +73,27 @@ module View
       unless @round.must_sell?
         children << h(:button, { on: { click: buy_ipo } }, 'Buy IPO Share') if @round.can_buy?(ipo_share)
         children << h(:button, { on: { click: buy_pool } }, 'Buy Pool Share') if @round.can_buy?(pool_share)
+
+        # Allow privates to be exchanged for shares
+        exchangable_company = lambda { |n|
+          n.abilities(:exchange)&.fetch(:corporation) == @selected_corporation.name &&
+          @round.can_gain?(ipo_share, n.owner)
+        }
+        add_company_exchange = lambda { |company|
+          exchange = lambda do
+            process_action(Engine::Action::BuyShare.new(company, ipo_share))
+          end
+          children << if company.owner == @current_entity
+                        h(:button, { on: { click: exchange } },
+                          "Exchange #{company.name} for Share")
+                      else
+                        # This can be done outside of a players turn, but make it clear who owns it
+                        h(:button, { on: { click: exchange } },
+                          "#{company.owner.name} exchanges #{company.name} for Share")
+                      end
+        }
+        @game.companies.select(&exchangable_company).each(&add_company_exchange)
+
       end
       children << h(SellShares, player: @current_entity)
 
