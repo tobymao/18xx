@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'view/stock_market'
+
 module View
   class Spreadsheet < Snabberb::Component
     needs :game
@@ -70,7 +72,19 @@ module View
           }
         }
       props = { style: {} }
-      props[:style]['background-color'] = 'rgba(220,220,220,0.4)' unless corporation.floated?
+
+      if corporation.floated?
+        unless corporation.share_price.color.nil?
+          color = StockMarket::COLOR_MAP[corporation.share_price.color]
+          unless color.nil?
+            m = color.match(/#(..)(..)(..)/)
+            props[:style]['background-color'] = "rgba(#{m[1].hex},#{m[2].hex},#{m[3].hex},0.4)"
+          end
+        end
+      else
+        props[:style]['background-color'] = 'rgba(220,220,220,0.4)'
+      end
+
       h(:tr, props, [
         h(:th, corporation_color, corporation.name),
         *@game.players.map do |p|
