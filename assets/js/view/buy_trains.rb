@@ -117,7 +117,7 @@ module View
           count = trains.count { |train2| train2.name == train.name }
 
           h(:div, [
-            "Train #{train.name} - from #{other.name}" + (count>1?" (has #{count})":""),
+            "Train #{train.name} - from #{other.name}" + (count > 1 ? " (has #{count})" : ''),
             input,
             h('button.margined', { on: { click: buy_train } }, 'Buy'),
           ])
