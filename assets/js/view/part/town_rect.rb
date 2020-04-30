@@ -31,86 +31,85 @@ module View
         [15, 16, 17, 21, 22, 23],
       ].freeze
 
-      def noramlized_edges
-        return @noramlized_edges if defined? @noramlized_edges
-
-        edge_a, edge_b = @edges
-        edge_a += 6 if (edge_b - edge_a).abs > 3
-        edge_a, edge_b = edge_b, edge_a if edge_b < edge_a
-
-        @noramlized_edges = [edge_a, edge_b]
+      def normalized_edges
+        @normalized_edges ||= begin
+                                edge_a, edge_b = @edges
+                                edge_a += 6 if (edge_b - edge_a).abs > 3
+                                edge_a, edge_b = edge_b, edge_a if edge_b < edge_a
+                                [edge_a, edge_b]
+                              end
       end
 
       def track_type
-        return @track_type if defined? @track_type
+        @track_type ||= begin
+                          edge_a, edge_b = normalized_edges
 
-        edge_a, edge_b = noramlized_edges
-
-        @track_type = case edge_b - edge_a
-                      when 3
-                        :straight
-                      when 2
-                        :gentle
-                      else
-                        :sharp
-                      end
+                          case edge_b - edge_a
+                          when 3
+                            :straight
+                          when 2
+                            :gentle
+                          else
+                            :sharp
+                          end
+                        end
       end
 
       def position_angle
-        return @position_angle if defined? @position_angle
+        @position_angle ||= begin
+                              edge_a, = normalized_edges
+                              angle = case track_type
+                                      when :sharp
+                                        (edge_a + 0.5) * 60
+                                      when :gentle
+                                        (edge_a * 60) + 5
+                                      else
+                                        edge_a * 60
+                                      end
+                              radians = (angle / 180) * Math::PI
 
-        edge_a, = noramlized_edges
-        angle = case track_type
-                when :sharp
-                  (edge_a + 0.5) * 60
-                when :gentle
-                  (edge_a * 60) + 5
-                else
-                  edge_a * 60
-                end
-        radians = (angle / 180) * Math::PI
-
-        @position_angle = [angle, -Math.sin(radians), Math.cos(radians)]
+                              [angle, -Math.sin(radians), Math.cos(radians)]
+                            end
       end
 
       def position
-        return @position if defined? @position
+        @position ||= begin
+                        edge_a, = normalized_edges
+                        angle = case track_type
+                                when :sharp
+                                  (edge_a + 0.5) * 60
+                                when :gentle
+                                  (edge_a * 60) + 2
+                                else
+                                  edge_a * 60
+                                end
+                        radians = (angle / 180) * Math::PI
 
-        edge_a, = noramlized_edges
-        angle = case track_type
-                when :sharp
-                  (edge_a + 0.5) * 60
-                when :gentle
-                  (edge_a * 60) + 2
-                else
-                  edge_a * 60
-                end
-        radians = (angle / 180) * Math::PI
+                        position = case track_type
+                                   when :sharp
+                                     43.5
+                                   when :gentle
+                                     53.375
+                                   else
+                                     40
+                                   end
 
-        position = case track_type
-                   when :sharp
-                     43.5
-                   when :gentle
-                     53.375
-                   else
-                     40
-                   end
-
-        @position = [-Math.sin(radians) * position,
-                     Math.cos(radians) * position]
+                        [-Math.sin(radians) * position,
+                         Math.cos(radians) * position]
+                      end
       end
 
       def track_location
-        return @track_location if defined? @track_location
+        @track_location ||= begin
+                              edge_a, = normalized_edges
 
-        edge_a, = noramlized_edges
-
-        @track_location = case track_type
-                          when :sharp
-                            SHARP_TRACK_LOCATIONS[edge_a % 6]
-                          else
-                            EDGE_TRACK_LOCATIONS[edge_a % 6]
-                          end
+                              case track_type
+                              when :sharp
+                                SHARP_TRACK_LOCATIONS[edge_a % 6]
+                              else
+                                EDGE_TRACK_LOCATIONS[edge_a % 6]
+                              end
+                            end
       end
 
       def preferred_render_locations
@@ -124,17 +123,17 @@ module View
       end
 
       def rotation_angle
-        return @rotation_angle if defined? @rotation_angle
-
-        edge_a, = noramlized_edges
-        @rotation_angle = case track_type
-                          when :sharp
-                            (edge_a + 2) * 60
-                          when :gentle
-                            (edge_a * 60) - 10
-                          else
-                            edge_a * 60
-                          end
+        @rotation_angle ||= begin
+                              edge_a, = normalized_edges
+                              case track_type
+                              when :sharp
+                                (edge_a + 2) * 60
+                              when :gentle
+                                (edge_a * 60) - 10
+                              else
+                                edge_a * 60
+                              end
+                            end
       end
 
       def render
