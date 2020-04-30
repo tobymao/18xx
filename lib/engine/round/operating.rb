@@ -83,7 +83,9 @@ module Engine
       end
 
       def pass_description
-        self.class::ACTIVE_PASS_DESCRIPTION[@step == @last_action_step ? @step : nil] || self.class::INACTIVE_PASS_DESCRIPTION[@step] || 'Pass'
+        self.class::ACTIVE_PASS_DESCRIPTION[@step == @last_action_step ? @step : nil] ||
+        self.class::INACTIVE_PASS_DESCRIPTION[@step] ||
+        'Pass'
       end
 
       def pass(_action)
