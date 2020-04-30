@@ -18,6 +18,10 @@ module View
       } }, [
         *render_title,
         *render_corporations,
+        h(:tr, [
+          h(:td, { style: { width: '20px' } }, ''),
+          h(:th, { attrs: { colspan: @game.players.length } }, 'Player Finances'),
+        ]),
         render_player_cash,
         render_player_privates,
         render_player_worth,
@@ -68,7 +72,7 @@ module View
       props = { style: {} }
       props[:style]['background-color'] = 'rgba(220,220,220,0.4)' unless corporation.floated?
       h(:tr, props, [
-        h(:td, corporation_color, corporation.name),
+        h(:th, corporation_color, corporation.name),
         *@game.players.map do |p|
           h(:td, p.num_shares_of(corporation).to_s + (corporation.president?(p) ? '*' : ''))
         end,
@@ -80,7 +84,7 @@ module View
         h(:td, corporation.trains.map(&:name)),
         h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.length}"),
         render_companies(corporation),
-        h(:td, corporation_color, corporation.name),
+        h(:th, corporation_color, corporation.name),
       ])
     end
 
@@ -90,28 +94,28 @@ module View
 
     def render_player_privates
       h(:tr, [
-        h(:td, 'Privates'),
+        h(:th, 'Privates'),
         *@game.players.map { |p| render_companies(p) }
       ])
     end
 
     def render_player_cash
       h(:tr, [
-        h(:td, 'Cash'),
+        h(:th, 'Cash'),
         *@game.players.map { |p| h(:td, @game.format_currency(p.cash)) }
       ])
     end
 
     def render_player_worth
       h(:tr, [
-        h(:td, 'Worth'),
+        h(:th, 'Worth'),
         *@game.players.map { |p| h(:td, @game.format_currency(p.value)) }
       ])
     end
 
     def render_player_certs
       h(:tr, [
-        h(:td, 'Certs'),
+        h(:th, 'Certs'),
         *@game.players.map { |p| h(:td, p.num_certs) }
       ])
     end
