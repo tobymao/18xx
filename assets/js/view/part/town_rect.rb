@@ -17,6 +17,31 @@ module View
         mean * 60
       end
 
+      def inner_rotation(edge_a, edge_b)
+        edge_a += 6 if (edge_b - edge_a).abs > 3
+        diff = (edge_a - edge_b).abs
+
+        if diff == 2
+          -22
+        else
+          0
+        end
+      end
+
+      def delta_x(width, edge_a, edge_b)
+        edge_a += 6 if (edge_b - edge_a).abs > 3
+        diff = (edge_a - edge_b).abs
+
+        (-width / 2.0) +
+          if diff == 1
+            0
+          elsif diff == 2
+            -50
+          elsif diff == 3
+            40
+          end
+      end
+
       def delta_y(height, edge_a, edge_b)
         edge_a += 6 if (edge_b - edge_a).abs > 3
         diff = (edge_a - edge_b).abs
@@ -25,7 +50,7 @@ module View
           if diff == 1
             43.5
           elsif diff == 2
-            20.575
+            31.575
           elsif diff == 3
             0
           end
@@ -36,11 +61,12 @@ module View
         edge_a, edge_b = edge_b, edge_a if edge_b < edge_a
 
         angle = rotation(edge_a, edge_b)
+        inner_angle = inner_rotation(edge_a, edge_b)
 
         height = 32
         width = 8
 
-        dx = -width / 2.0
+        dx = delta_x(width, edge_a, edge_b)
         dy = delta_y(height, edge_a, edge_b)
 
         attrs = {
@@ -55,7 +81,7 @@ module View
             h(
               :rect,
               attrs: {
-                transform: "translate(#{dx} #{dy})",
+                transform: "translate(#{dx} #{dy}) rotate(#{inner_angle})",
                 height: height,
                 width: width,
                 fill: @color,
