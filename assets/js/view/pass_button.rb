@@ -2,8 +2,6 @@
 
 require 'view/actionable'
 
-require 'engine/action/pass'
-
 module View
   class PassButton < Snabberb::Component
     include Actionable

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'engine/player'
-
 class EntityOrder < Snabberb::Component
   needs :round
 

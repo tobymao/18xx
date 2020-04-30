@@ -2,7 +2,6 @@
 
 require 'view/actionable'
 require 'view/log'
-require 'engine/action/message'
 
 module View
   class GameLog < Snabberb::Component

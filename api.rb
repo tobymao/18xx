@@ -125,7 +125,6 @@ class Api < Roda
   route do |r|
     unless PRODUCTION
       r.public
-      r.assets
     end
 
     puts "************** #{r.path} *************"

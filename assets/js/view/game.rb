@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'lib/connection'
-
 require 'view/auction_round'
 require 'view/companies'
 require 'view/corporations'
@@ -17,8 +16,6 @@ require 'view/tile_manifest'
 require 'view/tools'
 require 'view/train_roster'
 require 'view/spreadsheet'
-
-require 'engine'
 
 module View
   class Game < Snabberb::Component

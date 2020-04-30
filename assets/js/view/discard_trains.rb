@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'engine/action/discard_train'
 require 'view/actionable'
 
 module View

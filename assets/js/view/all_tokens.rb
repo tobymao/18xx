@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
-require 'snabberb/component'
-
-require 'engine'
 require 'view/token'
 
 module View
   class AllTokens < Snabberb::Component
     def render
-      corporations = Engine::Game::G1889.new([]).corporations
+      corporations = Engine::GAMES_BY_TITLE['1889'].new([]).corporations
 
       children = corporations.map { |c| render_token_block(c) }
 

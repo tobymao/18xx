@@ -7,10 +7,6 @@ require 'view/sell_shares'
 require 'view/stock_market'
 require 'view/undo_and_pass'
 
-require 'engine/action/buy_share'
-require 'engine/action/par'
-require 'engine/share'
-
 module View
   class StockRound < Snabberb::Component
     include Actionable

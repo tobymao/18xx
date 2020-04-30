@@ -3,6 +3,7 @@
 require 'compiled-opal'
 require 'snabberb'
 require 'polyfill'
+require 'engine'
 
 require 'index'
 require 'game_manager'
@@ -10,6 +11,7 @@ require 'user_manager'
 require 'lib/connection'
 require 'lib/storage'
 require 'view/about'
+require 'view/create_game'
 require 'view/home'
 require 'view/flash'
 require 'view/game'
@@ -17,13 +19,12 @@ require 'view/navigation'
 require 'view/all_tiles'
 require 'view/user'
 
-require_tree 'engine/game'
-
 class App < Snabberb::Component
   include GameManager
   include UserManager
 
   def render
+    # puts Engine::Game::Base
     props = {
       props: { id: 'app' },
       style: {

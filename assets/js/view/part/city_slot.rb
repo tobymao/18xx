@@ -2,7 +2,6 @@
 
 require 'snabberb/component'
 
-require 'engine/action/place_token'
 require 'view/actionable'
 require 'view/token'
 

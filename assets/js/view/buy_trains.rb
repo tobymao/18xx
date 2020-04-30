@@ -6,10 +6,6 @@ require 'view/discard_trains'
 require 'view/sell_shares'
 require 'view/undo_and_pass'
 
-require 'engine/action/bankrupt'
-require 'engine/action/buy_train'
-require 'engine/action/sell_shares'
-
 module View
   class BuyTrains < Snabberb::Component
     include Actionable

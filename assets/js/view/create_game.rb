@@ -4,8 +4,6 @@ require 'game_manager'
 require 'view/form'
 require 'json'
 
-require 'engine'
-
 module View
   class CreateGame < Form
     include GameManager

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'lib/storage'
-require 'engine/game_error'
 
 module View
   module Actionable

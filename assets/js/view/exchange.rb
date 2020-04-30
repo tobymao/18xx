@@ -2,8 +2,6 @@
 
 require 'view/actionable'
 
-require 'engine/action/buy_share'
-
 module View
   class Exchange < Snabberb::Component
     include Actionable

@@ -3,8 +3,6 @@
 require 'view/actionable'
 require 'view/undo_and_pass'
 
-require 'engine/action/dividend'
-
 module View
   class Dividend < Snabberb::Component
     include Actionable

@@ -3,8 +3,6 @@
 require 'view/actionable'
 require 'view/company'
 
-require 'engine/action/buy_company'
-
 module View
   class BuyCompanies < Snabberb::Component
     include Actionable

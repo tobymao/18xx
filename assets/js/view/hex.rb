@@ -5,9 +5,6 @@ require 'lib/tile_selector'
 require 'view/tile'
 require 'view/triangular_grid'
 
-require 'engine/action/lay_tile'
-require 'engine/route'
-
 module View
   class Hex < Snabberb::Component
     SIZE = 100

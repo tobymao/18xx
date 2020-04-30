@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'engine/tile'
-
 require 'view/tiles'
 
 module View

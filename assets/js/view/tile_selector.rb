@@ -2,9 +2,6 @@
 
 require 'view/hex'
 
-require 'engine/hex'
-require 'engine/tile'
-
 module View
   class TileSelector < Snabberb::Component
     needs :tile_selector, store: true

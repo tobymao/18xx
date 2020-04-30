@@ -3,8 +3,6 @@
 require 'view/actionable'
 require 'view/undo_and_pass'
 
-require 'engine/action/run_routes'
-
 module View
   class RouteSelector < Snabberb::Component
     include Actionable

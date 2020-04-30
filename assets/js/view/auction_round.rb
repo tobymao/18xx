@@ -5,8 +5,6 @@ require 'view/company'
 require 'view/players'
 require 'view/undo_and_pass'
 
-require 'engine/action/bid'
-
 module View
   class AuctionRound < Snabberb::Component
     include Actionable
