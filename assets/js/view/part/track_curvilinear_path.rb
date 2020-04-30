@@ -33,6 +33,7 @@ module View
 
       needs :path
       needs :color, default: 'black'
+      needs :ocolor, default: 'white'
 
       # returns SHARP, GENTLE, or STRAIGHT
       def compute_curvilinear_type(edge_a, edge_b)
@@ -60,7 +61,7 @@ module View
 
       def load_from_tile
         edge_a, edge_b = @path.exits
-
+        
         @curvilinear_type = compute_curvilinear_type(edge_a, edge_b)
         @rotation = compute_track_rotation_degrees(edge_a, edge_b)
       end
@@ -80,17 +81,28 @@ module View
       end
 
       def render_part
-        props = {
+        uprops = {
           attrs: {
-            class: 'curvilinear_path',
+            class: 'curvilinear_upath',
             transform: "rotate(#{@rotation})",
             d: SVG_PATH_STRINGS[@curvilinear_type],
-            stroke: @color,
-            'stroke-width' => 8
+            stroke: @path.gauge != :dual ? @ocolor : @color,
+            'stroke-width' => 14
           }
         }
 
-        h(:path, props)
+        props = {
+          attrs: {
+            class: "curvilinear_path",
+            transform: "rotate(#{@rotation})",
+            d: SVG_PATH_STRINGS[@curvilinear_type],
+            stroke: @path.gauge != :dual ? @color : @ocolor,
+            'stroke-dasharray' => (10 if @path.gauge == :narrow),
+            'stroke-width' => 10
+          }.compact
+        }
+
+        [ h(:path, uprops), h(:path, props) ]
       end
     end
   end

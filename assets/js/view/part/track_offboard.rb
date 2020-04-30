@@ -43,7 +43,7 @@ module View
             stroke: 'none',
             'stroke-linecap': 'butt',
             'stroke-linejoin': 'miter',
-            'stroke-width': 6,
+            'stroke-width': 8,
           }
         }
 

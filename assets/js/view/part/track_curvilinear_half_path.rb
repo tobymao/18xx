@@ -84,17 +84,28 @@ module View
       end
 
       def render_part
+        uprops = {
+          attrs: {
+            class: 'curvilinear_upath',
+            transform: "rotate(#{@rotation})",
+            d: SVG_PATH_STRINGS[[@curvilinear_type, @direction]],
+            stroke: @path.gauge != :dual ? @ocolor : @color,
+            'stroke-width' => 14
+          }
+        }
+
         props = {
           attrs: {
             class: 'curvilinear_path',
             transform: "rotate(#{@rotation})",
             d: SVG_PATH_STRINGS[[@curvilinear_type, @direction]],
-            stroke: @color,
-            'stroke-width' => 8
-          }
+            stroke: @path.gauge != :dual ? @color : @ocolor,
+            'stroke-dasharray' => (10 if @path.gauge == :narrow),
+            'stroke-width' => 10
+          }.compact
         }
 
-        h(:path, props)
+        [ h(:path, uprops), h(:path, props) ]
       end
     end
   end

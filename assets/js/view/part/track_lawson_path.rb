@@ -7,6 +7,7 @@ module View
     class TrackLawsonPath < Base
       needs :path
       needs :color, default: 'black'
+      needs :ocolor, default: 'white'
 
       def load_from_tile
         @edge_num = @path.edges.first.num
@@ -33,20 +34,28 @@ module View
 
       def render_part
         rotation = 60 * @edge_num
+        uprops = {
+          attrs: {
+            class: 'lawson_path',
+            transform: "rotate(#{rotation})",
+            d: 'M 0 87 L 0 0',
+            stroke: @path.gauge != :dual ? @ocolor : @color,
+            'stroke-width' => 14
+          }
+        }
 
         props = {
           attrs: {
             class: 'lawson_path',
             transform: "rotate(#{rotation})",
             d: 'M 0 87 L 0 0',
-            stroke: @color,
-            'stroke-width' => 8
-          }
+            stroke: @path.gauge != :dual ? @color : @ocolor,
+            'stroke-dasharray': (10 if @path.gauge == :narrow),
+            'stroke-width' => 10
+          }.compact
         }
 
-        [
-          h(:path, props),
-        ]
+        [ h(:path, uprops), h(:path, props), ]
       end
     end
   end

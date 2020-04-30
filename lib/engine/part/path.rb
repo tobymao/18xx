@@ -5,11 +5,12 @@ require_relative 'base'
 module Engine
   module Part
     class Path < Base
-      attr_reader :a, :b, :branch, :city, :edges, :junction, :offboard, :stop, :town
+      attr_reader :a, :b, :gauge, :branch, :city, :edges, :junction, :offboard, :stop, :town
 
-      def initialize(a, b)
+      def initialize(a, b, gauge)
         @a = a
         @b = b
+        @gauge = gauge || :broad
         @edges = []
 
         separate_parts
@@ -35,7 +36,7 @@ module Engine
       end
 
       def rotate(ticks)
-        Path.new(@a.rotate(ticks), @b.rotate(ticks))
+        Path.new(@a.rotate(ticks), @b.rotate(ticks), @gauge)
       end
 
       private

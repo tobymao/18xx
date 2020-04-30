@@ -16,7 +16,9 @@ module Engine
     # * [c]ity     - [r]evenue, local_[id] (default: 0), [s]lots (default 1)
     # * [o]ffboard - [r]evenues for different phases (separated by "/")
     # * [p]ath     - endpoints [a] and [b]; the endpoints can be an edge number,
-    #                town/city/offboard reference, or a lawson-style [j]unction
+    #                town/city/offboard reference, or a lawson-style [j]unction;
+    #                [g] indicates gauge, such as 'b'road (default), 'n'arrow,
+    #                'd'ual, etc
     # * [l]abel    - large letters on tile
     # * [u]pgrade  - [c]ost, [t]errain (multiple terrain types separated by "+"),
 
@@ -49,6 +51,11 @@ module Engine
       '57' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3',
       '58' => 't=r:10;p=a:0,b:_0;p=a:_0,b:2',
       '69' => 't=r:10;p=a:1,b:_0;p=a:_0,b:4;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
+      '73' => 't=r:10;p=a:0,b:_0,g:n;p=a:_0,b:4,g:n',
+      '74' => 't=r:10;p=a:0,b:_0,g:n;p=a:_0,b:3,g:n',
+      '77' => 'p=a:0,b:5,g:n',
+      '78' => 'p=a:0,b:4,g:n',
+      '79' => 'p=a:0,b:3,g:n',
       '291' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:1;l=Z',
       '292' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:2;l=Z',
       '293' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3;l=Z',
@@ -58,6 +65,12 @@ module Engine
       '631' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
       '632' => 't=r:10;p=a:0,b:_0;p=a:_0,b:5;t=r:10;p=a:3,b:_1;p=a:_1,b:4',
       '633' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1;t=r:10;p=a:3,b:_1;p=a:_1,b:4',
+      '644' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:5,g:n',
+      '645' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:4,g:n',
+      '657' => 'c=r:20;p=a:0,b:_0,g:n;p=a:_0,b:3',
+      '658' => 'c=r:20;p=a:0,b:_0,g:n;p=a:_0,b:4',
+      '659' => 'c=r:20;p=a:0,b:_0,g:n;p=a:_0,b:5',
+      '679' => 't=r:10;p=a:0,b:_0,g:n;p=a:_0,b:1,g:n',
       'X00' => 'c=r:30,s:1;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
       'X1' => 'c=r:30;p=a:0,b:_0;p=a:_0,b:4;l=DC',
     }.freeze
@@ -103,6 +116,7 @@ module Engine
       '440' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
       '592' => 'c=r:50,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
       '619' => 'c=r:30,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
+      '713' => 'p=a:0,b:3;p=a:1,b:5,g:n',
       'X2' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC',
       'X3' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:2;c=r:40;p=a:3,b:_1;p=a:_1,b:5;l=OO',
       'X4' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:1;c=r:40;p=a:2,b:_1;p=a:_1,b:3;l=OO',
@@ -138,6 +152,7 @@ module Engine
       '546' => 'p=a:0,b:j;p=a:2,b:j;p=a:3,b:j;p=a:4,b:j',
       '593' => 'c=r:60,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
       '611' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;',
+      '698' => 't=r:20;p=a:0,b:_0,g:d;p=a:1,b:_0,g:d;p=a:3,b:_0,g:d;p=a:5,b:_0,g:d',
       'W5' => 'c=r:50,s:6;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
       'X6' => 'c=r:70,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC',
       'X7' => 'c=r:50,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=OO',
@@ -205,17 +220,30 @@ module Engine
       case type
       when 'p'
         params = params.map do |k, v|
-          case v[0]
-          when '_'
-            [k, cache[v[1..-1].to_i]]
-          when 'j'
-            [k, Part::Junction.new]
+          case k[0]
+          when 'g'
+            case v[0]
+            when 'n'
+              [k, :narrow]
+            when 'd'
+              [k, :dual]
+            else
+              [k, :broad]
+            end
           else
-            [k, Part::Edge.new(v)]
+            case v[0]
+            when '_'
+              [k, cache[v[1..-1].to_i]]
+            when 'j'
+              [k, Part::Junction.new]
+            else
+              [k, Part::Edge.new(v)]
+            end
           end
         end.to_h
+        params['g'] ||= :broad
 
-        Part::Path.new(params['a'], params['b'])
+        Part::Path.new(params['a'], params['b'], params['g'])
       when 'c'
         city = Part::City.new(params['r'], params.fetch('s', 1))
         cache << city
