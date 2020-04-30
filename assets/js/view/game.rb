@@ -78,6 +78,11 @@ module View
         store(:selected_company, nil, skip: true)
       end
 
+      round_name, round_num = round_info
+      game_description = @game_data['description']
+      page_title = "#{game_description} - #{round_name} #{round_num} | 18xx.games"
+      `document.title = #{page_title}`
+
       props = {
         key: 'game_page',
         hook: {
@@ -151,11 +156,15 @@ module View
       @app_route.split('#')[1]
     end
 
-    def render_round
+    def round_info
       name = @round.class.name.split(':').last
-      description = @round.operating? ? "#{@game.turn}.#{@round.round_num}" : @game.turn
-      description = "#{description} - #{@round.description}"
-      h(:div, { style: { 'font-weight': 'bold' } }, "#{name} Round #{description}")
+      num = @round.operating? ? "#{@game.turn}.#{@round.round_num}" : @game.turn
+      [name, num]
+    end
+
+    def render_round
+      name, num = round_info
+      h(:div, { style: { 'font-weight': 'bold' } }, "#{name} Round #{num} - #{@round.description}")
     end
 
     def render_action
