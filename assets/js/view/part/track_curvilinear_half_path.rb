@@ -9,6 +9,7 @@ module View
       needs :exits
 
       REGIONS = {
+        [STOP, :none] => [15, 21],
         [SHARP, :left] => [15, 21],
         [SHARP, :right] => [13, 14],
         [GENTLE, :left] => [14, 15, 21],
@@ -18,6 +19,7 @@ module View
       }.freeze
 
       SVG_PATH_STRINGS = {
+        [STOP, :none] => 'M 0 87 L 0 30',
         [SHARP, :left] => 'M 0 87 '\
                           'L 0 75 '\
                           'A 43.30125 43.30125 0 0 0 -21.575 37.5405',
@@ -54,7 +56,8 @@ module View
         puts 'WARNING: expected @path to have exactly one exit' unless @path.exits.one?
         @this_exit = @path.exits.first
         other_exits = @exits.reject { |e| e == @this_exit }
-        puts "WARNING: expected exactly one other exit; found #{other_exits}" unless other_exits.one?
+        # Commenting this warning for now, this happens on OO tiles
+        # puts "WARNING: expected exactly one other exit; found #{other_exits}" unless other_exits.one?
         @other_exit = other_exits.first
 
         @curvilinear_type = compute_curvilinear_type(@this_exit, @other_exit)
@@ -70,6 +73,8 @@ module View
           # "half paths" have different directions
           return this_exit < other_exit ? :left : :right
         end
+
+        return :none if !other_exit || !this_exit
 
         if (this_exit + curvilinear_type) % 6 == other_exit
           :left

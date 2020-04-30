@@ -24,11 +24,11 @@ module Engine
 
       HEXES = {
         red: {
-          %w[A20] => 'o=yellow_20|green_30|brown_50|gray_60;p=a:4,b:_0;p=a:5,b:_0',
-          %w[A28] => 'o=yellow_20|green_30|brown_50|gray_60;p=a:5,b:_0',
-          %w[D1] => 'o=yellow_20|green_30|brown_50|gray_60;p=a:3,b:_0;p=a:4,b:_0',
-          %w[H1] => 'o=yellow_20|green_30|brown_50|gray_60;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
-          %w[J7 J15] => 'o=yellow_20|green_30|brown_50|gray_60;p=a:1,b:_0;p=a:2,b:_0',
+          %w[A20] => 'o=r:yellow_20|green_30|brown_50|gray_60;p=a:4,b:_0;p=a:5,b:_0',
+          %w[A28] => 'o=r:yellow_20|green_30|brown_50|gray_60;p=a:5,b:_0',
+          %w[D1] => 'o=r:yellow_20|green_30|brown_50|gray_60;p=a:3,b:_0;p=a:4,b:_0',
+          %w[H1] => 'o=r:yellow_20|green_30|brown_50|gray_60;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
+          %w[J7 J15] => 'o=r:yellow_20|green_30|brown_50|gray_60;p=a:1,b:_0;p=a:2,b:_0',
         },
         white: {
           %w[B5 B17 C14 C22 F3 F13 F19 I16] => 'city',
@@ -87,6 +87,8 @@ module Engine
       }.freeze
 
       LOCATION_NAMES = {
+        'A20' => 'Montréal',
+        'A28' => 'Maritime Prov.',
         'B5' => 'Lansing',
         'B13' => 'Toronto',
         'B17' => 'Rochester',
@@ -94,6 +96,7 @@ module Engine
         'C14' => 'Buffalo',
         'C22' => 'Albany',
         'C26' => 'Boston',
+        'D1' => 'Chicago',
         'D7' => 'Toledo',
         'D9' => 'Cleveland',
         'D19' => 'Scranton',
@@ -102,10 +105,13 @@ module Engine
         'F19' => 'Philadelphia',
         'G6' => 'Cincinnati',
         'G18' => 'Baltimore',
+        'H1' => 'St. Louis',
         'H3' => 'Louisville',
         'H9' => 'Charleston',
         'I12' => 'Blacksburg',
         'I16' => 'Richmond',
+        'J7' => 'Atlanta',
+        'J15' => 'Raleigh-Durham',
       }.freeze
 
       MARKET = [].freeze

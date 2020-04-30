@@ -17,6 +17,7 @@ module View
             render_input('User Name', id: :name),
             render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
             render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'new-password' }),
+            render_notifications,
             h(:div, [render_button('Create Account') { submit }]),
           ]]
         when :login
@@ -26,12 +27,25 @@ module View
             h(:div, [render_button('Login') { submit }]),
           ]]
         when :profile
-          ['Edit Profile (Coming Soon)', [
-            h(:div, [render_button('Logout') { submit }]),
+          ['Profile Settings', [
+            h(:div, [
+              render_notifications(@user&.dig(:settings, :notifications)),
+              render_button('Save Changes') { submit },
+            ]),
+            render_button('Logout') { logout },
           ]]
         end
 
       render_form(title, inputs)
+    end
+
+    def render_notifications(checked = true)
+      render_input(
+        'Allow Turn and Message Notifications',
+        id: :notifications,
+        type: :checkbox,
+        attrs: { checked: checked },
+      )
     end
 
     def submit
@@ -41,7 +55,7 @@ module View
       when :login
         login(params)
       when :profile
-        logout
+        edit_user(params)
       end
     end
   end

@@ -25,11 +25,18 @@ class User < Base
     super Argon2::Password.create(new_password)
   end
 
-  def to_h
-    {
+  def to_h(for_user: false)
+    h = {
       id: id,
       name: name,
     }
+
+    if for_user
+      h[:email] = email
+      h[:settings] = settings
+    end
+
+    h
   end
 
   def inspect

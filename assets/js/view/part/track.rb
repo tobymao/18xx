@@ -31,6 +31,8 @@ module View
           paths = @tile.paths.select { |path| path.edges.size == 1 }
         elsif @tile.towns.any?
           return render_track_for_curvilinear_town
+        elsif @tile.cities.any?
+          return render_track_for_curvilinear_city
         else
           track_class = Part::TrackCurvilinearPath
           paths = @tile.paths.select { |path| path.edges.size == 2 }
@@ -42,6 +44,22 @@ module View
       end
 
       private
+
+      def render_track_for_curvilinear_city
+        @tile.paths.select(&:city).group_by(&:city).flat_map do |_, paths|
+          exits = paths.flat_map(&:exits)
+
+          paths.map do |path|
+            h(
+              Part::TrackCurvilinearHalfPath,
+              region_use: @region_use,
+              exits: exits,
+              path: path,
+              color: color_for(path),
+            )
+          end
+        end
+      end
 
       def render_track_for_curvilinear_town
         @tile.paths.select(&:town).group_by(&:town).flat_map do |_, paths|

@@ -16,6 +16,7 @@ module Engine
         @min_increment = min_increment
 
         @bids = Hash.new { |h, k| h[k] = [] }
+        @bidders = Hash.new { |h, k| h[k] = [] }
         @auctioning_company = nil
         @last_to_act = nil
       end
@@ -132,6 +133,7 @@ module Engine
             accept_bid(bids.first)
           else
             @auctioning_company = @companies.first
+            @log << "#{@auctioning_company.name} goes up for auction"
             break
           end
         end
@@ -157,6 +159,7 @@ module Engine
         bids = @bids[company]
         bids.reject! { |b| b.entity == entity }
         bids << bid
+        @bidders[company] |= [entity]
 
         @log << "#{entity.name} bids #{@game.format_currency(price)} for #{bid.company.name}"
       end
@@ -166,7 +169,9 @@ module Engine
         player.companies << company
         player.spend(price, @bank)
         @companies.delete(company)
-        @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
+        only_bidder = @bidders[company].size == 1
+        @log << "#{player.name} wins the auction for #{company.name} "\
+                "with #{only_bidder ? 'the only' : 'a'} bid of #{@game.format_currency(price)}"
       end
 
       def bids_for_player(player)

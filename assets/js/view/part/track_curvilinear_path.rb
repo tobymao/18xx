@@ -5,17 +5,20 @@ require 'view/part/base'
 module View
   module Part
     class TrackCurvilinearPath < Base
+      STOP = 0
       SHARP = 1
       GENTLE = 2
       STRAIGHT = 3
 
       REGIONS = {
+        STOP => [15, 21],
         SHARP => [13, 14, 15, 21],
         GENTLE => [6, 7, 14, 15, 21],
         STRAIGHT => [2, 8, 15, 21],
       }.freeze
 
       SVG_PATH_STRINGS = {
+        STOP => 'M 0 87 L 0 30',
         SHARP => 'M 0 87 '\
                  'L 0 75 '\
                  'A 43.30125 43.30125 0 0 0 -64.951875 37.5 '\
@@ -33,6 +36,8 @@ module View
 
       # returns SHARP, GENTLE, or STRAIGHT
       def compute_curvilinear_type(edge_a, edge_b)
+        return 0 unless edge_b
+
         edge_a, edge_b = edge_b, edge_a if edge_b < edge_a
         diff = edge_b - edge_a
         diff = (edge_a - edge_b) % 6 if diff > 3
@@ -42,6 +47,8 @@ module View
       # degrees to rotate the svg path for this track path; e.g., a normal straight
       # is 0,3; for 1,4, rotate = 60
       def compute_track_rotation_degrees(edge_a, edge_b)
+        return (60 * edge_a) unless edge_b
+
         edge_a, edge_b = edge_b, edge_a if edge_b < edge_a
 
         if (edge_b - edge_a) > 3

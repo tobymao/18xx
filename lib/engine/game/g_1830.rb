@@ -23,13 +23,13 @@ module Engine
 
       HEXES = {
         red: {
-          # %w[I1] => 'p=a:3,b:_0',
-          %w[F2] => 'o=yellow_40|brown_70;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
-          %w[J2] => 'o=yellow_30|brown_60;p=a:2,b:_0;p=a:3,b:_0',
-          # %w[A9] => 'p=a:4,b:_0',
-          %w[A11] => 'o=yellow_30|brown_50;p=a:4,b:_0;p=a:5,b:_0',
-          %w[K13] => 'o=yellow_30|brown_40;p=a:1,b:_0;p=a:2,b:_0',
-          %w[B24] => 'o=yellow_20|brown_30;p=a:0,b:_0;p=a:5,b:_0',
+          %w[F2] => 'o=r:yellow_40|brown_70;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
+          %w[J2] => 'o=r:yellow_30|brown_60;p=a:2,b:_0;p=a:3,b:_0',
+          %w[I1] => 'o=r:yellow_30|brown_60;p=a:3,b:_0',
+          %w[A9] => 'o=r:yellow_30|brown_50;p=a:4,b:_0',
+          %w[A11] => 'o=r:yellow_30|brown_50;p=a:4,b:_0;p=a:5,b:_0',
+          %w[K13] => 'o=r:yellow_30|brown_40;p=a:1,b:_0;p=a:2,b:_0',
+          %w[B24] => 'o=r:yellow_20|brown_30;p=a:0,b:_0;p=a:5,b:_0',
         },
         gray: {
           %w[D2] => 'c=r:20;p=a:3,b:_0;p=a:4,b:_0',
@@ -52,7 +52,7 @@ module Engine
           %w[G15 C17 C21 D22 E17 E21 G13 I11 J10 J12] => 'u=c:120,t:mountain',
           %w[B16 E19 H4 B10 H10 H16] => 'city',
           %w[F16] => 'c=r:0;u=c:120,t:mountain',
-          # %w[G7 G17 F20] => 't=r:0;t=r:0',
+          %w[G7 G17 F20] => 't=r:0;t=r:0',
           %w[D6 I17 B18 C19] => 'u=c:80,t:water',
         },
         yellow: {
@@ -115,6 +115,8 @@ module Engine
 
       LOCATION_NAMES = {
         'D2' => 'Lansing',
+        'F2' => 'Chicago',
+        'J2' => 'Gulf',
         'F4' => 'Toledo',
         'J14' => 'Washington',
         'F22' => 'Providence',
@@ -122,6 +124,8 @@ module Engine
         'D10' => 'Hamilton & Toronto',
         'F6' => 'Cleveland',
         'E7' => 'London',
+        'A11' => 'Canadian West',
+        'K13' => 'Deep South',
         'E11' => 'Dunkirk & Buffalo',
         'H12' => 'Altoona',
         'D14' => 'Rochester',
@@ -138,6 +142,7 @@ module Engine
         'F24' => 'Mansfield',
         'B20' => 'Burlington',
         'E23' => 'Boston',
+        'B24' => 'Maritime Provinces',
         'D4' => 'Flint',
         'F10' => 'Erie',
         'G7' => 'Akron & Canton',
@@ -238,6 +243,7 @@ module Engine
           sym: 'SV',
           desc: '',
           abilities: [
+            { type: :blocks_hex, hex: 'G15' },
             # TODO
           ],
         },
@@ -250,6 +256,7 @@ module Engine
           is not connected to the corporations\'s railhead. This free tile placement is in addition
           to the corporation\'s normal tile placement.',
           abilities: [
+            { type: :blocks_hex, hex: 'B20' },
             # TODO
           ],
         },
@@ -263,6 +270,7 @@ module Engine
           remainder of the corporation\'s route. The tile laid is the owning corporation\'s one tile
           placement for the turn.',
           abilities: [
+            { type: :blocks_hex, hex: 'F16' },
             # TODO
           ],
         },
@@ -276,6 +284,7 @@ module Engine
           exchange may be made during the player\'s turn of a stock round or between the turns of
           other players or corporations in either stock or operating rounds. This action closes the M&H.',
           abilities: [
+            { type: :blocks_hex, hex: 'D18' },
             # TODO
           ],
         },
@@ -289,6 +298,7 @@ module Engine
           be running at this point, but the stock may be retained or sold subject to the ordinary rules
           of the game.',
           abilities: [
+            { type: :blocks_hex, hex: 'H18' },
             # TODO
           ],
         },
@@ -302,6 +312,8 @@ module Engine
           and does not exchange hands if the owning player loses the Presidency of the B&O. When the B&O
           purchases its first train the private company is closed down.',
           abilities: [
+            { type: :blocks_hex, hex: 'I13' },
+            { type: :blocks_hex, hex: 'I15' },
             # TODO
           ],
         },
