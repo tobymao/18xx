@@ -6,20 +6,51 @@ module View
   module Part
     class TownDot < Base
       needs :color, default: 'black'
+      needs :tile
+
+      CENTER_TOWN = [
+        {
+          region_weights: CENTER,
+          x: 0,
+          y: 0,
+        }
+      ].freeze
+
+      OFFSET_TOWNS = [
+        {
+          region_weights: [13, 14],
+          x: -40,
+          y: 20,
+        },
+        {
+          region_weights: [9, 10],
+          x: 40,
+          y: -20,
+        },
+        {
+          region_weights: { [6, 7] => 0.5 },
+          x: -40,
+          y: -20,
+        },
+        {
+          region_weights: { [16, 17] => 0.5 },
+          x: 40,
+          y: 20,
+        },
+      ].freeze
 
       def preferred_render_locations
-        [
-          {
-            region_weights: [7, 8, 9, 14, 15, 16],
-            x: 0,
-            y: 0,
-          },
-        ]
+        if @tile.towns.size > 1
+          OFFSET_TOWNS
+        else
+          CENTER_TOWN
+        end
       end
 
       def render_part
         attrs = {
           class: 'town_dot',
+          transform: translate,
           fill: @color,
           cx: '0',
           cy: '0',

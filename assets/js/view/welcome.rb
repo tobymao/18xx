@@ -28,22 +28,27 @@ module View
     end
 
     def render_notification
+      message = <<~MESSAGE
+        I've made some changes to email notifications. You can now disable them in your <a href='/profile'>Profile</a>.
+        And email messages will only be sent to users if you ping them with @playername.
+
+        Also, emails are only sent if you haven't been on the website within 60 seconds.
+
+        Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>
+      MESSAGE
+
       props = {
         style: {
           'background-color': '#FFEC46',
           'padding': '1em',
           'margin': '1rem 0',
+        },
+        props: {
+          innerHTML: message,
         }
       }
 
-      message = <<~MESSAGE
-        Welcome to the open beta! Please join me in the 18xx slack #18xxgames channel.
-      MESSAGE
-
-      h(:div, props, [
-        h(:span, message),
-        h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues' } }, 'Please file issues here'),
-      ])
+      h(:div, props)
     end
 
     def render_introduction

@@ -20,7 +20,9 @@ module View
 
     def params
       @inputs.map do |key, input|
-        [key, input.JS['elm'].JS['value']]
+        input = Native(input)
+        elm = input['elm']
+        [key, elm['type'] == 'checkbox' ? elm['checked'] : elm['value']]
       end.to_h
     end
 

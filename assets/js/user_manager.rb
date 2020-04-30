@@ -33,6 +33,10 @@ module UserManager
     end
   end
 
+  def edit_user(params)
+    @connection.safe_post('/user/edit', params)
+  end
+
   def login(params)
     @connection.safe_post('/user/login', params) do |data|
       login_user(data)

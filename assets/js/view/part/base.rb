@@ -35,6 +35,8 @@ module View
       TRACK_TO_EDGE_5 = [16, 17].freeze
 
       TOP_ROW = [0, 1, 2, 3, 4].freeze
+      TOP_MIDDLE_ROW = [6, 7, 8, 9, 10].freeze
+      BOTTOM_MIDDLE_ROW = [13, 14, 15, 16, 17].freeze
       BOTTOM_ROW = [19, 20, 21, 22, 23].freeze
 
       REGIONS_ROTATED_ONCE = {
@@ -111,6 +113,12 @@ module View
         y = render_location[:y]
 
         "translate(#{x} #{y})"
+      end
+
+      def rotation
+        angle = render_location[:angle] || 0
+
+        "rotate(#{angle})"
       end
 
       def increment_cost

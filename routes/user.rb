@@ -20,12 +20,22 @@ class Api
             name: r['name'],
             email: r['email'],
             password: r['password'],
+            settings: { notifications: r['notifications'] },
           }.reject { |_, v| v.empty? }
 
           login_user(User.create(params))
         end
 
         not_authorized! unless user
+
+        # POST '/api/user/edit'
+        r.post 'edit' do
+          user.settings = {
+            notifications: r.params['notifications'],
+          }
+          user.save
+          user.to_h(for_user: true)
+        end
 
         # POST '/api/user/logout'
         r.post 'logout' do
@@ -47,7 +57,7 @@ class Api
 
     {
       auth_token: token,
-      user: user.to_h,
+      user: user.to_h(for_user: true),
       games: Game.home_games(user, **request.params).map(&:to_h),
     }
   end

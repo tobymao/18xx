@@ -142,7 +142,7 @@ module Engine
         @corporations = init_corporations(@stock_market)
         @bank = init_bank
         @tiles = init_tiles
-        @cert_limit = self.class::CERT_LIMIT[@players.size]
+        @cert_limit = init_cert_limit
 
         @depot = init_train_handler
         init_starting_cash(@players, @bank)
@@ -251,7 +251,15 @@ module Engine
       private
 
       def init_bank
-        Bank.new(self.class::BANK_CASH, log: @log)
+        cash = self.class::BANK_CASH
+        cash = cash[players.size] if cash.is_a?(Hash)
+
+        Bank.new(cash, log: @log)
+      end
+
+      def init_cert_limit
+        cert_limit = self.class::CERT_LIMIT
+        cert_limit.is_a?(Hash) ? cert_limit[players.size] : cert_limit
       end
 
       def init_phase
@@ -328,7 +336,8 @@ module Engine
       end
 
       def init_starting_cash(players, bank)
-        cash = self.class::STARTING_CASH[players.size]
+        cash = self.class::STARTING_CASH
+        cash = cash[players.size] if cash.is_a?(Hash)
 
         players.each do |player|
           bank.spend(cash, player)
