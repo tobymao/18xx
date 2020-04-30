@@ -10,14 +10,29 @@ module View
         if multi_revenue?
           return [
             {
-              region_weights: [13, 14, 15, 16, 17],
-              x: 2,
-              y: 20,
+              region_weights: CENTER,
+              x: 0,
+              y: 0,
             },
             {
-              region_weights: [6, 7, 8, 9, 10],
-              x: 2,
-              y: -20,
+              region_weights: TOP_MIDDLE_ROW,
+              x: 0,
+              y: -24,
+            },
+            {
+              region_weights: BOTTOM_MIDDLE_ROW,
+              x: 0,
+              y: 24,
+            },
+            {
+              region_weights: TOP_ROW,
+              x: 0,
+              y: -48,
+            },
+            {
+              region_weights: BOTTOM_ROW,
+              x: 0,
+              y: 48,
             },
           ]
         end

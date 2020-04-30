@@ -8,7 +8,10 @@ module View
   module Part
     class Cities < Base
       def render
-        h(Part::City, region_use: @region_use, tile: @tile) if @tile.cities.count == 1
+        @tile.cities.map do |city|
+          edges = @tile.paths.select { |path| path.city.equal?(city) }.flat_map(&:exits)
+          h(Part::City, region_use: @region_use, tile: @tile, city: city, edges: edges)
+        end
       end
     end
   end

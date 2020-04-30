@@ -10,6 +10,10 @@ module View
       SLOT_RADIUS = 25
       SLOT_DIAMETER = 2 * SLOT_RADIUS
 
+      needs :tile
+      needs :edges
+      needs :city
+
       # key is how many city slots are part of the city; value is the offset for
       # the first city slot
       CITY_SLOT_POSITION = {
@@ -20,6 +24,24 @@ module View
         5 => [0, -43],
         6 => [0, -50],
       }.freeze
+
+      EDGE_TRACK_LOCATIONS = [
+        TRACK_TO_EDGE_0,
+        TRACK_TO_EDGE_1,
+        TRACK_TO_EDGE_2,
+        TRACK_TO_EDGE_3,
+        TRACK_TO_EDGE_4,
+        TRACK_TO_EDGE_5,
+      ].freeze
+
+      SHARP_TRACK_LOCATIONS = [
+        [13, 14, 15, 19, 20, 21],
+        [5, 6, 7, 12, 13, 14],
+        [0, 1, 2, 6, 7, 8],
+        [2, 3, 4, 8, 9, 10],
+        [9, 10, 11, 16, 17, 18],
+        [15, 16, 17, 21, 22, 23],
+      ].freeze
 
       # key: number of slots in city
       # value: [element name (sym), element attrs]
@@ -55,6 +77,35 @@ module View
       }.freeze
 
       def preferred_render_locations
+        edge_a, edge_b = @edges
+        if @tile.cities.size > 1 && (edge_a || edge_b)
+          if !edge_a || !edge_b
+            # We only have one exit, so just draw the city in that region
+
+            edge = edge_a || edge_b
+
+            return [
+              {
+                region_weights: EDGE_TRACK_LOCATIONS[edge],
+                x: -Math.sin((edge * 60) / 180 * Math::PI) * 50,
+                y: Math.cos((edge * 60) / 180 * Math::PI) * 50,
+              }
+            ]
+          end
+
+          edge_a += 6 if (edge_b - edge_a).abs > 3
+          edge = edge_b < edge_a ? edge_b : edge_a
+
+          # Draw it on edge a for now
+          return [
+            {
+              region_weights: EDGE_TRACK_LOCATIONS[edge],
+              x: -Math.sin((edge * 60) / 180 * Math::PI) * 50,
+              y: Math.cos((edge * 60) / 180 * Math::PI) * 50,
+            }
+          ]
+        end
+
         region_weights =
           case @city.slots
           when 1
@@ -77,10 +128,6 @@ module View
             y: y,
           }
         ]
-      end
-
-      def load_from_tile
-        @city = @tile.cities.first
       end
 
       def render_part
@@ -113,7 +160,6 @@ module View
       # TODOS:
       # - do actual math and get points for the 3-slot hexagon, rather than
       #   scaling the full-size hexagon
-      # - implement for 4, 5, and 6 slot cities
       def render_box(slots)
         element, attrs = BOX_ATTRS[slots]
         h("#{element}.city_box", attrs: attrs)
