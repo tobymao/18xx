@@ -5,17 +5,17 @@ module View
     needs :game
 
     def render
-      h(:div, {style: {
+      h(:div, { style: {
         overflow: 'auto',
         margin: '0 -1rem'
-      }}, [render_table])
+      } }, [render_table])
     end
 
     def render_table
-      h(:table, {style: {
+      h(:table, { style: {
         margin: '1rem 0 1.5rem 0',
         'text-align': 'center',
-      }}, [
+      } }, [
         *render_title,
         *render_corporations,
         render_player_cash,
