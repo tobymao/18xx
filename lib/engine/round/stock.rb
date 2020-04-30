@@ -34,6 +34,14 @@ module Engine
         'Buy and Sell Shares'
       end
 
+      def pass_description
+        if @current_actions.empty?
+          'Pass on Buying or Selling Shares'
+        else
+          'Done Buying or Selling Shares'
+        end
+      end
+
       def stock?
         true
       end
