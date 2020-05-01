@@ -95,7 +95,7 @@ module View
 
     def other_trains(other_corp_trains)
       other_corp_trains.flat_map do |other, trains|
-        trains.group_by(&:name).each_pair.map do |name, same_trains|
+        trains.group_by(&:name).map do |name, group|
           input = h(
             :input,
             style: {
@@ -114,7 +114,7 @@ module View
             process_action(Engine::Action::BuyTrain.new(@corporation, same_trains[0], price))
           end
 
-          count = same_trains.length
+          count = group.size
 
           h(:div, [
             "Train #{name} - from #{other.name}" + (count > 1 ? " (has #{count})" : ''),
