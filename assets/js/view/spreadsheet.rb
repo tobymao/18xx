@@ -20,7 +20,7 @@ module View
         *render_corporations,
         h(:tr, [
           h(:td, { style: { width: '20px' } }, ''),
-          h(:th, { attrs: { colspan: @game.players.length } }, 'Player Finances'),
+          h(:th, { attrs: { colspan: @game.players.size } }, 'Player Finances'),
         ]),
         render_player_cash,
         render_player_privates,
@@ -31,16 +31,16 @@ module View
       # TODO: consider adding train availability
     end
 
-    def render_or_history_titles(arbitrary_corporation)
-      arbitrary_corporation.or_revenue_history.flat_map.with_index do |or_hist, turn_num|
+    def render_history_titles(arbitrary_corporation)
+      arbitrary_corporation.revenue_history.flat_map.with_index do |or_hist, turn_num|
         or_hist.map.with_index do |_, or_num|
           h(:th, "#{turn_num + 1}.#{or_num + 1}")
         end
       end
     end
 
-    def render_or_history(corporation)
-      corporation.or_revenue_history.flat_map do |or_hist|
+    def render_history(corporation)
+      corporation.revenue_history.flat_map do |or_hist|
         # '-' indicates an as yet unfloated company
         # ' ' indicates that the company has not yet operated
         or_hist.map { |or_rev| h(:td, or_rev.nil? ? '-' : @game.format_currency(or_rev)) }
@@ -48,16 +48,16 @@ module View
     end
 
     def render_title
-      or_history_titles = render_or_history_titles(@game.corporations.first)
+      or_history_titles = render_history_titles(@game.corporations.first)
       [
         h(:tr, [
           h(:th, { style: { width: '20px' } }, ''),
-          h(:th, { attrs: { colspan: @game.players.length } }, 'Players'),
+          h(:th, { attrs: { colspan: @game.players.size } }, 'Players'),
           h(:th, { attrs: { colspan: 2 } }, 'Bank'),
           h(:th, { attrs: { colspan: 2 } }, 'Prices'),
           h(:th, { attrs: { colspan: 4 } }, 'Corporation'),
           h(:th, { style: { width: '20px' } }, ''),
-          h(:th, { attrs: { colspan: or_history_titles.length } }, 'OR History'),
+          h(:th, { attrs: { colspan: or_history_titles.size } }, 'OR History'),
           ]),
         h(:tr, [
           h(:th, { style: { width: '20px' } }, ''),
@@ -101,13 +101,13 @@ module View
         h(:td, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
         h(:td, @game.format_currency(corporation.cash)),
         h(:td, corporation.trains.map(&:name).join(',')),
-        h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.length}"),
+        h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
         render_companies(corporation),
         h(:th, corporation_color, corporation.name),
         # Note that if the company is currently operating the last space will be blank, as its final
         #   revenue number will not yet be present. If we add columns after these, will need to
         #   fill that in
-        *render_or_history(corporation)
+        *render_history(corporation)
       ])
     end
 

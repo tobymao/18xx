@@ -15,7 +15,7 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :par_price, :share_price, :tokens
-    attr_reader :companies, :coordinates, :min_price, :name, :full_name, :logo, :trains, :color, :or_revenue_history
+    attr_reader :companies, :coordinates, :min_price, :name, :full_name, :logo, :trains, :color, :revenue_history
 
     def initialize(sym:, name:, tokens:, **opts)
       @name = sym
@@ -31,7 +31,7 @@ module Engine
       @ipoed = false
       @trains = []
       @companies = []
-      @or_revenue_history = []
+      @revenue_history = []
 
       @cash = 0
       @float_percent = opts[:float_percent] || 60
@@ -100,9 +100,9 @@ module Engine
       true
     end
 
-    def push_revenue_history!(revenue, round_num)
-      @or_revenue_history.push([]) if round_num == 1
-      @or_revenue_history.last.push(revenue)
+    def add_revenue!(revenue, round_num)
+      @revenue_history << [] if round_num == 1
+      @revenue_history.last << revenue
     end
 
     def inspect

@@ -414,7 +414,7 @@ module Engine
 
       def new_operating_round(round_num = 1)
         @log << "-- Operating Round #{@turn}.#{round_num} --"
-        @corporations.reject(&:floated?).each { |c| c.push_revenue_history!(nil, round_num) }
+        @corporations.reject(&:floated?).each { |c| c.add_revenue!(nil, round_num) }
         Round::Operating.new(
           @corporations.select(&:floated?).sort,
           game: self,

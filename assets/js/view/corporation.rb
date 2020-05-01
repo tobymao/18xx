@@ -38,6 +38,7 @@ module View
 
       children << render_companies if @corporation.companies.any?
       children << render_president if @corporation.owner
+      children << render_last_or(@corporation) unless @corporation.revenue_history.empty?
 
       h(:div, { style: card_style, on: { click: onclick } }, children)
     end
@@ -240,6 +241,20 @@ module View
       }
 
       h(:div, props, "President: #{@corporation.owner.name}")
+    end
+
+    def render_last_or(corporation)
+      props = { style: {
+        margin: '2rem',
+        'text-align': 'left'
+      } }
+
+      or_heading = "OR#{corporation.revenue_history.size}"
+      or_history = corporation.revenue_history.last.map { |r| r.nil? ? '-' : @game.format_currency(r) }
+      h(:div, props, [
+        h(:span, { style: { 'font-weight': 'bold' } }, or_heading),
+        ": #{or_history.join(' ')}"
+      ])
     end
 
     def selected?

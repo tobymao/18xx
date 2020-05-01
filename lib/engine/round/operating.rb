@@ -346,7 +346,7 @@ module Engine
       end
 
       def withhold(revenue = 0)
-        @current_entity.push_revenue_history!(-revenue, @round_num)
+        @current_entity.add_revenue!(-revenue, @round_num)
         name = @current_entity.name
         if revenue.positive?
           @log << "#{name} withholds #{@game.format_currency(revenue)}"
@@ -358,7 +358,7 @@ module Engine
       end
 
       def payout(revenue)
-        @current_entity.push_revenue_history!(revenue, @round_num)
+        @current_entity.add_revenue!(revenue, @round_num)
         per_share = revenue / 10
         @log << "#{@current_entity.name} pays out #{@game.format_currency(revenue)} - "\
                 "#{@game.format_currency(per_share)} per share"
