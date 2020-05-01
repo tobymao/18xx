@@ -75,7 +75,7 @@ module Engine
       end
 
       def pass_description
-        (@step == @last_action_step ? 'Done' : 'Skip') + ' (' +self.class::SHORT_STEP_DESCRIPTION[@step]+')'
+        (@step == @last_action_step ? 'Done' : 'Skip') + ' (' + self.class::SHORT_STEP_DESCRIPTION[@step] + ')'
       end
 
       def pass(_action)
