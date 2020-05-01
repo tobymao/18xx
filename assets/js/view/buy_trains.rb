@@ -111,7 +111,7 @@ module View
 
           buy_train = lambda do
             price = input.JS['elm'].JS['value'].to_i
-            process_action(Engine::Action::BuyTrain.new(@corporation, same_trains[0], price))
+            process_action(Engine::Action::BuyTrain.new(@corporation, group[0], price))
           end
 
           count = group.size
