@@ -56,6 +56,7 @@ module Engine
         when Action::BuyShare
           owner = company.owner
           share = action.share
+          raise GameError,"Exchanging company would exceed limits"  unless can_gain?(share, owner)
           @game.share_pool.buy_share(owner, share, exchange: company)
           company.close!
         end

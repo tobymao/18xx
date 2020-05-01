@@ -46,18 +46,6 @@ module Engine
         true
       end
 
-      # Returns if a share can be gained by an entity respecting the cert limit
-      # This works irrespective of if that player has sold this round
-      # such as in 1889 for exchanging Dougo
-      #
-      def can_gain?(share, entity)
-        return unless share
-
-        corporation = share.corporation
-        corporation_holding_ok?(corporation, entity.percent_of(corporation) + share.percent) &&
-        (!corporation.counts_for_limit || entity.num_certs < @game.cert_limit)
-      end
-
       # Returns if a share can be bought via a normal buy actions
       # If a player has sold shares they cannot buy in many 18xx games
       # Some 18xx games can only buy one share per turn.
@@ -73,7 +61,7 @@ module Engine
 
       def must_sell?
         @current_entity.num_certs > @game.cert_limit ||
-          !@corporations.all? { |corp| corporation_holding_ok?(corp, @current_entity.percent_of(corp)) }
+          !@corporations.all? { |corp| corp.holding_ok?(@current_entity.percent_of(corp)) }
       end
 
       def can_sell?(bundle)

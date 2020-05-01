@@ -205,6 +205,18 @@ module Engine
       def action_processed(_action); end
 
       def action_finalized(_action); end
+
+      # Returns if a share can be gained by an entity respecting the cert limit
+      # This works irrespective of if that player has sold this round
+      # such as in 1889 for exchanging Dougo
+      #
+      def can_gain?(share, entity)
+        return unless share
+
+        corporation = share.corporation
+        corporation.holding_ok?( entity.percent_of(corporation) + share.percent) &&
+        (!corporation.counts_for_limit || entity.num_certs < @game.cert_limit)
+      end
     end
   end
 end
