@@ -88,9 +88,7 @@ module View
       # truncate "names" (list of hexes with this tile)
       map_hexes = tile_to_coords.map do |tile, coords|
         name = coords.join(',')
-        if name.size > 13
-          name = "#{name.slice(0,10)}..."
-        end
+        name = "#{name.slice(0, 10)}..." if name.size > 13
         tile.name = name
         tile
       end
@@ -103,24 +101,22 @@ module View
         )
       end
 
-      tiles =  game_class::TILES.flat_map do |name, num|
+      tiles = game_class::TILES.flat_map do |name, num|
         num.times.map do |index|
-          begin
-            Engine::Tile.for(name, index: index)
-          rescue Engine::GameError
-            # use "TODO" tiles for when a game has a tile in its TILES that is
-            # not yet defined in Engine::TILES
-            Engine::Tile.from_code(name, 'white', 'l=TODO', index: index)
-          end
+          Engine::Tile.for(name, index: index)
+        rescue Engine::GameError
+          # use "TODO" tiles for when a game has a tile in its TILES that is
+          # not yet defined in Engine::TILES
+          Engine::Tile.from_code(name, 'white', 'l=TODO', index: index)
         end
       end
 
-      rendered_tiles = tiles.sort.group_by(&:name).map do |name, tiles|
-        render_tile_block(name, tile: tiles.first, num: tiles.size)
+      rendered_tiles = tiles.sort.group_by(&:name).map do |name, tiles_|
+        render_tile_block(name, tile: tiles_.first, num: tiles_.size)
       end
 
       h("div#hexes_and_tiles_#{game_class.title}", [
-          h(:h1, "#{game_class.title}"),
+          h(:h1, game_class.title.to_s),
           h("div#map_hexes_#{game_class.title}", [
               h(:h2, "#{game_class.title} Map Hexes"),
               *rendered_map_hexes,
