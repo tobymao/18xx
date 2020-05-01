@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'snabberb/component'
-
 require 'view/part/base'
 
 module View

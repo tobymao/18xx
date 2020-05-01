@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-require 'snabberb'
-require '../view/log.rb'
-require '../view/players.rb'
-require_tree 'engine/game'
+require_relative '../view/log.rb'
+require_relative '../view/players.rb'
 
 class Turn < Snabberb::Component
   needs :game_data

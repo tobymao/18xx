@@ -1,10 +1,5 @@
 # frozen_string_literal: true
 
-require 'compiled-opal'
-require 'snabberb'
-require 'polyfill'
-require 'engine'
-
 require 'index'
 require 'game_manager'
 require 'user_manager'
@@ -24,7 +19,6 @@ class App < Snabberb::Component
   include UserManager
 
   def render
-    # puts Engine::Game::Base
     props = {
       props: { id: 'app' },
       style: {

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'snabberb/component'
-
 require 'view/part/blocker'
 require 'view/part/cities'
 require 'view/part/label'

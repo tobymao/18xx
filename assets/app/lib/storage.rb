@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'json'
-
 module Lib
   module Storage
     def self.[](key)

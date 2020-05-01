@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'snabberb/component'
-
 module View
   module Part
     class MultiRevenue < Snabberb::Component

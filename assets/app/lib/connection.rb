@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'lib/storage'
-require 'vendor/message-bus'
-require 'vendor/message-bus-ajax'
 
 module Lib
   class Connection

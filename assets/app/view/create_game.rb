@@ -2,7 +2,6 @@
 
 require 'game_manager'
 require 'view/form'
-require 'json'
 
 module View
   class CreateGame < Form

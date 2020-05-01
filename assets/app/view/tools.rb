@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'game_manager'
-require 'json'
-require 'snabberb/component'
 
 module View
   class Tools < Snabberb::Component

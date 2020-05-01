@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'snabberb/component'
-
 require 'view/part/track_curvilinear_path'
 require 'view/part/track_curvilinear_half_path'
 require 'view/part/track_lawson_path'
