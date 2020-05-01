@@ -168,10 +168,6 @@ module Engine
         action = @current_actions.include?(Action::SellShares) ? 'buying' : 'selling'
         @log << "#{entity.name} passes #{action} shares"
       end
-
-      def corporation_holding_ok?(corporation, percent)
-        %i[orange brown].include?(corporation.share_price&.color) || percent <= 60
-      end
     end
   end
 end
