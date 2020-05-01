@@ -18,6 +18,10 @@ module View
       } }, [
         *render_title,
         *render_corporations,
+        h(:tr, [
+          h(:td, { style: { width: '20px' } }, ''),
+          h(:th, { attrs: { colspan: @game.players.length } }, 'Player Finances'),
+        ]),
         render_player_cash,
         render_player_privates,
         render_player_worth,
@@ -49,7 +53,7 @@ module View
         h(:tr, [
           h(:th, { style: { width: '20px' } }, ''),
           h(:th, { attrs: { colspan: @game.players.length } }, 'Players'),
-          h(:th, { attrs: { colspan: 2 } }, 'Bank shares'),
+          h(:th, { attrs: { colspan: 2 } }, 'Bank'),
           h(:th, { attrs: { colspan: 2 } }, 'Prices'),
           h(:th, { attrs: { colspan: 4 } }, 'Corporation'),
           h(:th, { style: { width: '20px' } }, ''),
@@ -60,8 +64,8 @@ module View
           *@game.players.map { |p| h(:th, p.name) },
           h(:th, 'IPO'),
           h(:th, 'Market'),
-          h(:th, 'Par'),
-          h(:th, 'Current'),
+          h(:th, 'IPO'),
+          h(:th, 'Market'),
           h(:th, 'Cash'),
           h(:th, 'Trains'),
           h(:th, 'Tokens'),
@@ -87,7 +91,7 @@ module View
       props = { style: {} }
       props[:style]['background-color'] = 'rgba(220,220,220,0.4)' unless corporation.floated?
       h(:tr, props, [
-        h(:td, corporation_color, corporation.name),
+        h(:th, corporation_color, corporation.name),
         *@game.players.map do |p|
           h(:td, p.num_shares_of(corporation).to_s + (corporation.president?(p) ? '*' : ''))
         end,
@@ -96,10 +100,10 @@ module View
         h(:td, corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
         h(:td, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
         h(:td, @game.format_currency(corporation.cash)),
-        h(:td, corporation.trains.map(&:name)),
+        h(:td, corporation.trains.map(&:name).join(',')),
         h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.length}"),
         render_companies(corporation),
-        h(:td, corporation_color, corporation.name),
+        h(:th, corporation_color, corporation.name),
         # Note that if the company is currently operating the last space will be blank, as its final
         #   revenue number will not yet be present. If we add columns after these, will need to
         #   fill that in
@@ -113,28 +117,28 @@ module View
 
     def render_player_privates
       h(:tr, [
-        h(:td, 'Privates'),
+        h(:th, 'Privates'),
         *@game.players.map { |p| render_companies(p) }
       ])
     end
 
     def render_player_cash
       h(:tr, [
-        h(:td, 'Cash'),
+        h(:th, 'Cash'),
         *@game.players.map { |p| h(:td, @game.format_currency(p.cash)) }
       ])
     end
 
     def render_player_worth
       h(:tr, [
-        h(:td, 'Worth'),
+        h(:th, 'Worth'),
         *@game.players.map { |p| h(:td, @game.format_currency(p.value)) }
       ])
     end
 
     def render_player_certs
       h(:tr, [
-        h(:td, 'Certs'),
+        h(:th, 'Certs'),
         *@game.players.map { |p| h(:td, p.num_certs) }
       ])
     end
