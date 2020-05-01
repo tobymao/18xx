@@ -55,7 +55,7 @@ class Assets
             puts "Compressing - #{Time.now - time}"
           end
           File.write(@bundle_path, source)
-          File.binwrite("#{@bundle_path}.gz", Zlib::Deflate.deflate(source)) if @gzip
+          Zlib::GzipWriter.open("#{@bundle_path}.gz") { |gz| gz.write(source) } if @gzip
         end
 
         @bundle_path
