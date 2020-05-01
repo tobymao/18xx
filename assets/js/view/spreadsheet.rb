@@ -73,12 +73,14 @@ module View
         }
       props = { style: {} }
 
+      market_props = { style: {} }
+
       if corporation.floated?
         unless corporation.share_price.color.nil?
           color = StockMarket::COLOR_MAP[corporation.share_price.color]
           unless color.nil?
             m = color.match(/#(..)(..)(..)/)
-            props[:style]['background-color'] = "rgba(#{m[1].hex},#{m[2].hex},#{m[3].hex},0.4)"
+            market_props[:style]['background-color'] = "rgba(#{m[1].hex},#{m[2].hex},#{m[3].hex},0.4)"
           end
         end
       else
@@ -93,7 +95,7 @@ module View
         h(:td, corporation.num_shares_of(corporation)),
         h(:td, @game.share_pool.num_shares_of(corporation)),
         h(:td, corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
-        h(:td, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
+        h(:td, market_props, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
         h(:td, @game.format_currency(corporation.cash)),
         h(:td, corporation.trains.map(&:name).join(',')),
         h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.length}"),
