@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../bank'
-require_relative '../company'
-require_relative '../corporation'
-require_relative '../game/base'
-require_relative '../hex'
-require_relative '../tile'
+require_relative 'base'
 
 module Engine
   module Game
@@ -152,8 +147,9 @@ module Engine
           value: 20,
           revenue: 5,
           sym: 'TR',
-          desc: 'No special abilities.  If all players pass during the initial stock round and this company has not
-          been purchased, its price is reduced by ¥5.  If it is reduced to ¥0, the next player must take it for free.',
+          desc: 'Blocks laying track in Takamatsu (K4).
+          If all players pass during the initial stock round and this company has not been purchased,
+          its price is reduced by ¥5.  If it is reduced to ¥0, the next player must take it for free.',
           abilities: [
             { type: :blocks_hex, hex: 'K4' },
           ],

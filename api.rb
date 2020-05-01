@@ -7,12 +7,10 @@ require 'opal'
 require 'require_all'
 require 'roda'
 require 'snabberb'
-require 'uglifier'
 
 require_relative 'models'
-require_relative 'lib/js_context'
+require_relative 'lib/assets'
 require_relative 'lib/mail'
-require_relative 'lib/tilt/opal_template'
 
 require_rel './models'
 
@@ -25,10 +23,12 @@ MessageBus.configure(
     password: DB.opts[:password],
     port: DB.opts[:port],
   },
-  clear_every: 1,
+  clear_every: 10,
 )
 
 MessageBus.reliable_pub_sub.max_backlog_size = 1
+MessageBus.reliable_pub_sub.max_global_backlog_size = 100_000
+MessageBus.reliable_pub_sub.max_backlog_age = 172_800 # 2 days
 
 class Api < Roda
   opts[:check_dynamic_arity] = false
@@ -65,33 +65,14 @@ class Api < Roda
     { error: e.message }
   end
 
-  compress = lambda do |_, type, content|
-    type == :js && PRODUCTION ? Uglifier.compile(content, harmony: true) : content
-  end
-
-  plugin(
-    :assets,
-    js: 'app.rb',
-    gzip: PRODUCTION,
-    concat_only: true,
-    postprocessor: compress,
-  )
-
-  compile_assets
-  APP_JS_PATH = assets_opts[:compiled_js_path]
-  APP_JS = "#{APP_JS_PATH}.#{assets_opts[:compiled]['js']}.js"
-  Dir[APP_JS_PATH + '*'].sort.each { |file| File.delete(file) unless file.include?(APP_JS) }
-  CONTEXT = JsContext.new(APP_JS)
-  RENDER_HTML = lambda do |script, **needs|
-    CONTEXT.eval(Snabberb.html_script(script, **needs))
-  end
-
   plugin :public
   plugin :hash_routes
   plugin :streaming
   plugin :json
   plugin :json_parser
   plugin :halt
+
+  ASSETS = Assets.new(precompiled: PRODUCTION)
 
   use MessageBus::Rack::Middleware
   use Rack::Deflater unless PRODUCTION
@@ -121,10 +102,7 @@ class Api < Roda
   end
 
   route do |r|
-    unless PRODUCTION
-      r.public
-      r.assets
-    end
+    r.public unless PRODUCTION
 
     puts "************** #{r.path} *************"
 
@@ -155,12 +133,12 @@ class Api < Roda
       'Index',
       'App',
       'app',
-      javascript_include_tags: assets(:js),
+      javascript_include_tags: ASSETS.js_tags,
       app_route: request.path,
       **needs,
     )
 
-    CONTEXT.eval(script)
+    ASSETS.context.eval(script)
   end
 
   def session
