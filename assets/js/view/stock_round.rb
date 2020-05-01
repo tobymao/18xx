@@ -72,7 +72,7 @@ module View
       children = []
       unless @round.must_sell?
         children << h(:button, { on: { click: buy_ipo } }, 'Buy IPO Share') if @round.can_buy?(ipo_share)
-        children << h(:button, { on: { click: buy_pool } }, 'Buy Pool Share') if @round.can_buy?(pool_share)
+        children << h(:button, { on: { click: buy_pool } }, 'Buy Market Share') if @round.can_buy?(pool_share)
 
         # Allow privates to be exchanged for shares
         exchangable_company = lambda { |n|
