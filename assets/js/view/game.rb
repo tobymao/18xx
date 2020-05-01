@@ -16,6 +16,7 @@ require 'view/stock_market'
 require 'view/tile_manifest'
 require 'view/tools'
 require 'view/train_roster'
+require 'view/spreadsheet'
 
 require 'engine'
 
@@ -58,6 +59,8 @@ module View
           h(TrainRoster, game: @game)
         when 'players'
           h(Players, game: @game)
+        when 'spreadsheet'
+          h(Spreadsheet, game: @game)
         when 'tools'
           h(Tools, game: @game, game_data: @game_data)
         end
@@ -121,6 +124,7 @@ module View
           tab_button('Trains', '#trains'),
           tab_button('Tiles', '#tiles'),
           tab_button('Companies', '#companies'),
+          tab_button('Spreadsheet', '#spreadsheet'),
           tab_button('Tools', '#tools'),
         ]),
       ])

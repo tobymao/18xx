@@ -93,6 +93,10 @@ module Engine
       false
     end
 
+    def short_name
+      @sym.empty? ? @name.gsub('-', ' ').split(' ').map { |w| w[0] }.join : @sym
+    end
+
     def inspect
       "<#{self.class.name}: #{id}>"
     end

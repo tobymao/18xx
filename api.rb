@@ -25,10 +25,12 @@ MessageBus.configure(
     password: DB.opts[:password],
     port: DB.opts[:port],
   },
-  clear_every: 1,
+  clear_every: 10,
 )
 
 MessageBus.reliable_pub_sub.max_backlog_size = 1
+MessageBus.reliable_pub_sub.max_global_backlog_size = 100_000
+MessageBus.reliable_pub_sub.max_backlog_age = 172_800 # 2 days
 
 class Api < Roda
   opts[:check_dynamic_arity] = false
