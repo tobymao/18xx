@@ -33,6 +33,22 @@ module Engine
         company: 'Purchase Companies',
       }.freeze
 
+      # Pass Descriptions for when a user has yet to take an action as part of a step
+      INACTIVE_PASS_DESCRIPTION = {
+        track: 'Don\'t Lay Track',
+        token: 'Don\'t Place a Token',
+        train: 'Don\'t Buy Trains',
+        company: 'Don\'t Purchase Companies',
+      }.freeze
+
+      # Pass Descriptions for steps players can take more than one action
+      ACTIVE_PASS_DESCRIPTION = {
+        track: 'Done Laying Track',
+        token: 'Done Placing a Token',
+        train: 'Done Buying Trains',
+        company: 'Done Purchasing Companies',
+      }.freeze
+
       def initialize(entities, game:, round_num: 1)
         super
         @round_num = round_num
@@ -47,6 +63,7 @@ module Engine
         @bankrupt = false
 
         @step = self.class::STEPS.first
+        @last_action_step = self.class::STEPS.last
         @current_routes = []
 
         payout_companies
@@ -63,6 +80,12 @@ module Engine
 
       def description
         self.class::STEP_DESCRIPTION[@step]
+      end
+
+      def pass_description
+        self.class::ACTIVE_PASS_DESCRIPTION[@step == @last_action_step ? @step : nil] ||
+        self.class::INACTIVE_PASS_DESCRIPTION[@step] ||
+        'Pass'
       end
 
       def pass(_action)
@@ -307,6 +330,7 @@ module Engine
       end
 
       def action_processed(action)
+        @last_action_step = @step
         remove_just_sold_company_abilities unless action.is_a?(Action::BuyCompany)
         return if @bankrupt
         return if ignore_action?(action)
