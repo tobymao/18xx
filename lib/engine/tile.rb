@@ -159,10 +159,10 @@ module Engine
     RED = {}.freeze
     # rubocop:enable Layout/LineLength
 
-    COLORS = %i[white yellow green brown gray].freeze
+    COLORS = %i[white yellow green brown gray red].freeze
 
-    attr_accessor :hex, :legal_rotations, :location_name
-    attr_reader :cities, :color, :edges, :junctions, :label, :name,
+    attr_accessor :hex, :legal_rotations, :location_name, :name
+    attr_reader :cities, :color, :edges, :junctions, :label,
                 :parts, :preprinted, :rotation, :towns, :upgrades, :offboards, :blockers
 
     def self.for(name, **opts)
