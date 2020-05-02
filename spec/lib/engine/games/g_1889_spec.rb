@@ -8,7 +8,7 @@ require 'json'
 
 module Engine
   describe Game::G1889 do
-    let(:players) { [Player.new('a'), Player.new('b')] }
+    let(:players) { %w[a b] }
     subject { Game::G1889.new(players) }
 
     context 'on init' do
@@ -19,6 +19,28 @@ module Engine
 
       it 'starts with an auction' do
         expect(subject.round).to be_a(Round::Auction)
+      end
+
+      it 'starts with player a' do
+        expect(subject.round.entities).to eq(subject.players)
+        expect(subject.round.current_entity).to eq(subject.players.first)
+        expect(subject.current_entity).to eq(subject.players.first)
+      end
+    end
+
+    context 'on init with actions' do
+      let(:initial_actions) do
+        [
+          { 'type' => 'pass', 'entity' => 'a', 'entity_type' => 'player' },
+          { 'type' => 'message', 'entity' => 'a', 'entity_type' => 'player', 'message' => 'testing' },
+          { 'type' => 'pass', 'entity' => 'b', 'entity_type' => 'player' },
+          { 'type' => 'undo', 'entity' => 'a', 'entity_type' => 'player', 'steps' => 1 },
+        ]
+      end
+      subject { Game::G1889.new(players, actions: initial_actions) }
+      it 'should process constructor actions' do
+        expect(subject.actions.size).to be 4
+        expect(subject.current_entity.name).to be players[1]
       end
     end
 

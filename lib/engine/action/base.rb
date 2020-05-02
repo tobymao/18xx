@@ -10,6 +10,15 @@ module Engine
         type.split('_').map(&:capitalize).join
       end
 
+      def self.get_class(h)
+        Object
+          .const_get("Engine::Action::#{type(h['type'])}")
+      end
+
+      def self.construct_from_h(h, game)
+        get_class(h).from_h(h, game)
+      end
+
       def self.from_h(h, game)
         entity = game.send("#{h['entity_type']}_by_id", h['entity'])
         new(entity, *h_to_args(h, game))
@@ -47,6 +56,11 @@ module Engine
 
       def copy(game)
         self.class.from_h(to_h, game)
+      end
+
+      # Does an undo/redo not apply to this action?
+      def self.keep_on_undo?
+        false
       end
 
       private
