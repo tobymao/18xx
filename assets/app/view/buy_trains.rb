@@ -91,7 +91,7 @@ module View
 
     def other_trains(other_corp_trains)
       other_corp_trains.flat_map do |other, trains|
-        trains.map do |train|
+        trains.group_by(&:name).map do |name, group|
           input = h(
             :input,
             style: {
@@ -107,11 +107,13 @@ module View
 
           buy_train = lambda do
             price = input.JS['elm'].JS['value'].to_i
-            process_action(Engine::Action::BuyTrain.new(@corporation, train, price))
+            process_action(Engine::Action::BuyTrain.new(@corporation, group[0], price))
           end
 
+          count = group.size
+
           h(:div, [
-            "Train #{train.name} - from #{other.name}",
+            "Train #{name} - from #{other.name}" + (count > 1 ? " (has #{count})" : ''),
             input,
             h('button.margined', { on: { click: buy_train } }, 'Buy'),
           ])

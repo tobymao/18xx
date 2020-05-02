@@ -34,7 +34,8 @@ module View
 
         Also, emails are only sent if you haven't been on the website within 60 seconds.
 
-        Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>
+        Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, checkout the
+        <a href='https://docs.google.com/document/d/1nCYnzNMQLrFLZtWdbjfuSx5aIcaOyi27lMYkJxcGayw/edit'>FAQ!</a>
       MESSAGE
 
       props = {
