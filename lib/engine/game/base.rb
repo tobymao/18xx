@@ -9,6 +9,7 @@ else
   require_rel '../round'
 end
 
+require_relative '../gameutils/undo_helper'
 require_relative '../bank'
 require_relative '../company'
 require_relative '../corporation'
@@ -26,7 +27,7 @@ module Engine
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :hexes, :id, :log, :phase, :players, :round,
-                  :share_pool, :special, :stock_market, :tiles, :turn
+                  :share_pool, :special, :stock_market, :tiles, :turn, :ignored_actions
 
       BANK_CASH = 12_000
 
@@ -165,6 +166,7 @@ module Engine
         cache_objects
         connect_hexes
 
+        @undo_helper = GameUtils::UndoHelper.new(actions)
         # replay all actions with a copy
         actions.each do |action|
           action = action.copy(self) if action.is_a?(Action::Base)
@@ -197,6 +199,12 @@ module Engine
 
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
+        if @undo_helper.ignore_action?(action)
+          @actions << action
+          return clone(@actions) if @undo_helper.needs_reprocessing?(action)
+
+          return self
+        end
         @phase.process_action(action)
         # company special power actions are processed by a different round handler
         if action.entity.is_a?(Company)
@@ -214,9 +222,7 @@ module Engine
       end
 
       def action_from_h(h)
-        Object
-          .const_get("Engine::Action::#{Action::Base.type(h['type'])}")
-          .from_h(h, self)
+        Action::Base.construct_from_h(h, self)
       end
 
       def clone(actions)
@@ -224,6 +230,7 @@ module Engine
       end
 
       def rollback
+        # TODO: this should be removed
         clone(@actions[0...-1])
       end
 

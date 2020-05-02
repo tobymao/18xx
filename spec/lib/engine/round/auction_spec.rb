@@ -27,6 +27,17 @@ module Engine
 
     subject { Round::Auction.new(players, game: game) }
 
+    describe 'current_entity' do
+      it 'should start with player 1' do
+        expect(subject.current_entity).to eq(player_1)
+      end
+
+      it 'bidding moves to next player' do
+        subject.process_action(Action::Bid.new(player_1, private_2, 35))
+        expect(subject.current_entity).to eq(player_2)
+      end
+    end
+
     describe '#may_purchase?' do
       it 'is true for the cheapest, false for others' do
         expect(subject.may_purchase?(private_1)).to be true
