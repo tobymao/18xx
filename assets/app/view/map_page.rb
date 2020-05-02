@@ -11,11 +11,11 @@ module View
     ROUTE_FORMAT = %r{/map/(.*)}.freeze
 
     def render
-      game_title = @route.match(ROUTE_FORMAT).captures.first
+      game_title = @route.match(ROUTE_FORMAT)[1]
 
       game_class = Engine::GAMES_BY_TITLE[game_title]
 
-      return h(:p, "Bad game title: #{game_title}") if game_class.nil?
+      return h(:p, "Bad game title: #{game_title}") unless game_class
 
       begin
         names = %w[p1 p2 p3 p4 p5]
