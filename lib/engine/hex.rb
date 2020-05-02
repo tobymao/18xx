@@ -62,6 +62,7 @@ module Engine
           tile.cities[i].exchange_token(token) if token
         end
         city.remove_tokens!
+        city.reservations.clear
       end
 
       @tile.hex = nil
