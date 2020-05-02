@@ -29,6 +29,7 @@ module View
     needs :tile_selector, default: nil, store: true
     needs :show_grid, default: false, store: true
     needs :role, default: :map
+    needs :opacity, default: nil
 
     def render
       children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
@@ -48,7 +49,7 @@ module View
           transform: transform,
           fill: COLOR.fetch(@tile&.color, 'white'),
           stroke: 'black',
-          opacity: layable || %i[tile_selector tile_page].include?(@role) ? 1.0 : 0.3,
+          opacity: @opacity || (layable || %i[tile_selector tile_page].include?(@role) ? 1.0 : 0.3),
           cursor: clickable ? 'pointer' : nil,
         },
       }
