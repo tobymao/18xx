@@ -71,11 +71,11 @@ module View
         children << h(:button, { on: { click: buy_pool } }, 'Buy Market Share') if @round.can_buy?(pool_share)
 
         # Allow privates to be exchanged for shares
-        exchangable_company = lambda { |n|
+        exchangable = @game.companies.select do |n|
           n.abilities(:exchange)&.fetch(:corporation) == @selected_corporation.name &&
           @round.can_gain?(ipo_share, n.owner)
-        }
-        add_company_exchange = lambda { |company|
+        end
+        exchangable.each do |company|
           exchange = lambda do
             process_action(Engine::Action::BuyShare.new(company, ipo_share))
           end
@@ -87,8 +87,7 @@ module View
                         h(:button, { on: { click: exchange } },
                           "#{company.owner.name} exchanges #{company.name} for Share")
                       end
-        }
-        @game.companies.select(&exchangable_company).each(&add_company_exchange)
+        end
 
       end
       children << h(SellShares, player: @current_entity)

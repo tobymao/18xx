@@ -37,7 +37,7 @@ module Engine
         expect(subject.can_buy?(corp_0.shares[0])).to be_truthy
       end
 
-      it 'can\'t buy when at cert limit when doing so would gain you the presidency' do
+      it "can't buy when at cert limit when doing so would gain you the presidency" do
         player_0.cash = 10_000
         player_1.cash = 10_000
         market.set_par(corp_0, market.market[2][4])
