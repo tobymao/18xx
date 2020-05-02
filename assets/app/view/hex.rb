@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_tree 'engine'
 require 'lib/hex'
 require 'lib/tile_selector'
 require 'view/tile'
@@ -29,7 +30,6 @@ module View
     needs :tile_selector, default: nil, store: true
     needs :show_grid, default: false, store: true
     needs :role, default: :map
-    needs :opacity, default: nil
 
     def render
       children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
@@ -39,8 +39,8 @@ module View
 
       children << h(Tile, tile: @tile) if @tile
       children << h(View::TriangularGrid) if @show_grid
-      layable = @round.layable_hexes[@hex] if @round
 
+      layable = @round.layable_hexes[@hex] if @round
       clickable = layable || @role == :tile_selector
 
       props = {
@@ -49,7 +49,7 @@ module View
           transform: transform,
           fill: COLOR.fetch(@tile&.color, 'white'),
           stroke: 'black',
-          opacity: @opacity || (layable || %i[tile_selector tile_page].include?(@role) ? 1.0 : 0.3),
+          opacity: opacity(layable),
           cursor: clickable ? 'pointer' : nil,
         },
       }
@@ -89,6 +89,12 @@ module View
       when :tile_selector
         @tile_selector.tile = @tile
       end
+    end
+
+    def opacity(layable)
+      return 1.0 unless @round&.step == 'track'
+
+      layable || %i[tile_selector tile_page].include?(@role) ? 1.0 : 0.3
     end
   end
 end

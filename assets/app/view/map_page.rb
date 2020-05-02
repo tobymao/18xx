@@ -19,7 +19,7 @@ module View
 
       begin
         names = %w[p1 p2 p3 p4 p5]
-        h(Map, game: game_class.new(names), opacity: 1.0)
+        h(Map, game: game_class.new(names))
       rescue StandardError => e
         puts e
         h(:div, [
