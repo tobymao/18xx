@@ -36,9 +36,9 @@ module Engine
 
       def pass_description
         if @current_actions.empty?
-          'Pass on Buying or Selling Shares'
+          'Pass (Share)'
         else
-          'Done Buying or Selling Shares'
+          'Done (Share)'
         end
       end
 

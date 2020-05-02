@@ -102,3 +102,9 @@ task 'annotate' do
   require 'sequel/annotate'
   Sequel::Annotate.annotate(Dir['models/*.rb'])
 end
+
+desc 'Precompile assets for production'
+task :precompile do
+  require_relative 'lib/assets'
+  Assets.new(cache: false, make_map: false, compress: true, gzip: true).combine
+end
