@@ -19,6 +19,10 @@ module Engine
       def args_to_h
         { 'message' => @message }
       end
+
+      def keep_on_rollback?
+        true
+      end
     end
   end
 end
