@@ -100,14 +100,9 @@ module Engine
       true
     end
 
-    #def add_revenue!(turn, round_num, revenue)
-    #  or_map = @revenue_history[turn]
-    #  if or_map.nil?
-    #    or_map = {}
-    #    @revenue_history[turn] = or_map
-    #  end
-    #  or_map[round_num] = revenue
-    #end
+    def add_revenue!(turn, round_num, revenue)
+      @revenue_history[[turn, round_num]] = revenue
+    end
 
     def inspect
       "<#{self.class.name}: #{id}>"

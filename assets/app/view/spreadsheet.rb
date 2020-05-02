@@ -31,29 +31,35 @@ module View
       # TODO: consider adding train availability
     end
 
-    #def render_history_titles(corporations)
-    #  last_turn, last_round = corporations.map do |c|
-    #    last_turn, revenue = c.revenue_history.last
-    #    [last_turn, revenue.last]
-    #  end.max
+    def or_history(corporations)
+      # It looks like the set class isn't available, so we use this as a proxy
+      or_hist = {}
+      corporations.each do |c|
+        c.revenue_history.keys.each { |x| or_hist[x] = true }
+      end
+      or_hist_list = []
+      or_hist.keys.each { |x| or_hist_list << x }
+      or_hist_list.sort
+    end
 
-    #  (1..last_turn).map do |turn|
-    #    (1..last_round).map do |round|
-    #      h(:th, "#{turn + 1}.#{round + 1}")
-    #    end
-    #  end
-    #end
+    def render_history_titles(corporations)
+      or_history(corporations).map { |turn, round| h(:th, "#{turn}.#{round}")}
+    end
 
-    #def render_history(corporation)
-    #  corporation.revenue_history.flat_map do |or_hist|
-    #    # '-' indicates an as yet unfloated company
-    #    # ' ' indicates that the company has not yet operated
-    #    or_hist.map { |or_rev| h(:td, or_rev.nil? ? '-' : @game.format_currency(or_rev)) }
-    #  end
-    #end
+    def render_history(corporation)
+      hist = corporation.revenue_history
+      if hist.empty?
+        # This is a company that hasn't floated yet
+        []
+      else
+        or_history(@game.corporations).map do |x|
+          h(:td, hist[x].nil? ? '' : @game.format_currency(hist[x]))
+        end
+      end
+    end
 
     def render_title
-      #or_history_titles = render_history_titles(@game.corporations)
+      or_history_titles = render_history_titles(@game.corporations)
       [
         h(:tr, [
           h(:th, { style: { width: '20px' } }, ''),
@@ -76,7 +82,7 @@ module View
           h(:th, 'Tokens'),
           h(:th, 'Privates'),
           h(:th, { style: { width: '20px' } }, ''),
-          #*or_history_titles
+          *or_history_titles
         ])
       ]
     end
@@ -109,10 +115,7 @@ module View
         h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
         render_companies(corporation),
         h(:th, corporation_color, corporation.name),
-        # Note that if the company is currently operating the last space will be blank, as its final
-        #   revenue number will not yet be present. If we add columns after these, will need to
-        #   fill that in
-        #*render_history(corporation)
+        *render_history(corporation)
       ])
     end
 
