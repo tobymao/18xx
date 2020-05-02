@@ -104,8 +104,9 @@ module Engine
     end
 
     # Is it legal to hold percent shares in this corporation?
-    def holding_ok?(percent)
-      %i[orange brown].include?(share_price&.color) || percent <= 60
+    def holding_ok?(share_holder, extra_percent = 0)
+      percent = share_holder.percent_of(self) + extra_percent
+      %i[orange brown].include?(@share_price&.color) || percent <= 60
     end
   end
 end

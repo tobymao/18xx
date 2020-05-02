@@ -214,7 +214,7 @@ module Engine
         return unless share
 
         corporation = share.corporation
-        corporation.holding_ok?(entity.percent_of(corporation) + share.percent) &&
+        corporation.holding_ok?(entity, share.percent) &&
         (!corporation.counts_for_limit || entity.num_certs < @game.cert_limit)
       end
     end

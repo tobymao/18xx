@@ -61,7 +61,7 @@ module Engine
 
       def must_sell?
         @current_entity.num_certs > @game.cert_limit ||
-          !@corporations.all? { |corp| corp.holding_ok?(@current_entity.percent_of(corp)) }
+          !@corporations.all? { |corp| corp.holding_ok?(@current_entity) }
       end
 
       def can_sell?(bundle)
