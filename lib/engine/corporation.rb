@@ -31,7 +31,7 @@ module Engine
       @ipoed = false
       @trains = []
       @companies = []
-      @revenue_history = []
+      @revenue_history = {}
 
       @cash = 0
       @float_percent = opts[:float_percent] || 60
@@ -100,10 +100,14 @@ module Engine
       true
     end
 
-    def add_revenue!(revenue, round_num)
-      @revenue_history << [] if round_num == 1
-      @revenue_history.last << revenue
-    end
+    #def add_revenue!(turn, round_num, revenue)
+    #  or_map = @revenue_history[turn]
+    #  if or_map.nil?
+    #    or_map = {}
+    #    @revenue_history[turn] = or_map
+    #  end
+    #  or_map[round_num] = revenue
+    #end
 
     def inspect
       "<#{self.class.name}: #{id}>"
