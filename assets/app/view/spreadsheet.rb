@@ -71,20 +71,15 @@ module View
             color: '#ffffff'
           }
         }
-      props = { style: {} }
 
+      props = { style: {} }
       market_props = { style: {} }
 
-      if corporation.floated?
-        unless corporation.share_price.color.nil?
-          color = StockMarket::COLOR_MAP[corporation.share_price.color]
-          unless color.nil?
-            m = color.match(/#(..)(..)(..)/)
-            market_props[:style]['background-color'] = "rgba(#{m[1].hex},#{m[2].hex},#{m[3].hex},0.4)"
-          end
-        end
-      else
+      if !corporation.floated?
         props[:style]['background-color'] = 'rgba(220,220,220,0.4)'
+      elsif (color = StockMarket::COLOR_MAP[corporation.share_price.color])
+        m = color.match(/#(..)(..)(..)/)
+        market_props[:style]['background-color'] = "rgba(#{m[1].hex},#{m[2].hex},#{m[3].hex},0.4)"
       end
 
       h(:tr, props, [
