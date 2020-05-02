@@ -12,7 +12,7 @@ module Engine
         @terrains = terrains&.map(&:to_sym) || []
       end
 
-      def ==(other)
+      def matches(other)
         other.upgrade? && (@cost == other.cost) && (@terrains == other.terrains)
       end
 

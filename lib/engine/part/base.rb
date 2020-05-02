@@ -9,6 +9,10 @@ module Engine
         "#{tile.id}-#{index}"
       end
 
+      def hex
+        @tile&.hex
+      end
+
       def <=>(other)
         if edge? && other.edge?
           num <=> other.num
@@ -22,7 +26,7 @@ module Engine
       end
 
       def <=(other)
-        self == other
+        self.matches?(other)
       end
 
       def rotate(_ticks)
@@ -63,6 +67,10 @@ module Engine
 
       def offboard?
         false
+      end
+
+      def inspect
+        "<#{self.class.name}: hex: #{hex&.name}>"
       end
     end
   end

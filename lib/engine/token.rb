@@ -18,7 +18,7 @@ module Engine
       @used = true
     end
 
-    def ==(other)
+    def matches(other)
       other.class == Token && @corporation.name == other.corporation.name
     end
   end

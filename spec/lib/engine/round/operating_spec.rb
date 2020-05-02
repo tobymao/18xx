@@ -49,7 +49,7 @@ module Engine
 
           expect(subject.layable_hexes).to eq(
             hex_k6 => [0],
-            hex_k8 => [3, 4, 1, 2],
+            hex_k8 => [1, 2, 3, 4],
             hex_l7 => [1],
           )
 
@@ -58,9 +58,9 @@ module Engine
           expect(subject.layable_hexes).to eq(
             hex_j3 => [5],
             hex_j5 => [4],
-            hex_k4 => [0, 1, 2],
+            hex_k4 => [0, 2, 1],
             hex_k6 => [0, 3],
-            hex_k8 => [3, 4, 1, 2],
+            hex_k8 => [1, 2, 3, 4],
             hex_l7 => [1],
           )
         end
@@ -80,7 +80,7 @@ module Engine
             hex_f9 => [2, 3, 4, 5],
             hex_g8 => [1],
             hex_g10 => [2, 0],
-            hex_g12 => [3, 4, 5, 0],
+            hex_g12 => [3, 5, 4, 0],
             hex_g14 => [3, 4],
             hex_h11 => [1],
             hex_h13 => [2, 1, 4],

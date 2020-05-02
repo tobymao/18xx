@@ -5,7 +5,7 @@ require_relative 'base'
 module Engine
   module Part
     class Junction < Base
-      def ==(other)
+      def matches(other)
         other.junction?
       end
 

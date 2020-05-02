@@ -14,16 +14,21 @@ module View
     # Due to the way this and the map hook up routes needs to have
     # an entry, but that route is not valid at zero length
     def active_routes
-      @routes.select { |r| r.hexes.any? }
+      @routes.select { |r| r.connections.any? }
     end
 
     def render
-      round = @game.round
+      trains = @game.round.current_entity.trains
 
-      trains = round.current_entity.trains.map do |train|
+      if !@selected_route && (train = trains[0])
+        route = Engine::Route.new(@game.phase, train)
+        store(:routes, @routes + [route], skip: true)
+        store(:selected_route, route)
+      end
+
+      trains = trains.map do |train|
         onclick = lambda do
-          route = @routes.find { |t| t.train == train }
-          unless route
+          unless (route = @routes.find { |t| t.train == train })
             route = Engine::Route.new(@game.phase, train)
             store(:routes, @routes + [route])
           end

@@ -16,7 +16,7 @@ module Engine
         true
       end
 
-      def ==(other)
+      def matches(other)
         other.offboard? &&
           @revenue == other.revenue
       end

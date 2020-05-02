@@ -19,7 +19,7 @@ module Engine
         @reservations = []
       end
 
-      def ==(other)
+      def matches(other)
         other.city? &&
           @revenue == other.revenue &&
           @slots == other.slots &&
@@ -37,10 +37,6 @@ module Engine
         return false if @tokens.include?(nil)
 
         true
-      end
-
-      def hex
-        @tile&.hex
       end
 
       def <=(other)

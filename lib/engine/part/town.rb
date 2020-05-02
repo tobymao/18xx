@@ -14,7 +14,7 @@ module Engine
         @revenue = parse_revenue(revenue)
       end
 
-      def ==(other)
+      def matches(other)
         other.town? && (@revenue == other.revenue)
       end
 

@@ -10,7 +10,7 @@ module Engine
       name: '2',
       operating_rounds: 1,
       train_limit: 4,
-      tiles: :yellow,
+      tiles: [:yellow, :green],
     }.freeze
 
     THREE = {

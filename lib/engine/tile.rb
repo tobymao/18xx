@@ -26,8 +26,8 @@ module Engine
     #                yellow_30|brown_60|diesel_100
 
     attr_accessor :hex, :legal_rotations, :location_name, :name, :index
-    attr_reader :cities, :color, :edges, :junctions, :label,
-                :parts, :preprinted, :rotation, :towns, :upgrades, :offboards, :blockers
+    attr_reader :cities, :color, :edges, :junctions, :label, :nodes,
+                :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers
 
     def self.for(name, **opts)
       if (code = WHITE[name])
@@ -112,11 +112,12 @@ module Engine
       @cities = []
       @paths = []
       @towns = []
+      @branches = []
       @edges = nil
       @junctions = nil
       @upgrades = []
-      @location_name = location_name
       @offboards = []
+      @location_name = location_name
       @legal_rotations = []
       @blockers = []
       @preprinted = preprinted
@@ -142,6 +143,7 @@ module Engine
       @rotation = new_rotation
       @_paths = nil
       @_exits = nil
+      self
     end
 
     def rotate(num, ticks = 1)
@@ -165,7 +167,7 @@ module Engine
         ].any?
     end
 
-    def ==(other)
+    def matches(other)
       @name == other.name && @color == other.color && @parts == other.parts
     end
 
@@ -179,23 +181,22 @@ module Engine
       end
     end
 
-    def upgrade_tiles(tiles)
-      tiles.uniq(&:name).select { |t| upgrades_to?(t) }
-    end
-
     def upgrades_to?(other)
       # correct color progression?
       return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)
 
       # correct label?
-      return false unless label == other.label
+      return false if label != other.label
 
       # honors existing town/city counts?
       # TODO: this is not true for some OO upgrades, or some tiles where
       # double-town can be upgraded into a single town
+      puts "** towns" if name == "205" && other.name == '448'
       return false unless @towns.size == other.towns.size
+      puts "** cities" if name == "205" && other.name == '448'
       return false unless @cities.size == other.cities.size
 
+      puts "** paths subset #{paths_are_subset_of?(other.paths)}" if name == "205" && other.name == '448'
       # honors pre-existing track?
       return false unless paths_are_subset_of?(other.paths)
 
@@ -216,8 +217,8 @@ module Engine
       @blockers << private_company
     end
 
-    def to_s
-      "#{self.class.name} - #{@name}"
+    def inspect
+      "<#{self.class.name}: #{name}, hex: #{@hex&.name}>"
     end
 
     private
@@ -250,8 +251,11 @@ module Engine
         end
       end
 
+      @nodes = @paths.map(&:node)
+      @branches = @paths.map(&:branch)
       @junctions = @paths.map(&:junction)
       @edges = @paths.flat_map(&:edges)
+      @stops = @paths.map(&:stop).compact
     end
   end
 end

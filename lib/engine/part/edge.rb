@@ -11,7 +11,7 @@ module Engine
         @num = num.to_i
       end
 
-      def ==(other)
+      def matches?(other)
         other.edge? && (@num == other.num)
       end
 
@@ -20,7 +20,9 @@ module Engine
       end
 
       def rotate(ticks)
-        Edge.new((@num + ticks) % 6)
+        edge = Edge.new((@num + ticks) % 6)
+        edge.tile = @tile
+        edge
       end
     end
   end

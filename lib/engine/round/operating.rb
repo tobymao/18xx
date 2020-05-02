@@ -206,52 +206,25 @@ module Engine
       def layable_hexes
         @layable_hexes ||=
           begin
-            # hexes is a map hex => exits
-            hexes = Hash.new { |h, k| h[k] = [] }
+            tokened_cities = []
+            connections = @hexes.flat_map do |hex|
+              tokened_cities.concat(hex.tile.cities.select { |city| city.tokened_by?(@current_entity) })
 
-            queue = []
-            starting_hexes = []
-
-            @hexes.each do |hex|
-              cities = tokened_cities(hex)
-              next unless cities.any?
-
-              queue << hex
-              starting_hexes << hex
-
-              hexes[hex] = hex
+              hex
                 .tile
                 .paths
-                .select { |path| cities.include?(path.city) }
+                .select { |path| path.city&.tokened_by?(@current_entity) }
                 .flat_map(&:exits)
-                .uniq
+                .flat_map { |edge| hex.connections[edge] }
             end
+            puts "** layable connections #{tokened_cities.map { |c| [c.hex, c.hex.neighbors.keys] }.to_h}"
 
-            until queue.empty?
-              hex = queue.pop
-
-              hexes[hex].each do |direction|
-                next unless (neighbor = hex.neighbors[direction])
-
-                connected_exits = neighbor.connected_exits(hex, corporation: @current_entity)
-                explored = hexes[neighbor]
-                queue << neighbor if (explored | connected_exits).size > explored.size
-                hexes[neighbor] |= connected_exits | [Hex.invert(direction)]
-              end
-            end
-
-            starting_hexes.each { |h| hexes[h] |= h.neighbors.keys }
-            hexes.default = nil
-            hexes
+            Connection.layable_hexes(connections).merge(tokened_cities.map { |c| [c.hex, c.hex.neighbors.keys] }.to_h)
           end
       end
 
       def reachable_hexes
         @reachable_hexes ||= layable_hexes.select { |hex, exits| (hex.tile.exits & exits).any? }
-      end
-
-      def tokened_cities(hex)
-        hex.tile.cities.select { |c| c.tokened_by?(@current_entity) }
       end
 
       def legal_rotations(hex, tile)

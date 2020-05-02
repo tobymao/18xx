@@ -1,63 +1,42 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
-require 'engine/corporation'
-require 'engine/hex'
-require 'engine/tile'
+
+require 'engine'
 
 module Engine
   describe Hex do
-    subject { Hex.new('B3', layout: :flat, tile: Tile.for('9')) }
-    let(:neighbor) { Hex.new('C4', layout: :flat) }
-    let(:not_neighbor) { Hex.new('C6', layout: :flat) }
-
-    let(:connected_neighbor) { Hex.new('B5', layout: :flat, tile: Tile.for('9')) }
-    let(:rotated_neighbor) { Hex.new('B5', layout: :flat, tile: Tile.for('9', rotation: 1)) }
-
+    let(:game) { GAMES_BY_TITLE['1889'].new(['a', 'b']) }
+    subject { game.hex_by_id('H7') }
+#
     describe '#neighbor_direction' do
       it 'is a neighbor' do
-        expect(subject.neighbor_direction(neighbor)).to eq(5)
+        expect(subject.neighbor_direction(game.hex_by_id('I8'))).to eq(5)
       end
 
       it 'is not a neighbor' do
-        expect(subject.neighbor_direction(not_neighbor)).to be_falsey
-      end
-    end
-
-    describe '#connected?' do
-      it 'is connected' do
-        expect(subject.connected?(connected_neighbor)).to be_truthy
-      end
-
-      it 'is not connected with no tiles' do
-        expect(subject.connected?(neighbor)).to be_falsey
-      end
-
-      it 'is not connected with wrong rotation' do
-        expect(subject.connected?(rotated_neighbor)).to be_falsey
+        expect(subject.neighbor_direction(game.hex_by_id('I4'))).to be_falsey
       end
     end
 
     describe '#lay' do
-      let(:green_tile) { Tile.for('15') }
-      let(:brown_tile) { Tile.for('611') }
-      let(:corp_1) { Corporation.new(sym: 'AR', name: 'Awa Railway', tokens: [0, 40]) }
-      let(:corp_2) { Corporation.new(sym: 'IR', name: 'Iyo Railway', tokens: [0, 40]) }
+      let(:green_tile) { game.tile_by_id('15-0') }
+      let(:brown_tile) { game.tile_by_id('611-0') }
+      let(:corp_1) { game.corporation_by_id('AR') }
+      let(:corp_2) { game.corporation_by_id('IR') }
 
       context 'laying green' do
-        subject { Hex.new('A1', layout: :flat, tile: Tile.for('57')) }
-
         it 'sets @tile to the given tile' do
           subject.lay(green_tile)
-
-          expect(subject.tile).to eq(Tile.for('15'))
+          expect(subject.tile).to have_attributes(name: '15')
         end
 
         it 'preserves a placed token' do
           subject.tile.cities[0].place_token(corp_1)
 
           subject.lay(green_tile)
-          expect(subject.tile.cities[0].tokens).to eq([Token.new(corp_1), nil])
+          expect(subject.tile.cities[0].tokens[0]).to have_attributes(corporation: corp_1)
+          expect(subject.tile.cities[0].tokens[1]).to be_nil
         end
 
         it 'preserves a token reservation' do
@@ -69,19 +48,20 @@ module Engine
       end
 
       context 'laying brown' do
-        subject { Hex.new('A1', layout: :flat, tile: Tile.for('15')) }
+        before(:each) { subject.lay(green_tile) }
 
         it 'sets @tile to the given tile' do
           subject.lay(brown_tile)
 
-          expect(subject.tile).to eq(Tile.for('611'))
+          expect(subject.tile).to have_attributes(name: '611')
         end
 
         it 'preserves a placed token' do
           subject.tile.cities[0].place_token(corp_1)
 
           subject.lay(brown_tile)
-          expect(subject.tile.cities[0].tokens).to eq([Token.new(corp_1), nil])
+          expect(subject.tile.cities[0].tokens[0]).to have_attributes(corporation: corp_1)
+          expect(subject.tile.cities[0].tokens[1]).to be_nil
         end
 
         it 'preserves 2 placed tokens' do
@@ -90,8 +70,15 @@ module Engine
 
           subject.lay(brown_tile)
 
-          expect(subject.tile.cities[0].tokens[0]).to eq(Token.new(corp_1))
-          expect(subject.tile.cities[0].tokens[1]).to eq(Token.new(corp_2))
+          expect(subject.tile.cities[0].tokens[0]).to have_attributes(
+            corporation: corp_1,
+            used?: true,
+          )
+
+          expect(subject.tile.cities[0].tokens[1]).to have_attributes(
+            corporation: corp_2,
+            used?: true,
+          )
         end
 
         it 'preserves a placed token and a reservation' do
@@ -100,7 +87,8 @@ module Engine
 
           subject.lay(brown_tile)
 
-          expect(subject.tile.cities[0].tokens).to eq([nil, Token.new(corp_2)])
+          expect(subject.tile.cities[0].tokens[0]).to be_nil
+          expect(subject.tile.cities[0].tokens[1]).to have_attributes(corporation: corp_2)
           expect(subject.tile.cities[0].reservations).to eq(['AR'])
         end
       end
