@@ -52,7 +52,7 @@ module View
             blocker = companies.find do |c|
               c.abilities(:blocks_hex)&.dig(:hex) == coord
             end
-            unless blocker.nil?
+            if blocker
               tile.add_blocker!(blocker)
               # name it with the coord to distinguish this tile from its
               # standard archetype that doesn't have a blocker
