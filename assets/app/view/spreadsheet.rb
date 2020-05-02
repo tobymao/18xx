@@ -32,6 +32,8 @@ module View
     end
 
     def render_title
+      props = { style: { padding: '0 0.3rem' } }
+
       [
         h(:tr, [
           h(:th, { style: { width: '20px' } }, ''),
@@ -43,15 +45,15 @@ module View
           ]),
         h(:tr, [
           h(:th, { style: { width: '20px' } }, ''),
-          *@game.players.map { |p| h(:th, p.name) },
-          h(:th, 'IPO'),
-          h(:th, 'Market'),
-          h(:th, 'IPO'),
-          h(:th, 'Market'),
-          h(:th, 'Cash'),
-          h(:th, 'Trains'),
-          h(:th, 'Tokens'),
-          h(:th, 'Privates'),
+          *@game.players.map { |p| h(:th, props, p.name) },
+          h(:th, props, 'IPO'),
+          h(:th, props, 'Market'),
+          h(:th, props, 'IPO'),
+          h(:th, props, 'Market'),
+          h(:th, props, 'Cash'),
+          h(:th, props, 'Trains'),
+          h(:th, props, 'Tokens'),
+          h(:th, props, 'Privates'),
           h(:th, { style: { width: '20px' } }, ''),
         ])
       ]
