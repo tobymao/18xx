@@ -20,7 +20,7 @@ module View
       begin
         names = %w[p1 p2 p3 p4 p5]
         h(Map, game: game_class.new(names), opacity: 1.0)
-      rescue Engine::GameError => e
+      rescue StandardError => e
         puts e
         h(:div, [
             h(:p, "Error rendering map for #{game_title}:"),
