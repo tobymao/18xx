@@ -102,5 +102,10 @@ module Engine
     def inspect
       "<#{self.class.name}: #{id}>"
     end
+
+    # Is it legal to hold percent shares in this corporation?
+    def holding_ok?(percent)
+      %i[orange brown].include?(share_price&.color) || percent <= 60
+    end
   end
 end
