@@ -2,7 +2,7 @@
 
 require_relative '../action/message'
 require_relative '../game_error'
-require_relative '../share_bundle.rb'
+require_relative '../share_bundle'
 
 module Engine
   module Round

@@ -30,7 +30,7 @@ module Engine
       end
 
       def pass_description
-        'Pass on Bidding on Companies'
+        'Pass (Bidding)'
       end
 
       def finished?

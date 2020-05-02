@@ -33,20 +33,12 @@ module Engine
         company: 'Purchase Companies',
       }.freeze
 
-      # Pass Descriptions for when a user has yet to take an action as part of a step
-      INACTIVE_PASS_DESCRIPTION = {
-        track: 'Don\'t Lay Track',
-        token: 'Don\'t Place a Token',
-        train: 'Don\'t Buy Trains',
-        company: 'Don\'t Purchase Companies',
-      }.freeze
-
-      # Pass Descriptions for steps players can take more than one action
-      ACTIVE_PASS_DESCRIPTION = {
-        track: 'Done Laying Track',
-        token: 'Done Placing a Token',
-        train: 'Done Buying Trains',
-        company: 'Done Purchasing Companies',
+      # Shorter forms of the step description
+      SHORT_STEP_DESCRIPTION = {
+        track: 'Track',
+        token: 'Token',
+        train: 'Trains',
+        company: 'Companies',
       }.freeze
 
       def initialize(entities, game:, round_num: 1)
@@ -83,9 +75,7 @@ module Engine
       end
 
       def pass_description
-        self.class::ACTIVE_PASS_DESCRIPTION[@step == @last_action_step ? @step : nil] ||
-        self.class::INACTIVE_PASS_DESCRIPTION[@step] ||
-        'Pass'
+        (@step == @last_action_step ? 'Done' : 'Skip') + ' (' + self.class::SHORT_STEP_DESCRIPTION[@step] + ')'
       end
 
       def pass(_action)
