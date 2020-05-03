@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'view/stock_market'
+
 module View
   class Spreadsheet < Snabberb::Component
     needs :game
@@ -94,8 +96,17 @@ module View
             color: '#ffffff'
           }
         }
+
       props = { style: {} }
-      props[:style]['background-color'] = 'rgba(220,220,220,0.4)' unless corporation.floated?
+      market_props = { style: {} }
+
+      if !corporation.floated?
+        props[:style]['background-color'] = 'rgba(220,220,220,0.4)'
+      elsif (color = StockMarket::COLOR_MAP[corporation.share_price.color])
+        m = color.match(/#(..)(..)(..)/)
+        market_props[:style]['background-color'] = "rgba(#{m[1].hex},#{m[2].hex},#{m[3].hex},0.4)"
+      end
+
       h(:tr, props, [
         h(:th, corporation_color, corporation.name),
         *@game.players.map do |p|
@@ -104,7 +115,7 @@ module View
         h(:td, corporation.num_shares_of(corporation)),
         h(:td, @game.share_pool.num_shares_of(corporation)),
         h(:td, corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
-        h(:td, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
+        h(:td, market_props, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
         h(:td, @game.format_currency(corporation.cash)),
         h(:td, corporation.trains.map(&:name).join(',')),
         h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
