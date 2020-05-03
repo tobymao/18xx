@@ -26,9 +26,9 @@ module View
       }
 
       lines = @log.reverse.map do |line|
-        if line.is_a? String
+        if line.is_a?(String)
           h(:div, { style: { transform: 'scaleY(-1)' } }, line)
-        elsif line.is_a? Engine::Action::Message
+        elsif line.is_a?(Engine::Action::Message)
           h(:div, { style: { 'font-weight': 'bold', transform: 'scaleY(-1)' } }, "#{line.entity.name}: #{line.message}")
         end
       end
