@@ -474,6 +474,8 @@ module Engine
       end
 
       def log_operation(entity)
+        return unless entity
+
         @log << "#{entity.owner.name} operates #{entity.name}"
       end
 
