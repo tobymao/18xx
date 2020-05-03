@@ -48,7 +48,17 @@ module View
         []
       else
         or_history(@game.corporations).map do |x|
-          h(:td, hist[x].nil? ? '' : @game.format_currency(hist[x]))
+          if hist[x].nil?
+            h(:td, '')
+          else
+            props = {
+              style: {
+                color: hist[x].negative? ? '#aaa' : 'black',
+                padding: '0 0.15rem'
+              }
+            }
+            h(:td, props, hist[x].abs)
+          end
         end
       end
     end
