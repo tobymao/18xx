@@ -26,6 +26,10 @@ class Assets
     @context ||= JsContext.new(combine)
   end
 
+  def html(script, **needs)
+    Snabberb.html_script(script, **needs)
+  end
+
   def build
     return [@bundle_path] if @precompiled
 

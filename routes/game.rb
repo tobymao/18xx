@@ -197,8 +197,8 @@ class Api
 
     next if users.empty?
 
-    html = RENDER_HTML.call(
-      'assets/js/mail/turn.rb',
+    html = ASSETS.html(
+      'assets/app/mail/turn.rb',
       game_data: game.to_h(include_actions: true),
       game_url: data['game_url'],
     )
