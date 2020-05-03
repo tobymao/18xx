@@ -263,7 +263,7 @@ module View
         }
       }
 
-      last_run = @corporation.revenue_history[@corporation.revenue_history.keys.max]
+      last_run = @corporation.revenue_history[@corporation.revenue_history.keys.max].abs
       h(:td, props, "Last Run: #{@game.format_currency(last_run)}")
     end
 

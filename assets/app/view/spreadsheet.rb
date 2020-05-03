@@ -48,9 +48,7 @@ module View
         []
       else
         or_history(@game.corporations).map do |x|
-          if hist[x].nil?
-            h(:td, '')
-          else
+          if hist[x]
             props = {
               style: {
                 color: hist[x].negative? ? '#aaa' : 'black',
@@ -58,6 +56,8 @@ module View
               }
             }
             h(:td, props, hist[x].abs)
+          else
+            h(:td, '')
           end
         end
       end
