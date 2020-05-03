@@ -92,9 +92,14 @@ module View
     end
 
     def opacity(layable)
-      return 1.0 unless @round&.step == 'track'
+      corp_track_laying = @round.is_a?(Engine::Round::Operating) && (@round.step == 'track')
+      company_track_laying = @round.is_a?(Engine::Round::Special)
 
-      layable || %i[tile_selector tile_page].include?(@role) ? 1.0 : 0.3
+      if corp_track_laying || company_track_laying
+        layable || %i[tile_selector tile_page].include?(@role) ? 1.0 : 0.3
+      else
+        1.0
+      end
     end
   end
 end
