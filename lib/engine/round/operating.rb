@@ -60,6 +60,7 @@ module Engine
 
         payout_companies
         place_home_stations
+        log_operation(@current_entity)
       end
 
       def log_new_round
@@ -317,6 +318,7 @@ module Engine
         return unless @current_entity.passed?
 
         @current_entity = next_entity
+        log_operation(@current_entity) unless finished?
       end
 
       def action_processed(action)
@@ -469,6 +471,10 @@ module Engine
         else
           super
         end
+      end
+
+      def log_operation(entity)
+        @log << "#{entity.owner.name} operates #{entity.name}"
       end
 
       def liquidate(player)
