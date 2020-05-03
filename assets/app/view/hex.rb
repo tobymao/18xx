@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_tree 'engine'
 require 'lib/hex'
 require 'lib/tile_selector'
 require 'view/tile'
@@ -48,7 +49,7 @@ module View
           transform: transform,
           fill: COLOR.fetch(@tile&.color, 'white'),
           stroke: 'black',
-          opacity: layable || %i[tile_selector tile_page].include?(@role) ? 1.0 : 0.3,
+          opacity: opacity(layable),
           cursor: clickable ? 'pointer' : nil,
         },
       }
@@ -87,6 +88,17 @@ module View
         )
       when :tile_selector
         @tile_selector.tile = @tile
+      end
+    end
+
+    def opacity(layable)
+      corp_track_laying = @round.is_a?(Engine::Round::Operating) && (@round.step == 'track')
+      company_track_laying = @round.is_a?(Engine::Round::Special)
+
+      if corp_track_laying || company_track_laying
+        layable || %i[tile_selector tile_page].include?(@role) ? 1.0 : 0.3
+      else
+        1.0
       end
     end
   end

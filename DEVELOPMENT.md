@@ -13,6 +13,14 @@ If configuring the droplet from scratch, these are the requirements:
 
 ![Anatomy of a Tile](/public/images/tile_anatomy.png?raw=true "Anatomy of a Tile")
 
+### Development Routes
+
+Some app routes that may be of interest to developers:
+
+* `/all_tiles` - renders all of the track tiles (and map hex "tiles") defined in
+  the system
+* `/map/<game_title>` - renders the given game's map
+
 ### Docker
 
 Start the Docker stack for this project:
