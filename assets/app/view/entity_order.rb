@@ -47,7 +47,7 @@ class EntityOrder < Snabberb::Component
     props = {
       style: {
         margin: '1rem 0 1rem 0',
-        'font-size': '1.rem',
+        'font-size': '1.1rem',
         height: '1.5rem',
       }
     }
