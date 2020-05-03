@@ -32,14 +32,7 @@ module View
     end
 
     def or_history(corporations)
-      # It looks like the set class isn't available, so we use this as a proxy
-      or_hist = {}
-      corporations.each do |c|
-        c.revenue_history.keys.each { |x| or_hist[x] = true }
-      end
-      or_hist_list = []
-      or_hist.keys.each { |x| or_hist_list << x }
-      or_hist_list.sort
+      corporations.flat_map { |c| c.revenue_history.keys }.uniq.sort
     end
 
     def render_history_titles(corporations)

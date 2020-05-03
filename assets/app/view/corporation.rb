@@ -37,7 +37,21 @@ module View
       ]
 
       children << render_companies if @corporation.companies.any?
-      children << render_president if @corporation.owner
+
+      table_props = {
+        style: {
+          'text-align': 'center',
+          'font-weight': 'bold',
+          'margin-left': 'auto',
+          'margin-right': 'auto',
+          'border-spacing': '1rem',
+        }
+      }
+
+      if @corporation.owner
+        subchildren = [render_president] + (@corporation.revenue_history.empty? ? [] : [render_revenue_history])
+        children << h(:table, table_props, [h(:tr, subchildren)])
+      end
 
       h(:div, { style: card_style, on: { click: onclick } }, children)
     end
@@ -234,12 +248,23 @@ module View
     def render_president
       props = {
         style: {
+          'font-weight': 'bold',
+        }
+      }
+
+      h(:td, props, "President: #{@corporation.owner.name}")
+    end
+
+    def render_revenue_history
+      props = {
+        style: {
           'text-align': 'center',
           'font-weight': 'bold',
         }
       }
 
-      h(:div, props, "President: #{@corporation.owner.name}")
+      last_run = @corporation.revenue_history[@corporation.revenue_history.keys.max]
+      h(:td, props, "Last Run: #{@game.format_currency(last_run)}")
     end
 
     def selected?
