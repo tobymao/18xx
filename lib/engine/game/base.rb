@@ -316,7 +316,7 @@ module Engine
                 end
 
               # add private companies that block tile lays on this hex
-              blocker = companies.find { |c| c.abilities(:blocks_hex)&.dig(:hex) == coord }
+              blocker = companies.find { |c| c.abilities(:blocks_hexes)&.dig(:hexes)&.include?(coord) }
               tile.add_blocker!(blocker) unless blocker.nil?
 
               # reserve corporation home spots

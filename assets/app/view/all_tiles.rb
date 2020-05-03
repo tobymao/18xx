@@ -50,7 +50,7 @@ module View
 
             # add private companies that block tile lays on this hex
             blocker = companies.find do |c|
-              c.abilities(:blocks_hex)&.dig(:hex) == coord
+              c.abilities(:blocks_hexes)&.dig(:hexes)&.include?(coord)
             end
             if blocker
               tile.add_blocker!(blocker)

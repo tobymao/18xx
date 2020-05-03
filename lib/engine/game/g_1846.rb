@@ -329,8 +329,7 @@ module Engine
           sym: 'MC',
           desc: 'The owning corporation may lay up to two extra $0 cost yellow tiles in the MC\'s reserved hexes (B10, B12).',
           abilities: [
-            { type: :blocks_hex, hex: 'B10' },
-            { type: :blocks_hex, hex: 'B12' },
+            { type: :blocks_hexes, hexes: %w[B10 B12] },
             # TODO
           ],
         },
@@ -341,8 +340,7 @@ module Engine
           sym: 'O&I',
           desc: 'The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I\'s reserved hexes (F14, F16).',
           abilities: [
-            { type: :blocks_hex, hex: 'F14' },
-            { type: :blocks_hex, hex: 'F16' },
+            { type: :blocks_hexes, hexes: %w[F14 F16] },
             # TODO
           ],
         },
