@@ -14,21 +14,34 @@ module View
       yellow: '#ffff99'
     }.freeze
 
+    PAD = 5                                     # between box contents and border
+    BORDER = 1
+    WIDTH_TOTAL = 50                            # of entire box, including border
+    HEIGHT_TOTAL = 50
+    TOKEN_PAD = 3                               # left/right padding of tokens within box
+    TOKEN_SIZE = 25
+    BOX_WIDTH = WIDTH_TOTAL - 2 * BORDER
+    LEFT_MARGIN = TOKEN_PAD                     # left edge of leftmost token
+    RIGHT_MARGIN = BOX_WIDTH - TOKEN_PAD        # right edge of rightmost token
+    LEFT_TOKEN_POS = LEFT_MARGIN
+    RIGHT_TOKEN_POS = RIGHT_MARGIN - TOKEN_SIZE # left edge of rightmost token
+    MID_TOKEN_POS = (LEFT_TOKEN_POS + RIGHT_TOKEN_POS) / 2
+
     def render
       space_style = {
         position: 'relative',
         display: 'inline-block',
-        padding: '5px',
-        width: '40px',
-        height: '40px',
+        padding: "#{PAD}px",
+        width: "#{WIDTH_TOTAL - 2 * PAD}px",
+        height: "#{HEIGHT_TOTAL - 2 * PAD}px",
         margin: '0',
         'vertical-align': 'top',
       }
 
       box_style = space_style.merge(
-        width: '38px',
-        height: '38px',
-        border: 'solid 1px rgba(0,0,0,0.2)',
+        width: "#{WIDTH_TOTAL - 2 * PAD - 2 * BORDER}px",
+        height: "#{HEIGHT_TOTAL - 2 * PAD - 2 * BORDER}px",
+        border: "solid #{BORDER}px rgba(0,0,0,0.2)",
       )
 
       grid = @game.stock_market.market.flat_map do |prices|
@@ -38,14 +51,14 @@ module View
 
             corporations = price.corporations
             num_corps = corporations.size
-            spacing = 35 / num_corps
+            spacing = num_corps > 1 ? (RIGHT_TOKEN_POS - LEFT_TOKEN_POS) / (num_corps - 1) : 0
 
             tokens = corporations.map.with_index do |corporation, index|
               props = {
-                attrs: { data: corporation.logo, width: '25px' },
+                attrs: { data: corporation.logo, width: "#{TOKEN_SIZE}px" },
                 style: {
                   position: 'absolute',
-                  left: "#{index * spacing}px",
+                  left: num_corps > 1 ? "#{LEFT_TOKEN_POS + (index * spacing)}px" : "#{MID_TOKEN_POS}px",
                   'z-index' => num_corps - index,
                 }
               }
