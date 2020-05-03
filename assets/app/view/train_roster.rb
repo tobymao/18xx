@@ -86,7 +86,7 @@ module View
         h(:table, [
           h(:tr, [
             h(:th, td_props, 'Phase'),
-            h(:th, td_props, 'Operating Rounds'),
+            h(:th, td_props.merge({attrs: {title:'Number of Operating Rounds'}}), '# OR'),
             h(:th, td_props, 'Train Limit'),
             h(:th, td_props, 'Tiles'),
             h(:th, td_props, 'Companies')
@@ -118,7 +118,8 @@ module View
           h(:td, td_props, @game.format_currency(train.price)),
           h(:td, td_props, trains.size),
           h(:td, td_props, rust_schedule[name]&.join(',') || 'None'),
-          h(:td, td_props, discounts&.join(' '))
+          h(:td, td_props, discounts&.join(' ')),
+          h(:td, td_props, train.available_on)
         ])
       end
 
@@ -130,7 +131,8 @@ module View
             h(:th, td_props, 'Price'),
             h(:th, td_props, 'Remaining'),
             h(:th, td_props, 'Rusts'),
-            h(:th, td_props, 'Upgrade Discount')
+            h(:th, td_props, 'Upgrade Discount'),
+            h(:th, td_props.merge({attrs: {title:'Available after purchase of first train of type'}}), 'Available')
           ]),
           *rows
         ])
