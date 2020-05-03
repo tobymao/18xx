@@ -20,7 +20,7 @@ module View
         *render_corporations,
         h(:tr, [
           h(:td, { style: { width: '20px' } }, ''),
-          h(:th, { attrs: { colspan: @game.players.length } }, 'Player Finances'),
+          h(:th, { attrs: { colspan: @game.players.size } }, 'Player Finances'),
         ]),
         render_player_cash,
         render_player_privates,
@@ -31,17 +31,39 @@ module View
       # TODO: consider adding train availability
     end
 
+    def or_history(corporations)
+      corporations.flat_map { |c| c.revenue_history.keys }.uniq.sort
+    end
+
+    def render_history_titles(corporations)
+      or_history(corporations).map { |turn, round| h(:th, "#{turn}.#{round}") }
+    end
+
+    def render_history(corporation)
+      hist = corporation.revenue_history
+      if hist.empty?
+        # This is a company that hasn't floated yet
+        []
+      else
+        or_history(@game.corporations).map do |x|
+          h(:td, hist[x].nil? ? '' : @game.format_currency(hist[x]))
+        end
+      end
+    end
+
     def render_title
+      or_history_titles = render_history_titles(@game.corporations)
       props = { style: { padding: '0 0.3rem' } }
 
       [
         h(:tr, [
           h(:th, { style: { width: '20px' } }, ''),
-          h(:th, { attrs: { colspan: @game.players.length } }, 'Players'),
+          h(:th, { attrs: { colspan: @game.players.size } }, 'Players'),
           h(:th, { attrs: { colspan: 2 } }, 'Bank'),
           h(:th, { attrs: { colspan: 2 } }, 'Prices'),
           h(:th, { attrs: { colspan: 4 } }, 'Corporation'),
           h(:th, { style: { width: '20px' } }, ''),
+          h(:th, { attrs: { colspan: or_history_titles.size } }, 'OR History'),
           ]),
         h(:tr, [
           h(:th, { style: { width: '20px' } }, ''),
@@ -55,6 +77,7 @@ module View
           h(:th, props, 'Tokens'),
           h(:th, props, 'Privates'),
           h(:th, { style: { width: '20px' } }, ''),
+          *or_history_titles
         ])
       ]
     end
@@ -84,9 +107,10 @@ module View
         h(:td, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
         h(:td, @game.format_currency(corporation.cash)),
         h(:td, corporation.trains.map(&:name).join(',')),
-        h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.length}"),
+        h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
         render_companies(corporation),
         h(:th, corporation_color, corporation.name),
+        *render_history(corporation)
       ])
     end
 
