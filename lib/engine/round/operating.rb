@@ -60,6 +60,7 @@ module Engine
 
         payout_companies
         place_home_stations
+        log_operation(@current_entity)
       end
 
       def log_new_round
@@ -317,6 +318,7 @@ module Engine
         return unless @current_entity.passed?
 
         @current_entity = next_entity
+        log_operation(@current_entity) unless finished?
       end
 
       def action_processed(action)
@@ -336,6 +338,7 @@ module Engine
       end
 
       def withhold(revenue = 0)
+        @current_entity.add_revenue!(@game.turn, @round_num, -revenue)
         name = @current_entity.name
         if revenue.positive?
           @log << "#{name} withholds #{@game.format_currency(revenue)}"
@@ -347,6 +350,7 @@ module Engine
       end
 
       def payout(revenue)
+        @current_entity.add_revenue!(@game.turn, @round_num, revenue)
         per_share = revenue / 10
         @log << "#{@current_entity.name} pays out #{@game.format_currency(revenue)} - "\
                 "#{@game.format_currency(per_share)} per share"
@@ -467,6 +471,10 @@ module Engine
         else
           super
         end
+      end
+
+      def log_operation(entity)
+        @log << "#{entity.owner.name} operates #{entity.name}"
       end
 
       def liquidate(player)

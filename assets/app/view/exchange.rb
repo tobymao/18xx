@@ -15,6 +15,7 @@ module View
       share = corporation.shares.find { |s| !s.president }
 
       return h(:div) unless share
+      return h(:div) unless @game.round.can_gain?(share, @selected_company.owner)
 
       exchange = lambda do
         process_action(Engine::Action::BuyShare.new(@selected_company, share))
