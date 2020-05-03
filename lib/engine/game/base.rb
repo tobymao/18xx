@@ -225,8 +225,7 @@ module Engine
       end
 
       def rollback
-        action_to_remove = @actions.rindex { |x| !x.keep_on_rollback? }
-        clone(@actions[0, action_to_remove] + @actions[action_to_remove + 1..-1])
+        clone(@actions[0...-1])
       end
 
       def trains

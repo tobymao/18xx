@@ -49,10 +49,6 @@ module Engine
         self.class.from_h(to_h, game)
       end
 
-      def keep_on_rollback?
-        false
-      end
-
       private
 
       def type_s(obj)
