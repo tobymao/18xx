@@ -27,7 +27,7 @@ class Assets
   end
 
   def html(script, **needs)
-    Snabberb.html_script(script, **needs)
+    context.eval(Snabberb.html_script(script, **needs))
   end
 
   def build
