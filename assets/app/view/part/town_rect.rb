@@ -29,15 +29,19 @@ module View
         [15, 16, 17, 21, 22, 23],
       ].freeze
 
+      # Returns the two edges so that a < b and b - a is 1, 2 or 3.
       def normalized_edges
         @normalized_edges ||= begin
                                 edge_a, edge_b = @edges
+                                edge_a, edge_b = edge_b, edge_a if edge_b < edge_a
                                 edge_a += 6 if (edge_b - edge_a).abs > 3
                                 edge_a, edge_b = edge_b, edge_a if edge_b < edge_a
                                 [edge_a, edge_b]
                               end
       end
 
+      # Takes the difference in normalized edges and returns a symbol of
+      # :straight, :gentle or :sharp
       def track_type
         @track_type ||= begin
                           edge_a, edge_b = normalized_edges
@@ -53,6 +57,8 @@ module View
                         end
       end
 
+      # Returns the angle that the town rect needs to be based on the rotation
+      # of the tile
       def position_angle
         @position_angle ||= begin
                               edge_a, = normalized_edges
@@ -86,6 +92,8 @@ module View
                             end
       end
 
+      # Returns an array of rotation options for the town rectangle that
+      # corresponds to the positions given from track_location
       def rotation_angles
         @rotation_angles ||= begin
                                edge_a, = normalized_edges
@@ -102,7 +110,7 @@ module View
                              end
       end
 
-      # Returns an array of positions that we can use for this piece
+      # Returns an array of weights, location and rotations
       def position
         @position ||= begin
                         edge_a, edge_b = normalized_edges
@@ -134,6 +142,8 @@ module View
                       end
       end
 
+      # Maps the position method into the required format for
+      # preferred_render_locations
       def preferred_render_locations
         position.map do |weights, x, y, angle|
           {
