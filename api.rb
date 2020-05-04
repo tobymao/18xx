@@ -51,7 +51,9 @@ class Api < Roda
     csp.frame_ancestors :none
   end
 
-  plugin :common_logger, Logger.new('log/rack/rack.log')
+  LOGGER = Logger.new('log/rack/rack.log')
+
+  plugin :common_logger, LOGGER
 
   plugin :not_found do
     halt(404, 'Page not found')
@@ -62,6 +64,7 @@ class Api < Roda
   error do |e|
     puts e.backtrace.reverse
     puts "#{e.class}: #{e.message}"
+    LOGGER.error e.backtrace
     { error: e.message }
   end
 
