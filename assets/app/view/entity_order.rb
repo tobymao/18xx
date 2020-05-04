@@ -27,7 +27,10 @@ class EntityOrder < Snabberb::Component
 
       style = entity_props[:style]
 
-      style['text-decoration'] = 'underline' if @round.can_act?(entity)
+      if @round.can_act?(entity)
+        style['text-decoration'] = 'underline'
+        style['font-weight'] = 'bold'
+      end
 
       if index.positive?
         style['border-left'] = 'black solid thin'
