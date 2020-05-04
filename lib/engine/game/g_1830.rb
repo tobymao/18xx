@@ -238,7 +238,7 @@ module Engine
           sym: 'SV',
           desc: '',
           abilities: [
-            { type: :blocks_hex, hex: 'G15' },
+            { type: :blocks_hexes, hexes: ['G15'] },
             # TODO
           ],
         },
@@ -251,7 +251,7 @@ module Engine
           is not connected to the corporations\'s railhead. This free tile placement is in addition
           to the corporation\'s normal tile placement.',
           abilities: [
-            { type: :blocks_hex, hex: 'B20' },
+            { type: :blocks_hexes, hexes: ['B20'] },
             # TODO
           ],
         },
@@ -265,7 +265,7 @@ module Engine
           remainder of the corporation\'s route. The tile laid is the owning corporation\'s one tile
           placement for the turn.',
           abilities: [
-            { type: :blocks_hex, hex: 'F16' },
+            { type: :blocks_hexes, hexes: ['F16'] },
             # TODO
           ],
         },
@@ -279,7 +279,7 @@ module Engine
           exchange may be made during the player\'s turn of a stock round or between the turns of
           other players or corporations in either stock or operating rounds. This action closes the M&H.',
           abilities: [
-            { type: :blocks_hex, hex: 'D18' },
+            { type: :blocks_hexes, hexes: ['D18'] },
             # TODO
           ],
         },
@@ -293,7 +293,7 @@ module Engine
           be running at this point, but the stock may be retained or sold subject to the ordinary rules
           of the game.',
           abilities: [
-            { type: :blocks_hex, hex: 'H18' },
+            { type: :blocks_hexes, hexes: ['H18'] },
             # TODO
           ],
         },
@@ -307,8 +307,7 @@ module Engine
           and does not exchange hands if the owning player loses the Presidency of the B&O. When the B&O
           purchases its first train the private company is closed down.',
           abilities: [
-            { type: :blocks_hex, hex: 'I13' },
-            { type: :blocks_hex, hex: 'I15' },
+            { type: :blocks_hexes, hexes: %w[I13 I15] },
             # TODO
           ],
         },

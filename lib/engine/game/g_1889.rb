@@ -151,7 +151,7 @@ module Engine
           If all players pass during the initial stock round and this company has not been purchased,
           its price is reduced by ¥5.  If it is reduced to ¥0, the next player must take it for free.',
           abilities: [
-            { type: :blocks_hex, hex: 'K4' },
+            { type: :blocks_hexes, hexes: ['K4'] },
           ],
         },
         {
@@ -178,7 +178,7 @@ module Engine
           desc: 'When this company is sold to a corporation, the selling player may place a green tile on Ohzu.  This
           does not close the company.',
           abilities: [
-            { type: :blocks_hex, hex: 'C4' },
+            { type: :blocks_hexes, hexes: ['C4'] },
             {
               type: :tile_lay,
               tiles: %w[12 13 14 15 205 206],

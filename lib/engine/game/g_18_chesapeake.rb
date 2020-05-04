@@ -22,7 +22,7 @@ module Engine
           %w[B6 B8 B10 C3 C7 C9 C11 E7 E9 E13 F6 F12 G7 I7 J8 J10 L4 F4 G5 H2 I3] => 'blank',
           %w[B12 D4 D6 D10 E5] => 'mtn80',
           %w[F10 G9 G11 H12] => 'wtr40',
-          # TODO: %w[B4 K3 K5] => 't=r:0;t=r:0',
+          %w[B4 K3 K5] => 't=r:0;t=r:0',
           %w[C5 D12 E3 F2 G13 J2] => 'city',
           %w[C13 D2 D8] => 'c=r:0;u=c:80,t:mountain',
           %w[E11] => 'town',
@@ -31,13 +31,12 @@ module Engine
           %w[H4 J6] => 'c=r:0;u=c:40,t:water',
         },
         red: {
-          %w[A1 A15] => 'blank',
-          %w[A3] => 'c=r:0;p=a:5,b:_0',
+          %w[A3] => 'c=r:yellow_40|green_50|brown_60|gray_80;p=a:5,b:_0',
           %w[B2] => 'o=r:yellow_40|green_50|brown_60|gray_80;p=a:0,b:_0',
           %w[A7] => 'o=r:yellow_40|green_60|brown_80|gray_100;p=a:4,b:_0;p=a:5,b:_0',
-          %w[A13] => 'o=r:yellow_40|green_60|brown_80|gray_100;p=a:4,b:_0',
-          %w[B14] => 'o=r:yellow_40|green_60|brown_90|gray_100;p=a:3,b:_0;p=a:4,b:_0',
-          %w[H14] => 'o=r:yellow_20|green_40|brown_50|gray_60;p=a:2,b:_0',
+          %w[A13] => 'o=r:yellow_40|green_50|brown_60|gray_80;p=a:4,b:_0',
+          %w[B14] => 'o=r:yellow_40|green_50|brown_60|gray_80;p=a:3,b:_0;p=a:4,b:_0',
+          %w[H14] => 'o=r:yellow_30|green_40|brown_50|gray_60;p=a:2,b:_0',
           %w[L2] => 'o=r:yellow_40|green_60|brown_80|gray_100;p=a:0,b:_0;p=a:1,b:_0',
         },
         gray: {
@@ -124,6 +123,8 @@ module Engine
         'H6' => 'Baltimore',
         'H14' => 'Norfolk',
         'I5' => 'Wilmington',
+        'I9' => 'Delmarva Peninsula',
+        'K1' => 'Easton',
         'J2' => 'Allentown',
         'J4' => 'Philadelphia',
         'J6' => 'Camden',
@@ -214,19 +215,20 @@ module Engine
           name: 'Delaware and Raritan Canal',
           value: 20,
           revenue: 5,
-          sym: 'DRC',
+          sym: 'D&R',
           desc: 'No special ability. Blocks hex K3 while owned by a player. Companies may purchase P1 - P5 from a player for half to double the face value.',
           abilities: [
-            # TODO
+            { type: :blocks_hexes, hexes: ['K3'] },
           ],
         },
         {
           name: 'Columbia - Philadelphia Railroad',
           value: 40,
           revenue: 10,
-          sym: 'CPR',
+          sym: 'C-P',
           desc: 'Blocks hexes H2 and I3 while owned by a player. The owning company may lay two connected tiles in hexes H2 and I3. Only #8 and #9 tiles may be used. If any tiles are played in these hexes other than by using this ability, the ability is forfeit. These tiles may be placed even if the owning company does not have a route to the hexes. These tiles are laid during the tile laying step and are in addition to the company’s tile placement action.',
           abilities: [
+            { type: :blocks_hexes, hexes: %w[H2 I3] },
             # TODO
           ],
         },
@@ -234,9 +236,10 @@ module Engine
           name: 'Baltimore and Susquehanna Railroad',
           value: 50,
           revenue: 10,
-          sym: 'BSR',
+          sym: 'B&S',
           desc: 'Blocks hexes F4 and G5 while owned by a player. The owning company may lay two connected tiles in hexes F4 and G5. Only #8 and #9 tiles may be used. If any tiles are played in these hexes other than by using this ability, the ability is forfeit. These tiles may be placed even if the owning company does not have a route to the hexes. These tiles are laid during the tile laying step and are in addition to the company’s tile placement action.',
           abilities: [
+            { type: :blocks_hexes, hexes: %w[F4 G5] },
             # TODO
           ],
         },
@@ -244,9 +247,10 @@ module Engine
           name: 'Chesapeake and Ohio Canal',
           value: 80,
           revenue: 15,
-          sym: 'COC',
+          sym: 'C&OC',
           desc: 'Blocks hex D2 while owned by a player.Owning company may place a tile in hex D2.The company does not need to have a route to this hex.The tile placed counts as the company’ s tile lay action and the company must pay the terrain cost.The company may then immediately place a station token free of charge.',
           abilities: [
+            { type: :blocks_hexes, hexes: ['D2'] },
             # TODO
           ],
         },
@@ -307,6 +311,7 @@ module Engine
           name: 'Baltimore & Ohio Railroad',
           tokens: [0, 40, 60],
           float_percent: 60,
+          coordinates: 'H6',
           color: '#025aaa'
         },
         {
@@ -315,6 +320,7 @@ module Engine
           name: 'Chesapeake & Ohio Railroad',
           tokens: [0, 40, 60, 80],
           float_percent: 60,
+          coordinates: 'G13',
           color: '#8dd7f6'
         },
         {
@@ -332,6 +338,7 @@ module Engine
           name: 'Camden & Amboy Railroad',
           tokens: [0, 40],
           float_percent: 60,
+          coordinates: 'J6',
           color: '#f58121'
         },
         {
