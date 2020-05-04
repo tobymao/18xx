@@ -14,7 +14,7 @@ require 'view/stock_round'
 require 'view/stock_market'
 require 'view/tile_manifest'
 require 'view/tools'
-require 'view/train_roster'
+require 'view/train_and_phase_roster'
 require 'view/spreadsheet'
 
 module View
@@ -53,7 +53,7 @@ module View
         when 'corporations'
           h(Corporations, game: @game, user: @user)
         when 'trains'
-          h(TrainRoster, game: @game)
+          h(TrainAndPhaseRoster, game: @game)
         when 'players'
           h(Players, game: @game)
         when 'spreadsheet'

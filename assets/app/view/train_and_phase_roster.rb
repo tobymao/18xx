@@ -2,13 +2,16 @@
 
 require 'lib/color'
 module View
-  class TrainRoster < Snabberb::Component
+  class TrainAndPhaseRoster < Snabberb::Component
     needs :game
 
     def render
       @depot = @game.depot
 
-      h(:div, {}, [
+      h(:div,  { style: {
+          overflow: 'auto',
+          margin: '0 -1rem'
+        } }, [
         render_body
       ])
     end
