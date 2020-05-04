@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/stock_market'
+require 'lib/color'
 
 module View
   class Spreadsheet < Snabberb::Component
@@ -113,8 +114,7 @@ module View
       if !corporation.floated?
         props[:style]['background-color'] = 'rgba(220,220,220,0.4)'
       elsif (color = StockMarket::COLOR_MAP[corporation.share_price.color])
-        m = color.match(/#(..)(..)(..)/)
-        market_props[:style]['background-color'] = "rgba(#{m[1].hex},#{m[2].hex},#{m[3].hex},0.4)"
+        market_props[:style]['background-color'] = Lib::Color.convert_hex_to_rgba(color, 0.4)
       end
 
       h(:tr, props, [

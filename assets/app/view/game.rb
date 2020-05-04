@@ -118,7 +118,7 @@ module View
           tab_button('Corporations', '#corporations'),
           tab_button('Map', '#map'),
           tab_button('Market', '#market'),
-          tab_button('Trains', '#trains'),
+          tab_button('Trains/Phases', '#trains'),
           tab_button('Tiles', '#tiles'),
           tab_button('Companies', '#companies'),
           tab_button('Spreadsheet', '#spreadsheet'),

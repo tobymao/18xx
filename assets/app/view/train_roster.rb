@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/color'
 module View
   class TrainRoster < Snabberb::Component
     needs :game
@@ -56,9 +57,9 @@ module View
             padding: '0 1rem'
           }
         }
-        if View::Part::MultiRevenue::COLOR.include? phase_color
-          m = View::Part::MultiRevenue::COLOR[phase_color].match(/#(..)(..)(..)/)
-          phase_props[:style]['background-color'] = "rgba(#{m[1].hex},#{m[2].hex},#{m[3].hex},0.4)"
+        if Part::MultiRevenue::COLOR.include?(phase_color)
+          phase_props[:style]['background-color'] =
+            Lib::Color.convert_hex_to_rgba(Part::MultiRevenue::COLOR[phase_color], 0.4)
         end
 
         buy_text = if phase[:buy_companies]
@@ -86,7 +87,7 @@ module View
         h(:table, [
           h(:tr, [
             h(:th, td_props, 'Phase'),
-            h(:th, td_props.merge({attrs: {title:'Number of Operating Rounds'}}), '# OR'),
+            h(:th, td_props.merge(attrs: { title: 'Number of Operating Rounds' }), '# OR'),
             h(:th, td_props, 'Train Limit'),
             h(:th, td_props, 'Tiles'),
             h(:th, td_props, 'Companies')
@@ -132,7 +133,7 @@ module View
             h(:th, td_props, 'Remaining'),
             h(:th, td_props, 'Rusts'),
             h(:th, td_props, 'Upgrade Discount'),
-            h(:th, td_props.merge({attrs: {title:'Available after purchase of first train of type'}}), 'Available')
+            h(:th, td_props.merge(attrs: { title: 'Available after purchase of first train of type' }), 'Available')
           ]),
           *rows
         ])
