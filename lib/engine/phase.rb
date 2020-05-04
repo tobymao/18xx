@@ -4,7 +4,7 @@ require_relative 'action/buy_train'
 
 module Engine
   class Phase
-    attr_reader :buy_companies, :name, :operating_rounds, :train_limit, :tiles
+    attr_reader :buy_companies, :name, :operating_rounds, :train_limit, :tiles, :phases
 
     TWO = {
       name: '2',
@@ -69,6 +69,10 @@ module Engine
       when Action::BuyTrain
         next! if action.train.name == @next_on
       end
+    end
+
+    def current
+      @phases[@index]
     end
 
     def available?(phase_name)
