@@ -135,7 +135,7 @@ module View
       h(:tr, [
         h(:td, { style: { position: 'relative' } }, [h(:img, logo_props)]),
         h(:td, corporation.name + president_marker),
-        h(:td, "%#{shares.sum(&:percent)}"),
+        h(:td, "#{shares.sum(&:percent)}%"),
       ])
     end
 
