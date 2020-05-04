@@ -113,7 +113,7 @@ module View
 
       if !corporation.floated?
         props[:style]['background-color'] = 'rgba(220,220,220,0.4)'
-      elsif (color = StockMarket::COLOR_MAP[corporation.share_price.color])
+      elsif !corporation.counts_for_limit? && (color = StockMarket::COLOR_MAP[corporation.share_price.color])
         market_props[:style]['background-color'] = Lib::Color.convert_hex_to_rgba(color, 0.4)
       end
 
