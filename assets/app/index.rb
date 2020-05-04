@@ -57,6 +57,9 @@ class Index < Snabberb::Layout
         # rubocop:disable Layout/LineLength
         h(:link, attrs: { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css' }),
         h(:link, attrs: { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap' }),
+        h(:link, attrs: { rel: 'icon', type: 'image/svg+xml', href: '/images/icon.svg'}),
+        # Alas iOS doesn't seem to support svgs for this
+        h(:link, attrs: { rel: 'apple-touch-icon', href: '/images/icon_180x180.png'}),
         # rubocop:enable Layout/LineLength
         h(:style, props: { innerHTML: css }),
       ]),
