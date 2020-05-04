@@ -17,7 +17,10 @@ class EntityOrder < Snabberb::Component
       }
 
       if @round.current_entity == entity
-        scroll_to = ->(vnode) { Native(vnode)['elm'].scrollIntoView(false) }
+        scroll_to = lambda do |vnode|
+          elm = Native(vnode)['elm']
+          elm['parentElement']['parentElement'].scrollLeft = elm['offsetLeft'] - 10
+        end
 
         entity_props[:hook] = {
           insert: scroll_to,
