@@ -8,7 +8,8 @@ require 'view/part/track_offboard'
 module View
   module Part
     class Track < Snabberb::Component
-      ROUTE_COLORS = %i[red blue green purple].freeze
+      # http://mkweb.bcgsc.ca/colorblind/ 13 color palette
+      ROUTE_COLORS = %i[#AA0A3C #0A9B4B #005AC8 #8214A0].freeze
 
       needs :tile
       needs :region_use
@@ -81,7 +82,7 @@ module View
             path == p
           end
         end
-        index ? self.class::ROUTE_COLORS[index] : 'black'
+        index ? self.class::ROUTE_COLORS[index] : '#000000'
       end
     end
   end
