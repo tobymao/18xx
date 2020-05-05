@@ -390,7 +390,7 @@ module Engine
       def buy_train(entity, train, price, exchange)
         remaining = price - entity.cash
 
-        if train.from_depot? && remaining.positive? && must_buy_train?
+        if train.from_depot? && remaining.positive? && train.name == @depot.min_depot_train.name && must_buy_train?
           player = entity.owner
           player.spend(remaining, entity)
           @log << "#{player.name} contributes #{@game.format_currency(remaining)}"

@@ -30,8 +30,12 @@ module Engine
       available(corporation).map(&:min_price).min
     end
 
+    def min_depot_train
+      depot_trains.min_by(&:price)
+    end
+
     def min_depot_price
-      depot_trains.map(&:price).min
+      min_depot_train.price
     end
 
     def remove_train(train)
