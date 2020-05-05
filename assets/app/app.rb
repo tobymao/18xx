@@ -107,6 +107,6 @@ class App < Snabberb::Component
 
   def store_app_route(skip: true)
     window_route = `window.location.pathname + window.location.hash`
-    store(:app_route, window_route, skip: skip)
+    store(:app_route, window_route, skip: skip) unless window_route == ''
   end
 end
