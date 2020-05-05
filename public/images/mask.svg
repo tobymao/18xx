@@ -5,11 +5,11 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   width="179.47302"
-   height="207.23761"
-   viewBox="0 0 179.47302 207.23761"
+   id="svg9"
    version="1.1"
-   id="svg9">
+   viewBox="0 0 16 16"
+   height="198"
+   width="171.47302">
   <metadata
      id="metadata15">
     <rdf:RDF>
@@ -30,8 +30,8 @@
   <desc
      id="desc4">Created with Sketch.</desc>
   <polygon
-     style="fill:#f0e68c;fill-rule:evenodd;stroke:#000000;stroke-width:8;stroke-miterlimit:4;stroke-dasharray:none"
-     points="250,0 335.73651,49.5 335.73651,148.5 250,198 164.26349,148.5 164.26349,49.5 "
+     transform="matrix(0.09309999,0,0,0.09309999,-15.29293,-1.1961932)"
      id="Polygon"
-     transform="translate(-160.26349,4.6188022)" />
+     points="250,0 335.73651,49.5 335.73651,148.5 250,198 164.26349,148.5 164.26349,49.5 "
+     style="fill:#000000;fill-rule:evenodd;stroke:none;stroke-width:8;stroke-miterlimit:4;stroke-dasharray:none" />
 </svg>

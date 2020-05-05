@@ -58,8 +58,17 @@ class Index < Snabberb::Layout
         h(:link, attrs: { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css' }),
         h(:link, attrs: { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap' }),
         h(:link, attrs: { rel: 'icon', type: 'image/svg+xml', href: '/images/icon.svg' }),
-        # Alas iOS doesn't seem to support svgs for this
-        h(:link, attrs: { rel: 'apple-touch-icon', href: '/images/icon_180x180.png' }),
+        h(:link, attrs: { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/images/favicon-32x32.png' }),
+        h(:link, attrs: { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/images/favicon-16x16.png' }),
+        # Alas iOS doesn't seem to support svgs for this, this image must be at top level
+        h(:link, attrs: { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }),
+
+        h(:link, attrs: { rel: 'mask-icon', href: '/images/mask.svg', color: '#f0e68c' }),
+        h(:link, attrs: { rel: 'manifest', href: '/site.webmanifest' }),
+        # Microsoft tiles
+        h(:meta, attrs: { rel: 'msapplication-TileColor', content: '#da532c' }),
+        h(:meta, attrs: { rel: 'theme-color', content: '#ffffff' }),
+
         # rubocop:enable Layout/LineLength
         h(:style, props: { innerHTML: css }),
       ]),
