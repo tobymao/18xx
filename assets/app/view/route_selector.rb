@@ -14,7 +14,7 @@ module View
     # Due to the way this and the map hook up routes needs to have
     # an entry, but that route is not valid at zero length
     def active_routes
-      @routes.map { |i| i unless i.hexes.empty? }.compact
+      @routes.select { |r| r.hexes.any? }
     end
 
     def render
@@ -40,9 +40,9 @@ module View
           padding: '0.5rem',
         }
 
-        route = @routes.find { |t| t.train == train }
+        route = active_routes.find { |t| t.train == train }
         children = []
-        if route && !route.hexes.empty?
+        if route
           revenue, invalid = begin
                                [@game.format_currency(route.revenue), nil]
                              rescue Engine::GameError => e
@@ -51,7 +51,7 @@ module View
 
           style['background-color'] = Part::Track::ROUTE_COLORS[@routes.index(route)]
           style['color'] = 'white'
-          children << h(:td, route.stops.length)
+          children << h(:td, route.stops.size)
           children << h(:td, revenue)
           children << h(:td, if invalid
                                "#{route.hexes.map(&:name).join(', ')} (#{invalid})"
