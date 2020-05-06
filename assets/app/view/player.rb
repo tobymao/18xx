@@ -41,16 +41,7 @@ module View
         margin: '-0.5rem -0.5rem 0 -0.5rem',
       }
 
-      h(:div, { style: title_style }, "#{@player.name} (#{order_number})")
-    end
-
-    def order_number
-      number = @game.players.find_index(@player) + 1
-      return '1st' if number == 1
-      return '2nd' if number == 2
-      return '3rd' if number == 3
-
-      number.to_s + 'th'
+      h(:div, { style: title_style }, @player.name)
     end
 
     def render_body
@@ -97,8 +88,7 @@ module View
         },
       }
 
-      h(:div, div_props, [
-        h(:table, [
+      trs = [
           h(:tr, [
             h(:td, td_props, 'Cash'),
             h(:td, td_props, @game.format_currency(@player.cash)),
@@ -111,7 +101,16 @@ module View
             h(:td, td_props, 'Certs'),
             h(:td, td_cert_props, "#{num_certs}/#{cert_limit}"),
           ]),
-        ]),
+        ]
+
+      if @game.players.find_index(@player).zero?
+        trs << h(:tr, [
+                    h(:td, { attrs: { colspan: '2' } }, 'Priority deal'),
+               ])
+      end
+
+      h(:div, div_props, [
+        h(:table, trs),
       ])
     end
 
