@@ -89,23 +89,23 @@ module View
       }
 
       trs = [
-          h(:tr, [
-            h(:td, td_props, 'Cash'),
-            h(:td, td_props, @game.format_currency(@player.cash)),
-          ]),
-          h(:tr, [
-            h(:td, td_props, 'Value'),
-            h(:td, td_props, @game.format_currency(@player.value)),
-          ]),
-          h(:tr, [
-            h(:td, td_props, 'Certs'),
-            h(:td, td_cert_props, "#{num_certs}/#{cert_limit}"),
-          ]),
-        ]
+        h(:tr, [
+          h(:td, td_props, 'Cash'),
+          h(:td, td_props, @game.format_currency(@player.cash)),
+        ]),
+        h(:tr, [
+          h(:td, td_props, 'Value'),
+          h(:td, td_props, @game.format_currency(@player.value)),
+        ]),
+        h(:tr, [
+          h(:td, td_props, 'Certs'),
+          h(:td, td_cert_props, "#{num_certs}/#{cert_limit}"),
+        ]),
+      ]
 
       if @game.players.find_index(@player).zero?
         trs << h(:tr, [
-                    h(:td, { attrs: { colspan: '2' } }, 'Priority deal'),
+                 h(:td, { attrs: { colspan: '2' } }, 'Priority deal'),
                ])
       end
 
@@ -136,9 +136,7 @@ module View
         .map { |c, s| render_corporation_shares(c, s) }
 
       h(:div, div_props, [
-        h(:table, props, [
-          *shares,
-        ]),
+        h(:table, props, shares)
       ])
     end
 
