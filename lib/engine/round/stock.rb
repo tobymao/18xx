@@ -76,6 +76,10 @@ module Engine
            (corporation.share_holders.reject { |k, _| k == @current_entity }.values.max || 0) > 10)
       end
 
+      def did_sell?(corporation, entity)
+        @players_sold[entity][corporation]
+      end
+
       private
 
       def _process_action(action)
