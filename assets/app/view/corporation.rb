@@ -20,7 +20,7 @@ module View
         padding: '0.5rem',
         margin: '0.5rem 0.5rem 0 0',
         width: '320px',
-        'vertical-align': 'top',
+        'vertical-align': 'top'
       }
 
       card_style['background-color'] = 'lightblue' if selected?
@@ -33,24 +33,23 @@ module View
       children = [
         render_title,
         render_holdings,
-        render_shares,
+        render_shares
       ]
 
       children << render_companies if @corporation.companies.any?
 
-      table_props = {
+      revenue_table_props = {
         style: {
           'text-align': 'center',
           'font-weight': 'bold',
           'margin-left': 'auto',
-          'margin-right': 'auto',
-          'border-spacing': '1rem',
+          'margin-right': 'auto'
         }
       }
 
       if @corporation.owner
-        subchildren = [render_president] + (@corporation.revenue_history.empty? ? [] : [render_revenue_history])
-        children << h(:table, table_props, [h(:tr, subchildren)])
+        subchildren = (@corporation.revenue_history.empty? ? [] : [render_revenue_history])
+        children << h(:table, revenue_table_props, [h(:tr, subchildren)])
       end
 
       h(:div, { style: card_style, on: { click: onclick } }, children)
@@ -98,7 +97,7 @@ module View
         style: {
           display: 'inline-block',
           margin: '0.5em',
-          'text-align': 'right',
+          'text-align': 'right'
         },
       }
 
@@ -109,12 +108,12 @@ module View
           'max-width': '120px',
           'white-space': 'nowrap',
           'text-overflow': 'ellipsis',
-          overflow: 'hidden',
+          overflow: 'hidden'
         }
       }
       h(:div, props, [
         h(:div, value_props, value),
-        h(:div, key),
+        h(:div, key)
       ])
     end
 
@@ -148,63 +147,100 @@ module View
 
         h(:div, { style: token_list_style }, [
           h(:img, props),
-          h(:div, token_text),
+          h(:div, token_text)
         ])
       end
       h(:div, { style: token_style }, tokens_body)
     end
 
+    def share_price_str(share_price)
+      share_price ? @game.format_currency(share_price.price) : ''
+    end
+
     def render_shares
-      shares_style = {
-        margin: '0.5rem',
-        'text-align': 'center'
+      td_props = {
+        style: {
+          padding: '0 0.5rem',
+          'line-height': '1.25rem'
+        }
       }
 
-      share_price = @corporation.share_price ? @corporation.share_price.price : 0
-      par_price = @corporation.par_price ? @corporation.par_price.price : 0
+      player_rows = []
+      @game.players.sort_by { |p| p.num_shares_of(@corporation) }.reverse.each do |p|
+        shares = p.num_shares_of(@corporation)
+        next unless shares.positive?
 
-      h(:div, { style: shares_style }, [
-        h(:div, 'Shares'),
-        render_share_type('Market', @game.share_pool.num_shares_of(@corporation), share_price),
-        render_share_type('IPO', @corporation.num_shares_of(@corporation), par_price)
-      ])
-    end
+        is_president = @corporation.president?(p)
+        name_props = {
+          style: {
+            padding: '0 0.3rem'
+          }
+        }
+        player_rows << h(:tr, [
+                           h(:td, name_props, p.name),
+                           h(:td, td_props, shares.to_s + (is_president ? '*' : '')),
+                           h(:td, td_props, '')
+                         ])
+      end
 
-    def render_share_type(source_name, quantity, price)
-      share_style = {
-        display: 'inline-block',
-        margin: '0.2em 0.5em'
+      market_tr_props = {
+        style: {
+          'border-bottom': player_rows.size.positive? ? '1px solid #888' : '0'
+        }
       }
-      h(:div, { style: share_style }, [
-        h(:div, source_name),
-        render_number('Number', quantity),
-        render_number('Price', @game.format_currency(price))
-      ])
-    end
 
-    def render_number(title, number)
-      number_box_style = {
-        display: 'inline-block',
-        margin: '0 0.5em'
+      num_ipo_shares = @corporation.num_shares_of(@corporation)
+      num_market_shares = @game.share_pool.num_shares_of(@corporation)
+
+      pool_rows = [
+          h(:tr, [
+              h(:td, td_props, 'IPO'),
+              h(:td, td_props, num_ipo_shares.to_s),
+              h(:td, td_props, share_price_str(@corporation.par_price))
+            ]),
+      ]
+
+      if num_market_shares.positive?
+        pool_rows << h(:tr, [
+                         h(:td, td_props, 'Market'),
+                         h(:td, td_props, num_market_shares.to_s),
+                         h(:td, td_props, share_price_str(@corporation.share_price))
+                       ])
+      end
+
+      rows = [
+        *pool_rows,
+        h(:tr, market_tr_props, [h(:td, { colspan: '100%' }, '')]),
+        *player_rows
+      ]
+
+      table_props = {
+        style: {
+          'border-collapse': 'collapse', # so line under margin will work
+          'text-align': 'center',
+          'margin-left': 'auto',
+          'margin-right': 'auto',
+          'margin-top': '0.5rem'
+        }
       }
-      number_style = {
-        'font-size': '16px',
-        'font-weight': 'bold',
-        'max-width': '120px',
-        'white-space': 'nowrap',
-        'text-overflow': 'ellipsis',
-        'overflow': 'hidden'
-      }
-      h(:div, { style: number_box_style }, [
-        h(:div, { style: number_style }, number),
-        h(:div, title)
-      ])
+
+      h(:table, table_props, [
+          h(:tr, [
+              h(:th, td_props, 'Shareholder'),
+              h(:th, td_props, 'Number'),
+              h(:th, td_props, 'Price')
+            ]),
+          *rows
+        ])
     end
 
     def render_companies
       props = {
         style: {
-          'text-align': 'center'
+          'margin-top': '1rem',
+          'text-align': 'center',
+          'margin-left': 'auto',
+          'margin-right': 'auto'
         }
       }
 
@@ -215,40 +251,30 @@ module View
       h(:table, props, [
         h(:tr, [
           h(:th, 'Company'),
-          h(:th, 'Value'),
-          h(:th, 'Income'),
+          h(:th, 'Income')
         ]),
         *companies
       ])
     end
 
     def render_company(company)
-      name_props = {
+      props = {
         style: {
-          overflow: 'hidden',
-          'width': '200px',
-          'white-space': 'nowrap',
-          'text-overflow': 'ellipsis',
-        }
-      }
-
-      number_props = {
-        style: {
-          'width': '50px'
+          'padding': '0 0.3rem',
+          'line-height': '1.25rem'
         }
       }
 
       h(:tr, [
-        h(:td, name_props, company.name),
-        h(:td, number_props, @game.format_currency(company.value)),
-        h(:td, number_props, @game.format_currency(company.revenue)),
+        h(:td, props, company.name),
+        h(:td, props, @game.format_currency(company.revenue))
       ])
     end
 
     def render_president
       props = {
         style: {
-          'font-weight': 'bold',
+          'font-weight': 'bold'
         }
       }
 
@@ -258,8 +284,9 @@ module View
     def render_revenue_history
       props = {
         style: {
+          'padding-top': '1rem',
           'text-align': 'center',
-          'font-weight': 'bold',
+          'font-weight': 'bold'
         }
       }
 
