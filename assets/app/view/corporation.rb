@@ -165,27 +165,28 @@ module View
         }
       }
 
-      player_rows = []
-      @game.players.sort_by { |p| p.num_shares_of(@corporation) }.reverse.each do |p|
-        shares = p.num_shares_of(@corporation)
-        next unless shares.positive?
-
-        is_president = @corporation.president?(p)
+      player_rows = @game
+        .players
+        .map { |p| [p, @corporation.president?(p), p.num_shares_of(@corporation)] }
+        .select { |_, _, num_shares| num_shares.positive? }
+        .sort_by { |_, president, num_shares| [president ? 0 : 1, -num_shares] }
+        .map do |player, president, num_shares|
         name_props = {
           style: {
             padding: '0 0.3rem'
           }
         }
-        player_rows << h(:tr, [
-                           h(:td, name_props, p.name),
-                           h(:td, td_props, shares.to_s + (is_president ? '*' : '')),
-                           h(:td, td_props, ''),
-                         ])
+
+        h(:tr, [
+          h(:td, name_props, player.name),
+          h(:td, td_props, "#{num_shares}#{president ? '*' : ''}"),
+          h(:td, td_props, ''),
+        ])
       end
 
       market_tr_props = {
         style: {
-          'border-bottom': player_rows.size.positive? ? '1px solid #888' : '0'
+          'border-bottom': player_rows.any? ? '1px solid #888' : '0'
         }
       }
 
@@ -193,19 +194,19 @@ module View
       num_market_shares = @game.share_pool.num_shares_of(@corporation)
 
       pool_rows = [
-          h(:tr, [
-              h(:td, td_props, 'IPO'),
-              h(:td, td_props, num_ipo_shares.to_s),
-              h(:td, td_props, share_price_str(@corporation.par_price)),
-            ]),
+        h(:tr, [
+          h(:td, td_props, 'IPO'),
+          h(:td, td_props, num_ipo_shares.to_s),
+          h(:td, td_props, share_price_str(@corporation.par_price)),
+        ]),
       ]
 
       if num_market_shares.positive?
         pool_rows << h(:tr, [
-                         h(:td, td_props, 'Market'),
-                         h(:td, td_props, num_market_shares.to_s),
-                         h(:td, td_props, share_price_str(@corporation.share_price)),
-                       ])
+          h(:td, td_props, 'Market'),
+          h(:td, td_props, num_market_shares.to_s),
+          h(:td, td_props, share_price_str(@corporation.share_price)),
+        ])
       end
 
       rows = [
@@ -225,13 +226,13 @@ module View
       }
 
       h(:table, table_props, [
-          h(:tr, [
-              h(:th, td_props, 'Shareholder'),
-              h(:th, td_props, 'Number'),
-              h(:th, td_props, 'Price'),
-            ]),
-          *rows
-        ])
+        h(:tr, [
+          h(:th, td_props, 'Shareholder'),
+          h(:th, td_props, 'Number'),
+          h(:th, td_props, 'Price'),
+        ]),
+        *rows
+      ])
     end
 
     def render_companies

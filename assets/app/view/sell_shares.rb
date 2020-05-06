@@ -17,10 +17,9 @@ module View
 
         num_shares = bundle.num_shares
 
-        text = "Sell #{num_shares} share#{num_shares > 1 ? 's' : ''} "\
-          "(#{@game.format_currency(bundle.price)})"
+        text = "Sell #{num_shares} (#{@game.format_currency(bundle.price)})"
 
-        h(:button, { on: { click: sell } }, text)
+        h('button.margined_half', { on: { click: sell } }, text)
       end
 
       h(:div, { style: { 'margin-top': '1rem' } }, buttons.compact)

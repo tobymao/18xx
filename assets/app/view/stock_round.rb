@@ -50,7 +50,7 @@ module View
 
     def render_input
       input = @selected_corporation.ipoed ? render_ipoed : render_pre_ipo
-      h(:div, { style: { 'margin-top': '0.5rem' } }, [input].compact)
+      h(:div, { style: { 'margin-top': '0.5rem', width: '320px' } }, [input].compact)
     end
 
     def render_ipoed
@@ -67,8 +67,11 @@ module View
 
       children = []
       unless @round.must_sell?
-        children << h(:button, { on: { click: buy_ipo } }, 'Buy IPO Share') if @round.can_buy?(ipo_share)
-        children << h(:button, { on: { click: buy_pool } }, 'Buy Market Share') if @round.can_buy?(pool_share)
+        children << h('button.margined_half', { on: { click: buy_ipo } }, 'Buy IPO Share') if @round.can_buy?(ipo_share)
+
+        if @round.can_buy?(pool_share)
+          children << h('button.margined_half', { on: { click: buy_pool } }, 'Buy Market Share')
+        end
 
         # Allow privates to be exchanged for shares
         exchangable = @game.companies.select do |n|
