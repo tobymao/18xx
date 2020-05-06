@@ -111,19 +111,25 @@ module View
         },
       }
 
+      buttons = [
+        tab_button('Game'),
+        tab_button('Players', '#players'),
+        tab_button('Corporations', '#corporations'),
+        tab_button('Map', '#map'),
+        tab_button('Market', '#market'),
+        tab_button('Trains/Phases', '#trains'),
+        tab_button('Tiles', '#tiles'),
+      ]
+
+      buttons << tab_button('Companies', '#companies') unless @game.companies.all?(&:closed?)
+
+      buttons.concat([
+        tab_button('Spreadsheet', '#spreadsheet'),
+        tab_button('Tools', '#tools'),
+      ])
+
       h(:div, props, [
-        h(:div, { style: { width: 'max-content' } }, [
-          tab_button('Game'),
-          tab_button('Players', '#players'),
-          tab_button('Corporations', '#corporations'),
-          tab_button('Map', '#map'),
-          tab_button('Market', '#market'),
-          tab_button('Trains/Phases', '#trains'),
-          tab_button('Tiles', '#tiles'),
-          tab_button('Companies', '#companies'),
-          tab_button('Spreadsheet', '#spreadsheet'),
-          tab_button('Tools', '#tools'),
-        ]),
+        h(:div, { style: { width: 'max-content' } }, buttons),
       ])
     end
 

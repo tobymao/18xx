@@ -50,16 +50,16 @@ module View
             style = box_style.merge('background-color' => COLOR_MAP[price.color])
 
             corporations = price.corporations
-            num_corps = corporations.size
-            spacing = num_corps > 1 ? (RIGHT_TOKEN_POS - LEFT_TOKEN_POS) / (num_corps - 1) : 0
+            num = corporations.size
+            spacing = num > 1 ? (RIGHT_TOKEN_POS - LEFT_TOKEN_POS) / (num - 1) : 0
 
             tokens = corporations.map.with_index do |corporation, index|
               props = {
                 attrs: { data: corporation.logo, width: "#{TOKEN_SIZE}px" },
                 style: {
                   position: 'absolute',
-                  left: num_corps > 1 ? "#{LEFT_TOKEN_POS + (index * spacing)}px" : "#{MID_TOKEN_POS}px",
-                  'z-index' => num_corps - index,
+                  left: num > 1 ? "#{LEFT_TOKEN_POS + ((num - index - 1) * spacing)}px" : "#{MID_TOKEN_POS}px",
+                  'z-index' => num - index,
                 }
               }
               h(:object, props)

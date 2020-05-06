@@ -47,7 +47,7 @@ module View
       props = {
          style: {
            overflow: 'auto',
-           margin: '0 -1rem',
+           margin: '1rem -1rem',
          }
       }
 
