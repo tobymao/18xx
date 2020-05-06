@@ -102,6 +102,7 @@ module View
               min: 1,
               max: @corporation.cash,
               value: 1,
+              size: @corporation.cash.to_s.size,
             },
           )
 
