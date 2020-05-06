@@ -132,6 +132,8 @@ class Api < Roda
   end
 
   def render(**needs)
+    return debug(**needs) if request.params['debug'] && !PRODUCTION
+
     script = Snabberb.prerender_script(
       'Index',
       'App',
@@ -142,6 +144,25 @@ class Api < Roda
     )
 
     ASSETS.context.eval(script)
+  end
+
+  def debug(**needs)
+    needs = Snabberb.wrap(app_route: request.path, **needs)
+    attach_func = "Opal.$$.App.$attach('app', #{needs})"
+
+    <<~HTML
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>18xx.games</title>
+        </head>
+        <body>
+          <div id="app"></div>
+          #{ASSETS.js_tags}
+          <script>#{attach_func}</script>
+        </body>
+      </html>
+    HTML
   end
 
   def session
