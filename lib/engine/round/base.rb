@@ -125,6 +125,10 @@ module Engine
         bundles.select { |bundle| can_sell?(bundle) }
       end
 
+      def did_sell?(_corporation, _entity)
+        false
+      end
+
       private
 
       def potential_tiles(hex)

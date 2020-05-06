@@ -120,7 +120,9 @@ module View
       h(:tr, props, [
         h(:th, corporation_color, corporation.name),
         *@game.players.map do |p|
-          h(:td, p.num_shares_of(corporation).to_s + (corporation.president?(p) ? '*' : ''))
+          sold_props = { style: {} }
+          sold_props[:style]['background-color'] = 'rgba(225,0,0,0.4)' if @game.round.did_sell?(corporation, p)
+          h(:td, sold_props, p.num_shares_of(corporation).to_s + (corporation.president?(p) ? '*' : ''))
         end,
         h(:td, corporation.num_shares_of(corporation)),
         h(:td, @game.share_pool.num_shares_of(corporation)),
