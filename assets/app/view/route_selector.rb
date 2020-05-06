@@ -33,7 +33,7 @@ module View
         selected = @selected_route&.train == train
 
         style = {
-          border: "solid #{selected ? '3px' : '1px'} rgba(0,0,0,0.2)",
+          border: "solid #{selected ? '4px' : '1px'} rgba(0,0,0,0.2)",
           display: 'inline-block',
           cursor: selected ? 'default' : 'pointer',
           margin: '0.5rem 0.5rem 0.5rem 0',
