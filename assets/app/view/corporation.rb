@@ -20,7 +20,7 @@ module View
         padding: '0.5rem',
         margin: '0.5rem 0.5rem 0 0',
         width: '320px',
-        'vertical-align': 'top'
+        'vertical-align': 'top',
       }
 
       card_style['background-color'] = 'lightblue' if selected?
@@ -33,7 +33,7 @@ module View
       children = [
         render_title,
         render_holdings,
-        render_shares
+        render_shares,
       ]
 
       children << render_companies if @corporation.companies.any?
@@ -43,7 +43,7 @@ module View
           'text-align': 'center',
           'font-weight': 'bold',
           'margin-left': 'auto',
-          'margin-right': 'auto'
+          'margin-right': 'auto',
         }
       }
 
@@ -62,7 +62,7 @@ module View
         color: '#ffffff',
         padding: '0.5rem 0px',
         'font-weight': 'bold',
-        margin: '-0.5rem -0.5rem 0 -0.5rem'
+        margin: '-0.5rem -0.5rem 0 -0.5rem',
       }
       h(:div, { style: title_style }, @corporation.full_name)
     end
@@ -74,7 +74,7 @@ module View
         'background-color': 'lightgray',
         display: 'flex',
         'justify-content': 'center',
-        margin: '0 -0.5rem'
+        margin: '0 -0.5rem',
       }
 
       holdings_style['background-color'] = '#9b9' if @game.round.can_act?(@corporation)
@@ -83,7 +83,7 @@ module View
         render_header_segment(@corporation.name, 'Sym'),
         render_trains,
         render_header_segment(@game.format_currency(@corporation.cash), 'Cash'),
-        render_tokens
+        render_tokens,
       ])
     end
 
@@ -97,7 +97,7 @@ module View
         style: {
           display: 'inline-block',
           margin: '0.5em',
-          'text-align': 'right'
+          'text-align': 'right',
         },
       }
 
@@ -108,7 +108,7 @@ module View
           'max-width': '120px',
           'white-space': 'nowrap',
           'text-overflow': 'ellipsis',
-          overflow: 'hidden'
+          overflow: 'hidden',
         }
       }
       h(:div, props, [
@@ -124,11 +124,11 @@ module View
     def render_tokens
       token_style = {
         margin: '0.5rem',
-        'text-align': 'center'
+        'text-align': 'center',
       }
       token_list_style = {
         width: '2rem',
-        float: 'left'
+        float: 'left',
       }
 
       tokens_body = @corporation.tokens.map.with_index do |token, i|
@@ -147,7 +147,7 @@ module View
 
         h(:div, { style: token_list_style }, [
           h(:img, props),
-          h(:div, token_text)
+          h(:div, token_text),
         ])
       end
       h(:div, { style: token_style }, tokens_body)
@@ -161,7 +161,7 @@ module View
       td_props = {
         style: {
           padding: '0 0.5rem',
-          'line-height': '1.25rem'
+          'line-height': '1.25rem',
         }
       }
 
@@ -179,7 +179,7 @@ module View
         player_rows << h(:tr, [
                            h(:td, name_props, p.name),
                            h(:td, td_props, shares.to_s + (is_president ? '*' : '')),
-                           h(:td, td_props, '')
+                           h(:td, td_props, ''),
                          ])
       end
 
@@ -196,7 +196,7 @@ module View
           h(:tr, [
               h(:td, td_props, 'IPO'),
               h(:td, td_props, num_ipo_shares.to_s),
-              h(:td, td_props, share_price_str(@corporation.par_price))
+              h(:td, td_props, share_price_str(@corporation.par_price)),
             ]),
       ]
 
@@ -204,7 +204,7 @@ module View
         pool_rows << h(:tr, [
                          h(:td, td_props, 'Market'),
                          h(:td, td_props, num_market_shares.to_s),
-                         h(:td, td_props, share_price_str(@corporation.share_price))
+                         h(:td, td_props, share_price_str(@corporation.share_price)),
                        ])
       end
 
@@ -220,7 +220,7 @@ module View
           'text-align': 'center',
           'margin-left': 'auto',
           'margin-right': 'auto',
-          'margin-top': '0.5rem'
+          'margin-top': '0.5rem',
         }
       }
 
@@ -228,7 +228,7 @@ module View
           h(:tr, [
               h(:th, td_props, 'Shareholder'),
               h(:th, td_props, 'Number'),
-              h(:th, td_props, 'Price')
+              h(:th, td_props, 'Price'),
             ]),
           *rows
         ])
@@ -240,7 +240,7 @@ module View
           'margin-top': '1rem',
           'text-align': 'center',
           'margin-left': 'auto',
-          'margin-right': 'auto'
+          'margin-right': 'auto',
         }
       }
 
@@ -251,7 +251,7 @@ module View
       h(:table, props, [
         h(:tr, [
           h(:th, 'Company'),
-          h(:th, 'Income')
+          h(:th, 'Income'),
         ]),
         *companies
       ])
@@ -261,13 +261,13 @@ module View
       props = {
         style: {
           'padding': '0 0.3rem',
-          'line-height': '1.25rem'
+          'line-height': '1.25rem',
         }
       }
 
       h(:tr, [
         h(:td, props, company.name),
-        h(:td, props, @game.format_currency(company.revenue))
+        h(:td, props, @game.format_currency(company.revenue)),
       ])
     end
 
@@ -286,7 +286,7 @@ module View
         style: {
           'padding-top': '1rem',
           'text-align': 'center',
-          'font-weight': 'bold'
+          'font-weight': 'bold',
         }
       }
 
