@@ -33,7 +33,7 @@ module Engine
     describe '.for' do
       it 'should render basic tile' do
         expect(Tile.for('8')).to eq(
-          Tile.new('8', color: :yellow, parts: [Path.new(edge0, edge4)])
+          Tile.new('8', color: :yellow, parts: [Path.new(edge0, edge2)])
         )
       end
 
@@ -44,10 +44,10 @@ module Engine
       end
 
       it 'should render a lawson track tile' do
-        actual = Tile.for('81A')
+        actual = Tile.for('81')
 
         expected = Tile.new(
-          '81A',
+          '81',
           color: :green,
           parts: [Path.new(edge0, junction), Path.new(edge2, junction), Path.new(edge4, junction)]
         )
@@ -103,11 +103,11 @@ module Engine
           color: :yellow,
           parts: [
             town_a,
-            Path.new(edge0, town_a),
-            Path.new(town_a, edge4),
             town_b,
-            Path.new(edge1, town_b),
-            Path.new(town_b, edge3),
+            Path.new(edge1, town_a),
+            Path.new(town_a, edge3),
+            Path.new(edge0, town_b),
+            Path.new(town_b, edge4),
           ]
         )
         expect(actual).to eq(expected)
@@ -168,7 +168,7 @@ module Engine
     describe '#exits' do
       it 'should have the right exits' do
         expect(Tile.for('6').exits.to_a).to eq([0, 2])
-        expect(Tile.for('7').exits.to_a.sort).to eq([0, 5])
+        expect(Tile.for('7').exits.to_a.sort).to eq([0, 1])
       end
     end
 
@@ -198,10 +198,7 @@ module Engine
         EXPECTED_TILE_UPGRADES = {
           'blank' => %w[7 8 9],
           'city' => %w[5 6 57],
-          'mtn80' => %w[7 8 9],
-          'mtn+wtr80' => %w[7 8 9],
-          'wtr80' => %w[7 8 9],
-          'town' => %w[3 58],
+          'town' => %w[3 58 437],
           '3' => %w[],
           '5' => %w[12 14 15 205 206],
           '6' => %w[12 13 14 15 205 206],

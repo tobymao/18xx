@@ -9,9 +9,11 @@ require_relative 'part/label'
 require_relative 'part/offboard'
 require_relative 'part/path'
 require_relative 'part/upgrade'
+require_relative 'config/tile'
 
 module Engine
   class Tile
+    include Config::Tile
     # * [t]own     - [r]evenue, local_[id] (default: 0)
     # * [c]ity     - [r]evenue, local_[id] (default: 0), [s]lots (default 1)
     # * [o]ffboard - [r]evenues for different phases (separated by "/")
@@ -22,139 +24,6 @@ module Engine
 
     # [r]evenue    - number, list of numbers separated by "/", or something like
     #                yellow_30|brown_60|diesel_100
-
-    # rubocop:disable Layout/LineLength
-    WHITE = {
-      'blank' => '',
-      'wtr40' => 'u=c:40,t:water',
-      'mtn80' => 'u=c:80,t:mountain',
-      'wtr80' => 'u=c:80,t:water',
-      'mtn+wtr80' => 'u=c:80,t:mountain+water',
-      'town' => 't=r:0',
-      'town_wtr40' => 't=r:0;u=c:40,t:water',
-      'double_town' => 't=r:0;t=r:0',
-      'city' => 'c=r:0',
-      'city_wtr40' => 'c=r:0;u=c:40,t:water',
-      'city_mtn80' => 'c=r:0;u=c:80,t:mountain',
-    }.freeze
-
-    YELLOW = {
-      '1' => 't=r:10;p=a:0,b:_0;p=a:_0,b:4;t=r:10;p=a:1,b:_1;p=a:_1,b:3',
-      '2' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3;t=r:10;p=a:4,b:_1;p=a:_1,b:5',
-      '3' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1',
-      '4' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3',
-      '5' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:1',
-      '6' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:2',
-      '7' => 'p=a:0,b:5',
-      '8' => 'p=a:0,b:4',
-      '9' => 'p=a:0,b:3',
-      '55' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3;t=r:10;p=a:2,b:_1;p=a:_1,b:5',
-      '56' => 't=r:10;p=a:0,b:_0;p=a:_0,b:4;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
-      '57' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3',
-      '58' => 't=r:10;p=a:0,b:_0;p=a:_0,b:2',
-      '69' => 't=r:10;p=a:1,b:_0;p=a:_0,b:4;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
-      '291' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:1;l=Z',
-      '292' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:2;l=Z',
-      '293' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3;l=Z',
-      '437' => 't=r:30;p=a:0,b:_0;p=a:_0,b:2;l=P',
-      '438' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:2;l=H;u=c:80',
-      '630' => 't=r:10;p=a:1,b:_0;p=a:_0,b:2;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
-      '631' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
-      '632' => 't=r:10;p=a:0,b:_0;p=a:_0,b:5;t=r:10;p=a:3,b:_1;p=a:_1,b:4',
-      '633' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1;t=r:10;p=a:3,b:_1;p=a:_1,b:4',
-    }.freeze
-
-    GREEN = {
-      '12' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:5,b:_0',
-      '13' => 'c=r:30;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0',
-      '14' => 'c=r:30,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:3,b:_0;p=a:4,b:_0',
-      '15' => 'c=r:30,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0',
-      '16' => 'p=a:0,b:4;p=a:1,b:5',
-      '17' => 'p=a:0,b:2;p=a:3,b:5',
-      '18' => 'p=a:0,b:3;p=a:1,b:2',
-      '19' => 'p=a:0,b:3;p=a:1,b:5',
-      '20' => 'p=a:0,b:3;p=a:1,b:4',
-      '21' => 'p=a:0,b:2;p=a:3,b:4',
-      '22' => 'p=a:0,b:4;p=a:2,b:3',
-      '23' => 'p=a:0,b:3;p=a:0,b:4',
-      '24' => 'p=a:0,b:3;p=a:0,b:2',
-      '25' => 'p=a:0,b:2;p=a:0,b:4',
-      '26' => 'p=a:0,b:3;p=a:0,b:5',
-      '27' => 'p=a:0,b:3;p=a:0,b:1',
-      '28' => 'p=a:0,b:4;p=a:0,b:5',
-      '29' => 'p=a:0,b:1;p=a:0,b:2',
-      '30' => 'p=a:0,b:1;p=a:0,b:4',
-      '31' => 'p=a:0,b:2;p=a:0,b:5',
-      '53' => 'c=r:50,s:1;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
-      '54' => 'c=r:60,s:2;c=r:60,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:4,b:_1;p=a:5,b:_1;l=NY',
-      '59' => 'c=r:40;c=r:40;p=a:0,b:_0;p=a:4,b:_1;l=OO',
-      '80' => 'p=a:0,b:j;p=a:4,b:j;p=a:5,b:j',
-      '81' => 'p=a:0,b:j;p=a:2,b:j;p=a:4,b:j',
-      '81A' => 'p=a:0,b:j;p=a:2,b:j;p=a:4,b:j',
-      '82' => 'p=a:0,b:j;p=a:3,b:j;p=a:4,b:j',
-      '83' => 'p=a:0,b:j;p=a:3,b:j;p=a:5,b:j',
-      '87' => 't=r:10;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0',
-      '205' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:3,b:_0',
-      '206' => 'c=r:30;p=a:0,b:_0;p=a:3,b:_0;p=a:5,b:_0',
-      '294' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:4,b:_0;p=a:3,b:_0;l=Z',
-      '295' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;l=Z',
-      '296' => 'c=r:40,s:2;p=a:0,b:_0;p=a:4,b:_0;p=a:2,b:_0;p=a:3,b:_0;l=Z',
-      '298' => 'c=r:40;c=r:40;c=r:40;c=r:40;l=Chi;'\
-               'p=a:1,b:_0;p=a:0,b:_1;p=a:5,b:_2;p=a:4,b:_3;'\
-               'p=a:_0,b:3;p=a:_2,b:3;p=a:_3,b:3;p=a:_1,b:3',
-      '439' => 'c=r:60,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=H;u=c:80',
-      '440' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
-      '592' => 'c=r:50,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
-      '619' => 'c=r:30,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
-    }.freeze
-
-    BROWN = {
-      '39' => 'p=a:0,b:1;p=a:0,b:2;p=a:1,b:2',
-      '40' => 'p=a:0,b:2;p=a:0,b:4;p=a:2,b:4',
-      '41' => 'p=a:0,b:3;p=a:0,b:4;p=a:3,b:4',
-      '42' => 'p=a:0,b:3;p=a:0,b:2;p=a:2,b:3',
-      '43' => 'p=a:0,b:3;p=a:0,b:2;p=a:1,b:3;p=a:1,b:2',
-      '44' => 'p=a:0,b:3;p=a:0,b:1;p=a:1,b:4;p=a:3,b:4',
-      '45' => 'p=a:0,b:3;p=a:0,b:5;p=a:1,b:3;p=a:1,b:5',
-      '46' => 'p=a:0,b:1;p=a:0,b:3;p=a:1,b:5;p=a:3,b:5',
-      '47' => 'p=a:0,b:2;p=a:0,b:3;p=a:2,b:5;p=a:3,b:5',
-      '61' => 'c=r:60,s:1;p=a:0,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=B',
-      '62' => 'c=r:80,s:2;c=r:80,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:4,b:_1;p=a:5,b:_1;l=NY',
-      '63' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
-      '64' => 'c=r:50;c=r:50;p=a:0,b:_0;p=a:2,b:_0;p=a:3,b:_1;p=a:4,b:_1;l=OO',
-      '65' => 'c=r:50;c=r:50;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_1;p=a:5,b:_1;l=OO',
-      '66' => 'c=r:50;c=r:50;p=a:1,b:_0;p=a:2,b:_0;p=a:0,b:_1;p=a:3,b:_1;l=OO',
-      '67' => 'c=r:50;c=r:50;p=a:1,b:_0;p=a:5,b:_0;p=a:0,b:_1;p=a:3,b:_1;l=OO',
-      '68' => 'c=r:50;c=r:50;p=a:2,b:_0;p=a:5,b:_0;p=a:0,b:_1;p=a:3,b:_1;l=OO',
-      '70' => 'p=a:0,b:2;p=a:0,b:1;p=a:1,b:3;p=a:2,b:3',
-      '297' => 'c=r:60,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=Z',
-      '299' => 'c=r:70;c=r:70;c=r:70;c=r:70;p=a:1,b:_0;p=a:2,b:_0;p=a:1,b:_1;p=a:3,b:_1;p=a:1,b:_2;p=a:4,b:_2;p=a:1,b:_3;p=a:5,b:_3;l=Chi',
-      '448' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0',
-      '465' => 'c=r:60,s:3;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K',
-      '466' => 'c=r:60,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
-      '492' => 'c=r:80,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=H',
-      '544' => 'p=a:0,b:j;p=a:1,b:j;p=a:3,b:j;p=a:4,b:j',
-      '545' => 'p=a:0,b:j;p=a:1,b:j;p=a:2,b:j;p=a:3,b:j',
-      '546' => 'p=a:0,b:j;p=a:2,b:j;p=a:3,b:j;p=a:4,b:j',
-      '593' => 'c=r:60,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
-      '611' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;',
-      'W5' => 'c=r:50,s:6;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
-    }.freeze
-
-    GRAY = {
-      '51' => 'c=r:50,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0;p=a:5,b:_0',
-      '290' => 'c=r:70,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=Z',
-      '300' => 'c=r:90;c=r:90;c=r:90;c=r:90;p=a:1,b:_0;p=a:2,b:_0;p=a:1,b:_1;p=a:3,b:_1;p=a:1,b:_2;p=a:4,b:_2;p=a:1,b:_3;p=a:5,b:_3;l=Chi',
-      '456' => 'c=r:70,s:5;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
-      '597' => 'c=r:80,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=B',
-      '639' => 'c=r:100,s:4;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
-      '915' => 'c=r:50,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
-    }.freeze
-
-    RED = {}.freeze
-    # rubocop:enable Layout/LineLength
-
-    COLORS = %i[white yellow green brown gray red].freeze
 
     attr_accessor :hex, :legal_rotations, :location_name, :name, :index
     attr_reader :cities, :color, :edges, :junctions, :label,
