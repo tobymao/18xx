@@ -129,22 +129,28 @@ module Engine
       end
 
       def can_sell?(bundle)
-        # can't sell president's share
+        # Can't sell president's share
         return false if bundle.presidents_share
 
-        # can only sell as much as you need to afford the train
+        # Can only sell as much as you need to afford the train
         player = bundle.owner
         total_cash = bundle.price + player.cash + @current_entity.cash
         return false if total_cash >= @depot.min_depot_price + bundle.price_per_share
 
+        # Can't swap presidency
         corporation = bundle.corporation
-        # can't swap presidency
-        return true unless corporation.president?(player)
+        if corporation.president?(player)
+          share_holders = corporation.share_holders
+          remaining = share_holders[player] - bundle.percent
+          next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
+          return false if remaining < next_highest
+        end
 
-        share_holders = corporation.share_holders
-        remaining = share_holders[player] - bundle.percent
-        next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
-        remaining >= next_highest
+        # Can't oversaturate the market
+        return false if (bundle.percent + @share_pool.percent_of(corporation)) > 50
+
+        # Otherwise we're good
+        true
       end
 
       def can_lay_track?
