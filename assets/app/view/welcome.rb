@@ -86,12 +86,19 @@ module View
       create_props = {
         on: {
           click: -> { store(:app_route, '/new_game') },
-        }
+        },
+      }
+
+      tutorial_props = {
+        on: {
+          click: -> { store(:app_route, '/tutorial?action=1') },
+        },
+        style: { 'margin-left': '1rem' },
       }
 
       h(:div, props, [
         h('button.button', create_props, 'CREATE A NEW GAME'),
-        # h('button.button', { style: { 'margin-left': '1rem' } }, 'TUTORIAL'),
+        h('button.button', tutorial_props, 'TUTORIAL'),
       ])
     end
   end

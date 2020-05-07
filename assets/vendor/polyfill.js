@@ -7,7 +7,8 @@ if (typeof window === 'undefined') {
     addEventListener: function() {},
     location: {
       pathname: '',
-      hash: ''
+      hash: '',
+      search: ''
     },
     history: {
       pushState: function() {}

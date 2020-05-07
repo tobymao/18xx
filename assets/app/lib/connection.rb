@@ -27,16 +27,16 @@ module Lib
       `window.MessageBus.unsubscribe(#{channel})`
     end
 
-    def get(path, &block)
-      send(path, 'GET', nil, block)
+    def get(path, prefix = '/api', &block)
+      send(path, 'GET', nil, prefix, block)
     end
 
     def post(path, data = {}, &block)
-      send(path, 'POST', data, block)
+      send(path, 'POST', data, '/api', block)
     end
 
-    def safe_get(path, &block)
-      get(path) do |data|
+    def safe_get(path, prefix = '/api', &block)
+      get(path, prefix) do |data|
         if (error = data['error'])
           @root.store(:flash_opts, error)
         elsif block
@@ -69,7 +69,7 @@ module Lib
       Lib::Storage['auth_token']
     end
 
-    def send(path, method, data, block) # rubocop:disable Lint/UnusedMethodArgument
+    def send(path, method, data, prefix, block) # rubocop:disable Lint/UnusedMethodArgument
       data = data&.merge('_client_id': `MessageBus.clientId`)
 
       %x{
@@ -86,11 +86,11 @@ module Lib
         }
 
         if (typeof fetch !== 'undefined') {
-          fetch(#{'/api' + path}, payload).then(res => {
+          fetch(#{prefix + path}, payload).then(res => {
             return res.text()
           }).then(data => {
             if (typeof block === 'function') {
-              block.$call(Opal.Hash.$new(JSON.parse(data)))
+              block(Opal.Hash.$new(JSON.parse(data)))
             }
           }).catch(error => {
             if (typeof block === 'function') {

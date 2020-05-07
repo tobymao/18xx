@@ -45,7 +45,7 @@ class App < Snabberb::Component
       case @app_route
       when /new_game/
         h(View::CreateGame)
-      when /game|hotseat/
+      when /game|hotseat|tutorial/
         render_game
       when /signup/
         h(View::User, user: @user, type: :signup)
@@ -77,8 +77,15 @@ class App < Snabberb::Component
     match = @app_route.match(%r{(hotseat|game)\/((hs_)?\d+)})
 
     unless @game_data # this only happens when refreshing a hotseat game
-      enter_game(id: match[2], mode: match[1] == 'game' ? :muti : :hotseat)
-      return h(:div, 'Loading game...') unless @game_data
+      loading_screen = h(:div, 'Loading game...')
+
+      if @app_route.include?('tutorial')
+        enter_tutorial
+      else
+        enter_game(id: match[2], mode: match[1] == 'game' ? :muti : :hotseat)
+      end
+
+      return loading_screen unless @game_data
     end
 
     h(View::Game, connection: @connection, game_data: @game_data, user: @user)
@@ -93,7 +100,9 @@ class App < Snabberb::Component
         self.$store_app_route()
       }
 
-      if (window.location.pathname + window.location.hash != #{@app_route}) {
+      var location = window.location
+
+      if (location.pathname + location.hash + location.search != #{@app_route}) {
         window.history.pushState(#{@game_data.to_n}, #{@app_route}, #{@app_route})
       }
     }
@@ -106,7 +115,7 @@ class App < Snabberb::Component
   end
 
   def store_app_route(skip: true)
-    window_route = `window.location.pathname + window.location.hash`
+    window_route = `window.location.pathname + window.location.hash + window.location.search`
     store(:app_route, window_route, skip: skip) unless window_route == ''
   end
 end

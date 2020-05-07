@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require 'lib/connection'
+require 'lib/params'
 require 'view/auction_round'
 require 'view/companies'
 require 'view/corporations'
 require 'view/entity_order'
 require 'view/exchange'
+require 'view/history_controls'
 require 'view/game_log'
 require 'view/map'
 require 'view/operating_round'
@@ -29,11 +31,15 @@ module View
 
     def render
       game_id = @game_data['id']
-      if game_id != @game&.id
+      actions = @game_data['actions']
+      @num_actions = actions.size
+      cursor = Lib::Params['action']&.to_i
+
+      if game_id != @game&.id || @game.actions.size != @num_actions || (cursor && cursor != @game.actions.size)
         @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
           @game_data['players'].map { |p| p['name'] },
           id: game_id,
-          actions: @game_data['actions'],
+          actions: cursor ? actions.take(cursor) : actions,
         )
         store(:game, @game, skip: true)
       end
@@ -182,6 +188,7 @@ module View
       h('div.game', [
         render_round,
         h(GameLog, user: @user),
+        h(HistoryControls, num_actions: @num_actions),
         h(EntityOrder, round: @round),
         h(Exchange),
         render_action,

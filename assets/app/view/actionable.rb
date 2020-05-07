@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/params'
 require 'lib/storage'
 
 module View
@@ -12,6 +13,10 @@ module View
     end
 
     def process_action(action)
+      if Lib::Params['action']
+        return store(:flash_opts, 'You cannot make changes in history mode. Press >| to go current')
+      end
+
       game = @game.process_action(action)
       @game_data[:actions] << action.to_h
       store(:game_data, @game_data, skip: true)
@@ -30,6 +35,8 @@ module View
     end
 
     def rollback
+      return if Lib::Params['action']
+
       game = @game.rollback
       @game_data[:actions].pop
       store(:game_data, @game_data, skip: true)

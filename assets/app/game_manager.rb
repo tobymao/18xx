@@ -33,6 +33,13 @@ module GameManager
     store(:app_route, "/hotseat/#{game_id}")
   end
 
+  def enter_tutorial
+    @connection.safe_get('/assets/tutorial.json', '') do |data|
+      store(:game_data, data, skip: true)
+      update
+    end
+  end
+
   def get_games(params)
     @connection.safe_get("/game#{params}") do |data|
       store(:games, data[:games])
