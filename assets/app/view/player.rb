@@ -105,8 +105,8 @@ module View
 
       if @game.players.find_index(@player).zero?
         trs << h(:tr, [
-                 h(:td, { attrs: { colspan: '2' } }, 'Priority deal'),
-               ])
+          h(:td, { attrs: { colspan: '2' } }, 'Priority Deal'),
+        ])
       end
 
       h(:div, div_props, [
