@@ -157,6 +157,10 @@ module View
       share_price ? @game.format_currency(share_price.price) : ''
     end
 
+    def share_number_str(number)
+      number.positive? ? number.to_s : ''
+    end
+
     def render_shares
       td_props = {
         style: {
@@ -196,15 +200,15 @@ module View
       pool_rows = [
         h(:tr, [
           h(:td, td_props, 'IPO'),
-          h(:td, td_props, num_ipo_shares.to_s),
+          h(:td, td_props, share_number_str(num_ipo_shares)),
           h(:td, td_props, share_price_str(@corporation.par_price)),
         ]),
       ]
 
-      if num_market_shares.positive?
+      if player_rows.any?
         pool_rows << h(:tr, [
           h(:td, td_props, 'Market'),
-          h(:td, td_props, num_market_shares.to_s),
+          h(:td, td_props, share_number_str(num_market_shares)),
           h(:td, td_props, share_price_str(@corporation.share_price)),
         ])
       end
