@@ -21,7 +21,7 @@ require 'view/spreadsheet'
 
 module View
   class Game < Snabberb::Component
-    needs :game_data
+    needs :game_data, store: true
     needs :game, default: nil, store: true
     needs :connection
     needs :show_grid, default: false, store: true
@@ -70,9 +70,12 @@ module View
 
       @connection.subscribe(game_path) do |data|
         if data['id'] == @game.current_action_id
+          @game_data['actions'] << data
+          store(:game_data, @game_data, skip: true)
           store(:game, @game.process_action(data))
         else
           @connection.get(game_path) do |new_data|
+            store(:game_data, new_data, skip: true)
             store(:game, @game.clone(new_data['actions']))
           end
         end

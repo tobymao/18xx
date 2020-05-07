@@ -88,7 +88,7 @@ class App < Snabberb::Component
       return loading_screen unless @game_data
     end
 
-    h(View::Game, connection: @connection, game_data: @game_data, user: @user)
+    h(View::Game, connection: @connection, user: @user)
   end
 
   def js_handlers
