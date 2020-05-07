@@ -21,99 +21,122 @@ module View
         card_style['background-color'] = '#dfd'
       end
 
-      h(:div, { style: card_style }, [
-        render_header,
+      divs = [
+        render_title,
         render_body,
-      ])
+      ]
+
+      divs << render_companies if @player.companies.any?
+
+      h(:div, { style: card_style }, divs)
     end
 
-    def render_header
-      header_style = {
-         margin: '-0.5em',
-         'text-align': 'center',
-         'white-space': 'nowrap',
-         'background-color': 'lightgray',
+    def render_title
+      title_style = {
+        'background-color': @game.round.can_act?(@player) ? '#9b9' : 'lightgray',
+        'text-align': 'center',
+        color: 'black',
+        padding: '0.5rem 0px',
+        'font-weight': 'bold',
+        margin: '-0.5rem -0.5rem 0 -0.5rem',
       }
 
-      header_style['background-color'] = '#9b9' if @game.round.can_act?(@player)
-
-      h(:div, { style: header_style }, [
-        render_header_segment(@player.name, 'Player'),
-        render_header_segment(order_number, 'Order'),
-        render_header_segment(@game.format_currency(@player.cash), 'Cash'),
-        render_header_segment(@game.format_currency(@player.value), 'Value'),
-        render_header_segment("#{@player.num_certs}/#{@game.cert_limit}", 'Certs'),
-      ])
-    end
-
-    def render_header_segment(value, key)
-      props = {
-        style: {
-          display: 'inline-block',
-          margin: '0.5em',
-          'text-align': 'right',
-        },
-      }
-
-      value_props = {
-        style: {
-          'font-size': '16px',
-          'font-weight': 'bold',
-          'max-width': '120px',
-          'white-space': 'nowrap',
-          'text-overflow': 'ellipsis',
-          overflow: 'hidden',
-        }
-      }
-      h(:div, props, [
-        h(:div, value_props, value),
-        h(:div, key),
-      ])
-    end
-
-    def order_number
-      number = @game.players.find_index(@player) + 1
-      return '1st' if number == 1
-      return '2nd' if number == 2
-      return '3rd' if number == 3
-
-      number.to_s + 'th'
+      h(:div, { style: title_style }, @player.name)
     end
 
     def render_body
       props = {
         style: {
           'margin-top': '1rem',
+          'margin-bottom': '0.5rem',
+          display: 'flex',
+          'justify-content': 'center',
         },
       }
 
-      h(:div, props, [
-        render_shares,
-        render_companies,
+      divs = [
+        render_info,
+      ]
+
+      divs << render_shares if @player.shares.any?
+
+      h(:div, props, divs)
+    end
+
+    def render_info
+      num_certs = @player.num_certs
+      cert_limit = @game.cert_limit
+
+      div_props = {
+        style: {
+          display: 'inline-block',
+          'margin-left': '1.5rem',
+          'margin-right': '1.5rem',
+        },
+      }
+
+      td_props = {
+        style: {
+          padding: '0 0.5rem',
+        },
+      }
+
+      td_cert_props = {
+        style: {
+          padding: '0 0.5rem',
+          color: num_certs > cert_limit ? 'red' : 'black',
+        },
+      }
+
+      trs = [
+        h(:tr, [
+          h(:td, td_props, 'Cash'),
+          h(:td, td_props, @game.format_currency(@player.cash)),
+        ]),
+        h(:tr, [
+          h(:td, td_props, 'Value'),
+          h(:td, td_props, @game.format_currency(@player.value)),
+        ]),
+        h(:tr, [
+          h(:td, td_props, 'Certs'),
+          h(:td, td_cert_props, "#{num_certs}/#{cert_limit}"),
+        ]),
+      ]
+
+      if @game.players.find_index(@player).zero?
+        trs << h(:tr, [
+                 h(:td, { attrs: { colspan: '2' } }, 'Priority deal'),
+               ])
+      end
+
+      h(:div, div_props, [
+        h(:table, trs),
       ])
     end
 
     def render_shares
+      props = {
+        style: {
+          'text-align': 'right',
+        },
+      }
+
+      div_props = {
+        style: {
+          display: 'inline-block',
+          'margin-left': '1.5rem',
+          'margin-right': '1.5rem',
+        },
+      }
+
       shares = @player
         .shares_by_corporation.reject { |_, s| s.empty? }
         .sort_by { |c, s| [s.sum(&:percent), c.president?(@player) ? 1 : 0, c.name] }
         .reverse
         .map { |c, s| render_corporation_shares(c, s) }
 
-      props = {
-        style: {
-          display: 'inline-block',
-          'text-align': 'right',
-        }
-      }
-
-      h(:table, props, [
-        h(:tr, [
-          h(:th, { style: { width: '20px' } }, ''),
-          h(:th, 'Corp'),
-          h(:th, 'Share'),
-        ]),
-        *shares
+      h(:div, div_props, [
+        h(:table, props, shares)
       ])
     end
 
@@ -130,52 +153,89 @@ module View
         },
       }
 
-      president_marker = corporation.president?(@player) ? '*' : ''
+      logo_td_props = {
+        style: {
+          position: 'relative',
+          width: '20px',
+        },
+      }
 
+      td_props = {
+        style: {
+          padding: '0.1rem 0.2rem',
+          'text-align': 'left'
+        },
+      }
+
+      president_marker = corporation.president?(@player) ? '*' : ''
       h(:tr, [
-        h(:td, { style: { position: 'relative' } }, [h(:img, logo_props)]),
-        h(:td, corporation.name + president_marker),
-        h(:td, "#{shares.sum(&:percent)}%"),
+        h(:td, logo_td_props, [h(:img, logo_props)]),
+        h(:td, td_props, corporation.name + president_marker),
+        h(:td, td_props, "#{shares.sum(&:percent)}%"),
       ])
     end
 
     def render_companies
+      div_props = {
+        style: {
+          'margin-top': '1rem',
+          'margin-bottom': '0.5rem',
+          'text-align': 'center',
+        },
+      }
+
       props = {
         style: {
           display: 'inline-block',
-          float: 'right',
           'text-align': 'right',
-        }
+          'margin-left': 'auto',
+          'margin-right': 'auto',
+        },
+      }
+
+      th_props = {
+        style: {
+          'text-align': 'center',
+          padding: '0 0.3rem',
+        },
       }
 
       companies = @player.companies.map do |company|
         render_company(company)
       end
 
-      h(:table, props, [
-        h(:tr, [
-          h(:th, 'Company'),
-          h(:th, 'Value'),
-          h(:th, 'Income'),
+      h(:div, div_props, [
+        h(:table, props, [
+          h(:tr, [
+            h(:th, th_props, 'Company'),
+            h(:th, th_props, 'Value'),
+            h(:th, th_props, 'Income'),
+          ]),
+          *companies,
         ]),
-        *companies
       ])
     end
 
     def render_company(company)
       name_props = {
         style: {
+          'text-align': 'center',
           overflow: 'hidden',
-          'max-width': '30px',
           'white-space': 'nowrap',
           'text-overflow': 'ellipsis',
-        }
+        },
+      }
+
+      td_props = {
+        style: {
+          padding: '0 0.5rem',
+        },
       }
 
       h(:tr, [
         h(:td, name_props, company.name),
-        h(:td, @game.format_currency(company.value)),
-        h(:td, @game.format_currency(company.revenue)),
+        h(:td, td_props, @game.format_currency(company.value)),
+        h(:td, td_props, @game.format_currency(company.revenue)),
       ])
     end
   end
