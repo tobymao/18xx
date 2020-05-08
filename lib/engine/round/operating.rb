@@ -161,34 +161,42 @@ module Engine
         @step == :token
       end
 
-      def next_step!
-        current_index = self.class::STEPS.find_index(@step)
-
-        if current_index < self.class::STEPS.size - 1
-          case (@step = self.class::STEPS[current_index + 1])
-          when :token
-            return next_step! if @current_entity.tokens.none?
-
-            next_step! unless reachable_hexes.any? do |hex, exits|
-              hex.tile.paths.any? do |path|
-                path.city &&
-                  (path.exits & exits).any? &&
-                  path.city.tokenable?(@current_entity)
-              end
+      def conditional_next_step!
+        case @step
+        when :token
+          return next_step! if @current_entity.tokens.none?
+          next_step! unless reachable_hexes.any? do |hex, exits|
+            hex.tile.paths.any? do |path|
+              path.city &&
+                (path.exits & exits).any? &&
+                path.city.tokenable?(@current_entity)
             end
-          when :route
-            next_step! unless @current_entity.trains.any?
-          when :dividend
-            if @current_routes.empty?
-              withhold
-              next_step!
-            end
-          when :train
-            next_step! if !can_buy_train? && !must_buy_train?
-          when :company
-            next_step! unless can_buy_companies?
           end
+        when :route
+          next_step! unless @current_entity.trains.any?
+        when :dividend
+          if @current_routes.empty?
+            withhold
+            next_step!
+          end
+        when :train
+          # `console.log('autopasstrain')`
+          next_step! if !can_buy_train? && !must_buy_train?
+        when :company
+          # `console.log('autopasscompany')`
+          next_step! unless can_buy_companies?
+        end
+      end
+
+      def next_step!
+        # `console.log(#{@step})`
+        # `console.log(#{self.class::STEPS})`
+        current_index = self.class::STEPS.find_index(@step)
+        if current_index < self.class::STEPS.size - 1
+          @step = self.class::STEPS[current_index + 1]
+          conditional_next_step!
         else
+          # `console.log('done')`
           clear_route_cache
           @step = self.class::STEPS.first
           @current_entity.pass!
@@ -320,11 +328,15 @@ module Engine
         end
       end
 
-      def change_entity(_action)
+      def conditional_change_entity!
         return unless @current_entity.passed?
 
         @current_entity = next_entity
         log_operation(@current_entity) unless finished?
+      end
+
+      def change_entity(_action)
+        conditional_change_entity!
       end
 
       def action_processed(action)

@@ -197,13 +197,15 @@ module Engine
 
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
-        @phase.process_action(action)
         # company special power actions are processed by a different round handler
         if action.entity.is_a?(Company)
           @special.process_action(action)
         else
           @round.process_action(action)
         end
+        @phase.process_action(action)
+        @round.conditional_next_step! if round.respond_to? :conditional_next_step!
+        @round.conditional_change_entity! if round.respond_to? :conditional_change_entity!
         @actions << action
         next_round! while @round.finished? && !@finished
         self
