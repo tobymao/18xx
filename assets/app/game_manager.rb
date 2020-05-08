@@ -22,7 +22,7 @@ module GameManager
       id: "hs_#{time.to_i}",
       mode: :hotseat,
       user: { id: 0, name: 'You' },
-      created_at: time.strftime('%Y-%m-%-d'),
+      created_at: time.strftime('%Y-%m-%d'),
     }
 
     game_id = game_data[:id]
