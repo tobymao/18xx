@@ -173,9 +173,16 @@ module Engine
         player.companies << company
         player.spend(price, @bank)
         @companies.delete(company)
-        only_bidder = @bidders[company].size == 1
-        @log << "#{player.name} wins the auction for #{company.name} "\
-                "with #{only_bidder ? 'the only' : 'a'} bid of #{@game.format_currency(price)}"
+        @log << case @bidders[company].size
+                when 0
+                  "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
+                when 1
+                  "#{player.name} wins the auction for #{company.name} "\
+                  "with the only bid of #{@game.format_currency(price)}"
+                else
+                  "#{player.name} wins the auction for #{company.name} "\
+                  "with a bid of #{@game.format_currency(price)}"
+                end
       end
 
       def bids_for_player(player)
