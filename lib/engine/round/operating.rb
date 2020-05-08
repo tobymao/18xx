@@ -417,6 +417,7 @@ module Engine
 
       def sell_shares(shares)
         sell_and_change_price(shares, @share_pool, @stock_market)
+        recalculate_order
       end
 
       def buy_company(company, price)
@@ -510,6 +511,13 @@ module Engine
         end
 
         @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --" if rusted_trains.any?
+      end
+
+      def recalculate_order
+        # Selling shares may have caused the corporations that haven't operated yet
+        # to change order. Re-sort only them.
+        index = @entities.find_index(@current_entity) + 1
+        @entities[index..-1] = @entities[index..-1].sort! if index < @entities.size - 1
       end
     end
   end

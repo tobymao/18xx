@@ -24,28 +24,10 @@ module Engine
 
     context 'full game' do
       RESULTS = {
-        104 => {
-          'Gandhalf' => 7174,
-          'hoffmansthal' => 6627,
-          'sharunasbresson' => 7490,
-        },
         233 => {
           'dionhut' => 7844,
           'hhlodesign' => 7655,
           'raj' => 8050,
-        },
-        352 => {
-          'Eonthar' => 4711,
-          'Jasonbartfast' => 4687,
-          'badlywho' => 4992,
-          'philcampeau' => 5259,
-          'ynottony105' => 5138,
-        },
-        361 => {
-          'kouchan' => 4486,
-          'moesugikenshin' => 5361,
-          'yamadasan' => 5138,
-          'yuji' => 5803,
         },
       }.freeze
 
