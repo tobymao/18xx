@@ -115,10 +115,6 @@ module GameManager
     game[:mode] == :hotseat || game[:user][:id] == user&.dig(:id)
   end
 
-  def unsubscribe
-    @connection.unsubscribe('/games')
-  end
-
   protected
 
   def url(game, path = '')

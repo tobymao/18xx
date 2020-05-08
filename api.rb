@@ -26,7 +26,7 @@ MessageBus.configure(
   clear_every: 10,
 )
 
-MessageBus.reliable_pub_sub.max_backlog_size = 2
+MessageBus.reliable_pub_sub.max_backlog_size = 1
 MessageBus.reliable_pub_sub.max_global_backlog_size = 100_000
 MessageBus.reliable_pub_sub.max_backlog_age = 172_800 # 2 days
 
