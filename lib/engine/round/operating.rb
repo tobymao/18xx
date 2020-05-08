@@ -470,15 +470,16 @@ module Engine
       end
 
       def log_pass(entity)
+        verb = (@step == @last_action_step ? 'finishes' : 'skips')
         case @step
         when :track
-          @log << "#{entity.name} passes laying track"
+          @log << "#{entity.name} #{verb} laying track"
         when :token
-          @log << "#{entity.name} passes placing a token"
+          @log << "#{entity.name} #{verb} placing a token"
         when :train
-          @log << "#{entity.name} passes buying trains"
+          @log << "#{entity.name} #{verb} buying trains"
         when :company
-          @log << "#{entity.name} passes buying companies"
+          @log << "#{entity.name} #{verb} buying companies"
         else
           super
         end
