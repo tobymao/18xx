@@ -351,9 +351,11 @@ module Engine
 
       def payout(revenue)
         @current_entity.add_revenue!(@game.turn, @round_num, revenue)
-        per_share = revenue / 10
-        @log << "#{@current_entity.name} pays out #{@game.format_currency(revenue)} - "\
-                "#{@game.format_currency(per_share)} per share"
+        # TODO: actually count shares when we implement 1817, 18Ireland, 18US, etc
+        share_count = 10
+        per_share = revenue / share_count
+        @log << "#{@current_entity.name} pays out #{@game.format_currency(revenue)} = "\
+                "#{@game.format_currency(per_share)} x #{share_count} shares"
         @players.each do |player|
           payout_entity(player, per_share)
         end
@@ -365,10 +367,12 @@ module Engine
         return if (percent = holder.percent_of(@current_entity)).zero?
 
         receiver ||= holder
-        shares = percent / 10
+        # TODO: actually count shares when we implement 1817, 18Ireland, 18US, etc
+        share_count = 10
+        shares = percent / (100 / share_count)
         amount = shares * per_share
-        @log << "#{receiver.name} receives #{@game.format_currency(amount)} - "\
-                "#{@game.format_currency(per_share)} x #{shares}"
+        @log << "#{receiver.name} receives #{@game.format_currency(amount)} = "\
+                "#{@game.format_currency(per_share)} x #{shares} shares"
         @bank.spend(amount, receiver)
       end
 
