@@ -46,6 +46,7 @@ module View
         min: @selected_company.min_bid + step,
         max: @current_entity.cash,
         type: 'number',
+        size: @current_entity.cash.to_s.size,
       })
 
       buy = lambda do
