@@ -470,7 +470,7 @@ module Engine
       end
 
       def log_pass(entity)
-        verb = (@step == @last_action_step ? 'finishes' : 'skips')
+        verb = @step == @last_action_step ? 'finishes' : 'skips'
         case @step
         when :track
           @log << "#{entity.name} #{verb} laying track"
