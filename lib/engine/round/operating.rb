@@ -517,7 +517,7 @@ module Engine
         # Selling shares may have caused the corporations that haven't operated yet
         # to change order. Re-sort only them.
         index = @entities.find_index(@current_entity) + 1
-        @entities[index..-1] = @entities[index..-1].sort! if index < @entities.size - 1
+        @entities[index..-1] = @entities[index..-1].sort if index < @entities.size - 1
       end
     end
   end
