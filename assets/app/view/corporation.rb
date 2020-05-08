@@ -97,7 +97,7 @@ module View
         style: {
           display: 'inline-block',
           margin: '0.5em',
-          'text-align': 'right',
+          'text-align': 'center',
         },
       }
 
