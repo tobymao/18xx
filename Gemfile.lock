@@ -76,6 +76,8 @@ GEM
     sequel (5.31.0)
     sequel-annotate (1.4.0)
       sequel (>= 4)
+    sequel-pg_advisory_lock (0.1.2)
+      sequel
     sequel_pg (1.13.0)
       pg (>= 0.18.0, != 1.2.0)
       sequel (>= 4.38.0)
@@ -107,6 +109,7 @@ DEPENDENCIES
   rubocop
   sequel
   sequel-annotate
+  sequel-pg_advisory_lock
   sequel_pg
   snabberb
   tilt
