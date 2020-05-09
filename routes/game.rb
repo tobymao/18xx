@@ -180,19 +180,24 @@ class Api
 
   MessageBus.subscribe TURN_CHANNEL do |msg|
     data = msg.data
-    users = User.where(id: data['user_ids']).select(:id, :email, :settings).all
+    users = User.where(id: data['user_ids']).all
     game = Game[data['game_id']]
+    minute_ago = Time.now - 60
 
     connected = Session
       .where(user: users)
       .group_by(:user_id)
-      .having { max(updated_at) > Time.now - 60 }
+      .having { max(updated_at) > minute_ago }
       .select(:user_id)
       .all
       .map(&:user_id)
 
     users = users.reject do |user|
-      connected.include?(user.id) || user.settings['notifications'] == false
+      email_sent = user.settings['email_sent'] || 0
+
+      connected.include?(user.id) ||
+        user.settings['notifications'] == false ||
+        email_sent > minute_ago.to_i
     end
 
     next if users.empty?
@@ -204,6 +209,8 @@ class Api
     )
 
     users.each do |user|
+      user.settings['email_sent'] = Time.now.to_i
+      user.save
       Mail.send(user, "18xx.games Game: #{game.title} - #{game.id} - #{data['type']}", html)
     end
   end
