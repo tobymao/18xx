@@ -5,6 +5,8 @@ require 'view/part/base'
 module View
   module Part
     class LocationName < Base
+      LINE_HEIGHT = 15
+
       def preferred_render_locations
         if @tile.offboards.any?
           return [
@@ -16,7 +18,7 @@ module View
             {
               region_weights: TOP_MIDDLE_ROW,
               x: 0,
-              y: -24,
+              y: -(24 + delta_y),
             },
             {
               region_weights: BOTTOM_MIDDLE_ROW,
@@ -40,7 +42,7 @@ module View
             region_weights_out: { UPPER_CENTER => 1,
                                   [6, 10] => 0.25 },
             x: 0,
-            y: -40,
+            y: -(40 + delta_y),
           },
           {
             region_weights_in: { TRACK_TO_EDGE_0 => 1,
@@ -56,7 +58,7 @@ module View
       end
 
       def load_from_tile
-        @name = @tile.location_name
+        @name_segments = self.class.name_segments(@tile.location_name)
       end
 
       def render_part
@@ -69,7 +71,48 @@ module View
           'alignment-baseline': 'middle',
           'dominant-baseline': 'middle',
         }
-        h(:text, { attrs: attrs }, @name)
+
+        rendered_name = @name_segments.map.with_index do |segment, index|
+          x = 0
+          y = index * LINE_HEIGHT
+          h(:text, { attrs: { transform: "translate(#{x} #{y})" } }, segment)
+        end
+
+        h('g.location_name', { attrs: attrs }, rendered_name)
+      end
+
+      # adjustment for translation based on the number of segments in the name
+      #
+      # currently only used when the name is rendered above center, as new lines
+      # are added below the first one; names above center need to start higher
+      # up, but names below center don't
+      def delta_y
+        @delta_y ||= (@name_segments.size - 1) * LINE_HEIGHT
+      end
+
+      # split the location name to render across multiple lines; each "segment"
+      # that is returned gets rendered on its own line
+      def self.name_segments(name, max_size: 13)
+        return [name] if name.size <= max_size
+
+        segments = name.split(' ')
+
+        case segments.size
+        when 3
+          # join the middle word with the shorter of the first and last words;
+          # prefer joining with first if the first and last words are the same
+          # length
+          if segments[0].size > segments[2].size
+            [segments[0], segments.slice(1..2).join(' ')]
+          else
+            [segments.slice(0..1).join(' '), segments[2]]
+          end
+        when 4
+          # join first two words together, and join last two words together
+          [segments.slice(0..1).join(' '), segments.slice(2..3).join(' ')]
+        else
+          segments
+        end
       end
     end
   end
