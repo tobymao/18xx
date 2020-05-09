@@ -19,22 +19,16 @@ module Engine
           klass = Action.const_get(c)
           klass.split(klass).last.gsub(/(.)([A-Z])/, '\1_\2').downcase if klass.keep_on_undo?
         end.compact
-        pending_undos = 0
-        pending_redos = 0
 
-        actions.reverse_each.with_index do |action, index|
+        stack = []
+        actions.each.with_index do |action, index|
           if action['type'] == 'undo'
-            if pending_redos.zero?
-              pending_undos += action['steps']
-            else
-              pending_redos -= action['steps']
-            end
+            @undo_list.append(*stack.pop(action['steps']))
           elsif action['type'] == 'redo'
-            pending_redos += action['steps']
-          elsif !kept_actions.include?(action['type']) && pending_undos != 0
-            # action_id's start at 1, so don't remove the extra 1
-            @undo_list.append(actions.size - index)
-            pending_undos -= 1
+            @undo_list.pop(action['steps'])
+          elsif !kept_actions.include?(action['type'])
+            # action_id's start at 1
+            stack.append(index + 1)
           end
         end
       end
