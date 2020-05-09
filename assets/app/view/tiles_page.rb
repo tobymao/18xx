@@ -21,9 +21,9 @@ module View
     ].reduce(&:+)
 
     def render
-      game_title = @route.match(ROUTE_FORMAT)[1]
+      dest = @route.match(ROUTE_FORMAT)[1]
 
-      if game_title == 'all'
+      if dest == 'all'
         h('div#tiles', [
             h('div#all_tiles', [
                 h(:h1, 'Generic Map Hexes and All Track Tiles'),
@@ -31,11 +31,15 @@ module View
               ]),
 
           ])
-      else
-        game_class = Engine::GAMES_BY_TITLE[game_title]
+      elsif Engine::GAMES_BY_TITLE.keys.include?(dest)
+        game_class = Engine::GAMES_BY_TITLE[dest]
         h('div#tiles', [
             map_hexes_for(game_class)
           ])
+      elsif TILE_IDS.include?(dest)
+        render_tile_block(dest, scale: 5.0)
+      else
+        h(:p, "Bad tile dest: \#{dest}\"; should be \"all\", a valid game title, or a valid tile name/number")
       end
     end
 

@@ -17,11 +17,13 @@ If configuring the droplet from scratch, these are the requirements:
 
 Some app routes that may be of interest to developers:
 
+* `/map/<game_title>` - renders the given game's map
 * `/tiles/all` - renders all of the track tiles (and generic map hex "tiles")
   defined in `lib/engine/tile.rb`
 * `/tiles/<game_title>` - renders all of the track tiles (and map hex "tiles")
   for the given game
-* `/map/<game_title>` - renders the given game's map
+* `/tiles/<tile_name>` - renders a single tile at large scale (tile must be
+  defined in `lib/engine/tile.rb`)
 
 ### Docker
 
