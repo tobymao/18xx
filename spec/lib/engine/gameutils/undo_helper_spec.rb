@@ -31,7 +31,7 @@ module Engine
       it 'should process undo multiple steps and ignore keep on undo actions' do
         initial_actions.last['steps'] = 2
         subject.process_actions(initial_actions)
-        expect(subject.undo_list).to eq([3, 1])
+        expect(subject.undo_list).to eq([1, 3])
       end
 
       it 'should process undo and redos' do
