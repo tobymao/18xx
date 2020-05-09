@@ -33,9 +33,9 @@ module Engine
 
       def to_h
         {
-          'type' => self.class.type_s(self.class),
+          'type' => type_s(self),
           'entity' => entity.id,
-          'entity_type' => self.class.type_s(entity.class),
+          'entity_type' => type_s(entity),
           'id' => @id,
           **args_to_h,
         }
@@ -53,13 +53,10 @@ module Engine
         self.class.from_h(to_h, game)
       end
 
-      # Does an undo/redo not apply to this action?
-      def self.keep_on_undo?
-        false
-      end
+      private
 
-      def self.type_s(klass)
-        split(klass).last.gsub(/(.)([A-Z])/, '\1_\2').downcase
+      def type_s(obj)
+        self.class.split(obj.class).last.gsub(/(.)([A-Z])/, '\1_\2').downcase
       end
     end
   end
