@@ -17,6 +17,7 @@ GEM
       ffi (>= 1.0.0)
       rake
     jaro_winkler (1.5.4)
+    kgio (2.11.3)
     libv8 (7.3.492.27.1)
     listen (3.2.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
@@ -26,7 +27,6 @@ GEM
     method_source (1.0.0)
     mini_racer (0.2.10)
       libv8 (> 7.3)
-    nio4r (2.5.2)
     opal (1.0.3)
       ast (>= 2.3.0)
       parser (~> 2.6)
@@ -40,10 +40,9 @@ GEM
     pry-byebug (3.9.0)
       byebug (~> 11.0)
       pry (~> 0.13.0)
-    puma (4.3.3)
-      nio4r (~> 2.0)
     rack (2.2.2)
     rainbow (3.0.0)
+    raindrops (0.19.1)
     rake (13.0.1)
     rb-fsevent (0.10.3)
     rb-inotify (0.10.1)
@@ -86,6 +85,9 @@ GEM
     uglifier (4.2.0)
       execjs (>= 0.3.0, < 3)
     unicode-display_width (1.6.1)
+    unicorn (5.5.5)
+      kgio (~> 2.6)
+      raindrops (~> 0.7)
 
 PLATFORMS
   ruby
@@ -93,12 +95,10 @@ PLATFORMS
 DEPENDENCIES
   argon2
   c_lexer
-  execjs
   message_bus
   mini_racer
   opal
   pry-byebug
-  puma
   rake
   require_all
   rerun
@@ -111,6 +111,7 @@ DEPENDENCIES
   snabberb
   tilt
   uglifier
+  unicorn
 
 BUNDLED WITH
    2.1.4
