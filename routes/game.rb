@@ -211,7 +211,7 @@ class Api
     users.each do |user|
       user.settings['email_sent'] = Time.now.to_i
       user.save
-      Mail.send(user, "18xx.games Game: #{game.title} - #{game.id} - #{data['type']}", html)
+      # Mail.send(user, "18xx.games Game: #{game.title} - #{game.id} - #{data['type']}", html)
     end
   end
 end
