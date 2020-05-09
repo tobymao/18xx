@@ -73,12 +73,10 @@ module Engine
 
       # Process a non-pass action.
       def _process_action(bid)
-        @last_to_act = @current_entity unless @auctioning_company
         if @auctioning_company
-          # We're in the middle of a limited auction.
           add_bid(bid)
         else
-          # We're in the outer loop, either placing advanced bids or buying the first company outright.
+          @last_to_act = @current_entity
           placement_bid(bid)
         end
       end
