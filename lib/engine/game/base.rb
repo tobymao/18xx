@@ -9,7 +9,6 @@ else
   require_rel '../round'
 end
 
-require_relative '../gameutils/undo_helper'
 require_relative '../bank'
 require_relative '../company'
 require_relative '../corporation'
@@ -27,7 +26,7 @@ module Engine
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :hexes, :id, :log, :phase, :players, :round,
-                  :share_pool, :special, :stock_market, :tiles, :turn, :ignored_actions
+                  :share_pool, :special, :stock_market, :tiles, :turn
 
       BANK_CASH = 12_000
 
@@ -166,7 +165,7 @@ module Engine
         cache_objects
         connect_hexes
 
-        @undo_helper = GameUtils::UndoHelper.new(actions)
+        process_undos(actions)
         # replay all actions with a copy
         actions.each do |action|
           action = action.copy(self) if action.is_a?(Action::Base)
@@ -194,14 +193,41 @@ module Engine
         @round.active_entities.map(&:owner)
       end
 
+      def process_undos(actions)
+        @undo_list = []
+        @last_known_undo = 0
+
+        stack = []
+        actions.each.with_index do |action, index|
+          # action_id's start at 1, so always add one to the index
+          if action['type'] == 'undo'
+            @last_known_undo = index + 1
+            @undo_list << stack.pop
+          elsif action['type'] == 'redo'
+            @last_known_undo = index + 1
+            @undo_list.pop
+          elsif action['type'] != 'message'
+            # Adding more types of action here will break existing games
+
+            stack.append(index + 1)
+          end
+        end
+      end
+
       def process_action(action)
         return self if @finished
 
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
-        if @undo_helper.ignore_action?(action)
+
+        if @undo_list.include?(action.id)
           @actions << action
-          return clone(@actions) if @undo_helper.needs_reprocessing?(action)
+          return self
+        end
+
+        if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
+          @actions << action
+          return clone(@actions) if action.id > @last_known_undo
 
           return self
         end

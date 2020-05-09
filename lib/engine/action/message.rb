@@ -19,10 +19,6 @@ module Engine
       def args_to_h
         { 'message' => @message }
       end
-
-      def self.keep_on_undo?
-        true
-      end
     end
   end
 end

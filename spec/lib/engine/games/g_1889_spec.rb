@@ -9,6 +9,61 @@ require 'json'
 module Engine
   describe Game::G1889 do
     let(:players) { %w[a b] }
+
+    let(:actions) do
+      [
+        { 'type' => 'pass', 'entity' => 'a', 'entity_type' => 'player' },
+        { 'type' => 'message', 'entity' => 'a', 'entity_type' => 'player', 'message' => 'testing' },
+        { 'type' => 'pass', 'entity' => 'b', 'entity_type' => 'player' },
+        { 'type' => 'undo', 'entity' => 'a', 'entity_type' => 'player' },
+      ]
+    end
+
+    context 'on init with actions' do
+      let(:players) { %w[a b c] }
+      subject(:subject_with_actions) { Game::G1889.new(players, actions: actions) }
+      it 'should process constructor actions' do
+        expect(subject_with_actions.actions.size).to be 4
+        expect(subject_with_actions.current_entity.name).to be players[1]
+      end
+
+      it 'should process extra actions' do
+        action = Engine::Action::Pass.new(subject_with_actions.current_entity)
+        subject_with_actions.process_action(action)
+        expect(subject_with_actions.actions.size).to be 5
+        expect(subject_with_actions.current_entity.name).to be players[2]
+      end
+
+      it 'should return a new game when processing a undo' do
+        action = Engine::Action::Undo.new(subject_with_actions.current_entity)
+        game2 = subject_with_actions.process_action(action)
+        expect(subject_with_actions).not_to eq(game2)
+        expect(game2.actions.size).to be 5
+        expect(game2.current_entity.name).to be players[0]
+      end
+
+      it 'should return a new game when processing a redo' do
+        action = Engine::Action::Redo.new(subject_with_actions.current_entity)
+        game2 = subject_with_actions.process_action(action)
+        expect(subject_with_actions).not_to eq(game2)
+        expect(game2.actions.size).to be 5
+        expect(game2.current_entity.name).to be players[2]
+      end
+
+      it 'should return a new game when processing each undo/redo' do
+        action = Engine::Action::Undo.new(subject_with_actions.current_entity)
+        game2 = subject_with_actions.process_action(action)
+        expect(subject_with_actions).not_to eq(game2)
+        expect(game2.actions.size).to be 5
+        expect(game2.current_entity.name).to be players[0]
+        action = Engine::Action::Redo.new(game2.current_entity)
+        game3 = game2.process_action(action)
+        expect(game2).not_to eq(game3)
+        expect(game3.actions.size).to be 6
+        expect(game3.current_entity.name).to be players[1]
+      end
+    end
+
     subject { Game::G1889.new(players) }
 
     context 'on init' do
@@ -25,22 +80,6 @@ module Engine
         expect(subject.round.entities).to eq(subject.players)
         expect(subject.round.current_entity).to eq(subject.players.first)
         expect(subject.current_entity).to eq(subject.players.first)
-      end
-    end
-
-    context 'on init with actions' do
-      let(:initial_actions) do
-        [
-          { 'type' => 'pass', 'entity' => 'a', 'entity_type' => 'player' },
-          { 'type' => 'message', 'entity' => 'a', 'entity_type' => 'player', 'message' => 'testing' },
-          { 'type' => 'pass', 'entity' => 'b', 'entity_type' => 'player' },
-          { 'type' => 'undo', 'entity' => 'a', 'entity_type' => 'player', 'steps' => 1 },
-        ]
-      end
-      subject { Game::G1889.new(players, actions: initial_actions) }
-      it 'should process constructor actions' do
-        expect(subject.actions.size).to be 4
-        expect(subject.current_entity.name).to be players[1]
       end
     end
 
