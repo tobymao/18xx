@@ -103,7 +103,7 @@ module View
         ]),
       ]
 
-      if @game.players.find_index(@player).zero?
+      if @player == @game.priority_deal_player
         trs << h(:tr, [
           h(:td, { attrs: { colspan: '2' }, style: { 'text-align': 'center' } }, 'Priority Deal'),
         ])

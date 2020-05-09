@@ -17,8 +17,16 @@ module Engine
 
         @bids = Hash.new { |h, k| h[k] = [] }
         @bidders = Hash.new { |h, k| h[k] = [] }
-        @auctioning_company = nil
+
+        # The player after this one will have priority deal next round
+        # if everyone passes.
         @last_to_act = nil
+
+        # The company currently up for limited auction, or nil.
+        @auctioning_company = nil
+
+        # The player who kicked off the limited auction, or nil.
+        @auction_triggerer = nil
       end
 
       def name
@@ -63,24 +71,33 @@ module Engine
         @entities.all?(&:passed?)
       end
 
+      # Process a non-pass action.
       def _process_action(bid)
         if @auctioning_company
           add_bid(bid)
         else
+          @last_to_act = @current_entity
           placement_bid(bid)
         end
       end
 
+      # A non-pass action has been completed.
+      # Everybody has a chance to act in the future so we clear their passed flags.
       def action_processed(_action)
         @entities.each(&:unpass!)
       end
 
+      # An action (either pass or not) has been completed and we move on
+      # to the next player.
       def change_entity(_action)
         if (bids = @bids[@auctioning_company]).any?
+          # There are still remaining bids on a limited auction. The
+          # lowest-bidding remaining player goes next.
           @current_entity = bids.min_by(&:price).entity
         else
-          # if someone bought a share outright, then we find the next person who hasn't passed
-          @current_entity = @last_to_act if @last_to_act
+          # If we just exited a limited auction, move to the player after the
+          # one who triggered it.
+          @current_entity = @auction_triggerer if @auction_triggerer
 
           loop do
             @current_entity = next_entity
@@ -89,11 +106,15 @@ module Engine
         end
       end
 
+      # We've already moved on to the next player at this point and just
+      # need to clean up.
       def action_finalized(_action)
-        @last_to_act = nil if @bids[@companies.first].empty? && !finished?
+        @auction_triggerer = nil if @bids[@companies.first].empty? && !finished?
         return if !all_passed? || finished?
 
+        # Everyone has passed so we need to run a fake OR.
         if @companies.include?(@cheapest)
+          # No one has bought anything so we reduce the value of the cheapest company.
           value = @cheapest.min_bid
           @cheapest.discount += 5
           new_value = @cheapest.min_bid
@@ -101,6 +122,7 @@ module Engine
                   "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
 
           if new_value <= 0
+            # It's now free so the current player is forced to take it.
             buy_company(@current_entity, @cheapest, 0)
             resolve_bids
             change_entity(nil)
@@ -112,6 +134,9 @@ module Engine
       end
 
       def pass_processed(_action)
+        return unless @auctioning_company
+
+        # Remove ourselves from the current bidding, but we can come back in.
         @bids[@auctioning_company]&.reject! do |bid|
           @current_entity.unpass!
           bid.entity == @current_entity
@@ -121,7 +146,7 @@ module Engine
 
       def placement_bid(bid)
         if @companies.first == bid.company
-          @last_to_act = bid.entity
+          @auction_triggerer = bid.entity
           accept_bid(bid)
           resolve_bids
         else
@@ -136,8 +161,10 @@ module Engine
           if bids.size == 1
             accept_bid(bids.first)
           else
-            @auctioning_company = @companies.first
-            @log << "#{@auctioning_company.name} goes up for auction"
+            if @auctioning_company != @companies.first
+              @auctioning_company = @companies.first
+              @log << "#{@auctioning_company.name} goes up for auction"
+            end
             break
           end
         end
