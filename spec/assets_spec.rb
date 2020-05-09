@@ -25,8 +25,11 @@ describe 'Assets' do
       expect(render(app_route: '/about')).to include('created and maintained')
     end
 
-    it 'renders all_tiles' do
-      expect(render(app_route: '/all_tiles')).to include('Generic Map Hexes')
+    it 'renders tiles' do
+      expect(render(app_route: '/tiles/all')).to include('Generic Map Hexes')
+      expect(render(app_route: '/tiles/57')).to include('57')
+      expect(render(app_route: '/tiles/18Chesapeake')).to include('I9')
+      expect(render(app_route: '/tiles/18Chesapeake/I9')).to include('I9')
     end
 
     it 'renders login' do
