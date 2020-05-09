@@ -18,7 +18,7 @@ module View
           'New York & Newark' => ['New York', '& Newark'],
           'New York' => ['New York'],
           'Philadelphia & Trenton' => ['Philadelphia', '& Trenton'],
-          'Ritsurin Kouen' => ['Ritsurin', 'Kouen'],
+          'Ritsurin Kouen' => %w[Ritsurin Kouen],
           'West Virginia Coal' => ['West Virginia', 'Coal'],
         }.each do |name, expected|
           it "returns #{expected} for input \"#{name}\"" do
