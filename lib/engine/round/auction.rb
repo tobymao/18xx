@@ -146,12 +146,10 @@ module Engine
 
       def placement_bid(bid)
         if @companies.first == bid.company
-          # We're buying the first company.
           @auction_triggerer = bid.entity
           accept_bid(bid)
           resolve_bids
         else
-          # We're placing a bid on a later company.
           add_bid(bid)
         end
       end
