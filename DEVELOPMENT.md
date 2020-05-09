@@ -24,6 +24,8 @@ Some app routes that may be of interest to developers:
   for the given game
 * `/tiles/<tile_name>` - renders a single tile at large scale (tile must be
   defined in `lib/engine/tile.rb`)
+* `/tiles/<game_title>/<hex_coord>` - renders a single hex from the game's map
+  at large scale
 
 ### Docker
 

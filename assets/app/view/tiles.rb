@@ -19,18 +19,18 @@ module View
 
       h(:div, props, [
           h(:div, { style: { 'text-align': 'center', 'font-size': '12px' } }, text),
-        h(:svg, { style: { width: '100%', height: '100%' } }, [
-          h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
-            h(
-              Hex,
-              hex: Engine::Hex.new('A1',
-                                   layout: 'flat',
-                                   location_name: location_name,
-                                   tile: tile || Engine::Tile.for(name)),
-              role: :tile_page
-            )
+          h(:svg, { style: { width: '100%', height: '100%' } }, [
+            h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
+              h(
+                Hex,
+                hex: Engine::Hex.new('A1',
+                                     layout: 'flat',
+                                     location_name: location_name,
+                                     tile: tile || Engine::Tile.for(name)),
+                role: :tile_page
+              )
+            ])
           ])
-        ])
       ])
     end
   end
