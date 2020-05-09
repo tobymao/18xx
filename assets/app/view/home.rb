@@ -23,9 +23,11 @@ module View
 
       # Ready, then active, then unstarted.
       your_games.sort_by! do |game|
-        [user_is_acting?(@user, game) ? -2 : 2,
-         game['status'] != 'new' ? -1 : 1,
-         game['id']]
+        [
+          user_is_acting?(@user, game) ? -2 : 2,
+          game['status'] != 'new' ? -1 : 1,
+          -game['id']
+        ]
       end
 
       hotseat = Lib::Storage
