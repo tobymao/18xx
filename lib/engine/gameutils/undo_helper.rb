@@ -11,6 +11,7 @@ module Engine
 
       def process_actions(actions)
         @undo_list = []
+        @last_known_undo = 0
         return if actions.nil?
 
         # List of actions that undo does not apply to
@@ -22,8 +23,10 @@ module Engine
         stack = []
         actions.each.with_index do |action, index|
           if action['type'] == 'undo'
+            @last_known_undo = index + 1
             @undo_list.append(*stack.pop(action['steps']))
           elsif action['type'] == 'redo'
+            @last_known_undo = index
             @undo_list.pop(action['steps'])
           elsif !kept_actions.include?(action['type'])
             # action_id's start at 1
@@ -47,9 +50,8 @@ module Engine
       end
 
       # Would this action cause the undo list to change?
-      def needs_reprocessing?(_action)
-        # to implement
-        false
+      def needs_reprocessing?(action)
+        (action.is_a?(Action::Undo) || action.is_a?(Action::Redo)) && (action.id > @last_known_undo)
       end
     end
   end

@@ -46,6 +46,30 @@ module Engine
         expect(subject.undo_list).to eq([])
       end
     end
+
+    describe '#needs_reprocessing?' do
+      it "should return false for actions that aren't redo or undo" do
+        subject.process_actions(initial_actions)
+        action = Engine::Action::Pass.new(player)
+        action.id = 10
+        expect(subject.needs_reprocessing?(action)).to be false
+      end
+
+      it 'should return false for existing actions' do
+        subject.process_actions(initial_actions)
+        action = Engine::Action::Redo.new(player, 1)
+        action.id = 2
+        expect(subject.needs_reprocessing?(action)).to be false
+      end
+
+      it 'should return true if action is newer' do
+        subject.process_actions(initial_actions)
+        action = Engine::Action::Redo.new(player, 1)
+        action.id = 10
+        expect(subject.needs_reprocessing?(action)).to be true
+      end
+    end
+
     describe '#ignore_action?' do
       it 'should return true for Undo objects' do
         action = Engine::Action::Undo.new(player, 1)
