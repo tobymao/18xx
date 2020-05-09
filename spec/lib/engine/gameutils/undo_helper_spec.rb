@@ -2,9 +2,11 @@
 
 require './spec/spec_helper'
 require 'engine/gameutils/undo_helper'
+require 'engine/player'
 
 module Engine
   describe GameUtils::UndoHelper do
+    let(:player) { Player.new('a') }
     let(:initial_actions) do
       [
         { 'type' => 'pass', 'entity' => 'a', 'entity_type' => 'player' },
@@ -26,7 +28,7 @@ module Engine
         expect(subject.undo_list).to eq([3])
       end
 
-      it 'should process undo multiple steps and ignore keep on undo actions', skip: true do
+      it 'should process undo multiple steps and ignore keep on undo actions' do
         initial_actions.last['steps'] = 2
         subject.process_actions(initial_actions)
         expect(subject.undo_list).to eq([3, 1])
@@ -39,25 +41,25 @@ module Engine
       end
 
       it 'should process objects as well as hashes' do
-        initial_actions << Engine::Action::Redo.new(nil, 1)
+        initial_actions << Engine::Action::Redo.new(player, 1)
         subject.process_actions(initial_actions)
         expect(subject.undo_list).to eq([])
       end
     end
     describe '#ignore_action?' do
       it 'should return true for Undo objects' do
-        action = Engine::Action::Undo.new(nil, 1)
+        action = Engine::Action::Undo.new(player, 1)
         expect(subject.ignore_action?(action)).to be true
       end
 
       it 'should return true for Redo objects' do
-        action = Engine::Action::Redo.new(nil, 1)
+        action = Engine::Action::Redo.new(player, 1)
         expect(subject.ignore_action?(action)).to be true
       end
 
       it 'should return false for objects with action.id not in undo list' do
         subject.process_actions(initial_actions)
-        action = Engine::Action::Pass.new(nil)
+        action = Engine::Action::Pass.new(player)
         action.id = 0
         expect(subject.ignore_action?(action)).to be false
       end

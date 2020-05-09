@@ -222,7 +222,9 @@ module Engine
       end
 
       def action_from_h(h)
-        Action::Base.construct_from_h(h, self)
+        Object
+          .const_get("Engine::Action::#{Action::Base.type(h['type'])}")
+          .from_h(h, self)
       end
 
       def clone(actions)
