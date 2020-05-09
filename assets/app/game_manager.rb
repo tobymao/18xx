@@ -115,6 +115,10 @@ module GameManager
     game[:mode] == :hotseat || game[:user][:id] == user&.dig(:id)
   end
 
+  def user_is_acting?(user, game)
+    game['acting'].include?(user&.dig('id'))
+  end
+
   protected
 
   def url(game, path = '')
