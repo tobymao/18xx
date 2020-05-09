@@ -33,9 +33,9 @@ module Engine
 
       def to_h
         {
-          'type' => type_s(self),
+          'type' => self.class.type_s(self.class),
           'entity' => entity.id,
-          'entity_type' => type_s(entity),
+          'entity_type' => self.class.type_s(entity.class),
           'id' => @id,
           **args_to_h,
         }
@@ -58,10 +58,8 @@ module Engine
         false
       end
 
-      private
-
-      def type_s(obj)
-        self.class.split(obj.class).last.gsub(/(.)([A-Z])/, '\1_\2').downcase
+      def self.type_s(klass)
+        split(klass).last.gsub(/(.)([A-Z])/, '\1_\2').downcase
       end
     end
   end
