@@ -196,21 +196,34 @@ module Engine
       Tile.new(name, color: color, parts: decode(code), **opts)
     end
 
+    def self.connection_from_code(code, cache)
+      case code[0]
+      when '_'
+        cache[code[1..-1].to_i]
+      when 'j'
+        Part::Junction.new
+      else
+        Part::Edge.new(code)
+      end
+    end
+
+    def self.gauge_from_code(code)
+      case code
+      when 'n'
+        :narrow
+      when 'd'
+        :dual
+      else
+        :broad
+      end
+    end
+
     def self.part(type, params, cache)
       case type
       when 'p'
-        params = params.map do |k, v|
-          case v[0]
-          when '_'
-            [k, cache[v[1..-1].to_i]]
-          when 'j'
-            [k, Part::Junction.new]
-          else
-            [k, Part::Edge.new(v)]
-          end
-        end.to_h
-
-        Part::Path.new(params['a'], params['b'])
+        Part::Path.new(Tile.connection_from_code(params['a'], cache),
+                       Tile.connection_from_code(params['b'], cache),
+                       Tile.gauge_from_code(params.fetch('g', 'b')))
       when 'c'
         city = Part::City.new(params['r'], params.fetch('s', 1))
         cache << city
