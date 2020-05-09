@@ -6,24 +6,37 @@ require 'view/tile_manifest'
 require 'view/tiles'
 
 module View
-  class AllTiles < Tiles
+  class TilesPage < Tiles
+    needs :route
+
+    ROUTE_FORMAT = %r{/tiles/(.*)}.freeze
+
     TILE_IDS = [
       Engine::Tile::WHITE.keys,
       Engine::Tile::YELLOW.keys,
       Engine::Tile::GREEN.keys,
       Engine::Tile::BROWN.keys,
       Engine::Tile::GRAY.keys,
+      Engine::Tile::RED.keys,
     ].reduce(&:+)
 
     def render
-      h('div#tiles', [
-          h('div#all_tiles', [
-              h(:h1, 'Generic Map Hexes and All Track Tiles'),
-              *TILE_IDS.map { |t| render_tile_block(t) }
-            ]),
+      game_title = @route.match(ROUTE_FORMAT)[1]
 
-          *Engine::GAMES.map { |g| map_hexes_for(g) }
-        ])
+      if game_title == 'all'
+        h('div#tiles', [
+            h('div#all_tiles', [
+                h(:h1, 'Generic Map Hexes and All Track Tiles'),
+                *TILE_IDS.map { |t| render_tile_block(t) }
+              ]),
+
+          ])
+      else
+        game_class = Engine::GAMES_BY_TITLE[game_title]
+        h('div#tiles', [
+            map_hexes_for(game_class)
+          ])
+      end
     end
 
     def map_hexes_for(game_class)
