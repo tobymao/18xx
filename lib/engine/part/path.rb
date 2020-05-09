@@ -5,11 +5,14 @@ require_relative 'base'
 module Engine
   module Part
     class Path < Base
-      attr_reader :a, :b, :branch, :city, :edges, :junction, :offboard, :stop, :town
+      attr_reader :a, :b, :gauge, :branch, :city, :edges, :junction, :offboard, :stop, :town
 
-      def initialize(a, b)
+      GAUGES = %i[broad narrow dual].freeze
+
+      def initialize(a, b, gauge = :broad)
         @a = a
         @b = b
+        @gauge = gauge
         @edges = []
 
         separate_parts
