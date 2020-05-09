@@ -26,12 +26,16 @@ module Engine
     # rubocop:disable Layout/LineLength
     WHITE = {
       'blank' => '',
-      'town' => 't=r:0',
-      'city' => 'c=r:0',
       'wtr40' => 'u=c:40,t:water',
       'mtn80' => 'u=c:80,t:mountain',
       'wtr80' => 'u=c:80,t:water',
       'mtn+wtr80' => 'u=c:80,t:mountain+water',
+      'town' => 't=r:0',
+      'town_wtr40' => 't=r:0;u=c:40,t:water',
+      'double_town' => 't=r:0;t=r:0',
+      'city' => 'c=r:0',
+      'city_wtr40' => 'c=r:0;u=c:40,t:water',
+      'city_mtn80' => 'c=r:0;u=c:80,t:mountain',
     }.freeze
 
     YELLOW = {
