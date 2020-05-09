@@ -14,10 +14,9 @@ module Engine
         return if actions.nil?
 
         # List of actions that undo does not apply to
-        # TODO not happy about this, duping code from action
         kept_actions = Action.constants.map do |c|
           klass = Action.const_get(c)
-          klass.split(klass).last.gsub(/(.)([A-Z])/, '\1_\2').downcase if klass.keep_on_undo?
+          klass.type_s(klass) if klass.keep_on_undo?
         end.compact
 
         stack = []
