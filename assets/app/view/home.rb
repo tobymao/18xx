@@ -21,6 +21,13 @@ module View
       your_games, other_games = @games.partition { |game| user_in_game?(@user, game) }
       grouped = other_games.group_by { |game| game['status'] }
 
+      # Ready, then active, then unstarted.
+      your_games.sort_by! do |game|
+        [user_is_acting?(@user, game) ? -2 : 2,
+         game['status'] != 'new' ? -1 : 1,
+         game['id']]
+      end
+
       hotseat = Lib::Storage
         .all_keys
         .select { |k| k.start_with?('hs_') }
