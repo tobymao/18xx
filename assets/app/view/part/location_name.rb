@@ -103,13 +103,13 @@ module View
           # prefer joining with first if the first and last words are the same
           # length
           if segments[0].size > segments[2].size
-            [segments[0], segments.slice(1..2).join(' ')]
+            [segments[0], segments[1..2].join(' ')]
           else
-            [segments.slice(0..1).join(' '), segments[2]]
+            [segments[0..1].join(' '), segments[2]]
           end
         when 4
           # join first two words together, and join last two words together
-          [segments.slice(0..1).join(' '), segments.slice(2..3).join(' ')]
+          segments.each_slice(2).map { |pair| pair.join(' ') }
         else
           segments
         end
