@@ -11,7 +11,7 @@ module View
     def render
       return h(:div) unless (ability = @selected_company&.abilities(:exchange))
 
-      corporation = @game.corporation_by_id(ability[:corporation])
+      corporation = @game.corporation_by_id(ability[:corporation]&.to_s)
       share = corporation.shares.find { |s| !s.president }
 
       return h(:div) unless share

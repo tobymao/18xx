@@ -75,7 +75,7 @@ module View
 
         # Allow privates to be exchanged for shares
         exchangable = @game.companies.select do |n|
-          n.abilities(:exchange)&.fetch(:corporation) == @selected_corporation.name &&
+          n.abilities(:exchange)&.fetch(:corporation)&.to_s == @selected_corporation.name &&
           @round.can_gain?(ipo_share, n.owner)
         end
         exchangable.each do |company|
