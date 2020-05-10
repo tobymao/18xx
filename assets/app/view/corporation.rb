@@ -187,18 +187,18 @@ module View
           }
         }
 
-        player_share_props = {
+        sold_props = {
           style: {
             padding: '0 0.5rem',
             'line-height': '1.25rem',
-            color: did_sell ? '#d00' : 'black',
+            'font-style': 'italic',
           }
         }
 
         h(:tr, [
           h(:td, name_props, player.name),
-          h(:td, player_share_props, "#{num_shares}#{president ? '*' : ''}"),
-          h(:td, td_props, ''),
+          h(:td, td_props, "#{num_shares}#{president ? '*' : ''}"),
+          h(:td, sold_props, did_sell ? 'Sold' : ''),
         ])
       end
 
