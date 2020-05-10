@@ -25,8 +25,20 @@ describe 'Assets' do
       expect(render(app_route: '/about')).to include('created and maintained')
     end
 
-    it 'renders all_tiles' do
-      expect(render(app_route: '/all_tiles')).to include('Generic Map Hexes')
+    it 'renders tiles' do
+      expect(render(app_route: '/tiles/all')).to include('Generic Map Hexes')
+      expect(render(app_route: '/tiles/all')).not_to include('TODO')
+
+      expect(render(app_route: '/tiles/57')).to include('57')
+      expect(render(app_route: '/tiles/18Chesapeake')).to include('I9')
+      expect(render(app_route: '/tiles/18Chesapeake/I9')).to include('I9')
+      expect(render(app_route: '/tiles/18Chesapeake/X1')).to include('X1')
+
+      %w[1830 1889 18Chesapeake].each do |title|
+        expect(render(app_route: "/tiles/#{title}")).to include("#{title} Map Hexes")
+        expect(render(app_route: "/tiles/#{title}")).to include("#{title} Tile Manifest")
+        expect(render(app_route: "/tiles/#{title}")).not_to include('TODO')
+      end
     end
 
     it 'renders login' do

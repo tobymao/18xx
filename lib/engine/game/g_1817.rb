@@ -77,8 +77,16 @@ module Engine
         '597' => 4,
         '611' => 2,
         '619' => 8,
-        'X00' => 1,
-        'X30' => 1,
+        'X00' => {
+          count: 1,
+          color: :yellow,
+          code: 'c=r:30,s:1;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
+        },
+        'X30' => {
+          count: 1,
+          color: :gray,
+          code: 'c=r:100,s:4;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=NY',
+        },
       }.freeze
 
       LOCATION_NAMES = {

@@ -125,7 +125,7 @@ module Engine
         'C17' => 'Windsor',
         'C21' => 'Buffalo',
         'D14' => 'Toledo',
-        'D20' => 'ERIE',
+        'D20' => 'Erie',
         'D22' => 'Buffalo',
         'E11' => 'Fort Wayne',
         'E17' => 'Cleveland',

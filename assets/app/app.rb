@@ -12,7 +12,7 @@ require 'view/flash'
 require 'view/game'
 require 'view/map_page'
 require 'view/navigation'
-require 'view/all_tiles'
+require 'view/tiles_page'
 require 'view/user'
 
 class App < Snabberb::Component
@@ -55,8 +55,8 @@ class App < Snabberb::Component
         h(View::User, user: @user, type: :profile)
       when /about/
         h(View::About)
-      when /all_tiles/
-        h(View::AllTiles)
+      when /tiles/
+        h(View::TilesPage, route: @app_route)
       when /map/
         h(View::MapPage, route: @app_route)
       else
