@@ -171,21 +171,33 @@ module View
         }
       }
 
-      player_rows = @game
+      player_info = @game
         .players
-        .map { |p| [p, @corporation.president?(p), p.num_shares_of(@corporation)] }
-        .select { |_, _, num_shares| num_shares.positive? }
-        .sort_by { |_, president, num_shares| [president ? 0 : 1, -num_shares] }
-        .map do |player, president, num_shares|
+        .map do |p|
+          [p, @corporation.president?(p), p.num_shares_of(@corporation), @game.round.did_sell?(@corporation, p)]
+        end
+
+      player_rows = player_info
+        .select { |_, _, num_shares, did_sell| num_shares.positive? || did_sell }
+        .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
+        .map do |player, president, num_shares, did_sell|
         name_props = {
           style: {
             padding: '0 0.3rem'
           }
         }
 
+        player_share_props = {
+          style: {
+            padding: '0 0.5rem',
+            'line-height': '1.25rem',
+            color: did_sell ? '#d00' : 'black',
+          }
+        }
+
         h(:tr, [
           h(:td, name_props, player.name),
-          h(:td, td_props, "#{num_shares}#{president ? '*' : ''}"),
+          h(:td, player_share_props, "#{num_shares}#{president ? '*' : ''}"),
           h(:td, td_props, ''),
         ])
       end
