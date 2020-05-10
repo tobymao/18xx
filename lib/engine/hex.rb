@@ -4,7 +4,7 @@ require_relative 'connection'
 
 module Engine
   class Hex
-    attr_reader :connections, :coordinates, :layout, :neighbors, :tile, :x, :y, :location_name
+    attr_reader :coordinates, :layout, :neighbors, :paths, :tile, :x, :y, :location_name
 
     DIRECTIONS = {
       flat: {
@@ -68,9 +68,8 @@ module Engine
         city.reservations.clear
       end
 
-      disconnect!
+      puts "*** lay tile #{@tile.hex.name} ***"
 
-      puts "** laying #{@tile.hex.name}"
       @tile.hex = nil
       tile.hex = self
 

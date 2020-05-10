@@ -11,7 +11,7 @@ module Engine
         @num = num.to_i
       end
 
-      def matches?(other)
+      def <=(other)
         other.edge? && (@num == other.num)
       end
 

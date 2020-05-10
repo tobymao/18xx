@@ -45,7 +45,7 @@ module Engine
       end
 
       hexes.default = nil
-      puts hexes
+      # puts hexes
 
       hexes
     end
@@ -59,27 +59,23 @@ module Engine
       hex = path.hex
       edge = path.exits[0]
 
-      connections = hex.connections[edge]
-
       neighbor = hex.neighbors[edge]
       n_edge = hex.invert(edge)
       n_connections = neighbor.connections[n_edge]
 
       if n_connections.any?
         n_connections.each do |connection|
-          next if connections.include?(connection)
-
-          connections << connection
+          hex.connections[edge] |= [connection]
           connection.add_path(path)
-          puts "adding connection from neighbors #{n_edge} #{connection}"
+          puts "adding connection from neighbors #{edge} #{connection.inspect}"
         end
       else
-        connections << Connection.new(path)
+        hex.connections[edge] << Connection.new(path)
 
         neighbor.tile.paths.each do |p|
           connect!(p) if p.exits.include?(n_edge)
         end
-        puts "new connection #{edge} - #{n_edge} #{connections.inspect}"
+        puts "new connection #{edge} #{hex.connections[edge].inspect}"
       end
     end
 
@@ -99,13 +95,13 @@ module Engine
         .map { |c| c.extract_path!(path) }
 
       merge(connections_a, connections_b).each do |connection|
-        puts "** adding path #{path.hex.name} #{path.exits}"
+        puts "** adding path #{path.hex.name} #{path.exits} to #{connection.inspect}"
         connection.add_path(path)
 
         connection.paths.each do |path|
           puts "** adding connection to hex #{path.hex.name} #{path.exits} #{connection.inspect}"
           path.exits.each do |edge|
-            path.hex.connections[edge] << connection
+            path.hex.connections[edge] |= [connection]
           end
         end
       end
@@ -113,7 +109,6 @@ module Engine
 
     def self.merge(connections_a, connections_b)
       if connections_a.any? && connections_b.any?
-        puts "both exists"
         connections_a.flat_map do |connection_a|
           connections_b.map do |connection_b|
             Connection.new(connection_a.paths | connection_b.paths)
@@ -135,11 +130,8 @@ module Engine
     end
 
     def add_path(path)
-      raise 'Duplicate path' if @paths.include?(path)
-
-      @paths << path
+      @paths |= [path]
       clear_cache
-
       raise "Connection cannot have more than two nodes" if nodes.size > 2
     end
 
@@ -150,14 +142,16 @@ module Engine
     def clear_cache
       @nodes = nil
       @hexes = nil
+      @connections = nil
     end
 
     def extract_path!(path)
-      return branch(path) if hexes.include?(path.hex)
-
-      @paths.each do |p|
-        p.exits.each { |edge| p.hex.connections[edge].delete(self) }
+      if hexes.include?(path.hex)
+        branch = branch(path)
+        puts "branch #{branch.inspect}"
+        branch
       end
+      puts "no branch #{inspect}"
 
       self
     end
@@ -195,8 +189,12 @@ module Engine
       @hexes ||= @paths.map(&:hex)
     end
 
+    def include?(hex)
+      hexes.include?(hex)
+    end
+
     def connections
-      nodes.flat_map { |node| connections_for(node) }
+      @connections ||= nodes.flat_map { |node| connections_for(node) }
     end
 
     def connections_for(node)
@@ -218,7 +216,8 @@ module Engine
     end
 
     def inspect
-      node_str = nodes.map(&:hex).map(&:name).join(',')
+      # node_str = nodes.map(&:hex).map(&:name).join(',')
+      node_str = nodes.map { |node| node.hex&.name || 'null' }.join(',')
       path_str = @paths.map(&:inspect).join(',')
       "<#{self.class.name}: nodes: #{node_str}, paths: #{path_str}>"
     end

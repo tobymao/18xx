@@ -15,12 +15,6 @@ module Engine
         separate_parts
       end
 
-      def matches(other)
-        other&.path? &&
-          ((@a.matches(other.a) && @b.matches(other.b)) ||
-           (@a.matches(other.b) && @b.matches(other.a)))
-      end
-
       def <=(other)
         (@a <= other.a && @b <= other.b) ||
           (@a <= other.b && @b <= other.a)

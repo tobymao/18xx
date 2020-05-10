@@ -20,18 +20,25 @@ module Engine
 
     def add_hex(hex)
       if @connections.any?
-        if (connection = @connections[0].connections.find { |c| c.hexes.include?(hex) })
+        if (connection = @connections[0].connections.find { |c| c.include?(hex) })
           @connections.insert(0, connection)
         end
 
-        if (connection = @connections[-1].connections.find { |c| c.hexes.include?(hex) })
+        if (connection = @connections[-1].connections.find { |c| c.include?(hex) })
           @connections << connection
         end
       elsif @start
-        connection = @start.all_connections.find { |c| c.hexes.include?(hex) }
+        puts "ALL CONN #{@start.all_connections}"
+
+        connection = @start.all_connections.find { |c|
+          puts "** add hex #{hex} -- #{c.hexes}"
+          c.include?(hex)
+        }
+        puts "connection #{connection}"
         @connections << connection if connection
       else
         @start = hex
+        puts "start #{hex.inspect}"
       end
       puts @connections.inspect
     end

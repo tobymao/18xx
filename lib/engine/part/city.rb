@@ -19,14 +19,6 @@ module Engine
         @reservations = []
       end
 
-      def matches(other)
-        other.city? &&
-          @revenue == other.revenue &&
-          @slots == other.slots &&
-          @tokens == other.tokens &&
-          @reservations == other.reservations
-      end
-
       def remove_tokens!
         @tokens.map! { nil }
       end
@@ -37,10 +29,6 @@ module Engine
         return false if @tokens.include?(nil)
 
         true
-      end
-
-      def <=(other)
-        other.city?
       end
 
       def tokened_by?(corporation)

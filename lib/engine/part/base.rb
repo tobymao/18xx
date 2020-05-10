@@ -13,6 +13,10 @@ module Engine
         @tile&.hex
       end
 
+      def <=(other)
+        self.class == other.class
+      end
+
       def <=>(other)
         if edge? && other.edge?
           num <=> other.num
@@ -23,10 +27,6 @@ module Engine
         else
           0
         end
-      end
-
-      def <=(other)
-        self.matches?(other)
       end
 
       def rotate(_ticks)

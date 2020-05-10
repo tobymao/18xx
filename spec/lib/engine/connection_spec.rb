@@ -39,15 +39,13 @@ module Engine
 
         expect(subject.connections[0].size).to eq(1)
         expect(subject.connections[0][0]).to have_attributes(
-          node_a: node,
-          node_b: nil,
+          nodes: [node],
           hexes: [subject],
         )
 
         expect(subject.connections[3].size).to eq(1)
         expect(subject.connections[3][0]).to have_attributes(
-          node_a: node,
-          node_b: nil,
+          nodes: [node],
           hexes: [subject, neighbor_3]
         )
       end
@@ -57,27 +55,44 @@ module Engine
         connections_0 = subject.connections[0]
         expect(connections_0.size).to eq(1)
         expect(connections_0[0]).to have_attributes(
-          node_a: subject.tile.cities[0],
-          node_b: nil,
+          nodes: [subject.tile.cities[0]],
           paths: [subject.tile.paths[0]],
         )
 
         connections_3 = subject.connections[3]
         expect(connections_3.size).to eq(2)
         expect(connections_3[0]).to have_attributes(
-          node_a: subject.tile.cities[0],
-          node_b: nil,
+          nodes: [subject.tile.cities[0]],
           paths: [subject.tile.paths[1], neighbor_3.tile.paths[0]],
         )
         expect(connections_3[1]).to have_attributes(
-          node_a: subject.tile.cities[0],
-          node_b: nil,
+          nodes: [subject.tile.cities[0]],
           paths: [subject.tile.paths[1], neighbor_3.tile.paths[1]],
         )
       end
     end
 
-    context 'with awa connection' do
+    context 'with iyo' do
+      subject { game.hex_by_id('E2') }
+
+      it 'connects the upgrade' do
+        subject.lay(game.tile_by_id('6-0').rotate!(4))
+        expect(subject.connections[4][0].hexes.map(&:name)).to eq(['F1', 'E2'])
+        subject.lay(game.tile_by_id('12-0').rotate!(5))
+        expect(subject.connections[4][0].hexes.map(&:name)).to eq(['F1', 'E2'])
+      end
+    end
+
+    context 'with ko and sr' do
+      it 'can upgrade fork to 3 stops' do
+        game.hex_by_id('I2').lay(game.tile_by_id('6-0').rotate!(4))
+        game.hex_by_id('J3').lay(game.tile_by_id('8-0').rotate!(5))
+        game.hex_by_id('I2').lay(game.tile_by_id('12-0').rotate!(5))
+        game.hex_by_id('J3').lay(game.tile_by_id('23-0').rotate!(5))
+      end
+    end
+
+    context 'with awa' do
       subject { game.hex_by_id('K8') }
 
       it 'connects complex' do
@@ -94,23 +109,23 @@ module Engine
 
         naruoto = game.hex_by_id('L7')
         expect(subject.connections[4][0]).to have_attributes(
-          node_a: naruoto.tile.offboards[0],
-          node_b: subject.tile.cities[0],
+          nodes: [naruoto.tile.offboards[0], subject.tile.cities[0]],
           paths: [naruoto.tile.paths[0], subject.tile.paths[1]],
         )
 
         kotohira_connection = subject.connections[2][0]
-        expect(kotohira_connection).to have_attributes(
-          node_a: subject.tile.cities[0],
-          node_b: kotohira.tile.cities[0],
-        )
+        expect(kotohira_connection.nodes).to eq([
+          subject.tile.cities[0],
+          kotohira.tile.cities[0],
+        ])
+
         expect(kotohira_connection.hexes.map(&:name)).to eq(%w[J7 K8 I8 I4 I6])
 
         ritsurin_connection = subject.connections[2][1]
-        expect(ritsurin_connection).to have_attributes(
-          node_a: subject.tile.cities[0],
-          node_b: ritsurin.tile.towns[0],
-        )
+        expect(ritsurin_connection.nodes).to eq([
+          subject.tile.cities[0],
+          ritsurin.tile.towns[0],
+        ])
         expect(ritsurin_connection.hexes.map(&:name)).to eq(%w[I8 J7 K8 I6 J5])
       end
 
@@ -123,17 +138,11 @@ module Engine
 
         expect(komatsujima.all_connections.size).to eq(3)
         straight = komatsujima.connections[2][0]
-        expect(straight).to have_attributes(
-          node_a: komatsujima.tile.towns[0],
-          node_b: nil
-        )
+        expect(straight.nodes).to eq([komatsujima.tile.towns[0]])
         expect(straight.hexes.map(&:name)).to eq(%w[J9 I8])
 
         curve = komatsujima.connections[2][1]
-        expect(curve).to have_attributes(
-          node_a: komatsujima.tile.towns[0],
-          node_b: nil
-        )
+        expect(curve.nodes).to eq([komatsujima.tile.towns[0]])
         expect(curve.hexes.map(&:name)).to eq(%w[J9 J7 I8])
       end
     end

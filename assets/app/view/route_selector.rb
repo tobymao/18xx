@@ -23,7 +23,7 @@ module View
       if !@selected_route && (train = trains[0])
         route = Engine::Route.new(@game.phase, train)
         store(:routes, @routes + [route], skip: true)
-        store(:selected_route, route)
+        store(:selected_route, route, skip: true)
       end
 
       trains = trains.map do |train|
