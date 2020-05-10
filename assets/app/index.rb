@@ -20,6 +20,7 @@ class Index < Snabberb::Layout
       .button {
         font-size: 14px;
         border: solid 1px black;
+        border-radius: 5px;
         padding: 0.2rem 1rem;
         cursor: pointer;
         outline-style: none;
