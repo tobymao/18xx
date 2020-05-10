@@ -194,7 +194,6 @@ module Engine
         filtered_actions = Array.new(actions.size)
 
         actions.each.with_index do |action, index|
-          # action_id's start at 1, so always add one to the index
           case action['type']
           when 'undo'
             i = filtered_actions.rindex { |a| !a.nil? && a['type'] != 'message' }

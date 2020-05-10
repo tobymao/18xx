@@ -16,7 +16,7 @@ module View
       @current_entity = @round.current_entity
 
       h(:div, [
-        h(UndoAndPass, undo: @game.actions.size.positive?),
+        h(UndoAndPass),
         *render_companies,
         h(View::Players, game: @game),
       ].compact)
