@@ -2,17 +2,29 @@
 
 module View
   class About < Snabberb::Component
-    GITHUB_URL = 'https://github.com/tobymao/18xx'
-
     def render
-      h(:div, [
-        h(:p, [
-          '18xx.games is created and maintained by Toby Mao. It is an open source project, and you can find the ',
-          'code at ',
-          h(:a, { attrs: { href: GITHUB_URL } }, GITHUB_URL)
-        ]),
-        h(:p, 'The 1889 game is used with kind permission from Josh Starr at Grand Trunk Games.')
-      ])
+      message = <<~MESSAGE
+        <p>18xx.games is created and maintained by Toby Mao. It is an open source project, and you can find the
+        code on <a href='https://github.com/tobymao/18xx/issues'>Github</a>.</p>
+
+        <p><a href='https://boardgamegeek.com/boardgame/23540/1889-history-shikoku-railways'>1889</a> is used with kind permission from
+        Josh Starr at Grand Trunk Games.</p>
+
+        <p>This website will always be open-source and free to play. If you'd like support this project, you can become a patron on
+        <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>
+      MESSAGE
+
+      props = {
+        style: {
+          'padding': '1em',
+          'margin': '1rem 0',
+        },
+        props: {
+          innerHTML: message,
+        }
+      }
+
+      h(:div, props)
     end
   end
 end

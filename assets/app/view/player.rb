@@ -10,6 +10,8 @@ module View
         display: 'inline-block',
         position: 'relative',
         border: 'solid 1px gainsboro',
+        'border-radius': '10px',
+        overflow: 'hidden',
         padding: '0.5rem',
         margin: '0.5rem 0.5rem 0 0',
         width: '320px',
@@ -103,7 +105,7 @@ module View
         ]),
       ]
 
-      if @game.players.find_index(@player).zero?
+      if @player == @game.priority_deal_player
         trs << h(:tr, [
           h(:td, { attrs: { colspan: '2' }, style: { 'text-align': 'center' } }, 'Priority Deal'),
         ])

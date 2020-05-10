@@ -17,6 +17,8 @@ module View
         cursor: 'pointer',
         position: 'relative',
         border: 'solid 1px gainsboro',
+        'border-radius': '10px',
+        overflow: 'hidden',
         padding: '0.5rem',
         margin: '0.5rem 0.5rem 0 0',
         width: '320px',
@@ -97,7 +99,7 @@ module View
         style: {
           display: 'inline-block',
           margin: '0.5em',
-          'text-align': 'right',
+          'text-align': 'center',
         },
       }
 

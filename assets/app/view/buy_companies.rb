@@ -42,6 +42,7 @@ module View
         type: 'number',
         min: @selected_company.min_price,
         max: @selected_company.max_price,
+        size: @corporation.cash.to_s.size,
       })
 
       buy = lambda do

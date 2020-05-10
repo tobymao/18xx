@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   rack:
-    command: bash -c "bundle exec rake prod_up && bundle exec puma"
+    command: bash -c "bundle exec rake prod_up && bundle exec unicorn -c config/unicorn.rb"
     image: 18xx_rack:prod
     environment:
       RACK_ENV: production

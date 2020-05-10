@@ -22,7 +22,7 @@ module GameManager
       id: "hs_#{time.to_i}",
       mode: :hotseat,
       user: { id: 0, name: 'You' },
-      created_at: time.strftime('%Y-%m-%-d'),
+      created_at: time.strftime('%Y-%m-%d'),
     }
 
     game_id = game_data[:id]
@@ -113,6 +113,10 @@ module GameManager
 
   def user_owns_game?(user, game)
     game[:mode] == :hotseat || game[:user][:id] == user&.dig(:id)
+  end
+
+  def user_is_acting?(user, game)
+    game['acting'].include?(user&.dig('id'))
   end
 
   protected

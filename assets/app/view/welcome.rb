@@ -93,7 +93,9 @@ module View
         on: {
           click: -> { store(:app_route, '/tutorial?action=1') },
         },
-        style: { 'margin-left': '1rem' },
+        style: {
+          'margin-left': '1rem',
+        },
       }
 
       h(:div, props, [

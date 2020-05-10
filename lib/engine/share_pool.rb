@@ -31,7 +31,7 @@ module Engine
 
       if ipoed != corporation.ipoed
         @log << "#{entity.name} pars #{corporation.name} at "\
-                "#{@game.format_currency(corporation.par_price.price)} and becomes the president"
+                "#{@game.format_currency(corporation.par_price.price)}"
       end
 
       if exchange

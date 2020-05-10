@@ -15,7 +15,10 @@ Sequel::Model.plugin :subclasses unless ENV['RACK_ENV'] == 'development'
 Sequel.default_timezone = :utc
 Sequel.extension :migration
 Sequel.extension :pg_array_ops
-DB.extension :pg_array, :pg_json, :pg_enum
+DB.extension :pg_array, :pg_advisory_lock, :pg_json, :pg_enum
+
+DB.register_advisory_lock(:turn_lock, :pg_try_advisory_lock)
+# DB.register_advisory_lock(:action_lock, :pg_try_advisory)
 
 if ENV['RACK_ENV'] == 'development' || ENV['RACK_ENV'] == 'test'
   require 'logger'
