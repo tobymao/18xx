@@ -32,38 +32,38 @@ module Engine
         subject_with_actions.process_action(action)
         expect(subject_with_actions.actions.size).to be 5
         expect(subject_with_actions.current_entity.name).to be players[2]
-        expect(subject_with_actions.can_redo?).to be false
+        expect(subject_with_actions.redo_possible).to be false
       end
 
       it 'should return a new game when processing a undo' do
         action = Engine::Action::Undo.new(subject_with_actions.current_entity)
         game2 = subject_with_actions.process_action(action)
-        expect(subject_with_actions.can_undo?).to be true
-        expect(subject_with_actions.can_redo?).to be true
+        expect(subject_with_actions.undo_possible).to be true
+        expect(subject_with_actions.redo_possible).to be true
         expect(subject_with_actions).not_to eq(game2)
         expect(game2.actions.size).to be 5
         expect(game2.current_entity.name).to be players[0]
-        expect(game2.can_redo?).to be true
+        expect(game2.redo_possible).to be true
         # As only messages are left, we can no longer undo
-        expect(game2.can_undo?).to be false
+        expect(game2.undo_possible).to be false
       end
 
       it 'should allow redo if a user sends a message' do
         action = Engine::Action::Message.new(subject_with_actions.current_entity, 'testing more')
-        expect(subject_with_actions.can_redo?).to be true
+        expect(subject_with_actions.redo_possible).to be true
         subject_with_actions.process_action(action)
         expect(subject_with_actions.actions.size).to be 5
-        expect(subject_with_actions.can_redo?).to be true
+        expect(subject_with_actions.redo_possible).to be true
       end
 
       it 'should return a new game when processing a redo' do
         action = Engine::Action::Redo.new(subject_with_actions.current_entity)
-        expect(subject_with_actions.can_redo?).to be true
+        expect(subject_with_actions.redo_possible).to be true
         game2 = subject_with_actions.process_action(action)
         expect(subject_with_actions).not_to eq(game2)
         expect(game2.actions.size).to be 5
         expect(game2.current_entity.name).to be players[2]
-        expect(game2.can_redo?).to be false
+        expect(game2.redo_possible).to be false
       end
 
       it 'should return a new game when processing each undo/redo and the correct player should be active' do
