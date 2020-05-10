@@ -196,7 +196,7 @@ module Engine
       Tile.new(name, color: color, parts: decode(code), **opts)
     end
 
-    def self.connection_from_code(code, cache)
+    def self.node_from_code(code, cache)
       case code[0]
       when '_'
         cache[code[1..-1].to_i]
@@ -221,8 +221,8 @@ module Engine
     def self.part(type, params, cache)
       case type
       when 'p'
-        Part::Path.new(Tile.connection_from_code(params['a'], cache),
-                       Tile.connection_from_code(params['b'], cache),
+        Part::Path.new(Tile.node_from_code(params['a'], cache),
+                       Tile.node_from_code(params['b'], cache),
                        Tile.gauge_from_code(params.fetch('g', 'b')))
       when 'c'
         city = Part::City.new(params['r'], params.fetch('s', 1))
