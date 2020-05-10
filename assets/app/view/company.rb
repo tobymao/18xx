@@ -31,6 +31,7 @@ module View
       header_style = {
         background: 'yellow',
         border: '1px solid',
+        'border-radius': '5px',
         'margin-bottom': '0.5rem',
         'font-size': '90%'
       }
@@ -63,6 +64,8 @@ module View
           display: 'inline-block',
           cursor: 'pointer',
           border: 'solid 1px gainsboro',
+          'border-radius': '10px',
+          overflow: 'hidden',
           padding: '0.5rem',
           margin: '0.5rem 0.5rem 0 0',
           width: '300px',

@@ -87,13 +87,20 @@ module View
         on: {
           click: -> { store(:app_route, '/new_game') },
         },
+        style: {
+          'border-radius': '5px',
+        }
       }
 
       tutorial_props = {
+        'border-radius': '5px',
         on: {
           click: -> { store(:app_route, '/tutorial?action=1') },
         },
-        style: { 'margin-left': '1rem' },
+        style: {
+          'margin-left': '1rem',
+          'border-radius': '8px',
+        },
       }
 
       h(:div, props, [
