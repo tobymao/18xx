@@ -198,7 +198,7 @@ module Engine
         EXPECTED_TILE_UPGRADES = {
           'blank' => %w[7 8 9],
           'city' => %w[5 6 57],
-          'town' => %w[3 58 437],
+          'town' => %w[3 58],
           '3' => %w[],
           '5' => %w[12 14 15 205 206],
           '6' => %w[12 13 14 15 205 206],
