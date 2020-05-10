@@ -26,7 +26,7 @@ module Engine
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :hexes, :id, :log, :phase, :players, :round,
-                  :share_pool, :special, :stock_market, :tiles, :turn
+                  :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible
 
       BANK_CASH = 12_000
 
@@ -196,7 +196,7 @@ module Engine
         actions.each.with_index do |action, index|
           case action['type']
           when 'undo'
-            i = filtered_actions.rindex { |a| !a.nil? && a['type'] != 'message' }
+            i = filtered_actions.rindex { |a| a && a['type'] != 'message' }
             active_undos << [filtered_actions[i], i]
             filtered_actions[i] = nil
           when 'redo'
@@ -215,24 +215,15 @@ module Engine
         @undo_possible = false
         # replay all actions with a copy
         filtered_actions.each.with_index do |action, index|
-          if action.nil?
-            # Restore the original action to the list to ensure action ids remain consistent but don't apply them
-            @actions << actions[index]
-          else
+          if !action.nil?
             action = action.copy(self) if action.is_a?(Action::Base)
             process_action(action)
+          else
+            # Restore the original action to the list to ensure action ids remain consistent but don't apply them
+            @actions << actions[index]
           end
         end
-        @redo_possible = !active_undos.empty?
-      end
-
-      def can_undo?
-        # Is there an action that can be redone?
-        @undo_possible
-      end
-
-      def can_redo?
-        @redo_possible
+        @redo_possible = active_undos.any?
       end
 
       def process_action(action)
