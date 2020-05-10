@@ -52,6 +52,17 @@ module Engine
         }
       }.freeze
 
+      CUSTOM_TILES = {
+        yellow: {
+          'X00' => 'c=r:30,s:1;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
+        },
+        green: {},
+        brown: {},
+        gray: {
+          'X30' => 'c=r:100,s:4;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=NY',
+        },
+      }.freeze
+
       TILES = {
         '5' => 6,
         '6' => 7,

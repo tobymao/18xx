@@ -23,6 +23,10 @@ module View
     def render
       dest = @route.match(ROUTE_FORMAT)[1]
 
+      err_msg = "Bad tile dest: \"#{dest}\"; should be \"all\", <game_title>, "\
+                '<tile_name>, <game_title>/<hex_coord>, or '\
+                '<game_title>/<tile_name>'
+
       if dest == 'all'
         h('div#tiles', [
             h('div#all_tiles', [
@@ -39,20 +43,32 @@ module View
       elsif TILE_IDS.include?(dest)
         render_tile_block(dest, scale: 3.0)
       elsif dest.include?('/')
-        game_title, coord = dest.split('/')
-        tile = tile_for(game_title, coord)
+        game_title, dest = dest.split('/')
         begin
+          game = Engine::GAMES_BY_TITLE[game_title].new(%w[p1 p2 p3])
+
+          # TODO: handle case with big map and uses X for game-specific tiles
+          # (i.e., "X1" is the name of a tile *and* a hex)
+          tile, name =
+            if game.class::TILES.include?(dest)
+              t = game.tile_by_id("#{dest}-0")
+              [t, t.name]
+            else
+              t = game.hex_by_id(dest).tile
+              [t, dest]
+            end
+
           render_tile_block(
-            coord,
+            name,
             tile: tile,
             location_name: tile.location_name,
             scale: 3.0
           )
         rescue StandardError
-          h(:p, "Bad tile dest: \"#{dest}\"; should be \"all\", <game_title>, <tile_name>, or <game_title>/<hex_coord>")
+          h(:p, err_msg)
         end
       else
-        h(:p, "Bad tile dest: \"#{dest}\"; should be \"all\", <game_title>, <tile_name>, or <game_title>/<hex_coord>")
+        h(:p, err_msg)
       end
     end
 
@@ -156,47 +172,6 @@ module View
               *rendered_tiles,
             ])
         ])
-    end
-
-    def tile_for(game_title, coord)
-      game_class = Engine::GAMES_BY_TITLE[game_title]
-
-      location_names = game_class::LOCATION_NAMES
-      companies = game_class::COMPANIES.map { |c| Engine::Company.new(**c) }
-      corporations = game_class::CORPORATIONS.map { |c| Engine::Corporation.new(**c) }
-
-      game_hexes = game_class::HEXES
-      map_tiles = game_hexes.flat_map do |color, hexes|
-        hexes.map do |coords, tile_string|
-          next unless coords.include?(coord)
-
-          tile =
-            if TILE_IDS.include?(tile_string)
-              Engine::Tile.for(tile_string)
-            else
-              Engine::Tile.from_code(
-                coord,
-                color,
-                tile_string,
-              )
-            end
-          tile.location_name = location_names[coord]
-
-          blocker = companies.find do |c|
-            c.abilities(:blocks_hexes)&.dig(:hexes)&.include?(coord)
-          end
-          tile.add_blocker!(blocker) if blocker
-
-          # corporation reserved spots
-          corporations.select { |c| c.coordinates == coord }.each do |c|
-            tile.cities.first.add_reservation!(c.name)
-          end
-
-          tile
-        end
-      end.compact
-
-      map_tiles.first
     end
   end
 end

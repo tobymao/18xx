@@ -30,6 +30,7 @@ describe 'Assets' do
       expect(render(app_route: '/tiles/57')).to include('57')
       expect(render(app_route: '/tiles/18Chesapeake')).to include('I9')
       expect(render(app_route: '/tiles/18Chesapeake/I9')).to include('I9')
+      expect(render(app_route: '/tiles/18Chesapeake/X1')).to include('X1')
     end
 
     it 'renders login' do

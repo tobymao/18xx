@@ -62,8 +62,6 @@ module Engine
       '631' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
       '632' => 't=r:10;p=a:0,b:_0;p=a:_0,b:5;t=r:10;p=a:3,b:_1;p=a:_1,b:4',
       '633' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1;t=r:10;p=a:3,b:_1;p=a:_1,b:4',
-      'X00' => 'c=r:30,s:1;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
-      'X1' => 'c=r:30;p=a:0,b:_0;p=a:_0,b:4;l=DC',
     }.freeze
 
     GREEN = {
@@ -107,10 +105,6 @@ module Engine
       '440' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
       '592' => 'c=r:50,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
       '619' => 'c=r:30,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
-      'X2' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC',
-      'X3' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:2;c=r:40;p=a:3,b:_1;p=a:_1,b:5;l=OO',
-      'X4' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:1;c=r:40;p=a:2,b:_1;p=a:_1,b:3;l=OO',
-      'X5' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:4;c=r:40;p=a:3,b:_1;p=a:_1,b:5;l=OO',
     }.freeze
 
     BROWN = {
@@ -143,8 +137,6 @@ module Engine
       '593' => 'c=r:60,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B',
       '611' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;',
       'W5' => 'c=r:50,s:6;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
-      'X6' => 'c=r:70,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC',
-      'X7' => 'c=r:50,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=OO',
     }.freeze
 
     GRAY = {
@@ -155,9 +147,6 @@ module Engine
       '597' => 'c=r:80,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=B',
       '639' => 'c=r:100,s:4;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
       '915' => 'c=r:50,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0',
-      'X8' => 'c=r:100,s:4;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC',
-      'X9' => 'c=r:70,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=OO',
-      'X30' => 'c=r:100,s:4;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=NY',
     }.freeze
 
     RED = {}.freeze
@@ -165,7 +154,7 @@ module Engine
 
     COLORS = %i[white yellow green brown gray red].freeze
 
-    attr_accessor :hex, :legal_rotations, :location_name, :name
+    attr_accessor :hex, :legal_rotations, :location_name, :name, :index
     attr_reader :cities, :color, :edges, :junctions, :label,
                 :parts, :preprinted, :rotation, :towns, :upgrades, :offboards, :blockers
 

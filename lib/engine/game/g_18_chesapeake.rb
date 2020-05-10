@@ -53,6 +53,26 @@ module Engine
         }
       }.freeze
 
+      CUSTOM_TILES = {
+        yellow: {
+          'X1' => 'c=r:30;p=a:0,b:_0;p=a:_0,b:4;l=DC',
+        },
+        green: {
+          'X2' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC',
+          'X3' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:2;c=r:40;p=a:3,b:_1;p=a:_1,b:5;l=OO',
+          'X4' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:1;c=r:40;p=a:2,b:_1;p=a:_1,b:3;l=OO',
+          'X5' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:4;c=r:40;p=a:3,b:_1;p=a:_1,b:5;l=OO',
+        },
+        brown: {
+          'X6' => 'c=r:70,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC',
+          'X7' => 'c=r:50,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=OO',
+        },
+        gray: {
+          'X8' => 'c=r:100,s:4;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC',
+          'X9' => 'c=r:70,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=OO',
+        },
+      }.freeze
+
       TILES = {
         '1' => 1,
         '2' => 1,
