@@ -333,14 +333,15 @@ module Engine
       end
 
       def init_tiles
-        self.class::TILES.flat_map do |name, tile_h|
-          tile_h[:count].times.map do |index|
-            if (code = tile_h[:code])
-              color = tile_h[:color]
-              Tile.from_code(name, color, code, index: index)
-            else
-              Tile.for(name, index: index)
-            end
+        self.class::TILES.flat_map do |name, val|
+          if val.is_a?(Integer)
+            count = val
+            count.times.map { |i| Tile.for(name, index: i) }
+          else
+            count = val[:count]
+            color = val[:color]
+            code = val[:code]
+            count.times.map { |i| Tile.from_code(name, color, code, index: i) }
           end
         end
       end
