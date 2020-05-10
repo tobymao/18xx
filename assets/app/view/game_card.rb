@@ -19,6 +19,8 @@ module View
         style: {
           display: 'inline-block',
           border: 'solid 1px black',
+          'border-radius': '10px',
+          overflow: 'hidden',
           padding: '0.5rem',
           width: '320px',
           'margin': '0 0.5rem 0.5rem 0',
@@ -105,6 +107,9 @@ module View
         style: {
           top: '1rem',
           float: 'right',
+          'border-radius': '5px',
+          'margin': '0 0.3rem',
+          padding: '0.2rem 0.5rem',
         },
         on: {
           click: action,
