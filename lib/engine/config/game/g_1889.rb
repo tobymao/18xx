@@ -274,7 +274,7 @@ module Engine
               "name": "Takamatsu E-Railroad",
               "value": 20,
               "revenue": 5,
-              "description": "Blocks Takamatsu (K4).",
+              "desc": "Blocks Takamatsu (K4).",
               "sym": "TR",
               "abilities": [
                 {
@@ -289,7 +289,7 @@ module Engine
               "name": "Mitsubishi Ferry",
               "value": 30,
               "revenue": 5,
-              "description": "Player owner may place the port tile on a coastal town (B11, G10, I12, or J9) without a tile on it already, outside of the operating rounds of a company controller by another player. The player need not control a company or have connectivity to the placed tile from one of their companies. This does not close the company.",
+              "desc": "Player owner may place the port tile on a coastal town (B11, G10, I12, or J9) without a tile on it already, outside of the operating rounds of a company controller by another player. The player need not control a company or have connectivity to the placed tile from one of their companies. This does not close the company.",
               "sym": "MF",
               "abilities": [
                 {
@@ -311,7 +311,7 @@ module Engine
               "name": "Ehime Railway",
               "value": 40,
               "revenue": 10,
-              "description": "When this company is sold to a corporation, the selling player may immediately place a green tile on Ohzu (C4), in addition to any tile which it may lay during the same operating round. This does not close the company.",
+              "desc": "When this company is sold to a corporation, the selling player may immediately place a green tile on Ohzu (C4), in addition to any tile which it may lay during the same operating round. This does not close the company.",
               "sym": "ER",
               "abilities": [
                 {
@@ -342,7 +342,7 @@ module Engine
               "name": "Sumitomo Mines Railway",
               "value": 50,
               "revenue": 15,
-              "description": "Owning corporation may ignore building cost for mountain hexes which do not also contain rivers. This does not close the company.",
+              "desc": "Owning corporation may ignore building cost for mountain hexes which do not also contain rivers. This does not close the company.",
               "abilities": [
                 {
                   "type": "ignore_terrain",
@@ -355,7 +355,7 @@ module Engine
               "name": "Dougo Railway",
               "value": 60,
               "revenue": 15,
-              "description": "Owning player may exchange this private company for a 10% share of Iyo Railway from the initial offering.",
+              "desc": "Owning player may exchange this private company for a 10% share of Iyo Railway from the initial offering.",
               "abilities": [
                 {
                   "type": "exchange",
@@ -368,14 +368,14 @@ module Engine
               "name": "South Iyo Railway",
               "value": 80,
               "revenue": 20,
-              "description": "",
+              "desc": "",
               "min_players": 3
             },
             {
               "name": "Uno-Takamatsu Ferry",
               "value": 150,
               "revenue": 30,
-              "description": "Does not close while owned by a player. If owned by a player when the first 5-train is purchased it may no longer be sold to a public company and the revenue is increased to 50.",
+              "desc": "Does not close while owned by a player. If owned by a player when the first 5-train is purchased it may no longer be sold to a public company and the revenue is increased to 50.",
               "min_players": 4,
               "abilities": [
                 {
