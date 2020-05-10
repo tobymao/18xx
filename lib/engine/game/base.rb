@@ -42,13 +42,6 @@ module Engine
 
       HEXES = {}.freeze
 
-      CUSTOM_TILES = {
-        yellow: {},
-        green: {},
-        brown: {},
-        gray: {},
-      }.freeze
-
       TRAINS = [
         {
           name: '2',
@@ -340,21 +333,13 @@ module Engine
       end
 
       def init_tiles
-        custom_tiles = self.class::CUSTOM_TILES.flat_map do |color, tiles|
-          tiles.map do |name, code|
-            tile = Tile.from_code(name, color, code)
-            [name, tile]
-          end
-        end.to_h
-
-        self.class::TILES.flat_map do |name, num|
-          num.times.map do |index|
-            tile = custom_tiles[name]
-            if tile.nil?
-              Tile.for(name, index: index)
+        self.class::TILES.flat_map do |name, tile_h|
+          tile_h[:count].times.map do |index|
+            if (code = tile_h[:code])
+              color = tile_h[:color]
+              Tile.from_code(name, color, code, index: index)
             else
-              tile.index = index
-              tile
+              Tile.for(name, index: index)
             end
           end
         end

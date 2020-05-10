@@ -47,7 +47,7 @@ module View
         begin
           game = Engine::GAMES_BY_TITLE[game_title].new(%w[p1 p2 p3])
 
-          # TODO: handle case with big map and uses X for game-specific tiles
+          # TODO?: handle case with big map and uses X for game-specific tiles
           # (i.e., "X1" is the name of a tile *and* a hex)
           tile, name =
             if game.class::TILES.include?(dest)
@@ -74,57 +74,21 @@ module View
 
     def map_hexes_and_tile_manifest_for(game_class)
       game = game_class.new(%w[p1 p2 p3])
-      game_hexes = game_class::HEXES
-      location_names = game_class::LOCATION_NAMES
 
-      companies = game_class::COMPANIES.map { |c| Engine::Company.new(**c) }
-      corporations = game_class::CORPORATIONS.map { |c| Engine::Corporation.new(**c) }
+      # map_tiles: hash; key is hex ID, value is the Tile there
+      map_tiles = game.hexes.map { |h| [h.name, h.tile] }.to_h
 
-      map_tiles = game_hexes.map do |color, hexes|
-        hexes.map do |coords, tile_string|
-          coords.map.with_index do |coord, _index|
-            tile =
-              if TILE_IDS.include?(tile_string)
-                Engine::Tile.for(tile_string)
-              else
-                Engine::Tile.from_code(
-                  coord,
-                  color,
-                  tile_string,
-                  location_name: location_names[coord]
-                )
-              end
-
-            # add private companies that block tile lays on this hex
-            blocker = companies.find do |c|
-              c.abilities(:blocks_hexes)&.dig(:hexes)&.include?(coord)
-            end
-            if blocker
-              tile.add_blocker!(blocker)
-              # name it with the coord to distinguish this tile from its
-              # standard archetype that doesn't have a blocker
-              tile.name = coord
-            end
-
-            # reserve corporation home spots
-            corporations.select { |c| c.coordinates == coord }.each do |c|
-              tile.cities.first.add_reservation!(c.name)
-
-              # name it with the coord to distinguish this tile from its
-              # standard archetype that doesn't have a blocker
-              tile.name = coord
-            end
-
-            [coord, tile]
-          end.compact
-        end
-      end.flatten.each_slice(2).to_a.to_h
-
-      # get mapping of tile -> all coordinates using that tile (for starting map
-      # hex "tiles")
+      # get mapping of tile -> all hex coordinates using that tile
       tile_to_coords = {}
       map_tiles.each do |coord, tile|
-        tile_key = tile_to_coords.keys.find { |k| k&.name == tile.name }
+        tile_key = tile_to_coords.keys.find do |k|
+          [
+            k.name == tile.name,
+            k.location_name == tile.location_name,
+            k.blockers == tile.blockers,
+            k.cities.map(&:reservations) == tile.cities.map(&:reservations),
+          ].all?
+        end
         if tile_key.nil?
           tile_to_coords[tile] = [coord]
         else
