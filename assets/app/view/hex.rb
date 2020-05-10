@@ -72,7 +72,7 @@ module View
 
     def on_hex_click(event)
       if @selected_route
-        @selected_route.add_hex(@hex)
+        @selected_route.touch_hex(@hex)
         store(:selected_route, @selected_route)
         return
       end

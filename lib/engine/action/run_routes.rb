@@ -15,9 +15,8 @@ module Engine
 
       def self.h_to_args(h, game)
         routes = h['routes'].map do |r|
-          route = Route.new(game.phase, game.train_by_id(r['train']))
-          r['hexes'].each { |id| route.add_hex(game.hex_by_id(id)) }
-          route
+          hexes = r['hexes'].map { |id| game.hex_by_id(id) }
+          Route.new(game.phase, game.train_by_id(r['train']), hexes)
         end
         [routes]
       end

@@ -11,7 +11,6 @@ module Engine
       queue = []
 
       connections.each do |connection|
-        puts "connection - #{connection.inspect}"
         queue << connection
       end
 
@@ -25,19 +24,15 @@ module Engine
           explored_paths[path] = true
           hex = path.hex
           exits = path.exits
-          puts "visit #{hex.inspect} #{exits}"
           hexes[hex] |= exits
 
           exits.each do |edge|
             neighbor = hex.neighbors[edge]
             edge = hex.invert(edge)
             next if neighbor.connections[edge].any?
-            puts "coming to neighbor #{neighbor.inspect} #{edge}"
             hexes[neighbor] |= [edge]
           end
         end
-
-        puts "finding connections for connection #{connection.inspect}"
 
         connection.connections.each do |c|
           queue << c unless explored_connections[c]
@@ -45,140 +40,48 @@ module Engine
       end
 
       hexes.default = nil
-      # puts hexes
 
       hexes
     end
 
-    def self.connect!(path)
-      path.node ? connect_node!(path) : connect_edge!(path)
-    end
+    def self.connect!(hex)
+      connection = Connection.new
 
-    def self.connect_node!(path)
-      puts "connecting node #{path.hex.name} #{path.exits}"
-      hex = path.hex
-      edge = path.exits[0]
-
-      neighbor = hex.neighbors[edge]
-      n_edge = hex.invert(edge)
-      n_connections = neighbor.connections[n_edge]
-
-      if n_connections.any?
-        n_connections.each do |connection|
-          hex.connections[edge] |= [connection]
-          connection.add_path(path)
-          puts "adding connection from neighbors #{edge} #{connection.inspect}"
-        end
-      else
-        hex.connections[edge] << Connection.new(path)
-
-        neighbor.tile.paths.each do |p|
-          connect!(p) if p.exits.include?(n_edge)
-        end
-        puts "new connection #{edge} #{hex.connections[edge].inspect}"
-      end
-    end
-
-    def self.connect_edge!(path)
-      puts "connecting edge #{@coordinates} #{path.exits} - #{path.hex&.name}"
-      hex = path.hex
-      edge_a, edge_b = path.exits
-
-      connections_a = hex
-        .neighbors[edge_a]
-        .connections[hex.invert(edge_a)]
-        .map { |c| c.extract_path!(path) }
-
-      connections_b = hex
-        .neighbors[edge_b]
-        .connections[hex.invert(edge_b)]
-        .map { |c| c.extract_path!(path) }
-
-      merge(connections_a, connections_b).each do |connection|
-        puts "** adding path #{path.hex.name} #{path.exits} to #{connection.inspect}"
+      Part::Path.walk(hex.tile.paths) do |path|
+        hex = path.hex
+        connection = connection.branch!(path)
         connection.add_path(path)
 
-        connection.paths.each do |path|
-          puts "** adding connection to hex #{path.hex.name} #{path.exits} #{connection.inspect}"
-          path.exits.each do |edge|
-            path.hex.connections[edge] |= [connection]
+        path.exits.each do |edge|
+          hex.connections[edge].reject! do |c|
+            !c.paths.all?(&:hex) || (c.paths - connection.paths).empty?
           end
+          hex.connections[edge] << connection
         end
       end
     end
 
-    def self.merge(connections_a, connections_b)
-      if connections_a.any? && connections_b.any?
-        connections_a.flat_map do |connection_a|
-          connections_b.map do |connection_b|
-            Connection.new(connection_a.paths | connection_b.paths)
-          end
-        end
-      elsif connections_a.any?
-        connections_a
-      elsif connections_b.any?
-        connections_b
-      else
-        [Connection.new]
-      end
-    end
-
-    def initialize(paths = nil)
-      @paths = Array(paths)
+    def initialize(paths = [])
+      @paths = paths
       @nodes = nil
       @hexes = nil
     end
 
     def add_path(path)
-      @paths |= [path]
+      @paths << path
       clear_cache
-      raise "Connection cannot have more than two nodes" if nodes.size > 2
-    end
-
-    def remove_path(path)
-      clear_cache if @paths.delete(path)
+      raise 'Connection cannot have more than two nodes' if nodes.size > 2
+      raise 'Connection cannot have two paths on the same hex' if hexes.uniq.size < hexes.size
     end
 
     def clear_cache
       @nodes = nil
       @hexes = nil
-      @connections = nil
+      @path_map = nil
     end
 
-    def extract_path!(path)
-      if hexes.include?(path.hex)
-        branch = branch(path)
-        puts "branch #{branch.inspect}"
-        branch
-      end
-      puts "no branch #{inspect}"
-
-      self
-    end
-
-    def branch(path)
-      hex_paths = @paths
-        .reject { |p| p.hex == path.hex }
-        .map { |p| [p.hex, p] }
-        .to_h
-
-      explored = {}
-      queue = []
-      queue << path
-
-      while queue.any?
-        p = queue.pop
-        explored[p] = true
-        neighbors = p.hex.neighbors
-
-        p.exits.each do |edge|
-          next unless (n_path = hex_paths[neighbors[edge]])
-
-          queue << n_path unless explored[n_path]
-        end
-      end
-
-      self.class.new(explored.keys - [path])
+    def path_map
+      @path_map ||= @paths.map { |p| [p, true] }.to_h
     end
 
     def nodes
@@ -194,12 +97,10 @@ module Engine
     end
 
     def connections
-      @connections ||= nodes.flat_map { |node| connections_for(node) }
+      nodes.flat_map { |node| connections_for(node) }
     end
 
     def connections_for(node)
-      return [] unless node
-
       if node.offboard?
         return @paths.find { |p| p.node == node }.exits.flat_map do |edge|
           node.hex.connections[edge]
@@ -209,6 +110,22 @@ module Engine
       node.hex.all_connections.select do |connection|
         connection.nodes.include?(node)
       end
+    end
+
+    def branch!(path)
+      branched_paths = []
+      path.walk { |p| branched_paths << p if path_map[p] }
+      return self if @paths.size == branched_paths.size
+
+      branch = self.class.new(branched_paths)
+
+      branched_paths.each do |path|
+        path.exits.each do |edge|
+          path.hex.connections[edge] << branch
+        end
+      end
+
+      branch
     end
 
     def tokened_by?(corporation)

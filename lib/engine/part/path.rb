@@ -7,6 +7,32 @@ module Engine
     class Path < Base
       attr_reader :a, :b, :branch, :city, :edges, :junction, :node, :offboard, :stop, :town
 
+      def self.walk(paths, exits = [], visited = {})
+        paths.zip(exits).each do |path, exits|
+          path.walk(exits, visited) { |p| yield p }
+        end
+      end
+
+      #def self.walk(paths)
+      #  queue = paths.map { |path| [path, path.exits] }
+      #  visited = paths.map { |p| [p, true] }.to_h
+
+      #  while (path, exits = queue.pop)
+      #    yield path
+
+      #    hex = path.hex
+      #    exits.each do |edge|
+      #      np_edge = hex.invert(edge)
+      #      hex.neighbors[edge].paths[np_edge].each do |np|
+      #        next if visited[np]
+
+      #        queue << [np, np.exits - [np_edge]]
+      #        visited[np] = true
+      #      end
+      #    end
+      #  end
+      #end
+
       def initialize(a, b)
         @a = a
         @b = b
@@ -18,6 +44,20 @@ module Engine
       def <=(other)
         (@a <= other.a && @b <= other.b) ||
           (@a <= other.b && @b <= other.a)
+      end
+
+      def walk(edges = nil, visited = {})
+        return if visited[self]
+
+        visited[self] = true
+        yield self
+
+        (edges || exits).each do |edge|
+          np_edge = hex.invert(edge)
+          hex.neighbors[edge].paths[np_edge].each do |np|
+            np.walk(np.exits - [np_edge], visited) { |p| yield p }
+          end
+        end
       end
 
       def path?
@@ -36,7 +76,7 @@ module Engine
 
       def inspect
         name = self.class.name.split('::').last
-        "<#{name}: hex: #{hex&.name}, exit: #{exits}"
+        "<#{name}: hex: #{hex&.name}, exit: #{exits}>"
       end
 
       private

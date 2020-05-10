@@ -217,7 +217,6 @@ module Engine
                 .flat_map(&:exits)
                 .flat_map { |edge| hex.connections[edge] }
             end
-            puts "** layable connections #{tokened_cities.map { |c| [c.hex, c.hex.neighbors.keys] }.to_h}"
 
             Connection.layable_hexes(connections).merge(tokened_cities.map { |c| [c.hex, c.hex.neighbors.keys] }.to_h)
           end

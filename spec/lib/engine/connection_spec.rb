@@ -16,7 +16,7 @@ module Engine
 
         expect(Connection.layable_hexes(subject.all_connections)).to eq(
           game.hex_by_id('K6') => [0],
-          game.hex_by_id('K8') => [3, 4],
+          game.hex_by_id('K8') => [4, 3],
           game.hex_by_id('L7') => [1],
         )
       end
@@ -46,7 +46,7 @@ module Engine
         expect(subject.connections[3].size).to eq(1)
         expect(subject.connections[3][0]).to have_attributes(
           nodes: [node],
-          hexes: [subject, neighbor_3]
+          hexes: [neighbor_3, subject]
         )
       end
 
@@ -63,7 +63,7 @@ module Engine
         expect(connections_3.size).to eq(2)
         expect(connections_3[0]).to have_attributes(
           nodes: [subject.tile.cities[0]],
-          paths: [subject.tile.paths[1], neighbor_3.tile.paths[0]],
+          paths: [neighbor_3.tile.paths[0], subject.tile.paths[1]],
         )
         expect(connections_3[1]).to have_attributes(
           nodes: [subject.tile.cities[0]],
@@ -77,9 +77,9 @@ module Engine
 
       it 'connects the upgrade' do
         subject.lay(game.tile_by_id('6-0').rotate!(4))
-        expect(subject.connections[4][0].hexes.map(&:name)).to eq(['F1', 'E2'])
+        expect(subject.connections[4][0].hexes.map(&:name)).to eq(%w[E2 F1])
         subject.lay(game.tile_by_id('12-0').rotate!(5))
-        expect(subject.connections[4][0].hexes.map(&:name)).to eq(['F1', 'E2'])
+        expect(subject.connections[4][0].hexes.map(&:name)).to eq(%w[E2 F1])
       end
     end
 
@@ -97,7 +97,7 @@ module Engine
 
       it 'connects complex' do
         subject.lay(game.tile_by_id('6-0').rotate!(2))
-        game.hex_by_id('I8').lay(game.tile_by_id('7-0').rotate!(4))
+        game.hex_by_id('I8').lay(game.tile_by_id('7-0').rotate!(3))
         game.hex_by_id('I6').lay(game.tile_by_id('9-0'))
         kotohira = game.hex_by_id('I4')
         kotohira.lay(game.tile_by_id('438-0').rotate!(4))
@@ -109,8 +109,8 @@ module Engine
 
         naruoto = game.hex_by_id('L7')
         expect(subject.connections[4][0]).to have_attributes(
-          nodes: [naruoto.tile.offboards[0], subject.tile.cities[0]],
-          paths: [naruoto.tile.paths[0], subject.tile.paths[1]],
+          nodes: [subject.tile.cities[0], naruoto.tile.offboards[0]],
+          paths: [subject.tile.paths[1], naruoto.tile.paths[0]],
         )
 
         kotohira_connection = subject.connections[2][0]
@@ -118,15 +118,14 @@ module Engine
           subject.tile.cities[0],
           kotohira.tile.cities[0],
         ])
-
-        expect(kotohira_connection.hexes.map(&:name)).to eq(%w[J7 K8 I8 I4 I6])
+        expect(kotohira_connection.hexes.map(&:name)).to eq(%w[I6 I8 J7 K8 I4])
 
         ritsurin_connection = subject.connections[2][1]
         expect(ritsurin_connection.nodes).to eq([
-          subject.tile.cities[0],
           ritsurin.tile.towns[0],
+          subject.tile.cities[0],
         ])
-        expect(ritsurin_connection.hexes.map(&:name)).to eq(%w[I8 J7 K8 I6 J5])
+        expect(ritsurin_connection.hexes.map(&:name)).to eq(%w[J5 I6 I8 J7 K8])
       end
 
       it 'connects deep' do
@@ -139,11 +138,11 @@ module Engine
         expect(komatsujima.all_connections.size).to eq(3)
         straight = komatsujima.connections[2][0]
         expect(straight.nodes).to eq([komatsujima.tile.towns[0]])
-        expect(straight.hexes.map(&:name)).to eq(%w[J9 I8])
+        expect(straight.hexes.map(&:name)).to eq(%w[I8 J9])
 
         curve = komatsujima.connections[2][1]
         expect(curve.nodes).to eq([komatsujima.tile.towns[0]])
-        expect(curve.hexes.map(&:name)).to eq(%w[J9 J7 I8])
+        expect(curve.hexes.map(&:name)).to eq(%w[J9 I8 J7])
       end
     end
   end

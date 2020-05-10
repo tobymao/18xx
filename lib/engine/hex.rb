@@ -4,7 +4,7 @@ require_relative 'connection'
 
 module Engine
   class Hex
-    attr_reader :coordinates, :layout, :neighbors, :paths, :tile, :x, :y, :location_name
+    attr_reader :connections, :coordinates, :layout, :neighbors, :paths, :tile, :x, :y, :location_name
 
     DIRECTIONS = {
       flat: {
@@ -78,25 +78,33 @@ module Engine
       tile.location_name = @location_name
       @tile.location_name = nil
       @tile = tile
-
+      clear_cache
       connect!
+    end
+
+    def connect!
+      Connection.connect!(self)
+    end
+
+    def clear_cache
+      @paths = nil
+    end
+
+    def paths
+      @paths =
+        begin
+          paths = Hash.new { |h, k| h[k] = [] }
+
+          @tile.paths.each do |path|
+            path.exits.each { |e| paths[e] << path }
+          end
+
+          paths
+        end
     end
 
     def all_connections
       @connections.values.flatten
-    end
-
-    def disconnect!
-      nodes = @tile.nodes
-      paths = @tile.paths
-
-      all_connections.each do |connection|
-        paths.each { |p| connection.remove_path(p) }
-      end
-    end
-
-    def connect!(edge = nil)
-      @tile.paths.each { |path| Connection.connect!(path) }
     end
 
     def neighbor_direction(other)
