@@ -196,22 +196,37 @@ module Engine
       def process_undos(actions)
         @undo_list = []
         @last_known_undo = 0
+        @pending_undos = 0
 
         stack = []
         actions.each.with_index do |action, index|
           # action_id's start at 1, so always add one to the index
           if action['type'] == 'undo'
             @last_known_undo = index + 1
+            @pending_undos += 1
             @undo_list << stack.pop
           elsif action['type'] == 'redo'
             @last_known_undo = index + 1
-            @undo_list.pop
+            @pending_undos -= 1
+            stack << @undo_list.pop
           elsif action['type'] != 'message'
             # Adding more types of action here will break existing games
-
-            stack.append(index + 1)
+            stack << index + 1
+            @pending_undos = 0
           end
         end
+      end
+
+      def can_undo?
+        # Is there an action that can be redone?
+        @actions.any? do |x|
+          !(x.is_a?(Action::Undo) || x.is_a?(Action::Redo) || x.is_a?(Action::Message)) && !@undo_list.include?(x.id)
+        end
+      end
+
+      def can_redo?
+        # Is the last action
+        @pending_undos.positive?
       end
 
       def process_action(action)
@@ -230,7 +245,10 @@ module Engine
           return clone(@actions) if action.id > @last_known_undo
 
           return self
+        elsif !action.is_a?(Action::Message) && action.id > @last_known_undo
+          @pending_undos = 0
         end
+
         @phase.process_action(action)
         # company special power actions are processed by a different round handler
         if action.entity.is_a?(Company)
@@ -255,11 +273,6 @@ module Engine
 
       def clone(actions)
         self.class.new(@names, id: @id, actions: actions)
-      end
-
-      def rollback
-        # TODO: this should be removed
-        clone(@actions[0...-1])
       end
 
       def trains

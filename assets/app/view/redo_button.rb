@@ -3,20 +3,20 @@
 require 'view/actionable'
 
 module View
-  class UndoButton < Snabberb::Component
+  class RedoButton < Snabberb::Component
     include Actionable
 
     def render
       props = {
         on: {
-          click: -> { process_action(Engine::Action::Undo.new(@game.current_entity)) },
+          click: -> { process_action(Engine::Action::Redo.new(@game.current_entity)) },
         },
         style: {
           'margin-right': '1em',
         },
       }
 
-      h(:button, props, 'Undo')
+      h(:button, props, 'Redo')
     end
   end
 end
