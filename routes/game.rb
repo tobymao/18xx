@@ -50,7 +50,8 @@ class Api
               action_id = r.params['id']
               halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
 
-              action = engine.process_action(r.params).actions.last.to_h
+              engine = engine.process_action(r.params)
+              action = engine.actions.last.to_h
 
               Action.create(
                 game: game,
@@ -86,13 +87,6 @@ class Api
               end
 
               publish(channel, **action)
-              return_and_notify(game)
-            end
-
-            # POST '/api/game/<game_id>/action/rollback'
-            r.is 'rollback' do
-              game.actions.last.destroy
-              publish(channel, id: -1)
               return_and_notify(game)
             end
           end

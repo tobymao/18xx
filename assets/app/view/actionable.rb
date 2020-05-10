@@ -33,21 +33,5 @@ module View
       store(:flash_opts, e.message)
       e.backtrace.each { |line| puts line }
     end
-
-    def rollback
-      return if Lib::Params['action']
-
-      game = @game.rollback
-      @game_data[:actions].pop
-      store(:game_data, @game_data, skip: true)
-
-      if @game_data[:mode] == :hotseat
-        Lib::Storage[@game_data[:id]] = @game_data
-      else
-        @connection&.safe_post("/game/#{@game_data['id']}/action/rollback")
-      end
-
-      store(:game, game)
-    end
   end
 end

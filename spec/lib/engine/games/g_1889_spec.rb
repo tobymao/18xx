@@ -32,25 +32,41 @@ module Engine
         subject_with_actions.process_action(action)
         expect(subject_with_actions.actions.size).to be 5
         expect(subject_with_actions.current_entity.name).to be players[2]
+        expect(subject_with_actions.can_redo?).to be false
       end
 
       it 'should return a new game when processing a undo' do
         action = Engine::Action::Undo.new(subject_with_actions.current_entity)
         game2 = subject_with_actions.process_action(action)
+        expect(subject_with_actions.can_undo?).to be true
+        expect(subject_with_actions.can_redo?).to be true
         expect(subject_with_actions).not_to eq(game2)
         expect(game2.actions.size).to be 5
         expect(game2.current_entity.name).to be players[0]
+        expect(game2.can_redo?).to be true
+        # As only messages are left, we can no longer undo
+        expect(game2.can_undo?).to be false
+      end
+
+      it 'should allow redo if a user sends a message' do
+        action = Engine::Action::Message.new(subject_with_actions.current_entity, 'testing more')
+        expect(subject_with_actions.can_redo?).to be true
+        subject_with_actions.process_action(action)
+        expect(subject_with_actions.actions.size).to be 5
+        expect(subject_with_actions.can_redo?).to be true
       end
 
       it 'should return a new game when processing a redo' do
         action = Engine::Action::Redo.new(subject_with_actions.current_entity)
+        expect(subject_with_actions.can_redo?).to be true
         game2 = subject_with_actions.process_action(action)
         expect(subject_with_actions).not_to eq(game2)
         expect(game2.actions.size).to be 5
         expect(game2.current_entity.name).to be players[2]
+        expect(game2.can_redo?).to be false
       end
 
-      it 'should return a new game when processing each undo/redo' do
+      it 'should return a new game when processing each undo/redo and the correct player should be active' do
         action = Engine::Action::Undo.new(subject_with_actions.current_entity)
         game2 = subject_with_actions.process_action(action)
         expect(subject_with_actions).not_to eq(game2)
@@ -61,6 +77,11 @@ module Engine
         expect(game2).not_to eq(game3)
         expect(game3.actions.size).to be 6
         expect(game3.current_entity.name).to be players[1]
+        action = Engine::Action::Undo.new(game3.current_entity)
+        game4 = game3.process_action(action)
+        expect(game3).not_to eq(game4)
+        expect(game4.actions.size).to be 7
+        expect(game4.current_entity.name).to be players[0]
       end
     end
 
