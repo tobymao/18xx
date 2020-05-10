@@ -38,7 +38,7 @@ module View
       elsif Engine::GAMES_BY_TITLE.keys.include?(dest)
         game_class = Engine::GAMES_BY_TITLE[dest]
         h('div#tiles', [
-            map_hexes_for(game_class)
+            map_hexes_and_tile_manifest_for(game_class)
           ])
       elsif TILE_IDS.include?(dest)
         render_tile_block(dest, scale: 3.0)
@@ -72,7 +72,8 @@ module View
       end
     end
 
-    def map_hexes_for(game_class)
+    def map_hexes_and_tile_manifest_for(game_class)
+      game = game_class.new(%w[p1 p2 p3])
       game_hexes = game_class::HEXES
       location_names = game_class::LOCATION_NAMES
 
@@ -147,17 +148,7 @@ module View
         )
       end
 
-      tiles = game_class::TILES.flat_map do |name, num|
-        num.times.map do |index|
-          Engine::Tile.for(name, index: index)
-        rescue Engine::GameError
-          # use "TODO" tiles for when a game has a tile in its TILES that is
-          # not yet defined in Engine::TILES
-          Engine::Tile.from_code(name, 'white', 'l=TODO', index: index)
-        end
-      end
-
-      rendered_tiles = tiles.sort.group_by(&:name).map do |name, tiles_|
+      rendered_tiles = game.tiles.sort.group_by(&:name).map do |name, tiles_|
         render_tile_block(name, tile: tiles_.first, num: tiles_.size)
       end
 
