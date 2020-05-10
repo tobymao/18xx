@@ -34,8 +34,7 @@ describe 'Assets' do
       expect(render(app_route: '/tiles/18Chesapeake/I9')).to include('I9')
       expect(render(app_route: '/tiles/18Chesapeake/X1')).to include('X1')
 
-      finished_games = %w[1889 18Chesapeake]
-      finished_games.each do |title|
+      %w[1889 18Chesapeake].each do |title|
         expect(render(app_route: "/tiles/#{title}")).to include("#{title} Map Hexes")
         expect(render(app_route: "/tiles/#{title}")).to include("#{title} Tile Manifest")
         expect(render(app_route: "/tiles/#{title}")).not_to include('TODO')
