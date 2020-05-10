@@ -111,7 +111,7 @@ module Engine
 
         abilities = company
           .all_abilities
-          .select { |a| a[:when] == @name }
+          .select { |a| a[:when]&.to_s == @name }
 
         abilities.each do |ability|
           case ability[:type]
