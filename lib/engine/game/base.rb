@@ -165,12 +165,7 @@ module Engine
         cache_objects
         connect_hexes
 
-        process_undos(actions)
-        # replay all actions with a copy
-        actions.each do |action|
-          action = action.copy(self) if action.is_a?(Action::Base)
-          process_action(action)
-        end
+        initialize_actions(actions)
       end
 
       def inspect
@@ -193,40 +188,52 @@ module Engine
         @round.active_entities.map(&:owner)
       end
 
-      def process_undos(actions)
-        @undo_list = []
-        @last_known_undo = 0
-        @pending_undos = 0
+      # Initialize actions respecting the undo state
+      def initialize_actions(actions)
+        active_undos = []
+        filtered_actions = Array.new(actions.size)
 
-        stack = []
         actions.each.with_index do |action, index|
           # action_id's start at 1, so always add one to the index
-          if action['type'] == 'undo'
-            @last_known_undo = index + 1
-            @pending_undos += 1
-            @undo_list << stack.pop
-          elsif action['type'] == 'redo'
-            @last_known_undo = index + 1
-            @pending_undos -= 1
-            stack << @undo_list.pop
-          elsif action['type'] != 'message'
-            # Adding more types of action here will break existing games
-            stack << index + 1
-            @pending_undos = 0
+          case action['type']
+          when 'undo'
+            i = filtered_actions.rindex { |a| !a.nil? && a['type'] != 'message' }
+            active_undos << [filtered_actions[i], i]
+            filtered_actions[i] = nil
+          when 'redo'
+            a, i = active_undos.pop
+            filtered_actions[i] = a
+          when 'message'
+            # Messages do not get undoed.
+            # warning adding more types of action here will break existing game
+            filtered_actions[index] = action
+          else
+            active_undos = []
+            filtered_actions[index] = action
           end
         end
+
+        @undo_possible = false
+        # replay all actions with a copy
+        filtered_actions.each.with_index do |action, index|
+          if action.nil?
+            # Restore the original action to the list to ensure action ids remain consistent but don't apply them
+            @actions << actions[index]
+          else
+            action = action.copy(self) if action.is_a?(Action::Base)
+            process_action(action)
+          end
+        end
+        @redo_possible = !active_undos.empty?
       end
 
       def can_undo?
         # Is there an action that can be redone?
-        @actions.any? do |x|
-          !(x.is_a?(Action::Undo) || x.is_a?(Action::Redo) || x.is_a?(Action::Message)) && !@undo_list.include?(x.id)
-        end
+        @undo_possible
       end
 
       def can_redo?
-        # Is the last action
-        @pending_undos.positive?
+        @redo_possible
       end
 
       def process_action(action)
@@ -235,18 +242,9 @@ module Engine
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
 
-        if @undo_list.include?(action.id)
-          @actions << action
-          return self
-        end
-
         if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
           @actions << action
-          return clone(@actions) if action.id > @last_known_undo
-
-          return self
-        elsif !action.is_a?(Action::Message) && action.id > @last_known_undo
-          @pending_undos = 0
+          return clone(@actions)
         end
 
         @phase.process_action(action)
@@ -256,6 +254,12 @@ module Engine
         else
           @round.process_action(action)
         end
+
+        unless action.is_a?(Action::Message)
+          @redo_possible = false
+          @undo_possible = true
+        end
+
         @actions << action
         next_round! while @round.finished? && !@finished
         self
