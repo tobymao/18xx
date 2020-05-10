@@ -27,49 +27,63 @@ module View
                 '<tile_name>, <game_title>/<hex_coord>, or '\
                 '<game_title>/<tile_name>'
 
+      # all common hexes/tiles
       if dest == 'all'
         h('div#tiles', [
             h('div#all_tiles', [
-                h(:h1, 'Generic Map Hexes and All Track Tiles'),
+                h(:h1, 'Generic Map Hexes and Common Track Tiles'),
                 *TILE_IDS.map { |t| render_tile_block(t) }
               ]),
 
           ])
+
+      # everything for one game
       elsif Engine::GAMES_BY_TITLE.keys.include?(dest)
         game_class = Engine::GAMES_BY_TITLE[dest]
         h('div#tiles', [
             map_hexes_and_tile_manifest_for(game_class)
           ])
+
+      # just one tile
       elsif TILE_IDS.include?(dest)
         render_tile_block(dest, scale: 3.0)
+
+      # just one hex/tile from a specific game
       elsif dest.include?('/')
         game_title, dest = dest.split('/')
         begin
-          game = Engine::GAMES_BY_TITLE[game_title].new(%w[p1 p2 p3])
-
-          # TODO?: handle case with big map and uses X for game-specific tiles
-          # (i.e., "X1" is the name of a tile *and* a hex)
-          tile, name =
-            if game.class::TILES.include?(dest)
-              t = game.tile_by_id("#{dest}-0")
-              [t, t.name]
-            else
-              t = game.hex_by_id(dest).tile
-              [t, dest]
-            end
-
-          render_tile_block(
-            name,
-            tile: tile,
-            location_name: tile.location_name,
-            scale: 3.0
-          )
+          render_individual_tile(game_title, dest)
         rescue StandardError
           h(:p, err_msg)
         end
+
+      # no match from prior conditionals, something must be wrong with the given
+      # route
       else
         h(:p, err_msg)
       end
+    end
+
+    def render_individual_tile(game_title, dest)
+      game = Engine::GAMES_BY_TITLE[game_title].new(%w[p1 p2 p3])
+
+      # TODO?: handle case with big map and uses X for game-specific tiles
+      # (i.e., "X1" is the name of a tile *and* a hex)
+      tile, name =
+        if game.class::TILES.include?(dest)
+          t = game.tile_by_id("#{dest}-0")
+          [t, t.name]
+        else
+          t = game.hex_by_id(dest).tile
+          [t, dest]
+        end
+
+      render_tile_block(
+        name,
+        tile: tile,
+        location_name: tile.location_name,
+        scale: 3.0
+      )
     end
 
     def map_hexes_and_tile_manifest_for(game_class)
