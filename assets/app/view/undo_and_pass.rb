@@ -7,7 +7,6 @@ require 'view/redo_button'
 module View
   class UndoAndPass < Snabberb::Component
     include Actionable
-    needs :undo, default: true
     needs :pass, default: true
 
     def render
