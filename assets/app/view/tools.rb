@@ -30,7 +30,6 @@ module View
 
     def render_admin
       if user_owns_game?(@user, @game_data)
-        puts @game_data
         admin = []
         unless @game.finished
           end_game = if !@confirming_conclude_game
