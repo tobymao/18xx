@@ -107,7 +107,6 @@ class Api
             halt(400, 'Cannot play 1 player') if game.players.size < 2
 
             game.update(
-              settings: { seed: Random.new_seed },
               status: 'active',
               acting: [users.first.id],
             )
@@ -138,6 +137,7 @@ class Api
             user: user,
             description: r['description'],
             max_players: r['max_players'],
+            settings: { seed: Random.new_seed },
             title: title,
             round: Engine::GAMES_BY_TITLE[title].new([]).round.name,
           }
