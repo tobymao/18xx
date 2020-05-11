@@ -38,15 +38,16 @@ class Api
             return_and_notify(game)
           end
 
-          r.on 'action' do
-            engine = Engine::GAMES_BY_TITLE[game.title].new(
-              users.map(&:name),
-              actions: actions_h(game),
-            )
-            channel = "/game/#{game.id}"
+          # POST '/api/game/<game_id>/action'
+          r.is 'action' do
+            acting, action = nil
 
-            # POST '/api/game/<game_id>/action'
-            r.is do
+            DB.with_advisory_lock(:action_lock, game.id) do
+              engine = Engine::GAMES_BY_TITLE[game.title].new(
+                users.map(&:name),
+                actions: actions_h(game),
+              )
+
               action_id = r.params['id']
               halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
 
@@ -65,30 +66,30 @@ class Api
               active_players = engine.active_players.map(&:name)
               acting = users.select { |u| active_players.include?(u.name) }
               set_game_state(game, acting, engine)
+            end
 
-              type, user_ids =
-                if action['type'] == 'message'
-                  pinged = users.select do |user|
-                    action['message'].include?("@#{user.name}")
-                  end
-                  ['Received Message', pinged.map(&:id)]
-                else
-                  ['Your Turn', acting.map(&:id)]
+            type, user_ids =
+              if action['type'] == 'message'
+                pinged = users.select do |user|
+                  action['message'].include?("@#{user.name}")
                 end
-
-              if user_ids.any?
-                MessageBus.publish(
-                  TURN_CHANNEL,
-                  user_ids: user_ids,
-                  game_id: game.id,
-                  game_url: "#{r.base_url}/game/#{game.id}",
-                  type: type,
-                )
+                ['Received Message', pinged.map(&:id)]
+              else
+                ['Your Turn', acting.map(&:id)]
               end
 
-              publish(channel, **action)
-              return_and_notify(game)
+            if user_ids.any?
+              MessageBus.publish(
+                TURN_CHANNEL,
+                user_ids: user_ids,
+                game_id: game.id,
+                game_url: "#{r.base_url}/game/#{game.id}",
+                type: type,
+              )
             end
+
+            publish("/game/#{game.id}", **action)
+            return_and_notify(game)
           end
 
           not_authorized! unless game.user_id == user.id
