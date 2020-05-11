@@ -32,7 +32,7 @@ module View
         I've made some changes to email notifications. You can now disable them in your <a href='/profile'>Profile</a>.
         And email messages will only be sent to users if you ping them with @playername.
 
-        Also, emails are only sent if you haven't been on the website within 60 seconds.
+        You can now end games early. The owner of the game has an option in the tools tab to end the game if it is finished.
 
         Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
         <a href='https://docs.google.com/document/d/1nCYnzNMQLrFLZtWdbjfuSx5aIcaOyi27lMYkJxcGayw/edit'>FAQ!</a>
