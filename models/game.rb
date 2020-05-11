@@ -50,7 +50,6 @@ class Game < Base
       FROM games g
       JOIN user_games ug
         ON g.id = ug.id
-      WHERE g.status IN ('new', 'active')
       ORDER BY g.created_at DESC
       LIMIT #{QUERY_LIMIT}
       OFFSET :personal_offset * #{QUERY_LIMIT - 1}
