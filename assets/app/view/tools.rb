@@ -9,7 +9,7 @@ module View
 
     needs :game, store: true
     needs :user
-    needs :confirming_conclude_game, store: true, default: false
+    needs :confirm_endgame, store: true, default: false
 
     def render
       @game_data = @game_data.merge(actions: @game.actions.map(&:to_h))
@@ -32,17 +32,17 @@ module View
       if user_owns_game?(@user, @game_data)
         admin = []
         unless @game.finished
-          end_game = if !@confirming_conclude_game
+          end_game = if !@confirm_endgame
                        [
                          h(
                            'button.button',
-                           { style: { margin: '1rem' }, on: { click: -> { store(:confirming_conclude_game, true) } } },
+                           { style: { margin: '1rem' }, on: { click: -> { store(:confirm_endgame, true) } } },
                            'End Game',
                          ),
                        ]
                      else
                        confirm = lambda do
-                         store(:confirming_conclude_game, false)
+                         store(:confirm_endgame, false)
                          process_action(Engine::Action::EndGame.new(@game.current_entity))
                          # Go to main page
                          store(:app_route, @app_route.split('#').first)
@@ -55,7 +55,7 @@ module View
                          ),
                          h(
                            'button.button',
-                           { style: { margin: '1rem' }, on: { click: -> { store(:confirming_conclude_game, false) } } },
+                           { style: { margin: '1rem' }, on: { click: -> { store(:confirm_endgame, false) } } },
                            'Cancel',
                          )
                        ]
