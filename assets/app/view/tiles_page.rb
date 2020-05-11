@@ -22,6 +22,7 @@ module View
 
     def render
       dest = @route.match(ROUTE_FORMAT)[1]
+      dest = dest[0..-2] if dest[-1] == '/'
 
       begin
         # all common hexes/tiles
