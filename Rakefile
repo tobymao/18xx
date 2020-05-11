@@ -92,8 +92,8 @@ task :prod_irb do
   irb.call('production')
 end
 
-desc 'Check game validity in test_bounce mode'
-task :dev_checkgames do
+desc 'Check game validity in test mode'
+task :test_checkgames do
   irb.call('test', 'scripts/check_games.rb')
 end
 
