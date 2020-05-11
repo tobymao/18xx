@@ -168,7 +168,10 @@ module View
           result,
         ])
       else
-        children << h(:div, [h(:b, 'Updated: '), @gdata['updated_at']])
+        children << h(:div, [
+          h(:b, 'Round: '), "#{@gdata['round']&.split(' ')&.first} #{@gdata['turn']} ",
+          h(:b, 'Updated: '), @gdata['updated_at'],
+        ])
       end
 
       h(:div, props, children)
