@@ -47,24 +47,26 @@ class Api
 
             # POST '/api/game/<game_id>/action'
             r.is do
-              action_id = r.params['id']
-              halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
+              acting, action = nil
+              DB.with_advisory_lock(:turn_lock, game.id) do
+                action_id = r.params['id']
+                halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
 
-              action = engine.process_action(r.params).actions.last.to_h
+                action = engine.process_action(r.params).actions.last.to_h
 
-              Action.create(
-                game: game,
-                user: user,
-                action_id: action_id,
-                turn: engine.turn,
-                round: engine.round.name,
-                action: action,
-              )
+                Action.create(
+                  game: game,
+                  user: user,
+                  action_id: action_id,
+                  turn: engine.turn,
+                  round: engine.round.name,
+                  action: action,
+                )
 
-              active_players = engine.active_players.map(&:name)
-              acting = users.select { |u| active_players.include?(u.name) }
-              set_game_state(game, acting, engine)
-
+                active_players = engine.active_players.map(&:name)
+                acting = users.select { |u| active_players.include?(u.name) }
+                set_game_state(game, acting, engine)
+              end
               type, user_ids =
                 if action['type'] == 'message'
                   pinged = users.select do |user|
