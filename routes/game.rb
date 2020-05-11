@@ -167,6 +167,9 @@ class Api
     if engine.finished
       game.result = engine.result
       game.status = 'finished'
+    else
+      game.result = {}
+      game.status = 'active'
     end
 
     game.save

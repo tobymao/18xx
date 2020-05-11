@@ -415,6 +415,8 @@ module Engine
       def next_round!
         @round.entities.each(&:unpass!)
 
+        return end_game if @round.end_game
+
         @round =
           case @round
           when Round::Auction

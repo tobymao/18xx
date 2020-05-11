@@ -65,7 +65,7 @@ module View
         when 'spreadsheet'
           h(Spreadsheet, game: @game)
         when 'tools'
-          h(Tools, game: @game, game_data: @game_data)
+          h(Tools, game: @game, game_data: @game_data, user: @user)
         end
 
       @connection.subscribe(game_path) do |data|
