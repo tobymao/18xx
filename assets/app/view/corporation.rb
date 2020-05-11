@@ -246,7 +246,7 @@ module View
       h(:table, table_props, [
         h(:tr, [
           h(:th, td_props, 'Shareholder'),
-          h(:th, td_props, 'Number'),
+          h(:th, td_props, 'Shares'),
           h(:th, td_props, 'Price'),
         ]),
         *rows
