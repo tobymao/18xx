@@ -14,7 +14,7 @@ module Lib
 
     def get_coordinates(event)
       rect = event.JS['currentTarget'].JS.getBoundingClientRect
-      [`window.pageXOffset` + rect.JS['x'], `window.pageYOffset` + rect.JS['y']]
+      [`window.pageXOffset` + rect.JS['left'], `window.pageYOffset` + rect.JS['top']]
     end
 
     def tile=(new_tile)

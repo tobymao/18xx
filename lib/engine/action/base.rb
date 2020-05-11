@@ -27,6 +27,10 @@ module Engine
         @entity = entity
       end
 
+      def [](field)
+        to_h[field]
+      end
+
       def to_h
         {
           'type' => type_s(self),

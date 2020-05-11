@@ -26,7 +26,7 @@ module Engine
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :hexes, :id, :log, :phase, :players, :round,
-                  :share_pool, :special, :stock_market, :tiles, :turn
+                  :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible
 
       BANK_CASH = 12_000
 
@@ -165,11 +165,7 @@ module Engine
         cache_objects
         connect_hexes
 
-        # replay all actions with a copy
-        actions.each do |action|
-          action = action.copy(self) if action.is_a?(Action::Base)
-          process_action(action)
-        end
+        initialize_actions(actions)
       end
 
       def inspect
@@ -192,11 +188,55 @@ module Engine
         @round.active_entities.map(&:owner)
       end
 
+      # Initialize actions respecting the undo state
+      def initialize_actions(actions)
+        active_undos = []
+        filtered_actions = Array.new(actions.size)
+
+        actions.each.with_index do |action, index|
+          case action['type']
+          when 'undo'
+            i = filtered_actions.rindex { |a| a && a['type'] != 'message' }
+            active_undos << [filtered_actions[i], i]
+            filtered_actions[i] = nil
+          when 'redo'
+            a, i = active_undos.pop
+            filtered_actions[i] = a
+          when 'message'
+            # Messages do not get undoed.
+            # warning adding more types of action here will break existing game
+            filtered_actions[index] = action
+          else
+            active_undos = []
+            filtered_actions[index] = action
+          end
+        end
+
+        @undo_possible = false
+        # replay all actions with a copy
+        filtered_actions.each.with_index do |action, index|
+          if !action.nil?
+            action = action.copy(self) if action.is_a?(Action::Base)
+            process_action(action)
+          else
+            # Restore the original action to the list to ensure action ids remain consistent but don't apply them
+            @actions << actions[index]
+          end
+        end
+        @redo_possible = active_undos.any?
+      end
+
       def process_action(action)
         return self if @finished
 
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
+
+        if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
+          @actions << action
+          return clone(@actions)
+        end
+
         @phase.process_action(action)
         # company special power actions are processed by a different round handler
         if action.entity.is_a?(Company)
@@ -204,6 +244,12 @@ module Engine
         else
           @round.process_action(action)
         end
+
+        unless action.is_a?(Action::Message)
+          @redo_possible = false
+          @undo_possible = true
+        end
+
         @actions << action
         next_round! while @round.finished? && !@finished
         self
@@ -221,10 +267,6 @@ module Engine
 
       def clone(actions)
         self.class.new(@names, id: @id, actions: actions)
-      end
-
-      def rollback
-        clone(@actions[0...-1])
       end
 
       def trains
