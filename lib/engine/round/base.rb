@@ -156,10 +156,10 @@ module Engine
         @game.tiles << old_tile unless old_tile.preprinted
 
         # companies with block_hexes should block hexes
-        blocks_hexes = @game.companies.find do |n|
+        block_hex = @game.companies.find do |n|
           n.abilities(:blocks_hexes)&.fetch(:hexes)&.include?(hex.name)
         end
-        raise GameError, "#{hex.name} is blocked by #{blocks_hexes.name}" if blocks_hexes
+        raise GameError, "#{hex.name} is blocked by #{block_hex.name}" if block_hex
 
         tile.rotate!(rotation)
         hex.lay(tile)
