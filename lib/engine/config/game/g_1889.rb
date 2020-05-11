@@ -281,8 +281,7 @@ module Engine
                   "type": "blocks_hexes",
                   "hexes": [
                     "K4"
-                  ],
-                  "owner_type": "player"
+                  ]
                 }
               ]
             },
@@ -319,8 +318,7 @@ module Engine
                   "type": "blocks_hexes",
                   "hexes": [
                     "C4"
-                  ],
-                  "owner_type": "player"
+                  ]
                 },
                 {
                   "type": "tile_lay",

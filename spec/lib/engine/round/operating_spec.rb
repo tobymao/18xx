@@ -88,26 +88,6 @@ module Engine
           )
         end
       end
-
-      context 'with ko' do
-        let(:corporation) { game.corporation_by_id('KO') }
-        let(:company) { game.company_by_id('Takamatsu E-Railroad') }
-        let(:player) { game.player_by_id('a') }
-
-        it 'errors when upgrading K4 if Takumatsu is owned by player' do
-          company.owner = player
-          player.companies << company
-
-          action = Action::LayTile.new(corporation, Tile.for('440'), hex_k4, 0)
-          expect { subject.process_action(action) }.to raise_error(GameError)
-        end
-
-        it 'allows upgrading K4 if Takumatsu is owned by any corporation' do
-          company.owner = corporation
-          corporation.companies << company
-          subject.process_action(Action::LayTile.new(corporation, Tile.for('440'), hex_k4, 0))
-        end
-      end
     end
   end
 end

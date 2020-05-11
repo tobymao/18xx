@@ -65,7 +65,7 @@ end
 
 # Shell
 
-irb = proc do |env, *args|
+irb = proc do |env|
   ENV['RACK_ENV'] = env
   trap('INT', 'IGNORE')
   dir, base = File.split(FileUtils::RUBY)
@@ -74,7 +74,7 @@ irb = proc do |env, *args|
         else
           "#{FileUtils::RUBY} -S irb"
         end
-  sh "#{cmd} -r ./models #{args.join(' ')}"
+  sh "#{cmd} -r ./models"
 end
 
 desc 'Open irb shell in test mode'
@@ -90,21 +90,6 @@ end
 desc 'Open irb shell in production mode'
 task :prod_irb do
   irb.call('production')
-end
-
-desc 'Check game validity in test_bounce mode'
-task :dev_checkgames do
-  irb.call('test', 'scripts/check_games.rb')
-end
-
-desc 'Check game validity in development mode'
-task :dev_checkgames do
-  irb.call('development', 'scripts/check_games.rb')
-end
-
-desc 'Check game validity in production mode'
-task :prod_checkgames do
-  irb.call('production', 'scripts/check_games.rb')
 end
 
 # Other
