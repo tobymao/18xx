@@ -62,9 +62,14 @@ describe 'Assets' do
       needs = {
         game_data: {
           id: 1,
-          players: [{ name: 'Player 1' }, { name: 'Player 2' }],
+          user: { id: 1, name: 'Player 1' },
+          players: [{ id: 1, name: 'Player 1' }, { id: 2, name: 'Player 2' }],
           title: '1889',
           actions: [],
+        },
+        user: {
+          id: 1,
+          name: 'Player 1'
         }
       }
 

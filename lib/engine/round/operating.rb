@@ -84,7 +84,7 @@ module Engine
       end
 
       def finished?
-        @bankrupt || super
+        @end_game || @bankrupt || super
       end
 
       def can_buy_companies?

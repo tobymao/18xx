@@ -42,7 +42,7 @@ module Engine
       end
 
       def finished?
-        @companies.empty?
+        @end_game || @companies.empty?
       end
 
       def min_bid(company)

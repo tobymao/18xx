@@ -7,13 +7,14 @@ require_relative '../share_bundle'
 module Engine
   module Round
     class Base
-      attr_reader :entities, :current_entity
+      attr_reader :entities, :current_entity, :end_game
 
       def initialize(entities, game:, **_kwargs)
         @game = game
         @entities = entities
         @log = game.log
         @current_entity = @entities.first
+        @end_game = false
       end
 
       def log_new_round
@@ -51,6 +52,11 @@ module Engine
 
       def process_action(action)
         entity = action.entity
+        if action.is_a?(Action::EndGame)
+          @end_game = true
+          @log << '-- Game ended by owner --'
+          return
+        end
         return @log << action if action.is_a?(Action::Message)
         raise GameError, "It is not #{entity.name}'s turn" unless can_act?(entity)
 
@@ -67,7 +73,7 @@ module Engine
       end
 
       def finished?
-        @entities.all?(&:passed?)
+        @end_game || @entities.all?(&:passed?)
       end
 
       def can_act?(entity)

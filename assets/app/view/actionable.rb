@@ -22,6 +22,13 @@ module View
       store(:game_data, @game_data, skip: true)
 
       if @game_data[:mode] == :hotseat
+        if @game.finished
+          @game_data[:result] = @game.result
+          @game_data[:status] = 'finished'
+        else
+          @game_data[:result] = {}
+          @game_data[:status] = 'active'
+        end
         Lib::Storage[@game_data[:id]] = @game_data
       else
         @connection.safe_post("/game/#{@game_data['id']}/action", action.to_h)
