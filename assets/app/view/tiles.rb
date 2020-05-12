@@ -2,7 +2,7 @@
 
 module View
   class Tiles < Snabberb::Component
-    def render_tile_block(name, num: nil, tile: nil, location_name: nil, scale: 1.0)
+    def render_tile_block(name, num: nil, tile: nil, location_name: nil, scale: 1.0, opacity: 1.0)
       props = {
         style: {
           display: 'inline-block',
@@ -27,7 +27,8 @@ module View
                                      layout: 'flat',
                                      location_name: location_name,
                                      tile: tile || Engine::Tile.for(name)),
-                role: :tile_page
+                role: :tile_page,
+                opacity: opacity,
               )
             ])
           ])

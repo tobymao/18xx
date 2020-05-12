@@ -53,7 +53,7 @@ module View
         when 'market'
           h(StockMarket, game: @game, show_bank: true)
         when 'tiles'
-          h(TileManifest, tiles: @game.tiles)
+          h(TileManifest, tiles: @game.tiles, all_tiles: @game.init_tiles)
         when 'companies'
           h(Companies, game: @game, user: @user)
         when 'corporations'

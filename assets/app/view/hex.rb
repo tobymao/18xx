@@ -30,6 +30,7 @@ module View
     needs :tile_selector, default: nil, store: true
     needs :show_grid, default: false, store: true
     needs :role, default: :map
+    needs :opacity, default: nil
 
     def render
       children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
@@ -92,6 +93,8 @@ module View
     end
 
     def opacity(layable)
+      return @opacity if @opacity
+
       corp_track_laying = @round.is_a?(Engine::Round::Operating) && (@round.step == 'track')
       company_track_laying = @round.is_a?(Engine::Round::Special)
 
