@@ -21,11 +21,12 @@ module View
       your_games, other_games = @games.partition { |game| user_in_game?(@user, game) }
       grouped = other_games.group_by { |game| game['status'] }
 
-      # Ready, then active, then unstarted.
+      # Ready, then active, then unstarted, then completed
       your_games.sort_by! do |game|
         [
-          user_is_acting?(@user, game) ? -2 : 2,
-          game['status'] != 'new' ? -1 : 1,
+          user_is_acting?(@user, game) ? -game['id'] : 0,
+          game['status'] == 'active' ? -game['id'] : 0,
+          game['status'] == 'new' ? -game['id'] : 0,
           -game['id']
         ]
       end
