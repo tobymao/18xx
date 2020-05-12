@@ -116,7 +116,7 @@ module GameManager
   end
 
   def user_is_acting?(user, game)
-    game['acting'].include?(user&.dig('id'))
+    game['status'] == 'active' && game['acting'].include?(user&.dig('id'))
   end
 
   protected
