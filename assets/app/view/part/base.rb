@@ -113,6 +113,12 @@ module View
         "translate(#{x} #{y})"
       end
 
+      def scale
+        s = render_location[:scale] || 1
+
+        "scale(#{s})"
+      end
+
       def rotation
         angle = render_location[:angle] || 0
 
