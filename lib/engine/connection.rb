@@ -29,8 +29,7 @@ module Engine
           exits.each do |edge|
             neighbor = hex.neighbors[edge]
             edge = hex.invert(edge)
-            next if neighbor.connections[edge].any?
-            hexes[neighbor] |= [edge]
+            hexes[neighbor] << edge if neighbor.connections[edge].empty? && !hexes[neighbor].include?(edge)
           end
         end
 
@@ -46,17 +45,32 @@ module Engine
 
     def self.connect!(hex)
       connection = Connection.new
+      connections = {}
 
-      Part::Path.walk(hex.tile.paths) do |path|
-        hex = path.hex
-        connection = connection.branch!(path)
-        connection.add_path(path)
+      hex.tile.paths.each do |p|
+        p.walk do |path|
+          hex = path.hex
+          connection = connection.branch!(path)
+          connection.add_path(path)
+          connections[connection] = true
 
-        path.exits.each do |edge|
-          hex.connections[edge].reject! do |c|
-            !c.paths.all?(&:hex) || (c.paths - connection.paths).empty?
+          path.exits.each do |edge|
+            hex_connections = hex.connections[edge]
+            hex_connections << connection unless hex_connections.include?(connection)
           end
-          hex.connections[edge] << connection
+        end
+      end
+
+      connections.keys.each do |new|
+        new_paths = new.paths
+
+        new_paths.each do |path|
+          path.exits.each do |edge|
+            path.hex.connections[edge].reject! do |old|
+              old_paths = old.paths
+              old != new && (!old_paths.all?(&:hex) || (old_paths - new_paths).empty?)
+            end
+          end
         end
       end
     end
@@ -68,7 +82,7 @@ module Engine
     end
 
     def add_path(path)
-      @paths << path
+      @paths << path unless @paths.include?(path)
       clear_cache
       raise 'Connection cannot have more than two nodes' if nodes.size > 2
       raise 'Connection cannot have two paths on the same hex' if hexes.uniq.size < hexes.size
@@ -90,6 +104,10 @@ module Engine
 
     def hexes
       @hexes ||= @paths.map(&:hex)
+    end
+
+    def complete?
+      nodes.size == 2
     end
 
     def include?(hex)

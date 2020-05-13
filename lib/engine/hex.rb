@@ -68,8 +68,6 @@ module Engine
         city.reservations.clear
       end
 
-      puts "*** lay tile #{@tile.hex.name} ***"
-
       @tile.hex = nil
       tile.hex = self
 

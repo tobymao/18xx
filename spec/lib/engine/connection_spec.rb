@@ -60,6 +60,9 @@ module Engine
         )
 
         connections_3 = subject.connections[3]
+        connections_3.each do |c|
+          puts "#{c.object_id} #{c.inspect}"
+        end
         expect(connections_3.size).to eq(2)
         expect(connections_3[0]).to have_attributes(
           nodes: [subject.tile.cities[0]],
@@ -84,11 +87,22 @@ module Engine
     end
 
     context 'with ko and sr' do
+      subject { game.hex_by_id('J3') }
+
       it 'can upgrade fork to 3 stops' do
         game.hex_by_id('I2').lay(game.tile_by_id('6-0').rotate!(4))
-        game.hex_by_id('J3').lay(game.tile_by_id('8-0').rotate!(5))
+        subject.lay(game.tile_by_id('8-0').rotate!(3))
         game.hex_by_id('I2').lay(game.tile_by_id('12-0').rotate!(5))
-        game.hex_by_id('J3').lay(game.tile_by_id('23-0').rotate!(5))
+        subject.lay(game.tile_by_id('23-0').rotate!(5))
+        subject.lay(game.tile_by_id('47-0').rotate!(2))
+        expect(subject.connections.size).to eq(4)
+        expect(subject.connections[0].size).to eq(2)
+        expect(subject.connections[2].size).to eq(2)
+        connections_3 = subject.connections[3]
+        expect(connections_3.size).to eq(2)
+        expect(subject.connections[5].size).to eq(2)
+        expect(connections_3[0].hexes.map(&:name)).to eq(%w[J3 J1])
+        expect(connections_3[1].hexes.map(&:name)).to eq(%w[J1 J3 K4])
       end
     end
 
@@ -126,6 +140,7 @@ module Engine
           subject.tile.cities[0],
         ])
         expect(ritsurin_connection.hexes.map(&:name)).to eq(%w[J5 I6 I8 J7 K8])
+        expect(game.hex_by_id('J7').connections[5].size).to eq(2)
       end
 
       it 'connects deep' do

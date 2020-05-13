@@ -9,6 +9,7 @@ module View
   class Map < Snabberb::Component
     needs :game
     needs :tile_selector, default: nil, store: true
+    needs :selected_route, default: nil, store: true
     needs :selected_company, default: nil, store: true
 
     GAP = 50 # gap between the row/col labels and the map hexes
@@ -29,7 +30,8 @@ module View
         end
 
       # move the selected hex to the back so it renders highest in z space
-      @hexes << @hexes.delete(@tile_selector.hex) if @tile_selector
+      selected_hex = @tile_selector&.hex || @selected_route&.last_hex
+      @hexes << @hexes.delete(selected_hex) if selected_hex
 
       @hexes.map! do |hex|
         h(Hex, hex: hex, round: round)
