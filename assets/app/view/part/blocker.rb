@@ -8,13 +8,21 @@ module View
       def preferred_render_locations
         [
           {
-            region_weights: LEFT_CORNER,
+            region_weights: LEFT_CORNER + [13],
             x: -65,
             y: 5,
           },
           {
-            region_weights: [19, 20],
+
+            region_weights_in: [13, 19, 20],
+            region_weights_out: [19, 20],
             x: -35,
+            y: 60,
+          },
+          {
+            region_weights_in: [17, 22, 23],
+            region_weights_out: [22, 23],
+            x: 35,
             y: 60,
           },
         ]
