@@ -8,11 +8,19 @@ require 'zlib'
 require_relative 'js_context'
 
 class Assets
-  def initialize(make_map: true, compress: false, gzip: false, cache: true, precompiled: false)
+  attr_reader :out_path
+
+  def initialize(make_map: true, compress: false, gzip: false, cache: true, precompiled: false, pin: nil)
     @files = []
     @build_path = 'build'
     @out_path = 'public/assets'
+
     @root_path = '/assets'
+    @pin = pin
+    if @pin
+      @out_path = "public/pinned/#{pin}"
+      @root_path = "/pinned/#{pin}"
+    end
     @bundle_path = "#{@out_path}/main.js"
 
     @cache = cache

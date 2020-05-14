@@ -131,7 +131,7 @@ module Engine
         name.split('::').last.slice(1..-1)
       end
 
-      def initialize(names, id: 0, actions: [])
+      def initialize(names, id: 0, actions: [], pin: nil)
         @id = id
         @turn = 1
         @finished = false
@@ -166,6 +166,13 @@ module Engine
         connect_hexes
 
         initialize_actions(actions)
+
+        return unless pin
+
+        @log << '----'
+        @log << 'Your game was unable to be upgraded to the latest version of 18xx.games.'
+        @log << "It is pinned to version #{pin}, if any bugs are raised please include this version number"
+        @log << '----'
       end
 
       def inspect
@@ -266,7 +273,7 @@ module Engine
       end
 
       def clone(actions)
-        self.class.new(@names, id: @id, actions: actions)
+        self.class.new(@names, id: @id, pin: @pin, actions: actions)
       end
 
       def trains

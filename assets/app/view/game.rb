@@ -39,6 +39,7 @@ module View
         @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
           @game_data['players'].map { |p| p['name'] },
           id: game_id,
+          pin: @game_data['pin_version'],
           actions: cursor ? actions.take(cursor) : actions,
         )
         store(:game, @game, skip: true)

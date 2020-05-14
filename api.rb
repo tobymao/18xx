@@ -76,6 +76,8 @@ class Api < Roda
   plugin :halt
 
   ASSETS = Assets.new(precompiled: PRODUCTION)
+  # TODO: This should scan the directory
+  PIN_ASSETS = { 'deadbeef' => Assets.new(precompiled: true, pin: 'deadbeef') }.freeze
 
   use MessageBus::Rack::Middleware
   use Rack::Deflater unless PRODUCTION
@@ -123,7 +125,7 @@ class Api < Roda
       halt(404, 'Game not found') unless (game = Game[id])
       halt(400, 'Game has not started yet') if game.status == 'new'
 
-      render(game_data: game.to_h(include_actions: true))
+      render(pin: game.pin_version, game_data: game.to_h(include_actions: true))
     end
   end
 
@@ -131,19 +133,21 @@ class Api < Roda
     render(games: Game.home_games(user, **request.params).map(&:to_h))
   end
 
-  def render(**needs)
+  def render(pin: nil, **needs)
     return debug(**needs) if request.params['debug'] && !PRODUCTION
+
+    asset = PIN_ASSETS[pin] || ASSETS
 
     script = Snabberb.prerender_script(
       'Index',
       'App',
       'app',
-      javascript_include_tags: ASSETS.js_tags,
+      javascript_include_tags: asset.js_tags,
       app_route: request.path,
       **needs,
     )
 
-    ASSETS.context.eval(script)
+    asset.context.eval(script)
   end
 
   def debug(**needs)
