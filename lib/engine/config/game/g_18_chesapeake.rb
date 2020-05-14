@@ -46,13 +46,12 @@ module Engine
             %w[H4 J6] => 'c=r:0;u=c:40,t:water',
           },
           red: {
-            %w[A1 A15] => 'blank',
-            %w[A3] => 'c=r:0;p=a:5,b:j',
+            %w[A3] => 'c=r:yellow_40|green_50|brown_60|gray_80;p=a:5,b:j',
             %w[B2] => 'o=r:yellow_40|green_50|brown_60|gray_80;p=a:0,b:_0',
             %w[A7] => 'o=r:yellow_40|green_60|brown_80|gray_100;p=a:4,b:_0;p=a:5,b:_0',
-            %w[A13] => 'p=a:4,b:j',
+            %w[A13] => 'o=r:yellow_40|green_50|brown_60|gray_80;p=a:4,b:_0',
             %w[B14] => 'o=r:yellow_40|green_50|brown_60|gray_80;p=a:3,b:_0;p=a:4,b:_0',
-            %w[H14] => 'o=r:yellow_20|green_40|brown_50|gray_60;p=a:2,b:_0',
+            %w[H14] => 'o=r:yellow_30|green_40|brown_50|gray_60;p=a:2,b:_0',
             %w[L2] => 'o=r:yellow_40|green_60|brown_80|gray_100;p=a:0,b:_0;p=a:1,b:_0',
           },
           gray: {
@@ -154,8 +153,10 @@ module Engine
         }.freeze
 
         LOCATION_NAMES = {
+          'A3' => 'Pittsburgh',
           'B2' => 'Pittsburgh',
           'A7' => 'Ohio',
+          'A13' => 'West Virginia Coal',
           'B14' => 'West Virginia Coal',
           'B4' => 'Charleroi & Connellsville',
           'C5' => 'Green Spring',
@@ -173,9 +174,11 @@ module Engine
           'H6' => 'Baltimore',
           'H14' => 'Norfolk',
           'I5' => 'Wilmington',
+          'I9' => 'Delmarva Peninsula',
           'J2' => 'Allentown',
           'J4' => 'Philadelphia',
           'J6' => 'Camden',
+          'K1' => 'Easton',
           'K3' => 'Trenton & Amboy',
           'K5' => 'Burlington & Princeton',
           'L2' => 'New York',
