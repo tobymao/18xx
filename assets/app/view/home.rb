@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'game_manager'
+require 'lib/notification'
 require 'lib/storage'
 require 'view/chat'
 require 'view/game_row'
@@ -46,6 +47,9 @@ module View
 
       @connection.subscribe('/games') do |data|
         update_game(data)
+        if data['acting']&.include?(@user['id'])
+          Lib::Notification.notify('18xx - Game ' + data['id'].to_s + ' - Your turn')
+        end
       end
 
       destroy = lambda do
