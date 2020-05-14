@@ -113,6 +113,7 @@ class Game < Base
       actions: actions_h,
       created_at: pp_created_at,
       updated_at: pp_updated_at,
+      pin_version: pin_version
     }
   end
 end
