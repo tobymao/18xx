@@ -55,18 +55,16 @@ module Engine
       @connections.map { |c| c[:connection] }
     end
 
-    def add_connection(connection, side, replace)
-      puts "add conection #{connection.inspect}"
+    def add_connection(connection, side, replace = false)
       return side == :head ? @connections.shift : @connections.pop unless connection
 
       raise GameError if @connections.include?(connection)
       raise GameError if connection.nodes.size != 2
-      # raise GameError if @connections.any? { |c| (c[:connection].paths & connection.paths).any? }
+      raise GameError if !replace && paths_for(connection.paths).any?
 
       if @connections.empty?
         hex_a, hex_b = connection.nodes.map(&:hex)
         hex_a, hex_b = hex_b, hex_a if hex_a == @last_hex
-        puts "empty left #{hex_a.name} right #{hex_b.name}"
         @connections << { left: hex_a, right: hex_b, connection: connection }
       else
         hexes = connection.nodes.map(&:hex)
@@ -75,13 +73,11 @@ module Engine
 
         if hexes.include?(left)
           a, b = hexes
-          puts "add head left #{a.name} right #{b.name}"
           a, b = b, a if a == left
           new = { left: a, right: b, connection: connection }
           replace ? @connections[0] = new : @connections.unshift(new)
         elsif hexes.include?(right)
           a, b = hexes
-          puts "add tail left #{a.name} right #{b.name}"
           a, b = b, a if b == right
           new = { left: a, right: b, connection: connection }
           replace ? @connections[-1] = new : @connections << new
@@ -96,44 +92,30 @@ module Engine
     end
 
     def select(node, hex)
-      node
-        .all_connections
-        .uniq
-        .select { |c| c.complete? && !@connections.include?(c) && c.hexes.include?(hex) }
+      node.all_connections.uniq.select do |c|
+        c.complete? &&
+          !@connections.include?(c) &&
+          c.hexes.include?(hex)
+      end
     end
 
     def touch_hex(hex)
-      puts "touch #{hex.name}"
-
       if @connections.any?
         head_c = head[:connection]
         tail_c = tail[:connection]
         replace = @connections.size == 1
-        puts "head #{head.inspect}"
-        puts "tail #{tail.inspect}"
 
         if head_c.hexes.include?(hex)
           add_connection(next_connection(head[:right], head_c, hex), :head, replace)
-          puts "** coming here a"
         elsif tail_c.hexes.include?(hex)
           add_connection(next_connection(tail[:left], tail_c, hex), :tail, replace)
-          puts "** coming here b"
         elsif (connection = select(head[:left], hex)[0])
-          add_connection(connection, :head, false)
-          puts "** coming here c"
+          add_connection(connection, :head)
         elsif (connection = select(tail[:right], hex)[0])
-          add_connection(connection, :tail, false)
-          puts "** coming here d"
-        else
-          puts "** e **"
+          add_connection(connection, :tail)
         end
       elsif @last_hex
         add_connection(select(@last_hex, hex)[0])
-        puts "** coming here f"
-      end
-
-      @connections.each do |c|
-        puts c.inspect
       end
 
       @last_hex = hex
