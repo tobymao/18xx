@@ -4,43 +4,10 @@ module Engine
   class Connection
     attr_reader :paths
 
-    def self.layable_hexes(connections)
-      hexes = Hash.new { |h, k| h[k] = [] }
-      explored_connections = {}
-      explored_paths = {}
-      queue = []
-
+    def self.walk(connections, visited: {}, corporation: nil)
       connections.each do |connection|
-        queue << connection
+        connection.walk(visited: visited, corporation: corporation) { |c| yield c }
       end
-
-      while queue.any?
-        connection = queue.pop
-        explored_connections[connection] = true
-
-        connection.paths.each do |path|
-          next if explored_paths[path]
-
-          explored_paths[path] = true
-          hex = path.hex
-          exits = path.exits
-          hexes[hex] |= exits
-
-          exits.each do |edge|
-            neighbor = hex.neighbors[edge]
-            edge = hex.invert(edge)
-            hexes[neighbor] << edge if neighbor.connections[edge].empty? && !hexes[neighbor].include?(edge)
-          end
-        end
-
-        connection.connections.each do |c|
-          queue << c unless explored_connections[c]
-        end
-      end
-
-      hexes.default = nil
-
-      hexes
     end
 
     def self.connect!(hex)
@@ -114,19 +81,38 @@ module Engine
       hexes.include?(hex)
     end
 
-    def connections
-      nodes.flat_map { |node| connections_for(node) }
+    def connections(corporation: nil)
+      connections = []
+      nodes.each do |node|
+        connections.concat(connections_for(node)) unless node.blocks?(corporation)
+      end
+      connections.uniq!
+      connections
     end
 
     def connections_for(node)
-      if node.offboard?
-        return @paths.find { |p| p.node == node }.exits.flat_map do |edge|
-          node.hex.connections[edge]
+      connections = []
+      hex = node.hex
+
+      (node.offboard? ? @paths : hex.tile.paths).each do |path|
+        next unless path.node == node
+
+        path.exits.each do |edge|
+          connections.concat(hex.connections[edge])
         end
       end
+      connections.uniq!
+      connections
+    end
 
-      node.hex.all_connections.select do |connection|
-        connection.nodes.include?(node)
+    def walk(visited: {}, corporation: nil)
+      return if visited[self]
+
+      visited[self] = true
+      yield self
+
+      connections(corporation: corporation).each do |connection|
+        connection.walk(visited: visited, corporation: corporation) { |c | yield c }
       end
     end
 
@@ -144,10 +130,6 @@ module Engine
       end
 
       branch
-    end
-
-    def tokened_by?(corporation)
-      nodes.any? { |node| node.city? && node.tokened_by?(corporation) }
     end
 
     def inspect

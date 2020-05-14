@@ -102,7 +102,7 @@ module Engine
     end
 
     def all_connections
-      @connections.values.flatten
+      @connections.values.flatten.uniq
     end
 
     def neighbor_direction(other)

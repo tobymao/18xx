@@ -206,19 +206,35 @@ module Engine
       def layable_hexes
         @layable_hexes ||=
           begin
-            tokened_cities = []
-            connections = @hexes.flat_map do |hex|
-              tokened_cities.concat(hex.tile.cities.select { |city| city.tokened_by?(@current_entity) })
+            hexes = Hash.new { |h, k| h[k] = [] }
+            connections = []
+            @hexes.each do |hex|
+              hex.tile.cities.each do |city|
+                hexes[hex] = hex.neighbors.keys if city.tokened_by?(@current_entity)
+              end
 
-              hex
-                .tile
-                .paths
-                .select { |path| path.city&.tokened_by?(@current_entity) }
-                .flat_map(&:exits)
-                .flat_map { |edge| hex.connections[edge] }
+              hex.tile.paths.each do |path|
+                next unless path.city&.tokened_by?(@current_entity)
+
+                connections.concat(hex.all_connections.select { |c| c.paths.include?(path) })
+              end
             end
 
-            Connection.layable_hexes(connections).merge(tokened_cities.map { |c| [c.hex, c.hex.neighbors.keys] }.to_h)
+            Connection.walk(connections, corporation: @current_entity) do |connection|
+              connection.paths.each do |path|
+                hex = path.hex
+                path.exits.each do |edge|
+                  hexes[hex] << edge unless hexes[hex].include?(edge)
+
+                  neighbor = hex.neighbors[edge]
+                  edge = hex.invert(edge)
+                  hexes[neighbor] << edge if neighbor.connections[edge].empty? && !hexes[neighbor].include?(edge)
+                end
+              end
+            end
+
+            hexes.default = nil
+            hexes
           end
       end
 

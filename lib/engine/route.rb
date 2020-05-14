@@ -92,7 +92,7 @@ module Engine
     end
 
     def select(node, hex)
-      node.all_connections.uniq.select do |c|
+      node.all_connections.select do |c|
         c.complete? &&
           !@connections.include?(c) &&
           c.hexes.include?(hex)
