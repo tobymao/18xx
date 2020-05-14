@@ -227,8 +227,6 @@ module Engine
       end
 
       def process_action(action)
-        return self if @finished
-
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
 
@@ -236,6 +234,8 @@ module Engine
           @actions << action
           return clone(@actions)
         end
+
+        return self if @finished && !action.is_a?(Action::Message)
 
         @phase.process_action(action)
         # company special power actions are processed by a different round handler
