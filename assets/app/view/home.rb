@@ -2,6 +2,7 @@
 
 require 'game_manager'
 require 'lib/settings'
+require 'lib/notification'
 require 'lib/storage'
 require 'view/chat'
 require 'view/game_row'
@@ -58,6 +59,13 @@ module View
       `document.title = #{(acting ? '* ' : '') + '18xx.Games'}`
       change_favicon(acting)
       change_tab_color(acting)
+
+      @connection.subscribe('/games') do |data|
+        update_game(data)
+        if data['acting']&.include?(@user['id'])
+          Lib::Notification.notify('18xx - Game ' + data['id'].to_s + ' - Your turn')
+        end
+      end
 
       destroy = lambda do
         `clearTimeout(#{@refreshing})`
