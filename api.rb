@@ -136,6 +136,7 @@ class Api < Roda
 
   def render(pin: nil, **needs)
     return debug(**needs) if request.params['debug'] && !PRODUCTION
+
     asset = PIN_ASSETS[pin] || ASSETS
 
     script = Snabberb.prerender_script(

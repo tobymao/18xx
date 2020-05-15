@@ -44,15 +44,15 @@ module View
       if hotseat
         Lib::Storage[@game_data[:id]] = @game_data
       elsif participant
-        json=action.to_h
-        meta={
+        json = action.to_h
+        meta = {
           'game_result': @game_data[:result],
           'game_status': @game_data[:status],
           'active_players': game.active_players.map(&:name),
           'turn': game.turn,
           'round': game.round.name
           }
-        json['meta']=meta
+        json['meta'] = meta
         @connection.safe_post("/game/#{@game_data['id']}/action", json)
       else
         store(:flash_opts, 'You are not in this game. Moves are temporary. You can clone this game in the tools tab.')
