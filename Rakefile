@@ -111,10 +111,8 @@ end
 
 desc 'Create pinned version'
 task :create_pin, [:pin] do |_, args|
-  puts "Creating pin for #{args[:pin]}, this should be before your changes are done!"
   require_relative 'lib/assets'
   asset = Assets.new(cache: false, make_map: false, compress: true, gzip: true, pin: args[:pin])
   FileUtils.mkdir_p(asset.out_path)
   asset.combine
-  puts 'Remember to git add main.js and main.js.gz :)'
 end

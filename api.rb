@@ -125,7 +125,8 @@ class Api < Roda
       halt(404, 'Game not found') unless (game = Game[id])
       halt(400, 'Game has not started yet') if game.status == 'new'
 
-      render(pin: game.pin_version, game_data: game.to_h(include_actions: true))
+      puts game.settings['pin_version']
+      render(pin: game.settings['pin_version'], game_data: game.to_h(include_actions: true))
     end
   end
 
@@ -135,7 +136,6 @@ class Api < Roda
 
   def render(pin: nil, **needs)
     return debug(**needs) if request.params['debug'] && !PRODUCTION
-
     asset = PIN_ASSETS[pin] || ASSETS
 
     script = Snabberb.prerender_script(
