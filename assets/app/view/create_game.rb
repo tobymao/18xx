@@ -44,10 +44,12 @@ module View
     end
 
     def render_inputs
-      games = Engine::GAMES.map do |game|
-        next unless game.title == '1889'
-
-        h(:option, game.title)
+      games = (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).map do |game|
+        if game::DEV_STAGE == :production
+          h(:option, { attrs: { value: game.title } }, game.title)
+        else
+          h(:option, { attrs: { value: game.title } }, "#{game.title} (#{game::DEV_STAGE})")
+        end
       end
       h(:div, [
         render_input('Game Title', id: :title, el: 'select', children: games),

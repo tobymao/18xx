@@ -7,6 +7,8 @@ module Engine
   module Game
     class G1889 < Base
       include Config::Game::G1889
+
+      DEV_STAGE = :beta
     end
   end
 end
