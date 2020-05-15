@@ -131,6 +131,58 @@ module Engine
         name.split('::').last.slice(1..-1)
       end
 
+      def self.load_from_json(json)
+        data = JSON.parse(json)
+
+        # Make sure player objects have numeric keys
+        data['bankCash'].transform_keys!(&:to_i) if data['bankCash'].is_a?(Hash)
+        data['certLimit'].transform_keys!(&:to_i) if data['certLimit'].is_a?(Hash)
+        data['startingCash'].transform_keys!(&:to_i) if data['startingCash'].is_a?(Hash)
+
+        data['phases'].map! do |phase|
+          phase.transform_keys!(&:to_sym)
+          phase[:tiles]&.map!(&:to_sym)
+          phase[:events]&.transform_keys!(&:to_sym)
+
+          phase
+        end
+
+        data['trains'].map! do |train|
+          train.transform_keys!(&:to_sym)
+        end
+
+        data['companies'].map! do |company|
+          company.transform_keys!(&:to_sym)
+          company[:abilities]&.map! do |ability|
+            ability.transform_keys!(&:to_sym)
+            ability.transform_values! do |value|
+              value.respond_to?(:to_sym) ? value.to_sym : value
+            end
+          end
+          company
+        end
+
+        data['corporations'].map! do |company|
+          company.transform_keys!(&:to_sym)
+        end
+
+        data['hexes'].transform_keys!(&:to_sym)
+        data['hexes'].transform_values!(&:invert)
+
+        const_set(:CURRENCY_FORMAT_STR, data['currencyFormatStr'])
+        const_set(:BANK_CASH, data['bankCash'])
+        const_set(:CERT_LIMIT, data['certLimit'])
+        const_set(:STARTING_CASH, data['startingCash'])
+        const_set(:TILES, data['tiles'])
+        const_set(:LOCATION_NAMES, data['locationNames'])
+        const_set(:MARKET, data['market'])
+        const_set(:PHASES, data['phases'])
+        const_set(:TRAINS, data['trains'])
+        const_set(:COMPANIES, data['companies'])
+        const_set(:CORPORATIONS, data['corporations'])
+        const_set(:HEXES, data['hexes'])
+      end
+
       def initialize(names, id: 0, actions: [])
         @id = id
         @turn = 1
