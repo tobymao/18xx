@@ -157,6 +157,10 @@ module Engine
         @step == :track
       end
 
+      def can_run_routes?
+        @step == :route
+      end
+
       def can_place_token?
         @step == :token
       end

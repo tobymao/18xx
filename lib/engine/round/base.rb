@@ -96,6 +96,10 @@ module Engine
         false
       end
 
+      def can_run_routes?
+        false
+      end
+
       def can_place_token?
         false
       end

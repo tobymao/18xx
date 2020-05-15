@@ -71,7 +71,7 @@ module View
     end
 
     def on_hex_click(event)
-      if @selected_route
+      if @round&.can_run_routes? && @selected_route
         @selected_route.touch_hex(@hex)
         store(:selected_route, @selected_route)
         return

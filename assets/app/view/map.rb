@@ -31,7 +31,7 @@ module View
 
       # move the selected hex to the back so it renders highest in z space
       selected_hex = @tile_selector&.hex || @selected_route&.last_hex
-      @hexes << @hexes.delete(selected_hex) if selected_hex
+      @hexes << @hexes.delete(selected_hex) if @hexes.include?(selected_hex)
 
       @hexes.map! do |hex|
         h(Hex, hex: hex, round: round)

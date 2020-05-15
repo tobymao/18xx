@@ -6,12 +6,13 @@ module Engine
   class Route
     attr_reader :last_hex, :phase, :train
 
-    def initialize(phase, train, hexes = [])
+    def initialize(phase, train, hexes: [], routes: [])
       @connections = []
       @phase = phase
       @train = train
       @last_hex = nil
       @last_connection = nil
+      @routes = routes
       init_from_hexes(hexes)
     end
 
@@ -19,16 +20,18 @@ module Engine
       slice = []
       nodes = 0
 
-      hexes.uniq.each do |hex|
+      hexes.each do |hex|
         slice << hex
         nodes += 1 if hex.tile.nodes.any?
 
         if nodes > 1
-          connections = slice[0].all_connections.select do |connection|
-            #puts "** conection #{connection.inspect}" if train.id == '4-1'
-            (connection.hexes & slice).size == slice.size
-          end
-          #puts connections if train.id == '4-1'
+          connections = slice[0]
+            .all_connections
+            .select { |c| c.nodes.size == 2 }
+            .map { |c| [c, (c.hexes & slice).size] }
+            .sort_by { |_, size| -size }
+            .select { |_, size| size.positive? }
+            .map { |c, _| c }
 
           # raise if connections.size != 1
           @connections << { connection: connections[0] } if connections.any?
@@ -92,10 +95,13 @@ module Engine
     end
 
     def select(node, hex)
+      other_paths = @routes.reject { |r| r == self }.flat_map(&:paths)
+
       node.all_connections.select do |c|
         c.complete? &&
           !@connections.include?(c) &&
-          c.hexes.include?(hex)
+          c.hexes.include?(hex) &&
+          (c.paths & other_paths).empty?
       end
     end
 
@@ -121,8 +127,12 @@ module Engine
       @last_hex = hex
     end
 
-    def paths_for(paths)
-      connections.flat_map(&:paths) & paths
+    def paths
+      connections.flat_map(&:paths)
+    end
+
+    def paths_for(other_paths)
+      paths & other_paths
     end
 
     def stops
