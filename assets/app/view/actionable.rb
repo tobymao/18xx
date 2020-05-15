@@ -32,15 +32,15 @@ module View
       if @game_data[:mode] == :hotseat
         Lib::Storage[@game_data[:id]] = @game_data
       else
-        json=action.to_h
-        meta={
+        json = action.to_h
+        meta = {
           'game_result': @game_data[:result],
           'game_status': @game_data[:status],
           'active_players': game.active_players.map(&:name),
           'turn': game.turn,
           'round': game.round.name
           }
-        json['meta']=meta
+        json['meta'] = meta
         @connection.safe_post("/game/#{@game_data['id']}/action", json)
       end
 
