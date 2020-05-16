@@ -13,7 +13,7 @@ require_relative 'base'
 module Engine
   module Round
     class Operating < Base
-      attr_reader :bankrupt, :depot, :phase, :round_num, :step
+      attr_reader :bankrupt, :depot, :phase, :round_num, :step, :current_routes
 
       STEPS = %i[
         track
