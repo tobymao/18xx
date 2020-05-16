@@ -6,38 +6,29 @@ module Engine
   class Route
     attr_reader :last_hex, :phase, :train
 
-    def initialize(phase, train, hexes: [], routes: [])
+    def initialize(phase, train, connection_hexes: [], routes: [])
       @connections = []
       @phase = phase
       @train = train
       @last_hex = nil
       @last_connection = nil
       @routes = routes
-      init_from_hexes(hexes)
+      init_from_connection_hexes(connection_hexes)
     end
 
-    def init_from_hexes(hexes)
-      slice = []
-      nodes = 0
+    def init_from_connection_hexes(connection_hexes)
+      connections = connection_hexes.map do |hexes|
+        hexes.sort!
+        hexes[0].all_connections.find { |c| c.complete? && c.hexes.sort == hexes }
+      end
 
-      hexes.each do |hex|
-        slice << hex
-        nodes += 1 if hex.tile.nodes.any?
-
-        if nodes > 1
-          connections = slice[0]
-            .all_connections
-            .select { |c| c.nodes.size == 2 }
-            .map { |c| [c, (c.hexes & slice).size] }
-            .sort_by { |_, size| -size }
-            .select { |_, size| size.positive? }
-            .map { |c, _| c }
-
-          # raise if connections.size != 1
-          @connections << { connection: connections[0] } if connections.any?
-          slice = [hex]
-          nodes = 1
-        end
+      connections.each_cons(2) do |a, b|
+        middle = (a.nodes & b.nodes)
+        left = (a.nodes - middle)[0].hex
+        right = (b.nodes - middle)[0].hex
+        middle = middle[0].hex
+        @connections << { left: left, right: middle, connection: a } if a == connections[0]
+        @connections << { left: middle, right: right, connection: b }
       end
     end
 
@@ -140,12 +131,12 @@ module Engine
     end
 
     def hexes
-      connections.flat_map(&:hexes).uniq
+      @connections.flat_map { |c| [c[:left], c[:right]] }.uniq
     end
 
     def revenue
       stops_ = stops
-      raise GameError, 'Route must have at least 2 stops' if stops_.size < 2
+      raise GameError, 'Route must have at least 2 stops' if @connections.any? && stops_.size < 2
       raise GameError, "#{stops_.size} is too many stops for #{@train.distance} train" if @train.distance < stops_.size
 
       stops_.map { |stop| stop.route_revenue(@phase, @train) }.sum

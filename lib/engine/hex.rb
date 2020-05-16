@@ -51,6 +51,10 @@ module Engine
       @coordinates
     end
 
+    def <=>(other)
+      name <=> other
+    end
+
     def name
       @coordinates
     end

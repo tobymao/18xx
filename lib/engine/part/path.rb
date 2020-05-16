@@ -36,7 +36,9 @@ module Engine
           next if edge == skip
 
           np_edge = hex.invert(edge)
-          hex.neighbors[edge].paths[np_edge].each do |np|
+          return unless (neighbor = hex.neighbors[edge])
+
+          neighbor.paths[np_edge].each do |np|
             np.walk(skip: np_edge, visited: visited) { |p| yield p }
           end
         end

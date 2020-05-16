@@ -48,6 +48,10 @@ module Engine
       @hexes = nil
     end
 
+    def id
+      hexes.map(&:id).sort
+    end
+
     def add_path(path)
       @paths << path unless @paths.include?(path)
       clear_cache
