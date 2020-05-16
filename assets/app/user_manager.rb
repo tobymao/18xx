@@ -49,6 +49,24 @@ module UserManager
     store(:app_route, '/')
   end
 
+  def forgot(params)
+    @connection.safe_post('/user/forgot', params) do |data|
+      if data['result'] == true
+        store(:app_route, '/')
+        store(:flash_opts, 'Password reset sent!')
+      else
+        store(:flash_opts, 'Invalid email address')
+      end
+    end
+  end
+
+  def reset(params)
+    @connection.safe_post('/user/reset', params) do |data|
+      store(:flash_opts, 'Password Reset!')
+      login_user(data)
+    end
+  end
+
   private
 
   def login_user(data)

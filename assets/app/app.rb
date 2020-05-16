@@ -14,6 +14,8 @@ require 'view/map_page'
 require 'view/navigation'
 require 'view/tiles_page'
 require 'view/user'
+require 'view/forgot'
+require 'view/reset'
 
 class App < Snabberb::Component
   include GameManager
@@ -53,6 +55,10 @@ class App < Snabberb::Component
         h(View::User, user: @user, type: :login)
       when /profile/
         h(View::User, user: @user, type: :profile)
+      when /forgot/
+        h(View::Forgot, user: @user)
+      when /reset/
+        h(View::Reset, user: @user)
       when /about/
         h(View::About)
       when /tiles/

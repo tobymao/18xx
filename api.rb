@@ -81,7 +81,7 @@ class Api < Roda
   use Rack::Deflater unless PRODUCTION
 
   STANDARD_ROUTES = %w[
-    / about hotseat login map new_game profile signup tiles tutorial
+    / about hotseat login map new_game profile signup tiles tutorial forgot reset
   ].freeze
 
   Dir['./routes/*'].sort.each { |file| require file }
