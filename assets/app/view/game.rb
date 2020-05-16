@@ -29,6 +29,18 @@ module View
     needs :app_route, store: true
     needs :user
 
+    def render_broken_game(e)
+      h(:div, [
+        h(:div, "We're sorry this game cannot be continued due to #{e}"),
+        h(:div, [
+          'Please ',
+          h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues/' } }, 'raise a bug report'),
+          " and include the game id (#{@game_data['id']}) and the following JSON data"
+        ]),
+        h(GameData, actions: @game_data['actions'], allow_clone: false)
+      ])
+    end
+
     def render
       game_id = @game_data['id']
       actions = @game_data['actions']
@@ -36,12 +48,16 @@ module View
       cursor = Lib::Params['action']&.to_i
 
       if game_id != @game&.id || @game.actions.size != @num_actions || (cursor && cursor != @game.actions.size)
-        @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
-          @game_data['players'].map { |p| p['name'] },
-          id: game_id,
-          actions: cursor ? actions.take(cursor) : actions,
-        )
-        store(:game, @game, skip: true)
+        begin
+          @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
+            @game_data['players'].map { |p| p['name'] },
+            id: game_id,
+            actions: cursor ? actions.take(cursor) : actions,
+          )
+          store(:game, @game, skip: true)
+        rescue StandardError => e
+          return render_broken_game(e)
+        end
       end
 
       page =
