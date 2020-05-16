@@ -305,6 +305,10 @@ module Engine
         @actions << action
         next_round! while @round.finished? && !@finished
         self
+      rescue GameError => e
+        # Fill in the action id
+        e.action_id = current_action_id
+        raise
       end
 
       def current_action_id

@@ -30,15 +30,20 @@ module View
     needs :user
 
     def render_broken_game(e)
-      h(:div, [
-        h(:div, "We're sorry this game cannot be continued due to #{e}"),
-        h(:div, [
-          'Please ',
-          h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues/' } }, 'raise a bug report'),
-          " and include the game id (#{@game_data['id']}) and the following JSON data"
-        ]),
-        h(GameData, actions: @game_data['actions'], allow_clone: false)
+      inner = [h(:div, "We're sorry this game cannot be continued due to #{e}")]
+      if e.is_a?(Engine::GameError) && !e.action_id.nil?
+        action = e.action_id - 1
+        inner << h(:div, [
+          h(:a, { attrs: { href: "?action=#{action}" } }, "View the last valid action (#{action})")
+        ])
+      end
+      inner << h(:div, [
+        'Please ',
+        h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues/' } }, 'raise a bug report'),
+        " and include the game id (#{@game_data['id']}) and the following JSON data"
       ])
+      inner << h(GameData, actions: @game_data['actions'], allow_clone: false)
+      h(:div, inner)
     end
 
     def render
