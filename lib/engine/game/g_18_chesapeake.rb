@@ -6,7 +6,7 @@ require_relative 'base'
 module Engine
   module Game
     class G18Chesapeake < Base
-      include Config::Game::G18Chesapeake
+      load_from_json(Config::Game::G18Chesapeake::JSON)
     end
   end
 end

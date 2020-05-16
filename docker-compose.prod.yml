@@ -23,7 +23,6 @@ services:
 
   nginx:
     build: ./nginx/
-    image: nginx:1.17
     ports:
       - "80:80"
       - "443:443"

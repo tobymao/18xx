@@ -83,6 +83,29 @@ module Engine
         expect(game4.actions.size).to be 7
         expect(game4.current_entity.name).to be players[0]
       end
+
+      it 'should allow undo after game end' do
+        action = Engine::Action::EndGame.new(subject_with_actions.current_entity)
+        subject_with_actions.process_action(action)
+        expect(subject_with_actions.actions.size).to be 5
+        expect(subject_with_actions.finished).to be true
+        action = Engine::Action::Undo.new(subject_with_actions.current_entity)
+        game2 = subject_with_actions.process_action(action)
+        expect(game2).not_to eq(subject_with_actions)
+        expect(game2.actions.size).to be 6
+        expect(game2.finished).to be false
+      end
+
+      it 'should allow messages after game end' do
+        action = Engine::Action::EndGame.new(subject_with_actions.current_entity)
+        subject_with_actions.process_action(action)
+        expect(subject_with_actions.actions.size).to be 5
+        expect(subject_with_actions.finished).to be true
+        action = Engine::Action::Message.new(subject_with_actions.current_entity, 'hi')
+        subject_with_actions.process_action(action)
+        expect(subject_with_actions.actions.size).to be 6
+        expect(subject_with_actions.finished).to be true
+      end
     end
 
     subject { Game::G1889.new(players) }
