@@ -45,6 +45,8 @@ module Engine
         routes = @routes.map do |route|
           {
             'train' => route.train.id,
+            'hexes' => route.hexes.map(&:id),
+            'revenue' => route.revenue,
             'connections' => route.connections.map(&:id),
           }
         end
