@@ -9,7 +9,7 @@ module View
   class TilesPage < Tiles
     needs :route
 
-    ROUTE_FORMAT = %r{/tiles/(.*)}.freeze
+    ROUTE_FORMAT = %r{/tiles/([^/]*)/?}.freeze
 
     TILE_IDS = [
       Engine::Tile::WHITE.keys,
@@ -22,7 +22,6 @@ module View
 
     def render
       dest = @route.match(ROUTE_FORMAT)[1]
-      dest = dest[0..-2] if dest[-1] == '/'
 
       begin
         # all common hexes/tiles

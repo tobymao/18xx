@@ -5,36 +5,42 @@ require 'view/part/base'
 module View
   module Part
     class Blocker < Base
+      # prefix these constant names with "P" (for "PART") to avoid conflicts
+      # with constants in Part::Base
+      P_CENTER = {
+        region_weights: CENTER,
+        x: 0,
+        y: 0,
+        scale: 1.5,
+      }
+      P_LEFT_CORNER = {
+        region_weights: LEFT_CORNER + [13],
+        x: -65,
+        y: 5,
+      }
+      P_BOTTOM_LEFT = {
+        region_weights_in: [13, 19, 20],
+        region_weights_out: [19, 20],
+        x: -35,
+        y: 60,
+      }
+      P_BOTTOM_RIGHT = {
+        region_weights_in: [17, 22, 23],
+        region_weights_out: [22, 23],
+        x: 35,
+        y: 60,
+      }
+
       def preferred_render_locations
         if @tile.parts.size == 1
           [
-            {
-              region_weights: CENTER,
-              x: 0,
-              y: 0,
-              scale: 1.5,
-            }
+            P_CENTER
           ]
         else
           [
-            {
-              region_weights: LEFT_CORNER + [13],
-              x: -65,
-              y: 5,
-            },
-            {
-
-              region_weights_in: [13, 19, 20],
-              region_weights_out: [19, 20],
-              x: -35,
-              y: 60,
-            },
-            {
-              region_weights_in: [17, 22, 23],
-              region_weights_out: [22, 23],
-              x: 35,
-              y: 60,
-            },
+            P_LEFT_CORNER,
+            P_BOTTOM_LEFT,
+            P_BOTTOM_RIGHT,
           ]
         end
       end

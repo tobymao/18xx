@@ -114,9 +114,7 @@ module View
       end
 
       def scale
-        s = render_location[:scale] || 1
-
-        "scale(#{s})"
+        "scale(#{render_location[:scale] || 1})"
       end
 
       def rotation
