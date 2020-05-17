@@ -12,24 +12,24 @@ module View
         x: 0,
         y: 0,
         scale: 1.5,
-      }
+      }.freeze
       P_LEFT_CORNER = {
         region_weights: LEFT_CORNER + [13],
         x: -65,
         y: 5,
-      }
+      }.freeze
       P_BOTTOM_LEFT = {
         region_weights_in: [13, 19, 20],
         region_weights_out: [19, 20],
         x: -35,
         y: 60,
-      }
+      }.freeze
       P_BOTTOM_RIGHT = {
         region_weights_in: [17, 22, 23],
         region_weights_out: [22, 23],
         x: 35,
         y: 60,
-      }
+      }.freeze
 
       def preferred_render_locations
         if @tile.parts.size == 1
