@@ -9,7 +9,7 @@ module View
   class TilesPage < Tiles
     needs :route
 
-    ROUTE_FORMAT = %r{/tiles/([^/]*)/?}.freeze
+    ROUTE_FORMAT = %r{/tiles/([^/]*)(?:/(.+))?}.freeze
 
     TILE_IDS = [
       Engine::Tile::WHITE.keys,
@@ -21,7 +21,12 @@ module View
     ].reduce(&:+)
 
     def render
-      dest = @route.match(ROUTE_FORMAT)[1]
+      match = @route.match(ROUTE_FORMAT)
+      dest = match[1]
+      hexes_or_tiles = match[2]
+
+      puts "dest = #{dest}"
+      puts "hexes_or_tiles = #{hexes_or_tiles}"
 
       begin
         # all common hexes/tiles
@@ -34,19 +39,19 @@ module View
 
             ])
 
+        # hexes/tiles from a specific game
+        elsif hexes_or_tiles
+          game_title = dest
+          hex_or_tile_ids = hexes_or_tiles.split('+')
+          rendered = hex_or_tile_ids.map { |id| render_individual_tile(game_title, id) }
+          h('div#tiles', rendered)
+
         # everything for one game
         elsif Engine::GAMES_BY_TITLE.keys.include?(dest)
           game_class = Engine::GAMES_BY_TITLE[dest]
           h('div#tiles', [
               map_hexes_and_tile_manifest_for(game_class)
             ])
-
-        # hexes/tiles from a specific game
-        elsif dest.include?('/')
-          game_title, dest = dest.split('/')
-          hex_or_tile_ids = dest.split('+')
-          rendered = hex_or_tile_ids.map { |id| render_individual_tile(game_title, id) }
-          h('div#tiles', rendered)
 
         # common tile(s)
         else
