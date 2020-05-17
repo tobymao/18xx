@@ -23,13 +23,19 @@ module Engine
         hexes[0].all_connections.find { |c| c.complete? && c.hexes.sort == hexes }
       end
 
-      connections.each_cons(2) do |a, b|
-        middle = (a.nodes & b.nodes)
-        left = (a.nodes - middle)[0].hex
-        right = (b.nodes - middle)[0].hex
-        middle = middle[0].hex
-        @connections << { left: left, right: middle, connection: a } if a == connections[0]
-        @connections << { left: middle, right: right, connection: b }
+      return unless (first = connections[0])
+
+      if connections.size == 1
+        @connections << { left: first.nodes[0].hex, right: first.nodes[-1].hex, connection: first }
+      else
+        connections.each_cons(2) do |a, b|
+          middle = (a.nodes & b.nodes)
+          left = (a.nodes - middle)[0].hex
+          right = (b.nodes - middle)[0].hex
+          middle = middle[0].hex
+          @connections << { left: left, right: middle, connection: a } if a == first
+          @connections << { left: middle, right: right, connection: b }
+        end
       end
     end
 

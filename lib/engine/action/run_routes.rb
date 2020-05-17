@@ -43,12 +43,16 @@ module Engine
 
       def args_to_h
         routes = @routes.map do |route|
-          {
-            'train' => route.train.id,
-            'hexes' => route.hexes.map(&:id),
-            'revenue' => route.revenue,
-            'connections' => route.connections.map(&:id),
-          }
+          h = { 'train' => route.train.id }
+
+          if route.connections.any?
+            h['connections'] = route.connections.map(&:id)
+          else # legacy routes
+            h['hexes'] = route.hexes.map(&:id)
+            h['revenue'] = route.revenue
+          end
+
+          h
         end
 
         { 'routes' => routes }
