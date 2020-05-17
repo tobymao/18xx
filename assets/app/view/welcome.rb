@@ -29,8 +29,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        I've made some changes to email notifications. You can now disable them in your <a href='/profile'>Profile</a>.
-        And email messages will only be sent to users if you ping them with @playername.
+        I rewrote the routing code so it should hopefully be more intuitive. If there are any issues please let me know.
+        I'm purposefully not explaining it here to see if it's intuitive to figure out.
 
         You can now end games early. The owner of the game has an option in the tools tab to end the game if it is finished.
 
