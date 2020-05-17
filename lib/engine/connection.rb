@@ -146,7 +146,6 @@ module Engine
     end
 
     def inspect
-      # node_str = nodes.map(&:hex).map(&:name).join(',')
       node_str = nodes.map { |node| node.hex&.name || 'null' }.join(',')
       path_str = @paths.map(&:inspect).join(',')
       "<#{self.class.name}: nodes: #{node_str}, paths: #{path_str}>"

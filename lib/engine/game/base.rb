@@ -464,9 +464,7 @@ module Engine
           end
         end
 
-        @hexes
-          .select { |h| h.tile.cities.any? || h.tile.exits.any? }
-          .each(&:connect!)
+        @hexes.select { |h| h.tile.cities.any? || h.tile.exits.any? }.each(&:connect!)
       end
 
       def next_round!

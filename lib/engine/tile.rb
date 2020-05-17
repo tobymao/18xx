@@ -167,10 +167,6 @@ module Engine
         ].any?
     end
 
-    def matches(other)
-      @name == other.name && @color == other.color && @parts == other.parts
-    end
-
     def upgrade_cost(abilities)
       ignore = abilities.find { |a| a[:type] == :ignore_terrain }
 

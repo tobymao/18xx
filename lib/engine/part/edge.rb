@@ -21,6 +21,7 @@ module Engine
 
       def rotate(ticks)
         edge = Edge.new((@num + ticks) % 6)
+        edge.index = index
         edge.tile = @tile
         edge
       end

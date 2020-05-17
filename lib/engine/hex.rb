@@ -52,7 +52,7 @@ module Engine
     end
 
     def <=>(other)
-      name <=> other
+      name <=> other.name
     end
 
     def name
