@@ -28,7 +28,7 @@ module View
           ]
         end
 
-        [
+        default = [
           {
             region_weights: CENTER,
             x: 0,
@@ -55,6 +55,50 @@ module View
             y: 40,
           },
         ]
+
+        if @tile.cities.size == 1
+          case @tile.cities.first.slots
+          when 3
+            [
+              {
+                region_weights_in: { TRACK_TO_EDGE_0 => 1,
+                                     BOTTOM_ROW => 0.1 },
+                region_weights_out: { BOTTOM_ROW => 1 },
+                x: 0,
+                y: 50,
+              },
+              {
+                region_weights_in: { TRACK_TO_EDGE_3 => 1,
+                                     TOP_ROW => 1 },
+                region_weights_out: { UPPER_CENTER => 1,
+                                      TOP_ROW => 1 },
+                x: 0,
+                y: -(63 + delta_y),
+              },
+            ]
+          when 4
+            [
+              {
+                region_weights_in: { TRACK_TO_EDGE_3 => 1,
+                                     TOP_ROW => 1 },
+                region_weights_out: { TOP_ROW => 1 },
+                x: 0,
+                y: -(55 + delta_y),
+              },
+              {
+                region_weights_in: { TRACK_TO_EDGE_0 => 1,
+                                     BOTTOM_ROW => 1 },
+                region_weights_out: { BOTTOM_ROW => 1 },
+                x: 0,
+                y: 55,
+              },
+            ]
+          else
+            default
+          end
+        else
+          default
+        end
       end
 
       def load_from_tile
