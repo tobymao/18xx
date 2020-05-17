@@ -26,13 +26,13 @@ module Engine
       return unless (first = connections[0])
 
       if connections.size == 1
-        @connections << { left: first.nodes[0].hex, right: first.nodes[-1].hex, connection: first }
+        @connections << { left: first.nodes[0], right: first.nodes[-1], connection: first }
       else
         connections.each_cons(2) do |a, b|
           middle = (a.nodes & b.nodes)
-          left = (a.nodes - middle)[0].hex
-          right = (b.nodes - middle)[0].hex
-          middle = middle[0].hex
+          left = (a.nodes - middle)[0]
+          right = (b.nodes - middle)[0]
+          middle = middle[0]
           @connections << { left: left, right: middle, connection: a } if a == first
           @connections << { left: middle, right: right, connection: b }
         end
@@ -56,18 +56,6 @@ module Engine
       @connections.map { |c| c[:connection] }
     end
 
-    def segment(connection, left: nil, right: nil)
-      hexes = connection.nodes.map(&:hex)
-
-      if left
-        right = (hexes - [left])[0]
-      else
-        left = (hexes - [right])[0]
-      end
-
-      { left: left, right: right, connection: connection }
-    end
-
     def next_connection(node, connection, hex)
       connections = select(node, hex)
       index = connections.find_index(connection) || connections.size
@@ -77,12 +65,24 @@ module Engine
     def select(node, hex)
       other_paths = @routes.reject { |r| r == self }.flat_map(&:paths)
 
-      node.all_connections.select do |c|
+      node.hex.all_connections.select do |c|
         c.complete? &&
           !@connections.include?(c) &&
           c.hexes.include?(hex) &&
           (c.paths & other_paths).empty?
       end
+    end
+
+    def segment(connection, left: nil, right: nil)
+      nodes = connection.nodes
+
+      if left
+        right = (nodes - [left])[0]
+      else
+        left = (nodes - [right])[0]
+      end
+
+      { left: left, right: right, connection: connection }
     end
 
     def touch_hex(hex)
@@ -91,16 +91,14 @@ module Engine
         tail_c = tail[:connection]
 
         if head_c.hexes.include?(hex)
-          node = head[:right]
-          if (connection = next_connection(node, head_c, hex))
-            @connections[0] = segment(connection, right: node)
+          if (connection = next_connection(head[:right], head_c, hex))
+            @connections[0] = segment(connection, right: head[:right])
           else
             @connections.shift
           end
         elsif tail_c.hexes.include?(hex)
-          node = head[:left]
-          if (connection = next_connection(node, tail_c, hex))
-            @connections[-1] = segment(connection, left: node)
+          if (connection = next_connection(tail[:left], tail_c, hex))
+            @connections[-1] = segment(connection, left: tail[:left])
           else
             @connections.pop
           end
@@ -112,10 +110,10 @@ module Engine
       elsif @last_hex == hex
         @last_hex = nil
       elsif @last_hex
-        if (connection = select(@last_hex, hex)[0])
-          hex_a, hex_b = connection.nodes.map(&:hex)
-          hex_a, hex_b = hex_b, hex_a if @last_hex == hex_a
-          @connections << { left: hex_a, right: hex_b, connection: connection }
+        if (connection = select(@last_hex.tile.nodes[0], hex)[0])
+          a, b = connection.nodes
+          a, b = b, a if @last_hex == a.hex
+          @connections << { left: a, right: b, connection: connection }
         end
       else
         @last_hex = hex
@@ -137,7 +135,25 @@ module Engine
     def hexes
       return @override[:hexes] if @override
 
-      @connections.flat_map { |c| [c[:left], c[:right]] }.uniq
+      @connections.flat_map { |c| [c[:left].hex, c[:right].hex] }.uniq
+    end
+
+    def check_cycles!
+      cycles = {}
+
+      @connections.each do |c|
+        right = c[:right]
+        cycles[c[:left]] = true
+        raise GameError, "Cannot use #{right.hex.name} twice" if cycles[right]
+
+        cycles[right] = true
+      end
+    end
+
+    def check_overlap!
+      @routes.flat_map(&:paths).group_by(&:itself).each do |k, v|
+        raise GameError, "Route cannot use same path twice #{k.inspect}" if v.size > 1
+      end
     end
 
     def revenue
@@ -147,6 +163,9 @@ module Engine
       raise GameError, 'Route must have at least 2 stops' if @connections.any? && stops_.size < 2
       raise GameError, "#{stops_.size} is too many stops for #{@train.distance} train" if @train.distance < stops_.size
       raise GameError, 'Route must contain token' if stops.any? && stops_.none? { |s| s.tokened_by?(train.owner) }
+
+      check_cycles!
+      check_overlap!
 
       stops_.map { |stop| stop.route_revenue(@phase, @train) }.sum
     end

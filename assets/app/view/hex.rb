@@ -36,7 +36,7 @@ module View
       children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
 
       @selected = @hex == @tile_selector&.hex || @hex == @selected_route&.last_hex
-      @tile = @selected && @tile_selector&.tile ? @tile_selector.tile : @hex.tile
+      @tile = @selected && @round.can_lay_track? && @tile_selector&.tile ? @tile_selector.tile : @hex.tile
 
       children << h(Tile, tile: @tile) if @tile
       children << h(View::TriangularGrid) if @show_grid
