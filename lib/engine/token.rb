@@ -17,9 +17,5 @@ module Engine
     def use!
       @used = true
     end
-
-    def ==(other)
-      other.class == Token && @corporation.name == other.corporation.name
-    end
   end
 end
