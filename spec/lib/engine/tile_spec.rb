@@ -97,5 +97,61 @@ module Engine
         end
       end
     end
+
+    describe '#render_cities_on_edges' do
+      [
+        {
+          desc: "18Chesapeake's X3",
+          code: 'c=r:40;c=r:40;p=a:0,b:_0;p=a:_0,b:2;p=a:3,b:_1;p=a:_1,b:5;l=OO',
+          expected: {
+            0 => [2, 5],
+            1 => [1, 4],
+            2 => [4, 1],
+            3 => [5, 2],
+            4 => [4, 1],
+            5 => [1, 4],
+          }
+        },
+        {
+          desc: "18Chesapeake's X5",
+          code: 'c=r:40;c=r:40;p=a:3,b:_0;p=a:_0,b:5;p=a:0,b:_1;p=a:_1,b:4;l=OO',
+          expected: {
+            0 => [3, 0],
+            1 => [4, 1],
+            2 => [5, 2],
+            3 => [0, 3],
+            4 => [1, 4],
+            5 => [2, 5],
+          }
+        },
+        {
+          desc: "18Chesapeake's H6 hex (Baltimore)",
+          code: 'c=r:30;c=r:30;p=a:1,b:_0;p=a:4,b:_1;l=OO;u=c:40,t:water',
+          expected: {
+            0 => [1, 4],
+          },
+        },
+        {
+          desc: "18Chesapeake's J4 hex (Philadelphia)",
+          code: 'c=r:30;c=r:30;p=a:0,b:_0;p=a:3,b:_1;l=OO',
+          expected: {
+            0 => [0, 3],
+          },
+        },
+      ].each do |spec|
+        describe "with #{spec[:desc]}" do
+          tile = Tile.from_code('name', 'color', spec[:code])
+
+          spec[:expected].each do |rotation, expected|
+            it "selects #{expected} for rotation #{rotation}" do
+              tile.rotate!(rotation)
+              actual = tile.edges_for_city_rendering
+
+              expect(actual).to eq(expected)
+            end
+          end
+        end
+      end
+    end
   end
 end

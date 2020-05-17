@@ -34,6 +34,15 @@ module View
         TRACK_TO_EDGE_5,
       ].freeze
 
+      EDGE_CITY_LOCATIONS = [
+        [15, 20, 21, 22],
+        [12, 13, 14, 19],
+        [0, 5, 6, 7],
+        [1, 2, 3, 8],
+        [10, 11, 4, 9],
+        [16, 17, 18, 23],
+      ].freeze
+
       SHARP_TRACK_LOCATIONS = [
         [13, 14, 15, 19, 20, 21],
         [5, 6, 7, 12, 13, 14],
@@ -79,27 +88,10 @@ module View
       def preferred_render_locations
         edge_a, edge_b = @edges
         if @tile.cities.size > 1 && (edge_a || edge_b)
-          if !edge_a || !edge_b
-            # We only have one exit, so just draw the city in that region
-
-            edge = edge_a || edge_b
-
-            return [
-              {
-                region_weights: EDGE_TRACK_LOCATIONS[edge],
-                x: -Math.sin((edge * 60) / 180 * Math::PI) * 50,
-                y: Math.cos((edge * 60) / 180 * Math::PI) * 50,
-              }
-            ]
-          end
-
-          edge_a += 6 if (edge_b - edge_a).abs > 3
-          edge = edge_b < edge_a ? edge_b : edge_a
-
-          # Draw it on edge a for now
+          edge = @tile.edges_for_city_rendering[@city.index]
           return [
             {
-              region_weights: EDGE_TRACK_LOCATIONS[edge],
+              region_weights: EDGE_TRACK_LOCATIONS[edge] + EDGE_CITY_LOCATIONS[edge],
               x: -Math.sin((edge * 60) / 180 * Math::PI) * 50,
               y: Math.cos((edge * 60) / 180 * Math::PI) * 50,
             }
