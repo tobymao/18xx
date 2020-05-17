@@ -6,96 +6,121 @@ module View
   module Part
     class LocationName < Base
       LINE_HEIGHT = 15
+      CHARACTER_WIDTH = 8
+      BACKGROUND_COLOR = '#FFFFFF'
+      BACKGROUND_OPACITY = '0.5'
 
       def preferred_render_locations
+        center = {
+          region_weights: CENTER,
+          x: 0,
+          y: 0,
+        }
+
+        up24 = {
+          region_weights: TOP_MIDDLE_ROW,
+          x: 0,
+          y: -(24 + delta_y),
+        }
+
+        down24 = {
+          region_weights: BOTTOM_MIDDLE_ROW,
+          x: 0,
+          y: 24,
+        }
+
+        up40 = {
+          region_weights_in: { TRACK_TO_EDGE_3 => 1,
+                               UPPER_CENTER => 1,
+                               [6, 10] => 0.25,
+                               TOP_ROW => 0.1 },
+          region_weights_out: { UPPER_CENTER => 1,
+                                [6, 10] => 0.25 },
+          x: 0,
+          y: -(40 + delta_y),
+        }
+
+        down40 = {
+          region_weights_in: { TRACK_TO_EDGE_0 => 1,
+                               LOWER_CENTER => 1,
+                               [13, 17] => 0.25,
+                               BOTTOM_ROW => 0.1 },
+          region_weights_out: { LOWER_CENTER => 1,
+                                [13, 14, 16, 17] => 0.25 },
+          x: 0,
+          y: 40,
+        }
+
+        down50 = {
+          region_weights_in: { TRACK_TO_EDGE_0 => 1,
+                               BOTTOM_ROW => 0.1 },
+          region_weights_out: { BOTTOM_ROW => 1 },
+          x: 0,
+          y: 50,
+        }
+
+        up63 = {
+          region_weights_in: { TRACK_TO_EDGE_3 => 1,
+                               TOP_ROW => 1 },
+          region_weights_out: { TOP_ROW => 1 },
+          x: 0,
+          y: -(63 + delta_y),
+        }
+
+        up56 = {
+          region_weights_in: { TRACK_TO_EDGE_3 => 1,
+                               TOP_ROW => 1 },
+          region_weights_out: { TOP_ROW => 1 },
+          x: 0,
+          y: -(56 + delta_y),
+        }
+
+        down55 = {
+          region_weights_in: { TRACK_TO_EDGE_0 => 1,
+                               BOTTOM_ROW => 1 },
+          region_weights_out: { BOTTOM_ROW => 1 },
+          x: 0,
+          y: 55,
+        }
+
         if @tile.offboards.any?
           return [
-            {
-              region_weights: CENTER,
-              x: 0,
-              y: 0,
-            },
-            {
-              region_weights: TOP_MIDDLE_ROW,
-              x: 0,
-              y: -(24 + delta_y),
-            },
-            {
-              region_weights: BOTTOM_MIDDLE_ROW,
-              x: 0,
-              y: 24,
-            },
+            center,
+            up24,
+            down24,
           ]
         end
 
         default = [
-          {
-            region_weights: CENTER,
-            x: 0,
-            y: 0,
-          },
-          {
-            region_weights_in: { TRACK_TO_EDGE_3 => 1,
-                                 UPPER_CENTER => 1,
-                                 [6, 10] => 0.25,
-                                 TOP_ROW => 0.1 },
-            region_weights_out: { UPPER_CENTER => 1,
-                                  [6, 10] => 0.25 },
-            x: 0,
-            y: -(40 + delta_y),
-          },
-          {
-            region_weights_in: { TRACK_TO_EDGE_0 => 1,
-                                 LOWER_CENTER => 1,
-                                 [13, 17] => 0.25,
-                                 BOTTOM_ROW => 0.1 },
-            region_weights_out: { LOWER_CENTER => 1,
-                                  [13, 14, 16, 17] => 0.25 },
-            x: 0,
-            y: 40,
-          },
+          center,
+          up40,
+          down40,
         ]
 
         if @tile.cities.size == 1
           case @tile.cities.first.slots
           when 3
             [
-              {
-                region_weights_in: { TRACK_TO_EDGE_0 => 1,
-                                     BOTTOM_ROW => 0.1 },
-                region_weights_out: { BOTTOM_ROW => 1 },
-                x: 0,
-                y: 50,
-              },
-              {
-                region_weights_in: { TRACK_TO_EDGE_3 => 1,
-                                     TOP_ROW => 1 },
-                region_weights_out: { UPPER_CENTER => 1,
-                                      TOP_ROW => 1 },
-                x: 0,
-                y: -(63 + delta_y),
-              },
+              down50,
+              up63,
             ]
           when 4
             [
-              {
-                region_weights_in: { TRACK_TO_EDGE_3 => 1,
-                                     TOP_ROW => 1 },
-                region_weights_out: { TOP_ROW => 1 },
-                x: 0,
-                y: -(55 + delta_y),
-              },
-              {
-                region_weights_in: { TRACK_TO_EDGE_0 => 1,
-                                     BOTTOM_ROW => 1 },
-                region_weights_out: { BOTTOM_ROW => 1 },
-                x: 0,
-                y: 55,
-              },
+              up56,
+              down55,
             ]
           else
             default
           end
+        elsif @tile.cities.size > 1
+          down55[:region_weights_in][BOTTOM_ROW] += 1
+          up56[:region_weights_in][TOP_ROW] += 1
+
+          [
+            center,
+            down55,
+            up56,
+          ]
         else
           default
         end
@@ -122,7 +147,33 @@ module View
           h(:text, { attrs: { transform: "translate(#{x} #{y})" } }, segment)
         end
 
-        h('g.location_name', { attrs: attrs }, rendered_name)
+        h('g.location_name', { attrs: attrs }, [
+            render_background_box,
+            *rendered_name
+          ])
+      end
+
+      def render_background_box
+        lines = @name_segments.size
+        characters = @name_segments.map(&:size).max
+
+        buffer_x = CHARACTER_WIDTH
+        buffer_y = 4
+
+        width = buffer_x + (characters * CHARACTER_WIDTH)
+        height = buffer_y + (lines * LINE_HEIGHT)
+
+        attrs = {
+          height: height,
+          width: width,
+          fill: BACKGROUND_COLOR,
+          'fill-opacity': BACKGROUND_OPACITY,
+          stroke: 'none',
+          x: -width / 2,
+          y: -((buffer_y + LINE_HEIGHT) / 2),
+        }
+
+        h(:rect, attrs: attrs)
       end
 
       # adjustment for translation based on the number of segments in the name

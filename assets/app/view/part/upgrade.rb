@@ -9,17 +9,28 @@ module View
       needs :terrains, default: []
 
       def preferred_render_locations
+        center = {
+          region_weights: CENTER,
+          x: 0,
+          y: 0,
+        }
+
+        top_right_corner = {
+          region_weights: [3, 4],
+          x: 30,
+          y: -60,
+        }
+
+        top_center = {
+          region_weights: [2],
+          x: 0,
+          y: -60,
+        }
+
         [
-          {
-            region_weights: CENTER,
-            x: 0,
-            y: 0,
-          },
-          {
-            region_weights: [3, 4],
-            x: 30,
-            y: -60,
-          },
+          center,
+          top_right_corner,
+          top_center,
         ]
       end
 

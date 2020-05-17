@@ -7,6 +7,20 @@ module View
   module Part
     class Revenue < Base
       def preferred_render_locations
+        left_corner = {
+          region_weights_in: LEFT_CORNER + LEFT_MID,
+          region_weights_out: LEFT_CORNER,
+          x: -75,
+          y: 0,
+        }
+
+        right_corner = {
+          region_weights_in: RIGHT_CORNER + RIGHT_MID,
+          region_weights_out: RIGHT_CORNER,
+          x: 75,
+          y: 0,
+        }
+
         if multi_revenue?
           return [
             {
@@ -82,28 +96,35 @@ module View
             },
           ]
         when (2..4)
-          [
-            {
-              # left-corner
-              region_weights_in: LEFT_CORNER + LEFT_MID,
-              region_weights_out: LEFT_CORNER,
-              x: -70,
-              y: 0,
-            },
-            {
-              # left-corner
-              region_weights_in: RIGHT_CORNER + RIGHT_MID,
-              region_weights_out: RIGHT_CORNER,
-              x: 70,
-              y: 0,
-            },
-            {
-              # between center and edge1
-              region_weights: [13, 14],
-              x: -45,
-              y: 25,
-            },
-          ]
+          if @cities == 2
+            [
+              left_corner,
+              right_corner,
+              # top right corner
+              {
+                region_weights: [3, 4],
+                x: 40,
+                y: -68,
+              },
+              # lower left corner
+              {
+                region_weights: [19, 20],
+                x: -40,
+                y: 68,
+              }
+            ]
+          else
+            [
+              left_corner,
+              right_corner,
+              {
+                # between center and edge1
+                region_weights: [13, 14],
+                x: -45,
+                y: 25,
+              },
+            ]
+          end
         else
           [
             {
@@ -117,6 +138,7 @@ module View
 
       def load_from_tile
         @slots = @tile.cities.map(&:slots).sum + @tile.towns.size
+        @cities = @tile.cities.size
 
         revenues = @tile.stops.map(&:revenue).uniq
 
@@ -125,7 +147,7 @@ module View
         if revenues.size == 1
           revenues = revenues.first
         else
-          puts 'WARNING: encountered multiple different revenues on one tile'
+          puts "WARNING: encountered multiple different revenues on tile #{@tile.name}"
           @revenue = nil
           return
         end
