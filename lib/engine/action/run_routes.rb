@@ -15,7 +15,18 @@ module Engine
 
       def self.h_to_args(h, game)
         routes = h['routes'].map do |route|
-          connection_hexes = route['connections'].map do |hex_ids|
+          # hexes and revenue are for backwards compatability
+          # they can be removed in the future
+          override = nil
+
+          if (hex_ids = route['hexes'])
+            override = {
+              hexes: hex_ids.map { |id| game.hex_by_id(id) },
+              revenue: route['revenue'],
+            }
+          end
+
+          connection_hexes = route['connections']&.map do |hex_ids|
             hex_ids.map { |id| game.hex_by_id(id) }
           end
 
@@ -23,6 +34,7 @@ module Engine
             game.phase,
             game.train_by_id(route['train']),
             connection_hexes: connection_hexes,
+            override: override,
           )
         end
 

@@ -7,9 +7,9 @@ module Engine
     class Path < Base
       attr_reader :a, :b, :branch, :city, :edges, :junction, :node, :offboard, :stop, :town
 
-      def self.walk(paths, visited: {})
+      def self.walk(paths, visited: {}, on: nil)
         paths.each do |path|
-          path.walk(visited: visited) { |p| yield p }
+          path.walk(visited: visited, on: nil) { |p| yield p }
         end
       end
 
@@ -21,12 +21,16 @@ module Engine
         separate_parts
       end
 
+      def <=>(other)
+        id <=> other.id
+      end
+
       def <=(other)
         (@a <= other.a && @b <= other.b) ||
           (@a <= other.b && @b <= other.a)
       end
 
-      def walk(skip: nil, visited: {})
+      def walk(skip: nil, visited: {}, on: nil)
         return if visited[self]
 
         visited[self] = true
@@ -39,7 +43,9 @@ module Engine
           return unless (neighbor = hex.neighbors[edge])
 
           neighbor.paths[np_edge].each do |np|
-            np.walk(skip: np_edge, visited: visited) { |p| yield p }
+            next if on && !on[np]
+
+            np.walk(skip: np_edge, visited: visited, on: on) { |p| yield p }
           end
         end
       end
@@ -54,6 +60,7 @@ module Engine
 
       def rotate(ticks)
         path = Path.new(@a.rotate(ticks), @b.rotate(ticks))
+        path.index = index
         path.tile = @tile
         path
       end

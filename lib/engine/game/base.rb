@@ -5,6 +5,7 @@ if RUBY_ENGINE == 'opal'
   require_tree '../round'
 else
   require 'require_all'
+  require 'json'
   require_rel '../action'
   require_rel '../round'
 end

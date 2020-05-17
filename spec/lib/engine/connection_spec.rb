@@ -41,7 +41,7 @@ module Engine
         expect(subject.connections[3].size).to eq(1)
         expect(subject.connections[3][0]).to have_attributes(
           nodes: [node],
-          hexes: [neighbor_3, subject]
+          hexes: [subject, neighbor_3]
         )
       end
 
@@ -61,7 +61,7 @@ module Engine
         expect(connections_3.size).to eq(2)
         expect(connections_3[0]).to have_attributes(
           nodes: [subject.tile.cities[0]],
-          paths: [neighbor_3.tile.paths[0], subject.tile.paths[1]],
+          paths: [subject.tile.paths[1], neighbor_3.tile.paths[0]],
         )
         expect(connections_3[1]).to have_attributes(
           nodes: [subject.tile.cities[0]],
@@ -91,13 +91,14 @@ module Engine
         subject.lay(game.tile_by_id('23-0').rotate!(5))
         subject.lay(game.tile_by_id('47-0').rotate!(2))
         expect(subject.connections.size).to eq(4)
+        # expect(subject.connections).to eq({})
         expect(subject.connections[0].size).to eq(2)
         expect(subject.connections[2].size).to eq(2)
         connections_3 = subject.connections[3]
         expect(connections_3.size).to eq(2)
         expect(subject.connections[5].size).to eq(2)
-        expect(connections_3[0].hexes.map(&:name)).to eq(%w[J3 J1])
-        expect(connections_3[1].hexes.map(&:name)).to eq(%w[J1 J3 K4])
+        expect(connections_3[0].hexes.map(&:name)).to eq(%w[K4 J3 J1])
+        expect(connections_3[1].hexes.map(&:name)).to eq(%w[J1 J3])
       end
     end
 
@@ -127,7 +128,7 @@ module Engine
           subject.tile.cities[0],
           kotohira.tile.cities[0],
         ])
-        expect(kotohira_connection.hexes.map(&:name)).to eq(%w[I6 I8 J7 K8 I4])
+        expect(kotohira_connection.hexes.map(&:name)).to eq(%w[K8 J7 I8 I6 I4])
 
         ritsurin_connection = subject.connections[2][1]
         expect(ritsurin_connection.nodes).to eq([
@@ -148,7 +149,7 @@ module Engine
         expect(komatsujima.all_connections.size).to eq(3)
         straight = komatsujima.connections[2][0]
         expect(straight.nodes).to eq([komatsujima.tile.towns[0]])
-        expect(straight.hexes.map(&:name)).to eq(%w[I8 J9])
+        expect(straight.hexes.map(&:name)).to eq(%w[J9 I8])
 
         curve = komatsujima.connections[2][1]
         expect(curve.nodes).to eq([komatsujima.tile.towns[0]])

@@ -191,12 +191,9 @@ module Engine
       # honors existing town/city counts?
       # TODO: this is not true for some OO upgrades, or some tiles where
       # double-town can be upgraded into a single town
-      puts "** towns" if name == "205" && other.name == '448'
       return false unless @towns.size == other.towns.size
-      puts "** cities" if name == "205" && other.name == '448'
       return false unless @cities.size == other.cities.size
 
-      puts "** paths subset #{paths_are_subset_of?(other.paths)}" if name == "205" && other.name == '448'
       # honors pre-existing track?
       return false unless paths_are_subset_of?(other.paths)
 

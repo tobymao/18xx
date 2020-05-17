@@ -6,14 +6,15 @@ module Engine
   class Route
     attr_reader :last_hex, :phase, :train
 
-    def initialize(phase, train, connection_hexes: [], routes: [])
+    def initialize(phase, train, connection_hexes: [], routes: [], override: nil)
       @connections = []
       @phase = phase
       @train = train
       @last_hex = nil
       @last_connection = nil
       @routes = routes
-      init_from_connection_hexes(connection_hexes)
+      @override = override
+      init_from_connection_hexes(connection_hexes) if connection_hexes
     end
 
     def init_from_connection_hexes(connection_hexes)
@@ -49,33 +50,44 @@ module Engine
       @connections.map { |c| c[:connection] }
     end
 
-    def add_connection(connection, side, replace = false)
-      return side == :head ? @connections.shift : @connections.pop unless connection
+    def segment(connection, left: nil, right: nil)
+      hexes = connection.nodes.map(&:hex)
 
-      raise GameError if @connections.include?(connection)
-      raise GameError if connection.nodes.size != 2
-      raise GameError if !replace && paths_for(connection.paths).any?
-
-      if @connections.empty?
-        hex_a, hex_b = connection.nodes.map(&:hex)
-        hex_a, hex_b = hex_b, hex_a if hex_a == @last_hex
-        @connections << { left: hex_a, right: hex_b, connection: connection }
+      if left
+        right = (hexes - [left])[0]
       else
-        hexes = connection.nodes.map(&:hex)
-        left = head[:left]
-        right = tail[:right]
+        left = (hexes - [right])[0]
+      end
 
-        if hexes.include?(left)
-          a, b = hexes
-          a, b = b, a if a == left
-          new = { left: a, right: b, connection: connection }
-          replace ? @connections[0] = new : @connections.unshift(new)
-        elsif hexes.include?(right)
-          a, b = hexes
-          a, b = b, a if b == right
-          new = { left: a, right: b, connection: connection }
-          replace ? @connections[-1] = new : @connections << new
-        end
+      { left: left, right: right, connection: connection }
+    end
+
+    def add_connection(connection, node)
+      if @connections.empty?
+        return unless connection
+
+        hex_a, hex_b = connection.nodes.map(&:hex)
+        return @connections << { left: hex_a, right: hex_b, connection: connection }
+      end
+      # raise GameError if @connections.include?(connection)
+      # raise GameError if conection && connection.nodes.size != 2
+      # raise GameError if !replace && paths_for(connection.paths).any?
+
+      case node
+      when (hr = head[:right])
+        return @connections.shift unless connection
+
+        @connections[0] = segment(connection, right: hr)
+      when (hl = head[:left])
+        @connections.unshift(segment(connection, right: hl))
+      when (tl = tail[:left])
+        return @connections.pop unless connection
+
+        @connections[-1] = segment(connection, left: tl)
+      when (tr = tail[:right])
+        @connections << segment(connection, left: tr)
+      else
+        # if connections.empty?
       end
     end
 
@@ -100,22 +112,28 @@ module Engine
       if @connections.any?
         head_c = head[:connection]
         tail_c = tail[:connection]
-        replace = @connections.size == 1
+        solo = connections.size == 1
 
         if head_c.hexes.include?(hex)
-          add_connection(next_connection(head[:right], head_c, hex), :head, replace)
+          puts "head #{head[:right].name}"
+          add_connection(next_connection(head[:right], head_c, hex), head[:right])
         elsif tail_c.hexes.include?(hex)
-          add_connection(next_connection(tail[:left], tail_c, hex), :tail, replace)
+          puts "tail #{tail[:left].name}"
+          add_connection(next_connection(tail[:left], tail_c, hex), tail[:left])
         elsif (connection = select(head[:left], hex)[0])
-          add_connection(connection, :head)
+          puts "head connection"
+          add_connection(connection, head[:left])
         elsif (connection = select(tail[:right], hex)[0])
-          add_connection(connection, :tail)
+          puts "tail connection"
+          add_connection(connection, tail[:right])
         end
+      elsif @last_hex == hex
+        @last_hex = nil
       elsif @last_hex
         add_connection(select(@last_hex, hex)[0])
+      else
+        @last_hex = hex
       end
-
-      @last_hex = hex
     end
 
     def paths
@@ -131,10 +149,14 @@ module Engine
     end
 
     def hexes
+      return @override[:hexes] if @override
+
       @connections.flat_map { |c| [c[:left], c[:right]] }.uniq
     end
 
     def revenue
+      return @override[:revenue] if @override
+
       stops_ = stops
       raise GameError, 'Route must have at least 2 stops' if @connections.any? && stops_.size < 2
       raise GameError, "#{stops_.size} is too many stops for #{@train.distance} train" if @train.distance < stops_.size

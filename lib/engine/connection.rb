@@ -11,15 +11,24 @@ module Engine
     end
 
     def self.connect!(hex)
-      connection = Connection.new
       connections = {}
 
-      hex.tile.paths.each do |p|
+      node_paths, paths = hex.tile.paths.partition(&:node)
+
+      Part::Path.walk(paths) do |path|
+        node_paths << path if path.node
+      end
+
+      node_paths.uniq.each do |p|
+        connection = Connection.new
         p.walk do |path|
           hex = path.hex
           connection = connection.branch!(path)
-          connection.add_path(path)
+          next if connection.paths.include?(path)
+          next if connection.nodes.include?(path.node)
+          next if connection.paths.any? { |p| p.hex == hex && (p.exits & path.exits).any? }
           connections[connection] = true
+          connection.add_path(path)
 
           path.exits.each do |edge|
             hex_connections = hex.connections[edge]
@@ -28,7 +37,7 @@ module Engine
         end
       end
 
-      connections.keys.each do |new|
+      connections.keys.uniq { |c| c.paths.sort }.each do |new|
         new_paths = new.paths
 
         new_paths.each do |path|
@@ -53,10 +62,9 @@ module Engine
     end
 
     def add_path(path)
-      @paths << path unless @paths.include?(path)
+      @paths << path
       clear_cache
       raise 'Connection cannot have more than two nodes' if nodes.size > 2
-      raise 'Connection cannot have two paths on the same hex' if hexes.uniq.size < hexes.size
     end
 
     def clear_cache
@@ -122,7 +130,7 @@ module Engine
 
     def branch!(path)
       branched_paths = []
-      path.walk { |p| branched_paths << p if path_map[p] }
+      path.walk(on: path_map) { |p| branched_paths << p if path_map[p] }
       return self if @paths.size == branched_paths.size
 
       branch = self.class.new(branched_paths)
