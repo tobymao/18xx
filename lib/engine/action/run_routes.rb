@@ -26,8 +26,8 @@ module Engine
             }
           end
 
-          connection_hexes = route['connections']&.map do |hex_ids|
-            hex_ids.map { |id| game.hex_by_id(id) }
+          connection_hexes = route['connections']&.map do |ids|
+            ids.map { |id| game.hex_by_id(id) }
           end
 
           Route.new(

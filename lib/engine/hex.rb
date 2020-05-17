@@ -4,7 +4,7 @@ require_relative 'connection'
 
 module Engine
   class Hex
-    attr_reader :connections, :coordinates, :layout, :neighbors, :paths, :tile, :x, :y, :location_name
+    attr_reader :connections, :coordinates, :layout, :neighbors, :tile, :x, :y, :location_name
 
     DIRECTIONS = {
       flat: {

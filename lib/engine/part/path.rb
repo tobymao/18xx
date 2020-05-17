@@ -9,7 +9,7 @@ module Engine
 
       def self.walk(paths, visited: {}, on: nil)
         paths.each do |path|
-          path.walk(visited: visited, on: nil) { |p| yield p }
+          path.walk(visited: visited, on: on) { |p| yield p }
         end
       end
 
@@ -40,7 +40,7 @@ module Engine
           next if edge == skip
 
           np_edge = hex.invert(edge)
-          return unless (neighbor = hex.neighbors[edge])
+          next unless (neighbor = hex.neighbors[edge])
 
           neighbor.paths[np_edge].each do |np|
             next if on && !on[np]

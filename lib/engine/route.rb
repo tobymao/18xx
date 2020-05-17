@@ -67,6 +67,7 @@ module Engine
         return unless connection
 
         hex_a, hex_b = connection.nodes.map(&:hex)
+        hex_a, hex_b = hex_b, hex_a if @last_hex == hex_a
         return @connections << { left: hex_a, right: hex_b, connection: connection }
       end
       # raise GameError if @connections.include?(connection)
@@ -86,8 +87,6 @@ module Engine
         @connections[-1] = segment(connection, left: tl)
       when (tr = tail[:right])
         @connections << segment(connection, left: tr)
-      else
-        # if connections.empty?
       end
     end
 
@@ -112,19 +111,14 @@ module Engine
       if @connections.any?
         head_c = head[:connection]
         tail_c = tail[:connection]
-        solo = connections.size == 1
 
         if head_c.hexes.include?(hex)
-          puts "head #{head[:right].name}"
           add_connection(next_connection(head[:right], head_c, hex), head[:right])
         elsif tail_c.hexes.include?(hex)
-          puts "tail #{tail[:left].name}"
           add_connection(next_connection(tail[:left], tail_c, hex), tail[:left])
         elsif (connection = select(head[:left], hex)[0])
-          puts "head connection"
           add_connection(connection, head[:left])
         elsif (connection = select(tail[:right], hex)[0])
-          puts "tail connection"
           add_connection(connection, tail[:right])
         end
       elsif @last_hex == hex

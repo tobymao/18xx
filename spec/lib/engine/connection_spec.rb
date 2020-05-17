@@ -6,7 +6,7 @@ require 'engine'
 
 module Engine
   describe Connection do
-    let(:game) { GAMES_BY_TITLE['1889'].new(['a', 'b']) }
+    let(:game) { GAMES_BY_TITLE['1889'].new(%w[a b]) }
 
     describe '#connections' do
       subject { game.hex_by_id('K8') }
@@ -47,23 +47,20 @@ module Engine
 
       it 'connects on an upgrade' do
         neighbor_3.lay(game.tile_by_id('23-0'))
-        connections_0 = subject.connections[0]
-        expect(connections_0.size).to eq(1)
-        expect(connections_0[0]).to have_attributes(
+        connections0 = subject.connections[0]
+        expect(connections0.size).to eq(1)
+        expect(connections0[0]).to have_attributes(
           nodes: [subject.tile.cities[0]],
           paths: [subject.tile.paths[0]],
         )
 
-        connections_3 = subject.connections[3]
-        connections_3.each do |c|
-          puts "#{c.object_id} #{c.inspect}"
-        end
-        expect(connections_3.size).to eq(2)
-        expect(connections_3[0]).to have_attributes(
+        connections3 = subject.connections[3]
+        expect(connections3.size).to eq(2)
+        expect(connections3[0]).to have_attributes(
           nodes: [subject.tile.cities[0]],
           paths: [subject.tile.paths[1], neighbor_3.tile.paths[0]],
         )
-        expect(connections_3[1]).to have_attributes(
+        expect(connections3[1]).to have_attributes(
           nodes: [subject.tile.cities[0]],
           paths: [subject.tile.paths[1], neighbor_3.tile.paths[1]],
         )
@@ -94,11 +91,11 @@ module Engine
         # expect(subject.connections).to eq({})
         expect(subject.connections[0].size).to eq(2)
         expect(subject.connections[2].size).to eq(2)
-        connections_3 = subject.connections[3]
-        expect(connections_3.size).to eq(2)
+        connections3 = subject.connections[3]
+        expect(connections3.size).to eq(2)
         expect(subject.connections[5].size).to eq(2)
-        expect(connections_3[0].hexes.map(&:name)).to eq(%w[K4 J3 J1])
-        expect(connections_3[1].hexes.map(&:name)).to eq(%w[J1 J3])
+        expect(connections3[0].hexes.map(&:name)).to eq(%w[K4 J3 J1])
+        expect(connections3[1].hexes.map(&:name)).to eq(%w[J1 J3])
       end
     end
 

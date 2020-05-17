@@ -20,8 +20,8 @@ module View
     def render
       trains = @game.round.current_entity.trains
 
-      if !@selected_route && (train = trains[0])
-        route = Engine::Route.new(@game.phase, train, routes: @routes)
+      if !@selected_route && (first_train = trains[0])
+        route = Engine::Route.new(@game.phase, first_train, routes: @routes)
         @routes << route
         store(:routes, @routes, skip: true)
         store(:selected_route, route, skip: true)

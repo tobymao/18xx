@@ -15,18 +15,19 @@ module Engine
 
       node_paths, paths = hex.tile.paths.partition(&:node)
 
-      Part::Path.walk(paths) do |path|
-        node_paths << path if path.node
+      paths.each do |path|
+        path.walk { |p| node_paths << p if p.node }
       end
 
-      node_paths.uniq.each do |p|
+      node_paths.uniq.each do |node_path|
         connection = Connection.new
-        p.walk do |path|
+        node_path.walk do |path|
           hex = path.hex
           connection = connection.branch!(path)
           next if connection.paths.include?(path)
           next if connection.nodes.include?(path.node)
           next if connection.paths.any? { |p| p.hex == hex && (p.exits & path.exits).any? }
+
           connections[connection] = true
           connection.add_path(path)
 
@@ -124,7 +125,7 @@ module Engine
       yield self
 
       connections(corporation: corporation).each do |connection|
-        connection.walk(visited: visited, corporation: corporation) { |c | yield c }
+        connection.walk(visited: visited, corporation: corporation) { |c| yield c }
       end
     end
 
@@ -135,9 +136,9 @@ module Engine
 
       branch = self.class.new(branched_paths)
 
-      branched_paths.each do |path|
-        path.exits.each do |edge|
-          path.hex.connections[edge] << branch
+      branched_paths.each do |p|
+        p.exits.each do |edge|
+          p.hex.connections[edge] << branch
         end
       end
 

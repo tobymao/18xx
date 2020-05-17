@@ -6,9 +6,9 @@ require 'engine'
 
 module Engine
   describe Hex do
-    let(:game) { GAMES_BY_TITLE['1889'].new(['a', 'b']) }
+    let(:game) { GAMES_BY_TITLE['1889'].new(%w[a b]) }
     subject { game.hex_by_id('H7') }
-#
+
     describe '#neighbor_direction' do
       it 'is a neighbor' do
         expect(subject.neighbor_direction(game.hex_by_id('I8'))).to eq(5)
