@@ -22,7 +22,7 @@ module View
         # Array<Array<Path>>
         @routes_paths = @routes.map { |route| route.paths_for(@tile.paths) }
 
-        if !@tile.offboards.empty?
+        if @tile.offboards.any?
           track_class = Part::TrackOffboard
           paths = @tile.paths.select(&:offboard)
         elsif @tile.lawson?

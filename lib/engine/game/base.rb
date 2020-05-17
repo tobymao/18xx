@@ -5,6 +5,7 @@ if RUBY_ENGINE == 'opal'
   require_tree '../round'
 else
   require 'require_all'
+  require 'json'
   require_rel '../action'
   require_rel '../round'
 end
@@ -462,6 +463,8 @@ module Engine
             hex.neighbors[direction] = neighbor
           end
         end
+
+        @hexes.select { |h| h.tile.cities.any? || h.tile.exits.any? }.each(&:connect!)
       end
 
       def next_round!
