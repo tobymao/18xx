@@ -62,34 +62,6 @@ module Engine
       { left: left, right: right, connection: connection }
     end
 
-    def add_connection(connection, node)
-      if @connections.empty?
-        return unless connection
-
-        hex_a, hex_b = connection.nodes.map(&:hex)
-        hex_a, hex_b = hex_b, hex_a if @last_hex == hex_a
-        return @connections << { left: hex_a, right: hex_b, connection: connection }
-      end
-      # raise GameError if @connections.include?(connection)
-      # raise GameError if conection && connection.nodes.size != 2
-      # raise GameError if !replace && paths_for(connection.paths).any?
-
-      case node
-      when (hr = head[:right])
-        return @connections.shift unless connection
-
-        @connections[0] = segment(connection, right: hr)
-      when (hl = head[:left])
-        @connections.unshift(segment(connection, right: hl))
-      when (tl = tail[:left])
-        return @connections.pop unless connection
-
-        @connections[-1] = segment(connection, left: tl)
-      when (tr = tail[:right])
-        @connections << segment(connection, left: tr)
-      end
-    end
-
     def next_connection(node, connection, hex)
       connections = select(node, hex)
       index = connections.find_index(connection) || connections.size
@@ -113,18 +85,32 @@ module Engine
         tail_c = tail[:connection]
 
         if head_c.hexes.include?(hex)
-          add_connection(next_connection(head[:right], head_c, hex), head[:right])
+          node = head[:right]
+          if (connection = next_connection(node, head_c, hex))
+            @connections[0] = segment(connection, right: node)
+          else
+            @connections.shift
+          end
         elsif tail_c.hexes.include?(hex)
-          add_connection(next_connection(tail[:left], tail_c, hex), tail[:left])
+          node = head[:left]
+          if (connection = next_connection(node, tail_c, hex))
+            @connections[-1] = segment(connection, left: node)
+          else
+            @connections.pop
+          end
         elsif (connection = select(head[:left], hex)[0])
-          add_connection(connection, head[:left])
+          @connections.unshift(segment(connection, right: head[:left]))
         elsif (connection = select(tail[:right], hex)[0])
-          add_connection(connection, tail[:right])
+          @connections << segment(connection, left: tail[:right])
         end
       elsif @last_hex == hex
         @last_hex = nil
       elsif @last_hex
-        add_connection(select(@last_hex, hex)[0])
+        if (connection = select(@last_hex, hex)[0])
+          hex_a, hex_b = connection.nodes.map(&:hex)
+          hex_a, hex_b = hex_b, hex_a if @last_hex == hex_a
+          @connections << { left: hex_a, right: hex_b, connection: connection }
+        end
       else
         @last_hex = hex
       end
@@ -154,6 +140,7 @@ module Engine
       stops_ = stops
       raise GameError, 'Route must have at least 2 stops' if @connections.any? && stops_.size < 2
       raise GameError, "#{stops_.size} is too many stops for #{@train.distance} train" if @train.distance < stops_.size
+      raise GameError, "Route must contain token" if stops.any? && stops_.none? { |s| s.tokened_by?(train.owner) }
 
       stops_.map { |stop| stop.route_revenue(@phase, @train) }.sum
     end

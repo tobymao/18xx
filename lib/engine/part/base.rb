@@ -37,6 +37,10 @@ module Engine
         false
       end
 
+      def tokened_by?(_corporation)
+        false
+      end
+
       def city?
         false
       end
