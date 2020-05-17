@@ -25,9 +25,6 @@ module View
       dest = match[1]
       hexes_or_tiles = match[2]
 
-      puts "dest = #{dest}"
-      puts "hexes_or_tiles = #{hexes_or_tiles}"
-
       begin
         # all common hexes/tiles
         if dest == 'all'
