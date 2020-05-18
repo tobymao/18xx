@@ -156,18 +156,31 @@ module Engine
       end
     end
 
+    def check_connected!
+      return unless (connection = connections[0])
+
+      connected = connection.select(connections, corporation: corporation)
+      unconnected = connections - connected
+      raise GameError, 'Route is not connected' if unconnected.any?
+    end
+
     def revenue
       return @override[:revenue] if @override
 
       stops_ = stops
       raise GameError, 'Route must have at least 2 stops' if @connections.any? && stops_.size < 2
       raise GameError, "#{stops_.size} is too many stops for #{@train.distance} train" if @train.distance < stops_.size
-      raise GameError, 'Route must contain token' if stops.any? && stops_.none? { |s| s.tokened_by?(train.owner) }
+      raise GameError, 'Route must contain token' if stops.any? && stops_.none? { |s| s.tokened_by?(corporation) }
 
       check_cycles!
       check_overlap!
+      check_connected!
 
       stops_.map { |stop| stop.route_revenue(@phase, @train) }.sum
+    end
+
+    def corporation
+      train.owner
     end
   end
 end
