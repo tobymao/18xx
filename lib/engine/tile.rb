@@ -258,10 +258,8 @@ module Engine
         uses = paths.flat_map { |p| [p.a, p.b] }
                    .select(&:edge?)
                    .map(&:num)
-                   .count { |e| e == edge}
-        if uses > 1
-          candidate_edges[edge] = 0
-        end
+                   .count { |e| e == edge }
+        candidate_edges[edge] = 0 if uses > 1
       end
 
       # index: the city index
