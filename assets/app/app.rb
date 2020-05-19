@@ -21,6 +21,7 @@ class App < Snabberb::Component
   include GameManager
   include UserManager
   needs :disable_user_errors, default: false
+  needs :pin, default: nil
 
   def render
     props = {
