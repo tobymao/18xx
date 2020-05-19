@@ -122,6 +122,7 @@ module Engine
       @blockers = []
       @preprinted = preprinted
       @index = index
+      @preferred_city_edges = {}
 
       tag_parts
       separate_parts
@@ -214,81 +215,30 @@ module Engine
       "<#{self.class.name}: #{name}, hex: #{@hex&.name}>"
     end
 
-    # returns array where the value at an index is which edge that city (based
-    # on index in self.cities) should be rendered
-    def edges_for_city_rendering
-      @_edges_for_city_rendering ||= {}
-      cached_val = @_edges_for_city_rendering[@rotation]
-      return cached_val unless cached_val.nil?
+    # returns hash where keys are cities, and values are the edge the city
+    # should be rendered at
+    def preferred_city_edges
+      # cache per rotation
+      @preferred_city_edges[@rotation] ||=
+        begin
+          city_edges = Hash.new { |h, k| h[k] = [] }
+          edge_count = Hash.new(0)
 
-      # array of hashes; index is city index, edges is nums of edges that city
-      # connects to
-      city_edges = cities.map do |city|
-        edges = paths.select do |path|
-          [path.a, path.b].include?(city)
-        end.flat_map(&:edges).map(&:num)
+          paths.each do |path|
+            next unless (city = path.city)
 
-        {
-          index: city.index,
-          edges: edges.sort,
-        }
-      end
+            path.exits.each do |edge|
+              city_edges[city] << edge
+              edge_count[edge] += 1
+            end
+          end
 
-      # sort so that cities connected to lower edges are handled first
-      city_edges = city_edges.sort_by { |ce| ce[:edges] }
+          sorted = city_edges.each { |_, v| v.sort! }.sort_by { |_, edges_| edges_ }
 
-      # key: edge num where a city might be rendered
-      # value: suitability of edge for rendering, on a scale of 0 to 10; start
-      # with 10, update value as each city's spot is determined in the loop
-      # below
-      edges_with_paths = city_edges.flat_map { |ce| ce[:edges] }
-      candidate_edges = edges_with_paths.zip(Array.new(edges_with_paths.size, 10)).to_h
-
-      # slightly prefer to keep room along bottom to render location name
-      candidate_edges[0] -= 1 if candidate_edges.include?(0)
-
-      # start off by reducing suitability for all edges where neighboring edges
-      # have track; doubly so if both of an edge's neighbors have track
-      candidate_edges = subtract_all_neighbors(candidate_edges, edges_with_paths)
-
-      # if any candidate edge is used by multiple paths to cities, set that
-      # edge's score to 0 (e.g., edge to Chicago Connections on "Chi" tiles in
-      # 1846)
-      candidate_edges.keys.each do |edge|
-        uses = paths.flat_map { |p| [p.a, p.b] }
-                   .select(&:edge?)
-                   .map(&:num)
-                   .count { |e| e == edge }
-        candidate_edges[edge] = 0 if uses > 1
-      end
-
-      # index: the city index
-      # value: the edge on which to render that city
-      # - start off nil, update value as each city's spot is determined in the
-      #   loop below
-      # - this is the value that will be returned
-      dest_edges = Array.new(city_edges.size)
-
-      city_edges.each do |city|
-        candidates = candidate_edges.select { |edge, _score| city[:edges].include?(edge) }
-
-        # pick the candidate with best score; tiebreak by lowest edge
-        #
-        # if no candidates available, just take the first edge that has any path
-        # to the city
-        edge = (candidates.max_by { |e, score| [score, -e] } || city[:edges]).first
-
-        # update candidates for rendering future cities; the chosen edge is now
-        # 0 for other cities, and neighboring edges are reduced by 1
-        candidate_edges = update_candidates(candidate_edges, edge, city[:index])
-
-        # update the return value
-        # (can't just use city_edges.map here because city_edges may be sorted
-        # differently than tile.cities)
-        dest_edges[city[:index]] = edge
-      end
-
-      @_edges_for_city_rendering[@rotation] = dest_edges
+          sorted.map do |city, edges_|
+            [city, edges_.min_by { |edge| edge_count[edge] }]
+          end.to_h
+        end
     end
 
     private
@@ -326,41 +276,6 @@ module Engine
       @junctions = @paths.map(&:junction)
       @edges = @paths.flat_map(&:edges)
       @stops = @paths.map(&:stop).compact
-    end
-
-    # used by edges_for_city_rendering; for each given edge, subtract 1 for each
-    # of its neighbors
-    def subtract_all_neighbors(candidate_edges, edges)
-      edges.each do |edge|
-        candidate_edges = subtract_for_neighbors(candidate_edges, edge)
-      end
-      candidate_edges
-    end
-
-    # used by edges_for_city_rendering; set the given edge to 0 and subtract for
-    # its neighbors
-    def update_candidates(candidate_edges, edge, city_index)
-      if edge.nil?
-        puts "Error rendering tile '#{name}': could not find edge on which to render city #{city_index}."
-        return candidate_edges
-      end
-
-      candidate_edges[edge] = 0
-      subtract_for_neighbors(candidate_edges, edge)
-    end
-
-    # used by edges_for_city_rendering; subtract 1 for each of the given edge's
-    # neighboring edges
-    def subtract_for_neighbors(candidate_edges, edge)
-      puts edge unless edge.is_a?(Integer)
-
-      neighbor1 = (edge + 1) % 6
-      neighbor2 = (edge - 1) % 6
-
-      candidate_edges[neighbor1] -= 1 if candidate_edges.include?(neighbor1)
-      candidate_edges[neighbor2] -= 1 if candidate_edges.include?(neighbor2)
-
-      candidate_edges
     end
   end
 end
