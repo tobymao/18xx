@@ -32,7 +32,7 @@ class Api
 
           halt(400, 'Could not find email') unless user
           halt(400, "You've recently reset your password!  Please try again later!") unless user.can_reset
-          
+
           html = ASSETS.html(
             'assets/app/mail/reset.rb',
             user: user.to_h,
