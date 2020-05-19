@@ -29,7 +29,10 @@ class Api
         # POST '/api/user/forgot'
         r.is 'forgot' do
           user = User.by_email(r['email'])
+
           halt(400, 'Could not find email') unless user
+          halt(400, "You've recently reset your password!  Please try again later!") unless user.can_reset
+          
           html = ASSETS.html(
             'assets/app/mail/reset.rb',
             user: user.to_h,
