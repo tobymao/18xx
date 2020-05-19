@@ -225,7 +225,7 @@ module Engine
       # connects to
       city_edges = cities.map do |city|
         edges = paths.select do |path|
-          [path.a, path.b].any? { |p| p.is?(city) }
+          [path.a, path.b].include?(city)
         end.flat_map(&:edges).map(&:num)
 
         {

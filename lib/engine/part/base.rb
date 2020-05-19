@@ -9,12 +9,6 @@ module Engine
         "#{tile.id}-#{index}"
       end
 
-      def is?(other)
-        (tile&.id == other&.tile&.id) &&
-          id == other.id &&
-          (self == other)
-      end
-
       def hex
         @tile&.hex
       end
