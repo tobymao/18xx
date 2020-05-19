@@ -98,7 +98,7 @@ module Engine
       end
     end
 
-    describe '#render_cities_on_edges' do
+    describe '#preferred_city_edges' do
       [
         {
           desc: "18Chesapeake's X3",
@@ -157,9 +157,13 @@ module Engine
           spec[:expected].each do |rotation, expected|
             it "selects #{expected} for rotation #{rotation}" do
               tile.rotate!(rotation)
-              actual = tile.edges_for_city_rendering
+              actual = tile.preferred_city_edges
 
-              expect(actual).to eq(expected)
+              expected_h = expected.map.with_index do |edge, index|
+                [tile.cities[index], edge]
+              end.to_h
+
+              expect(actual).to eq(expected_h)
             end
           end
         end

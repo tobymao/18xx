@@ -88,7 +88,7 @@ module View
       def preferred_render_locations
         edge_a, edge_b = @edges
         if @tile.cities.size > 1 && (edge_a || edge_b)
-          edge = @tile.edges_for_city_rendering[@city.index]
+          edge = @tile.preferred_city_edges[@city]
           return [
             {
               region_weights: EDGE_TRACK_LOCATIONS[edge] + EDGE_CITY_LOCATIONS[edge],
