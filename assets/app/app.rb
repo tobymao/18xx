@@ -18,6 +18,7 @@ require 'view/user'
 class App < Snabberb::Component
   include GameManager
   include UserManager
+  needs :pin, default: nil
 
   def render
     props = {

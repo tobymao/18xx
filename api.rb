@@ -76,8 +76,6 @@ class Api < Roda
   plugin :halt
 
   ASSETS = Assets.new(precompiled: PRODUCTION)
-  # TODO: This should scan the directory
-  PIN_ASSETS = { 'deadbeef' => Assets.new(precompiled: true, pin: 'deadbeef') }.freeze
 
   use MessageBus::Rack::Middleware
   use Rack::Deflater unless PRODUCTION
@@ -134,10 +132,9 @@ class Api < Roda
     render(games: Game.home_games(user, **request.params).map(&:to_h))
   end
 
-  def render(pin: nil, **needs)
+  def render(**needs)
     return debug(**needs) if request.params['debug'] && !PRODUCTION
-
-    asset = PIN_ASSETS[pin] || ASSETS
+    return render_pin(**needs) if needs[:pin]
 
     script = Snabberb.prerender_script(
       'Index',
@@ -148,7 +145,25 @@ class Api < Roda
       **needs,
     )
 
-    asset.context.eval(script)
+    ASSETS.context.eval(script)
+  end
+
+  def render_pin(**needs)
+    needsjs = Snabberb.wrap(app_route: request.path, **needs)
+    attach_func = "Opal.$$.App.$attach('app', #{needsjs})"
+    <<~HTML
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>18xx.games</title>
+        </head>
+        <body>
+          <div id="app"></div>
+          <script type="text/javascript" src="/pinned/#{needs[:pin]}/main.js"></script>
+          <script>#{attach_func}</script>
+        </body>
+      </html>
+    HTML
   end
 
   def debug(**needs)
