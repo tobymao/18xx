@@ -29,41 +29,38 @@ class Api
         # POST '/api/user/forgot'
         r.is 'forgot' do
           user = User.by_email(r['email'])
-          if user
-            html = ASSETS.html(
-              'assets/app/mail/reset.rb',
-              user: user.to_h,
-              hash: user.reset_hashes[1],
-              base_url: r.base_url
-            )
-            # Remove once we verify email sends as expected
-            puts html
-            { result: true }
-          else
-            { result: false }
-          end
+          halt(400, 'Could not find email') unless user
+          html = ASSETS.html(
+            'assets/app/mail/reset.rb',
+            user: user.to_h,
+            hash: user.reset_hashes[1],
+            base_url: r.base_url
+          )
+          # Remove once we verify email sends as expected
+          puts html
+          { result: true }
         end
 
         # POST '/api/user/reset'
         r.is 'reset' do
-          user = User.first(id: r['id'])
-          if !user
-            halt(400, 'Invalid user!')
-          elsif user.reset_hashes.include? r['hash']
-            user.update(password: r['password'])
-            login_user(user)
-          else
-            halt(400, 'Invalid code!')
-          end
+          user = User.by_email(r['email'])
+
+          halt(400, 'Invalid email!') unless user
+          halt(400, 'Invalid code!') unless user.reset_hashes.include? r['hash']
+          halt(400, "You've recently reset your password!  Please try again later!") unless user.can_reset
+
+          user.password = r['password']
+          user.settings['last_password_reset'] = Time.now.to_i
+          user.save
+
+          login_user(user)
         end
 
         not_authorized! unless user
 
         # POST '/api/user/edit'
         r.post 'edit' do
-          user.settings = {
-            notifications: r.params['notifications'],
-          }
+          user.settings['notifications'] = r.params['notifications']
           user.save
           user.to_h(for_user: true)
         end

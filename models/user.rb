@@ -25,6 +25,11 @@ class User < Base
     super Argon2::Password.create(new_password)
   end
 
+  def can_reset
+    reset_time = settings['last_password_reset'].to_i + RESET_WINDOW
+    reset_time < Time.now.to_i
+  end
+
   def to_h(for_user: false)
     h = {
       id: id,

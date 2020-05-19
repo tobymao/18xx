@@ -51,12 +51,10 @@ module UserManager
 
   def forgot(params)
     @connection.safe_post('/user/forgot', params) do |data|
-      if data['result'] == true
-        store(:app_route, '/')
-        store(:flash_opts, 'Password reset sent!')
-      else
-        store(:flash_opts, 'Invalid email address')
-      end
+      break unless data['result'] == true
+
+      store(:app_route, '/')
+      store(:flash_opts, 'Password reset sent!')
     end
   end
 
