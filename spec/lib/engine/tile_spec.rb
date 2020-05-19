@@ -138,6 +138,18 @@ module Engine
             0 => [0, 3],
           },
         },
+        {
+          desc: "1846's tile #298 (green Chi)",
+          code: 'c=r:40;c=r:40;c=r:40;c=r:40;'\
+                'p=a:0,b:_0;p=a:_0,b:3;'\
+                'p=a:1,b:_1;p=a:_1,b:3;'\
+                'p=a:4,b:_2;p=a:_2,b:3;'\
+                'p=a:5,b:_3;p=a:_3,b:3;'\
+                'l=Chi',
+          expected: {
+            0 => [0, 1, 4, 5],
+          },
+        },
       ].each do |spec|
         describe "with #{spec[:desc]}" do
           tile = Tile.from_code('name', 'color', spec[:code])
