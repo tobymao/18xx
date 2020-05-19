@@ -13,7 +13,7 @@ require_relative 'base'
 module Engine
   module Round
     class Operating < Base
-      attr_reader :bankrupt, :depot, :phase, :round_num, :step
+      attr_reader :bankrupt, :depot, :phase, :round_num, :step, :current_routes
 
       STEPS = %i[
         track
@@ -157,6 +157,10 @@ module Engine
         @step == :track
       end
 
+      def can_run_routes?
+        @step == :route
+      end
+
       def can_place_token?
         @step == :token
       end
@@ -206,41 +210,33 @@ module Engine
       def layable_hexes
         @layable_hexes ||=
           begin
-            # hexes is a map hex => exits
             hexes = Hash.new { |h, k| h[k] = [] }
-
-            queue = []
-            starting_hexes = []
-
+            connections = []
             @hexes.each do |hex|
-              cities = tokened_cities(hex)
-              next unless cities.any?
+              hex.tile.cities.each do |city|
+                hexes[hex] = hex.neighbors.keys if city.tokened_by?(@current_entity)
+              end
 
-              queue << hex
-              starting_hexes << hex
+              hex.tile.paths.each do |path|
+                next unless path.city&.tokened_by?(@current_entity)
 
-              hexes[hex] = hex
-                .tile
-                .paths
-                .select { |path| cities.include?(path.city) }
-                .flat_map(&:exits)
-                .uniq
-            end
-
-            until queue.empty?
-              hex = queue.pop
-
-              hexes[hex].each do |direction|
-                next unless (neighbor = hex.neighbors[direction])
-
-                connected_exits = neighbor.connected_exits(hex, corporation: @current_entity)
-                explored = hexes[neighbor]
-                queue << neighbor if (explored | connected_exits).size > explored.size
-                hexes[neighbor] |= connected_exits | [Hex.invert(direction)]
+                connections.concat(hex.all_connections.select { |c| c.paths.include?(path) })
               end
             end
 
-            starting_hexes.each { |h| hexes[h] |= h.neighbors.keys }
+            Connection.walk(connections, corporation: @current_entity) do |connection|
+              connection.paths.each do |path|
+                hex = path.hex
+                path.exits.each do |edge|
+                  hexes[hex] << edge unless hexes[hex].include?(edge)
+
+                  neighbor = hex.neighbors[edge]
+                  edge = hex.invert(edge)
+                  hexes[neighbor] << edge if neighbor.connections[edge].empty? && !hexes[neighbor].include?(edge)
+                end
+              end
+            end
+
             hexes.default = nil
             hexes
           end
@@ -248,10 +244,6 @@ module Engine
 
       def reachable_hexes
         @reachable_hexes ||= layable_hexes.select { |hex, exits| (hex.tile.exits & exits).any? }
-      end
-
-      def tokened_cities(hex)
-        hex.tile.cities.select { |c| c.tokened_by?(@current_entity) }
       end
 
       def legal_rotations(hex, tile)

@@ -96,6 +96,10 @@ module Engine
         false
       end
 
+      def can_run_routes?
+        false
+      end
+
       def can_place_token?
         false
       end
@@ -139,8 +143,11 @@ module Engine
 
       def potential_tiles(hex)
         colors = @game.phase.tiles
-        tiles = @game.tiles.select { |tile| colors.include?(tile.color) }
-        hex.tile.upgrade_tiles(tiles)
+        @game
+          .tiles
+          .select { |tile| colors.include?(tile.color) }
+          .uniq(&:name)
+          .select { |t| hex.tile.upgrades_to?(t) }
       end
 
       def sell_and_change_price(bundle, share_pool, stock_market)

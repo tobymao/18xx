@@ -58,9 +58,9 @@ task :prod_up do
   migrate.call('production', nil)
 end
 
-desc 'irb with -I lib/ -I assets/js/'
+desc 'irb with -I lib/ -I assets/app/'
 task :irb do
-  sh 'irb -I lib/ -I assets/js/'
+  sh 'irb -I lib/ -I assets/app/'
 end
 
 # Shell

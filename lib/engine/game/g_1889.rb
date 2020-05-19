@@ -6,7 +6,7 @@ require_relative 'base'
 module Engine
   module Game
     class G1889 < Base
-      include Config::Game::G1889
+      load_from_json(Config::Game::G1889::JSON)
 
       DEV_STAGE = :beta
     end

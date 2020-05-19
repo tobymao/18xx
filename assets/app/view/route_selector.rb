@@ -14,18 +14,25 @@ module View
     # Due to the way this and the map hook up routes needs to have
     # an entry, but that route is not valid at zero length
     def active_routes
-      @routes.select { |r| r.hexes.any? }
+      @routes.select { |r| r.connections.any? }
     end
 
     def render
-      round = @game.round
+      trains = @game.round.current_entity.trains
 
-      trains = round.current_entity.trains.map do |train|
+      if !@selected_route && (first_train = trains[0])
+        route = Engine::Route.new(@game.phase, first_train, routes: @routes)
+        @routes << route
+        store(:routes, @routes, skip: true)
+        store(:selected_route, route, skip: true)
+      end
+
+      trains = trains.map do |train|
         onclick = lambda do
-          route = @routes.find { |t| t.train == train }
-          unless route
-            route = Engine::Route.new(@game.phase, train)
-            store(:routes, @routes + [route])
+          unless (route = @routes.find { |t| t.train == train })
+            route = Engine::Route.new(@game.phase, train, routes: @routes)
+            @routes << route
+            store(:routes, @routes)
           end
           store(:selected_route, route)
         end
@@ -62,14 +69,21 @@ module View
         h(:tr, [h(:td, { style: style, on: { click: onclick } }, "Train: #{train.name}"), *children])
       end
 
-      h(:div, [
+      props = {
+        key: 'route_selector',
+        hook: {
+          destroy: -> { cleanup },
+        },
+      }
+
+      h(:div, props, [
         h(UndoAndPass, pass: false),
         h(:table, { style: { 'text-align': 'left' } }, [
           h(:tr, [
-           h(:th, 'Train'),
-           h(:th, 'Stops'),
-           h(:th, 'Revenue'),
-           h(:th, 'Route')
+            h(:th, 'Train'),
+            h(:th, 'Stops'),
+            h(:th, 'Revenue'),
+            h(:th, 'Route')
           ]),
           *trains
         ]),
@@ -77,11 +91,15 @@ module View
       ])
     end
 
+    def cleanup
+      store(:selected_route, nil, skip: true)
+      store(:routes, [], skip: true)
+    end
+
     def actions
       submit = lambda do
         process_action(Engine::Action::RunRoutes.new(@game.current_entity, active_routes))
-        store(:routes, [], skip: true)
-        store(:selected_route, nil, skip: true)
+        cleanup
       end
 
       reset = lambda do
@@ -92,7 +110,8 @@ module View
       reset_all = lambda do
         @selected_route = nil
         store(:selected_route, @selected_route)
-        store(:routes, [])
+        @routes.clear
+        store(:routes, @routes)
       end
 
       revenue = begin

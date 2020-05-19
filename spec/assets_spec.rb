@@ -26,8 +26,9 @@ describe 'Assets' do
     end
 
     it 'renders tiles' do
-      expect(render(app_route: '/tiles/all')).to include('Generic Map Hexes')
-      expect(render(app_route: '/tiles/all')).not_to include('TODO')
+      all_tiles = render(app_route: '/tiles/all')
+      expect(all_tiles).to include('Generic Map Hexes')
+      expect(all_tiles).not_to include('TODO')
 
       expect(render(app_route: '/tiles/57')).to include('57')
       expect(render(app_route: '/tiles/18Chesapeake')).to include('I9')

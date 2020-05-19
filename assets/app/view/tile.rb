@@ -45,10 +45,20 @@ module View
       children << render_tile_part(Part::Track, routes: @routes) if @tile.exits.any?
       children << render_tile_part(Part::Cities) if @tile.cities.any?
       children << render_tile_part(Part::Towns, routes: @routes) if @tile.towns.any?
+
+      # OO tiles have different rules...
+      if @tile.cities.count > 1
+        children << render_tile_part(Part::LocationName) if @tile.location_name
+      end
+
       children << render_tile_part(Part::Label) if @tile.label
-      children << render_tile_part(Part::Revenue) if (@tile.cities + @tile.towns + @tile.offboards).any?
+      children << render_tile_part(Part::Revenue) if @tile.stops.any?
       children << render_tile_part(Part::Upgrades) if @tile.upgrades
-      children << render_tile_part(Part::LocationName) if @tile.location_name
+
+      if @tile.cities.count <= 1
+        children << render_tile_part(Part::LocationName) if @tile.location_name
+      end
+
       children << render_tile_part(Part::Blocker) if should_render_blocker?
 
       children.flatten!
