@@ -30,6 +30,16 @@ module Engine
           (@a <= other.b && @b <= other.a)
       end
 
+      def select(paths)
+        on = paths.map { |p| [p, 0] }.to_h
+
+        walk(on: on) do |path|
+          on[path] = 1 if on[path]
+        end
+
+        on.keys.select { |p| on[p] == 1 }
+      end
+
       def walk(skip: nil, visited: {}, on: nil)
         return if visited[self]
 

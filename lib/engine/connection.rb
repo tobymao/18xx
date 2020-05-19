@@ -4,9 +4,9 @@ module Engine
   class Connection
     attr_reader :paths
 
-    def self.walk(connections, visited: {}, corporation: nil)
+    def self.walk(connections, visited: {}, corporation: nil, on: nil)
       connections.each do |connection|
-        connection.walk(visited: visited, corporation: corporation) { |c| yield c }
+        connection.walk(visited: visited, corporation: corporation, on: on) { |c| yield c }
       end
     end
 
@@ -71,11 +71,6 @@ module Engine
     def clear_cache
       @nodes = nil
       @hexes = nil
-      @path_map = nil
-    end
-
-    def path_map
-      @path_map ||= @paths.map { |p| [p, true] }.to_h
     end
 
     def nodes
@@ -118,20 +113,31 @@ module Engine
       connections
     end
 
-    def walk(visited: {}, corporation: nil)
+    def select(connections, corporation: nil)
+      on = connections.map { |c| [c, 0] }.to_h
+
+      walk(corporation: corporation, on: on) do |connection|
+        on[connection] = 1 if on[connection]
+      end
+
+      on.keys.select { |c| on[c] == 1 }
+    end
+
+    def walk(visited: {}, corporation: nil, on: nil)
       return if visited[self]
 
       visited[self] = true
       yield self
 
       connections(corporation: corporation).each do |connection|
+        next if on && !on[connection]
+
         connection.walk(visited: visited, corporation: corporation) { |c| yield c }
       end
     end
 
     def branch!(path)
-      branched_paths = []
-      path.walk(on: path_map) { |p| branched_paths << p if path_map[p] }
+      branched_paths = path.select(@paths)
       return self if @paths.size == branched_paths.size
 
       branch = self.class.new(branched_paths)
