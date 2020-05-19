@@ -221,22 +221,45 @@ module Engine
       # cache per rotation
       @preferred_city_edges[@rotation] ||=
         begin
+          # city => nums of edges it is connected to
           city_edges = Hash.new { |h, k| h[k] = [] }
+
+          # edge => how many tracks/cities are on that edge, plus 0.1
+          # for each track/city on neighboring edges
           edge_count = Hash.new(0)
 
+          # slightly prefer to keep room along bottom to render location name
+          edge_count[0] += 0.1
+
+          # populate city_edges and edge_count as described in above comments
           paths.each do |path|
             next unless (city = path.city)
 
             path.exits.each do |edge|
               city_edges[city] << edge
               edge_count[edge] += 1
+              edge_count[(edge + 1) % 6] += 0.1
+              edge_count[(edge - 1) % 6] += 0.1
             end
           end
 
-          sorted = city_edges.each { |_, v| v.sort! }.sort_by { |_, edges_| edges_ }
+          # sort city_edges so that the lowest edge with any paths will be
+          # handled first
+          sorted = city_edges.each { |_, e| e.sort! }.sort_by { |_, e| e }
 
+          # construct the final hash to return, updating edge_count along the
+          # way
           sorted.map do |city, edges_|
-            [city, edges_.min_by { |edge| edge_count[edge] }]
+            edge = edges_.min_by { |e| edge_count[e] }
+
+            # since this edge is being used, increase its count (and that of its
+            # neighbors) to influence what edges will be used for the remaining
+            # cities
+            edge_count[edge] += 1
+            edge_count[(edge + 1) % 6] += 0.1
+            edge_count[(edge - 1) % 6] += 0.1
+
+            [city, edge]
           end.to_h
         end
     end
