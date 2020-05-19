@@ -2,6 +2,7 @@
 
 require 'view/buy_companies'
 require 'view/buy_trains'
+require 'view/company'
 require 'view/corporation'
 require 'view/dividend'
 require 'view/map'
@@ -29,7 +30,11 @@ module View
         end
 
       children << action
-      children << h(Corporation, corporation: round.current_entity)
+      corporation = round.current_entity
+      children << h(Corporation, corporation: corporation)
+      (corporation.companies + corporation.owner.companies).each do |company|
+        children << h(Company, company: company) if company.abilities(:tile_lay)
+      end
       children << h(Map, game: @game)
       children << h(BuyCompanies) if round.can_buy_companies?
 
