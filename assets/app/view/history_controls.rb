@@ -31,7 +31,6 @@ module View
       route = Lib::Params.add(@app_route, 'action', action_id)
 
       click = lambda do
-        puts "** route #{route}"
         store(:app_route, route)
       end
 

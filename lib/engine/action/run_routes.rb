@@ -14,20 +14,45 @@ module Engine
       end
 
       def self.h_to_args(h, game)
-        routes = h['routes'].map do |r|
-          route = Route.new(game.phase, game.train_by_id(r['train']))
-          r['hexes'].each { |id| route.add_hex(game.hex_by_id(id)) }
-          route
+        routes = h['routes'].map do |route|
+          # hexes and revenue are for backwards compatability
+          # they can be removed in the future
+          override = nil
+
+          if (hex_ids = route['hexes'])
+            override = {
+              hexes: hex_ids.map { |id| game.hex_by_id(id) },
+              revenue: route['revenue'],
+            }
+          end
+
+          connection_hexes = route['connections']&.map do |ids|
+            ids.map { |id| game.hex_by_id(id) }
+          end
+
+          Route.new(
+            game.phase,
+            game.train_by_id(route['train']),
+            connection_hexes: connection_hexes,
+            override: override,
+          )
         end
+
         [routes]
       end
 
       def args_to_h
         routes = @routes.map do |route|
-          {
-            'train' => route.train.id,
-            'hexes' => route.hexes.map(&:id),
-          }
+          h = { 'train' => route.train.id }
+
+          if route.connections.any?
+            h['connections'] = route.connections.map(&:id)
+          else # legacy routes
+            h['hexes'] = route.hexes.map(&:id)
+            h['revenue'] = route.revenue
+          end
+
+          h
         end
 
         { 'routes' => routes }

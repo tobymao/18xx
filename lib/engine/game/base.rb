@@ -5,6 +5,7 @@ if RUBY_ENGINE == 'opal'
   require_tree '../round'
 else
   require 'require_all'
+  require 'json'
   require_rel '../action'
   require_rel '../round'
 end
@@ -27,7 +28,7 @@ module Engine
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :hexes, :id, :log, :phase, :players, :round,
                   :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible
-
+      DEV_STAGE = :prealpha
       BANK_CASH = 12_000
 
       CURRENCY_FORMAT_STR = '$%d'
@@ -191,6 +192,23 @@ module Engine
         @actions = []
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
+
+        case self.class::DEV_STAGE
+        when :prealpha
+          @log << "#{self.class.title} is in prealpha state, no support is provided at all"
+        when :alpha
+          @log << "#{self.class.title} is currently considered 'alpha',"\
+          ' the rules implementation is likely to not be complete.'
+          @log << 'As the implementation improves, games that are not compatible'\
+          ' with the latest version will be deleted.'
+          @log << 'We suggest that any alpha quality game is concluded within 7 days.'
+        when :beta
+          @log << "#{self.class.title} is currently considered 'beta',"\
+          ' the rules implementation may allow illegal moves.'
+          @log << 'As the implementation improves, games that are not compatible'\
+          ' with the latest version will be given 7 days to be completed before being deleted.'
+          @log << 'Because of this we suggest not playing games that may take months to complete.'
+        end
 
         @companies = init_companies(@players)
         @stock_market = init_stock_market
@@ -466,6 +484,8 @@ module Engine
             hex.neighbors[direction] = neighbor
           end
         end
+
+        @hexes.select { |h| h.tile.cities.any? || h.tile.exits.any? }.each(&:connect!)
       end
 
       def next_round!

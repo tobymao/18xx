@@ -160,6 +160,17 @@ module Engine
           'Hushed' => 3511,
           'Skanadron' => 5351,
         },
+        956 => {
+          'Jac' => 4894,
+          'kelsin' => 5254,
+          'mroy' => 4836,
+        },
+        962 => {
+          'Dimikosta' => 3091,
+          'Joshua6' => 4317,
+          'SamK' => 4444,
+          'ventusignis' => 3880,
+        },
       }.freeze
 
       RESULTS.each do |game_id, result|

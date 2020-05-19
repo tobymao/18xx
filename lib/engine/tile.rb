@@ -26,8 +26,8 @@ module Engine
     #                yellow_30|brown_60|diesel_100
 
     attr_accessor :hex, :legal_rotations, :location_name, :name, :index
-    attr_reader :cities, :color, :edges, :junctions, :label,
-                :parts, :preprinted, :rotation, :towns, :upgrades, :offboards, :blockers
+    attr_reader :cities, :color, :edges, :junctions, :label, :nodes,
+                :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers
 
     def self.for(name, **opts)
       if (code = WHITE[name])
@@ -112,15 +112,17 @@ module Engine
       @cities = []
       @paths = []
       @towns = []
+      @branches = []
       @edges = nil
       @junctions = nil
       @upgrades = []
-      @location_name = location_name
       @offboards = []
+      @location_name = location_name
       @legal_rotations = []
       @blockers = []
       @preprinted = preprinted
       @index = index
+      @preferred_city_edges = {}
 
       tag_parts
       separate_parts
@@ -142,6 +144,7 @@ module Engine
       @rotation = new_rotation
       @_paths = nil
       @_exits = nil
+      self
     end
 
     def rotate(num, ticks = 1)
@@ -165,10 +168,6 @@ module Engine
         ].any?
     end
 
-    def ==(other)
-      @name == other.name && @color == other.color && @parts == other.parts
-    end
-
     def upgrade_cost(abilities)
       ignore = abilities.find { |a| a[:type] == :ignore_terrain }
 
@@ -179,16 +178,12 @@ module Engine
       end
     end
 
-    def upgrade_tiles(tiles)
-      tiles.uniq(&:name).select { |t| upgrades_to?(t) }
-    end
-
     def upgrades_to?(other)
       # correct color progression?
       return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)
 
       # correct label?
-      return false unless label == other.label
+      return false if label != other.label
 
       # honors existing town/city counts?
       # TODO: this is not true for some OO upgrades, or some tiles where
@@ -216,8 +211,57 @@ module Engine
       @blockers << private_company
     end
 
-    def to_s
-      "#{self.class.name} - #{@name}"
+    def inspect
+      "<#{self.class.name}: #{name}, hex: #{@hex&.name}>"
+    end
+
+    # returns hash where keys are cities, and values are the edge the city
+    # should be rendered at
+    def preferred_city_edges
+      # cache per rotation
+      @preferred_city_edges[@rotation] ||=
+        begin
+          # city => nums of edges it is connected to
+          city_edges = Hash.new { |h, k| h[k] = [] }
+
+          # edge => how many tracks/cities are on that edge, plus 0.1
+          # for each track/city on neighboring edges
+          edge_count = Hash.new(0)
+
+          # slightly prefer to keep room along bottom to render location name
+          edge_count[0] += 0.1
+
+          # populate city_edges and edge_count as described in above comments
+          paths.each do |path|
+            next unless (city = path.city)
+
+            path.exits.each do |edge|
+              city_edges[city] << edge
+              edge_count[edge] += 1
+              edge_count[(edge + 1) % 6] += 0.1
+              edge_count[(edge - 1) % 6] += 0.1
+            end
+          end
+
+          # sort city_edges so that the lowest edge with any paths will be
+          # handled first
+          sorted = city_edges.each { |_, e| e.sort! }.sort_by { |_, e| e }
+
+          # construct the final hash to return, updating edge_count along the
+          # way
+          sorted.map do |city, edges_|
+            edge = edges_.min_by { |e| edge_count[e] }
+
+            # since this edge is being used, increase its count (and that of its
+            # neighbors) to influence what edges will be used for the remaining
+            # cities
+            edge_count[edge] += 1
+            edge_count[(edge + 1) % 6] += 0.1
+            edge_count[(edge - 1) % 6] += 0.1
+
+            [city, edge]
+          end.to_h
+        end
     end
 
     private
@@ -250,8 +294,11 @@ module Engine
         end
       end
 
+      @nodes = @paths.map(&:node)
+      @branches = @paths.map(&:branch)
       @junctions = @paths.map(&:junction)
       @edges = @paths.flat_map(&:edges)
+      @stops = @paths.map(&:stop).compact
     end
   end
 end

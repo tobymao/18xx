@@ -16,6 +16,7 @@ module View
             region_use: @region_use,
             cost: upgrade.cost,
             terrains: upgrade.terrains,
+            tile: @tile,
           )
         end
       end
