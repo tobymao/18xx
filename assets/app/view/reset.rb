@@ -10,6 +10,7 @@ module View
     def render_content
       title = 'Reset Password'
       inputs = [
+        render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
         render_input('Temporary Password', id: :hash, type: :password, attrs: { autocomplete: 'temp-password' }),
         render_input('New Password', id: :password, type: :password, attrs: { autocomplete: 'new-password' }),
         h(:div, [render_button('Reset Password') { submit }])
@@ -18,9 +19,7 @@ module View
     end
 
     def submit
-      compiled_params = params
-      compiled_params['id'] = Lib::Params['user_id']
-      reset(compiled_params)
+      reset(params)
     end
   end
 end
