@@ -36,11 +36,18 @@ module Engine
                 "#{@game.format_currency(corporation.par_price.price)}"
       end
 
+      share_str = "a #{share.percent}% share of #{corporation.name}"
+
       if exchange
-        @log << "#{entity.name} exchanges #{exchange.name} for a share of #{corporation.name}"
+        case exchange
+        when :free
+          @log << "#{entity.name} receives #{share_str}"
+        when Company
+          @log << "#{entity.name} exchanges #{exchange.name} for #{share_str}"
+        end
         transfer_shares(share, entity)
       else
-        @log << "#{entity.name} buys a #{share.percent}% share of #{corporation.name} "\
+        @log << "#{entity.name} buys #{share_str} "\
           "from #{share.owner.corporation? ? 'the IPO' : 'the market'} "\
           "for #{@game.format_currency(price)}"
         transfer_shares(share, entity, spender: entity, receiver: @bank)

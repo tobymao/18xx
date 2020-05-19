@@ -51,7 +51,10 @@ module Engine
         case action
         when Action::LayTile
           lay_tile(action)
-          company.remove_ability(:tile_lay)
+          ability = company.abilities(:tile_lay)
+          ability[:count] ||= 0
+          ability[:count] -= 1
+          company.remove_ability(:tile_lay) unless ability[:count].positive?
           @game.round.clear_route_cache if @game.round.operating?
         when Action::BuyShare
           owner = company.owner

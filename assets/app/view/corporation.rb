@@ -60,8 +60,8 @@ module View
     def render_title
       title_style = {
         background: @corporation.color,
+        color: @corporation.text_color,
         'text-align': 'center',
-        color: '#ffffff',
         padding: '0.5rem 0px',
         'font-weight': 'bold',
         margin: '-0.5rem -0.5rem 0 -0.5rem',

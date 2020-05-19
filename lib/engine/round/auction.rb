@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../action/par'
+require_relative '../action/bid'
 require_relative '../game_error'
 require_relative 'base'
 
@@ -14,6 +16,7 @@ module Engine
         @cheapest = @companies.first
         @bank = game.bank
         @min_increment = min_increment
+        @share_pool = game.share_pool
 
         @bids = Hash.new { |h, k| h[k] = [] }
         @bidders = Hash.new { |h, k| h[k] = [] }
@@ -27,6 +30,9 @@ module Engine
 
         # The player who kicked off the limited auction, or nil.
         @auction_triggerer = nil
+
+        # Used when a private company needs to par at the end of the round
+        @companies_pending_par = []
       end
 
       def name
@@ -42,7 +48,7 @@ module Engine
       end
 
       def finished?
-        @end_game || @companies.empty?
+        @end_game || (@companies.empty? && !company_pending_par)
       end
 
       def min_bid(company)
@@ -65,6 +71,10 @@ module Engine
         !@auctioning_company || company == @auctioning_company
       end
 
+      def company_pending_par
+        @companies_pending_par[0]
+      end
+
       private
 
       def all_passed?
@@ -72,12 +82,21 @@ module Engine
       end
 
       # Process a non-pass action.
-      def _process_action(bid)
-        if @auctioning_company
-          add_bid(bid)
-        else
-          @last_to_act = @current_entity
-          placement_bid(bid)
+      def _process_action(action)
+        case action
+        when Action::Bid
+          if @auctioning_company
+            add_bid(action)
+          else
+            @last_to_act = @current_entity
+            placement_bid(action)
+          end
+        when Action::Par
+          share_price = action.share_price
+          corporation = action.corporation
+          @game.stock_market.set_par(corporation, share_price)
+          @share_pool.buy_share(@current_entity, corporation.shares.first, exchange: :free)
+          @companies_pending_par.shift
         end
       end
 
@@ -90,6 +109,8 @@ module Engine
       # An action (either pass or not) has been completed and we move on
       # to the next player.
       def change_entity(_action)
+        return @current_entity = company_pending_par.owner if company_pending_par
+
         if (bids = @bids[@auctioning_company]).any?
           # There are still remaining bids on a limited auction. The
           # lowest-bidding remaining player goes next.
@@ -119,7 +140,7 @@ module Engine
           @cheapest.discount += 5
           new_value = @cheapest.min_bid
           @log << "#{@cheapest.name} minimum bid decreases from "\
-                  "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
+            "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
 
           if new_value <= 0
             # It's now free so the current player is forced to take it.
@@ -200,16 +221,26 @@ module Engine
         player.companies << company
         player.spend(price, @bank) if price.positive?
         @companies.delete(company)
-        @log << case @bidders[company].size
-                when 0
-                  "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
-                when 1
-                  "#{player.name} wins the auction for #{company.name} "\
-                  "with the only bid of #{@game.format_currency(price)}"
-                else
-                  "#{player.name} wins the auction for #{company.name} "\
-                  "with a bid of #{@game.format_currency(price)}"
-                end
+        @log <<
+        case @bidders[company].size
+        when 0
+          "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
+        when 1
+          "#{player.name} wins the auction for #{company.name} "\
+            "with the only bid of #{@game.format_currency(price)}"
+        else
+          "#{player.name} wins the auction for #{company.name} "\
+            "with a bid of #{@game.format_currency(price)}"
+        end
+
+        return unless (ability = company.abilities(:share))
+
+        share = ability[:share]
+        if share.president
+          @companies_pending_par << company
+        else
+          @share_pool.buy_share(player, share, exchange: :free)
+        end
       end
 
       def bids_for_player(player)

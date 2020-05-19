@@ -57,10 +57,19 @@ module Engine
         @step = self.class::STEPS.first
         @last_action_step = self.class::STEPS.last
         @current_routes = []
+        @teleported = false
 
         payout_companies
         place_home_stations
         log_operation(@current_entity)
+      end
+
+      def teleport
+        @current_entity.companies.each do |company|
+          ability = company.abilities(:teleport)
+          return ability if ability
+        end
+        nil
       end
 
       def log_new_round
@@ -237,6 +246,11 @@ module Engine
               end
             end
 
+            teleport&.dig(:hexes)&.each do |hex_id|
+              hex = @game.hex_by_id(hex_id)
+              hexes[hex] |= hex.neighbors.keys
+            end
+
             hexes.default = nil
             hexes
           end
@@ -275,6 +289,7 @@ module Engine
         case action
         when Action::LayTile
           lay_tile(action)
+          @teleported = check_teleport(action)
           clear_route_cache
         when Action::PlaceToken
           place_token(action)
@@ -315,6 +330,7 @@ module Engine
       def change_entity(_action)
         return unless @current_entity.passed?
 
+        @teleported = false
         @current_entity = next_entity
         log_operation(@current_entity) unless finished?
       end
@@ -446,7 +462,7 @@ module Engine
 
         price = entity.next_token&.price || 0
         action.city.place_token(entity)
-        if price.positive?
+        if price.positive? && !@teleported
           entity.spend(price, @bank)
           price_log = " for #{@game.format_currency(price)}"
         end
@@ -515,6 +531,12 @@ module Engine
         # to change order. Re-sort only them.
         index = @entities.find_index(@current_entity) + 1
         @entities[index..-1] = @entities[index..-1].sort if index < @entities.size - 1
+      end
+
+      def check_teleport(action)
+        return unless (ability = teleport)
+
+        ability[:hexes].include?(action.hex.id) && ability[:tiles].include?(action.tile.name)
       end
     end
   end

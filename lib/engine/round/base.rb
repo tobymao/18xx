@@ -190,7 +190,8 @@ module Engine
       def payout_companies
         @game.companies.select(&:owner).each do |company|
           owner = company.owner
-          revenue = company.revenue
+          next unless (revenue = company.revenue).positive?
+
           @game.bank.spend(revenue, owner)
           @log << "#{owner.name} collects #{@game.format_currency(revenue)} from #{company.name}"
         end

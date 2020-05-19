@@ -53,7 +53,7 @@ module Engine
         return false unless get_slot(corporation)
         return false unless (token = corporation.next_token)
         return false unless token.price <= corporation.cash
-        return false if tokened_by?(corporation)
+        return false if @tile.cities.any? { |c| c.tokened_by?(corporation) }
 
         true
       end

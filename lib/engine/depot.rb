@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'action/buy_train.rb'
+
 module Engine
   class Depot
     attr_reader :trains, :upcoming, :discarded
@@ -11,6 +13,13 @@ module Engine
       @upcoming = @trains.dup
       @discarded = []
       @bank = @game.bank
+    end
+
+    def export!
+      train = @upcoming.first
+      @game.log << "-- Event: A #{train.name} train exports --"
+      remove_train(train)
+      @game.phase.process_action(Engine::Action::BuyTrain.new(nil, train, 0))
     end
 
     def reclaim_train(train)
