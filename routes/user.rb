@@ -43,8 +43,7 @@ class Api
             base_url: r.base_url
           )
           # Remove once we verify email sends as expected
-          puts html
-          # Mail.send(user, "18xx.games Forgotten Password", html)
+          Mail.send(user, "18xx.games Forgotten Password", html)
           { result: true }
         end
 
