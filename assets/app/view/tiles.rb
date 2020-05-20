@@ -15,7 +15,7 @@ module View
         },
       }
 
-      text = num ? "#{name} x #{num}" : name
+      text = num ? "##{name} × #{num}" : name
 
       h(:div, props, [
           h(:div, { style: { 'text-align': 'center', 'font-size': '12px' } }, text),
