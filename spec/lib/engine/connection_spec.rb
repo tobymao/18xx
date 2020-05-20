@@ -70,9 +70,15 @@ module Engine
     context 'with iyo' do
       subject { game.hex_by_id('E2') }
 
+      # broken; tile #6 rot 4 (edges [0,4]) cannot upgrade to tile #12 rot5
+      # (edges [0,1,5]); if not meant to be an upgrade, can we split those two
+      # lays into separate tests?
       it 'connects the upgrade' do
         subject.lay(game.tile_by_id('6-0').rotate!(4))
         expect(subject.connections[4][0].hexes.map(&:name)).to eq(%w[E2 F1])
+
+        # tile #12 with rotation 5 has edges 0, 1, 5; if laid on E2 how can it
+        # connect to F1? E2-F1 is on E2's edge 4
         subject.lay(game.tile_by_id('12-0').rotate!(5))
         expect(subject.connections[4][0].hexes.map(&:name)).to eq(%w[E2 F1])
       end
@@ -81,9 +87,15 @@ module Engine
     context 'with ko and sr' do
       subject { game.hex_by_id('J3') }
 
+      # broken; tile #6 rot 4 (edges [0,4]) cannot upgrade to tile #12 rot5
+      # (edges [0,1,5]); if not meant to be an upgrade, can we split those two
+      # lays into separate tests?
       it 'can upgrade fork to 3 stops' do
+        # why are these two lays happening? they appear to be overridden by
+        # the next two lays
         game.hex_by_id('I2').lay(game.tile_by_id('6-0').rotate!(4))
         subject.lay(game.tile_by_id('8-0').rotate!(3))
+
         game.hex_by_id('I2').lay(game.tile_by_id('12-0').rotate!(5))
         subject.lay(game.tile_by_id('23-0').rotate!(5))
         subject.lay(game.tile_by_id('47-0').rotate!(2))
