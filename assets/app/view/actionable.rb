@@ -15,7 +15,7 @@ module View
 
     def process_action(action)
       hotseat = @game_data[:mode] == :hotseat
-      participant = @game.players.map(&:name).include?(@user.dig('name'))
+      participant = @game.players.map(&:name).include?(@user&.dig('name'))
 
       if Lib::Params['action']
         return store(:flash_opts, 'You cannot make changes in history mode. Press >| to go current')
