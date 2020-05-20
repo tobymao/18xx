@@ -92,6 +92,63 @@ module Engine
           expect(subject.tile.cities[0].reservations).to eq(['AR'])
         end
       end
+
+      context 'OO tile on 18Chesapeake J4 (Philadelphia)' do
+        let(:game) { GAMES_BY_TITLE['18Chesapeake'].new(%w[a b c]) }
+
+        # init C&A so it can token in Philly
+        let(:c_and_a) do
+          corp = game.corporation_by_id('C&A')
+          corp.cash = 40
+          corp
+        end
+
+        subject { game.hex_by_id('J4') }
+
+        # grab some properties form the preprinted OO tile
+        let(:old_tile) { subject.tile }
+        let(:old_city) { old_tile.cities.find { |c| c.tokenable?(c_and_a) } }
+        let(:old_edge) do
+          old_path = old_tile.paths.find { |p| p.city == old_city }
+          old_path.edges.first.num
+        end
+
+        before(:each) do
+          # place C&A's home token
+          game.hex_by_id('J6').tile.cities[0].place_token(c_and_a)
+
+          # place token on the preprinted OO tile
+          old_city.place_token(c_and_a)
+        end
+
+        {
+          'X3' => [0, 1, 3, 4],
+          'X4' => [0, 3],
+          'X5' => [0, 3],
+        }.each do |tile_name, rotations|
+          rotations.each do |rotation|
+            it "correctly lays #{tile_name} with rotation #{rotation}" do
+              # get the tile and rotate it
+              tile = game.tile_by_id("#{tile_name}-0")
+              tile.rotate!(rotation)
+
+              # lay it
+              subject.lay(tile)
+
+              # grab the city that C&A's token is on
+              cities = tile.cities.select { |c| c.tokened_by?(c_and_a) }
+              expect(cities.size).to eq(1)
+              city = cities.first
+
+              # expect the connection between the edge and the bottom city
+              # from the preprinted OO tile to still be present
+              edges = tile.paths.select { |p| p.city == city }.flat_map(&:edges).map(&:num)
+              expect(edges.size).to eq(2)
+              expect(edges).to include(old_edge)
+            end
+          end
+        end
+      end
     end
   end
 end
