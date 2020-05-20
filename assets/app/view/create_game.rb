@@ -97,6 +97,10 @@ module View
           .values
           .map { |name| { name: name } }
 
+        if players.any? { |name| players.count(name) > 1 }
+          return store(:flash_opts, 'Cannot have duplicate player names')
+        end
+
         game_data = params['game_data']
 
         if game_data.empty?
