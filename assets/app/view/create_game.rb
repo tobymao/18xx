@@ -95,7 +95,7 @@ module View
         players = params
           .select { |k, _| k.start_with?('player_') }
           .values
-          .map { |name| { name: name } }
+          .map { |name| name.gsub(/\s+/, ' ').strip }
 
         if players.any? { |name| players.count(name) > 1 }
           return store(:flash_opts, 'Cannot have duplicate player names')
@@ -114,7 +114,7 @@ module View
         end
 
         create_hotseat(
-          players: players,
+          players: players.map { |name| { name: name } },
           title: params[:title],
           description: params[:description],
           max_players: params[:max_players],
