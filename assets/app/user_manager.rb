@@ -53,14 +53,14 @@ module UserManager
     @connection.safe_post('/user/forgot', params) do |data|
       break unless data['result']
 
+      store(:flash_opts, { message: 'Password reset sent!', color: 'lightgreen' }, skip: true)
       store(:app_route, '/')
-      store(:flash_opts, 'Password reset sent!')
     end
   end
 
   def reset(params)
     @connection.safe_post('/user/reset', params) do |data|
-      store(:flash_opts, 'Password Reset!')
+      store(:flash_opts, { message: 'Password reset!', color: 'lightgreen' }, skip: true)
       login_user(data)
     end
   end
