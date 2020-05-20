@@ -63,7 +63,7 @@ module View
         You can clone games in the tools tab and then play around locally.</p>
 
         <p>In multiplayer games, you'll also be able to make moves for other players, this is so people can say 'pass me this SR' and you don't
-        need to wait. Please use this feature politely! I'm also planning on adding a toggle to disable or enable this in the future. </p>
+        need to wait. To use this feature in a game, enable "Master Mode" in the Tools tab. Please use it politely!</p>
       MESSAGE
 
       props = {
