@@ -169,7 +169,7 @@ module Engine
       def log_pass(entity)
         return super if @current_actions.empty?
 
-        action = @current_actions.include?(Action::SellShares) ? 'buying' : 'selling'
+        action = !(@current_actions.include?(Action::BuyShare) || @current_actions.include?(Action::Par))? 'buying' : 'selling'
         @log << "#{entity.name} passes #{action} shares"
       end
     end
