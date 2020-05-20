@@ -15,6 +15,7 @@ module View
 
     def process_action(action)
       hotseat = @game_data[:mode] == :hotseat
+      participant = @game.players.map(&:name).include?(@user.dig('name'))
 
       if Lib::Params['action']
         return store(:flash_opts, 'You cannot make changes in history mode. Press >| to go current')
@@ -22,7 +23,7 @@ module View
 
       if !hotseat &&
           !action.free? &&
-          @user &&
+          participant &&
           !@game.active_players.map(&:name).include?(@user['name']) &&
           !Lib::Storage[@game.id]&.dig('master_mode')
         return store(:flash_opts, 'Not your turn. Turn on master mode in the tools tab to act for others.')
@@ -41,8 +42,10 @@ module View
           @game_data[:status] = 'active'
         end
         Lib::Storage[@game_data[:id]] = @game_data
-      else
+      elsif participant
         @connection.safe_post("/game/#{@game_data['id']}/action", action.to_h)
+      else
+        store(:flash_opts, 'You are not in this game. Moves are temporary. You can clone this game in the tools tab.')
       end
 
       store(:game, game)
