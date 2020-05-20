@@ -51,7 +51,7 @@ module UserManager
 
   def forgot(params)
     @connection.safe_post('/user/forgot', params) do |data|
-      break unless data['result'] == true
+      break unless data['result']
 
       store(:app_route, '/')
       store(:flash_opts, 'Password reset sent!')

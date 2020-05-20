@@ -31,7 +31,10 @@ class Api
           user = User.by_email(r['email'])
 
           halt(400, 'Could not find email') unless user
-          halt(400, "You've recently reset your password!  Please try again later!") unless user.can_reset
+          halt(400, "You've recently requested a password reset!") unless user.can_reset?
+
+          user.settings['last_password_reset'] = Time.now.to_i
+          user.save
 
           html = ASSETS.html(
             'assets/app/mail/reset.rb',
@@ -41,6 +44,7 @@ class Api
           )
           # Remove once we verify email sends as expected
           puts html
+          # Mail.send(user, "18xx.games Forgotten Password", html)
           { result: true }
         end
 
@@ -49,11 +53,9 @@ class Api
           user = User.by_email(r['email'])
 
           halt(400, 'Invalid email!') unless user
-          halt(400, 'Invalid code!') unless user.reset_hashes.include? r['hash']
-          halt(400, "You've recently reset your password!  Please try again later!") unless user.can_reset
+          halt(400, 'Invalid code!') unless user.reset_hashes.include?(r['hash'])
 
           user.password = r['password']
-          user.settings['last_password_reset'] = Time.now.to_i
           user.save
 
           login_user(user)
