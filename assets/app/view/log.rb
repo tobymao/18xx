@@ -5,18 +5,16 @@ module View
     needs :log
 
     def render
-      reverse_scroll = lambda do |event|
-        %x{
-          var e = #{event}
-          e.preventDefault()
-          e.currentTarget.scrollTop -= e.deltaY
-        }
+      scroll_to_bottom = lambda do |vnode|
+        elm = Native(vnode)['elm']
+        elm.scrollTop = elm.scrollHeight
       end
 
       props = {
-        on: { wheel: reverse_scroll },
+        hook: {
+          postpatch: ->(_, vnode) { scroll_to_bottom.call(vnode) },
+        },
         style: {
-          transform: 'scaleY(-1)',
           overflow: 'auto',
           height: '200px',
           padding: '0.5rem',
@@ -25,11 +23,11 @@ module View
         },
       }
 
-      lines = @log.reverse.map do |line|
+      lines = @log.map do |line|
         if line.is_a?(String)
-          h(:div, { style: { transform: 'scaleY(-1)' } }, line)
+          h(:div, line)
         elsif line.is_a?(Engine::Action::Message)
-          h(:div, { style: { 'font-weight': 'bold', transform: 'scaleY(-1)' } }, "#{line.entity.name}: #{line.message}")
+          h(:div, { style: { 'font-weight': 'bold' } }, "#{line.entity.name}: #{line.message}")
         end
       end
 
