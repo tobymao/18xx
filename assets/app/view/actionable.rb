@@ -10,18 +10,29 @@ module View
       base.needs :game, store: true
       base.needs :flash_opts, default: {}, store: true
       base.needs :connection, store: true, default: nil
+      base.needs :user, store: true, default: nil
     end
 
     def process_action(action)
+      hotseat = @game_data[:mode] == :hotseat
+
       if Lib::Params['action']
         return store(:flash_opts, 'You cannot make changes in history mode. Press >| to go current')
+      end
+
+      if !hotseat &&
+          !action.free? &&
+          @user &&
+          !@game.active_players.map(&:name).include?(@user['name']) &&
+          !Lib::Storage[@game.id]&.dig('master_mode')
+        return store(:flash_opts, 'Not your turn. Turn on master mode in the tools tab to act for others.')
       end
 
       game = @game.process_action(action)
       @game_data[:actions] << action.to_h
       store(:game_data, @game_data, skip: true)
 
-      if @game_data[:mode] == :hotseat
+      if hotseat
         if @game.finished
           @game_data[:result] = @game.result
           @game_data[:status] = 'finished'

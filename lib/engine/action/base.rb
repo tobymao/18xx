@@ -53,6 +53,10 @@ module Engine
         self.class.from_h(to_h, game)
       end
 
+      def free?
+        false
+      end
+
       private
 
       def type_s(obj)
