@@ -50,7 +50,6 @@ class Game < Base
       FROM games g
       JOIN user_games ug
         ON g.id = ug.id
-      WHERE g.status != 'finished'
       ORDER BY g.created_at DESC
       LIMIT #{QUERY_LIMIT}
       OFFSET :personal_offset * #{QUERY_LIMIT - 1}
@@ -65,7 +64,7 @@ class Game < Base
     UNION
     #{USER_STATUS_QUERY % { status: 'active' }}
     UNION
-    #{STATUS_QUERY % { status: 'finished' }}
+    #{USER_STATUS_QUERY % { status: 'finished' }}
   SQL
 
   LOGGED_OUT_QUERY = <<~SQL
