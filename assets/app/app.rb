@@ -20,6 +20,7 @@ require 'view/reset'
 class App < Snabberb::Component
   include GameManager
   include UserManager
+  needs :disable_user_errors, default: false
 
   def render
     props = {
@@ -94,7 +95,7 @@ class App < Snabberb::Component
       return loading_screen unless @game_data
     end
 
-    h(View::Game, connection: @connection, user: @user)
+    h(View::Game, connection: @connection, user: @user, disable_user_errors: @disable_user_errors)
   end
 
   def js_handlers

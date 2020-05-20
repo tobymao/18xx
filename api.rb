@@ -147,6 +147,7 @@ class Api < Roda
   end
 
   def debug(**needs)
+    needs[:disable_user_errors] = true
     needs = Snabberb.wrap(app_route: request.path, **needs)
     attach_func = "Opal.$$.App.$attach('app', #{needs})"
 
