@@ -91,38 +91,34 @@ module View
     end
 
     def submit
-      if @mode == :hotseat
-        players = params
-          .select { |k, _| k.start_with?('player_') }
-          .values
-          .map { |name| name.gsub(/\s+/, ' ').strip }
+      return create_game(params) if @mode != :hotseat
 
-        if players.any? { |name| players.count(name) > 1 }
-          return store(:flash_opts, 'Cannot have duplicate player names')
-        end
+      players = params
+        .select { |k, _| k.start_with?('player_') }
+        .values
+        .map { |name| name.gsub(/\s+/, ' ').strip }
 
-        game_data = params['game_data']
+      return store(:flash_opts, 'Cannot have duplicate player names') if players.uniq.size != players.size
 
-        if game_data.empty?
-          game_data = {}
-        else
-          begin
-            game_data = JSON.parse(game_data)
-          rescue JSON::ParserError => e
-            return store(:flash_opts, e.message)
-          end
-        end
+      game_data = params['game_data']
 
-        create_hotseat(
-          players: players.map { |name| { name: name } },
-          title: params[:title],
-          description: params[:description],
-          max_players: params[:max_players],
-          **game_data,
-        )
+      if game_data.empty?
+        game_data = {}
       else
-        create_game(params)
+        begin
+          game_data = JSON.parse(game_data)
+        rescue JSON::ParserError => e
+          return store(:flash_opts, e.message)
+        end
       end
+
+      create_hotseat(
+        players: players.map { |name| { name: name } },
+        title: params[:title],
+        description: params[:description],
+        max_players: params[:max_players],
+        **game_data,
+      )
     end
   end
 end
