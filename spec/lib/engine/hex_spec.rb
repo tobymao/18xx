@@ -110,7 +110,7 @@ module Engine
         let(:old_city) { old_tile.cities.find { |c| c.tokenable?(c_and_a) } }
         let(:old_edge) do
           old_path = old_tile.paths.find { |p| p.city == old_city }
-          old_path.edges.first.num
+          old_path.exits.first
         end
 
         before(:each) do
@@ -142,7 +142,7 @@ module Engine
 
               # expect the connection between the edge and the bottom city
               # from the preprinted OO tile to still be present
-              edges = tile.paths.select { |p| p.city == city }.flat_map(&:edges).map(&:num)
+              edges = tile.paths.select { |p| p.city == city }.flat_map(&:exits)
               expect(edges.size).to eq(2)
               expect(edges).to include(old_edge)
             end

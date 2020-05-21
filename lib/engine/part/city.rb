@@ -77,7 +77,7 @@ module Engine
 
       # returns Array[Integer] of all edges that this city are connected to
       def connected_edges
-        @connected_edges[tile.rotation] ||= tile.paths.select { |p| p.city == self }.flat_map(&:edges).map(&:num).sort
+        @connected_edges[tile.rotation] ||= tile.paths.select { |p| p.city == self }.flat_map(&:exits).sort
       end
     end
   end
