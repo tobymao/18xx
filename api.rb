@@ -123,24 +123,23 @@ class Api < Roda
       halt(404, 'Game not found') unless (game = Game[id])
       halt(400, 'Game has not started yet') if game.status == 'new'
 
-      puts game.settings['pin_version']
-      render(pin: game.settings['pin_version'], game_data: game.to_h(include_actions: true))
+      render(pin_version: game.settings['pin_version'], game_data: game.to_h(include_actions: true))
     end
   end
 
   def render_with_games
-    render(games: Game.home_games(user, **request.params).map(&:to_h))
+    render(pin_version: request.params['pin_version'], games: Game.home_games(user, **request.params).map(&:to_h))
   end
 
   def render(**needs)
     return debug(**needs) if request.params['debug'] && !PRODUCTION
-    return render_pin(**needs) if needs[:pin]
+    return render_pin(**needs) if needs[:pin_version]
 
     script = Snabberb.prerender_script(
       'Index',
       'App',
       'app',
-      javascript_include_tags: asset.js_tags,
+      javascript_include_tags: ASSETS.js_tags,
       app_route: request.path,
       **needs,
     )
@@ -159,7 +158,7 @@ class Api < Roda
         </head>
         <body>
           <div id="app"></div>
-          <script type="text/javascript" src="/pinned/#{needs[:pin]}/main.js"></script>
+          <script type="text/javascript" src="/pinned/#{needs[:pin_version]}/main.js"></script>
           <script>#{attach_func}</script>
         </body>
       </html>
