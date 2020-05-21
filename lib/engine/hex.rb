@@ -72,21 +72,13 @@ module Engine
         # if @tile is not blank, ensure connectivity is maintained
         else
           @tile.cities.map do |old_city|
-            cities = tile.cities.select do |new_city|
+            new_city = tile.cities.find do |city|
               # we want old_edges to be subset of new_edges
               old_edges = old_city.connected_edges
-              new_edges = new_city.connected_edges
+              new_edges = city.connected_edges
               old_edges & new_edges == old_edges
-            end.compact
-
-            unless cities.one?
-              err_msg = "City #{old_city.index} on old tile maps to "\
-                        "cities #{cities.map(&:index)} on new tile; expected "\
-                        'exactly one city on new tile'
-              raise GameError, err_msg
             end
-
-            [old_city, cities.first]
+            [old_city, new_city]
           end.to_h
         end
 
