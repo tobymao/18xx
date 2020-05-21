@@ -64,7 +64,7 @@ module View
       ].freeze
 
       def preferred_render_locations
-        @tile.cities.size > 1 ?  OFFSET_LOCATIONS : CENTERED_LOCATIONS
+        @tile.cities.size > 1 ? OFFSET_LOCATIONS : CENTERED_LOCATIONS
       end
 
       def load_from_tile
