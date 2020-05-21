@@ -23,7 +23,7 @@ module View
         children << reservation if @reservation
         children << h(Token, corporation: @token.corporation, radius: @radius) if @token
 
-        h(:g, { on: { click: -> { on_click } }, attrs: { class: 'city_slot' } }, children)
+        h(:g, { on: { click: -> { on_click } } }, children)
       end
 
       def reservation

@@ -51,7 +51,7 @@ module View
 
       def render_part
         h(:g,
-          { attrs: { transform: "#{translate} #{scale}", class: 'blocker', } },
+          { attrs: { transform: "#{translate} #{scale}" } },
           [
             h(:text,
               { attrs: { fill: 'black',

@@ -179,7 +179,6 @@ module View
           h(Part::MultiRevenue, revenues: @revenue, translate: translate)
         else
           attrs = {
-            class: 'revenue',
             'stroke-width': 1,
             transform: translate,
           }

@@ -26,7 +26,6 @@ module View
 
     needs :hex
     needs :round, default: nil
-    needs :selected_route, default: nil, store: true
     needs :tile_selector, default: nil, store: true
     needs :show_grid, default: false, store: true
     needs :role, default: :map
@@ -35,7 +34,7 @@ module View
     def render
       children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
 
-      @selected = @hex == @tile_selector&.hex || @hex == @selected_route&.last_hex
+      @selected = @hex == @tile_selector&.hex
       @tile = @selected && @round.can_lay_track? && @tile_selector&.tile ? @tile_selector.tile : @hex.tile
 
       children << h(Tile, tile: @tile) if @tile
@@ -71,12 +70,6 @@ module View
     end
 
     def on_hex_click(event)
-      if @round&.can_run_routes? && @selected_route
-        @selected_route.touch_hex(@hex)
-        store(:selected_route, @selected_route)
-        return
-      end
-
       return @tile_selector.rotate! if @selected && @tile_selector.tile
 
       case @role

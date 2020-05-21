@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require 'lib/hex'
+require 'view/runnable'
 require 'view/part/base'
 require 'view/part/city_slot'
 
 module View
   module Part
     class City < Base
+      include Runnable
+
       SLOT_RADIUS = 25
       SLOT_DIAMETER = 2 * SLOT_RADIUS
 
@@ -144,9 +147,9 @@ module View
 
         children << render_box(slots.size) if slots.size.between?(2, 6)
 
-        children += slots
+        children.concat(slots)
 
-        h('g.city', children)
+        h('g.city', { on: { click: -> { touch_node(@city) } } }, children)
       end
 
       # TODOS:

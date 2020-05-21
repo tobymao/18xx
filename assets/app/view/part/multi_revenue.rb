@@ -61,12 +61,7 @@ module View
           ]
         end
 
-        attrs = {
-          class: 'multi_revenue',
-          transform: @translate,
-        }
-
-        h(:g, { attrs: attrs }, children)
+        h(:g, { attrs: { transform: @translate } }, children)
       end
     end
   end
