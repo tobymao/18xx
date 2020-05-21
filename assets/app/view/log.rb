@@ -11,6 +11,7 @@ module View
       end
 
       props = {
+        key: 'log',
         hook: {
           postpatch: ->(_, vnode) { scroll_to_bottom.call(vnode) },
         },
