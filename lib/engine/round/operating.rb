@@ -433,7 +433,7 @@ module Engine
         @just_sold_company = company
 
         @current_entity.companies << company
-        @current_entity.spend(price, entity)
+        @current_entity.spend(price, entity) if price.positive?
         @log << "#{@current_entity.name} buys #{company.name} from #{entity.name} for #{@game.format_currency(price)}"
       end
 
@@ -492,7 +492,7 @@ module Engine
           sell_shares(bundle)
         end
 
-        player.spend(player.cash, @bank)
+        player.spend(player.cash, @bank) if player.cash.positive?
 
         @bankrupt = true
       end
