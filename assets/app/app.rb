@@ -14,10 +14,13 @@ require 'view/map_page'
 require 'view/navigation'
 require 'view/tiles_page'
 require 'view/user'
+require 'view/forgot'
+require 'view/reset'
 
 class App < Snabberb::Component
   include GameManager
   include UserManager
+  needs :disable_user_errors, default: false
   needs :pin, default: nil
 
   def render
@@ -54,6 +57,10 @@ class App < Snabberb::Component
         h(View::User, user: @user, type: :login)
       when /profile/
         h(View::User, user: @user, type: :profile)
+      when /forgot/
+        h(View::Forgot, user: @user)
+      when /reset/
+        h(View::Reset, user: @user)
       when /about/
         h(View::About)
       when /tiles/
@@ -89,7 +96,7 @@ class App < Snabberb::Component
       return loading_screen unless @game_data
     end
 
-    h(View::Game, connection: @connection, user: @user)
+    h(View::Game, connection: @connection, user: @user, disable_user_errors: @disable_user_errors)
   end
 
   def js_handlers
