@@ -90,8 +90,14 @@ module GameManager
       game_data = Lib::Storage[game_id]
       return store(:flash_opts, "Hotseat game #{game_id} not found") unless game_data
 
+      if game[:pin_version]
+        game_data[:settings] ||= {}
+        game_data[:settings][:pin_version] = game[:pin_version]
+        Lib::Storage[game_id] = game_data
+      end
+
       store(:game_data, game_data, skip: true)
-      store(:app_route, hs_url(game)) unless @app_route.include?(hs_url(game))
+      store(:app_route, hs_url(game, game_data)) unless @app_route.include?(hs_url(game, game_data))
       return
     end
 
@@ -125,8 +131,14 @@ module GameManager
     "/game/#{game['id']}#{path}"
   end
 
-  def hs_url(game)
-    "/hotseat/#{game['id']}"
+  def hs_url(game, game_data)
+    pin_version = game_data&.dig('settings', 'pin_version')
+
+    if pin_version
+      "/hotseat/#{game['id']}?pin_version=#{pin_version}"
+    else
+      "/hotseat/#{game['id']}"
+    end
   end
 
   def update_game(game)
