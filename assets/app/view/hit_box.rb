@@ -9,7 +9,7 @@ module View
     def render
       h(:circle,
         on: { click: @click },
-        style: { 'pointer-events': 'bounding-box' },
+        style: { cursor: 'pointer', 'pointer-events': 'bounding-box' },
         attrs: {
           stroke: 'none',
           transform: @transform,
