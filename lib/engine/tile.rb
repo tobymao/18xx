@@ -186,10 +186,11 @@ module Engine
       return false if label != other.label
 
       # honors existing town/city counts?
-      # TODO: this is not true for some OO upgrades, or some tiles where
-      # double-town can be upgraded into a single town
+      # - allow labelled cities to upgrade regardless of count; they're probably
+      #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
+      # - TODO: account for games that allow double dits to upgrade to one town
       return false unless @towns.size == other.towns.size
-      return false unless @cities.size == other.cities.size
+      return false unless label || (@cities.size == other.cities.size)
 
       # honors pre-existing track?
       return false unless paths_are_subset_of?(other.paths)
