@@ -15,7 +15,6 @@ class Assets
     @files = []
     @build_path = 'build'
     @out_path = OUTPUT_BASE + '/assets'
-
     @root_path = '/assets'
     @bundle_path = "#{@out_path}/main.js"
 
