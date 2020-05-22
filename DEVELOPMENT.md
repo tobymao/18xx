@@ -29,6 +29,10 @@ Some app routes that may be of interest to developers:
 * `/tiles/<game_title>/<tile_name>` - renders a single tile from a game at large
   scale
 
+Additionally, where the above routes take a `<hex_coord>` or `<tile_name>`,
+multiple can be given by separating them with `+`, and hex coords and tile names
+can be mix and matched with `+`.
+
 ### Docker
 
 Start the Docker stack for this project:

@@ -26,14 +26,15 @@ describe 'Assets' do
     end
 
     it 'renders tiles' do
-      all_tiles = render(app_route: '/tiles/all')
-      expect(all_tiles).to include('Generic Map Hexes')
-      expect(all_tiles).not_to include('TODO')
+      expect(render(app_route: '/tiles/all')).to include('Generic Map Hexes')
 
       expect(render(app_route: '/tiles/57')).to include('57')
       expect(render(app_route: '/tiles/18Chesapeake')).to include('I9')
       expect(render(app_route: '/tiles/18Chesapeake/I9')).to include('I9')
       expect(render(app_route: '/tiles/18Chesapeake/X1')).to include('X1')
+      x2_x3 = render(app_route: '/tiles/18Chesapeake/X2+X3')
+      expect(x2_x3).to include('X2')
+      expect(x2_x3).to include('X3')
 
       %w[1830 1889 18Chesapeake].each do |title|
         expect(render(app_route: "/tiles/#{title}")).to include("#{title} Map Hexes")
