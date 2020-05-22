@@ -16,16 +16,8 @@ module View
 
       return h(:p, "Bad game title: #{game_title}") unless game_class
 
-      begin
-        names = %w[p1 p2 p3 p4 p5]
-        h(Map, game: game_class.new(names))
-      rescue StandardError => e
-        puts e
-        h(:div, [
-            h(:p, "Error rendering map for #{game_title}:"),
-            h(:p, "#{e.class.name}: #{e.message}"),
-          ])
-      end
+      names = %w[p1 p2 p3 p4 p5]
+      h(Map, game: game_class.new(names))
     end
   end
 end
