@@ -36,7 +36,6 @@ module View
 
         props = {
           attrs: {
-            class: 'lawson_path',
             transform: "rotate(#{rotation})",
             d: 'M 0 87 L 0 0',
             stroke: @color,

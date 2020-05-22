@@ -29,8 +29,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        I rewrote the routing code so it should hopefully be more intuitive. If there are any issues please let me know.
-        I'm purposefully not explaining it here to see if it's intuitive to figure out.
+        The routing code has been changed again!!! You must now click nodes (cities towns and offboards). If there are any issues please let me know.
 
         You can now end games early. The owner of the game has an option in the tools tab to end the game if it is finished.
 

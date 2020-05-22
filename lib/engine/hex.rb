@@ -60,16 +60,35 @@ module Engine
     end
 
     def lay(tile)
+      # key: city on @tile (AKA old_city)
+      # values: city on tile (AKA new_city)
+      #
+      # map old cities to new based on edges they are connected to
+      city_map =
+        # if @tile is blank, map cities by index
+        if @tile.cities.flat_map(&:exits).empty? && (@tile.cities.size == tile.cities.size)
+          @tile.cities.zip(tile.cities).to_h
+        # if @tile is not blank, ensure connectivity is maintained
+        else
+          @tile.cities.map do |old_city|
+            new_city = tile.cities.find do |city|
+              # we want old_edges to be subset of new_edges
+              (old_city.exits - city.exits).empty?
+            end
+            [old_city, new_city]
+          end.to_h
+        end
+
       # when upgrading, preserve tokens (both reserved and actually placed) on
       # previous tile
-      @tile.cities.each_with_index do |city, i|
-        tile.cities[i].reservations = city.reservations.dup
+      city_map.each do |old_city, new_city|
+        new_city.reservations = old_city.reservations.dup
 
-        city.tokens.each do |token|
-          tile.cities[i].exchange_token(token) if token
+        old_city.tokens.each do |token|
+          new_city.exchange_token(token) if token
         end
-        city.remove_tokens!
-        city.reservations.clear
+        old_city.remove_tokens!
+        old_city.reservations.clear
       end
 
       @tile.hex = nil

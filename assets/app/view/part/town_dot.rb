@@ -1,12 +1,17 @@
 # frozen_string_literal: true
 
+require 'view/hit_box'
 require 'view/part/base'
+require 'view/runnable'
 
 module View
   module Part
     class TownDot < Base
+      include Runnable
+
       needs :color, default: 'black'
       needs :tile
+      needs :town
 
       CENTER_TOWN = [
         {
@@ -40,24 +45,14 @@ module View
       ].freeze
 
       def preferred_render_locations
-        if @tile.towns.size > 1
-          OFFSET_TOWNS
-        else
-          CENTER_TOWN
-        end
+        @tile.towns.size > 1 ? OFFSET_TOWNS : CENTER_TOWN
       end
 
       def render_part
-        attrs = {
-          class: 'town_dot',
-          transform: translate,
-          fill: @color,
-          cx: '0',
-          cy: '0',
-          r: '10',
-        }
-
-        h(:circle, attrs: attrs)
+        h(:g, [
+          h(:circle, attrs: { transform: translate, fill: @color, r: 10 }),
+          h(HitBox, click: -> { touch_node(@town) }, transform: translate),
+        ])
       end
     end
   end

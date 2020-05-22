@@ -4,13 +4,13 @@ require_relative 'game_error'
 
 module Engine
   class Route
-    attr_reader :last_hex, :phase, :train
+    attr_reader :last_node, :phase, :train
 
     def initialize(phase, train, connection_hexes: [], routes: [], override: nil)
       @connections = []
       @phase = phase
       @train = train
-      @last_hex = nil
+      @last_node = nil
       @last_connection = nil
       @routes = routes
       @override = override
@@ -41,7 +41,7 @@ module Engine
 
     def reset!
       @connections.clear
-      @last_hex = nil
+      @last_node = nil
     end
 
     def head
@@ -56,19 +56,19 @@ module Engine
       @connections.map { |c| c[:connection] }
     end
 
-    def next_connection(node, connection, hex)
-      connections = select(node, hex)
+    def next_connection(node, connection, other)
+      connections = select(node, other)
       index = connections.find_index(connection) || connections.size
       connections[index + 1]
     end
 
-    def select(node, hex)
+    def select(node, other)
       other_paths = @routes.reject { |r| r == self }.flat_map(&:paths)
+      nodes = [node, other]
 
       node.hex.all_connections.select do |c|
-        c.complete? &&
+        (c.nodes & nodes).size == 2 &&
           !@connections.include?(c) &&
-          c.hexes.include?(hex) &&
           (c.paths & other_paths).empty?
       end
     end
@@ -85,38 +85,42 @@ module Engine
       { left: left, right: right, connection: connection }
     end
 
-    def touch_hex(hex)
+    def touch_node(node)
       if @connections.any?
-        head_c = head[:connection]
-        tail_c = tail[:connection]
-
-        if head_c.hexes.include?(hex)
-          if (connection = next_connection(head[:right], head_c, hex))
+        case node
+        when head[:left]
+          if (connection = next_connection(head[:right], head[:connection], node))
             @connections[0] = segment(connection, right: head[:right])
           else
             @connections.shift
           end
-        elsif tail_c.hexes.include?(hex)
-          if (connection = next_connection(tail[:left], tail_c, hex))
+        when tail[:right]
+          if (connection = next_connection(tail[:left], tail[:connection], node))
             @connections[-1] = segment(connection, left: tail[:left])
           else
             @connections.pop
           end
-        elsif (connection = select(head[:left], hex)[0])
-          @connections.unshift(segment(connection, right: head[:left]))
-        elsif (connection = select(tail[:right], hex)[0])
-          @connections << segment(connection, left: tail[:right])
+        when head[:right]
+          @connections.shift
+        when tail[:left]
+          @connections.pop
+        else
+          if (connection = select(head[:left], node)[0])
+            @connections.unshift(segment(connection, right: head[:left]))
+          elsif (connection = select(tail[:right], node)[0])
+            @connections << segment(connection, left: tail[:right])
+          end
         end
-      elsif @last_hex == hex
-        @last_hex = nil
-      elsif @last_hex
-        if (connection = select(@last_hex.tile.nodes[0], hex)[0])
+      elsif @last_node == node
+        @last_node = nil
+      elsif @last_node
+        if (connection = select(@last_node, node)[0])
           a, b = connection.nodes
-          a, b = b, a if @last_hex == a.hex
+          a, b = b, a if @last_node == a
           @connections << { left: a, right: b, connection: connection }
         end
       else
-        @last_hex = hex
+        @last_node = node
       end
     end
 

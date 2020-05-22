@@ -7,8 +7,7 @@ module View
     class Cities < Base
       def render
         @tile.cities.map do |city|
-          edges = @tile.paths.select { |path| path.city.equal?(city) }.flat_map(&:exits)
-          h(Part::City, region_use: @region_use, tile: @tile, city: city, edges: edges)
+          h(Part::City, region_use: @region_use, tile: @tile, city: city)
         end
       end
     end

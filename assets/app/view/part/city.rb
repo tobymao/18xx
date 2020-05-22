@@ -1,17 +1,19 @@
 # frozen_string_literal: true
 
 require 'lib/hex'
+require 'view/runnable'
 require 'view/part/base'
 require 'view/part/city_slot'
 
 module View
   module Part
     class City < Base
+      include Runnable
+
       SLOT_RADIUS = 25
       SLOT_DIAMETER = 2 * SLOT_RADIUS
 
       needs :tile
-      needs :edges
       needs :city
 
       # key is how many city slots are part of the city; value is the offset for
@@ -86,7 +88,7 @@ module View
       }.freeze
 
       def preferred_render_locations
-        edge_a, edge_b = @edges
+        edge_a, edge_b = @city.exits
         if @tile.cities.size > 1 && (edge_a || edge_b)
           edge = @tile.preferred_city_edges[@city]
           return [
@@ -144,9 +146,9 @@ module View
 
         children << render_box(slots.size) if slots.size.between?(2, 6)
 
-        children += slots
+        children.concat(slots)
 
-        h('g.city', children)
+        h(:g, { on: { click: -> { touch_node(@city) } } }, children)
       end
 
       # TODOS:
@@ -154,7 +156,7 @@ module View
       #   scaling the full-size hexagon
       def render_box(slots)
         element, attrs = BOX_ATTRS[slots]
-        h("#{element}.city_box", attrs: attrs)
+        h(element, attrs: attrs)
       end
     end
   end

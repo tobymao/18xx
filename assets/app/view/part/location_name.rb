@@ -132,7 +132,6 @@ module View
 
       def render_part
         attrs = {
-          class: 'location_name',
           fill: 'black',
           transform: "scale(1.1) #{translate}",
           'text-anchor': 'middle',
@@ -147,7 +146,7 @@ module View
           h(:text, { attrs: { transform: "translate(#{x} #{y})" } }, segment)
         end
 
-        h('g.location_name', { attrs: attrs }, [
+        h(:g, { style: { 'pointer-events': 'none' }, attrs: attrs }, [
             render_background_box,
             *rendered_name
           ])

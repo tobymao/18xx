@@ -198,7 +198,7 @@ module Engine
       def buy_company(player, company, price)
         company.owner = player
         player.companies << company
-        player.spend(price, @bank)
+        player.spend(price, @bank) if price.positive?
         @companies.delete(company)
         @log << case @bidders[company].size
                 when 0

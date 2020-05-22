@@ -462,7 +462,7 @@ module Engine
             count.times.map { |i| Tile.for(name, index: i) }
           else
             count = val['count']
-            color = val['color']
+            color = val['color'].to_sym
             code = val['code']
             count.times.map { |i| Tile.from_code(name, color, code, index: i) }
           end

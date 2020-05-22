@@ -15,10 +15,9 @@ module View
       def render
         @tile.towns.map do |town|
           if @tile.lawson? || @tile.paths.empty?
-            h(Part::TownDot, tile: @tile, region_use: @region_use, color: color_for(town))
+            h(Part::TownDot, town: town, tile: @tile, region_use: @region_use, color: color_for(town))
           else
-            edges = @tile.paths.select { |path| path.town.equal?(town) }.flat_map(&:exits)
-            h(Part::TownRect, region_use: @region_use, color: color_for(town), edges: edges)
+            h(Part::TownRect, town: town, region_use: @region_use, color: color_for(town))
           end
         end
       end

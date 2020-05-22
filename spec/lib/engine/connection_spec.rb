@@ -73,7 +73,7 @@ module Engine
       it 'connects the upgrade' do
         subject.lay(game.tile_by_id('6-0').rotate!(4))
         expect(subject.connections[4][0].hexes.map(&:name)).to eq(%w[E2 F1])
-        subject.lay(game.tile_by_id('12-0').rotate!(5))
+        subject.lay(game.tile_by_id('12-0').rotate!(4))
         expect(subject.connections[4][0].hexes.map(&:name)).to eq(%w[E2 F1])
       end
     end
@@ -82,13 +82,10 @@ module Engine
       subject { game.hex_by_id('J3') }
 
       it 'can upgrade fork to 3 stops' do
-        game.hex_by_id('I2').lay(game.tile_by_id('6-0').rotate!(4))
-        subject.lay(game.tile_by_id('8-0').rotate!(3))
         game.hex_by_id('I2').lay(game.tile_by_id('12-0').rotate!(5))
         subject.lay(game.tile_by_id('23-0').rotate!(5))
         subject.lay(game.tile_by_id('47-0').rotate!(2))
         expect(subject.connections.size).to eq(4)
-        # expect(subject.connections).to eq({})
         expect(subject.connections[0].size).to eq(2)
         expect(subject.connections[2].size).to eq(2)
         connections3 = subject.connections[3]

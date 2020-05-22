@@ -86,7 +86,6 @@ module View
       def render_part
         props = {
           attrs: {
-            class: 'curvilinear_path',
             transform: "rotate(#{@rotation})",
             d: SVG_PATH_STRINGS[[@curvilinear_type, @direction]],
             stroke: @color,

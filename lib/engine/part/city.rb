@@ -2,12 +2,14 @@
 
 require_relative '../game_error'
 require_relative 'base'
+require_relative 'node'
 require_relative 'revenue_center'
 
 module Engine
   module Part
     class City < Base
-      include Part::RevenueCenter
+      include RevenueCenter
+      include Node
 
       attr_accessor :reservations
       attr_reader :slots, :tokens, :revenue
@@ -63,7 +65,7 @@ module Engine
       end
 
       def place_token(corporation)
-        raise GameError, 'Cannot lay token' unless tokenable?(corporation)
+        raise GameError, "Cannot lay token on #{id}" unless tokenable?(corporation)
 
         token = corporation.next_token
         token.use!

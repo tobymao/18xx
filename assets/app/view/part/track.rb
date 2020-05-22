@@ -23,32 +23,31 @@ module View
         @routes_paths = @routes.map { |route| route.paths_for(@tile.paths) }
 
         if @tile.offboards.any?
-          track_class = Part::TrackOffboard
-          paths = @tile.paths.select(&:offboard)
+          @tile.paths.select(&:offboard).map do |path|
+            h(TrackOffboard, offboard: path.offboard, region_use: @region_use, path: path, color: color_for(path))
+          end
         elsif @tile.lawson?
-          track_class = Part::TrackLawsonPath
-          paths = @tile.paths.select { |path| path.edges.size == 1 }
+          @tile.paths.select { |path| path.edges.size == 1 }.map do |path|
+            h(TrackLawsonPath, region_use: @region_use, path: path, color: color_for(path))
+          end
         elsif @tile.towns.any?
-          return render_track_for_curvilinear_town
+          render_track_for_curvilinear_town
         elsif @tile.cities.any?
-          return render_track_for_curvilinear_city
+          render_track_for_curvilinear_city
         else
-          track_class = Part::TrackCurvilinearPath
-          paths = @tile.paths.select { |path| path.edges.size == 2 }
-        end
-
-        paths.map do |path|
-          h(track_class, region_use: @region_use, path: path, color: color_for(path))
+          @tile.paths.select { |path| path.edges.size == 2 }.map do |path|
+            h(TrackCurvilinearPath, region_use: @region_use, path: path, color: color_for(path))
+          end
         end
       end
 
       private
 
       def render_track_for_curvilinear_city
-        @tile.paths.select(&:city).group_by(&:city).flat_map do |_, paths|
-          exits = paths.flat_map(&:exits)
+        @tile.cities.flat_map do |city|
+          exits = city.exits
 
-          paths.map do |path|
+          city.paths.map do |path|
             h(
               Part::TrackCurvilinearHalfPath,
               region_use: @region_use,
@@ -61,10 +60,10 @@ module View
       end
 
       def render_track_for_curvilinear_town
-        @tile.paths.select(&:town).group_by(&:town).flat_map do |_, paths|
-          exits = paths.flat_map(&:exits)
+        @tile.towns.flat_map do |town|
+          exits = town.exits
 
-          paths.map do |path|
+          town.paths.map do |path|
             h(
               Part::TrackCurvilinearHalfPath,
               region_use: @region_use,

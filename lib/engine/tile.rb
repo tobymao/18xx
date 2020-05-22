@@ -112,11 +112,13 @@ module Engine
       @cities = []
       @paths = []
       @towns = []
-      @branches = []
-      @edges = nil
-      @junctions = nil
       @upgrades = []
       @offboards = []
+      @branches = nil
+      @nodes = nil
+      @stops = nil
+      @edges = nil
+      @junctions = nil
       @location_name = location_name
       @legal_rotations = []
       @blockers = []
@@ -124,7 +126,6 @@ module Engine
       @index = index
       @preferred_city_edges = {}
 
-      tag_parts
       separate_parts
     end
 
@@ -142,6 +143,7 @@ module Engine
         @legal_rotations.first ||
         @rotation
       @rotation = new_rotation
+      @nodes.each(&:clear!)
       @_paths = nil
       @_exits = nil
       self
@@ -161,11 +163,9 @@ module Engine
 
     def lawson?
       @lawson ||=
-        [
-          @junctions.any?,
-          [cities.size, towns.size] == [1, 0],
-          ([cities.size, towns.size] == [0, 1]) && ![1, 2].include?(exits.size),
-        ].any?
+        @junctions.any? ||
+        (@cities.size == 1 && @towns.empty?) ||
+        ((cities.empty? && towns.size == 1) && edges.size > 2)
     end
 
     def upgrade_cost(abilities)
@@ -186,10 +186,11 @@ module Engine
       return false if label != other.label
 
       # honors existing town/city counts?
-      # TODO: this is not true for some OO upgrades, or some tiles where
-      # double-town can be upgraded into a single town
-      return false unless @towns.size == other.towns.size
-      return false unless @cities.size == other.cities.size
+      # - allow labelled cities to upgrade regardless of count; they're probably
+      #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
+      # - TODO: account for games that allow double dits to upgrade to one town
+      return false if @towns.size != other.towns.size
+      return false if !label && @cities.size != other.cities.size
 
       # honors pre-existing track?
       return false unless paths_are_subset_of?(other.paths)
@@ -266,15 +267,6 @@ module Engine
 
     private
 
-    def tag_parts
-      @parts.each.group_by(&:class).values.each do |parts|
-        parts.each.with_index do |part, index|
-          part.index = index
-          part.tile = self
-        end
-      end
-    end
-
     def separate_parts
       @parts.each do |part|
         if part.city?
@@ -294,11 +286,18 @@ module Engine
         end
       end
 
-      @nodes = @paths.map(&:node)
-      @branches = @paths.map(&:branch)
-      @junctions = @paths.map(&:junction)
-      @edges = @paths.flat_map(&:edges)
-      @stops = @paths.map(&:stop).compact
+      @parts.each.group_by(&:class).values.each do |parts|
+        parts.each.with_index do |part, index|
+          part.index = index
+          part.tile = self
+        end
+      end
+
+      @nodes = @paths.map(&:node).compact.uniq
+      @branches = @paths.map(&:branch).compact.uniq
+      @junctions = @paths.map(&:junction).compact.uniq
+      @stops = @paths.map(&:stop).compact.uniq
+      @edges = @paths.flat_map(&:edges).compact.uniq
     end
   end
 end
