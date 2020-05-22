@@ -64,14 +64,6 @@ module Engine
         log_operation(@current_entity)
       end
 
-      def teleport
-        @current_entity.companies.each do |company|
-          ability = company.abilities(:teleport)
-          return ability if ability
-        end
-        nil
-      end
-
       def log_new_round
         @log << "-- #{name} #{@turn}.#{round_num} --"
       end
@@ -246,9 +238,11 @@ module Engine
               end
             end
 
-            teleport&.dig(:hexes)&.each do |hex_id|
-              hex = @game.hex_by_id(hex_id)
-              hexes[hex] |= hex.neighbors.keys
+            @current_entity.abilities(:teleport) do |ability, _|
+              ability[:hexes].each do |hex_id|
+                hex = @game.hex_by_id(hex_id)
+                hexes[hex] |= hex.neighbors.keys
+              end
             end
 
             hexes.default = nil
@@ -289,7 +283,10 @@ module Engine
         case action
         when Action::LayTile
           lay_tile(action)
-          @teleported = check_teleport(action)
+          @current_entity.abilities(:teleport) do |ability, _|
+            @teleported = ability[:hexes].include?(action.hex.id) &&
+              ability[:tiles].include?(action.tile.name)
+          end
           clear_route_cache
         when Action::PlaceToken
           place_token(action)
@@ -330,7 +327,12 @@ module Engine
       def change_entity(_action)
         return unless @current_entity.passed?
 
-        @teleported = false
+        if @teleported
+          @teleported = false
+          @current_entity.abilities(:teleport) do |_, company|
+            company.remove_ability(:teleport)
+          end
+        end
         @current_entity = next_entity
         log_operation(@current_entity) unless finished?
       end
@@ -424,6 +426,7 @@ module Engine
         @log << "#{entity.name} #{verb} a #{train.name} train for "\
           "#{@game.format_currency(price)} from #{train.owner.name}"
         entity.buy_train(train, price)
+
         rust_trains!(train)
       end
 
@@ -531,12 +534,6 @@ module Engine
         # to change order. Re-sort only them.
         index = @entities.find_index(@current_entity) + 1
         @entities[index..-1] = @entities[index..-1].sort if index < @entities.size - 1
-      end
-
-      def check_teleport(action)
-        return unless (ability = teleport)
-
-        ability[:hexes].include?(action.hex.id) && ability[:tiles].include?(action.tile.name)
       end
     end
   end

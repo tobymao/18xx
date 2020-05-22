@@ -229,7 +229,7 @@ module Engine
       # such as in 1889 for exchanging Dougo
       #
       def can_gain?(share, entity)
-        return unless share
+        return if !share || !entity
 
         corporation = share.corporation
         corporation.holding_ok?(entity, share.percent) &&

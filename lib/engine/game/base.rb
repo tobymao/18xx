@@ -267,6 +267,7 @@ module Engine
         end
 
         @actions << action
+        action_processed(action)
         next_round! while @round.finished? && !@finished
         self
       end
@@ -306,7 +307,9 @@ module Engine
       end
 
       def purchasable_companies
-        @companies.select { |c| c.owner&.player? }
+        @companies.select do |company|
+          company.owner&.player? && !company.abilities(:no_buy)
+        end
       end
 
       private
@@ -477,6 +480,8 @@ module Engine
             raise "Unexected round type #{@round}"
           end
       end
+
+      def action_processed(_action); end
 
       def or_set_finished; end
 

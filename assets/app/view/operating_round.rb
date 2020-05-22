@@ -32,8 +32,8 @@ module View
       children << action
       corporation = round.current_entity
       children << h(Corporation, corporation: corporation)
-      (corporation.companies + corporation.owner.companies).each do |company|
-        children << h(Company, company: company) if company.abilities(:tile_lay)
+      (corporation.companies + corporation.owner.companies).each do |c|
+        children << h(Company, company: c) if c.abilities(:tile_lay) || c.abilities(:teleport)
       end
       children << h(Map, game: @game)
       children << h(BuyCompanies) if round.can_buy_companies?

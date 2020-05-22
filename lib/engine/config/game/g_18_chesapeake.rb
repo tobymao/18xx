@@ -346,7 +346,8 @@ module Engine
         {
           "type": "share",
           "share": "random-president"
-        }
+        },
+        { "type": "no_buy" }
       ]
     }
   ],

@@ -115,5 +115,12 @@ module Engine
       percent = share_holder.percent_of(self) + extra_percent
       %i[orange brown].include?(@share_price&.color) || percent <= 60
     end
+
+    def abilities(type)
+      @companies.each do |company|
+        ability = company.abilities(type)
+        yield ability, company if ability
+      end
+    end
   end
 end
