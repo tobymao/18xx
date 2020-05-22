@@ -9,7 +9,7 @@ module View
   class TilesPage < Tiles
     needs :route
 
-    ROUTE_FORMAT = %r{/tiles/([^/]*)(?:/(.+))?}.freeze
+    ROUTE_FORMAT = %r{/tiles/([^/?]*)(?:/([^?]+))?}.freeze
 
     TILE_IDS = [
       Engine::Tile::WHITE.keys,
