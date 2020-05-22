@@ -29,7 +29,14 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>
+        18Chesapeake is now in ALPHA stage. That means I need YOUR help to test it! Please try it out and let me know if there are any
+        issues thanks! Due to the pace of development, games will be swiftly deleted if issues occur so please play with the intent to test.
+        </p>
+
+        <p>
         The routing code has been changed again!!! You must now click nodes (cities towns and offboards). If there are any issues please let me know.
+        </p>
 
         You can now end games early. The owner of the game has an option in the tools tab to end the game if it is finished.
 

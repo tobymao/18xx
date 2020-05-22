@@ -2,6 +2,7 @@
 
 require 'view/actionable'
 require 'view/company'
+require 'view/par'
 require 'view/players'
 require 'view/undo_and_pass'
 
@@ -14,12 +15,24 @@ module View
     def render
       @round = @game.round
       @current_entity = @round.current_entity
+      @company_pending_par = @round.company_pending_par
 
       h(:div, [
-        h(UndoAndPass),
+        h(UndoAndPass, pass: @company_pending_par),
+        *render_company_pending_par,
         *render_companies,
         h(View::Players, game: @game),
       ].compact)
+    end
+
+    def render_company_pending_par
+      return [] unless @company_pending_par
+
+      corporation = @company_pending_par.abilities(:share)[:share].corporation
+      [
+        h(Corporation, corporation: corporation),
+        h(Par, corporation: corporation),
+      ]
     end
 
     def render_companies

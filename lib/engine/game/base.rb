@@ -28,68 +28,17 @@ module Engine
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :hexes, :id, :log, :phase, :players, :round,
                   :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible
+
       DEV_STAGE = :prealpha
       BANK_CASH = 12_000
 
       CURRENCY_FORMAT_STR = '$%d'
 
-      STARTING_CASH = {
-        2 => 1200,
-        3 => 800,
-        4 => 600,
-        5 => 480,
-        6 => 400,
-      }.freeze
+      STARTING_CASH = {}.freeze
 
       HEXES = {}.freeze
 
-      TRAINS = [
-        {
-          name: '2',
-          distance: 2,
-          price: 80,
-          rusts_on: '4',
-          num: 6,
-        },
-        {
-          name: '3',
-          distance: 3,
-          price: 180,
-          rusts_on: '6',
-          num: 5,
-        },
-        {
-          name: '4',
-          distance: 4,
-          price: 300,
-          rusts_on: 'D',
-          num: 4,
-        },
-        {
-          name: '5',
-          distance: 5,
-          price: 450,
-          num: 3,
-        },
-        {
-          name: '6',
-          distance: 6,
-          price: 630,
-          num: 2,
-        },
-        {
-          name: 'D',
-          distance: 999,
-          price: 1100,
-          available_on: '6',
-          discount: {
-            '4' => 300,
-            '5' => 300,
-            '6' => 300,
-          },
-          num: 20,
-        },
-      ].freeze
+      TRAINS = [].freeze
 
       CERT_LIMIT = {
         2 => 28,
@@ -105,14 +54,7 @@ module Engine
 
       CORPORATIONS = [].freeze
 
-      PHASES = [
-        Phase::TWO,
-        Phase::THREE,
-        Phase::FOUR,
-        Phase::FIVE,
-        Phase::SIX,
-        Phase::D,
-      ].freeze
+      PHASES = [].freeze
 
       LOCATION_NAMES = {}.freeze
 
@@ -193,6 +135,8 @@ module Engine
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
 
+        srand(@id.to_s.scan(/\d+/).first.to_i)
+
         case self.class::DEV_STAGE
         when :prealpha
           @log << "#{self.class.title} is in prealpha state, no support is provided at all"
@@ -234,6 +178,8 @@ module Engine
 
         cache_objects
         connect_hexes
+
+        init_company_abilities
 
         initialize_actions(actions)
 
@@ -478,6 +424,23 @@ module Engine
         end
       end
 
+      def init_company_abilities
+        @companies.each do |company|
+          next unless (ability = company.abilities(:share))
+
+          case (share = ability[:share])
+          when 'random-president'
+            share = @corporations.sample.shares[0]
+            ability[:share] = share
+            corporation = share.corporation
+            company.desc = "#{company.desc} The random corporation is #{corporation.name}."
+            @log << "#{company.name} comes with the president's share of #{corporation.name}"
+          else
+            ability[:share] = share_by_id(share)
+          end
+        end
+      end
+
       def connect_hexes
         coordinates = @hexes.map { |h| [[h.x, h.y], h] }.to_h
 
@@ -518,12 +481,15 @@ module Engine
             else
               @turn += 1
               @operating_rounds = @phase.operating_rounds
+              or_set_finished
               new_stock_round
             end
           else
             raise "Unexected round type #{@round}"
           end
       end
+
+      def or_set_finished; end
 
       def end_game
         @finished = true
@@ -564,11 +530,19 @@ module Engine
 
       def new_stock_round
         @log << "-- Stock Round #{@turn} --"
+        stock_round
+      end
+
+      def stock_round
         Round::Stock.new(@players, game: self)
       end
 
       def new_operating_round(round_num = 1)
         @log << "-- Operating Round #{@turn}.#{round_num} --"
+        operating_round(round_num)
+      end
+
+      def operating_round(round_num)
         Round::Operating.new(
           @corporations.select(&:floated?).sort,
           game: self,

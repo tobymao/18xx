@@ -12,12 +12,13 @@ module Engine
 
       PURCHASE_ACTIONS = [Action::BuyShare, Action::Par].freeze
 
-      def initialize(entities, game:)
+      def initialize(entities, game:, sell_buy_order: :sell_buy_or_buy_sell)
         super
         @share_pool = game.share_pool
         @stock_market = game.stock_market
         @corporations = game.corporations
         @can_sell = game.turn > 1
+        @sell_buy_order = sell_buy_order
         # player => corporation => :now or :prev
         # this differentiates between preventing users from buying shares they sold
         # and preventing users from selling the same shares separately in the some action
@@ -71,9 +72,18 @@ module Engine
 
         @players_sold[@current_entity][corporation] != :now &&
           (bundle.percent + @share_pool.percent_of(corporation)) <= 50 &&
-          !(@current_actions.uniq.size == 2 && self.class::PURCHASE_ACTIONS.include?(@current_actions.last)) &&
+          can_sell_order? &&
           (!bundle.presidents_share ||
            (corporation.share_holders.reject { |k, _| k == @current_entity }.values.max || 0) > 10)
+      end
+
+      def can_sell_order?
+        case @sell_buy_order
+        when :sell_buy_or_buy_sell
+          !(@current_actions.uniq.size == 2 && self.class::PURCHASE_ACTIONS.include?(@current_actions.last))
+        when :sell_buy
+          (self.class::PURCHASE_ACTIONS & @current_actions).empty?
+        end
       end
 
       def did_sell?(corporation, entity)

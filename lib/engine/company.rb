@@ -6,8 +6,8 @@ module Engine
   class Company
     include Ownable
 
-    attr_accessor :revenue, :discount
-    attr_reader :desc, :name, :sym, :value
+    attr_accessor :desc, :revenue, :discount
+    attr_reader :name, :sym, :value
 
     def initialize(name:, value:, revenue: 0, desc: '', sym: '', abilities: [], **_opts)
       @name = name
@@ -19,8 +19,9 @@ module Engine
       @closed = false
 
       @abilities = abilities
+        .map(&:dup)
         .group_by { |ability| ability[:type] }
-        .transform_values(&:first)
+        .transform_values!(&:first)
     end
 
     def abilities(type)

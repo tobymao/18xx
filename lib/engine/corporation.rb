@@ -15,7 +15,8 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :par_price, :share_price, :tokens
-    attr_reader :companies, :coordinates, :min_price, :name, :full_name, :logo, :trains, :color, :revenue_history
+    attr_reader :color, :companies, :coordinates, :min_price, :name, :full_name,
+                :logo, :text_color, :trains, :revenue_history
 
     def initialize(sym:, name:, tokens:, **opts)
       @name = sym
@@ -39,6 +40,7 @@ module Engine
       @min_price = opts[:min_price]
       @logo = "/logos/#{opts[:logo]}.svg"
       @color = opts[:color]
+      @text_color = opts[:text_color] || '#ffffff'
     end
 
     def <=>(other)

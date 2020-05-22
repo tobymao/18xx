@@ -100,11 +100,11 @@ module View
     end
 
     def render_corporation(corporation)
-      corporation_color =
+      name_props =
         {
           style: {
             background: corporation.color,
-            color: '#ffffff'
+            color: corporation.text_color,
           }
         }
 
@@ -118,7 +118,7 @@ module View
       end
 
       h(:tr, props, [
-        h(:th, corporation_color, corporation.name),
+        h(:th, name_props, corporation.name),
         *@game.players.map do |p|
           sold_props = { style: {} }
           sold_props[:style]['background-color'] = 'rgba(225,0,0,0.4)' if @game.round.did_sell?(corporation, p)
@@ -132,7 +132,7 @@ module View
         h(:td, corporation.trains.map(&:name).join(',')),
         h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
         render_companies(corporation),
-        h(:th, corporation_color, corporation.name),
+        h(:th, name_props, corporation.name),
         *render_history(corporation)
       ])
     end

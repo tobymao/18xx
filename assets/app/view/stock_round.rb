@@ -2,6 +2,7 @@
 
 require 'view/actionable'
 require 'view/corporation'
+require 'view/par'
 require 'view/players'
 require 'view/sell_shares'
 require 'view/stock_market'
@@ -101,26 +102,7 @@ module View
     def render_pre_ipo
       return if @round.must_sell?
 
-      style = {
-        cursor: 'pointer',
-        border: 'solid 1px gainsboro',
-        display: 'inline-block',
-        padding: '0.5rem',
-        margin: '0.5rem 0.5rem 0.5rem 0',
-      }
-
-      par_values = @round.stock_market.par_prices.map do |share_price|
-        par = lambda do
-          process_action(Engine::Action::Par.new(@current_entity, @selected_corporation, share_price))
-        end
-
-        h(:div, { style: style, on: { click: par } }, @game.format_currency(share_price.price))
-      end
-
-      h(:div, [
-        h(:div, 'Par Price:'),
-        *par_values,
-      ])
+      h(Par, corporation: @selected_corporation)
     end
   end
 end
