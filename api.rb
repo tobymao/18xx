@@ -148,8 +148,8 @@ class Api < Roda
   end
 
   def render_pin(**needs)
-    js="#{Assets::PIN_DIR}#{needs[:pin_version]}.js"
-    halt(404, "Pin #{needs[:pin_version]} not found") unless File::exist?(Assets::OUTPUT_BASE+js)
+    js = "#{Assets::PIN_DIR}#{needs[:pin_version]}.js"
+    halt(404, "Pin #{needs[:pin_version]} not found") unless File.exist?(Assets::OUTPUT_BASE + js)
 
     needsjs = Snabberb.wrap(app_route: request.path, **needs)
 

@@ -8,13 +8,13 @@ require 'zlib'
 require_relative 'js_context'
 
 class Assets
-  OUTPUT_BASE = "public"
-  PIN_DIR="/pinned/"
+  OUTPUT_BASE = 'public'
+  PIN_DIR = '/pinned/'
 
   def initialize(make_map: true, compress: false, gzip: false, cache: true, precompiled: false)
     @files = []
     @build_path = 'build'
-    @out_path = OUTPUT_BASE+'/assets'
+    @out_path = OUTPUT_BASE + '/assets'
 
     @root_path = '/assets'
     @bundle_path = "#{@out_path}/main.js"
