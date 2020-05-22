@@ -18,7 +18,7 @@ module View
       @company_pending_par = @round.company_pending_par
 
       h(:div, [
-        h(UndoAndPass, pass: @company_pending_par),
+        h(UndoAndPass, pass: !@company_pending_par),
         *render_company_pending_par,
         *render_companies,
         h(View::Players, game: @game),
