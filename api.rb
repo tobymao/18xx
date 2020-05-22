@@ -81,7 +81,7 @@ class Api < Roda
   use Rack::Deflater unless PRODUCTION
 
   STANDARD_ROUTES = %w[
-    / about hotseat login map new_game profile signup tiles tutorial
+    / about hotseat login map new_game profile signup tiles tutorial forgot reset
   ].freeze
 
   Dir['./routes/*'].sort.each { |file| require file }
@@ -147,6 +147,7 @@ class Api < Roda
   end
 
   def debug(**needs)
+    needs[:disable_user_errors] = true
     needs = Snabberb.wrap(app_route: request.path, **needs)
     attach_func = "Opal.$$.App.$attach('app', #{needs})"
 

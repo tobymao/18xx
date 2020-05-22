@@ -179,7 +179,7 @@ module Engine
           end
 
         cost = old_tile.upgrade_cost(abilities)
-        entity.spend(cost, @game.bank) unless cost.zero?
+        entity.spend(cost, @game.bank) if cost.positive?
 
         @log << "#{action.entity.name}"\
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\

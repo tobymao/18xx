@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'game_manager'
+require 'view/game_data'
 require 'lib/storage'
 
 module View
@@ -13,20 +14,10 @@ module View
     needs :confirm_endgame, store: true, default: false
 
     def render
-      @game_data = @game_data.merge(actions: @game.actions.map(&:to_h))
-      @json = `JSON.stringify(#{@game_data.to_n}, null, 2)`
       @settings = Lib::Storage[@game.id] || {}
-
-      props = {
-        style: {
-          'white-space': 'pre-wrap',
-        },
-      }
-
-      h(:div, props, [
+      h(:div, [
         *render_tools,
-        render_clone_game,
-        @json,
+        h(GameData, actions: @game.actions.map(&:to_h))
       ])
     end
 
