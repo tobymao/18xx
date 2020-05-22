@@ -106,13 +106,12 @@ end
 desc 'Precompile assets for production'
 task :precompile do
   require_relative 'lib/assets'
-  Assets.new(cache: false, make_map: false, compress: true, gzip: true).combine
-end
+  bundle = Assets.new(cache: false, make_map: false, compress: true, gzip: true).combine
 
-desc 'Create pinned version'
-task :create_pin, [:pin] do |_, args|
-  require_relative 'lib/assets'
-  asset = Assets.new(cache: false, make_map: false, compress: true, gzip: true, pin: args[:pin])
-  FileUtils.mkdir_p(asset.out_path)
-  asset.combine
+  # Copy to the pin directory
+  git_rev = `git rev-parse --short HEAD`.strip
+  pin_dir = Assets::OUTPUT_BASE+Assets::PIN_DIR
+  FileUtils.mkdir_p(pin_dir)
+  FileUtils.cp(bundle, "#{pin_dir}/#{git_rev}.js")
+  FileUtils.cp("#{bundle}.gz", "#{pin_dir}/#{git_rev}.js.gz")
 end
