@@ -44,10 +44,10 @@ module View
       private
 
       def render_track_for_curvilinear_city
-        @tile.paths.select(&:city).group_by(&:city).flat_map do |_, paths|
-          exits = paths.flat_map(&:exits)
+        @tile.cities.flat_map do |city|
+          exits = city.exits
 
-          paths.map do |path|
+          city.paths.map do |path|
             h(
               Part::TrackCurvilinearHalfPath,
               region_use: @region_use,
@@ -60,10 +60,10 @@ module View
       end
 
       def render_track_for_curvilinear_town
-        @tile.paths.select(&:town).group_by(&:town).flat_map do |_, paths|
-          exits = paths.flat_map(&:exits)
+        @tile.towns.flat_map do |town|
+          exits = town.exits
 
-          paths.map do |path|
+          town.paths.map do |path|
             h(
               Part::TrackCurvilinearHalfPath,
               region_use: @region_use,

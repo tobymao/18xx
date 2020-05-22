@@ -66,17 +66,14 @@ module Engine
       # map old cities to new based on edges they are connected to
       city_map =
         # if @tile is blank, map cities by index
-        if @tile.cities.flat_map(&:connected_edges).empty? && (@tile.cities.size == tile.cities.size)
+        if @tile.cities.flat_map(&:exits).empty? && (@tile.cities.size == tile.cities.size)
           @tile.cities.zip(tile.cities).to_h
-
         # if @tile is not blank, ensure connectivity is maintained
         else
           @tile.cities.map do |old_city|
             new_city = tile.cities.find do |city|
               # we want old_edges to be subset of new_edges
-              old_edges = old_city.connected_edges
-              new_edges = city.connected_edges
-              old_edges & new_edges == old_edges
+              (old_city.exits - city.exits).empty?
             end
             [old_city, new_city]
           end.to_h

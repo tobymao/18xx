@@ -14,7 +14,6 @@ module View
       SLOT_DIAMETER = 2 * SLOT_RADIUS
 
       needs :tile
-      needs :edges
       needs :city
 
       # key is how many city slots are part of the city; value is the offset for
@@ -89,7 +88,7 @@ module View
       }.freeze
 
       def preferred_render_locations
-        edge_a, edge_b = @edges
+        edge_a, edge_b = @city.exits
         if @tile.cities.size > 1 && (edge_a || edge_b)
           edge = @tile.preferred_city_edges[@city]
           return [
@@ -157,7 +156,7 @@ module View
       #   scaling the full-size hexagon
       def render_box(slots)
         element, attrs = BOX_ATTRS[slots]
-        h("#{element}.city_box", attrs: attrs)
+        h(element, attrs: attrs)
       end
     end
   end

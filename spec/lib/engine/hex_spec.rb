@@ -142,7 +142,7 @@ module Engine
 
               # expect the connection between the edge and the bottom city
               # from the preprinted OO tile to still be present
-              edges = tile.paths.select { |p| p.city == city }.flat_map(&:exits)
+              edges = city.exits
               expect(edges.size).to eq(2)
               expect(edges).to include(old_edge)
             end

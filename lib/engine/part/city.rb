@@ -2,12 +2,14 @@
 
 require_relative '../game_error'
 require_relative 'base'
+require_relative 'node'
 require_relative 'revenue_center'
 
 module Engine
   module Part
     class City < Base
-      include Part::RevenueCenter
+      include RevenueCenter
+      include Node
 
       attr_accessor :reservations
       attr_reader :slots, :tokens, :revenue
@@ -17,7 +19,6 @@ module Engine
         @slots = slots.to_i
         @tokens = Array.new(@slots)
         @reservations = []
-        @connected_edges = {}
       end
 
       def remove_tokens!
@@ -73,11 +74,6 @@ module Engine
 
       def exchange_token(token)
         @tokens[get_slot(token.corporation)] = token
-      end
-
-      # returns Array[Integer] of all edges that this city are connected to
-      def connected_edges
-        @connected_edges[tile.rotation] ||= tile.paths.select { |p| p.city == self }.flat_map(&:exits).sort
       end
     end
   end

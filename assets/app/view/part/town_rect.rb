@@ -9,7 +9,6 @@ module View
     class TownRect < Base
       include Runnable
 
-      needs :edges
       needs :town
       needs :color, default: 'black'
 
@@ -38,7 +37,7 @@ module View
       def normalized_edges
         @normalized_edges ||=
           begin
-            edge_a, edge_b = @edges
+            edge_a, edge_b = @town.exits
             edge_a, edge_b = edge_b, edge_a if edge_b < edge_a
             edge_a += 6 if (edge_b - edge_a).abs > 3
             edge_a, edge_b = edge_b, edge_a if edge_b < edge_a
