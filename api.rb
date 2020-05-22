@@ -148,17 +148,21 @@ class Api < Roda
   end
 
   def render_pin(**needs)
+    js="#{Assets::PIN_DIR}#{needs[:pin_version]}.js"
+    halt(404, "Pin #{needs[:pin_version]} not found") unless File::exist?(Assets::OUTPUT_BASE+js)
+
     needsjs = Snabberb.wrap(app_route: request.path, **needs)
+
     attach_func = "Opal.$$.App.$attach('app', #{needsjs})"
     <<~HTML
       <html>
         <head>
           <meta charset="utf-8">
-          <title>18xx.games</title>
+          <title>18xx.games (pin #{needs[:pin_version]})</title>
         </head>
         <body>
           <div id="app"></div>
-          <script type="text/javascript" src="/pinned/#{needs[:pin_version]}/main.js"></script>
+          <script type="text/javascript" src="#{js}"></script>
           <script>#{attach_func}</script>
         </body>
       </html>
