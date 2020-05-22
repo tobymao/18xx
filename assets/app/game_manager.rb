@@ -90,9 +90,9 @@ module GameManager
       game_data = Lib::Storage[game_id]
       return store(:flash_opts, "Hotseat game #{game_id} not found") unless game_data
 
-      if game[:pin_version]
+      if game[:pin]
         game_data[:settings] ||= {}
-        game_data[:settings][:pin_version] = game[:pin_version]
+        game_data[:settings][:pin] = game[:pin]
         Lib::Storage[game_id] = game_data
       end
 
@@ -132,10 +132,10 @@ module GameManager
   end
 
   def hs_url(game, game_data)
-    pin_version = game_data&.dig('settings', 'pin_version')
+    pin = game_data&.dig('settings', 'pin')
 
-    if pin_version
-      "/hotseat/#{game['id']}?pin_version=#{pin_version}"
+    if pin
+      "/hotseat/#{game['id']}?pin=#{pin}"
     else
       "/hotseat/#{game['id']}"
     end
