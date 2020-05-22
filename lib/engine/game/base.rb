@@ -422,7 +422,7 @@ module Engine
             share = @corporations.sample.shares[0]
             ability[:share] = share
             corporation = share.corporation
-            company.desc = "#{company.desc} The random corporation is #{corporation.name}."
+            company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
             @log << "#{company.name} comes with the president's share of #{corporation.name}"
           else
             ability[:share] = share_by_id(share)

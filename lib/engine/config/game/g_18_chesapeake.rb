@@ -244,7 +244,7 @@ module Engine
       "name": "Delaware and Raritan Canal",
       "value": 20,
       "revenue": 5,
-      "desc": "No special ability. Blocks hex K3 while owned by a player. Companies may purchase P1 - P5 from a player for half to double the face value.",
+      "desc": "No special ability. Blocks hex K3 while owned by a player.",
       "sym": "D&R",
       "abilities": [
         {
@@ -260,7 +260,7 @@ module Engine
       "name": "Columbia - Philadelphia Railroad",
       "value": 40,
       "revenue": 10,
-      "desc": "Blocks hexes H2 and I3 while owned by a player. The owning company may lay two connected tiles in hexes H2 and I3. Only #8 and #9 tiles may be used. If any tiles are played in these hexes other than by using this ability, the ability is forfeit. These tiles may be placed even if the owning company does not have a route to the hexes. These tiles are laid during the tile laying step and are in addition to the company’s tile placement action.",
+      "desc": "Blocks hexes H2 and I3 while owned by a player. The owning corporation may lay two connected tiles in hexes H2 and I3. Only #8 and #9 tiles may be used. If any tiles are played in these hexes other than by using this ability, the ability is forfeit. These tiles may be placed even if the owning corporation does not have a route to the hexes. These tiles are laid during the tile laying step and are in addition to the corporation’s tile placement action.",
       "sym": "C-P",
       "abilities": [
         {
@@ -291,7 +291,7 @@ module Engine
       "name": "Baltimore and Susquehanna Railroad",
       "value": 50,
       "revenue": 10,
-      "desc": "Blocks hexes F4 and G5 while owned by a player. The owning company may lay two connected tiles in hexes F4 and G5. Only #8 and #9 tiles may be used. If any tiles are played in these hexes other than by using this ability, the ability is forfeit. These tiles may be placed even if the owning company does not have a route to the hexes. These tiles are laid during the tile laying step and are in addition to the company’s tile placement action.",
+      "desc": "Blocks hexes F4 and G5 while owned by a player. The owning corporation may lay two connected tiles in hexes F4 and G5. Only #8 and #9 tiles may be used. If any tiles are played in these hexes other than by using this ability, the ability is forfeit. These tiles may be placed even if the owning corporation does not have a route to the hexes. These tiles are laid during the tile laying step and are in addition to the corporation’s tile placement action.",
       "sym": "B&S",
       "abilities": [
         {
@@ -308,7 +308,7 @@ module Engine
       "name": "Chesapeake and Ohio Canal",
       "value": 80,
       "revenue": 15,
-      "desc": "Blocks hex D2 while owned by a player. Owning company may place a tile in hex D2.The company does not need to have a route to this hex.The tile placed counts as the company’ s tile lay action and the company must pay the terrain cost.The company may then immediately place a station token free of charge.",
+      "desc": "Blocks hex D2 while owned by a player. The owning corporation may place a tile in hex D2. The corporation does not need to have a route to this hex. The tile placed counts as the corporation’s tile lay action and the corporation must pay the terrain cost. The corporation may then immediately place a station token free of charge.",
       "sym": "C&OC",
       "abilities": [
         {
@@ -330,7 +330,7 @@ module Engine
       "name": "Baltimore & Ohio Railroad",
       "value": 100,
       "revenue": 0,
-      "desc": "During game setup place one share of the Baltimore & Ohio public company with this certificate.The player purchasing this private immediately takes both the private company and the B & O share.This private company has no other special ability.",
+      "desc": "During game setup place one share of the Baltimore & Ohio corporation with this certificate. The player purchasing this private immediately takes both the private company and the B&O share. This private company has no other special ability.",
       "abilities": [
         {
           "type": "share",
@@ -342,7 +342,7 @@ module Engine
       "name": "Cornelius Vanderbilt",
       "value": 200,
       "revenue": 30,
-      "desc": "During game setup select a random president’s certificate and place it with this certificate.The player purchasing this private company takes both this certificate and the randomly selected president’ s certificate.The player immediately sets the par value of the public company.This private closes when the associated public company buys it’s first train.",
+      "desc": "During game setup select a random president’s certificate and place it with this certificate. The player purchasing this private company takes both this certificate and the randomly selected president’ s certificate. The player immediately sets the par value of the corporation. This private closes when the associated corporation buys its first train. It cannot be bought by a corporation.",
       "abilities": [
         {
           "type": "share",
