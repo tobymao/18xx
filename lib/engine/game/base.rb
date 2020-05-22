@@ -417,7 +417,7 @@ module Engine
         @companies.each do |company|
           next unless (ability = company.abilities(:share))
 
-          case (share = ability[:share])
+          case (share = ability[:share].to_s)
           when 'random-president'
             share = @corporations.sample.shares[0]
             ability[:share] = share
