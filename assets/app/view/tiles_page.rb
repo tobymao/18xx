@@ -25,47 +25,35 @@ module View
       dest = match[1]
       hexes_or_tiles = match[2]
 
-      begin
-        # all common hexes/tiles
-        if dest == 'all'
-          h('div#tiles', [
-              h('div#all_tiles', [
-                  h(:h1, 'Generic Map Hexes and Common Track Tiles'),
-                  *TILE_IDS.map { |t| render_tile_block(t) }
-                ]),
+      # all common hexes/tiles
+      if dest == 'all'
+        h('div#tiles', [
+            h('div#all_tiles', [
+                h(:h1, 'Generic Map Hexes and Common Track Tiles'),
+                *TILE_IDS.map { |t| render_tile_block(t) }
+              ]),
 
-            ])
-
-        # hexes/tiles from a specific game
-        elsif hexes_or_tiles
-          game_title = dest
-          hex_or_tile_ids = hexes_or_tiles.split('+')
-          rendered = hex_or_tile_ids.map { |id| render_individual_tile(game_title, id) }
-          h('div#tiles', rendered)
-
-        # everything for one game
-        elsif Engine::GAMES_BY_TITLE.keys.include?(dest)
-          game_class = Engine::GAMES_BY_TITLE[dest]
-          h('div#tiles', [
-              map_hexes_and_tile_manifest_for(game_class)
-            ])
-
-        # common tile(s)
-        else
-          tile_ids = dest.split('+')
-          rendered = tile_ids.map { |id| render_tile_block(id, scale: 3.0) }
-          h('div#tiles', rendered)
-        end
-      rescue StandardError => e
-        err_msg = "Bad tile dest: \"#{dest}\"; should be \"all\", <game_title>, "\
-                  '<tile_name>, <game_title>/<hex_coord>, or '\
-                  '<game_title>/<tile_name>. Multiple tile_names can be given, '\
-                  'separated by "+"'
-
-        h(:div, [
-            h(:p, err_msg),
-            h(:p, "#{e.class.name}: #{e.message}"),
           ])
+
+      # hexes/tiles from a specific game
+      elsif hexes_or_tiles
+        game_title = dest
+        hex_or_tile_ids = hexes_or_tiles.split('+')
+        rendered = hex_or_tile_ids.map { |id| render_individual_tile(game_title, id) }
+        h('div#tiles', rendered)
+
+      # everything for one game
+      elsif Engine::GAMES_BY_TITLE.keys.include?(dest)
+        game_class = Engine::GAMES_BY_TITLE[dest]
+        h('div#tiles', [
+            map_hexes_and_tile_manifest_for(game_class)
+          ])
+
+      # common tile(s)
+      else
+        tile_ids = dest.split('+')
+        rendered = tile_ids.map { |id| render_tile_block(id, scale: 3.0) }
+        h('div#tiles', rendered)
       end
     end
 
