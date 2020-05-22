@@ -45,6 +45,7 @@ class EntityOrder < Snabberb::Component
         logo_props = {
           attrs: {
             src: entity.logo,
+            width: '25px',
           },
           style: {
             'max-height': '1.2rem',
