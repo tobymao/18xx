@@ -43,10 +43,11 @@ class Api
             acting, action = nil
 
             DB.with_advisory_lock(:action_lock, game.id) do
-              if game.settings['pin_version']
+              if game.settings['pin']
                 action_id = r.params['id']
                 action = r.params
                 meta = action.delete('meta')
+                halt(400, 'Game missing metadata') unless meta
                 halt(400, 'Game out of sync') unless actions_h(game).size + 1 == action_id
 
                 Action.create(
