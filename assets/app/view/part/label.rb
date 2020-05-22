@@ -85,7 +85,7 @@ module View
           'dominant-baseline': 'middle',
         }
 
-        h('g.label', { attrs: attrs }, [
+        h(:g, { attrs: attrs }, [
           h(:text, { attrs: text_attrs }, @label)
         ])
       end

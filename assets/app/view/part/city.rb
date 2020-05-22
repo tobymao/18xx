@@ -149,7 +149,7 @@ module View
 
         children.concat(slots)
 
-        h('g.city', { on: { click: -> { touch_node(@city) } } }, children)
+        h(:g, { on: { click: -> { touch_node(@city) } } }, children)
       end
 
       # TODOS:

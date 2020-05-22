@@ -146,7 +146,7 @@ module View
           h(:text, { attrs: { transform: "translate(#{x} #{y})" } }, segment)
         end
 
-        h('g.location_name', { style: { 'pointer-events': 'none' }, attrs: attrs }, [
+        h(:g, { style: { 'pointer-events': 'none' }, attrs: attrs }, [
             render_background_box,
             *rendered_name
           ])
