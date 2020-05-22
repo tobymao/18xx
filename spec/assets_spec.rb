@@ -51,9 +51,36 @@ describe 'Assets' do
       expect(render(app_route: '/signup')).to include('Signup')
     end
 
-    it 'renders map' do
-      expect(render(app_route: '/map/1889')).to include('Takamatsu')
-      expect(render(app_route: '/map/18Chesapeake')).to include('Baltimore')
+    context '/map' do
+      {
+        '1889' => %w[
+          1 10 11 12 13 14 2 20 3 30 4 40 5 6 60 7 8 80 9 A AR Anan Awaji B C D
+          D100 D80 E ER F G H I IR Ikeda Imabari J K KO Komatsujima Kotohira
+          Kouchi Kouen KU Kubokawa L Marugame Matsuyama Muki Muroto Nahari
+          Nakamura Nangoku Naruto Niihama Ohzu Okayama Ritsurin SR Saijou
+          Sakaide Sukumo T TR Takamatsu Tokushima UR Uwajima Yawatahama
+        ],
+        '18Chesapeake' => %w[
+          1 10 100 11 12 13 14 2 3 30 4 40 5 50 6 60 7 8 80 9 A Allentown Amboy
+          B B&amp;O B&amp;S Baltimore Berlin Burlington C C&amp;A C&amp;O
+          C&amp;OC C-P Camden Charleroi Charlottesville Coal Columbia
+          Connellsville D D&amp;R DC Delmarva E Easton F Fredericksburg G Green
+          H Hagerstown Harrisburg I J K L LV Leesburg Lynchburg N&amp;W New
+          Norfolk OO Ohio PLE PRR Peninsula Philadelphia Pittsburgh Princeton
+          Richmond SRR Spring Strasburg Trenton Virginia Washington West
+          Wilmington York
+        ]
+      }.each do |game_title, expected_strings|
+        context game_title do
+          it 'renders map' do
+            rendered = render(app_route: "/map/#{game_title}")
+
+            aggregate_failures 'expected strings' do
+              expected_strings.each { |s| expect(rendered).to include(s) }
+            end
+          end
+        end
+      end
     end
 
     it 'renders new_game' do
