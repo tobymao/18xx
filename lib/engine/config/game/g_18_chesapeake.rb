@@ -341,7 +341,7 @@ module Engine
       "name": "Cornelius Vanderbilt",
       "value": 200,
       "revenue": 30,
-      "desc": "During game setup select a random president’s certificate and place it with this certificate. The player purchasing this private company takes both this certificate and the randomly selected president’ s certificate. The player immediately sets the par value of the corporation. This private closes when the associated corporation buys its first train. It cannot be bought by a corporation.",
+      "desc": "During game setup select a random president’s certificate and place it with this certificate. The player purchasing this private company takes both this certificate and the randomly selected president’s certificate. The player immediately sets the par value of the corporation. This private closes when the associated corporation buys its first train. It cannot be bought by a corporation.",
       "abilities": [
         {
           "type": "share",
