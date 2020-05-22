@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
+require 'engine'
 require 'engine/game/g_1889'
 require 'engine/tile'
 
@@ -37,8 +38,14 @@ module Engine
     end
 
     describe '#upgrades_to?' do
-      context '1889' do
-        EXPECTED_TILE_UPGRADES = {
+      EXPECTED_TILE_UPGRADES = {
+        '18Chesapeake' => {
+          'X3' => %w[X7],
+          'X4' => %w[X7],
+          'X5' => %w[X7],
+          'X7' => %w[],
+        },
+        '1889' => {
           'blank' => %w[7 8 9],
           'city' => %w[5 6 57],
           'town' => %w[3 58],
@@ -82,16 +89,26 @@ module Engine
           '466' => %w[],
           '492' => %w[],
           '611' => %w[],
-        }.freeze
+        },
+      }.freeze
 
-        EXPECTED_TILE_UPGRADES.keys.each do |t|
-          EXPECTED_TILE_UPGRADES.keys.each do |u|
-            tile = Tile.for(t)
-            upgrade = Tile.for(u)
-            included = EXPECTED_TILE_UPGRADES[t].include?(u)
+      EXPECTED_TILE_UPGRADES.each do |game_title, upgrades|
+        context game_title do
+          game = Engine::GAMES_BY_TITLE[game_title].new(%w[p1 p2 p3])
 
-            it "#{t} can#{included ? '' : 'not'} upgrade to #{u}" do
-              expect(tile.upgrades_to?(upgrade)).to eq(included)
+          upgrades.keys.each do |t|
+            tile = game.tile_by_id("#{t}-0") || Tile.for(t)
+
+            context "tile \"#{t}\"" do
+              upgrades.keys.each do |u|
+                upgrade = game.tile_by_id("#{u}-0") || Tile.for(t)
+
+                included = upgrades[t].include?(u)
+
+                it "can#{included ? '' : 'not'} upgrade to tile \"#{u}\"" do
+                  expect(tile.upgrades_to?(upgrade)).to eq(included)
+                end
+              end
             end
           end
         end

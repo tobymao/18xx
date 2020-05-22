@@ -180,7 +180,7 @@ module Engine
 
     def upgrades_to?(other)
       # correct color progression?
-      return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)
+      return false unless COLORS.index(other.color.to_sym) == (COLORS.index(@color.to_sym) + 1)
 
       # correct label?
       return false if label != other.label
