@@ -30,7 +30,7 @@ module Engine
       correct_owner_type =
         case ability[:owner_type]
         when :player
-          owner&.player?
+          !owner || owner.player?
         when :corporation
           owner&.corporation?
         when nil
