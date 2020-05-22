@@ -8,6 +8,7 @@ module View
 
     needs :user
     needs :gdata # can't conflict with game_data
+    needs :confirm_delete, store: true, default: false
 
     ENTER_GREEN = '#3CB371'
     JOIN_YELLOW = '#F0E58C'
@@ -55,7 +56,13 @@ module View
 
     def render_header
       buttons = []
-      buttons << render_button('Delete', -> { delete_game(@gdata) }) if owner?
+      if owner?
+        buttons << if @confirm_delete != @gdata['id']
+                     render_button('Delete', -> { store(:confirm_delete, @gdata['id']) })
+                   else
+                     render_button('Confirm', -> { delete_game(@gdata) })
+                   end
+      end
 
       color =
         case @gdata['status']
