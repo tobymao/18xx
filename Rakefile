@@ -110,7 +110,7 @@ task :precompile do
 
   # Copy to the pin directory
   git_rev = `git rev-parse --short HEAD`.strip
-  pin_dir = Assets::OUTPUT_BASE+Assets::PIN_DIR
+  pin_dir = Assets::OUTPUT_BASE + Assets::PIN_DIR
   FileUtils.mkdir_p(pin_dir)
   FileUtils.cp(bundle, "#{pin_dir}/#{git_rev}.js")
   FileUtils.cp("#{bundle}.gz", "#{pin_dir}/#{git_rev}.js.gz")
