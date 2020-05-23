@@ -243,7 +243,7 @@ module Engine
       "float_percent": 20,
       "sym": "B&O",
       "name": "Baltimore & Ohio",
-      "logo": "1846/B&O",
+      "logo": "1846/BO",
       "tokens": [
         0,
         80,
@@ -257,7 +257,7 @@ module Engine
       "float_percent": 20,
       "sym": "C&O",
       "name": "Chesapeake & Ohio",
-      "logo": "1846/C&O",
+      "logo": "1846/CO",
       "tokens": [
         0,
         80,
