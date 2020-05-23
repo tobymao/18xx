@@ -104,7 +104,6 @@ module Engine
                 {
                   name: 'C&A',
                   token: 0,
-                  reservations_in_cities: nil,
                 },
               ],
               tile: ['preprinted', 0],
@@ -124,12 +123,10 @@ module Engine
                 {
                   name: 'B&O',
                   token: 1,
-                  reservations_in_cities: nil,
                 },
                 {
                   name: 'PRR',
                   token: 0,
-                  reservations_in_cities: nil,
                 },
               ],
               tile: ['X3', 2],
@@ -158,12 +155,9 @@ module Engine
               # lay initial tile
               hex.lay(initial_tile) unless hex.tile == initial_tile
 
-              # add initial corporation tokens and reservations
+              # add initial corporation tokens
               spec[:setup][:corporations].each do |corp|
                 corporation = game.corporation_by_id(corp[:name])
-
-                initial_tile.cities[corp[:reservations]].add_reservation!(corporation.sym) unless corp[:reservations].nil?
-
                 unless corp[:token].nil?
                   initial_tile.cities[corp[:token]].place_token(corporation)
                 end
