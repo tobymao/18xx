@@ -76,16 +76,11 @@ module Engine
       end
 
       def committed_cash(player)
-        bids_for_player(player).map(&:price).sum
+        bids_for_player(player).sum(&:price)
       end
 
       def current_bid_amount(player, company)
-        return 0 unless company
-
-        current_bid = bids[company].find { |b| b.entity == player }
-        return 0 unless current_bid
-
-        current_bid.price
+        bids[company]&.find { |b| b.entity == player }&.price || 0
       end
 
       def max_bid(player, company)
