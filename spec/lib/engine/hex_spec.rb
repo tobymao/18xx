@@ -158,9 +158,7 @@ module Engine
               # add initial corporation tokens
               spec[:setup][:corporations].each do |corp|
                 corporation = game.corporation_by_id(corp[:name])
-                unless corp[:token].nil?
-                  initial_tile.cities[corp[:token]].place_token(corporation)
-                end
+                initial_tile.cities[corp[:token]].place_token(corporation) unless corp[:token].nil?
               end
             end
 
