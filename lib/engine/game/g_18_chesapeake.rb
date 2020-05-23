@@ -6,6 +6,14 @@ require_relative 'base'
 module Engine
   module Game
     class G18Chesapeake < Base
+      register_colors(green: '#237333',
+                      red: '#d81e3e',
+                      blue: '#0189d1',
+                      lightBlue: '#a2dced',
+                      yellow: '#FFF500',
+                      orange: '#f48221',
+                      brown: '#7b352a')
+
       load_from_json(Config::Game::G18Chesapeake::JSON)
 
       DEV_STAGE = :alpha
