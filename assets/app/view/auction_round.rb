@@ -57,7 +57,7 @@ module View
         value: @round.min_bid(@selected_company),
         step: step,
         min: @selected_company.min_bid + step,
-        max: @current_entity.cash,
+        max: @round.max_bid(@current_entity, @selected_company),
         type: 'number',
         size: @current_entity.cash.to_s.size,
       })
