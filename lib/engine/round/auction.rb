@@ -75,6 +75,23 @@ module Engine
         @companies_pending_par[0]
       end
 
+      def committed_cash(player)
+        bids_for_player(player).map(&:price).sum
+      end
+
+      def current_bid_amount(player, company)
+        return 0 unless company
+
+        current_bid = bids[company].find { |b| b.entity == player }
+        return 0 unless current_bid
+
+        current_bid.price
+      end
+
+      def max_bid(player, company)
+        player.cash - committed_cash(player) + current_bid_amount(player, company)
+      end
+
       private
 
       def all_passed?
