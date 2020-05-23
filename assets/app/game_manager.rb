@@ -101,9 +101,13 @@ module GameManager
       return
     end
 
-    @connection.safe_get(url(game)) do |data|
+    game_url = url(game)
+
+    @connection.safe_get(game_url) do |data|
+      next `window.location = #{game_url}` if data.dig('settings', 'pin')
+
       store(:game_data, data, skip: true)
-      store(:app_route, url(game))
+      store(:app_route, game_url)
     end
   end
 

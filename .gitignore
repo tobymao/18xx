@@ -9,6 +9,7 @@
 /build/
 /vendor/
 /public/assets/*
+/public/pinned/*
 
 .tags
 .DS_STORE

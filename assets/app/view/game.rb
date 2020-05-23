@@ -52,19 +52,20 @@ module View
       actions = @game_data['actions']
       @num_actions = actions.size
       cursor = Lib::Params['action']&.to_i
-
       return if game_id == @game&.id && @game.actions.size == @num_actions && (!cursor || cursor == @game.actions.size)
 
       @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
         @game_data['players'].map { |p| p['name'] },
         id: game_id,
         actions: cursor ? actions.take(cursor) : actions,
-        pin: @game_data&.dig('settings', 'pin'),
+        pin: @pin,
       )
       store(:game, @game, skip: true)
     end
 
     def render
+      @pin = @game_data&.dig('settings', 'pin')
+
       if @disable_user_errors
         # Opal exceptions lack backtraces, so do this outside of a rescue in dev mode to preserve the backtrace
         load_game
@@ -203,6 +204,7 @@ module View
       name = @round.class.name.split(':').last
       description = @round.operating? ? "#{@game.turn}.#{@round.round_num}" : @game.turn
       description = "#{description} - #{@round.description}"
+      description = "#{description} - Pinned to Version: #{@pin}" if @pin
       h(:div, { style: { 'font-weight': 'bold' } }, "#{name} Round #{description}")
     end
 
