@@ -79,6 +79,14 @@ module Engine
         name.split('::').last.slice(1..-1)
       end
 
+      def self.register_colors(colors)
+        colors.default_proc = proc do |_, key|
+          key
+        end
+
+        const_set(:COLORS, colors)
+      end
+
       def self.load_from_json(json)
         data = JSON.parse(json)
 
@@ -110,8 +118,12 @@ module Engine
           company
         end
 
-        data['corporations'].map! do |company|
-          company.transform_keys!(&:to_sym)
+        data['corporations'].map! do |corporation|
+          corporation.transform_keys!(&:to_sym)
+
+          corporation[:color] = const_get(:COLORS)[corporation[:color]] if const_defined?(:COLORS)
+
+          corporation
         end
 
         data['hexes'].transform_keys!(&:to_sym)

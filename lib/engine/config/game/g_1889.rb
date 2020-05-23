@@ -231,7 +231,7 @@ module Engine
       "name": "Mitsubishi Ferry",
       "value": 30,
       "revenue": 5,
-      "desc": "Player owner may place the port tile on a coastal town (B11, G10, I12, or J9) without a tile on it already, outside of the operating rounds of a corporation controlled by another player. The player need not control a corporation or have connectivity to the placed tile from one of their corporations. This does not close the company.",
+      "desc": "Player owner may place the port tile on a coastal town (B11, G10, I12, or J9) without a tile on it already, outside of the operating rounds of a corporation controlled by another player. The player need not control a corporation or have connectivity to the placed tile from one of their corporations. This does not close the corporation.",
       "sym": "MF",
       "abilities": [
         {
@@ -344,7 +344,7 @@ module Engine
         40
       ],
       "coordinates": "K8",
-      "color": "#37383a"
+      "color": "black"
     },
     {
       "float_percent": 50,
@@ -356,7 +356,7 @@ module Engine
         40
       ],
       "coordinates": "E2",
-      "color": "#f48221"
+      "color": "orange"
     },
     {
       "float_percent": 50,
@@ -368,7 +368,7 @@ module Engine
         40
       ],
       "coordinates": "I2",
-      "color": "#76a042"
+      "color": "brightGreen"
     },
     {
       "float_percent": 50,
@@ -380,7 +380,7 @@ module Engine
         40
       ],
       "coordinates": "K4",
-      "color": "#d81e3e"
+      "color": "red"
     },
     {
       "float_percent": 50,
@@ -393,7 +393,7 @@ module Engine
         40
       ],
       "coordinates": "F9",
-      "color": "#00a99e"
+      "color": "turquoise"
     },
     {
       "float_percent": 50,
@@ -404,7 +404,7 @@ module Engine
         0
       ],
       "coordinates": "C10",
-      "color": "#0189d1"
+      "color": "blue"
     },
     {
       "float_percent": 50,
@@ -417,7 +417,7 @@ module Engine
         40
       ],
       "coordinates": "B7",
-      "color": "#7b352a"
+      "color": "brown"
     }
   ],
   "trains": [

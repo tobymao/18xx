@@ -320,8 +320,12 @@ module Engine
         {
           "type": "teleport",
           "owner_type": "corporation",
-          "tiles": ["57"],
-          "hexes": ["D2"]
+          "tiles": [
+            "57"
+          ],
+          "hexes": [
+            "D2"
+          ]
         }
       ]
     },
@@ -347,7 +351,9 @@ module Engine
           "type": "share",
           "share": "random-president"
         },
-        { "type": "no_buy" }
+        {
+          "type": "no_buy"
+        }
       ]
     }
   ],
@@ -364,7 +370,7 @@ module Engine
         80
       ],
       "coordinates": "F2",
-      "color": "#237333"
+      "color": "green"
     },
     {
       "float_percent": 60,
@@ -389,7 +395,7 @@ module Engine
         40
       ],
       "coordinates": "H4",
-      "color": "#d81e3e"
+      "color": "red"
     },
     {
       "float_percent": 60,
@@ -402,7 +408,7 @@ module Engine
         60
       ],
       "coordinates": "H6",
-      "color": "#0189d1"
+      "color": "blue"
     },
     {
       "float_percent": 60,
@@ -416,7 +422,7 @@ module Engine
         80
       ],
       "coordinates": "G13",
-      "color": "#A2DCED",
+      "color": "lightBlue",
       "text_color": "black"
     },
     {
@@ -429,7 +435,7 @@ module Engine
         40
       ],
       "coordinates": "J2",
-      "color": "#FFF500",
+      "color": "yellow",
       "text_color": "black"
     },
     {
@@ -442,7 +448,7 @@ module Engine
         40
       ],
       "coordinates": "J6",
-      "color": "#f48221"
+      "color": "orange"
     },
     {
       "float_percent": 60,
@@ -455,7 +461,7 @@ module Engine
         60
       ],
       "coordinates": "C13",
-      "color": "#7b352a"
+      "color": "brown"
     }
   ],
   "trains": [
@@ -691,7 +697,8 @@ module Engine
       "tiles": [
         "yellow",
         "green",
-        "brown"
+        "brown",
+        "gray"
       ],
       "operating_rounds": 3
     }
