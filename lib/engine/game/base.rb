@@ -70,6 +70,11 @@ module Engine
         %i[cities city],
       ].freeze
 
+      # https://en.wikipedia.org/wiki/Linear_congruential_generator#Parameters_in_common_use
+      RAND_A = 1_103_515_245
+      RAND_C = 12_345
+      RAND_M = 2**31
+
       def self.title
         name.split('::').last.slice(1..-1)
       end
@@ -135,7 +140,7 @@ module Engine
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
 
-        srand(@id.to_s.scan(/\d+/).first.to_i)
+        @seed = @id.to_s.scan(/\d+/).first.to_i
 
         case self.class::DEV_STAGE
         when :prealpha
@@ -182,6 +187,10 @@ module Engine
         init_company_abilities
 
         initialize_actions(actions)
+      end
+
+      def rand
+        @seed = (RAND_A * @seed + RAND_C) % RAND_M
       end
 
       def inspect
@@ -422,7 +431,7 @@ module Engine
 
           case (share = ability[:share].to_s)
           when 'random-president'
-            share = @corporations.sample.shares[0]
+            share = @corporations[rand % @corporations.size].shares[0]
             ability[:share] = share
             corporation = share.corporation
             company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."

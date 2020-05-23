@@ -45,6 +45,7 @@ class Api
             DB.with_advisory_lock(:action_lock, game.id) do
               engine = Engine::GAMES_BY_TITLE[game.title].new(
                 users.map(&:name),
+                id: game.id,
                 actions: actions_h(game),
               )
 
