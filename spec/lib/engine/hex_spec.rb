@@ -137,6 +137,27 @@ module Engine
           },
           {
             game: '18Chesapeake',
+            desc: 'Baltimore brown to gray w/ B&O and PRR tokens',
+            setup: {
+              hex: 'H6',
+              corporations: [
+                {
+                  name: 'B&O',
+                  token: 0,
+                },
+                {
+                  name: 'PRR',
+                  token: 0,
+                },
+              ],
+              tile: ['X7', 3],
+            },
+            tiles_with_rotations_to_lay: {
+              'X9' => [3],
+            },
+          },
+          {
+            game: '18Chesapeake',
             desc: 'Baltimore green to brown w/ PRR token and B&O reservation',
             setup: {
               hex: 'H6',
