@@ -17,13 +17,17 @@ module UserManager
     end
   end
 
-  def refresh_user
+  def refresh_user(attempts = 1)
     return if @user || !Lib::Storage['auth_token']
 
     @connection.post('/user/refresh') do |data|
-      if data['error']
-        invalidate_user
-        store(:flash_opts, 'Credentials expired please re-login')
+      if (error = data['error'])
+        if attempts > 3 || error.include?('not authorized')
+          invalidate_user
+          store(:flash_opts, 'Credentials expired please re-login')
+        else
+          `setTimeout(function() { self.$refresh_user(attempts + 1) }, 2000 * attempts)`
+        end
       else
         @connection.authenticate!
         store(:games, data['games'], skip: true)
