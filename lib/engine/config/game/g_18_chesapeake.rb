@@ -395,7 +395,7 @@ module Engine
       "float_percent": 60,
       "sym": "B&O",
       "name": "Baltimore & Ohio Railroad",
-      "logo": "18_chesapeake/B&O",
+      "logo": "18_chesapeake/BO",
       "tokens": [
         0,
         40,
@@ -408,7 +408,7 @@ module Engine
       "float_percent": 60,
       "sym": "C&O",
       "name": "Chesapeake & Ohio Railroad",
-      "logo": "18_chesapeake/C&O",
+      "logo": "18_chesapeake/CO",
       "tokens": [
         0,
         40,
@@ -436,7 +436,7 @@ module Engine
       "float_percent": 60,
       "sym": "C&A",
       "name": "Camden & Amboy Railroad",
-      "logo": "18_chesapeake/C&A",
+      "logo": "18_chesapeake/CA",
       "tokens": [
         0,
         40
@@ -448,7 +448,7 @@ module Engine
       "float_percent": 60,
       "sym": "N&W",
       "name": "Norfolk & Western Railway",
-      "logo": "18_chesapeake/N&W",
+      "logo": "18_chesapeake/NW",
       "tokens": [
         0,
         40,
