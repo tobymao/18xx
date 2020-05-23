@@ -139,7 +139,7 @@ module View
         elm = h(
           acting?(player) ? :u : :span,
           { style: { 'margin-right': '0.5rem' } },
-          player['name'] + (index != (players.length - 1) ? ',' : ''),
+          player['name'] + (index != (players.size - 1) ? ',' : ''),
         )
 
         if owner? && new? && player['id'] != @user['id']
