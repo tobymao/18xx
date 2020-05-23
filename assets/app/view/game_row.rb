@@ -13,7 +13,7 @@ module View
     needs :type
 
     def render
-      h(:div, [
+      h(:div, { key: @header }, [
         render_header(@header),
         *render_row,
       ])
