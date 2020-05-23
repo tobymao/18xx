@@ -94,7 +94,23 @@ module View
         h(:tr, [
           h(:td, td_props, 'Cash'),
           h(:td, td_props, @game.format_currency(@player.cash)),
-        ]),
+        ])
+      ]
+
+      if @game.round.auction?
+        trs += [
+          h(:tr, [
+            h(:td, td_props, 'Committed'),
+            h(:td, td_props, @game.format_currency(@game.round.committed_cash(@player))),
+          ]),
+          h(:tr, [
+            h(:td, td_props, 'Available'),
+            h(:td, td_props, @game.format_currency(@player.cash - @game.round.committed_cash(@player))),
+          ]),
+        ]
+      end
+
+      trs += [
         h(:tr, [
           h(:td, td_props, 'Value'),
           h(:td, td_props, @game.format_currency(@player.value)),
