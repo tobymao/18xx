@@ -349,7 +349,7 @@ module Engine
       "float_percent": 60,
       "sym": "B&O",
       "name": "Baltimore & Ohio Railroad",
-      "logo": "1830/B&O",
+      "logo": "1830/BO",
       "tokens": [
         0,
         40,
@@ -362,7 +362,7 @@ module Engine
       "float_percent": 60,
       "sym": "C&O",
       "name": "Chesapeake & Ohio Railroad",
-      "logo": "1830/C&O",
+      "logo": "1830/CO",
       "tokens": [
         0,
         40,
@@ -400,7 +400,7 @@ module Engine
       "float_percent": 60,
       "sym": "B&M",
       "name": "Boston & Maine Railroad",
-      "logo": "1830/B&M",
+      "logo": "1830/BM",
       "tokens": [
         0,
         40
