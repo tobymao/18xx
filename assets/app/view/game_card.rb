@@ -135,8 +135,7 @@ module View
         }
       }
 
-      p_elm = []
-      players.each_with_index do |player, index|
+      p_elm = players.map.with_index do |player, index|
         elm = h(
           acting?(player) ? :u : :span,
           { style: { 'margin-right': '0.5rem' } },
@@ -153,7 +152,7 @@ module View
           elm = h('button.button', button_props, [elm])
         end
 
-        p_elm << elm
+        elm
       end
 
       children = [
