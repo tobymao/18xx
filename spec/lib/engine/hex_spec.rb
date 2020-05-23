@@ -93,58 +93,149 @@ module Engine
         end
       end
 
-      context 'OO tile on 18Chesapeake J4 (Philadelphia)' do
-        let(:game) { GAMES_BY_TITLE['18Chesapeake'].new(%w[a b c]) }
+      context 'OO tiles' do
+        [
+          {
+            game: '18Chesapeake',
+            desc: 'Philadelphia yellow to green w/ C&A token in bottom city',
+            setup: {
+              hex: 'J4',
+              corporations: [
+                {
+                  name: 'C&A',
+                  token: 0,
+                },
+              ],
+              tile: ['preprinted', 0],
+            },
+            tiles_with_rotations_to_lay: {
+              'X3' => [0, 1, 3, 4],
+              'X4' => [0, 3],
+              'X5' => [0, 3],
+            },
+          },
+          {
+            game: '18Chesapeake',
+            desc: 'Baltimore green to brown w/ B&O and PRR tokens',
+            setup: {
+              hex: 'H6',
+              corporations: [
+                {
+                  name: 'B&O',
+                  token: 1,
+                },
+                {
+                  name: 'PRR',
+                  token: 0,
+                },
+              ],
+              tile: ['X3', 2],
+            },
+            tiles_with_rotations_to_lay: {
+              'X7' => [3],
+            },
+          },
+          {
+            game: '18Chesapeake',
+            desc: 'Baltimore brown to gray w/ B&O and PRR tokens',
+            setup: {
+              hex: 'H6',
+              corporations: [
+                {
+                  name: 'B&O',
+                  token: 0,
+                },
+                {
+                  name: 'PRR',
+                  token: 0,
+                },
+              ],
+              tile: ['X7', 3],
+            },
+            tiles_with_rotations_to_lay: {
+              'X9' => [3],
+            },
+          },
+          {
+            game: '18Chesapeake',
+            desc: 'Baltimore green to brown w/ PRR token and B&O reservation',
+            setup: {
+              hex: 'H6',
+              corporations: [
+                {
+                  name: 'B&O',
+                  token: nil,
+                },
+                {
+                  name: 'PRR',
+                  token: 0,
+                },
+              ],
+              tile: ['X3', 2],
+            },
+            tiles_with_rotations_to_lay: {
+              'X7' => [3],
+            },
+          },
+        ].each do |spec|
+          context "#{spec[:game]} #{spec[:desc]}" do
+            let(:game) { GAMES_BY_TITLE[spec[:game]].new(%w[a b c]) }
+            let(:hex) { game.hex_by_id(spec[:setup][:hex]) }
+            let(:initial_tile) do
+              tile_name, rotation = spec[:setup][:tile]
+              if tile_name == 'preprinted'
+                hex.tile
+              else
+                tile = game.tile_by_id("#{tile_name}-0")
+                tile.rotate!(rotation)
+                tile
+              end
+            end
 
-        # init C&A so it can token in Philly
-        let(:c_and_a) do
-          corp = game.corporation_by_id('C&A')
-          corp.cash = 40
-          corp
-        end
+            # setup
+            before(:each) do
+              # lay initial tile
+              hex.lay(initial_tile) unless hex.tile == initial_tile
 
-        subject { game.hex_by_id('J4') }
+              # add initial corporation tokens
+              spec[:setup][:corporations].each do |corp|
+                corporation = game.corporation_by_id(corp[:name])
+                initial_tile.cities[corp[:token]].place_token(corporation) unless corp[:token].nil?
+              end
+            end
 
-        # grab some properties form the preprinted OO tile
-        let(:old_tile) { subject.tile }
-        let(:old_city) { old_tile.cities.find { |c| c.tokenable?(c_and_a) } }
-        let(:old_edge) do
-          old_path = old_tile.paths.find { |p| p.city == old_city }
-          old_path.exits.first
-        end
+            spec[:tiles_with_rotations_to_lay].each do |tile_name, rotations|
+              rotations.each do |rotation|
+                it "correctly lays #{tile_name} with rotation #{rotation}" do
+                  # get the tile and rotate it
+                  tile = game.tile_by_id("#{tile_name}-0")
+                  tile.rotate!(rotation)
 
-        before(:each) do
-          # place C&A's home token
-          game.hex_by_id('J6').tile.cities[0].place_token(c_and_a)
+                  # lay it
+                  hex.lay(tile)
 
-          # place token on the preprinted OO tile
-          old_city.place_token(c_and_a)
-        end
+                  spec[:setup][:corporations].each do |corp|
+                    corporation = game.corporation_by_id(corp[:name])
 
-        {
-          'X3' => [0, 1, 3, 4],
-          'X4' => [0, 3],
-          'X5' => [0, 3],
-        }.each do |tile_name, rotations|
-          rotations.each do |rotation|
-            it "correctly lays #{tile_name} with rotation #{rotation}" do
-              # get the tile and rotate it
-              tile = game.tile_by_id("#{tile_name}-0")
-              tile.rotate!(rotation)
+                    next unless corp[:token]
 
-              # lay it
-              subject.lay(tile)
+                    # check corp still has a token, grab the new city with
+                    # their token
+                    cities = tile.cities.select { |c| c.tokened_by?(corporation) }
+                    expect(cities.size).to eq(1)
+                    city = cities.first
 
-              # grab the city that C&A's token is on
-              cities = tile.cities.select { |c| c.tokened_by?(c_and_a) }
-              expect(cities.size).to eq(1)
-              city = cities.first
+                    # expect the connection between the edge and the bottom
+                    # city from the preprinted OO tile to still be present
+                    old_city = initial_tile.cities[corp[:token]]
+                    old_edges = old_city.exits
 
-              # expect the connection between the edge and the bottom city
-              # from the preprinted OO tile to still be present
-              edges = city.exits
-              expect(edges.size).to eq(2)
-              expect(edges).to include(old_edge)
+                    # make sure all old edges are in the new city
+                    edges = city.exits
+                    expect(edges).to include(*old_edges)
+                  end
+                end
+              end
             end
           end
         end
