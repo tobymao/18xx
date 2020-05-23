@@ -135,13 +135,12 @@ module View
         }
       }
 
-      index = players.size
-      p_elm = players.map do |player|
-        index -= 1
+      p_elm = []
+      players.each_with_index do |player, index|
         elm = h(
           acting?(player) ? :u : :span,
           { style: { 'margin-right': '0.5rem' } },
-          player['name'] + (index.positive? ? ',' : ''),
+          player['name'] + (index != (players.length - 1) ? ',' : ''),
         )
 
         if owner? && new? && player['id'] != @user['id']
@@ -154,7 +153,7 @@ module View
           elm = h('button.button', button_props, [elm])
         end
 
-        elm
+        p_elm << elm
       end
 
       children = [
