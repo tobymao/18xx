@@ -217,22 +217,22 @@ module Engine
                   spec[:setup][:corporations].each do |corp|
                     corporation = game.corporation_by_id(corp[:name])
 
-                    if corp[:token]
-                      # check corp still has a token, grab the new city with
-                      # their token
-                      cities = tile.cities.select { |c| c.tokened_by?(corporation) }
-                      expect(cities.size).to eq(1)
-                      city = cities.first
+                    next unless corp[:token]
 
-                      # expect the connection between the edge and the bottom
-                      # city from the preprinted OO tile to still be present
-                      old_city = initial_tile.cities[corp[:token]]
-                      old_edges = old_city.exits
+                    # check corp still has a token, grab the new city with
+                    # their token
+                    cities = tile.cities.select { |c| c.tokened_by?(corporation) }
+                    expect(cities.size).to eq(1)
+                    city = cities.first
 
-                      # make sure all old edges are in the new city
-                      edges = city.exits
-                      expect(edges).to include(*old_edges)
-                    end
+                    # expect the connection between the edge and the bottom
+                    # city from the preprinted OO tile to still be present
+                    old_city = initial_tile.cities[corp[:token]]
+                    old_edges = old_city.exits
+
+                    # make sure all old edges are in the new city
+                    edges = city.exits
+                    expect(edges).to include(*old_edges)
                   end
                 end
               end
