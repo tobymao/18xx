@@ -265,7 +265,8 @@ module Engine
         80
       ],
       "coordinates": "I15",
-      "color": "lightBlue"
+      "color": "lightBlue",
+      "text_color": "black"
     },
     {
       "float_percent": 20,
@@ -278,7 +279,8 @@ module Engine
         0
       ],
       "coordinates": "E21",
-      "color": "yellow"
+      "color": "yellow",
+      "text_color": "black"
     },
     {
       "float_percent": 20,
