@@ -21,6 +21,7 @@ class App < Snabberb::Component
   include GameManager
   include UserManager
   needs :disable_user_errors, default: false
+  needs :pin, default: nil
 
   def render
     props = {
@@ -89,7 +90,7 @@ class App < Snabberb::Component
       if @app_route.include?('tutorial')
         enter_tutorial
       else
-        enter_game(id: match[2], mode: match[1] == 'game' ? :muti : :hotseat)
+        enter_game(id: match[2], mode: match[1] == 'game' ? :muti : :hotseat, pin: @pin)
       end
 
       return loading_screen unless @game_data

@@ -43,30 +43,59 @@ class Api
             acting, action = nil
 
             DB.with_advisory_lock(:action_lock, game.id) do
-              engine = Engine::GAMES_BY_TITLE[game.title].new(
-                users.map(&:name),
-                id: game.id,
-                actions: actions_h(game),
-              )
+              if game.settings['pin']
+                action_id = r.params['id']
+                action = r.params
+                meta = action.delete('meta')
+                halt(400, 'Game missing metadata') unless meta
+                halt(400, 'Game out of sync') unless actions_h(game).size + 1 == action_id
 
-              action_id = r.params['id']
-              halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
+                Action.create(
+                  game: game,
+                  user: user,
+                  action_id: action_id,
+                  turn: meta['turn'],
+                  round: meta['round'],
+                  action: action,
+                )
 
-              engine = engine.process_action(r.params)
-              action = engine.actions.last.to_h
+                active_players = meta['active_players']
+                acting = users.select { |u| active_players.include?(u.name) }
 
-              Action.create(
-                game: game,
-                user: user,
-                action_id: action_id,
-                turn: engine.turn,
-                round: engine.round.name,
-                action: action,
-              )
+                game.round = meta['round']
+                game.turn = meta['turn']
+                game.acting = acting.map(&:id)
 
-              active_players = engine.active_players.map(&:name)
-              acting = users.select { |u| active_players.include?(u.name) }
-              set_game_state(game, acting, engine)
+                game.result = meta['game_result']
+                game.status = meta['game_status']
+
+                game.save
+              else
+                engine = Engine::GAMES_BY_TITLE[game.title].new(
+                  users.map(&:name),
+                  id: game.id,
+                  actions: actions_h(game),
+                )
+
+                action_id = r.params['id']
+                halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
+
+                engine = engine.process_action(r.params)
+                action = engine.actions.last.to_h
+
+                Action.create(
+                  game: game,
+                  user: user,
+                  action_id: action_id,
+                  turn: engine.turn,
+                  round: engine.round.name,
+                  action: action,
+                )
+
+                active_players = engine.active_players.map(&:name)
+                acting = users.select { |u| active_players.include?(u.name) }
+                set_game_state(game, acting, engine)
+              end
             end
 
             type, user_ids =

@@ -143,7 +143,7 @@ module Engine
         const_set(:HEXES, data['hexes'])
       end
 
-      def initialize(names, id: 0, actions: [])
+      def initialize(names, id: 0, actions: [], pin: nil)
         @id = id
         @turn = 1
         @finished = false
@@ -199,6 +199,17 @@ module Engine
         init_company_abilities
 
         initialize_actions(actions)
+
+        return unless pin
+
+        @log << '----'
+        @log << 'Your game was unable to be upgraded to the latest version of 18xx.games.'
+        @log << "It is pinned to version #{pin}, if any bugs are raised please include this version number."
+        if self.class::DEV_STAGE == :beta
+          @log << 'Please note, you have 7 days since the upgrade to complete your game,'\
+          ' after which time it will be deleted.'
+        end
+        @log << '----'
       end
 
       def rand
@@ -304,7 +315,7 @@ module Engine
       end
 
       def clone(actions)
-        self.class.new(@names, id: @id, actions: actions)
+        self.class.new(@names, id: @id, pin: @pin, actions: actions)
       end
 
       def trains

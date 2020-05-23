@@ -33,17 +33,29 @@ module View
       @game_data[:actions] << action.to_h
       store(:game_data, @game_data, skip: true)
 
+      if @game.finished
+        @game_data[:result] = @game.result
+        @game_data[:status] = 'finished'
+      else
+        @game_data[:result] = {}
+        @game_data[:status] = 'active'
+      end
+
       if hotseat
-        if @game.finished
-          @game_data[:result] = @game.result
-          @game_data[:status] = 'finished'
-        else
-          @game_data[:result] = {}
-          @game_data[:status] = 'active'
-        end
         Lib::Storage[@game_data[:id]] = @game_data
       elsif participant
-        @connection.safe_post("/game/#{@game_data['id']}/action", action.to_h)
+        json = action.to_h
+        if @game_data&.dig('settings', 'pin')
+          meta = {
+            'game_result': @game_data[:result],
+            'game_status': @game_data[:status],
+            'active_players': game.active_players.map(&:name),
+            'turn': game.turn,
+            'round': game.round.name
+            }
+          json['meta'] = meta
+        end
+        @connection.safe_post("/game/#{@game_data['id']}/action", json)
       else
         store(:flash_opts, 'You are not in this game. Moves are temporary. You can clone this game in the tools tab.')
       end

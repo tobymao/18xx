@@ -106,5 +106,11 @@ end
 desc 'Precompile assets for production'
 task :precompile do
   require_relative 'lib/assets'
-  Assets.new(cache: false, make_map: false, compress: true, gzip: true).combine
+  bundle = Assets.new(cache: false, make_map: false, compress: true, gzip: true).combine
+
+  # Copy to the pin directory
+  git_rev = `git rev-parse --short HEAD`.strip
+  pin_dir = Assets::OUTPUT_BASE + Assets::PIN_DIR
+  FileUtils.mkdir_p(pin_dir)
+  FileUtils.cp("#{bundle}.gz", "#{pin_dir}/#{git_rev}.js.gz")
 end

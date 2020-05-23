@@ -59,6 +59,7 @@ module View
         @game_data['players'].map { |p| p['name'] },
         id: game_id,
         actions: cursor ? actions.take(cursor) : actions,
+        pin: @game_data&.dig('settings', 'pin'),
       )
       store(:game, @game, skip: true)
     end
