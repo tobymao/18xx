@@ -221,6 +221,7 @@ module Engine
       "abilities": [
         {
           "type": "blocks_hexes",
+          "owner_type": "player",
           "hexes": [
             "K4"
           ]
@@ -258,6 +259,7 @@ module Engine
       "abilities": [
         {
           "type": "blocks_hexes",
+          "owner_type": "player",
           "hexes": [
             "C4"
           ]
