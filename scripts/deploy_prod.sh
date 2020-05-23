@@ -3,7 +3,7 @@
 set -e
 
 docker-compose run rack rake precompile
-scp public/assets/main.js public/assets/main.js.gz public/pinned/* deploy@18xx:~/18xx/public/assets/
+scp public/assets/main.js public/assets/main.js.gz deploy@18xx:~/18xx/public/assets/
 ssh -l deploy 18xx <<EOF
 cd ~/18xx/
 set -e
