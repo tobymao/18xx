@@ -135,6 +135,27 @@ module Engine
               'X7' => [3],
             },
           },
+          {
+            game: '18Chesapeake',
+            desc: 'Baltimore green to brown w/ PRR token and B&O reservation',
+            setup: {
+              hex: 'H6',
+              corporations: [
+                {
+                  name: 'B&O',
+                  token: nil,
+                },
+                {
+                  name: 'PRR',
+                  token: 0,
+                },
+              ],
+              tile: ['X3', 2],
+            },
+            tiles_with_rotations_to_lay: {
+              'X7' => [3],
+            },
+          },
         ].each do |spec|
           context "#{spec[:game]} #{spec[:desc]}" do
             let(:game) { GAMES_BY_TITLE[spec[:game]].new(%w[a b c]) }
