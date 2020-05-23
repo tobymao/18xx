@@ -137,11 +137,11 @@ module View
 
       index = players.size
       p_elm = players.map do |player|
-        index = index - 1
+        index -= 1
         elm = h(
           acting?(player) ? :u : :span,
           { style: { 'margin-right': '0.5rem' } },
-          player['name'] + (index > 0 ? ',' : ''),
+          player['name'] + (index.positive? ? ',' : ''),
         )
 
         if owner? && new? && player['id'] != @user['id']
@@ -156,6 +156,7 @@ module View
 
         elm
       end
+      p_elm.join(',')
 
       children = [
         h(:div, [h(:b, 'Id: '), @gdata['id'].to_s]),
