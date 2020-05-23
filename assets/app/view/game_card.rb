@@ -135,11 +135,13 @@ module View
         }
       }
 
+      index = players.size
       p_elm = players.map do |player|
+        index = index - 1
         elm = h(
           acting?(player) ? :u : :span,
           { style: { 'margin-right': '0.5rem' } },
-          player['name'],
+          player['name'] + (index > 0 ? ',' : ''),
         )
 
         if owner? && new? && player['id'] != @user['id']
