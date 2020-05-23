@@ -79,16 +79,19 @@ module Engine
           end.to_h
         end
 
-      # when upgrading, preserve tokens (both reserved and actually placed) on
-      # previous tile
+      # when upgrading, preserve reservations on previous tile
       city_map.each do |old_city, new_city|
-        new_city.reservations = old_city.reservations.dup
+        new_city.reservations.concat(old_city.reservations)
+        old_city.reservations.clear
+      end
 
+      # when upgrading, preserve tokens on previous tile (must be handled after
+      # reservations are completely done due to OO weirdness)
+      city_map.each do |old_city, new_city|
         old_city.tokens.each do |token|
           new_city.exchange_token(token) if token
         end
         old_city.remove_tokens!
-        old_city.reservations.clear
       end
 
       @tile.hex = nil
@@ -98,6 +101,7 @@ module Engine
       # old one
       tile.location_name = @location_name
       @tile.location_name = nil
+
       @tile = tile
       clear_cache
       connect!
