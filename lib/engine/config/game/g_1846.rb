@@ -224,7 +224,7 @@ module Engine
         0
       ],
       "coordinates": "F20",
-      "color": "#d81e3e"
+      "color": "red"
     },
     {
       "float_percent": 20,
@@ -237,13 +237,13 @@ module Engine
         80
       ],
       "coordinates": "D20",
-      "color": "#37383a"
+      "color": "black"
     },
     {
       "float_percent": 20,
       "sym": "B&O",
       "name": "Baltimore & Ohio",
-      "logo": "1846/BO",
+      "logo": "1846/B&O",
       "tokens": [
         0,
         80,
@@ -251,20 +251,21 @@ module Engine
         0
       ],
       "coordinates": "G19",
-      "color": "#0189d1"
+      "color": "blue"
     },
     {
       "float_percent": 20,
       "sym": "C&O",
       "name": "Chesapeake & Ohio",
-      "logo": "1846/CO",
+      "logo": "1846/C&O",
       "tokens": [
         0,
         80,
         80,
         80
       ],
-      "coordinates": "I15"
+      "coordinates": "I15",
+      "color": "lightBlue"
     },
     {
       "float_percent": 20,
@@ -277,7 +278,7 @@ module Engine
         0
       ],
       "coordinates": "E21",
-      "color": "#f8c200"
+      "color": "yellow"
     },
     {
       "float_percent": 20,
@@ -289,7 +290,7 @@ module Engine
         80
       ],
       "coordinates": "B16",
-      "color": "#f48221"
+      "color": "orange"
     },
     {
       "float_percent": 20,
@@ -302,12 +303,12 @@ module Engine
         0
       ],
       "coordinates": "K3",
-      "color": "#237333"
+      "color": "green"
     }
   ],
   "trains": [
     {
-      "name": "2: Big 4",
+      "name": "2",
       "distance": 2,
       "price": 0,
       "rusts_on": [
@@ -317,7 +318,7 @@ module Engine
       "num": 1
     },
     {
-      "name": "2: MS",
+      "name": "2",
       "distance": 2,
       "price": 0,
       "rusts_on": [
@@ -520,14 +521,14 @@ module Engine
   },
   "phases": [
     {
-      "name": "Yellow",
+      "name": "1",
       "train_limit": 4,
       "tiles": [
         "yellow"
       ]
     },
     {
-      "name": "Green",
+      "name": "2",
       "train_limit": 4,
       "tiles": [
         "yellow",
@@ -535,23 +536,29 @@ module Engine
       ]
     },
     {
-      "name": "Brown",
+      "name": "3",
       "train_limit": 3,
       "tiles": [
         "yellow",
         "green",
         "brown"
-      ]
+      ],
+      "events": {
+        "close_companies": true
+      }
     },
     {
-      "name": "Gray",
+      "name": "4",
       "train_limit": 2,
       "tiles": [
         "yellow",
         "green",
         "brown",
         "gray"
-      ]
+      ],
+      "events": {
+        "remove_tokens": true
+      }
     }
   ]
 }

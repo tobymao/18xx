@@ -92,7 +92,40 @@ module Engine
     }
   },
   "market": [
-    []
+    [
+      "0",
+      "40",
+      "40",
+      "40",
+      "40",
+      "45",
+      "50",
+      "55",
+      "60",
+      "65",
+      "70",
+      "80",
+      "90",
+      "100",
+      "110",
+      "120",
+      "135",
+      "150",
+      "165",
+      "180",
+      "200",
+      "220",
+      "245",
+      "270",
+      "300",
+      "330",
+      "360",
+      "400",
+      "440",
+      "490",
+      "540",
+      "600"
+    ]
   ],
   "companies": [],
   "corporations": [
@@ -106,7 +139,7 @@ module Engine
         0,
         0
       ],
-      "color": "rgb(193,60,125)"
+      "color": "pink"
     },
     {
       "float_percent": 20,
@@ -118,7 +151,7 @@ module Engine
         0,
         0
       ],
-      "color": "#e09001"
+      "color": "gold"
     },
     {
       "float_percent": 20,
@@ -130,7 +163,7 @@ module Engine
         0,
         0
       ],
-      "color": "#f48221"
+      "color": "orange"
     },
     {
       "float_percent": 20,
@@ -142,7 +175,7 @@ module Engine
         0,
         0
       ],
-      "color": "#37383a"
+      "color": "black"
     },
     {
       "float_percent": 20,
@@ -154,7 +187,7 @@ module Engine
         0,
         0
       ],
-      "color": "#d81e3e"
+      "color": "red"
     },
     {
       "float_percent": 20,
@@ -166,7 +199,7 @@ module Engine
         0,
         0
       ],
-      "color": "#7b352a"
+      "color": "brown"
     },
     {
       "float_percent": 20,
@@ -178,7 +211,7 @@ module Engine
         0,
         0
       ],
-      "color": "#237333"
+      "color": "green"
     },
     {
       "float_percent": 20,
@@ -190,7 +223,7 @@ module Engine
         0,
         0
       ],
-      "color": "#7f528b"
+      "color": "violet"
     },
     {
       "float_percent": 20,
@@ -202,7 +235,7 @@ module Engine
         0,
         0
       ],
-      "color": "#37b2e2"
+      "color": "lightBlue"
     },
     {
       "float_percent": 20,
@@ -214,7 +247,7 @@ module Engine
         0,
         0
       ],
-      "color": "#f8c200"
+      "color": "yellow"
     },
     {
       "float_percent": 20,
@@ -226,7 +259,7 @@ module Engine
         0,
         0
       ],
-      "color": "#00a99e"
+      "color": "turquoise"
     },
     {
       "float_percent": 20,
@@ -238,7 +271,7 @@ module Engine
         0,
         0
       ],
-      "color": "#9a9a9d"
+      "color": "white"
     },
     {
       "float_percent": 20,
@@ -250,7 +283,7 @@ module Engine
         0,
         0
       ],
-      "color": "#76a042"
+      "color": "brightGreen"
     },
     {
       "float_percent": 20,
@@ -262,7 +295,7 @@ module Engine
         0,
         0
       ],
-      "color": "#bdbd00"
+      "color": "lime"
     },
     {
       "float_percent": 20,
@@ -274,7 +307,7 @@ module Engine
         0,
         0
       ],
-      "color": "#b58168"
+      "color": "lightBrown"
     },
     {
       "float_percent": 20,
@@ -286,7 +319,7 @@ module Engine
         0,
         0
       ],
-      "color": "#0189d1"
+      "color": "blue"
     },
     {
       "float_percent": 20,
@@ -298,7 +331,7 @@ module Engine
         0,
         0
       ],
-      "color": "#fbf4de"
+      "color": "natural"
     },
     {
       "float_percent": 20,
@@ -310,7 +343,7 @@ module Engine
         0,
         0
       ],
-      "color": "#004d95"
+      "color": "navy"
     },
     {
       "float_percent": 20,
@@ -322,7 +355,7 @@ module Engine
         0,
         0
       ],
-      "color": "#baa4cb"
+      "color": "lavender"
     },
     {
       "float_percent": 20,
@@ -334,7 +367,7 @@ module Engine
         0,
         0
       ],
-      "color": "#baa4cb"
+      "color": "lavender"
     }
   ],
   "trains": [

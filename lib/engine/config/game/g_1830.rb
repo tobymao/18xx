@@ -315,7 +315,7 @@ module Engine
         100
       ],
       "coordinates": "H12",
-      "color": "#237333"
+      "color": "green"
     },
     {
       "float_percent": 60,
@@ -329,7 +329,7 @@ module Engine
         100
       ],
       "coordinates": "E19",
-      "color": "#37383a"
+      "color": "black"
     },
     {
       "float_percent": 60,
@@ -343,33 +343,33 @@ module Engine
         100
       ],
       "coordinates": "A19",
-      "color": "#d81e3e"
+      "color": "red"
     },
     {
       "float_percent": 60,
       "sym": "B&O",
       "name": "Baltimore & Ohio Railroad",
-      "logo": "1830/BO",
+      "logo": "1830/B&O",
       "tokens": [
         0,
         40,
         100
       ],
       "coordinates": "I15",
-      "color": "#0189d1"
+      "color": "blue"
     },
     {
       "float_percent": 60,
       "sym": "C&O",
       "name": "Chesapeake & Ohio Railroad",
-      "logo": "1830/CO",
+      "logo": "1830/C&O",
       "tokens": [
         0,
         40,
         100
       ],
       "coordinates": "F6",
-      "color": "#37b2e2"
+      "color": "lightBlue"
     },
     {
       "float_percent": 60,
@@ -382,7 +382,7 @@ module Engine
         100
       ],
       "coordinates": "E11",
-      "color": "#f8c200"
+      "color": "yellow"
     },
     {
       "float_percent": 60,
@@ -394,19 +394,19 @@ module Engine
         40
       ],
       "coordinates": "G19",
-      "color": "#f48221"
+      "color": "orange"
     },
     {
       "float_percent": 60,
       "sym": "B&M",
       "name": "Boston & Maine Railroad",
-      "logo": "1830/BM",
+      "logo": "1830/B&M",
       "tokens": [
         0,
         40
       ],
       "coordinates": "E23",
-      "color": "#76a042"
+      "color": "brightGreen"
     }
   ],
   "trains": [
