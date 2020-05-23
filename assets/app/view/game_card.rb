@@ -156,7 +156,6 @@ module View
 
         elm
       end
-      p_elm.join(',')
 
       children = [
         h(:div, [h(:b, 'Id: '), @gdata['id'].to_s]),
