@@ -98,8 +98,7 @@ module Engine
       def must_buy_train?
         # TODO: this is a hack and doesn't actually check reachable cities
         # OO tiles and other complex track will break this
-        @current_entity.trains.empty? &&
-          reachable_hexes.keys.count { |hex| hex.tile.paths.any?(&:stop) } > 1
+        @current_entity.trains.empty? && connected_nodes.size > 1
       end
 
       def active_entities
@@ -170,13 +169,7 @@ module Engine
           when :token
             return next_step! if @current_entity.tokens.none?
 
-            next_step! unless reachable_hexes.any? do |hex, exits|
-              hex.tile.paths.any? do |path|
-                path.city &&
-                  (path.exits & exits).any? &&
-                  path.city.tokenable?(@current_entity)
-              end
-            end
+            next_step! unless connected_nodes.any? { |node, _| node.tokenable?(@current_entity) }
           when :route
             next_step! unless @current_entity.trains.any?
           when :dividend
@@ -205,49 +198,61 @@ module Engine
       end
 
       def layable_hexes
-        @layable_hexes ||=
-          begin
-            hexes = Hash.new { |h, k| h[k] = [] }
-            connections = []
-            @hexes.each do |hex|
-              hex.tile.cities.each do |city|
-                hexes[hex] = hex.neighbors.keys if city.tokened_by?(@current_entity)
-              end
-
-              hex.tile.paths.each do |path|
-                next unless path.city&.tokened_by?(@current_entity)
-
-                connections.concat(hex.all_connections.select { |c| c.paths.include?(path) })
-              end
-            end
-
-            Connection.walk(connections, corporation: @current_entity) do |connection|
-              connection.paths.each do |path|
-                hex = path.hex
-                path.exits.each do |edge|
-                  hexes[hex] << edge unless hexes[hex].include?(edge)
-
-                  neighbor = hex.neighbors[edge]
-                  edge = hex.invert(edge)
-                  hexes[neighbor] << edge if neighbor.connections[edge].empty? && !hexes[neighbor].include?(edge)
-                end
-              end
-            end
-
-            @current_entity.abilities(:teleport) do |ability, _|
-              ability[:hexes].each do |hex_id|
-                hex = @game.hex_by_id(hex_id)
-                hexes[hex] |= hex.neighbors.keys
-              end
-            end
-
-            hexes.default = nil
-            hexes
-          end
+        compute_connections unless @layable_hexes
+        @layable_hexes
       end
 
-      def reachable_hexes
-        @reachable_hexes ||= layable_hexes.select { |hex, exits| (hex.tile.exits & exits).any? }
+      def connected_nodes
+        compute_connections unless @connected_nodes
+        @connected_nodes
+      end
+
+      def compute_connections
+        connections = []
+        @layable_hexes = Hash.new { |h, k| h[k] = [] }
+        @connected_nodes = {}
+
+        @hexes.each do |hex|
+          hex.tile.cities.each do |city|
+            @layable_hexes[hex] = hex.neighbors.keys if city.tokened_by?(@current_entity)
+          end
+
+          hex.tile.paths.each do |path|
+            next unless path.city&.tokened_by?(@current_entity)
+
+            connections.concat(hex.all_connections.select { |c| c.paths.include?(path) })
+          end
+        end
+
+        paths = {}
+
+        Connection.walk(connections, corporation: @current_entity) do |connection|
+          connection.nodes.each { |node| @connected_nodes[node] = true }
+
+          connection.paths.each do |path|
+            next if paths[path]
+
+            paths[path] = true
+            hex = path.hex
+            path.exits.each do |edge|
+              @layable_hexes[hex] << edge
+              neighbor = hex.neighbors[edge]
+              edge = hex.invert(edge)
+              @layable_hexes[neighbor] << edge if neighbor.connections[edge].empty?
+            end
+          end
+        end
+
+        @current_entity.abilities(:teleport) do |ability, _|
+          ability[:hexes].each do |hex_id|
+            hex = @game.hex_by_id(hex_id)
+            @layable_hexes[hex].concat(hex.neighbors.keys)
+            hex.tile.nodes.each { |node| @connected_nodes[node] = true }
+          end
+        end
+
+        @layable_hexes.default = nil
+        @layable_hexes.each { |_, edges| edges.uniq! }
       end
 
       def legal_rotations(hex, tile)
@@ -268,7 +273,7 @@ module Engine
 
       def clear_route_cache
         @layable_hexes = nil
-        @reachable_hexes = nil
+        @connected_nodes = nil
       end
 
       private
@@ -463,7 +468,7 @@ module Engine
       def place_token(action)
         entity = action.entity
         hex = action.city.hex
-        unless reachable_hexes[action.city.hex]
+        if !connected_nodes[action.city] && !@teleported
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 
