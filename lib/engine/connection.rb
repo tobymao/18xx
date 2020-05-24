@@ -132,7 +132,7 @@ module Engine
       connections(corporation: corporation).each do |connection|
         next if on && !on[connection]
 
-        connection.walk(visited: visited, corporation: corporation) { |c| yield c }
+        connection.walk(visited: visited, corporation: corporation, on: on) { |c| yield c }
       end
     end
 
