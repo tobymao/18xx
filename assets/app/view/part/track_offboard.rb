@@ -2,13 +2,10 @@
 
 require 'view/hit_box'
 require 'view/part/base'
-require 'view/runnable'
 
 module View
   module Part
     class TrackOffboard < Base
-      include Runnable
-
       needs :path
       needs :offboard
       needs :color, default: 'black'
@@ -51,13 +48,7 @@ module View
           }
         }
 
-        radians = (edge * 60) / 180 * Math::PI
-        translate = "translate(#{-Math.sin(radians) * 60}, #{Math.cos(radians) * 60})"
-
-        h(:g, [
-          h(:path, props),
-          h(HitBox, click: -> { touch_node(@offboard) }, transform: translate),
-        ])
+        h(:path, props)
       end
     end
   end

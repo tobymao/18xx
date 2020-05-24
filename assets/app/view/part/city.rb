@@ -143,12 +143,10 @@ module View
         end
 
         children = []
-
         children << render_box(slots.size) if slots.size.between?(2, 6)
-
         children.concat(slots)
-
-        h(:g, { on: { click: -> { touch_node(@city) } } }, children)
+        props = @city.solo? ? {} : { on: { click: -> { touch_node(@city) } } }
+        h(:g, props, children)
       end
 
       # TODOS:

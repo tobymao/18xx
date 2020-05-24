@@ -137,8 +137,7 @@ module View
       end
 
       def render
-        h(:g, [
-          h(:rect, attrs: {
+        children = [h(:rect, attrs: {
             transform: "#{translate} #{rotation}",
             x: -WIDTH / 2,
             y: -HEIGHT / 2,
@@ -146,9 +145,11 @@ module View
             height: HEIGHT,
             fill: @color,
             stroke: 'none',
-          }),
-          h(HitBox, click: -> { touch_node(@town) }, transform: translate),
-        ])
+          })]
+
+        children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
+
+        h(:g, children)
       end
     end
   end

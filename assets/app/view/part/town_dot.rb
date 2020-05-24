@@ -49,10 +49,9 @@ module View
       end
 
       def render_part
-        h(:g, [
-          h(:circle, attrs: { transform: translate, fill: @color, r: 10 }),
-          h(HitBox, click: -> { touch_node(@town) }, transform: translate),
-        ])
+        children = [h(:circle, attrs: { transform: translate, fill: @color, r: 10 })]
+        children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
+        h(:g, children)
       end
     end
   end

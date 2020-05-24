@@ -8,6 +8,10 @@ module Engine
         @exits = nil
       end
 
+      def solo?
+        @tile.nodes.one?
+      end
+
       def paths
         @paths ||= @tile.paths.select { |p| p.node == self }
       end

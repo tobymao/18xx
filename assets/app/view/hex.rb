@@ -3,11 +3,14 @@
 require_tree 'engine'
 require 'lib/hex'
 require 'lib/tile_selector'
+require 'view/runnable'
 require 'view/tile'
 require 'view/triangular_grid'
 
 module View
   class Hex < Snabberb::Component
+    include Runnable
+
     SIZE = 100
 
     LAYOUT = {
@@ -34,7 +37,7 @@ module View
     def render
       children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
 
-      @selected = @hex == @tile_selector&.hex
+      @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
       @tile = @selected && @round.can_lay_track? && @tile_selector&.tile ? @tile_selector.tile : @hex.tile
 
       children << h(Tile, tile: @tile) if @tile
@@ -70,7 +73,10 @@ module View
     end
 
     def on_hex_click(event)
-      return @tile_selector.rotate! if @selected && @tile_selector.tile
+      nodes = @hex.tile.nodes
+      touch_node(nodes[0]) if @round&.can_run_routes? && nodes.one?
+
+      return @tile_selector.rotate! if @selected && @tile_selector&.tile
 
       case @role
       when :map
