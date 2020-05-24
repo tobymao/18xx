@@ -3,6 +3,7 @@
 module View
   class Log < Snabberb::Component
     needs :log
+    needs :follow_scroll, default: true, store: true
 
     def render
       scroll_to_bottom = lambda do |vnode|
@@ -10,10 +11,17 @@ module View
         elm.scrollTop = elm.scrollHeight
       end
 
+      scroll_handler = lambda do
+        # can't seem to access the target of the event here
+      end
+
       props = {
         key: 'log',
         hook: {
-          postpatch: ->(_, vnode) { scroll_to_bottom.call(vnode) },
+          postpatch: ->(_, vnode) { scroll_to_bottom.call(vnode) if @follow_scroll },
+        },
+        on: {
+          scroll: scroll_handler
         },
         style: {
           overflow: 'auto',
