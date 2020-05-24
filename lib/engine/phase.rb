@@ -67,7 +67,9 @@ module Engine
     def process_action(action)
       case action
       when Action::BuyTrain
-        next! if action.train.name == @next_on
+        train = action.train
+        next! if train.name == @next_on
+        rust_trains!(train)
       end
     end
 
@@ -128,6 +130,19 @@ module Engine
       @game.companies.each do |company|
         company.close! unless company.abilities(:never_closes)
       end
+    end
+
+    def rust_trains!(train)
+      rusted_trains = []
+
+      @game.trains.each do |t|
+        if t.owner && t.rusts_on == train.name
+          rusted_trains << t.name
+          t.rust!
+        end
+      end
+
+      @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --" if rusted_trains.any?
     end
 
     def next!

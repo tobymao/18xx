@@ -430,8 +430,6 @@ module Engine
         @log << "#{entity.name} #{verb} a #{train.name} train for "\
           "#{@game.format_currency(price)} from #{train.owner.name}"
         entity.buy_train(train, price)
-
-        rust_trains!(train)
       end
 
       def sell_shares(shares)
@@ -518,19 +516,6 @@ module Engine
         player.spend(player.cash, @bank)
 
         @bankrupt = true
-      end
-
-      def rust_trains!(train)
-        rusted_trains = []
-
-        @game.trains.each do |t|
-          if t.owner && t.rusts_on == train.name
-            rusted_trains << t.name
-            t.rust!
-          end
-        end
-
-        @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --" if rusted_trains.any?
       end
 
       def recalculate_order
