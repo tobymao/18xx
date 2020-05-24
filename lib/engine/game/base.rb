@@ -493,6 +493,7 @@ module Engine
             reorder_players
             new_stock_round
           when Round::Stock
+            @operating_rounds = @phase.operating_rounds
             reorder_players
             new_operating_round
           when Round::Operating
@@ -504,7 +505,6 @@ module Engine
               end_game
             else
               @turn += 1
-              @operating_rounds = @phase.operating_rounds
               or_set_finished
               new_stock_round
             end
