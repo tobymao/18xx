@@ -106,10 +106,6 @@ module Engine
         super + crowded_corps
       end
 
-      def crowded_corps
-        @entities.select { |e| e.trains.size > @phase.train_limit }
-      end
-
       def corp_has_room?
         @current_entity.trains.size < @phase.train_limit
       end
@@ -322,9 +318,7 @@ module Engine
         when Action::BuyTrain
           buy_train(entity, action.train, action.price, action.exchange)
         when Action::DiscardTrain
-          train = action.train
-          @depot.reclaim_train(train)
-          @log << "#{entity.name} discards #{train.name}"
+          discard_train(action)
         when Action::SellShares
           sell_shares(action.shares)
         when Action::BuyCompany

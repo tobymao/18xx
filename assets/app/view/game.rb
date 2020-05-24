@@ -5,6 +5,7 @@ require 'lib/params'
 require 'view/auction_round'
 require 'view/companies'
 require 'view/corporations'
+require 'view/discard_trains'
 require 'view/entity_order'
 require 'view/exchange'
 require 'view/history_controls'
@@ -209,6 +210,9 @@ module View
     end
 
     def render_action
+      crowded_corps = @round.crowded_corps
+      return h(DiscardTrains, corporations: crowded_corps) if @round.crowded_corps.any?
+
       case @round
       when Engine::Round::Auction
         h(AuctionRound, game: @game)

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/actionable'
+require 'view/undo_and_pass'
 
 module View
   class DiscardTrains < Snabberb::Component
@@ -9,6 +10,12 @@ module View
     needs :corporations
 
     def render
+      block_props = {
+        style: {
+          display: 'inline-block',
+          'vertical-align': 'top',
+        },
+      }
       overflow = @corporations.map do |corporation|
         trains = corporation.trains.map do |train|
           train_props = {
@@ -16,23 +23,23 @@ module View
               display: 'inline-block',
               cursor: 'pointer',
               border: 'solid 1px gainsboro',
-              'margin-left': '1rem',
               'padding': '0.5rem',
             },
             on: { click: -> { process_action(Engine::Action::DiscardTrain.new(corporation, train)) } },
           }
 
-          h(:div, train_props, train.name)
+          h('div.margined', train_props, train.name)
         end
 
-        h(:div, [
-          corporation.name,
-          *trains,
+        h(:div, block_props, [
+          h(Corporation, corporation: corporation),
+          h(:div, trains),
         ])
       end
 
       h(:div, [
-        'Discard Trains',
+        h(:div, { style: { 'margin-bottom': '1rem', 'font-weight': 'bold' } }, 'Discard Trains'),
+        h(UndoAndPass, pass: false),
         *overflow,
       ])
     end

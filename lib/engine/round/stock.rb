@@ -96,6 +96,8 @@ module Engine
         entity = action.entity
 
         case action
+        when Action::DiscardTrain
+          discard_train(action)
         when Action::BuyShare
           buy_share(entity, action.share)
         when Action::SellShares
@@ -110,6 +112,8 @@ module Engine
       end
 
       def action_processed(action)
+        return if action.is_a?(Action::DiscardTrain)
+
         entity = action.entity
         @current_actions << action.class
         @last_to_act = entity

@@ -2,7 +2,6 @@
 
 require 'view/actionable'
 require 'view/corporation'
-require 'view/discard_trains'
 require 'view/sell_shares'
 require 'view/undo_and_pass'
 
@@ -21,11 +20,8 @@ module View
       children = []
 
       must_buy_train = round.must_buy_train?
-      crowded_corps = round.crowded_corps
 
-      children << h(:div, [
-        h(UndoAndPass, pass: !must_buy_train && crowded_corps.none?),
-      ])
+      children << h(:div, [h(UndoAndPass, pass: !must_buy_train)])
 
       if (round.can_buy_train? && round.corp_has_room?) || round.must_buy_train?
         children << h('div.margined', 'Available Trains')
@@ -70,8 +66,6 @@ module View
           children << h(SellShares, player: @corporation.owner)
         end
       end
-
-      children << h(DiscardTrains, corporations: crowded_corps) if crowded_corps.any?
 
       children << h(:div, [h(:div, 'Remaining Trains'), *remaining_trains])
 

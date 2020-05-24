@@ -38,7 +38,7 @@ module Engine
       end
 
       def active_entities
-        [@current_entity]
+        [@current_entity] + crowded_corps
       end
 
       def next_entity
@@ -137,6 +137,17 @@ module Engine
 
       def did_sell?(_corporation, _entity)
         false
+      end
+
+      def crowded_corps
+        train_limit = @game.phase.train_limit
+        @game.corporations.select { |c| c.trains.size > train_limit }
+      end
+
+      def discard_train(action)
+        train = action.train
+        @game.depot.reclaim_train(train)
+        @log << "#{action.entity.name} discards #{train.name}"
       end
 
       private
