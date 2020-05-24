@@ -132,7 +132,7 @@ module View
           # -rotation on the Slot so its contents are rendered without
           # rotation
           h(:g, { attrs: { 'stroke-width': 1, transform: "rotate(#{rotation})" } }, [
-              h(:g, { attrs: { transform: "#{translate} rotate(#{rotation})" } }, [
+              h(:g, { attrs: { transform: "#{translate} rotate(#{-rotation})" } }, [
                   h(CitySlot, city: @city,
                               token: token,
                               slot_index: slot_index,
