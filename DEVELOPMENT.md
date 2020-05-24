@@ -31,7 +31,12 @@ Some app routes that may be of interest to developers:
 
 Additionally, where the above routes take a `<hex_coord>` or `<tile_name>`,
 multiple can be given by separating them with `+`, and hex coords and tile names
-can be mix and matched with `+`.
+can be mix and matched with `+`. Those routes also accept URL params `r` and
+`n`. `r` sets the rotation to render; `all` can be given, or multiple numbers
+can be given, separated by `+`. `n` specifies the location name to render on the
+tile, but this will not override an existing location name (e.g.,
+`/tiles/1889/I4?n=Exampleville` will always display "Kotohira" instead of
+"Exampleville")
 
 ### Docker
 

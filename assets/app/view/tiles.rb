@@ -2,7 +2,7 @@
 
 module View
   class Tiles < Snabberb::Component
-    def render_tile_block(name, num: nil, tile: nil, location_name: nil, scale: 1.0, opacity: 1.0)
+    def render_tile_blocks(name, num: nil, tile: nil, location_name: nil, scale: 1.0, opacity: 1.0, rotations: nil)
       props = {
         style: {
           display: 'inline-block',
@@ -15,24 +15,36 @@ module View
         },
       }
 
-      text = num ? "##{name} × #{num}" : name
+      tile ||= Engine::Tile.for(name)
+      location_name ||= tile.location_name
 
-      h(:div, props, [
-          h(:div, { style: { 'text-align': 'center', 'font-size': '12px' } }, text),
-          h(:svg, { style: { width: '100%', height: '100%' } }, [
-            h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
-              h(
-                Hex,
-                hex: Engine::Hex.new('A1',
-                                     layout: 'flat',
-                                     location_name: location_name,
-                                     tile: tile || Engine::Tile.for(name)),
-                role: :tile_page,
-                opacity: opacity,
-              )
+      # setting [0] as default value in function arg doesn't work
+      rotations ||= [0]
+
+      rotations.map do |rotation|
+        tile.rotate!(rotation)
+
+        text = name.dup
+        text += "-#{rotation}" if rotations.size > 1
+        text += " × #{num}" if num
+
+        h(:div, props, [
+            h(:div, { style: { 'text-align': 'center', 'font-size': '12px' } }, text),
+            h(:svg, { style: { width: '100%', height: '100%' } }, [
+              h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
+                h(
+                  Hex,
+                  hex: Engine::Hex.new('A1',
+                                       layout: 'flat',
+                                       location_name: location_name,
+                                       tile: tile),
+                  role: :tile_page,
+                  opacity: opacity,
+                )
+              ])
             ])
-          ])
-      ])
+        ])
+      end
     end
   end
 end
