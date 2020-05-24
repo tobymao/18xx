@@ -322,7 +322,9 @@ module Engine
         when Action::SellShares
           sell_shares(action.shares)
         when Action::BuyCompany
-          buy_company(action.company, action.price)
+          company = action.company
+          buy_company(company, action.price)
+          clear_route_cache if company.abilities(:teleport)
         when Action::Bankrupt
           liquidate(entity.owner)
         end
