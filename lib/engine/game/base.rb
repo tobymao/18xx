@@ -543,7 +543,7 @@ module Engine
 
       def reorder_players
         rotate_players(@round.last_to_act)
-        @log << "#{current_entity.name} has priority deal"
+        @log << "#{@players[0].name} has priority deal"
       end
 
       def rotate_players(last_to_act)
