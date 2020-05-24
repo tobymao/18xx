@@ -98,7 +98,7 @@ module View
       ]
 
       if @game.round.auction?
-        trs += [
+        trs.concat([
           h(:tr, [
             h(:td, td_props, 'Committed'),
             h(:td, td_props, @game.format_currency(@game.round.committed_cash(@player))),
@@ -107,10 +107,10 @@ module View
             h(:td, td_props, 'Available'),
             h(:td, td_props, @game.format_currency(@player.cash - @game.round.committed_cash(@player))),
           ]),
-        ]
+        ])
       end
 
-      trs += [
+      trs.concat([
         h(:tr, [
           h(:td, td_props, 'Value'),
           h(:td, td_props, @game.format_currency(@player.value)),
@@ -119,7 +119,7 @@ module View
           h(:td, td_props, 'Certs'),
           h(:td, td_cert_props, "#{num_certs}/#{cert_limit}"),
         ]),
-      ]
+      ])
 
       if @player == @game.priority_deal_player
         trs << h(:tr, [
