@@ -164,9 +164,9 @@ module Engine
       def sell_and_change_price(bundle, share_pool, stock_market)
         share_pool.sell_shares(bundle)
         corporation = bundle.corporation
-        prev = corporation.share_price.price
+        price = corporation.share_price.price
         bundle.num_shares.times { stock_market.move_down(corporation) }
-        log_share_price(corporation, prev)
+        log_share_price(corporation, price)
       end
 
       def lay_tile(action)

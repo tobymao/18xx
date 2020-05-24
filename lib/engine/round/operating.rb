@@ -523,6 +523,7 @@ module Engine
         @log << "#{player.name} goes bankrupt and sells remaining shares"
 
         player.shares_by_corporation.each do |corporation, _|
+          next unless corporation.share_price # if a corporation has not parred
           next unless (bundle = sellable_bundles(player, corporation).max_by(&:price))
 
           sell_shares(bundle)
