@@ -148,40 +148,59 @@ class Api < Roda
   end
 
   def render_pin(**needs)
-    needsjs = Snabberb.wrap(app_route: request.path, **needs)
+    pin = needs[:pin]
 
-    attach_func = "Opal.$$.App.$attach('app', #{needsjs})"
-    <<~HTML
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>18xx.games (pin #{needs[:pin]})</title>
-        </head>
-        <body>
-          <div id="app"></div>
-          <script type="text/javascript" src="#{Assets::PIN_DIR}#{needs[:pin]}.js"></script>
-          <script>#{attach_func}</script>
-        </body>
-      </html>
-    HTML
+    static(
+      desc: "Pin #{pin}",
+      js_tags: "<script type='text/javascript' src='#{Assets::PIN_DIR}#{pin}.js'></script>",
+      attach_func: "Opal.$$.App.$attach('app', #{Snabberb.wrap(app_route: request.path, **needs)})",
+    )
   end
 
   def debug(**needs)
     needs[:disable_user_errors] = true
     needs = Snabberb.wrap(app_route: request.path, **needs)
-    attach_func = "Opal.$$.App.$attach('app', #{needs})"
 
+    static(
+      desc: 'Debug',
+      js_tags: ASSETS.js_tags,
+      attach_func: "Opal.$$.App.$attach('app', #{needs})",
+    )
+  end
+
+  def static(desc:, js_tags:, attach_func:)
     <<~HTML
       <html>
-        <head>
-          <meta charset="utf-8">
-          <title>18xx.games</title>
-        </head>
-        <body>
-          <div id="app"></div>
-          #{ASSETS.js_tags}
-          <script>#{attach_func}</script>
-        </body>
+         <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+            <title>18xx.games (#{desc})</title>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css">
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&amp;display=swap">
+            <link rel="icon" type="image/svg+xml" href="/images/icon.svg">
+            <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+            <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+            <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+            <link rel="mask-icon" href="/images/mask.svg" color="#f0e68c">
+            <link rel="manifest" href="/site.webmanifest">
+            <meta rel="msapplication-TileColor" content="#da532c">
+            <meta rel="theme-color" content="#ffffff">
+            <style>* { font-family: 'Inconsolata', monospace; }
+               .card_header { font-size: 15px; font-weight: bold; margin: 1rem 0; }
+               .back { font-size: 15px; font-weight: bold; margin: 1rem 0; }
+               .button { font-size: 14px; border: solid 1px black; border-radius: 5px; padding: 0.2rem 1rem; cursor: pointer; outline-style: none; }
+               .button:hover { background-color: black; color: white; }
+               .half { width: 100%; display: inline-block; }
+               .margined { margin: 1rem 1rem 1rem 0; }
+               .margined_half { margin: 0.5rem 0.5rem 0.5rem 0; }
+               @media only screen and (min-width: 900px) { .half { width: 49%; } }
+            </style>
+         </head>
+         <body>
+            <div id="app"></div>
+            #{js_tags}
+            <script>#{attach_func}</script>
+         </body>
       </html>
     HTML
   end
