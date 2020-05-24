@@ -121,6 +121,8 @@ module View
             down55,
             up56,
           ]
+        elsif @tile.towns.size == 1
+          default + [up63, down55]
         else
           default
         end
