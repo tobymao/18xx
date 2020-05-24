@@ -300,6 +300,20 @@ module Engine
             "F4",
             "G5"
           ]
+        },
+        {
+          "type": "tile_lay",
+          "owner_type": "corporation",
+          "hexes": [
+            "F4",
+            "G5"
+          ],
+          "tiles": [
+            "8",
+            "9"
+          ],
+          "when": "track",
+          "count": 2
         }
       ]
     },
