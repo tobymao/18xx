@@ -129,12 +129,6 @@ module Engine
 
     context 'full game' do
       RESULTS = {
-        68 => {
-          'Kruizey' => 326,
-          'RobbieT' => 180,
-          'bugscheese' => 723,
-          'takeoutweight' => 702,
-        },
         233 => {
           'dionhut' => 7844,
           'hhlodesign' => 7655,
@@ -173,7 +167,7 @@ module Engine
         it "#{game_id} matches result exactly" do
           data = JSON.parse(File.read("spec/fixtures/1889/#{game_id}.json"))
           players = data['players'].map { |p| p['name'] }
-          expect(subject.class.new(players, id: game_id, actions: data['actions']).result).to eq(result)
+          expect(described_class.new(players, id: game_id, actions: data['actions']).result).to eq(result)
         end
       end
     end

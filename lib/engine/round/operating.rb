@@ -98,7 +98,11 @@ module Engine
       def must_buy_train?
         # TODO: this is a hack and doesn't actually check reachable cities
         # OO tiles and other complex track will break this
-        @current_entity.trains.empty? && connected_nodes.size > 1
+        @current_entity.trains.empty? && route?
+      end
+
+      def route?
+        connected_nodes.size > 1
       end
 
       def active_entities
@@ -171,7 +175,7 @@ module Engine
 
             next_step! unless connected_nodes.any? { |node, _| node.tokenable?(@current_entity) }
           when :route
-            next_step! unless @current_entity.trains.any?
+            next_step! if @current_entity.trains.empty? || !route?
           when :dividend
             if @current_routes.empty?
               withhold
