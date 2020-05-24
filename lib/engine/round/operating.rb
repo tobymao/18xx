@@ -353,15 +353,19 @@ module Engine
         remove_just_sold_company_abilities unless action.is_a?(Action::BuyCompany)
         return if @bankrupt
         return if ignore_action?(action)
-        return if action.is_a?(Action::SellShares)
-        return if action.is_a?(Action::BuyTrain) && can_buy_train?
-        return if crowded_corps.any?
 
         next_step!
       end
 
       def ignore_action?(action)
-        action.is_a?(Action::BuyCompany) && (@step != :company || can_buy_companies?)
+        case action
+        when Action::SellShares
+          true
+        when Action::DiscardTrain, Action::BuyTrain
+          crowded_corps.any? || can_buy_train?
+        when Action::BuyCompany
+          @step != :company || can_buy_companies?
+        end
       end
 
       def withhold(revenue = 0)
