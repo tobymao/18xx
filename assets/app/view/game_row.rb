@@ -12,6 +12,8 @@ module View
     needs :user
     needs :type
 
+    LIMIT = 10
+
     def render
       h(:div, { key: @header }, [
         render_header(@header),
@@ -23,7 +25,7 @@ module View
       children = [header]
       p = page.to_i
       children << render_more('Prev', "?#{@type}=#{p - 1}") if p.positive?
-      children << render_more('Next', "?#{@type}=#{p + 1}") if @game_row_games.size > 10
+      children << render_more('Next', "?#{@type}=#{p + 1}") if @game_row_games.size > LIMIT
 
       h('div.card_header', children)
     end
@@ -50,7 +52,7 @@ module View
     end
 
     def render_row
-      @game_row_games.map { |game| h(GameCard, gdata: game, user: @user) }.take(10)
+      @game_row_games.map { |game| h(GameCard, gdata: game, user: @user) }.take(LIMIT)
     end
 
     private
