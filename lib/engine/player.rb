@@ -57,5 +57,14 @@ module Engine
     def to_s
       "#{self.class.name} - #{@name}"
     end
+
+    def liquidity(round)
+      value = cash
+      shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, _|
+        max_bundle = round.get_liquid_bundles(self, corporation).max_by(&:price)
+        value += max_bundle&.price || 0
+      end
+      value
+    end
   end
 end

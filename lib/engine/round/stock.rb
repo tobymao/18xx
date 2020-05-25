@@ -66,15 +66,9 @@ module Engine
       end
 
       def can_sell?(bundle)
-        return false unless @can_sell
-
-        corporation = bundle.corporation
-
-        @players_sold[@current_entity][corporation] != :now &&
-          (bundle.percent + @share_pool.percent_of(corporation)) <= 50 &&
+        @players_sold[@current_entity][bundle.corporation] != :now &&
           can_sell_order? &&
-          (!bundle.presidents_share ||
-           (corporation.share_holders.reject { |k, _| k == @current_entity }.values.max || 0) > 10)
+          liquid_bundle?(bundle, @current_entity)
       end
 
       def can_sell_order?

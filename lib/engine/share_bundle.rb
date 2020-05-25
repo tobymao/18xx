@@ -44,7 +44,7 @@ module Engine
       price_per_share * num_shares
     end
 
-    def can_entity_dump?(entity)
+    def can_dump?(entity)
       !presidents_share || (corporation.share_holders.reject { |k, _| k == entity }.values.max || 0) > 10
     end
   end

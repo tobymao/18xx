@@ -120,18 +120,7 @@ module Engine
       end
 
       def sellable_bundles(player, corporation)
-        shares = player
-          .shares_of(corporation)
-          .sort_by(&:price)
-
-        bundles = shares.flat_map.with_index do |share, index|
-          bundle = shares.take(index + 1)
-          percent = bundle.sum(&:percent)
-          bundles = [Engine::ShareBundle.new(bundle, percent)]
-          bundles.insert(0, Engine::ShareBundle.new(bundle, percent - 10)) if share.president
-          bundles
-        end
-
+        bundles = player.bundles_for_corporation(corporation)
         bundles.select { |bundle| can_sell?(bundle) }
       end
 
@@ -239,7 +228,7 @@ module Engine
       def liquid_bundle?(bundle, entity)
         return false unless @game.turn > 1
 
-        can_bundle_fit_in_bank?(bundle) && bundle.can_entity_dump?(entity)
+        can_bundle_fit_in_bank?(bundle) && bundle.can_dump?(entity)
       end
 
       def can_bundle_fit_in_bank?(bundle)
@@ -247,7 +236,7 @@ module Engine
       end
 
       def get_liquid_bundles(player, corporation)
-        bundles = player.get_corporation_share_bundles(corporation)
+        bundles = player.bundles_for_corporation(corporation)
         bundles.select { |bundle| liquid_bundle?(bundle, player) }
       end
     end

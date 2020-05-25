@@ -101,7 +101,7 @@ module View
         ]),
         h(:tr, [
           h(:td, td_props, 'Liquidity'),
-          h(:td, td_props, @game.format_currency(liquidity)),
+          h(:td, td_props, @game.format_currency(@player.liquidity(@game.round))),
         ]),
         h(:tr, [
           h(:td, td_props, 'Certs'),
@@ -244,15 +244,6 @@ module View
         h(:td, td_props, @game.format_currency(company.value)),
         h(:td, td_props, @game.format_currency(company.revenue)),
       ])
-    end
-
-    def liquidity
-      value = @player.cash
-      @player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, _|
-        max_bundle = @game.round.get_liquid_bundles(@player, corporation).max_by(&:price)
-        value += max_bundle&.price || 0
-      end
-      value
     end
   end
 end

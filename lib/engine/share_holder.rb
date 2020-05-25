@@ -26,7 +26,7 @@ module Engine
       percent_of(corporation) / 10
     end
 
-    def get_corporation_share_bundles(corporation)
+    def bundles_for_corporation(corporation)
       shares = shares_of(corporation).sort_by(&:price)
 
       bundles = shares.flat_map.with_index do |share, index|
