@@ -235,6 +235,21 @@ module Engine
         corporation.holding_ok?(entity, share.percent) &&
         (!corporation.counts_for_limit || entity.num_certs < @game.cert_limit)
       end
+
+      def liquid_bundle?(bundle, entity)
+        return false unless @game.turn > 1
+
+        can_bundle_fit_in_bank?(bundle) && bundle.can_entity_dump?(entity)
+      end
+
+      def can_bundle_fit_in_bank?(bundle)
+        (bundle.percent + @share_pool.percent_of(bundle.corporation)) <= 50
+      end
+
+      def get_liquid_bundles(player, corporation)
+        bundles = player.get_corporation_share_bundles(corporation)
+        bundles.select { |bundle| liquid_bundle?(bundle, player) }
+      end
     end
   end
 end

@@ -100,6 +100,10 @@ module View
           h(:td, td_props, @game.format_currency(@player.value)),
         ]),
         h(:tr, [
+          h(:td, td_props, 'Liquidity'),
+          h(:td, td_props, @game.format_currency(liquidity)),
+        ]),
+        h(:tr, [
           h(:td, td_props, 'Certs'),
           h(:td, td_cert_props, "#{num_certs}/#{cert_limit}"),
         ]),
@@ -126,8 +130,8 @@ module View
       div_props = {
         style: {
           display: 'inline-block',
-          'margin-left': '1.5rem',
-          'margin-right': '1.5rem',
+          'margin-left': '1rem',
+          'margin-right': '1rem',
         },
       }
 
@@ -240,6 +244,15 @@ module View
         h(:td, td_props, @game.format_currency(company.value)),
         h(:td, td_props, @game.format_currency(company.revenue)),
       ])
+    end
+
+    def liquidity
+      value = @player.cash
+      @player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, _|
+        max_bundle = @game.round.get_liquid_bundles(@player, corporation).max_by(&:price)
+        value += max_bundle&.price || 0
+      end
+      value
     end
   end
 end

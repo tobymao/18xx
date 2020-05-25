@@ -25,5 +25,17 @@ module Engine
     def num_shares_of(corporation)
       percent_of(corporation) / 10
     end
+
+    def get_corporation_share_bundles(corporation)
+      shares = shares_of(corporation).sort_by(&:price)
+
+      bundles = shares.flat_map.with_index do |share, index|
+        bundle = shares.take(index + 1)
+        percent = bundle.sum(&:percent)
+        bundles = [Engine::ShareBundle.new(bundle, percent)]
+        bundles.insert(0, Engine::ShareBundle.new(bundle, percent - 10)) if share.president
+        bundles
+      end
+    end
   end
 end
