@@ -36,18 +36,18 @@ module Engine
       corporation.owner = game.players.first
     end
 
-    describe '#layable_hexes' do
+    describe '#connected_hexes' do
       context 'with awa' do
         let(:corporation) { game.corporation_by_id('AR') }
 
         it 'returns the layable hexes' do
-          expect(subject.layable_hexes).to eq(
+          expect(subject.connected_hexes).to eq(
             hex_k8 => [1, 2, 3, 4]
           )
 
           subject.process_action(Action::LayTile.new(corporation, Tile.for('5'), hex_k8, 3))
 
-          expect(subject.layable_hexes).to eq(
+          expect(subject.connected_hexes).to eq(
             hex_k6 => [0],
             hex_k8 => [1, 2, 3, 4],
             hex_l7 => [1],
@@ -55,7 +55,7 @@ module Engine
 
           subject.process_action(Action::LayTile.new(corporation, Tile.for('9'), hex_k6, 0))
 
-          expect(subject.layable_hexes).to eq(
+          expect(subject.connected_hexes).to eq(
             hex_j3 => [5],
             hex_j5 => [4],
             hex_k4 => [0, 1, 2],
@@ -74,7 +74,7 @@ module Engine
           subject.process_action(Action::LayTile.new(corporation, Tile.for('15'), hex_g12, 3))
           subject.process_action(Action::LayTile.new(corporation, Tile.for('9'), hex_h13, 1))
 
-          expect(subject.layable_hexes).to eq(
+          expect(subject.connected_hexes).to eq(
             hex_e8 => [5],
             hex_f7 => [0],
             hex_f9 => [2, 3, 4, 5],

@@ -14,6 +14,10 @@ module Engine
         @revenue = parse_revenue(revenue)
       end
 
+      def blocks?(_corporation)
+        true
+      end
+
       def offboard?
         true
       end

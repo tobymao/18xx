@@ -161,11 +161,13 @@ module Engine
     end
 
     def check_connected!
-      return unless (connection = connections[0])
+      paths_ = paths.uniq
 
-      connected = connection.select(connections, corporation: corporation)
-      unconnected = connections - connected
-      raise GameError, 'Route is not connected' if unconnected.any?
+      # rubocop:disable Style/GuardClause
+      if paths_[0].select(paths_, corporation: corporation).size != paths_.size
+        raise GameError, 'Route is not connected'
+      end
+      # rubocop:enable Style/GuardClause
     end
 
     def revenue

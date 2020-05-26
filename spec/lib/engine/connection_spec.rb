@@ -8,15 +8,6 @@ module Engine
   describe Connection do
     let(:game) { GAMES_BY_TITLE['1889'].new(%w[a b]) }
 
-    describe '#connections' do
-      subject { game.hex_by_id('K8') }
-
-      it 'should not connect offboards' do
-        subject.lay(game.tile_by_id('5-0').rotate!(3))
-        expect(subject.connections[4][0].connections.size).to eq(2)
-      end
-    end
-
     describe '.connect!' do
       subject { game.hex_by_id('H7') }
 

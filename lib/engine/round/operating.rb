@@ -51,6 +51,7 @@ module Engine
         @players = game.players
         @stock_market = game.stock_market
         @share_pool = game.share_pool
+        @graph = game.graph
         @just_sold_company = nil
         @bankrupt = false
 
@@ -187,7 +188,6 @@ module Engine
             next_step! unless can_buy_companies?
           end
         else
-          clear_route_cache
           @step = self.class::STEPS.first
           @current_entity.pass!
         end
@@ -201,83 +201,20 @@ module Engine
         end
       end
 
-      def layable_hexes
-        compute_connections unless @layable_hexes
-        @layable_hexes
+      def connected_hexes
+        @graph.connected_hexes(@current_entity)
       end
 
       def connected_nodes
-        compute_connections unless @connected_nodes
-        @connected_nodes
+        @graph.connected_nodes(@current_entity)
       end
 
-      def compute_connections
-        connections = []
-        @layable_hexes = Hash.new { |h, k| h[k] = [] }
-        @connected_nodes = {}
-
-        @hexes.each do |hex|
-          hex.tile.cities.each do |city|
-            @layable_hexes[hex] = hex.neighbors.keys if city.tokened_by?(@current_entity)
-          end
-
-          hex.tile.paths.each do |path|
-            next unless path.city&.tokened_by?(@current_entity)
-
-            connections.concat(hex.all_connections.select { |c| c.paths.include?(path) })
-          end
-        end
-
-        paths = {}
-
-        Connection.walk(connections, corporation: @current_entity) do |connection|
-          connection.nodes.each { |node| @connected_nodes[node] = true }
-
-          connection.paths.each do |path|
-            next if paths[path]
-
-            paths[path] = true
-            hex = path.hex
-            path.exits.each do |edge|
-              @layable_hexes[hex] << edge
-              neighbor = hex.neighbors[edge]
-              edge = hex.invert(edge)
-              @layable_hexes[neighbor] << edge if neighbor.connections[edge].empty?
-            end
-          end
-        end
-
-        @current_entity.abilities(:teleport) do |ability, _|
-          ability[:hexes].each do |hex_id|
-            hex = @game.hex_by_id(hex_id)
-            @layable_hexes[hex].concat(hex.neighbors.keys)
-            hex.tile.nodes.each { |node| @connected_nodes[node] = true }
-          end
-        end
-
-        @layable_hexes.default = nil
-        @layable_hexes.each { |_, edges| edges.uniq! }
-      end
-
-      def legal_rotations(hex, tile)
-        original_exits = hex.tile.exits
-
-        (0..5).select do |rotation|
-          exits = tile.exits.map { |e| tile.rotate(e, rotation) }
-          # connected to a legal route and not pointed into an offboard space
-          (exits & layable_hexes[hex]).any? &&
-            ((original_exits & exits).size == original_exits.size) &&
-            exits.all? { |direction| hex.neighbors[direction] }
-        end
+      def connected_paths
+        @graph.connected_paths(@current_entity)
       end
 
       def operating?
         true
-      end
-
-      def clear_route_cache
-        @layable_hexes = nil
-        @connected_nodes = nil
       end
 
       private
@@ -302,7 +239,6 @@ module Engine
             @teleported = ability[:hexes].include?(hex_id) &&
               ability[:tiles].include?(action.tile.name)
           end
-          clear_route_cache
         when Action::PlaceToken
           place_token(action)
         when Action::RunRoutes
@@ -333,7 +269,7 @@ module Engine
         when Action::BuyCompany
           company = action.company
           buy_company(company, action.price)
-          clear_route_cache if company.abilities(:teleport)
+          @graph.clear if company.abilities(:teleport)
         when Action::Bankrupt
           liquidate(entity.owner)
         end
@@ -487,7 +423,8 @@ module Engine
           price_log = " for #{@game.format_currency(price)}"
         end
         @log << "#{entity.name} places a token on #{action.city.hex.name}#{price_log}"
-        clear_route_cache
+
+        @graph.clear
       end
 
       def remove_just_sold_company_abilities

@@ -4,12 +4,6 @@ module Engine
   class Connection
     attr_reader :paths
 
-    def self.walk(connections, visited: {}, corporation: nil, on: nil)
-      connections.each do |connection|
-        connection.walk(visited: visited, corporation: corporation, on: on) { |c| yield c }
-      end
-    end
-
     def self.connect!(hex)
       connections = {}
 
@@ -87,53 +81,6 @@ module Engine
 
     def include?(hex)
       hexes.include?(hex)
-    end
-
-    def connections(corporation: nil)
-      connections = []
-      nodes.each do |node|
-        connections.concat(connections_for(node)) unless node.blocks?(corporation)
-      end
-      connections.uniq!
-      connections
-    end
-
-    def connections_for(node)
-      connections = []
-      hex = node.hex
-
-      (node.offboard? ? @paths : hex.tile.paths).each do |path|
-        next unless path.node == node
-
-        path.exits.each do |edge|
-          connections.concat(hex.connections[edge])
-        end
-      end
-      connections.uniq!
-      connections
-    end
-
-    def select(connections, corporation: nil)
-      on = connections.map { |c| [c, 0] }.to_h
-
-      walk(corporation: corporation, on: on) do |connection|
-        on[connection] = 1 if on[connection]
-      end
-
-      on.keys.select { |c| on[c] == 1 }
-    end
-
-    def walk(visited: {}, corporation: nil, on: nil)
-      return if visited[self]
-
-      visited[self] = true
-      yield self
-
-      connections(corporation: corporation).each do |connection|
-        next if on && !on[connection]
-
-        connection.walk(visited: visited, corporation: corporation, on: on) { |c| yield c }
-      end
     end
 
     def branch!(path)

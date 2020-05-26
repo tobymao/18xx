@@ -104,7 +104,15 @@ module Engine
         false
       end
 
-      def layable_hexes
+      def connected_hexes
+        {}
+      end
+
+      def connected_paths
+        {}
+      end
+
+      def connected_nodes
         {}
       end
 
@@ -114,9 +122,23 @@ module Engine
           tile.legal_rotations = legal_rotations(hex, tile)
           next if tile.legal_rotations.empty?
 
-          tile.rotate!
+          tile.rotate! # rotate it to the first legal rotation
           tile
         end.compact
+      end
+
+      def legal_rotations(hex, tile)
+        old_paths = hex.tile.paths
+
+        (0..5).select do |rotation|
+          tile.rotate!(rotation)
+          new_paths = tile.paths
+          new_exits = tile.exits
+
+          new_exits.all? { |edge| hex.neighbors[edge] } &&
+            (new_exits & connected_hexes[hex]).any? &&
+            old_paths.all? { |path| new_paths.any? { |p| path <= p } }
+        end
       end
 
       def sellable_bundles(player, corporation)
@@ -176,11 +198,14 @@ module Engine
         rotation = action.rotation
         old_tile = hex.tile
 
-        @game.tiles.reject! { |t| tile.equal?(t) }
+        @game.tiles.delete(tile)
         @game.tiles << old_tile unless old_tile.preprinted
 
         tile.rotate!(rotation)
         hex.lay(tile)
+
+        @game.graph.clear
+        check_track_restrictions!(old_tile, tile)
 
         abilities =
           if entity.respond_to?(:companies)
@@ -245,6 +270,31 @@ module Engine
         corporation = share.corporation
         corporation.holding_ok?(entity, share.percent) &&
         (!corporation.counts_for_limit || entity.num_certs < @game.cert_limit)
+      end
+
+      def check_track_restrictions!(old_tile, new_tile)
+        old_paths = old_tile.paths
+        changed_city = false
+        used_new_track = old_paths.empty?
+
+        new_tile.paths.each do |np|
+          next unless connected_paths[np]
+
+          op = old_paths.find { |path| path <= np }
+          used_new_track = true unless op
+          changed_city = true if op&.node && op.node.max_revenue != np.node.max_revenue
+        end
+
+        case @game.class::TRACK_RESTRICTION
+        when :permissive
+          true
+        when :restrictive
+          raise GameError, 'Must use new track' unless used_new_track
+        when :semi_restrictive
+          raise GameError, 'Must use new track or change city value' if !used_new_track && !changed_city
+        else
+          raise
+        end
       end
     end
   end
