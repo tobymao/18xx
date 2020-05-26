@@ -30,9 +30,11 @@ module View
 
         if code && code == 13
           message = event['target']['value']
-          add_line(user: @user, created_at: Time.now.strftime('%m/%d %H:%M:%S'), message: message)
-          event['target']['value'] = ''
-          @connection.post('/chat', message: message)
+          if message.strip != ''
+            add_line(user: @user, created_at: Time.now.strftime('%m/%d %H:%M:%S'), message: message)
+            event['target']['value'] = ''
+            @connection.post('/chat', message: message)
+          end
         end
       end
 
