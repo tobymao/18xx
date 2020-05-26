@@ -17,6 +17,10 @@ module Engine
           end
       end
 
+      def max_revenue
+        @revenue.values.max
+      end
+
       def route_revenue(phase, train)
         return @revenue[:diesel] if train.name.upcase == 'D' && @revenue[:diesel]
 

@@ -42,7 +42,7 @@ module View
 
       children << h(Tile, tile: @tile) if @tile
       children << h(View::TriangularGrid) if @show_grid
-      layable = @round.layable_hexes[@hex] if @round
+      layable = @round.connected_hexes[@hex] if @round
 
       clickable = layable || @role == :tile_selector
 

@@ -8,13 +8,10 @@ require_relative 'base'
 module Engine
   module Round
     class Special < Base
+      attr_writer :current_entity
+
       def active_entities
         @entities
-      end
-
-      def current_entity=(new_entity)
-        @current_entity = new_entity
-        @layable_hexes = nil
       end
 
       def tile_laying_ability
@@ -27,21 +24,11 @@ module Engine
         !!tile_laying_ability
       end
 
-      def layable_hexes
-        @layable_hexes ||= tile_laying_ability[:hexes]&.map do |coordinates|
+      def connected_hexes
+        tile_laying_ability[:hexes]&.map do |coordinates|
           hex = @game.hex_by_id(coordinates)
           [hex, hex.neighbors.keys]
         end.to_h
-      end
-
-      def legal_rotations(hex, tile)
-        original_exits = hex.tile.exits
-
-        (0..5).select do |rotation|
-          exits = tile.exits.map { |e| tile.rotate(e, rotation) }
-          ((original_exits & exits).size == original_exits.size) &&
-            exits.all? { |direction| hex.neighbors[direction] }
-        end
       end
 
       private
@@ -55,7 +42,6 @@ module Engine
           ability[:count] ||= 0
           ability[:count] -= 1
           company.remove_ability(:tile_lay) unless ability[:count].positive?
-          @game.round.clear_route_cache if @game.round.operating?
         when Action::BuyShare
           owner = company.owner
           share = action.share
@@ -73,6 +59,10 @@ module Engine
           # this is shit
           @game.tiles.find { |t| t.name == name }
         end.compact
+      end
+
+      def check_track_restrictions!(_old_tile, _new_tile)
+        true
       end
     end
   end

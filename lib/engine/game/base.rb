@@ -14,6 +14,7 @@ require_relative '../bank'
 require_relative '../company'
 require_relative '../corporation'
 require_relative '../depot'
+require_relative '../graph'
 require_relative '../hex'
 require_relative '../phase'
 require_relative '../player'
@@ -26,7 +27,7 @@ module Engine
   module Game
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
-                  :depot, :finished, :hexes, :id, :log, :phase, :players, :round,
+                  :depot, :finished, :graph, :hexes, :id, :log, :phase, :players, :round,
                   :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible
 
       DEV_STAGE = :prealpha
@@ -57,6 +58,8 @@ module Engine
       PHASES = [].freeze
 
       LOCATION_NAMES = {}.freeze
+
+      TRACK_RESTRICTION = :semi_restrictive
 
       CACHABLE = [
         %i[players player],
@@ -182,6 +185,7 @@ module Engine
         init_starting_cash(@players, @bank)
         @share_pool = SharePool.new(self)
         @hexes = init_hexes(@companies, @corporations)
+        @graph = Graph.new(self)
 
         # call here to set up ids for all cities before any tiles from @tiles
         # can be placed onto the map

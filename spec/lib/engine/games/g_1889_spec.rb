@@ -128,12 +128,7 @@ module Engine
     end
 
     context 'full game' do
-      RESULTS = {
-        233 => {
-          'dionhut' => 7844,
-          'hhlodesign' => 7655,
-          'raj' => 8050,
-        },
+      {
         247 => {
           'fdinh' => 1094,
           'gugvib' => 1148,
@@ -145,25 +140,13 @@ module Engine
           'johnhawkhaines' => 260,
           'scottredracecar' => 1473,
         },
-        319 => {
-          'Avemo3' => 6586,
-          'Hushed' => 3511,
-          'Skanadron' => 5351,
-        },
-        956 => {
-          'Jac' => 4894,
-          'kelsin' => 5254,
-          'mroy' => 4836,
-        },
         962 => {
           'Dimikosta' => 3091,
           'Joshua6' => 4317,
           'SamK' => 4444,
           'ventusignis' => 3880,
         },
-      }.freeze
-
-      RESULTS.each do |game_id, result|
+      }.each do |game_id, result|
         it "#{game_id} matches result exactly" do
           data = JSON.parse(File.read("spec/fixtures/1889/#{game_id}.json"))
           players = data['players'].map { |p| p['name'] }
