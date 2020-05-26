@@ -21,22 +21,22 @@ Some app routes that may be of interest to developers:
 * `/tiles/all` - renders all of the track tiles (and generic map hex "tiles")
   defined in `lib/engine/tile.rb`
 * `/tiles/<game_title>` - renders all of the track tiles (and map hex "tiles")
-  for the given game
+  for the given game. Multiple game titles can be given, separated by `+`.
 * `/tiles/<tile_name>` - renders a single tile at large scale (tile must be
   defined in `lib/engine/tile.rb`)
-* `/tiles/<game_title>/<hex_coord>` - renders a single hex from the game's map
-  at large scale
-* `/tiles/<game_title>/<tile_name>` - renders a single tile from a game at large
-  scale
+* `/tiles/<game_title>/<hex_coord_or_tile_name>` - renders a single hex or tile
+  the given game at large scale. Multiple hex coords or tile names can be given,
+  separated by `+`.
 
-Additionally, where the above routes take a `<hex_coord>` or `<tile_name>`,
-multiple can be given by separating them with `+`, and hex coords and tile names
-can be mix and matched with `+`. Those routes also accept URL params `r` and
-`n`. `r` sets the rotation to render; `all` can be given, or multiple numbers
-can be given, separated by `+`. `n` specifies the location name to render on the
-tile, but this will not override an existing location name (e.g.,
-`/tiles/1889/I4?n=Exampleville` will always display "Kotohira" instead of
-"Exampleville")
+Optional URL params for above routes:
+
+* `r=<rotation(s)>` - specify the rotation with an `Integer`, multiple rotations
+    with `+`-separated `Integer`s, or `all` to see all 6. Preprinted tiles are
+    not rotated. This param is ignored at `/tiles/all`.
+* `n=<location_name>` - specify a location name to render for tiles that have at
+    least one stop. Preprinted tiles with location names are not
+    overridden. This param is ignored at `/tiles/all`.
+* `grid` - show the triangular grid on the hexes to identify regions on the tile
 
 ### Docker
 

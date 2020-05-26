@@ -545,7 +545,7 @@ module Engine
       "o=r:yellow_30|green_40|brown_50|gray_60;c=r:0,s:2;p=a:4,b:_0;p=a:5,b:_0": [
         "D9"
       ],
-      "p=a:3,b:j;p=a:4,b:j;p=a:5,b=j": [
+      "p=a:3,b:j;p=a:4,b:j;p=a:5,b:j": [
         "F1"
       ]
     },

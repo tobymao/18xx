@@ -58,12 +58,15 @@ module View
         rendered = hex_or_tile_ids.flat_map { |id| render_individual_tile_from_game(game_title, id) }
         h('div#tiles', rendered)
 
-      # everything for one game
-      elsif Engine::GAMES_BY_TITLE.keys.include?(dest)
-        game_class = Engine::GAMES_BY_TITLE[dest]
-        h('div#tiles', [
-            map_hexes_and_tile_manifest_for(game_class)
-          ])
+      # everything for one or more games
+      elsif (game_titles = dest.split('+')).all? { |g| Engine::GAMES_BY_TITLE.keys.include?(g) }
+
+        rendered = game_titles.flat_map do |g|
+          game_class = Engine::GAMES_BY_TITLE[g]
+          map_hexes_and_tile_manifest_for(game_class)
+        end
+
+        h('div#tiles', rendered)
 
       # common tile(s)
       else
@@ -144,7 +147,13 @@ module View
       end
 
       rendered_tiles = game.tiles.sort.group_by(&:name).flat_map do |name, tiles_|
-        render_tile_blocks(name, tile: tiles_.first, num: tiles_.size)
+        render_tile_blocks(
+          name,
+          tile: tiles_.first,
+          num: tiles_.size,
+          rotations: @rotations,
+          location_name: @location_name,
+        )
       end
 
       h("div#hexes_and_tiles_#{game_class.title}", [

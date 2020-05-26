@@ -14,15 +14,10 @@ module View
         scale: 1.5,
       }.freeze
       P_LEFT_CORNER = {
-        region_weights: LEFT_CORNER + [13],
+        region_weights_in: LEFT_CORNER + [13],
+        region_weights_out: LEFT_CORNER,
         x: -65,
         y: 5,
-      }.freeze
-      P_BOTTOM_LEFT = {
-        region_weights_in: [13, 19, 20],
-        region_weights_out: [19, 20],
-        x: -35,
-        y: 60,
       }.freeze
       P_BOTTOM_RIGHT = {
         region_weights_in: [17, 22, 23],
@@ -39,7 +34,6 @@ module View
         else
           [
             P_LEFT_CORNER,
-            P_BOTTOM_LEFT,
             P_BOTTOM_RIGHT,
           ]
         end

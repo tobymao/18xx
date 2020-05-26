@@ -16,10 +16,10 @@ module View
       }
 
       tile ||= Engine::Tile.for(name)
-      location_name ||= tile.location_name
 
-      # setting [0] as default value in function arg doesn't work
-      rotations ||= [0]
+      loc_name = location_name || tile.location_name if tile.stops.any?
+
+      rotations = [0] if tile.preprinted || rotations.nil?
 
       rotations.map do |rotation|
         tile.rotate!(rotation)
@@ -36,7 +36,7 @@ module View
                   Hex,
                   hex: Engine::Hex.new('A1',
                                        layout: 'flat',
-                                       location_name: location_name,
+                                       location_name: loc_name,
                                        tile: tile),
                   role: :tile_page,
                   opacity: opacity,
