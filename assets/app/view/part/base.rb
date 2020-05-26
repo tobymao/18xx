@@ -129,9 +129,13 @@ module View
         region_weights = { region_weights => 1.0 } if region_weights.is_a?(Array)
 
         region_weights.each do |regions, weight|
-          regions.each do |region|
-            @region_use[region] += weight
-          end
+          increment_weight_for_regions(regions, weight)
+        end
+      end
+
+      def increment_weight_for_regions(regions, weight = 1)
+        regions.each do |region|
+          @region_use[region] += weight
         end
       end
 

@@ -21,16 +21,16 @@ module View
           y: -60,
         }
 
-        top_center = {
-          region_weights: [2],
-          x: 0,
-          y: -60,
+        edge2 = {
+          region_weights: [0, 5, 6],
+          x: -50,
+          y: -45,
         }
 
         [
           center,
           top_right_corner,
-          top_center,
+          edge2,
         ]
       end
 

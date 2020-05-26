@@ -30,7 +30,6 @@ module View
     needs :hex
     needs :round, default: nil
     needs :tile_selector, default: nil, store: true
-    needs :show_grid, default: false, store: true
     needs :role, default: :map
     needs :opacity, default: nil
 
@@ -41,7 +40,7 @@ module View
       @tile = @selected && @round.can_lay_track? && @tile_selector&.tile ? @tile_selector.tile : @hex.tile
 
       children << h(Tile, tile: @tile) if @tile
-      children << h(View::TriangularGrid) if @show_grid
+      children << h(View::TriangularGrid) if Lib::Params['grid']
       layable = @round.connected_hexes[@hex] if @round
 
       clickable = layable || @role == :tile_selector

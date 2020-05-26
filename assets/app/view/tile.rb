@@ -47,15 +47,18 @@ module View
       children << render_tile_part(Part::Towns, routes: @routes) if @tile.towns.any?
 
       # OO tiles have different rules...
-      children << render_tile_part(Part::LocationName) if @tile.cities.size > 1 && @tile.location_name
+      children << render_tile_part(Part::LocationName) if @tile.location_name && @tile.cities.size > 1
+
+      # cities and towns render revenue, unless there are more than 2 cities on
+      # the tile, or the revenue varies by phase
+      if (@tile.cities.size > 2) || @tile.stops.any? { |s| s.revenue.values.uniq.size > 1 }
+        children << render_tile_part(Part::Revenue)
+      end
 
       children << render_tile_part(Part::Label) if @tile.label
-      children << render_tile_part(Part::Revenue) if @tile.stops.any?
       children << render_tile_part(Part::Upgrades) if @tile.upgrades
-
-      children << render_tile_part(Part::LocationName) if @tile.cities.count <= 1 && @tile.location_name
-
       children << render_tile_part(Part::Blocker) if should_render_blocker?
+      children << render_tile_part(Part::LocationName) if @tile.location_name && (@tile.cities.size <= 1)
 
       children.flatten!
 

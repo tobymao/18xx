@@ -9,25 +9,22 @@ module View
       CHARACTER_WIDTH = 8
       BACKGROUND_COLOR = '#FFFFFF'
       BACKGROUND_OPACITY = '0.5'
-
       def preferred_render_locations
-        center = {
-          region_weights: CENTER,
-          x: 0,
-          y: 0,
-        }
-
-        up24 = {
-          region_weights: TOP_MIDDLE_ROW,
-          x: 0,
-          y: -(24 + delta_y),
-        }
-
-        down24 = {
-          region_weights: BOTTOM_MIDDLE_ROW,
-          x: 0,
-          y: 24,
-        }
+        top =
+          begin
+            y = if @name_segments.size > 1
+                  54
+                else
+                  61
+                end
+            {
+              region_weights_in: { TRACK_TO_EDGE_3 => 1,
+                                   TOP_ROW => 2 },
+              region_weights_out: { TOP_ROW => 1 },
+              x: 0,
+              y: -(y + delta_y),
+            }
+          end
 
         up40 = {
           region_weights_in: { TRACK_TO_EDGE_3 => 1,
@@ -38,6 +35,24 @@ module View
                                 [6, 10] => 0.25 },
           x: 0,
           y: -(40 + delta_y),
+        }
+
+        up24 = {
+          region_weights: TOP_MIDDLE_ROW,
+          x: 0,
+          y: -(24 + delta_y),
+        }
+
+        center = {
+          region_weights: CENTER,
+          x: 0,
+          y: -delta_y / 2,
+        }
+
+        down24 = {
+          region_weights: BOTTOM_MIDDLE_ROW,
+          x: 0,
+          y: 24,
         }
 
         down40 = {
@@ -59,29 +74,21 @@ module View
           y: 50,
         }
 
-        up63 = {
-          region_weights_in: { TRACK_TO_EDGE_3 => 1,
-                               TOP_ROW => 1 },
-          region_weights_out: { TOP_ROW => 1 },
-          x: 0,
-          y: -(63 + delta_y),
-        }
-
-        up56 = {
-          region_weights_in: { TRACK_TO_EDGE_3 => 1,
-                               TOP_ROW => 1 },
-          region_weights_out: { TOP_ROW => 1 },
-          x: 0,
-          y: -(56 + delta_y),
-        }
-
-        down55 = {
-          region_weights_in: { TRACK_TO_EDGE_0 => 1,
-                               BOTTOM_ROW => 1 },
-          region_weights_out: { BOTTOM_ROW => 1 },
-          x: 0,
-          y: 55,
-        }
+        bottom =
+          begin
+            y = if @name_segments.size > 1
+                  39
+                else
+                  56
+                end
+            {
+              region_weights_in: { TRACK_TO_EDGE_0 => 1,
+                                   BOTTOM_ROW => 1.5 },
+              region_weights_out: { BOTTOM_ROW => 1 },
+              x: 0,
+              y: (y + delta_y),
+            }
+          end
 
         if @tile.offboards.any?
           return [
@@ -91,41 +98,70 @@ module View
           ]
         end
 
-        default = [
-          center,
-          up40,
-          down40,
-        ]
+        if @tile.towns.size == 1
+          return [
+            center,
+            up40,
+            down40,
+          ]
+        end
 
         if @tile.cities.size == 1
-          case @tile.cities.first.slots
-          when 3
-            [
-              down50,
-              up63,
-            ]
-          when 4
-            [
-              up56,
-              down55,
-            ]
-          else
-            default
-          end
-        elsif @tile.cities.size > 1
-          down55[:region_weights_in][BOTTOM_ROW] += 1
-          up56[:region_weights_in][TOP_ROW] += 1
-
-          [
-            center,
-            down55,
-            up56,
-          ]
-        elsif @tile.towns.size == 1
-          default + [up63, down55]
-        else
-          default
+          return case @tile.cities.first.slots
+                 when 3
+                   [
+                     down50,
+                     top,
+                   ]
+                 when 4
+                   [
+                     top,
+                     bottom,
+                   ]
+                 else
+                   [
+                     center,
+                     up40,
+                     down40,
+                   ]
+                 end
         end
+
+        if (@tile.towns + @tile.cities).size > 1
+          # if top and bottom edges are both used, we might end up rendering in
+          # the middle, so try to shift out of the way of track
+          if [0, 3].all? { |e| @tile.exits.include?(e) }
+            width, = box_dimensions
+            shift = 79 - (width / 2)
+            delta_x =
+              if [1, 2].all? { |e| @tile.exits.include?(e) }
+                # track on both left edges, so shift to the right
+                shift
+              elsif [4, 5].all? { |e| @tile.exits.include?(e) }
+                # track on both right edges, so shift to the left
+                -shift
+              end
+            center[:x] += delta_x if delta_x
+          end
+
+          return begin
+                   if @tile.exits.any?
+                     [
+                       center,
+                       bottom,
+                       top,
+                     ]
+                   else
+                     [
+                       center,
+                       up40,
+                       down40,
+                     ]
+                   end
+                 end
+        end
+
+        []
       end
 
       def load_from_tile
@@ -154,15 +190,24 @@ module View
           ])
       end
 
+      def box_dimensions
+        @box_dimensions ||=
+          begin
+            lines = @name_segments.size
+            characters = @name_segments.map(&:size).max
+
+            buffer_x = CHARACTER_WIDTH
+            buffer_y = 4
+
+            width = buffer_x + (characters * CHARACTER_WIDTH)
+            height = buffer_y + (lines * LINE_HEIGHT)
+
+            [width, height]
+          end
+      end
+
       def render_background_box
-        lines = @name_segments.size
-        characters = @name_segments.map(&:size).max
-
-        buffer_x = CHARACTER_WIDTH
-        buffer_y = 4
-
-        width = buffer_x + (characters * CHARACTER_WIDTH)
-        height = buffer_y + (lines * LINE_HEIGHT)
+        width, height = box_dimensions
 
         attrs = {
           height: height,
@@ -171,7 +216,7 @@ module View
           'fill-opacity': BACKGROUND_OPACITY,
           stroke: 'none',
           x: -width / 2,
-          y: -((buffer_y + LINE_HEIGHT) / 2),
+          y: -(((CHARACTER_WIDTH / 2) + LINE_HEIGHT) / 2),
         }
 
         h(:rect, attrs: attrs)

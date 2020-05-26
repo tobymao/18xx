@@ -4,6 +4,7 @@ require 'lib/hex'
 require 'view/runnable'
 require 'view/part/base'
 require 'view/part/city_slot'
+require 'view/part/single_revenue'
 
 module View
   module Part
@@ -27,7 +28,7 @@ module View
         6 => [0, -50],
       }.freeze
 
-      EDGE_TRACK_LOCATIONS = [
+      EDGE_TRACK_REGIONS = [
         TRACK_TO_EDGE_0,
         TRACK_TO_EDGE_1,
         TRACK_TO_EDGE_2,
@@ -36,22 +37,13 @@ module View
         TRACK_TO_EDGE_5,
       ].freeze
 
-      EDGE_CITY_LOCATIONS = [
+      EDGE_CITY_REGIONS = [
         [15, 20, 21, 22],
         [12, 13, 14, 19],
         [0, 5, 6, 7],
         [1, 2, 3, 8],
         [10, 11, 4, 9],
         [16, 17, 18, 23],
-      ].freeze
-
-      SHARP_TRACK_LOCATIONS = [
-        [13, 14, 15, 19, 20, 21],
-        [5, 6, 7, 12, 13, 14],
-        [0, 1, 2, 6, 7, 8],
-        [2, 3, 4, 8, 9, 10],
-        [9, 10, 11, 16, 17, 18],
-        [15, 16, 17, 21, 22, 23],
       ].freeze
 
       # key: number of slots in city
@@ -66,8 +58,8 @@ module View
         }],
         3 => [:polygon, {
           fill: 'white',
-          points: Lib::Hex::POINTS,
-          transform: 'scale(0.458)',
+          # Lib::Hex::POINTS scaled by 0.458
+          points: '45.8,0 22.9,-39.846 -22.9,-39.846 -45.8,0 -22.9,39.846 22.9,39.846',
         }],
         4 => [:rect, {
           fill: 'white',
@@ -87,15 +79,25 @@ module View
         }],
       }.freeze
 
+      OO_REVENUE_ANGLES = [175, -135, 145, -5, 45, -45].freeze
+
+      OO_REVENUE_REGIONS = [
+        [19],
+        [5, 12],
+        [5, 12],
+        [4],
+        [11, 18],
+        [11, 18],
+      ].freeze
+
       def preferred_render_locations
         edge_a, edge_b = @city.exits
         if @tile.cities.size > 1 && (edge_a || edge_b)
-          edge = @tile.preferred_city_edges[@city]
           return [
             {
-              region_weights: EDGE_TRACK_LOCATIONS[edge] + EDGE_CITY_LOCATIONS[edge],
-              x: -Math.sin((edge * 60) / 180 * Math::PI) * 50,
-              y: Math.cos((edge * 60) / 180 * Math::PI) * 50,
+              region_weights: EDGE_TRACK_REGIONS[@edge] + EDGE_CITY_REGIONS[@edge],
+              x: -Math.sin((@edge * 60) / 180 * Math::PI) * 50,
+              y: Math.cos((@edge * 60) / 180 * Math::PI) * 50,
             }
           ]
         end
@@ -124,6 +126,11 @@ module View
         ]
       end
 
+      def load_from_tile
+        @edge = @tile.preferred_city_town_edges[@city]
+        @cities = @tile.cities.size
+      end
+
       def render_part
         slots = (0..(@city.slots - 1)).zip(@city.tokens).map do |slot_index, token|
           rotation = (360 / @city.slots) * slot_index
@@ -145,13 +152,70 @@ module View
         children = []
         children << render_box(slots.size) if slots.size.between?(2, 6)
         children.concat(slots)
+
+        if (revenue = render_revenue)
+          children << revenue
+        end
+
         props = @city.solo? ? {} : { on: { click: -> { touch_node(@city) } } }
         h(:g, props, children)
       end
 
-      # TODOS:
-      # - do actual math and get points for the 3-slot hexagon, rather than
-      #   scaling the full-size hexagon
+      def render_revenue
+        revenues = @city.revenue.values.uniq
+        return if revenues.uniq.size > 1
+
+        revenue = revenues.first
+        return if revenue.zero?
+
+        # let View::Tile worry about rendering revenue if there are too many
+        # individual cities (eg, Chi in 1846)
+        return if @tile.cities.size > 2
+
+        angle = 0
+        displacement = 42
+        x = render_location[:x]
+        y = render_location[:y]
+        regions = []
+
+        # if there are more than 2 cities on the tile (e.g., Chi in 1846), the
+        # revenue should be handled by View::Tile
+        case @cities
+        when 1
+          x = 0
+          y = 0
+          regions = [11, 18]
+
+          case @city.slots
+          when 1
+            regions = [9, 16]
+          when 2
+            displacement = 67
+          when 3
+            displacement = 65
+          when 4
+            displacement = 67
+          end
+        when 2
+          if @edge
+            angle = OO_REVENUE_ANGLES[@edge]
+            regions = OO_REVENUE_REGIONS[@edge]
+          end
+        end
+
+        increment_weight_for_regions(regions)
+
+        h(:g, { attrs: { transform: "translate(#{x} #{y})" } }, [
+            h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
+                h(:g, { attrs: { transform: "translate(#{displacement} 0)" } }, [
+                    h(Part::SingleRevenue,
+                      revenue: revenue,
+                      transform: "rotate(#{-angle})")
+                  ])
+              ])
+          ])
+      end
+
       def render_box(slots)
         element, attrs = BOX_ATTRS[slots]
         h(element, attrs: attrs)

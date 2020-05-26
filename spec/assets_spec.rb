@@ -36,6 +36,10 @@ describe 'Assets' do
       expect(x2_x3).to include('X2')
       expect(x2_x3).to include('X3')
 
+      multiple_games = render(app_route: '/tiles/1889+18Chesapeake')
+      expect(multiple_games).to include('Kouchi')
+      expect(multiple_games).to include('Delmarva')
+
       %w[1830 1889 18Chesapeake].each do |title|
         expect(render(app_route: "/tiles/#{title}")).to include("#{title} Map Hexes")
         expect(render(app_route: "/tiles/#{title}")).to include("#{title} Tile Manifest")
@@ -53,6 +57,12 @@ describe 'Assets' do
 
     context '/map' do
       {
+        # games with config but not full implementation; just do a quick spot check
+        '1817' => %w[Pittsburgh],
+        '1830' => %w[New York],
+        '1846' => %w[Chicago],
+
+        # games with full implementation; verify every string on the map
         '1889' => %w[
           1 10 11 12 13 14 2 20 3 30 4 40 5 6 60 7 8 80 9 A AR Anan Awaji B C D
           D100 D80 E ER F G H I IR Ikeda Imabari J K KO Komatsujima Kotohira
@@ -69,7 +79,7 @@ describe 'Assets' do
           Norfolk OO Ohio PLE PRR Peninsula Philadelphia Pittsburgh Princeton
           Richmond SRR Spring Strasburg Trenton Virginia Washington West
           Wilmington York
-        ]
+        ],
       }.each do |game_title, expected_strings|
         context game_title do
           it 'renders map' do
