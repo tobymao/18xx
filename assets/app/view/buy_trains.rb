@@ -8,6 +8,7 @@ require 'view/undo_and_pass'
 module View
   class BuyTrains < Snabberb::Component
     include Actionable
+    needs :show_other_players, default: nil, store: true
 
     def render
       round = @game.round
@@ -77,14 +78,15 @@ module View
         buy_train = -> { process_action(Engine::Action::BuyTrain.new(@corporation, train, train.price)) }
 
         h(:div, [
-          "Train #{train.name} - #{@game.format_currency(train.price)}",
+          "Train #{train.name} - #{@game.format_currency(train.price)} from The Depot",
           h('button', { style: { margin: '1rem' }, on: { click: buy_train } }, 'Buy'),
         ])
       end
     end
 
     def other_trains(other_corp_trains)
-      other_corp_trains.flat_map do |other, trains|
+      hidden_trains = false
+      trains_to_buy = other_corp_trains.flat_map do |other, trains|
         trains.group_by(&:name).map do |name, group|
           input = h(
             :input,
@@ -107,13 +109,33 @@ module View
 
           count = group.size
 
-          h(:div, [
-            "Train #{name} - from #{other.name}" + (count > 1 ? " (has #{count})" : ''),
-            input,
-            h('button.margined', { on: { click: buy_train } }, 'Buy'),
-          ])
+          if @show_other_players || other.owner == @corporation.owner
+            h(:div, [
+              "Train #{name} - from #{other.name} (#{other.owner.name})" + (count > 1 ? " (has #{count})" : ''),
+              input,
+              h('button.margined', { on: { click: buy_train } }, 'Buy'),
+            ])
+          else
+            hidden_trains = true
+            nil
+          end
         end
+      end.compact
+
+      if hidden_trains
+        trains_to_buy << h(:div, [
+          h('button.margined',
+            { on: { click: -> { store(:show_other_players, true) } } },
+            'Show trains from other players'),
+        ])
+      elsif @show_other_players
+        trains_to_buy << h(:div, [
+          h('button.margined',
+            { on: { click: -> { store(:show_other_players, false) } } },
+            'Hide trains from other players'),
+        ])
       end
+      trains_to_buy
     end
 
     def remaining_trains
