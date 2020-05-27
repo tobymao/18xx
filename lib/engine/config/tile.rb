@@ -13,7 +13,7 @@ module Engine
         'city' => 'c=r:0',
       }.freeze
 
-      # Red tiles don't exist yet
+      BLUE = {}.freeze
       RED = {}.freeze
 
       YELLOW = {

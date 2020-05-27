@@ -42,6 +42,8 @@ module Engine
         color = :gray
       elsif (code = RED[name])
         color = :red
+      elsif (code = BLUE[name])
+        color = :blue
       else
         raise Engine::GameError, "Tile '#{name}' not found"
       end
