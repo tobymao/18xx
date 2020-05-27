@@ -22,8 +22,10 @@ module View
 
         if code && code == 13
           message = event['target']['value']
-          event['target']['value'] = ''
-          process_action(Engine::Action::Message.new(@player, message))
+          if message.strip != ''
+            event['target']['value'] = ''
+            process_action(Engine::Action::Message.new(@player, message))
+          end
         end
       end
 
