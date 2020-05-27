@@ -6,7 +6,7 @@ module Engine
 
     def initialize(shares, percent = nil)
       shares = Array(shares)
-      raise 'All shares must be from the same corporation' unless shares.map(&:corporation).uniq.size == 1
+      raise 'All shares must be from the same corporation' unless shares.map(&:corporation).uniq.one?
 
       @shares = shares
       @percent = percent || @shares.sum(&:percent)

@@ -55,7 +55,7 @@ module View
 
         return if revenues.empty?
 
-        if revenues.size == 1
+        if revenues.one?
           revenues = revenues.first
         else
           puts "WARNING: encountered multiple different revenues on tile #{@tile.name}"
@@ -64,7 +64,7 @@ module View
         end
 
         @revenue =
-          if revenues.values.uniq.size == 1
+          if revenues.values.uniq.one?
             revenues.values.uniq.first
           else
             revenues

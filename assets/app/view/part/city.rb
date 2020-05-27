@@ -92,7 +92,7 @@ module View
 
       def preferred_render_locations
         edge_a, edge_b = @city.exits
-        if @tile.cities.size > 1 && (edge_a || edge_b)
+        if @num_cities > 1 && (edge_a || edge_b)
           return [
             {
               region_weights: EDGE_TRACK_REGIONS[@edge] + EDGE_CITY_REGIONS[@edge],
@@ -128,7 +128,7 @@ module View
 
       def load_from_tile
         @edge = @tile.preferred_city_town_edges[@city]
-        @cities = @tile.cities.size
+        @num_cities = @tile.cities.size
       end
 
       def render_part
@@ -162,15 +162,15 @@ module View
       end
 
       def render_revenue
-        revenues = @city.revenue.values.uniq
-        return if revenues.uniq.size > 1
+        revenues = @city.uniq_revenues
+        return if revenues.size > 1
 
         revenue = revenues.first
         return if revenue.zero?
 
         # let View::Tile worry about rendering revenue if there are too many
         # individual cities (eg, Chi in 1846)
-        return if @tile.cities.size > 2
+        return if @num_cities > 2
 
         angle = 0
         displacement = 42
@@ -180,7 +180,7 @@ module View
 
         # if there are more than 2 cities on the tile (e.g., Chi in 1846), the
         # revenue should be handled by View::Tile
-        case @cities
+        case @num_cities
         when 1
           x = 0
           y = 0

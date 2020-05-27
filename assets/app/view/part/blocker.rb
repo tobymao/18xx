@@ -27,7 +27,7 @@ module View
       }.freeze
 
       def preferred_render_locations
-        if @tile.parts.size == 1
+        if @tile.parts.one?
           [
             P_CENTER
           ]

@@ -61,8 +61,8 @@ module View
       ].freeze
 
       def preferred_render_locations
-        if (@tile.cities + @tile.towns).size == 1
-          if (@tile.cities.size == 1) && (@tile.cities.first.slots > 1)
+        if (@tile.cities + @tile.towns).one?
+          if @tile.cities.one? && (@tile.cities.first.slots > 1)
             SINGLE_CITY_MULTI_SLOT
           else
             SINGLE_CITY_ONE_SLOT

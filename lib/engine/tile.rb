@@ -124,7 +124,6 @@ module Engine
       @blockers = []
       @preprinted = preprinted
       @index = index
-      @preferred_city_town_edges = {}
 
       separate_parts
     end
@@ -146,6 +145,7 @@ module Engine
       @nodes.each(&:clear!)
       @_paths = nil
       @_exits = nil
+      @preferred_city_town_edges = nil
       self
     end
 
@@ -164,8 +164,8 @@ module Engine
     def lawson?
       @lawson ||=
         @junctions.any? ||
-        (@cities.size == 1 && @towns.empty?) ||
-        ((cities.empty? && towns.size == 1) && edges.size > 2)
+        (@cities.one? && @towns.empty?) ||
+        ((cities.empty? && towns.one?) && edges.size > 2)
     end
 
     def upgrade_cost(abilities)
@@ -222,7 +222,7 @@ module Engine
     # "ct" for "city or town"
     def preferred_city_town_edges
       # cache per rotation
-      @preferred_city_town_edges[@rotation] ||=
+      @preferred_city_town_edges ||=
         begin
           # ct => nums of edges it is connected to
           ct_edges = Hash.new { |h, k| h[k] = [] }

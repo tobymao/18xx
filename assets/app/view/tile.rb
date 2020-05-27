@@ -51,7 +51,7 @@ module View
 
       # cities and towns render revenue, unless there are more than 2 cities on
       # the tile, or the revenue varies by phase
-      if (@tile.cities.size > 2) || @tile.stops.any? { |s| s.revenue.values.uniq.size > 1 }
+      if (@tile.cities.size > 2) || @tile.stops.any? { |s| s.uniq_revenues.size > 1 }
         children << render_tile_part(Part::Revenue)
       end
 

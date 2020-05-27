@@ -191,7 +191,7 @@ module Engine
         while (bids = @bids[@companies.first])
           break if bids.empty?
 
-          if bids.size == 1
+          if bids.one?
             accept_bid(bids.first)
           else
             if @auctioning_company != @companies.first

@@ -19,7 +19,7 @@ module View
 
       loc_name = location_name || tile.location_name if tile.stops.any?
 
-      rotations = [0] if tile.preprinted || rotations.nil?
+      rotations = [0] if tile.preprinted || !rotations
 
       rotations.map do |rotation|
         tile.rotate!(rotation)
