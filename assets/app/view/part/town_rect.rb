@@ -12,7 +12,6 @@ module View
 
       needs :town
       needs :color, default: 'black'
-      needs :tile
 
       HEIGHT = 8
       WIDTH = 32
@@ -110,7 +109,7 @@ module View
         edge_a, = normalized_edges
 
         loc =
-          if @tile.towns.size == 1
+          if @tile.towns.one?
             SINGLE_TOWN_REGIONS[track_type][min_edge]
           else
             EDGE_TOWN_REGIONS[track_type][edge_a % 6]
@@ -123,21 +122,27 @@ module View
       def rotation_angles
         edge_a, = normalized_edges
 
-        if @tile.towns.size == 1
-          {
-            straight: [min_edge * 60],
-            sharp: [(min_edge + 2) * 60],
-            gentle: [(min_edge * 60) - 30],
-          }[track_type]
+        if @tile.towns.one?
+          case track_type
+          when :straight
+            [min_edge * 60]
+          when :sharp
+            [(min_edge + 2) * 60]
+          when :gentle
+            [(min_edge * 60) - 30]
+          end
         else
 
           tilt = RECTANGLE_TILT[track_type] || 0
 
-          delta = {
-            left: -tilt,
-            right: tilt,
-            straight: 0,
-          }[track_direction]
+          delta = case track_direction
+                  when :straight
+                    0
+                  when :left
+                    -tilt
+                  when :right
+                    tilt
+                  end
 
           [(edge_a * 60) + delta]
         end
@@ -147,33 +152,38 @@ module View
       def position
         edge_a, = normalized_edges
 
-        if @tile.towns.size == 1
-          angles = {
-            straight: [edge_a * 60],
-            sharp: [(min_edge + 0.5) * 60],
-            gentle: [(min_edge + 1) * 60],
-          }[track_type]
+        if @tile.towns.one?
 
-          positions = {
-            straight: [0],
-            sharp: [43.5],
-            gentle: [20],
-          }[track_type]
-
+          angles, positions = case track_type
+                              when :straight
+                                [[edge_a * 60], [0]]
+                              when :sharp
+                                [[(min_edge + 0.5) * 60], [43.5]]
+                              when :gentle
+                                [[(min_edge + 1) * 60], [20]]
+                              end
         else
           positional_angle = POSITIONAL_ANGLE[track_type] || 0
-          delta = {
-            left: positional_angle,
-            right: -positional_angle,
-            straight: 0,
-          }[track_direction]
+
+          delta = case track_direction
+                  when :straight
+                    0
+                  when :left
+                    positional_angle
+                  when :right
+                    -positional_angle
+                  end
+
           angles = [(edge_a * 60) + delta]
 
-          positions = {
-            straight: [40],
-            sharp: [60],
-            gentle: [53.375],
-          }[track_type]
+          positions = case track_type
+                      when :straight
+                        [40]
+                      when :sharp
+                        [60]
+                      when :gentle
+                        [53.375]
+                      end
         end
 
         radians = angles.map { |a| a / 180 * Math::PI }
@@ -198,8 +208,9 @@ module View
       end
 
       def load_from_tile
+        @tile = @town.tile
         @edge = @tile.preferred_city_town_edges[@town]
-        @towns = @tile.towns.size
+        @num_towns = @tile.towns.size
       end
 
       def render_part
@@ -223,8 +234,8 @@ module View
       end
 
       def render_revenue
-        revenues = @town.revenue.values.uniq
-        return if revenues.uniq.size > 1
+        revenues = @town.uniq_revenues
+        return if revenues.size > 1
 
         revenue = revenues.first
         return if revenue.zero?
@@ -237,7 +248,7 @@ module View
         regions = []
 
         # AFAIK no tiles have more than 2 towns
-        case @towns
+        case @num_towns
         when 1
           angle = rotation_angles[0]
           reverse_side = track_type == :sharp

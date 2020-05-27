@@ -98,7 +98,7 @@ module View
           ]
         end
 
-        if @tile.towns.size == 1
+        if @tile.towns.one?
           return [
             center,
             up40,
@@ -106,7 +106,7 @@ module View
           ]
         end
 
-        if @tile.cities.size == 1
+        if @tile.cities.one?
           return case @tile.cities.first.slots
                  when 3
                    [
@@ -130,14 +130,14 @@ module View
         if (@tile.towns + @tile.cities).size > 1
           # if top and bottom edges are both used, we might end up rendering in
           # the middle, so try to shift out of the way of track
-          if [0, 3].all? { |e| @tile.exits.include?(e) }
+          if ([0, 3] - @tile.exits).empty?
             width, = box_dimensions
             shift = 79 - (width / 2)
             delta_x =
-              if [1, 2].all? { |e| @tile.exits.include?(e) }
+              if ([1, 2] - @tile.exits).empty?
                 # track on both left edges, so shift to the right
                 shift
-              elsif [4, 5].all? { |e| @tile.exits.include?(e) }
+              elsif ([4, 5] - @tile.exits).empty?
                 # track on both right edges, so shift to the left
                 -shift
               end

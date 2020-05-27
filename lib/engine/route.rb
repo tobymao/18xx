@@ -25,7 +25,7 @@ module Engine
 
       return unless (first = connections[0])
 
-      if connections.size == 1
+      if connections.one?
         @connections << { left: first.nodes[0], right: first.nodes[-1], connection: first }
       else
         connections.each_cons(2) do |a, b|

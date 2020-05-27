@@ -17,7 +17,7 @@ module View
           if @tile.lawson? || @tile.paths.empty?
             h(Part::TownDot, town: town, tile: @tile, region_use: @region_use, color: color_for(town))
           else
-            h(Part::TownRect, tile: @tile, town: town, region_use: @region_use, color: color_for(town))
+            h(Part::TownRect, town: town, region_use: @region_use, color: color_for(town))
           end
         end
       end

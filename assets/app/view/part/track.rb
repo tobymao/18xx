@@ -27,7 +27,7 @@ module View
             h(TrackOffboard, offboard: path.offboard, region_use: @region_use, path: path, color: color_for(path))
           end
         elsif @tile.lawson?
-          @tile.paths.select { |path| path.edges.size == 1 }.map do |path|
+          @tile.paths.select { |path| path.edges.one? }.map do |path|
             h(TrackLawsonPath, region_use: @region_use, path: path, color: color_for(path))
           end
         elsif @tile.towns.any?

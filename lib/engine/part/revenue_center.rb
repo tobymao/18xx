@@ -26,6 +26,10 @@ module Engine
 
         phase.tiles.reverse.each { |color| return @revenue[color] if @revenue[color] }
       end
+
+      def uniq_revenues
+        @uniq_revenues ||= revenue.values.uniq
+      end
     end
   end
 end
