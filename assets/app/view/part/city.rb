@@ -79,6 +79,10 @@ module View
         }],
       }.freeze
 
+      # value at index 0 is used as default in render_revenue
+      # other indexes correspond to number of slots in the city
+      DISPLACEMENT = [42, 42, 67, 65, 67, 0, 0].freeze
+
       OO_REVENUE_ANGLES = [175, -135, 145, -5, 45, -45].freeze
 
       OO_REVENUE_REGIONS = [
@@ -173,10 +177,11 @@ module View
         return if @num_cities > 2
 
         angle = 0
-        displacement = 42
         x = render_location[:x]
         y = render_location[:y]
         regions = []
+
+        displacement = DISPLACEMENT[0]
 
         # if there are more than 2 cities on the tile (e.g., Chi in 1846), the
         # revenue should be handled by View::Tile
@@ -186,16 +191,9 @@ module View
           y = 0
           regions = [11, 18]
 
-          case @city.slots
-          when 1
-            regions = [9, 16]
-          when 2
-            displacement = 67
-          when 3
-            displacement = 65
-          when 4
-            displacement = 67
-          end
+          displacement = DISPLACEMENT[@city.slots]
+
+          regions = [9, 16] if @city.slots == 1
         when 2
           if @edge
             angle = OO_REVENUE_ANGLES[@edge]
