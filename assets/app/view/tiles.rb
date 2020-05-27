@@ -24,7 +24,7 @@ module View
       rotations.map do |rotation|
         tile.rotate!(rotation)
 
-        text = name.dup
+        text = "##{name}"
         text += "-#{rotation}" if rotations.size > 1
         text += " × #{num}" if num
 
