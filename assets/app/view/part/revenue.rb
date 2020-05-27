@@ -65,7 +65,7 @@ module View
 
         @revenue =
           if revenues.values.uniq.one?
-            revenues.values.uniq.first
+            revenues.values.first
           else
             revenues
           end
