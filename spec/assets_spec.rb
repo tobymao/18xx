@@ -40,7 +40,7 @@ describe 'Assets' do
       expect(multiple_games).to include('Kouchi')
       expect(multiple_games).to include('Delmarva')
 
-      %w[1830 1889 18Chesapeake].each do |title|
+      %w[1889 18Chesapeake].each do |title|
         expect(render(app_route: "/tiles/#{title}")).to include("#{title} Map Hexes")
         expect(render(app_route: "/tiles/#{title}")).to include("#{title} Tile Manifest")
         expect(render(app_route: "/tiles/#{title}")).not_to include('TODO')
@@ -59,7 +59,6 @@ describe 'Assets' do
       {
         # games with config but not full implementation; just do a quick spot check
         '1817' => %w[Pittsburgh],
-        '1830' => %w[New York],
         '1846' => %w[Chicago],
 
         # games with full implementation; verify every string on the map

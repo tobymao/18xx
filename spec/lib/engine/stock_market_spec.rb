@@ -3,12 +3,12 @@
 require './spec/spec_helper'
 
 require 'engine/corporation'
-require 'engine/game/g_1830'
+require 'engine/game/g_1889'
 require 'engine/stock_market'
 
 module Engine
   describe StockMarket do
-    let(:subject) { StockMarket.new(Game::G1830::MARKET, []) }
+    let(:subject) { StockMarket.new(Game::G1889::MARKET, []) }
     let(:corporation) { Corporation.new(sym: 'a', name: 'a', tokens: [0]) }
     let(:corporation_2) { Corporation.new(sym: 'b', name: 'b', tokens: [0]) }
 
@@ -76,7 +76,7 @@ module Engine
       end
 
       it 'stays put at cliff' do
-        current_price = subject.market[7][0]
+        current_price = subject.market[7][4]
         subject.set_par(corporation, current_price)
         subject.move_down(corporation)
         expect(corporation.share_price).to be(current_price)
@@ -84,7 +84,7 @@ module Engine
       end
 
       it 'doesnt change order moving down on a cliff' do
-        current_price = subject.market[7][0]
+        current_price = subject.market[7][4]
         subject.set_par(corporation, current_price)
         subject.set_par(corporation_2, current_price)
         subject.move_down(corporation)
