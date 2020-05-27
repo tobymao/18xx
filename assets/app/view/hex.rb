@@ -73,18 +73,20 @@ module View
 
     def on_hex_click(event)
       nodes = @hex.tile.nodes
-      touch_node(nodes[0]) if @round&.can_run_routes? && nodes.one?
 
-      return @tile_selector.rotate! if @selected && @tile_selector&.tile
+      if @round&.can_run_routes?
+        touch_node(nodes[0]) if nodes.one?
+        return
+      end
+
+      if @round&.can_lay_track? && @selected && (tile = @tile_selector&.tile)
+        @tile_selector.rotate! if tile.hex != @hex
+        return
+      end
 
       case @role
       when :map
-        return unless @round&.can_lay_track?
-
-        store(
-          :tile_selector,
-          Lib::TileSelector.new(@hex, @tile, event, root, @round.current_entity),
-        )
+        store(:tile_selector, Lib::TileSelector.new(@hex, @tile, event, root, @round.current_entity))
       when :tile_selector
         @tile_selector.tile = @tile
       end
