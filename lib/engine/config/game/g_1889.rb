@@ -8,7 +8,7 @@ module Engine
   module Config
     module Game
       module G1889
-        JSON = <<-DATA
+        JSON = <<-'DATA'
 {
   "filename": "1889",
   "modulename": "1889",
