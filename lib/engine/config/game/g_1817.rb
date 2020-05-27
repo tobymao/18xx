@@ -8,7 +8,7 @@ module Engine
   module Config
     module Game
       module G1817
-        JSON = <<-DATA
+        JSON = <<-'DATA'
 {
   "filename": "1817",
   "modulename": "1817",
@@ -133,6 +133,7 @@ module Engine
       "float_percent": 20,
       "sym": "A&S",
       "name": "Alton & Southern Railway",
+      "logo": "1817/AS",
       "tokens": [
         0,
         0,
@@ -145,6 +146,7 @@ module Engine
       "float_percent": 20,
       "sym": "A&A",
       "name": "Arcade and Attica",
+      "logo": "1817/AA",
       "tokens": [
         0,
         0,
@@ -157,6 +159,7 @@ module Engine
       "float_percent": 20,
       "sym": "Belt",
       "name": "Belt Railway of Chicago",
+      "logo": "1817/Belt",
       "tokens": [
         0,
         0,
@@ -169,6 +172,7 @@ module Engine
       "float_percent": 20,
       "sym": "Bess",
       "name": "Bessemer and Lake Erie Railroad",
+      "logo": "1817/Bess",
       "tokens": [
         0,
         0,
@@ -181,6 +185,7 @@ module Engine
       "float_percent": 20,
       "sym": "B&A",
       "name": "Boston and Albany Railroad",
+      "logo": "1817/BA",
       "tokens": [
         0,
         0,
@@ -193,6 +198,7 @@ module Engine
       "float_percent": 20,
       "sym": "DL&W",
       "name": "Delaware, Lackawanna and Western Railroad",
+      "logo": "1817/DLW",
       "tokens": [
         0,
         0,
@@ -205,6 +211,7 @@ module Engine
       "float_percent": 20,
       "sym": "J",
       "name": "Elgin, Joliet and Eastern Railway",
+      "logo": "1817/J",
       "tokens": [
         0,
         0,
@@ -217,6 +224,7 @@ module Engine
       "float_percent": 20,
       "sym": "GT",
       "name": "Grand Trunk Western Railroad",
+      "logo": "1817/GT",
       "tokens": [
         0,
         0,
@@ -229,6 +237,7 @@ module Engine
       "float_percent": 20,
       "sym": "H",
       "name": "Housatonic Railroad",
+      "logo": "1817/H",
       "tokens": [
         0,
         0,
@@ -241,6 +250,7 @@ module Engine
       "float_percent": 20,
       "sym": "ME",
       "name": "Morristown and Erie Railway",
+      "logo": "1817/ME",
       "tokens": [
         0,
         0,
@@ -253,6 +263,7 @@ module Engine
       "float_percent": 20,
       "sym": "NYOW",
       "name": "New York, Ontaria and Western Railway",
+      "logo": "1817/NYOW",
       "tokens": [
         0,
         0,
@@ -265,6 +276,7 @@ module Engine
       "float_percent": 20,
       "sym": "NYSW",
       "name": "New York, Susquehanna and Western Railway",
+      "logo": "1817/NYSW",
       "tokens": [
         0,
         0,
@@ -277,6 +289,7 @@ module Engine
       "float_percent": 20,
       "sym": "PSNR",
       "name": "Pittsburg, Shawmut and Northern Railroad",
+      "logo": "1817/PSNR",
       "tokens": [
         0,
         0,
@@ -289,6 +302,7 @@ module Engine
       "float_percent": 20,
       "sym": "PLE",
       "name": "Pittsburg and Lake Erie Railroad",
+      "logo": "1817/PLE",
       "tokens": [
         0,
         0,
@@ -301,6 +315,7 @@ module Engine
       "float_percent": 20,
       "sym": "PW",
       "name": "Providence and Worcester Railroad",
+      "logo": "1817/PW",
       "tokens": [
         0,
         0,
@@ -313,6 +328,7 @@ module Engine
       "float_percent": 20,
       "sym": "R",
       "name": "Rutland Railraod",
+      "logo": "1817/R",
       "tokens": [
         0,
         0,
@@ -325,6 +341,7 @@ module Engine
       "float_percent": 20,
       "sym": "SR",
       "name": "Strasburg Railroad",
+      "logo": "1817/SR",
       "tokens": [
         0,
         0,
@@ -337,6 +354,7 @@ module Engine
       "float_percent": 20,
       "sym": "UR",
       "name": "Union Railroad",
+      "logo": "1817/UR",
       "tokens": [
         0,
         0,
@@ -349,6 +367,7 @@ module Engine
       "float_percent": 20,
       "sym": "WT",
       "name": "Warren & Trumbull Railroad",
+      "logo": "1817/WT",
       "tokens": [
         0,
         0,
@@ -361,6 +380,7 @@ module Engine
       "float_percent": 20,
       "sym": "WC",
       "name": "West Chester Railroad",
+      "logo": "1817/WC",
       "tokens": [
         0,
         0,
@@ -545,7 +565,7 @@ module Engine
       "o=r:yellow_30|green_40|brown_50|gray_60;c=r:0,s:2;p=a:4,b:_0;p=a:5,b:_0": [
         "D9"
       ],
-      "p=a:3,b:j;p=a:4,b:j;p=a:5,b:j": [
+      "p=a:3,b:j;p=a:2,b:j;p=a:4,b:j": [
         "F1"
       ]
     },

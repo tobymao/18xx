@@ -8,7 +8,7 @@ module Engine
   module Config
     module Game
       module G1846
-        JSON = <<-DATA
+        JSON = <<-'DATA'
 {
   "filename": "1846",
   "modulename": "1846",
@@ -216,6 +216,7 @@ module Engine
       "float_percent": 20,
       "sym": "PRR",
       "name": "Pennsylvania",
+      "logo": "1846/PRR",
       "tokens": [
         0,
         80,
@@ -230,6 +231,7 @@ module Engine
       "float_percent": 20,
       "sym": "NYC",
       "name": "New York Central",
+      "logo": "1846/NYC",
       "tokens": [
         0,
         80,
@@ -272,6 +274,7 @@ module Engine
       "float_percent": 20,
       "sym": "ERIE",
       "name": "Erie",
+      "logo": "1846/ERIE",
       "tokens": [
         0,
         80,
@@ -286,6 +289,7 @@ module Engine
       "float_percent": 20,
       "sym": "GT",
       "name": "Grand Trunk",
+      "logo": "1846/GT",
       "tokens": [
         0,
         80,
@@ -298,6 +302,7 @@ module Engine
       "float_percent": 20,
       "sym": "IC",
       "name": "Illinois Central",
+      "logo": "1846/IC",
       "tokens": [
         0,
         80,
