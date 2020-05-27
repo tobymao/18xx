@@ -148,7 +148,7 @@ module Engine
         end
 
         # Can't oversaturate the market
-        return false unless can_bundle_fit_in_bank?(bundle)
+        return false unless bundle.fit_in_bank?(@share_pool)
 
         # Otherwise we're good
         true

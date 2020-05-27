@@ -44,6 +44,16 @@ module Engine
       price_per_share * num_shares
     end
 
+    def liquid_bundle?(turn, share_pool, entity)
+      return false unless turn > 1
+
+      fit_in_bank?(share_pool) && can_dump?(entity)
+    end
+
+    def fit_in_bank?(share_pool)
+      (percent + share_pool.percent_of(corporation)) <= 50
+    end
+
     def can_dump?(entity)
       !presidents_share || (corporation.share_holders.reject { |k, _| k == entity }.values.max || 0) > 10
     end

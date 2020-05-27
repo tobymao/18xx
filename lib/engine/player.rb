@@ -58,13 +58,18 @@ module Engine
       "#{self.class.name} - #{@name}"
     end
 
-    def liquidity(round)
+    def liquidity(game)
       value = cash
       shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, _|
-        max_bundle = round.get_liquid_bundles(self, corporation).max_by(&:price)
+        max_bundle = liquid_bundles(game, corporation).max_by(&:price)
         value += max_bundle&.price || 0
       end
       value
+    end
+
+    def liquid_bundles(game, corporation)
+      bundles = bundles_for_corporation(corporation)
+      bundles.select { |bundle| bundle.liquid_bundle?(game.turn, game.share_pool, player) }
     end
   end
 end
