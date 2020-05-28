@@ -18,7 +18,9 @@ module View
         h(Chat, user: @user, connection: @connection),
       ]
 
-      your_games, other_games = @games.partition { |game| user_in_game?(@user, game) }
+      your_games, other_games = @games.partition do |game|
+        user_in_game?(@user, game) && game['status'] != 'finished'
+      end
       grouped = other_games.group_by { |game| game['status'] }
 
       last = your_games.last
