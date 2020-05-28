@@ -79,14 +79,15 @@ module View
         return
       end
 
-      if @round&.can_lay_track? && @selected && (tile = @tile_selector&.tile)
-        @tile_selector.rotate! if tile.hex != @hex
-        return
-      end
-
       case @role
       when :map
-        store(:tile_selector, Lib::TileSelector.new(@hex, @tile, event, root, @round.current_entity))
+        return unless @round&.can_lay_track?
+
+        if @selected && (tile = @tile_selector&.tile)
+          @tile_selector.rotate! if tile.hex != @hex
+        else
+          store(:tile_selector, Lib::TileSelector.new(@hex, @tile, event, root, @round.current_entity))
+        end
       when :tile_selector
         @tile_selector.tile = @tile
       end
