@@ -47,27 +47,17 @@ module Engine
       end
 
       nodes.keys.each do |node|
-        global = {}
-        node_paths = node.paths
+        node.walk(corporation: corporation) do |path|
+          paths[path] = true
+          nodes[path.node] = true if path.node
+          hex = path.hex
 
-        node_paths.each do |node_path|
-          local = global.dup
-          node_paths.each { |path| local[path] = true if path != node_path }
-
-          node_path.walk(visited: local, corporation: corporation) do |path|
-            paths[path] = true
-            nodes[path.node] = true if path.node
-
-            hex = path.hex
-            path.exits.each do |edge|
-              hexes[hex] << edge
-              neighbor = hex.neighbors[edge]
-              edge = hex.invert(edge)
-              hexes[neighbor] << edge if neighbor.paths[edge].empty?
-            end
+          path.exits.each do |edge|
+            hexes[hex] << edge
+            neighbor = hex.neighbors[edge]
+            edge = hex.invert(edge)
+            hexes[neighbor] << edge if neighbor.paths[edge].empty?
           end
-
-          global[node_path] = true
         end
       end
 

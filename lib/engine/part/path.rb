@@ -7,12 +7,6 @@ module Engine
     class Path < Base
       attr_reader :a, :b, :branch, :city, :edges, :junction, :node, :offboard, :stop, :town
 
-      def self.walk(paths, visited: {}, on: nil, corporation: nil)
-        paths.each do |path|
-          path.walk(visited: visited, on: on, corporation: corporation) { |p| yield p }
-        end
-      end
-
       def initialize(a, b)
         @a = a
         @b = b
@@ -30,17 +24,17 @@ module Engine
           (@a <= other.b && @b <= other.a)
       end
 
-      def select(paths, corporation: nil)
+      def select(paths)
         on = paths.map { |p| [p, 0] }.to_h
 
-        walk(on: on, corporation: corporation) do |path|
+        walk(on: on) do |path|
           on[path] = 1 if on[path]
         end
 
         on.keys.select { |p| on[p] == 1 }
       end
 
-      def walk(skip: nil, visited: {}, on: nil, corporation: nil)
+      def walk(skip: nil, visited: {}, on: nil)
         return if visited[self]
 
         visited[self] = true
@@ -55,14 +49,8 @@ module Engine
           neighbor.paths[np_edge].each do |np|
             next if on && !on[np]
 
-            np.walk(skip: np_edge, visited: visited, on: on, corporation: corporation) { |p| yield p }
+            np.walk(skip: np_edge, visited: visited, on: on) { |p| yield p }
           end
-        end
-
-        return if !node || !corporation || node.blocks?(corporation)
-
-        node.paths.each do |np|
-          np.walk(visited: visited, on: on, corporation: corporation) { |p| yield p }
         end
       end
 
