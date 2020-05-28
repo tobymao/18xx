@@ -17,7 +17,7 @@ module Engine
         @share_pool = game.share_pool
         @stock_market = game.stock_market
         @corporations = game.corporations
-        @turn = game.turn
+        @sellable_turn = game.sellable_turn?
         @sell_buy_order = sell_buy_order
         # player => corporation => :now or :prev
         # this differentiates between preventing users from buying shares they sold
@@ -66,9 +66,11 @@ module Engine
       end
 
       def can_sell?(bundle)
-        @players_sold[@current_entity][bundle.corporation] != :now &&
+        @sellable_turn &&
+          @players_sold[@current_entity][bundle.corporation] != :now &&
           can_sell_order? &&
-          bundle.liquid_bundle?(@turn, @share_pool, @current_entity)
+          @share_pool.fit_in_bank?(bundle) &&
+          bundle.can_dump?(@current_entity)
       end
 
       def can_sell_order?

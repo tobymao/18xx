@@ -82,6 +82,10 @@ module Engine
       false
     end
 
+    def fit_in_bank?(bundle)
+      (bundle.percent + percent_of(bundle.corporation)) <= 50
+    end
+
     private
 
     def distance(player_a, player_b)

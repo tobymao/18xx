@@ -37,5 +37,10 @@ module Engine
         bundles
       end
     end
+
+    def dumpable_bundles(corporation)
+      bundles = bundles_for_corporation(corporation)
+      bundles.select { |bundle| bundle.can_dump?(self) }
+    end
   end
 end

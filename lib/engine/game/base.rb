@@ -344,6 +344,21 @@ module Engine
         end
       end
 
+      def liquidity(player)
+        return player.cash unless sellable_turn?
+
+        value = player.cash
+        player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, _|
+          max_bundle = player.dumpable_bundles(corporation).max_by(&:price)
+          value += max_bundle&.price || 0 if max_bundle && @share_pool&.fit_in_bank?(max_bundle)
+        end
+        value
+      end
+
+      def sellable_turn?
+        @turn > 1
+      end
+
       private
 
       def init_bank

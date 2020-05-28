@@ -101,7 +101,7 @@ module View
         ]),
         h(:tr, [
           h(:td, td_props, 'Liquidity'),
-          h(:td, td_props, @game.format_currency(@player.liquidity(@game))),
+          h(:td, td_props, @game.format_currency(@game.liquidity(@player))),
         ]),
         h(:tr, [
           h(:td, td_props, 'Certs'),
