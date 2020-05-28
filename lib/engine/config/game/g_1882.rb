@@ -262,7 +262,6 @@ module Engine
           "share": "CPR_0"
         }
       ]
-
     }
   ],
   "corporations": [
