@@ -29,31 +29,37 @@ module Engine
     "6": 300
   },
   "locationNames": {
-    "A9": "Western Canada",
-    "B2": "Northern Alberta",
+    "A9": "Western Canada (HB +100)",
+    "B2": "Northern Alberta (HB +100)",
     "B12": "Lethbridge",
     "C3": "Lloydminster",
     "C7": "Kindersley",
     "C11": "Medicine Hat",
+    "C13": "Elkwater",
     "D4": "Maidstone",
+    "D6": "Wilkie",
     "E5": "North Battleford & Battleford",
     "E9": "Swift Current",
     "F4": "Spiritwood",
     "F14": "Shaunavon",
     "G7": "Saskatoon",
     "H4": "Prince Albert",
+    "H6": "Rosthern & Melfort",
     "H10": "Moose Jaw",
     "H12": "Assiniboia",
     "I3": "Candle Lake",
     "I7": "Humboldt",
+    "I11": "Rouleau & Mossbank",
     "J10": "Pile o' Bones & Lumsden",
     "K1": "Sandy Bay",
     "K3": "Flin Flon",
     "K7": "Wadena",
+    "K9": "Melville & Fort Qu'Appelle",
     "K13": "Wayburn & Estevan",
     "K15": "USA",
-    "L2": "Europe",
+    "L2": "Hudson Bay",
     "L10": "Moosomin",
+    "L12": "Carlyle",
     "L14": "Oxbow",
     "M9": "Eastern Canada",
     "M11": "Virden"
@@ -92,15 +98,15 @@ module Engine
     "67": 1,
     "68": 1,
     "69": 1,
-    "R861": {
+    "R1": {
       "count": 1,
       "color": "green",
-      "code": "c=r:0;c=r:0;p=a:1,b:j;p=a:4,b:j;l=RE"
+      "code": "c=r:60;c=r:60;p=a:0,b:_0;p=a:_0,b:1;p=a:2,b:_1;p=a:_1,b:3;l=R"
     },
-    "R862": {
+    "R2": {
       "count": 1,
       "color": "brown",
-      "code": "c=r:70,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;l=RE"
+      "code": "c=r:70,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;l=R"
     }
   },
   "market": [
@@ -249,7 +255,14 @@ module Engine
       "name": "Canadian Pacific",
       "value": 180,
       "revenue": 25,
-      "desc": "When purchased during the private auction comes with the 20% president's certificate of the Canadian Pacific (CPR) public company. The buying player must immediately set the par price for the CPR to any par price. The Canadian Pacific private company cannot be purchased by a public company."
+      "desc": "When purchased during the private auction comes with the 20% president's certificate of the Canadian Pacific (CPR) public company. The buying player must immediately set the par price for the CPR to any par price. The Canadian Pacific private company cannot be purchased by a public company.",
+      "abilities": [
+        {
+          "type": "share",
+          "share": "CPR_0"
+        }
+      ]
+
     }
   ],
   "corporations": [
@@ -258,7 +271,8 @@ module Engine
       "name": "Canadian National",
       "logo": "1882/CN",
       "tokens": [],
-      "color": "gray"
+      "color": "orange",
+      "text_color": "black"
     },
     {
       "sym": "CNR",
@@ -272,16 +286,17 @@ module Engine
       "color": "green"
     },
     {
-      "sym": "HB",
+      "sym": "HBR",
       "name": "Hudson Bay Railway",
-      "logo": "1882/HB",
+      "logo": "1882/HBR",
       "tokens": [
         0,
         40,
         40
       ],
       "coordinates": "K7",
-      "color": "yellow"
+      "color": "gold",
+      "text_color": "black"
     },
     {
       "sym": "CPR",
@@ -325,7 +340,7 @@ module Engine
         0,
         40
       ],
-      "color": "brown"
+      "color": "purple"
     }
   ],
   "trains": [
@@ -495,7 +510,7 @@ module Engine
         "E5",
         "K13"
       ],
-      "c=r:40;c=r:40;p=a:1,b:_0;p=a:4,b:_1;l=RE": [
+      "c=r:40;c=r:40;p=a:1,b:_0;p=a:4,b:_1;l=R": [
         "J10"
       ],
       "p=a:1,b:3": [
