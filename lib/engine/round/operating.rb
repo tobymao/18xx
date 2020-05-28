@@ -248,6 +248,7 @@ module Engine
             @log << "#{entity.name} runs a #{route.train.name} train for "\
                     "#{@game.format_currency(route.revenue)} (#{hexes})"
           end
+          @current_entity.add_run!(@current_routes)
         when Action::Dividend
           revenue = @current_routes.sum(&:revenue)
           @current_routes = []

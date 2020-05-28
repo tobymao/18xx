@@ -16,7 +16,7 @@ module Engine
 
     attr_accessor :ipoed, :par_price, :share_price, :tokens
     attr_reader :color, :companies, :coordinates, :min_price, :name, :full_name,
-                :logo, :text_color, :trains, :revenue_history
+                :logo, :text_color, :trains, :revenue_history, :last_run
 
     def initialize(sym:, name:, tokens:, **opts)
       @name = sym
@@ -33,6 +33,7 @@ module Engine
       @trains = []
       @companies = []
       @revenue_history = {}
+      @last_run = nil
 
       @cash = 0
       @float_percent = opts[:float_percent] || 60
@@ -100,6 +101,12 @@ module Engine
 
     def corporation?
       true
+    end
+
+    def add_run!(run)
+      # Convert to list of connections as tile lays make connections no longer valid
+      @last_run = {}
+      run.each { |x| @last_run[x.train] = x.connection_hexes }
     end
 
     def add_revenue!(turn, round_num, revenue)

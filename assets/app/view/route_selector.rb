@@ -17,8 +17,31 @@ module View
       @routes.select { |r| r.connections.any? }
     end
 
+    def last_run
+      trains = @game.round.current_entity.trains
+      last_run = @game.round.current_entity.last_run
+      return [] unless last_run
+
+      last_run.map do |train, connections|
+        connection_hexes = connections&.map do |ids|
+          ids.map { |id| @game.hex_by_id(id) }
+        end
+        # A future enhancement to this could be to find trains and move the routes over
+        Engine::Route.new(@game.phase, train, connection_hexes: connection_hexes) if trains.include?(train)
+      end.compact
+    end
+
     def render
       trains = @game.round.current_entity.trains
+
+      if @routes.empty?
+        @routes = last_run
+        if @routes.any?
+          @selected_route = @routes.first
+          store(:routes, @routes, skip: true)
+          store(:selected_route, @selected_route, skip: true)
+        end
+      end
 
       if !@selected_route && (first_train = trains[0])
         route = Engine::Route.new(@game.phase, first_train, routes: @routes)

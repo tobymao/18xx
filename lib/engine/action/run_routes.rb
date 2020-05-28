@@ -46,7 +46,7 @@ module Engine
           h = { 'train' => route.train.id }
 
           if route.connections.any?
-            h['connections'] = route.connections.map(&:id)
+            h['connections'] = route.connection_hexes
           else # legacy routes
             h['hexes'] = route.hexes.map(&:id)
             h['revenue'] = route.revenue
