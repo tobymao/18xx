@@ -27,7 +27,7 @@ module View
       # Ready, then active, then unstarted, then completed
       your_games.sort_by! do |game|
         [
-          game == last ? 1 : 0,
+          game == last && your_games.size > GameRow::LIMIT ? 1 : 0,
           user_is_acting?(@user, game) ? -game['id'] : 0,
           game['status'] == 'active' ? -game['id'] : 0,
           game['status'] == 'new' ? -game['id'] : 0,
