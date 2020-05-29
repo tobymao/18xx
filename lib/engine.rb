@@ -16,7 +16,7 @@ module Engine
   end.compact
 
   # Games that are alpha or above
-  VISIBLE_GAMES = GAMES.select { |game| %i[alpha beta production].include? game::DEV_STAGE }
+  VISIBLE_GAMES = GAMES.select { |game| %i[alpha beta production].include?(game::DEV_STAGE) }
 
   GAMES_BY_TITLE = GAMES.map { |game| [game.title, game] }.to_h
 end

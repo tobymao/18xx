@@ -16,7 +16,7 @@ module Engine
 
       load_from_json(Config::Game::G18Chesapeake::JSON)
 
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
 
       def action_processed(action)
         case action
