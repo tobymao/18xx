@@ -83,8 +83,6 @@ module GameManager
 
   def enter_game(game)
     store(:game, nil, skip: true)
-    game[:loading] = true
-
     if game[:mode] == :hotseat
       game_id = game[:id]
       game_data = Lib::Storage[game_id]
@@ -100,13 +98,13 @@ module GameManager
         Lib::Storage[game_id] = game_data
       end
 
-      store(:game_data, game_data, skip: true)
+      store(:game_data, game_data.merge(loaded: true), skip: true)
       store(:app_route, hs_url(game, game_data)) unless @app_route.include?(hs_url(game, game_data))
       return
     end
 
     game_url = url(game)
-    store(:game_data, game, skip: true)
+    store(:game_data, game.merge(loading: true), skip: true)
     store(:app_route, game_url)
 
     @connection.safe_get(game_url) do |data|
