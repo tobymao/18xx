@@ -9,6 +9,7 @@ end
 
 require_relative '../corporation'
 require_relative 'base'
+require_relative '../operating_info'
 
 module Engine
   module Round
@@ -248,9 +249,10 @@ module Engine
             @log << "#{entity.name} runs a #{route.train.name} train for "\
                     "#{@game.format_currency(route.revenue)} (#{hexes})"
           end
-          @current_entity.add_run!(@current_routes)
         when Action::Dividend
           revenue = @current_routes.sum(&:revenue)
+          or_info = OperatingInfo.new(@current_routes, action, revenue)
+          @current_entity.add_operating_info!(@game.turn, @round_num, or_info)
           @current_routes = []
 
           case action.kind
@@ -310,7 +312,6 @@ module Engine
       end
 
       def withhold(revenue = 0)
-        @current_entity.add_revenue!(@game.turn, @round_num, -revenue)
         name = @current_entity.name
         if revenue.positive?
           @log << "#{name} withholds #{@game.format_currency(revenue)}"
@@ -322,7 +323,6 @@ module Engine
       end
 
       def payout(revenue)
-        @current_entity.add_revenue!(@game.turn, @round_num, revenue)
         # TODO: actually count shares when we implement 1817, 18Ireland, 18US, etc
         share_count = 10
         per_share = revenue / share_count

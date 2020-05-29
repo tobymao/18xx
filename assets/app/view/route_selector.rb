@@ -19,7 +19,8 @@ module View
 
     def last_run
       trains = @game.round.current_entity.trains
-      last_run = @game.round.current_entity.last_run
+      operating = @game.round.current_entity.operating_history
+      last_run = operating[operating.keys.max].routes
       return [] unless last_run
 
       last_run.map do |train, connections|
