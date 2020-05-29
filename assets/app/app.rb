@@ -84,17 +84,18 @@ class App < Snabberb::Component
   def render_game
     match = @app_route.match(%r{(hotseat|game)\/((hs_)?\d+)})
 
-    unless @game_data # this only happens when refreshing a hotseat game
-      loading_screen = h(:div, 'Loading game...')
-
+    if !@game_data # this is a hotseat game
       if @app_route.include?('tutorial')
         enter_tutorial
       else
         enter_game(id: match[2], mode: match[1] == 'game' ? :muti : :hotseat, pin: @pin)
       end
-
-      return loading_screen unless @game_data
+    elsif !@game_data['loaded'] && !@game_data['loading']
+      enter_game(id: match[2], mode: match[1] == 'game' ? :muti : :hotseat, pin: @pin)
+      enter_game(@game_data)
     end
+
+    return h(:div, 'Loading game...') unless @game_data&.dig('loaded')
 
     h(View::Game, connection: @connection, user: @user, disable_user_errors: @disable_user_errors)
   end

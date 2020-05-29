@@ -61,11 +61,7 @@ module Engine
 
       TRACK_RESTRICTION = :semi_restrictive
 
-      IMPASSABLE_HEX_COLORS = [
-        :blue,
-        :gray,
-        :red,
-      ].freeze
+      IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
       CACHABLE = [
         %i[players player],
