@@ -13,7 +13,7 @@ module Engine
         'city' => 'c=r:0',
       }.freeze
 
-      # Red tiles don't exist yet
+      BLUE = {}.freeze
       RED = {}.freeze
 
       YELLOW = {
@@ -511,7 +511,7 @@ module Engine
         '469' => 'p=a:0,b:1,t:n',
       }.freeze
 
-      COLORS = %i[white yellow green brown gray greenbrown browngray none red].freeze
+      COLORS = %i[white yellow green brown blue gray greenbrown browngray none red].freeze
     end
   end
 end
