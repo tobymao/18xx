@@ -31,6 +31,10 @@ module View
       message = <<~MESSAGE
         Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
         <a href='https://docs.google.com/document/d/1nCYnzNMQLrFLZtWdbjfuSx5aIcaOyi27lMYkJxcGayw/edit'>FAQ!</a>
+
+        If you're looking to buy these games, please check out
+        <a href='https://all-aboardgames.com'>All-Aboard Games</a> and
+        <a href='https://www.grandtrunkgames.com'>Grand Trunk Games</a>.
       MESSAGE
 
       props = {
