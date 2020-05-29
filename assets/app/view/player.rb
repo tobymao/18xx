@@ -116,6 +116,10 @@ module View
           h(:td, td_props, @game.format_currency(@player.value)),
         ]),
         h(:tr, [
+          h(:td, td_props, 'Liquidity'),
+          h(:td, td_props, @game.format_currency(@game.liquidity(@player))),
+        ]),
+        h(:tr, [
           h(:td, td_props, 'Certs'),
           h(:td, td_cert_props, "#{num_certs}/#{cert_limit}"),
         ]),
@@ -142,8 +146,8 @@ module View
       div_props = {
         style: {
           display: 'inline-block',
-          'margin-left': '1.5rem',
-          'margin-right': '1.5rem',
+          'margin-left': '1rem',
+          'margin-right': '1rem',
         },
       }
 

@@ -112,6 +112,7 @@ class Game < Base
       acting: acting.to_a,
       result: result.to_h,
       actions: actions_h,
+      loaded: include_actions,
       created_at: pp_created_at,
       updated_at: pp_updated_at,
     }

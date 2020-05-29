@@ -35,8 +35,7 @@ module GameManager
 
   def enter_tutorial
     @connection.safe_get('/assets/tutorial.json', '') do |data|
-      store(:game_data, data, skip: true)
-      update
+      store(:game_data, data, skip: false)
     end
   end
 
@@ -84,11 +83,14 @@ module GameManager
 
   def enter_game(game)
     store(:game, nil, skip: true)
-
     if game[:mode] == :hotseat
       game_id = game[:id]
       game_data = Lib::Storage[game_id]
-      return store(:flash_opts, "Hotseat game #{game_id} not found") unless game_data
+
+      unless game_data
+        store(:flash_opts, "Hotseat game #{game_id} not found", skip: true)
+        return store(:app_route, '/')
+      end
 
       if game[:pin]
         game_data[:settings] ||= {}
@@ -96,18 +98,20 @@ module GameManager
         Lib::Storage[game_id] = game_data
       end
 
-      store(:game_data, game_data, skip: true)
+      store(:game_data, game_data.merge(loaded: true), skip: true)
       store(:app_route, hs_url(game, game_data)) unless @app_route.include?(hs_url(game, game_data))
       return
     end
 
     game_url = url(game)
+    store(:game_data, game.merge(loading: true), skip: true)
+    store(:app_route, game_url + `window.location.search`)
 
     @connection.safe_get(game_url) do |data|
       next `window.location = #{game_url}` if data.dig('settings', 'pin')
 
-      store(:game_data, data, skip: true)
-      store(:app_route, game_url)
+      `window.history.replaceState(#{@data.to_n}, #{@app_route}, #{@app_route})`
+      store(:game_data, data, skip: false)
     end
   end
 

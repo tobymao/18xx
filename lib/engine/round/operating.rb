@@ -148,7 +148,7 @@ module Engine
         end
 
         # Can't oversaturate the market
-        return false if (bundle.percent + @share_pool.percent_of(corporation)) > 50
+        return false unless @share_pool.fit_in_bank?(bundle)
 
         # Otherwise we're good
         true

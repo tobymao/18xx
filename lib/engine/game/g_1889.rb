@@ -16,7 +16,7 @@ module Engine
 
       load_from_json(Config::Game::G1889::JSON)
 
-      DEV_STAGE = :beta
+      DEV_STAGE = :production
     end
   end
 end

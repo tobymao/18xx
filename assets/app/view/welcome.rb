@@ -29,19 +29,12 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>
-        18Chesapeake is now in ALPHA stage. That means I need YOUR help to test it! Please try it out and let me know if there are any
-        issues thanks! Due to the pace of development, games will be swiftly deleted if issues occur so please play with the intent to test.
-        </p>
-
-        <p>
-        The routing code has been changed again!!! You must now click nodes (cities towns and offboards). If there are any issues please let me know.
-        </p>
-
-        You can now end games early. The owner of the game has an option in the tools tab to end the game if it is finished.
-
         Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
         <a href='https://docs.google.com/document/d/1nCYnzNMQLrFLZtWdbjfuSx5aIcaOyi27lMYkJxcGayw/edit'>FAQ!</a>
+
+        If you're looking to buy these games, please check out
+        <a href='https://all-aboardgames.com'>All-Aboard Games</a> and
+        <a href='https://www.grandtrunkgames.com'>Grand Trunk Games</a>.
       MESSAGE
 
       props = {

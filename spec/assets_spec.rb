@@ -104,6 +104,7 @@ describe 'Assets' do
           players: [{ id: 1, name: 'Player 1' }, { id: 2, name: 'Player 2' }],
           title: '1889',
           actions: [],
+          loaded: true,
         },
         user: {
           id: 1,

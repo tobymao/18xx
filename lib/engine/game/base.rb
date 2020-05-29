@@ -61,6 +61,8 @@ module Engine
 
       TRACK_RESTRICTION = :semi_restrictive
 
+      IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
+
       CACHABLE = [
         %i[players player],
         %i[corporations corporation],
@@ -348,6 +350,23 @@ module Engine
         end
       end
 
+      def liquidity(player)
+        return player.cash unless sellable_turn?
+
+        value = player.cash
+        player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, _|
+          max_bundle = player.dumpable_bundles(corporation)
+            .select { |bundle| @share_pool&.fit_in_bank?(bundle) }
+            .max_by(&:price)
+          value += max_bundle&.price || 0
+        end
+        value
+      end
+
+      def sellable_turn?
+        @turn > 1
+      end
+
       private
 
       def init_bank
@@ -477,7 +496,7 @@ module Engine
             x, y = xy
             neighbor = coordinates[[hex.x + x, hex.y + y]]
             next unless neighbor
-            next if neighbor.tile.color == :gray && !neighbor.targeting?(hex)
+            next if self.class::IMPASSABLE_HEX_COLORS.include?(neighbor.tile.color) && !neighbor.targeting?(hex)
 
             hex.neighbors[direction] = neighbor
           end

@@ -22,7 +22,7 @@ module UserManager
 
     @connection.post('/user/refresh') do |data|
       if (error = data['error'])
-        if attempts > 3 || error.include?('not authorized')
+        if attempts > 4 || error.include?('not authorized')
           invalidate_user
           store(:flash_opts, 'Credentials expired please re-login')
         else
@@ -31,8 +31,7 @@ module UserManager
       else
         @connection.authenticate!
         store(:games, data['games'], skip: true)
-        store(:user, data['user'], skip: true)
-        update # for some reason this causes an infinite loop
+        store(:user, data['user'], skip: false)
       end
     end
   end
