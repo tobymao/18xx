@@ -61,6 +61,12 @@ module Engine
 
       TRACK_RESTRICTION = :semi_restrictive
 
+      IMPASSABLE_HEX_COLORS = [
+        :blue,
+        :gray,
+        :red,
+      ].freeze
+
       CACHABLE = [
         %i[players player],
         %i[corporations corporation],
@@ -492,7 +498,7 @@ module Engine
             x, y = xy
             neighbor = coordinates[[hex.x + x, hex.y + y]]
             next unless neighbor
-            next if neighbor.tile.color == :gray && !neighbor.targeting?(hex)
+            next if self.class::IMPASSABLE_HEX_COLORS.include?(neighbor.tile.color) && !neighbor.targeting?(hex)
 
             hex.neighbors[direction] = neighbor
           end
