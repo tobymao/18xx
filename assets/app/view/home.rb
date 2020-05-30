@@ -23,11 +23,9 @@ module View
       end
       grouped = other_games.group_by { |game| game['status'] }
 
-      last = your_games.last
       # Ready, then active, then unstarted, then completed
       your_games.sort_by! do |game|
         [
-          game == last && your_games.size > GameRow::LIMIT ? 1 : 0,
           user_is_acting?(@user, game) ? -game['id'] : 0,
           game['status'] == 'active' ? -game['id'] : 0,
           game['status'] == 'new' ? -game['id'] : 0,
