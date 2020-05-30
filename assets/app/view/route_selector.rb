@@ -35,8 +35,12 @@ module View
     def render
       trains = @game.round.current_entity.trains
 
+      description = 'Please select routes'
+      last_routes = last_run
+      description += ', the previously ran routes have been used but there may be better routes' if last_routes.any?
       if @routes.empty?
-        @routes = last_run
+        @routes = last_routes
+
         if @routes.any?
           @selected_route = @routes.first
           store(:routes, @routes, skip: true)
@@ -102,6 +106,7 @@ module View
 
       h(:div, props, [
         h(UndoAndPass, pass: false),
+        h(:div, description),
         h(:table, { style: { 'text-align': 'left' } }, [
           h(:tr, [
             h(:th, 'Train'),
