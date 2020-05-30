@@ -42,7 +42,7 @@ module View
         width: "#{WIDTH_TOTAL - 2 * PAD - 2 * BORDER}px",
         height: "#{HEIGHT_TOTAL - 2 * PAD - 2 * BORDER}px",
         border: "solid #{BORDER}px rgba(0,0,0,0.2)",
-        color: "black",
+        color: 'black',
       )
 
       grid = @game.stock_market.market.flat_map do |prices|

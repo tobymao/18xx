@@ -72,7 +72,7 @@ module View
       )
     end
 
-    def render_bg_color(bg_color = "#ffffff")
+    def render_bg_color(bg_color = '#ffffff')
       render_input(
         'Background color',
         id: :bg_color,
@@ -81,7 +81,7 @@ module View
       )
     end
 
-    def render_font_color(font_color = "#000000")
+    def render_font_color(font_color = '#000000')
       render_input(
         'Font color',
         id: :font_color,
