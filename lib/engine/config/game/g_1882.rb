@@ -237,25 +237,32 @@ module Engine
       "name": "Saskatchewan Central",
       "value": 50,
       "revenue": 10,
-      "desc": "During a player's stock turn, in any phase, the player owning this private company can close it to \"convert\" to the 10-share public company SCR. This counts as a \"certificate purchase action\". SCR shares cannot be purchased by any player unless SC has been converted. The SCR floats using the same rules as other companies. If the private company is sold to a company, it no longer can be converted."
+      "desc": "During a player's stock turn, in any phase, the player owning this company can close it to \"convert\" to the 10-share corporation SC. This counts as a \"certificate purchase action\". SC shares cannot be purchased by any player unless SC has been converted. The SC floats using the same rules as other corporation. If the private company is sold to a corporation, it no longer can be converted."
     },
     {
       "name": "North West Rebellion",
       "value": 80,
       "revenue": 15,
-      "desc": "A public company owning this company may move one of its existing on-map station markers located in a non-NWR indicated city to any available NWR-indicated hex city (including OO). There is no cost to this move. There is no track connection requirement. This can occur in addition to, or after, a regular token purchase/placement for an operating round. If the company home token is moved, replace it with a neutral marker from the supply. A single tile lay or upgrade may be performed on the destination hex if a station was placed, this is in addition to a regular track lay or upgrade performed by the company."
+      "desc": "A corporation owning this company may move one of its existing on-map station markers located in a non-NWR indicated city to any available NWR-indicated hex city (including OO). There is no cost to this move. There is no track connection requirement. This can occur in addition to, or after, a regular token purchase/placement for an operating round. If the corporation home token is moved, replace it with a neutral marker from the supply. A single tile lay or upgrade may be performed on the destination hex if a station was placed; this is in addition to a regular track lay or upgrade performed by the corporation."
     },
     {
       "name": "Trestle Bridge",
       "value": 140,
       "revenue": 0,
-      "desc": "During setup, a 10% share certificate selected randomly (not SC) is placed with this private company. When purchased during the private auction, the player receives the private company and the certificate."
+      "desc": "Earns $10 every time a corporation adds track over a river. During setup, a 10% share certificate selected randomly from the corporations (excluding SC) is placed with this company. When purchased during the private auction, the player receives both the company and the certificate.",
+      "abilities": [
+        {
+          "type": "share",
+          "share": "random",
+          "random-share-exclude": "SC CN"
+        }
+      ]
     },
     {
       "name": "Canadian Pacific",
       "value": 180,
       "revenue": 25,
-      "desc": "When purchased during the private auction comes with the 20% president's certificate of the Canadian Pacific (CPR) public company. The buying player must immediately set the par price for the CPR to any par price. The Canadian Pacific private company cannot be purchased by a public company.",
+      "desc": "When purchased during the private auction, this company comes with the 20% president's certificate of the Canadian Pacific (CPR) corporation. The buying player must immediately set the par price for the CPR to any par price. The Canadian Pacific company cannot be purchased by a corporation.",
       "abilities": [
         {
           "type": "share",

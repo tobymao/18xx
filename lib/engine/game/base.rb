@@ -489,11 +489,21 @@ module Engine
 
           case (share = ability[:share].to_s)
           when 'random-president'
-            share = @corporations[rand % @corporations.size].shares[0]
+            corporation = @corporations[rand % @corporations.size]
+            share = corporation.shares[0]
             ability[:share] = share
-            corporation = share.corporation
             company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
             @log << "#{company.name} comes with the president's share of #{corporation.name}"
+          when 'random'
+            exclusions = ability[:'random-share-exclude']&.split
+            corporation = nil
+            while corporation.nil? || exclusions&.include?(corporation.name)
+              corporation = @corporations[rand % @corporations.size]
+            end
+            share = corporation.shares[1] # not president
+            ability[:share] = share
+            company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
+            @log << "#{company.name} comes with a 10%  share of #{corporation.name}"
           else
             ability[:share] = share_by_id(share)
           end
