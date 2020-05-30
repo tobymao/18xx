@@ -30,6 +30,7 @@ class App < Snabberb::Component
         'background-color': @user&.dig(:settings, :bg_color),
         color: @user&.dig(:settings, :font_color),
         margin: :auto,
+        'min-height': '98vh',
         padding: '0.5rem',
       },
     }
