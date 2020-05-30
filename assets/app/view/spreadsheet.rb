@@ -35,7 +35,7 @@ module View
     end
 
     def or_history(corporations)
-      corporations.flat_map { |c| c.revenue_history.keys }.uniq.sort
+      corporations.flat_map { |c| c.operating_history.keys }.uniq.sort
     end
 
     def render_history_titles(corporations)
@@ -43,7 +43,7 @@ module View
     end
 
     def render_history(corporation)
-      hist = corporation.revenue_history
+      hist = corporation.operating_history
       if hist.empty?
         # This is a company that hasn't floated yet
         []
@@ -52,11 +52,11 @@ module View
           if hist[x]
             props = {
               style: {
-                color: hist[x].negative? ? '#aaa' : 'black',
+                color: hist[x].dividend.kind == 'withhold' ? '#aaa' : 'black',
                 padding: '0 0.15rem'
               }
             }
-            h(:td, props, hist[x].abs)
+            h(:td, props, hist[x].revenue.abs)
           else
             h(:td, '')
           end

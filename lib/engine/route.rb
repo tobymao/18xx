@@ -188,5 +188,9 @@ module Engine
     def corporation
       train.owner
     end
+
+    def connection_hexes
+      connections.map(&:id)
+    end
   end
 end
