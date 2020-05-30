@@ -23,12 +23,25 @@ class App < Snabberb::Component
   needs :disable_user_errors, default: false
   needs :pin, default: nil
 
+  #JCL's colors
+  COLORS = {
+    blue: "rgb(154, 192, 205)",
+    brown: "rgb(182.7136, 108.423424, 49.192192)",
+    gray: "rgb(192,192,192)",
+    green: "rgb(79.309824, 152.595968, 35.13728)",
+    offboard: "rgb(255,70,91)",
+    plain: "rgb(255,255,230)",
+    yellow: "rgb(255.0, 215.843137254912, 0.0)",
+  }
+
   def render
     props = {
       props: { id: 'app' },
       style: {
-        padding: '0.5rem',
+        'background-color': @user&.dig(:settings, :bg_color),
+        color: @user&.dig(:settings, :font_color),
         margin: :auto,
+        padding: '0.5rem',
       },
     }
 
