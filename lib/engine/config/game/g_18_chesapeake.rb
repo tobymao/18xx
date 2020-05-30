@@ -645,11 +645,6 @@ module Engine
       "c=r:30;c=r:30;p=a:0,b:_0;p=a:3,b:_1;l=OO": [
         "J4"
       ]
-    },
-    "blue": {
-      "": [
-        "H8", "H10", "I11"
-      ]
     }
   },
   "phases": [

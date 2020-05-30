@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
+require 'game_manager'
 require 'user_manager'
+require 'view/game_row'
 require 'view/form'
 
 module View
   class User < Form
+    include GameManager
     include UserManager
 
     needs :type
@@ -41,7 +44,23 @@ module View
           ]]
         end
 
-      render_form(title, inputs)
+      children = [render_form(title, inputs)]
+
+      if @type == :profile
+        finished_games = @games.select do |game|
+          user_in_game?(@user, game) && game['status'] == 'finished'
+        end
+
+        children << h(
+          GameRow,
+          header: 'Your Finished Games',
+          game_row_games: finished_games,
+          type: :personal,
+          user: @user,
+        )
+      end
+
+      h(:div, children)
     end
 
     def render_notifications(checked = true)

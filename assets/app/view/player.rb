@@ -72,8 +72,7 @@ module View
       div_props = {
         style: {
           display: 'inline-block',
-          'margin-left': '1.5rem',
-          'margin-right': '1.5rem',
+          margin: '0rem 1rem',
         },
       }
 

@@ -8,7 +8,7 @@ class Game < Base
   one_to_many :game_users
   many_to_many :players, class: :User, right_key: :user_id, join_table: :game_users
 
-  QUERY_LIMIT = 11
+  QUERY_LIMIT = 13
 
   STATUS_QUERY = <<~SQL
     SELECT %<status>s_games.*
@@ -50,10 +50,8 @@ class Game < Base
       FROM games g
       JOIN user_games ug
         ON g.id = ug.id
-      WHERE g.status != 'finished'
-      ORDER BY g.created_at DESC
-      LIMIT #{QUERY_LIMIT}
-      OFFSET :personal_offset * #{QUERY_LIMIT - 1}
+      ORDER BY g.id DESC
+      LIMIT 1000
     ) personal_games
   SQL
 
@@ -65,7 +63,7 @@ class Game < Base
     UNION
     #{USER_STATUS_QUERY % { status: 'active' }}
     UNION
-    #{STATUS_QUERY % { status: 'finished' }}
+    #{USER_STATUS_QUERY % { status: 'finished' }}
   SQL
 
   LOGGED_OUT_QUERY = <<~SQL
@@ -79,7 +77,6 @@ class Game < Base
 
   def self.home_games(user, **opts)
     opts = {
-      personal_offset: opts['personal'],
       new_offset: opts['new'],
       active_offset: opts['active'],
       finished_offset: opts['finished'],

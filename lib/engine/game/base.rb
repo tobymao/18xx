@@ -355,8 +355,10 @@ module Engine
 
         value = player.cash
         player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, _|
-          max_bundle = player.dumpable_bundles(corporation).max_by(&:price)
-          value += max_bundle&.price || 0 if max_bundle && @share_pool&.fit_in_bank?(max_bundle)
+          max_bundle = player.dumpable_bundles(corporation)
+            .select { |bundle| @share_pool&.fit_in_bank?(bundle) }
+            .max_by(&:price)
+          value += max_bundle&.price || 0
         end
         value
       end

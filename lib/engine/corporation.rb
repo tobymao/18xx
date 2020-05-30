@@ -16,7 +16,7 @@ module Engine
 
     attr_accessor :ipoed, :par_price, :share_price, :tokens
     attr_reader :color, :companies, :coordinates, :min_price, :name, :full_name,
-                :logo, :text_color, :trains, :revenue_history
+                :logo, :text_color, :trains, :operating_history
 
     def initialize(sym:, name:, tokens:, **opts)
       @name = sym
@@ -32,7 +32,7 @@ module Engine
       @ipoed = false
       @trains = []
       @companies = []
-      @revenue_history = {}
+      @operating_history = {}
 
       @cash = 0
       @float_percent = opts[:float_percent] || 60
@@ -102,8 +102,8 @@ module Engine
       true
     end
 
-    def add_revenue!(turn, round_num, revenue)
-      @revenue_history[[turn, round_num]] = revenue
+    def add_operating_info!(turn, round_num, info)
+      @operating_history[[turn, round_num]] = info
     end
 
     def inspect

@@ -50,7 +50,7 @@ module View
       }
 
       if @corporation.owner
-        subchildren = (@corporation.revenue_history.empty? ? [] : [render_revenue_history])
+        subchildren = (@corporation.operating_history.empty? ? [] : [render_revenue_history])
         children << h(:table, revenue_table_props, [h(:tr, subchildren)])
       end
 
@@ -309,7 +309,7 @@ module View
         }
       }
 
-      last_run = @corporation.revenue_history[@corporation.revenue_history.keys.max].abs
+      last_run = @corporation.operating_history[@corporation.operating_history.keys.max].revenue
       h(:td, props, "Last Run: #{@game.format_currency(last_run)}")
     end
 

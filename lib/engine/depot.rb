@@ -28,11 +28,7 @@ module Engine
       train.owner.remove_train(train)
       train.owner = self
 
-      if (index = @upcoming.find_index { |t| t.name == train.name })
-        @upcoming.insert(index, train)
-      else
-        @discarded << train
-      end
+      @discarded << train
     end
 
     def min_price(corporation)
@@ -56,8 +52,7 @@ module Engine
       [
         @upcoming.first,
         *@upcoming.select { |t| @game.phase.available?(t.available_on) },
-        *@discarded,
-      ].uniq(&:name)
+      ].uniq(&:name) + @discarded.uniq(&:name)
     end
 
     def discountable_trains_for(corporation)

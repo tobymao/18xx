@@ -18,10 +18,10 @@ module View
       hexes = hexes.map.with_index do |hex, index|
         style = {
           position: 'absolute',
-          left: Hex::SIZE * Math.cos(index * theta) + 70,
-          bottom: Hex::SIZE * Math.sin(index * theta) + 80,
-          width: 60,
-          height: 60,
+          left: "#{Hex::SIZE * Math.cos(index * theta) + 70}px",
+          bottom: "#{Hex::SIZE * Math.sin(index * theta) + 80}px",
+          width: '60px',
+          height: '60px',
           filter: 'drop-shadow(5px 5px 2px #888)',
           'pointer-events' => 'auto',
         }
@@ -30,8 +30,8 @@ module View
 
       style = {
         position: 'absolute',
-        left: @tile_selector.x - 50,
-        top: @tile_selector.y - 50,
+        left: "#{@tile_selector.x - 50}px",
+        top: "#{@tile_selector.y - 50}px",
         width: '200px',
         height: '200px',
         'pointer-events' => 'none',

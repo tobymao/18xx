@@ -18,16 +18,16 @@ module View
         h(Chat, user: @user, connection: @connection),
       ]
 
-      your_games, other_games = @games.partition do |game|
-        user_in_game?(@user, game) && game['status'] != 'finished'
-      end
+      your_games, other_games = @games.partition { |game| user_in_game?(@user, game) }
+
+      # these will show up in the profile page
+      your_games.reject! { |game| game['status'] == 'finished' }
+
       grouped = other_games.group_by { |game| game['status'] }
 
-      last = your_games.last
       # Ready, then active, then unstarted, then completed
       your_games.sort_by! do |game|
         [
-          game == last && your_games.size > GameRow::LIMIT ? 1 : 0,
           user_is_acting?(@user, game) ? -game['id'] : 0,
           game['status'] == 'active' ? -game['id'] : 0,
           game['status'] == 'new' ? -game['id'] : 0,

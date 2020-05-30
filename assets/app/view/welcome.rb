@@ -29,8 +29,15 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>Finished games are now visible in the profile page. There is now no more paging for your games.<p/>
+
         Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
         <a href='https://docs.google.com/document/d/1nCYnzNMQLrFLZtWdbjfuSx5aIcaOyi27lMYkJxcGayw/edit'>FAQ!</a>
+
+        <p>If you're looking to buy these games, please check out
+        <a href='https://all-aboardgames.com'>All-Aboard Games</a> and
+        <a href='https://www.grandtrunkgames.com'>Grand Trunk Games</a>.
+        </p>
       MESSAGE
 
       props = {
