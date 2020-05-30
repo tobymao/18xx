@@ -63,7 +63,7 @@ class Game < Base
     UNION
     #{USER_STATUS_QUERY % { status: 'active' }}
     UNION
-    #{STATUS_QUERY % { status: 'finished' }}
+    #{USER_STATUS_QUERY % { status: 'finished' }}
   SQL
 
   LOGGED_OUT_QUERY = <<~SQL
