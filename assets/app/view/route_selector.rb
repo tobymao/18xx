@@ -35,9 +35,9 @@ module View
     def render
       trains = @game.round.current_entity.trains
 
-      description = 'Please select routes'
+      description = 'Select routes'
       last_routes = last_run
-      description += ', the previous routes have been autofilled' if last_routes.any?
+      description += ': prior routes are autofilled' if last_routes.any?
       if @routes.empty?
         @routes = last_routes
 

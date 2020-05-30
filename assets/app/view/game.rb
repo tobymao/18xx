@@ -52,7 +52,8 @@ module View
       actions = @game_data['actions']
       @num_actions = actions.size
       cursor = Lib::Params['action']&.to_i
-      return if game_id == @game&.id && @game.actions.size == @num_actions && (!cursor || cursor == @game.actions.size)
+      return if game_id == @game&.id &&
+        ((!cursor && @game.actions.size == @num_actions) || (cursor == @game.actions.size))
 
       @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
         @game_data['players'].map { |p| p['name'] },
