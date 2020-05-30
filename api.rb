@@ -145,7 +145,7 @@ class Api < Roda
       **needs,
     )
 
-    ASSETS.context.eval(script)
+    '<!DOCTYPE html>' + ASSETS.context.eval(script)
   end
 
   def render_pin(**needs)
@@ -171,6 +171,7 @@ class Api < Roda
 
   def static(desc:, js_tags:, attach_func:)
     <<~HTML
+      <!DOCTYPE html>
       <html>
          <head>
             <meta charset="utf-8">

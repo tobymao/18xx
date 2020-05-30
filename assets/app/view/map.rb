@@ -63,10 +63,8 @@ module View
       props = {
         attrs: {
           id: 'map',
-        },
-        style: {
-          width: width,
-          height: height,
+          width: width.to_s,
+          height: height.to_s,
         },
       }
 
