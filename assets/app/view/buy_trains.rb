@@ -77,8 +77,10 @@ module View
       depot_trains.map do |train|
         buy_train = -> { process_action(Engine::Action::BuyTrain.new(@corporation, train, train.price)) }
 
+        source = @depot.discarded.include?(train) ? 'The Discard' : 'The Depot'
+
         h(:div, [
-          "Train #{train.name} - #{@game.format_currency(train.price)} from The Depot",
+          "Train #{train.name} - #{@game.format_currency(train.price)} #{source}",
           h('button', { style: { margin: '1rem' }, on: { click: buy_train } }, 'Buy'),
         ])
       end
