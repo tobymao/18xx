@@ -219,7 +219,12 @@ module Engine
       end
 
       def rand
-        @seed = (RAND_A * @seed + RAND_C) % RAND_M
+        @seed =
+          if RUBY_ENGINE == 'opal'
+            `parseInt(Big(#{RAND_A}).times(#{@seed}).plus(#{RAND_C}).mod(#{RAND_M}).toString())`
+          else
+            (RAND_A * @seed + RAND_C) % RAND_M
+          end
       end
 
       def inspect

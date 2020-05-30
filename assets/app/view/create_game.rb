@@ -113,6 +113,7 @@ module View
       end
 
       create_hotseat(
+        id: Time.now.to_i,
         players: players.map { |name| { name: name } },
         title: params[:title],
         description: params[:description],
