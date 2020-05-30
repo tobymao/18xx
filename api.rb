@@ -171,6 +171,7 @@ class Api < Roda
 
   def static(desc:, js_tags:, attach_func:)
     <<~HTML
+      <!DOCTYPE html>
       <html>
          <head>
             <meta charset="utf-8">
