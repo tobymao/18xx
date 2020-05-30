@@ -37,7 +37,7 @@ module View
 
       description = 'Please select routes'
       last_routes = last_run
-      description += ', the previously ran routes have been used but there may be better routes' if last_routes.any?
+      description += ', the previous routes have been autofilled' if last_routes.any?
       if @routes.empty?
         @routes = last_routes
 
