@@ -21,6 +21,7 @@ module View
       if @game.round.can_act?(@player)
         card_style['border'] = 'solid 1px black'
         card_style['background-color'] = '#dfd'
+        card_style['color'] = 'black'
       end
 
       divs = [

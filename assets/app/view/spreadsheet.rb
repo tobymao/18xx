@@ -52,7 +52,7 @@ module View
           if hist[x]
             props = {
               style: {
-                color: hist[x].dividend.kind == 'withhold' ? '#aaa' : 'black',
+                color: hist[x].dividend.kind == 'withhold' ? '#aaa' : 'inherit',
                 padding: '0 0.15rem'
               }
             }
