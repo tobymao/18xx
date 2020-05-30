@@ -25,12 +25,12 @@ module View
         'vertical-align': 'top',
       }
 
-      card_style['background-color'] = 'lightblue' if selected?
-
       if @game.round.can_act?(@corporation)
         card_style['border'] = 'solid 1px black'
         card_style['background-color'] = '#dfd'
       end
+
+      card_style['background-color'] = 'lightblue' if selected?
 
       children = [
         render_title,
