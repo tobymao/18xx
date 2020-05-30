@@ -106,7 +106,7 @@ module View
 
       h(:div, props, [
         h(UndoAndPass, pass: false),
-        h(:div, description),
+        h('div.margined', description),
         h(:table, { style: { 'text-align': 'left' } }, [
           h(:tr, [
             h(:th, 'Train'),
