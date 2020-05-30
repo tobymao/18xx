@@ -20,8 +20,8 @@ module View
           position: 'absolute',
           left: "#{Hex::SIZE * Math.cos(index * theta) + 70}px",
           bottom: "#{Hex::SIZE * Math.sin(index * theta) + 80}px",
-          width: 60,
-          height: 60,
+          width: '60px',
+          height: '60px',
           filter: 'drop-shadow(5px 5px 2px #888)',
           'pointer-events' => 'auto',
         }
