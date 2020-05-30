@@ -21,8 +21,8 @@ module View
         style: {
           position: 'absolute',
           cursor: 'pointer',
-          left: '22px',
-          top: '-8px',
+          left: '75px',
+          top: '40px',
           'font-size': '35px',
         },
         on: { click: -> { lay_tile } },
@@ -33,8 +33,9 @@ module View
         style: {
           position: 'absolute',
           cursor: 'pointer',
-          left: '52px',
-          'font-size': '20px',
+          left: '103px',
+          top: '44px',
+          'font-size': '35px',
         },
         on: { click: -> { store(:tile_selector, nil) } },
       }
