@@ -46,8 +46,11 @@ module Engine
         end
       end
 
-      nodes.keys.each do |node|
-        node.walk(corporation: corporation) do |path|
+      tokens = nodes.dup
+
+      # this can be much more efficient if we track path directional visited
+      tokens.keys.each do |node|
+        node.walk(visited: tokens.reject { |k, _| k == node }, corporation: corporation) do |path|
           paths[path] = true
           nodes[path.node] = true if path.node
           hex = path.hex
