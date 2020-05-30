@@ -4,11 +4,10 @@ module Engine
   # Information about an entities operating round
   class OperatingInfo
     attr_reader :routes, :dividend, :revenue
-    def initialize(runroutes, dividend, revenue)
-      # Convert the route into connection hexes as upgrades may break the representation
-      @routes = {}
-      runroutes.each { |x| @routes[x.train] = x.connection_hexes }
 
+    def initialize(runs, dividend, revenue)
+      # Convert the route into connection hexes as upgrades may break the representation
+      @routes = runs.map { |run| [run.train, run.connection_hexes] }.to_h
       @revenue = revenue
       @dividend = dividend
     end
