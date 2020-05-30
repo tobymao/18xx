@@ -19,7 +19,7 @@ module View
     }.freeze
 
     COLOR = {
-      white: '#fff',
+      white: '#EAE0C8',
       yellow: '#fde900',
       green: '#71bf44',
       brown: '#cb7745',
