@@ -6,7 +6,7 @@ class Index < Snabberb::Layout
       * { font-family: 'Inconsolata', monospace; }
 
       @media (prefers-color-scheme: dark) {
-        body { 
+        body {
           background-color: black;
           color: #eee;
         }

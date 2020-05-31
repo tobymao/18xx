@@ -32,9 +32,7 @@ module View
           ]]
         when :profile
           ['Profile Settings', [
-            h(:div, [
               render_notifications(@user&.dig(:settings, :notifications)),
-            ]),
             h(:div, [
               render_bg_color(@user&.dig(:settings, :bg_color)),
               render_font_color(@user&.dig(:settings, :font_color)),
@@ -72,7 +70,8 @@ module View
       )
     end
 
-    def render_bg_color(bg_color = '#ffffff')
+    def render_bg_color(bg_color)
+      bg_color ||= '#ffffff'
       render_input(
         'Background color',
         id: :bg_color,
@@ -81,12 +80,14 @@ module View
       )
     end
 
-    def render_font_color(font_color = '#000000')
+    def render_font_color(font_color)
+      font_color ||= '#000000'
       render_input(
         'Font color',
         id: :font_color,
         type: :color,
         attrs: { value: font_color },
+        on: { change: -> { store(:font_color) } },
       )
     end
 
