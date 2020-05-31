@@ -42,13 +42,12 @@ module View
         width: "#{WIDTH_TOTAL - 2 * PAD - 2 * BORDER}px",
         height: "#{HEIGHT_TOTAL - 2 * PAD - 2 * BORDER}px",
         border: "solid #{BORDER}px rgba(0,0,0,0.2)",
-        color: 'black',
       )
 
       grid = @game.stock_market.market.flat_map do |prices|
         rows = prices.map do |price|
           if price
-            style = box_style.merge('background-color' => price.color ? COLOR_MAP[price.color] : 'white')
+            style = box_style.merge('background-color' => COLOR_MAP[price.color])
 
             corporations = price.corporations
             num = corporations.size

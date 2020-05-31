@@ -34,12 +34,8 @@ module View
           ['Profile Settings', [
             h(:div, [
               render_notifications(@user&.dig(:settings, :notifications)),
+              render_button('Save Changes') { submit },
             ]),
-            h(:div, [
-              render_bg_color(@user&.dig(:settings, :bg_color)),
-              render_font_color(@user&.dig(:settings, :font_color)),
-            ]),
-            render_button('Save Changes') { submit },
             render_button('Logout') { logout },
           ]]
         end
@@ -69,24 +65,6 @@ module View
         id: :notifications,
         type: :checkbox,
         attrs: { checked: checked },
-      )
-    end
-
-    def render_bg_color(bg_color = '#ffffff')
-      render_input(
-        'Background color',
-        id: :bg_color,
-        type: :color,
-        attrs: { value: bg_color },
-      )
-    end
-
-    def render_font_color(font_color = '#000000')
-      render_input(
-        'Font color',
-        id: :font_color,
-        type: :color,
-        attrs: { value: font_color },
       )
     end
 

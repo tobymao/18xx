@@ -43,7 +43,6 @@ module View
       props = {
         style: {
           'background-color': '#FFEC46',
-          'color': 'black',
           'padding': '1em',
           'margin': '1rem 0',
         },

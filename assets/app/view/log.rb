@@ -21,7 +21,6 @@ module View
           height: '200px',
           padding: '0.5rem',
           'background-color': 'lightgray',
-          color: 'black',
           'word-break': 'break-word',
         },
       }

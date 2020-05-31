@@ -28,7 +28,6 @@ class Index < Snabberb::Layout
 
       .button:hover {
         background-color: black;
-        border-color: rgb(217, 210, 210);
         color: white;
       }
 

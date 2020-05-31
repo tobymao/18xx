@@ -32,7 +32,6 @@ module View
         background: 'yellow',
         border: '1px solid',
         'border-radius': '5px',
-        color: 'black',
         'margin-bottom': '0.5rem',
         'font-size': '90%'
       }
@@ -76,10 +75,8 @@ module View
         },
         on: { click: onclick },
       }
-      if selected?
-        props[:style]['background-color'] = 'lightblue'
-        props[:style]['color'] = 'black'
-      end
+
+      props[:style]['background-color'] = 'lightblue' if selected?
 
       children = [
         h(:div, { style: header_style }, 'PRIVATE COMPANY'),

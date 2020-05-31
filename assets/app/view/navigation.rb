@@ -29,7 +29,6 @@ module View
           src: '/images/logo.svg',
         },
         style: {
-          'background-color': 'white',
           position: 'absolute',
           top: '16px',
           width: '80px',
@@ -48,7 +47,6 @@ module View
       props = {
         attrs: { href: href },
         style: {
-          color: @user&.dig(:settings, :font_color),
           margin: '0 1rem',
         },
       }
