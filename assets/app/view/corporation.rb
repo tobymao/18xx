@@ -46,7 +46,7 @@ module View
           'font-weight': 'bold',
           'margin-left': 'auto',
           'margin-right': 'auto',
-        }
+        },
       }
 
       if @corporation.owner
@@ -111,11 +111,11 @@ module View
           'white-space': 'nowrap',
           'text-overflow': 'ellipsis',
           overflow: 'hidden',
-        }
+        },
       }
       h(:div, props, [
         h(:div, value_props, value),
-        h(:div, key)
+        h(:div, key),
       ])
     end
 
@@ -136,10 +136,10 @@ module View
       tokens_body = @corporation.tokens.map.with_index do |token, i|
         props = {
           attrs: {
-            src: @corporation.logo
+            src: @corporation.logo,
           },
           style: {
-            width: '25px'
+            width: '25px',
           },
         }
 
@@ -168,7 +168,7 @@ module View
         style: {
           padding: '0 0.5rem',
           'line-height': '1.25rem',
-        }
+        },
       }
 
       player_info = @game
@@ -183,8 +183,8 @@ module View
         .map do |player, president, num_shares, did_sell|
         name_props = {
           style: {
-            padding: '0 0.3rem'
-          }
+            padding: '0 0.3rem',
+          },
         }
 
         sold_props = {
@@ -192,7 +192,7 @@ module View
             padding: '0 0.5rem',
             'line-height': '1.25rem',
             'font-style': 'italic',
-          }
+          },
         }
 
         h(:tr, [
@@ -204,8 +204,8 @@ module View
 
       market_tr_props = {
         style: {
-          'border-bottom': player_rows.any? ? '1px solid #888' : '0'
-        }
+          'border-bottom': player_rows.any? ? '1px solid #888' : '0',
+        },
       }
 
       num_ipo_shares = @corporation.num_shares_of(@corporation)
@@ -230,7 +230,7 @@ module View
       rows = [
         *pool_rows,
         h(:tr, market_tr_props, [h(:td, { colspan: '100%' }, '')]),
-        *player_rows
+        *player_rows,
       ]
 
       table_props = {
@@ -240,7 +240,7 @@ module View
           'margin-left': 'auto',
           'margin-right': 'auto',
           'margin-top': '0.5rem',
-        }
+        },
       }
 
       h(:table, table_props, [
@@ -249,7 +249,7 @@ module View
           h(:th, td_props, 'Shares'),
           h(:th, td_props, 'Price'),
         ]),
-        *rows
+        *rows,
       ])
     end
 
@@ -260,7 +260,7 @@ module View
           'text-align': 'center',
           'margin-left': 'auto',
           'margin-right': 'auto',
-        }
+        },
       }
 
       companies = @corporation.companies.map do |company|
@@ -272,7 +272,7 @@ module View
           h(:th, 'Company'),
           h(:th, 'Income'),
         ]),
-        *companies
+        *companies,
       ])
     end
 
@@ -281,7 +281,7 @@ module View
         style: {
           'padding': '0 0.3rem',
           'line-height': '1.25rem',
-        }
+        },
       }
 
       h(:tr, [
@@ -293,8 +293,8 @@ module View
     def render_president
       props = {
         style: {
-          'font-weight': 'bold'
-        }
+          'font-weight': 'bold',
+        },
       }
 
       h(:td, props, "President: #{@corporation.owner.name}")
@@ -306,7 +306,7 @@ module View
           'padding-top': '1rem',
           'text-align': 'center',
           'font-weight': 'bold',
-        }
+        },
       }
 
       last_run = @corporation.operating_history[@corporation.operating_history.keys.max].revenue

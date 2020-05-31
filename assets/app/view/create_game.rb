@@ -39,7 +39,7 @@ module View
       end
 
       h(:div, [
-        render_form('Create New Game - You need an account to play multiplayer', inputs)
+        render_form('Create New Game - You need an account to play multiplayer', inputs),
       ])
     end
 

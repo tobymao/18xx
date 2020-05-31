@@ -31,7 +31,7 @@ module View
           user_is_acting?(@user, game) ? -game['id'] : 0,
           game['status'] == 'active' ? -game['id'] : 0,
           game['status'] == 'new' ? -game['id'] : 0,
-          -game['id']
+          -game['id'],
         ]
       end
 
@@ -60,7 +60,7 @@ module View
         key: 'home_page',
         hook: {
           destroy: destroy,
-        }
+        },
       }
 
       h(:div, props, children)
@@ -83,7 +83,7 @@ module View
         style: {
           'text-align': 'center',
           'border-top': '1px solid gainsboro',
-        }
+        },
       }
 
       children = [
@@ -135,7 +135,7 @@ module View
         on: { click: action },
         style: {
           margin: '1rem',
-        }
+        },
       }
 
       h(:button, props, name)

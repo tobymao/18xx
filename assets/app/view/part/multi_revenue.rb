@@ -24,7 +24,7 @@ module View
           {
             text: text,
             width: text.size * 13,
-            color: phase == :diesel ? :gray : phase
+            color: phase == :diesel ? :gray : phase,
           }
         end
 

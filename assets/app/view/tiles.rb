@@ -40,9 +40,9 @@ module View
                                        tile: tile),
                   role: :tile_page,
                   opacity: opacity,
-                )
-              ])
-            ])
+                ),
+              ]),
+            ]),
         ])
       end
     end

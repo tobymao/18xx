@@ -186,7 +186,7 @@ module View
 
         h(:g, { style: { 'pointer-events': 'none' }, attrs: attrs }, [
             render_background_box,
-            *rendered_name
+            *rendered_name,
           ])
       end
 

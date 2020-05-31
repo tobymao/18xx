@@ -18,7 +18,7 @@ module View
           region_weights: CENTER,
           x: 0,
           y: 0,
-        }
+        },
       ].freeze
 
       OFFSET_TOWNS = [

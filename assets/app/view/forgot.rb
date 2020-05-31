@@ -11,7 +11,7 @@ module View
       title = 'Forgot Password'
       inputs = [
         render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
-        h(:div, [render_button('Reset Password') { submit }])
+        h(:div, [render_button('Reset Password') { submit }]),
       ]
       render_form(title, inputs)
     end

@@ -59,7 +59,7 @@ module View
         style: {
           display: 'inline-block',
           'vertical-align': 'top',
-        }
+        },
       }
 
       @round.available.map do |company|

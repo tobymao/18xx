@@ -10,9 +10,9 @@ module View
 
       h(:div,  { style: {
           overflow: 'auto',
-          margin: '0 -1rem'
+          margin: '0 -1rem',
         } }, [
-        render_body
+        render_body,
       ])
     end
 
@@ -39,8 +39,8 @@ module View
     def cert_limit
       cert_props = {
         style: {
-          'margin-bottom': '1rem'
-        }
+          'margin-bottom': '1rem',
+        },
       }
       h(:div, cert_props, "Certificate limit: #{@game.cert_limit}")
     end
@@ -48,8 +48,8 @@ module View
     def phases
       td_props = {
         style: {
-          padding: '0 1rem'
-        }
+          padding: '0 1rem',
+        },
       }
 
       current_phase = @game.phase.current
@@ -57,8 +57,8 @@ module View
         phase_color = Array(phase[:tiles]).last
         phase_props = {
           style: {
-            padding: '0 1rem'
-          }
+            padding: '0 1rem',
+          },
         }
         if Part::MultiRevenue::COLOR.include?(phase_color)
           phase_props[:style]['background-color'] =
@@ -78,12 +78,12 @@ module View
           h(:td, td_props, phase[:operating_rounds]),
           h(:td, td_props, phase[:train_limit]),
           h(:td, phase_props, phase_color.capitalize),
-          h(:td, td_props, buy_text)
+          h(:td, td_props, buy_text),
         ])
       end
 
       props = {
-        style: { 'margin-top': '1rem' }
+        style: { 'margin-top': '1rem' },
       }
       h(:div, props, [
         h(:div, 'Game Phases'),
@@ -93,18 +93,18 @@ module View
             h(:th, td_props.merge(attrs: { title: 'Number of Operating Rounds' }), '# OR'),
             h(:th, td_props, 'Train Limit'),
             h(:th, td_props, 'Tiles'),
-            h(:th, td_props, 'Companies')
+            h(:th, td_props, 'Companies'),
           ]),
-          *rows
-        ])
+          *rows,
+        ]),
       ])
     end
 
     def upcoming_trains
       td_props = {
         style: {
-          padding: '0 1rem'
-        }
+          padding: '0 1rem',
+        },
       }
 
       rust_schedule = {}
@@ -123,7 +123,7 @@ module View
           h(:td, td_props, trains.size),
           h(:td, td_props, rust_schedule[name]&.join(',') || 'None'),
           h(:td, td_props, discounts&.join(' ')),
-          h(:td, td_props, train.available_on)
+          h(:td, td_props, train.available_on),
         ])
       end
 
@@ -136,18 +136,18 @@ module View
             h(:th, td_props, 'Remaining'),
             h(:th, td_props, 'Rusts'),
             h(:th, td_props, 'Upgrade Discount'),
-            h(:th, td_props.merge(attrs: { title: 'Available after purchase of first train of type' }), 'Available')
+            h(:th, td_props.merge(attrs: { title: 'Available after purchase of first train of type' }), 'Available'),
           ]),
-          *rows
-        ])
+          *rows,
+        ]),
       ])
     end
 
     def discarded_trains
       td_props = {
         style: {
-          padding: '0 1rem'
-        }
+          padding: '0 1rem',
+        },
       }
 
       rows = @depot.discarded.map do |train|
@@ -164,8 +164,8 @@ module View
             h(:th, td_props, 'Type'),
             h(:th, td_props, 'Price'),
           ]),
-          *rows
-        ])
+          *rows,
+        ]),
       ])
     end
   end

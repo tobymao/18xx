@@ -11,7 +11,7 @@ module View
       red: '#ffaaaa',
       brown: '#8b4513',
       orange: '#ffbb55',
-      yellow: '#ffff99'
+      yellow: '#ffff99',
     }.freeze
 
     PAD = 5                                     # between box contents and border
@@ -60,7 +60,7 @@ module View
                   position: 'absolute',
                   left: num > 1 ? "#{LEFT_TOKEN_POS + ((num - index - 1) * spacing)}px" : "#{MID_TOKEN_POS}px",
                   'z-index' => num - index,
-                }
+                },
               }
               h(:object, props)
             end
@@ -79,8 +79,8 @@ module View
 
       bank_props = {
         style: {
-          'margin-bottom': '1rem'
-        }
+          'margin-bottom': '1rem',
+        },
       }
 
       children = []

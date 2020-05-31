@@ -12,7 +12,7 @@ class EntityOrder < Snabberb::Component
           height: '1.5rem',
           'vertical-align': 'top',
           'margin-right': '1rem',
-          'white-space': 'nowrap'
+          'white-space': 'nowrap',
         },
       }
 
@@ -24,7 +24,7 @@ class EntityOrder < Snabberb::Component
 
         entity_props[:hook] = {
           insert: scroll_to,
-          update: ->(_, vnode) { scroll_to.call(vnode) }
+          update: ->(_, vnode) { scroll_to.call(vnode) },
         }
       end
 

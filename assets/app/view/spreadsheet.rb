@@ -10,7 +10,7 @@ module View
     def render
       h(:div, { style: {
         overflow: 'auto',
-        margin: '0 -1rem'
+        margin: '0 -1rem',
       } }, [render_table])
     end
 
@@ -53,8 +53,8 @@ module View
             props = {
               style: {
                 color: hist[x].dividend.kind == 'withhold' ? '#aaa' : 'black',
-                padding: '0 0.15rem'
-              }
+                padding: '0 0.15rem',
+              },
             }
             h(:td, props, hist[x].revenue.abs)
           else
@@ -90,8 +90,8 @@ module View
           h(:th, props, 'Tokens'),
           h(:th, props, 'Privates'),
           h(:th, { style: { width: '20px' } }, ''),
-          *or_history_titles
-        ])
+          *or_history_titles,
+        ]),
       ]
     end
 
@@ -105,7 +105,7 @@ module View
           style: {
             background: corporation.color,
             color: corporation.text_color,
-          }
+          },
         }
 
       props = { style: {} }
@@ -133,7 +133,7 @@ module View
         h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
         render_companies(corporation),
         h(:th, name_props, corporation.name),
-        *render_history(corporation)
+        *render_history(corporation),
       ])
     end
 
@@ -144,28 +144,28 @@ module View
     def render_player_privates
       h(:tr, [
         h(:th, 'Privates'),
-        *@game.players.map { |p| render_companies(p) }
+        *@game.players.map { |p| render_companies(p) },
       ])
     end
 
     def render_player_cash
       h(:tr, [
         h(:th, 'Cash'),
-        *@game.players.map { |p| h(:td, @game.format_currency(p.cash)) }
+        *@game.players.map { |p| h(:td, @game.format_currency(p.cash)) },
       ])
     end
 
     def render_player_worth
       h(:tr, [
         h(:th, 'Worth'),
-        *@game.players.map { |p| h(:td, @game.format_currency(p.value)) }
+        *@game.players.map { |p| h(:td, @game.format_currency(p.value)) },
       ])
     end
 
     def render_player_certs
       h(:tr, [
         h(:th, 'Certs'),
-        *@game.players.map { |p| h(:td, p.num_certs) }
+        *@game.players.map { |p| h(:td, p.num_certs) },
       ])
     end
   end

@@ -14,7 +14,7 @@ class Reset < Snabberb::Component
       h(:div, "Here is your temporary password: #{@hash}"),
       h(:text, 'Please '),
       h(:a, { attrs: { href: "#{@base_url}/reset" } }, 'click here'),
-      h(:text, ' to reset your password')
+      h(:text, ' to reset your password'),
     ])
   end
 end

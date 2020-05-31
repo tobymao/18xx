@@ -46,7 +46,7 @@ module View
         h('div#tiles', [
             h('div#all_tiles', [
                 h(:h1, 'Generic Map Hexes and Common Track Tiles'),
-                *TILE_IDS.flat_map { |t| render_tile_blocks(t) }
+                *TILE_IDS.flat_map { |t| render_tile_blocks(t) },
               ]),
 
           ])
@@ -165,7 +165,7 @@ module View
           h("div#game_tiles_#{game_class.title}", [
               h(:h2, "#{game_class.title} Tile Manifest"),
               *rendered_tiles,
-            ])
+            ]),
         ])
     end
   end

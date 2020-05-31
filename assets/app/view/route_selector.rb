@@ -112,9 +112,9 @@ module View
             h(:th, 'Train'),
             h(:th, 'Stops'),
             h(:th, 'Revenue'),
-            h(:th, 'Route (Click revenue centers. Click again to cycle path)')
+            h(:th, 'Route (Click revenue centers. Click again to cycle path)'),
           ]),
-          *trains
+          *trains,
         ]),
         actions,
       ])

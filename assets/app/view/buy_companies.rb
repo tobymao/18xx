@@ -22,7 +22,7 @@ module View
         style: {
           display: 'inline-block',
           'vertical-align': 'top',
-        }
+        },
       }
 
       companies = @game.purchasable_companies.sort_by do |company|
@@ -60,7 +60,7 @@ module View
 
       h(:div, props, [
         input,
-        h(:button, { on: { click: buy } }, 'Buy')
+        h(:button, { on: { click: buy } }, 'Buy'),
       ])
     end
   end

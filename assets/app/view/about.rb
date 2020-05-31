@@ -24,7 +24,7 @@ module View
         },
         props: {
           innerHTML: message,
-        }
+        },
       }
 
       h(:div, props)

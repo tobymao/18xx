@@ -24,7 +24,7 @@ module Engine
       @tokens = tokens.map { |price| Token.new(self, price: price) }
       [
         Share.new(self, president: true, percent: 20),
-        *8.times.map { |index| Share.new(self, percent: 10, index: index + 1) }
+        *8.times.map { |index| Share.new(self, percent: 10, index: index + 1) },
       ].each { |share| shares_by_corporation[self] << share }
 
       @share_price = nil

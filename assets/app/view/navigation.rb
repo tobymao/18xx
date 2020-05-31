@@ -12,7 +12,7 @@ module View
         style: {
           padding: '1rem',
           'box-shadow': '0 2px 0 0 gainsboro',
-        }
+        },
       }
 
       other_links = [item('About', '/about')]
@@ -32,7 +32,7 @@ module View
           position: 'absolute',
           top: '16px',
           width: '80px',
-        }
+        },
       }
 
       h(:div, props, [

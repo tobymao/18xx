@@ -32,8 +32,8 @@ module View
           h(:svg, { attrs: { width: (2 * radius), height: (2 * radius) } }, [
               h(:g, { attrs: { transform: "translate(#{radius} #{radius})" } }, [
                   h(View::Token, corporation: corporation, radius: radius),
-                ])
-            ])
+                ]),
+            ]),
         ])
     end
   end
