@@ -14,6 +14,10 @@ module Engine
                       brown: '#7b352a')
 
       load_from_json(Config::Game::G1882::JSON)
+
+      def stock_round
+        Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy_sell)
+      end
     end
   end
 end

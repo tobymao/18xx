@@ -79,6 +79,8 @@ module Engine
           !(@current_actions.uniq.size == 2 && self.class::PURCHASE_ACTIONS.include?(@current_actions.last))
         when :sell_buy
           (self.class::PURCHASE_ACTIONS & @current_actions).empty?
+        when :sell_buy_sell
+          true
         end
       end
 
