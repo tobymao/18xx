@@ -28,6 +28,7 @@ module Engine
     "5": 390,
     "6": 390
   },
+  "mustSellInBlocks": true,
   "locationNames": {
     "F3": "Saijou",
     "G4": "Niihama",

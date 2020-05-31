@@ -28,6 +28,7 @@ module Engine
     "5": 360,
     "6": 300
   },
+  "mustSellInBlocks": false,
   "locationNames": {
     "A9": "Western Canada (HB +100)",
     "B2": "Northern Alberta (HB +100)",
