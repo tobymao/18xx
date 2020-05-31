@@ -31,6 +31,7 @@ module Engine
     "4": 400,
     "5": 400
   },
+  "capitalization": "incremental",
   "mustSellInBlocks": false,
   "locationNames": {
     "B8": "Holland",

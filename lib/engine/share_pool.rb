@@ -36,6 +36,7 @@ module Engine
       end
 
       share_str = "a #{share.percent}% share of #{corporation.name}"
+      incremental = corporation.capitalization == :incremental
 
       if exchange
         case exchange
@@ -49,13 +50,22 @@ module Engine
         @log << "#{entity.name} buys #{share_str} "\
           "from #{share.owner.corporation? ? 'the IPO' : 'the market'} "\
           "for #{@game.format_currency(price)}"
-        transfer_shares(share, entity, spender: entity, receiver: @bank)
+
+        if incremental
+          transfer_shares(share, entity, spender: entity, receiver: share.owner)
+        else
+          transfer_shares(share, entity, spender: entity, receiver: @bank)
+        end
       end
 
       return if floated == corporation.floated?
 
+      @log << "#{corporation.name} floats"
+
+      return if incremental
+
       @bank.spend(par_price * 10, corporation)
-      @log << "#{corporation.name} floats with #{@game.format_currency(corporation.cash)}"
+      @log << "#{corporation.name} receives #{@game.format_currency(corporation.cash)}"
     end
 
     def sell_shares(bundle)

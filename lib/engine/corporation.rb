@@ -15,7 +15,7 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :par_price, :share_price, :tokens
-    attr_reader :color, :companies, :coordinates, :min_price, :name, :full_name,
+    attr_reader :capitalization, :color, :companies, :coordinates, :min_price, :name, :full_name,
                 :logo, :text_color, :trains, :operating_history
 
     def initialize(sym:, name:, tokens:, **opts)
@@ -35,6 +35,7 @@ module Engine
       @operating_history = {}
 
       @cash = 0
+      @capitalization = opts[:capitalization] || :full
       @float_percent = opts[:float_percent] || 60
       @coordinates = opts[:coordinates]
       @min_price = opts[:min_price]

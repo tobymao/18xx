@@ -28,6 +28,7 @@ module Engine
     "5": 360,
     "6": 300
   },
+  "capitalization": "full",
   "mustSellInBlocks": false,
   "locationNames": {
     "A9": "Western Canada (HB +100)",

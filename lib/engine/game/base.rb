@@ -51,6 +51,8 @@ module Engine
 
       CERT_LIMIT_COLORS = %i[brown orange yellow].freeze
 
+      CAPITALIZATION = :full
+
       MUST_SELL_IN_BLOCKS = false
 
       COMPANIES = [].freeze
@@ -140,6 +142,7 @@ module Engine
         const_set(:BANK_CASH, data['bankCash'])
         const_set(:CERT_LIMIT, data['certLimit'])
         const_set(:STARTING_CASH, data['startingCash'])
+        const_set(:CAPITALIZATION, data['capitalization'])
         const_set(:MUST_SELL_IN_BLOCKS, data['mustSellInBlocks'])
         const_set(:TILES, data['tiles'])
         const_set(:LOCATION_NAMES, data['locationNames'])
@@ -430,7 +433,11 @@ module Engine
         min_price = stock_market.par_prices.map(&:price).min
 
         self.class::CORPORATIONS.map do |corporation|
-          Corporation.new(min_price: min_price, **corporation)
+          Corporation.new(
+            min_price: min_price,
+            capitalization: self.class::CAPITALIZATION,
+            **corporation,
+          )
         end
       end
 

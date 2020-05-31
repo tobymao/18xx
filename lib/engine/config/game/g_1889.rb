@@ -28,6 +28,7 @@ module Engine
     "5": 390,
     "6": 390
   },
+  "capitalization": "full",
   "mustSellInBlocks": true,
   "locationNames": {
     "F3": "Saijou",
