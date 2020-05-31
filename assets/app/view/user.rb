@@ -87,7 +87,6 @@ module View
         id: :font_color,
         type: :color,
         attrs: { value: font_color },
-        on: { change: -> { store(:font_color) } },
       )
     end
 
