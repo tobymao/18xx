@@ -29,6 +29,7 @@ module Engine
     "7": 180
   },
   "capitalization": "incremental",
+  "layout": "pointy",
   "mustSellInBlocks": false,
   "locationNames": {
     "A20": "Montréal",

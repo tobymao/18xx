@@ -2,7 +2,16 @@
 
 module View
   class Tiles < Snabberb::Component
-    def render_tile_blocks(name, num: nil, tile: nil, location_name: nil, scale: 1.0, opacity: 1.0, rotations: nil)
+    def render_tile_blocks(
+      name,
+      layout: nil,
+      num: nil,
+      tile: nil,
+      location_name: nil,
+      scale: 1.0,
+      opacity: 1.0,
+      rotations: nil
+    )
       props = {
         style: {
           display: 'inline-block',
@@ -24,7 +33,8 @@ module View
       rotations.map do |rotation|
         tile.rotate!(rotation)
 
-        text = "##{name}"
+        text = tile.preprinted ? '' : '#'
+        text += name
         text += "-#{rotation}" if rotations.size > 1
         text += " × #{num}" if num
 
@@ -35,7 +45,7 @@ module View
                 h(
                   Hex,
                   hex: Engine::Hex.new('A1',
-                                       layout: 'flat',
+                                       layout: layout,
                                        location_name: loc_name,
                                        tile: tile),
                   role: :tile_page,

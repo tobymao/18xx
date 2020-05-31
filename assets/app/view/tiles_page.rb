@@ -26,6 +26,8 @@ module View
       dest = match[1]
       hexes_or_tiles = match[2]
 
+      layout = (Lib::Params['l'] || 'flat').to_sym
+
       # parse URL params 'r' and 'n'; but don't apply them to /tiles/all, are
       # you trying to kill your browser?
       @rotations =
@@ -46,7 +48,7 @@ module View
         h('div#tiles', [
             h('div#all_tiles', [
                 h(:h1, 'Generic Map Hexes and Common Track Tiles'),
-                *TILE_IDS.flat_map { |t| render_tile_blocks(t) },
+                *TILE_IDS.flat_map { |t| render_tile_blocks(t, layout: layout) },
               ]),
 
           ])
@@ -74,6 +76,7 @@ module View
         rendered = tile_ids.flat_map do |id|
           render_tile_blocks(
             id,
+            layout: layout,
             scale: 3.0,
             rotations: @rotations,
             location_name: @location_name,
@@ -99,6 +102,7 @@ module View
 
       render_tile_blocks(
         name,
+        layout: game.class::LAYOUT,
         tile: tile,
         location_name: tile.location_name || @location_name,
         scale: 3.0,
@@ -141,6 +145,7 @@ module View
       rendered_map_hexes = map_hexes.sort.flat_map do |tile|
         render_tile_blocks(
           tile.name,
+          layout: game.layout,
           tile: tile,
           location_name: tile.location_name
         )
@@ -149,6 +154,7 @@ module View
       rendered_tiles = game.tiles.sort.group_by(&:name).flat_map do |name, tiles_|
         render_tile_blocks(
           name,
+          layout: game.layout,
           tile: tiles_.first,
           num: tiles_.size,
           rotations: @rotations,
