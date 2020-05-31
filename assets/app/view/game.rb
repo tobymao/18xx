@@ -103,12 +103,15 @@ module View
           h(Tools, game: @game, game_data: @game_data, user: @user)
         end
 
-      @connection.subscribe(game_path) do |data|
-        if data['id'] == @game.current_action_id
+      @connection.subscribe(game_path, -2) do |data|
+        n_id = data['id']
+        o_id = @game.current_action_id
+
+        if n_id == o_id
           @game_data['actions'] << data
           store(:game_data, @game_data, skip: true)
           store(:game, @game.process_action(data))
-        else
+        elsif n_id > o_id
           @connection.get(game_path) do |new_data|
             store(:game_data, new_data, skip: true)
             store(:game, @game.clone(new_data['actions']))
