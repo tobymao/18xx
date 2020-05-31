@@ -528,7 +528,8 @@ module Engine
       "train_limit": 4,
       "tiles": [
         "yellow"
-      ]
+      ],
+      "operating_rounds": 1
     },
     {
       "name": "3",
@@ -536,7 +537,8 @@ module Engine
       "tiles": [
         "yellow",
         "green"
-      ]
+      ],
+      "operating_rounds": 2
     },
     {
       "name": "4",
@@ -544,7 +546,8 @@ module Engine
       "tiles": [
         "yellow",
         "green"
-      ]
+      ],
+      "operating_rounds": 2
     },
     {
       "name": "5",
@@ -553,7 +556,8 @@ module Engine
         "yellow",
         "green",
         "brown"
-      ]
+      ],
+      "operating_rounds": 3
     },
     {
       "name": "6",
@@ -562,7 +566,8 @@ module Engine
         "yellow",
         "green",
         "brown"
-      ]
+      ],
+      "operating_rounds": 3
     },
     {
       "name": "D",
@@ -571,7 +576,8 @@ module Engine
         "yellow",
         "green",
         "brown"
-      ]
+      ],
+      "operating_rounds": 3
     }
   ]
 }
