@@ -32,7 +32,7 @@ module View
           ]]
         when :profile
           ['Profile Settings', [
-              render_notifications(@user&.dig(:settings, :notifications)),
+            render_notifications(@user&.dig(:settings, :notifications)),
             h(:div, [
               render_bg_color(@user&.dig(:settings, :bg_color)),
               render_font_color(@user&.dig(:settings, :font_color)),
