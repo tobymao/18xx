@@ -362,7 +362,7 @@ module Engine
       "abilities": [
         {
           "type": "share",
-          "share": "random-president"
+          "share": "random_president"
         },
         {
           "type": "no_buy"

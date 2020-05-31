@@ -488,15 +488,14 @@ module Engine
           next unless (ability = company.abilities(:share))
 
           case (share = ability[:share].to_s)
-          when 'random-president'
+          when 'random_president'
             corporation = @corporations[rand % @corporations.size]
             share = corporation.shares[0]
             ability[:share] = share
             company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
             @log << "#{company.name} comes with the president's share of #{corporation.name}"
-          when 'random'
-            corp_strs = ability[:'random-share-corps']&.split
-            corporations = @corporations.select { |c| corp_strs&.include?(c.name) } || @corporations
+          when 'random_share'
+            corporations = ability[:corporations]&.map { |id| corporation_by_id(id) } || @corporations
             corporation = corporations[rand % corporations.size]
             share = corporation.shares.find { |s| !s.president }
             ability[:share] = share

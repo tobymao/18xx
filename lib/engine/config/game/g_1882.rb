@@ -253,8 +253,8 @@ module Engine
       "abilities": [
         {
           "type": "share",
-          "share": "random",
-          "random-share-corps": "CNR CPR GT HBR QLL"
+          "share": "random_share",
+          "corporations": ["CNR", "CPR", "GT", "HBR", "QLL"]
         }
       ]
     },
