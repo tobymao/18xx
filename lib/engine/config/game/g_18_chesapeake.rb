@@ -28,6 +28,7 @@ module Engine
     "5": 480,
     "6": 400
   },
+  "mustSellInBlocks": false,
   "locationNames": {
     "A3": "Pittsburgh",
     "B2": "Pittsburgh",

@@ -51,6 +51,8 @@ module Engine
 
       CERT_LIMIT_COLORS = %i[brown orange yellow].freeze
 
+      MUST_SELL_IN_BLOCKS = false
+
       COMPANIES = [].freeze
 
       CORPORATIONS = [].freeze
@@ -138,6 +140,7 @@ module Engine
         const_set(:BANK_CASH, data['bankCash'])
         const_set(:CERT_LIMIT, data['certLimit'])
         const_set(:STARTING_CASH, data['startingCash'])
+        const_set(:MUST_SELL_IN_BLOCKS, data['mustSellInBlocks'])
         const_set(:TILES, data['tiles'])
         const_set(:LOCATION_NAMES, data['locationNames'])
         const_set(:MARKET, data['market'])
