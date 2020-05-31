@@ -5,6 +5,19 @@ class Index < Snabberb::Layout
     css = <<~CSS
       * { font-family: 'Inconsolata', monospace; }
 
+      @media (prefers-color-scheme: dark) {
+        body { 
+          background-color: black;
+          color: #eee;
+        }
+        .nav__links a {
+          color: white;
+        }
+        .nav__links a:hover {
+          color: #ccc;
+        }
+      }
+
       .card_header {
         font-size: 15px;
         font-weight: bold;

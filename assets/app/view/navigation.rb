@@ -36,7 +36,7 @@ module View
         }
       }
 
-      h(:div, props, [
+      h('div.nav', props, [
         h(:a, { attrs: { href: '/' } }, [
           h(:img, logo_props),
         ]),
@@ -67,7 +67,7 @@ module View
         },
       }
 
-      h(:div, props, children)
+      h('div.nav__links', props, children)
     end
   end
 end
