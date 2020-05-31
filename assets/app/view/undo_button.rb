@@ -16,7 +16,7 @@ module View
         },
       }
 
-      h(:button, props, 'Undo')
+      h('button.button', props, 'Undo')
     end
   end
 end

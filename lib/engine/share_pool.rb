@@ -56,8 +56,7 @@ module Engine
       return if floated == corporation.floated?
 
       @bank.spend(price * 10, corporation)
-      @log << "#{corporation.name} floats with #{@game.format_currency(corporation.cash)} "\
-              "and tokens #{corporation.coordinates}"
+      @log << "#{corporation.name} floats with #{@game.format_currency(corporation.cash)}"
     end
 
     def sell_shares(bundle)

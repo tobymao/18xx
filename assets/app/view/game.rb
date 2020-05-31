@@ -6,6 +6,7 @@ require 'view/auction_round'
 require 'view/companies'
 require 'view/corporations'
 require 'view/discard_trains'
+require 'view/draft_round'
 require 'view/entity_order'
 require 'view/exchange'
 require 'view/history_controls'
@@ -213,12 +214,14 @@ module View
       return h(DiscardTrains, corporations: crowded_corps) if @round.crowded_corps.any?
 
       case @round
-      when Engine::Round::Auction
-        h(AuctionRound, game: @game)
       when Engine::Round::Stock
         h(StockRound, game: @game)
       when Engine::Round::Operating
         h(OperatingRound, game: @game)
+      when Engine::Round::Auction
+        h(AuctionRound, game: @game)
+      when Engine::Round::Draft
+        h(DraftRound, game: @game)
       end
     end
 

@@ -311,7 +311,14 @@ module Engine
 
         @actions << action
         action_processed(action)
-        next_round! while @round.finished? && !@finished
+
+        while @round.finished? && !@finished
+          @round.entities.each(&:unpass!)
+          break end_game if @round.end_game
+
+          next_round!
+        end
+
         self
       end
 
@@ -511,15 +518,8 @@ module Engine
       end
 
       def next_round!
-        @round.entities.each(&:unpass!)
-
-        return end_game if @round.end_game
-
         @round =
           case @round
-          when Round::Auction
-            reorder_players
-            new_stock_round
           when Round::Stock
             @operating_rounds = @phase.operating_rounds
             reorder_players
@@ -536,8 +536,9 @@ module Engine
               or_set_finished
               new_stock_round
             end
-          else
-            raise "Unexected round type #{@round}"
+          when init_round.class
+            reorder_players
+            new_stock_round
           end
       end
 

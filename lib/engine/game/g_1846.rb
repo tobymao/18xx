@@ -17,6 +17,22 @@ module Engine
                       green: '#32763f')
 
       load_from_json(Config::Game::G1846::JSON)
+
+      DEV_STAGE = :prealpha
+
+      def init_companies(players)
+        super + @players.size.times.map do |i|
+          Company.new(name: (i + 1).to_s, value: 0, desc: "Choose this card if you don't want to purchase a company")
+        end
+      end
+
+      def init_round
+        Round::Draft.new(@players.reverse, game: self)
+      end
+
+      def stock_round
+        Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy)
+      end
     end
   end
 end
