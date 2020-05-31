@@ -30,10 +30,11 @@ module Engine
 
       corporation.ipoed = true if share.presidents_share
       price = share.price
+      par_price = corporation.par_price&.price
 
       if ipoed != corporation.ipoed
         @log << "#{entity.name} pars #{corporation.name} at "\
-                "#{@game.format_currency(corporation.par_price.price)}"
+                "#{@game.format_currency(par_price)}"
       end
 
       share_str = "a #{share.percent}% share of #{corporation.name}"
@@ -55,7 +56,7 @@ module Engine
 
       return if floated == corporation.floated?
 
-      @bank.spend(price * 10, corporation)
+      @bank.spend(par_price * 10, corporation)
       @log << "#{corporation.name} floats with #{@game.format_currency(corporation.cash)}"
     end
 
