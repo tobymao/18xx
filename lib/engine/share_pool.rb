@@ -7,11 +7,9 @@ require_relative 'share_holder'
 module Engine
   class SharePool
     include ShareHolder
-    attr_reader :corporations
 
     def initialize(game)
       @game = game
-      @corporations = game.corporations # used by View::StockRound::render_corporations
       @bank = game.bank
       @log = game.log
     end
