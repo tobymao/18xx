@@ -254,7 +254,7 @@ module Engine
         {
           "type": "share",
           "share": "random",
-          "random-share-exclude": "SC CN"
+          "random-share-corps": "CNR CPR GT HBR QLL"
         }
       ]
     },
