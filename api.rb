@@ -51,7 +51,7 @@ class Api < Roda
     csp.frame_ancestors :none
   end
 
-  LOGGER = Logger.new('log/rack/rack.log')
+  LOGGER = Logger.new($stdout)
 
   plugin :common_logger, LOGGER
 
