@@ -26,7 +26,8 @@ module View
                                        city: nil,
                                        radius: radius,
                                        connection: double,
-                                       num_cities: 1)
+                                       num_cities: 1,
+                                       region_use: {})
             allow(slot).to receive_messages(h: '')
 
             # act
@@ -46,7 +47,8 @@ module View
                                        city: nil,
                                        radius: 0,
                                        connection: double,
-                                       num_cities: 1)
+                                       num_cities: 1,
+                                       region_use: {})
             allow(slot).to receive_messages(h: '')
 
             # act
