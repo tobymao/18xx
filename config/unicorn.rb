@@ -13,7 +13,7 @@ preload_app true
 
 before_fork do |_server, _worker|
   DB.disconnect
-  ObjectSpace.each_object(Assets) { |asset| asset.clear! }
+  ObjectSpace.each_object(Assets, &:clear!)
 end
 
 after_fork do |_server, _worker|
