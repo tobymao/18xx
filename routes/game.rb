@@ -102,6 +102,8 @@ class Api
                   action['message'].include?("@#{user.name}")
                 end
                 ['Received Message', pinged.map(&:id)]
+              elsif game.status == 'finished'
+                ['Game Finished', users.map(&:id)]
               else
                 ['Your Turn', acting.map(&:id)]
               end
