@@ -127,7 +127,7 @@ module Engine
             3 => [5, 2],
             4 => [4, 1],
             5 => [1, 4],
-          }
+          },
         },
         {
           desc: "18Chesapeake's X5",
@@ -139,7 +139,7 @@ module Engine
             3 => [0, 3],
             4 => [1, 4],
             5 => [2, 5],
-          }
+          },
         },
         {
           desc: "18Chesapeake's H6 hex (Baltimore)",

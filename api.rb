@@ -26,7 +26,7 @@ MessageBus.configure(
   clear_every: 10,
 )
 
-MessageBus.reliable_pub_sub.max_backlog_size = 1
+MessageBus.reliable_pub_sub.max_backlog_size = 2
 MessageBus.reliable_pub_sub.max_global_backlog_size = 100_000
 MessageBus.reliable_pub_sub.max_backlog_age = 172_800 # 2 days
 
@@ -51,7 +51,7 @@ class Api < Roda
     csp.frame_ancestors :none
   end
 
-  LOGGER = Logger.new('log/rack/rack.log')
+  LOGGER = Logger.new($stdout)
 
   plugin :common_logger, LOGGER
 
@@ -171,6 +171,7 @@ class Api < Roda
 
   def static(desc:, js_tags:, attach_func:)
     <<~HTML
+      <!DOCTYPE html>
       <html>
          <head>
             <meta charset="utf-8">

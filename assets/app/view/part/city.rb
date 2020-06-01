@@ -67,15 +67,15 @@ module View
           height: SLOT_DIAMETER * 2,
           x: -SLOT_DIAMETER,
           y: -SLOT_DIAMETER,
-          rx: SLOT_RADIUS
+          rx: SLOT_RADIUS,
         }],
         5 => [:circle, {
           fill: 'white',
-          r: 1.36 * SLOT_DIAMETER
+          r: 1.36 * SLOT_DIAMETER,
         }],
         6 => [:circle, {
           fill: 'white',
-          r: 1.5 * SLOT_DIAMETER
+          r: 1.5 * SLOT_DIAMETER,
         }],
       }.freeze
 
@@ -102,7 +102,7 @@ module View
               region_weights: EDGE_TRACK_REGIONS[@edge] + EDGE_CITY_REGIONS[@edge],
               x: -Math.sin((@edge * 60) / 180 * Math::PI) * 50,
               y: Math.cos((@edge * 60) / 180 * Math::PI) * 50,
-            }
+            },
           ]
         end
 
@@ -126,7 +126,7 @@ module View
             region_weights: region_weights,
             x: x,
             y: y,
-          }
+          },
         ]
       end
 
@@ -148,8 +148,8 @@ module View
                               token: token,
                               slot_index: slot_index,
                               radius: SLOT_RADIUS,
-                              reservation: @city.reservations[slot_index])
-                ])
+                              reservation: @city.reservations[slot_index]),
+                ]),
             ])
         end
 
@@ -208,9 +208,9 @@ module View
                 h(:g, { attrs: { transform: "translate(#{displacement} 0)" } }, [
                     h(Part::SingleRevenue,
                       revenue: revenue,
-                      transform: "rotate(#{-angle})")
-                  ])
-              ])
+                      transform: "rotate(#{-angle})"),
+                  ]),
+              ]),
           ])
       end
 

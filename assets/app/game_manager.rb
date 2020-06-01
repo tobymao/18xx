@@ -13,16 +13,17 @@ module GameManager
   end
 
   def create_hotseat(**opts)
-    time = Time.now
+    salt = Array.new(8) { [*'a'..'z'].sample }.join
+    id = opts[:id].to_s.scan(/\d+/).first.to_i
 
     game_data = {
       status: 'active',
       actions: [],
       **opts,
-      id: "hs_#{time.to_i}",
+      id: "hs_#{salt}_#{id}",
       mode: :hotseat,
       user: { id: 0, name: 'You' },
-      created_at: time.strftime('%Y-%m-%d'),
+      created_at: Time.now.strftime('%Y-%m-%d'),
     }
 
     game_id = game_data[:id]

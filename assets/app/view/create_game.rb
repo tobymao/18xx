@@ -39,7 +39,7 @@ module View
       end
 
       h(:div, [
-        render_form('Create New Game - You need an account to play multiplayer', inputs)
+        render_form('Create New Game - You need an account to play multiplayer', inputs),
       ])
     end
 
@@ -113,6 +113,7 @@ module View
       end
 
       create_hotseat(
+        id: Time.now.to_i,
         players: players.map { |name| { name: name } },
         title: params[:title],
         description: params[:description],

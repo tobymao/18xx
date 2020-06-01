@@ -28,6 +28,8 @@ module Engine
     "5": 480,
     "6": 400
   },
+  "capitalization": "full",
+  "mustSellInBlocks": false,
   "locationNames": {
     "A3": "Pittsburgh",
     "B2": "Pittsburgh",
@@ -362,7 +364,7 @@ module Engine
       "abilities": [
         {
           "type": "share",
-          "share": "random-president"
+          "share": "random_president"
         },
         {
           "type": "no_buy"

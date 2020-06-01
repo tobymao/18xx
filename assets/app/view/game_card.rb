@@ -19,15 +19,14 @@ module View
       props = {
         style: {
           display: 'inline-block',
-          border: 'solid 1px',
-          'border-color': 'currentColor',
+          border: 'solid 1px black',
           'border-radius': '10px',
           overflow: 'hidden',
           padding: '0.5rem',
           width: '320px',
           'margin': '0 0.5rem 0.5rem 0',
           'vertical-align': 'top',
-        }
+        },
       }
 
       h(:div, props, [
@@ -91,15 +90,14 @@ module View
           margin: '-0.5em',
           padding: '0.5em',
           'background-color': color,
-        }
+        },
       }
 
       text_props = {
         style: {
-          color: 'black',
           display: 'inline-block',
           width: '160px',
-        }
+        },
       }
 
       h('div', props, [
@@ -134,7 +132,7 @@ module View
           'margin-top': '0.5rem',
           'line-height': '1.2rem',
           'word-break': 'break-all',
-        }
+        },
       }
 
       p_elm = players.map.with_index do |player, index|
@@ -179,7 +177,7 @@ module View
       else
         children << h(:div, [
           h(:b, 'Round: '), "#{@gdata['round']&.split(' ')&.first} #{@gdata['turn']} ",
-          h(:b, 'Updated: '), @gdata['updated_at'],
+          h(:b, 'Updated: '), @gdata['updated_at']
         ])
       end
 

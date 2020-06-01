@@ -10,7 +10,7 @@ module View
         style: {
           display: 'inline-block',
           'margin-right': '1rem',
-        }
+        },
       }
 
       h('div.half', props, [
@@ -23,7 +23,7 @@ module View
 
     def render_header
       h('div.card_header', [
-        "Welcome#{@user ? ' ' + @user['name'] : ''}!"
+        "Welcome#{@user ? ' ' + @user['name'] : ''}!",
       ])
     end
 
@@ -43,13 +43,12 @@ module View
       props = {
         style: {
           'background-color': '#FFEC46',
-          'color': 'black',
           'padding': '1em',
           'margin': '1rem 0',
         },
         props: {
           innerHTML: message,
-        }
+        },
       }
 
       h(:div, props)
@@ -83,7 +82,7 @@ module View
       props = {
         style: {
           'margin': '1rem 0',
-        }
+        },
       }
 
       create_props = {

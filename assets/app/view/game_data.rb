@@ -61,7 +61,7 @@ module View
         ])
       else
         h('div.margined', [
-          copy_button
+          copy_button,
         ])
       end
     end

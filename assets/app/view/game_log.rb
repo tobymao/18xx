@@ -36,7 +36,7 @@ module View
           display: 'inline-block',
           width: '100%',
           margin: '1rem 0 1rem 0',
-        }
+        },
       }
 
       h(:div, props, children)

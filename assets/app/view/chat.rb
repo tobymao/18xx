@@ -48,7 +48,7 @@ module View
         style: {
           display: 'inline-block',
           'vertical-align': 'top',
-        }
+        },
       }
 
       h('div.half', props, children)

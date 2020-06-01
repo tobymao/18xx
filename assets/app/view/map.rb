@@ -50,7 +50,7 @@ module View
          style: {
            overflow: 'auto',
            margin: '1rem -1rem',
-         }
+         },
       }
 
       h(:div, props, children)
@@ -72,7 +72,7 @@ module View
         h(:g, { attrs: { transform: 'scale(0.5)' } }, [
           h(:g, { attrs: { id: 'map-hexes', transform: "translate(#{25 + GAP} #{12.5 + GAP})" } }, @hexes),
           h(Axis, cols: @cols, rows: @rows, layout: @layout, gap: GAP),
-        ])
+        ]),
       ])
     end
   end

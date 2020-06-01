@@ -51,7 +51,7 @@ module View
             'game_status': @game_data[:status],
             'active_players': game.active_players.map(&:name),
             'turn': game.turn,
-            'round': game.round.name
+            'round': game.round.name,
             }
           json['meta'] = meta
         end

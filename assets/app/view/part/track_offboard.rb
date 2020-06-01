@@ -29,7 +29,7 @@ module View
             region_weights: REGIONS[edge],
             x: 0,
             y: 0,
-          }
+          },
         ]
       end
 
@@ -45,7 +45,7 @@ module View
             'stroke-linecap': 'butt',
             'stroke-linejoin': 'miter',
             'stroke-width': 6,
-          }
+          },
         }
 
         h(:path, props)

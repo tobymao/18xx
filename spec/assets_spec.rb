@@ -108,8 +108,8 @@ describe 'Assets' do
         },
         user: {
           id: 1,
-          name: 'Player 1'
-        }
+          name: 'Player 1',
+        },
       }
 
       expect(render(app_route: '/game/1', **needs)).to include('Takamatsu E-Railroad')

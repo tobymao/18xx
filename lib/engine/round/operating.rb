@@ -175,7 +175,7 @@ module Engine
           when :token
             return next_step! if @current_entity.tokens.none?
 
-            next_step! unless connected_nodes.any? { |node, _| node.tokenable?(@current_entity) }
+            next_step! unless connected_nodes.any? { |node, _| node.tokenable?(@current_entity, free: @teleported) }
           when :route
             next_step! if @current_entity.trains.empty? || !route?
           when :dividend

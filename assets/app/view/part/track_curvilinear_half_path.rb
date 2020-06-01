@@ -48,7 +48,7 @@ module View
             region_weights: regions,
             x: 0,
             y: 0,
-          }
+          },
         ]
       end
 
@@ -89,8 +89,8 @@ module View
             transform: "rotate(#{@rotation})",
             d: SVG_PATH_STRINGS[[@curvilinear_type, @direction]],
             stroke: @color,
-            'stroke-width' => 8
-          }
+            'stroke-width' => 8,
+          },
         }
 
         h(:path, props)

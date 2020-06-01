@@ -93,7 +93,7 @@ module View
         }
 
         h(:g, { attrs: attrs }, [
-          h(:text, { attrs: text_attrs }, @label)
+          h(:text, { attrs: text_attrs }, @label),
         ])
       end
     end

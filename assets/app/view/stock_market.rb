@@ -11,7 +11,7 @@ module View
       red: '#ffaaaa',
       brown: '#8b4513',
       orange: '#ffbb55',
-      yellow: '#ffff99'
+      yellow: '#ffff99',
     }.freeze
 
     PAD = 5                                     # between box contents and border
@@ -42,13 +42,12 @@ module View
         width: "#{WIDTH_TOTAL - 2 * PAD - 2 * BORDER}px",
         height: "#{HEIGHT_TOTAL - 2 * PAD - 2 * BORDER}px",
         border: "solid #{BORDER}px rgba(0,0,0,0.2)",
-        color: 'black',
       )
 
       grid = @game.stock_market.market.flat_map do |prices|
         rows = prices.map do |price|
           if price
-            style = box_style.merge('background-color' => price.color ? COLOR_MAP[price.color] : 'white')
+            style = box_style.merge('background-color' => COLOR_MAP[price.color])
 
             corporations = price.corporations
             num = corporations.size
@@ -61,7 +60,7 @@ module View
                   position: 'absolute',
                   left: num > 1 ? "#{LEFT_TOKEN_POS + ((num - index - 1) * spacing)}px" : "#{MID_TOKEN_POS}px",
                   'z-index' => num - index,
-                }
+                },
               }
               h(:object, props)
             end
@@ -80,8 +79,8 @@ module View
 
       bank_props = {
         style: {
-          'margin-bottom': '1rem'
-        }
+          'margin-bottom': '1rem',
+        },
       }
 
       children = []

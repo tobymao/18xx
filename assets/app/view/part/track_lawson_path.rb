@@ -27,7 +27,7 @@ module View
             region_weights: regions,
             x: 0,
             y: 0,
-          }
+          },
         ]
       end
 
@@ -39,8 +39,8 @@ module View
             transform: "rotate(#{rotation})",
             d: 'M 0 87 L 0 0',
             stroke: @color,
-            'stroke-width' => 8
-          }
+            'stroke-width' => 8,
+          },
         }
 
         [

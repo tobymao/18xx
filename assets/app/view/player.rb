@@ -21,7 +21,6 @@ module View
       if @game.round.can_act?(@player)
         card_style['border'] = 'solid 1px black'
         card_style['background-color'] = '#dfd'
-        card_style['color'] = 'black'
       end
 
       divs = [
@@ -94,7 +93,7 @@ module View
         h(:tr, [
           h(:td, td_props, 'Cash'),
           h(:td, td_props, @game.format_currency(@player.cash)),
-        ])
+        ]),
       ]
 
       if @game.round.auction?
@@ -158,7 +157,7 @@ module View
         .map { |c, s| render_corporation_shares(c, s) }
 
       h(:div, div_props, [
-        h(:table, props, shares)
+        h(:table, props, shares),
       ])
     end
 
@@ -185,7 +184,7 @@ module View
       td_props = {
         style: {
           padding: '0.1rem 0.2rem',
-          'text-align': 'left'
+          'text-align': 'left',
         },
       }
 

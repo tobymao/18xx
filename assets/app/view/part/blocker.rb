@@ -29,7 +29,7 @@ module View
       def preferred_render_locations
         if @tile.parts.one?
           [
-            P_CENTER
+            P_CENTER,
           ]
         else
           [

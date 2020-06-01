@@ -7,11 +7,9 @@ require_relative 'share_holder'
 module Engine
   class SharePool
     include ShareHolder
-    attr_reader :corporations
 
     def initialize(game)
       @game = game
-      @corporations = game.corporations # used by View::StockRound::render_corporations
       @bank = game.bank
       @log = game.log
     end
@@ -30,13 +28,15 @@ module Engine
 
       corporation.ipoed = true if share.presidents_share
       price = share.price
+      par_price = corporation.par_price&.price
 
       if ipoed != corporation.ipoed
         @log << "#{entity.name} pars #{corporation.name} at "\
-                "#{@game.format_currency(corporation.par_price.price)}"
+                "#{@game.format_currency(par_price)}"
       end
 
       share_str = "a #{share.percent}% share of #{corporation.name}"
+      incremental = corporation.capitalization == :incremental
 
       if exchange
         case exchange
@@ -50,14 +50,22 @@ module Engine
         @log << "#{entity.name} buys #{share_str} "\
           "from #{share.owner.corporation? ? 'the IPO' : 'the market'} "\
           "for #{@game.format_currency(price)}"
-        transfer_shares(share, entity, spender: entity, receiver: @bank)
+
+        if incremental
+          transfer_shares(share, entity, spender: entity, receiver: share.owner)
+        else
+          transfer_shares(share, entity, spender: entity, receiver: @bank)
+        end
       end
 
       return if floated == corporation.floated?
 
-      @bank.spend(price * 10, corporation)
-      @log << "#{corporation.name} floats with #{@game.format_currency(corporation.cash)} "\
-              "and tokens #{corporation.coordinates}"
+      @log << "#{corporation.name} floats"
+
+      return if incremental
+
+      @bank.spend(par_price * 10, corporation)
+      @log << "#{corporation.name} receives #{@game.format_currency(corporation.cash)}"
     end
 
     def sell_shares(bundle)

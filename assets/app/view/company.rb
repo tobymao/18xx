@@ -13,7 +13,7 @@ module View
 
     def render_bidders
       bidders_style = {
-        'font-weight': 'normal'
+        'font-weight': 'normal',
       }
       names = @bids
         .sort_by(&:price)
@@ -32,9 +32,8 @@ module View
         background: 'yellow',
         border: '1px solid',
         'border-radius': '5px',
-        color: 'black',
         'margin-bottom': '0.5rem',
-        'font-size': '90%'
+        'font-size': '90%',
       }
 
       description_style = {
@@ -47,17 +46,17 @@ module View
       value_style = {
         display: 'inline-block',
         width: '50%',
-        'text-align': 'left'
+        'text-align': 'left',
       }
 
       revenue_style = {
         display: 'inline-block',
         width: '50%',
-        'text-align': 'right'
+        'text-align': 'right',
       }
 
       bidders_style = {
-        'margin-top': '1rem'
+        'margin-top': '1rem',
       }
 
       props = {
@@ -76,10 +75,8 @@ module View
         },
         on: { click: onclick },
       }
-      if selected?
-        props[:style]['background-color'] = 'lightblue'
-        props[:style]['color'] = 'black'
-      end
+
+      props[:style]['background-color'] = 'lightblue' if selected?
 
       children = [
         h(:div, { style: header_style }, 'PRIVATE COMPANY'),

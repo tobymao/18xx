@@ -6,6 +6,7 @@ require 'view/auction_round'
 require 'view/companies'
 require 'view/corporations'
 require 'view/discard_trains'
+require 'view/draft_round'
 require 'view/entity_order'
 require 'view/exchange'
 require 'view/history_controls'
@@ -35,13 +36,13 @@ module View
       if e.is_a?(Engine::GameError) && !e.action_id.nil?
         action = e.action_id - 1
         inner << h(:div, [
-          h(:a, { attrs: { href: "?action=#{action}" } }, "View the last valid action (#{action})")
+          h(:a, { attrs: { href: "?action=#{action}" } }, "View the last valid action (#{action})"),
         ])
       end
       inner << h(:div, [
         'Please ',
         h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues/' } }, 'raise a bug report'),
-        " and include the game id (#{@game_data['id']}) and the following JSON data"
+        " and include the game id (#{@game_data['id']}) and the following JSON data",
       ])
       inner << h(GameData, actions: @game_data['actions'], allow_clone: false)
       h(:div, inner)
@@ -52,7 +53,8 @@ module View
       actions = @game_data['actions']
       @num_actions = actions.size
       cursor = Lib::Params['action']&.to_i
-      return if game_id == @game&.id && @game.actions.size == @num_actions && (!cursor || cursor == @game.actions.size)
+      return if game_id == @game&.id &&
+        ((!cursor && @game.actions.size == @num_actions) || (cursor == @game.actions.size))
 
       @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
         @game_data['players'].map { |p| p['name'] },
@@ -101,12 +103,15 @@ module View
           h(Tools, game: @game, game_data: @game_data, user: @user)
         end
 
-      @connection.subscribe(game_path) do |data|
-        if data['id'] == @game.current_action_id
+      @connection.subscribe(game_path, -2) do |data|
+        n_id = data['id']
+        o_id = @game.current_action_id
+
+        if n_id == o_id
           @game_data['actions'] << data
           store(:game_data, @game_data, skip: true)
           store(:game, @game.process_action(data))
-        else
+        elsif n_id > o_id
           @connection.get(game_path) do |new_data|
             store(:game_data, new_data, skip: true)
             store(:game, @game.clone(new_data['actions']))
@@ -123,7 +128,7 @@ module View
         key: 'game_page',
         hook: {
           destroy: destroy,
-        }
+        },
       }
 
       h(:div, props, [
@@ -212,12 +217,14 @@ module View
       return h(DiscardTrains, corporations: crowded_corps) if @round.crowded_corps.any?
 
       case @round
-      when Engine::Round::Auction
-        h(AuctionRound, game: @game)
       when Engine::Round::Stock
         h(StockRound, game: @game)
       when Engine::Round::Operating
         h(OperatingRound, game: @game)
+      when Engine::Round::Auction
+        h(AuctionRound, game: @game)
+      when Engine::Round::Draft
+        h(DraftRound, game: @game)
       end
     end
 

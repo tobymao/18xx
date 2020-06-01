@@ -31,6 +31,8 @@ module Engine
     "4": 400,
     "5": 400
   },
+  "capitalization": "incremental",
+  "mustSellInBlocks": false,
   "locationNames": {
     "B8": "Holland",
     "B16": "Port Huron",
@@ -153,14 +155,14 @@ module Engine
       "value": 60,
       "debt": 80,
       "revenue": 0,
-      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). Splits revenue evenly with owner."
+      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). Splits revenue evenly with owner. $80 debt must be paid by purchaser."
     },
     {
       "name": "Big 4",
       "value": 40,
       "debt": 60,
       "revenue": 0,
-      "desc": "Starts with $60 in treasury, a 2 train, and a token in Indianapolis (G9). Splits revenue evenly with owner."
+      "desc": "Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). Splits revenue evenly with owner. $60 debt must be paid by purchaser."
     },
     {
       "name": "Chicago and Western Indiana",

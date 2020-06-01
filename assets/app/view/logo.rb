@@ -20,7 +20,7 @@ module View
           width: '500px',
           height: '198px',
           viewBox: '0 0 500 198',
-        }
+        },
       }
 
       bg_color = @user&.dig(:settings, :bg_color) || '#ffffff'

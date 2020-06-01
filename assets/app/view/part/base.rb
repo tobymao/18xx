@@ -102,7 +102,7 @@ module View
             # offset given to svg's translate()
             x: 0,
             y: 0,
-          }
+          },
         ]
       end
 

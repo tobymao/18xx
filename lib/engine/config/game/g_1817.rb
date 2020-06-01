@@ -28,6 +28,8 @@ module Engine
     "6": 210,
     "7": 180
   },
+  "capitalization": "incremental",
+  "mustSellInBlocks": false,
   "locationNames": {
     "A20": "Montréal",
     "A28": "Maritime Prov.",

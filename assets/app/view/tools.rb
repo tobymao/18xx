@@ -17,7 +17,7 @@ module View
       @settings = Lib::Storage[@game.id] || {}
       h(:div, [
         *render_tools,
-        h(GameData, actions: @game.actions.map(&:to_h))
+        h(GameData, actions: @game.actions.map(&:to_h)),
       ])
     end
 
@@ -51,7 +51,7 @@ module View
                        'button.button',
                        { style: { margin: '1rem' }, on: { click: -> { store(:confirm_endgame, false) } } },
                        'Cancel',
-                     )
+                     ),
                    ]
                  else
                    [

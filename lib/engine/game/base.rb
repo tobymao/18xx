@@ -51,6 +51,10 @@ module Engine
 
       CERT_LIMIT_COLORS = %i[brown orange yellow].freeze
 
+      CAPITALIZATION = :full
+
+      MUST_SELL_IN_BLOCKS = false
+
       COMPANIES = [].freeze
 
       CORPORATIONS = [].freeze
@@ -138,6 +142,8 @@ module Engine
         const_set(:BANK_CASH, data['bankCash'])
         const_set(:CERT_LIMIT, data['certLimit'])
         const_set(:STARTING_CASH, data['startingCash'])
+        const_set(:CAPITALIZATION, data['capitalization'])
+        const_set(:MUST_SELL_IN_BLOCKS, data['mustSellInBlocks'])
         const_set(:TILES, data['tiles'])
         const_set(:LOCATION_NAMES, data['locationNames'])
         const_set(:MARKET, data['market'])
@@ -219,7 +225,12 @@ module Engine
       end
 
       def rand
-        @seed = (RAND_A * @seed + RAND_C) % RAND_M
+        @seed =
+          if RUBY_ENGINE == 'opal'
+            `parseInt(Big(#{RAND_A}).times(#{@seed}).plus(#{RAND_C}).mod(#{RAND_M}).toString())`
+          else
+            (RAND_A * @seed + RAND_C) % RAND_M
+          end
       end
 
       def inspect
@@ -306,7 +317,14 @@ module Engine
 
         @actions << action
         action_processed(action)
-        next_round! while @round.finished? && !@finished
+
+        while @round.finished? && !@finished
+          @round.entities.each(&:unpass!)
+          break end_game if @round.end_game
+
+          next_round!
+        end
+
         self
       end
 
@@ -415,7 +433,11 @@ module Engine
         min_price = stock_market.par_prices.map(&:price).min
 
         self.class::CORPORATIONS.map do |corporation|
-          Corporation.new(min_price: min_price, **corporation)
+          Corporation.new(
+            min_price: min_price,
+            capitalization: self.class::CAPITALIZATION,
+            **corporation,
+          )
         end
       end
 
@@ -476,12 +498,19 @@ module Engine
           next unless (ability = company.abilities(:share))
 
           case (share = ability[:share].to_s)
-          when 'random-president'
-            share = @corporations[rand % @corporations.size].shares[0]
+          when 'random_president'
+            corporation = @corporations[rand % @corporations.size]
+            share = corporation.shares[0]
             ability[:share] = share
-            corporation = share.corporation
             company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
             @log << "#{company.name} comes with the president's share of #{corporation.name}"
+          when 'random_share'
+            corporations = ability[:corporations]&.map { |id| corporation_by_id(id) } || @corporations
+            corporation = corporations[rand % corporations.size]
+            share = corporation.shares.find { |s| !s.president }
+            ability[:share] = share
+            company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
+            @log << "#{company.name} comes with a #{share.percent}% share of #{corporation.name}"
           else
             ability[:share] = share_by_id(share)
           end
@@ -506,15 +535,8 @@ module Engine
       end
 
       def next_round!
-        @round.entities.each(&:unpass!)
-
-        return end_game if @round.end_game
-
         @round =
           case @round
-          when Round::Auction
-            reorder_players
-            new_stock_round
           when Round::Stock
             @operating_rounds = @phase.operating_rounds
             reorder_players
@@ -531,8 +553,9 @@ module Engine
               or_set_finished
               new_stock_round
             end
-          else
-            raise "Unexected round type #{@round}"
+          when init_round.class
+            reorder_players
+            new_stock_round
           end
       end
 

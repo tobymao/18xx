@@ -17,6 +17,53 @@ module Engine
                       green: '#32763f')
 
       load_from_json(Config::Game::G1846::JSON)
+
+      DEV_STAGE = :prealpha
+
+      ORANGE_GROUP = [
+        'Lake Shore Line',
+        'Michigan Central',
+        'Ohio & Indiana',
+      ].freeze
+
+      BLUE_GROUP = [
+        'Steamboat Company',
+        'Meat Packing Company',
+        'Tunnel Blasting Company',
+      ].freeze
+
+      GREEN_GROUP = %w[C&O ERIE PRR].freeze
+
+      def init_companies(players)
+        companies = super + @players.size.times.map do |i|
+          Company.new(name: (i + 1).to_s, value: 0, desc: "Choose this card if you don't want to purchase a company")
+        end
+
+        remove_from_group!(ORANGE_GROUP, companies)
+        remove_from_group!(BLUE_GROUP, companies)
+
+        companies
+      end
+
+      def remove_from_group!(group, entities)
+        remove = group.sort_by { rand }.take([5 - @players.size, 2].min)
+        @log << "Removing #{remove.join(', ')}"
+        entities.reject! { |e| remove.include?(e.name) }
+      end
+
+      def init_corporations(stock_market)
+        corporations = super
+        remove_from_group!(GREEN_GROUP, companies)
+        corporations
+      end
+
+      def init_round
+        Round::Draft.new(@players.reverse, game: self)
+      end
+
+      def stock_round
+        Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy)
+      end
     end
   end
 end

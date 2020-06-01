@@ -24,7 +24,7 @@ module View
           [7, 8],
           [8, 9],
           [9, 16],
-          [15, 16]
+          [15, 16],
         ],
         gentle: [
           [14],
@@ -32,7 +32,7 @@ module View
           [8],
           [9],
           [16],
-          [15]
+          [15],
         ],
       }.freeze
 
@@ -202,7 +202,7 @@ module View
             region_weights: weights,
             x: x,
             y: y,
-            angle: angle
+            angle: angle,
           }
         end
       end
@@ -271,9 +271,9 @@ module View
                 h(:g, { attrs: { transform: "translate(#{displacement} 0)" } }, [
                     h(Part::SingleRevenue,
                       revenue: revenue,
-                      transform: "rotate(#{-angle})")
-                  ])
-              ])
+                      transform: "rotate(#{-angle})"),
+                  ]),
+              ]),
           ])
       end
     end

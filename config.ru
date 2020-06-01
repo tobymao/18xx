@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
-dev = ENV['RACK_ENV'] == 'development'
+PRODUCTION = ENV['RACK_ENV'] == 'production'
 
-if dev
+if PRODUCTION
+  require 'unicorn/worker_killer'
+  #use Unicorn::WorkerKiller::MaxRequests, 1024, 2048
+else
   require 'logger'
   logger = Logger.new($stdout) # rubocop:disable Lint/UselessAssignment
 end

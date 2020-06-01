@@ -41,7 +41,7 @@ module Engine
         false
       end
 
-      def tokenable?(_corporation)
+      def tokenable?(_corporation, *)
         false
       end
 

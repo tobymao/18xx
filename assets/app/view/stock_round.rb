@@ -39,10 +39,10 @@ module View
         style: {
           display: 'inline-block',
           'vertical-align': 'top',
-        }
+        },
       }
 
-      @round.share_pool.corporations.map do |corporation|
+      @game.corporations.map do |corporation|
         children = [h(Corporation, corporation: corporation)]
         children << render_input if @selected_corporation == corporation
         h(:div, props, children)

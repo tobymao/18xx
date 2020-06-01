@@ -35,8 +35,12 @@ module View
     def render
       trains = @game.round.current_entity.trains
 
+      description = 'Select routes'
+      last_routes = last_run
+      description += ': prior routes are autofilled' if last_routes.any?
       if @routes.empty?
-        @routes = last_run
+        @routes = last_routes
+
         if @routes.any?
           @selected_route = @routes.first
           store(:routes, @routes, skip: true)
@@ -102,14 +106,15 @@ module View
 
       h(:div, props, [
         h(UndoAndPass, pass: false),
+        h('div.margined', description),
         h(:table, { style: { 'text-align': 'left' } }, [
           h(:tr, [
             h(:th, 'Train'),
             h(:th, 'Stops'),
             h(:th, 'Revenue'),
-            h(:th, 'Route (Click revenue centers. Click again to cycle path)')
+            h(:th, 'Route (Click revenue centers. Click again to cycle path)'),
           ]),
-          *trains
+          *trains,
         ]),
         actions,
       ])
