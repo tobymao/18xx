@@ -10,6 +10,12 @@ class Index < Snabberb::Layout
           background-color: black;
           color: #eee;
         }
+        .nav #logo-dark path {
+          fill: #eee;
+        }
+        .nav #logo-dark polygon {
+          fill: #ec232a;
+        }
         .nav__links a {
           color: white;
         }

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/create_game'
+require 'view/logo'
 
 module View
   class Navigation < Snabberb::Component
@@ -24,21 +25,9 @@ module View
         other_links << item('Login', '/login')
       end
 
-      logo_props = {
-        attrs: {
-          src: '/images/logo.svg',
-        },
-        style: {
-          'background-color': 'white',
-          position: 'absolute',
-          top: '16px',
-          width: '80px',
-        }
-      }
-
       h('div.nav', props, [
         h(:a, { attrs: { href: '/' } }, [
-          h(:img, logo_props),
+          h(Logo),
         ]),
         render_other_links(other_links),
       ])
