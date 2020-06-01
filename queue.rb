@@ -1,27 +1,18 @@
 # frozen_string_literal: true
 
 require 'logger'
-require 'message_bus'
 require 'require_all'
 require_relative 'models'
 require_rel './models'
 require_relative 'lib/assets'
+require_relative 'lib/bus'
 require_relative 'lib/mail'
 
 PRODUCTION = ENV['RACK_ENV'] == 'production'
 
 LOGGER = Logger.new($stdout)
 
-MessageBus.configure(
-  backend: :postgres,
-  backend_options: {
-    host: DB.opts[:host],
-    user: DB.opts[:user],
-    dbname: DB.opts[:database],
-    password: DB.opts[:password],
-    port: DB.opts[:port],
-  },
-)
+Bus.configure(DB)
 
 ASSETS = Assets.new(precompiled: PRODUCTION)
 

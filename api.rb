@@ -2,7 +2,6 @@
 
 PRODUCTION = ENV['RACK_ENV'] == 'production'
 
-require 'message_bus'
 require 'opal'
 require 'require_all'
 require 'roda'
@@ -10,6 +9,7 @@ require 'snabberb'
 
 require_relative 'models'
 require_relative 'lib/assets'
+require_relative 'lib/bus'
 require_relative 'lib/mail'
 
 require_rel './models'
@@ -59,23 +59,9 @@ class Api < Roda
   plugin :json_parser
   plugin :halt
 
-  MessageBus.configure(
-    backend: :postgres,
-    backend_options: {
-      host: DB.opts[:host],
-      user: DB.opts[:user],
-      dbname: DB.opts[:database],
-      password: DB.opts[:password],
-      port: DB.opts[:port],
-    },
-    clear_every: 10,
-  )
-
-  MessageBus.reliable_pub_sub.max_backlog_size = 2
-  MessageBus.reliable_pub_sub.max_global_backlog_size = 100_000
-  MessageBus.reliable_pub_sub.max_backlog_age = 172_800 # 2 days
-
   ASSETS = Assets.new(precompiled: PRODUCTION)
+
+  Bus.configure(DB)
 
   use MessageBus::Rack::Middleware
   use Rack::Deflater unless PRODUCTION
