@@ -109,13 +109,13 @@ class Api
               end
 
             if user_ids.any?
-              MessageBus.publish(
-                TURN_CHANNEL,
-                user_ids: user_ids,
-                game_id: game.id,
-                game_url: "#{r.base_url}/game/#{game.id}",
-                type: type,
-              )
+              # MessageBus.publish(
+              #   TURN_CHANNEL,
+              #   user_ids: user_ids,
+              #   game_id: game.id,
+              #   game_url: "#{r.base_url}/game/#{game.id}",
+              #   type: type,
+              # )
             end
 
             publish("/game/#{game.id}", **action)
