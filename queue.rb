@@ -27,7 +27,6 @@ ASSETS = Assets.new(precompiled: PRODUCTION)
 
 MessageBus.subscribe '/turn', -1 do |msg|
   data = msg.data
-  LOGGER.info(data)
 
   users = User.where(id: data['user_ids']).all
   game = Game[data['game_id']]
@@ -61,7 +60,7 @@ MessageBus.subscribe '/turn', -1 do |msg|
     user.settings['email_sent'] = Time.now.to_i
     user.save
     Mail.send(user, "18xx.games Game: #{game.title} - #{game.id} - #{data['type']}", html)
-    LOGGER.info("mail sent to for game: #{game.id} to user: #{user.id}")
+    LOGGER.info("mail sent for game: #{game.id} to user: #{user.id}")
   end
 end
 
