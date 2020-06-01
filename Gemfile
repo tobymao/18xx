@@ -17,6 +17,7 @@ gem 'snabberb'
 gem 'tilt'
 gem 'uglifier'
 gem 'unicorn'
+gem 'unicorn-worker-killer'
 
 group :development do
   gem 'pry-byebug'
