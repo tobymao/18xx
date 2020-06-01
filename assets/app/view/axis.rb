@@ -18,8 +18,8 @@ module View
       attrs = {
         id: 'map-axis',
         'stroke-width': 1,
-        stroke: 'black',
-        fill: 'black',
+        stroke: 'currentColor',
+        fill: 'currentColor',
         'text-anchor': 'middle',
         'dominant-baseline': 'baseline',
         'font-size': "#{@font_size}px",

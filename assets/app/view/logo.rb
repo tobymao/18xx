@@ -24,7 +24,7 @@ module View
       }
 
       bg_color = @user&.dig(:settings, :bg_color) || '#ffffff'
-      logo_id = bg_color == '#ffffff' ? 'logo-dark' : 'logo'
+      logo_id = bg_color == '#ffffff' ? 'logo--dark' : 'logo'
       # green = '#71bf44'
       offboard = '#ec232a'
       yellow = '#F0E68C'

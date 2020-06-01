@@ -51,11 +51,14 @@ module View
 
       props = {
         style: {
+          color: @user&.dig(:settings, :font_color) || 'currentColor',
           'text-align': 'right',
         },
       }
 
-      h('div.nav__links', props, children)
+      bg_color = @user&.dig(:settings, :bg_color) || '#ffffff'
+      link_class = bg_color == '#ffffff' ? 'nav__links--dark' : 'nav__links'
+      h("div.#{link_class}", props, children)
     end
   end
 end

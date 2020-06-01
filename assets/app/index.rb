@@ -10,16 +10,23 @@ class Index < Snabberb::Layout
           background-color: black;
           color: #eee;
         }
-        .nav #logo-dark path {
+        .nav #logo--dark path {
           fill: #eee;
         }
-        .nav #logo-dark polygon {
+        .nav #logo--dark polygon {
           fill: #ec232a;
         }
         .nav__links a {
-          color: white;
+          color: currentColor;
         }
         .nav__links a:hover {
+          color: currentColor;
+          opacity: 0.8;
+        }
+        .nav__links--dark a {
+          color: white;
+        }
+        .nav__links--dark a:hover {
           color: #ccc;
         }
       }
@@ -47,6 +54,7 @@ class Index < Snabberb::Layout
 
       .button:hover {
         background-color: black;
+        border-color: rgb(217, 210, 210);
         color: white;
       }
 
