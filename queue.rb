@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'logger'
 require 'message_bus'
 require 'require_all'
 require_relative 'models'
