@@ -40,7 +40,7 @@ module View
         click: click,
         children: text,
         style: {
-          color: 'black',
+          color: 'currentColor',
           'margin-right': '2rem',
           'text-decoration': 'none',
         },

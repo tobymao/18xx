@@ -37,7 +37,9 @@ module UserManager
   end
 
   def edit_user(params)
-    @connection.safe_post('/user/edit', params)
+    @connection.safe_post('/user/edit', params) do |data|
+      store(:user, data['user'], skip: false)
+    end
   end
 
   def login(params)

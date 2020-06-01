@@ -19,7 +19,7 @@ module View
       props = {
         style: {
           display: 'inline-block',
-          border: 'solid 1px black',
+          border: 'solid 1px currentColor',
           'border-radius': '10px',
           overflow: 'hidden',
           padding: '0.5rem',
@@ -95,6 +95,7 @@ module View
 
       text_props = {
         style: {
+          color: 'black',
           display: 'inline-block',
           width: '160px',
         },
