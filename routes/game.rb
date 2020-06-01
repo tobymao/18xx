@@ -3,8 +3,6 @@
 require_relative '../lib/engine'
 
 class Api
-  TURN_CHANNEL = '/turn'
-
   hash_routes :api do |hr|
     hr.on 'game' do |r|
       # '/api/game/<game_id>/*'
@@ -109,13 +107,13 @@ class Api
               end
 
             if user_ids.any?
-              # MessageBus.publish(
-              #   TURN_CHANNEL,
-              #   user_ids: user_ids,
-              #   game_id: game.id,
-              #   game_url: "#{r.base_url}/game/#{game.id}",
-              #   type: type,
-              # )
+              MessageBus.publish(
+                '/turn',
+                user_ids: user_ids,
+                game_id: game.id,
+                game_url: "#{r.base_url}/game/#{game.id}",
+                type: type,
+              )
             end
 
             publish("/game/#{game.id}", **action)
@@ -204,45 +202,5 @@ class Api
     end
 
     game.save
-  end
-
-  MessageBus.subscribe TURN_CHANNEL do |msg|
-    data = msg.data
-
-    DB.with_advisory_lock(:turn_lock, data['game_id']) do
-      users = User.where(id: data['user_ids']).all
-      game = Game[data['game_id']]
-      minute_ago = Time.now - 60
-
-      connected = Session
-        .where(user: users)
-        .group_by(:user_id)
-        .having { max(updated_at) > minute_ago }
-        .select(:user_id)
-        .all
-        .map(&:user_id)
-
-      users = users.reject do |user|
-        email_sent = user.settings['email_sent'] || 0
-
-        connected.include?(user.id) ||
-          user.settings['notifications'] == false ||
-          email_sent > minute_ago.to_i
-      end
-
-      next if users.empty?
-
-      html = ASSETS.html(
-        'assets/app/mail/turn.rb',
-        game_data: game.to_h(include_actions: true),
-        game_url: data['game_url'],
-      )
-
-      users.each do |user|
-        user.settings['email_sent'] = Time.now.to_i
-        user.save
-        Mail.send(user, "18xx.games Game: #{game.title} - #{game.id} - #{data['type']}", html)
-      end
-    end
   end
 end

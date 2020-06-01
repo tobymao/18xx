@@ -6,6 +6,12 @@ services:
     depends_on:
       - db
 
+  queue:
+    build: .
+    depends_on:
+      - db
+      - rack
+
   db:
     build: ./db/
     volumes:

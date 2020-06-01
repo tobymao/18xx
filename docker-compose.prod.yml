@@ -14,6 +14,19 @@ services:
     volumes:
       - ./public:/18xx/public
 
+  queue:
+    image: 18xx_queue:prod
+    command: bundle exec ruby queue.rb
+    environment:
+      RACK_ENV: production
+      DATABASE_URL: $DATABASE_URL
+      MAIL_GUN_KEY: $MAIL_GUN_KEY
+    build:
+      args:
+        RACK_ENV: production
+    volumes:
+      - ./public:/18xx/public
+
   db:
     environment:
       - POSTGRES_USER
