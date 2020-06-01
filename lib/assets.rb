@@ -25,6 +25,10 @@ class Assets
     @precompiled = precompiled
   end
 
+  def clear!
+    @context = nil
+  end
+
   def context
     @context ||= JsContext.new(combine)
   end

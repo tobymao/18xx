@@ -107,8 +107,6 @@ class Api < Roda
   route do |r|
     r.public unless PRODUCTION
 
-    puts "************** #{r.path} *************"
-
     r.hash_branches
 
     r.root do
