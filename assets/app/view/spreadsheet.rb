@@ -185,14 +185,9 @@ module View
     end
 
     def corporation_operated?(corporation, current_round)
-      current_round_s = current_round.join('.')
-
-      hist = corporation.operating_history
-      hist.each do |x|
-        history_key_s = x[0].join('.')
-        return true if history_key_s == current_round_s
+      corporation.operating_history.each do |history|
+        return true if history[0] == current_round
       end
-
       false
     end
   end
