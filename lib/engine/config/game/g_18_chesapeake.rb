@@ -29,6 +29,7 @@ module Engine
     "6": 400
   },
   "capitalization": "full",
+  "layout": "flat",
   "mustSellInBlocks": false,
   "locationNames": {
     "A3": "Pittsburgh",

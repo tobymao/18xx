@@ -70,7 +70,6 @@ make prod_deploy
 ```
 
 * access the site at http://localhost:9292
-* access Adminer at http://localhost:8080/?pgsql=db&username=root&db=db_18xx
 
 Make code changes, and within a few seconds the app should restart. Manually
 refresh your browser to load the new app.

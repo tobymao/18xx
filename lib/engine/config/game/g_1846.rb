@@ -32,37 +32,41 @@ module Engine
     "5": 400
   },
   "capitalization": "incremental",
+  "layout": "pointy",
   "mustSellInBlocks": false,
   "locationNames": {
-    "B8": "Holland",
-    "B16": "Port Huron",
-    "B18": "Sarnia",
-    "C5": "Chicago Connections",
-    "C9": "South Bend",
-    "C15": "Detroit",
-    "C17": "Windsor",
-    "D14": "Toledo",
-    "D20": "ERIE",
-    "D22": "Buffalo",
-    "E11": "Fort Wayne",
-    "E17": "Cleveland",
-    "E21": "Salamanca",
-    "E23": "Binghamton",
-    "G3": "Springfield",
+    "H2": "Holland",
+    "P2": "Port Huron",
+    "R2": "Sarnia",
+    "E3": "Chicago Connections",
+    "I3": "South Bend",
+    "O3": "Detroit",
+    "Q3": "Windsor",
+    "N4": "Toledo",
+    "T4": "Erie",
+    "U3": "Buffalo",
+    "V4": "Buffalo",
+    "K5": "Fort Wayne",
+    "Q5": "Cleveland",
+    "U5": "Salamanca",
+    "W5": "Binghamton",
+    "C7": "Springfield",
     "G7": "Terre Haute",
-    "G9": "Indianapolis",
-    "G13": "Dayton",
-    "G15": "Columbus",
-    "G19": "Wheeling",
-    "G21": "Pittsburgh",
-    "H12": "Cincinnati",
-    "H20": "Cumberland",
-    "I1": "St. Louis",
-    "I5": "Centralia",
-    "I15": "Huntington",
-    "I17": "Charleston",
+    "I7": "Indianapolis",
+    "M7": "Dayton",
+    "O7": "Columbus",
+    "S7": "Wheeling",
+    "U7": "Pittsburgh",
+    "V6": "Pittsburgh",
+    "L8": "Cincinnati",
+    "T6": "Homewood",
+    "T8": "Cumberland",
+    "A9": "St. Louis",
+    "E9": "Centralia",
+    "O9": "Huntington",
+    "Q9": "Charleston",
     "J10": "Louisville",
-    "K3": "Cairo"
+    "C11": "Cairo"
   },
   "tiles": {
     "5": 3,
@@ -155,20 +159,20 @@ module Engine
       "value": 60,
       "discount": -80,
       "revenue": 0,
-      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). Splits revenue evenly with owner. Buyer pays an extra $80 (\"debt\")."
+      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (O3). Splits revenue evenly with owner. Buyer pays an extra $80 (\"debt\")."
     },
     {
       "name": "Big 4",
       "value": 40,
       "discount": -60,
       "revenue": 0,
-      "desc": "Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). Splits revenue evenly with owner. Buyer pays an extra $60 (\"debt\")."
+      "desc": "Starts with $40 in treasury, a 2 train, and a token in Indianapolis (I7). Splits revenue evenly with owner. Buyer pays an extra $60 (\"debt\")."
     },
     {
       "name": "Chicago and Western Indiana",
       "value": 60,
       "revenue": 10,
-      "desc": "Reserves a token slot in Chicago (D6), in which the owning corporation may place an extra token at no cost."
+      "desc": "Reserves a token slot in Chicago (F4), in which the owning corporation may place an extra token at no cost."
     },
     {
       "name": "Mail Contract",
@@ -186,31 +190,31 @@ module Engine
       "name": "Meat Packing Company",
       "value": 60,
       "revenue": 15,
-      "desc": "The owning corporation may place a $30 marker in either St. Louis (I1) or Chicago (D6), to add $30 to all routes run to this location."
+      "desc": "The owning corporation may place a $30 marker in either St. Louis (A9) or Chicago (F4), to add $30 to all routes run to this location."
     },
     {
       "name": "Steamboat Company",
       "value": 40,
       "revenue": 10,
-      "desc": "Place or shift the port marker among port locations (B8, C5, D14, G19, I1). Add $20 per port symbol to all routes run to this location by the owning (or assigned) company."
+      "desc": "Place or shift the port marker among port locations (H2, E3, N4, S7, A9). Add $20 per port symbol to all routes run to this location by the owning (or assigned) company."
     },
     {
       "name": "Lake Shore Line",
       "value": 40,
       "revenue": 15,
-      "desc": "The owning corporation may make an extra $0 cost tile upgrade of either Cleveland (E17) or Toledo (D14), but not both."
+      "desc": "The owning corporation may make an extra $0 cost tile upgrade of either Cleveland (Q5) or Toledo (N4), but not both."
     },
     {
       "name": "Michigan Central",
       "value": 40,
       "revenue": 15,
-      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's reserved hexes (B10, B12)."
+      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's reserved hexes (J2, L2)."
     },
     {
       "name": "Ohio & Indiana",
       "value": 40,
       "revenue": 15,
-      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I's reserved hexes (F14, F16)."
+      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I's reserved hexes (N6, P6)."
     }
   ],
   "corporations": [
@@ -226,7 +230,7 @@ module Engine
         80,
         0
       ],
-      "coordinates": "F20",
+      "coordinates": "T6",
       "color": "red"
     },
     {
@@ -240,7 +244,7 @@ module Engine
         80,
         80
       ],
-      "coordinates": "D20",
+      "coordinates": "T4",
       "color": "black"
     },
     {
@@ -254,7 +258,7 @@ module Engine
         80,
         0
       ],
-      "coordinates": "G19",
+      "coordinates": "S7",
       "color": "blue"
     },
     {
@@ -268,7 +272,7 @@ module Engine
         80,
         80
       ],
-      "coordinates": "I15",
+      "coordinates": "O9",
       "color": "lightBlue",
       "text_color": "black"
     },
@@ -283,7 +287,7 @@ module Engine
         80,
         0
       ],
-      "coordinates": "E21",
+      "coordinates": "U5",
       "color": "yellow",
       "text_color": "black"
     },
@@ -297,7 +301,7 @@ module Engine
         80,
         80
       ],
-      "coordinates": "B16",
+      "coordinates": "P2",
       "color": "orange"
     },
     {
@@ -311,7 +315,7 @@ module Engine
         80,
         0
       ],
-      "coordinates": "K3",
+      "coordinates": "C11",
       "color": "green"
     }
   ],
@@ -388,143 +392,143 @@ module Engine
       "blank": [
         "E5",
         "F6",
-        "G5",
-        "H6",
-        "J4",
-        "B14",
-        "C11",
-        "C13",
-        "D8",
-        "D10",
-        "D12",
         "E7",
-        "E9",
-        "E13",
-        "E15",
-        "E19",
-        "F4",
         "F8",
-        "F10",
-        "F12",
-        "G11",
-        "H2",
+        "D10",
+        "N2",
+        "K3",
+        "M3",
         "H4",
+        "J4",
+        "L4",
+        "G5",
+        "I5",
+        "M5",
+        "O5",
+        "S5",
+        "D6",
+        "H6",
+        "J6",
+        "L6",
+        "K7",
+        "B8",
+        "D8",
         "H8",
-        "H10",
-        "I3",
-        "I7",
-        "I9",
         "J8",
-        "D18",
-        "B10",
-        "B12",
-        "F14",
-        "F16",
-        "I11",
-        "J6"
+        "C9",
+        "G9",
+        "I9",
+        "H10",
+        "R4",
+        "J2",
+        "L2",
+        "N6",
+        "P6",
+        "K9",
+        "F10"
       ],
       "city": [
-        "B16",
-        "C9",
-        "D14",
-        "E11",
-        "G3",
+        "P2",
+        "I3",
+        "N4",
+        "K5",
+        "C7",
         "G7",
-        "G9",
-        "G13",
-        "G15"
+        "I7",
+        "M7",
+        "O7"
       ],
       "c=r:0;l=Z": [
-        "E17",
-        "H12"
+        "Q5",
+        "L8"
       ],
       "u=c:40,t:mountain": [
-        "F18",
-        "G17",
-        "H16"
+        "R6",
+        "Q7",
+        "P8"
       ],
       "u=c:60,t:mountain": [
-        "H14"
+        "N8"
       ]
     },
     "gray": {
-      "p=a:4,b:5": [
-        "A15",
-        "C7"
+      "p=a:5,b:0": [
+        "O1",
+        "G3"
       ],
-      "c=r:10;p=a:0,b:_0;p=a:1,b:_0;p=a:3,b:_0;p=a:4,b:_0": [
-        "F20"
+      "c=r:10;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0;p=a:5,b:_0": [
+        "T6"
       ],
-      "c=r:10,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:5,b:_0": [
-        "I5"
+      "c=r:10,s:2;p=a:1,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:0,b:_0": [
+        "E9"
       ],
-      "c=r:20;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0": [
-        "I15"
+      "c=r:20;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0": [
+        "O9"
       ],
-      "c=r:20;p=a:2,b:_0": [
-        "K3"
+      "c=r:20;p=a:3,b:_0": [
+        "C11"
       ]
     },
     "red": {
-      "o=r:yellow_40|brown_10;p=a:3,b:_0": [
-        "B8"
+      "o=r:yellow_40|brown_10;p=a:4,b:_0": [
+        "H2"
       ],
-      "o=r:yellow_30|brown_50;p=a:0,b:_0;l=E": [
-        "B18"
+      "o=r:yellow_30|brown_50;p=a:1,b:_0;l=E": [
+        "R2"
       ],
-      "o=r:yellow_20|brown_40;p=a:4,b:_0;l=W": [
-        "C5"
+      "o=r:yellow_20|brown_40;p=a:5,b:_0;l=W": [
+        "E3"
       ],
-      "o=r:yellow_40|brown_60;p=a:0,b:_0;l=E": [
-        "C17"
+      "o=r:yellow_40|brown_60;p=a:1,b:_0;l=E": [
+        "Q3"
       ],
-      "o=yellow_30|brown_60;p=a:5,b:_0;l=E": [
-        "C21"
+      "o=r:yellow_30|brown_60;p=a:0,b:_0;l=E": [
+        "U3"
       ],
-      "o=yellow_30|brown_60;p=a:0,b:_0;l=E": [
-        "D22"
+      "o=r:yellow_30|brown_60;p=a:1,b:_0;l=E": [
+        "V4"
       ],
-      "o=r:yellow_20|brown_50;p=a:0,b:_0;l=E": [
-        "E23",
-        "I17"
+      "o=r:yellow_20|brown_50;p=a:1,b:_0;l=E": [
+        "W5",
+        "Q9"
       ],
-      "o=yellow_30|brown_70;p=a:0,b:_0;l=E": [
-        "F22"
+      "o=r:yellow_30|brown_70;p=a:1,b:_0;l=E": [
+        "V6"
       ],
-      "o=yellow_30|brown_70;p=a:0,b:_0;p=a:1,b:_0;l=E": [
-        "G21"
+      "o=r:yellow_30|brown_70;p=a:1,b:_0;p=a:2,b:_0;l=E": [
+        "U7"
       ],
-      "o=r:yellow_20|brown_40;p=a:1,b:_0;l=E": [
-        "H20"
+      "o=r:yellow_20|brown_40;p=a:2,b:_0;l=E": [
+        "T8"
       ],
-      "o=r:yellow_50|brown_70;p=a:2,b:_0;p=a:3,b:_0;l=W": [
-        "I1"
+      "o=r:yellow_50|brown_70;p=a:3,b:_0;p=a:4,b:_0;l=W": [
+        "A9"
       ],
-      "o=r:yellow_50|brown_70;p=a:1,b:_0;p=a:2,b:_0": [
+      "o=r:yellow_50|brown_70;p=a:2,b:_0;p=a:3,b:_0": [
         "J10"
       ]
     },
     "yellow": {
-      "c=r:40,s:2;p=a:0,b:_0;p=a:2,b:_0;l=Z;u=c:40,t:water": [
-        "C15"
+      "c=r:40,s:2;p=a:1,b:_0;p=a:3,b:_0;l=Z;u=c:40,t:water": [
+        "O3"
       ],
-      "c=r:10;c=r:10;c=r:10;c=r:10;p=a:2,b:_0;p=a:3,b:_1;p=a:4,b:_2;p=a:5,b:_3;l=Chi": [
-        "D6"
+      "c=r:10;c=r:10;c=r:10;c=r:10;p=a:3,b:_0;p=a:4,b:_1;p=a:5,b:_2;p=a:0,b:_3;l=Chi": [
+        "F4"
       ],
-      "c=r:10,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:5,b:_0": [
-        "D20"
+      "c=r:10,s:2;p=a:1,b:_0;p=a:3,b:_0;p=a:0,b:_0": [
+        "T4"
       ],
-      "c=r:10;p=a:0,b:_0;p=a:1,b:_0;p=a:3,b:_0": [
-        "E21"
+      "c=r:10;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0": [
+        "U5"
       ],
-      "c=r:10;p=a:4,b:_0": [
-        "G19"
+      "c=r:10;p=a:5,b:_0": [
+        "S7"
       ]
     },
     "blue": {
       "blank": [
-        "C19",
-        "D16"
+        "S3",
+        "P4"
       ]
     }
   },

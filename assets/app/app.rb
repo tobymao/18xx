@@ -84,7 +84,7 @@ class App < Snabberb::Component
   def render_game
     match = @app_route.match(%r{(hotseat|game)\/((hs.*_)?\d+)})
 
-    if !@game_data # this is a hotseat game
+    if !@game_data&.any? # this is a hotseat game
       if @app_route.include?('tutorial')
         enter_tutorial
       else
@@ -119,7 +119,7 @@ class App < Snabberb::Component
 
   def on_hash_change(state)
     game_data = Hash.new(state)
-    store(:game_data, game_data, skip: true) if game_data.any?
+    store(:game_data, game_data, skip: true) if game_data
     store_app_route(skip: false)
   end
 

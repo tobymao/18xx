@@ -49,10 +49,10 @@ module Engine
         true
       end
 
-      def tokenable?(corporation)
+      def tokenable?(corporation, free: false)
         return false unless get_slot(corporation)
         return false unless (token = corporation.next_token)
-        return false unless token.price <= corporation.cash
+        return false if !free && token.price > corporation.cash
         return false if @tile.cities.any? { |c| c.tokened_by?(corporation) }
 
         true

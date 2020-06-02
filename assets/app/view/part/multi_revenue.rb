@@ -13,7 +13,7 @@ module View
       }.freeze
 
       needs :revenues
-      needs :translate, default: 'translate(0 0)'
+      needs :transform, default: 'translate(0 0)'
 
       def render
         # Compute text and width first in order to get total_width
@@ -61,7 +61,7 @@ module View
           ]
         end
 
-        h(:g, { attrs: { transform: @translate } }, children)
+        h(:g, { attrs: { transform: @transform } }, children)
       end
     end
   end

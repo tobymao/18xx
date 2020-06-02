@@ -6,10 +6,10 @@ require 'view/part/multi_revenue'
 module View
   module Part
     class Revenue < Base
-      P_LEFT_CORNER = {
+      P_RIGHT_CORNER = {
         region_weights_in: LEFT_CORNER + LEFT_MID,
         region_weights_out: LEFT_CORNER,
-        x: -75,
+        x: 75,
         y: 0,
       }.freeze
 
@@ -43,7 +43,7 @@ module View
             },
           ]
         else
-          [P_LEFT_CORNER]
+          [P_RIGHT_CORNER]
         end
       end
 
@@ -80,12 +80,12 @@ module View
       end
 
       def render_part
+        transform = "#{translate} #{rotation_for_layout}"
+
         if multi_revenue?
-          h(Part::MultiRevenue, revenues: @revenue, translate: translate)
+          h(Part::MultiRevenue, revenues: @revenue, transform: transform)
         else
-          h(Part::SingleRevenue,
-            revenue: @revenue,
-            transform: translate,)
+          h(Part::SingleRevenue, revenue: @revenue, transform: transform)
         end
       end
     end
