@@ -134,11 +134,11 @@ module GameManager
     game['status'] == 'active' && game['acting'].include?(user&.dig('id'))
   end
 
-  protected
-
   def url(game, path = '')
     "/game/#{game['id']}#{path}"
   end
+
+  protected
 
   def hs_url(game, game_data)
     pin = game_data&.dig('settings', 'pin')

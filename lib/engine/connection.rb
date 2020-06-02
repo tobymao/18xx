@@ -50,10 +50,31 @@ module Engine
       @paths = paths
       @nodes = nil
       @hexes = nil
+      @id = nil
+    end
+
+    def matches?(connection_hexes)
+      id == connection_hexes || id.reverse == connection_hexes
     end
 
     def id
-      hexes.map(&:id).sort
+      @id ||=
+        begin
+          sorted = []
+          path_map = {}
+          node_path = nil
+
+          @paths.each do |path|
+            node_path = path if path.node
+            path_map[path] = true
+          end
+
+          node_path.walk(on: path_map) do |path|
+            sorted << path
+          end
+
+          sorted.map { |path| path.hex.id }
+        end
     end
 
     def add_path(path)
@@ -65,6 +86,7 @@ module Engine
     def clear_cache
       @nodes = nil
       @hexes = nil
+      @id = nil
     end
 
     def nodes

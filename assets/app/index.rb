@@ -17,13 +17,24 @@ class Index < Snabberb::Layout
         margin: 1rem 0;
       }
 
-      .button {
+      .button, .button-link {
         font-size: 14px;
         border: solid 1px black;
         border-radius: 5px;
         padding: 0.2rem 1rem;
         cursor: pointer;
         outline-style: none;
+      }
+
+      .button-link {
+        text-decoration: none;
+        color: initial;
+        background: whitesmoke;
+      }
+
+      .button-link:hover {
+        background: black;
+        color: white;
       }
 
       .button:hover {
