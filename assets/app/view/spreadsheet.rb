@@ -98,14 +98,11 @@ module View
 
     def render_corporations
       current_round = [@game.turn]
-      current_round += [@game.round.round_num] if @game.round.name == 'Operating Round'
+      current_round << @game.round.round_num if @game.round.name == 'Operating Round'
 
       floated_corporations = @game.round.entities
       @game.corporations.map do |c|
-        operating_order = -1
-        operating_index = floated_corporations.find_index(c)
-        operating_order = operating_index + 1 if operating_index
-
+        operating_order = (floated_corporations.find_index(c) || -1) + 1
         render_corporation(c, operating_order, current_round)
       end
     end
@@ -189,8 +186,8 @@ module View
 
     def corporation_operated?(corporation, current_round)
       current_round_s = current_round.join('.')
-      hist = corporation.operating_history
 
+      hist = corporation.operating_history
       hist.each do |x|
         history_key_s = x[0].join('.')
         return true if history_key_s == current_round_s
