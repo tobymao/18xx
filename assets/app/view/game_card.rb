@@ -58,7 +58,7 @@ module View
       buttons = []
       if owner?
         buttons << if @confirm_delete != @gdata['id']
-                     render_button('Delete', -> { store(:confirm_delete, @gdata['id']) })
+                     render_button('🗑️', -> { store(:confirm_delete, @gdata['id']) })
                    else
                      render_button('Confirm', -> { delete_game(@gdata) })
                    end
@@ -76,7 +76,9 @@ module View
           JOIN_YELLOW
         when 'active'
           buttons << render_button('Enter', -> { enter_game(@gdata) })
-          buttons << render_button_as_link('↗️', url(@gdata))
+          if @confirm_delete != @gdata['id']
+            buttons << render_button_as_link('↗️', url(@gdata))
+          end
           acting?(@user) ? YOUR_TURN_ORANGE : ENTER_GREEN
         when 'finished'
           buttons << render_button('Review', -> { enter_game(@gdata) })
