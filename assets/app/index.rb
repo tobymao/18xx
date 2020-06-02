@@ -85,10 +85,6 @@ class Index < Snabberb::Layout
         text-decoration: none;
         color: initial;
         background: whitesmoke;
-
-        -webkit-appearance: button;
-        -moz-appearance: button;
-        appearance: button;
       }
 
       .button-link:hover {
