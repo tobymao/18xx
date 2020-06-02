@@ -86,6 +86,7 @@ module View
           h(:th, props, 'IPO'),
           h(:th, props, 'Market'),
           h(:th, props, 'Cash'),
+          h(:th, props, 'Operating Order'),
           h(:th, props, 'Trains'),
           h(:th, props, 'Tokens'),
           h(:th, props, 'Privates'),
@@ -96,10 +97,20 @@ module View
     end
 
     def render_corporations
-      @game.corporations.map { |c| render_corporation(c) }
+      current_round = [@game.turn]
+      current_round += [@game.round.round_num] if @game.round.name == 'Operating Round'
+
+      floated_corporations = @game.round.entities
+      @game.corporations.map do |c|
+        operating_order = -1
+        operating_index = floated_corporations.find_index(c)
+        operating_order = operating_index + 1 if operating_index
+
+        render_corporation(c, operating_order, current_round)
+      end
     end
 
-    def render_corporation(corporation)
+    def render_corporation(corporation, operating_order, current_round)
       name_props =
         {
           style: {
@@ -117,6 +128,12 @@ module View
         market_props[:style]['background-color'] = Lib::Color.convert_hex_to_rgba(color, 0.4)
       end
 
+      operating_order_text = ''
+      if operating_order.positive?
+        operating_order_text = operating_order.to_s
+        operating_order_text += '*' if corporation_operated?(corporation, current_round)
+      end
+
       h(:tr, props, [
         h(:th, name_props, corporation.name),
         *@game.players.map do |p|
@@ -129,6 +146,7 @@ module View
         h(:td, corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
         h(:td, market_props, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
         h(:td, @game.format_currency(corporation.cash)),
+        h(:td, operating_order_text),
         h(:td, corporation.trains.map(&:name).join(',')),
         h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
         render_companies(corporation),
@@ -167,6 +185,18 @@ module View
         h(:th, 'Certs'),
         *@game.players.map { |p| h(:td, p.num_certs) },
       ])
+    end
+
+    def corporation_operated?(corporation, current_round)
+      current_round_s = current_round.join('.')
+      hist = corporation.operating_history
+
+      hist.each do |x|
+        history_key_s = x[0].join('.')
+        return true if history_key_s == current_round_s
+      end
+
+      false
     end
   end
 end
