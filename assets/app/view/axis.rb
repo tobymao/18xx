@@ -4,30 +4,30 @@ require 'view/hex'
 
 module View
   class Axis < Snabberb::Component
-    needs :cols # 1-N, representing A,B,C...
-    needs :rows # 1-N
+    needs :cols
+    needs :rows
     needs :layout
 
-    # labels will work with any non-negative gap passed in, but automatic
-    # resizing/positioning based on font size is not yet working
     needs :font_size, default: 25
     needs :text_length, default: 25
     needs :gap
+    needs :map_x, default: 0
+    needs :map_y, default: 0
+
+    X_OFFSET = 100
 
     def render
       attrs = {
-        id: 'map-axis',
         'stroke-width': 1,
         stroke: 'currentColor',
         fill: 'currentColor',
         'text-anchor': 'middle',
-        'dominant-baseline': 'baseline',
         'font-size': "#{@font_size}px",
       }
 
-      h(:g, { attrs: attrs }, [
-          *col_labels,
-          *row_labels,
+      h('g#map-axis', { attrs: attrs }, [
+          col_labels,
+          row_labels,
         ])
     end
 
@@ -41,45 +41,63 @@ module View
       hex_x, hex_y = hex_size
 
       labels = @cols.map do |c|
-        x = (hex_x / 2) + (hex_x * (c.to_i - 1))
+        x = hex_x * (c.to_i - 1)
         label = ('A'..'Z').to_a[c - 1]
-        h(:text, { attrs: { x: x, y: @font_size } }, label)
+        h(:text, { attrs: { x: x } }, label)
       end
 
-      t_x = 50 + @gap
-      t_y = (hex_y * (@rows.size.to_i + 1)) + (2 * @gap)
+      t_x = X_OFFSET + @gap
 
-      [
-        h(:g, { attrs: { transform: "translate(#{t_x} 0)" } }, labels),
-        h(:g, { attrs: { 'dominant-baseline': 'hanging', transform: "translate(#{t_x} #{t_y})" } }, labels),
-      ]
+      rows_offset = @layout == :flat ? (@rows.size + 1) : @rows.size
+      bottom_t_y = (hex_y * rows_offset) + (@font_size * 2) + (@gap * 2)
+
+      bottom_t_y += @font_size * 2 if @layout == :pointy
+
+      h(:g,
+        { attrs: { transform: "translate(#{t_x + @font_size} 0)" } },
+        [
+          h(:g,
+            { attrs: { 'dominant-baseline': 'hanging' } },
+            labels),
+          h(:g,
+            { attrs: { transform: "translate(0 #{bottom_t_y})",
+                       'dominant-baseline': 'baseline' } },
+            labels),
+        ])
     end
 
     def row_labels
       hex_x, hex_y = hex_size
 
       labels = @rows.map do |row|
-        y = (hex_y * row.to_i)
-        h(:text, { attrs: { x: @font_size, y: y } }, row)
+        multiplier = row.to_i
+        multiplier -= 0.5 if @layout == :pointy
+        y = hex_y * multiplier
+
+        label = row
+        h(:text, { attrs: { y: y } }, label)
       end
 
-      t_x = (hex_x * (@cols.size.to_i + 1)) + (2 * @gap) - 100
-      t_y = 29 + @gap
+      t_x = @font_size / 2
+      t_y = @map_y + (@layout == :flat ? 0 : @font_size / 2)
 
-      [
-        h(:g,
-          { attrs: { 'dominant-baseline': 'middle',
-                     textLength: @text_length,
-                     transform: "translate(0 #{t_y})",
-                     'text-anchor': 'end' } },
-          labels),
-        h(:g,
-          { attrs: { 'dominant-baseline': 'middle',
-                     textLength: @text_length,
-                     transform: "translate(#{t_x} #{t_y})",
-                     'text-anchor': 'start' } },
-          labels),
-      ]
+      cols_offset = @layout == :flat ? (@cols.size.to_i + 1) : (@cols.size.to_i + 2)
+      right_t_x = (hex_x * cols_offset) - X_OFFSET + (2 * @gap) + @font_size
+
+      right_t_x += @font_size if @layout == :pointy
+
+      h(:g, { attrs: { 'dominant-baseline': 'hanging',
+                       transform: "translate(#{t_x} #{t_y})",
+                       textLength: @font_size } },
+        [
+          h(:g,
+            { attrs: { 'text-anchor': 'middle' } },
+            labels),
+          h(:g,
+            { attrs: { transform: "translate(#{right_t_x} 0)",
+                       'text-anchor': 'middle' } },
+            labels),
+        ])
     end
   end
 end

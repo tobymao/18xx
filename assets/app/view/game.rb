@@ -66,7 +66,7 @@ module View
     end
 
     def render
-      @pin = @game_data&.dig('settings', 'pin')
+      @pin = @game_data.dig('settings', 'pin')
 
       if @disable_user_errors
         # Opal exceptions lack backtraces, so do this outside of a rescue in dev mode to preserve the backtrace
@@ -88,7 +88,7 @@ module View
         when 'market'
           h(StockMarket, game: @game, show_bank: true)
         when 'tiles'
-          h(TileManifest, tiles: @game.tiles, all_tiles: @game.init_tiles)
+          h(TileManifest, tiles: @game.tiles, all_tiles: @game.init_tiles, layout: @game.layout)
         when 'companies'
           h(Companies, game: @game, user: @user)
         when 'corporations'
@@ -103,7 +103,9 @@ module View
           h(Tools, game: @game, game_data: @game_data, user: @user)
         end
 
-      @connection.subscribe(game_path, -2) do |data|
+      @connection = nil if @game_data[:mode] == :hotseat
+
+      @connection&.subscribe(game_path, -2) do |data|
         n_id = data['id']
         o_id = @game.current_action_id
 
@@ -120,9 +122,11 @@ module View
       end
 
       destroy = lambda do
-        @connection.unsubscribe(game_path)
+        @connection&.unsubscribe(game_path)
         store(:selected_company, nil, skip: true)
       end
+
+      render_title
 
       props = {
         key: 'game_page',
@@ -142,6 +146,24 @@ module View
     end
 
     private
+
+    def render_title
+      title = "#{@game.class.title} - #{@game.id} - 18xx.games"
+      `document.title = #{title}`
+      flash_turn
+    end
+
+    def flash_turn
+      return unless @game.active_player_names.include?(@user&.dig(:name))
+
+      %x{
+        setTimeout(function() {
+          document.title = "-- Your Turn --"
+
+          setTimeout(function() { self.$render_title() }, 1500)
+        }, 1500)
+      }
+    end
 
     def tabs
       props = {
