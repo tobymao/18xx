@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/game_row'
+require 'view/link'
 
 module View
   class GameCard < Snabberb::Component
@@ -75,10 +76,10 @@ module View
           end
           JOIN_YELLOW
         when 'active'
-          buttons << render_button('Enter', -> { enter_game(@gdata) })
+          buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Enter')
           acting?(@user) ? YOUR_TURN_ORANGE : ENTER_GREEN
         when 'finished'
-          buttons << render_button('Review', -> { enter_game(@gdata) })
+          buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Enter')
           FINISHED_GREY
         end
 
@@ -124,6 +125,23 @@ module View
       }
 
       h('button.button', props, text)
+    end
+
+    def render_link(href, click, text)
+      h(
+        Link,
+        href: href,
+        click: click,
+        children: text,
+        style: {
+          top: '1rem',
+          float: 'right',
+          'border-radius': '5px',
+          'margin': '0 0.3rem',
+          padding: '0.2rem 0.5rem',
+        },
+        class: '.button-link'
+      )
     end
 
     def render_body
