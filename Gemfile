@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 
 gem 'argon2'
 gem 'c_lexer'
+gem 'mailjet'
 gem 'message_bus'
 gem 'mini_racer'
 gem 'opal'
@@ -17,6 +18,7 @@ gem 'snabberb'
 gem 'tilt'
 gem 'uglifier'
 gem 'unicorn'
+gem 'unicorn-worker-killer'
 
 group :development do
   gem 'pry-byebug'

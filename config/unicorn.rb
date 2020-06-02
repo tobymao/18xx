@@ -7,7 +7,7 @@ PRODUCTION = ENV['RACK_ENV'] == 'production'
 
 listen 9292
 worker_processes PRODUCTION ? 4 : 1
-timeout 30
+timeout 10
 preload_app true
 
 before_fork do |_server, _worker|

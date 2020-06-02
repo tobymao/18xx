@@ -52,12 +52,15 @@ module Engine
 
       def process_action(action)
         entity = action.entity
+        return @log << action if action.is_a?(Action::Message)
+        raise GameError, 'Game has ended' if @end_game
+
         if action.is_a?(Action::EndGame)
           @end_game = true
-          @log << '-- Game ended by owner --'
+          @log << "-- Game ended by #{entity.name} --"
           return
         end
-        return @log << action if action.is_a?(Action::Message)
+
         raise GameError, "It is not #{entity.name}'s turn" unless can_act?(entity)
 
         if action.pass?

@@ -7,13 +7,27 @@ services:
     environment:
       RACK_ENV: production
       DATABASE_URL: $DATABASE_URL
-      MAIL_GUN_KEY: $MAIL_GUN_KEY
+      MAIL_JET_KEY: $MAIL_JET_KEY
+      MAIL_JET_SECRET: $MAIL_JET_SECRET
     build:
       args:
         RACK_ENV: production
     volumes:
       - ./public:/18xx/public
-      - ./log/rack:/18xx/log/rack
+
+  queue:
+    image: 18xx_queue:prod
+    command: bundle exec ruby queue.rb
+    environment:
+      RACK_ENV: production
+      DATABASE_URL: $DATABASE_URL
+      MAIL_JET_KEY: $MAIL_JET_KEY
+      MAIL_JET_SECRET: $MAIL_JET_SECRET
+    build:
+      args:
+        RACK_ENV: production
+    volumes:
+      - ./public:/18xx/public
 
   db:
     environment:
@@ -27,7 +41,6 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./log/nginx:/var/log/nginx
       - ./public:/public
       - /etc/18xxgames/ssl:/etc/18xxgames/ssl
     depends_on:
