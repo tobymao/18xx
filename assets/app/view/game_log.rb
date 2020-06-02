@@ -42,7 +42,7 @@ module View
             h(:input,
               style: {
                 'margin-left': '0.5rem',
-                'flex': 1,
+                'flex': '1',
               },
               on: { keyup: enter }),
           ])
