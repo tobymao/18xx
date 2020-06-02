@@ -110,7 +110,7 @@ module Engine
         depot_trains = @depot.depot_trains
         other_trains = @depot.other_trains(current_entity)
 
-        # If the corporation cannot buy a train, then it can only buy the cheapest available_on
+        # If the corporation cannot buy a train, then it can only buy the cheapest available
         min_depot_train = @depot.min_depot_train
         if min_depot_train.price > current_entity.cash
           depot_trains = [min_depot_train]
