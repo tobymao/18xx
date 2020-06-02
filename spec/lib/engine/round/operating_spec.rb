@@ -28,12 +28,171 @@ module Engine
     let(:hex_h13) { game.hex_by_id('H13') }
     let(:hex_i12) { game.hex_by_id('I12') }
 
-    subject { Round::Operating.new([corporation], game: game, round_num: 1) }
+    subject do
+      Round::Operating.new([corporation],
+                           game: game,
+                           round_num: 1,
+                           ebuy_pres_swap: false,
+                           ebuy_other_value: false)
+    end
 
     before :each do
       game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
       corporation.cash = 100
       corporation.owner = game.players.first
+    end
+
+    context 'basic setup' do
+      let(:corporation) { game.corporation_by_id('AR') }
+      let(:corporation2) { game.corporation_by_id('SR') }
+      let(:player) { game.players.first }
+      let(:player2) { game.players[1] }
+      subject do
+        Round::Operating.new([corporation, corporation2],
+                             game: game,
+                             round_num: 1,
+                             ebuy_pres_swap: false,
+                             ebuy_other_value: false)
+      end
+
+      before :each do
+        game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
+        game.stock_market.set_par(corporation2, game.stock_market.par_prices[0])
+        game.send(:next_round!)
+
+        corporation.cash = 1000
+        corporation.owner = player
+        corporation2.cash = 1000
+        corporation2.owner = player
+        player.cash = 1000
+        player2.cash = 1000
+        # Make player 1 president of two companies, player 2 have the same amount of shares
+        4.times { game.share_pool.buy_share(player, corporation.shares.first) }
+        5.times { game.share_pool.buy_share(player2, corporation.shares.first) }
+        4.times { game.share_pool.buy_share(player, corporation2.shares.first) }
+        5.times { game.share_pool.buy_share(player2, corporation2.shares.first) }
+        player.cash = 1000
+        player2.cash = 1000
+      end
+
+      describe 'sellable_bundles' do
+        context 'with 1889 rules' do
+          it 'should not return bundles that cause a president change' do
+            player.cash = 1
+            corporation.cash = 1
+            bundles = subject.sellable_bundles(player, corporation)
+            # Player is president of corp 1, but cannot sell any shares without a president change
+            expect(bundles.size).to eq(0)
+            bundles = subject.sellable_bundles(player, corporation2)
+            # Player is president of corp 2, but cannot sell any shares without a president change
+            expect(bundles.size).to eq(0)
+          end
+        end
+        context 'with 18Chesapeake rules' do
+          subject { Round::Operating.new([corporation, corporation2], game: game, round_num: 1) }
+          it 'should return bundles that cause a president change' do
+            player.cash = 1
+            corporation.cash = 1
+            expect(subject.current_entity).to eq(corporation)
+            bundles = subject.sellable_bundles(player, corporation)
+            # Player is president of corp 1, and it is the current corp
+            expect(bundles.size).to eq(0)
+
+            bundles = subject.sellable_bundles(player, corporation2)
+            # Player is president of corp 2, selling shares will cause a president change
+            # Only one share can sell to raise the 80 yen needed for a 2 train
+            expect(bundles.size).to eq(1)
+          end
+        end
+      end
+
+      describe 'buyable_trains' do
+        context 'with 1889 rules' do
+          it 'returns 2 trains in the depot at start' do
+            available = subject.buyable_trains
+            expect(available.size).to eq(1)
+          end
+
+          it 'returns a 2 train in the discard if discarded' do
+            train = subject.buyable_trains.first
+            subject.depot.remove_train(train)
+            corporation.buy_train(train, train.price)
+            subject.depot.reclaim_train(train)
+
+            available = subject.buyable_trains
+            expect(available.size).to eq(2)
+          end
+
+          it 'returns trains owned by other corporations' do
+            train = subject.buyable_trains.first
+            subject.depot.remove_train(train)
+            corporation2.buy_train(train, train.price)
+
+            available = subject.buyable_trains
+            expect(available.size).to eq(2)
+          end
+
+          it 'returns only returns trains in the depot if the corp cannot afford and the player has sold shares' do
+            train = subject.buyable_trains.first
+            subject.depot.remove_train(train)
+            corporation2.buy_train(train, train.price)
+            corporation.cash = 1
+            # Move to train step to allow the share sales
+            subject.process_action(Action::LayTile.new(corporation, Tile.for('5'), hex_k8, 3))
+
+            bundle = player.bundles_for_corporation(corporation2).first
+            subject.process_action(Action::SellShares.new(player, bundle.shares, bundle.percent))
+            available = subject.buyable_trains
+            expect(available.size).to eq(1)
+          end
+
+          it 'returns only returns cheapest trains available if the corp cannot afford any' do
+            while (train = subject.buyable_trains.first).name == '2'
+              subject.depot.remove_train(train)
+              corporation2.buy_train(train, train.price)
+            end
+            subject.depot.reclaim_train(corporation2.trains.first) while corporation2.trains.any?
+
+            available = subject.buyable_trains
+            expect(available.size).to eq(2)
+
+            corporation.cash = 1
+            available = subject.buyable_trains
+            expect(available.size).to eq(1)
+          end
+        end
+        context 'with 18Chesapeake rules' do
+          subject { Round::Operating.new([corporation], game: game, round_num: 1) }
+          it 'returns returns other corp trains if sold shares does not exceed face value' do
+            train = subject.buyable_trains.first
+            subject.depot.remove_train(train)
+            corporation2.buy_train(train, train.price)
+            corporation.cash = 1
+            player.cash = 1
+            # Move to train step to allow the share sales
+            subject.process_action(Action::LayTile.new(corporation, Tile.for('5'), hex_k8, 3))
+
+            bundle = player.bundles_for_corporation(corporation2).first
+            subject.process_action(Action::SellShares.new(player, bundle.shares, bundle.percent))
+            available = subject.buyable_trains
+            expect(available.size).to eq(2)
+          end
+          it 'returns only depot trains if sold shares exceeds face value' do
+            train = subject.buyable_trains.first
+            subject.depot.remove_train(train)
+            corporation2.buy_train(train, train.price)
+            corporation.cash = 1
+            player.cash = 1
+            # Move to train step to allow the share sales
+            subject.process_action(Action::LayTile.new(corporation, Tile.for('5'), hex_k8, 3))
+
+            bundle = player.bundles_for_corporation(corporation2)[2]
+            subject.process_action(Action::SellShares.new(player, bundle.shares, bundle.percent))
+            available = subject.buyable_trains
+            expect(available.size).to eq(1)
+          end
+        end
+      end
     end
 
     describe '#connected_hexes' do
