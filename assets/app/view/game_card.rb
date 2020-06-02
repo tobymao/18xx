@@ -79,7 +79,7 @@ module View
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Enter')
           acting?(@user) ? YOUR_TURN_ORANGE : ENTER_GREEN
         when 'finished'
-          buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Enter')
+          buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Review')
           FINISHED_GREY
         end
 
