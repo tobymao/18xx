@@ -256,6 +256,10 @@ module Engine
         @round.active_entities.map(&:owner)
       end
 
+      def active_player_names
+        active_players.map(&:name)
+      end
+
       # Initialize actions respecting the undo state
       def initialize_actions(actions)
         active_undos = []

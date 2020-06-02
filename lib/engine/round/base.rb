@@ -57,7 +57,7 @@ module Engine
 
         if action.is_a?(Action::EndGame)
           @end_game = true
-          @log << "-- Game ended by #{entity.name} --"
+          @log << "-- Game ended by #{entity.owner.name} --"
           return
         end
 
