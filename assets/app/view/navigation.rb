@@ -9,13 +9,6 @@ module View
     needs :user, default: nil, store: true
 
     def render
-      props = {
-        style: {
-          padding: '1rem',
-          'box-shadow': '0 2px 0 0 gainsboro',
-        },
-      }
-
       other_links = [item('About', '/about')]
 
       if @user
@@ -25,23 +18,14 @@ module View
         other_links << item('Login', '/login')
       end
 
-      h('div.nav', props, [
-        h(:a, { attrs: { href: '/' } }, [
-          h(Logo),
-        ]),
+      h('div#nav', [
+        h(Logo),
         render_other_links(other_links),
       ])
     end
 
     def item(name, href)
-      props = {
-        attrs: { href: href },
-        style: {
-          margin: '0 1rem',
-        },
-      }
-
-      h(:a, props, name)
+      h('a.nav', { attrs: { href: href } }, name)
     end
 
     def render_other_links(other_links)
@@ -49,16 +33,7 @@ module View
         link
       end
 
-      props = {
-        style: {
-          color: @user&.dig(:settings, :font_color) || 'currentColor',
-          'text-align': 'right',
-        },
-      }
-
-      bg_color = @user&.dig(:settings, :bg_color) || '#ffffff'
-      link_class = bg_color == '#ffffff' ? 'nav__links--dark' : 'nav__links'
-      h("div.#{link_class}", props, children)
+      h(:div, children)
     end
   end
 end
