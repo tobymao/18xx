@@ -20,7 +20,14 @@ module View
             corp = Engine::Corporation.new(sym: 'ER', name: 'Example Railroad', tokens: [0])
             token = corp.tokens.first
             radius = 1
-            slot = described_class.new(nil, token: token, game: nil, city: nil, radius: radius, connection: double)
+            slot = described_class.new(nil,
+                                       token: token,
+                                       game: nil,
+                                       city: nil,
+                                       radius: radius,
+                                       connection: double,
+                                       num_cities: 1,
+                                       region_use: {})
             allow(slot).to receive_messages(h: '')
 
             # act
@@ -34,7 +41,14 @@ module View
         context 'with no token' do
           it 'does not render a View::Token' do
             # setup
-            slot = described_class.new(nil, token: nil, game: nil, city: nil, radius: 0, connection: double)
+            slot = described_class.new(nil,
+                                       token: nil,
+                                       game: nil,
+                                       city: nil,
+                                       radius: 0,
+                                       connection: double,
+                                       num_cities: 1,
+                                       region_use: {})
             allow(slot).to receive_messages(h: '')
 
             # act

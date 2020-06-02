@@ -79,9 +79,11 @@ module View
         }],
       }.freeze
 
-      # value at index 0 is used as default in render_revenue
-      # other indexes correspond to number of slots in the city
-      DISPLACEMENT = [42, 42, 67, 65, 67, 0, 0].freeze
+      # index corresponds to number of slots in the city
+      REVENUE_DISPLACEMENT = {
+        flat: [nil, 42, 67, 65, 67, 0, 0],
+        pointy: [nil, 42, 62, 57],
+      }.freeze
 
       OO_REVENUE_ANGLES = [175, -135, 145, -5, 45, -45].freeze
 
@@ -145,10 +147,13 @@ module View
           h(:g, { attrs: { 'stroke-width': 1, transform: "rotate(#{rotation})" } }, [
               h(:g, { attrs: { transform: "#{translate} rotate(#{-rotation})" } }, [
                   h(CitySlot, city: @city,
+                              num_cities: @num_cities,
                               token: token,
                               slot_index: slot_index,
                               radius: SLOT_RADIUS,
-                              reservation: @city.reservations[slot_index]),
+                              reservation: @city.reservations[slot_index],
+                              tile: @tile,
+                              region_use: @region_use),
                 ]),
             ])
         end
@@ -162,6 +167,9 @@ module View
         end
 
         props = @city.solo? ? {} : { on: { click: -> { touch_node(@city) } } }
+
+        props[:attrs] = { transform: rotation_for_layout } if @tile.cities.size == 1
+
         h(:g, props, children)
       end
 
@@ -176,24 +184,26 @@ module View
         # individual cities (eg, Chi in 1846)
         return if @num_cities > 2
 
-        angle = 0
+        angle = angle_for_layout
+
         x = render_location[:x]
         y = render_location[:y]
         regions = []
 
-        displacement = DISPLACEMENT[0]
+        displacement = REVENUE_DISPLACEMENT[layout][1]
 
-        # if there are more than 2 cities on the tile (e.g., Chi in 1846), the
-        # revenue should be handled by View::Tile
         case @num_cities
         when 1
           x = 0
           y = 0
-          regions = [11, 18]
 
-          displacement = DISPLACEMENT[@city.slots]
+          displacement = REVENUE_DISPLACEMENT[layout][@city.slots]
 
-          regions = [9, 16] if @city.slots == 1
+          regions = if layout == :flat
+                      @city.slots == 1 ? [9, 16] : [11, 18]
+                    else
+                      @city.slots == 1 ? [8, 9] : [3, 4]
+                    end
         when 2
           if @edge
             angle = OO_REVENUE_ANGLES[@edge]

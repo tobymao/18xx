@@ -9,13 +9,13 @@ module Engine
     attr_accessor :desc, :revenue, :discount
     attr_reader :name, :sym, :value
 
-    def initialize(name:, value:, revenue: 0, desc: '', sym: '', abilities: [], **_opts)
+    def initialize(name:, value:, revenue: 0, desc: '', sym: '', abilities: [], **opts)
       @name = name
       @value = value
       @desc = desc
       @revenue = revenue
       @sym = sym
-      @discount = 0
+      @discount = opts[:discount] || 0
       @closed = false
 
       @abilities = abilities

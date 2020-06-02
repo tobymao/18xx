@@ -2,7 +2,6 @@
 
 PRODUCTION = ENV['RACK_ENV'] == 'production'
 
-require 'message_bus'
 require 'opal'
 require 'require_all'
 require 'roda'
@@ -10,25 +9,10 @@ require 'snabberb'
 
 require_relative 'models'
 require_relative 'lib/assets'
+require_relative 'lib/bus'
 require_relative 'lib/mail'
 
 require_rel './models'
-
-MessageBus.configure(
-  backend: :postgres,
-  backend_options: {
-    host: DB.opts[:host],
-    user: DB.opts[:user],
-    dbname: DB.opts[:database],
-    password: DB.opts[:password],
-    port: DB.opts[:port],
-  },
-  clear_every: 10,
-)
-
-MessageBus.reliable_pub_sub.max_backlog_size = 2
-MessageBus.reliable_pub_sub.max_global_backlog_size = 100_000
-MessageBus.reliable_pub_sub.max_backlog_age = 172_800 # 2 days
 
 class Api < Roda
   opts[:check_dynamic_arity] = false
@@ -77,6 +61,8 @@ class Api < Roda
 
   ASSETS = Assets.new(precompiled: PRODUCTION)
 
+  Bus.configure(DB)
+
   use MessageBus::Rack::Middleware
   use Rack::Deflater unless PRODUCTION
 
@@ -106,8 +92,6 @@ class Api < Roda
 
   route do |r|
     r.public unless PRODUCTION
-
-    puts "************** #{r.path} *************"
 
     r.hash_branches
 
@@ -145,7 +129,7 @@ class Api < Roda
       **needs,
     )
 
-    '<!DOCTYPE html>' + ASSETS.context.eval(script)
+    '<!DOCTYPE html>' + ASSETS.context.eval(script, warmup: request.path.split('/')[1].to_s)
   end
 
   def render_pin(**needs)

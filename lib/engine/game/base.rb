@@ -39,6 +39,8 @@ module Engine
 
       HEXES = {}.freeze
 
+      LAYOUT = nil
+
       TRAINS = [].freeze
 
       CERT_LIMIT = {
@@ -152,6 +154,7 @@ module Engine
         const_set(:COMPANIES, data['companies'])
         const_set(:CORPORATIONS, data['corporations'])
         const_set(:HEXES, data['hexes'])
+        const_set(:LAYOUT, data['layout'].to_sym)
       end
 
       def initialize(names, id: 0, actions: [], pin: nil)
@@ -251,6 +254,10 @@ module Engine
 
       def active_players
         @round.active_entities.map(&:owner)
+      end
+
+      def active_player_names
+        active_players.map(&:name)
       end
 
       # Initialize actions respecting the undo state
@@ -355,7 +362,7 @@ module Engine
       end
 
       def layout
-        :flat
+        self.class::LAYOUT
       end
 
       def format_currency(val)

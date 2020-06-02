@@ -111,7 +111,7 @@ module GameManager
     @connection.safe_get(game_url) do |data|
       next `window.location = #{game_url}` if data.dig('settings', 'pin')
 
-      `window.history.replaceState(#{@data.to_n}, #{@app_route}, #{@app_route})`
+      `window.history.replaceState(#{data.to_n}, #{@app_route}, #{@app_route})`
       store(:game_data, data, skip: false)
     end
   end
@@ -134,11 +134,11 @@ module GameManager
     game['status'] == 'active' && game['acting'].include?(user&.dig('id'))
   end
 
-  protected
-
   def url(game, path = '')
     "/game/#{game['id']}#{path}"
   end
+
+  protected
 
   def hs_url(game, game_data)
     pin = game_data&.dig('settings', 'pin')
