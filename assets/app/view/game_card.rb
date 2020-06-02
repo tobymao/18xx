@@ -76,9 +76,11 @@ module View
           JOIN_YELLOW
         when 'active'
           buttons << render_button('Enter', -> { enter_game(@gdata) })
+          buttons << render_button_as_link('↗️', url(@gdata))
           acting?(@user) ? YOUR_TURN_ORANGE : ENTER_GREEN
         when 'finished'
           buttons << render_button('Review', -> { enter_game(@gdata) })
+          buttons << render_button_as_link('↗️', url(@gdata))
           FINISHED_GREY
         end
 
@@ -124,6 +126,23 @@ module View
       }
 
       h('button.button', props, text)
+    end
+
+    def render_button_as_link(text, href)
+      props = {
+        style: {
+          top: '1rem',
+          float: 'right',
+          'margin': '0 0.3rem',
+          padding: '0.2rem 0.5rem',
+        },
+        attrs: {
+          href: href,
+          target: '_blank',
+        },
+      }
+
+      h('a.button-link', props, text)
     end
 
     def render_body
