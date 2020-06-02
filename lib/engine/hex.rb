@@ -33,8 +33,8 @@ module Engine
 
     # Coordinates are of the form A1..Z99
     # x and y map to the double coordinate system
-    # layout is pointy or flat
-    def initialize(coordinates, layout: :pointy, tile: Tile.for('blank'), location_name: nil)
+    # layout is :pointy or :flat
+    def initialize(coordinates, layout: nil, tile: Tile.for('blank'), location_name: nil)
       @coordinates = coordinates
       @layout = layout
       @x = LETTERS.index(@coordinates[0]).to_i
