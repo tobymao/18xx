@@ -56,7 +56,7 @@ module View
 
     def render_introduction
       message = <<~MESSAGE
-        <p>18xx.games is a website where you can play async or real-time 18xx games! Right now only 1889 is implemented
+        <p>18xx.games is a website where you can play async or real-time 18xx games! Right now only 1889 and 18Chesapeake are implemented
         but I'm planning on doing many more in the future.</p>
 
         <p>You can play locally with hot seat mode without an account. If you want to play multiplayer, you'll need to create an account.</p>
