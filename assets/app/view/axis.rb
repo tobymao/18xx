@@ -42,9 +42,8 @@ module View
 
       labels = @cols.map do |c|
         x = hex_x * (c.to_i - 1)
-        y = 0
         label = ('A'..'Z').to_a[c - 1]
-        h(:text, { attrs: { x: x, y: y } }, label)
+        h(:text, { attrs: { x: x } }, label)
       end
 
       t_x = X_OFFSET + @gap
@@ -71,14 +70,12 @@ module View
       hex_x, hex_y = hex_size
 
       labels = @rows.map do |row|
-        x = 0
-
         multiplier = row.to_i
-        multiplier -= (1 / 2) if @layout == :pointy
+        multiplier -= 0.5 if @layout == :pointy
         y = hex_y * multiplier
 
         label = row
-        h(:text, { attrs: { x: x, y: y } }, label)
+        h(:text, { attrs: { y: y } }, label)
       end
 
       t_x = @font_size / 2
