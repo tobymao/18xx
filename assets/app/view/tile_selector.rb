@@ -5,12 +5,11 @@ require 'view/hex'
 module View
   class TileSelector < Snabberb::Component
     needs :tile_selector, store: true
-    needs :layout
     needs :tiles
 
     def render
       hexes = @tiles.map do |tile|
-        hex = Engine::Hex.new('A1', layout: @layout, tile: tile)
+        hex = Engine::Hex.new('A1', layout: 'flat', tile: tile)
         h(Hex, hex: hex, role: :tile_selector)
       end
 

@@ -183,18 +183,6 @@ module View
         end
         region
       end
-
-      def layout
-        @layout ||= @tile&.hex&.layout
-      end
-
-      def angle_for_layout
-        @angle_for_layout ||= layout == :pointy ? -30 : 0
-      end
-
-      def rotation_for_layout
-        "rotate(#{angle_for_layout})"
-      end
     end
   end
 end

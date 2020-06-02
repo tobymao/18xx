@@ -18,12 +18,13 @@ Sequel.extension :pg_array_ops
 DB.extension :pg_array, :pg_advisory_lock, :pg_json, :pg_enum
 
 DB.register_advisory_lock(:action_lock)
+DB.register_advisory_lock(:turn_lock, :pg_try_advisory_lock)
 
 if ENV['RACK_ENV'] == 'development' || ENV['RACK_ENV'] == 'test'
   require 'logger'
-  logger = Logger.new($stdout)
-  logger.level = Logger::FATAL if ENV['RACK_ENV'] == 'test'
-  DB.loggers << logger
+  LOGGER = Logger.new($stdout)
+  LOGGER.level = Logger::FATAL if ENV['RACK_ENV'] == 'test'
+  DB.loggers << LOGGER
 end
 
 unless ENV['RACK_ENV'] == 'development'

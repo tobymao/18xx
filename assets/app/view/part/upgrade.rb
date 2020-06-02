@@ -8,36 +8,29 @@ module View
       needs :cost
       needs :terrains, default: []
 
-      P_CENTER = {
-        region_weights: CENTER,
-        x: 0,
-        y: 0,
-      }.freeze
-
-      P_TOP_RIGHT_CORNER = {
-        region_weights: [3, 4],
-        x: 30,
-        y: -60,
-      }.freeze
-
-      P_BOTTOM_LEFT_CORNER = {
-        region_weights: [19, 20],
-        x: -30,
-        y: 60,
-      }.freeze
-
-      P_EDGE2 = {
-        region_weights: [0, 5, 6],
-        x: -50,
-        y: -45,
-      }.freeze
-
       def preferred_render_locations
+        center = {
+          region_weights: CENTER,
+          x: 0,
+          y: 0,
+        }
+
+        top_right_corner = {
+          region_weights: [3, 4],
+          x: 30,
+          y: -60,
+        }
+
+        edge2 = {
+          region_weights: [0, 5, 6],
+          x: -50,
+          y: -45,
+        }
+
         [
-          P_CENTER,
-          P_TOP_RIGHT_CORNER,
-          P_EDGE2,
-          P_BOTTOM_LEFT_CORNER,
+          center,
+          top_right_corner,
+          edge2,
         ]
       end
 
@@ -63,7 +56,7 @@ module View
         attrs = {
           class: 'upgrade',
           'stroke-width': 1,
-          transform: "#{translate} #{rotation_for_layout}",
+          transform: translate,
         }
 
         h(:g, { attrs: attrs }, children)

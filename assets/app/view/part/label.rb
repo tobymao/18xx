@@ -14,30 +14,12 @@ module View
       }].freeze
 
       P_LEFT_CORNER = {
-        flat: {
-          region_weights: { LEFT_CORNER => 1.0, (LEFT_CENTER + LEFT_MID) => 0.5 },
-          x: -71.25,
-          y: 0,
-        },
-        pointy: {
-          region_weights: { LEFT_CORNER => 1.0, (LEFT_CENTER + LEFT_MID) => 0.5 },
-          x: -67,
-          y: 0,
-        },
+        region_weights: { LEFT_CORNER => 1.0, (LEFT_CENTER + LEFT_MID) => 0.5 },
+        x: -71.25,
+        y: 0,
       }.freeze
 
-      P_BOTTOM_LEFT_CORNER = {
-        flat: {
-          region_weights: { [19, 20] => 1.0 },
-          x: -30,
-          y: 65,
-        },
-        pointy: {
-          region_weights: { [19, 20] => 1.0 },
-          x: -30,
-          y: 61,
-        },
-      }.freeze
+      SINGLE_CITY_MULTI_SLOT = [P_LEFT_CORNER].freeze
 
       MULTI_CITY_LOCATIONS = [
         # top center
@@ -71,22 +53,24 @@ module View
           y: -65,
         },
         # bottom left corner
-        P_BOTTOM_LEFT_CORNER[:flat],
+        {
+          region_weights: { [19, 20] => 1.0 },
+          x: -30,
+          y: 65,
+        },
       ].freeze
 
       def preferred_render_locations
         if (@tile.cities + @tile.towns).one?
           if @tile.cities.one? && (@tile.cities.first.slots > 1)
-            [P_LEFT_CORNER[layout]]
+            SINGLE_CITY_MULTI_SLOT
           else
             SINGLE_CITY_ONE_SLOT
           end
         elsif @tile.cities.size > 1
           MULTI_CITY_LOCATIONS
-        elsif layout == :flat
-          [P_LEFT_CORNER[layout]]
         else
-          [P_LEFT_CORNER[layout], P_BOTTOM_LEFT_CORNER[layout]]
+          [P_LEFT_CORNER]
         end
       end
 
@@ -96,7 +80,7 @@ module View
 
       def render_part
         attrs = {
-          transform: "#{translate} #{rotation_for_layout}",
+          transform: translate,
           'pointer-events': 'none',
         }
 

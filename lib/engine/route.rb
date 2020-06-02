@@ -14,19 +14,14 @@ module Engine
       @last_connection = nil
       @routes = routes
       @override = override
-      restore_connections(connection_hexes) if connection_hexes
+      init_from_connection_hexes(connection_hexes) if connection_hexes
     end
 
-    def restore_connections(connection_hexes)
+    def init_from_connection_hexes(connection_hexes)
       connections = connection_hexes.map do |hexes|
-        hex_ids = hexes.map(&:id)
-        complete = hexes[0].all_connections.select(&:complete?)
-        # remove the sorts after we complete a migration to correctely ordered hexes
-        complete.find { |c| c.matches?(hex_ids) } || complete.find { |c| c.id.sort == hex_ids.sort }
+        hexes.sort!
+        hexes[0].all_connections.find { |c| c.complete? && c.hexes.sort == hexes }
       end
-
-      connections.uniq!
-      connections.compact!
 
       return unless (first = connections[0])
 
@@ -38,8 +33,6 @@ module Engine
           left = (a.nodes - middle)[0]
           right = (b.nodes - middle)[0]
           middle = middle[0]
-          return @connections.clear if !left || !right
-
           @connections << { left: left, right: middle, connection: a } if a == first
           @connections << { left: middle, right: right, connection: b }
         end
@@ -146,13 +139,7 @@ module Engine
     def hexes
       return @override[:hexes] if @override
 
-      # find unique node hexes
-      @connections
-        .flat_map { |c| [c[:left], c[:right]] }
-        .chunk(&:itself)
-        .to_a # opal has a bug that needs this conversion from enum
-        .map(&:first)
-        .map(&:hex)
+      @connections.flat_map { |c| [c[:left].hex, c[:right].hex] }.uniq
     end
 
     def check_cycles!

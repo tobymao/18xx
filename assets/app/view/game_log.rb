@@ -29,24 +29,7 @@ module View
         end
       end
 
-      if @player
-        children << h(:div, { style: {
-            'margin-top': '0.5rem',
-            'display': 'flex',
-            'flex-direction': 'row',
-          } }, [
-            h(:span, { style: {
-              'font-weight': 'bold',
-              'margin-top': '4px',
-             } }, [@user['name'] + ':']),
-            h(:input,
-              style: {
-                'margin-left': '0.5rem',
-                'flex': '1',
-              },
-              on: { keyup: enter }),
-          ])
-      end
+      children << h(:input, style: { width: '100%' }, on: { keyup: enter }) if @player
 
       props = {
         style: {

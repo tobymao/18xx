@@ -24,11 +24,11 @@ module View
       return [] unless last_run
 
       last_run.map do |train, connections|
-        connections = connections&.map do |ids|
+        connection_hexes = connections&.map do |ids|
           ids.map { |id| @game.hex_by_id(id) }
         end
         # A future enhancement to this could be to find trains and move the routes over
-        Engine::Route.new(@game.phase, train, connection_hexes: connections) if trains.include?(train)
+        Engine::Route.new(@game.phase, train, connection_hexes: connection_hexes) if trains.include?(train)
       end.compact
     end
 

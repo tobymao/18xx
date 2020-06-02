@@ -9,21 +9,100 @@ module View
       CHARACTER_WIDTH = 8
       BACKGROUND_COLOR = '#FFFFFF'
       BACKGROUND_OPACITY = '0.5'
-
       def preferred_render_locations
+        top =
+          begin
+            y = if @name_segments.size > 1
+                  54
+                else
+                  61
+                end
+            {
+              region_weights_in: { TRACK_TO_EDGE_3 => 1,
+                                   TOP_ROW => 2 },
+              region_weights_out: { TOP_ROW => 1 },
+              x: 0,
+              y: -(y + delta_y),
+            }
+          end
+
+        up40 = {
+          region_weights_in: { TRACK_TO_EDGE_3 => 1,
+                               UPPER_CENTER => 1,
+                               [6, 10] => 0.25,
+                               TOP_ROW => 0.1 },
+          region_weights_out: { UPPER_CENTER => 1,
+                                [6, 10] => 0.25 },
+          x: 0,
+          y: -(40 + delta_y),
+        }
+
+        up24 = {
+          region_weights: TOP_MIDDLE_ROW,
+          x: 0,
+          y: -(24 + delta_y),
+        }
+
+        center = {
+          region_weights: CENTER,
+          x: 0,
+          y: -delta_y / 2,
+        }
+
+        down24 = {
+          region_weights: BOTTOM_MIDDLE_ROW,
+          x: 0,
+          y: 24,
+        }
+
+        down40 = {
+          region_weights_in: { TRACK_TO_EDGE_0 => 1,
+                               LOWER_CENTER => 1,
+                               [13, 17] => 0.25,
+                               BOTTOM_ROW => 0.1 },
+          region_weights_out: { LOWER_CENTER => 1,
+                                [13, 14, 16, 17] => 0.25 },
+          x: 0,
+          y: 40,
+        }
+
+        down50 = {
+          region_weights_in: { TRACK_TO_EDGE_0 => 1,
+                               BOTTOM_ROW => 0.1 },
+          region_weights_out: { BOTTOM_ROW => 1 },
+          x: 0,
+          y: 50,
+        }
+
+        bottom =
+          begin
+            y = if @name_segments.size > 1
+                  39
+                else
+                  56
+                end
+            {
+              region_weights_in: { TRACK_TO_EDGE_0 => 1,
+                                   BOTTOM_ROW => 1.5 },
+              region_weights_out: { BOTTOM_ROW => 1 },
+              x: 0,
+              y: (y + delta_y),
+            }
+          end
+
         if @tile.offboards.any?
           return [
-            l_center,
-            l_up24,
-            l_down24,
+            center,
+            up24,
+            down24,
           ]
         end
 
         if @tile.towns.one?
           return [
-            l_center,
-            l_up40,
-            l_down40,
+            center,
+            up40,
+            down40,
           ]
         end
 
@@ -31,35 +110,35 @@ module View
           return case @tile.cities.first.slots
                  when 3
                    [
-                     l_down50,
-                     l_top,
+                     down50,
+                     top,
                    ]
                  when 4
                    [
-                     l_top,
-                     l_bottom,
+                     top,
+                     bottom,
                    ]
                  else
                    [
-                     l_center,
-                     l_up40,
-                     l_down40,
+                     center,
+                     up40,
+                     down40,
                    ]
                  end
         end
 
         if (@tile.towns + @tile.cities).size > 1
-          center = l_center
-
-          # if top and bottom edges are both used, we might end up rendering the
-          # name in the middle, so try to shift out of the way of track
+          # if top and bottom edges are both used, we might end up rendering in
+          # the middle, so try to shift out of the way of track
           if ([0, 3] - @tile.exits).empty?
             width, = box_dimensions
             shift = 79 - (width / 2)
             delta_x =
               if ([1, 2] - @tile.exits).empty?
+                # track on both left edges, so shift to the right
                 shift
               elsif ([4, 5] - @tile.exits).empty?
+                # track on both right edges, so shift to the left
                 -shift
               end
             center[:x] += delta_x if delta_x
@@ -69,14 +148,14 @@ module View
                    if @tile.exits.any?
                      [
                        center,
-                       l_bottom,
-                       l_top,
+                       bottom,
+                       top,
                      ]
                    else
                      [
                        center,
-                       l_up40,
-                       l_down40,
+                       up40,
+                       down40,
                      ]
                    end
                  end
@@ -105,11 +184,9 @@ module View
           h(:text, { attrs: { transform: "translate(#{x} #{y})" } }, segment)
         end
 
-        h(:g, { attrs: { transform: rotation_for_layout } }, [
-            h(:g, { style: { 'pointer-events': 'none' }, attrs: attrs }, [
-                render_background_box,
-                *rendered_name,
-              ]),
+        h(:g, { style: { 'pointer-events': 'none' }, attrs: attrs }, [
+            render_background_box,
+            *rendered_name,
           ])
       end
 
@@ -177,127 +254,6 @@ module View
         else
           segments
         end
-      end
-
-      private
-
-      def l_top
-        y = if @name_segments.size > 1
-              54
-            else
-              61
-            end
-        {
-          region_weights_in: { TRACK_TO_EDGE_3 => 1,
-                               TOP_ROW => 2 },
-          region_weights_out: { TOP_ROW => 1 },
-          x: 0,
-          y: -(y + delta_y),
-        }
-      end
-
-      def l_up40
-        y = -(40 + delta_y)
-
-        loc = { x: 0, y: y }
-
-        if layout == :flat
-          loc[:region_weights_in] = { TRACK_TO_EDGE_3 => 1,
-                                      UPPER_CENTER => 1,
-                                      [6, 10] => 0.25,
-                                      TOP_ROW => 0.1 }
-          loc[:region_weights_out] = { UPPER_CENTER => 1,
-                                       [6, 10] => 0.25 }
-        else
-          # slight extra nudge to clear the revenue circle
-          loc[:y] -= 2
-
-          loc[:region_weights_in] = { TRACK_TO_EDGE_2 => 0.5,
-                                      TRACK_TO_EDGE_3 => 0.5,
-                                      [2, 6, 7, 8] => 1,
-                                      [3, 5] => 0.25,
-                                      [0, 1] => 0.1 }
-          loc[:region_weights_out] = { [2, 6, 7, 8] => 1,
-                                       [3, 5] => 0.25 }
-        end
-        loc
-      end
-
-      def l_up24
-        loc = {
-          x: 0,
-          y: -(24 + delta_y),
-        }
-        loc[:region_weights] = if layout == :flat
-                                 TOP_MIDDLE_ROW
-                               else
-                                 [4, 7, 8, 12]
-                               end
-        loc
-      end
-
-      def l_center
-        {
-          region_weights: CENTER,
-          x: 0,
-          y: -delta_y / 2,
-        }
-      end
-
-      def l_down24
-        loc = { x: 0, y: 24 }
-        loc[:region_weights] = if layout == :flat
-                                 BOTTOM_MIDDLE_ROW
-                               else
-                                 [11, 15, 16, 19]
-                               end
-        loc
-      end
-
-      def l_down40
-        loc = { x: 0, y: 40 }
-
-        if layout == :flat
-          loc[:region_weights_in] = { TRACK_TO_EDGE_0 => 1,
-                                      LOWER_CENTER => 1,
-                                      [13, 17] => 0.25,
-                                      BOTTOM_ROW => 0.1 }
-          loc[:region_weights_out] = { LOWER_CENTER => 1,
-                                       [13, 14, 16, 17] => 0.25 }
-        elsif layout == :pointy
-          loc[:region_weights_in] = { TRACK_TO_EDGE_0 => 0.5,
-                                      TRACK_TO_EDGE_5 => 0.5,
-                                      [15, 16, 21, 17] => 1,
-                                      [11, 18, 19, 20] => 0.5,
-                                      [22, 23] => 0.1 }
-          loc[:region_weights_out] = { [15, 16, 21, 17] => 1,
-                                       [11, 18, 19, 20] => 0.25 }
-        end
-        loc
-      end
-
-      def l_down50
-        loc = { x: 0, y: 50 }
-
-        loc[:region_weights_in] = { TRACK_TO_EDGE_0 => 1,
-                                    BOTTOM_ROW => 0.1 }
-        loc[:region_weights_out] = { BOTTOM_ROW => 1 }
-        loc
-      end
-
-      def l_bottom
-        y = if @name_segments.size > 1
-              39
-            else
-              56
-            end
-
-        loc = { x: 0, y: y + delta_y }
-
-        loc[:region_weights_in] = { TRACK_TO_EDGE_0 => 1,
-                                    BOTTOM_ROW => 1.5 }
-        loc[:region_weights_out] = { BOTTOM_ROW => 1 }
-        loc
       end
     end
   end
