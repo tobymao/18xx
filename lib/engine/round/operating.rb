@@ -14,7 +14,7 @@ require_relative '../operating_info'
 module Engine
   module Round
     class Operating < Base
-      attr_reader :bankrupt, :depot, :phase, :round_num, :step, :current_routes
+      attr_reader :bankrupt, :depot, :phase, :round_num, :num_rounds, :step, :current_routes
 
       STEPS = %i[
         track
@@ -42,9 +42,10 @@ module Engine
         company: 'Companies',
       }.freeze
 
-      def initialize(entities, game:, round_num: 1, **opts)
+      def initialize(entities, game:, round_num: 1, num_rounds: 1, **opts)
         super
         @round_num = round_num
+        @num_rounds = num_rounds
         @ebuy_pres_swap = opts[:ebuy_pres_swap].nil? ? true : opts[:ebuy_pres_swap]
         @ebuy_other_value = opts[:ebuy_other_value].nil? ? true : opts[:ebuy_other_value]
         @hexes = game.hexes
@@ -70,7 +71,7 @@ module Engine
       end
 
       def log_new_round
-        @log << "-- #{name} #{@turn}.#{round_num} --"
+        @log << "-- #{name} #{@turn}.#{round_num} (of #{num_rounds}) --"
       end
 
       def name

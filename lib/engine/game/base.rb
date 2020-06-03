@@ -626,7 +626,7 @@ module Engine
       end
 
       def new_operating_round(round_num = 1)
-        @log << "-- Operating Round #{@turn}.#{round_num} --"
+        @log << "-- Operating Round #{@turn}.#{round_num} (of #{@operating_rounds}) --"
         operating_round(round_num)
       end
 
@@ -635,6 +635,7 @@ module Engine
           @corporations.select(&:floated?).sort,
           game: self,
           round_num: round_num,
+          num_rounds: @operating_rounds
         )
       end
 
