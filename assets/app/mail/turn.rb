@@ -16,7 +16,7 @@ class Turn < Snabberb::Component
 
     h(:div, [
       render_link,
-      h(View::Log, log: @game.log.last(20).reverse),
+      h(View::Log, log: @game.log.last(20)),
       h(View::Players, game: @game),
     ])
   end
