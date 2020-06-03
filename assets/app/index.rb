@@ -5,15 +5,34 @@ class Index < Snabberb::Layout
     css = <<~CSS
       * { font-family: 'Inconsolata', monospace; }
 
+      /* prevent hover effects on mobile devices */
+      @media(hover: hover) and (pointer: fine) {
+        .button-link:hover {
+          background: black;
+          color: white;
+        }
+        .button:hover {
+          background-color: black;
+          border-color: rgb(217, 210, 210);
+          color: white;
+        }
+        .button, .button-link {
+          outline-style: none;
+        }
+        a.nav:hover, a.default-bg:hover {
+          text-decoration: underline dotted;
+          opacity: 0.8;
+        }
+        #logo a:hover {
+          opacity: 0.8;
+        }
+        a:active, a:focus {
+          outline: 0;
+        }
+      }
+
       a.nav, a.default-bg  {
         color: currentColor;
-      }
-      a.nav:hover, a.default-bg:hover {
-        text-decoration: underline dotted;
-        opacity: 0.8;
-      }
-      a:active, a:focus {
-        outline: 0;
       }
       a.nav {
         margin: 0 1rem;
@@ -30,9 +49,6 @@ class Index < Snabberb::Layout
         color: currentColor;
         font-weight: bold;
         text-decoration: none;
-      }
-      #logo a:hover {
-        opacity: 0.8;
       }
       #logo__18xx {
         display: inline-block;
@@ -76,24 +92,12 @@ class Index < Snabberb::Layout
         border-radius: 5px;
         padding: 0.2rem 1rem;
         cursor: pointer;
-        outline-style: none;
       }
 
       .button-link {
         text-decoration: none;
         color: initial;
         background: whitesmoke;
-      }
-
-      .button-link:hover {
-        background: black;
-        color: white;
-      }
-
-      .button:hover {
-        background-color: black;
-        border-color: rgb(217, 210, 210);
-        color: white;
       }
 
       .half {
