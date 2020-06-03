@@ -75,7 +75,7 @@ class Index < Snabberb::Layout
       @media (prefers-color-scheme: dark) {
         body {
           background-color: black;
-          color: white;
+          color: gainsboro;
         }
       }
 
