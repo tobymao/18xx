@@ -41,6 +41,8 @@ module Engine
 
       LAYOUT = nil
 
+      AXES = nil
+
       TRAINS = [].freeze
 
       CERT_LIMIT = {
@@ -365,6 +367,17 @@ module Engine
         self.class::LAYOUT
       end
 
+      def axes
+        @axes ||=
+          if (axes = self.class::AXES)
+            axes
+          elsif layout == :flat
+            { x: :letter, y: :number }
+          elsif layout == :pointy
+            { x: :number, y: :letter }
+          end
+      end
+
       def format_currency(val)
         self.class::CURRENCY_FORMAT_STR % val
       end
@@ -471,7 +484,7 @@ module Engine
               # name the location (city/town)
               location_name = self.class::LOCATION_NAMES[coord]
 
-              Hex.new(coord, layout: layout, tile: tile, location_name: location_name)
+              Hex.new(coord, layout: layout, axes: axes, tile: tile, location_name: location_name)
             end
           end
         end.flatten

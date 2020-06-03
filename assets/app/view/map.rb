@@ -78,6 +78,7 @@ module View
           h(Axis,
             cols: @cols,
             rows: @rows,
+            axes: @game.axes,
             layout: @layout,
             font_size: font_size,
             gap: GAP,
