@@ -2,10 +2,14 @@
 
 require 'view/stock_market'
 require 'lib/color'
+require 'view/link'
+require 'lib/storage'
 
 module View
   class Spreadsheet < Snabberb::Component
     needs :game
+    needs :spreadsheet_sort_by, default: Lib::Storage['spreadsheet_sort_by'] || 'ID', store: true
+    needs :spreadsheet_sort_order, default: Lib::Storage['spreadsheet_sort_order'] || 'ASC', store: true
 
     def render
       h(:div, { style: {
@@ -79,14 +83,58 @@ module View
           h(:th, { attrs: { colspan: or_history_titles.size } }, 'OR History'),
           ]),
         h(:tr, [
-          h(:th, { style: { width: '20px' } }, ''),
+          h(:th, { style: { width: '20px' } }, [
+            h(
+              Link,
+              href: '',
+              click: lambda {
+                mark_sort_column('ID')
+                toggle_sort_order
+              },
+              children: 'SYM' + (@spreadsheet_sort_by == 'ID' ? ' ' + sort_order_icon : ''),
+              class: ''
+            ),
+          ]),
           *@game.players.map { |p| h(:th, props, p.name) },
           h(:th, props, 'IPO'),
           h(:th, props, 'Market'),
           h(:th, props, 'IPO'),
-          h(:th, props, 'Market'),
-          h(:th, props, 'Cash'),
-          h(:th, props, 'Operating Order'),
+          h(:th, props, [
+            h(
+              Link,
+              href: '',
+              click: lambda {
+                mark_sort_column('SHARE-PRICE')
+                toggle_sort_order
+              },
+              children: 'Market' + (@spreadsheet_sort_by == 'SHARE-PRICE' ? ' ' + sort_order_icon : ''),
+              class: ''
+            ),
+          ]),
+          h(:th, props, [
+            h(
+              Link,
+              href: '',
+              click: lambda {
+                mark_sort_column('CASH')
+                toggle_sort_order
+              },
+              children: 'Cash' + (@spreadsheet_sort_by == 'CASH' ? ' ' + sort_order_icon : ''),
+              class: ''
+            ),
+          ]),
+          h(:th, props, [
+            h(
+              Link,
+              href: '',
+              click: lambda {
+                mark_sort_column('OPERATING-ORDER')
+                toggle_sort_order
+              },
+              children: 'Operating Order' + (@spreadsheet_sort_by == 'OPERATING-ORDER' ? ' ' + sort_order_icon : ''),
+              class: ''
+            ),
+          ]),
           h(:th, props, 'Trains'),
           h(:th, props, 'Tokens'),
           h(:th, props, 'Privates'),
@@ -96,14 +144,62 @@ module View
       ]
     end
 
+    def sort_order_icon
+      return '(⬇️)' if @spreadsheet_sort_order == 'ASC'
+
+      '(⬆️)'
+    end
+
+    def mark_sort_column(sort_by)
+      Lib::Storage['spreadsheet_sort_by'] = sort_by
+      store(:spreadsheet_sort_by, sort_by)
+      *@spreadsheet_sort_by = sort_by
+    end
+
+    def toggle_sort_order
+      if @spreadsheet_sort_order == 'DESC'
+        Lib::Storage['spreadsheet_sort_order'] = 'ASC'
+        store(:spreadsheet_sort_order, 'ASC')
+        *@spreadsheet_sort_order = 'ASC'
+      else
+        Lib::Storage['spreadsheet_sort_order'] = 'DESC'
+        store(:spreadsheet_sort_order, 'DESC')
+        *@spreadsheet_sort_order = 'DESC'
+      end
+    end
+
     def render_corporations
       current_round = @game.round.turn_round_num
 
+      ordered_corporations = sorted_corporations
+      ordered_corporations.map do |c|
+        render_corporation(c[1], c[0], current_round)
+      end
+    end
+
+    def sorted_corporations
+      result = []
       floated_corporations = @game.round.entities
+
       @game.corporations.map do |c|
         operating_order = (floated_corporations.find_index(c) || -1) + 1
-        render_corporation(c, operating_order, current_round)
+        result << [operating_order, c]
       end
+
+      result = result.sort_by do |c|
+        if @spreadsheet_sort_by == 'OPERATING-ORDER'
+          c[0]
+        elsif @spreadsheet_sort_by == 'CASH'
+          c[1].cash
+        elsif @spreadsheet_sort_by == 'SHARE-PRICE'
+          c[1].share_price.nil? ? 0 : c[1].share_price.price
+        else
+          c[1].id
+        end
+      end
+
+      result = result.reverse if @spreadsheet_sort_order == 'DESC'
+      result
     end
 
     def render_corporation(corporation, operating_order, current_round)
