@@ -67,6 +67,7 @@ class Api
           user.settings['notifications'] = r.params['notifications']
           user.settings['bg_color'] = r.params['bg_color']
           user.settings['font_color'] = r.params['font_color']
+          user.settings['red_logo'] = r.params['red_logo']
           user.save
           user.to_h(for_user: true)
         end

@@ -3,6 +3,7 @@
 require 'game_manager'
 require 'user_manager'
 require 'view/game_row'
+require 'view/logo'
 require 'view/form'
 
 module View
@@ -34,12 +35,15 @@ module View
           ['Profile Settings', [
             render_notifications(@user&.dig(:settings, :notifications)),
             h(:div, [
-              render_bg_color(@user&.dig(:settings, :bg_color)),
-              render_font_color(@user&.dig(:settings, :font_color)),
+              render_color(:bg_color, 'Background Color', @user&.dig(:settings, :bg_color), '#ffffff'),
+              render_color(:font_color, 'Font Color', @user&.dig(:settings, :font_color), '#000000'),
+              render_logo_color(@user&.dig(:settings, :red_logo)),
             ]),
-            render_button('Use Default Colors') { reset_colors },
             render_button('Save Changes') { submit },
-            render_button('Logout') { logout },
+            render_button('Use Default Colors') { reset_colors },
+            h(:div, [
+              render_button('Logout') { logout },
+            ]),
           ]]
         end
 
@@ -65,7 +69,22 @@ module View
     def reset_colors
       @inputs.delete(:font_color)
       @inputs.delete(:bg_color)
+      @inputs.delete(:red_logo)
       submit
+    end
+
+    def render_color(id, name, color, default)
+      color ||= default
+      render_input(name, id: id, type: :color, attrs: { value: color })
+    end
+
+    def render_logo_color(red_logo)
+      render_input(
+        'Alternative Red Logo',
+        id: :red_logo,
+        type: :checkbox,
+        attrs: { checked: red_logo },
+      )
     end
 
     def render_notifications(checked = true)
@@ -74,26 +93,6 @@ module View
         id: :notifications,
         type: :checkbox,
         attrs: { checked: checked },
-      )
-    end
-
-    def render_bg_color(bg_color)
-      bg_color ||= '#ffffff'
-      render_input(
-        'Background color',
-        id: :bg_color,
-        type: :color,
-        attrs: { value: bg_color },
-      )
-    end
-
-    def render_font_color(font_color)
-      font_color ||= '#000000'
-      render_input(
-        'Font color',
-        id: :font_color,
-        type: :color,
-        attrs: { value: font_color },
       )
     end
 

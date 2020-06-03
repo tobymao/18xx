@@ -44,7 +44,7 @@ class Index < Snabberb::Layout
         background: url(/images/logo_polygon_yellow.svg) left/2.5rem no-repeat;
         color: black;
       }
-      #logo__18xx.default, #logo__18xx.red {
+      #logo__18xx.red {
         background: url(/images/logo_polygon_red.svg) left/2.5rem no-repeat;
         color: white;
       }
@@ -53,10 +53,6 @@ class Index < Snabberb::Layout
         body {
           background-color: black;
           color: white;
-        }
-        #logo__18xx.default {
-          background: url(/images/logo_polygon_yellow.svg) left/2.5rem no-repeat;
-          color: black;
         }
       }
 
