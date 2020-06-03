@@ -11,8 +11,10 @@ module View
         elm.scrollTop = elm.scrollHeight
       end
 
-      scroll_handler = lambda do
-        # can't seem to access the target of the event here
+      scroll_handler = lambda do |event|
+        elm = Native(event).target
+        bottom = elm.scrollHeight - elm.scrollTop <= elm.clientHeight + 5
+        store(:follow_scroll, bottom, skip: true) if @follow_scroll != bottom
       end
 
       props = {
@@ -20,15 +22,14 @@ module View
         hook: {
           postpatch: ->(_, vnode) { scroll_to_bottom.call(vnode) if @follow_scroll },
         },
-        on: {
-          scroll: scroll_handler
-        },
+        on: { scroll: scroll_handler },
         style: {
           overflow: 'auto',
           height: '200px',
-          padding: '0.5rem',
-          'background-color': 'lightgray',
+          padding: '0.5rem 1rem',
+          margin: '0 -1.5rem',
           color: 'black',
+          'background-color': 'lightgray',
           'word-break': 'break-word',
         },
       }
