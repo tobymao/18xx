@@ -11,7 +11,10 @@ If configuring the droplet from scratch, these are the requirements:
 
 ### Anatomy of a Tile
 
-![Anatomy of a Tile](/public/images/tile_anatomy.png?raw=true "Anatomy of a Tile")
+![Anatomy of a Tile](/public/images/tile_anatomy_flat.png?raw=true "Anatomy of a Flat Tile")
+
+
+![Anatomy of a Tile](/public/images/tile_anatomy_pointy.png?raw=true "Anatomy of a Pointy Tile")
 
 ### Development Routes
 
