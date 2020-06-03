@@ -135,6 +135,11 @@ module Engine
           'marco4884' => 1089,
           'vecchioleone' => 305,
         },
+        314 => {
+          'Rebus' => 1134,
+          'johnhawkhaines' => 260,
+          'scottredracecar' => 1473,
+        },
         962 => {
           'Dimikosta' => 3091,
           'Joshua6' => 4317,

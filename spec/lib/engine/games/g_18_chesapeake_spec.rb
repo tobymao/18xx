@@ -9,6 +9,23 @@ module Engine
   describe Game::G18Chesapeake do
     context 'full game' do
       {
+        1276 => {
+          'ferralferrets' => 560,
+          'malayet2' => 1756,
+          'philcampeau' => 1528,
+        },
+        1277 => {
+          'Harshit' => 1216,
+          'jagdish' => 1045,
+          'mfwesq' => 1153,
+          'tgg' => 600,
+          'wery' => 1028,
+        },
+        1638 => {
+          'jweines' => 6566,
+          'Scott Nicholson' => 6229,
+          'Twalker' => 5485,
+        },
       }.each do |game_id, result|
         it "#{game_id} matches result exactly" do
           data = JSON.parse(File.read("spec/fixtures/18_chesapeake/#{game_id}.json"))

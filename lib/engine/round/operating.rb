@@ -400,7 +400,7 @@ module Engine
 
         remaining = price - entity.cash
 
-        if remaining.positive? && must_buy_train? && !@game.phase.just_rusted?
+        if remaining.positive? && must_buy_train? && !@game.phase.just_rusted_own?
           raise GameError, 'Cannot contribute funds when exchanging' if exchange
           raise GameError, 'Cannot buy for more than cost' if price > train.price
 

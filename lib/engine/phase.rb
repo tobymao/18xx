@@ -61,17 +61,16 @@ module Engine
       @phases = phases
       @game = game
       @log = @game.log
-      @just_rusted = false
+      @just_rusted_own = false
       setup_phase!
     end
 
     def process_action(action)
-      @just_rusted = false
       case action
       when Action::BuyTrain
         train = action.train
         next! if train.name == @next_on
-        rust_trains!(train)
+        rust_trains!(train, action.entity)
       end
     end
 
@@ -85,9 +84,9 @@ module Engine
       @phases.find_index { |phase| phase[:name] == phase_name } <= @index
     end
 
-    # Did the last action cause a rust?
-    def just_rusted?
-      @just_rusted
+    # Did the last action cause a rust on the current entitys turn?
+    def just_rusted_own?
+      @just_rusted_own
     end
 
     def setup_phase!
@@ -139,16 +138,17 @@ module Engine
       end
     end
 
-    def rust_trains!(train)
+    def rust_trains!(train, entity)
       rusted_trains = []
-
+      @just_rusted_own = false
       @game.trains.each do |t|
-        if t.owner && t.rusts_on == train.name
-          rusted_trains << t.name
-          t.rust!
-        end
+        next unless t.owner && t.rusts_on == train.name
+
+        rusted_trains << t.name
+        @just_rusted_own = true if t.owner == entity
+        t.rust!
       end
-      @just_rusted = true
+
       @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --" if rusted_trains.any?
     end
 
