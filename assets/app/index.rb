@@ -7,19 +7,16 @@ class Index < Snabberb::Layout
 
       /* prevent hover effects on mobile devices */
       @media(hover: hover) and (pointer: fine) {
-        .button-link:hover {
+        .button:hover, .button-link:hover {
           background: black;
+          border-color: rgb(217, 210, 210);
           color: white;
         }
-        .button:hover {
-          background: black;
-          border: rgb(217, 210, 210);
-          color: white;
-        }
-        .button:active, .button-link:active {
+        .button, .button-link {
           outline: 0;
         }
-        .button:focus, .button-link:focus {
+        .button:active, .button-link:active, .button:focus, .button-link:focus {
+          outline: 0;
           opacity: 0.8;
         }
         a.nav:hover, a.default-bg:hover {
