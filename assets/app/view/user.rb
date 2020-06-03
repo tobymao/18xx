@@ -37,6 +37,7 @@ module View
               render_bg_color(@user&.dig(:settings, :bg_color)),
               render_font_color(@user&.dig(:settings, :font_color)),
             ]),
+            render_button('Use Default Colors') { reset_colors },
             render_button('Save Changes') { submit },
             render_button('Logout') { logout },
           ]]
@@ -59,6 +60,12 @@ module View
       end
 
       h(:div, children)
+    end
+
+    def reset_colors
+      @inputs.delete(:font_color)
+      @inputs.delete(:bg_color)
+      submit
     end
 
     def render_notifications(checked = true)

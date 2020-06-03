@@ -75,7 +75,7 @@ module View
         on: { click: block },
       }
 
-      h(:button, props, text)
+      h('button.button', props, text)
     end
   end
 end
