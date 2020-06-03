@@ -12,12 +12,15 @@ class Index < Snabberb::Layout
           color: white;
         }
         .button:hover {
-          background-color: black;
-          border-color: rgb(217, 210, 210);
+          background: black;
+          border: rgb(217, 210, 210);
           color: white;
         }
-        .button, .button-link {
-          outline-style: none;
+        .button:active, .button-link:active {
+          outline: 0;
+        }
+        .button:focus, .button-link:focus {
+          opacity: 0.8;
         }
         a.nav:hover, a.default-bg:hover {
           text-decoration: underline dotted;
@@ -26,7 +29,7 @@ class Index < Snabberb::Layout
         #logo a:hover {
           opacity: 0.8;
         }
-        a:active, a:focus {
+        a:active {
           outline: 0;
         }
       }
