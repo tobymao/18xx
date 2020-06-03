@@ -150,22 +150,10 @@ module View
 
     private
 
-    def render_title
+    def render_title(flash = true)
       title = "#{@game.class.title} - #{@game.id} - 18xx.games"
+      title = "* #{title}" if @game.active_player_names.include?(@user&.dig(:name))
       `document.title = #{title}`
-      flash_turn
-    end
-
-    def flash_turn
-      return unless @game.active_player_names.include?(@user&.dig(:name))
-
-      %x{
-        setTimeout(function() {
-          document.title = "-- Your Turn --"
-
-          setTimeout(function() { self.$render_title() }, 1500)
-        }, 1500)
-      }
     end
 
     def tabs
