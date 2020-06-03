@@ -422,7 +422,7 @@ module Engine
         end
 
         price = entity.next_token&.price || 0
-        action.city.place_token(entity)
+        action.city.place_token(entity, free: @teleported)
         if price.positive? && !@teleported
           entity.spend(price, @bank)
           price_log = " for #{@game.format_currency(price)}"
