@@ -61,10 +61,12 @@ module Engine
       @phases = phases
       @game = game
       @log = @game.log
+      @just_rusted = false
       setup_phase!
     end
 
     def process_action(action)
+      @just_rusted = false
       case action
       when Action::BuyTrain
         train = action.train
@@ -81,6 +83,11 @@ module Engine
       return false unless phase_name
 
       @phases.find_index { |phase| phase[:name] == phase_name } <= @index
+    end
+
+    # Did the last action cause a rust?
+    def just_rusted?
+      @just_rusted
     end
 
     def setup_phase!
@@ -141,7 +148,7 @@ module Engine
           t.rust!
         end
       end
-
+      @just_rusted = true
       @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --" if rusted_trains.any?
     end
 

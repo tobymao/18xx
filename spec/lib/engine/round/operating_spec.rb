@@ -194,6 +194,68 @@ module Engine
             expect(available.size).to eq(1)
           end
         end
+
+        describe 'buy_train' do
+          context 'with 1889 rules' do
+            it 'allows purchasing with emergency funds if must buy' do
+              train = subject.buyable_trains.first
+              subject.process_action(Action::LayTile.new(corporation, Tile.for('5'), hex_k8, 3))
+              expect(subject.must_buy_train?).to be true
+              corporation.cash = 1
+              subject.process_action(Action::BuyTrain.new(corporation, train, train.price))
+            end
+            it 'does not allow purchasing with emergency funds if no need to buy' do
+              train = subject.buyable_trains.first
+              subject.process_action(Action::LayTile.new(corporation, Tile.for('5'), hex_k8, 3))
+              subject.process_action(Action::BuyTrain.new(corporation, train, train.price))
+              expect(subject.must_buy_train?).to be false
+              corporation.cash = 1
+              train = subject.buyable_trains.first
+              action = Action::BuyTrain.new(corporation, train, train.price)
+              expect { subject.process_action(action) }.to raise_error GameError
+            end
+            it 'causes a rust event when buying the first 4' do
+              train = subject.buyable_trains.first
+              subject.process_action(Action::LayTile.new(corporation, Tile.for('5'), hex_k8, 3))
+              subject.process_action(Action::BuyTrain.new(corporation, train, train.price))
+              expect(subject.must_buy_train?).to be false
+
+              # Move to 4 trains to cause a rust event
+              while (train = subject.buyable_trains.first).name != '4'
+                subject.depot.remove_train(train)
+                corporation2.buy_train(train, train.price)
+                corporation2.cash = 1000
+              end
+
+              corporation.cash = 1000
+              train = subject.buyable_trains.first
+              action = Action::BuyTrain.new(corporation, train, train.price)
+              game.phase.process_action(action)
+              subject.process_action(action)
+              expect(corporation.trains.size).to eq(1)
+            end
+
+            it 'does not allow purchasing with emergency funds if no need to buy even if it causes a rusting' do
+              train = subject.buyable_trains.first
+              subject.process_action(Action::LayTile.new(corporation, Tile.for('5'), hex_k8, 3))
+              subject.process_action(Action::BuyTrain.new(corporation, train, train.price))
+              expect(subject.must_buy_train?).to be false
+
+              # Move to 4 trains to cause a rust event
+              while (train = subject.buyable_trains.first).name != '4'
+                subject.depot.remove_train(train)
+                corporation2.buy_train(train, train.price)
+                corporation2.cash = 1000
+              end
+
+              corporation.cash = 1
+              train = subject.buyable_trains.first
+              action = Action::BuyTrain.new(corporation, train, train.price)
+              game.phase.process_action(action)
+              expect { subject.process_action(action) }.to raise_error GameError
+            end
+          end
+        end
       end
     end
 
