@@ -70,6 +70,8 @@ class Index < Snabberb::Layout
 
       .button, .button-link {
         font-size: 14px;
+        background: whitesmoke;
+        color: black;
         border: solid 1px black;
         border-radius: 5px;
         padding: 0.2rem 1rem;

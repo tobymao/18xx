@@ -28,7 +28,7 @@ module View
           ['Login', [
             render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
             render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
-            h(:div, [render_button('Login') { submit }]),
+            h(:div, { style: { 'margin-bottom': '1rem' } }, [render_button('Login') { submit }]),
             h('a.default-bg', { attrs: { href: '/forgot' } }, 'Forgot Password'),
           ]]
         when :profile
