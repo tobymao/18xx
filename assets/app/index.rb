@@ -123,6 +123,18 @@ class Index < Snabberb::Layout
       @media only screen and (min-width: 900px) {
         .half { width: 49%; }
       }
+
+      #settings__theme * {
+        vertical-align: middle;
+      }
+      #settings__theme__preview {
+        display: inline-block;
+      }
+      .color-square {
+        display: inline-block;
+        height: 2rem;
+        width: 2rem;
+      }
     CSS
 
     view_port = {

@@ -2,7 +2,9 @@
 
 require 'game_manager'
 require 'user_manager'
+require 'lib/theme'
 require 'view/game_row'
+require 'view/hex'
 require 'view/logo'
 require 'view/form'
 
@@ -34,14 +36,17 @@ module View
         when :profile
           ['Profile Settings', [
             render_notifications(@user&.dig(:settings, :notifications)),
-            h(:div, [
+            h('div#settings__colors', [
               render_color(:bg_color, 'Background Color', @user&.dig(:settings, :bg_color), '#ffffff'),
               render_color(:font_color, 'Font Color', @user&.dig(:settings, :font_color), '#000000'),
               render_logo_color(@user&.dig(:settings, :red_logo)),
             ]),
-            render_button('Save Changes') { submit },
-            render_button('Use Default Colors') { reset_colors },
-            h(:div, [
+            render_theme_picker(@user&.dig(:settings, :theme) || 'T_18XXGAMES'),
+            h('div#settings__buttons', [
+              render_button('Save Changes') { submit },
+              render_button('Reset to Defaults') { reset_colors },
+            ]),
+            h('div#settings__logout', [
               render_button('Logout') { logout },
             ]),
           ]]
@@ -70,6 +75,7 @@ module View
       @inputs.delete(:font_color)
       @inputs.delete(:bg_color)
       @inputs.delete(:red_logo)
+      @inputs.delete(:theme)
       submit
     end
 
@@ -85,6 +91,31 @@ module View
         type: :checkbox,
         attrs: { checked: red_logo },
       )
+    end
+
+    def render_theme_picker(theme)
+      themes = Theme.constants.map do |t|
+        props = { attrs: { value: t } }
+        props[:attrs]['selected'] = 'theme' if t == theme
+        h(:option, props, Theme.const_get(t)['title'])
+      end
+
+      children = [
+        render_input(
+          'Theme',
+          id: 'theme',
+          el: 'select',
+          children: themes,
+          attrs: { 'id': 'settings__theme__picker' },
+        ),
+      ]
+
+      color_squares = View::Hex::COLOR.map do |color, _value|
+        h("div.color-square.#{color}", style: { 'background-color': Theme.const_get(theme)[color] })
+      end
+
+      children << h('div#settings__theme__preview', color_squares)
+      h('div#settings__theme', children)
     end
 
     def render_notifications(checked = true)
