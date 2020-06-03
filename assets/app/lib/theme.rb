@@ -31,17 +31,6 @@ module Lib
       halt: '#666',
     }.freeze
 
-    # previous color scheme from hex.rb => T_18XX_GAMES
-    COLOR = {
-      white: '#EAE0C8',
-      yellow: '#fde900',
-      green: '#71bf44',
-      brown: '#cb7745',
-      gray: '#bcbdc0',
-      red: '#ec232a',
-      blue: '#00f',
-    }.freeze
-
     T_18XX_GAMES = {
       title: '18xx.Games',
       yellow: '#fde900',

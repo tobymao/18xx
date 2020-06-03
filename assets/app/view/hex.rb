@@ -44,7 +44,7 @@ module View
         attrs: {
           id: "hex-#{@hex.coordinates}",
           transform: transform,
-          fill: Lib::Theme.const_get(theme)[@tile&.color || 'plain'],
+          fill: Lib::Theme.const_get(theme)[@tile&.color || 'white'],
           stroke: 'black',
           opacity: opacity(layable),
           cursor: clickable ? 'pointer' : nil,
