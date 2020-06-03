@@ -10,8 +10,8 @@ module View
     def render
       h(:div, [
         h(UndoAndPass, pass: false),
-        h('button.margined', { on: { click: -> { dividend('payout') } } }, 'Payout'),
-        h('button.margined', { on: { click: -> { dividend('withhold') } } }, 'Withhold'),
+        h('button.button.margined', { on: { click: -> { dividend('payout') } } }, 'Payout'),
+        h('button.button.margined', { on: { click: -> { dividend('withhold') } } }, 'Withhold'),
       ])
     end
 

@@ -68,10 +68,12 @@ module View
 
       children = []
       unless @round.must_sell?
-        children << h('button.margined_half', { on: { click: buy_ipo } }, 'Buy IPO Share') if @round.can_buy?(ipo_share)
+        if @round.can_buy?(ipo_share)
+          children << h('button.button.margined_half', { on: { click: buy_ipo } }, 'Buy IPO Share')
+        end
 
         if @round.can_buy?(pool_share)
-          children << h('button.margined_half', { on: { click: buy_pool } }, 'Buy Market Share')
+          children << h('button.button.margined_half', { on: { click: buy_pool } }, 'Buy Market Share')
         end
 
         # Allow privates to be exchanged for shares
@@ -84,11 +86,11 @@ module View
             process_action(Engine::Action::BuyShare.new(company, ipo_share))
           end
           children << if company.owner == @current_entity
-                        h(:button, { on: { click: exchange } },
+                        h('button.button', { on: { click: exchange } },
                           "Exchange #{company.name} for Share")
                       else
                         # This can be done outside of a players turn, but make it clear who owns it
-                        h(:button, { on: { click: exchange } },
+                        h('button.button', { on: { click: exchange } },
                           "#{company.owner.name} exchanges #{company.name} for Share")
                       end
         end
