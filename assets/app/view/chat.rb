@@ -20,9 +20,7 @@ module View
 
       @log ||= []
 
-      children = [
-        h(Log, log: @log),
-      ]
+      children = [h(Log, log: @log)]
 
       enter = lambda do |event|
         event = Native(event)

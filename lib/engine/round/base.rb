@@ -15,6 +15,7 @@ module Engine
         @log = game.log
         @current_entity = @entities.first
         @end_game = false
+        @round_num = 1
       end
 
       def log_new_round
@@ -44,6 +45,10 @@ module Engine
       def next_entity
         index = @entities.find_index(@current_entity) + 1
         index < @entities.size ? @entities[index] : @entities[0]
+      end
+
+      def turn_round_num
+        [@game.turn, @round_num]
       end
 
       def pass(action)

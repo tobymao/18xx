@@ -27,8 +27,12 @@ class App < Snabberb::Component
     props = {
       props: { id: 'app' },
       style: {
-        padding: '0.5rem',
+        'background-color': @user&.dig(:settings, :bg_color) || 'inherit',
+        color: @user&.dig(:settings, :font_color) || 'currentColor',
         margin: :auto,
+        'min-height': '98vh',
+        padding: '0.5rem',
+        transition: 'all 1s ease',
       },
     }
 

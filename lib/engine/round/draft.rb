@@ -33,7 +33,7 @@ module Engine
       end
 
       def only_one_company?
-        @companies.size <= @draw_size && @companies.one? { |company| !blank?(company) }
+        @companies.one? && !blank?(@companies[0])
       end
 
       def name
@@ -85,11 +85,6 @@ module Engine
       end
 
       def action_finalized(_action)
-        if only_one_company?
-          @log << 'One company remaining'
-          @companies.reject! { |company| blank?(company) }
-        end
-
         return unless finished?
 
         @choices.each do |player, companies|

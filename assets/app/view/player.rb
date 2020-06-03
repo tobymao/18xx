@@ -21,6 +21,7 @@ module View
       if @game.round.can_act?(@player)
         card_style['border'] = 'solid 1px black'
         card_style['background-color'] = '#dfd'
+        card_style['color'] = 'black'
       end
 
       divs = [
@@ -85,7 +86,7 @@ module View
       td_cert_props = {
         style: {
           padding: '0 0.5rem',
-          color: num_certs > cert_limit ? 'red' : 'black',
+          color: num_certs > cert_limit ? 'red' : 'currentColor',
         },
       }
 

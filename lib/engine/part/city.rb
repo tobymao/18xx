@@ -64,8 +64,8 @@ module Engine
         end
       end
 
-      def place_token(corporation)
-        raise GameError, "#{corporation.name} cannot lay token on #{id}" unless tokenable?(corporation)
+      def place_token(corporation, free: false)
+        raise GameError, "#{corporation.name} cannot lay token on #{id}" unless tokenable?(corporation, free: free)
 
         token = corporation.next_token
         token.use!

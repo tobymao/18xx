@@ -52,7 +52,7 @@ module View
           if hist[x]
             props = {
               style: {
-                color: hist[x].dividend.kind == 'withhold' ? '#aaa' : 'black',
+                opacity: hist[x].dividend.kind == 'withhold' ? '0.5' : '1.0',
                 padding: '0 0.15rem',
               },
             }
@@ -86,6 +86,7 @@ module View
           h(:th, props, 'IPO'),
           h(:th, props, 'Market'),
           h(:th, props, 'Cash'),
+          h(:th, props, 'Operating Order'),
           h(:th, props, 'Trains'),
           h(:th, props, 'Tokens'),
           h(:th, props, 'Privates'),
@@ -96,10 +97,16 @@ module View
     end
 
     def render_corporations
-      @game.corporations.map { |c| render_corporation(c) }
+      current_round = @game.round.turn_round_num
+
+      floated_corporations = @game.round.entities
+      @game.corporations.map do |c|
+        operating_order = (floated_corporations.find_index(c) || -1) + 1
+        render_corporation(c, operating_order, current_round)
+      end
     end
 
-    def render_corporation(corporation)
+    def render_corporation(corporation, operating_order, current_round)
       name_props =
         {
           style: {
@@ -117,6 +124,14 @@ module View
         market_props[:style]['background-color'] = Lib::Color.convert_hex_to_rgba(color, 0.4)
       end
 
+      operating_order_text = ''
+      if operating_order.positive?
+        operating_order_text = operating_order.to_s
+        corporation.operating_history.each do |history|
+          operating_order_text += '*' if history[0] == current_round
+        end
+      end
+
       h(:tr, props, [
         h(:th, name_props, corporation.name),
         *@game.players.map do |p|
@@ -129,6 +144,7 @@ module View
         h(:td, corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
         h(:td, market_props, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
         h(:td, @game.format_currency(corporation.cash)),
+        h(:td, operating_order_text),
         h(:td, corporation.trains.map(&:name).join(',')),
         h(:td, "#{corporation.tokens.map { |t| t.used? ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
         render_companies(corporation),

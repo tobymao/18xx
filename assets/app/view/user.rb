@@ -3,6 +3,7 @@
 require 'game_manager'
 require 'user_manager'
 require 'view/game_row'
+require 'view/logo'
 require 'view/form'
 
 module View
@@ -27,16 +28,22 @@ module View
           ['Login', [
             render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
             render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
-            h(:div, [render_button('Login') { submit }]),
-            h(:a, { attrs: { href: '/forgot' } }, 'Forgot Password'),
+            h(:div, { style: { 'margin-bottom': '1rem' } }, [render_button('Login') { submit }]),
+            h('a.default-bg', { attrs: { href: '/forgot' } }, 'Forgot Password'),
           ]]
         when :profile
           ['Profile Settings', [
+            render_notifications(@user&.dig(:settings, :notifications)),
             h(:div, [
-              render_notifications(@user&.dig(:settings, :notifications)),
-              render_button('Save Changes') { submit },
+              render_color(:bg_color, 'Background Color', @user&.dig(:settings, :bg_color), '#ffffff'),
+              render_color(:font_color, 'Font Color', @user&.dig(:settings, :font_color), '#000000'),
+              render_logo_color(@user&.dig(:settings, :red_logo)),
             ]),
-            render_button('Logout') { logout },
+            render_button('Save Changes') { submit },
+            render_button('Use Default Colors') { reset_colors },
+            h(:div, [
+              render_button('Logout') { logout },
+            ]),
           ]]
         end
 
@@ -57,6 +64,27 @@ module View
       end
 
       h(:div, children)
+    end
+
+    def reset_colors
+      @inputs.delete(:font_color)
+      @inputs.delete(:bg_color)
+      @inputs.delete(:red_logo)
+      submit
+    end
+
+    def render_color(id, name, color, default)
+      color ||= default
+      render_input(name, id: id, type: :color, attrs: { value: color })
+    end
+
+    def render_logo_color(red_logo)
+      render_input(
+        'Alternative Red Logo',
+        id: :red_logo,
+        type: :checkbox,
+        attrs: { checked: red_logo },
+      )
     end
 
     def render_notifications(checked = true)

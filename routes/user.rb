@@ -20,7 +20,7 @@ class Api
             name: r['name'],
             email: r['email'],
             password: r['password'],
-            settings: { notifications: r['notifications'] },
+            settings: { notifications: r['notifications'], bg_color: r['bg_color'], font_color: r['font_color'] },
           }.reject { |_, v| v.empty? }
 
           login_user(User.create(params))
@@ -65,6 +65,9 @@ class Api
         # POST '/api/user/edit'
         r.post 'edit' do
           user.settings['notifications'] = r.params['notifications']
+          user.settings['bg_color'] = r.params['bg_color']
+          user.settings['font_color'] = r.params['font_color']
+          user.settings['red_logo'] = r.params['red_logo']
           user.save
           user.to_h(for_user: true)
         end

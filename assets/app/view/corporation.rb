@@ -28,9 +28,13 @@ module View
       if @game.round.can_act?(@corporation)
         card_style['border'] = 'solid 1px black'
         card_style['background-color'] = '#dfd'
+        card_style['color'] = 'black'
       end
 
-      card_style['background-color'] = 'lightblue' if selected?
+      if selected?
+        card_style['background-color'] = 'lightblue'
+        card_style['color'] = 'black'
+      end
 
       children = [
         render_title,
@@ -74,6 +78,7 @@ module View
         'text-align': 'center',
         'white-space': 'nowrap',
         'background-color': 'lightgray',
+        color: 'black',
         display: 'flex',
         'justify-content': 'center',
         margin: '0 -0.5rem',
