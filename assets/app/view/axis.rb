@@ -19,8 +19,8 @@ module View
     def render
       attrs = {
         'stroke-width': 1,
-        stroke: 'black',
-        fill: 'black',
+        stroke: 'currentColor',
+        fill: 'currentColor',
         'text-anchor': 'middle',
         'font-size': "#{@font_size}px",
       }

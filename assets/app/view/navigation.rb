@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/create_game'
+require 'view/logo'
 
 module View
   class Navigation < Snabberb::Component
@@ -8,13 +9,6 @@ module View
     needs :user, default: nil, store: true
 
     def render
-      props = {
-        style: {
-          padding: '1rem',
-          'box-shadow': '0 2px 0 0 gainsboro',
-        },
-      }
-
       other_links = [item('About', '/about')]
 
       if @user
@@ -24,34 +18,14 @@ module View
         other_links << item('Login', '/login')
       end
 
-      logo_props = {
-        attrs: {
-          src: '/images/logo.svg',
-        },
-        style: {
-          position: 'absolute',
-          top: '16px',
-          width: '80px',
-        },
-      }
-
-      h(:div, props, [
-        h(:a, { attrs: { href: '/' } }, [
-          h(:img, logo_props),
-        ]),
+      h('div#nav', [
+        h(Logo),
         render_other_links(other_links),
       ])
     end
 
     def item(name, href)
-      props = {
-        attrs: { href: href },
-        style: {
-          margin: '0 1rem',
-        },
-      }
-
-      h(:a, props, name)
+      h('a.nav', { attrs: { href: href } }, name)
     end
 
     def render_other_links(other_links)
@@ -59,13 +33,7 @@ module View
         link
       end
 
-      props = {
-        style: {
-          'text-align': 'right',
-        },
-      }
-
-      h(:div, props, children)
+      h(:div, children)
     end
   end
 end

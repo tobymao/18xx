@@ -5,6 +5,61 @@ class Index < Snabberb::Layout
     css = <<~CSS
       * { font-family: 'Inconsolata', monospace; }
 
+      a.nav, a.default-bg  {
+        color: currentColor;
+      }
+      a.nav:hover, a.default-bg:hover {
+        text-decoration: underline dotted;
+        opacity: 0.8;
+      }
+      a:active, a:focus {
+        outline: 0;
+      }
+      a.nav {
+        margin: 0 1rem;
+      }
+
+      #nav {
+        box-shadow: 0 2px 0 0 gainsboro;
+        display: flex;
+        justify-content: space-between;
+        line-height: 3rem;
+        padding: 0 1rem 0.5rem 1rem;
+      }
+      #logo a {
+        color: currentColor;
+        font-weight: bold;
+        text-decoration: none;
+      }
+      #logo a:hover {
+        opacity: 0.8;
+      }
+      #logo__18xx {
+        display: inline-block;
+        height: 3rem;
+        text-align: center;
+        width: 2.5rem;
+      }
+      #logo__18xx.yellow {
+        background: url(/images/logo_polygon_yellow.svg) left/2.5rem no-repeat;
+        color: black;
+      }
+      #logo__18xx.default, #logo__18xx.red {
+        background: url(/images/logo_polygon_red.svg) left/2.5rem no-repeat;
+        color: white;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: black;
+          color: white;
+        }
+        #logo__18xx.default {
+          background: url(/images/logo_polygon_yellow.svg) left/2.5rem no-repeat;
+          color: black;
+        }
+      }
+
       .card_header {
         font-size: 15px;
         font-weight: bold;
@@ -39,6 +94,7 @@ class Index < Snabberb::Layout
 
       .button:hover {
         background-color: black;
+        border-color: rgb(217, 210, 210);
         color: white;
       }
 
