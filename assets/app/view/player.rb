@@ -86,7 +86,7 @@ module View
       td_cert_props = {
         style: {
           padding: '0 0.5rem',
-          color: num_certs > cert_limit ? 'red' : 'black',
+          color: num_certs > cert_limit ? 'red' : 'currentColor',
         },
       }
 
