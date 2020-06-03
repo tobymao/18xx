@@ -9,13 +9,53 @@ module View
   class BuyTrains < Snabberb::Component
     include Actionable
     needs :show_other_players, default: nil, store: true
+    needs :selected_corporation, default: nil, store: true
+
+    def render_president_contributions
+      player = @corporation.owner
+
+      children = []
+
+      funds_required = @depot.min_depot_price - (@corporation.cash + player.cash)
+      if funds_required.positive?
+        liquidity = @game.liquidity(player, emergency: true)
+        children << h('div.margined',
+                      "To buy the cheapest train the president must raise #{@game.format_currency(funds_required)}"\
+                      ", and can sell #{@game.format_currency(liquidity - player.cash)} in shares")
+
+        props = {
+          style: {
+            display: 'inline-block',
+            'vertical-align': 'top',
+          },
+        }
+
+        player.shares_by_corporation.each do |corporation, shares|
+          next if shares.empty?
+
+          corp = [h(Corporation, corporation: corporation)]
+
+          corp << h(SellShares, player: @corporation.owner) if @selected_corporation == corporation
+
+          children << h(:div, props, corp)
+        end
+
+        children << render_bankruptcy
+      else
+        children << h('div.margined',
+                      'To buy the cheapest train the president must contribute'\
+                      " #{@game.format_currency(@depot.min_depot_price - @corporation.cash)}")
+      end
+
+      children
+    end
 
     def render
       round = @game.round
       @corporation = round.current_entity
       @depot = round.depot
 
-      available = @depot.available(@corporation).group_by(&:owner)
+      available = round.buyable_trains.group_by(&:owner)
       depot_trains = available.delete(@depot)
       other_corp_trains = available.sort_by { |c, _| c.owner == @corporation.owner ? 0 : 1 }
       children = []
@@ -24,10 +64,19 @@ module View
 
       children << h(:div, [h(UndoAndPass, pass: !must_buy_train)])
 
+      if must_buy_train
+
+        children << h('div.margined',
+                      "#{@corporation.name} must buy a train either from The Depot, The Discard"\
+                      "#{other_corp_trains.any? ? ' or other corporations' : ''}")
+
+        children += render_president_contributions if @corporation.cash < @depot.min_depot_price
+      end
+
       if (round.can_buy_train? && round.corp_has_room?) || round.must_buy_train?
         children << h('div.margined', 'Available Trains')
         children.concat(from_depot(depot_trains))
-        children.concat(other_trains(other_corp_trains)) unless @game.actions.last.is_a?(SellShares)
+        children.concat(other_trains(other_corp_trains)) if other_corp_trains.any?
       end
 
       discountable_trains = @depot.discountable_trains_for(@corporation)
@@ -51,20 +100,6 @@ module View
             "#{train.name} -> #{discount_train.name} #{@game.format_currency(price)}",
             h('button.margined', { on: { click: exchange_train } }, 'Exchange'),
           ])
-        end
-      end
-
-      if must_buy_train
-        player = @corporation.owner
-
-        if @corporation.cash + player.cash < @depot.min_depot_price
-          children << render_bankruptcy
-          player.shares_by_corporation.each do |corporation, shares|
-            next if shares.empty?
-
-            children << h(Corporation, corporation: corporation)
-          end
-          children << h(SellShares, player: @corporation.owner)
         end
       end
 
@@ -159,7 +194,7 @@ module View
         on: { click: resign },
       }
 
-      h(:button, props, 'Declare Bankruptcy')
+      h('button.margined', props, 'Declare Bankruptcy')
     end
   end
 end

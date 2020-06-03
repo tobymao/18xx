@@ -21,6 +21,11 @@ module Engine
           'tgg' => 600,
           'wery' => 1028,
         },
+        1638 => {
+          'jweines' => 6566,
+          'Scott Nicholson' => 6229,
+          'Twalker' => 5485,
+        },
       }.each do |game_id, result|
         it "#{game_id} matches result exactly" do
           data = JSON.parse(File.read("spec/fixtures/18_chesapeake/#{game_id}.json"))

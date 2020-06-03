@@ -99,7 +99,7 @@ module Engine
     def distance(player_a, player_b)
       return 0 if !player_a || !player_b
 
-      entities = @game.round.entities
+      entities = @game.players
       a = entities.find_index(player_a)
       b = entities.find_index(player_b)
       a < b ? b - a : b - (a - entities.size)
