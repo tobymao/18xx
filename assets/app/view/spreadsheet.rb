@@ -97,8 +97,7 @@ module View
     end
 
     def render_corporations
-      current_round = [@game.turn]
-      current_round << @game.round.round_num if @game.round.name == 'Operating Round'
+      current_round = @game.round.turn_round_num
 
       floated_corporations = @game.round.entities
       @game.corporations.map do |c|
@@ -128,7 +127,9 @@ module View
       operating_order_text = ''
       if operating_order.positive?
         operating_order_text = operating_order.to_s
-        operating_order_text += '*' if corporation_operated?(corporation, current_round)
+        corporation.operating_history.each do |history|
+          operating_order_text += '*' if history[0] == current_round
+        end
       end
 
       h(:tr, props, [
@@ -182,13 +183,6 @@ module View
         h(:th, 'Certs'),
         *@game.players.map { |p| h(:td, p.num_certs) },
       ])
-    end
-
-    def corporation_operated?(corporation, current_round)
-      corporation.operating_history.each do |history|
-        return true if history[0] == current_round
-      end
-      false
     end
   end
 end
