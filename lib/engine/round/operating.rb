@@ -235,6 +235,8 @@ module Engine
 
       def _process_action(action)
         entity = action.entity
+        # default operating action is to payout 0, i.e. withhold
+        or_info = OperatingInfo.new([], Action::Dividend.new(@game.current_entity, 'withhold'), 0)
 
         case action
         when Action::LayTile
@@ -270,7 +272,6 @@ module Engine
         when Action::Dividend
           revenue = @current_routes.sum(&:revenue)
           or_info = OperatingInfo.new(@current_routes, action, revenue)
-          @current_entity.add_operating_info!(@game.turn, @round_num, or_info)
           @current_routes = []
 
           case action.kind
@@ -296,6 +297,8 @@ module Engine
         when Action::Bankrupt
           liquidate(entity.owner)
         end
+
+        @current_entity.add_operating_info!(@game.turn, @round_num, or_info)
       end
 
       def start_operating
