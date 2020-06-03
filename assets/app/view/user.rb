@@ -4,7 +4,6 @@ require 'game_manager'
 require 'user_manager'
 require 'lib/theme'
 require 'view/game_row'
-require 'view/hex'
 require 'view/logo'
 require 'view/form'
 
@@ -41,7 +40,7 @@ module View
               render_color(:font_color, 'Font Color', @user&.dig(:settings, :font_color), '#000000'),
               render_logo_color(@user&.dig(:settings, :red_logo)),
             ]),
-            render_theme_picker(@user&.dig(:settings, :theme) || 'T_18XXGAMES'),
+            render_theme_picker(@user&.dig(:settings, :theme) || 'T_18XX_GAMES'),
             h('div#settings__buttons', [
               render_button('Save Changes') { submit },
               render_button('Reset to Defaults') { reset_settings },
@@ -110,7 +109,7 @@ module View
         ),
       ]
 
-      color_squares = View::Hex::COLOR.map do |color, _value|
+      color_squares = Lib::Theme::COLOR.map do |color, _value|
         h("div.color-square.#{color}", style: { 'background': Lib::Theme.const_get(theme)[color] || 'transparent' })
       end
 

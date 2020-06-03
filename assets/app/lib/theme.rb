@@ -2,25 +2,24 @@
 
 # Themes taken from
 # https://github.com/18xx-maker/18xx-maker/tree/master/src/data/themes/maps
-# except for T_18XXGAMES and T_JCL
+# except for T_18XX_GAMES and T_JCL
 
 module Lib
   module Theme
-    T_18CHESAPEAKE = {
+    T_18_CHESAPEAKE = {
       title: '18Chesapeake',
       yellow: '#fde900',
       green: '#71bf44',
       brown: '#cb7745',
       gray: '#bcbdc0',
-      plain: '#d1e2c2',
+      white: '#d1e2c2',
       map_gray: '#f1f1d9',
       map_water: '#c2dee7',
       offboard: '#d6a086',
       mountain: '#0d6335',
-      water: '#445674',
+      blue: '#445674',
       land: '#a8c3a2',
       river: '#cde1cc',
-      white: '#f1f1d9',
       black: '#000',
       orange: '#f47d20',
       red: '#ec2126',
@@ -32,21 +31,31 @@ module Lib
       halt: '#666',
     }.freeze
 
-    T_18XXGAMES = {
+    # previous color scheme from hex.rb => T_18XX_GAMES
+    COLOR = {
+      white: '#EAE0C8',
+      yellow: '#fde900',
+      green: '#71bf44',
+      brown: '#cb7745',
+      gray: '#bcbdc0',
+      red: '#ec232a',
+      blue: '#00f',
+    }.freeze
+
+    T_18XX_GAMES = {
       title: '18xx.Games',
       yellow: '#fde900',
       green: '#71bf44',
       brown: '#cb7745',
       gray: '#bcbdc0',
-      plain: '#EAE0C8',
+      white: '#EAE0C8',
       offboard: '#ec232a',
       mountain: '#eae0c8',
-      water: 'rgb(154, 192, 205)',
+      blue: '#00f',
       land: '#59b578',
       river: 'rgb(154, 192, 205)',
       orange: '#f58121',
       red: '#ec232a',
-      white: '#ffffff',
       black: '#000000',
       track: '#000000',
       border: '#ffffff',
@@ -56,9 +65,9 @@ module Lib
       halt: '#666',
     }.freeze
 
-    T_BROGGLES1817 = {
+    T_BROGGLES_1817 = {
       title: 'Broggles 1817',
-      plain: '#e3bd00',
+      white: '#e3bd00',
       yellow: '#f9b231',
       green: '#2aac65',
       brown: '#ac4f3e',
@@ -67,10 +76,9 @@ module Lib
       map_water: '#34a9e1',
       offboard: '#be111f',
       mountain: '#3a3a39',
-      water: '#34a9e1',
+      blue: '#34a9e1',
       land: '#e3bd00',
       river: '#34a9e1',
-      white: '#3a3a39',
       black: '#f6f6f6',
       orange: '#f47d20',
       red: '#be111f',
@@ -82,9 +90,9 @@ module Lib
       halt: '#f6f6f6',
     }.freeze
 
-    T_BROGGLES1836JR = {
+    T_BROGGLES_1836_JR = {
       title: 'Broggles 1836jr',
-      plain: '#3b3c91',
+      white: '#3b3c91',
       yellow: '#f7ee83',
       green: '#7c9e81',
       brown: '#d28979',
@@ -93,10 +101,9 @@ module Lib
       map_water: '#2b90be',
       offboard: '#c6473d',
       mountain: '#f3aa48',
-      water: '#2b90be',
+      blue: '#2b90be',
       land: '#3b3c91',
       river: '#1b4f6c',
-      white: '#3b3c91',
       black: '#ececec',
       orange: '#f3aa48',
       red: '#c6473d',
@@ -108,24 +115,23 @@ module Lib
       halt: '#3b3c91',
     }.freeze
 
-    T_BROGGLES1849 = {
+    T_BROGGLES_1849 = {
       title: 'Broggles 1849',
       yellow: '#ddd38e',
       green: '#006836',
       brown: '#5f360d',
       gray: '#7e8080',
-      plain: '#7d9b77',
+      white: '#7d9b77',
       offboard: '#d95236',
       mountain: '#f6a012',
-      water: '#9dcbe8',
+      blue: '#9dcbe8',
       land: '#7d9b77',
       river: '#9dcbe8',
       orange: '#f6a012',
       red: '#d95236',
-      white: '#fff',
       black: '#3f1f0c',
       halt: '#3f1f0c',
-      border_plain: '#7d9b77',
+      border_white: '#7d9b77',
       border_yellow: '#e2d76d',
       border_green: '#006836',
       border_brown: '#5f360d',
@@ -143,29 +149,29 @@ module Lib
       tile_border_brown: '#3f1f0c',
       tile_border_gray: '#3f1f0c',
       track_default: '#3f1f0c',
-      track_plain: '#3f1f0c',
+      track_white: '#3f1f0c',
       track_yellow: '#d8bf30',
       track_green: '#024f28',
       track_brown: '#5f360d',
       track_gray: '#494948',
       town_default: '#3f1f0c',
-      town_plain: '#3f1f0c',
+      town_white: '#3f1f0c',
       town_yellow: '#d8bf30',
       town_green: '#024f28',
       town_brown: '#5f360d',
       town_gray: '#494948',
-      center_town_plain: '#3f1f0c',
+      center_town_white: '#3f1f0c',
       center_town_default: '#3f1f0c',
       city_default: '#ffffff',
-      city_plain: '#ffffff',
+      city_white: '#ffffff',
       city_yellow: '#ffffff',
       city_green: '#ffffff',
       city_brown: '#ffffff',
     }.freeze
 
-    T_BROGGLES18EU = {
+    T_BROGGLES_18EU = {
       title: 'Broggles 18EU',
-      plain: '#b5e864',
+      white: '#b5e864',
       yellow: '#fedc47',
       green: '#92c361',
       brown: '#bc5f40',
@@ -174,10 +180,9 @@ module Lib
       map_water: '#3ca3dc',
       offboard: '#be111f',
       mountain: '#6e6e6e',
-      water: '#3ca3dc',
+      blue: '#3ca3dc',
       land: '#92c361',
       river: '#5ac5f2',
-      white: '#f1f1d9',
       black: '#4e4039',
       orange: '#f47d20',
       red: '#be111f',
@@ -189,9 +194,9 @@ module Lib
       halt: '#4e4039',
     }.freeze
 
-    T_BROGGLES18TK = {
+    T_BROGGLES_18TK = {
       title: 'Broggles 18TK',
-      plain: '#cabb9f',
+      white: '#cabb9f',
       yellow: '#dedc00',
       green: '#008d34',
       brown: '#936745',
@@ -200,10 +205,9 @@ module Lib
       map_water: '#009ee3',
       offboard: '#be3641',
       mountain: '#3a3a39',
-      water: '#009ee3',
+      blue: '#009ee3',
       land: '#cabb9f',
       river: '#009ee3',
-      white: '#f1f1d9',
       black: '#000',
       orange: '#f47d20',
       red: '#be3641',
@@ -215,9 +219,9 @@ module Lib
       halt: '#181716',
     }.freeze
 
-    T_BROGGLESMEX = {
+    T_BROGGLES_MEX = {
       title: 'Broggles T_MEX',
-      plain: '#e4904f',
+      white: '#e4904f',
       yellow: '#fac75a',
       green: '#58b060',
       brown: '#594a41',
@@ -226,10 +230,9 @@ module Lib
       map_water: '#539e97',
       offboard: '#dc5136',
       mountain: '#d8bda0',
-      water: '#4b978f',
+      blue: '#4b978f',
       land: '#e4904d',
       river: '#4bb693',
-      white: '#f1f1d9',
       black: '#262262',
       orange: '#f47d20',
       red: '#dc5136',
@@ -241,24 +244,23 @@ module Lib
       halt: '#262262',
     }.freeze
 
-    T_CARTHAGINIAN = {
+    T_CARTH = {
       title: 'Carthaginian',
       yellow: '#fdcb09',
       green: '#0aa99e',
       brown: '#cc6b2d',
       gray: '#c1c5c6',
-      plain: '#f2f4e8',
+      white: '#f2f4e8',
       offboard: '#dc8281',
       mountain: '#997749',
-      water: '#4cb2d7',
+      blue: '#4cb2d7',
       land: '#dfe2c7',
       river: '#c5e2e3',
       orange: '#f48221',
       red: '#dc8281',
-      white: '#fefffe',
       black: '#37383a',
       halt: 'rgb(102,102,102)',
-      border_plain: '#f2f4e8',
+      border_white: '#f2f4e8',
       border_yellow: '#fdcb09',
       border_green: '#0aa99e',
       border_brown: '#cc6b2d',
@@ -276,7 +278,7 @@ module Lib
       tile_border_brown: '#d9ddba',
       tile_border_gray: '#babe81',
       track_default: '#37383a',
-      track_plain: '#b9bf81',
+      track_white: '#b9bf81',
       track_yellow: '#bc9806',
       track_green: '#4a7522',
       track_brown: '#743c0a',
@@ -286,10 +288,10 @@ module Lib
       town_brown: '#743c0a',
       town_gray: '#37383a',
       town_offboard: '#37383a',
-      center_town_plain: '#b9bf81',
+      center_town_white: '#b9bf81',
       center_town_default: '#37383a',
       city_default: '#dde1e2',
-      city_plain: '#fefffe',
+      city_white: '#fefffe',
       city_yellow: '#f9faf4',
       city_green: '#f1f3e6',
       city_brown: '#eaedda',
@@ -297,17 +299,16 @@ module Lib
 
     T_DTG = {
       title: 'DTG',
-      plain: '#cfe6c5',
+      white: '#cfe6c5',
       yellow: '#fde900',
       green: '#71bf44',
       brown: '#cb7745',
       gray: '#bcbdc0',
       offboard: '#ec232a',
       mountain: '#cd8c5e',
-      water: '#147ebe',
+      blue: '#147ebe',
       land: '#8da98c',
       river: '#9ccac3',
-      white: '#fff',
       black: '#000',
       orange: '#f47d20',
       red: '#ec232a',
@@ -325,15 +326,14 @@ module Lib
       green: '#59b578',
       brown: '#bf8156',
       gray: '#a9afb2',
-      plain: '#fcefde',
+      white: '#fcefde',
       offboard: '#ec2126',
       mountain: '#d1ae85',
-      water: '#67a7c4',
+      blue: '#67a7c4',
       land: '#59b578',
       river: '#d4dbd7',
       orange: '#f58121',
       red: '#d1232a',
-      white: '#fff',
       black: '#110a0c',
       track: '#110a0c',
       border: '#fff',
@@ -349,14 +349,13 @@ module Lib
       green: '#91be2e',
       brown: '#d46c27',
       gray: '#513210',
-      plain: '#f3de6c',
+      white: '#f3de6c',
       mountain: '#513210',
-      water: '#0c1977',
+      blue: '#0c1977',
       land: '#1a3426',
       river: '#b4a86f',
       orange: '#f58121',
       offboard: '#ec232a',
-      white: '#fff',
       black: '#110a0c',
       track: '#110a0c',
       border: '#fff',
@@ -372,15 +371,14 @@ module Lib
       green: 'rgb(79, 153, 35)',
       brown: 'rgb(183, 109, 49)',
       gray: 'rgb(192,192,192)',
-      plain: 'rgb(255,255,230)',
+      white: 'rgb(255,255,230)',
       offboard: 'rgb(255,70,91)',
       mountain: '#d1ae85',
-      water: 'rgb(154, 192, 205)',
+      blue: 'rgb(154, 192, 205)',
       land: '#59b578',
       river: 'rgb(154, 192, 205)',
       orange: '#f58121',
       red: '#d1232a',
-      white: '#fff',
       black: '#110a0c',
       track: '#110a0c',
       border: '#fff',
@@ -392,17 +390,16 @@ module Lib
 
     T_PS18XX = {
       title: 'PS18xx',
-      plain: '#f5f5dd',
+      white: '#f5f5dd',
       yellow: '#fffe03',
       green: '#64e164',
       brown: '#ce6601',
       gray: '#bebebe',
       offboard: '#fe6464',
       mountain: '#ee874b',
-      water: '#2090ff',
+      blue: '#2090ff',
       land: '#0a0',
       river: '#bbd9e6',
-      white: '#fff',
       black: '#000',
       orange: '#ffa500',
       red: '#fe6464',
@@ -413,10 +410,5 @@ module Lib
       city: '#fff',
       halt: '#666',
     }.freeze
-
-    def color(feature)
-      theme = @user&.dig(:settings, :theme) || 'T_BROGGLES1817'
-      const_get(theme)[feature]
-    end
   end
 end

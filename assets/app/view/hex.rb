@@ -19,21 +19,12 @@ module View
       pointy: [SIZE * Math.sqrt(3) / 2, SIZE * 3 / 2],
     }.freeze
 
-    COLOR = {
-      plain: '#EAE0C8',
-      yellow: '#fde900',
-      green: '#71bf44',
-      brown: '#cb7745',
-      gray: '#bcbdc0',
-      red: '#ec232a',
-      water: '#00f',
-    }.freeze
-
     needs :hex
     needs :round, default: nil
     needs :tile_selector, default: nil, store: true
     needs :role, default: :map
     needs :opacity, default: nil
+    needs :user, default: nil, store: true
 
     def render
       children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
@@ -47,11 +38,13 @@ module View
 
       clickable = layable || @role == :tile_selector
 
+      theme = @user&.dig(:settings, :theme) || 'T_18XX_GAMES'
+
       props = {
         attrs: {
           id: "hex-#{@hex.coordinates}",
           transform: transform,
-          fill: Lib::Theme.color(@tile&.color || 'plain'),
+          fill: Lib::Theme.const_get(theme)[@tile&.color || 'plain'],
           stroke: 'black',
           opacity: opacity(layable),
           cursor: clickable ? 'pointer' : nil,
