@@ -42,9 +42,11 @@ module Engine
         company: 'Companies',
       }.freeze
 
-      def initialize(entities, game:, round_num: 1)
+      def initialize(entities, game:, round_num: 1, **opts)
         super
         @round_num = round_num
+        @ebuy_pres_swap = opts[:ebuy_pres_swap].nil? ? true : opts[:ebuy_pres_swap]
+        @ebuy_other_value = opts[:ebuy_other_value].nil? ? true : opts[:ebuy_other_value]
         @hexes = game.hexes
         @phase = game.phase
         @bank = game.bank
@@ -54,6 +56,7 @@ module Engine
         @share_pool = game.share_pool
         @graph = game.graph
         @just_sold_company = nil
+        @last_share_sold_price = nil
         @bankrupt = false
 
         @step = self.class::STEPS.first
@@ -98,9 +101,31 @@ module Engine
       end
 
       def must_buy_train?
-        # TODO: this is a hack and doesn't actually check reachable cities
-        # OO tiles and other complex track will break this
-        @current_entity.trains.empty? && route?
+        !@current_entity.rusted_self && @current_entity.trains.empty? && route?
+      end
+
+      def buyable_trains
+        depot_trains = @depot.depot_trains
+        other_trains = @depot.other_trains(current_entity)
+
+        # If the corporation cannot buy a train, then it can only buy the cheapest available
+        min_depot_train = @depot.min_depot_train
+        if min_depot_train.price > current_entity.cash
+          depot_trains = [min_depot_train]
+
+          if @last_share_sold_price
+            # 1889, a player cannot contribute to buy a train from another corporation
+            return depot_trains unless @ebuy_other_value
+
+            # 18Chesapeake and most others, it's legal to buy trains from other corps until
+            # if the player has just sold a share they can buy a train between cash-price_last_share_sold and cash
+            # e.g. If you had $40 cash, and if the train costs $100 and you've sold a share for $80,
+            # you now have $120 cash the $100 train should still be available to buy
+            min_available_cash = (current_entity.cash + current_entity.owner.cash) - @last_share_sold_price
+            return depot_trains + (other_trains.reject { |x| x.price < min_available_cash })
+          end
+        end
+        depot_trains + other_trains
       end
 
       def route?
@@ -141,7 +166,8 @@ module Engine
 
         # Can't swap presidency
         corporation = bundle.corporation
-        if corporation.president?(player)
+        if corporation.president?(player) &&
+          (!@ebuy_pres_swap || corporation == @current_entity)
           share_holders = corporation.share_holders
           remaining = share_holders[player] - bundle.percent
           next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
@@ -265,9 +291,11 @@ module Engine
           end
         when Action::BuyTrain
           buy_train(entity, action.train, action.price, action.exchange)
+          @last_share_sold_price = nil
         when Action::DiscardTrain
           discard_train(action)
         when Action::SellShares
+          @last_share_sold_price = action.shares.price_per_share
           sell_shares(action.shares)
         when Action::BuyCompany
           company = action.company
@@ -287,6 +315,7 @@ module Engine
             company.remove_ability(:teleport)
           end
         end
+        @last_share_sold_price = nil
         @current_entity = next_entity
         log_operation(@current_entity) unless finished?
       end
@@ -364,10 +393,14 @@ module Engine
       end
 
       def buy_train(entity, train, price, exchange)
+        # Check if the train is actually buyable in the current situation
+        raise GameError, 'Not a buyable train' unless buyable_trains.include?(train)
+
         remaining = price - entity.cash
 
-        if train.from_depot? && remaining.positive? && train.name == @depot.min_depot_train.name && must_buy_train?
+        if remaining.positive? && must_buy_train?
           raise GameError, 'Cannot contribute funds when exchanging' if exchange
+          raise GameError, 'Cannot buy for more than cost' if price > train.price
 
           player = entity.owner
           player.spend(remaining, entity)

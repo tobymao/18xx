@@ -6,56 +6,6 @@ module Engine
   class Phase
     attr_reader :buy_companies, :name, :operating_rounds, :train_limit, :tiles, :phases
 
-    TWO = {
-      name: '2',
-      operating_rounds: 1,
-      train_limit: 4,
-      tiles: :yellow,
-    }.freeze
-
-    THREE = {
-      name: '3',
-      operating_rounds: 2,
-      train_limit: 4,
-      tiles: %i[yellow green].freeze,
-      buy_companies: true,
-      on: '3',
-    }.freeze
-
-    FOUR = {
-      name: '4',
-      operating_rounds: 2,
-      train_limit: 3,
-      tiles: %i[yellow green].freeze,
-      buy_companies: true,
-      on: '4',
-    }.freeze
-
-    FIVE = {
-      name: '5',
-      operating_rounds: 3,
-      train_limit: 2,
-      tiles: %i[yellow green brown].freeze,
-      on: '5',
-      events: { close_companies: true },
-    }.freeze
-
-    SIX = {
-      name: '6',
-      operating_rounds: 3,
-      train_limit: 2,
-      tiles: %i[yellow green brown].freeze,
-      on: '6',
-    }.freeze
-
-    D = {
-      name: 'D',
-      operating_rounds: 3,
-      train_limit: 2,
-      tiles: %i[yellow green brown].freeze,
-      on: 'D',
-    }.freeze
-
     def initialize(phases, game)
       @index = 0
       @phases = phases
@@ -69,7 +19,7 @@ module Engine
       when Action::BuyTrain
         train = action.train
         next! if train.name == @next_on
-        rust_trains!(train)
+        rust_trains!(train, action.entity)
       end
     end
 
@@ -132,14 +82,14 @@ module Engine
       end
     end
 
-    def rust_trains!(train)
+    def rust_trains!(train, entity)
       rusted_trains = []
-
       @game.trains.each do |t|
-        if t.owner && t.rusts_on == train.name
-          rusted_trains << t.name
-          t.rust!
-        end
+        next if t.rusted || t.rusts_on != train.name
+
+        rusted_trains << t.name
+        entity.rusted_self = true if entity && entity == t.owner
+        t.rust!
       end
 
       @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --" if rusted_trains.any?

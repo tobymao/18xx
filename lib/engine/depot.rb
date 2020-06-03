@@ -69,8 +69,11 @@ module Engine
     end
 
     def available(corporation)
-      other_trains = @trains.reject { |t| [corporation, self, nil].include?(t.owner) }
-      depot_trains + other_trains
+      depot_trains + other_trains(corporation)
+    end
+
+    def other_trains(corporation)
+      @trains.reject { |t| [corporation, self, nil].include?(t.owner) }
     end
 
     def cash

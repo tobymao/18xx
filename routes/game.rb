@@ -44,6 +44,7 @@ class Api
               if game.settings['pin']
                 action_id = r.params['id']
                 action = r.params
+                action.delete('_client_id')
                 meta = action.delete('meta')
                 halt(400, 'Game missing metadata') unless meta
                 halt(400, 'Game out of sync') unless actions_h(game).size + 1 == action_id

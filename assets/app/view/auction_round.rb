@@ -75,11 +75,11 @@ module View
 
       company_actions =
         if @round.may_purchase?(@selected_company)
-          [h(:button, { on: { click: buy } }, 'Buy')]
+          [h('button.button', { on: { click: buy } }, 'Buy')]
         elsif @selected_company && @round.may_bid?(@selected_company)
           [
             input,
-            h(:button, { on: { click: create_bid } }, 'Place Bid'),
+            h('button.button', { on: { click: create_bid } }, 'Place Bid'),
           ]
         end
 

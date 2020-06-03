@@ -48,11 +48,14 @@ module View
       h(:div, inner)
     end
 
+    def cursor
+      @cursor ||= Lib::Params['action']&.to_i
+    end
+
     def load_game
       game_id = @game_data['id']
       actions = @game_data['actions']
       @num_actions = actions.size
-      cursor = Lib::Params['action']&.to_i
       return if game_id == @game&.id &&
         ((!cursor && @game.actions.size == @num_actions) || (cursor == @game.actions.size))
 
@@ -103,7 +106,7 @@ module View
           h(Tools, game: @game, game_data: @game_data, user: @user)
         end
 
-      @connection = nil if @game_data[:mode] == :hotseat
+      @connection = nil if @game_data[:mode] == :hotseat || cursor
 
       @connection&.subscribe(game_path, -2) do |data|
         n_id = data['id']
@@ -149,20 +152,8 @@ module View
 
     def render_title
       title = "#{@game.class.title} - #{@game.id} - 18xx.games"
+      title = "* #{title}" if @game.active_player_names.include?(@user&.dig(:name))
       `document.title = #{title}`
-      flash_turn
-    end
-
-    def flash_turn
-      return unless @game.active_player_names.include?(@user&.dig(:name))
-
-      %x{
-        setTimeout(function() {
-          document.title = "-- Your Turn --"
-
-          setTimeout(function() { self.$render_title() }, 1500)
-        }, 1500)
-      }
     end
 
     def tabs
@@ -214,7 +205,7 @@ module View
         style: {
           'margin': '0 1rem 1rem 0',
           'color': 'black',
-          'text-decoration': (route_anchor || '') == anchor ? '' : 'none',
+          'text-decoration': route_anchor == anchor[1..-1] ? '' : 'none',
         },
         on: { click: change_anchor },
       }

@@ -375,15 +375,24 @@ module Engine
         end
       end
 
-      def liquidity(player)
+      def liquidity(player, emergency: false)
         return player.cash unless sellable_turn?
 
         value = player.cash
-        player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, _|
-          max_bundle = player.dumpable_bundles(corporation)
-            .select { |bundle| @share_pool&.fit_in_bank?(bundle) }
-            .max_by(&:price)
-          value += max_bundle&.price || 0
+        if emergency
+          value += player.shares_by_corporation.sum do |corporation, shares|
+            next 0 if shares.empty?
+
+            last = round.sellable_bundles(player, corporation).last
+            last ? last.price : 0
+          end
+        else
+          player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, _|
+            max_bundle = player.dumpable_bundles(corporation)
+              .select { |bundle| @share_pool&.fit_in_bank?(bundle) }
+              .max_by(&:price)
+            value += max_bundle&.price || 0
+          end
         end
         value
       end
