@@ -101,9 +101,7 @@ module Engine
       end
 
       def must_buy_train?
-        # TODO: this is a hack and doesn't actually check reachable cities
-        # OO tiles and other complex track will break this
-        @current_entity.trains.empty? && route?
+        !@current_entity.rusted_self && @current_entity.trains.empty? && route?
       end
 
       def buyable_trains
@@ -400,7 +398,7 @@ module Engine
 
         remaining = price - entity.cash
 
-        if remaining.positive? && must_buy_train? && !@game.phase.just_rusted_own?
+        if remaining.positive? && must_buy_train?
           raise GameError, 'Cannot contribute funds when exchanging' if exchange
           raise GameError, 'Cannot buy for more than cost' if price > train.price
 

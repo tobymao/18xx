@@ -6,62 +6,11 @@ module Engine
   class Phase
     attr_reader :buy_companies, :name, :operating_rounds, :train_limit, :tiles, :phases
 
-    TWO = {
-      name: '2',
-      operating_rounds: 1,
-      train_limit: 4,
-      tiles: :yellow,
-    }.freeze
-
-    THREE = {
-      name: '3',
-      operating_rounds: 2,
-      train_limit: 4,
-      tiles: %i[yellow green].freeze,
-      buy_companies: true,
-      on: '3',
-    }.freeze
-
-    FOUR = {
-      name: '4',
-      operating_rounds: 2,
-      train_limit: 3,
-      tiles: %i[yellow green].freeze,
-      buy_companies: true,
-      on: '4',
-    }.freeze
-
-    FIVE = {
-      name: '5',
-      operating_rounds: 3,
-      train_limit: 2,
-      tiles: %i[yellow green brown].freeze,
-      on: '5',
-      events: { close_companies: true },
-    }.freeze
-
-    SIX = {
-      name: '6',
-      operating_rounds: 3,
-      train_limit: 2,
-      tiles: %i[yellow green brown].freeze,
-      on: '6',
-    }.freeze
-
-    D = {
-      name: 'D',
-      operating_rounds: 3,
-      train_limit: 2,
-      tiles: %i[yellow green brown].freeze,
-      on: 'D',
-    }.freeze
-
     def initialize(phases, game)
       @index = 0
       @phases = phases
       @game = game
       @log = @game.log
-      @just_rusted_own = false
       setup_phase!
     end
 
@@ -82,11 +31,6 @@ module Engine
       return false unless phase_name
 
       @phases.find_index { |phase| phase[:name] == phase_name } <= @index
-    end
-
-    # Did the last action cause a rust on the current entitys turn?
-    def just_rusted_own?
-      @just_rusted_own
     end
 
     def setup_phase!
@@ -140,12 +84,11 @@ module Engine
 
     def rust_trains!(train, entity)
       rusted_trains = []
-      @just_rusted_own = false
       @game.trains.each do |t|
-        next unless t.owner && t.rusts_on == train.name
+        next if t.rusts_on != train.name
 
         rusted_trains << t.name
-        @just_rusted_own = true if t.owner == entity
+        entity.rusted_self = true if entity && entity == t.owner
         t.rust!
       end
 

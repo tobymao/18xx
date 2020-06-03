@@ -14,7 +14,7 @@ module Engine
     include ShareHolder
     include Spender
 
-    attr_accessor :ipoed, :par_price, :share_price, :tokens
+    attr_accessor :ipoed, :par_price, :rusted_self, :share_price, :tokens
     attr_reader :capitalization, :color, :companies, :coordinates, :min_price, :name, :full_name,
                 :logo, :text_color, :trains, :operating_history
 
@@ -30,6 +30,9 @@ module Engine
       @share_price = nil
       @par_price = nil
       @ipoed = false
+      # phase rusts happen before a train actually buys, so there is a race condition
+      # where buying a train rusts yourself and it looks like you must buy a train
+      @rusted_self = false
       @trains = []
       @companies = []
       @operating_history = {}
@@ -75,6 +78,7 @@ module Engine
       train.owner.remove_train(train)
       train.owner = self
       @trains << train
+      @rusted_self = false
     end
 
     def remove_train(train)
