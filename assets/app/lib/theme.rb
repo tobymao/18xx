@@ -414,8 +414,8 @@ module Lib
       halt: '#666',
     }.freeze
 
-    def self.color(feature, theme)
-      # theme = @user&.dig(:settings, :theme) || 'T_BROGGLES1817'
+    def color(feature)
+      theme = @user&.dig(:settings, :theme) || 'T_BROGGLES1817'
       const_get(theme)[feature]
     end
   end

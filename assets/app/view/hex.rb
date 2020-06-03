@@ -47,13 +47,11 @@ module View
 
       clickable = layable || @role == :tile_selector
 
-      theme = @user&.dig(:settings, :theme) || 'T_BROGGLES1817'
       props = {
         attrs: {
           id: "hex-#{@hex.coordinates}",
           transform: transform,
-          # fill: COLOR.fetch(@tile&.color, 'white'),
-          fill: Lib::Theme.color(@tile&.color || 'plain', theme),
+          fill: Lib::Theme.color(@tile&.color || 'plain'),
           stroke: 'black',
           opacity: opacity(layable),
           cursor: clickable ? 'pointer' : nil,
