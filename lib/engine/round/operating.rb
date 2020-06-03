@@ -70,10 +70,6 @@ module Engine
         log_operation(@current_entity)
       end
 
-      def log_new_round
-        @log << "-- #{name} #{@turn}.#{round_num} (of #{num_rounds}) --"
-      end
-
       def name
         'Operating Round'
       end
