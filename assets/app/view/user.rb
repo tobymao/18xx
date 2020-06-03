@@ -44,7 +44,7 @@ module View
             render_theme_picker(@user&.dig(:settings, :theme) || 'T_18XXGAMES'),
             h('div#settings__buttons', [
               render_button('Save Changes') { submit },
-              render_button('Reset to Defaults') { reset_colors },
+              render_button('Reset to Defaults') { reset_settings },
             ]),
             h('div#settings__logout', [
               render_button('Logout') { logout },
@@ -71,7 +71,7 @@ module View
       h(:div, children)
     end
 
-    def reset_colors
+    def reset_settings
       @inputs.delete(:font_color)
       @inputs.delete(:bg_color)
       @inputs.delete(:red_logo)
@@ -94,10 +94,10 @@ module View
     end
 
     def render_theme_picker(theme)
-      themes = Theme.constants.map do |t|
+      themes = Lib::Theme.constants.map do |t|
         props = { attrs: { value: t } }
         props[:attrs]['selected'] = 'theme' if t == theme
-        h(:option, props, Theme.const_get(t)['title'])
+        h(:option, props, Lib::Theme.const_get(t)['title'])
       end
 
       children = [
@@ -111,7 +111,7 @@ module View
       ]
 
       color_squares = View::Hex::COLOR.map do |color, _value|
-        h("div.color-square.#{color}", style: { 'background-color': Theme.const_get(theme)[color] })
+        h("div.color-square.#{color}", style: { 'background': Lib::Theme.const_get(theme)[color] || 'transparent' })
       end
 
       children << h('div#settings__theme__preview', color_squares)

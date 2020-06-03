@@ -2,6 +2,7 @@
 
 require_tree 'engine'
 require 'lib/hex'
+require 'lib/theme'
 require 'lib/tile_selector'
 require 'view/runnable'
 require 'view/tile'
@@ -19,13 +20,13 @@ module View
     }.freeze
 
     COLOR = {
-      white: '#EAE0C8',
+      plain: '#EAE0C8',
       yellow: '#fde900',
       green: '#71bf44',
       brown: '#cb7745',
       gray: '#bcbdc0',
       red: '#ec232a',
-      blue: '#00f',
+      water: '#00f',
     }.freeze
 
     needs :hex
@@ -46,11 +47,13 @@ module View
 
       clickable = layable || @role == :tile_selector
 
+      theme = @user&.dig(:settings, :theme) || 'T_BROGGLES1817'
       props = {
         attrs: {
           id: "hex-#{@hex.coordinates}",
           transform: transform,
-          fill: COLOR.fetch(@tile&.color, 'white'),
+          # fill: COLOR.fetch(@tile&.color, 'white'),
+          fill: Lib::Theme.color(@tile&.color || 'plain', theme),
           stroke: 'black',
           opacity: opacity(layable),
           cursor: clickable ? 'pointer' : nil,
