@@ -88,6 +88,7 @@ module Engine
             expect(bundles.size).to eq(0)
           end
         end
+
         context 'with 18Chesapeake rules' do
           subject { Round::Operating.new([corporation, corporation2], game: game, round_num: 1) }
           it 'should return bundles that cause a president change' do
@@ -161,6 +162,7 @@ module Engine
             expect(available.size).to eq(1)
           end
         end
+
         context 'with 18Chesapeake rules' do
           subject { Round::Operating.new([corporation], game: game, round_num: 1) }
           it 'returns returns other corp trains if sold shares does not exceed face value' do
