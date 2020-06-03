@@ -19,7 +19,7 @@ class Index < Snabberb::Layout
           outline: 0;
           opacity: 0.8;
         }
-        a.nav:hover, a.default-bg:hover {
+        a.nav:hover, a.default-bg:hover, a.text:hover {
           text-decoration: underline dotted;
           opacity: 0.8;
         }
@@ -34,7 +34,7 @@ class Index < Snabberb::Layout
         }
       }
 
-      a.nav, a.default-bg  {
+      a.nav, a.default-bg, a.text  {
         color: currentColor;
       }
       a.nav {
