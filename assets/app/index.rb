@@ -29,6 +29,9 @@ class Index < Snabberb::Layout
         a:active {
           outline: 0;
         }
+        a.game__nav:hover {
+          opacity: 0.8;
+        }
       }
 
       a.nav, a.default-bg  {
@@ -36,6 +39,10 @@ class Index < Snabberb::Layout
       }
       a.nav {
         margin: 0 1rem;
+      }
+      a.game__nav:focus {
+        font-weight: bold;
+        outline: 0;
       }
 
       #nav {
