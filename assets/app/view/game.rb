@@ -150,7 +150,7 @@ module View
 
     private
 
-    def render_title(flash = true)
+    def render_title
       title = "#{@game.class.title} - #{@game.id} - 18xx.games"
       title = "* #{title}" if @game.active_player_names.include?(@user&.dig(:name))
       `document.title = #{title}`
