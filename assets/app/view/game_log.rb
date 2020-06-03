@@ -11,7 +11,7 @@ module View
 
     def render
       children = [
-        h(Log, log: @game.log),
+        h(Log, log: @game.log, negative_pad: true),
       ]
 
       @player = @game.player_by_id(@user['name']) if @user

@@ -3,6 +3,7 @@
 module View
   class Log < Snabberb::Component
     needs :log
+    needs :negative_pad, default: false
     needs :follow_scroll, default: true, store: true
 
     def render
@@ -21,18 +22,23 @@ module View
         key: 'log',
         hook: {
           postpatch: ->(_, vnode) { scroll_to_bottom.call(vnode) if @follow_scroll },
+          insert: ->(vnode) { scroll_to_bottom.call(vnode) if @follow_scroll },
         },
         on: { scroll: scroll_handler },
         style: {
           overflow: 'auto',
           height: '200px',
-          padding: '0.5rem 1rem',
-          margin: '0 -1.5rem',
+          padding: '0.5rem 0',
           color: 'black',
           'background-color': 'lightgray',
           'word-break': 'break-word',
         },
       }
+
+      if @negative_pad
+        props[:style][:padding] = '0.5rem 1.5rem'
+        props[:style][:margin] = '0 -1.5rem'
+      end
 
       lines = @log.map do |line|
         if line.is_a?(String)
