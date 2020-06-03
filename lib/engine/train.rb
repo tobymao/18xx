@@ -7,7 +7,7 @@ module Engine
   class Train
     include Ownable
 
-    attr_reader :available_on, :name, :distance, :discount, :rusts_on
+    attr_reader :available_on, :name, :distance, :discount, :rusts_on, :rusted
 
     def initialize(name:, distance:, price:, index: 0, **opts)
       @name = name
@@ -17,6 +17,7 @@ module Engine
       @rusts_on = opts[:rusts_on]
       @available_on = opts[:available_on]
       @discount = opts[:discount]
+      @rusted = false
     end
 
     def price(exchange_train = nil)
@@ -30,6 +31,7 @@ module Engine
     def rust!
       owner&.remove_train(self)
       @owner = nil
+      @rusted = true
     end
 
     def min_price

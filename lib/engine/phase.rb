@@ -85,7 +85,7 @@ module Engine
     def rust_trains!(train, entity)
       rusted_trains = []
       @game.trains.each do |t|
-        next if t.rusts_on != train.name
+        next if t.rusted || t.rusts_on != train.name
 
         rusted_trains << t.name
         entity.rusted_self = true if entity && entity == t.owner
