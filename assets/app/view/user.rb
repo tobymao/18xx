@@ -109,7 +109,7 @@ module View
         ),
       ]
 
-      color_squares = Lib::Theme::COLOR.map do |color, _value|
+      color_squares = ['white', 'yellow', 'green', 'brown', 'gray', 'red', 'blue'].map do |color, _value|
         h("div.color-square.#{color}", style: { 'background': Lib::Theme.const_get(theme)[color] || 'transparent' })
       end
 
