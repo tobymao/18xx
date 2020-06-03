@@ -210,7 +210,7 @@ module View
         on: { click: change_anchor },
       }
 
-      h(:a, props, name)
+      h('a.game__nav', props, name)
     end
 
     def route_anchor
