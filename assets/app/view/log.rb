@@ -8,6 +8,8 @@ module View
 
     def render
       scroll_to_bottom = lambda do |vnode|
+        next unless @follow_scroll
+
         elm = Native(vnode)['elm']
         elm.scrollTop = elm.scrollHeight
       end
@@ -21,14 +23,14 @@ module View
       props = {
         key: 'log',
         hook: {
-          postpatch: ->(_, vnode) { scroll_to_bottom.call(vnode) if @follow_scroll },
-          insert: ->(vnode) { scroll_to_bottom.call(vnode) if @follow_scroll },
+          postpatch: ->(_, vnode) { scroll_to_bottom.call(vnode) },
+          insert: ->(vnode) { scroll_to_bottom.call(vnode) },
         },
         on: { scroll: scroll_handler },
         style: {
           overflow: 'auto',
           height: '200px',
-          padding: '0.5rem 0',
+          padding: '0.5rem',
           color: 'black',
           'background-color': 'lightgray',
           'word-break': 'break-word',
