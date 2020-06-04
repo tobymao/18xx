@@ -87,7 +87,7 @@ module View
         when nil
           render_game
         when 'map'
-          h(Map, game: @game)
+          h(Map, game: @game, opacity: 1.0)
         when 'market'
           h(StockMarket, game: @game, show_bank: true)
         when 'tiles'
@@ -219,9 +219,10 @@ module View
 
     def render_round
       name = @round.class.name.split(':').last
-      description = @round.operating? ? "#{@game.turn}.#{@round.round_num}" : @game.turn
-      description = "#{description} - #{@round.description}"
-      description = "#{description} - Pinned to Version: #{@pin}" if @pin
+      description = @game.turn.to_s
+      description += ".#{@round.round_num} (of #{@game.operating_rounds})" if @round.operating?
+      description += " - #{@round.description}"
+      description += " - Pinned to Version: #{@pin}" if @pin
       h(:div, { style: { 'font-weight': 'bold' } }, "#{name} Round #{description}")
     end
 

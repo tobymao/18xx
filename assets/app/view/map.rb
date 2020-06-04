@@ -11,6 +11,7 @@ module View
     needs :tile_selector, default: nil, store: true
     needs :selected_route, default: nil, store: true
     needs :selected_company, default: nil, store: true
+    needs :opacity, default: nil
 
     GAP = 25 # GAP between the row/col labels and the map hexes
 
@@ -34,7 +35,7 @@ module View
       @hexes << @hexes.delete(selected_hex) if @hexes.include?(selected_hex)
 
       @hexes.map! do |hex|
-        h(Hex, hex: hex, round: round)
+        h(Hex, hex: hex, round: round, opacity: @opacity)
       end
 
       children = [render_map]
@@ -78,6 +79,7 @@ module View
           h(Axis,
             cols: @cols,
             rows: @rows,
+            axes: @game.axes,
             layout: @layout,
             font_size: font_size,
             gap: GAP,

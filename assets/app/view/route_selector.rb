@@ -17,18 +17,20 @@ module View
       @routes.select { |r| r.connections.any? }
     end
 
-    def last_run
+    def generate_last_routes!
       trains = @game.round.current_entity.trains
       operating = @game.round.current_entity.operating_history
       last_run = operating[operating.keys.max]&.routes
       return [] unless last_run
 
       last_run.map do |train, connections|
+        next unless trains.include?(train)
+
         connections = connections&.map do |ids|
           ids.map { |id| @game.hex_by_id(id) }
         end
         # A future enhancement to this could be to find trains and move the routes over
-        Engine::Route.new(@game.phase, train, connection_hexes: connections) if trains.include?(train)
+        @routes << Engine::Route.new(@game.phase, train, connection_hexes: connections, routes: @routes)
       end.compact
     end
 
@@ -36,16 +38,11 @@ module View
       trains = @game.round.current_entity.trains
 
       description = 'Select routes'
-      last_routes = last_run
-      description += ': prior routes are autofilled' if last_routes.any?
-      if @routes.empty?
-        @routes = last_routes
-
-        if @routes.any?
-          @selected_route = @routes.first
-          store(:routes, @routes, skip: true)
-          store(:selected_route, @selected_route, skip: true)
-        end
+      if @routes.empty? && generate_last_routes!.any?
+        description += ': prior routes are autofilled'
+        @selected_route = @routes.first
+        store(:routes, @routes, skip: true)
+        store(:selected_route, @selected_route, skip: true)
       end
 
       if !@selected_route && (first_train = trains[0])
@@ -131,7 +128,7 @@ module View
         cleanup
       end
 
-      reset = lambda do
+      clear = lambda do
         @selected_route&.reset!
         store(:selected_route, @selected_route)
       end
@@ -150,8 +147,8 @@ module View
                 end
       h(:div, [
         h('button.button', { on: { click: submit } }, 'Submit ' + revenue),
-        h('button.button', { style: { 'margin-left': '1rem' }, on: { click: reset } }, 'Reset Train'),
-        h('button.button', { style: { 'margin-left': '1rem' }, on: { click: reset_all } }, 'Reset All'),
+        h('button.button', { style: { 'margin-left': '0.5rem' }, on: { click: clear } }, 'Clear Train'),
+        h('button.button', { style: { 'margin-left': '0.5rem' }, on: { click: reset_all } }, 'Reset'),
       ])
     end
   end

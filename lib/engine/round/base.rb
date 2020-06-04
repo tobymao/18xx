@@ -18,10 +18,6 @@ module Engine
         @round_num = 1
       end
 
-      def log_new_round
-        @log << "-- #{name} #{game.turn} --"
-      end
-
       def name
         raise NotImplementedError
       end
@@ -124,6 +120,10 @@ module Engine
         {}
       end
 
+      def reachable_hexes
+        {}
+      end
+
       def upgradeable_tiles(hex)
         potential_tiles(hex).map do |tile|
           tile.rotate!(0) # reset tile to no rotation since calculations are absolute
@@ -218,6 +218,16 @@ module Engine
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile ##{tile.name}"\
          " with rotation #{rotation} on #{hex.name}"
+      end
+
+      def place_home_token(corporation)
+        hex = @game.hexes.find { |h| h.coordinates == corporation.coordinates }
+        cities = hex.tile.cities
+        city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+        return unless city.tokenable?(corporation)
+
+        @log << "#{corporation.name} places a token on #{hex.name}"
+        city.place_token(corporation)
       end
 
       def payout_companies

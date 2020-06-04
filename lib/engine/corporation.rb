@@ -107,10 +107,6 @@ module Engine
       true
     end
 
-    def add_operating_info!(turn, round_num, info)
-      @operating_history[[turn, round_num]] = info
-    end
-
     def inspect
       "<#{self.class.name}: #{id}>"
     end

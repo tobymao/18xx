@@ -7,6 +7,7 @@ module View
     needs :cols
     needs :rows
     needs :layout
+    needs :axes
 
     needs :font_size, default: 25
     needs :text_length, default: 25
@@ -15,6 +16,7 @@ module View
     needs :map_y, default: 0
 
     X_OFFSET = 100
+    LETTERS = ('A'..'Z').to_a.freeze
 
     def render
       attrs = {
@@ -40,9 +42,15 @@ module View
     def col_labels
       hex_x, hex_y = hex_size
 
-      labels = @cols.map do |c|
-        x = hex_x * (c.to_i - 1)
-        label = ('A'..'Z').to_a[c - 1]
+      labels = @cols.map do |col|
+        x = hex_x * (col.to_i - 1)
+
+        label =
+          if @axes[:x] == :letter
+            LETTERS[col - 1]
+          else
+            col
+          end
         h(:text, { attrs: { x: x } }, label)
       end
 
@@ -74,7 +82,13 @@ module View
         multiplier -= 0.5 if @layout == :pointy
         y = hex_y * multiplier
 
-        label = row
+        label =
+          if @axes[:y] == :letter
+            LETTERS[row - 1]
+          else
+            row
+          end
+
         h(:text, { attrs: { y: y } }, label)
       end
 

@@ -171,16 +171,7 @@ class Api < Roda
             <link rel="manifest" href="/site.webmanifest">
             <meta rel="msapplication-TileColor" content="#da532c">
             <meta rel="theme-color" content="#ffffff">
-            <style>* { font-family: 'Inconsolata', monospace; }
-               .card_header { font-size: 15px; font-weight: bold; margin: 1rem 0; }
-               .back { font-size: 15px; font-weight: bold; margin: 1rem 0; }
-               .button { font-size: 14px; border: solid 1px black; border-radius: 5px; padding: 0.2rem 1rem; cursor: pointer; outline-style: none; }
-               .button:hover { background-color: black; color: white; }
-               .half { width: 100%; display: inline-block; }
-               .margined { margin: 1rem 1rem 1rem 0; }
-               .margined_half { margin: 0.5rem 0.5rem 0.5rem 0; }
-               @media only screen and (min-width: 900px) { .half { width: 49%; } }
-            </style>
+            <link rel="stylesheet" href="/assets/main.css">
          </head>
          <body>
             <div id="app"></div>

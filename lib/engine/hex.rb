@@ -27,18 +27,43 @@ module Engine
 
     LETTERS = ('A'..'Z').to_a
 
+    COORD_LETTER = /([A-Z]+)/.freeze
+    COORD_NUMBER = /([0-9]+)/.freeze
+
     def self.invert(dir)
       (dir + 3) % 6
+    end
+
+    def self.init_x_y(coordinates, axes_config)
+      axes_config ||= { x: :letter, y: :number }
+
+      letter = coordinates.match(COORD_LETTER)[1]
+      number = coordinates.match(COORD_NUMBER)[1].to_i
+
+      x =
+        if axes_config[:x] == :letter
+          LETTERS.index(letter)
+        else
+          number - 1
+        end
+
+      y =
+        if axes_config[:y] == :letter
+          LETTERS.index(letter)
+        else
+          number - 1
+        end
+
+      [x, y]
     end
 
     # Coordinates are of the form A1..Z99
     # x and y map to the double coordinate system
     # layout is :pointy or :flat
-    def initialize(coordinates, layout: nil, tile: Tile.for('blank'), location_name: nil)
+    def initialize(coordinates, layout: nil, axes: nil, tile: Tile.for('blank'), location_name: nil)
       @coordinates = coordinates
       @layout = layout
-      @x = LETTERS.index(@coordinates[0]).to_i
-      @y = @coordinates[1..-1].to_i - 1
+      @x, @y = self.class.init_x_y(@coordinates, axes)
       @neighbors = {}
       @connections = Hash.new { |h, k| h[k] = [] }
       @location_name = location_name

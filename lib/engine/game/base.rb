@@ -27,10 +27,11 @@ module Engine
   module Game
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
-                  :depot, :finished, :graph, :hexes, :id, :log, :phase, :players, :round,
+                  :depot, :finished, :graph, :hexes, :id, :log, :phase, :players, :operating_rounds, :round,
                   :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible
 
       DEV_STAGE = :prealpha
+
       BANK_CASH = 12_000
 
       CURRENCY_FORMAT_STR = '$%d'
@@ -40,6 +41,8 @@ module Engine
       HEXES = {}.freeze
 
       LAYOUT = nil
+
+      AXES = nil
 
       TRAINS = [].freeze
 
@@ -66,6 +69,15 @@ module Engine
       LOCATION_NAMES = {}.freeze
 
       TRACK_RESTRICTION = :semi_restrictive
+
+      EBUY_PRES_SWAP = true # allow presidential swaps of other corps when ebuying
+      EBUY_OTHER_VALUE = true # allow ebuying other corp trains for up to face
+
+      # when is the home token placed? on...
+      # operate
+      # float
+      # operating_round // 1889 places on first operating round
+      HOME_TOKEN_TIMING = :operate
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
@@ -365,6 +377,17 @@ module Engine
         self.class::LAYOUT
       end
 
+      def axes
+        @axes ||=
+          if (axes = self.class::AXES)
+            axes
+          elsif layout == :flat
+            { x: :letter, y: :number }
+          elsif layout == :pointy
+            { x: :number, y: :letter }
+          end
+      end
+
       def format_currency(val)
         self.class::CURRENCY_FORMAT_STR % val
       end
@@ -480,7 +503,7 @@ module Engine
               # name the location (city/town)
               location_name = self.class::LOCATION_NAMES[coord]
 
-              Hex.new(coord, layout: layout, tile: tile, location_name: location_name)
+              Hex.new(coord, layout: layout, axes: axes, tile: tile, location_name: location_name)
             end
           end
         end.flatten
@@ -626,7 +649,7 @@ module Engine
       end
 
       def new_operating_round(round_num = 1)
-        @log << "-- Operating Round #{@turn}.#{round_num} --"
+        @log << "-- Operating Round #{@turn}.#{round_num} (of #{@operating_rounds}) --"
         operating_round(round_num)
       end
 

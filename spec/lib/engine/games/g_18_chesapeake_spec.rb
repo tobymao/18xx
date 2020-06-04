@@ -9,10 +9,11 @@ module Engine
   describe Game::G18Chesapeake do
     context 'full game' do
       {
-        1276 => {
-          'ferralferrets' => 560,
-          'malayet2' => 1756,
-          'philcampeau' => 1528,
+        1689 => {
+          'Eonthar' => 6357,
+          'Jasonbartfast' => 8651,
+          'philcampeau' => 7945,
+          'ynottony105' => 7041,
         },
         1277 => {
           'Harshit' => 1216,

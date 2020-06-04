@@ -1,0 +1,120 @@
+* { font-family: 'Inconsolata', monospace; }
+
+/* prevent hover effects on mobile devices */
+@media(hover: hover) and (pointer: fine) {
+  .button:hover, .button-link:hover {
+    background: black;
+    border-color: rgb(217, 210, 210);
+    color: white;
+  }
+  .button, .button-link {
+    outline: 0;
+  }
+  .button:active, .button-link:active, .button:focus, .button-link:focus {
+    outline: 0;
+    opacity: 0.8;
+  }
+  a.nav:hover, a.default-bg:hover, a.text:hover {
+    text-decoration: underline dotted;
+    opacity: 0.8;
+  }
+  #logo a:hover {
+    opacity: 0.8;
+  }
+  a:active {
+    outline: 0;
+  }
+  a.game__nav:hover {
+    opacity: 0.8;
+  }
+}
+
+a.nav, a.default-bg, a.text  {
+  color: currentColor;
+}
+a.nav {
+  margin: 0 1rem;
+}
+a.game__nav:focus {
+  font-weight: bold;
+  outline: 0;
+}
+
+#nav {
+  box-shadow: 0 2px 0 0 gainsboro;
+  display: flex;
+  justify-content: space-between;
+  line-height: 3rem;
+  padding: 0 1rem 0.5rem 1rem;
+}
+#logo a {
+  color: currentColor;
+  font-weight: bold;
+  text-decoration: none;
+}
+#logo__18xx {
+  display: inline-block;
+  height: 3rem;
+  text-align: center;
+  width: 2.5rem;
+}
+#logo__18xx.yellow {
+  background: url(/images/logo_polygon_yellow.svg) left/2.5rem no-repeat;
+  color: black;
+}
+#logo__18xx.red {
+  background: url(/images/logo_polygon_red.svg) left/2.5rem no-repeat;
+  color: white;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: black;
+    color: gainsboro;
+  }
+}
+
+.card_header {
+  font-size: 15px;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.back {
+  font-size: 15px;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.button, .button-link {
+  font-size: 14px;
+  background: whitesmoke;
+  color: black;
+  border: solid 1px black;
+  border-radius: 5px;
+  padding: 0.2rem 1rem;
+  cursor: pointer;
+}
+
+.button-link {
+  text-decoration: none;
+  color: initial;
+  background: whitesmoke;
+}
+
+.half {
+  width: 100%;
+  display: inline-block;
+}
+
+.margined {
+  margin: 1rem 1rem 1rem 0;
+}
+
+.margined_half {
+  margin: 0.5rem 0.5rem 0.5rem 0;
+}
+
+@media only screen and (min-width: 900px) {
+  .half { width: 49%; }
+}

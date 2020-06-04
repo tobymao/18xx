@@ -42,11 +42,11 @@ module Engine
         company: 'Companies',
       }.freeze
 
-      def initialize(entities, game:, round_num: 1, **opts)
+      def initialize(entities, game:, round_num: 1, **_opts)
         super
         @round_num = round_num
-        @ebuy_pres_swap = opts[:ebuy_pres_swap].nil? ? true : opts[:ebuy_pres_swap]
-        @ebuy_other_value = opts[:ebuy_other_value].nil? ? true : opts[:ebuy_other_value]
+        @home_token_timing = @game.class::HOME_TOKEN_TIMING
+        @ebuy_other_value = @game.class::EBUY_OTHER_VALUE
         @hexes = game.hexes
         @phase = game.phase
         @bank = game.bank
@@ -65,12 +65,8 @@ module Engine
         @teleported = false
 
         payout_companies
-        place_home_stations
-        log_operation(@current_entity)
-      end
-
-      def log_new_round
-        @log << "-- #{name} #{@turn}.#{round_num} --"
+        @entities.each { |c| place_home_token(c) } if @home_token_timing == :operating_round
+        start_operating
       end
 
       def name
@@ -167,7 +163,7 @@ module Engine
         # Can't swap presidency
         corporation = bundle.corporation
         if corporation.president?(player) &&
-          (!@ebuy_pres_swap || corporation == @current_entity)
+            (!@game.class::EBUY_PRES_SWAP || corporation == @current_entity)
           share_holders = corporation.share_holders
           remaining = share_holders[player] - bundle.percent
           next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
@@ -220,14 +216,6 @@ module Engine
         end
       end
 
-      def place_home_stations
-        @entities.each do |corporation|
-          hex = @hexes.find { |h| h.coordinates == corporation.coordinates }
-          city = hex.tile.cities.find { |c| c.reserved_by?(corporation) } || hex.tile.cities.first
-          city.place_token(corporation) if city.tokenable?(corporation)
-        end
-      end
-
       def connected_hexes
         @graph.connected_hexes(@current_entity)
       end
@@ -238,6 +226,10 @@ module Engine
 
       def connected_paths
         @graph.connected_paths(@current_entity)
+      end
+
+      def reachable_hexes
+        @graph.reachable_hexes(@current_entity)
       end
 
       def operating?
@@ -270,15 +262,23 @@ module Engine
           place_token(action)
         when Action::RunRoutes
           @current_routes = action.routes
+          trains = {}
           @current_routes.each do |route|
+            train = route.train
+            raise GameError, 'Cannot run train twice' if trains[train]
+
+            trains[train] = true
             hexes = route.hexes.map(&:name).join(', ')
-            @log << "#{entity.name} runs a #{route.train.name} train for "\
+            @log << "#{entity.name} runs a #{train.name} train for "\
                     "#{@game.format_currency(route.revenue)} (#{hexes})"
           end
         when Action::Dividend
           revenue = @current_routes.sum(&:revenue)
-          or_info = OperatingInfo.new(@current_routes, action, revenue)
-          @current_entity.add_operating_info!(@game.turn, @round_num, or_info)
+          @current_entity.operating_history[[@game.turn, @round_num]] = OperatingInfo.new(
+            @current_routes,
+            action,
+            revenue
+          )
           @current_routes = []
 
           case action.kind
@@ -306,8 +306,22 @@ module Engine
         end
       end
 
+      def start_operating
+        return if finished?
+
+        log_operation(@current_entity)
+        place_home_token(@current_entity) if @home_token_timing == :operate
+      end
+
       def change_entity(_action)
         return unless @current_entity.passed?
+
+        # default operating action is to payout 0, i.e. withhold
+        @current_entity.operating_history[[@game.turn, @round_num]] ||= OperatingInfo.new(
+          [],
+          Action::Dividend.new(@game.current_entity, 'withhold'),
+          0
+        )
 
         if @teleported
           @teleported = false
@@ -317,7 +331,7 @@ module Engine
         end
         @last_share_sold_price = nil
         @current_entity = next_entity
-        log_operation(@current_entity) unless finished?
+        start_operating
       end
 
       def action_processed(action)
@@ -399,6 +413,10 @@ module Engine
         remaining = price - entity.cash
 
         if remaining.positive? && must_buy_train?
+          cheapest = @depot.min_depot_train
+          if train != cheapest && (!@ebuy_other_value || train.from_depot?)
+            raise GameError, "Cannot purchase #{train.name} train: #{cheapest.name} train available"
+          end
           raise GameError, 'Cannot contribute funds when exchanging' if exchange
           raise GameError, 'Cannot buy for more than cost' if price > train.price
 

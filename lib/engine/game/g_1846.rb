@@ -20,6 +20,8 @@ module Engine
 
       DEV_STAGE = :prealpha
 
+      HOME_TOKEN_TIMING = :float
+
       ORANGE_GROUP = [
         'Lake Shore Line',
         'Michigan Central',
