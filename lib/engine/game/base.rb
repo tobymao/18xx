@@ -635,7 +635,6 @@ module Engine
           @corporations.select(&:floated?).sort,
           game: self,
           round_num: round_num,
-          num_rounds: @operating_rounds
         )
       end
 

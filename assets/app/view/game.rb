@@ -219,9 +219,10 @@ module View
 
     def render_round
       name = @round.class.name.split(':').last
-      description = @round.operating? ? "#{@game.turn}.#{@round.round_num} (of #{@round.num_rounds})" : @game.turn
-      description = "#{description} - #{@round.description}"
-      description = "#{description} - Pinned to Version: #{@pin}" if @pin
+      description = @game.turn.to_s
+      description += ".#{@round.round_num} (of #{@game.phase.operating_rounds})" if @round.operating?
+      description += " - #{@round.description}"
+      description += " - Pinned to Version: #{@pin}" if @pin
       h(:div, { style: { 'font-weight': 'bold' } }, "#{name} Round #{description}")
     end
 
