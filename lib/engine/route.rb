@@ -21,8 +21,7 @@ module Engine
       connections = connection_hexes.map do |hexes|
         hex_ids = hexes.map(&:id)
         complete = hexes[0].all_connections.select(&:complete?)
-        # remove the sorts after we complete a migration to correctely ordered hexes
-        complete.find { |c| c.matches?(hex_ids) } || complete.find { |c| c.id.sort == hex_ids.sort }
+        complete.find { |c| c.matches?(hex_ids) }
       end
 
       connections.uniq!
