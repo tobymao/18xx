@@ -45,21 +45,23 @@ module View
       children << h(Tile, tile: @tile) if @tile
       children << h(View::TriangularGrid) if Lib::Params['grid']
 
-      layable = nil
+      opaque = true
+      clickable = @role == :tile_selector
 
       case @round
       when Engine::Round::Operating
         case @round.step
         when :track
-          layable = @round.connected_hexes[@hex]
+          opaque = @round.connected_hexes[@hex]
+          clickable ||= opaque
         when :token, :route
-          layable = @round.reachable_hexes[@hex]
+          opaque = @round.reachable_hexes[@hex]
+          clickable ||= opaque
         end
       when Engine::Round::Special
-        layable = @round.connected_hexes[@hex]
+        opaque = @round.connected_hexes[@hex]
+        clickable ||= opaque
       end
-
-      clickable = layable || @role == :tile_selector
 
       props = {
         attrs: {
@@ -67,7 +69,7 @@ module View
           transform: transform,
           fill: COLOR.fetch(@tile&.color, 'white'),
           stroke: 'black',
-          opacity: opacity(layable),
+          opacity: opacity(opaque),
           cursor: clickable ? 'pointer' : nil,
        },
       }
@@ -109,11 +111,11 @@ module View
       end
     end
 
-    def opacity(layable)
+    def opacity(opaque)
       return @opacity if @opacity
       return 1.0 if NON_TRANSPARENT_ROLES.include?(@role)
 
-      layable ? 1.0 : 0.5
+      opaque ? 1.0 : 0.5
     end
   end
 end
