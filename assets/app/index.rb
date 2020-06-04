@@ -107,6 +107,11 @@ class Index < Snabberb::Layout
         background: whitesmoke;
       }
 
+      input, select {
+        cursor: pointer;
+        vertical-align: middle;
+      }
+
       .half {
         width: 100%;
         display: inline-block;

@@ -2,7 +2,6 @@
 
 require 'game_manager'
 require 'user_manager'
-require 'lib/theme'
 require 'view/game_row'
 require 'view/logo'
 require 'view/form'
@@ -33,14 +32,18 @@ module View
             h('a.default-bg', { attrs: { href: '/forgot' } }, 'Forgot Password'),
           ]]
         when :profile
+          # dark = `window.matchMedia('(prefers-color-scheme: dark)').matches`
+          # bg_color = `window.getComputedStyle(document.getElementById("app"))['background-color']`
+          # store(:flash_opts, { message: bg_color, color: '#888' }, skip: true)
+          dark = 'true'
           ['Profile Settings', [
             render_notifications(@user&.dig(:settings, :notifications)),
             h('div#settings__colors', [
-              render_color(:bg_color, 'Background Color', @user&.dig(:settings, :bg_color), '#ffffff'),
-              render_color(:font_color, 'Font Color', @user&.dig(:settings, :font_color), '#000000'),
+              render_color(:bg_color, 'Background Color', @user&.dig(:settings, :bg_color), dark ? '#000' : '#fff'),
+              render_color(:font_color, 'Font Color', @user&.dig(:settings, :font_color), dark ? '#fff' : '#000'),
               render_logo_color(@user&.dig(:settings, :red_logo)),
             ]),
-            render_theme_picker(@user&.dig(:settings, :theme) || 'T_18XX_GAMES'),
+            render_tile_colors,
             h('div#settings__buttons', [
               render_button('Save Changes') { submit },
               render_button('Reset to Defaults') { reset_settings },
@@ -74,13 +77,28 @@ module View
       @inputs.delete(:font_color)
       @inputs.delete(:bg_color)
       @inputs.delete(:red_logo)
-      @inputs.delete(:theme)
+      @inputs.delete(:white)
+      @inputs.delete(:yellow)
+      @inputs.delete(:green)
+      @inputs.delete(:brown)
+      @inputs.delete(:gray)
+      @inputs.delete(:red)
+      @inputs.delete(:blue)
       submit
+      # `location.reload()`
     end
 
     def render_color(id, name, color, default)
       color ||= default
-      render_input(name, id: id, type: :color, attrs: { value: color })
+      render_input(
+        name,
+        id: id,
+        type: :color,
+        attrs: { value: color },
+        container_style: { height: '2rem' },
+        input_style: { border: '0', 'border-radius': '2px', padding: '0', margin: '0 1.5rem 0 0.5rem',
+                       height: '1.8rem', width: '2.7rem' }
+      )
     end
 
     def render_logo_color(red_logo)
@@ -89,32 +107,25 @@ module View
         id: :red_logo,
         type: :checkbox,
         attrs: { checked: red_logo },
+        input_style: { 'margin-left': '0.5rem' },
       )
     end
 
-    def render_theme_picker(theme)
-      themes = Lib::Theme.constants.map do |t|
-        props = { attrs: { value: t } }
-        props[:attrs]['selected'] = 'theme' if t == theme
-        h(:option, props, Lib::Theme.const_get(t)['title'])
-      end
-
-      children = [
-        render_input(
-          'Theme',
-          id: 'theme',
-          el: 'select',
-          children: themes,
-          attrs: { 'id': 'settings__theme__picker' },
-        ),
-      ]
-
-      color_squares = %w[white yellow green brown gray red blue].map do |color, _value|
-        h("div.color-square.#{color}", style: { 'background': Lib::Theme.const_get(theme)[color] || 'transparent' })
-      end
-
-      children << h('div#settings__theme__preview', color_squares)
-      h('div#settings__theme', children)
+    def render_tile_colors
+      h('div#settings__tiles', [
+        h('div#settings__tiles__label', 'Map & Tile Colors'),
+        h('div#settings__tiles__buttons', View::Hex::COLOR.map do |color, hex_color|
+          render_input(
+            '',
+            id: color,
+            type: :color,
+            attrs: { title: color, value: @user&.dig(:settings, color) || hex_color },
+            container_style: { overflow: 'hidden', width: '3rem', height: '2rem' },
+            input_style: { border: '0', 'border-radius': '2px', padding: '0',
+                           width: '90%', height: '100%', margin: '3px' },
+          )
+        end),
+      ])
     end
 
     def render_notifications(checked = true)
@@ -123,6 +134,7 @@ module View
         id: :notifications,
         type: :checkbox,
         attrs: { checked: checked },
+        input_style: { 'margin-left': '0.5rem' },
       )
     end
 

@@ -2,7 +2,6 @@
 
 require_tree 'engine'
 require 'lib/hex'
-require 'lib/theme'
 require 'lib/tile_selector'
 require 'view/runnable'
 require 'view/tile'
@@ -17,6 +16,16 @@ module View
     LAYOUT = {
       flat: [SIZE * 3 / 2, SIZE * Math.sqrt(3) / 2],
       pointy: [SIZE * Math.sqrt(3) / 2, SIZE * 3 / 2],
+    }.freeze
+
+    COLOR = {
+      white: '#EAE0C8',
+      yellow: '#fde900',
+      green: '#71bf44',
+      brown: '#cb7745',
+      gray: '#bcbdc0',
+      red: '#ec232a',
+      blue: '#0000ff',
     }.freeze
 
     needs :hex
@@ -38,13 +47,12 @@ module View
 
       clickable = layable || @role == :tile_selector
 
-      theme = @user&.dig(:settings, :theme) || 'T_18XX_GAMES'
-
       props = {
         attrs: {
           id: "hex-#{@hex.coordinates}",
           transform: transform,
-          fill: Lib::Theme.const_get(theme)[@tile&.color || 'white'],
+          # fill: @user&.dig(:settings, [@tile&.color || 'white']) || (COLOR[@tile&.color || 'white']),
+          fill: @user&.dig(:settings, @tile&.color) || (COLOR[@tile&.color || 'white']),
           stroke: 'black',
           opacity: opacity(layable),
           cursor: clickable ? 'pointer' : nil,
