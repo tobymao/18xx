@@ -269,8 +269,11 @@ module Engine
           end
         when Action::Dividend
           revenue = @current_routes.sum(&:revenue)
-          or_info = OperatingInfo.new(@current_routes, action, revenue)
-          @current_entity.add_operating_info!(@game.turn, @round_num, or_info)
+          @current_entity.operating_history[[@game.turn, @round_num]] = OperatingInfo.new(
+            @current_routes,
+            action,
+            revenue
+          )
           @current_routes = []
 
           case action.kind
@@ -307,6 +310,13 @@ module Engine
 
       def change_entity(_action)
         return unless @current_entity.passed?
+
+        # default operating action is to payout 0, i.e. withhold
+        @current_entity.operating_history[[@game.turn, @round_num]] ||= OperatingInfo.new(
+          [],
+          Action::Dividend.new(@game.current_entity, 'withhold'),
+          0
+        )
 
         if @teleported
           @teleported = false
