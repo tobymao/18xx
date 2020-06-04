@@ -16,6 +16,7 @@ module View
     needs :map_y, default: 0
 
     X_OFFSET = 100
+    LETTERS = ('A'..'Z').to_a.freeze
 
     def render
       attrs = {
@@ -46,7 +47,7 @@ module View
 
         label =
           if @axes[:x] == :letter
-            ('A'..'Z').to_a[col - 1]
+            LETTERS[col - 1]
           else
             col
           end
@@ -83,7 +84,7 @@ module View
 
         label =
           if @axes[:y] == :letter
-            ('A'..'Z').to_a[row - 1]
+            LETTERS[row - 1]
           else
             row
           end
