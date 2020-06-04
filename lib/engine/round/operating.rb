@@ -235,7 +235,7 @@ module Engine
 
       def _process_action(action)
         entity = action.entity
-        
+
         case action
         when Action::LayTile
           hex_id = action.hex.id
@@ -302,14 +302,17 @@ module Engine
         return if finished?
 
         log_operation(@current_entity)
-        # default operating action is to payout 0, i.e. withhold
-        or_info = OperatingInfo.new([], Action::Dividend.new(@game.current_entity, 'withhold'), 0)
-        @current_entity.add_operating_info!(@game.turn, @round_num, or_info)
         place_home_token(@current_entity) if @home_token_timing == :operate
       end
 
       def change_entity(_action)
         return unless @current_entity.passed?
+
+        unless @current_entity.operating_info(@game.turn, @round_num)
+          # default operating action is to payout 0, i.e. withhold
+          or_info = OperatingInfo.new([], Action::Dividend.new(@game.current_entity, 'withhold'), 0)
+          @current_entity.add_operating_info!(@game.turn, @round_num, or_info)
+        end
 
         if @teleported
           @teleported = false
