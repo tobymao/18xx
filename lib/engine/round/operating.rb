@@ -413,8 +413,10 @@ module Engine
 
         if remaining.positive? && must_buy_train?
           cheapest = @depot.min_depot_train
+          if train != cheapest && train.from_depot?
+            raise GameError, "Cannot purchase #{train.name} train: #{cheapest.name} train available"
+          end
           raise GameError, 'Cannot contribute funds when exchanging' if exchange
-          raise GameError, "Cannot purchase #{train.name} train: #{cheapest.name} train available" if train != cheapest
           raise GameError, 'Cannot buy for more than cost' if price > train.price
 
           player = entity.owner
