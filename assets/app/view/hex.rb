@@ -28,6 +28,8 @@ module View
       blue: '#00f',
     }.freeze
 
+    NON_TRANSPARENT_ROLES = %i[tile_selector tile_page].freeze
+
     needs :hex
     needs :round, default: nil
     needs :tile_selector, default: nil, store: true
@@ -42,7 +44,20 @@ module View
 
       children << h(Tile, tile: @tile) if @tile
       children << h(View::TriangularGrid) if Lib::Params['grid']
-      layable = @round.connected_hexes[@hex] if @round
+
+      layable = nil
+
+      case @round
+      when Engine::Round::Operating
+        case @round.step
+        when :track
+          layable = @round.connected_hexes[@hex]
+        when :token, :route
+          layable = @round.reachable_hexes[@hex]
+        end
+      when Engine::Round::Special
+        layable = @round.connected_hexes[@hex]
+      end
 
       clickable = layable || @role == :tile_selector
 
@@ -96,15 +111,9 @@ module View
 
     def opacity(layable)
       return @opacity if @opacity
+      return 1.0 if NON_TRANSPARENT_ROLES.include?(@role)
 
-      corp_track_laying = @round.is_a?(Engine::Round::Operating) && (@round.step == 'track')
-      company_track_laying = @round.is_a?(Engine::Round::Special)
-
-      if corp_track_laying || company_track_laying
-        layable || %i[tile_selector tile_page].include?(@role) ? 1.0 : 0.3
-      else
-        1.0
-      end
+      layable ? 1.0 : 0.5
     end
   end
 end

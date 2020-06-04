@@ -9,12 +9,14 @@ module Engine
       @connected_hexes = {}
       @connected_nodes = {}
       @connected_paths = {}
+      @reachable_hexes = {}
     end
 
     def clear
       @connected_hexes.clear
       @connected_nodes.clear
       @connected_paths.clear
+      @reachable_hexes.clear
     end
 
     def connected_hexes(corporation)
@@ -30,6 +32,11 @@ module Engine
     def connected_paths(corporation)
       compute(corporation) unless @connected_paths[corporation]
       @connected_paths[corporation]
+    end
+
+    def reachable_hexes(corporation)
+      compute(corporation) unless @reachable_hexes[corporation]
+      @reachable_hexes[corporation]
     end
 
     def compute(corporation)
@@ -78,6 +85,7 @@ module Engine
       @connected_hexes[corporation] = hexes
       @connected_nodes[corporation] = nodes
       @connected_paths[corporation] = paths
+      @reachable_hexes[corporation] = paths.map { |path, _| [path.hex, true] }.to_h
     end
   end
 end

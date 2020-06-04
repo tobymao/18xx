@@ -120,6 +120,10 @@ module Engine
         {}
       end
 
+      def reachable_hexes
+        {}
+      end
+
       def upgradeable_tiles(hex)
         potential_tiles(hex).map do |tile|
           tile.rotate!(0) # reset tile to no rotation since calculations are absolute

@@ -87,7 +87,7 @@ module View
         when nil
           render_game
         when 'map'
-          h(Map, game: @game)
+          h(Map, game: @game, opacity: 1.0)
         when 'market'
           h(StockMarket, game: @game, show_bank: true)
         when 'tiles'

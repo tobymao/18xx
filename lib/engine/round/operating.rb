@@ -227,6 +227,10 @@ module Engine
         @graph.connected_paths(@current_entity)
       end
 
+      def reachable_hexes
+        @graph.reachable_hexes(@current_entity)
+      end
+
       def operating?
         true
       end
