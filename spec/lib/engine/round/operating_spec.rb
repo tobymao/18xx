@@ -3,6 +3,7 @@
 require './spec/spec_helper'
 
 require 'engine/game/g_1889'
+require 'engine/game/g_18_chesapeake'
 require 'engine/phase'
 require 'engine/round/operating'
 
@@ -28,13 +29,7 @@ module Engine
     let(:hex_h13) { game.hex_by_id('H13') }
     let(:hex_i12) { game.hex_by_id('I12') }
 
-    subject do
-      Round::Operating.new([corporation],
-                           game: game,
-                           round_num: 1,
-                           ebuy_pres_swap: false,
-                           ebuy_other_value: false)
-    end
+    subject { Round::Operating.new([corporation], game: game, round_num: 1) }
 
     before :each do
       game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
@@ -48,11 +43,7 @@ module Engine
       let(:player) { game.players.first }
       let(:player2) { game.players[1] }
       subject do
-        Round::Operating.new([corporation, corporation2],
-                             game: game,
-                             round_num: 1,
-                             ebuy_pres_swap: false,
-                             ebuy_other_value: false)
+        Round::Operating.new([corporation, corporation2], game: game, round_num: 1)
       end
 
       before :each do
@@ -90,7 +81,10 @@ module Engine
         end
 
         context 'with 18Chesapeake rules' do
-          subject { Round::Operating.new([corporation, corporation2], game: game, round_num: 1) }
+          subject do
+            allow(game).to receive(:class) { Game::G18Chesapeake }
+            Round::Operating.new([corporation, corporation2], game: game, round_num: 1)
+          end
           it 'should return bundles that cause a president change' do
             player.cash = 1
             corporation.cash = 1
@@ -164,7 +158,10 @@ module Engine
         end
 
         context 'with 18Chesapeake rules' do
-          subject { Round::Operating.new([corporation], game: game, round_num: 1) }
+          subject do
+            allow(game).to receive(:class) { Game::G18Chesapeake }
+            Round::Operating.new([corporation], game: game, round_num: 1)
+          end
           it 'returns returns other corp trains if sold shares does not exceed face value' do
             train = subject.buyable_trains.first
             subject.depot.remove_train(train)

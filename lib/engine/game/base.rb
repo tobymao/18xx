@@ -31,6 +31,7 @@ module Engine
                   :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible
 
       DEV_STAGE = :prealpha
+
       BANK_CASH = 12_000
 
       CURRENCY_FORMAT_STR = '$%d'
@@ -68,6 +69,15 @@ module Engine
       LOCATION_NAMES = {}.freeze
 
       TRACK_RESTRICTION = :semi_restrictive
+
+      EBUY_PRES_SWAP = true # allow presidential swaps of other corps when ebuying
+      EBUY_OTHER_VALUE = true # allow ebuying other corp trains for up to face
+
+      # when is the home token placed? on...
+      # operate
+      # float
+      # operating_round // 1889 places on first operating round
+      HOME_TOKEN_TIMING = :operate
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 

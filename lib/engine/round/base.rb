@@ -216,6 +216,16 @@ module Engine
          " with rotation #{rotation} on #{hex.name}"
       end
 
+      def place_home_token(corporation)
+        hex = @game.hexes.find { |h| h.coordinates == corporation.coordinates }
+        cities = hex.tile.cities
+        city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+        return unless city.tokenable?(corporation)
+
+        @log << "#{corporation.name} places a token on #{hex.name}"
+        city.place_token(corporation)
+      end
+
       def payout_companies
         @game.companies.select(&:owner).each do |company|
           owner = company.owner

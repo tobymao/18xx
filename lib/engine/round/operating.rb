@@ -42,11 +42,10 @@ module Engine
         company: 'Companies',
       }.freeze
 
-      def initialize(entities, game:, round_num: 1, **opts)
+      def initialize(entities, game:, round_num: 1, **_opts)
         super
         @round_num = round_num
-        @ebuy_pres_swap = opts[:ebuy_pres_swap].nil? ? true : opts[:ebuy_pres_swap]
-        @ebuy_other_value = opts[:ebuy_other_value].nil? ? true : opts[:ebuy_other_value]
+        @home_token_timing = @game.class::HOME_TOKEN_TIMING
         @hexes = game.hexes
         @phase = game.phase
         @bank = game.bank
@@ -65,8 +64,8 @@ module Engine
         @teleported = false
 
         payout_companies
-        place_home_stations
-        log_operation(@current_entity)
+        @entities.each { |c| place_home_token(c) } if @home_token_timing == :operating_round
+        start_operating
       end
 
       def name
@@ -111,7 +110,7 @@ module Engine
 
           if @last_share_sold_price
             # 1889, a player cannot contribute to buy a train from another corporation
-            return depot_trains unless @ebuy_other_value
+            return depot_trains unless @game.class::EBUY_OTHER_VALUE
 
             # 18Chesapeake and most others, it's legal to buy trains from other corps until
             # if the player has just sold a share they can buy a train between cash-price_last_share_sold and cash
@@ -163,7 +162,7 @@ module Engine
         # Can't swap presidency
         corporation = bundle.corporation
         if corporation.president?(player) &&
-          (!@ebuy_pres_swap || corporation == @current_entity)
+            (!@game.class::EBUY_PRES_SWAP || corporation == @current_entity)
           share_holders = corporation.share_holders
           remaining = share_holders[player] - bundle.percent
           next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
@@ -213,14 +212,6 @@ module Engine
         else
           @step = self.class::STEPS.first
           @current_entity.pass!
-        end
-      end
-
-      def place_home_stations
-        @entities.each do |corporation|
-          hex = @hexes.find { |h| h.coordinates == corporation.coordinates }
-          city = hex.tile.cities.find { |c| c.reserved_by?(corporation) } || hex.tile.cities.first
-          city.place_token(corporation) if city.tokenable?(corporation)
         end
       end
 
@@ -307,6 +298,13 @@ module Engine
         end
       end
 
+      def start_operating
+        return if finished?
+
+        log_operation(@current_entity)
+        place_home_token(@current_entity) if @home_token_timing == :operate
+      end
+
       def change_entity(_action)
         return unless @current_entity.passed?
 
@@ -318,7 +316,7 @@ module Engine
         end
         @last_share_sold_price = nil
         @current_entity = next_entity
-        log_operation(@current_entity) unless finished?
+        start_operating
       end
 
       def action_processed(action)
