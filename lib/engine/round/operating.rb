@@ -46,6 +46,7 @@ module Engine
         super
         @round_num = round_num
         @home_token_timing = @game.class::HOME_TOKEN_TIMING
+        @ebuy_other_value = @game.class::EBUY_OTHER_VALUE
         @hexes = game.hexes
         @phase = game.phase
         @bank = game.bank
@@ -110,7 +111,7 @@ module Engine
 
           if @last_share_sold_price
             # 1889, a player cannot contribute to buy a train from another corporation
-            return depot_trains unless @game.class::EBUY_OTHER_VALUE
+            return depot_trains unless @ebuy_other_value
 
             # 18Chesapeake and most others, it's legal to buy trains from other corps until
             # if the player has just sold a share they can buy a train between cash-price_last_share_sold and cash
@@ -413,7 +414,7 @@ module Engine
 
         if remaining.positive? && must_buy_train?
           cheapest = @depot.min_depot_train
-          if train != cheapest && train.from_depot?
+          if train != cheapest && (!@ebuy_other_value || train.from_depot?)
             raise GameError, "Cannot purchase #{train.name} train: #{cheapest.name} train available"
           end
           raise GameError, 'Cannot contribute funds when exchanging' if exchange
