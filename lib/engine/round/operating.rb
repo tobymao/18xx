@@ -266,9 +266,14 @@ module Engine
           place_token(action)
         when Action::RunRoutes
           @current_routes = action.routes
+          trains = {}
           @current_routes.each do |route|
+            train = route.train
+            raise GameError, 'Cannot run train twice' if trains[train]
+
+            trains[train] = true
             hexes = route.hexes.map(&:name).join(', ')
-            @log << "#{entity.name} runs a #{route.train.name} train for "\
+            @log << "#{entity.name} runs a #{train.name} train for "\
                     "#{@game.format_currency(route.revenue)} (#{hexes})"
           end
         when Action::Dividend
