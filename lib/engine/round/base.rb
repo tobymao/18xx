@@ -18,10 +18,6 @@ module Engine
         @round_num = 1
       end
 
-      def log_new_round
-        @log << "-- #{name} #{game.turn} --"
-      end
-
       def name
         raise NotImplementedError
       end
