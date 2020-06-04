@@ -30,6 +30,8 @@ module Engine
                   :depot, :finished, :graph, :hexes, :id, :log, :phase, :players, :round,
                   :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible
 
+      attr_accessor :routes
+
       DEV_STAGE = :prealpha
       BANK_CASH = 12_000
 
@@ -207,6 +209,7 @@ module Engine
 
         @round = init_round
         @special = Round::Special.new(@companies, game: self)
+        @routes = []
 
         cache_objects
         connect_hexes
@@ -324,6 +327,7 @@ module Engine
 
         @actions << action
         action_processed(action)
+        @routes << action if action.is_a?(Action::RunRoutes)
 
         while @round.finished? && !@finished
           @round.entities.each(&:unpass!)
