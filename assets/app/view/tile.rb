@@ -64,7 +64,7 @@ module View
 
       children.flatten!
 
-      h(:g, { attrs: { fill: 'none' } }, children)
+      h('g.tile', children)
     end
   end
 end

@@ -119,6 +119,11 @@ a.game__nav:focus {
   .half { width: 49%; }
 }
 
+.tile {
+   fill: none;
+   stroke-width: 1;
+}
+
 .tile_block {
   display: inline-block;
   padding: 0.1em;
