@@ -21,8 +21,6 @@ if (typeof window === 'undefined') {
   }
 }
 
-// if (typeof matches === 'undefeind') {}
-
 if (typeof localStorage === 'undefined') {
   localStorage = {
     getItem: function() {},
