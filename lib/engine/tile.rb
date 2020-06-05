@@ -274,6 +274,10 @@ module Engine
         end
     end
 
+    def revenue_to_render
+      @revenue_to_render ||= stops.map(&:revenue_to_render)
+    end
+
     private
 
     def separate_parts
