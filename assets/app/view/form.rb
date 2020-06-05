@@ -36,9 +36,10 @@ module View
         on: { keyup: enter },
       }
 
+      id = name.gsub(/\s/, '-').downcase
       h(:form, props, [
         h(:legend, name),
-        h(:div, inputs),
+        h("div##{id}", inputs),
         h(:input, attrs: { type: :text }, style: { display: 'none' }),
       ])
     end
@@ -59,17 +60,14 @@ module View
       input = h(el, props, children)
       @inputs[id] = input
       h(
-        :div,
-        { style: { display: 'inline-block', **container_style } },
-        [label, input],
+        'div.input-container',
+        { style: { **container_style } },
+        [h(:label, label), input]
       )
     end
 
     def render_button(text, &block)
       props = {
-        style: {
-          margin: '0.5rem 0.5rem 0 0',
-        },
         attrs: { type: :button },
         on: { click: block },
       }

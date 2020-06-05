@@ -39,8 +39,8 @@ module View
           ['Profile Settings', [
             render_notifications(@user&.dig(:settings, :notifications)),
             h('div#settings__colors', [
-              render_color(:bg_color, 'Background Color', @user&.dig(:settings, :bg_color), dark ? '#000' : '#fff'),
-              render_color(:font_color, 'Font Color', @user&.dig(:settings, :font_color), dark ? '#fff' : '#000'),
+              render_color(:bg_color, 'Background', @user&.dig(:settings, :bg_color), dark ? '#000000' : '#ffffff'),
+              render_color(:font_color, 'Font Color', @user&.dig(:settings, :font_color), dark ? '#ffffff' : '#000000'),
               render_logo_color(@user&.dig(:settings, :red_logo)),
             ]),
             render_tile_colors,
@@ -85,7 +85,6 @@ module View
       @inputs.delete(:red)
       @inputs.delete(:blue)
       submit
-      # `location.reload()`
     end
 
     def render_notifications(checked = true)
@@ -95,7 +94,6 @@ module View
           id: :notifications,
           type: :checkbox,
           attrs: { checked: checked },
-          input_style: { 'margin': '1rem 0 0.5rem 0.5rem' },
         ),
       ])
     end
@@ -111,20 +109,17 @@ module View
     end
 
     def render_logo_color(red_logo)
-      h('div#settings__colors__logo', [
-        render_input(
-          'Alternative Red Logo',
-          id: :red_logo,
-          type: :checkbox,
-          attrs: { checked: red_logo },
-          input_style: { 'margin-left': '0.5rem' },
-        ),
-      ])
+      render_input(
+        'Alternative Red Logo',
+        id: :red_logo,
+        type: :checkbox,
+        attrs: { checked: red_logo },
+      )
     end
 
     def render_tile_colors
       h('div#settings__tiles', [
-        h('div#settings__tiles__label', 'Map & Tile Colors'),
+        h(:label, 'Map & Tile Colors'),
         h('div#settings__tiles__buttons', View::Hex::COLOR.map do |color, hex_color|
           render_input(
             '',
