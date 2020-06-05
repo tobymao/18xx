@@ -88,6 +88,18 @@ module View
       # `location.reload()`
     end
 
+    def render_notifications(checked = true)
+      h('div#settings__notifications', [
+        render_input(
+          'Allow Turn and Message Notifications',
+          id: :notifications,
+          type: :checkbox,
+          attrs: { checked: checked },
+          input_style: { 'margin': '1rem 0 0.5rem 0.5rem' },
+        )
+      ])
+    end
+
     def render_color(id, name, color, default)
       color ||= default
       render_input(
@@ -95,20 +107,19 @@ module View
         id: id,
         type: :color,
         attrs: { value: color },
-        container_style: { height: '2rem' },
-        input_style: { border: '0', 'border-radius': '2px', padding: '0', margin: '0 1.5rem 0 0.5rem',
-                       height: '1.8rem', width: '2.7rem' }
       )
     end
 
     def render_logo_color(red_logo)
-      render_input(
-        'Alternative Red Logo',
-        id: :red_logo,
-        type: :checkbox,
-        attrs: { checked: red_logo },
-        input_style: { 'margin-left': '0.5rem' },
-      )
+      h('div#settings__colors__logo', [
+        render_input(
+          'Alternative Red Logo',
+          id: :red_logo,
+          type: :checkbox,
+          attrs: { checked: red_logo },
+          input_style: { 'margin-left': '0.5rem' },
+        )
+      ])
     end
 
     def render_tile_colors
@@ -120,22 +131,9 @@ module View
             id: color,
             type: :color,
             attrs: { title: color, value: @user&.dig(:settings, color) || hex_color },
-            container_style: { overflow: 'hidden', width: '3rem', height: '2rem' },
-            input_style: { border: '0', 'border-radius': '2px', padding: '0',
-                           width: '90%', height: '100%', margin: '3px' },
           )
         end),
       ])
-    end
-
-    def render_notifications(checked = true)
-      render_input(
-        'Allow Turn and Message Notifications',
-        id: :notifications,
-        type: :checkbox,
-        attrs: { checked: checked },
-        input_style: { 'margin-left': '0.5rem' },
-      )
     end
 
     def submit

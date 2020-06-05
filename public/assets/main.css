@@ -1,11 +1,16 @@
 * { font-family: 'Inconsolata', monospace; }
 
+input, select {
+  cursor: pointer;
+  margin: 1rem;
+}
+
 /* prevent hover effects on mobile devices */
 @media(hover: hover) and (pointer: fine) {
   .button:hover, .button-link:hover {
     background: black;
-    border-color: rgb(217, 210, 210);
-    color: white;
+    border-color: gainsboro;
+    color: gainsboro;
   }
   .button, .button-link {
     outline: 0;
@@ -72,6 +77,40 @@ a.game__nav:focus {
     background-color: black;
     color: gainsboro;
   }
+}
+
+#settings__notifications, #settings__colors, #settings__tiles {
+  height: 3rem;
+}
+#settings__colors input[type=color] {
+  border: 0;
+  border-radius: 2px;
+  margin: 0 1.5rem 0 0.5rem;
+  padding: 0;
+  height: 1.8rem;
+  width: 2.7rem;
+}
+#settings__colors__logo {
+  display: inline-block;
+}
+
+#settings__tiles > div {
+  display: inline-block;
+}
+#settings__tiles__label {
+  margin-right: 0.5rem;
+}
+#settings__tiles input[type=color] {
+  border: 0;
+  border-radius: 2px;
+  margin: 3px;
+  padding: 0;
+  height: 1.8rem;
+  width: 2.7rem;
+}
+
+#settings__buttons {
+  margin: 1rem 0;
 }
 
 .card_header {

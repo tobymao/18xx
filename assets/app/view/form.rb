@@ -48,7 +48,6 @@ module View
       # rubocop:enable Layout/LineLength
       props = {
         style: {
-          margin: '1rem',
           **input_style,
         },
         attrs: {
