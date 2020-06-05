@@ -105,7 +105,7 @@ module View
 
       if game['user']['id'] == @user['id']
         children << button('Start', -> { start_game(game) }) if game['players'].size > 1
-        children << button('Delete', -> { delete_game(game) })
+        children << button('🗑️', -> { delete_game(game) })
       elsif game['players'].any? { |p| p['id'] == @user['id'] }
         children << button('Leave', -> { leave_game(game) })
       elsif game['max_players'] > game['players'].size
