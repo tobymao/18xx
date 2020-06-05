@@ -91,12 +91,8 @@ module View
 
       def render_part
         attrs = {
-          fill: 'black',
           transform: "scale(1.1) #{translate}",
-          'text-anchor': 'middle',
           'stroke-width': 0.5,
-          'alignment-baseline': 'middle',
-          'dominant-baseline': 'middle',
         }
 
         rendered_name = @name_segments.map.with_index do |segment, index|
@@ -106,7 +102,7 @@ module View
         end
 
         h(:g, { attrs: { transform: rotation_for_layout } }, [
-            h(:g, { style: { 'pointer-events': 'none' }, attrs: attrs }, [
+          h('g.tile__text', { attrs: attrs }, [
                 render_background_box,
                 *rendered_name,
               ]),

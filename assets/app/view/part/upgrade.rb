@@ -32,6 +32,8 @@ module View
         y: -45,
       }.freeze
 
+      WATER_PATH = 'M -15 -7 Q -7.5 -15, 0 -7 S 7.5 1, 15 -7M -15 -2  Q -7.5 -10, 0 -2  S 7.5 6, 15 -2'
+
       def preferred_render_locations
         [
           P_CENTER,
@@ -60,13 +62,7 @@ module View
 
         children = [cost] + terrain
 
-        attrs = {
-          class: 'upgrade',
-          'stroke-width': 1,
-          transform: "#{translate} #{rotation_for_layout}",
-        }
-
-        h(:g, { attrs: attrs }, children)
+        h(:g, { attrs: { transform: "#{translate} #{rotation_for_layout}" } }, children)
       end
 
       def mountain(delta_x: 0, delta_y: 0)
@@ -76,23 +72,8 @@ module View
 
       def water(delta_x: 0, delta_y: 0)
         h(:g, { attrs: { transform: "translate(#{10 + delta_x} #{12 + delta_y}) scale(0.7)" } }, [
-            h(:path, attrs: {
-                d: 'M -15 -7 Q -7.5 -15, 0 -7 S 7.5 1, 15 -7M -15 -2  Q -7.5 -10, 0 -2  S 7.5 6, 15 -2',
-                fill: 'none',
-                stroke: 'white',
-                'stroke-width': '2',
-                'stroke-linecap': 'round',
-                'stroke-linejoin': 'round',
-              }),
-            h(:path,  attrs: {
-                d: 'M -15 -7 Q -7.5 -15, 0 -7 S 7.5 1, 15 -7M -15 -2  Q -7.5 -10, 0 -2  S 7.5 6, 15 -2',
-                fill: 'none',
-                stroke: '#147ebe',
-                'stroke-width': '2',
-                'stroke-linecap': 'round',
-                'stroke-linejoin': 'round',
-              }),
-          ])
+          h('path.tile__water', attrs: { d: WATER_PATH }),
+        ])
       end
     end
   end

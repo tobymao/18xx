@@ -95,21 +95,8 @@ module View
       end
 
       def render_part
-        attrs = {
-          transform: "#{translate} #{rotation_for_layout}",
-          'pointer-events': 'none',
-        }
-
-        text_attrs = {
-          fill: 'black',
-          transform: 'scale(2.5)',
-          'text-anchor': 'middle',
-          'alignment-baseline': 'middle',
-          'dominant-baseline': 'middle',
-        }
-
-        h(:g, { attrs: attrs }, [
-          h(:text, { attrs: text_attrs }, @label),
+        h(:g, { attrs: { transform: "#{translate} #{rotation_for_layout}" } }, [
+          h('text.tile__text', { attrs: { transform: 'scale(2.5)' } }, @label),
         ])
       end
     end

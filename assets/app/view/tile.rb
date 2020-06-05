@@ -58,7 +58,7 @@ module View
       end
 
       children << render_tile_part(Part::Label) if @tile.label
-      children << render_tile_part(Part::Upgrades) if @tile.upgrades
+      children << render_tile_part(Part::Upgrades) if @tile.upgrades.any?
       children << render_tile_part(Part::Blocker) if should_render_blocker?
       children << render_tile_part(Part::LocationName) if @tile.location_name && (@tile.cities.size <= 1)
 
