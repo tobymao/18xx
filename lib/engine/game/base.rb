@@ -319,8 +319,6 @@ module Engine
           return clone(@actions)
         end
 
-        return self if @finished && !action.is_a?(Action::Message)
-
         @phase.process_action(action)
         # company special power actions are processed by a different round handler
         if action.entity.is_a?(Company)
@@ -339,8 +337,6 @@ module Engine
 
         while @round.finished? && !@finished
           @round.entities.each(&:unpass!)
-          break end_game if @round.end_game
-
           next_round!
         end
 
@@ -422,6 +418,13 @@ module Engine
 
       def sellable_turn?
         @turn > 1
+      end
+
+      def end_game!
+        @finished = true
+        scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
+        @log << "Game over: #{scores.join(', ')}"
+        @round
       end
 
       private
@@ -581,12 +584,12 @@ module Engine
             reorder_players
             new_operating_round
           when Round::Operating
-            return end_game if @round.bankrupt
+            return end_game! if @round.bankrupt
 
             if @round.round_num < @operating_rounds
               new_operating_round(@round.round_num + 1)
             elsif @bank.broken?
-              end_game
+              end_game!
             else
               @turn += 1
               or_set_finished
@@ -601,13 +604,6 @@ module Engine
       def action_processed(_action); end
 
       def or_set_finished; end
-
-      def end_game
-        @finished = true
-        scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
-        @log << "Game over: #{scores.join(', ')}"
-        @round
-      end
 
       def priority_deal_player
         if @round.current_entity.player?
