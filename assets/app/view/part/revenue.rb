@@ -53,28 +53,11 @@ module View
         stops = @tile.stops
         @hide = stops.any?(&:hide)
 
-        revenues = stops.map(&:revenue).uniq
-
-        return if @hide || revenues.empty?
-
-        if revenues.one?
-          revenues = revenues.first
-        else
-          puts "WARNING: encountered multiple different revenues on tile #{@tile.name}"
-          @revenue = nil
-          return
-        end
-
-        @revenue =
-          if revenues.values.uniq.one?
-            revenues.values.first
-          else
-            revenues
-          end
+        @revenue = @tile.revenue_to_render.first
       end
 
       def should_render?
-        ![nil, 0].include?(@revenue)
+        !@hide && ![nil, 0].include?(@revenue)
       end
 
       def multi_revenue?

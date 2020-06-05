@@ -186,5 +186,30 @@ module Engine
         end
       end
     end
+
+    describe '#revenue_to_render' do
+      {
+        '1846' => {
+          'C15' => [40],
+          'C17' => [{ yellow: 40, brown: 60 }],
+          'D6' => [10, 10, 10, 10],
+        },
+        '1882' => {
+          'H4' => [30],
+          'J10' => [40, 40],
+          'K15' => [{ yellow: 30, brown: 30 }],
+        },
+      }.each do |game_title, specs|
+        game = Engine::GAMES_BY_TITLE[game_title].new(%w[p1 p2 p3])
+        describe game_title do
+          specs.each do |hex, expected_revenue|
+            tile = game.hex_by_id(hex).tile
+            it "returns #{expected_revenue} for #{tile.name}" do
+              expect(tile.revenue_to_render).to eq(expected_revenue)
+            end
+          end
+        end
+      end
+    end
   end
 end

@@ -35,6 +35,21 @@ module View
       true
     end
 
+    # if false, then the revenue is rendered by Part::Cities or Part::Towns
+    def should_render_revenue?
+      revenue = @tile.revenue_to_render
+
+      return false if revenue.empty?
+
+      return false if revenue.first.is_a?(Numeric) && (@tile.cities + @tile.towns).one?
+
+      return false if revenue.uniq.size > 1
+
+      return false if revenue.size == 2
+
+      true
+    end
+
     def render
       # hash mapping the different regions to a number representing how much
       # they've been used; it gets passed to the different tile parts and is
@@ -51,11 +66,7 @@ module View
       # OO tiles have different rules...
       children << render_tile_part(Part::LocationName) if @tile.location_name && @tile.cities.size > 1
 
-      # cities and towns render revenue, unless there are more than 2 cities on
-      # the tile, or the revenue varies by phase
-      if (@tile.cities.size > 2) || @tile.stops.any? { |s| s.uniq_revenues.size > 1 }
-        children << render_tile_part(Part::Revenue)
-      end
+      children << render_tile_part(Part::Revenue) if should_render_revenue?
 
       children << render_tile_part(Part::Label) if @tile.label
       children << render_tile_part(Part::Upgrades) if @tile.upgrades.any?
