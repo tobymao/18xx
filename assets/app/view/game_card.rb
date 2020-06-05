@@ -59,7 +59,7 @@ module View
       buttons = []
       if owner?
         buttons << if @confirm_delete != @gdata['id']
-                     render_button('🗑️', -> { store(:confirm_delete, @gdata['id']) })
+                     render_button('Delete', -> { store(:confirm_delete, @gdata['id']) })
                    else
                      render_button('Confirm', -> { delete_game(@gdata) })
                    end
