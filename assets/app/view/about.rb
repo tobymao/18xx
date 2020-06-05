@@ -19,9 +19,8 @@ module View
       MESSAGE
 
       props = {
-        props: {
-          innerHTML: message,
-        },
+        props: { innerHTML: message },
+        style: { margin: '2rem 1rem' },
       }
 
       h('div#about', props)
