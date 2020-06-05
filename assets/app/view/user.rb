@@ -32,10 +32,7 @@ module View
             h('a.default-bg', { attrs: { href: '/forgot' } }, 'Forgot Password'),
           ]]
         when :profile
-          # dark = `window.matchMedia('(prefers-color-scheme: dark)').matches`
-          # bg_color = `window.getComputedStyle(document.getElementById("app"))['background-color']`
-          # store(:flash_opts, { message: bg_color, color: '#888' }, skip: true)
-          dark = 'true'
+          dark = `window.matchMedia('(prefers-color-scheme: dark)').matches`
           ['Profile Settings', [
             render_notifications(@user&.dig(:settings, :notifications)),
             h('div#settings__colors', [
@@ -74,16 +71,14 @@ module View
     end
 
     def reset_settings
-      @inputs.delete(:font_color)
-      @inputs.delete(:bg_color)
-      @inputs.delete(:red_logo)
-      @inputs.delete(:white)
-      @inputs.delete(:yellow)
-      @inputs.delete(:green)
-      @inputs.delete(:brown)
-      @inputs.delete(:gray)
-      @inputs.delete(:red)
-      @inputs.delete(:blue)
+      `document.querySelectorAll('#settings__notifications input')[0].checked = true`
+      dark = `window.matchMedia('(prefers-color-scheme: dark)').matches`
+      Native(`document.querySelectorAll('input[placeholder="Background"]')[0]`).value = dark ? '#000000' : '#ffffff'
+      Native(`document.querySelectorAll('input[placeholder="Font Color"]')[0]`).value = dark ? '#ffffff' : '#000000'
+      `document.querySelectorAll('input[placeholder="Alternative Red Logo"]')[0].checked = false`
+      View::Hex::COLOR.each do |color, hex_color|
+        `document.querySelectorAll('input[title=' + #{color} + ']')[0].value = #{hex_color}`
+      end
       submit
     end
 

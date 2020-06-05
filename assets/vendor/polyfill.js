@@ -2,9 +2,14 @@ if (typeof setTimeout === 'undefined') { var setTimeout = function setTimeout(fu
 
 if (typeof window === 'undefined') {
   window = {
+    addEventListener: function() {},
+    matchMedia: function() {
+      return {
+        matches: false
+      }
+    },
     requestAnimationFrame: function() {},
     scrollTo: function() {},
-    addEventListener: function() {},
     location: {
       pathname: '',
       hash: '',
@@ -15,6 +20,8 @@ if (typeof window === 'undefined') {
     }
   }
 }
+
+// if (typeof matches === 'undefeind') {}
 
 if (typeof localStorage === 'undefined') {
   localStorage = {
