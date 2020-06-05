@@ -1,21 +1,16 @@
 # frozen_string_literal: true
 
 require_relative '../game_error'
-require_relative 'base'
-require_relative 'node'
 require_relative 'revenue_center'
 
 module Engine
   module Part
-    class City < Base
-      include RevenueCenter
-      include Node
-
+    class City < RevenueCenter
       attr_accessor :reservations
-      attr_reader :slots, :tokens, :revenue
+      attr_reader :slots, :tokens
 
-      def initialize(revenue, slots = 1)
-        @revenue = parse_revenue(revenue)
+      def initialize(revenue, slots = 1, groups = nil, hide = false)
+        super(revenue, groups, hide)
         @slots = slots.to_i
         @tokens = Array.new(@slots)
         @reservations = []

@@ -50,10 +50,12 @@ module View
       def load_from_tile
         @slots = @tile.cities.map(&:slots).sum + @tile.towns.size
         @cities = @tile.cities.size
+        stops = @tile.stops
+        @hide = stops.any?(&:hide)
 
-        revenues = @tile.stops.map(&:revenue).uniq
+        revenues = stops.map(&:revenue).uniq
 
-        return if revenues.empty?
+        return if @hide || revenues.empty?
 
         if revenues.one?
           revenues = revenues.first

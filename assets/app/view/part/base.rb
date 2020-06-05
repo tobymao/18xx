@@ -110,7 +110,7 @@ module View
         x = render_location[:x]
         y = render_location[:y]
 
-        "translate(#{x} #{y})"
+        "translate(#{x.round(2)} #{y.round(2)})"
       end
 
       def scale

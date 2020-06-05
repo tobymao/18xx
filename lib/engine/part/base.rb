@@ -77,6 +77,10 @@ module Engine
         false
       end
 
+      def border?
+        false
+      end
+
       def inspect
         "<#{self.class.name}: hex: #{hex&.name}>"
       end

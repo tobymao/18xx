@@ -76,7 +76,7 @@ module View
       Native(`document.querySelectorAll('input[placeholder="Background"]')[0]`).value = dark ? '#000000' : '#ffffff'
       Native(`document.querySelectorAll('input[placeholder="Font Color"]')[0]`).value = dark ? '#ffffff' : '#000000'
       `document.querySelectorAll('input[placeholder="Alternative Red Logo"]')[0].checked = false`
-      View::Hex::COLOR.each do |color, hex_color|
+      Lib::Hex::COLOR.each do |color, hex_color|
         `document.querySelectorAll('input[title=' + #{color} + ']')[0].value = #{hex_color}`
       end
       submit
@@ -115,7 +115,7 @@ module View
     def render_tile_colors
       h('div#settings__tiles', [
         h(:label, 'Map & Tile Colors'),
-        h('div#settings__tiles__buttons', View::Hex::COLOR.map do |color, hex_color|
+        h('div#settings__tiles__buttons', Lib::Hex::COLOR.map do |color, hex_color|
           render_input(
             '',
             id: color,

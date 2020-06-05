@@ -14,13 +14,8 @@ module View
     )
       props = {
         style: {
-          display: 'inline-block',
           width: "#{80 * scale}px",
           height: "#{97 * scale}px",
-          padding: '0.1em',
-          margin: '10px 1px 10px 0',
-          'outline-style': 'solid',
-          'outline-width': 'thin',
         },
       }
 
@@ -38,7 +33,7 @@ module View
         text += "-#{rotation}" if rotations.size > 1
         text += " × #{num}" if num
 
-        h(:div, props, [
+        h('div.tile_block', props, [
             h(:div, { style: { 'text-align': 'center', 'font-size': '12px' } }, text),
             h(:svg, { style: { width: '100%', height: '100%' } }, [
               h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [

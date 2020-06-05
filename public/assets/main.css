@@ -188,3 +188,11 @@ input#chatbar {
 @media only screen and (min-width: 900px) {
   .half { width: 49%; }
 }
+
+.tile_block {
+  display: inline-block;
+  padding: 0.1em;
+  margin: 10px 1px 10px 0;
+  outline-style: solid;
+  outline-width: thin;
+}

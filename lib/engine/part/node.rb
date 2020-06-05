@@ -2,7 +2,7 @@
 
 module Engine
   module Part
-    module Node
+    class Node < Base
       def clear!
         @paths = nil
         @exits = nil
