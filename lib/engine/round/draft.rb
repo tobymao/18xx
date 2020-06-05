@@ -7,7 +7,7 @@ module Engine
     class Draft < Base
       attr_reader :companies, :last_to_act
 
-      def initialize(entities, game:)
+      def initialize(entities, game:, **_kwargs)
         super
 
         @companies = game.companies.sort_by { @game.rand }
