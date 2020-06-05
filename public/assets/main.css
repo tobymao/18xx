@@ -22,7 +22,7 @@ input, select {
   cursor: pointer;
   margin: 0.5rem;
 }
-label + input, label + select, input + label, select + label {
+input + label, select + label {
   margin-left: 0.5rem;
 }
 label.right {
@@ -149,13 +149,13 @@ input#chatbar {
 }
 
 .card_header {
-  font-size: 15px;
+  font-size: 1.2rem;
   font-weight: bold;
   margin: 1rem 0;
 }
 
 .back {
-  font-size: 15px;
+  font-size: 1.2rem;
   font-weight: bold;
   margin: 1rem 0;
 }
