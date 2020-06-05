@@ -577,8 +577,7 @@ module Engine
       end
 
       def next_round!
-        if (game_end = game_ending?)
-          _reason, after = game_end
+        if (_reason, after = game_end_reason)
           if after != :full_round || (@round.is_a?(Round::Operating) && @round.round_num == @operating_rounds)
             return end_game!
           end
@@ -605,10 +604,8 @@ module Engine
       end
 
       def game_ending_description
-        game_end = game_ending?
-        return unless game_end
-
-        reason, after = game_end
+        reason, after = game_end_reason
+        return unless after
 
         after_text = ''
 
@@ -631,7 +628,7 @@ module Engine
         "#{reason_map[reason]}#{after_text}"
       end
 
-      def game_ending?
+      def game_end_reason
         return :bankrupt, :immediate if @round.is_a?(Round::Operating) && @round.bankrupt
         return :bank, :full_round if @bank.broken?
       end
