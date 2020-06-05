@@ -76,7 +76,7 @@ module View
         store(:selected_company, nil, skip: true)
       end
 
-      h('button.margined', { style: { display: 'block' }, on: { click: choose } }, 'Choose')
+      h('button.button.margined', { style: { display: 'block' }, on: { click: choose } }, 'Choose')
     end
 
     def render_player
