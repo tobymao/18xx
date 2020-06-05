@@ -96,7 +96,7 @@ module View
           type: :checkbox,
           attrs: { checked: checked },
           input_style: { 'margin': '1rem 0 0.5rem 0.5rem' },
-        )
+        ),
       ])
     end
 
@@ -118,7 +118,7 @@ module View
           type: :checkbox,
           attrs: { checked: red_logo },
           input_style: { 'margin-left': '0.5rem' },
-        )
+        ),
       ])
     end
 
