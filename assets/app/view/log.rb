@@ -25,6 +25,7 @@ module View
         hook: {
           postpatch: ->(_, vnode) { scroll_to_bottom.call(vnode) },
           insert: ->(vnode) { scroll_to_bottom.call(vnode) },
+          destroy: ->(vnode) { store(:follow_scroll, true, skip: true) },
         },
         on: { scroll: scroll_handler },
         style: {
