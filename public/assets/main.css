@@ -108,6 +108,10 @@ a.game__nav:focus {
   }
 }
 
+div#about {
+  margin: 2rem 1rem;
+}
+
 #profile-settings {
   margin-top: 1rem;
 }
@@ -142,6 +146,10 @@ a.game__nav:focus {
 }
 #settings__tiles input[type=color] {
   margin: 3px;
+}
+
+#chatlog, input#chatbar {
+  width: 100%;
 }
 
 input#chatbar {

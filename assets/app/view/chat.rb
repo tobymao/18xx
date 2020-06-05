@@ -36,7 +36,7 @@ module View
         end
       end
 
-      children << h('input#chatbar', style: { width: '100%' }, on: { keyup: enter }) if @user
+      children << h('input#chatbar', on: { keyup: enter }) if @user
 
       props = {
         key: 'global_chat',
