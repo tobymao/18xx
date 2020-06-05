@@ -49,6 +49,7 @@ module Engine
     "E17": "Cleveland",
     "E21": "Salamanca",
     "E23": "Binghamton",
+    "F20": "Homewood",
     "G3": "Springfield",
     "G7": "Terre Haute",
     "G9": "Indianapolis",
