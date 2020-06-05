@@ -33,10 +33,6 @@ module Engine
   },
   "capitalization": "incremental",
   "layout": "pointy",
-  "axes": {
-    "rows": "numbers",
-    "columns": "letters"
-  },
   "mustSellInBlocks": false,
   "locationNames": {
     "B8": "Holland",
@@ -48,7 +44,6 @@ module Engine
     "C17": "Windsor",
     "D14": "Toledo",
     "D20": "Erie",
-    "C23": "Buffalo",
     "D22": "Buffalo",
     "E11": "Fort Wayne",
     "E17": "Cleveland",
@@ -60,7 +55,6 @@ module Engine
     "G13": "Dayton",
     "G15": "Columbus",
     "G19": "Wheeling",
-    "G21": "Pittsburgh",
     "G21": "Pittsburgh",
     "H12": "Cincinnati",
     "H20": "Cumberland",
@@ -160,16 +154,16 @@ module Engine
     {
       "name": "Michigan Southern",
       "value": 60,
-      "discount": -80,
+      "debt": 80,
       "revenue": 0,
-      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). Splits revenue evenly with owner. Buyer pays an extra $80 (\"debt\")."
+      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). Splits revenue evenly with owner."
     },
     {
       "name": "Big 4",
       "value": 40,
-      "discount": -60,
+      "debt": 60,
       "revenue": 0,
-      "desc": "Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). Splits revenue evenly with owner. Buyer pays an extra $60 (\"debt\")."
+      "desc": "Starts with $60 in treasury, a 2 train, and a token in Indianapolis (G9). Splits revenue evenly with owner."
     },
     {
       "name": "Chicago and Western Indiana",
@@ -430,7 +424,7 @@ module Engine
         "I11",
         "J6"
       ],
-      "c=r:0": [
+      "city": [
         "B16",
         "C9",
         "D14",
@@ -455,7 +449,7 @@ module Engine
       ]
     },
     "gray": {
-      "p=a:5,b:0": [
+      "p=a:0,b:5": [
         "A15",
         "C7"
       ],
@@ -485,20 +479,20 @@ module Engine
       "o=r:yellow_40|brown_60;p=a:1,b:_0;l=E": [
         "C17"
       ],
-      "o=yellow_30|brown_60;p=a:0,b:_0;l=E": [
+      "o=r:yellow_30|brown_60;p=a:0,b:_0;l=E": [
         "C21"
       ],
-      "o=yellow_30|brown_60;p=a:1,b:_0;l=E": [
+      "o=r:yellow_30|brown_60;p=a:1,b:_0;l=E": [
         "D22"
       ],
       "o=r:yellow_20|brown_50;p=a:1,b:_0;l=E": [
         "E23",
         "I17"
       ],
-      "o=yellow_30|brown_70;p=a:1,b:_0;l=E": [
+      "o=r:yellow_30|brown_70;p=a:1,b:_0;l=E": [
         "F22"
       ],
-      "o=yellow_30|brown_70;p=a:1,b:_0;p=a:2,b:_0;l=E": [
+      "o=r:yellow_30|brown_70;p=a:1,b:_0;p=a:2,b:_0;l=E": [
         "G21"
       ],
       "o=r:yellow_20|brown_40;p=a:2,b:_0;l=E": [
@@ -515,7 +509,7 @@ module Engine
       "c=r:40,s:2;p=a:1,b:_0;p=a:3,b:_0;l=Z;u=c:40,t:water": [
         "C15"
       ],
-      "c=r:10;c=r:10;c=r:10;c=r:10;p=a:3,b:_0;p=a:4,b:_1;p=a:5,b:_2;p=a:0,b:_3;l=Chi": [
+      "c=r:10;c=r:10;c=r:10;c=r:10;p=a:0,b:_0;p=a:3,b:_1;p=a:4,b:_2;p=a:5,b:_3;l=Chi": [
         "D6"
       ],
       "c=r:10,s:2;p=a:1,b:_0;p=a:3,b:_0;p=a:0,b:_0": [
@@ -529,7 +523,7 @@ module Engine
       ]
     },
     "blue": {
-      "": [
+      "blank": [
         "C19",
         "D16"
       ]
