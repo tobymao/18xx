@@ -194,6 +194,10 @@ module Engine
       check_overlap!
       check_connected!(token)
 
+      stops.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
+        raise GameError, "Cannot use group #{key} more than once" unless group.one?
+      end
+
       stops_.map { |stop| stop.route_revenue(@phase, @train) }.sum
     end
 

@@ -33,9 +33,7 @@ module Engine
   "mustSellInBlocks": false,
   "locationNames": {
     "A3": "Pittsburgh",
-    "B2": "Pittsburgh",
     "A7": "Ohio",
-    "A13": "West Virginia Coal",
     "B14": "West Virginia Coal",
     "B4": "Charleroi & Connellsville",
     "C5": "Green Spring",
@@ -599,19 +597,19 @@ module Engine
       ]
     },
     "red": {
-      "c=r:yellow_40|green_50|brown_60|gray_80;p=a:5,b:_0": [
+      "c=r:yellow_40|green_50|brown_60|gray_80,g:Pittsburgh;p=a:5,b:_0;b=e:4": [
         "A3"
       ],
-      "o=r:yellow_40|green_50|brown_60|gray_80;p=a:0,b:_0": [
+      "o=r:yellow_40|green_50|brown_60|gray_80,g:Pittsburgh,h:1;p=a:0,b:_0;b=e:1": [
         "B2"
       ],
       "o=r:yellow_40|green_60|brown_80|gray_100;p=a:4,b:_0;p=a:5,b:_0": [
         "A7"
       ],
-      "o=r:yellow_40|green_50|brown_60|gray_80;p=a:4,b:_0": [
+      "o=r:yellow_40|green_50|brown_60|gray_80,g:West Virginia Coal,h:1;p=a:4,b:_0;b=e:5": [
         "A13"
       ],
-      "o=r:yellow_40|green_50|brown_60|gray_80;p=a:3,b:_0;p=a:4,b:_0": [
+      "o=r:yellow_40|green_50|brown_60|gray_80,g:West Virginia Coal;p=a:3,b:_0;p=a:4,b:_0;b=e:2": [
         "B14"
       ],
       "o=r:yellow_30|green_40|brown_50|gray_60;p=a:2,b:_0": [

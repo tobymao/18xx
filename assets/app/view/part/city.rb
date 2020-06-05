@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/hex'
 require 'view/runnable'
 require 'view/part/base'
 require 'view/part/city_slot'
@@ -58,7 +57,7 @@ module View
         }],
         3 => [:polygon, {
           fill: 'white',
-          # Lib::Hex::POINTS scaled by 0.458
+          # Hex::POINTS scaled by 0.458
           points: '45.8,0 22.9,-39.846 -22.9,-39.846 -45.8,0 -22.9,39.846 22.9,39.846',
         }],
         4 => [:rect, {
@@ -144,7 +143,7 @@ module View
           # use the rotation on the outer <g> to position the slot, then use
           # -rotation on the Slot so its contents are rendered without
           # rotation
-          h(:g, { attrs: { 'stroke-width': 1, transform: "rotate(#{rotation})" } }, [
+          h(:g, { attrs: { transform: "rotate(#{rotation})" } }, [
               h(:g, { attrs: { transform: "#{translate} rotate(#{-rotation})" } }, [
                   h(CitySlot, city: @city,
                               num_cities: @num_cities,
@@ -213,7 +212,7 @@ module View
 
         increment_weight_for_regions(regions)
 
-        h(:g, { attrs: { transform: "translate(#{x} #{y})" } }, [
+        h(:g, { attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
             h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
                 h(:g, { attrs: { transform: "translate(#{displacement} 0)" } }, [
                     h(Part::SingleRevenue,

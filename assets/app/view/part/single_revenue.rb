@@ -16,14 +16,9 @@ module View
           'text-anchor': 'middle',
         }
 
-        attrs = {
-          'stroke-width': 1,
-          transform: @transform,
-        }
-
         h(
           :g,
-          { attrs: attrs },
+          { attrs: { transform: @transform } },
           [
             h(:circle, attrs: { r: 14, fill: 'white' }),
             h(:text, { attrs: text_attrs }, @revenue),

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_tree 'engine'
 require 'lib/hex'
 require 'lib/tile_selector'
 require 'view/runnable'
@@ -18,16 +17,6 @@ module View
       pointy: [SIZE * Math.sqrt(3) / 2, SIZE * 3 / 2],
     }.freeze
 
-    COLOR = {
-      white: '#EAE0C8',
-      yellow: '#fde900',
-      green: '#71bf44',
-      brown: '#cb7745',
-      gray: '#bcbdc0',
-      red: '#ec232a',
-      blue: '#00f',
-    }.freeze
-
     NON_TRANSPARENT_ROLES = %i[tile_selector tile_page].freeze
 
     needs :hex
@@ -37,11 +26,10 @@ module View
     needs :opacity, default: nil
 
     def render
-      children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
-
       @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
       @tile = @selected && @round.can_lay_track? && @tile_selector&.tile ? @tile_selector.tile : @hex.tile
 
+      children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
       children << h(Tile, tile: @tile) if @tile
       children << h(View::TriangularGrid) if Lib::Params['grid']
 
@@ -65,14 +53,15 @@ module View
 
       props = {
         attrs: {
-          id: "hex-#{@hex.coordinates}",
           transform: transform,
-          fill: COLOR.fetch(@tile&.color, 'white'),
+          fill: Lib::Hex::COLOR.fetch(@tile&.color, 'white'),
           stroke: 'black',
-          opacity: opacity(opaque),
-          cursor: clickable ? 'pointer' : nil,
        },
       }
+
+      opacity_level = opacity(opaque)
+      props[:attrs][:opacity] = opacity_level if opacity_level != 1.0
+      props[:attrs][:cursor] = 'pointer' if clickable
 
       props[:on] = { click: ->(e) { on_hex_click(e) } } if clickable
       props[:attrs]['stroke-width'] = 5 if @selected
@@ -82,7 +71,7 @@ module View
 
     def translation
       t_x, t_y = LAYOUT[@hex.layout]
-      "translate(#{t_x * @hex.x + SIZE}, #{t_y * @hex.y + SIZE})"
+      "translate(#{(t_x * @hex.x + SIZE).round(2)}, #{(t_y * @hex.y + SIZE).round(2)})"
     end
 
     def transform

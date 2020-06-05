@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_tree 'engine'
-
 require 'lib/params'
 require 'view/tile_manifest'
 require 'view/tiles'

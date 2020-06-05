@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/part/blocker'
+require 'view/part/borders'
 require 'view/part/cities'
 require 'view/part/label'
 require 'view/part/location_name'
@@ -42,6 +43,7 @@ module View
 
       children = []
 
+      children << h(Part::Borders, tile: @tile) if @tile.borders.any?
       children << render_tile_part(Part::Track, routes: @routes) if @tile.exits.any?
       children << render_tile_part(Part::Cities) if @tile.cities.any?
       children << render_tile_part(Part::Towns, routes: @routes) if @tile.towns.any?
@@ -62,11 +64,7 @@ module View
 
       children.flatten!
 
-      attrs = {
-        fill: 'none',
-        'stroke-width' => 1,
-      }
-      h(:g, { attrs: attrs }, children)
+      h(:g, { attrs: { fill: 'none' } }, children)
     end
   end
 end

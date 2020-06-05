@@ -1,32 +1,34 @@
 # frozen_string_literal: true
 
+if RUBY_ENGINE == 'opal'
+  require_tree 'part'
+else
+  require 'require_all'
+  require_rel 'part'
+end
+
 require_relative 'game_error'
-require_relative 'part/city'
-require_relative 'part/town'
-require_relative 'part/edge'
-require_relative 'part/junction'
-require_relative 'part/label'
-require_relative 'part/offboard'
-require_relative 'part/path'
-require_relative 'part/upgrade'
 require_relative 'config/tile'
 
 module Engine
   class Tile
     include Config::Tile
-    # * [t]own     - [r]evenue, local_[id] (default: 0)
-    # * [c]ity     - [r]evenue, local_[id] (default: 0), [s]lots (default 1)
-    # * [o]ffboard - [r]evenues for different phases (separated by "/")
-    # * [p]ath     - endpoints [a] and [b]; the endpoints can be an edge number,
-    #                town/city/offboard reference, or a lawson-style [j]unction
-    # * [l]abel    - large letters on tile
-    # * [u]pgrade  - [c]ost, [t]errain (multiple terrain types separated by "+"),
-
-    # [r]evenue    - number, list of numbers separated by "/", or something like
-    #                yellow_30|brown_60|diesel_100
+    # * [t]own       - [r]evenue, local_[id] (default: 0)
+    # * [c]ity       - [r]evenue, local_[id] (default: 0), [s]lots (default 1)
+    # * [o]ffboard   - [r]evenues for different phases (separated by "|")
+    # *    [g]roups     - identifier to determine a group of related nodes, like large offboards
+    #                     array separated by "|"
+    # *    [r]evenue    - number, list of numbers separated by "|", or something like
+    #                     yellow_30|brown_60|diesel_100
+    # *    [h]ide       - hide the revenue label if present: 1
+    # * [p]ath       - endpoints [a] and [b]; the endpoints can be an edge number,
+    #                  town/city/offboard reference, or a lawson-style [j]unction
+    # * [l]abel      - large letters on tile
+    # * [u]pgrade    - [c]ost, [t]errain (multiple terrain types separated by "+"),
+    # * [b]order     - [e]dge
 
     attr_accessor :hex, :legal_rotations, :location_name, :name, :index
-    attr_reader :cities, :color, :edges, :junctions, :label, :nodes,
+    attr_reader :borders, :cities, :color, :edges, :junctions, :label, :nodes,
                 :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers
 
     def self.for(name, **opts)
@@ -83,13 +85,17 @@ module Engine
 
         Part::Path.new(params['a'], params['b'])
       when 'c'
-        city = Part::City.new(params['r'], params.fetch('s', 1))
+        city = Part::City.new(params['r'], params.fetch('s', 1), params['g'], params['h'])
         cache << city
         city
       when 't'
-        town = Part::Town.new(params['r'])
+        town = Part::Town.new(params['r'], params['g'], params['h'])
         cache << town
         town
+      when 'o'
+        offboard = Part::Offboard.new(params['r'], params['g'], params['h'])
+        cache << offboard
+        offboard
       when 'l'
         label = Part::Label.new(params)
         cache << label
@@ -98,10 +104,8 @@ module Engine
         upgrade = Part::Upgrade.new(params['c'], params['t']&.split('+'))
         cache << upgrade
         upgrade
-      when 'o'
-        offboard = Part::Offboard.new(params['r'])
-        cache << offboard
-        offboard
+      when 'b'
+        Part::Border.new(params['e'])
       end
     end
 
@@ -116,6 +120,7 @@ module Engine
       @towns = []
       @upgrades = []
       @offboards = []
+      @borders = []
       @branches = nil
       @nodes = nil
       @stops = nil
@@ -285,6 +290,8 @@ module Engine
           @upgrades << part
         elsif part.offboard?
           @offboards << part
+        elsif part.border?
+          @borders << part
         else
           raise "Part #{part} not separated."
         end
