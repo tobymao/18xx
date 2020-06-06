@@ -136,8 +136,8 @@ module View
     def render_corporations
       current_round = @game.round.turn_round_num
 
-      sorted_corporations.map do |c|
-        render_corporation(c[1], c[0], current_round)
+      sorted_corporations.map do |order, corporation|
+        render_corporation(corporation, order, current_round)
       end
     end
 
