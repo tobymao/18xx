@@ -157,14 +157,14 @@ module Engine
       "value": 60,
       "discount": -80,
       "revenue": 0,
-      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (O3). Splits revenue evenly with owner. Buyer pays an extra $80 (\"debt\")."
+      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). Splits revenue evenly with owner. Buyer pays an extra $80 (\"debt\")."
     },
     {
       "name": "Big 4",
       "value": 40,
       "discount": -60,
       "revenue": 0,
-      "desc": "Starts with $40 in treasury, a 2 train, and a token in Indianapolis (I7). Splits revenue evenly with owner. Buyer pays an extra $60 (\"debt\")."
+      "desc": "Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). Splits revenue evenly with owner. Buyer pays an extra $60 (\"debt\")."
     },
     {
       "name": "Chicago and Western Indiana",
