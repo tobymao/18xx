@@ -3,6 +3,7 @@
 require 'game_manager'
 require 'lib/storage'
 require 'view/game/game_data'
+require 'view/game/actionable'
 
 module View
   module Game
