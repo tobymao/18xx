@@ -21,7 +21,6 @@ class Api
             email: r['email'],
             password: r['password'],
           }.reject { |_, v| v.empty? }
-          update_settings(r)
 
           login_user(User.create(params))
         end
