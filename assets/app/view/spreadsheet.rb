@@ -86,58 +86,14 @@ module View
           h(:th, { attrs: { colspan: or_history_titles.size } }, 'OR History'),
           ]),
         h(:tr, [
-          h(:th, { style: { width: '20px' } }, [
-            h(
-              Link,
-              href: '',
-              click: lambda {
-                mark_sort_column('ID')
-                toggle_sort_order
-              },
-              children: 'SYM' + (@spreadsheet_sort_by == 'ID' ? ' ' + sort_order_icon : ''),
-              class: ''
-            ),
-          ]),
+          render_sort_link({ style: { width: '20px' } }, 'SYM', 'ID'),
           *@game.players.map { |p| h(:th, props, p.name) },
           h(:th, props, 'IPO'),
           h(:th, props, 'Market'),
           h(:th, props, 'IPO'),
-          h(:th, props, [
-            h(
-              Link,
-              href: '',
-              click: lambda {
-                mark_sort_column('SHARE-PRICE')
-                toggle_sort_order
-              },
-              children: 'Market' + (@spreadsheet_sort_by == 'SHARE-PRICE' ? ' ' + sort_order_icon : ''),
-              class: ''
-            ),
-          ]),
-          h(:th, props, [
-            h(
-              Link,
-              href: '',
-              click: lambda {
-                mark_sort_column('CASH')
-                toggle_sort_order
-              },
-              children: 'Cash' + (@spreadsheet_sort_by == 'CASH' ? ' ' + sort_order_icon : ''),
-              class: ''
-            ),
-          ]),
-          h(:th, props, [
-            h(
-              Link,
-              href: '',
-              click: lambda {
-                mark_sort_column('OPERATING-ORDER')
-                toggle_sort_order
-              },
-              children: 'Operating Order' + (@spreadsheet_sort_by == 'OPERATING-ORDER' ? ' ' + sort_order_icon : ''),
-              class: ''
-            ),
-          ]),
+          render_sort_link(props, 'Market', 'SHARE-PRICE'),
+          render_sort_link(props, 'Cash', 'CASH'),
+          render_sort_link(props, 'Operating Order', 'OPERATING-ORDER'),
           h(:th, props, 'Trains'),
           h(:th, props, 'Tokens'),
           h(:th, props, 'Privates'),
@@ -145,6 +101,21 @@ module View
           *or_history_titles,
         ]),
       ]
+    end
+
+    def render_sort_link(props, title, sort_by)
+      h(:th, props, [
+        h(
+          Link,
+          href: '',
+          click: lambda {
+            mark_sort_column(sort_by)
+            toggle_sort_order
+          },
+          children: title + (@spreadsheet_sort_by == sort_by ? ' ' + sort_order_icon : ''),
+          class: ''
+        ),
+      ])
     end
 
     def sort_order_icon
