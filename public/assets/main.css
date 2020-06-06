@@ -113,7 +113,6 @@ a.game__nav:focus {
 }
 
 #profile-settings > div {
-  height: 2.5rem;
   margin: 0.2rem 0;
 }
 #profile-settings > div * {
@@ -133,9 +132,6 @@ a.game__nav:focus {
 
 #settings__tiles > label {
   margin-right: 0.5rem;
-}
-#settings__tiles__buttons {
-  display: inline-block;
 }
 #settings__tiles__buttons > .input-container {
   margin: 0;
