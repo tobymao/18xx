@@ -510,7 +510,7 @@ module Engine
       "c=r:40,s:2;p=a:1,b:_0;p=a:3,b:_0;l=Z;u=c:40,t:water": [
         "C15"
       ],
-      "c=r:10;c=r:10;c=r:10;c=r:10;p=a:0,b:_0;p=a:3,b:_1;p=a:4,b:_2;p=a:5,b:_3;l=Chi": [
+      "c=r:10,g:Chicago;c=r:10,g:Chicago;c=r:10,g:Chicago;c=r:10,g:Chicago;p=a:0,b:_0;p=a:3,b:_1;p=a:4,b:_2;p=a:5,b:_3;l=Chi": [
         "D6"
       ],
       "c=r:10,s:2;p=a:1,b:_0;p=a:3,b:_0;p=a:0,b:_0": [
