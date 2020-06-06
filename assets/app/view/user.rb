@@ -81,7 +81,6 @@ module View
     end
 
     def reset_settings
-      Native(@inputs[:notifications]).elm.checked = true
       dark = `window.matchMedia('(prefers-color-scheme: dark)').matches`
       Native(@inputs[:bg_color]).elm.value = dark ? '#000000' : '#ffffff'
       Native(@inputs[:font_color]).elm.value = dark ? '#ffffff' : '#000000'
