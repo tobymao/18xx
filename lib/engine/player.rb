@@ -12,10 +12,11 @@ module Engine
 
     attr_reader :name, :companies
 
-    def initialize(name)
+    def initialize(name, count_companies: true)
       @name = name
       @cash = 0
       @companies = []
+      @count_companies = count_companies
     end
 
     def value
@@ -51,7 +52,8 @@ module Engine
     end
 
     def num_certs
-      companies.count + shares.count { |s| s.corporation.counts_for_limit }
+      num_companies = @count_companies ? companies.size : 0
+      num_companies + shares.count { |s| s.corporation.counts_for_limit }
     end
 
     def to_s

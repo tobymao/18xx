@@ -60,6 +60,18 @@ module Engine
 
       MUST_SELL_IN_BLOCKS = false
 
+      # when can a share holder sell shares
+      # first           -- after first stock round
+      # operate         -- after operation
+      # p_any_operate   -- pres any time, share holders after operation
+      SELL_AFTER = :first
+
+      # down_share -- down one row per share
+      # down_block -- down one row per block
+      # left_block_pres -- left one column per block if president
+      # left_block -- one row per block
+      SELL_MOVEMENT = :down_share
+
       COMPANIES = [].freeze
 
       CORPORATIONS = [].freeze

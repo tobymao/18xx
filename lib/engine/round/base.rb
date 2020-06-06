@@ -182,7 +182,14 @@ module Engine
         share_pool.sell_shares(bundle)
         corporation = bundle.corporation
         price = corporation.share_price.price
-        bundle.num_shares.times { stock_market.move_down(corporation) }
+        case @game.class::SELL_MOVEMENT
+        when :down_share
+          bundle.num_shares.times { stock_market.move_down(corporation) }
+        when :left_block_pres
+          stock_market.move_left(corporation) if corporation.president?(bundle.owner)
+        else
+          raise NotImplementedError
+        end
         log_share_price(corporation, price)
       end
 

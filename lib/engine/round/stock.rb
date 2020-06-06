@@ -66,8 +66,22 @@ module Engine
       end
 
       def can_sell?(bundle)
-        @sellable_turn &&
-          !(@game.class::MUST_SELL_IN_BLOCKS && @players_sold[@current_entity][bundle.corporation] == :now) &&
+        corporation = bundle.corporation
+
+        timing =
+          case @game.class::SELL_AFTER
+          when :first
+            @game.turn > 1
+          when :operate
+            corporation.operated?
+          when :p_any_operate
+            corporation.operated? || corporation.president?(@current_entity)
+          else
+            raise NotImplementedError
+          end
+
+        timing &&
+          !(@game.class::MUST_SELL_IN_BLOCKS && @players_sold[@current_entity][corporation] == :now) &&
           can_sell_order? &&
           @share_pool.fit_in_bank?(bundle) &&
           bundle.can_dump?(@current_entity)
@@ -170,6 +184,8 @@ module Engine
         raise GameError, "Cannot buy a share of #{share&.corporation&.name}" unless can_buy?(share)
 
         @share_pool.buy_share(entity, share)
+        corporation = share.corporation
+        place_home_token(corporation) if @game.class::HOME_TOKEN_TIMING == :float && corporation.floated?
       end
 
       def distance(player_a, player_b)

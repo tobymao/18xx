@@ -107,6 +107,10 @@ module Engine
       true
     end
 
+    def operated?
+      @operating_history.any?
+    end
+
     def inspect
       "<#{self.class.name}: #{id}>"
     end
