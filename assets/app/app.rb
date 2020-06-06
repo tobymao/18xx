@@ -9,7 +9,7 @@ require 'view/about'
 require 'view/create_game'
 require 'view/home'
 require 'view/flash'
-require 'view/game'
+require 'view/game_page'
 require 'view/map_page'
 require 'view/navigation'
 require 'view/tiles_page'
@@ -101,7 +101,7 @@ class App < Snabberb::Component
 
     return h(:div, 'Loading game...') unless @game_data&.dig('loaded')
 
-    h(View::Game, connection: @connection, user: @user, disable_user_errors: @disable_user_errors)
+    h(View::GamePage, connection: @connection, user: @user, disable_user_errors: @disable_user_errors)
   end
 
   def js_handlers

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'view/map'
+require 'view/game/map'
 
 module View
   class MapPage < Snabberb::Component
@@ -15,7 +15,7 @@ module View
       return h(:p, "Bad game title: #{game_title}") unless game_class
 
       names = %w[p1 p2 p3 p4 p5]
-      h(Map, game: game_class.new(names))
+      h(Game::Map, game: game_class.new(names))
     end
   end
 end

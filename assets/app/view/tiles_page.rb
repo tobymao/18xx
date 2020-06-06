@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'lib/params'
-require 'view/tile_manifest'
 require 'view/tiles'
 
 module View

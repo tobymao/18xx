@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'view/game/hex'
+
 module View
   class Tiles < Snabberb::Component
     def render_tile_blocks(
@@ -38,7 +40,7 @@ module View
             h(:svg, { style: { width: '100%', height: '100%' } }, [
               h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
                 h(
-                  Hex,
+                  Game::Hex,
                   hex: Engine::Hex.new('A1',
                                        layout: layout,
                                        location_name: loc_name,
