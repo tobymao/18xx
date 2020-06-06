@@ -541,7 +541,8 @@ module Engine
       "train_limit": 4,
       "tiles": [
         "yellow"
-      ]
+      ],
+      "operating_rounds": 2
     },
     {
       "name": "2",
@@ -549,7 +550,8 @@ module Engine
       "tiles": [
         "yellow",
         "green"
-      ]
+      ],
+      "operating_rounds": 2
     },
     {
       "name": "3",
@@ -559,6 +561,7 @@ module Engine
         "green",
         "brown"
       ],
+      "operating_rounds": 2,
       "events": {
         "close_companies": true
       }
@@ -572,6 +575,7 @@ module Engine
         "brown",
         "gray"
       ],
+      "operating_rounds": 2,
       "events": {
         "remove_tokens": true
       }
