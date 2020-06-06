@@ -93,21 +93,23 @@ module Engine
       }.freeze
 
       EXPECTED_TILE_UPGRADES.each do |game_title, upgrades|
-        context game_title do
+        it "correctly upgrades tiles for #{game_title}" do
           game = Engine::GAMES_BY_TITLE[game_title].new(%w[p1 p2 p3])
 
-          upgrades.keys.each do |t|
-            tile = game.tile_by_id("#{t}-0") || Tile.for(t)
+          aggregate_failures 'tile upgrades' do
+            upgrades.keys.each do |t|
+              tile = game.tile_by_id("#{t}-0") || Tile.for(t)
 
-            context "tile \"#{t}\"" do
               upgrades.keys.each do |u|
-                upgrade = game.tile_by_id("#{u}-0") || Tile.for(t)
+                upgrade = game.tile_by_id("#{u}-0") || Tile.for(u)
 
-                included = upgrades[t].include?(u)
+                expected_included = upgrades[t].include?(u)
+                expected_string = "#{t} #{expected_included ? '<' : '!<'} #{u}"
 
-                it "can#{included ? '' : 'not'} upgrade to tile \"#{u}\"" do
-                  expect(tile.upgrades_to?(upgrade)).to eq(included)
-                end
+                actual_included = tile.upgrades_to?(upgrade)
+                actual_string = "#{t} #{actual_included ? '<' : '!<'} #{u}"
+
+                expect(actual_string).to eq(expected_string)
               end
             end
           end
