@@ -597,16 +597,16 @@ module Engine
       ]
     },
     "red": {
-      "c=r:yellow_40|green_50|brown_60|gray_80,g:Pittsburgh;p=a:5,b:_0;b=e:4": [
+      "c=r:yellow_40|green_50|brown_60|gray_80,h:1,g:Pittsburgh;p=a:5,b:_0;b=e:4": [
         "A3"
       ],
-      "o=r:yellow_40|green_50|brown_60|gray_80,g:Pittsburgh,h:1;p=a:0,b:_0;b=e:1": [
+      "o=r:yellow_40|green_50|brown_60|gray_80,g:Pittsburgh;p=a:0,b:_0;b=e:1": [
         "B2"
       ],
       "o=r:yellow_40|green_60|brown_80|gray_100;p=a:4,b:_0;p=a:5,b:_0": [
         "A7"
       ],
-      "o=r:yellow_40|green_50|brown_60|gray_80,g:West Virginia Coal,h:1;p=a:4,b:_0;b=e:5": [
+      "o=r:yellow_40|green_50|brown_60|gray_80,h:1,g:West Virginia Coal;p=a:4,b:_0;b=e:5": [
         "A13"
       ],
       "o=r:yellow_40|green_50|brown_60|gray_80,g:West Virginia Coal;p=a:3,b:_0;p=a:4,b:_0;b=e:2": [
