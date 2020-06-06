@@ -33,10 +33,6 @@ module Engine
   },
   "capitalization": "incremental",
   "layout": "pointy",
-  "axes": {
-    "rows": "numbers",
-    "columns": "letters"
-  },
   "mustSellInBlocks": false,
   "locationNames": {
     "B8": "Holland",
@@ -48,19 +44,18 @@ module Engine
     "C17": "Windsor",
     "D14": "Toledo",
     "D20": "Erie",
-    "C23": "Buffalo",
     "D22": "Buffalo",
     "E11": "Fort Wayne",
     "E17": "Cleveland",
     "E21": "Salamanca",
     "E23": "Binghamton",
+    "F20": "Homewood",
     "G3": "Springfield",
     "G7": "Terre Haute",
     "G9": "Indianapolis",
     "G13": "Dayton",
     "G15": "Columbus",
     "G19": "Wheeling",
-    "G21": "Pittsburgh",
     "G21": "Pittsburgh",
     "H12": "Cincinnati",
     "H20": "Cumberland",
@@ -430,7 +425,7 @@ module Engine
         "I11",
         "J6"
       ],
-      "c=r:0": [
+      "city": [
         "B16",
         "C9",
         "D14",
@@ -455,7 +450,7 @@ module Engine
       ]
     },
     "gray": {
-      "p=a:5,b:0": [
+      "p=a:0,b:5": [
         "A15",
         "C7"
       ],
@@ -485,20 +480,20 @@ module Engine
       "o=r:yellow_40|brown_60;p=a:1,b:_0;l=E": [
         "C17"
       ],
-      "o=yellow_30|brown_60;p=a:0,b:_0;l=E": [
+      "o=r:yellow_30|brown_60,h:1;p=a:0,b:_0;l=E;b=e:5": [
         "C21"
       ],
-      "o=yellow_30|brown_60;p=a:1,b:_0;l=E": [
+      "o=r:yellow_30|brown_60;p=a:1,b:_0;b=e:2": [
         "D22"
       ],
       "o=r:yellow_20|brown_50;p=a:1,b:_0;l=E": [
         "E23",
         "I17"
       ],
-      "o=yellow_30|brown_70;p=a:1,b:_0;l=E": [
+      "o=r:yellow_30|brown_70,h:1;p=a:1,b:_0;l=E;b=e:0": [
         "F22"
       ],
-      "o=yellow_30|brown_70;p=a:1,b:_0;p=a:2,b:_0;l=E": [
+      "o=r:yellow_30|brown_70;p=a:1,b:_0;p=a:2,b:_0;b=e:3": [
         "G21"
       ],
       "o=r:yellow_20|brown_40;p=a:2,b:_0;l=E": [
@@ -515,7 +510,7 @@ module Engine
       "c=r:40,s:2;p=a:1,b:_0;p=a:3,b:_0;l=Z;u=c:40,t:water": [
         "C15"
       ],
-      "c=r:10;c=r:10;c=r:10;c=r:10;p=a:3,b:_0;p=a:4,b:_1;p=a:5,b:_2;p=a:0,b:_3;l=Chi": [
+      "c=r:10;c=r:10;c=r:10;c=r:10;p=a:0,b:_0;p=a:3,b:_1;p=a:4,b:_2;p=a:5,b:_3;l=Chi": [
         "D6"
       ],
       "c=r:10,s:2;p=a:1,b:_0;p=a:3,b:_0;p=a:0,b:_0": [
@@ -529,7 +524,7 @@ module Engine
       ]
     },
     "blue": {
-      "": [
+      "blank": [
         "C19",
         "D16"
       ]
@@ -541,7 +536,8 @@ module Engine
       "train_limit": 4,
       "tiles": [
         "yellow"
-      ]
+      ],
+      "operating_rounds": 2
     },
     {
       "name": "2",
@@ -549,7 +545,8 @@ module Engine
       "tiles": [
         "yellow",
         "green"
-      ]
+      ],
+      "operating_rounds": 2
     },
     {
       "name": "3",
@@ -559,6 +556,7 @@ module Engine
         "green",
         "brown"
       ],
+      "operating_rounds": 2,
       "events": {
         "close_companies": true
       }
@@ -572,6 +570,7 @@ module Engine
         "brown",
         "gray"
       ],
+      "operating_rounds": 2,
       "events": {
         "remove_tokens": true
       }

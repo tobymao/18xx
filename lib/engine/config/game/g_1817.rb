@@ -86,12 +86,12 @@ module Engine
     "X00": {
       "count": 1,
       "color": "yellow",
-      "code": "c=r:30;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=B"
+      "code": "c=r:30;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0;l=B"
     },
     "X30": {
       "count": 1,
       "color": "gray",
-      "code": "c=r:100,s:4;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;l=NY"
+      "code": "c=r:100,s:4;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=NY"
     }
   },
   "market": [
@@ -448,19 +448,19 @@ module Engine
   ],
   "hexes": {
     "red": {
-      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:4,b:_0;p=a:5,b:_0": [
+      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:5,b:_0;p=a:0,b:_0": [
         "A20"
       ],
-      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:5,b:_0": [
+      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:0,b:_0": [
         "A28"
       ],
-      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:3,b:_0;p=a:4,b:_0": [
+      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:4,b:_0;p=a:5,b:_0": [
         "D1"
       ],
-      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0": [
+      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0": [
         "H1"
       ],
-      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:1,b:_0;p=a:2,b:_0": [
+      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:2,b:_0;p=a:3,b:_0": [
         "J7",
         "J15"
       ]
@@ -562,27 +562,27 @@ module Engine
       ]
     },
     "gray": {
-      "o=r:yellow_20|green_30|brown_40;t=r:0;p=a:0,b:_0;p=a:3,b:_0;p=a:4,b:_0": [
+      "t=r:yellow_20|green_30|brown_40;p=a:1,b:_0;p=a:4,b:_0;p=a:5,b:_0": [
         "B13"
       ],
-      "o=r:yellow_30|green_40|brown_50|gray_60;c=r:0,s:2;p=a:4,b:_0;p=a:5,b:_0": [
+      "c=r:yellow_30|green_40|brown_50|gray_60,s:2;p=a:5,b:_0;p=a:0,b:_0": [
         "D9"
       ],
-      "p=a:3,b:j;p=a:2,b:j;p=a:4,b:j": [
+      "p=a:4,b:j;p=a:3,b:j;p=a:5,b:j": [
         "F1"
       ]
     },
     "yellow": {
-      "c=r:30;p=a:3,b:_0;p=a:5,b:_0;l=B;u=c:20,t:water": [
+      "c=r:30;p=a:4,b:_0;p=a:0,b:_0;l=B;u=c:20,t:water": [
         "C8"
       ],
-      "c=r:30;p=a:2,b:_0;p=a:4,b:_0;l=B": [
+      "c=r:30;p=a:3,b:_0;p=a:5,b:_0;l=B": [
         "C26"
       ],
-      "c=r:40;c=r:40;p=a:2,b:_0;p=a:5,b:_0;l=NY;u=c:20,t:water": [
+      "c=r:40;c=r:40;p=a:3,b:_0;p=a:0,b:_0;l=NY;u=c:20,t:water": [
         "E22"
       ],
-      "c=r:30;p=a:3,b:_0;p=a:5,b:_0;l=B": [
+      "c=r:30;p=a:4,b:_0;p=a:0,b:_0;l=B": [
         "G18"
       ]
     },
