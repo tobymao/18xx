@@ -589,6 +589,12 @@ module Engine
       end
 
       def next_round!
+        if (_reason, after = game_end_reason)
+          if after != :full_round || (@round.is_a?(Round::Operating) && @round.round_num == @operating_rounds)
+            return end_game!
+          end
+        end
+
         @round =
           case @round
           when Round::Stock
@@ -596,12 +602,8 @@ module Engine
             reorder_players
             new_operating_round
           when Round::Operating
-            return end_game! if @round.bankrupt
-
             if @round.round_num < @operating_rounds
               new_operating_round(@round.round_num + 1)
-            elsif @bank.broken?
-              end_game!
             else
               @turn += 1
               or_set_finished
@@ -611,6 +613,36 @@ module Engine
             reorder_players
             new_stock_round
           end
+      end
+
+      def game_ending_description
+        reason, after = game_end_reason
+        return unless after
+
+        after_text = ''
+
+        unless @finished
+          after_text = case after
+                       when :immediate
+                         ' : Game Ends immediately'
+                       when :current_round
+                         " : Game Ends at conclusion of this round (#{turn}.#{round_num})"
+                       when :full_round
+                         " : Game Ends at conclusion of OR #{turn}.#{operating_rounds}"
+                       end
+        end
+
+        reason_map = {
+                       bank: 'Bank Broken',
+                       bankrupt: 'Bankrupcy',
+                       stockmarket: 'Company hit max stock value',
+                     }
+        "#{reason_map[reason]}#{after_text}"
+      end
+
+      def game_end_reason
+        return :bankrupt, :immediate if @round.is_a?(Round::Operating) && @round.bankrupt
+        return :bank, :full_round if @bank.broken?
       end
 
       def action_processed(_action); end
