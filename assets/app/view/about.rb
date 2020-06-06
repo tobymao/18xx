@@ -4,8 +4,9 @@ module View
   class About < Snabberb::Component
     def render
       message = <<~MESSAGE
-        <p>18xx.games is created and maintained by Toby Mao. It is an open source project, and you can find the
-        code on <a href='https://github.com/tobymao/18xx/issues' class='default-bg'>Github</a>.</p>
+        <div class="card_header">About 18xx.Games</div>
+        <p>18xx.Games is created and maintained by Toby Mao. It is an open source project, and you can find the
+        code on <a href='https://github.com/tobymao/18xx/issues' class='default-bg'>GitHub</a>.</p>
 
         <p><a href='https://boardgamegeek.com/boardgame/23540/1889-history-shikoku-railways' class='default-bg'>1889</a> is used with kind permission from
         Josh Starr at <a href='https://www.grandtrunkgames.com' class='default-bg'>Grand Trunk Games</a>.</p>
@@ -18,16 +19,11 @@ module View
       MESSAGE
 
       props = {
-        style: {
-          'padding': '1em',
-          'margin': '1rem 0',
-        },
-        props: {
-          innerHTML: message,
-        },
+        props: { innerHTML: message },
+        style: { margin: '2rem 1rem' },
       }
 
-      h(:div, props)
+      h('div#about', props)
     end
   end
 end

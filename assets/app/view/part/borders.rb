@@ -6,6 +6,7 @@ module View
   module Part
     class Borders < Snabberb::Component
       needs :tile
+      needs :user, default: nil, store: true
 
       EDGES = {
         0 => {
@@ -48,7 +49,7 @@ module View
 
       def render_borders
         @tile.borders.map do |border|
-          color = Lib::Hex::COLOR.fetch(@tile.color)
+          color = @user&.dig(:settings, @tile&.color) || Lib::Hex::COLOR.fetch(@tile.color)
 
           h(:line, attrs: {
             **EDGES[border.edge],

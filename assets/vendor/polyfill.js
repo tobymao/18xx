@@ -2,9 +2,10 @@ if (typeof setTimeout === 'undefined') { var setTimeout = function setTimeout(fu
 
 if (typeof window === 'undefined') {
   window = {
+    addEventListener: function() {},
+    matchMedia: function() { return {} },
     requestAnimationFrame: function() {},
     scrollTo: function() {},
-    addEventListener: function() {},
     location: {
       pathname: '',
       hash: '',

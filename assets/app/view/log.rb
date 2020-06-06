@@ -51,7 +51,7 @@ module View
         end
       end
 
-      h(:div, props, lines)
+      h('div#chatlog', props, lines)
     end
   end
 end

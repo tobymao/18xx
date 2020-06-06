@@ -24,6 +24,7 @@ module View
     needs :tile_selector, default: nil, store: true
     needs :role, default: :map
     needs :opacity, default: nil
+    needs :user, default: nil, store: true
 
     def render
       @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
@@ -54,7 +55,7 @@ module View
       props = {
         attrs: {
           transform: transform,
-          fill: Lib::Hex::COLOR.fetch(@tile&.color, 'white'),
+          fill: @user&.dig(:settings, @tile&.color) || (Lib::Hex::COLOR[@tile&.color || 'white']),
           stroke: 'black',
        },
       }

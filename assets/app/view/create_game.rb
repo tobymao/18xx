@@ -73,7 +73,7 @@ module View
 
       [
         h(:input, props),
-        h(:span, { style: { 'margin': '0 1rem 0 0.5rem' } }, text),
+        h('label.right', text),
       ]
     end
 
