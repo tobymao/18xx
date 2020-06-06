@@ -32,7 +32,7 @@ module Engine
   "layout": "flat",
   "mustSellInBlocks": false,
   "locationNames": {
-    "A3": "Pittsburgh",
+    "B2": "Pittsburgh",
     "A7": "Ohio",
     "B14": "West Virginia Coal",
     "B4": "Charleroi & Connellsville",
