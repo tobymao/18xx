@@ -42,8 +42,8 @@ module Engine
         company: 'Companies',
       }.freeze
 
-      def initialize(entities, game:, round_num: 1, **_opts)
-        super
+      def initialize(entities, game:, round_num: 1, **opts)
+        super(entities.select(&:floated?).sort, game: game, **opts)
         @round_num = round_num
         @home_token_timing = @game.class::HOME_TOKEN_TIMING
         @ebuy_other_value = @game.class::EBUY_OTHER_VALUE
@@ -59,8 +59,8 @@ module Engine
         @last_share_sold_price = nil
         @bankrupt = false
 
-        @step = self.class::STEPS.first
-        @last_action_step = self.class::STEPS.last
+        @step = steps.first
+        @last_action_step = steps.last
         @current_routes = []
         @teleported = false
 
@@ -189,31 +189,8 @@ module Engine
         @step == :token
       end
 
-      def next_step!
-        current_index = self.class::STEPS.find_index(@step)
-
-        if current_index < self.class::STEPS.size - 1
-          case (@step = self.class::STEPS[current_index + 1])
-          when :token
-            return next_step! if @current_entity.tokens.none?
-
-            next_step! unless connected_nodes.any? { |node, _| node.tokenable?(@current_entity, free: @teleported) }
-          when :route
-            next_step! if @current_entity.trains.empty? || !route?
-          when :dividend
-            if @current_routes.empty?
-              withhold
-              next_step!
-            end
-          when :train
-            next_step! if !can_buy_train? && !must_buy_train?
-          when :company
-            next_step! unless can_buy_companies?
-          end
-        else
-          @step = self.class::STEPS.first
-          @current_entity.pass!
-        end
+      def steps
+        self.class::STEPS
       end
 
       def connected_hexes
@@ -237,6 +214,45 @@ module Engine
       end
 
       private
+
+      def next_step!
+        current_index = steps.find_index(@step)
+
+        if current_index < steps.size - 1
+          @step = steps[current_index + 1]
+          send("skip_#{@step}")
+        else
+          @step = steps.first
+          @current_entity.pass!
+        end
+      end
+
+      def skip_token
+        if @current_entity.tokens.none?
+          next_step!
+        elsif connected_nodes.none? { |node, _| node.tokenable?(@current_entity, free: @teleported) }
+          next_step!
+        end
+      end
+
+      def skip_route
+        next_step! if @current_entity.trains.empty? || !route?
+      end
+
+      def skip_dividend
+        return if @current_routes.any?
+
+        withhold
+        next_step!
+      end
+
+      def skip_train
+        next_step! if !can_buy_train? && !must_buy_train?
+      end
+
+      def skip_company
+        next_step! unless can_buy_companies?
+      end
 
       def _process_action(action)
         entity = action.entity

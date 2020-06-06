@@ -559,7 +559,8 @@ module Engine
       "operating_rounds": 2,
       "events": {
         "close_companies": true
-      }
+      },
+      "operating_rounds": 2
     },
     {
       "name": "4",
@@ -573,7 +574,8 @@ module Engine
       "operating_rounds": 2,
       "events": {
         "remove_tokens": true
-      }
+      },
+      "operating_rounds": 2
     }
   ]
 }

@@ -45,6 +45,7 @@ module Engine
       game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
       corporation.cash = 100
       corporation.owner = game.players.first
+      allow(corporation).to receive(:floated?) { true }
     end
 
     context '#1889' do

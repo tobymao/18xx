@@ -5,6 +5,7 @@ require 'view/buy_trains'
 require 'view/company'
 require 'view/corporation'
 require 'view/dividend'
+require 'view/issue_shares'
 require 'view/map'
 require 'view/undo_and_pass'
 require 'view/route_selector'
@@ -27,6 +28,8 @@ module View
           h(Dividend)
         when :train
           h(BuyTrains)
+        when :issue
+          h(IssueShares)
         end
 
       children << action

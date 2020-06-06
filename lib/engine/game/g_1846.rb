@@ -62,11 +62,15 @@ module Engine
       end
 
       def init_round
-        Round::Draft.new(@players.reverse, game: self)
+        Round::G1846::Draft.new(@players.reverse, game: self)
       end
 
       def stock_round
         Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy)
+      end
+
+      def operating_round(round_num)
+        Round::G1846::Operating.new(@corporations, game: self, round_num: round_num)
       end
     end
   end

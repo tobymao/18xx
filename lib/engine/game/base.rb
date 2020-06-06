@@ -694,11 +694,7 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::Operating.new(
-          @corporations.select(&:floated?).sort,
-          game: self,
-          round_num: round_num,
-        )
+        Round::Operating.new(@corporations, game: self, round_num: round_num)
       end
 
       def cache_objects
