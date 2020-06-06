@@ -36,9 +36,19 @@ module View
           ['Profile Settings', [
             render_notifications(@user&.dig(:settings, :notifications)),
             h('div#settings__colors', [
-              render_color(:bg_color, 'Background', @user&.dig(:settings, :bg_color), dark ? '#000000' : '#ffffff'),
-              render_color(:font_color, 'Font Color', @user&.dig(:settings, :font_color), dark ? '#ffffff' : '#000000'),
-              render_logo_color(@user&.dig(:settings, :red_logo)),
+              render_color(
+                :bg_color,
+                'Background',
+                @user&.dig(:settings, :bg_color),
+                dark ? '#000000' : '#ffffff'
+              ),
+              render_color(
+                :font_color,
+                'Font Color',
+                @user&.dig(:settings, :font_color),
+                dark ? '#ffffff' : '#000000'
+              ),
+              @elm_logo = render_logo_color(@user&.dig(:settings, :red_logo)),
             ]),
             render_tile_colors,
             h('div#settings__buttons', [
@@ -71,20 +81,20 @@ module View
     end
 
     def reset_settings
-      `document.querySelectorAll('#settings__notifications input')[0].checked = true`
+      Native(@inputs[:notifications]).elm.checked = true
       dark = `window.matchMedia('(prefers-color-scheme: dark)').matches`
-      Native(`document.querySelectorAll('input[placeholder="Background"]')[0]`).value = dark ? '#000000' : '#ffffff'
-      Native(`document.querySelectorAll('input[placeholder="Font Color"]')[0]`).value = dark ? '#ffffff' : '#000000'
-      `document.querySelectorAll('input[placeholder="Alternative Red Logo"]')[0].checked = false`
+      Native(@inputs[:bg_color]).elm.value = dark ? '#000000' : '#ffffff'
+      Native(@inputs[:font_color]).elm.value = dark ? '#ffffff' : '#000000'
+      Native(@inputs[:red_logo]).elm.removeAttribute('checked')
       Lib::Hex::COLOR.each do |color, hex_color|
-        `document.querySelectorAll('input[title=' + #{color} + ']')[0].value = #{hex_color}`
+        Native(@inputs[color]).elm.value = hex_color
       end
       submit
     end
 
     def render_notifications(checked = true)
       h('div#settings__notifications', [
-        render_input(
+        @elm_notifications = render_input(
           'Allow Turn and Message Notifications',
           id: :notifications,
           type: :checkbox,
@@ -128,6 +138,7 @@ module View
       when :login
         login(params)
       when :profile
+        store(:flash_opts, Native(@elms_bg))
         edit_user(params)
       end
     end
