@@ -2,12 +2,17 @@
 
 require 'view/stock_market'
 require 'lib/color'
+require 'view/link'
+require 'lib/storage'
 
 module View
   class Spreadsheet < Snabberb::Component
     needs :game
 
     def render
+      @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
+      @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
+
       h(:div, { style: {
         overflow: 'auto',
         margin: '0 -1rem',
@@ -79,14 +84,14 @@ module View
           h(:th, { attrs: { colspan: or_history_titles.size } }, 'OR History'),
           ]),
         h(:tr, [
-          h(:th, { style: { width: '20px' } }, ''),
+          render_sort_link({ style: { width: '20px' } }, 'SYM', 'ID'),
           *@game.players.map { |p| h(:th, props, p.name) },
           h(:th, props, 'IPO'),
           h(:th, props, 'Market'),
           h(:th, props, 'IPO'),
-          h(:th, props, 'Market'),
-          h(:th, props, 'Cash'),
-          h(:th, props, 'Operating Order'),
+          render_sort_link(props, 'Market', 'SHARE_PRICE'),
+          render_sort_link(props, 'Cash', 'CASH'),
+          render_sort_link(props, 'Operating Order', 'OPERATING_ORDER'),
           h(:th, props, 'Trains'),
           h(:th, props, 'Tokens'),
           h(:th, props, 'Privates'),
@@ -96,14 +101,69 @@ module View
       ]
     end
 
+    def render_sort_link(props, title, sort_by)
+      h(:th, props, [
+        h(
+          Link,
+          href: '',
+          click: lambda {
+            mark_sort_column(sort_by)
+            toggle_sort_order
+          },
+          children: title + (@spreadsheet_sort_by == sort_by ? ' ' + sort_order_icon : ''),
+          class: ''
+        ),
+      ])
+    end
+
+    def sort_order_icon
+      return '(⬇️)' if @spreadsheet_sort_order == 'ASC'
+
+      '(⬆️)'
+    end
+
+    def mark_sort_column(sort_by)
+      Lib::Storage['spreadsheet_sort_by'] = sort_by
+      update
+    end
+
+    def toggle_sort_order
+      Lib::Storage['spreadsheet_sort_order'] = 'ASC' if @spreadsheet_sort_order == 'DESC'
+      Lib::Storage['spreadsheet_sort_order'] = 'DESC' unless @spreadsheet_sort_order == 'DESC'
+      update
+    end
+
     def render_corporations
       current_round = @game.round.turn_round_num
 
-      floated_corporations = @game.round.entities
-      @game.corporations.map do |c|
-        operating_order = (floated_corporations.find_index(c) || -1) + 1
-        render_corporation(c, operating_order, current_round)
+      sorted_corporations.map do |c|
+        render_corporation(c[1], c[0], current_round)
       end
+    end
+
+    def sorted_corporations
+      floated_corporations = @game.round.entities
+
+      result = @game.corporations.map do |c|
+        operating_order = (floated_corporations.find_index(c) || -1) + 1
+        [operating_order, c]
+      end
+
+      result.sort_by! do |operating_order, corporation|
+        case @spreadsheet_sort_by
+        when 'OPERATING_ORDER'
+          operating_order
+        when 'CASH'
+          corporation.cash
+        when 'SHARE_PRICE'
+          corporation.share_price&.price || 0
+        else
+          corporation.id
+        end
+      end
+
+      result.reverse! if @spreadsheet_sort_order == 'DESC'
+      result
     end
 
     def render_corporation(corporation, operating_order, current_round)
