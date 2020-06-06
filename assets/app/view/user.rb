@@ -138,7 +138,6 @@ module View
       when :login
         login(params)
       when :profile
-        store(:flash_opts, Native(@elms_bg))
         edit_user(params)
       end
     end

@@ -20,20 +20,8 @@ class Api
             name: r['name'],
             email: r['email'],
             password: r['password'],
-            settings: {
-              notifications: r['notifications'],
-              bg_color: r['bg_color'],
-              font_color: r['font_color'],
-              red_logo: r['red_logo'],
-              white: r['white'],
-              yellow: r['yellow'],
-              green: r['green'],
-              brown: r['brown'],
-              gray: r['gray'],
-              red: r['red'],
-              blue: r['blue'],
-            },
           }.reject { |_, v| v.empty? }
+          update_settings(r)
 
           login_user(User.create(params))
         end
