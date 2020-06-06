@@ -119,6 +119,16 @@ a.game__nav:focus {
   .half { width: 49%; }
 }
 
+div.map {
+  margin: 1rem -1rem;
+}
+@media only screen and (min-width: 1480px) {
+  div.map {
+    display: inline-block;
+    margin: -1.5rem 1rem 1rem 1rem;
+  }
+}
+
 .tile {
    fill: none;
    stroke-width: 1;

@@ -50,11 +50,10 @@ module View
       props = {
          style: {
            overflow: 'auto',
-           margin: '1rem -1rem',
          },
       }
 
-      h(:div, props, children)
+      h('div.map', props, children)
     end
 
     def render_map
