@@ -483,7 +483,7 @@ module Engine
       "o=r:yellow_30|brown_60,h:1,g:Buffalo|East;p=a:0,b:_0;l=E;b=e:5": [
         "C21"
       ],
-      "o=r:yellow_30|brown_60;p=a:1,b:_0;b=e:2": [
+      "o=r:yellow_30|brown_60,g:Buffalo|East;p=a:1,b:_0;b=e:2": [
         "D22"
       ],
       "o=r:yellow_20|brown_50,g:East;p=a:1,b:_0;l=E": [
@@ -559,8 +559,7 @@ module Engine
       "operating_rounds": 2,
       "events": {
         "close_companies": true
-      },
-      "operating_rounds": 2
+      }
     },
     {
       "name": "4",
@@ -574,8 +573,7 @@ module Engine
       "operating_rounds": 2,
       "events": {
         "remove_tokens": true
-      },
-      "operating_rounds": 2
+      }
     }
   ]
 }
