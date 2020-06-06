@@ -10,6 +10,12 @@ class User < Base
 
   RESET_WINDOW = 60 * 15 # 15 minutes
 
+  SETTINGS = %w[notifications bg_color font_color red_logo white yellow green brown gray red blue].freeze
+
+  def update_settings(params)
+    SETTINGS.each { |setting| settings[setting] = params[setting] }
+  end
+
   def self.by_email(email)
     self[Sequel.function(:lower, :email) => email.downcase]
   end

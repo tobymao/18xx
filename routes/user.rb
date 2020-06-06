@@ -20,8 +20,19 @@ class Api
             name: r['name'],
             email: r['email'],
             password: r['password'],
-            settings: { notifications: r['notifications'], bg_color: r['bg_color'],
-                        font_color: r['font_color'] },
+            settings: {
+              notifications: r['notifications'],
+              bg_color: r['bg_color'],
+              font_color: r['font_color'],
+              red_logo: r['red_logo'],
+              white: r['white'],
+              yellow: r['yellow'],
+              green: r['green'],
+              brown: r['brown'],
+              gray: r['gray'],
+              red: r['red'],
+              blue: r['blue'],
+            },
           }.reject { |_, v| v.empty? }
 
           login_user(User.create(params))
@@ -62,20 +73,20 @@ class Api
         end
 
         not_authorized! unless user
-
         # POST '/api/user/edit'
         r.post 'edit' do
-          user.settings['notifications'] = r.params['notifications']
-          user.settings['bg_color'] = r.params['bg_color']
-          user.settings['font_color'] = r.params['font_color']
-          user.settings['red_logo'] = r.params['red_logo']
-          user.settings['white'] = r.params['white']
-          user.settings['yellow'] = r.params['yellow']
-          user.settings['green'] = r.params['green']
-          user.settings['brown'] = r.params['brown']
-          user.settings['gray'] = r.params['gray']
-          user.settings['red'] = r.params['red']
-          user.settings['blue'] = r.params['blue']
+          # user.settings['notifications'] = r.params['notifications']
+          # user.settings['bg_color'] = r.params['bg_color']
+          # user.settings['font_color'] = r.params['font_colr']
+          # user.settings['red_logo'] = r.params['red_logo']
+          # user.settings['white'] = r.params['white']
+          # user.settings['yellow'] = r.params['yellow']
+          # user.settings['green'] = r.params['green']
+          # user.settings['brown'] = r.params['brown']
+          # user.settings['gray'] = r.params['gray']
+          # user.settings['red'] = r.params['red']
+          # user.settings['blue'] = r.params['blue']
+          user.update_settings(r.params)
           user.save
           user.to_h(for_user: true)
         end
