@@ -8,8 +8,6 @@ require 'lib/storage'
 module View
   class Spreadsheet < Snabberb::Component
     needs :game
-    needs :spreadsheet_sort_by, default: nil
-    needs :spreadsheet_sort_order, default: nil
 
     def render
       @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
@@ -91,9 +89,9 @@ module View
           h(:th, props, 'IPO'),
           h(:th, props, 'Market'),
           h(:th, props, 'IPO'),
-          render_sort_link(props, 'Market', 'SHARE-PRICE'),
+          render_sort_link(props, 'Market', 'SHARE_PRICE'),
           render_sort_link(props, 'Cash', 'CASH'),
-          render_sort_link(props, 'Operating Order', 'OPERATING-ORDER'),
+          render_sort_link(props, 'Operating Order', 'OPERATING_ORDER'),
           h(:th, props, 'Trains'),
           h(:th, props, 'Tokens'),
           h(:th, props, 'Privates'),
@@ -138,31 +136,29 @@ module View
     def render_corporations
       current_round = @game.round.turn_round_num
 
-      ordered_corporations = sorted_corporations
-      ordered_corporations.map do |c|
+      sorted_corporations.map do |c|
         render_corporation(c[1], c[0], current_round)
       end
     end
 
     def sorted_corporations
-      result = []
       floated_corporations = @game.round.entities
 
-      @game.corporations.map do |c|
+      result = @game.corporations.map do |c|
         operating_order = (floated_corporations.find_index(c) || -1) + 1
-        result << [operating_order, c]
+        [operating_order, c]
       end
 
-      result = result.sort_by do |c|
+      result.sort_by! do |operating_order, corporation|
         case @spreadsheet_sort_by
-        when 'OPERATING-ORDER'
-          c[0]
+        when 'OPERATING_ORDER'
+          operating_order
         when 'CASH'
-          c[1].cash
-        when 'SHARE-PRICE'
-          c[1].share_price.nil? ? 0 : c[1].share_price.price
+          corporation.cash
+        when 'SHARE_PRICE'
+          corporation.share_price&.price || 0
         else
-          c[1].id
+          corporation.id
         end
       end
 
