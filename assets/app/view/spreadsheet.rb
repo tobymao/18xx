@@ -8,10 +8,13 @@ require 'lib/storage'
 module View
   class Spreadsheet < Snabberb::Component
     needs :game
-    needs :spreadsheet_sort_by, default: Lib::Storage['spreadsheet_sort_by'] || 'ID', store: true
-    needs :spreadsheet_sort_order, default: Lib::Storage['spreadsheet_sort_order'] || 'ASC', store: true
+    needs :spreadsheet_sort_by, default: nil
+    needs :spreadsheet_sort_order, default: nil
 
     def render
+      @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
+      @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
+
       h(:div, { style: {
         overflow: 'auto',
         margin: '0 -1rem',
@@ -152,20 +155,13 @@ module View
 
     def mark_sort_column(sort_by)
       Lib::Storage['spreadsheet_sort_by'] = sort_by
-      store(:spreadsheet_sort_by, sort_by)
-      *@spreadsheet_sort_by = sort_by
+      update
     end
 
     def toggle_sort_order
-      if @spreadsheet_sort_order == 'DESC'
-        Lib::Storage['spreadsheet_sort_order'] = 'ASC'
-        store(:spreadsheet_sort_order, 'ASC')
-        *@spreadsheet_sort_order = 'ASC'
-      else
-        Lib::Storage['spreadsheet_sort_order'] = 'DESC'
-        store(:spreadsheet_sort_order, 'DESC')
-        *@spreadsheet_sort_order = 'DESC'
-      end
+      Lib::Storage['spreadsheet_sort_order'] = 'ASC' if @spreadsheet_sort_order == 'DESC'
+      Lib::Storage['spreadsheet_sort_order'] = 'DESC' unless @spreadsheet_sort_order == 'DESC'
+      update
     end
 
     def render_corporations
@@ -187,18 +183,19 @@ module View
       end
 
       result = result.sort_by do |c|
-        if @spreadsheet_sort_by == 'OPERATING-ORDER'
+        case @spreadsheet_sort_by
+        when 'OPERATING-ORDER'
           c[0]
-        elsif @spreadsheet_sort_by == 'CASH'
+        when 'CASH'
           c[1].cash
-        elsif @spreadsheet_sort_by == 'SHARE-PRICE'
+        when 'SHARE-PRICE'
           c[1].share_price.nil? ? 0 : c[1].share_price.price
         else
           c[1].id
         end
       end
 
-      result = result.reverse if @spreadsheet_sort_order == 'DESC'
+      result.reverse! if @spreadsheet_sort_order == 'DESC'
       result
     end
 
