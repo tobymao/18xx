@@ -48,7 +48,7 @@ module View
                 @user&.dig(:settings, :font_color),
                 dark ? '#ffffff' : '#000000'
               ),
-              @elm_logo = render_logo_color(@user&.dig(:settings, :red_logo)),
+              render_logo_color(@user&.dig(:settings, :red_logo)),
             ]),
             render_tile_colors,
             h('div#settings__buttons', [
@@ -85,7 +85,7 @@ module View
       dark = `window.matchMedia('(prefers-color-scheme: dark)').matches`
       Native(@inputs[:bg_color]).elm.value = dark ? '#000000' : '#ffffff'
       Native(@inputs[:font_color]).elm.value = dark ? '#ffffff' : '#000000'
-      Native(@inputs[:red_logo]).elm.removeAttribute('checked')
+      Native(@inputs[:red_logo]).elm.checked = false
       Lib::Hex::COLOR.each do |color, hex_color|
         Native(@inputs[color]).elm.value = hex_color
       end
