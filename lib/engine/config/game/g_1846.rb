@@ -480,20 +480,20 @@ module Engine
       "o=r:yellow_40|brown_60;p=a:1,b:_0;l=E": [
         "C17"
       ],
-      "o=r:yellow_30|brown_60,h:1;p=a:0,b:_0;b=e:5": [
+      "o=r:yellow_30|brown_60,h:1;p=a:0,b:_0;l=E;b=e:5": [
         "C21"
       ],
-      "o=r:yellow_30|brown_60;p=a:1,b:_0;l=E;b=e:2": [
+      "o=r:yellow_30|brown_60;p=a:1,b:_0;b=e:2": [
         "D22"
       ],
       "o=r:yellow_20|brown_50;p=a:1,b:_0;l=E": [
         "E23",
         "I17"
       ],
-      "o=r:yellow_30|brown_70,h:1;p=a:1,b:_0;b=e:0": [
+      "o=r:yellow_30|brown_70,h:1;p=a:1,b:_0;l=E;b=e:0": [
         "F22"
       ],
-      "o=r:yellow_30|brown_70;p=a:1,b:_0;p=a:2,b:_0;l=E;b=e:3": [
+      "o=r:yellow_30|brown_70;p=a:1,b:_0;p=a:2,b:_0;b=e:3": [
         "G21"
       ],
       "o=r:yellow_20|brown_40;p=a:2,b:_0;l=E": [
