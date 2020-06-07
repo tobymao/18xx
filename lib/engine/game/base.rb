@@ -32,6 +32,11 @@ module Engine
 
       DEV_STAGE = :prealpha
 
+      GAME_LOCATION = nil
+      GAME_RULES_URL = nil
+      GAME_DESIGNER = nil
+      GAME_PUBLISHER = nil
+
       BANK_CASH = 12_000
 
       CURRENCY_FORMAT_STR = '$%d'

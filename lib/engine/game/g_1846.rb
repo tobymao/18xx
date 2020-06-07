@@ -20,6 +20,11 @@ module Engine
 
       DEV_STAGE = :prealpha
 
+      GAME_LOCATION = 'Midwest, USA'
+      GAME_RULES_URL = 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf'
+      GAME_DESIGNER = 'Thomas Lehmann'
+      GAME_PUBLISHER = :gmt
+
       SELL_AFTER = :p_any_operate
       SELL_MOVEMENT = :left_block_pres
       HOME_TOKEN_TIMING = :float
