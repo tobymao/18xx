@@ -100,47 +100,47 @@ module Engine
     "X1": {
       "count": 1,
       "color": "yellow",
-      "code": "c=r:30;p=a:0,b:_0;p=a:4,b:_0;l=DC"
+      "code": "city=revenue:30;path=a:0,b:_0;path=a:4,b:_0;label=DC"
     },
     "X2": {
       "count": 1,
       "color": "green",
-      "code": "c=r:40,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:1,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC"
+      "code": "city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=DC"
     },
     "X3": {
       "count": 1,
       "color": "green",
-      "code": "c=r:40;c=r:40;p=a:0,b:_0;p=a:_0,b:2;p=a:3,b:_1;p=a:_1,b:5;l=OO"
+      "code": "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:3,b:_1;path=a:_1,b:5;label=OO"
     },
     "X4": {
       "count": 1,
       "color": "green",
-      "code": "c=r:40;c=r:40;p=a:0,b:_0;p=a:_0,b:1;p=a:2,b:_1;p=a:_1,b:3;l=OO"
+      "code": "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=OO"
     },
     "X5": {
       "count": 1,
       "color": "green",
-      "code": "c=r:40;c=r:40;p=a:3,b:_0;p=a:_0,b:5;p=a:0,b:_1;p=a:_1,b:4;l=OO"
+      "code": "city=revenue:40;city=revenue:40;path=a:3,b:_0;path=a:_0,b:5;path=a:0,b:_1;path=a:_1,b:4;label=OO"
     },
     "X6": {
       "count": 1,
       "color": "brown",
-      "code": "c=r:70,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC"
+      "code": "city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=DC"
     },
     "X7": {
       "count": 2,
       "color": "brown",
-      "code": "c=r:50,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:5,b:_0;p=a:4,b:_0;l=OO"
+      "code": "city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;path=a:4,b:_0;label=OO"
     },
     "X8": {
       "count": 1,
       "color": "gray",
-      "code": "c=r:100,s:4;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=DC"
+      "code": "city=revenue:100,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=DC"
     },
     "X9": {
       "count": 1,
       "color": "gray",
-      "code": "c=r:70,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=OO"
+      "code": "city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO"
     }
   },
   "market": [
@@ -527,7 +527,7 @@ module Engine
   ],
   "hexes": {
     "white": {
-      "blank": [
+      "": [
         "B6",
         "B8",
         "B10",
@@ -550,25 +550,25 @@ module Engine
         "H2",
         "I3"
       ],
-      "u=c:80,t:mountain": [
+      "upgrade=cost:80,terrain:mountain": [
         "B12",
         "D4",
         "D6",
         "D10",
         "E5"
       ],
-      "u=c:40,t:water": [
+      "upgrade=cost:40,terrain:water": [
         "F10",
         "G9",
         "G11",
         "H12"
       ],
-      "t=r:0;t=r:0": [
+      "town=revenue:0;town=revenue:0": [
         "B4",
         "K3",
         "K5"
       ],
-      "city": [
+      "city=revenue:0": [
         "C5",
         "D12",
         "E3",
@@ -576,74 +576,74 @@ module Engine
         "G13",
         "J2"
       ],
-      "c=r:0;u=c:80,t:mountain": [
+      "city=revenue:0;upgrade=cost:80,terrain:mountain": [
         "C13",
         "D2",
         "D8"
       ],
-      "town": [
+      "town=revenue:0": [
         "E11"
       ],
-      "c=r:0;l=DC": [
+      "city=revenue:0;label=DC": [
         "F8"
       ],
-      "t=r:0;u=c:40,t:water": [
+      "town=revenue:0;upgrade=cost:40,terrain:water": [
         "G3",
         "I5"
       ],
-      "c=r:0;u=c:40,t:water": [
+      "city=revenue:0;upgrade=cost:40,terrain:water": [
         "H4",
         "J6"
       ]
     },
     "red": {
-      "c=r:yellow_40|green_50|brown_60|gray_80,h:1,g:Pittsburgh;p=a:5,b:_0;b=e:4": [
+      "city=revenue:yellow_40|green_50|brown_60|gray_80,hide:1,groups:Pittsburgh;path=a:5,b:_0;border=edge:4": [
         "A3"
       ],
-      "o=r:yellow_40|green_50|brown_60|gray_80,g:Pittsburgh;p=a:0,b:_0;b=e:1": [
+      "offboard=revenue:yellow_40|green_50|brown_60|gray_80,groups:Pittsburgh;path=a:0,b:_0;border=edge:1": [
         "B2"
       ],
-      "o=r:yellow_40|green_60|brown_80|gray_100;p=a:4,b:_0;p=a:5,b:_0": [
+      "offboard=revenue:yellow_40|green_60|brown_80|gray_100;path=a:4,b:_0;path=a:5,b:_0": [
         "A7"
       ],
-      "o=r:yellow_40|green_50|brown_60|gray_80,h:1,g:West Virginia Coal;p=a:4,b:_0;b=e:5": [
+      "offboard=revenue:yellow_40|green_50|brown_60|gray_80,hide:1,groups:West Virginia Coal;path=a:4,b:_0;border=edge:5": [
         "A13"
       ],
-      "o=r:yellow_40|green_50|brown_60|gray_80,g:West Virginia Coal;p=a:3,b:_0;p=a:4,b:_0;b=e:2": [
+      "offboard=revenue:yellow_40|green_50|brown_60|gray_80,groups:West Virginia Coal;path=a:3,b:_0;path=a:4,b:_0;border=edge:2": [
         "B14"
       ],
-      "o=r:yellow_30|green_40|brown_50|gray_60;p=a:2,b:_0": [
+      "offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:2,b:_0": [
         "H14"
       ],
-      "o=r:yellow_40|green_60|brown_80|gray_100;p=a:0,b:_0;p=a:1,b:_0": [
+      "offboard=revenue:yellow_40|green_60|brown_80|gray_100;path=a:0,b:_0;path=a:1,b:_0": [
         "L2"
       ]
     },
     "gray": {
-      "p=a:1,b:5": [
+      "path=a:1,b:5": [
         "E1"
       ],
-      "p=a:3,b:4": [
+      "path=a:3,b:4": [
         "F14"
       ],
-      "p=a:1,b:5;p=a:0,b:1": [
+      "path=a:1,b:5;path=a:0,b:1": [
         "G1"
       ],
-      "t=r:30;p=a:3,b:_0;p=a:_0,b:5": [
+      "town=revenue:30;path=a:3,b:_0;path=a:_0,b:5": [
         "I9"
       ],
-      "t=r:30;p=a:0,b:_0;p=a:_0,b:1": [
+      "town=revenue:30;path=a:0,b:_0;path=a:_0,b:1": [
         "K1"
       ],
-      "p=a:2,b:3": [
+      "path=a:2,b:3": [
         "K7"
       ]
     },
     "yellow": {
-      "c=r:30;c=r:30;p=a:1,b:_0;p=a:4,b:_1;l=OO;u=c:40,t:water": [
+      "city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=OO;upgrade=cost:40,terrain:water": [
         "H6"
       ],
-      "c=r:30;c=r:30;p=a:0,b:_0;p=a:3,b:_1;l=OO": [
+      "city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:3,b:_1;label=OO": [
         "J4"
       ]
     }

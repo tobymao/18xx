@@ -36,6 +36,13 @@ describe 'Assets' do
       expect(x2_x3).to include('X2')
       expect(x2_x3).to include('X3')
 
+      aggregate_failures 'location name for all stop types' do
+        with_loc_names = render(app_route: '/tiles/18Chesapeake/B2+H6+K3')
+        %w[B2 Pittsburgh H6 Baltimore K3 Trenton Amboy D&amp;R].each do |str|
+          expect(with_loc_names).to include(str)
+        end
+      end
+
       multiple_games = render(app_route: '/tiles/1889+18Chesapeake')
       expect(multiple_games).to include('Kouchi')
       expect(multiple_games).to include('Delmarva')
