@@ -45,24 +45,33 @@ module View
     end
 
     # rubocop:disable Layout/LineLength
-    def render_input(label, id:, el: 'input', type: 'text', attrs: {}, container_style: {}, input_style: {}, children: [])
+    def render_input(label, placeholder: '', id:, el: 'input', type: 'text', attrs: {}, container_style: {}, label_style: {}, input_style: {}, children: [])
       # rubocop:enable Layout/LineLength
-      props = {
+      label_props = {
+        style: {
+          **label_style,
+        },
+        attrs: {
+          for: id,
+        },
+      }
+      input_props = {
         style: {
           **input_style,
         },
         attrs: {
-          placeholder: label,
+          placeholder: placeholder,
+          id: id,
           type: type,
           **attrs,
         },
       }
-      input = h(el, props, children)
+      input = h(el, input_props, children)
       @inputs[id] = input
       h(
         'div.input-container',
         { style: { **container_style } },
-        [h(:label, label), input]
+        [h(:label, label_props, label), input]
       )
     end
 
