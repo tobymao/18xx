@@ -51,9 +51,9 @@ game config/code:
   the track to it is rendered; track to offboards are pointed
 - **path**
     - **a** and **b** - *required* - the two points connected by this path; can
-      be integer to indicate edge number, an underscore followed by an integer
-      to refer by index to a city/town/offboard defined earlier on the tile, or
-      `junction` to refer to the center point of a Lawson-style tile
+      be integer to indicate edge number, or an underscore followed by an
+      integer to refer by index to a city/town/offboard/junction defined earlier
+      on the tile
     - **track** - broad/narrow/dual/line/dashed; this option is not yet
       implemented, so track is always broad
 - **label** - large letter(s) on tile (e.g., "Chi", "OO", or "Z")
@@ -64,6 +64,7 @@ game config/code:
     - **edge** - integer - which edge to hide from rendering; a line matching
       the tile's color is drawn on top of the edge's normal black line so that
       two adjacent tiles appear joined
+- **junction** - the center point of a Lawson-style tile
 
 #### Town/City/Offboard sub parts
 
@@ -93,7 +94,7 @@ Towns, cities, and offboards have a few "sub parts" in common:
 
 * Lawson tile #81
 
-`path=a:0,b:junction;path=a:2,b:junction;path=a:4,b:junction`
+`junction,path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0`
 
 ![Tile 81](/public/images/tile_81.png?raw=true "Tile 81")
 

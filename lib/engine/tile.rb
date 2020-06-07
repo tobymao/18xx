@@ -15,7 +15,7 @@ module Engine
     include Config::Tile
 
     attr_accessor :hex, :legal_rotations, :location_name, :name, :index
-    attr_reader :borders, :cities, :color, :edges, :junctions, :label, :nodes,
+    attr_reader :borders, :cities, :color, :edges, :junction, :label, :nodes,
                 :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers
 
     def self.for(name, **opts)
@@ -45,6 +45,7 @@ module Engine
 
       code.split(';').map do |part_code|
         type, params = part_code.split('=')
+        params ||= ''
 
         params = params.split(',').map { |param| param.split(':') }.to_h if params.include?(':')
 
@@ -63,8 +64,6 @@ module Engine
           case v[0]
           when '_'
             [k, cache[v[1..-1].to_i]]
-          when 'j'
-            [k, Part::Junction.new] if v == 'junction'
           else
             [k, Part::Edge.new(v)]
           end
@@ -93,6 +92,10 @@ module Engine
         upgrade
       when 'border'
         Part::Border.new(params['edge'])
+      when 'junction'
+        junction = Part::Junction.new
+        cache << junction
+        junction
       end
     end
 
@@ -112,7 +115,7 @@ module Engine
       @nodes = nil
       @stops = nil
       @edges = nil
-      @junctions = nil
+      @junction = nil
       @location_name = location_name
       @legal_rotations = []
       @blockers = []
@@ -157,7 +160,7 @@ module Engine
 
     def lawson?
       @lawson ||=
-        @junctions.any? ||
+        !!@junction ||
         (@cities.one? && @towns.empty?) ||
         ((cities.empty? && towns.one?) && edges.size > 2)
     end
@@ -283,6 +286,8 @@ module Engine
           @offboards << part
         elsif part.border?
           @borders << part
+        elsif part.junction?
+          @junction = part
         else
           raise "Part #{part} not separated."
         end
@@ -297,7 +302,6 @@ module Engine
 
       @nodes = @paths.map(&:node).compact.uniq
       @branches = @paths.map(&:branch).compact.uniq
-      @junctions = @paths.map(&:junction).compact.uniq
       @stops = @paths.map(&:stop).compact.uniq
       @edges = @paths.flat_map(&:edges).compact.uniq
     end
