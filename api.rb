@@ -84,7 +84,7 @@ class Api < Roda
           50,
           user: user.to_h,
           message: hr.params['message'],
-          created_at: Time.now.strftime('%m/%d %H:%M:%S'),
+          created_at: Time.now.to_i,
         )
       end
     end

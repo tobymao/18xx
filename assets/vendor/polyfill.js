@@ -1,4 +1,5 @@
 if (typeof setTimeout === 'undefined') { var setTimeout = function setTimeout(func) { } }
+if (typeof setInterval === 'undefined') { var setInterval = function setInterval(func) { } }
 
 if (typeof window === 'undefined') {
   window = {

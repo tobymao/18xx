@@ -60,6 +60,9 @@ Style/EmptyCaseCondition:
 Style/MultipleComparison:
   Enabled: false
 
+Style/MultilineIfModifier:
+  Enabled: false
+
 Style/TrailingCommaInArguments:
   Enabled: false
 

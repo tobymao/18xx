@@ -13,6 +13,7 @@ module View
     needs :app_route, store: true
     needs :user
     needs :disable_user_errors
+    needs :connected, default: false, store: true
 
     def render_broken_game(e)
       inner = [h(:div, "We're sorry this game cannot be continued due to #{e}")]
@@ -105,11 +106,14 @@ module View
             store(:game, @game.clone(new_data['actions']))
           end
         end
-      end
+      end unless @connected
+
+      store(:connected, true, skip: true)
 
       destroy = lambda do
         @connection&.unsubscribe(game_path)
         store(:selected_company, nil, skip: true)
+        store(:connected, false, skip: true)
       end
 
       render_title

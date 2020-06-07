@@ -40,7 +40,9 @@ module GameManager
     end
   end
 
-  def get_games(params)
+  def get_games(params = nil)
+    params ||= `window.location.search`
+
     @connection.safe_get("/game#{params}") do |data|
       store(:games, data[:games])
     end

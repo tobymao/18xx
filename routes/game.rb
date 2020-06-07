@@ -26,14 +26,14 @@ class Api
 
             GameUser.create(game: game, user: user)
             game.players(reload: true)
-            return_and_notify(game)
+            game.to_h
           end
 
           not_authorized! unless users.any? { |u| u.id == user.id }
 
           r.is 'leave' do
             game.remove_player(user)
-            return_and_notify(game)
+            game.to_h
           end
 
           # POST '/api/game/<game_id>/action'
@@ -120,7 +120,7 @@ class Api
             end
 
             publish("/game/#{game.id}", **action)
-            return_and_notify(game)
+            game.to_h
           end
 
           not_authorized! unless game.user_id == user.id
@@ -129,7 +129,6 @@ class Api
           r.is 'delete' do
             game_h = game.to_h.merge(deleted: true)
             game.destroy
-            publish('/games', **game_h)
             game_h
           end
 
@@ -141,13 +140,13 @@ class Api
               status: 'active',
               acting: [users.first.id],
             )
-            return_and_notify(game)
+            game.to_h
           end
 
           # POST '/api/game/<game_id>/kick
           r.is 'kick' do
             game.remove_player(r.params['id'])
-            return_and_notify(game)
+            game.to_h
           end
         end
       end
@@ -175,7 +174,7 @@ class Api
 
           game = Game.create(params)
           GameUser.create(game: game, user: user)
-          return_and_notify(game)
+          game.to_h
         end
       end
     end
@@ -183,12 +182,6 @@ class Api
 
   def actions_h(game)
     game.actions(reload: true).map(&:to_h)
-  end
-
-  def return_and_notify(game)
-    game_h = game.to_h
-    publish('/games', **game_h)
-    game_h
   end
 
   def set_game_state(game, acting, engine)

@@ -7,11 +7,14 @@ module View
     needs :user
     needs :connection
     needs :log, default: nil, store: true
+    needs :subscribed, default: false, store: true
 
     def render
-      @connection.subscribe('/chat', @log ? -1 : 0) do |data|
+      @connection.subscribe('/chat', 0) do |data|
         add_line(data)
-      end
+      end unless @subscribed
+
+      store(:subscribed, true, skip: true)
 
       destroy = lambda do
         store(:log, nil, skip: true)
@@ -29,7 +32,7 @@ module View
         if code && code == 13
           message = event['target']['value']
           if message.strip != ''
-            add_line(user: @user, created_at: Time.now.strftime('%m/%d %H:%M:%S'), message: message)
+            add_line(user: @user, created_at: Time.now.to_i, message: message)
             event['target']['value'] = ''
             @connection.post('/chat', message: message)
           end
@@ -54,7 +57,7 @@ module View
 
     def add_line(data)
       name = data[:user][:name]
-      ts = data[:created_at]
+      ts = Time.at(data[:created_at]).strftime('%m/%d %H:%M:%S')
       message = data[:message]
       store(:log, @log + ["#{ts} #{name}: #{message}"])
     end
