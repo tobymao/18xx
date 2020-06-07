@@ -145,14 +145,11 @@ a.game__nav:focus {
 
 #chatlog, input#chatbar {
   width: 100%;
-  -ms-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box; 
-  box-sizing: border-box;
 }
 
 input#chatbar {
   margin: 0;
+  box-sizing: border-box;
 }
 
 .card_header {
