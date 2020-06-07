@@ -79,8 +79,8 @@ module View
           h(Game::Companies, game: @game, user: @user)
         when 'corporations'
           h(Game::Corporations, game: @game, user: @user)
-        when 'trains'
-          h(Game::TrainAndPhaseRoster, game: @game)
+        when 'info'
+          h(Game::GameInfo, game: @game)
         when 'players'
           h(Game::Players, game: @game)
         when 'spreadsheet'
@@ -159,7 +159,7 @@ module View
         tab_button('Corporations', '#corporations'),
         tab_button('Map', '#map'),
         tab_button('Market', '#market'),
-        tab_button('Trains/Phases', '#trains'),
+        tab_button('Info', '#info'),
         tab_button('Tiles', '#tiles'),
       ]
 

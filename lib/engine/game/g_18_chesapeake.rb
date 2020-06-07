@@ -18,6 +18,11 @@ module Engine
 
       DEV_STAGE = :beta
 
+      GAME_LOCATION = nil
+      GAME_RULES_URL = 'https://www.dropbox.com/s/e38xzaf14meb2tw/18Chesapeake_Rules.pdf'
+      GAME_DESIGNER = 'Scott Petersen'
+      GAME_PUBLISHER = :aag
+
       def action_processed(action)
         case action
         when Action::BuyTrain

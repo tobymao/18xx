@@ -28,6 +28,11 @@ module Engine
                       yellow: '#fcea18')
 
       load_from_json(Config::Game::G1817::JSON)
+
+      GAME_LOCATION = 'NYSE, USA'
+      GAME_RULES_URL = 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view'
+      GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
+      GAME_PUBLISHER = :aag
     end
   end
 end

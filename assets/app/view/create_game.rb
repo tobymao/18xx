@@ -45,10 +45,12 @@ module View
 
     def render_inputs
       games = (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).map do |game|
+        title = game.title
+        title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
         if game::DEV_STAGE == :production
-          h(:option, { attrs: { value: game.title } }, game.title)
+          h(:option, { attrs: { value: game.title } }, title)
         else
-          h(:option, { attrs: { value: game.title } }, "#{game.title} (#{game::DEV_STAGE})")
+          h(:option, { attrs: { value: game.title } }, "#{title} (#{game::DEV_STAGE})")
         end
       end
       h(:div, [
