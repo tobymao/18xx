@@ -48,17 +48,11 @@ module View
     def render_input(label, placeholder: '', id:, el: 'input', type: 'text', attrs: {}, container_style: {}, label_style: {}, input_style: {}, children: [])
       # rubocop:enable Layout/LineLength
       label_props = {
-        style: {
-          **label_style,
-        },
-        attrs: {
-          for: id,
-        },
+        style: label_style,
+        attrs: { for: id },
       }
       input_props = {
-        style: {
-          **input_style,
-        },
+        style: input_style,
         attrs: {
           placeholder: placeholder,
           id: id,
