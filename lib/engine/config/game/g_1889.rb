@@ -507,7 +507,7 @@ module Engine
       "upgrade=cost:80,terrain:water": [
         "K6"
       ],
-      "upgrade=cost:80,terrain:water+mountain": [
+      "upgrade=cost:80,terrain:water|mountain": [
         "H5",
         "I6"
       ],

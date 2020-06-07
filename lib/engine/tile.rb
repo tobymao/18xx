@@ -87,7 +87,7 @@ module Engine
         cache << label
         label
       when 'upgrade'
-        upgrade = Part::Upgrade.new(params['cost'], params['terrain']&.split('+'))
+        upgrade = Part::Upgrade.new(params['cost'], params['terrain']&.split('|'))
         cache << upgrade
         upgrade
       when 'border'

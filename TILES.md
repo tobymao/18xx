@@ -59,7 +59,7 @@ game config/code:
 - **label** - large letter(s) on tile (e.g., "Chi", "OO", or "Z")
 - **upgrade**
     - **cost** - *required* - integer
-    - **terrain** - `mountain`/`water` - multiple terrain types separated by `+`
+    - **terrain** - `mountain`/`water` - multiple terrain types separated by `|`
 - **border**
     - **edge** - integer - which edge to hide from rendering; a line matching
       the tile's color is drawn on top of the edge's normal black line so that
@@ -106,7 +106,7 @@ Towns, cities, and offboards have a few "sub parts" in common:
 
 * 1889 - preprinted tile for H5
 
-`upgrade=cost:80,terrain:water+mountain`
+`upgrade=cost:80,terrain:water|mountain`
 
 ![1889 H5](/public/images/tile_1889_H5.png?raw=true "1889 H5")
 
