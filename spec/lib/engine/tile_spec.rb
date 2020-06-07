@@ -121,7 +121,7 @@ module Engine
       [
         {
           desc: "18Chesapeake's X3",
-          code: 'c=r:40;c=r:40;p=a:0,b:_0;p=a:_0,b:2;p=a:3,b:_1;p=a:_1,b:5;l=OO',
+          code: 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:3,b:_1;path=a:_1,b:5;label=OO',
           expected: {
             0 => [2, 5],
             1 => [1, 4],
@@ -133,7 +133,7 @@ module Engine
         },
         {
           desc: "18Chesapeake's X5",
-          code: 'c=r:40;c=r:40;p=a:3,b:_0;p=a:_0,b:5;p=a:0,b:_1;p=a:_1,b:4;l=OO',
+          code: 'city=revenue:40;city=revenue:40;path=a:3,b:_0;path=a:_0,b:5;path=a:0,b:_1;path=a:_1,b:4;label=OO',
           expected: {
             0 => [3, 0],
             1 => [4, 1],
@@ -145,26 +145,26 @@ module Engine
         },
         {
           desc: "18Chesapeake's H6 hex (Baltimore)",
-          code: 'c=r:30;c=r:30;p=a:1,b:_0;p=a:4,b:_1;l=OO;u=c:40,t:water',
+          code: 'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=OO;upgrade=cost:40,terrain:water',
           expected: {
             0 => [1, 4],
           },
         },
         {
           desc: "18Chesapeake's J4 hex (Philadelphia)",
-          code: 'c=r:30;c=r:30;p=a:0,b:_0;p=a:3,b:_1;l=OO',
+          code: 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:3,b:_1;label=OO',
           expected: {
             0 => [0, 3],
           },
         },
         {
           desc: "1846's tile #298 (green Chi)",
-          code: 'c=r:40;c=r:40;c=r:40;c=r:40;'\
-                'p=a:0,b:_0;p=a:_0,b:3;'\
-                'p=a:1,b:_1;p=a:_1,b:3;'\
-                'p=a:4,b:_2;p=a:_2,b:3;'\
-                'p=a:5,b:_3;p=a:_3,b:3;'\
-                'l=Chi',
+          code: 'city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;'\
+                'path=a:0,b:_0;path=a:_0,b:3;'\
+                'path=a:1,b:_1;path=a:_1,b:3;'\
+                'path=a:4,b:_2;path=a:_2,b:3;'\
+                'path=a:5,b:_3;path=a:_3,b:3;'\
+                'label=Chi',
           expected: {
             0 => [0, 1, 4, 5],
           },

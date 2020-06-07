@@ -387,7 +387,7 @@ module Engine
   ],
   "hexes": {
     "white": {
-      "blank": [
+      "": [
         "E5",
         "F6",
         "G5",
@@ -425,7 +425,7 @@ module Engine
         "I11",
         "J6"
       ],
-      "city": [
+      "city=revenue:0": [
         "B16",
         "C9",
         "D14",
@@ -436,95 +436,95 @@ module Engine
         "G13",
         "G15"
       ],
-      "c=r:0;l=Z": [
+      "city=revenue:0;label=Z": [
         "E17",
         "H12"
       ],
-      "u=c:40,t:mountain": [
+      "upgrade=cost:40,terrain:mountain": [
         "F18",
         "G17",
         "H16"
       ],
-      "u=c:60,t:mountain": [
+      "upgrade=cost:60,terrain:mountain": [
         "H14"
       ]
     },
     "gray": {
-      "p=a:0,b:5": [
+      "path=a:0,b:5": [
         "A15",
         "C7"
       ],
-      "c=r:10;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0;p=a:5,b:_0": [
+      "city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
         "F20"
       ],
-      "c=r:10,s:2;p=a:1,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:0,b:_0": [
+      "city=revenue:10,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_0": [
         "I5"
       ],
-      "c=r:20;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0": [
+      "city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0": [
         "I15"
       ],
-      "c=r:20;p=a:3,b:_0": [
+      "city=revenue:20;path=a:3,b:_0": [
         "K3"
       ]
     },
     "red": {
-      "o=r:yellow_40|brown_10;p=a:4,b:_0": [
+      "offboard=revenue:yellow_40|brown_10;path=a:4,b:_0": [
         "B8"
       ],
-      "o=r:yellow_30|brown_50,g:East;p=a:1,b:_0;l=E": [
+      "offboard=revenue:yellow_30|brown_50,groups:East;path=a:1,b:_0;label=E": [
         "B18"
       ],
-      "o=r:yellow_20|brown_40;p=a:5,b:_0;l=W": [
+      "offboard=revenue:yellow_20|brown_40;path=a:5,b:_0;label=W": [
         "C5"
       ],
-      "o=r:yellow_40|brown_60,g:East;p=a:1,b:_0;l=E": [
+      "offboard=revenue:yellow_40|brown_60,groups:East;path=a:1,b:_0;label=E": [
         "C17"
       ],
-      "o=r:yellow_30|brown_60,h:1,g:Buffalo|East;p=a:0,b:_0;b=e:5": [
+      "offboard=revenue:yellow_30|brown_60,hide:1,groups:Buffalo|East;path=a:0,b:_0;border=edge:5": [
         "C21"
       ],
-      "o=r:yellow_30|brown_60,g:Buffalo|East;p=a:1,b:_0;l=E;b=e:2": [
+      "offboard=revenue:yellow_30|brown_60,groups:Buffalo|East;path=a:1,b:_0;label=E;border=edge:2": [
         "D22"
       ],
-      "o=r:yellow_20|brown_50,g:East;p=a:1,b:_0;l=E": [
+      "offboard=revenue:yellow_20|brown_50,groups:East;path=a:1,b:_0;label=E": [
         "E23",
         "I17"
       ],
-      "o=r:yellow_30|brown_70,h:1,g:Pittsburgh|East;p=a:1,b:_0;b=e:0": [
+      "offboard=revenue:yellow_30|brown_70,hide:1,groups:Pittsburgh|East;path=a:1,b:_0;border=edge:0": [
         "F22"
       ],
-      "o=r:yellow_30|brown_70,g:Pittsburgh|East;p=a:1,b:_0;p=a:2,b:_0;l=E;b=e:3": [
+      "offboard=revenue:yellow_30|brown_70,groups:Pittsburgh|East;path=a:1,b:_0;path=a:2,b:_0;label=E;border=edge:3": [
         "G21"
       ],
-      "o=r:yellow_20|brown_40,g:East;p=a:2,b:_0;l=E": [
+      "offboard=revenue:yellow_20|brown_40,groups:East;path=a:2,b:_0;label=E": [
         "H20"
       ],
-      "o=r:yellow_50|brown_70;p=a:3,b:_0;p=a:4,b:_0;l=W": [
+      "offboard=revenue:yellow_50|brown_70;path=a:3,b:_0;path=a:4,b:_0;label=W": [
         "I1"
       ],
-      "o=r:yellow_50|brown_70;p=a:2,b:_0;p=a:3,b:_0": [
+      "offboard=revenue:yellow_50|brown_70;path=a:2,b:_0;path=a:3,b:_0": [
         "J10"
       ]
     },
     "yellow": {
-      "c=r:40,s:2;p=a:1,b:_0;p=a:3,b:_0;l=Z;u=c:40,t:water": [
+      "city=revenue:40,slots:2;path=a:1,b:_0;path=a:3,b:_0;label=Z;upgrade=cost:40,terrain:water": [
         "C15"
       ],
-      "c=r:10,g:Chicago;c=r:10,g:Chicago;c=r:10,g:Chicago;c=r:10,g:Chicago;p=a:0,b:_0;p=a:3,b:_1;p=a:4,b:_2;p=a:5,b:_3;l=Chi": [
+      "city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;path=a:0,b:_0;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;label=Chi": [
         "D6"
       ],
-      "c=r:10,s:2;p=a:1,b:_0;p=a:3,b:_0;p=a:0,b:_0": [
+      "city=revenue:10,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0": [
         "D20"
       ],
-      "c=r:10;p=a:1,b:_0;p=a:2,b:_0;p=a:4,b:_0": [
+      "city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0": [
         "E21"
       ],
-      "c=r:10;p=a:5,b:_0": [
+      "city=revenue:10;path=a:5,b:_0": [
         "G19"
       ]
     },
     "blue": {
-      "blank": [
+      "": [
         "C19",
         "D16"
       ]

@@ -332,7 +332,7 @@ module Engine
   ],
   "hexes": {
     "white": {
-      "blank": [
+      "": [
         "B6",
         "B8",
         "B10",
@@ -383,23 +383,23 @@ module Engine
         "I13",
         "J8"
       ],
-      "c=r:0;u=c:40,t:water": [
+      "city=revenue:0;upgrade=cost:40,terrain:water": [
         "C17",
         "G9",
         "H6"
       ],
-      "c=r:0;u=c:40,t:water;l=C": [
+      "city=revenue:0;upgrade=cost:40,terrain:water;label=C": [
         "D10"
       ],
-      "u=c:40,t:water": [
+      "upgrade=cost:40,terrain:water": [
         "G5",
         "F4"
       ],
-      "t=r:0;t=r:0": [
+      "town=revenue:0;town=revenue:0": [
         "C15",
         "E7"
       ],
-      "city": [
+      "city=revenue:0": [
         "B20",
         "C13",
         "C21",
@@ -412,7 +412,7 @@ module Engine
         "H16",
         "I11"
       ],
-      "town": [
+      "town=revenue:0": [
         "C9",
 		"D12",
 		"F20",
@@ -420,22 +420,22 @@ module Engine
 		"I15",
 		"J10"
       ],
-      "t=r:0;u=c:40,t:water": [
+      "town=revenue:0;upgrade=cost:40,terrain:water": [
         "H12"
       ],
-      "c=r:0;l=C": [
+      "city=revenue:0;label=C": [
         "J12",
         "G19"
       ]
     },
     "red": {
-      "o=r:yellow_30|green_40|brown_60|gray_80;p=a:0,b:_0": [
+      "offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:0,b:_0": [
         "A7"
       ],
-      "o=r:yellow_40|green_50|brown_60|gray_80;p=a:0,b:_0": [
+      "offboard=revenue:yellow_40|green_50|brown_60|gray_80;path=a:0,b:_0": [
         "A23"
       ],
-      "o=r:yellow_40|green_60|brown_80|gray_100;p=a:4,b:_0": [
+      "offboard=revenue:yellow_40|green_60|brown_80|gray_100;path=a:4,b:_0": [
         "G1"
       ]
     }
