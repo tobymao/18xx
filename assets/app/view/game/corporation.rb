@@ -14,16 +14,15 @@ module View
         end
 
         card_style = {
-          display: 'inline-block',
-          cursor: 'pointer',
           position: 'relative',
-          border: 'solid 1px gainsboro',
-          'border-radius': '10px',
+          display: 'inline-block',
           overflow: 'hidden',
-          padding: '0.5rem',
-          margin: '0.5rem 0.5rem 0 0',
-          width: '320px',
           'vertical-align': 'top',
+          width: '24rem',
+          margin: '0.5rem 0.5rem 0 0',
+          border: 'solid 1px gainsboro',
+          'border-radius': '0.7rem',
+          cursor: 'pointer',
         }
 
         if @game.round.can_act?(@corporation)
@@ -47,10 +46,10 @@ module View
 
         revenue_table_props = {
           style: {
-            'text-align': 'center',
-            'font-weight': 'bold',
             'margin-left': 'auto',
             'margin-right': 'auto',
+            'font-weight': 'bold',
+            'text-align': 'center',
           },
         }
 
@@ -59,39 +58,72 @@ module View
           children << h(:table, revenue_table_props, [h(:tr, subchildren)])
         end
 
-        h(:div, { style: card_style, on: { click: onclick } }, children)
+        h('div.corporation', { style: card_style, on: { click: onclick } }, children)
       end
 
       def render_title
-        title_style = {
+        title_row_style = {
+          display: 'grid',
+          grid: '1fr / 2rem auto',
+          'align-items': 'center',
+          gap: '0 1rem',
+          padding: '0.4rem',
           background: @corporation.color,
           color: @corporation.text_color,
-          'text-align': 'center',
-          padding: '0.5rem 0px',
-          'font-weight': 'bold',
-          margin: '-0.5rem -0.5rem 0 -0.5rem',
         }
-        h(:div, { style: title_style }, @corporation.full_name)
+        token_props = {
+          attrs: { src: @corporation.logo },
+          style: {
+            height: '2rem',
+            width: '2rem',
+            'justify-self': 'start',
+            border: "0.2rem solid #{@corporation.text_color}",
+            'border-radius': '1.5rem',
+          },
+        }
+        name_style = {
+          'justify-self': 'center',
+          color: @corporation.text_color,
+          'font-weight': 'bold',
+        }
+
+        h('div.corp__title__row', { style: title_row_style }, [
+          h('img.token', token_props),
+          h('div.corp__title__name', { style: name_style }, @corporation.full_name),
+        ])
       end
 
       def render_holdings
-        holdings_style = {
-          'text-align': 'center',
-          'white-space': 'nowrap',
-          'background-color': 'lightgray',
+        holdings_row_style = {
+          display: 'grid',
+          grid: '1fr / 4.5rem auto',
+          gap: '0 0.2rem',
+          'align-items': 'center',
+          'justify-items': 'center',
+          padding: '0.1rem 0.5rem',
+          background: 'gainsboro',
           color: 'black',
-          display: 'flex',
-          'justify-content': 'center',
-          margin: '0 -0.5rem',
+        }
+        sym_style = {
+          'font-size': '3rem',
+          'font-weight': 'bold',
+          'justify-self': 'start',
+        }
+        holdings_style = {
+          display: 'grid',
+          grid: '1fr / 1fr 1fr auto',
+          gap: '0 0.3rem'
         }
 
-        holdings_style['background-color'] = '#9b9' if @game.round.can_act?(@corporation)
+        holdings_row_style['background'] = '#99bb99' if @game.round.can_act?(@corporation)
 
-        h(:div, { style: holdings_style }, [
-          render_header_segment(@corporation.name, 'Sym'),
-          render_trains,
-          render_header_segment(@game.format_currency(@corporation.cash), 'Cash'),
-          render_tokens,
+        h('div.corp__holdings__row', { style: holdings_row_style }, [
+          h('div.corp__sym', { style: sym_style }, @corporation.name),
+          h('div.corp__holdings', { style: holdings_style }, [
+            render_trains,
+            render_header_segment(@game.format_currency(@corporation.cash), 'Cash'),
+            render_tokens,
+          ]),
         ])
       end
 
@@ -101,64 +133,71 @@ module View
       end
 
       def render_header_segment(value, key)
-        props = {
-          style: {
-            display: 'inline-block',
-            margin: '0.5em',
-            'text-align': 'center',
-          },
+        segment_style = {
+          display: 'grid',
+          grid: '3fr 2fr / 1fr',
+          'align-items': 'center',
+          'justify-items': 'center',
+        }
+        value_style = {
+          'max-width': '7.5rem',
+          overflow: 'hidden',
+          'font-weight': 'bold',
+          'text-overflow': 'ellipsis',
+          'white-space': 'nowrap',
+        }
+        key_style = {
+          'align-self': 'end',
         }
 
-        value_props = {
-          style: {
-            'font-size': '16px',
-            'font-weight': 'bold',
-            'max-width': '120px',
-            'white-space': 'nowrap',
-            'text-overflow': 'ellipsis',
-            overflow: 'hidden',
-          },
-        }
-        h(:div, props, [
-          h(:div, value_props, value),
-          h(:div, key),
+        h('div.header__segment', { style: segment_style }, [
+          h('div.value', { style: value_style }, value),
+          h('div.key', { style: key_style }, key),
         ])
       end
 
       def render_treasury
-        h(:div, "Treasury: #{@game.format_currency(@corporation.cash)}")
+        h('div.corp__treasury', "Treasury: #{@game.format_currency(@corporation.cash)}")
       end
 
       def render_tokens
-        token_style = {
-          margin: '0.5rem',
-          'text-align': 'center',
-        }
         token_list_style = {
-          width: '2rem',
-          float: 'left',
+          display: 'grid',
+          grid: '1fr / auto-flow repeat(auto-fit, minmax(1.8rem, 1fr))',
+          gap: '0 0.2rem',
+          'align-items': 'center',
+          'justify-items': 'center',
+        }
+        token_column_style = {
+          display: 'grid',
+          grid: '3fr 2fr / 1fr',
+          'align-items': 'center',
+          'justify-items': 'center',
+        }
+        token_text_style = {
+          'align-self': 'end',
         }
 
         tokens_body = @corporation.tokens.map.with_index do |token, i|
-          props = {
+          img_props = {
             attrs: {
               src: @corporation.logo,
             },
             style: {
-              width: '25px',
+              width: '1.8rem',
             },
           }
 
-          props[:style][:filter] = 'contrast(15%) grayscale(100%)' if token.used?
+          img_props[:style][:filter] = 'contrast(15%) grayscale(100%)' if token.used?
 
           token_text = i.zero? ? @corporation.coordinates : token.price
 
-          h(:div, { style: token_list_style }, [
-            h(:img, props),
-            h(:div, token_text),
+          h('div.corp__token', { style: token_column_style }, [
+            h('img.token', img_props),
+            h('div.key', { style: token_text_style }, token_text),
           ])
         end
-        h(:div, { style: token_style }, tokens_body)
+        h('div.corp__tokens', { style: token_list_style }, tokens_body)
       end
 
       def share_price_str(share_price)
@@ -201,10 +240,10 @@ module View
             },
           }
 
-          h(:tr, [
-            h(:td, name_props, player.name),
-            h(:td, td_props, "#{num_shares}#{president ? '*' : ''}"),
-            h(:td, sold_props, did_sell ? 'Sold' : ''),
+          h('tr.player', [
+            h('td.name', name_props, player.name),
+            h('td.shares', td_props, "#{num_shares}#{president ? '*' : ''}"),
+            h('td.sold', sold_props, did_sell ? 'Sold' : ''),
           ])
         end
 
@@ -218,18 +257,18 @@ module View
         num_market_shares = @game.share_pool.num_shares_of(@corporation)
 
         pool_rows = [
-          h(:tr, [
-            h(:td, td_props, 'IPO'),
-            h(:td, td_props, share_number_str(num_ipo_shares)),
-            h(:td, td_props, share_price_str(@corporation.par_price)),
+          h('tr.ip', [
+            h('td.name', td_props, 'IPO'),
+            h('td.shares', td_props, share_number_str(num_ipo_shares)),
+            h('td.price', td_props, share_price_str(@corporation.par_price)),
           ]),
         ]
 
         if player_rows.any?
-          pool_rows << h(:tr, [
-            h(:td, td_props, 'Market'),
-            h(:td, td_props, share_number_str(num_market_shares)),
-            h(:td, td_props, share_price_str(@corporation.share_price)),
+          pool_rows << h('tr.market', [
+            h('td.name', td_props, 'Market'),
+            h('td.shares', td_props, share_number_str(num_market_shares)),
+            h('td.price', td_props, share_price_str(@corporation.share_price)),
           ])
         end
 
@@ -249,13 +288,17 @@ module View
           },
         }
 
-        h(:table, table_props, [
-          h(:tr, [
-            h(:th, td_props, 'Shareholder'),
-            h(:th, td_props, 'Shares'),
-            h(:th, td_props, 'Price'),
+        h('table.shareholders', table_props, [
+          h(:thead, [
+            h('tr', [
+              h('th.shareholder', td_props, 'Shareholder'),
+              h('th.shares', td_props, 'Shares'),
+              h('th.price', td_props, 'Price'),
+            ]),
           ]),
-          *rows,
+          h(:tbody, [
+            *rows,
+          ])
         ])
       end
 
@@ -303,7 +346,7 @@ module View
           },
         }
 
-        h(:td, props, "President: #{@corporation.owner.name}")
+        h('td.president', props, "President: #{@corporation.owner.name}")
       end
 
       def render_revenue_history
@@ -316,7 +359,7 @@ module View
         }
 
         last_run = @corporation.operating_history[@corporation.operating_history.keys.max].revenue
-        h(:td, props, "Last Run: #{@game.format_currency(last_run)}")
+        h('td.last-run', props, "Last Run: #{@game.format_currency(last_run)}")
       end
 
       def selected?
