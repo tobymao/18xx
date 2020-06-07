@@ -25,10 +25,12 @@ module Engine
       end
 
       def connected_hexes
-        tile_laying_ability[:hexes]&.map do |coordinates|
+        (tile_laying_ability[:hexes] || []).map do |coordinates|
           hex = @game.hex_by_id(coordinates)
+          next unless hex.tile.preprinted
+
           [hex, hex.neighbors.keys]
-        end.to_h
+        end.compact.to_h
       end
 
       private

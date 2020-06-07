@@ -200,6 +200,11 @@ module Engine
         rotation = action.rotation
         old_tile = hex.tile
 
+        # at time of writing, this check is invalid for tile 437 in 1889; we
+        # need to remove the P label and properly implement ports to use this
+        # error
+        # raise GameError, "#{old_tile.name} cannot upgrade to #{tile.name}" unless old_tile.upgrades_to?(tile)
+
         @game.tiles.delete(tile)
         @game.tiles << old_tile unless old_tile.preprinted
 
