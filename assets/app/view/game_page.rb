@@ -213,7 +213,7 @@ module View
 
     def render_action
       crowded_corps = @round.crowded_corps
-      return h(DiscardTrains, corporations: crowded_corps) if @round.crowded_corps.any?
+      return h(Game::DiscardTrains, corporations: crowded_corps) if @round.crowded_corps.any?
 
       case @round
       when Engine::Round::Stock
