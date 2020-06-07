@@ -110,6 +110,9 @@ module Engine
       RAND_C = 12_345
       RAND_M = 2**31
 
+      def setup(players)
+      end
+
       def self.title
         name.split('::').last.slice(1..-1)
       end
@@ -236,6 +239,8 @@ module Engine
         connect_hexes
 
         init_company_abilities
+
+        setup(players)
 
         initialize_actions(actions)
 
