@@ -26,7 +26,7 @@ module View
 
         h(:div, [
           h(:div, 'Par Price:'),
-          *par_values,
+          *par_values.reverse,
         ])
       end
     end
