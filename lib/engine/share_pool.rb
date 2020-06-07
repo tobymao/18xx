@@ -19,9 +19,9 @@ module Engine
     end
 
     def buy_share(entity, share, exchange: nil)
+      share = share.is_a?(ShareBundle) ? share : ShareBundle.new(share)
       raise GameError, 'Cannot buy share from player' if share.owner.player?
 
-      share = ShareBundle.new(share)
       corporation = share.corporation
       ipoed = corporation.ipoed
       floated = corporation.floated?

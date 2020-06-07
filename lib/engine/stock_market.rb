@@ -57,7 +57,29 @@ module Engine
       end
     end
 
+    def find_share_price(corporation, direction)
+      r, c = corporation.share_price.coordinates
+      case direction
+      when :left
+        c -= 1
+        share_price(r, c) || share_price(r, c + 1)
+      when :right
+        c += 1
+        share_price(r, c) || share_price(r, c - 1)
+      when :down
+        r -= 1
+        share_price(r, c) || share_price(r + 1, c)
+      when :up
+        r += 1
+        share_price(r, c) || share_price(r - 1, c)
+      end
+    end
+
     private
+
+    def share_price(row, column)
+      @market[row]&.[](column)
+    end
 
     def move(corporation, row, column)
       share_price = share_price(row, column)
@@ -66,10 +88,6 @@ module Engine
       corporation.share_price.corporations.delete(corporation)
       corporation.share_price = share_price
       share_price.corporations << corporation
-    end
-
-    def share_price(row, column)
-      @market[row][column]
     end
   end
 end

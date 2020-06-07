@@ -214,13 +214,10 @@ module View
           },
         }
 
-        num_ipo_shares = @corporation.num_shares_of(@corporation)
-        num_market_shares = @game.share_pool.num_shares_of(@corporation)
-
         pool_rows = [
           h(:tr, [
             h(:td, td_props, 'IPO'),
-            h(:td, td_props, share_number_str(num_ipo_shares)),
+            h(:td, td_props, share_number_str(@corporation.num_ipo_shares)),
             h(:td, td_props, share_price_str(@corporation.par_price)),
           ]),
         ]
@@ -228,7 +225,7 @@ module View
         if player_rows.any?
           pool_rows << h(:tr, [
             h(:td, td_props, 'Market'),
-            h(:td, td_props, share_number_str(num_market_shares)),
+            h(:td, td_props, share_number_str(@corporation.num_market_shares)),
             h(:td, td_props, share_price_str(@corporation.share_price)),
           ])
         end

@@ -229,7 +229,8 @@ module Engine
         0
       ],
       "coordinates": "F20",
-      "color": "red"
+      "color": "red",
+      "always_market_price": true
     },
     {
       "float_percent": 20,
@@ -243,7 +244,8 @@ module Engine
         80
       ],
       "coordinates": "D20",
-      "color": "black"
+      "color": "black",
+      "always_market_price": true
     },
     {
       "float_percent": 20,
@@ -257,7 +259,8 @@ module Engine
         0
       ],
       "coordinates": "G19",
-      "color": "blue"
+      "color": "blue",
+      "always_market_price": true
     },
     {
       "float_percent": 20,
@@ -272,7 +275,8 @@ module Engine
       ],
       "coordinates": "I15",
       "color": "lightBlue",
-      "text_color": "black"
+      "text_color": "black",
+      "always_market_price": true
     },
     {
       "float_percent": 20,
@@ -287,7 +291,8 @@ module Engine
       ],
       "coordinates": "E21",
       "color": "yellow",
-      "text_color": "black"
+      "text_color": "black",
+      "always_market_price": true
     },
     {
       "float_percent": 20,
@@ -300,7 +305,8 @@ module Engine
         80
       ],
       "coordinates": "B16",
-      "color": "orange"
+      "color": "orange",
+      "always_market_price": true
     },
     {
       "float_percent": 20,
@@ -314,7 +320,8 @@ module Engine
         0
       ],
       "coordinates": "K3",
-      "color": "green"
+      "color": "green",
+      "always_market_price": true
     }
   ],
   "trains": [
