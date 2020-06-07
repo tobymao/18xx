@@ -94,7 +94,7 @@ Towns, cities, and offboards have a few "sub parts" in common:
 
 * Lawson tile #81
 
-`junction,path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0`
+`junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0`
 
 ![Tile 81](/public/images/tile_81.png?raw=true "Tile 81")
 
