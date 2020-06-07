@@ -568,7 +568,7 @@ module Engine
       "city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:5,b:_0;path=a:0,b:_0": [
         "D9"
       ],
-      "path=a:4,b:junction;path=a:3,b:junction;path=a:5,b:junction": [
+      "junction;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0": [
         "F1"
       ]
     },
