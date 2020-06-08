@@ -19,7 +19,7 @@ module View
       end
 
       def render_body
-        children = [h(:div, [game_info, upcoming_trains])]
+        children = [h(:div, [upcoming_trains])]
 
         unless @depot.discarded.empty?
           props = {
@@ -34,6 +34,7 @@ module View
         end
 
         children << phases
+        children << game_info
 
         h(:div, {}, children)
       end
@@ -41,20 +42,15 @@ module View
       def game_info
         props = {
           style: {
-            'margin-bottom': '1rem',
+            'margin-top': '1rem',
           },
         }
         children = []
-        publishers = {
-          aag: ['All Aboard Games', 'https://all-aboardgames.com/'],
-          gmt: ['GMT', 'https://www.gmtgames.com/'],
-          gtg: ['Grand Trunk Games', 'https://www.grandtrunkgames.com/'],
-        }
-        publisher, url = publishers[@game.class::GAME_PUBLISHER]
-        if publisher
+
+        if (publisher = @game.class::GAME_PUBLISHER)
           children << h(:div, props, [
-              "#{@game.class.title} is used with kind permission of ",
-              h(:a, { attrs: { href: url } }, publisher),
+              "#{@game.class.title} is used with kind permission from ",
+              h(:a, { attrs: { href: publisher::URL } }, publisher::NAME),
             ])
         end
         children << h(:div, props, "Designed by #{@game.class::GAME_DESIGNER}") if @game.class::GAME_DESIGNER

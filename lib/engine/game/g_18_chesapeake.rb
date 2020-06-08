@@ -2,6 +2,7 @@
 
 require_relative '../config/game/g_18_chesapeake'
 require_relative 'base'
+require_relative '../publisher/all_aboard_games.rb'
 
 module Engine
   module Game
@@ -21,7 +22,7 @@ module Engine
       GAME_LOCATION = nil
       GAME_RULES_URL = 'https://www.dropbox.com/s/e38xzaf14meb2tw/18Chesapeake_Rules.pdf'
       GAME_DESIGNER = 'Scott Petersen'
-      GAME_PUBLISHER = :aag
+      GAME_PUBLISHER = Publisher::AllAboardGames
 
       def action_processed(action)
         case action
