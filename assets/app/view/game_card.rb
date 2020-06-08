@@ -10,6 +10,7 @@ module View
     needs :user
     needs :gdata # can't conflict with game_data
     needs :confirm_delete, store: true, default: false
+    needs :confirm_kick, store: true, default: false
 
     ENTER_GREEN = '#3CB371'
     JOIN_YELLOW = '#F0E58C'
@@ -155,23 +156,52 @@ module View
       }
 
       p_elm = players.map.with_index do |player, index|
-        elm = h(
+        elms = []
+
+        elms << h(
           acting?(player) ? :u : :span,
-          { style: { 'margin-right': '0.5rem' } },
-          player['name'] + (index != (players.size - 1) ? ',' : ''),
+          player['name']
         )
 
+        elm_props = {
+          style: {
+            'margin-right': '0.5rem',
+            'white-space': 'nowrap',
+          },
+        }
+
         if owner? && new? && player['id'] != @user['id']
-          button_props = {
-            on: { click: -> { kick(@gdata, player) } },
-            style: {
-              'margin-left': '0.5rem',
-            },
-          }
-          elm = h('button.button', button_props, [elm])
+          id = "#{@gdata['id']}-#{player['id']}"
+          if @confirm_kick != id
+            button_props = {
+              on: { click: -> { store(:confirm_kick, id) } },
+              style: {
+                color: 'red',
+                cursor: 'pointer',
+              },
+            }
+
+            elms << h('a', button_props, '❌')
+          else
+            button_props = {
+              on: { click: lambda {
+                kick(@gdata, player)
+                store(:confirm_kick, false)
+              } },
+              style: {
+                cursor: 'pointer',
+              },
+            }
+
+            elms << h('a', button_props, '❌?')
+
+            elm_props['style']['color'] = 'red'
+          end
         end
 
-        elm
+        elms << ',' if index != (players.size - 1)
+
+        h('span', elm_props, elms)
       end
 
       children = [
