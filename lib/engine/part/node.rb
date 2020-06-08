@@ -39,8 +39,10 @@ module Engine
           visited_local = visited_paths.dup
 
           node_path.walk(visited: visited_local, on: on) do |path|
+            visited_local[path] = path
             yield path
             next unless (next_node = path.node)
+            next if next_node == self
             next if corporation && next_node.blocks?(corporation)
 
             next_node.walk(

@@ -34,17 +34,18 @@ module Engine
         on.keys.select { |p| on[p] == 1 }
       end
 
-      def walk(skip: nil, visited: {}, on: nil)
-        return if visited[self]
+      def walk(skip: nil, visited: nil, on: nil)
+        return if visited&.[](self)
 
+        visited = visited&.dup || {}
         visited[self] = true
         yield self
 
         exits.each do |edge|
           next if edge == skip
+          next unless (neighbor = hex.neighbors[edge])
 
           np_edge = hex.invert(edge)
-          next unless (neighbor = hex.neighbors[edge])
 
           neighbor.paths[np_edge].each do |np|
             next if on && !on[np]

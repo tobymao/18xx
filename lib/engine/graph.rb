@@ -40,7 +40,7 @@ module Engine
     end
 
     def compute(corporation)
-      hexes = Hash.new { |h, k| h[k] = [] }
+      hexes = Hash.new { |h, k| h[k] = {} }
       nodes = {}
       paths = {}
 
@@ -48,25 +48,26 @@ module Engine
         hex.tile.cities.each do |city|
           next unless city.tokened_by?(corporation)
 
-          hexes[hex].concat(hex.neighbors.keys)
+          hex.neighbors.each { |e, _| hexes[hex][e] = true }
           nodes[city] = true
         end
       end
 
       tokens = nodes.dup
 
-      # this can be much more efficient if we track path directional visited
       tokens.keys.each do |node|
-        node.walk(visited: tokens.reject { |k, _| k == node }, corporation: corporation) do |path|
+        visited = tokens.reject { |token, _| token == node }
+        visited_paths = visited.flat_map { |token, _| token.paths.map { |p| [p, true] } }.to_h
+
+        node.walk(visited: visited, corporation: corporation, visited_paths: visited_paths) do |path|
           paths[path] = true
           nodes[path.node] = true if path.node
           hex = path.hex
+          edges = hexes[hex]
 
           path.exits.each do |edge|
-            hexes[hex] << edge
-            neighbor = hex.neighbors[edge]
-            edge = hex.invert(edge)
-            hexes[neighbor] << edge if neighbor.paths[edge].empty?
+            edges[edge] = true
+            hexes[hex.neighbors[edge]][hex.invert(edge)] = true
           end
         end
       end
@@ -74,13 +75,13 @@ module Engine
       corporation.abilities(:teleport) do |ability, _|
         ability[:hexes].each do |hex_id|
           hex = @game.hex_by_id(hex_id)
-          hexes[hex].concat(hex.neighbors.keys)
+          hex.neighbors.each { |e, _| hexes[hex][e] = true }
           hex.tile.nodes.each { |node| nodes[node] = true }
         end
       end
 
       hexes.default = nil
-      hexes.each { |_, edges| edges.uniq! }
+      hexes.transform_values!(&:keys)
 
       @connected_hexes[corporation] = hexes
       @connected_nodes[corporation] = nodes
