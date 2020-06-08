@@ -78,7 +78,7 @@ module View
             width: '2rem',
             'justify-self': 'start',
             border: "0.2rem solid #{@corporation.text_color}",
-            'border-radius': '1.5rem',
+            'border-radius': '0.5rem',
           },
         }
         name_style = {
@@ -105,7 +105,7 @@ module View
           color: 'black',
         }
         sym_style = {
-          'font-size': '3rem',
+          'font-size': '2rem',
           'font-weight': 'bold',
           'justify-self': 'start',
         }
@@ -167,6 +167,7 @@ module View
           gap: '0 0.2rem',
           'align-items': 'center',
           'justify-items': 'center',
+          'padding-left': '1rem',
         }
         token_column_style = {
           display: 'grid',
@@ -188,7 +189,7 @@ module View
             },
           }
 
-          img_props[:style][:filter] = 'contrast(15%) grayscale(100%)' if token.used?
+          img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if token.used?
 
           token_text = i.zero? ? @corporation.coordinates : token.price
 
@@ -241,15 +242,15 @@ module View
           }
 
           h('tr.player', [
-            h('td.name', name_props, player.name),
-            h('td.shares', td_props, "#{num_shares}#{president ? '*' : ''}"),
+            h('td.shareholder.name', name_props, player.name),
+            h('td.shares', td_props, "#{president ? '* ' : ''}#{num_shares}"),
             h('td.sold', sold_props, did_sell ? 'Sold' : ''),
           ])
         end
 
         market_tr_props = {
           style: {
-            'border-bottom': player_rows.any? ? '1px solid #888' : '0',
+            'border-bottom': player_rows.any? ? '1px solid currentColor' : '0',
           },
         }
 
@@ -258,15 +259,15 @@ module View
 
         pool_rows = [
           h('tr.ipo', [
-            h('td.name', td_props, 'IPO'),
+            h('td.shareholder.ipo', td_props, 'IPO'),
             h('td.shares', td_props, share_number_str(num_ipo_shares)),
             h('td.price', td_props, share_price_str(@corporation.par_price)),
           ]),
         ]
 
         if player_rows.any?
-          pool_rows << h('tr.market', [
-            h('td.name', td_props, 'Market'),
+          pool_rows << h('tr.market', market_tr_props, [
+            h('td.shareholder.market', td_props, 'Market'),
             h('td.shares', td_props, share_number_str(num_market_shares)),
             h('td.price', td_props, share_price_str(@corporation.share_price)),
           ])
@@ -274,14 +275,12 @@ module View
 
         rows = [
           *pool_rows,
-          h(:tr, market_tr_props, [h(:td, { colspan: '100%' }, '')]),
           *player_rows,
         ]
 
         table_props = {
           style: {
             'border-collapse': 'collapse', # so line under margin will work
-            'text-align': 'center',
             'margin-left': 'auto',
             'margin-right': 'auto',
             'margin-top': '0.5rem',
