@@ -5,7 +5,7 @@ require_relative 'passer'
 require_relative 'share'
 require_relative 'share_holder'
 require_relative 'spender'
-require_relative 'token'
+require_relative 'corporation_token'
 
 module Engine
   class Corporation
@@ -22,7 +22,7 @@ module Engine
     def initialize(sym:, name:, tokens:, **opts)
       @name = sym
       @full_name = name
-      @tokens = tokens.map { |price| Token.new(self, price: price) }
+      @tokens = tokens.map { |price| CorporationToken.new(self, price: price) }
       [
         Share.new(self, president: true, percent: 20),
         *8.times.map { |index| Share.new(self, percent: 10, index: index + 1) },

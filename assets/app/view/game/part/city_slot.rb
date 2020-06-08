@@ -24,7 +24,7 @@ module View
           children = []
           children << h(:circle, attrs: { r: @radius, fill: 'white' })
           children << reservation if @reservation
-          children << h(Token, corporation: @token.corporation, radius: @radius) if @token
+          children << h(Token, token: @token, radius: @radius) if @token
 
           props = { on: { click: -> { on_click } } }
 
