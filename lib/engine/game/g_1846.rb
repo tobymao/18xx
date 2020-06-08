@@ -4,6 +4,7 @@
 
 require_relative '../config/game/g_1846'
 require_relative 'base'
+require_relative '../publisher/gmt_games.rb'
 
 module Engine
   module Game
@@ -23,7 +24,7 @@ module Engine
       GAME_LOCATION = 'Midwest, USA'
       GAME_RULES_URL = 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf'
       GAME_DESIGNER = 'Thomas Lehmann'
-      GAME_PUBLISHER = :gmt
+      GAME_PUBLISHER = Publisher::GmtGames
 
       SELL_AFTER = :p_any_operate
       SELL_MOVEMENT = :left_block_pres
