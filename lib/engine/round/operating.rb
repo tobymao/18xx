@@ -152,11 +152,12 @@ module Engine
       end
 
       def can_sell?(bundle)
+        player = bundle.owner
         # Can't sell president's share
-        return false if bundle.presidents_share
+        return false unless bundle.can_dump?(player)
 
         # Can only sell as much as you need to afford the train
-        player = bundle.owner
+
         total_cash = bundle.price + player.cash + @current_entity.cash
         return false if total_cash >= @depot.min_depot_price + bundle.price_per_share
 
