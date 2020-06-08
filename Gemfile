@@ -25,6 +25,7 @@ group :development do
   gem 'rerun'
   gem 'rubocop'
   gem 'sequel-annotate'
+  gem 'stackprof'
 end
 
 group :test do
