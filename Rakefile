@@ -124,7 +124,7 @@ task 'stackprof', [:json] do |_task, args|
       data = JSON.parse(File.read(args[:json]))
       Engine::GAMES_BY_TITLE[data['title']].new(
         data['players'].map { |p| p['name'] },
-        id: 1,
+        id: data['id'],
         actions: data['actions'],
       )
     end
