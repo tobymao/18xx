@@ -50,7 +50,7 @@ module View
         if (publisher = @game.class::GAME_PUBLISHER)
           children << h(:div, props, [
               "#{@game.class.title} is used with kind permission from ",
-              h(:a, { attrs: { href: publisher::URL } }, publisher::NAME),
+              h(:a, { attrs: { href: publisher[:url] } }, publisher[:name]),
             ])
         end
         children << h(:div, props, "Designed by #{@game.class::GAME_DESIGNER}") if @game.class::GAME_DESIGNER
