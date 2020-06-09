@@ -16,19 +16,6 @@ module Engine
 
       load_from_json(Config::Game::G18NewEngland::JSON)
 
-      def action_processed(action)
-        case action
-        when Action::BuyTrain
-          if !cornelius.closed? && action.entity == cornelius.abilities(:share)[:share].corporation
-            cornelius.close!
-            @log << "#{cornelius.name} closes"
-          end
-        when Action::LayTile
-          check_special_tile_lay(action, columbia)
-          check_special_tile_lay(action, baltimore)
-        end
-      end
-
       def check_special_tile_lay(action, company)
         return if company.closed? || action.entity == company
         return unless (ability = company.abilities(:tile_lay))
