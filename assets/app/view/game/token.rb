@@ -3,13 +3,13 @@
 module View
   module Game
     class Token < Snabberb::Component
-      needs :token
+      needs :corporation
       needs :radius
 
       def render
         h(
           :image, attrs: {
-            href: @token.logo,
+            href: @corporation.logo,
             x: -@radius,
             y: -@radius,
             height: (2 * @radius),

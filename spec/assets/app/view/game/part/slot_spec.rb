@@ -35,7 +35,7 @@ module View
               slot.render
 
               # assert
-              expect(slot).to have_received(:h).with(Token, token: token, radius: radius)
+              expect(slot).to have_received(:h).with(Token, corporation: corp, radius: radius)
             end
           end
 
