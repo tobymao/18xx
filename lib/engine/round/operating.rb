@@ -124,10 +124,6 @@ module Engine
         depot_trains + other_trains
       end
 
-      def route?
-        connected_nodes.size > 1
-      end
-
       def active_entities
         super + crowded_corps
       end
@@ -210,6 +206,10 @@ module Engine
         @graph.reachable_hexes(@current_entity)
       end
 
+      def route?
+        @graph.route?(@current_entity)
+      end
+
       def operating?
         true
       end
@@ -229,11 +229,9 @@ module Engine
       end
 
       def skip_token
-        if @current_entity.tokens.none?
-          next_step!
-        elsif connected_nodes.none? { |node, _| node.tokenable?(@current_entity, free: @teleported) }
-          next_step!
-        end
+        return next_step! unless (token = @current_entity.next_token)
+        return next_step! if !@teleported && token.price > @current_entity.cash
+        return next_step! unless @graph.can_token?(@current_entity, @teleported)
       end
 
       def skip_route
@@ -485,7 +483,7 @@ module Engine
       def place_token(action)
         entity = action.entity
         hex = action.city.hex
-        if !connected_nodes[action.city] && !@teleported
+        if !@game.loading && !connected_nodes[action.city] && !@teleported
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 

@@ -10,6 +10,8 @@ module Engine
       @connected_nodes = {}
       @connected_paths = {}
       @reachable_hexes = {}
+      @routes = {}
+      @tokens = {}
     end
 
     def clear
@@ -17,6 +19,26 @@ module Engine
       @connected_nodes.clear
       @connected_paths.clear
       @reachable_hexes.clear
+      @tokens.clear
+    end
+
+    def route?(corporation)
+      @routes[corporation] ||= connected_nodes(corporation).size > 1
+      @routes[corporation]
+    end
+
+    def can_token?(corporation, free)
+      key = [corporation, free]
+      return @tokens[key] if @tokens.key?(key)
+
+      compute(corporation) do |node|
+        if node.tokenable?(corporation, free: free)
+          @tokens[key] = true
+          break
+        end
+      end
+      @tokens[key] ||= false
+      @tokens[key]
     end
 
     def connected_hexes(corporation)
@@ -61,7 +83,10 @@ module Engine
 
         node.walk(visited: visited, corporation: corporation, visited_paths: visited_paths) do |path|
           paths[path] = true
-          nodes[path.node] = true if path.node
+          if (p_node = path.node)
+            nodes[p_node] = true
+            yield p_node if block_given?
+          end
           hex = path.hex
           edges = hexes[hex]
 
@@ -76,7 +101,10 @@ module Engine
         ability[:hexes].each do |hex_id|
           hex = @game.hex_by_id(hex_id)
           hex.neighbors.each { |e, _| hexes[hex][e] = true }
-          hex.tile.nodes.each { |node| nodes[node] = true }
+          hex.tile.nodes.each do |node|
+            nodes[node] = true
+            yield node if block_given?
+          end
         end
       end
 

@@ -27,7 +27,7 @@ module Engine
   module Game
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
-                  :depot, :finished, :graph, :hexes, :id, :log, :phase, :players, :operating_rounds, :round,
+                  :depot, :finished, :graph, :hexes, :id, :loading, :log, :phase, :players, :operating_rounds, :round,
                   :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible
 
       DEV_STAGE = :prealpha
@@ -183,9 +183,11 @@ module Engine
         const_set(:LAYOUT, data['layout'].to_sym)
       end
 
-      def initialize(names, id: 0, actions: [], pin: nil)
+      def initialize(names, id: 0, actions: [], pin: nil, strict: false)
         @id = id
         @turn = 1
+        @loading = false
+        @strict = strict
         @finished = false
         @log = []
         @actions = []
@@ -290,6 +292,7 @@ module Engine
 
       # Initialize actions respecting the undo state
       def initialize_actions(actions)
+        @loading = true unless @strict
         active_undos = []
         filtered_actions = Array.new(actions.size)
 
@@ -324,6 +327,7 @@ module Engine
           end
         end
         @redo_possible = active_undos.any?
+        @loading = false
       end
 
       def process_action(action)

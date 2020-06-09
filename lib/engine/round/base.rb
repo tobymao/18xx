@@ -207,7 +207,7 @@ module Engine
         hex.lay(tile)
 
         @game.graph.clear
-        check_track_restrictions!(old_tile, tile)
+        check_track_restrictions!(old_tile, tile) unless @game.loading
 
         abilities =
           if entity.respond_to?(:companies)
