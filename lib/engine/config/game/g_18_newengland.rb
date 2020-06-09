@@ -26,7 +26,7 @@ module Engine
     "4": 280,
     "5": 280
   },
-  "capitalization": "inceremental",
+  "capitalization": "incremental",
   "layout": "flat",
   "mustSellInBlocks": false,
   "locationNames": {
