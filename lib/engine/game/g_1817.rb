@@ -2,7 +2,7 @@
 
 require_relative '../config/game/g_1817'
 require_relative 'base'
-require_relative '../publisher/all_aboard_games.rb'
+require_relative '../publisher'
 
 module Engine
   module Game
@@ -33,7 +33,7 @@ module Engine
       GAME_LOCATION = 'NYSE, USA'
       GAME_RULES_URL = 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view'
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
-      GAME_PUBLISHER = Publisher::AllAboardGames
+      GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
     end
   end
 end
