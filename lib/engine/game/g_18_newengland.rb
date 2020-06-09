@@ -16,8 +16,6 @@ module Engine
 
       load_from_json(Config::Game::G18NewEngland::JSON)
 
-      DEV_STAGE = :beta
-
       def action_processed(action)
         case action
         when Action::BuyTrain
