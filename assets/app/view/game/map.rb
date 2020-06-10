@@ -44,27 +44,28 @@ module View
         children = [render_map]
 
         if @tile_selector
-          selector = if @tile_selector.hex.tile != @tile_selector.tile
-                       h(TileConfirmation)
-                     else
-                       begin
-                         tiles = round.upgradeable_tiles(@tile_selector.hex)
+          begin
+            tiles = round.upgradeable_tiles(@tile_selector.hex)
+            selector = if @tile_selector.hex.tile != @tile_selector.tile
+                         h(TileConfirmation)
+                       else
                          h(TileSelector, layout: @layout, tiles: tiles)
-                       rescue StandardError
-                         nil
                        end
-                     end
-
-          # Move the position to the middle of the hex
-          props = {
-            style: {
-              position: 'relative',
-              left: "#{(@tile_selector.x + map_x) * SCALE}px",
-              top: "#{(@tile_selector.y + map_y) * SCALE}px",
-            },
-          }
-          # This needs to be before the map, so that the relative positioning works
-          children.unshift(h(:div, props, [selector])) if selector
+            # Move the position to the middle of the hex
+            props = {
+             style: {
+               position: 'relative',
+               left: "#{(@tile_selector.x + map_x) * SCALE}px",
+               top: "#{(@tile_selector.y + map_y) * SCALE}px",
+             },
+            }
+            # This needs to be before the map, so that the relative positioning works
+            children.unshift(h(:div, props, [selector])) if selector
+          rescue StandardError
+            # If the tile selector is left up when undo occurs an exception can occur, clear
+            store(:tile_selector, nil)
+            nil
+          end
         end
 
         props = {
