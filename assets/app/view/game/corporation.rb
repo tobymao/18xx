@@ -142,7 +142,7 @@ module View
         tokens_body = @corporation.tokens.map.with_index do |token, i|
           props = {
             attrs: {
-              src: @corporation.logo,
+              src: token.corporation.logo,
             },
             style: {
               width: '25px',

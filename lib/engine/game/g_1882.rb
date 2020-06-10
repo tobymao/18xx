@@ -14,6 +14,8 @@ module Engine
                       yellow: '#FFF500',
                       brown: '#7b352a')
 
+      CORPORATIONS_WITHOUT_NEUTRAL = %w[CPR CN].freeze
+
       load_from_json(Config::Game::G1882::JSON)
 
       GAME_LOCATION = 'Assiniboia, Canada'
@@ -23,6 +25,17 @@ module Engine
 
       def stock_round
         Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy_sell)
+      end
+
+      def init_corporations(stock_market)
+        # Neutral corp that allows tokens that don't block other players
+        # CN runs using these tokens
+        neutral_corp = Corporation.new(sym: 'neutral', name: 'neutral', tokens: [], logo: '1882/neutral')
+        corporations = super
+        corporations.each do |x|
+          x.tokens << Token.new(neutral_corp, price: 0) unless CORPORATIONS_WITHOUT_NEUTRAL.include?(x.name)
+        end
+        corporations
       end
     end
   end
