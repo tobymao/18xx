@@ -10,6 +10,8 @@ module Engine
       @connected_nodes = {}
       @connected_paths = {}
       @reachable_hexes = {}
+      @routes = {}
+      @tokens = {}
     end
 
     def clear
@@ -17,6 +19,26 @@ module Engine
       @connected_nodes.clear
       @connected_paths.clear
       @reachable_hexes.clear
+      @tokens.clear
+    end
+
+    def route?(corporation)
+      @routes[corporation] ||= connected_nodes(corporation).size > 1
+      @routes[corporation]
+    end
+
+    def can_token?(corporation, free)
+      key = [corporation, free]
+      return @tokens[key] if @tokens.key?(key)
+
+      compute(corporation) do |node|
+        if node.tokenable?(corporation, free: free)
+          @tokens[key] = true
+          break
+        end
+      end
+      @tokens[key] ||= false
+      @tokens[key]
     end
 
     def connected_hexes(corporation)
@@ -40,7 +62,7 @@ module Engine
     end
 
     def compute(corporation)
-      hexes = Hash.new { |h, k| h[k] = [] }
+      hexes = Hash.new { |h, k| h[k] = {} }
       nodes = {}
       paths = {}
 
@@ -48,25 +70,29 @@ module Engine
         hex.tile.cities.each do |city|
           next unless city.tokened_by?(corporation)
 
-          hexes[hex].concat(hex.neighbors.keys)
+          hex.neighbors.each { |e, _| hexes[hex][e] = true }
           nodes[city] = true
         end
       end
 
       tokens = nodes.dup
 
-      # this can be much more efficient if we track path directional visited
       tokens.keys.each do |node|
-        node.walk(visited: tokens.reject { |k, _| k == node }, corporation: corporation) do |path|
+        visited = tokens.reject { |token, _| token == node }
+        visited_paths = visited.flat_map { |token, _| token.paths.map { |p| [p, true] } }.to_h
+
+        node.walk(visited: visited, corporation: corporation, visited_paths: visited_paths) do |path|
           paths[path] = true
-          nodes[path.node] = true if path.node
+          if (p_node = path.node)
+            nodes[p_node] = true
+            yield p_node if block_given?
+          end
           hex = path.hex
+          edges = hexes[hex]
 
           path.exits.each do |edge|
-            hexes[hex] << edge
-            neighbor = hex.neighbors[edge]
-            edge = hex.invert(edge)
-            hexes[neighbor] << edge if neighbor.paths[edge].empty?
+            edges[edge] = true
+            hexes[hex.neighbors[edge]][hex.invert(edge)] = true
           end
         end
       end
@@ -74,13 +100,16 @@ module Engine
       corporation.abilities(:teleport) do |ability, _|
         ability[:hexes].each do |hex_id|
           hex = @game.hex_by_id(hex_id)
-          hexes[hex].concat(hex.neighbors.keys)
-          hex.tile.nodes.each { |node| nodes[node] = true }
+          hex.neighbors.each { |e, _| hexes[hex][e] = true }
+          hex.tile.nodes.each do |node|
+            nodes[node] = true
+            yield node if block_given?
+          end
         end
       end
 
       hexes.default = nil
-      hexes.each { |_, edges| edges.uniq! }
+      hexes.transform_values!(&:keys)
 
       @connected_hexes[corporation] = hexes
       @connected_nodes[corporation] = nodes

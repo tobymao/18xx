@@ -32,6 +32,7 @@ module Engine
           data = JSON.parse(File.read("spec/fixtures/18_chesapeake/#{game_id}.json"))
           players = data['players'].map { |p| p['name'] }
           expect(described_class.new(players, id: game_id, actions: data['actions']).result).to eq(result)
+          expect(described_class.new(players, id: game_id, actions: data['actions'], strict: true).result).to eq(result)
         end
       end
     end
