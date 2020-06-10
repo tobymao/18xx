@@ -24,10 +24,10 @@ module Engine
       def init_corporations(stock_market)
         # Neutral corp that allows tokens that don't block other players
         # CN runs using these tokens
-        @neutral_corp = Corporation.new(sym: 'neutral', name: 'neutral', tokens: [], logo: '1882/neutral')
+        neutral_corp = Corporation.new(sym: 'neutral', name: 'neutral', tokens: [], logo: '1882/neutral')
         corporations = super
         corporations.each do |x|
-          x.tokens << Token.new(@neutral_corp, price: 0) unless CORPORATIONS_WITHOUT_NEUTRAL.include?(x.name)
+          x.tokens << Token.new(neutral_corp, price: 0) unless CORPORATIONS_WITHOUT_NEUTRAL.include?(x.name)
         end
         corporations
       end
