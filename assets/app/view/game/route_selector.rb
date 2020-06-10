@@ -141,15 +141,23 @@ module View
           store(:routes, @routes)
         end
 
+        clear_all = lambda do
+          @routes.each(&:reset!)
+          store(:routes, @routes)
+        end
+
         revenue = begin
                     @game.format_currency(active_routes.sum(&:revenue))
                   rescue Engine::GameError
                     '(Invalid Route)'
                   end
-        h(:div, [
-          h('button.button', { on: { click: submit } }, 'Submit ' + revenue),
-          h('button.button', { style: { 'margin-left': '0.5rem' }, on: { click: clear } }, 'Clear Train'),
-          h('button.button', { style: { 'margin-left': '0.5rem' }, on: { click: reset_all } }, 'Reset'),
+        h(:div, { style: { overflow: 'auto' } }, [
+          h(:div, { style: { width: 'max-content' } }, [
+            h('button.button', { on: { click: submit } }, 'Submit ' + revenue),
+            h('button.button', { style: { 'margin-left': '0.5rem' }, on: { click: clear } }, 'Clear Train'),
+            h('button.button', { style: { 'margin-left': '0.5rem' }, on: { click: clear_all } }, 'Clear All'),
+            h('button.button', { style: { 'margin-left': '0.5rem' }, on: { click: reset_all } }, 'Reset'),
+          ]),
         ])
       end
     end
