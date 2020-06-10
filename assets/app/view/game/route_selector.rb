@@ -141,6 +141,11 @@ module View
           store(:routes, @routes)
         end
 
+        clear_all = lambda do
+          @routes.each { |route| route&.reset! }
+          store(:routes, @routes)
+        end
+
         revenue = begin
                     @game.format_currency(active_routes.sum(&:revenue))
                   rescue Engine::GameError
@@ -149,6 +154,7 @@ module View
         h(:div, [
           h('button.button', { on: { click: submit } }, 'Submit ' + revenue),
           h('button.button', { style: { 'margin-left': '0.5rem' }, on: { click: clear } }, 'Clear Train'),
+          h('button.button', { style: { 'margin-left': '0.5rem' }, on: { click: clear_all } }, 'Clear All'),
           h('button.button', { style: { 'margin-left': '0.5rem' }, on: { click: reset_all } }, 'Reset'),
         ])
       end
