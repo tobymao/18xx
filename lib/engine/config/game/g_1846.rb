@@ -326,7 +326,7 @@ module Engine
   ],
   "trains": [
     {
-      "name": "2",
+      "name": "2MS",
       "distance": 2,
       "price": 0,
       "rusts_on": [
@@ -336,7 +336,7 @@ module Engine
       "num": 1
     },
     {
-      "name": "2",
+      "name": "2B4",
       "distance": 2,
       "price": 0,
       "rusts_on": [
