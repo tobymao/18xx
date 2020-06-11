@@ -73,7 +73,9 @@ module Engine
       entity = bundle.owner
       num_shares = bundle.num_shares
 
-      @log << "#{entity.name} sells #{num_shares} share#{num_shares > 1 ? 's' : ''} " \
+      verb = entity.corporation? ? 'issues' : 'sells'
+
+      @log << "#{entity.name} #{verb} #{num_shares} share#{num_shares > 1 ? 's' : ''} " \
         "#{bundle.corporation.name} and receives #{@game.format_currency(bundle.price)}"
 
       transfer_shares(bundle, self, spender: @bank, receiver: entity)
