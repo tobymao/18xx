@@ -196,7 +196,7 @@ module Engine
         100,
         100
       ],
-      "coordinates": "J6",
+      "coordinates": "B20",
       "color": "DeepSkyBlue",
       "text_color": "black"
     },
