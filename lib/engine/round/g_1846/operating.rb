@@ -60,6 +60,14 @@ module Engine
             .reject { |bundle| @current_entity.cash < bundle.price }
         end
 
+        private
+
+        def ignore_action?(action)
+          return false if action.is_a?(Action::SellShares) && action.entity.corporation?
+
+          super
+        end
+
         def skip_issue
           issuable_shares.empty? && redeemable_shares.empty?
         end
