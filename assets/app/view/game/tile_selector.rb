@@ -9,7 +9,9 @@ module View
       needs :layout
       needs :tiles
       SCALE = 0.3
+      TILE_SIZE = 60
       SIZE = Hex::SIZE * SCALE
+      DISTANCE = Hex::SIZE
 
       def render
         hexes = @tiles.map do |tile|
@@ -22,10 +24,10 @@ module View
         hexes = hexes.map.with_index do |hex, index|
           style = {
             position: 'absolute',
-            left: "#{Hex::SIZE * Math.cos(index * theta) - SIZE}px",
-            bottom: "#{Hex::SIZE * Math.sin(index * theta) - SIZE}px",
-            width: '60px',
-            height: '60px',
+            left: "#{DISTANCE * Math.cos(index * theta) - SIZE}px",
+            bottom: "#{DISTANCE * Math.sin(index * theta) - SIZE}px",
+            width: "#{TILE_SIZE}px",
+            height: "#{TILE_SIZE}px",
             filter: 'drop-shadow(5px 5px 2px #888)',
             'pointer-events' => 'auto',
           }

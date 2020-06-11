@@ -29,7 +29,7 @@ module View
           style: {
             position: 'absolute',
             cursor: 'pointer',
-            left: '0px',
+            left: '6px',
             top: '-50px',
             color: 'black',
             'font-size': '35px',
