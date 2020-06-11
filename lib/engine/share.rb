@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'ownable'
+require_relative 'share_bundle'
 
 module Engine
   class Share
@@ -35,6 +36,10 @@ module Engine
 
     def to_s
       "#{self.class.name} - #{id}"
+    end
+
+    def to_bundle
+      ShareBundle.new(self)
     end
   end
 end

@@ -7,6 +7,7 @@ module View
       needs :bids, default: nil
       needs :selected_company, default: nil, store: true
       needs :game, store: true
+      needs :tile_selector, default: nil, store: true
 
       def selected?
         @company == @selected_company
@@ -26,6 +27,7 @@ module View
       def render
         onclick = lambda do
           selected_company = selected? ? nil : @company
+          store(:tile_selector, nil)
           store(:selected_company, selected_company)
         end
 

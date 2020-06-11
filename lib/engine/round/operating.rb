@@ -124,10 +124,6 @@ module Engine
         depot_trains + other_trains
       end
 
-      def route?
-        connected_nodes.size > 1
-      end
-
       def active_entities
         super + crowded_corps
       end
@@ -152,11 +148,12 @@ module Engine
       end
 
       def can_sell?(bundle)
+        player = bundle.owner
         # Can't sell president's share
-        return false if bundle.presidents_share
+        return false unless bundle.can_dump?(player)
 
         # Can only sell as much as you need to afford the train
-        player = bundle.owner
+
         total_cash = bundle.price + player.cash + @current_entity.cash
         return false if total_cash >= @depot.min_depot_price + bundle.price_per_share
 
@@ -209,6 +206,10 @@ module Engine
         @graph.reachable_hexes(@current_entity)
       end
 
+      def route?
+        @graph.route?(@current_entity)
+      end
+
       def operating?
         true
       end
@@ -220,106 +221,122 @@ module Engine
 
         if current_index < steps.size - 1
           @step = steps[current_index + 1]
-          send("skip_#{@step}")
+          next_step! if send("skip_#{@step}")
         else
           @step = steps.first
           @current_entity.pass!
         end
       end
 
+      def skip_track; end
+
       def skip_token
-        if @current_entity.tokens.none?
-          next_step!
-        elsif connected_nodes.none? { |node, _| node.tokenable?(@current_entity, free: @teleported) }
-          next_step!
-        end
+        return true unless (token = @current_entity.next_token)
+
+        (!@teleported && token.price > @current_entity.cash) ||
+          !@graph.can_token?(@current_entity, @teleported)
       end
 
       def skip_route
-        next_step! if @current_entity.trains.empty? || !route?
+        @current_entity.trains.empty? || !route?
       end
 
       def skip_dividend
-        return if @current_routes.any?
+        return false if @current_routes.any?
 
         withhold
-        next_step!
+        true
       end
 
       def skip_train
-        next_step! if !can_buy_train? && !must_buy_train?
+        !can_buy_train? && !must_buy_train?
       end
 
       def skip_company
-        next_step! unless can_buy_companies?
+        !can_buy_companies?
       end
 
       def _process_action(action)
-        entity = action.entity
+        send("process_#{action.type}", action)
+      end
 
-        case action
-        when Action::LayTile
-          hex_id = action.hex.id
+      def process_lay_tile(action)
+        hex_id = action.hex.id
 
-          # companies with block_hexes should block hexes
-          @game.companies.each do |company|
-            next if company.closed?
-            next unless (ability = company.abilities(:blocks_hexes))
+        # companies with block_hexes should block hexes
+        @game.companies.each do |company|
+          next if company.closed?
+          next unless (ability = company.abilities(:blocks_hexes))
 
-            raise GameError, "#{hex_id} is blocked by #{company.name}" if ability[:hexes].include?(hex_id)
-          end
-
-          lay_tile(action)
-          @current_entity.abilities(:teleport) do |ability, _|
-            @teleported = ability[:hexes].include?(hex_id) &&
-              ability[:tiles].include?(action.tile.name)
-          end
-        when Action::PlaceToken
-          place_token(action)
-        when Action::RunRoutes
-          @current_routes = action.routes
-          trains = {}
-          @current_routes.each do |route|
-            train = route.train
-            raise GameError, 'Cannot run train twice' if trains[train]
-
-            trains[train] = true
-            hexes = route.hexes.map(&:name).join(', ')
-            @log << "#{entity.name} runs a #{train.name} train for "\
-                    "#{@game.format_currency(route.revenue)} (#{hexes})"
-          end
-        when Action::Dividend
-          revenue = @current_routes.sum(&:revenue)
-          @current_entity.operating_history[[@game.turn, @round_num]] = OperatingInfo.new(
-            @current_routes,
-            action,
-            revenue
-          )
-          @current_routes = []
-
-          case action.kind
-          when 'payout'
-            payout(revenue)
-          when 'withhold'
-            withhold(revenue)
-          else
-            raise GameError, "Unknown dividend type #{action.kind}"
-          end
-        when Action::BuyTrain
-          buy_train(entity, action.train, action.price, action.exchange)
-          @last_share_sold_price = nil
-        when Action::DiscardTrain
-          discard_train(action)
-        when Action::SellShares
-          @last_share_sold_price = action.shares.price_per_share
-          sell_shares(action.shares)
-        when Action::BuyCompany
-          company = action.company
-          buy_company(company, action.price)
-          @graph.clear if company.abilities(:teleport)
-        when Action::Bankrupt
-          liquidate(entity.owner)
+          raise GameError, "#{hex_id} is blocked by #{company.name}" if ability[:hexes].include?(hex_id)
         end
+
+        lay_tile(action)
+        @current_entity.abilities(:teleport) do |ability, _|
+          @teleported = ability[:hexes].include?(hex_id) &&
+          ability[:tiles].include?(action.tile.name)
+        end
+      end
+
+      def process_place_token(action)
+        place_token(action)
+      end
+
+      def process_run_routes(action)
+        @current_routes = action.routes
+        trains = {}
+        @current_routes.each do |route|
+          train = route.train
+          raise GameError, 'Cannot run train twice' if trains[train]
+
+          trains[train] = true
+          hexes = route.hexes.map(&:name).join(', ')
+          @log << "#{@current_entity.name} runs a #{train.name} train for "\
+            "#{@game.format_currency(route.revenue)} (#{hexes})"
+        end
+      end
+
+      def process_dividend(action)
+        revenue = @current_routes.sum(&:revenue)
+        @current_entity.operating_history[[@game.turn, @round_num]] = OperatingInfo.new(
+          @current_routes,
+          action,
+          revenue
+        )
+        @current_routes = []
+
+        case action.kind
+        when 'payout'
+          payout(revenue)
+        when 'withhold'
+          withhold(revenue)
+        else
+          raise GameError, "Unknown dividend type #{action.kind}"
+        end
+      end
+
+      def process_buy_train(action)
+        buy_train(action.entity, action.train, action.price, action.exchange)
+        @last_share_sold_price = nil
+      end
+
+      def process_discard_train(action)
+        discard_train(action)
+      end
+
+      def process_sell_shares(action)
+        @last_share_sold_price = action.bundle.price_per_share
+        sell_shares(action.bundle)
+      end
+
+      def process_buy_company(action)
+        company = action.company
+        buy_company(company, action.price)
+        @graph.clear if company.abilities(:teleport)
+      end
+
+      def process_bankrupt(action)
+        liquidate(action.entity.owner)
       end
 
       def start_operating
@@ -327,6 +344,7 @@ module Engine
 
         log_operation(@current_entity)
         place_home_token(@current_entity) if @home_token_timing == :operate
+        send("skip_#{@step}")
       end
 
       def change_entity(_action)
@@ -455,8 +473,8 @@ module Engine
         entity.buy_train(train, price)
       end
 
-      def sell_shares(shares)
-        sell_and_change_price(shares, @share_pool, @stock_market)
+      def sell_shares(bundle)
+        sell_and_change_price(bundle, @share_pool, @stock_market)
         recalculate_order
       end
 
@@ -484,7 +502,7 @@ module Engine
       def place_token(action)
         entity = action.entity
         hex = action.city.hex
-        if !connected_nodes[action.city] && !@teleported
+        if !@game.loading && !connected_nodes[action.city] && !@teleported
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 

@@ -114,3 +114,19 @@ task :precompile do
   FileUtils.mkdir_p(pin_dir)
   FileUtils.cp("#{bundle}.gz", "#{pin_dir}/#{git_rev}.js.gz")
 end
+
+desc 'Profile loading data'
+task 'stackprof', [:json] do |_task, args|
+  require 'stackprof'
+  require_relative 'lib/engine'
+  StackProf.run(mode: :cpu, out: 'stackprof.dump', raw: true, interval: 10) do
+    100.times do
+      data = JSON.parse(File.read(args[:json]))
+      Engine::GAMES_BY_TITLE[data['title']].new(
+        data['players'].map { |p| p['name'] },
+        id: data['id'],
+        actions: data['actions'],
+      )
+    end
+  end
+end

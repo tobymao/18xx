@@ -39,7 +39,7 @@ module Engine
     end
 
     def price_per_share
-      @share_price&.price || @shares.first.price_per_share
+      @share_price || @shares.first.price_per_share
     end
 
     def price

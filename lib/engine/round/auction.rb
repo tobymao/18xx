@@ -107,7 +107,7 @@ module Engine
           share_price = action.share_price
           corporation = action.corporation
           @game.stock_market.set_par(corporation, share_price)
-          @share_pool.buy_share(@current_entity, corporation.shares.first, exchange: :free)
+          @share_pool.buy_shares(@current_entity, corporation.shares.first, exchange: :free)
           @companies_pending_par.shift
         end
       end
@@ -251,7 +251,7 @@ module Engine
         if share.president
           @companies_pending_par << company
         else
-          @share_pool.buy_share(player, share, exchange: :free)
+          @share_pool.buy_shares(player, share, exchange: :free)
         end
       end
 

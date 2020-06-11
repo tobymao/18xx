@@ -4,6 +4,7 @@
 
 require_relative '../config/game/g_1846'
 require_relative 'base'
+require_relative '../publisher'
 
 module Engine
   module Game
@@ -19,6 +20,11 @@ module Engine
       load_from_json(Config::Game::G1846::JSON)
 
       DEV_STAGE = :prealpha
+
+      GAME_LOCATION = 'Midwest, USA'
+      GAME_RULES_URL = 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf'
+      GAME_DESIGNER = 'Thomas Lehmann'
+      GAME_PUBLISHER = Publisher::INFO[:gmt_games]
 
       SELL_AFTER = :p_any_operate
       SELL_MOVEMENT = :left_block_pres

@@ -13,7 +13,7 @@ module View
       def render
         buttons = @game.round.sellable_bundles(@player, @selected_corporation).map do |bundle|
           sell = lambda do
-            process_action(Engine::Action::SellShares.new(@player, bundle.shares, bundle.percent))
+            process_action(Engine::Action::SellShares.new(@player, bundle.shares, bundle.share_price, bundle.percent))
           end
 
           num_shares = bundle.num_shares
