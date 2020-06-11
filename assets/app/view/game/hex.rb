@@ -67,20 +67,24 @@ module View
 
         props[:on] = { click: ->(e) { on_hex_click(e) } } if clickable
         props[:attrs]['stroke-width'] = 5 if @selected
-
         h(:g, props, children)
       end
 
       def translation
+        x, y = coordinates
+        "translate(#{x}, #{y})"
+      end
+
+      def coordinates
         t_x, t_y = LAYOUT[@hex.layout]
-        "translate(#{(t_x * @hex.x + SIZE).round(2)}, #{(t_y * @hex.y + SIZE).round(2)})"
+        [(t_x * @hex.x + SIZE).round(2), (t_y * @hex.y + SIZE).round(2)]
       end
 
       def transform
         "#{translation}#{@hex.layout == :pointy ? ' rotate(30)' : ''}"
       end
 
-      def on_hex_click(event)
+      def on_hex_click
         nodes = @hex.tile.nodes
 
         if @round&.can_run_routes?
@@ -95,7 +99,7 @@ module View
           if @selected && (tile = @tile_selector&.tile)
             @tile_selector.rotate! if tile.hex != @hex
           else
-            store(:tile_selector, Lib::TileSelector.new(@hex, @tile, event, root, @round.current_entity))
+            store(:tile_selector, Lib::TileSelector.new(@hex, @tile, coordinates, root, @round.current_entity))
           end
         when :tile_selector
           @tile_selector.tile = @tile

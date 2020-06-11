@@ -4,17 +4,12 @@ module Lib
   class TileSelector
     attr_reader :entity, :hex, :tile, :x, :y
 
-    def initialize(hex, tile, event, root, entity)
+    def initialize(hex, tile, coordinates, root, entity)
       @hex = hex
       @tile = tile
-      @x, @y = get_coordinates(event)
+      @x, @y = coordinates
       @root = root
       @entity = entity
-    end
-
-    def get_coordinates(event)
-      rect = event.JS['currentTarget'].JS.getBoundingClientRect
-      [`window.pageXOffset` + rect.JS['left'], `window.pageYOffset` + rect.JS['top']]
     end
 
     def tile=(new_tile)

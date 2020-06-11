@@ -14,7 +14,9 @@ module View
       needs :selected_company, default: nil, store: true
       needs :opacity, default: nil
 
+      FONT_SIZE = 25
       GAP = 25 # GAP between the row/col labels and the map hexes
+      SCALE = 0.5 # Scale for the map
 
       def render
         @hexes = @game.hexes.dup
@@ -41,11 +43,30 @@ module View
 
         children = [render_map]
 
-        if @tile_selector && @tile_selector.hex.tile != @tile_selector.tile
-          children << h(TileConfirmation)
-        elsif @tile_selector
-          tiles = round.upgradeable_tiles(@tile_selector.hex)
-          children << h(TileSelector, layout: @layout, tiles: tiles)
+        if @tile_selector
+          left = (@tile_selector.x + map_x) * SCALE
+          selector = if @tile_selector.hex.tile != @tile_selector.tile
+                       h(TileConfirmation)
+                     else
+                       # Selecting column A can cause tiles to go off the edge of the map
+                       if (left - (TileSelector::DISTANCE + (TileSelector::TILE_SIZE / 2))).negative?
+                         left = TileSelector::DISTANCE + (TileSelector::TILE_SIZE / 2)
+                       end
+
+                       tiles = round.upgradeable_tiles(@tile_selector.hex)
+                       h(TileSelector, layout: @layout, tiles: tiles)
+                     end
+
+          # Move the position to the middle of the hex
+          props = {
+           style: {
+             position: 'relative',
+             left: "#{left}px",
+             top: "#{(@tile_selector.y + map_y) * SCALE}px",
+           },
+          }
+          # This needs to be before the map, so that the relative positioning works
+          children.unshift(h(:div, props, [selector]))
         end
 
         props = {
@@ -58,11 +79,15 @@ module View
         h(:div, props, children)
       end
 
-      def render_map
-        font_size = 25
-        map_x = GAP + font_size
-        map_y = GAP + (@layout == :flat ? (font_size / 2) : font_size)
+      def map_x
+        GAP + FONT_SIZE
+      end
 
+      def map_y
+        GAP + (@layout == :flat ? (FONT_SIZE / 2) : FONT_SIZE)
+      end
+
+      def render_map
         w_size, h_size = @layout == :flat ? [85, 50] : [50, 85]
         width = (@cols.size * w_size) + GAP
         height = (@rows.size * h_size) + GAP
@@ -75,14 +100,14 @@ module View
         }
 
         h(:svg, props, [
-          h(:g, { attrs: { transform: 'scale(0.5)' } }, [
+          h(:g, { attrs: { transform: "scale(#{SCALE})" } }, [
             h(:g, { attrs: { id: 'map-hexes', transform: "translate(#{map_x} #{map_y})" } }, @hexes),
             h(Axis,
               cols: @cols,
               rows: @rows,
               axes: @game.axes,
               layout: @layout,
-              font_size: font_size,
+              font_size: FONT_SIZE,
               gap: GAP,
               map_x: map_x,
               map_y: map_y),
