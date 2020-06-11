@@ -33,12 +33,12 @@ module Engine
 
       def to_h
         {
-          'type' => type_s(self),
+          'type' => type,
           'entity' => entity.id,
           'entity_type' => type_s(entity),
           'id' => @id,
           **args_to_h,
-        }
+        }.reject { |_, v| v.nil? }
       end
 
       def args_to_h
@@ -55,6 +55,10 @@ module Engine
 
       def free?
         false
+      end
+
+      def type
+        type_s(self)
       end
 
       private

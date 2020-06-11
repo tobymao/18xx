@@ -24,9 +24,9 @@ module Engine
       game.send(:next_round!)
     end
 
-    describe '#buy_share' do
+    describe '#buy_shares' do
       it 'can ipo' do
-        subject.buy_share(player_1, corporation.shares.first)
+        subject.buy_shares(player_1, corporation.shares.first)
         expect(corporation.ipoed).to be_truthy
         expect(corporation.floated?).to be_falsey
         expect(player_1.cash).to eq(400)
@@ -37,7 +37,7 @@ module Engine
 
       it 'can float' do
         corporation.shares.take(4).each do |share|
-          subject.buy_share(player_1, share)
+          subject.buy_shares(player_1, share)
         end
         expect(corporation.ipoed).to be_truthy
         expect(corporation.percent_of(corporation)).to eq(50)
@@ -49,12 +49,12 @@ module Engine
       end
 
       it 'can swap presidency' do
-        subject.buy_share(player_1, corporation.shares[0])
-        subject.buy_share(player_2, corporation.shares[1])
-        subject.buy_share(player_2, corporation.shares[2])
+        subject.buy_shares(player_1, corporation.shares[0])
+        subject.buy_shares(player_2, corporation.shares[1])
+        subject.buy_shares(player_2, corporation.shares[2])
         expect(corporation.president?(player_1)).to be_truthy
 
-        subject.buy_share(player_2, corporation.shares[3])
+        subject.buy_shares(player_2, corporation.shares[3])
         expect(corporation.president?(player_2)).to be_truthy
         expect(player_1.percent_of(corporation)).to eq(20)
         expect(player_2.percent_of(corporation)).to eq(30)
@@ -67,7 +67,7 @@ module Engine
 
       context 'with exchange' do
         it "doesn't ipo" do
-          subject.buy_share(player_1, corporation.shares[1], exchange: company)
+          subject.buy_shares(player_1, corporation.shares[1], exchange: company)
           expect(corporation.ipoed).to be_falsey
           expect(corporation.president?(player_1)).to be_falsey
           expect(player_1.cash).to eq(420)
@@ -76,13 +76,13 @@ module Engine
 
         it 'floats' do
           corporation.shares[0..2].dup.each do |share|
-            subject.buy_share(player_1, share)
+            subject.buy_shares(player_1, share)
           end
 
           expect(corporation.floated?).to be_falsey
           expect(corporation.cash).to eq(0)
 
-          subject.buy_share(player_1, corporation.shares[0], exchange: company)
+          subject.buy_shares(player_1, corporation.shares[0], exchange: company)
           expect(corporation.floated?).to be_truthy
           expect(corporation.cash).to eq(100)
         end
@@ -92,15 +92,15 @@ module Engine
     describe '#sell_share' do
       it 'respects order for president swap' do
         corporation.shares[0..1].dup.each do |share|
-          subject.buy_share(player_2, share)
+          subject.buy_shares(player_2, share)
         end
 
         corporation.shares[0..2].dup.each do |share|
-          subject.buy_share(player_1, share)
+          subject.buy_shares(player_1, share)
         end
 
         corporation.shares[0..2].dup.each do |share|
-          subject.buy_share(player_3, share)
+          subject.buy_shares(player_3, share)
         end
 
         expect(player_1.percent_of(corporation)).to eq(30)
@@ -115,11 +115,11 @@ module Engine
       context 'with 60 40 split' do
         before :each do
           corporation.shares[0..4].dup.each do |share|
-            subject.buy_share(player_1, share)
+            subject.buy_shares(player_1, share)
           end
 
           corporation.shares.dup.each do |share|
-            subject.buy_share(player_2, share)
+            subject.buy_shares(player_2, share)
           end
         end
 

@@ -67,10 +67,10 @@ module Engine
         player.cash = 2000
         player2.cash = 2000
         # Make player 1 president of two companies, player 2 have the same amount of shares
-        4.times { game.share_pool.buy_share(player, corporation.shares.first) }
-        5.times { game.share_pool.buy_share(player2, corporation.shares.first) }
-        4.times { game.share_pool.buy_share(player, corporation2.shares.first) }
-        5.times { game.share_pool.buy_share(player2, corporation2.shares.first) }
+        4.times { game.share_pool.buy_shares(player, corporation.shares.first) }
+        5.times { game.share_pool.buy_shares(player2, corporation.shares.first) }
+        4.times { game.share_pool.buy_shares(player, corporation2.shares.first) }
+        5.times { game.share_pool.buy_shares(player2, corporation2.shares.first) }
         player.cash = 2000
         player2.cash = 2000
         subject.process_action(Action::LayTile.new(corporation, Tile.for('5'), hex_k8, 3))
@@ -118,7 +118,7 @@ module Engine
           corporation.cash = 1
 
           bundle = player.bundles_for_corporation(corporation2).first
-          subject.process_action(Action::SellShares.new(player, bundle.shares, bundle.percent))
+          subject.process_action(Action::SellShares.new(player, bundle.shares, bundle.price, bundle.percent))
           available = subject.buyable_trains
           expect(available.size).to eq(1)
         end
@@ -229,10 +229,10 @@ module Engine
         player.cash = 2000
         player2.cash = 2000
         # Make player 1 president of two companies, player 2 have the same amount of shares
-        4.times { game.share_pool.buy_share(player, corporation.shares.first) }
-        5.times { game.share_pool.buy_share(player2, corporation.shares.first) }
-        4.times { game.share_pool.buy_share(player, corporation2.shares.first) }
-        5.times { game.share_pool.buy_share(player2, corporation2.shares.first) }
+        4.times { game.share_pool.buy_shares(player, corporation.shares.first) }
+        5.times { game.share_pool.buy_shares(player2, corporation.shares.first) }
+        4.times { game.share_pool.buy_shares(player, corporation2.shares.first) }
+        5.times { game.share_pool.buy_shares(player2, corporation2.shares.first) }
         player.cash = 2000
         player2.cash = 2000
         subject.process_action(Action::LayTile.new(corporation, Tile.for('57'), hex_c13, 1))
@@ -262,7 +262,7 @@ module Engine
           player.cash = 1
 
           bundle = player.bundles_for_corporation(corporation2).first
-          subject.process_action(Action::SellShares.new(player, bundle.shares, bundle.percent))
+          subject.process_action(Action::SellShares.new(player, bundle.shares, bundle.price, bundle.percent))
           available = subject.buyable_trains
           expect(available.size).to eq(2)
         end
@@ -273,7 +273,7 @@ module Engine
           player.cash = 1
 
           bundle = player.bundles_for_corporation(corporation2)[2]
-          subject.process_action(Action::SellShares.new(player, bundle.shares, bundle.percent))
+          subject.process_action(Action::SellShares.new(player, bundle.shares, bundle.price, bundle.percent))
           available = subject.buyable_trains
           expect(available.size).to eq(1)
         end

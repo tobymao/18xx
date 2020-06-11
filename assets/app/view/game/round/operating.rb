@@ -22,7 +22,7 @@ module View
 
           action =
             case round.step
-            when :company, :track, :token
+            when :company, :track, :token, :token_or_track
               h(UndoAndPass)
             when :route
               h(RouteSelector)

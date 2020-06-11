@@ -19,7 +19,7 @@ module View
         return h(:div) unless @game.round.can_gain?(share, @selected_company.owner)
 
         exchange = lambda do
-          process_action(Engine::Action::BuyShare.new(@selected_company, share))
+          process_action(Engine::Action::BuyShares.new(@selected_company, share))
           store(:selected_company, nil, skip: true)
         end
 

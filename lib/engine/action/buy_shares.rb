@@ -1,16 +1,15 @@
 # frozen_string_literal: true
 
 require_relative 'base'
-require_relative '../share_bundle'
 
 module Engine
   module Action
-    class SellShares < Base
+    class BuyShares < Base
       attr_reader :entity, :bundle
 
-      def initialize(entity, shares, share_price = nil, percent = nil)
+      def initialize(entity, shares, share_price = nil)
         @entity = entity
-        @bundle = ShareBundle.new(shares, percent)
+        @bundle = ShareBundle.new(Array(shares))
         @bundle.share_price = share_price
       end
 
@@ -18,14 +17,12 @@ module Engine
         [
           h['shares'].map { |id| game.share_by_id(id) },
           h['share_price'],
-          h['percent'],
         ]
       end
 
       def args_to_h
         {
           'shares' => @bundle.shares.map(&:id),
-          'percent' => @bundle.percent,
           'share_price' => @bundle.share_price,
         }
       end

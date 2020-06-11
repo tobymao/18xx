@@ -179,14 +179,15 @@ module Engine
       end
 
       def sell_and_change_price(bundle, share_pool, stock_market)
-        share_pool.sell_shares(bundle)
         corporation = bundle.corporation
         price = corporation.share_price.price
+        was_president = corporation.president?(bundle.owner)
+        share_pool.sell_shares(bundle)
         case @game.class::SELL_MOVEMENT
         when :down_share
           bundle.num_shares.times { stock_market.move_down(corporation) }
         when :left_block_pres
-          stock_market.move_left(corporation) if corporation.president?(bundle.owner)
+          stock_market.move_left(corporation) if was_president
         else
           raise NotImplementedError
         end
@@ -276,11 +277,11 @@ module Engine
       # This works irrespective of if that player has sold this round
       # such as in 1889 for exchanging Dougo
       #
-      def can_gain?(share, entity)
-        return if !share || !entity
+      def can_gain?(bundle, entity)
+        return if !bundle || !entity
 
-        corporation = share.corporation
-        corporation.holding_ok?(entity, share.percent) &&
+        corporation = bundle.corporation
+        corporation.holding_ok?(entity, bundle.percent) &&
         (!corporation.counts_for_limit || entity.num_certs < @game.cert_limit)
       end
 

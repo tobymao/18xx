@@ -41,7 +41,7 @@ module View
         case @round
         when Engine::Round::Operating
           case @round.step
-          when :track
+          when :track, :token_or_track
             opaque = @round.connected_hexes[@hex]
             clickable ||= opaque
           when :token, :route

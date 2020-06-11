@@ -22,7 +22,7 @@ module Engine
       it 'shares' do
         current_price = market.market[0][0]
         market.set_par(corporation, current_price)
-        share_pool.buy_share(player, corporation.shares[0])
+        share_pool.buy_shares(player, corporation.shares[0])
         expect(player.num_certs).to eq(1)
       end
 
@@ -30,14 +30,14 @@ module Engine
         player.companies << company
         current_price = market.market[0][0]
         market.set_par(corporation, current_price)
-        share_pool.buy_share(player, corporation.shares[0])
+        share_pool.buy_shares(player, corporation.shares[0])
         expect(player.num_certs).to eq(2)
       end
 
       it 'non-limit shares' do
         current_price = market.market[-1][0]
         market.set_par(corporation, current_price)
-        share_pool.buy_share(player, corporation.shares[0])
+        share_pool.buy_shares(player, corporation.shares[0])
         expect(player.num_certs).to eq(0)
       end
     end

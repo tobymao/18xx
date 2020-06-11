@@ -13,37 +13,22 @@ module View
 
         h(:div, [
           h(UndoAndPass),
-          render_issuable_shares,
-          render_redeemable_shares,
+          render_shares('Issue', @round.issuable_shares, Engine::Action::SellShares),
+          render_shares('Redeem', @round.redeemable_shares, Engine::Action::BuyShares),
         ].compact)
       end
 
-      def render_issuable_shares
-        shares = @round.issuable_shares.map do |bundle|
+      def render_shares(description, shares, action)
+        shares = shares.map do |bundle|
           render_button(bundle) do
-            process_action(Engine::Action::SellShares.new(@current_entity, bundle.shares, bundle.percent))
+            process_action(action.new(@round.current_entity, bundle.shares, bundle.share_price))
           end
         end
 
         return nil if shares.empty?
 
         h(:div, [
-          h('div.inline.margined', 'Issue'),
-          *shares,
-        ])
-      end
-
-      def render_redeemable_shares
-        shares = @round.redeemable_shares.map do |bundle|
-          render_button(bundle) do
-            process_action(Engine::Action::BuyShare.new(@current_entity, bundle.shares, bundle.percent))
-          end
-        end
-
-        return nil if shares.empty?
-
-        h(:div, [
-          h('div.inline.margined', 'Redeem'),
+          h('div.inline.margined', description),
           *shares,
         ])
       end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
-require_relative '../action/buy_share'
+require_relative '../action/buy_shares'
 require_relative '../action/par'
 require_relative '../action/sell_shares'
 
@@ -10,7 +10,7 @@ module Engine
     class Stock < Base
       attr_reader :last_to_act, :share_pool, :stock_market
 
-      PURCHASE_ACTIONS = [Action::BuyShare, Action::Par].freeze
+      PURCHASE_ACTIONS = [Action::BuyShares, Action::Par].freeze
 
       def initialize(entities, game:, sell_buy_order: :sell_buy_or_buy_sell)
         super
@@ -50,12 +50,12 @@ module Engine
       # Returns if a share can be bought via a normal buy actions
       # If a player has sold shares they cannot buy in many 18xx games
       # Some 18xx games can only buy one share per turn.
-      def can_buy?(share)
-        return unless share
+      def can_buy?(bundle)
+        return unless bundle
 
-        corporation = share.corporation
+        corporation = bundle.corporation
 
-        @current_entity.cash >= share.price && can_gain?(share, @current_entity) &&
+        @current_entity.cash >= bundle.price && can_gain?(bundle, @current_entity) &&
           !@players_sold[@current_entity][corporation] &&
           (@current_actions & self.class::PURCHASE_ACTIONS).none?
       end
@@ -110,16 +110,16 @@ module Engine
         case action
         when Action::DiscardTrain
           discard_train(action)
-        when Action::BuyShare
-          buy_share(entity, action.share)
+        when Action::BuyShares
+          buy_shares(entity, action.bundle)
         when Action::SellShares
-          sell_shares(action.shares)
+          sell_shares(action.bundle)
         when Action::Par
           share_price = action.share_price
           corporation = action.corporation
           @stock_market.set_par(corporation, share_price)
           share = corporation.shares.first
-          buy_share(entity, share)
+          buy_shares(entity, share.to_bundle)
         end
       end
 
@@ -139,8 +139,8 @@ module Engine
           .map { |share| ShareBundle.new(share, 10) }
 
         bundles.none? { |bundle| can_sell?(bundle) } &&
-          @share_pool.shares.none? { |s| can_buy?(s) } &&
-          @corporations.none? { |c| can_buy?(c.shares.first) } &&
+          @share_pool.shares.none? { |s| can_buy?(s.to_bundle) } &&
+          @corporations.none? { |c| can_buy?(c.shares.first&.to_bundle) } &&
           !must_sell? # this forces a deadlock and a user must undo
       end
 
@@ -180,11 +180,11 @@ module Engine
         sell_and_change_price(shares, @share_pool, @stock_market)
       end
 
-      def buy_share(entity, share)
-        raise GameError, "Cannot buy a share of #{share&.corporation&.name}" unless can_buy?(share)
+      def buy_shares(entity, shares)
+        raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" unless can_buy?(shares)
 
-        @share_pool.buy_share(entity, share)
-        corporation = share.corporation
+        @share_pool.buy_shares(entity, shares)
+        corporation = shares.corporation
         place_home_token(corporation) if @game.class::HOME_TOKEN_TIMING == :float && corporation.floated?
       end
 
@@ -197,7 +197,7 @@ module Engine
       def log_pass(entity)
         return super if @current_actions.empty?
 
-        action = if @current_actions.include?(Action::BuyShare) || @current_actions.include?(Action::Par)
+        action = if @current_actions.include?(Action::BuyShares) || @current_actions.include?(Action::Par)
                    'selling'
                  else
                    'buying'
