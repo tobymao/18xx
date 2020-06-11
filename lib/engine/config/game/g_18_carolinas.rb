@@ -35,6 +35,7 @@ module Engine
     "columns": "letters"
   },
   "mustSellInBlocks": false,
+  "maxJumps": 4,
   "locationNames": {
     "A7": "Knoxville",
     "A23": "Richmond",
@@ -169,64 +170,9 @@ module Engine
   "corporations": [
     {
       "float_percent": 60,
-      "sym": "NCR",
-      "name": "North Carolina Railroad",
-      "logo": "18_carolinas/NCR",
-      "tokens": [
-        0,
-        40,
-        100,
-        100
-      ],
-      "coordinates": "C13",
-      "color": "red"
-    },
-    {
-      "float_percent": 60,
-      "sym": "WM",
-      "name": "Wilmington and Manchester Railroad",
-      "logo": "18_carolinas/WM",
-      "tokens": [
-        0,
-        40,
-        100,
-        100
-      ],
-      "coordinates": "H16",
-      "color": "deepPink"
-    },
-    {
-      "float_percent": 60,
-      "sym": "WNC",
-      "name": "Western North Carolina Railroad",
-      "logo": "18_carolinas/WNC",
-      "tokens": [
-        0,
-        40,
-        100,
-        100
-      ],
-      "coordinates": "D8",
-      "color": "orange"
-    },
-    {
-      "float_percent": 60,
-      "sym": "SR",
-      "name": "Southern Railway",
-      "logo": "18_carolinas/SR",
-      "tokens": [
-        0,
-        40,
-        100,
-        100
-      ],
-      "coordinates": "J12",
-      "color": "green"
-    },
-    {
-      "float_percent": 60,
       "sym": "WW",
       "name": "Wilmington and Weldon Railroad",
+      "state": "NC",
       "logo": "18_carolinas/WW",
       "tokens": [
         0,
@@ -240,8 +186,87 @@ module Engine
     },
     {
       "float_percent": 60,
+      "sym": "SEA",
+      "name": "Seaboard and Roanoke Railroad",
+      "state": "NC",
+      "logo": "18_carolinas/SEA",
+      "tokens": [
+        0,
+        40,
+        100,
+        100
+      ],
+      "coordinates": "J6",
+      "color": "DeepSkyBlue",
+      "text_color": "black"
+    },
+    {
+      "float_percent": 60,
+      "sym": "NCR",
+      "name": "North Carolina Railroad",
+      "state": "NC",
+      "logo": "18_carolinas/NCR",
+      "tokens": [
+        0,
+        40,
+        100,
+        100
+      ],
+      "coordinates": "C13",
+      "color": "red"
+    },
+    {
+      "float_percent": 60,
+      "sym": "WNC",
+      "name": "Western North Carolina Railroad",
+      "state": "NC",
+      "logo": "18_carolinas/WNC",
+      "tokens": [
+        0,
+        40,
+        100,
+        100
+      ],
+      "coordinates": "D8",
+      "color": "orange",
+      "text_color": "black"
+    },
+    {
+      "float_percent": 60,
+      "sym": "WM",
+      "name": "Wilmington and Manchester Railroad",
+      "state": "SC",
+      "logo": "18_carolinas/WM",
+      "tokens": [
+        0,
+        40,
+        100,
+        100
+      ],
+      "coordinates": "H16",
+      "color": "deepPink"
+    },
+    {
+      "float_percent": 60,
+      "sym": "SR",
+      "name": "Southern Railway",
+      "state": "SC",
+      "logo": "18_carolinas/SR",
+      "tokens": [
+        0,
+        40,
+        100,
+        100
+      ],
+      "coordinates": "J12",
+      "color": "green",
+      "text_color": "yellow"
+    },
+    {
+      "float_percent": 60,
       "sym": "CSC",
       "name": "Charlotte and South Carolina Railroad",
+      "state": "SC",
       "logo": "18_carolinas/CSC",
       "tokens": [
         0,
@@ -254,24 +279,9 @@ module Engine
     },
     {
       "float_percent": 60,
-      "sym": "SEA",
-      "name": "Seaboard and Roanoke Railroad",
-      "logo": "18_carolinas/SEA",
-      "tokens": [
-        0,
-        40,
-        100,
-        100
-      ],
-      "coordinates": "J6",
-      "color": "DeepSkyBlue",
-      "text_color": "black"
-
-    },
-    {
-      "float_percent": 60,
       "sym": "CAR",
       "name": "Columbia and Augusta Railroad",
+      "state": "SC",
       "logo": "18_carolinas/CAR",
       "tokens": [
         0,
@@ -480,10 +490,8 @@ module Engine
         "green",
         "brown"
       ],
-      "operating_rounds": 3,
-      "events": {
-        "close_companies": true
-      }
+      "operating_rounds": 3
+
     },
     {
       "name": "6",
