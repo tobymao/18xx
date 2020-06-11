@@ -333,7 +333,7 @@ module Engine
         "6",
         "7/8"
       ],
-      "num": 1
+      "num": 0
     },
     {
       "name": "2B4",
@@ -343,7 +343,7 @@ module Engine
         "6",
         "7/8"
       ],
-      "num": 1
+      "num": 0
     },
     {
       "name": "2",
