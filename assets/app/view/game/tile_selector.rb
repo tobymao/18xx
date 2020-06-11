@@ -9,6 +9,7 @@ module View
       needs :layout
       needs :tiles
       SCALE = 0.3
+      SIZE = Hex::SIZE * SCALE
 
       def render
         hexes = @tiles.map do |tile|
@@ -18,12 +19,11 @@ module View
 
         theta = 360.0 / hexes.size * Math::PI / 180
 
-        size = Hex::SIZE * SCALE
         hexes = hexes.map.with_index do |hex, index|
           style = {
             position: 'absolute',
-            left: "#{Hex::SIZE * Math.cos(index * theta) - size}px",
-            bottom: "#{Hex::SIZE * Math.sin(index * theta) - size}px",
+            left: "#{Hex::SIZE * Math.cos(index * theta) - SIZE}px",
+            bottom: "#{Hex::SIZE * Math.sin(index * theta) - SIZE}px",
             width: '60px',
             height: '60px',
             filter: 'drop-shadow(5px 5px 2px #888)',

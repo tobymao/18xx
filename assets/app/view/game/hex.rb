@@ -66,15 +66,8 @@ module View
         props[:attrs][:cursor] = 'pointer' if clickable
 
         props[:on] = { click: ->(e) { on_hex_click(e) } } if clickable
-        if @selected
-          props[:attrs]['stroke-width'] = 5
-          props[:hook] = { destroy: -> { cleanup } }
-        end
+        props[:attrs]['stroke-width'] = 5 if @selected
         h(:g, props, children)
-      end
-
-      def cleanup
-        store(:tile_selector, nil, skip: true)
       end
 
       def translation
@@ -91,7 +84,7 @@ module View
         "#{translation}#{@hex.layout == :pointy ? ' rotate(30)' : ''}"
       end
 
-      def on_hex_click(_event)
+      def on_hex_click
         nodes = @hex.tile.nodes
 
         if @round&.can_run_routes?
