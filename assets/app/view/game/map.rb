@@ -45,17 +45,17 @@ module View
 
         if @tile_selector
           left = (@tile_selector.x + map_x) * SCALE
-          selector = if @tile_selector.hex.tile != @tile_selector.tile
-                       h(TileConfirmation)
-                     else
-                       # Selecting column A can cause tiles to go off the edge of the map
-                       if (left - (TileSelector::DISTANCE + (TileSelector::TILE_SIZE / 2))).negative?
-                         left = TileSelector::DISTANCE + (TileSelector::TILE_SIZE / 2)
-                       end
 
-                       tiles = round.upgradeable_tiles(@tile_selector.hex)
-                       h(TileSelector, layout: @layout, tiles: tiles)
-                     end
+          selector =
+            if @tile_selector.hex.tile != @tile_selector.tile
+              h(TileConfirmation)
+            else
+              # Selecting column A can cause tiles to go off the edge of the map
+              distance = TileSelector::DISTANCE + (TileSelector::TILE_SIZE / 2)
+              left = distance if (left - distance).negative?
+              tiles = round.upgradeable_tiles(@tile_selector.hex)
+              h(TileSelector, layout: @layout, tiles: tiles)
+            end
 
           # Move the position to the middle of the hex
           props = {
