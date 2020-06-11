@@ -6,7 +6,7 @@ module View
   class Chat < Snabberb::Component
     needs :user
     needs :connection
-    needs :log, default: nil, store: true
+    needs :log, default: [], store: true
     needs :subscribed, default: false, store: true
 
     def render
@@ -17,12 +17,10 @@ module View
       store(:subscribed, true, skip: true)
 
       destroy = lambda do
-        store(:log, nil, skip: true)
+        store(:log, [], skip: true)
         store(:subscribed, false, skip: true)
         @connection.unsubscribe('/chat')
       end
-
-      @log ||= []
 
       children = [h(Log, log: @log)]
 
@@ -60,7 +58,7 @@ module View
       name = data[:user][:name]
       ts = Time.at(data[:created_at]).strftime('%m/%d %H:%M:%S')
       message = data[:message]
-      store(:log, @log + ["#{ts} #{name}: #{message}"])
+      store(:log, @log << "#{ts} #{name}: #{message}")
     end
   end
 end
