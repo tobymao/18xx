@@ -2,11 +2,12 @@
 
 module Engine
   class Token
-    attr_reader :corporation, :price
+    attr_reader :corporation, :price, :logo
 
-    def initialize(corporation, price: 0)
+    def initialize(corporation, price: 0, logo: nil)
       @corporation = corporation
       @price = price
+      @logo = logo || corporation.logo
       @used = false
     end
 

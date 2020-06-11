@@ -23,17 +23,22 @@ module Engine
       GAME_DESIGNER = 'Marc Voyer'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
 
+      TRACK_RESTRICTION = :permissive
+
+      LAY_TOKEN_OTHER_CORP_TAKES_OWNERSHIP = true
+
       def stock_round
         Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy_sell)
       end
 
       def init_corporations(stock_market)
-        # Neutral corp that allows tokens that don't block other players
-        # CN runs using these tokens
-        neutral_corp = Corporation.new(sym: 'neutral', name: 'neutral', tokens: [], logo: '1882/neutral')
         corporations = super
+        # CN's tokens use a neutral logo, but as layed become owned by cn but don't block other players
+        cn_corp = corporations.find { |x| x.name == 'CN' }
         corporations.each do |x|
-          x.tokens << Token.new(neutral_corp, price: 0) unless CORPORATIONS_WITHOUT_NEUTRAL.include?(x.name)
+          unless CORPORATIONS_WITHOUT_NEUTRAL.include?(x.name)
+            x.tokens << Token.new(cn_corp, price: 0, logo: '/logos/1882/neutral.svg')
+          end
         end
         corporations
       end

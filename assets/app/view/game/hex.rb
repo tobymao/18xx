@@ -75,9 +75,13 @@ module View
         "translate(#{x}, #{y})"
       end
 
+      def self.coordinates(hex)
+        t_x, t_y = LAYOUT[hex.layout]
+        [(t_x * hex.x + SIZE).round(2), (t_y * hex.y + SIZE).round(2)]
+      end
+
       def coordinates
-        t_x, t_y = LAYOUT[@hex.layout]
-        [(t_x * @hex.x + SIZE).round(2), (t_y * @hex.y + SIZE).round(2)]
+        self.class.coordinates(@hex)
       end
 
       def transform

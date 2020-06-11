@@ -3,6 +3,7 @@
 require 'view/game/actionable'
 require 'view/game/part/base'
 require 'view/game/token'
+require 'lib/token_selector'
 
 module View
   module Game
@@ -24,7 +25,7 @@ module View
           children = []
           children << h(:circle, attrs: { r: @radius, fill: 'white' })
           children << reservation if @reservation
-          children << h(Token, corporation: @token.corporation, radius: @radius) if @token
+          children << h(Token, token: @token, radius: @radius) if @token
 
           props = { on: { click: -> { on_click } } }
 
@@ -45,13 +46,20 @@ module View
           return if @token
           return unless @game.round.can_place_token?
 
-          action = Engine::Action::PlaceToken.new(
-            @game.current_entity,
-            @city,
-            @slot_index
-          )
+          # If there's a choice of tokens from different corps show the selector, otherwise just place
+          token_types = @game.current_entity.tokens.reject{|t| t.used?}.group_by(&:corporation)
+          if token_types.size == 1
+            action = Engine::Action::PlaceToken.new(
+              @game.current_entity,
+              @city,
+              @slot_index
+            )
 
-          process_action(action)
+            process_action(action)
+          else
+            store(:tile_selector,
+                  Lib::TokenSelector.new(@tile.hex, Hex.coordinates(@tile.hex), @city, @slot_index, token_types))
+          end
         end
       end
     end

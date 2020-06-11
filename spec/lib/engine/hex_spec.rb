@@ -32,7 +32,7 @@ module Engine
         end
 
         it 'preserves a placed token' do
-          subject.tile.cities[0].place_token(corp_1)
+          subject.tile.cities[0].place_token(corp_1, corp_1.next_token)
 
           subject.lay(green_tile)
           expect(subject.tile.cities[0].tokens[0]).to have_attributes(corporation: corp_1)
@@ -57,7 +57,7 @@ module Engine
         end
 
         it 'preserves a placed token' do
-          subject.tile.cities[0].place_token(corp_1)
+          subject.tile.cities[0].place_token(corp_1, corp_1.next_token)
 
           subject.lay(brown_tile)
           expect(subject.tile.cities[0].tokens[0]).to have_attributes(corporation: corp_1)
@@ -65,8 +65,8 @@ module Engine
         end
 
         it 'preserves 2 placed tokens' do
-          subject.tile.cities[0].place_token(corp_1)
-          subject.tile.cities[0].place_token(corp_2)
+          subject.tile.cities[0].place_token(corp_1, corp_1.next_token)
+          subject.tile.cities[0].place_token(corp_2, corp_2.next_token)
 
           subject.lay(brown_tile)
 
@@ -83,7 +83,7 @@ module Engine
 
         it 'preserves a placed token and a reservation' do
           subject.tile.cities[0].reservations = ['AR']
-          subject.tile.cities[0].place_token(corp_2)
+          subject.tile.cities[0].place_token(corp_2, corp_2.next_token)
 
           subject.lay(brown_tile)
 
@@ -200,7 +200,9 @@ module Engine
               # add initial corporation tokens
               spec[:setup][:corporations].each do |corp|
                 corporation = game.corporation_by_id(corp[:name])
-                initial_tile.cities[corp[:token]].place_token(corporation) unless corp[:token].nil?
+                unless corp[:token].nil?
+                  initial_tile.cities[corp[:token]].place_token(corporation, corporation.next_token)
+                end
               end
             end
 

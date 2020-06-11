@@ -233,7 +233,7 @@ module Engine
         return unless city.tokenable?(corporation)
 
         @log << "#{corporation.name} places a token on #{hex.name}"
-        city.place_token(corporation)
+        city.place_token(corporation, corporation.next_token)
       end
 
       def payout_companies

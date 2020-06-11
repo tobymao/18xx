@@ -22,6 +22,7 @@ module Engine
     def initialize(sym:, name:, tokens:, **opts)
       @name = sym
       @full_name = name
+      @logo = "/logos/#{opts[:logo]}.svg"
       @tokens = tokens.map { |price| Token.new(self, price: price) }
       [
         Share.new(self, president: true, percent: 20),
@@ -43,7 +44,6 @@ module Engine
       @float_percent = opts[:float_percent] || 60
       @coordinates = opts[:coordinates]
       @min_price = opts[:min_price]
-      @logo = "/logos/#{opts[:logo]}.svg"
       @color = opts[:color]
       @text_color = opts[:text_color] || '#ffffff'
       @always_market_price = opts[:always_market_price] || false
