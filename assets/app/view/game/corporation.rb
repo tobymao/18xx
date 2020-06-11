@@ -112,7 +112,7 @@ module View
         holdings_style = {
           display: 'grid',
           grid: '1fr / 1fr 1fr auto',
-          gap: '0 0.3rem'
+          gap: '0 0.3rem',
         }
 
         holdings_row_style['background'] = '#99bb99' if @game.round.can_act?(@corporation)
@@ -297,7 +297,7 @@ module View
           ]),
           h(:tbody, [
             *rows,
-          ])
+          ]),
         ])
       end
 

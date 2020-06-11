@@ -52,6 +52,7 @@ module View
           **input_style,
         },
         attrs: {
+          id: "input_#{id}",
           placeholder: label,
           type: type,
           **attrs,
