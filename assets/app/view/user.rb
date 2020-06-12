@@ -104,7 +104,7 @@ module View
 
     def render_color(id, name, hex_color, default)
       hex_color ||= default
-      render_input(name, id: id, type: :color, attrs: { value: hex_color }, )
+      render_input(name, id: id, type: :color, attrs: { value: hex_color },)
     end
 
     def render_logo_color(red_logo)

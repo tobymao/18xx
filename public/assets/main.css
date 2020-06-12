@@ -34,6 +34,12 @@ label.right {
   margin-right: 1rem;
 }
 
+.nowrap {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* prevent hover effects on mobile devices */
 @media(hover: hover) and (pointer: fine) {
   .button:hover, .button-link:hover {
@@ -208,4 +214,106 @@ input#chatbar {
   alignment-baseline: middle;
   dominant-baseline: middle;
   pointer-events: none;
+}
+
+.card {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  width: 24rem;
+  margin: 0.5rem 0.5rem 0 0;
+  border-radius: 0.7rem;
+}
+.card table {
+  line-height: 1.25rem;
+}
+.card th {
+  padding: 0 0.3rem;
+}
+.card td {
+  padding: 0 0.5rem;
+}
+
+/* corporations & companies */
+.corporations__row {
+  margin-bottom: 0.5rem;
+}
+.corp__title {
+  display: grid;
+  grid: 1fr / 2rem auto;
+  align-items: center;
+  justify-items: center;
+  gap: 0 1rem;
+  padding: 0.4rem;
+}
+img.corp__title__herald {
+  height: 2rem;
+  width: 2rem;
+  justify-self: start;
+  border: 0.2rem solid currentColor;
+  border-radius: 0.5rem;
+}
+.corp__title__name {
+  color: currentColor;
+  font-weight: bold;
+}
+
+.corp__holdings {
+  display: grid;
+  grid: 1fr / 4.5rem auto;
+  gap: 0 0.2rem;
+  padding: 0.2rem 0.5rem;
+}
+.corp__holdings * {
+  display: grid;
+  align-self: center;
+  justify-self: center;
+}
+.corp__holdings__sym {
+  font-size: 2rem;
+  font-weight: bold;
+  justify-self: start;
+}
+.corp__holdings__details {
+  grid: 1fr / 1fr 1fr auto;
+  gap: 0 0.3rem;
+}
+.corp__holdings__segment {
+  grid: 3fr 2fr / 1fr;
+}
+.corp__holdings > .value {
+  max-width: 7.5rem;
+  font-weight: bold;
+}
+.corp__holdings > .key {
+  align-self: end;
+}
+.corp__token-list {
+  grid: 1fr / auto-flow repeat(auto-fit, minmax(1.8rem, 1fr));
+  gap: 0 0.2rem;
+  padding-left: 1rem;
+}
+.corp__token {
+  grid: 3fr 2fr / 1fr;
+}
+
+table.shareholders, table.companies, table.revenue {
+  margin: 0.5rem auto;
+  border-collapse: collapse; /* necessary for border under tr.market */
+}
+tr.market:not(last-child) {
+  border-bottom: 1px solid currentColor;
+}
+td.last-run {
+  font-weight: bold;
+}
+td.income, td.price, td.shares, td.value {
+  text-align: right;
+}
+td.shares {
+  padding-right: 1.5rem;
+}
+td.sold {
+  font-style: italic;
+  text-align: right;
 }

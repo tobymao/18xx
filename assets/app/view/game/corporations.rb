@@ -22,8 +22,8 @@ module View
       end
 
       def render_corporations(owner, corporations)
-        h('div.game__corporations__row', [
-          h('div.game__corporations__owner', { style: { 'border-bottom': '1px solid gainsboro' } }, owner.name),
+        h('div.corporations__row', [
+          h('div.corporations__owner', { style: { 'border-bottom': '1px solid gainsboro' } }, owner.name),
           *corporations.sort_by(&:name).map { |c| h(Corporation, corporation: c) },
         ])
       end
