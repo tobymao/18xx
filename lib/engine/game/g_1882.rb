@@ -16,6 +16,12 @@ module Engine
 
       CORPORATIONS_WITHOUT_NEUTRAL = %w[CPR CN].freeze
 
+      CORPORATIONS_OVERRIDE = {
+        'CN' => {
+          needs_token_to_par: true,
+        },
+      }.freeze
+
       load_from_json(Config::Game::G1882::JSON)
 
       GAME_LOCATION = 'Assiniboia, Canada'

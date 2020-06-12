@@ -47,6 +47,7 @@ module Engine
       @color = opts[:color]
       @text_color = opts[:text_color] || '#ffffff'
       @always_market_price = opts[:always_market_price] || false
+      @needs_token_to_par = opts[:needs_token_to_par] || false
     end
 
     def <=>(other)
@@ -61,6 +62,12 @@ module Engine
       # if no share price, like when you exchange a share pre-ipo
       # it still counts
       @share_price ? @share_price.counts_for_limit : true
+    end
+
+    def can_par?
+      return false if @needs_token_to_par && @tokens.empty?
+
+      true
     end
 
     def par_price

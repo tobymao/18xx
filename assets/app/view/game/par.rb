@@ -16,7 +16,7 @@ module View
           margin: '0.5rem 0.5rem 0.5rem 0',
         }
 
-        par_values = @game.stock_market.par_prices.map do |share_price|
+        par_values = @game.round.par_prices(@corporation).map do |share_price|
           par = lambda do
             process_action(Engine::Action::Par.new(@game.current_entity, @corporation, share_price))
           end
@@ -24,10 +24,14 @@ module View
           h(:div, { style: style, on: { click: par } }, @game.format_currency(share_price.price))
         end
 
-        h(:div, [
-          h(:div, 'Par Price:'),
-          *par_values.reverse,
-        ])
+        if par_values.empty?
+          h(:div, 'Cannot Par')
+        else
+          h(:div, [
+            h(:div, 'Par Price:'),
+            *par_values.reverse,
+          ])
+        end
       end
     end
   end

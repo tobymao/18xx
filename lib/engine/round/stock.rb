@@ -173,6 +173,12 @@ module Engine
         end
       end
 
+      def par_prices(corporation)
+        return [] unless corporation.can_par?
+
+        @stock_market.par_prices
+      end
+
       def sell_shares(shares)
         raise GameError, "Cannot sell shares of #{shares.corporation.name}" unless can_sell?(shares)
 
