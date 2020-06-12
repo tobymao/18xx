@@ -134,37 +134,34 @@ module View
       end
 
       def render_corporation_shares(corporation, shares)
+        td_props = {
+          style: {
+            padding: '0 0.2rem',
+          }
+        }
+        div_props = {
+          style: {
+            height: '20px',
+          }
+        }
         logo_props = {
           attrs: {
             src: corporation.logo,
           },
           style: {
-            position: 'absolute',
-            width: '20px',
-            top: '0',
-            left: '0',
-          },
-        }
-
-        logo_td_props = {
-          style: {
-            position: 'relative',
-            width: '20px',
-          },
-        }
-
-        td_props = {
-          style: {
-            padding: '0.1rem 0.2rem',
-            'text-align': 'left',
+            height: '20px',
           },
         }
 
         president_marker = corporation.president?(@player) ? '*' : ''
-        h(:tr, [
-          h(:td, logo_td_props, [h(:img, logo_props)]),
+        h('tr.row', [
+          h('td.center', td_props, [
+            h(:div, div_props, [
+              h(:img, logo_props),
+            ]),
+          ]),
           h(:td, td_props, corporation.name + president_marker),
-          h(:td, td_props, "#{shares.sum(&:percent)}%"),
+          h('td.right', td_props, "#{shares.sum(&:percent)}%"),
         ])
       end
 
