@@ -27,7 +27,6 @@ module Engine
 
         @corporations.each_with_index do |corporation, index|
           index -= 4 if index > 3
-          puts index
           @stock_market.set_par(corporation, @stock_market.par_prices[3 - index])
 
           @log << "#{corporation.name} is set to par #{@stock_market.par_prices[3 - index].price}"
