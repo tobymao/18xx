@@ -56,7 +56,6 @@ module View
         attrs: {
           id: "input_#{id}",
           placeholder: placeholder,
-          id: id,
           type: type,
           **attrs,
         },
