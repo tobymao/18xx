@@ -22,7 +22,7 @@ module View
       end
 
       def render_corporations(owner, corporations)
-        h('div.corp__row', { style: { 'margin-bottom': '0.5rem'} }, [
+        h('div.corp__row', { style: { 'margin-bottom': '0.5rem' } }, [
           h('div.owner', { style: { 'border-bottom': '1px solid gainsboro' } }, owner.name),
           *corporations.sort_by(&:name).map { |c| h(Corporation, corporation: c) },
         ])

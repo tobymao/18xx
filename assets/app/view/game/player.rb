@@ -64,7 +64,7 @@ module View
         table_props = {
           style: {
             margin: '0 1rem',
-          }
+          },
         }
 
         td_cert_props = {
@@ -110,7 +110,7 @@ module View
 
         if @player == @game.priority_deal_player
           trs << h(:tr, [
-            h('td.italic.center', { attrs: { colspan: '2' } }, 'Priority Deal'),
+            h('td.center.italic', { attrs: { colspan: '2' } }, 'Priority Deal'),
           ])
         end
 
@@ -121,7 +121,7 @@ module View
         props = {
           style: {
             margin: '0 1rem',
-          }
+          },
         }
 
         shares = @player
@@ -137,12 +137,12 @@ module View
         td_props = {
           style: {
             padding: '0 0.2rem',
-          }
+          },
         }
         div_props = {
           style: {
             height: '20px',
-          }
+          },
         }
         logo_props = {
           attrs: {
@@ -155,11 +155,7 @@ module View
 
         president_marker = corporation.president?(@player) ? '*' : ''
         h('tr.row', [
-          h('td.center', td_props, [
-            h(:div, div_props, [
-              h(:img, logo_props),
-            ]),
-          ]),
+          h('td.center', td_props, [h(:div, div_props, [h(:img, logo_props)])]),
           h(:td, td_props, corporation.name + president_marker),
           h('td.right', td_props, "#{shares.sum(&:percent)}%"),
         ])
