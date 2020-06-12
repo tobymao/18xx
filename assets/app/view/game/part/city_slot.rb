@@ -47,8 +47,8 @@ module View
           return unless @game.round.can_place_token?
 
           # If there's a choice of tokens from different corps show the selector, otherwise just place
-          token_types = @game.current_entity.tokens.reject(&:used?).group_by(&:corporation)
-          if token_types.size == 1
+          corp_tokens = @game.current_entity.available_tokens_by_corporation
+          if corp_tokens.size == 1
             action = Engine::Action::PlaceToken.new(
               @game.current_entity,
               @city,
@@ -58,7 +58,7 @@ module View
             process_action(action)
           else
             store(:tile_selector,
-                  Lib::TokenSelector.new(@tile.hex, Hex.coordinates(@tile.hex), @city, @slot_index, token_types))
+                  Lib::TokenSelector.new(@tile.hex, Hex.coordinates(@tile.hex), @city, @slot_index))
           end
         end
       end

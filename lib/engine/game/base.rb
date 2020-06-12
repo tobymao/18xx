@@ -90,9 +90,6 @@ module Engine
       EBUY_PRES_SWAP = true # allow presidential swaps of other corps when ebuying
       EBUY_OTHER_VALUE = true # allow ebuying other corp trains for up to face
 
-      # 1882: When laying a token that is from another corp, the other corp takes ownership
-      LAY_TOKEN_OTHER_CORP_TAKES_OWNERSHIP = false
-
       # when is the home token placed? on...
       # operate
       # float

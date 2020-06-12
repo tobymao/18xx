@@ -22,16 +22,9 @@ module View
         end
 
         hexes = list_coordinates(hexes, DISTANCE, SIZE).map do |hex, left, bottom|
-          style = {
-            position: 'absolute',
-            left: "#{left}px",
-            bottom: "#{bottom}px",
-            width: "#{TILE_SIZE}px",
-            height: "#{TILE_SIZE}px",
-            filter: 'drop-shadow(5px 5px 2px #888)',
-            'pointer-events' => 'auto',
-          }
-          h(:svg, { style: style }, [h(:g, { attrs: { transform: "scale(#{SCALE})" } }, [hex])])
+          h(:svg,
+            { style: style(left, bottom, TILE_SIZE) },
+            [h(:g, { attrs: { transform: "scale(#{SCALE})" } }, [hex])])
         end
 
         h(:div, hexes)

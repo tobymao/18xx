@@ -48,11 +48,9 @@ module View
           left = (@tile_selector.x + map_x) * SCALE
 
           selector =
-            if @tile_selector.is_a? Lib::TokenSelector
+            if @tile_selector.is_a?(Lib::TokenSelector)
               # 1882
-              h(TokenSelector,
-                game: @game, tokens: @tile_selector.tokens,
-                city: @tile_selector.city, slot_index: @tile_selector.slot_index)
+              h(TokenSelector)
             elsif @tile_selector.hex.tile != @tile_selector.tile
               h(TileConfirmation)
             else

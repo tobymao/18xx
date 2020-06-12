@@ -31,8 +31,6 @@ module Engine
 
       TRACK_RESTRICTION = :permissive
 
-      LAY_TOKEN_OTHER_CORP_TAKES_OWNERSHIP = true
-
       def stock_round
         Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy_sell)
       end
@@ -47,6 +45,10 @@ module Engine
           end
         end
         corporations
+      end
+
+      def operating_round(round_num)
+        Round::G1882::Operating.new(@corporations, game: self, round_num: round_num)
       end
     end
   end

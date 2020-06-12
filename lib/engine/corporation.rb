@@ -90,6 +90,11 @@ module Engine
       @tokens.find { |t| !t.used? }
     end
 
+    def available_tokens_by_corporation
+      # 1882 allows neutral tokens, group tokens that are available by corp
+      tokens.reject(&:used?).group_by(&:corporation)
+    end
+
     def share_holders
       @share_holders ||= Hash.new(0)
     end

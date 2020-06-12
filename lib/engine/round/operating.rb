@@ -506,7 +506,7 @@ module Engine
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 
-        token = action.tokenidx ? entity.tokens[action.tokenidx] : entity.next_token
+        token = action.token || entity.next_token
         raise GameError, 'Token is already used' if token.used?
 
         price = token&.price || 0
@@ -515,14 +515,7 @@ module Engine
           entity.spend(price, @bank)
           price_log = " for #{@game.format_currency(price)}"
         end
-
-        if @game.class::LAY_TOKEN_OTHER_CORP_TAKES_OWNERSHIP && token.corporation != entity
-          entity.tokens.delete(token)
-          token.corporation.tokens << token
-          @log << "#{entity.name} places a neutral token on #{action.city.hex.name}#{price_log}"
-        else
-          @log << "#{entity.name} places a token on #{action.city.hex.name}#{price_log}"
-        end
+        @log << "#{entity.name} places a token on #{action.city.hex.name}#{price_log}"
         @graph.clear
       end
 

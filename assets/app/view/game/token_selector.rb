@@ -9,31 +9,20 @@ module View
       include Lib::RadialSelector
       include Actionable
       needs :tile_selector, store: true
-      needs :tokens
-      needs :city
-      needs :slot_index
       TOKEN_SIZE = 40
       SIZE = TOKEN_SIZE / 2
       DISTANCE = TOKEN_SIZE
 
       def render
-        tokens = list_coordinates(@tokens.keys, DISTANCE, SIZE).map do |corporation, left, bottom|
-          layable = @tokens[corporation].first
-          style = {
-            position: 'absolute',
-            left: "#{left}px",
-            bottom: "#{bottom}px",
-            width: "#{TOKEN_SIZE}px",
-            height: "#{TOKEN_SIZE}px",
-            filter: 'drop-shadow(5px 5px 2px #888)',
-            'pointer-events' => 'auto',
-          }
+        corp_tokens = @game.current_entity.available_tokens_by_corporation
+        tokens = list_coordinates(corp_tokens.keys, DISTANCE, SIZE).map do |corporation, left, bottom|
+          layable = corp_tokens[corporation].first
 
           click = lambda do
             action = Engine::Action::PlaceToken.new(
               @game.current_entity,
-              @city,
-              @slot_index,
+              @tile_selector.city,
+              @tile_selector.slot_index,
               @game.current_entity.tokens.find_index(layable)
             )
             process_action(action)
@@ -46,7 +35,7 @@ module View
             on: {
               click: click,
             },
-            style: style,
+            style: style(left, bottom, TOKEN_SIZE),
           }
 
           h(:img, props)

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'view/game/hex'
-
 module Lib
   module RadialSelector
     # item -> [x,y,item]
@@ -14,6 +12,18 @@ module Lib
           distance * Math.sin(index * theta) - offset,
         ]
       end
+    end
+
+    def style(left, bottom, size)
+      {
+        position: 'absolute',
+        left: "#{left}px",
+        bottom: "#{bottom}px",
+        width: "#{size}px",
+        height: "#{size}px",
+        filter: 'drop-shadow(5px 5px 2px #888)',
+        'pointer-events' => 'auto',
+      }
     end
   end
 end
