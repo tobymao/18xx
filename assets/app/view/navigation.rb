@@ -36,7 +36,7 @@ module View
 
     def item(name, href)
       props = {
-        attrs: { 
+        attrs: {
           href: href,
         },
         style: {
