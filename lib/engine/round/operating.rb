@@ -29,7 +29,7 @@ module Engine
         track: 'Lay Track',
         token: 'Place a Token',
         route: 'Run Routes',
-        dividend: 'Pay or Withold Dividends',
+        dividend: 'Pay or Withhold Dividends',
         train: 'Buy Trains',
         company: 'Purchase Companies',
       }.freeze
@@ -43,7 +43,7 @@ module Engine
       }.freeze
 
       def initialize(entities, game:, round_num: 1, **opts)
-        super(entities.select(&:floated?).sort, game: game, **opts)
+        super(select(entities), game: game, **opts)
         @round_num = round_num
         @home_token_timing = @game.class::HOME_TOKEN_TIMING
         @ebuy_other_value = @game.class::EBUY_OTHER_VALUE
@@ -62,11 +62,16 @@ module Engine
         @step = steps.first
         @last_action_step = steps.last
         @current_routes = []
+        @current_actions = []
         @teleported = false
 
         payout_companies
         @entities.each { |c| place_home_token(c) } if @home_token_timing == :operating_round
         start_operating
+      end
+
+      def select(entities)
+        entities.select(&:floated?).sort
       end
 
       def name
@@ -342,9 +347,10 @@ module Engine
       def start_operating
         return if finished?
 
+        @current_actions.clear
         log_operation(@current_entity)
         place_home_token(@current_entity) if @home_token_timing == :operate
-        send("skip_#{@step}")
+        next_step! if send("skip_#{@step}")
       end
 
       def change_entity(_action)
@@ -370,6 +376,7 @@ module Engine
 
       def action_processed(action)
         @last_action_step = @step
+        @current_actions << action
         remove_just_sold_company_abilities unless action.is_a?(Action::BuyCompany)
         return if @bankrupt
         return if ignore_action?(action)
@@ -405,10 +412,16 @@ module Engine
         per_share = revenue / share_count
         @log << "#{@current_entity.name} pays out #{@game.format_currency(revenue)} = "\
                 "#{@game.format_currency(per_share)} x #{share_count} shares"
+
         @players.each do |player|
           payout_entity(player, per_share)
         end
-        payout_entity(@share_pool, per_share, @current_entity)
+
+        if @current_entity.capitalization == :incremental
+          payout_entity(@current_entity, per_share, @current_entity)
+        else
+          payout_entity(@share_pool, per_share, @current_entity)
+        end
         change_share_price(:right)
       end
 
@@ -426,6 +439,8 @@ module Engine
       end
 
       def change_share_price(direction)
+        return if @current_entity.minor?
+
         prev = @current_entity.share_price.price
 
         case direction

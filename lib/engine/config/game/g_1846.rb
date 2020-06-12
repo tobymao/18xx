@@ -328,32 +328,12 @@ module Engine
     {
       "name": "2",
       "distance": 2,
-      "price": 0,
-      "rusts_on": [
-        "6",
-        "7/8"
-      ],
-      "num": 1
-    },
-    {
-      "name": "2",
-      "distance": 2,
-      "price": 0,
-      "rusts_on": [
-        "6",
-        "7/8"
-      ],
-      "num": 1
-    },
-    {
-      "name": "2",
-      "distance": 2,
       "price": 80,
       "rusts_on": [
         "6",
         "7/8"
       ],
-      "num": 7
+      "num": 9
     },
     {
       "name": "3/5",

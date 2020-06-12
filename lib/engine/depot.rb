@@ -73,7 +73,9 @@ module Engine
     end
 
     def other_trains(corporation)
-      @trains.reject { |t| [corporation, self, nil].include?(t.owner) }
+      @trains.reject do |train|
+        train.unpurchasable || [corporation, self, nil].include?(train.owner)
+      end
     end
 
     def cash

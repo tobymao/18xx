@@ -8,6 +8,7 @@ module Engine
     include Ownable
 
     attr_reader :available_on, :name, :distance, :discount, :rusts_on, :rusted
+    attr_accessor :unpurchasable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
       @name = name
@@ -17,6 +18,7 @@ module Engine
       @rusts_on = opts[:rusts_on]
       @available_on = opts[:available_on]
       @discount = opts[:discount]
+      @unpurchasable = false
       @rusted = false
     end
 
