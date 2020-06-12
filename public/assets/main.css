@@ -1,8 +1,17 @@
 * { font-family: 'Inconsolata', monospace; }
 
+a {
+  color: currentColor;
+}
+a.game__nav:focus {
+  font-weight: bold;
+  outline: 0;
+}
+
 button {
   margin: 0.5rem 0.5rem 0 0;
 }
+
 .button, .button-link {
   font-size: 14px;
   background: whitesmoke;
@@ -16,6 +25,29 @@ button {
   text-decoration: none;
   color: initial;
   background: whitesmoke;
+}
+
+/* prevent hover effects on mobile devices */
+@media(hover: hover) and (pointer: fine) {
+  a:hover {
+    text-decoration: underline dotted;
+    opacity: 0.8;
+  }
+  a:active {
+    outline: 0;
+  }
+  .button:hover, .button-link:hover {
+    background: black;
+    border-color: gainsboro;
+    color: gainsboro;
+  }
+  .button, .button-link {
+    outline: 0;
+  }
+  .button:active, .button-link:active, .button:focus, .button-link:focus {
+    outline: 0;
+    opacity: 0.8;
+  }
 }
 
 input, select {
@@ -54,73 +86,6 @@ label.right {
 }
 .bold {
   font-weight: bold;
-}
-
-/* prevent hover effects on mobile devices */
-@media(hover: hover) and (pointer: fine) {
-  .button:hover, .button-link:hover {
-    background: black;
-    border-color: gainsboro;
-    color: gainsboro;
-  }
-  .button, .button-link {
-    outline: 0;
-  }
-  .button:active, .button-link:active, .button:focus, .button-link:focus {
-    outline: 0;
-    opacity: 0.8;
-  }
-  a.nav:hover, a.default-bg:hover, a.text:hover {
-    text-decoration: underline dotted;
-    opacity: 0.8;
-  }
-  #logo a:hover {
-    opacity: 0.8;
-  }
-  a:active {
-    outline: 0;
-  }
-  a.game__nav:hover {
-    opacity: 0.8;
-  }
-}
-
-a.nav, a.default-bg, a.text  {
-  color: currentColor;
-}
-a.nav {
-  margin: 0 1rem;
-}
-a.game__nav:focus {
-  font-weight: bold;
-  outline: 0;
-}
-
-#nav {
-  box-shadow: 0 2px 0 0 gainsboro;
-  display: flex;
-  justify-content: space-between;
-  line-height: 3rem;
-  padding: 0 1rem 0.5rem 1rem;
-}
-#logo a {
-  color: currentColor;
-  font-weight: bold;
-  text-decoration: none;
-}
-#logo__18xx {
-  display: inline-block;
-  height: 3rem;
-  text-align: center;
-  width: 2.5rem;
-}
-#logo__18xx.yellow {
-  background: url(/images/logo_polygon_yellow.svg) left/2.5rem no-repeat;
-  color: black;
-}
-#logo__18xx.red {
-  background: url(/images/logo_polygon_red.svg) left/2.5rem no-repeat;
-  color: white;
 }
 
 @media (prefers-color-scheme: dark) {

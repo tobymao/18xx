@@ -55,12 +55,11 @@ module View
         style: input_style,
         attrs: {
           id: "input_#{id}",
-          placeholder: placeholder,
           type: type,
           **attrs,
         },
       }
-      input_props[:attrs].delete(:placeholder) if placeholder == ''
+      input_props[:attrs][:placeholder] = placeholder if placeholder != ''
       input = h(el, input_props, children)
       @inputs[id] = input
       h(

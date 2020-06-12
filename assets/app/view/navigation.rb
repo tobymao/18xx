@@ -18,14 +18,32 @@ module View
         other_links << item('Login', '/login')
       end
 
-      h('div#nav', [
+      props = {
+        style: {
+          'box-shadow': '0 2px 0 0 gainsboro',
+          display: 'flex',
+          'justify-content': 'space-between',
+          'line-height': '3rem',
+          padding: '0 1rem 0.5rem 1rem',
+        },
+      }
+
+      h('div#nav', props, [
         h(Logo),
         render_other_links(other_links),
       ])
     end
 
     def item(name, href)
-      h('a.nav', { attrs: { href: href } }, name)
+      props = {
+        attrs: { 
+          href: href,
+        },
+        style: {
+          margin: '0 1rem',
+        },
+      }
+      h(:a, props, name)
     end
 
     def render_other_links(other_links)
