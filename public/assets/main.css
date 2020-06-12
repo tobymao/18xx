@@ -40,6 +40,22 @@ label.right {
   white-space: nowrap;
 }
 
+.center {
+  text-align: center;
+}
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+}
+.italic {
+  font-style: italic;
+}
+.bold {
+  font-weight: bold;
+}
+
 /* prevent hover effects on mobile devices */
 @media(hover: hover) and (pointer: fine) {
   .button:hover, .button-link:hover {
@@ -216,18 +232,20 @@ input#chatbar {
   pointer-events: none;
 }
 
+.title {
+  font-weight: bold;
+  text-align: center;
+  padding: 0.3rem;
+}
+
 .card {
   display: inline-block;
   overflow: hidden;
   vertical-align: top;
   width: 24rem;
   margin: 0.5rem 0.5rem 0 0;
+  border: 1px solid gainsboro;
   border-radius: 0.7rem;
-}
-.title {
-  font-weight: bold;
-  text-align: center;
-  padding: 0.3rem;
 }
 .card table {
   line-height: 1.25rem;
@@ -239,85 +257,12 @@ input#chatbar {
   padding: 0 0.5rem;
 }
 
-/* corporations & companies */
-.corporations__row {
-  margin-bottom: 0.5rem;
-}
-.corp__title {
-  display: grid;
-  grid: 1fr / 2rem auto;
-  align-items: center;
-  justify-items: center;
-  gap: 0 1rem;
-  padding: 0.4rem;
-}
-img.corp__herald {
-  height: 2rem;
-  width: 2rem;
-  justify-self: start;
-  border: 0.2rem solid currentColor;
-  border-radius: 0.5rem;
-}
-.corp__name {
-  color: currentColor;
-}
-
-.corp__holdings {
-  display: grid;
-  grid: 1fr / 4.5rem auto;
-  gap: 0 0.2rem;
-  padding: 0.2rem 0.5rem;
-}
-.corp__holdings * {
+.corp div {
   display: grid;
   align-self: center;
   justify-self: center;
 }
-.corp__holdings__sym {
-  font-size: 2rem;
-  font-weight: bold;
-  justify-self: start;
-}
-.corp__holdings__details {
-  grid: 1fr / 1fr 1fr auto;
-  gap: 0 0.3rem;
-}
-.corp__holdings__segment {
-  grid: 3fr 2fr / 1fr;
-}
-.corp__holdings > .value {
-  max-width: 7.5rem;
-  font-weight: bold;
-}
-.corp__holdings > .key {
-  align-self: end;
-}
-.corp__token-list {
-  grid: 1fr / auto-flow repeat(auto-fit, minmax(1.8rem, 1fr));
-  gap: 0 0.2rem;
-  padding-left: 1rem;
-}
-.corp__token {
-  grid: 3fr 2fr / 1fr;
-}
-
 table.shareholders, table.companies, table.revenue {
   margin: 0.5rem auto;
-  border-collapse: collapse; /* necessary for border under tr.market */
-}
-tr.market:not(last-child) {
-  border-bottom: 1px solid currentColor;
-}
-td.last-run {
-  font-weight: bold;
-}
-td.income, td.price, td.shares, td.value {
-  text-align: right;
-}
-td.shares {
-  padding-right: 1.5rem;
-}
-td.sold {
-  font-style: italic;
-  text-align: right;
+  border-collapse: collapse; /* necessary for borders within tables */
 }
