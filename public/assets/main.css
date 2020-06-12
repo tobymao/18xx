@@ -224,6 +224,11 @@ input#chatbar {
   margin: 0.5rem 0.5rem 0 0;
   border-radius: 0.7rem;
 }
+.title {
+  font-weight: bold;
+  text-align: center;
+  padding: 0.3rem;
+}
 .card table {
   line-height: 1.25rem;
 }
@@ -246,16 +251,15 @@ input#chatbar {
   gap: 0 1rem;
   padding: 0.4rem;
 }
-img.corp__title__herald {
+img.corp__herald {
   height: 2rem;
   width: 2rem;
   justify-self: start;
   border: 0.2rem solid currentColor;
   border-radius: 0.5rem;
 }
-.corp__title__name {
+.corp__name {
   color: currentColor;
-  font-weight: bold;
 }
 
 .corp__holdings {

@@ -8,19 +8,11 @@ module View
 
       def render
         card_style = {
-          display: 'inline-block',
-          position: 'relative',
-          border: 'solid 1px gainsboro',
-          'border-radius': '10px',
-          overflow: 'hidden',
-          padding: '0.5rem',
-          margin: '0.5rem 0.5rem 0 0',
-          width: '320px',
-          'vertical-align': 'top',
+          border: '1px solid gainsboro',
         }
 
         if @game.round.can_act?(@player)
-          card_style['border'] = 'solid 1px black'
+          card_style['border'] = '1px solid black'
           card_style['background-color'] = '#dfd'
           card_style['color'] = 'black'
         end
@@ -32,20 +24,16 @@ module View
 
         divs << render_companies if @player.companies.any?
 
-        h(:div, { style: card_style }, divs)
+        h('div.player.card', { style: card_style }, divs)
       end
 
       def render_title
         title_style = {
-          'background-color': @game.round.can_act?(@player) ? '#9b9' : 'lightgray',
-          'text-align': 'center',
+          'background-color': @game.round.can_act?(@player) ? '#9b9' : 'gainsboro',
           color: 'black',
-          padding: '0.5rem 0px',
-          'font-weight': 'bold',
-          margin: '-0.5rem -0.5rem 0 -0.5rem',
         }
 
-        h(:div, { style: title_style }, @player.name)
+        h('div.player.title', { style: title_style }, @player.name)
       end
 
       def render_body
@@ -78,51 +66,45 @@ module View
           },
         }
 
-        td_props = {
-          style: {
-            padding: '0 0.5rem',
-          },
-        }
-
         td_cert_props = {
           style: {
-            padding: '0 0.5rem',
             color: num_certs > cert_limit ? 'red' : 'currentColor',
+            'text-align': 'right',
           },
         }
 
         trs = [
           h(:tr, [
-            h(:td, td_props, 'Cash'),
-            h(:td, td_props, @game.format_currency(@player.cash)),
+            h(:td, 'Cash'),
+            h('td.value', @game.format_currency(@player.cash)),
           ]),
         ]
 
         if @game.round.auction?
           trs.concat([
             h(:tr, [
-              h(:td, td_props, 'Committed'),
-              h(:td, td_props, @game.format_currency(@game.round.committed_cash(@player))),
+              h(:td, 'Committed'),
+              h('td.value', @game.format_currency(@game.round.committed_cash(@player))),
             ]),
             h(:tr, [
-              h(:td, td_props, 'Available'),
-              h(:td, td_props, @game.format_currency(@player.cash - @game.round.committed_cash(@player))),
+              h(:td, 'Available'),
+              h('td.value', @game.format_currency(@player.cash - @game.round.committed_cash(@player))),
             ]),
           ])
         end
 
         trs.concat([
           h(:tr, [
-            h(:td, td_props, 'Value'),
-            h(:td, td_props, @game.format_currency(@player.value)),
+            h(:td, 'Value'),
+            h('td.value', @game.format_currency(@player.value)),
           ]),
           h(:tr, [
-            h(:td, td_props, 'Liquidity'),
-            h(:td, td_props, @game.format_currency(@game.liquidity(@player))),
+            h(:td, 'Liquidity'),
+            h('td.value', @game.format_currency(@game.liquidity(@player))),
           ]),
           h(:tr, [
-            h(:td, td_props, 'Certs'),
-            h(:td, td_cert_props, "#{num_certs}/#{cert_limit}"),
+            h(:td, 'Certs'),
+            h('td.value', td_cert_props, "#{num_certs}/#{cert_limit}"),
           ]),
         ])
 
@@ -242,22 +224,20 @@ module View
       def render_company(company)
         name_props = {
           style: {
-            'text-align': 'center',
-            overflow: 'hidden',
-            'white-space': 'nowrap',
-            'text-overflow': 'ellipsis',
             'max-width': '200px',
+            'text-align': 'left',
           },
         }
 
         td_props = {
           style: {
             padding: '0 0.5rem',
+            'text-align': 'right',
           },
         }
 
         h(:tr, [
-          h(:td, name_props, company.name),
+          h('td.company.nowrap', name_props, company.name),
           h(:td, td_props, @game.format_currency(company.value)),
           h(:td, td_props, @game.format_currency(company.revenue)),
         ])

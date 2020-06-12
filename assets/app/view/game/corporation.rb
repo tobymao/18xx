@@ -42,7 +42,7 @@ module View
           children << h('table.revenue', [h(:tr, subchildren)])
         end
 
-        h('div.corporation.card', { style: card_style, on: { click: onclick } }, children)
+        h('div.corp.card', { style: card_style, on: { click: onclick } }, children)
       end
 
       def render_title
@@ -57,8 +57,8 @@ module View
         }
 
         h('div.corp__title', title_row_props, [
-          h('img.corp__title__herald', token_props),
-          h('div.corp__title__name', @corporation.full_name),
+          h('img.corp__herald', token_props),
+          h('div.corp__name.title', @corporation.full_name),
         ])
       end
 
