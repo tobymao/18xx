@@ -13,22 +13,9 @@ require_relative 'config/tile'
 module Engine
   class Tile
     include Config::Tile
-    # * [t]own       - [r]evenue, local_[id] (default: 0)
-    # * [c]ity       - [r]evenue, local_[id] (default: 0), [s]lots (default 1)
-    # * [o]ffboard   - [r]evenues for different phases (separated by "|")
-    # *    [g]roups     - identifier to determine a group of related nodes, like large offboards
-    #                     array separated by "|"
-    # *    [r]evenue    - number, list of numbers separated by "|", or something like
-    #                     yellow_30|brown_60|diesel_100
-    # *    [h]ide       - hide the revenue label if present: 1
-    # * [p]ath       - endpoints [a] and [b]; the endpoints can be an edge number,
-    #                  town/city/offboard reference, or a lawson-style [j]unction
-    # * [l]abel      - large letters on tile
-    # * [u]pgrade    - [c]ost, [t]errain (multiple terrain types separated by "+"),
-    # * [b]order     - [e]dge
 
     attr_accessor :hex, :legal_rotations, :location_name, :name, :index
-    attr_reader :borders, :cities, :color, :edges, :junctions, :label, :nodes,
+    attr_reader :borders, :cities, :color, :edges, :junction, :label, :nodes,
                 :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers
 
     def self.for(name, **opts)
@@ -58,6 +45,7 @@ module Engine
 
       code.split(';').map do |part_code|
         type, params = part_code.split('=')
+        params ||= ''
 
         params = params.split(',').map { |param| param.split(':') }.to_h if params.include?(':')
 
@@ -71,41 +59,43 @@ module Engine
 
     def self.part(type, params, cache)
       case type
-      when 'p'
+      when 'path'
         params = params.map do |k, v|
           case v[0]
           when '_'
             [k, cache[v[1..-1].to_i]]
-          when 'j'
-            [k, Part::Junction.new]
           else
             [k, Part::Edge.new(v)]
           end
         end.to_h
 
         Part::Path.new(params['a'], params['b'])
-      when 'c'
-        city = Part::City.new(params['r'], params.fetch('s', 1), params['g'], params['h'])
+      when 'city'
+        city = Part::City.new(params['revenue'], params.fetch('slots', 1), params['groups'], params['hide'])
         cache << city
         city
-      when 't'
-        town = Part::Town.new(params['r'], params['g'], params['h'])
+      when 'town'
+        town = Part::Town.new(params['revenue'], params['groups'], params['hide'])
         cache << town
         town
-      when 'o'
-        offboard = Part::Offboard.new(params['r'], params['g'], params['h'])
+      when 'offboard'
+        offboard = Part::Offboard.new(params['revenue'], params['groups'], params['hide'])
         cache << offboard
         offboard
-      when 'l'
+      when 'label'
         label = Part::Label.new(params)
         cache << label
         label
-      when 'u'
-        upgrade = Part::Upgrade.new(params['c'], params['t']&.split('+'))
+      when 'upgrade'
+        upgrade = Part::Upgrade.new(params['cost'], params['terrain']&.split('|'))
         cache << upgrade
         upgrade
-      when 'b'
-        Part::Border.new(params['e'])
+      when 'border'
+        Part::Border.new(params['edge'])
+      when 'junction'
+        junction = Part::Junction.new
+        cache << junction
+        junction
       end
     end
 
@@ -125,7 +115,7 @@ module Engine
       @nodes = nil
       @stops = nil
       @edges = nil
-      @junctions = nil
+      @junction = nil
       @location_name = location_name
       @legal_rotations = []
       @blockers = []
@@ -170,7 +160,7 @@ module Engine
 
     def lawson?
       @lawson ||=
-        @junctions.any? ||
+        !!@junction ||
         (@cities.one? && @towns.empty?) ||
         ((cities.empty? && towns.one?) && edges.size > 2)
     end
@@ -296,6 +286,8 @@ module Engine
           @offboards << part
         elsif part.border?
           @borders << part
+        elsif part.junction?
+          @junction = part
         else
           raise "Part #{part} not separated."
         end
@@ -310,7 +302,6 @@ module Engine
 
       @nodes = @paths.map(&:node).compact.uniq
       @branches = @paths.map(&:branch).compact.uniq
-      @junctions = @paths.map(&:junction).compact.uniq
       @stops = @paths.map(&:stop).compact.uniq
       @edges = @paths.flat_map(&:edges).compact.uniq
     end

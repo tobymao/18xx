@@ -3,6 +3,7 @@
 module Engine
   class ShareBundle
     attr_reader :shares, :percent
+    attr_accessor :share_price
 
     def initialize(shares, percent = nil)
       shares = Array(shares)
@@ -10,6 +11,7 @@ module Engine
 
       @shares = shares
       @percent = percent || @shares.sum(&:percent)
+      @share_price = nil
     end
 
     def num_shares
@@ -37,7 +39,7 @@ module Engine
     end
 
     def price_per_share
-      @shares.first.price_per_share
+      @share_price || @shares.first.price_per_share
     end
 
     def price

@@ -42,12 +42,12 @@ module Engine
           ability[:count] ||= 0
           ability[:count] -= 1
           company.remove_ability(:tile_lay) unless ability[:count].positive?
-        when Action::BuyShare
+        when Action::BuyShares
           owner = company.owner
-          share = action.share
-          raise GameError, 'Exchanging company would exceed limits' unless can_gain?(share, owner)
+          bundle = action.bundle
+          raise GameError, 'Exchanging company would exceed limits' unless can_gain?(bundle, owner)
 
-          @game.share_pool.buy_share(owner, share, exchange: company)
+          @game.share_pool.buy_shares(owner, bundle, exchange: company)
           company.close!
         end
       end

@@ -11,6 +11,7 @@ module View
     include GameManager
 
     needs :user
+    needs :refreshing, default: nil, store: true
 
     def render
       children = [
@@ -48,12 +49,11 @@ module View
       render_row(children, 'Active Games', grouped['active'], :active)
       render_row(children, 'Finished Games', grouped['finished'], :finished)
 
-      @connection.subscribe('/games') do |data|
-        update_game(data)
-      end
+      game_refresh
 
       destroy = lambda do
-        @connection.unsubscribe('/games')
+        `clearTimeout(#{@refreshing})`
+        store(:refreshing, nil, skip: true)
       end
 
       props = {
@@ -64,6 +64,20 @@ module View
       }
 
       h(:div, props, children)
+    end
+
+    def game_refresh
+      return unless @user
+      return if @refreshing
+
+      timeout = %x{
+        setTimeout(function(){
+          self['$get_games']()
+          self['$store']('refreshing', nil, Opal.hash({skip: true}))
+        }, 10000)
+      }
+
+      store(:refreshing, timeout, skip: true)
     end
 
     def render_row(children, header, games, type)

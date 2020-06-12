@@ -36,6 +36,13 @@ describe 'Assets' do
       expect(x2_x3).to include('X2')
       expect(x2_x3).to include('X3')
 
+      aggregate_failures 'location name for all stop types' do
+        with_loc_names = render(app_route: '/tiles/18Chesapeake/B2+H6+K3')
+        %w[B2 Pittsburgh H6 Baltimore K3 Trenton Amboy D&amp;R].each do |str|
+          expect(with_loc_names).to include(str)
+        end
+      end
+
       multiple_games = render(app_route: '/tiles/1889+18Chesapeake')
       expect(multiple_games).to include('Kouchi')
       expect(multiple_games).to include('Delmarva')
@@ -117,7 +124,7 @@ describe 'Assets' do
       expect(render(app_route: '/game/1#corporations', **needs)).to include('Awa Railroad')
       expect(render(app_route: '/game/1#map', **needs)).to include('Kotohira')
       expect(render(app_route: '/game/1#market', **needs)).to include('Bank Cash')
-      expect(render(app_route: '/game/1#trains', **needs)).to include('Upcoming')
+      expect(render(app_route: '/game/1#info', **needs)).to include('Upcoming')
       expect(render(app_route: '/game/1#tiles', **needs)).to include('492')
       expect(render(app_route: '/game/1#companies', **needs)).to include('Companies')
       expect(render(app_route: '/game/1#spreadsheet', **needs)).to include('Worth')

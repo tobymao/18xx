@@ -23,7 +23,7 @@ module View
 
       tile ||= Engine::Tile.for(name)
 
-      loc_name = location_name || tile.location_name if tile.stops.any?
+      loc_name = location_name || tile.location_name if (tile.cities + tile.towns + tile.offboards).any?
 
       rotations = [0] if tile.preprinted || !rotations
 

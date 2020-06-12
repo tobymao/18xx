@@ -1,5 +1,8 @@
 # Development
 
+See [`TILES.md`](/TILES.md) for some details and useful routes for tile
+development.
+
 ### Droplet configuration
 
 If configuring the droplet from scratch, these are the requirements:
@@ -8,38 +11,6 @@ If configuring the droplet from scratch, these are the requirements:
 * `docker-compose`
 * `make`
 * this repo (via `git clone`)
-
-### Anatomy of a Tile
-
-![Anatomy of a Tile](/public/images/tile_anatomy_flat.png?raw=true "Anatomy of a Flat Tile")
-
-
-![Anatomy of a Tile](/public/images/tile_anatomy_pointy.png?raw=true "Anatomy of a Pointy Tile")
-
-### Development Routes
-
-Some app routes that may be of interest to developers:
-
-* `/map/<game_title>` - renders the given game's map
-* `/tiles/all` - renders all of the track tiles (and generic map hex "tiles")
-  defined in `lib/engine/tile.rb`
-* `/tiles/<game_title>` - renders all of the track tiles (and map hex "tiles")
-  for the given game. Multiple game titles can be given, separated by `+`.
-* `/tiles/<tile_name>` - renders a single tile at large scale (tile must be
-  defined in `lib/engine/tile.rb`)
-* `/tiles/<game_title>/<hex_coord_or_tile_name>` - renders a single hex or tile
-  the given game at large scale. Multiple hex coords or tile names can be given,
-  separated by `+`.
-
-Optional URL params for above routes:
-
-* `r=<rotation(s)>` - specify the rotation with an `Integer`, multiple rotations
-    with `+`-separated `Integer`s, or `all` to see all 6. Preprinted tiles are
-    not rotated. This param is ignored at `/tiles/all`.
-* `n=<location_name>` - specify a location name to render for tiles that have at
-    least one stop. Preprinted tiles with location names are not
-    overridden. This param is ignored at `/tiles/all`.
-* `grid` - show the triangular grid on the hexes to identify regions on the tile
 
 ### Docker
 
@@ -106,3 +77,10 @@ Compose documentation:
 #### Before filing a pull request
 
 Run `docker-compose exec rack rake` while a docker instance is running to run rubocop (to ensure your changes meet the project's code style guidelines) as well as the test suite.
+
+#### Profiling the code
+
+Run `docker-compose exec rack rake stackprof[spec/fixtures/18_chesapeake/1277.json]` (or other file) to load and process the json file 1000 times. This will generate a stackprof.dump which can be further analyzed
+
+stackprof --d3-flamegraph stackprof.dump >stackprof.html
+stackprof stackprof.dump

@@ -11,19 +11,13 @@ module View
       needs :tile_selector, store: true
 
       def render
-        style = {
-          position: 'absolute',
-          left: @tile_selector.x,
-          top: @tile_selector.y,
-        }
-
         confirm = {
           props: { innerHTML: '☑' },
           style: {
             position: 'absolute',
             cursor: 'pointer',
-            left: '75px',
-            top: '40px',
+            left: '-26px',
+            top: '-50px',
             color: 'black',
             'font-size': '35px',
           },
@@ -31,19 +25,19 @@ module View
         }
 
         delete = {
-          props: { innerHTML: '⌫' },
+          props: { innerHTML: '☒' },
           style: {
             position: 'absolute',
             cursor: 'pointer',
-            left: '103px',
-            top: '44px',
+            left: '6px',
+            top: '-50px',
             color: 'black',
             'font-size': '35px',
           },
           on: { click: -> { store(:tile_selector, nil) } },
         }
 
-        h(:div, { style: style }, [
+        h(:div, [
           h(:div, confirm),
           h(:div, delete),
         ])

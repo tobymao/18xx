@@ -86,12 +86,12 @@ module Engine
     "X00": {
       "count": 1,
       "color": "yellow",
-      "code": "c=r:30;p=a:1,b:_0;p=a:3,b:_0;p=a:5,b:_0;l=B"
+      "code": "city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=B"
     },
     "X30": {
       "count": 1,
       "color": "gray",
-      "code": "c=r:100,s:4;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=NY"
+      "code": "city=revenue:100,slots:4;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY"
     }
   },
   "market": [
@@ -448,25 +448,25 @@ module Engine
   ],
   "hexes": {
     "red": {
-      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:5,b:_0;p=a:0,b:_0": [
+      "offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:5,b:_0;path=a:0,b:_0": [
         "A20"
       ],
-      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:0,b:_0": [
+      "offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:0,b:_0": [
         "A28"
       ],
-      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:4,b:_0;p=a:5,b:_0": [
+      "offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:4,b:_0;path=a:5,b:_0": [
         "D1"
       ],
-      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0": [
+      "offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
         "H1"
       ],
-      "o=r:yellow_20|green_30|brown_50|gray_60;p=a:2,b:_0;p=a:3,b:_0": [
+      "offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:2,b:_0;path=a:3,b:_0": [
         "J7",
         "J15"
       ]
     },
     "white": {
-      "city": [
+      "city=revenue:0": [
         "B5",
         "B17",
         "C14",
@@ -476,19 +476,19 @@ module Engine
         "F19",
         "I16"
       ],
-      "c=r:0;u=c:20,t:water": [
+      "city=revenue:0;upgrade=cost:20,terrain:water": [
         "D7"
       ],
-      "c=r:0;u=c:15,t:mountain": [
+      "city=revenue:0;upgrade=cost:15,terrain:mountain": [
         "D19",
         "I12"
       ],
-      "c=r:0;u=c:10,t:water": [
+      "city=revenue:0;upgrade=cost:10,terrain:water": [
         "G6",
         "H3",
         "H9"
       ],
-      "u=c:15,t:mountain": [
+      "upgrade=cost:15,terrain:mountain": [
         "B25",
         "C20",
         "C24",
@@ -503,7 +503,7 @@ module Engine
         "I8",
         "I10"
       ],
-      "u=c:10,t:water": [
+      "upgrade=cost:10,terrain:water": [
         "D13",
         "E12",
         "F11",
@@ -511,7 +511,7 @@ module Engine
         "G10",
         "H7"
       ],
-      "u=c:20,t:water": [
+      "upgrade=cost:20,terrain:water": [
         "B9",
         "B27",
         "D25",
@@ -519,7 +519,7 @@ module Engine
         "G20",
         "H17"
       ],
-      "blank": [
+      "": [
         "B3",
         "B7",
         "B11",
@@ -562,32 +562,32 @@ module Engine
       ]
     },
     "gray": {
-      "t=r:yellow_20|green_30|brown_40;p=a:1,b:_0;p=a:4,b:_0;p=a:5,b:_0": [
+      "town=revenue:yellow_20|green_30|brown_40;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
         "B13"
       ],
-      "c=r:yellow_30|green_40|brown_50|gray_60,s:2;p=a:5,b:_0;p=a:0,b:_0": [
+      "city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:5,b:_0;path=a:0,b:_0": [
         "D9"
       ],
-      "p=a:4,b:j;p=a:3,b:j;p=a:5,b:j": [
+      "junction;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0": [
         "F1"
       ]
     },
     "yellow": {
-      "c=r:30;p=a:4,b:_0;p=a:0,b:_0;l=B;u=c:20,t:water": [
+      "city=revenue:30;path=a:4,b:_0;path=a:0,b:_0;label=B;upgrade=cost:20,terrain:water": [
         "C8"
       ],
-      "c=r:30;p=a:3,b:_0;p=a:5,b:_0;l=B": [
+      "city=revenue:30;path=a:3,b:_0;path=a:5,b:_0;label=B": [
         "C26"
       ],
-      "c=r:40;c=r:40;p=a:3,b:_0;p=a:0,b:_0;l=NY;u=c:20,t:water": [
+      "city=revenue:40;city=revenue:40;path=a:3,b:_0;path=a:0,b:_0;label=NY;upgrade=cost:20,terrain:water": [
         "E22"
       ],
-      "c=r:30;p=a:4,b:_0;p=a:0,b:_0;l=B": [
+      "city=revenue:30;path=a:4,b:_0;path=a:0,b:_0;label=B": [
         "G18"
       ]
     },
     "blue": {
-      "blank": [
+      "": [
         "C12"
       ]
     }

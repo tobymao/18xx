@@ -104,12 +104,12 @@ module Engine
     "R1": {
       "count": 1,
       "color": "green",
-      "code": "c=r:60;c=r:60;p=a:0,b:_0;p=a:_0,b:1;p=a:2,b:_1;p=a:_1,b:3;l=R"
+      "code": "city=revenue:60;city=revenue:60;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=R"
     },
     "R2": {
       "count": 1,
       "color": "brown",
-      "code": "c=r:70,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;l=R"
+      "code": "city=revenue:70,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=R"
     }
   },
   "market": [
@@ -400,24 +400,24 @@ module Engine
   ],
   "hexes": {
     "red": {
-      "o=r:yellow_40|brown_80;p=a:4,b:_0;p=a:5,b:_0": [
+      "offboard=revenue:yellow_40|brown_80;path=a:4,b:_0;path=a:5,b:_0": [
         "A9"
       ],
-      "o=r:yellow_30|brown_60;p=a:0,b:_0;p=a:5,b:_0": [
+      "offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;path=a:5,b:_0": [
         "B2"
       ],
-      "o=r:yellow_30|brown_30;p=a:3,b:_0": [
+      "offboard=revenue:yellow_30|brown_30;path=a:3,b:_0": [
         "K15"
       ],
-      "o=r:yellow_40|brown_50;p=a:0,b:_0;p=a:1,b:_0": [
+      "offboard=revenue:yellow_40|brown_50;path=a:0,b:_0;path=a:1,b:_0": [
         "L2"
       ],
-      "o=r:yellow_30|brown_40;p=a:1,b:_0;p=a:2,b:_0": [
+      "offboard=revenue:yellow_30|brown_40;path=a:1,b:_0;path=a:2,b:_0": [
         "M9"
       ]
     },
     "white": {
-      "blank": [
+      "": [
         "B4",
         "B6",
         "B8",
@@ -454,7 +454,7 @@ module Engine
         "L4",
         "L8"
       ],
-      "city": [
+      "city=revenue:0": [
         "C3",
         "C7",
         "C11",
@@ -469,65 +469,65 @@ module Engine
         "K7",
         "L10"
       ],
-      "t=r:0;u=c:40,t:mountain": [
+      "town=revenue:0;upgrade=cost:40,terrain:mountain": [
         "C13"
       ],
-      "town": [
+      "town=revenue:0": [
         "D6",
         "L12"
       ],
-      "t=r:0;t=r:0": [
+      "town=revenue:0;town=revenue:0": [
         "H6",
         "I11",
         "K9"
       ]
     },
     "gray": {
-      "c=r:40;p=a:4,b:_0;p=a:_0,b:5": [
+      "city=revenue:40;path=a:4,b:_0;path=a:_0,b:5": [
         "B12"
       ],
-      "c=r:30;p=a:2,b:_0;p=a:_0,b:4": [
+      "city=revenue:30;path=a:2,b:_0;path=a:_0,b:4": [
         "F14"
       ],
-      "p=a:0,b:1": [
+      "path=a:0,b:1": [
         "G3"
       ],
-      "c=r:30;p=a:0,b:_0;p=a:1,b:_0": [
+      "city=revenue:30;path=a:0,b:_0;path=a:1,b:_0": [
         "H4"
       ],
-      "p=a:3,b:4": [
+      "path=a:3,b:4": [
         "H14"
       ],
-      "t=r:10;p=a:0,b:_0;p=a:_0,b:4": [
+      "town=revenue:10;path=a:0,b:_0;path=a:_0,b:4": [
         "I3"
       ],
-      "p=a:2,b:4": [
+      "path=a:2,b:4": [
         "J14"
       ],
-      "t=r:10;p=a:0,b:_0;p=a:_0,b:1": [
+      "town=revenue:10;path=a:0,b:_0;path=a:_0,b:1": [
         "K1"
       ],
-      "t=r:10;p=a:2,b:_0;p=a:_0,b:3": [
+      "town=revenue:10;path=a:2,b:_0;path=a:_0,b:3": [
         "L14"
       ],
-      "c=r:20;p=a:2,b:_0": [
+      "city=revenue:20;path=a:2,b:_0": [
         "M11"
       ]
     },
     "yellow": {
-      "c=r:0;c=r:0;l=OO": [
+      "city=revenue:0;city=revenue:0;label=OO": [
         "E5",
         "K13"
       ],
-      "c=r:40;c=r:40;p=a:1,b:_0;p=a:4,b:_1;l=R": [
+      "city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:4,b:_1;label=R": [
         "J10"
       ],
-      "p=a:1,b:3": [
+      "path=a:1,b:3": [
         "L6"
       ]
     },
     "blue": {
-      "o=r:yellow_20|brown_30;p=a:0,b:_0;p=a:1,b:_0": [
+      "offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:1,b:_0": [
         "F2"
       ]
     }

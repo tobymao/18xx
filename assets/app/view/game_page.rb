@@ -13,6 +13,7 @@ module View
     needs :app_route, store: true
     needs :user
     needs :disable_user_errors
+    needs :connected, default: false, store: true
 
     def render_broken_game(e)
       inner = [h(:div, "We're sorry this game cannot be continued due to #{e}")]
@@ -79,8 +80,8 @@ module View
           h(Game::Companies, game: @game, user: @user)
         when 'corporations'
           h(Game::Corporations, game: @game, user: @user)
-        when 'trains'
-          h(Game::TrainAndPhaseRoster, game: @game)
+        when 'info'
+          h(Game::GameInfo, game: @game)
         when 'players'
           h(Game::Players, game: @game)
         when 'spreadsheet'
@@ -105,11 +106,14 @@ module View
             store(:game, @game.clone(new_data['actions']))
           end
         end
-      end
+      end unless @connected
+
+      store(:connected, true, skip: true)
 
       destroy = lambda do
         @connection&.unsubscribe(game_path)
         store(:selected_company, nil, skip: true)
+        store(:connected, false, skip: true)
       end
 
       render_title
@@ -159,7 +163,7 @@ module View
         tab_button('Corporations', '#corporations'),
         tab_button('Map', '#map'),
         tab_button('Market', '#market'),
-        tab_button('Trains/Phases', '#trains'),
+        tab_button('Info', '#info'),
         tab_button('Tiles', '#tiles'),
       ]
 

@@ -4,7 +4,7 @@ require 'lib/color'
 
 module View
   module Game
-    class TrainAndPhaseRoster < Snabberb::Component
+    class GameInfo < Snabberb::Component
       needs :game
 
       def render
@@ -19,7 +19,7 @@ module View
       end
 
       def render_body
-        children = [h(:div, [cert_limit, upcoming_trains])]
+        children = [h(:div, [upcoming_trains])]
 
         unless @depot.discarded.empty?
           props = {
@@ -34,17 +34,31 @@ module View
         end
 
         children << phases
+        children << game_info
 
         h(:div, {}, children)
       end
 
-      def cert_limit
-        cert_props = {
+      def game_info
+        props = {
           style: {
-            'margin-bottom': '1rem',
+            'margin-top': '1rem',
           },
         }
-        h(:div, cert_props, "Certificate limit: #{@game.cert_limit}")
+        children = []
+
+        if (publisher = @game.class::GAME_PUBLISHER)
+          children << h(:div, props, [
+              "#{@game.class.title} is used with kind permission from ",
+              h(:a, { attrs: { href: publisher[:url] } }, publisher[:name]),
+            ])
+        end
+        children << h(:div, props, "Designed by #{@game.class::GAME_DESIGNER}") if @game.class::GAME_DESIGNER
+        if @game.class::GAME_RULES_URL
+          children << h(:div, props, [h(:a, { attrs: { href: @game.class::GAME_RULES_URL } }, 'Rules')])
+        end
+
+        h(:div, children)
       end
 
       def phases

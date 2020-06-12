@@ -14,9 +14,10 @@ module Engine
     include ShareHolder
     include Spender
 
-    attr_accessor :ipoed, :par_price, :rusted_self, :share_price, :tokens
+    attr_accessor :ipoed, :rusted_self, :share_price, :tokens
     attr_reader :capitalization, :color, :companies, :coordinates, :min_price, :name, :full_name,
                 :logo, :text_color, :trains, :operating_history
+    attr_writer :par_price
 
     def initialize(sym:, name:, tokens:, **opts)
       @name = sym
@@ -45,6 +46,7 @@ module Engine
       @logo = "/logos/#{opts[:logo]}.svg"
       @color = opts[:color]
       @text_color = opts[:text_color] || '#ffffff'
+      @always_market_price = opts[:always_market_price] || false
     end
 
     def <=>(other)
@@ -59,6 +61,22 @@ module Engine
       # if no share price, like when you exchange a share pre-ipo
       # it still counts
       @share_price ? @share_price.counts_for_limit : true
+    end
+
+    def par_price
+      @always_market_price ? @share_price : @par_price
+    end
+
+    def num_ipo_shares
+      num_shares_of(self)
+    end
+
+    def num_player_shares
+      share_holders.values.sum / 10
+    end
+
+    def num_market_shares
+      10 - num_ipo_shares - num_player_shares
     end
 
     def next_token

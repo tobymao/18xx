@@ -61,11 +61,11 @@ module View
           pool_share = @round.share_pool.shares_by_corporation[@selected_corporation]&.first
 
           buy_ipo = lambda do
-            process_action(Engine::Action::BuyShare.new(@current_entity, ipo_share))
+            process_action(Engine::Action::BuyShares.new(@current_entity, ipo_share))
           end
 
           buy_pool = lambda do
-            process_action(Engine::Action::BuyShare.new(@current_entity, pool_share))
+            process_action(Engine::Action::BuyShares.new(@current_entity, pool_share))
           end
 
           children = []
@@ -85,7 +85,7 @@ module View
             end
             exchangable.each do |company|
               exchange = lambda do
-                process_action(Engine::Action::BuyShare.new(company, ipo_share))
+                process_action(Engine::Action::BuyShares.new(company, ipo_share))
               end
               children << if company.owner == @current_entity
                             h('button.button', { on: { click: exchange } },

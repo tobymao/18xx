@@ -18,16 +18,16 @@ module Engine
       'Sharepool'
     end
 
-    def buy_share(entity, share, exchange: nil)
-      raise GameError, 'Cannot buy share from player' if share.owner.player?
+    def buy_shares(entity, shares, exchange: nil)
+      bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
+      raise GameError, 'Cannot buy share from player' if shares.owner.player?
 
-      share = ShareBundle.new(share)
-      corporation = share.corporation
+      corporation = bundle.corporation
       ipoed = corporation.ipoed
       floated = corporation.floated?
 
-      corporation.ipoed = true if share.presidents_share
-      price = share.price
+      corporation.ipoed = true if bundle.presidents_share
+      price = bundle.price
       par_price = corporation.par_price&.price
 
       if ipoed != corporation.ipoed
@@ -35,7 +35,7 @@ module Engine
                 "#{@game.format_currency(par_price)}"
       end
 
-      share_str = "a #{share.percent}% share of #{corporation.name}"
+      share_str = "a #{bundle.percent}% share of #{corporation.name}"
       incremental = corporation.capitalization == :incremental
 
       if exchange
@@ -45,17 +45,18 @@ module Engine
         when Company
           @log << "#{entity.name} exchanges #{exchange.name} for #{share_str}"
         end
-        transfer_shares(share, entity)
+        transfer_shares(bundle, entity)
       else
         @log << "#{entity.name} buys #{share_str} "\
-          "from #{share.owner.corporation? ? 'the IPO' : 'the market'} "\
+          "from #{bundle.owner.corporation? ? 'the IPO' : 'the market'} "\
           "for #{@game.format_currency(price)}"
 
-        if incremental
-          transfer_shares(share, entity, spender: entity, receiver: share.owner)
-        else
-          transfer_shares(share, entity, spender: entity, receiver: @bank)
-        end
+        transfer_shares(
+          bundle,
+          entity,
+          spender: entity,
+          receiver: incremental && bundle.owner.corporation? ? bundle.owner : @bank,
+        )
       end
 
       return if floated == corporation.floated?
@@ -72,7 +73,9 @@ module Engine
       entity = bundle.owner
       num_shares = bundle.num_shares
 
-      @log << "#{entity.name} sells #{num_shares} share#{num_shares > 1 ? 's' : ''} " \
+      verb = entity.corporation? ? 'issues' : 'sells'
+
+      @log << "#{entity.name} #{verb} #{num_shares} share#{num_shares > 1 ? 's' : ''} " \
         "#{bundle.corporation.name} and receives #{@game.format_currency(bundle.price)}"
 
       transfer_shares(bundle, self, spender: @bank, receiver: entity)

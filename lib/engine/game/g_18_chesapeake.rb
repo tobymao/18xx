@@ -2,6 +2,7 @@
 
 require_relative '../config/game/g_18_chesapeake'
 require_relative 'base'
+require_relative '../publisher'
 
 module Engine
   module Game
@@ -17,6 +18,11 @@ module Engine
       load_from_json(Config::Game::G18Chesapeake::JSON)
 
       DEV_STAGE = :beta
+
+      GAME_LOCATION = nil
+      GAME_RULES_URL = 'https://www.dropbox.com/s/e38xzaf14meb2tw/18Chesapeake_Rules.pdf'
+      GAME_DESIGNER = 'Scott Petersen'
+      GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
 
       def action_processed(action)
         case action

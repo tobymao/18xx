@@ -12,6 +12,7 @@ module View
         base.needs :flash_opts, default: {}, store: true
         base.needs :connection, store: true, default: nil
         base.needs :user, store: true, default: nil
+        base.needs :tile_selector, default: nil, store: true
       end
 
       def process_action(action)
@@ -62,6 +63,7 @@ module View
         end
 
         store(:game, game)
+        store(:tile_selector, nil, skip: true)
       rescue StandardError => e
         store(:game, @game.clone(@game.actions), skip: true)
         store(:flash_opts, e.message)
