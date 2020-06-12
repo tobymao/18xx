@@ -27,12 +27,12 @@ module Engine
 
         @corporations.each_with_index do |corporation, index|
           index -= 4 if index > 3
+          puts index
+          @stock_market.set_par(corporation, @stock_market.par_prices[3 - index])
 
-          @stock_market.set_par(corporation, @stock_market.par_prices[index - 3])
-
-          @log << "#{corporation.name} is set to par #{@stock_market.par_prices[index - 3].price}"
-          corporation.tokens.pop(1) if index - 3 == 1 || index - 3 == 2
-          corporation.tokens.pop(2) if index - 3 == 0
+          @log << "#{corporation.name} is set to par #{@stock_market.par_prices[3 - index].price}"
+          corporation.tokens.pop(1) if index  == 1 || index == 2
+          corporation.tokens.pop(2) if index  == 3
         end
 
         @corporations.sort_by! { |corporation| -corporation.par_price.price }
