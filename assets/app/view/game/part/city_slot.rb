@@ -47,7 +47,7 @@ module View
           return unless @game.round.can_place_token?
 
           # If there's a choice of tokens from different corps show the selector, otherwise just place
-          token_types = @game.current_entity.tokens.reject(&:used).group_by(&:corporation)
+          token_types = @game.current_entity.tokens.reject(&:used?).group_by(&:corporation)
           if token_types.size == 1
             action = Engine::Action::PlaceToken.new(
               @game.current_entity,
