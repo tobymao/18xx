@@ -60,7 +60,6 @@ module View
           **attrs,
         },
       }
-      input_props[:attrs].delete(:placeholder) if placeholder == ''
       input = h(el, input_props, children)
       @inputs[id] = input
       h(
