@@ -411,7 +411,6 @@ module Engine
         payout_entity(@share_pool, per_share, @current_entity)
 
         jumps = [(revenue / current_entity.share_price.price).floor, @game.class::MAX_JUMPS]
-        puts jumps
         change_share_price(:right, jumps.min)
       end
 
