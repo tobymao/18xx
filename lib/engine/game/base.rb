@@ -65,6 +65,8 @@ module Engine
 
       MUST_SELL_IN_BLOCKS = false
 
+      MAX_JUMPS = 1
+
       # when can a share holder sell shares
       # first           -- after first stock round
       # operate         -- after operation
@@ -186,6 +188,7 @@ module Engine
         const_set(:CORPORATIONS, data['corporations'])
         const_set(:HEXES, data['hexes'])
         const_set(:LAYOUT, data['layout'].to_sym)
+        const_set(:MAX_JUMPS, data['maxJumps']) if data['maxJumps']
       end
 
       def initialize(names, id: 0, actions: [], pin: nil, strict: false)

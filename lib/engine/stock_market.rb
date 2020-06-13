@@ -23,14 +23,15 @@ module Engine
       corporation.par_price = share_price
     end
 
-    def move_right(corporation)
+    def move_right(corporation, jumps)
       r, c = corporation.share_price.coordinates
-
-      if c + 1 < @market[r].size
-        c += 1
-        move(corporation, r, c)
-      else
-        move_up(corporation)
+      jumps.times do
+        if c + 1 < @market[r].size
+          c += 1
+          move(corporation, r, c)
+        else
+          move_up(corporation)
+        end
       end
     end
 

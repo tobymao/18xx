@@ -409,7 +409,9 @@ module Engine
           payout_entity(player, per_share)
         end
         payout_entity(@share_pool, per_share, @current_entity)
-        change_share_price(:right)
+
+        jumps = [(revenue / current_entity.share_price.price).floor, @game.class::MAX_JUMPS]
+        change_share_price(:right, jumps.min)
       end
 
       def payout_entity(holder, per_share, receiver = nil)
@@ -425,14 +427,14 @@ module Engine
         @bank.spend(amount, receiver)
       end
 
-      def change_share_price(direction)
+      def change_share_price(direction, jumps)
         prev = @current_entity.share_price.price
 
         case direction
         when :left
           @stock_market.move_left(@current_entity)
         when :right
-          @stock_market.move_right(@current_entity)
+          @stock_market.move_right(@current_entity, jumps)
         else
           raise GameError, "Don't know how to move direction #{direction}"
         end
