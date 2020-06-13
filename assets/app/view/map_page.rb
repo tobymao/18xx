@@ -14,7 +14,7 @@ module View
 
       return h(:p, "Bad game title: #{game_title}") unless game_class
 
-      names = %w[p1 p2 p3 p4 p5]
+      names = %w[p1 p2 p3 p4]
       h(Game::Map, game: game_class.new(names))
     end
   end
