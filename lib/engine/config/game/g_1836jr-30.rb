@@ -7,7 +7,7 @@
 module Engine
   module Config
     module Game
-      module G1836jr
+      module G1836jr30
         JSON = <<-'DATA'
 {
    "filename":"1836jr30",
