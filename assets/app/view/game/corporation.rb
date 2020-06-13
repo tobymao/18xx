@@ -38,7 +38,7 @@ module View
 
         if @corporation.owner
           subchildren = (@corporation.operating_history.empty? ? [] : [render_revenue_history])
-          children << h('table.revenue', [h(:tr, subchildren)])
+          children << h('table.center', [h(:tr, subchildren)])
         end
 
         h('div.corp.card', { style: card_style, on: { click: onclick } }, children)
@@ -237,7 +237,9 @@ module View
           *player_rows,
         ]
 
-        h('table.shareholders', [
+        props = { style: { 'border-collapse': 'collapse' } }
+
+        h('table.center', props, [
           h(:thead, [
             h(:tr, [
               h(:th, 'Shareholder'),
@@ -256,7 +258,7 @@ module View
           render_company(company)
         end
 
-        h('table.companies', [
+        h('table.center', [
           h(:thead, [
             h(:tr, [
               h(:th, 'Company'),

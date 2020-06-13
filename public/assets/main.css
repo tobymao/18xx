@@ -227,7 +227,6 @@ input#chatbar {
   align-self: center;
   justify-self: center;
 }
-table.shareholders, table.companies, table.revenue {
+table.center {
   margin: 0.5rem auto;
-  border-collapse: collapse; /* necessary for borders within tables */
 }
