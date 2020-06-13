@@ -257,7 +257,16 @@ module Engine
          "name":"Amsterdam Canal Company",
          "value":20,
          "revenue":5,
-         "desc":"No special ability. Blocks hex D6 while owned by player."
+         "desc":"No special ability. Blocks hex D6 while owned by player.",
+         "abilities":[
+            {
+               "type":"blocks_hexes",
+               "owner_type":"player",
+               "hexes":[
+                  "D6"
+               ]
+            }
+          ]
       },
       {
          "name":"Enkhuizen-Stavoren Ferry",
@@ -315,6 +324,15 @@ module Engine
                "type":"exchange",
                "corporation":"B",
                "owner_type":"player"
+            },
+            {
+               "type":"blocks_hexes",
+               "owner_type":"player",
+               "hexes":[
+                  "G7",
+                  "G9",
+                  "H10"
+               ]
             }
          ]
       },
