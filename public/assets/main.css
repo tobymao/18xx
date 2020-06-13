@@ -207,7 +207,6 @@ input#chatbar {
   display: inline-block;
   overflow: hidden;
   vertical-align: top;
-  width: 24rem;
   margin: 0.5rem 0.5rem 0 0;
   border: 1px solid gainsboro;
   border-radius: 0.7rem;
@@ -221,6 +220,9 @@ input#chatbar {
 .card td {
   padding: 0 0.5rem;
 }
+.card td.name {
+  text-align: left;
+}
 
 .corp div {
   display: grid;
@@ -228,5 +230,5 @@ input#chatbar {
   justify-self: center;
 }
 table.center {
-  margin: 0.5rem auto;
+  margin: 0.2rem auto;
 }

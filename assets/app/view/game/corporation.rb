@@ -15,6 +15,7 @@ module View
 
         card_style = {
           cursor: 'pointer',
+          width: '20rem',
         }
 
         if @game.round.can_act?(@corporation)
@@ -47,39 +48,41 @@ module View
       def render_title
         title_row_props = {
           style: {
-            grid: '1fr / 2rem auto',
-            gap: '0 1rem',
-            padding: '0.4rem',
+            grid: '1fr / 1.5rem auto',
+            gap: '0 0.5rem',
+            padding: '0.2rem',
             background: @corporation.color,
             color: @corporation.text_color,
           },
         }
-        token_props = {
+        logo_props = {
           attrs: { src: @corporation.logo },
           style: {
-            height: '2rem',
-            width: '2rem',
+            height: '1.5rem',
+            width: '1.5rem',
             'justify-self': 'start',
-            border: '0.2rem solid currentColor',
+            border: '2px solid currentColor',
             'border-radius': '0.5rem',
           },
         }
         name_props = {
           style: {
             color: 'currentColor',
+            display: 'inline-block',
+            width: '17rem',
           },
         }
 
         h('div.corp__title', title_row_props, [
-          h(:img, token_props),
-          h('div.title', name_props, @corporation.full_name),
+          h(:img, logo_props),
+          h('div.title.nowrap', name_props, @corporation.full_name),
         ])
       end
 
       def render_holdings
         holdings_row_props = {
           style: {
-            grid: '1fr / 4.5rem auto',
+            grid: '1fr / auto auto auto',
             gap: '0 0.2rem',
             padding: '0.2rem 0.5rem',
             'background-color': @game.round.can_act?(@corporation) ? '#99bb99' : 'gainsboro',
@@ -88,14 +91,14 @@ module View
         }
         sym_props = {
           style: {
-            'font-size': '2rem',
+            'font-size': '1.5rem',
             'font-weight': 'bold',
             'justify-self': 'start',
           },
         }
         holdings_props = {
           style: {
-            grid: '1fr / 1fr 1fr auto',
+            grid: '1fr / 1fr 1fr',
             gap: '0 0.3rem',
           },
         }
@@ -105,8 +108,8 @@ module View
           h(:div, holdings_props, [
             render_trains,
             render_header_segment(@game.format_currency(@corporation.cash), 'Cash'),
-            render_tokens,
           ]),
+          render_tokens,
         ])
       end
 
@@ -142,6 +145,7 @@ module View
         token_list_props = {
           style: {
             grid: '1fr / auto-flow',
+            'justify-self': 'right',
             gap: '0 0.2rem',
             'padding-left': '1rem',
           },
@@ -163,7 +167,7 @@ module View
               src: token.corporation.logo,
             },
             style: {
-              width: '1.8rem',
+              width: '1.5rem',
             },
           }
           img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if token.used?

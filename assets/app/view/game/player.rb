@@ -9,6 +9,7 @@ module View
       def render
         card_style = {
           border: '1px solid gainsboro',
+          width: '24rem',
         }
 
         if @game.round.can_act?(@player)
@@ -41,8 +42,8 @@ module View
       def render_body
         props = {
           style: {
-            'margin-top': '1rem',
-            'margin-bottom': '0.5rem',
+            'margin-top': '0.2rem',
+            'margin-bottom': '0.4rem',
             display: 'flex',
             'justify-content': 'center',
           },
@@ -162,17 +163,11 @@ module View
       end
 
       def render_companies
-        props = {
-          style: {
-            'margin': '0.5rem auto',
-          },
-        }
-
         companies = @player.companies.map do |company|
           render_company(company)
         end
 
-        h(:table, props, [
+        h('table.center', [
           h(:tr, [
             h(:th, 'Company'),
             h(:th, 'Value'),
