@@ -9,12 +9,6 @@ module Engine
   describe Game::G18Chesapeake do
     context 'full game' do
       {
-        1689 => {
-          'Eonthar' => 6357,
-          'Jasonbartfast' => 8651,
-          'philcampeau' => 7945,
-          'ynottony105' => 7041,
-        },
         1277 => {
           'Harshit' => 1216,
           'jagdish' => 1045,
@@ -22,10 +16,17 @@ module Engine
           'tgg' => 600,
           'wery' => 1028,
         },
-        1638 => {
-          'jweines' => 6566,
-          'Scott Nicholson' => 6229,
-          'Twalker' => 5485,
+        1689 => {
+          'Eonthar' => 6357,
+          'Jasonbartfast' => 8651,
+          'philcampeau' => 7945,
+          'ynottony105' => 7041,
+        },
+        1905 => {
+          'Apreche' => 4604,
+          'GeekNightsRym' => 4210,
+          'agrajag' => 6214,
+          'pence' => 4848,
         },
       }.each do |game_id, result|
         it "#{game_id} matches result exactly" do

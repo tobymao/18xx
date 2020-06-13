@@ -23,7 +23,7 @@ module Engine
     end
 
     def route?(corporation)
-      @routes[corporation] ||= connected_nodes(corporation).size > 1
+      compute(corporation) unless @routes[corporation]
       @routes[corporation]
     end
 
@@ -79,13 +79,15 @@ module Engine
 
       tokens.keys.each do |node|
         visited = tokens.reject { |token, _| token == node }
-        visited_paths = visited.flat_map { |token, _| token.paths.map { |p| [p, true] } }.to_h
+        local_nodes = {}
 
-        node.walk(visited: visited, corporation: corporation, visited_paths: visited_paths) do |path|
+        node.walk(visited: visited, corporation: corporation) do |path|
           paths[path] = true
           if (p_node = path.node)
             nodes[p_node] = true
             yield p_node if block_given?
+            local_nodes[p_node] = true
+            @routes[corporation] = true if local_nodes.size > 1
           end
           hex = path.hex
           edges = hexes[hex]
