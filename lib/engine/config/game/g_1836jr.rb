@@ -471,7 +471,7 @@ module Engine
    ],
    "hexes":{
       "gray":{
-         "city=revenue:10;path=a:4,b:_0;path=a:_0,b:5":[
+         "city=revenue:10;path=a:0,b:_0;path=a:_0,b:5":[
             "A9"
          ]
       },
@@ -537,19 +537,19 @@ module Engine
          ]
       },
       "red":{
-         "offboard=revenue:yellow_40|brown_70;path=a:0,b:_0;path=a:5,b:_0":[
+         "offboard=revenue:yellow_40|brown_70;path=a:0,b:_0;path=a:1,b:_0":[
             "A13"
          ],
-         "offboard=revenue:yellow_30|brown_50;path=a:0,b:_0":[
+         "offboard=revenue:yellow_30|brown_50;path=a:1,b:_0":[
             "E13",
             "H12"
          ],
-         "offboard=revenue:yellow_40|brown_70;path=a:0,b:_0;path=a:1,b:_0":[
+         "offboard=revenue:yellow_40|brown_70;path=a:1,b:_0;path=a:2,b:_0":[
             "K13"
          ]
       },
       "yellow":{
-         "city=revenue:40;path=a:4,b:_0;path=a:_0,b:5;label=NY;upgrade=cost:40,terrain:water":[
+         "city=revenue:40;path=a:0,b:_0;path=a:_0,b:5;label=NY;upgrade=cost:40,terrain:water":[
             "D6"
          ],
          "city=revenue:0;city=revenue:0;label=OO":[
@@ -559,10 +559,10 @@ module Engine
             "E11",
             "H10"
          ],
-         "city=revenue:30;path=a:0,b:_0;path=a:_0,b:2;label=B":[
+         "city=revenue:30;path=a:1,b:_0;path=a:_0,b:3;label=B":[
             "H6"
          ],
-         "city=revenue:30;path=a:3,b:_0;path=a:_0,b:5;label=B":[
+         "city=revenue:30;path=a:0,b:_0;path=a:_0,b:4;label=B":[
             "I3"
          ]
       },
@@ -578,64 +578,74 @@ module Engine
          ]
       }
    },
-   "phases":[
-      {
-         "name":"2",
-         "train_limit":4,
-         "tiles":[
-            "yellow"
-         ],
-        "operating_rounds": 1
-      },
-      {
-         "name":"3",
-         "train_limit":4,
-         "tiles":[
-            "yellow",
-            "green"
-         ],
-        "operating_rounds": 2
-      },
-      {
-         "name":"4",
-         "train_limit":3,
-         "tiles":[
-            "yellow",
-            "green"
-         ],
-        "operating_rounds": 2
-      },
-      {
-         "name":"5",
-         "train_limit":2,
-         "tiles":[
-            "yellow",
-            "green",
-            "brown"
-         ],
-        "operating_rounds": 3
-      },
-      {
-         "name":"6",
-         "train_limit":2,
-         "tiles":[
-            "yellow",
-            "green",
-            "brown"
-         ],
-        "operating_rounds": 3
-      },
-      {
-         "name":"D",
-         "train_limit":2,
-         "tiles":[
-            "yellow",
-            "green",
-            "brown"
-         ],
-        "operating_rounds": 3
+  "phases": [
+    {
+      "name": "2",
+      "train_limit": 4,
+      "tiles": [
+        "yellow"
+      ],
+      "operating_rounds": 1
+    },
+    {
+      "name": "3",
+      "on": "3",
+      "train_limit": 4,
+      "tiles": [
+        "yellow",
+        "green"
+      ],
+      "operating_rounds": 2,
+      "buy_companies": true
+    },
+    {
+      "name": "4",
+      "on": "4",
+      "train_limit": 3,
+      "tiles": [
+        "yellow",
+        "green"
+      ],
+      "operating_rounds": 2,
+      "buy_companies": true
+    },
+    {
+      "name": "5",
+      "on": "5",
+      "train_limit": 2,
+      "tiles": [
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "operating_rounds": 3,
+      "events": {
+        "close_companies": true
       }
-   ]
+    },
+    {
+      "name": "6",
+      "on": "6",
+      "train_limit": 2,
+      "tiles": [
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "operating_rounds": 3
+    },
+    {
+      "name": "D",
+      "on": "D",
+      "train_limit": 2,
+      "tiles": [
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "operating_rounds": 3
+    }
+  ]
 }
         DATA
       end
