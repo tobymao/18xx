@@ -141,7 +141,7 @@ module View
       def render_tokens
         token_list_props = {
           style: {
-            grid: '1fr / auto-flow repeat(auto-fit, minmax(1.8rem, 1fr))',
+            grid: '1fr / auto-flow',
             gap: '0 0.2rem',
             'padding-left': '1rem',
           },
