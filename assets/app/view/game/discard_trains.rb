@@ -26,7 +26,7 @@ module View
                 border: 'solid 1px gainsboro',
                 'padding': '0.5rem',
               },
-              on: { click: -> { process_action(Engine::Action::DiscardTrain.new(corporation, train)) } },
+              on: { click: -> { process_action(Engine::Action::DiscardTrain.new(corporation, train: train)) } },
             }
 
             h('div.margined', train_props, train.name)

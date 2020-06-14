@@ -97,10 +97,31 @@ module Engine
                 player.companies << company
                 price = company.min_bid
                 player.spend(price, @game.bank) if price.positive?
+
+                float_minor(company)
+
                 @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
               end
             end
           end
+        end
+
+        def float_minor(company)
+          player = company.player
+          michigan_southern = @game.michigan_southern
+          big4 = @game.big4
+
+          minor =
+            case company.name
+            when michigan_southern.full_name
+              michigan_southern.owner = player
+              michigan_southern
+            when big4.full_name
+              big4.owner = player
+              big4
+            end
+
+          @game.bank.spend(company.value, minor) if minor
         end
       end
     end

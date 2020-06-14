@@ -37,13 +37,12 @@ module View
           card_style['color'] = 'black'
         end
 
-        children = [
-          render_title,
-          render_holdings,
-          render_shares,
-        ]
+        children = [render_title, render_holdings]
 
-        children << render_companies if @corporation.companies.any?
+        unless @corporation.minor?
+          children << render_shares
+          children << render_companies if @corporation.companies.any?
+        end
 
         revenue_table_props = {
           style: {
@@ -177,10 +176,13 @@ module View
           },
         }
 
-        player_info = @game
-          .players
-          .map do |p|
-          [p, @corporation.president?(p), p.num_shares_of(@corporation), @game.round.did_sell?(@corporation, p)]
+        player_info = @game.players.map do |player|
+          [
+            player,
+            @corporation.president?(player),
+            player.num_shares_of(@corporation),
+            @game.round.did_sell?(@corporation, player),
+          ]
         end
 
         player_rows = player_info

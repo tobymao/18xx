@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'operator'
 require_relative 'ownable'
 require_relative 'passer'
 require_relative 'share'
@@ -9,20 +10,19 @@ require_relative 'token'
 
 module Engine
   class Corporation
+    include Operator
     include Ownable
     include Passer
     include ShareHolder
     include Spender
 
-    attr_accessor :ipoed, :rusted_self, :share_price, :tokens
-    attr_reader :capitalization, :color, :companies, :coordinates, :min_price, :name, :full_name,
-                :logo, :text_color, :trains, :operating_history
+    attr_accessor :ipoed, :share_price
+    attr_reader :capitalization, :companies, :min_price, :name, :full_name
     attr_writer :par_price
 
-    def initialize(sym:, name:, tokens:, **opts)
+    def initialize(sym:, name:, **opts)
       @name = sym
       @full_name = name
-      @tokens = tokens.map { |price| Token.new(self, price: price) }
       [
         Share.new(self, president: true, percent: 20),
         *8.times.map { |index| Share.new(self, percent: 10, index: index + 1) },
@@ -31,22 +31,15 @@ module Engine
       @share_price = nil
       @par_price = nil
       @ipoed = false
-      # phase rusts happen before a train actually buys, so there is a race condition
-      # where buying a train rusts yourself and it looks like you must buy a train
-      @rusted_self = false
-      @trains = []
       @companies = []
-      @operating_history = {}
 
       @cash = 0
       @capitalization = opts[:capitalization] || :full
       @float_percent = opts[:float_percent] || 60
-      @coordinates = opts[:coordinates]
       @min_price = opts[:min_price]
-      @logo = "/logos/#{opts[:logo]}.svg"
-      @color = opts[:color]
-      @text_color = opts[:text_color] || '#ffffff'
       @always_market_price = opts[:always_market_price] || false
+
+      operator_setup(opts)
     end
 
     def <=>(other)
@@ -79,28 +72,12 @@ module Engine
       10 - num_ipo_shares - num_player_shares
     end
 
-    def next_token
-      @tokens.find { |t| !t.used? }
-    end
-
     def share_holders
       @share_holders ||= Hash.new(0)
     end
 
     def id
       @name
-    end
-
-    def buy_train(train, price = nil)
-      spend(price || train.price, train.owner)
-      train.owner.remove_train(train)
-      train.owner = self
-      @trains << train
-      @rusted_self = false
-    end
-
-    def remove_train(train)
-      @trains.delete(train)
     end
 
     def president?(player)
@@ -125,8 +102,8 @@ module Engine
       true
     end
 
-    def operated?
-      @operating_history.any?
+    def minor?
+      false
     end
 
     def inspect

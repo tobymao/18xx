@@ -1,3 +1,6 @@
+Layout/FirstArgumentIndentation:
+  Enabled: false
+
 Layout/FirstArrayElementIndentation:
   Enabled: false
 

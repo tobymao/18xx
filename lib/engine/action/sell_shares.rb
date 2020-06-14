@@ -8,18 +8,18 @@ module Engine
     class SellShares < Base
       attr_reader :entity, :bundle
 
-      def initialize(entity, shares, share_price = nil, percent = nil)
+      def initialize(entity, shares:, share_price: nil, percent: nil)
         @entity = entity
         @bundle = ShareBundle.new(shares, percent)
         @bundle.share_price = share_price
       end
 
       def self.h_to_args(h, game)
-        [
-          h['shares'].map { |id| game.share_by_id(id) },
-          h['share_price'],
-          h['percent'],
-        ]
+        {
+          shares: h['shares'].map { |id| game.share_by_id(id) },
+          share_price: h['share_price'],
+          percent: h['percent'],
+        }
       end
 
       def args_to_h
