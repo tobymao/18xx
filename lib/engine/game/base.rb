@@ -164,10 +164,7 @@ module Engine
           corporation.transform_keys!(&:to_sym)
 
           corporation[:color] = const_get(:COLORS)[corporation[:color]] if const_defined?(:COLORS)
-          if const_defined?(:CORPORATIONS_OVERRIDE)
-            corp_override = const_get(:CORPORATIONS_OVERRIDE)[corporation[:sym]]
-            corporation.merge!(corp_override) if corp_override
-          end
+
           corporation
         end
 

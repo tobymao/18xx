@@ -7,24 +7,23 @@ module Engine
     class PlaceToken < Base
       attr_reader :city, :slot, :token
 
-      def initialize(entity, city, slot, token_id = nil)
+      def initialize(entity, city, slot, token_type = :normal)
         @entity = entity
         @city = city
         @slot = slot
-        # After processing the action the token may no longer be in the entity
-        @token_id = token_id
-        @token = @entity.tokens[token_id] unless token_id.nil?
+        @token = @entity.next_token_by_type(token_type)
       end
 
       def self.h_to_args(h, game)
-        [game.city_by_id(h['city']), h['slot'], h['token_id']]
+        [game.city_by_id(h['city']), h['slot'], h['token_type']]
       end
 
       def args_to_h
+        token_type = @token.type if @token.type != :normal
         {
           'city' => @city.id,
           'slot' => @slot,
-          'token_id' => @token_id,
+          'token_type' => token_type,
         }
       end
     end

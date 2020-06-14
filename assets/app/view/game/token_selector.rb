@@ -14,23 +14,21 @@ module View
       DISTANCE = TOKEN_SIZE
 
       def render
-        corp_tokens = @game.current_entity.available_tokens_by_corporation
-        tokens = list_coordinates(corp_tokens.keys, DISTANCE, SIZE).map do |corporation, left, bottom|
-          layable = corp_tokens[corporation].first
-
+        tokens = @game.current_entity.next_tokens_by_type
+        tokens = list_coordinates(tokens, DISTANCE, SIZE).map do |token, left, bottom|
           click = lambda do
             action = Engine::Action::PlaceToken.new(
               @game.current_entity,
               @tile_selector.city,
               @tile_selector.slot_index,
-              @game.current_entity.tokens.find_index(layable)
+              token.type
             )
             process_action(action)
           end
 
           props = {
             attrs: {
-              src: layable.logo,
+              src: token.logo,
             },
             on: {
               click: click,

@@ -515,7 +515,16 @@ module Engine
           entity.spend(price, @bank)
           price_log = " for #{@game.format_currency(price)}"
         end
-        @log << "#{entity.name} places a token on #{action.city.hex.name}#{price_log}"
+
+        case token.type
+        when :neutral
+          entity.tokens.delete(token)
+          token.corporation.tokens << token
+          @log << "#{entity.name} places a neutral token on #{action.city.hex.name}#{price_log}"
+        else
+          @log << "#{entity.name} places a token on #{action.city.hex.name}#{price_log}"
+        end
+
         @graph.clear
       end
 

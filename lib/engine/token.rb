@@ -2,13 +2,14 @@
 
 module Engine
   class Token
-    attr_reader :corporation, :price, :logo
+    attr_reader :corporation, :price, :logo, :type
 
-    def initialize(corporation, price: 0, logo: nil)
+    def initialize(corporation, price: 0, logo: nil, type: :normal)
       @corporation = corporation
       @price = price
       @logo = logo || corporation.logo
       @used = false
+      @type = type
     end
 
     def used?

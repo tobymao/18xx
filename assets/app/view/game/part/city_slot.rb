@@ -46,9 +46,9 @@ module View
           return if @token
           return unless @game.round.can_place_token?
 
-          # If there's a choice of tokens from different corps show the selector, otherwise just place
-          corp_tokens = @game.current_entity.available_tokens_by_corporation
-          if corp_tokens.size == 1
+          # If there's a choice of tokens of different types show the selector, otherwise just place
+          next_tokens = @game.current_entity.next_tokens_by_type
+          if next_tokens.size == 1
             action = Engine::Action::PlaceToken.new(
               @game.current_entity,
               @city,
