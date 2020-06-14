@@ -36,7 +36,7 @@ module Engine
       @cash = 0
       @capitalization = opts[:capitalization] || :full
       @float_percent = opts[:float_percent] || 60
-      @min_price = opts[:min_price]
+      @min_price = 0
       @always_market_price = opts[:always_market_price] || false
 
       operator_setup(opts)
