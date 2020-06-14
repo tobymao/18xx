@@ -15,7 +15,7 @@ module View
 
         card_style = {
           cursor: 'pointer',
-          width: '20rem',
+          width: '16rem',
         }
 
         if @game.round.can_act?(@corporation)
@@ -48,18 +48,19 @@ module View
       def render_title
         title_row_props = {
           style: {
-            grid: '1fr / 1.5rem auto',
-            gap: '0 0.5rem',
-            padding: '0.2rem',
+            grid: '1fr / auto auto',
+            padding: '0.2rem 0.4rem',
             background: @corporation.color,
             color: @corporation.text_color,
+            height: '2.4rem',
           },
         }
         logo_props = {
           attrs: { src: @corporation.logo },
           style: {
-            height: '1.5rem',
-            width: '1.5rem',
+            height: '1.6rem',
+            width: '1.6rem',
+            'align-self': 'center',
             'justify-self': 'start',
             border: '2px solid currentColor',
             'border-radius': '0.5rem',
@@ -69,13 +70,14 @@ module View
           style: {
             color: 'currentColor',
             display: 'inline-block',
-            width: '17rem',
-          },
+            'justify-self': 'start',
+            'max-width': '22rem',
+          }
         }
 
         h('div.corp__title', title_row_props, [
           h(:img, logo_props),
-          h('div.title.nowrap', name_props, @corporation.full_name),
+          h('div.title', name_props, @corporation.full_name),
         ])
       end
 
@@ -147,7 +149,6 @@ module View
             grid: '1fr / auto-flow',
             'justify-self': 'right',
             gap: '0 0.2rem',
-            'padding-left': '1rem',
           },
         }
         token_column_props = {
