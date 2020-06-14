@@ -157,62 +157,72 @@ module Engine
       "value": 60,
       "discount": -80,
       "revenue": 0,
-      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). Splits revenue evenly with owner. Buyer pays an extra $80 (\"debt\")."
+      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). Splits revenue evenly with owner. Buyer pays an extra $80 (\"debt\").",
+      "sym": "MS"
     },
     {
       "name": "Big 4",
       "value": 40,
       "discount": -60,
       "revenue": 0,
-      "desc": "Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). Splits revenue evenly with owner. Buyer pays an extra $60 (\"debt\")."
+      "desc": "Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). Splits revenue evenly with owner. Buyer pays an extra $60 (\"debt\").",
+      "sym": "BIG4"
     },
     {
       "name": "Chicago and Western Indiana",
       "value": 60,
       "revenue": 10,
-      "desc": "Reserves a token slot in Chicago (D6), in which the owning corporation may place an extra token at no cost."
+      "desc": "Reserves a token slot in Chicago (D6), in which the owning corporation may place an extra token at no cost.",
+      "sym": "C&WI"
     },
     {
       "name": "Mail Contract",
       "value": 80,
       "revenue": 0,
-      "desc": "Adds $10 per location visited by any one train of the owning corporation. Never closes once purchased by a corporation."
+      "desc": "Adds $10 per location visited by any one train of the owning corporation. Never closes once purchased by a corporation.",
+      "sym": "MAIL"
     },
     {
       "name": "Tunnel Blasting Company",
       "value": 60,
       "revenue": 20,
-      "desc": "Reduces, for the owning corporation, the cost of laying all mountain tiles and tunnel/pass hexsides by $20."
+      "desc": "Reduces, for the owning corporation, the cost of laying all mountain tiles and tunnel/pass hexsides by $20.",
+      "sym": "TBC"
     },
     {
       "name": "Meat Packing Company",
       "value": 60,
       "revenue": 15,
-      "desc": "The owning corporation may place a $30 marker in either St. Louis (I1) or Chicago (D6), to add $30 to all routes run to this location."
+      "desc": "The owning corporation may place a $30 marker in either St. Louis (I1) or Chicago (D6), to add $30 to all routes run to this location.",
+      "sym": "MPC"
     },
     {
       "name": "Steamboat Company",
       "value": 40,
       "revenue": 10,
-      "desc": "Place or shift the port marker among port locations (B8, C5, D14, G19, I1). Add $20 per port symbol to all routes run to this location by the owning (or assigned) company."
+      "desc": "Place or shift the port marker among port locations (B8, C5, D14, G19, I1). Add $20 per port symbol to all routes run to this location by the owning (or assigned) company.",
+      "sym": "SC"
     },
     {
       "name": "Lake Shore Line",
       "value": 40,
       "revenue": 15,
-      "desc": "The owning corporation may make an extra $0 cost tile upgrade of either Cleveland (E17) or Toledo (D14), but not both."
+      "desc": "The owning corporation may make an extra $0 cost tile upgrade of either Cleveland (E17) or Toledo (D14), but not both.",
+      "sym": "LSL"
     },
     {
       "name": "Michigan Central",
       "value": 40,
       "revenue": 15,
-      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's reserved hexes (B10, B12)."
+      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's reserved hexes (B10, B12).",
+      "sym": "MC"
     },
     {
       "name": "Ohio & Indiana",
       "value": 40,
       "revenue": 15,
-      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I's reserved hexes (F14, F16)."
+      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I's reserved hexes (F14, F16).",
+      "sym": "O&I"
     }
   ],
   "corporations": [
