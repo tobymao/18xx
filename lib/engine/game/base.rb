@@ -114,6 +114,7 @@ module Engine
       RAND_A = 1_103_515_245
       RAND_C = 12_345
       RAND_M = 2**31
+      def setup_before_init_round; end
 
       def setup; end
 
