@@ -31,13 +31,14 @@ module View
       def render_title
         props = {
           style: {
+            'max-width': '20rem',
+            padding: '0.4rem',
             'background-color': @game.round.can_act?(@player) ? '#9b9' : 'gainsboro',
             color: 'black',
-            padding: '0.4rem',
           },
         }
 
-        h('div.player.title', props, @player.name)
+        h('div.player.title.nowrap', props, @player.name)
       end
 
       def render_body
