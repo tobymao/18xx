@@ -237,7 +237,7 @@ module Engine
 
         @phase = init_phase
         @operating_rounds = @phase.operating_rounds
-        setup
+        setup_before_init_round
         @round = init_round
         @special = Round::Special.new(@companies, game: self)
 
@@ -245,6 +245,7 @@ module Engine
         connect_hexes
 
         init_company_abilities
+        setup
 
         initialize_actions(actions)
 

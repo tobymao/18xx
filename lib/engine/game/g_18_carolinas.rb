@@ -16,7 +16,7 @@ module Engine
         super.take(players.size)
       end
 
-      def setup
+      def setup_before_init_round
         @companies.each_with_index do |company, index|
           price = company.value
           player = @players[index]
