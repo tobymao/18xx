@@ -40,7 +40,7 @@ module View
 
       chatbar_props = {
         attrs: {
-          placeholder: 'your message',
+          placeholder: 'Send a message',
         },
         style: {
           height: '1.4rem',
