@@ -50,7 +50,8 @@ module Engine
 
       def init_companies(players)
         companies = super + @players.size.times.map do |i|
-          Company.new(name: (i + 1).to_s, value: 0, desc: "Choose this card if you don't want to purchase a company")
+          name = (i + 1).to_s
+          Company.new(sym: name, name: name, value: 0, desc: "Choose this card if you don't want to purchase a company")
         end
 
         remove_from_group!(ORANGE_GROUP, companies)

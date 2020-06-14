@@ -215,7 +215,7 @@ module View
       end
 
       def render_companies(entity)
-        h(:td, entity.companies.map(&:short_name).join(','))
+        h(:td, entity.companies.map(&:sym).join(','))
       end
 
       def render_player_privates

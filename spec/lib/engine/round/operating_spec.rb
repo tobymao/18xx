@@ -387,7 +387,7 @@ module Engine
 
       context 'with ko' do
         let(:corporation) { game.corporation_by_id('KO') }
-        let(:company) { game.company_by_id('Takamatsu E-Railroad') }
+        let(:company) { game.company_by_id('TR') }
         let(:player) { game.player_by_id('a') }
 
         it 'errors when upgrading K4 if Takumatsu is owned by player' do
