@@ -66,16 +66,20 @@ module View
 
           buy = lambda do
             process_action(Engine::Action::Bid.new(
-                             @current_entity,
-                             @selected_company,
-                             @round.min_bid(@selected_company)
-                           ))
+              @current_entity,
+              company: @selected_company,
+              price: @round.min_bid(@selected_company),
+            ))
             store(:selected_company, nil, skip: true)
           end
 
           create_bid = lambda do
             price = input.JS['elm'].JS['value'].to_i
-            process_action(Engine::Action::Bid.new(@current_entity, @selected_company, price))
+            process_action(Engine::Action::Bid.new(
+              @current_entity,
+              company: @selected_company,
+              price: price,
+            ))
             store(:selected_company, nil, skip: true)
           end
 

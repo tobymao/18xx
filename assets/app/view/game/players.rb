@@ -8,7 +8,11 @@ module View
       needs :game
 
       def render
-        h('div.player', @game.players.map { |p| h(Player, player: p, game: @game) })
+        props = {
+          style: { margin: '1rem 0 1.5rem 0' },
+        }
+
+        h('div.players', props, @game.players.map { |p| h(Player, player: p, game: @game) })
       end
     end
   end

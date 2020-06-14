@@ -46,9 +46,9 @@ module View
       def lay_tile
         action = Engine::Action::LayTile.new(
           @tile_selector.entity,
-          @tile_selector.tile,
-          @tile_selector.hex,
-          @tile_selector.tile.rotation,
+          tile: @tile_selector.tile,
+          hex: @tile_selector.hex,
+          rotation: @tile_selector.tile.rotation,
         )
         store(:tile_selector, nil, skip: true)
         store(:selected_company, nil, skip: true)

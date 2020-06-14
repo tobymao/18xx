@@ -214,13 +214,14 @@ input#chatbar {
   line-height: 1.25rem;
 }
 .card th {
-  padding: 0 0.3rem;
+  padding: 0 0.3rem 0 0.2rem;
 }
 .card td {
-  padding: 0 0.5rem;
+  padding: 0 0.5rem 0 0.3rem;
 }
 .card td.name {
   text-align: left;
+  max-width: 12rem;
 }
 
 .corp div {

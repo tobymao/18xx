@@ -2,7 +2,6 @@
 
 require_relative '../config/game/g_18_chesapeake'
 require_relative 'base'
-require_relative '../publisher'
 
 module Engine
   module Game

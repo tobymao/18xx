@@ -21,7 +21,11 @@ module View
       def render_shares(description, shares, action)
         shares = shares.map do |bundle|
           render_button(bundle) do
-            process_action(action.new(@round.current_entity, bundle.shares, bundle.share_price))
+            process_action(action.new(
+              @round.current_entity,
+              shares: bundle.shares,
+              share_price: bundle.share_price,
+            ))
           end
         end
 

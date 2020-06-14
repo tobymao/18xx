@@ -15,7 +15,7 @@ module View
 
         card_style = {
           cursor: 'pointer',
-          width: '16rem',
+          width: '20rem',
         }
 
         if @game.round.can_act?(@corporation)
@@ -29,13 +29,12 @@ module View
           card_style['color'] = 'black'
         end
 
-        children = [
-          render_title,
-          render_holdings,
-          render_shares,
-        ]
+        children = [render_title, render_holdings]
 
-        children << render_companies if @corporation.companies.any?
+        unless @corporation.minor?
+          children << render_shares
+          children << render_companies if @corporation.companies.any?
+        end
 
         if @corporation.owner
           subchildren = (@corporation.operating_history.empty? ? [] : [render_revenue_history])
@@ -71,8 +70,7 @@ module View
             color: 'currentColor',
             display: 'inline-block',
             'justify-self': 'start',
-            'max-width': '22rem',
-          }
+          },
         }
 
         h('div.corp__title', title_row_props, [
@@ -209,7 +207,7 @@ module View
           .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
           .map do |player, president, num_shares, did_sell|
             h('tr.player', [
-              h("td.name.#{president ? 'president' : ''}", player.name),
+              h("td.name.nowrap.#{president ? 'president' : ''}", player.name),
               h('td.right', shares_props, "#{president ? '* ' : ''}#{num_shares}"),
               did_sell ? h('td.italic', 'Sold') : '',
             ])
@@ -277,8 +275,12 @@ module View
       end
 
       def render_company(company)
+        props = {
+          style: { 'max-width': '15rem' },
+        }
+
         h(:tr, [
-          h('td.name.nowrap', company.name),
+          h('td.name.nowrap', props, company.name),
           h('td.right', @game.format_currency(company.revenue)),
         ])
       end

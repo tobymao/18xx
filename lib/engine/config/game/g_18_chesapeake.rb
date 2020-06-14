@@ -348,6 +348,7 @@ module Engine
       "value": 100,
       "revenue": 0,
       "desc": "During game setup place one share of the Baltimore & Ohio corporation with this certificate. The player purchasing this private immediately takes both the private company and the B&O share. This private company has no other special ability.",
+      "sym": "B&OR",
       "abilities": [
         {
           "type": "share",
@@ -360,6 +361,7 @@ module Engine
       "value": 200,
       "revenue": 30,
       "desc": "During game setup select a random president’s certificate and place it with this certificate. The player purchasing this private company takes both this certificate and the randomly selected president’s certificate. The player immediately sets the par value of the corporation. This private closes when the associated corporation buys its first train. It cannot be bought by a corporation.",
+      "sym": "CV",
       "abilities": [
         {
           "type": "share",

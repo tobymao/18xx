@@ -290,6 +290,7 @@ module Engine
       "value": 50,
       "revenue": 15,
       "desc": "Owning corporation may ignore building cost for mountain hexes which do not also contain rivers. This does not close the company.",
+      "sym": "SMR",
       "abilities": [
         {
           "type": "ignore_terrain",
@@ -303,6 +304,7 @@ module Engine
       "value": 60,
       "revenue": 15,
       "desc": "Owning player may exchange this private company for a 10% share of Iyo Railway from the initial offering.",
+      "sym": "DR",
       "abilities": [
         {
           "type": "exchange",
@@ -316,6 +318,7 @@ module Engine
       "value": 80,
       "revenue": 20,
       "desc": "No special abilities.",
+      "sym": "SIR",
       "min_players": 3
     },
     {
@@ -323,6 +326,7 @@ module Engine
       "value": 150,
       "revenue": 30,
       "desc": "Does not close while owned by a player. If owned by a player when the first 5-train is purchased it may no longer be sold to a public company and the revenue is increased to 50.",
+      "sym": "UTF",
       "min_players": 4,
       "abilities": [
         {

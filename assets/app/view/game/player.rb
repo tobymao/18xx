@@ -9,7 +9,7 @@ module View
       def render
         card_style = {
           border: '1px solid gainsboro',
-          width: '24rem',
+          width: '20rem',
         }
 
         if @game.round.can_act?(@player)
@@ -33,6 +33,7 @@ module View
           style: {
             'background-color': @game.round.can_act?(@player) ? '#9b9' : 'gainsboro',
             color: 'black',
+            padding: '0.4rem',
           },
         }
 
@@ -178,14 +179,8 @@ module View
       end
 
       def render_company(company)
-        props = {
-          style: {
-            'max-width': '200px',
-          },
-        }
-
         h(:tr, [
-          h('td.name.nowrap', props, company.name),
+          h('td.name.nowrap', company.name),
           h('td.right', @game.format_currency(company.value)),
           h('td.right', @game.format_currency(company.revenue)),
         ])

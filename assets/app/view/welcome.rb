@@ -29,7 +29,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>Finished games are now visible in the profile page. There is now no more paging for your games.<p/>
+        <p>1836jr is now available for early alpha. Don't expect much and don't file bugs, we know it's broken!.<p/>
 
         Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
         <a href='https://docs.google.com/document/d/1nCYnzNMQLrFLZtWdbjfuSx5aIcaOyi27lMYkJxcGayw/edit'>FAQ!</a>

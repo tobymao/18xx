@@ -12,11 +12,11 @@ module Engine
 
       def self.from_h(h, game)
         entity = game.send("#{h['entity_type']}_by_id", h['entity'])
-        new(entity, *h_to_args(h, game))
+        new(entity, **h_to_args(h, game))
       end
 
       def self.h_to_args(_h, _game)
-        []
+        {}
       end
 
       def self.split(klass)
