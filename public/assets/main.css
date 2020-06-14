@@ -143,15 +143,6 @@ a.game__nav:focus {
   margin: 3px;
 }
 
-#chatlog, input#chatbar {
-  width: 100%;
-}
-
-input#chatbar {
-  margin: 0;
-  box-sizing: border-box;
-}
-
 .card_header {
   font-size: 1.2rem;
   font-weight: bold;

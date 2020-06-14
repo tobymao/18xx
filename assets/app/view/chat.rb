@@ -38,7 +38,20 @@ module View
         end
       end
 
-      children << h('input#chatbar', on: { keyup: enter }) if @user
+      chatbar_props = {
+        attrs: {
+          placeholder: 'your message',
+        },
+        style: {
+          height: '1.4rem',
+          width: '100%',
+          margin: '0',
+          'box-sizing': 'border-box',
+          padding: '0 0.5rem',
+        },
+      }
+
+      children << h('textarea#chatbar', chatbar_props, on: { keyup: enter }) if @user
 
       props = {
         key: 'global_chat',
