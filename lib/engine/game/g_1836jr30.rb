@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../config/game/g_1836jr30'
+require_relative '../config/game/g_1836Jr30'
 require_relative 'base'
 
 module Engine
   module Game
-    class G1836jr30 < Base
-      load_from_json(Config::Game::G1836jr30::JSON)
+    class G1836Jr30 < Base
+      load_from_json(Config::Game::G1836Jr30::JSON)
 
       DEV_STAGE = :alpha
       GAME_LOCATION = 'Netherlands'

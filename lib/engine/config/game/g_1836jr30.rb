@@ -7,10 +7,10 @@
 module Engine
   module Config
     module Game
-      module G1836jr30
+      module G1836Jr30
         JSON = <<-'DATA'
 {
-   "filename":"1836jr30",
+   "filename":"1836Jr30",
    "modulename":"1836Jr-30",
    "currencyFormatStr":"F%d",
    "bankCash":6000,
@@ -373,7 +373,7 @@ module Engine
          "abilities":[
             {
                "type":"share",
-               "share":"NO_0"
+               "share":"Nord_0"
             },
             {
                "type":"no_buy"
@@ -393,7 +393,7 @@ module Engine
       {
          "sym":"B",
          "name":"Chemins de Fer de L'État Belge",
-         "logo":"1836jr/B",
+         "logo":"1836Jr/B",
          "tokens":[
             0,
             40,
@@ -406,7 +406,7 @@ module Engine
       {
          "sym":"GCL",
          "name":"Grande Compagnie du Luxembourg",
-         "logo":"1836jr/GCL",
+         "logo":"1836Jr/GCL",
          "tokens":[
             0,
             40,
@@ -417,9 +417,9 @@ module Engine
          "color":"green"
       },
       {
-         "sym":"NO",
+         "sym":"Nord",
          "name":"Chemin de Fer du Nord",
-         "logo":"1836jr/NO",
+         "logo":"1836Jr/Nord",
          "tokens":[
             0,
             40,
@@ -431,7 +431,7 @@ module Engine
       {
          "sym":"NBDS",
          "name":"Noord-Brabantsch-Duitsche Spoorweg-Maatschappij",
-         "logo":"1836jr/NBDS",
+         "logo":"1836Jr/NBDS",
          "tokens":[
             0,
             40,
@@ -444,7 +444,7 @@ module Engine
       {
          "sym":"HSM",
          "name":"Hollandsche IJzeren Spoorweg Maatschappij",
-         "logo":"1836jr/HSM",
+         "logo":"1836Jr/HSM",
          "tokens":[
             0,
             40
@@ -455,7 +455,7 @@ module Engine
       {
          "sym":"NFL",
          "name":"Noord-Friesche Locaal",
-         "logo":"1836jr/NFL",
+         "logo":"1836Jr/NFL",
          "tokens":[
             0,
             40
