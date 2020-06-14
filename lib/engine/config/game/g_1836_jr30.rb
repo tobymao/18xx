@@ -393,7 +393,7 @@ module Engine
       {
          "sym":"B",
          "name":"Chemins de Fer de L'État Belge",
-         "logo":"1836Jr/B",
+         "logo":"1836_jr/B",
          "tokens":[
             0,
             40,
@@ -406,7 +406,7 @@ module Engine
       {
          "sym":"GCL",
          "name":"Grande Compagnie du Luxembourg",
-         "logo":"1836Jr/GCL",
+         "logo":"1836_jr/GCL",
          "tokens":[
             0,
             40,
@@ -419,7 +419,7 @@ module Engine
       {
          "sym":"Nord",
          "name":"Chemin de Fer du Nord",
-         "logo":"1836Jr/Nord",
+         "logo":"1836_jr/Nord",
          "tokens":[
             0,
             40,
@@ -431,7 +431,7 @@ module Engine
       {
          "sym":"NBDS",
          "name":"Noord-Brabantsch-Duitsche Spoorweg-Maatschappij",
-         "logo":"1836Jr/NBDS",
+         "logo":"1836_jr/NBDS",
          "tokens":[
             0,
             40,
@@ -444,7 +444,7 @@ module Engine
       {
          "sym":"HSM",
          "name":"Hollandsche IJzeren Spoorweg Maatschappij",
-         "logo":"1836Jr/HSM",
+         "logo":"1836_jr/HSM",
          "tokens":[
             0,
             40
@@ -455,7 +455,7 @@ module Engine
       {
          "sym":"NFL",
          "name":"Noord-Friesche Locaal",
-         "logo":"1836Jr/NFL",
+         "logo":"1836_jr/NFL",
          "tokens":[
             0,
             40
