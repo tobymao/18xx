@@ -49,9 +49,10 @@ module View
           'box-sizing': 'border-box',
           padding: '0 0.5rem',
         },
+        on: { keyup: enter },
       }
 
-      children << h('textarea#chatbar', chatbar_props, on: { keyup: enter }) if @user
+      children << h('textarea#chatbar', chatbar_props) if @user
 
       props = {
         key: 'global_chat',
