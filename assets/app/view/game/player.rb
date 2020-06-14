@@ -8,19 +8,12 @@ module View
 
       def render
         card_style = {
-          display: 'inline-block',
-          position: 'relative',
-          border: 'solid 1px gainsboro',
-          'border-radius': '10px',
-          overflow: 'hidden',
-          padding: '0.5rem',
-          margin: '0.5rem 0.5rem 0 0',
-          width: '320px',
-          'vertical-align': 'top',
+          border: '1px solid gainsboro',
+          width: '20rem',
         }
 
         if @game.round.can_act?(@player)
-          card_style['border'] = 'solid 1px black'
+          card_style['border'] = '1px solid black'
           card_style['background-color'] = '#dfd'
           card_style['color'] = 'black'
         end
@@ -32,27 +25,27 @@ module View
 
         divs << render_companies if @player.companies.any?
 
-        h(:div, { style: card_style }, divs)
+        h('div.player.card', { style: card_style }, divs)
       end
 
       def render_title
-        title_style = {
-          'background-color': @game.round.can_act?(@player) ? '#9b9' : 'lightgray',
-          'text-align': 'center',
-          color: 'black',
-          padding: '0.5rem 0px',
-          'font-weight': 'bold',
-          margin: '-0.5rem -0.5rem 0 -0.5rem',
+        props = {
+          style: {
+            'max-width': '20rem',
+            padding: '0.4rem',
+            'background-color': @game.round.can_act?(@player) ? '#9b9' : 'gainsboro',
+            color: 'black',
+          },
         }
 
-        h(:div, { style: title_style }, @player.name)
+        h('div.player.title.nowrap', props, @player.name)
       end
 
       def render_body
         props = {
           style: {
-            'margin-top': '1rem',
-            'margin-bottom': '0.5rem',
+            'margin-top': '0.2rem',
+            'margin-bottom': '0.4rem',
             display: 'flex',
             'justify-content': 'center',
           },
@@ -71,84 +64,66 @@ module View
         num_certs = @player.num_certs
         cert_limit = @game.cert_limit
 
-        div_props = {
+        table_props = {
           style: {
-            display: 'inline-block',
-            margin: '0rem 1rem',
-          },
-        }
-
-        td_props = {
-          style: {
-            padding: '0 0.5rem',
+            margin: '0 1rem',
           },
         }
 
         td_cert_props = {
           style: {
-            padding: '0 0.5rem',
             color: num_certs > cert_limit ? 'red' : 'currentColor',
           },
         }
 
         trs = [
           h(:tr, [
-            h(:td, td_props, 'Cash'),
-            h(:td, td_props, @game.format_currency(@player.cash)),
+            h(:td, 'Cash'),
+            h('td.right', @game.format_currency(@player.cash)),
           ]),
         ]
 
         if @game.round.auction?
           trs.concat([
             h(:tr, [
-              h(:td, td_props, 'Committed'),
-              h(:td, td_props, @game.format_currency(@game.round.committed_cash(@player))),
+              h(:td, 'Committed'),
+              h('td.right', @game.format_currency(@game.round.committed_cash(@player))),
             ]),
             h(:tr, [
-              h(:td, td_props, 'Available'),
-              h(:td, td_props, @game.format_currency(@player.cash - @game.round.committed_cash(@player))),
+              h(:td, 'Available'),
+              h('td.right', @game.format_currency(@player.cash - @game.round.committed_cash(@player))),
             ]),
           ])
         end
 
         trs.concat([
           h(:tr, [
-            h(:td, td_props, 'Value'),
-            h(:td, td_props, @game.format_currency(@player.value)),
+            h(:td, 'Value'),
+            h('td.right', @game.format_currency(@player.value)),
           ]),
           h(:tr, [
-            h(:td, td_props, 'Liquidity'),
-            h(:td, td_props, @game.format_currency(@game.liquidity(@player))),
+            h(:td, 'Liquidity'),
+            h('td.right', @game.format_currency(@game.liquidity(@player))),
           ]),
           h(:tr, [
-            h(:td, td_props, 'Certs'),
-            h(:td, td_cert_props, "#{num_certs}/#{cert_limit}"),
+            h(:td, 'Certs'),
+            h('td.right', td_cert_props, "#{num_certs}/#{cert_limit}"),
           ]),
         ])
 
         if @player == @game.priority_deal_player
           trs << h(:tr, [
-            h(:td, { attrs: { colspan: '2' }, style: { 'text-align': 'center' } }, 'Priority Deal'),
+            h('td.center.italic', { attrs: { colspan: '2' } }, 'Priority Deal'),
           ])
         end
 
-        h(:div, div_props, [
-          h(:table, trs),
-        ])
+        h(:table, table_props, trs)
       end
 
       def render_shares
         props = {
           style: {
-            'text-align': 'right',
-          },
-        }
-
-        div_props = {
-          style: {
-            display: 'inline-block',
-            'margin-left': '1rem',
-            'margin-right': '1rem',
+            margin: '0 1rem',
           },
         }
 
@@ -158,108 +133,57 @@ module View
           .reverse
           .map { |c, s| render_corporation_shares(c, s) }
 
-        h(:div, div_props, [
-          h(:table, props, shares),
-        ])
+        h(:table, props, shares)
       end
 
       def render_corporation_shares(corporation, shares)
+        td_props = {
+          style: {
+            padding: '0 0.2rem',
+          },
+        }
+        div_props = {
+          style: {
+            height: '20px',
+          },
+        }
         logo_props = {
           attrs: {
             src: corporation.logo,
           },
           style: {
-            position: 'absolute',
-            width: '20px',
-            top: '0',
-            left: '0',
-          },
-        }
-
-        logo_td_props = {
-          style: {
-            position: 'relative',
-            width: '20px',
-          },
-        }
-
-        td_props = {
-          style: {
-            padding: '0.1rem 0.2rem',
-            'text-align': 'left',
+            height: '20px',
           },
         }
 
         president_marker = corporation.president?(@player) ? '*' : ''
-        h(:tr, [
-          h(:td, logo_td_props, [h(:img, logo_props)]),
+        h('tr.row', [
+          h('td.center', td_props, [h(:div, div_props, [h(:img, logo_props)])]),
           h(:td, td_props, corporation.name + president_marker),
-          h(:td, td_props, "#{shares.sum(&:percent)}%"),
+          h('td.right', td_props, "#{shares.sum(&:percent)}%"),
         ])
       end
 
       def render_companies
-        div_props = {
-          style: {
-            'margin-top': '1rem',
-            'margin-bottom': '0.5rem',
-            'text-align': 'center',
-          },
-        }
-
-        props = {
-          style: {
-            display: 'inline-block',
-            'text-align': 'right',
-            'margin-left': 'auto',
-            'margin-right': 'auto',
-          },
-        }
-
-        th_props = {
-          style: {
-            'text-align': 'center',
-            padding: '0 0.3rem',
-          },
-        }
-
         companies = @player.companies.map do |company|
           render_company(company)
         end
 
-        h(:div, div_props, [
-          h(:table, props, [
-            h(:tr, [
-              h(:th, th_props, 'Company'),
-              h(:th, th_props, 'Value'),
-              h(:th, th_props, 'Income'),
-            ]),
-            *companies,
+        h('table.center', [
+          h(:tr, [
+            h(:th, 'Company'),
+            h(:th, 'Value'),
+            h(:th, 'Income'),
           ]),
+          *companies,
         ])
       end
 
       def render_company(company)
-        name_props = {
-          style: {
-            'text-align': 'center',
-            overflow: 'hidden',
-            'white-space': 'nowrap',
-            'text-overflow': 'ellipsis',
-            'max-width': '200px',
-          },
-        }
-
-        td_props = {
-          style: {
-            padding: '0 0.5rem',
-          },
-        }
-
         h(:tr, [
-          h(:td, name_props, company.name),
-          h(:td, td_props, @game.format_currency(company.value)),
-          h(:td, td_props, @game.format_currency(company.revenue)),
+          h('td.name.nowrap', company.name),
+          h('td.right', @game.format_currency(company.value)),
+          h('td.right', @game.format_currency(company.revenue)),
         ])
       end
     end

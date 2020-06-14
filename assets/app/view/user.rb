@@ -29,7 +29,7 @@ module View
             render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
             render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
             h(:div, { style: { 'margin-bottom': '1rem' } }, [render_button('Login') { submit }]),
-            h('a.default-bg', { attrs: { href: '/forgot' } }, 'Forgot Password'),
+            h(:a, { attrs: { href: '/forgot' } }, 'Forgot Password'),
           ]]
         when :profile
           dark = `window.matchMedia('(prefers-color-scheme: dark)').matches`
@@ -102,9 +102,9 @@ module View
       ])
     end
 
-    def render_color(id, name, color, default)
-      color ||= default
-      render_input(name, id: id, type: :color, attrs: { value: color },)
+    def render_color(id, name, hex_color, default)
+      hex_color ||= default
+      render_input(name, id: id, type: :color, attrs: { value: hex_color },)
     end
 
     def render_logo_color(red_logo)
