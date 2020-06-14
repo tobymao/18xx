@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../config/game/g_1836Jr30'
+require_relative '../config/game/g_1836_jr30'
 require_relative 'base'
 
 module Engine
