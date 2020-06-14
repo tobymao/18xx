@@ -311,6 +311,9 @@ module Engine
             {
                "type":"teleport",
                "owner_type":"corporation",
+                "tiles": [
+                  "57"
+                ],
                "hexes":[
                   "J8"
                ]
