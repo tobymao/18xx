@@ -54,7 +54,7 @@ module View
       input_props = {
         style: input_style,
         attrs: {
-          id: "input_#{id}",
+          id: id,
           type: type,
           **attrs,
         },
