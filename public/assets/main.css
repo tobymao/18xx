@@ -40,6 +40,7 @@ button {
     background: black;
     border-color: gainsboro;
     color: gainsboro;
+    text-decoration: none;
   }
   .button, .button-link {
     outline: 0;
@@ -50,9 +51,15 @@ button {
   }
 }
 
-input, select {
+input, select, textarea {
+  background: whitesmoke;
+  border-radius: 5px;
+  padding: 0 0.5rem;
   cursor: pointer;
   margin: 0.5rem;
+}
+input, select {
+  height: 2rem;
 }
 input + label, select + label {
   margin-left: 0.5rem;
@@ -64,6 +71,17 @@ label.right {
 .input-container {
   display: inline-block;
   margin-right: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: black;
+    color: gainsboro;
+  }
+  
+  button, .button, .button-link, input, select, textarea {
+    background-color: gainsboro;
+  }
 }
 
 .nowrap {
@@ -86,13 +104,6 @@ label.right {
 }
 .bold {
   font-weight: bold;
-}
-
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: black;
-    color: gainsboro;
-  }
 }
 
 #profile-settings {
