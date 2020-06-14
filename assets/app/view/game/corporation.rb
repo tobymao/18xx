@@ -190,10 +190,13 @@ module View
       end
 
       def render_shares
-        player_info = @game
-          .players
-          .map do |p|
-          [p, @corporation.president?(p), p.num_shares_of(@corporation), @game.round.did_sell?(@corporation, p)]
+        player_info = @game.players.map do |player|
+          [
+            player,
+            @corporation.president?(player),
+            player.num_shares_of(@corporation),
+            @game.round.did_sell?(@corporation, player),
+          ]
         end
 
         shares_props = {
