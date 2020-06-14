@@ -8,7 +8,7 @@ module Engine
     class RunRoutes < Base
       attr_reader :routes
 
-      def initialize(entity, routes)
+      def initialize(entity, routes:)
         @entity = entity
         @routes = routes
       end
@@ -38,7 +38,7 @@ module Engine
           )
         end
 
-        [routes]
+        { routes: routes }
       end
 
       def args_to_h

@@ -314,7 +314,7 @@ module Engine
         '46' => 'path=a:0,b:3;path=a:2,b:4;path=a:3,b:4;path=a:0,b:2',
         '47' => 'path=a:0,b:3;path=a:1,b:4;path=a:1,b:3;path=a:0,b:4',
         '61' => 'city=revenue:60;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B',
-        '62' => 'city=revenue:80,slots:2;city=revenue:80,slots:2;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_0;path=a:_0,b:3;label=NY',
+        '62' => 'city=revenue:80,slots:2;city=revenue:80,slots:2;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=NY',
         '63' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
         '64' => 'city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:2;path=a:3,b:_1;path=a:_1,b:4;label=OO',
         '65' => 'city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:4;path=a:2,b:_1;path=a:_1,b:3;label=OO',

@@ -37,7 +37,7 @@ module Engine
     def fake_buy_train(train, corp)
       subject.depot.remove_train(train)
       corp.cash += train.price
-      game.phase.process_action(Action::BuyTrain.new(corp, train, train.price))
+      game.phase.process_action(Action::BuyTrain.new(corp, train: train, price: train.price))
       corp.buy_train(train, train.price)
     end
 
@@ -73,7 +73,7 @@ module Engine
         5.times { game.share_pool.buy_shares(player2, corporation2.shares.first) }
         player.cash = 2000
         player2.cash = 2000
-        subject.process_action(Action::LayTile.new(corporation, Tile.for('5'), hex_k8, 3))
+        subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('5'), hex: hex_k8, rotation: 3))
       end
 
       describe 'sellable_bundles' do
@@ -118,7 +118,12 @@ module Engine
           corporation.cash = 1
 
           bundle = player.bundles_for_corporation(corporation2).first
-          subject.process_action(Action::SellShares.new(player, bundle.shares, bundle.price, bundle.percent))
+          subject.process_action(Action::SellShares.new(
+            player,
+            shares: bundle.shares,
+            share_price: bundle.price,
+            percent: bundle.percent,
+          ))
           available = subject.buyable_trains
           expect(available.size).to eq(1)
         end
@@ -143,20 +148,20 @@ module Engine
             expect(subject.must_buy_train?).to be true
             corporation.cash = 1
             train = subject.buyable_trains.first
-            subject.process_action(Action::BuyTrain.new(corporation, train, train.price))
+            subject.process_action(Action::BuyTrain.new(corporation, train: train, price: train.price))
           end
           it 'does not allow purchasing with emergency funds if no need to buy' do
             train = subject.buyable_trains.first
-            subject.process_action(Action::BuyTrain.new(corporation, train, train.price))
+            subject.process_action(Action::BuyTrain.new(corporation, train: train, price: train.price))
             expect(subject.must_buy_train?).to be false
             corporation.cash = 1
             train = subject.buyable_trains.first
-            action = Action::BuyTrain.new(corporation, train, train.price)
+            action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             expect { subject.process_action(action) }.to raise_error GameError
           end
           it 'causes a rust event when buying the first 4' do
             train = subject.buyable_trains.first
-            subject.process_action(Action::BuyTrain.new(corporation, train, train.price))
+            subject.process_action(Action::BuyTrain.new(corporation, train: train, price: train.price))
             expect(subject.must_buy_train?).to be false
 
             # Move to 4 trains to cause a rust event
@@ -166,7 +171,7 @@ module Engine
 
             corporation.cash = 1000
             train = subject.buyable_trains.first
-            action = Action::BuyTrain.new(corporation, train, train.price)
+            action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             game.phase.process_action(action)
             subject.process_action(action)
             expect(corporation.trains.size).to eq(1)
@@ -174,7 +179,7 @@ module Engine
 
           it 'does not allow purchasing with emergency funds if no need to buy even if it causes a rusting' do
             train = subject.buyable_trains.first
-            subject.process_action(Action::BuyTrain.new(corporation, train, train.price))
+            subject.process_action(Action::BuyTrain.new(corporation, train: train, price: train.price))
             expect(subject.must_buy_train?).to be false
 
             # Move to 4 trains to cause a rust event
@@ -187,7 +192,7 @@ module Engine
 
             corporation.cash = 1
             train = subject.buyable_trains.first
-            action = Action::BuyTrain.new(corporation, train, train.price)
+            action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             game.phase.process_action(action)
             expect { subject.process_action(action) }.to raise_error GameError
           end
@@ -201,7 +206,7 @@ module Engine
 
             corporation.cash = subject.buyable_trains.first.price
             train = subject.buyable_trains.find { |x| x.name == 'D' }
-            action = Action::BuyTrain.new(corporation, train, train.price)
+            action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             game.phase.process_action(action)
             expect { subject.process_action(action) }.to raise_error GameError
           end
@@ -235,7 +240,7 @@ module Engine
         5.times { game.share_pool.buy_shares(player2, corporation2.shares.first) }
         player.cash = 2000
         player2.cash = 2000
-        subject.process_action(Action::LayTile.new(corporation, Tile.for('57'), hex_c13, 1))
+        subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('57'), hex: hex_c13, rotation: 1))
       end
 
       describe 'sellable_bundles' do
@@ -262,7 +267,12 @@ module Engine
           player.cash = 1
 
           bundle = player.bundles_for_corporation(corporation2).first
-          subject.process_action(Action::SellShares.new(player, bundle.shares, bundle.price, bundle.percent))
+          subject.process_action(Action::SellShares.new(
+            player,
+            shares: bundle.shares,
+            share_price: bundle.price,
+            percent: bundle.percent,
+          ))
           available = subject.buyable_trains
           expect(available.size).to eq(2)
         end
@@ -273,7 +283,12 @@ module Engine
           player.cash = 1
 
           bundle = player.bundles_for_corporation(corporation2)[2]
-          subject.process_action(Action::SellShares.new(player, bundle.shares, bundle.price, bundle.percent))
+          subject.process_action(Action::SellShares.new(
+            player,
+            shares: bundle.shares,
+            share_price: bundle.price,
+            percent: bundle.percent,
+          ))
           available = subject.buyable_trains
           expect(available.size).to eq(1)
         end
@@ -289,7 +304,7 @@ module Engine
 
           corporation.cash = subject.buyable_trains.first.price
           train = subject.buyable_trains.find { |x| x.name == 'D' }
-          action = Action::BuyTrain.new(corporation, train, train.price)
+          action = Action::BuyTrain.new(corporation, train: train, price: train.price)
           game.phase.process_action(action)
           expect { subject.process_action(action) }.to raise_error GameError
         end
@@ -300,7 +315,7 @@ module Engine
           corporation.cash = 1
           train = corporation2.trains.first
           player.cash = train.price
-          action = Action::BuyTrain.new(corporation, train, train.price)
+          action = Action::BuyTrain.new(corporation, train: train, price: train.price)
           game.phase.process_action(action)
           subject.process_action(action)
         end
@@ -310,7 +325,7 @@ module Engine
           corporation.cash = 1
           train = corporation2.trains.first
           player.cash = train.price
-          action = Action::BuyTrain.new(corporation, train, train.price + 1)
+          action = Action::BuyTrain.new(corporation, train: train, price: train.price + 1)
           game.phase.process_action(action)
           expect { subject.process_action(action) }.to raise_error GameError
         end
@@ -326,7 +341,7 @@ module Engine
             hex_k8 => [1, 2, 3, 4]
           )
 
-          subject.process_action(Action::LayTile.new(corporation, Tile.for('5'), hex_k8, 3))
+          subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('5'), hex: hex_k8, rotation: 3))
 
           expect(subject.connected_hexes).to eq(
             hex_k6 => [0],
@@ -334,7 +349,7 @@ module Engine
             hex_l7 => [1],
           )
 
-          subject.process_action(Action::LayTile.new(corporation, Tile.for('9'), hex_k6, 0))
+          subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('9'), hex: hex_k6, rotation: 0))
 
           expect(subject.connected_hexes).to eq(
             hex_j3 => [5],
@@ -351,9 +366,9 @@ module Engine
         let(:corporation) { game.corporation_by_id('TR') }
 
         it 'can handle forks' do
-          subject.process_action(Action::LayTile.new(corporation, Tile.for('58'), hex_g10, 0))
-          subject.process_action(Action::LayTile.new(corporation, Tile.for('15'), hex_g12, 3))
-          subject.process_action(Action::LayTile.new(corporation, Tile.for('9'), hex_h13, 1))
+          subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('58'), hex: hex_g10, rotation: 0))
+          subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('15'), hex: hex_g12, rotation: 3))
+          subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('9'), hex: hex_h13, rotation: 1))
 
           expect(subject.connected_hexes).to eq(
             hex_e8 => [5],
@@ -372,21 +387,21 @@ module Engine
 
       context 'with ko' do
         let(:corporation) { game.corporation_by_id('KO') }
-        let(:company) { game.company_by_id('Takamatsu E-Railroad') }
+        let(:company) { game.company_by_id('TR') }
         let(:player) { game.player_by_id('a') }
 
         it 'errors when upgrading K4 if Takumatsu is owned by player' do
           company.owner = player
           player.companies << company
 
-          action = Action::LayTile.new(corporation, Tile.for('440'), hex_k4, 0)
+          action = Action::LayTile.new(corporation, tile: Tile.for('440'), hex: hex_k4, rotation: 0)
           expect { subject.process_action(action) }.to raise_error(GameError)
         end
 
         it 'allows upgrading K4 if Takumatsu is owned by any corporation' do
           company.owner = corporation
           corporation.companies << company
-          subject.process_action(Action::LayTile.new(corporation, Tile.for('440'), hex_k4, 0))
+          subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('440'), hex: hex_k4, rotation: 0))
         end
       end
     end

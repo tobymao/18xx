@@ -2,7 +2,6 @@
 
 require_relative '../config/game/g_1817'
 require_relative 'base'
-require_relative '../publisher'
 
 module Engine
   module Game
