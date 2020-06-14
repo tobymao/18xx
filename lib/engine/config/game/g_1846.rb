@@ -339,36 +339,39 @@ module Engine
       "name": "3/5",
       "distance": 3,
       "price": 160,
-      "num": 6
-    },
-    {
-      "name": "4",
-      "distance": 4,
-      "price": 180,
+      "variants": [
+         {
+           "name": "4",
+           "distance": 4,
+           "price": 180
+         }
+      ],
       "num": 6
     },
     {
       "name": "4/6",
       "distance": 4,
       "price": 450,
-      "num": 5
-    },
-    {
-      "name": "5",
-      "distance": 5,
-      "price": 500,
+      "variants": [
+         {
+           "name": "5",
+           "distance": 5,
+           "price": 500
+         }
+      ],
       "num": 5
     },
     {
       "name": "6",
       "distance": 6,
       "price": 800,
-      "num": 9
-    },
-    {
-      "name": "7/8",
-      "distance": 7,
-      "price": 900,
+      "variants": [
+        {
+          "name": "7/8",
+          "distance": 7,
+          "price": 900
+        }
+      ],
       "num": 9
     }
   ],

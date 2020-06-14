@@ -73,7 +73,7 @@ module Engine
 
       def big4
         @big4 ||= Minor.new(
-          sym: 'B4',
+          sym: 'BIG4',
           name: 'Big 4',
           coordinates: 'G9',
           tokens: [0],

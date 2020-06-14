@@ -90,9 +90,9 @@ module View
               process_action(
                 Engine::Action::BuyTrain.new(
                   @corporation,
-                  discount_train,
-                  price,
-                  train,
+                  train: discount_train,
+                  price: price,
+                  exchange: train,
                 )
               )
             end
@@ -111,7 +111,13 @@ module View
 
       def from_depot(depot_trains)
         depot_trains.map do |train|
-          buy_train = -> { process_action(Engine::Action::BuyTrain.new(@corporation, train, train.price)) }
+          buy_train = lambda do
+            process_action(Engine::Action::BuyTrain.new(
+              @corporation,
+              train: train,
+              price: train.price,
+            ))
+          end
 
           source = @depot.discarded.include?(train) ? 'The Discard' : 'The Depot'
 
@@ -142,7 +148,11 @@ module View
 
             buy_train = lambda do
               price = input.JS['elm'].JS['value'].to_i
-              process_action(Engine::Action::BuyTrain.new(@corporation, group[0], price))
+              process_action(Engine::Action::BuyTrain.new(
+                @corporation,
+                train: group[0],
+                price: price,
+              ))
             end
 
             count = group.size

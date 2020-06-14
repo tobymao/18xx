@@ -25,7 +25,7 @@ module View
             message = event['target']['value']
             if message.strip != ''
               event['target']['value'] = ''
-              process_action(Engine::Action::Message.new(@player, message))
+              process_action(Engine::Action::Message.new(@player, message: message))
             end
           end
         end

@@ -359,7 +359,7 @@ module Engine
         # default operating action is to payout 0, i.e. withhold
         @current_entity.operating_history[[@game.turn, @round_num]] ||= OperatingInfo.new(
           [],
-          Action::Dividend.new(@game.current_entity, 'withhold'),
+          Action::Dividend.new(@game.current_entity, kind: 'withhold'),
           0
         )
 

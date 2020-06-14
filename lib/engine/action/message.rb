@@ -7,13 +7,13 @@ module Engine
     class Message < Base
       attr_reader :message
 
-      def initialize(entity, message)
+      def initialize(entity, message:)
         @entity = entity
         @message = message
       end
 
       def self.h_to_args(h, _)
-        [h['message']]
+        { message: h['message'] }
       end
 
       def args_to_h

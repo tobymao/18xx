@@ -92,7 +92,6 @@ module Engine
           @current_actions.count { |action| action.is_a?(type) }
         end
 
-
         def skip_token
           return true if count_actions(Action::PlaceToken).positive?
 
@@ -111,7 +110,10 @@ module Engine
           return super if @current_entity.corporation?
 
           revenue = @current_routes.sum(&:revenue)
-          revenue.positive? ? payout(revenue) : withhold
+          process_dividend(Action::Dividend.new(
+            @current_entity,
+            kind: revenue.positive? ? 'payout' : 'withhold',
+          ))
           true
         end
 
