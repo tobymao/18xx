@@ -158,7 +158,7 @@ module Engine
       "discount": -80,
       "revenue": 0,
       "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). Splits revenue evenly with owner. Buyer pays an extra $80 (\"debt\").",
-      "sym": "MSIRR"
+      "sym": "MS"
     },
     {
       "name": "Big 4",
@@ -166,7 +166,7 @@ module Engine
       "discount": -60,
       "revenue": 0,
       "desc": "Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). Splits revenue evenly with owner. Buyer pays an extra $60 (\"debt\").",
-      "sym": "BIG4IRR"
+      "sym": "BIG4"
     },
     {
       "name": "Chicago and Western Indiana",
@@ -187,7 +187,7 @@ module Engine
       "value": 60,
       "revenue": 20,
       "desc": "Reduces, for the owning corporation, the cost of laying all mountain tiles and tunnel/pass hexsides by $20.",
-      "sym": "TB"
+      "sym": "TBC"
     },
     {
       "name": "Meat Packing Company",
