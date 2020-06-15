@@ -23,7 +23,7 @@ module Engine
       end
 
       def args_to_h
-        token_type = @token.type if @token.type != :normal
+        token_type = @token&.type if @token&.type != :normal
         {
           'city' => @city.id,
           'slot' => @slot,
