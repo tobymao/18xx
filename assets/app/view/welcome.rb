@@ -42,7 +42,7 @@ module View
 
       props = {
         style: {
-          'background-color': '#FFEC46',
+          background: 'rgb(240, 229, 140)',
           color: 'black',
           'padding': '1em',
           'margin': '1rem 0',

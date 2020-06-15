@@ -6,6 +6,7 @@ require_tree './game'
 
 module View
   class GamePage < Snabberb::Component
+    include Lib::Color
     needs :game_data, store: true
     needs :game, default: nil, store: true
     needs :connection
@@ -151,7 +152,7 @@ module View
           padding: '1.5rem',
           margin: '-16px -1.5rem 1.5rem -1.5rem',
           top: '0',
-          'background-color': 'gainsboro',
+          'background-color': color_for(:bg2),
           'font-size': 'large',
           'z-index': '9999',
         },
@@ -191,7 +192,7 @@ module View
         },
         style: {
           'margin': '0 1rem 1rem 0',
-          'color': 'black',
+          'color': color_for(:font2),
           'text-decoration': route_anchor == anchor[1..-1] ? '' : 'none',
         },
         on: { click: change_anchor },

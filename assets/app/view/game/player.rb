@@ -3,6 +3,7 @@
 module View
   module Game
     class Player < Snabberb::Component
+      include Lib::Color
       needs :player
       needs :game
 
@@ -33,8 +34,8 @@ module View
           style: {
             'max-width': '20rem',
             padding: '0.4rem',
-            'background-color': @game.round.can_act?(@player) ? '#9b9' : 'gainsboro',
-            color: 'black',
+            'background-color': @game.round.can_act?(@player) ? '#9b9' : color_for(:bg2),
+            color: @game.round.can_act?(@player) ? 'black' : color_for(:font2),
           },
         }
 

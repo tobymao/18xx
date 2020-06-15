@@ -3,6 +3,7 @@
 module View
   module Game
     class Corporation < Snabberb::Component
+      include Lib::Color
       needs :corporation
       needs :selected_corporation, default: nil, store: true
       needs :game, store: true
@@ -85,8 +86,8 @@ module View
             grid: '1fr / auto auto auto',
             gap: '0 0.2rem',
             padding: '0.2rem 0.5rem',
-            'background-color': @game.round.can_act?(@corporation) ? '#99bb99' : 'gainsboro',
-            color: 'black',
+            'background-color': @game.round.can_act?(@corporation) ? '#99bb99' : color_for(:bg2),
+            color: @game.round.can_act?(@corporation) ? 'black' : color_for(:font2),
           },
         }
         sym_props = {
