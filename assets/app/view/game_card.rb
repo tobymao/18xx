@@ -189,8 +189,12 @@ module View
         children << h(:div, { style: { display: 'inline' } }, [h(:strong, 'Max Players: '), @gdata['max_players']])
         children << h(:div, { style: { display: 'inline', float: 'right' } }, [
           h(:strong, 'Created: '),
-          h(:span, { attrs: { title: @gdata['created_fulldate'] } },
-            @gdata['created_at'] == Time.now.strftime('%Y-%m-%d') ? @gdata['created_time'] : @gdata['created_at']),
+          h(:span, { attrs: { title: Time.at(@gdata['created_at']).strftime('%F %T') } },
+            if Time.at(@gdata['created_at']).strftime('%F') == Time.now.strftime('%F')
+              Time.at(@gdata['created_at']).strftime('%T')
+            else
+              Time.at(@gdata['created_at']).strftime('%F')
+            end),
         ])
       elsif @gdata['status'] == 'finished'
         result = @gdata['result']
@@ -213,8 +217,12 @@ module View
           if @gdata['updated_at']
             h(:div, { style: { display: 'inline', float: 'right' } }, [
               h(:strong, 'Updated: '),
-              h(:span, { attrs: { title: @gdata['updated_fulldate'] } },
-                @gdata['updated_at'] == Time.now.strftime('%Y-%m-%d') ? @gdata['updated_time'] : @gdata['updated_at']),
+              h(:span, { attrs: { title: Time.at(@gdata['updated_at']).strftime('%F %T') } },
+                if Time.at(@gdata['updated_at']).strftime('%F') == Time.now.strftime('%F')
+                  Time.at(@gdata['updated_at']).strftime('%T')
+                else
+                  Time.at(@gdata['updated_at']).strftime('%F')
+                end),
             ])
           end,
         ])

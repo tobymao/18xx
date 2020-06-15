@@ -111,11 +111,7 @@ class Game < Base
       actions: actions_h,
       loaded: include_actions,
       created_at: pp_created_at,
-      created_time: pp_created_time,
-      created_fulldate: pp_created_fulldate,
       updated_at: pp_updated_at,
-      updated_time: pp_updated_time,
-      updated_fulldate: pp_updated_fulldate,
     }
   end
 end
