@@ -38,6 +38,7 @@ module Engine
       @float_percent = opts[:float_percent] || 60
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
+      @needs_token_to_par = opts[:needs_token_to_par] || false
 
       operator_setup(opts)
     end
@@ -54,6 +55,12 @@ module Engine
       # if no share price, like when you exchange a share pre-ipo
       # it still counts
       @share_price ? @share_price.counts_for_limit : true
+    end
+
+    def can_par?
+      return false if @needs_token_to_par && @tokens.empty?
+
+      true
     end
 
     def par_price

@@ -103,7 +103,7 @@ module Engine
           train.unpurchasable = true
           minor.buy_train(train, :free)
           hex = hex_by_id(minor.coordinates)
-          hex.tile.cities[0].place_token(minor, free: true)
+          hex.tile.cities[0].place_token(minor, minor.next_token, free: true)
         end
       end
 

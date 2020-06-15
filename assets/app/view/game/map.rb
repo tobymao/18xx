@@ -4,6 +4,7 @@ require 'view/game/axis'
 require 'view/game/hex'
 require 'view/game/tile_confirmation'
 require 'view/game/tile_selector'
+require 'view/game/token_selector'
 
 module View
   module Game
@@ -47,7 +48,10 @@ module View
           left = (@tile_selector.x + map_x) * SCALE
 
           selector =
-            if @tile_selector.hex.tile != @tile_selector.tile
+            if @tile_selector.is_a?(Lib::TokenSelector)
+              # 1882
+              h(TokenSelector)
+            elsif @tile_selector.hex.tile != @tile_selector.tile
               h(TileConfirmation)
             else
               # Selecting column A can cause tiles to go off the edge of the map

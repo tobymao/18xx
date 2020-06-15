@@ -115,8 +115,11 @@ module Engine
         when Action::SellShares
           sell_shares(action.bundle)
         when Action::Par
+
           share_price = action.share_price
           corporation = action.corporation
+          raise GameError, "#{corporation} cannot be parred" unless corporation.can_par?
+
           @stock_market.set_par(corporation, share_price)
           share = corporation.shares.first
           buy_shares(entity, share.to_bundle)

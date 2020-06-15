@@ -24,6 +24,7 @@ module Engine
         return false unless corporation
         return false if tokened_by?(corporation)
         return false if @tokens.include?(nil)
+        return false if @tokens.any? { |t| t&.type == :neutral }
 
         true
       end
@@ -59,10 +60,9 @@ module Engine
         end
       end
 
-      def place_token(corporation, free: false)
+      def place_token(corporation, token, free: false)
         raise GameError, "#{corporation.name} cannot lay token on #{id}" unless tokenable?(corporation, free: free)
 
-        token = corporation.next_token
         token.use!
         exchange_token(token)
       end

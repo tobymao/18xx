@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require 'view/game/hex'
+require 'lib/radial_selector'
 
 module View
   module Game
     class TileSelector < Snabberb::Component
+      include Lib::RadialSelector
       needs :tile_selector, store: true
       needs :layout
       needs :tiles
@@ -19,19 +21,10 @@ module View
           h(Hex, hex: hex, role: :tile_selector)
         end
 
-        theta = 360.0 / hexes.size * Math::PI / 180
-
-        hexes = hexes.map.with_index do |hex, index|
-          style = {
-            position: 'absolute',
-            left: "#{DISTANCE * Math.cos(index * theta) - SIZE}px",
-            bottom: "#{DISTANCE * Math.sin(index * theta) - SIZE}px",
-            width: "#{TILE_SIZE}px",
-            height: "#{TILE_SIZE}px",
-            filter: 'drop-shadow(5px 5px 2px #888)',
-            'pointer-events' => 'auto',
-          }
-          h(:svg, { style: style }, [h(:g, { attrs: { transform: "scale(#{SCALE})" } }, [hex])])
+        hexes = list_coordinates(hexes, DISTANCE, SIZE).map do |hex, left, bottom|
+          h(:svg,
+            { style: style(left, bottom, TILE_SIZE) },
+            [h(:g, { attrs: { transform: "scale(#{SCALE})" } }, [hex])])
         end
 
         h(:div, hexes)
