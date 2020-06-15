@@ -118,7 +118,7 @@ module View
     def render_tile_colors
       h('div#settings__tiles', [
         h(:label, 'Map & Tile Colors'),
-        h('div#settings__tiles__buttons', Lib::Hex::COLOR.map do |color, _hex_color|
+        h('div#settings__tiles__buttons', Lib::Hex::COLOR.map do |color, _|
           render_input(
             '',
             id: color,

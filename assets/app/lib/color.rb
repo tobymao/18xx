@@ -9,8 +9,8 @@ module Lib
       bg2: '#dcdcdc',
       font: '#000000',
       font2: '#000000',
+      **Lib::Hex::COLOR,
     }.freeze
-    COLORS.merge!(Lib::Hex::COLOR)
 
     def self.included(base)
       base.needs :user, default: nil, store: true
