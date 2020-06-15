@@ -2,6 +2,7 @@
 
 a {
   color: currentColor;
+  text-underline-offset: 0.2em;
 }
 a.game__nav:focus {
   font-weight: bold;
@@ -58,7 +59,7 @@ input, select, textarea {
   cursor: pointer;
   margin: 0.5rem;
 }
-input, select {
+input:not([type="checkbox"]), select {
   height: 2rem;
 }
 input + label, select + label {

@@ -23,8 +23,7 @@ module View
           border: 'solid 1px currentColor',
           'border-radius': '10px',
           overflow: 'hidden',
-          padding: '0.5rem',
-          width: '320px',
+          width: '23rem',
           'margin': '0 0.5rem 0.5rem 0',
           'vertical-align': 'top',
         },
@@ -85,11 +84,10 @@ module View
 
       buttons << render_button('Start', -> { start_game(@gdata) }) if owner? && new? && players.size > 1
 
-      props = {
+      div_props = {
         style: {
           position: 'relative',
-          margin: '-0.5em',
-          padding: '0.5em',
+          padding: '0.3em 0.1rem 0 0.5rem',
           'background-color': color,
         },
       }
@@ -98,14 +96,15 @@ module View
         style: {
           color: 'black',
           display: 'inline-block',
-          width: '160px',
+          'max-width': '13rem',
         },
       }
+      owner_props = { attrs: { title: @gdata['user']['name'].to_s }, }
 
-      h('div', props, [
+      h('div.header', div_props, [
         h(:div, text_props, [
           h(:div, "Game: #{@gdata['title']}"),
-          h(:div, "Owner: #{@gdata['user']['name']}"),
+          h('div.nowrap', owner_props, "Owner: #{@gdata['user']['name']}"),
         ]),
         *buttons,
       ])
@@ -148,41 +147,51 @@ module View
     def render_body
       props = {
         style: {
-          'margin-top': '0.5rem',
           'line-height': '1.2rem',
+          padding: '0.3rem 0.5rem',
           'word-break': 'break-all',
         },
       }
 
       p_elm = players.map.with_index do |player, index|
-        elm = h(
-          acting?(player) ? :u : :span,
-          { style: { 'margin-right': '0.5rem' } },
-          player['name'] + (index != (players.size - 1) ? ',' : ''),
-        )
-
+        short_name = player['name'].length > 19 ? player['name'][0...18] + '…' : player['name']
         if owner? && new? && player['id'] != @user['id']
           button_props = {
             on: { click: -> { kick(@gdata, player) } },
+            attrs: {
+              title: "kick #{player['name']}",
+            },
             style: {
-              'margin-left': '0.5rem',
+              padding: '0.1rem 0.3rem',
+              margin: '0 0.3rem 0.1rem 0.3rem',
             },
           }
-          elm = h('button.button', button_props, [elm])
-        end
 
+          elm = h('button.button', button_props, short_name)
+        else
+          player_props = { attrs: { title: player['name'].to_s } }
+
+          elm = h(:span, [
+            h(acting?(player) ? :em : :span, player_props, short_name),
+            index == (players.size - 1) || owner? && new? ? '' : ', ',
+          ])
+        end
         elm
       end
 
       children = [
-        h(:div, [h(:b, 'Id: '), @gdata['id'].to_s]),
-        h(:div, [h(:b, 'Description: '), @gdata['description']]),
-        h(:div, [h(:b, 'Players: '), *p_elm]),
+        h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s]),
+        h(:div, [h(:strong, 'Description: '), @gdata['description']]),
+        h(:div, [h(:strong, 'Players: '), *p_elm]),
       ]
 
       if new?
-        children << h(:div, [h(:b, 'Max Players: '), @gdata['max_players']])
-        children << h(:div, [h(:b, 'Created: '), @gdata['created_at']])
+        children << h(:div, { style: { display: 'inline' } }, [h(:strong, 'Max Players: '), @gdata['max_players']])
+        children << h(:div, { style: { display: 'inline', float: 'right' } }, [
+          h(:strong, 'Created: '),
+          h(:span, { attrs: { title: @gdata['created_fulldate'] } },
+            @gdata['created_at'] == Time.now.strftime('%Y-%m-%d') ? @gdata['created_time'] : @gdata['created_at']),
+        ])
       elsif @gdata['status'] == 'finished'
         result = @gdata['result']
           .sort_by { |_, v| -v }
@@ -190,13 +199,24 @@ module View
           .join(', ')
 
         children << h(:div, [
-          h(:b, 'Result: '),
+          h(:strong, 'Result: '),
           result,
         ])
-      else
+      elsif @gdata['round'] || @gdata['updated_at'] 
         children << h(:div, [
-          h(:b, 'Round: '), "#{@gdata['round']&.split(' ')&.first} #{@gdata['turn']} ",
-          h(:b, 'Updated: '), @gdata['updated_at']
+          if @gdata['round']
+            h(:div, { style: { display: 'inline' } }, [
+              h(:strong, 'Round: '),
+              "#{@gdata['round']&.split(' ')&.first} #{@gdata['turn']}",
+            ])
+          end,
+          if @gdata['updated_at']
+            h(:div, { style: { display: 'inline', float: 'right' } }, [
+              h(:strong, 'Updated: '),
+              h(:span, { attrs: { title: @gdata['updated_fulldate'] } },
+                @gdata['updated_at'] == Time.now.strftime('%Y-%m-%d') ? @gdata['updated_time'] : @gdata['updated_at']),
+            ])
+          end,
         ])
       end
 
