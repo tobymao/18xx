@@ -20,7 +20,7 @@ module Engine
     end
 
     def value
-      @cash + shares.sum(&:price) + @companies.sum(&:value)
+      @cash + shares.select { |s| s.corporation.ipoed }.sum(&:price) + @companies.sum(&:value)
     end
 
     def id
