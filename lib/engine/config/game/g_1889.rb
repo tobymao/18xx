@@ -219,7 +219,7 @@ module Engine
       "name": "Takamatsu E-Railroad",
       "value": 20,
       "revenue": 5,
-      "desc": "Blocks Takamatsu (K4).",
+      "desc": "Blocks Takamatsu (K4) while owned by a player.",
       "sym": "TR",
       "abilities": [
         {
@@ -257,7 +257,7 @@ module Engine
       "name": "Ehime Railway",
       "value": 40,
       "revenue": 10,
-      "desc": "When this company is sold to a corporation, the selling player may immediately place a green tile on Ohzu (C4), in addition to any tile which it may lay during the same operating round. This does not close the company.",
+      "desc": "When this company is sold to a corporation, the selling player may immediately place a green tile on Ohzu (C4), in addition to any tile which it may lay during the same operating round. This does not close the company. Blocks C4 while owned by a player.",
       "sym": "ER",
       "abilities": [
         {
