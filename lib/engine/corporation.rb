@@ -23,7 +23,6 @@ module Engine
     def initialize(sym:, name:, **opts)
       @name = sym
       @full_name = name
-      @logo = "/logos/#{opts[:logo]}.svg"
       [
         Share.new(self, president: true, percent: 20),
         *8.times.map { |index| Share.new(self, percent: 10, index: index + 1) },
@@ -40,6 +39,7 @@ module Engine
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
+
       operator_setup(opts)
     end
 
@@ -77,6 +77,10 @@ module Engine
 
     def num_market_shares
       10 - num_ipo_shares - num_player_shares
+    end
+
+    def share_holders
+      @share_holders ||= Hash.new(0)
     end
 
     def id

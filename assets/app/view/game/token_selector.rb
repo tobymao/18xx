@@ -19,9 +19,9 @@ module View
           click = lambda do
             action = Engine::Action::PlaceToken.new(
               @game.current_entity,
-              @tile_selector.city,
-              @tile_selector.slot_index,
-              token.type
+              city: @tile_selector.city,
+              slot: @tile_selector.slot_index,
+              token_type: token.type
             )
             process_action(action)
           end
