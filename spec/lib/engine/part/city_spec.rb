@@ -9,15 +9,48 @@ require 'engine/token'
 module Engine
   module Part
     describe City do
-      subject { described_class.new('20') }
+      subject { Tile.for('57', index: 0).cities[0] }
 
-      let(:corporation) { Engine::Corporation.new('AS', name: 'Aperture Science', tokens: 2) }
-      let(:placed_token) { Engine::Token.new(corporation, true) }
-      let(:unplaced_token) { Engine::Token.new(corporation) }
+      let(:corporation) { Engine::Corporation.new(sym: 'AS', name: 'Aperture Science', tokens: [0, 40]) }
+      let(:corporation2) { Engine::Corporation.new(sym: 'BM', name: 'Black Mesa', tokens: []) }
+      let(:unplaced_token) { corporation.next_token }
+      let(:neutral_token) { Engine::Token.new(corporation2, type: :neutral) }
 
       describe '#initialize' do
         it 'starts with no tokens' do
           expect(subject.tokens).to eq([nil])
+        end
+      end
+
+      describe '#blocks?' do
+        it 'unblocked with no tokens' do
+          expect(subject.blocks?(corporation)).to be false
+        end
+        it 'unblocked with same corporation token' do
+          subject.place_token(corporation, unplaced_token, free: true)
+          expect(subject.blocks?(corporation)).to be false
+        end
+        it 'blocked with different corporation token' do
+          subject.place_token(corporation, unplaced_token, free: true)
+          expect(subject.blocks?(corporation2)).to be true
+        end
+        it 'unblocked with neutral token' do
+          corporation2.tokens << neutral_token
+          subject.place_token(corporation2, neutral_token, free: true)
+          expect(subject.blocks?(corporation)).to be false
+        end
+      end
+
+      describe '#tokenable?' do
+        subject { Tile.for('14', index: 0).cities[0] }
+        it 'disallows two tokens of the same corp' do
+          subject.place_token(corporation, unplaced_token, free: true)
+          expect(subject.tokenable?(corporation)).to be false
+        end
+        it 'allows neutral token' do
+          corporation.tokens << neutral_token
+          subject.place_token(corporation, unplaced_token, free: true)
+          expect(subject.tokenable?(corporation)).to be true
         end
       end
 
