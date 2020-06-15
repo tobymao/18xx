@@ -28,7 +28,7 @@ module Engine
         {
           'train' => @train.id,
           'price' => @price,
-          'variant' => @train.variant,
+          'variant' => @train.variants.one? ? nil : @train.name,
           'exchange' => @exchange&.id,
         }
       end

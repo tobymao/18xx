@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
+require_relative '../helper/type'
+
 module Engine
   module Part
     class Base
+      include Helper::Type
+
       attr_accessor :index, :tile
 
       def id

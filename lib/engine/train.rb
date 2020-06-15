@@ -11,6 +11,7 @@ module Engine
     attr_accessor :unpurchasable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
+      @id = name
       @name = name
       @distance = distance
       @price = price
@@ -20,11 +21,11 @@ module Engine
       @discount = opts[:discount]
       @unpurchasable = false
       @rusted = false
-      setup_variants(opts[:variants])
+      init_variants(opts[:variants])
     end
 
-    def setup_variants(variants)
-      return unless variants
+    def init_variants(variants)
+      variants ||= []
 
       @variant = {
         name: @name,
@@ -38,10 +39,11 @@ module Engine
       @variants = variants.group_by { |h| h[:name] }.transform_values(&:first)
     end
 
-    def variant=(variant)
-      return unless variant
+    def variant=(new_variant)
+      return unless new_variant
 
-      @variants[variant]
+      @variant = @variants[new_variant]
+      @variant.each { |k, v| instance_variable_set("@#{k}", v) }
     end
 
     def price(exchange_train = nil)
@@ -49,7 +51,7 @@ module Engine
     end
 
     def id
-      "#{@name}-#{@index}"
+      "#{@id}-#{@index}"
     end
 
     def rust!
