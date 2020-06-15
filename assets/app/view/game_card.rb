@@ -99,7 +99,7 @@ module View
           'max-width': '13rem',
         },
       }
-      owner_props = { attrs: { title: @gdata['user']['name'].to_s }, }
+      owner_props = { attrs: { title: @gdata['user']['name'].to_s } }
 
       h('div.header', div_props, [
         h(:div, text_props, [
@@ -202,7 +202,7 @@ module View
           h(:strong, 'Result: '),
           result,
         ])
-      elsif @gdata['round'] || @gdata['updated_at'] 
+      elsif @gdata['round'] || @gdata['updated_at']
         children << h(:div, [
           if @gdata['round']
             h(:div, { style: { display: 'inline' } }, [
