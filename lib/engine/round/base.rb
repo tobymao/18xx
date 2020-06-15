@@ -231,6 +231,8 @@ module Engine
       end
 
       def place_home_token(corporation)
+        return unless corporation.next_token # 1882
+
         hex = @game.hexes.find { |h| h.coordinates == corporation.coordinates }
         cities = hex.tile.cities
         city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
