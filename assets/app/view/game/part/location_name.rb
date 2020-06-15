@@ -135,6 +135,15 @@ module View
           when 4
             # join first two words together, and join last two words together
             segments.each_slice(2).map { |pair| pair.join(' ') }
+          when 5
+            # join the middle word with the shorter of the front or back 2 words
+            front = segments[0..1].join(' ')
+            back = segments[3..5].join(' ')
+            if front.size > back.size
+              [front + ' ' + segments[2], back]
+            else
+              [front, segments[2] + ' ' + back]
+            end
           else
             segments
           end
