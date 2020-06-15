@@ -2,6 +2,7 @@
 
 module View
   class Log < Snabberb::Component
+    include Lib::Color
     needs :log
     needs :negative_pad, default: false
     needs :follow_scroll, default: true, store: true
@@ -31,9 +32,10 @@ module View
         style: {
           overflow: 'auto',
           height: '200px',
+          width: '100%',
           padding: '0.5rem',
-          color: 'black',
-          'background-color': 'lightgray',
+          'background-color': color_for(:bg2),
+          color: color_for(:font2),
           'word-break': 'break-word',
         },
       }

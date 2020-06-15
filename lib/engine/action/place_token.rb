@@ -7,7 +7,7 @@ module Engine
     class PlaceToken < Base
       attr_reader :city, :slot, :token
 
-      def initialize(entity, city, slot, token_type = :normal)
+      def initialize(entity, city:, slot:, token_type: :normal)
         @entity = entity
         @city = city
         @slot = slot
@@ -15,7 +15,11 @@ module Engine
       end
 
       def self.h_to_args(h, game)
-        [game.city_by_id(h['city']), h['slot'], h['token_type']]
+        {
+          city: game.city_by_id(h['city']),
+          slot: h['slot'],
+          token_type: h['token_type'],
+        }
       end
 
       def args_to_h

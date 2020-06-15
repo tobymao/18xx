@@ -217,13 +217,17 @@ module Engine
             []
           end
 
-        cost = old_tile.upgrade_cost(abilities)
+        cost = tile_cost(old_tile, abilities)
         entity.spend(cost, @game.bank) if cost.positive?
 
         @log << "#{action.entity.name}"\
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile ##{tile.name}"\
          " with rotation #{rotation} on #{hex.name}"
+      end
+
+      def tile_cost(tile, abilities)
+        tile.upgrade_cost(abilities)
       end
 
       def place_home_token(corporation)

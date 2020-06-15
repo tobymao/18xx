@@ -1,8 +1,17 @@
 * { font-family: 'Inconsolata', monospace; }
 
+a {
+  color: currentColor;
+}
+a.game__nav:focus {
+  font-weight: bold;
+  outline: 0;
+}
+
 button {
   margin: 0.5rem 0.5rem 0 0;
 }
+
 .button, .button-link {
   font-size: 14px;
   background: whitesmoke;
@@ -18,9 +27,39 @@ button {
   background: whitesmoke;
 }
 
-input, select {
+/* prevent hover effects on mobile devices */
+@media(hover: hover) and (pointer: fine) {
+  a:hover {
+    text-decoration: underline dotted;
+    opacity: 0.8;
+  }
+  a:active {
+    outline: 0;
+  }
+  .button:hover, .button-link:hover {
+    background: black;
+    border-color: gainsboro;
+    color: gainsboro;
+    text-decoration: none;
+  }
+  .button, .button-link {
+    outline: 0;
+  }
+  .button:active, .button-link:active, .button:focus, .button-link:focus {
+    outline: 0;
+    opacity: 0.8;
+  }
+}
+
+input, select, textarea {
+  background: whitesmoke;
+  border-radius: 5px;
+  padding: 0 0.5rem;
   cursor: pointer;
   margin: 0.5rem;
+}
+input, select {
+  height: 2rem;
 }
 input + label, select + label {
   margin-left: 0.5rem;
@@ -34,78 +73,37 @@ label.right {
   margin-right: 1rem;
 }
 
-/* prevent hover effects on mobile devices */
-@media(hover: hover) and (pointer: fine) {
-  .button:hover, .button-link:hover {
-    background: black;
-    border-color: gainsboro;
-    color: gainsboro;
-  }
-  .button, .button-link {
-    outline: 0;
-  }
-  .button:active, .button-link:active, .button:focus, .button-link:focus {
-    outline: 0;
-    opacity: 0.8;
-  }
-  a.nav:hover, a.default-bg:hover, a.text:hover {
-    text-decoration: underline dotted;
-    opacity: 0.8;
-  }
-  #logo a:hover {
-    opacity: 0.8;
-  }
-  a:active {
-    outline: 0;
-  }
-  a.game__nav:hover {
-    opacity: 0.8;
-  }
-}
-
-a.nav, a.default-bg, a.text  {
-  color: currentColor;
-}
-a.nav {
-  margin: 0 1rem;
-}
-a.game__nav:focus {
-  font-weight: bold;
-  outline: 0;
-}
-
-#nav {
-  box-shadow: 0 2px 0 0 gainsboro;
-  display: flex;
-  justify-content: space-between;
-  line-height: 3rem;
-  padding: 0 1rem 0.5rem 1rem;
-}
-#logo a {
-  color: currentColor;
-  font-weight: bold;
-  text-decoration: none;
-}
-#logo__18xx {
-  display: inline-block;
-  height: 3rem;
-  text-align: center;
-  width: 2.5rem;
-}
-#logo__18xx.yellow {
-  background: url(/images/logo_polygon_yellow.svg) left/2.5rem no-repeat;
-  color: black;
-}
-#logo__18xx.red {
-  background: url(/images/logo_polygon_red.svg) left/2.5rem no-repeat;
-  color: white;
-}
-
 @media (prefers-color-scheme: dark) {
   body {
     background-color: black;
     color: gainsboro;
   }
+  
+  button, .button, .button-link, input, select, textarea {
+    background-color: gainsboro;
+  }
+}
+
+.nowrap {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.center {
+  text-align: center;
+}
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+}
+.italic {
+  font-style: italic;
+}
+.bold {
+  font-weight: bold;
 }
 
 #profile-settings {
@@ -141,15 +139,6 @@ a.game__nav:focus {
 }
 #settings__tiles input[type=color] {
   margin: 3px;
-}
-
-#chatlog, input#chatbar {
-  width: 100%;
-}
-
-input#chatbar {
-  margin: 0;
-  box-sizing: border-box;
 }
 
 .card_header {
@@ -208,4 +197,40 @@ input#chatbar {
   alignment-baseline: middle;
   dominant-baseline: middle;
   pointer-events: none;
+}
+
+.title {
+  font-weight: bold;
+  text-align: center;
+}
+
+.card {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  margin: 0.5rem 0.5rem 0 0;
+  border: 1px solid gainsboro;
+  border-radius: 0.7rem;
+}
+.card table {
+  line-height: 1.25rem;
+}
+.card th {
+  padding: 0 0.3rem 0 0.2rem;
+}
+.card td {
+  padding: 0 0.5rem 0 0.3rem;
+}
+.card td.name {
+  text-align: left;
+  max-width: 12rem;
+}
+
+.corp div {
+  display: grid;
+  align-self: center;
+  justify-self: center;
+}
+table.center {
+  margin: 0.2rem auto;
 }

@@ -16,8 +16,8 @@ module View
         ])
       end
 
-      def dividend(type)
-        process_action(Engine::Action::Dividend.new(@game.current_entity, type))
+      def dividend(kind)
+        process_action(Engine::Action::Dividend.new(@game.current_entity, kind: kind))
       end
     end
   end

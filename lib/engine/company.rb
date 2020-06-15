@@ -9,12 +9,12 @@ module Engine
     attr_accessor :desc, :revenue, :discount
     attr_reader :name, :sym, :value
 
-    def initialize(name:, value:, revenue: 0, desc: '', sym: '', abilities: [], **opts)
+    def initialize(sym:, name:, value:, revenue: 0, desc: '', abilities: [], **opts)
+      @sym = sym
       @name = name
       @value = value
       @desc = desc
       @revenue = revenue
-      @sym = sym
       @discount = opts[:discount] || 0
       @closed = false
 
@@ -55,7 +55,7 @@ module Engine
     end
 
     def id
-      @name
+      @sym
     end
 
     def min_bid
@@ -92,10 +92,6 @@ module Engine
 
     def corporation?
       false
-    end
-
-    def short_name
-      @sym.empty? ? @name.gsub('-', ' ').split(' ').map { |w| w[0] }.join : @sym
     end
 
     def inspect

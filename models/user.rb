@@ -10,7 +10,9 @@ class User < Base
 
   RESET_WINDOW = 60 * 15 # 15 minutes
 
-  SETTINGS = %w[notifications bg_color font_color red_logo white yellow green brown gray red blue].freeze
+  SETTINGS = %w[
+    notifications bg font bg2 font2 red_logo white yellow green brown gray red blue
+  ].freeze
 
   def update_settings(params)
     SETTINGS.each { |setting| settings[setting] = params[setting] }

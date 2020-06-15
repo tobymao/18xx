@@ -33,7 +33,7 @@ module Engine
       end
 
       it 'bidding moves to next player' do
-        subject.process_action(Action::Bid.new(player_1, private_2, 35))
+        subject.process_action(Action::Bid.new(player_1, company: private_2, price: 35))
         expect(subject.current_entity).to eq(player_2)
       end
     end
@@ -47,32 +47,32 @@ module Engine
       end
 
       it 'is false if the cheapest has bids' do
-        subject.process_action(Action::Bid.new(player_1, private_2, 35))
-        subject.process_action(Action::Bid.new(player_2, private_2, 40))
-        subject.process_action(Action::Bid.new(player_3, private_1, 20))
+        subject.process_action(Action::Bid.new(player_1, company: private_2, price: 35))
+        subject.process_action(Action::Bid.new(player_2, company: private_2, price: 40))
+        subject.process_action(Action::Bid.new(player_3, company: private_1, price: 20))
         expect(subject.may_purchase?(private_2)).to be false
       end
 
       it 'is true if the cheapest remaining has no bids' do
-        subject.process_action(Action::Bid.new(player_1, private_1, 20))
+        subject.process_action(Action::Bid.new(player_1, company: private_1, price: 20))
         expect(subject.may_purchase?(private_2)).to be true
       end
     end
 
     describe '#process_action' do
       it 'buys the cheapest private' do
-        subject.process_action(Action::Bid.new(player_1, private_1, 20))
+        subject.process_action(Action::Bid.new(player_1, company: private_1, price: 20))
         expect(player_1.companies).to eq([private_1])
         expect(player_1.cash).to eq(80)
         expect(game.bank.cash).to eq(5460)
       end
 
       it 'resolves waterfall' do
-        subject.process_action(Action::Bid.new(player_1, private_2, 35))
+        subject.process_action(Action::Bid.new(player_1, company: private_2, price: 35))
         expect(player_1.companies).to eq([])
         expect(player_1.cash).to eq(100)
 
-        subject.process_action(Action::Bid.new(player_2, private_1, 20))
+        subject.process_action(Action::Bid.new(player_2, company: private_1, price: 20))
         expect(player_2.companies).to eq([private_1])
         expect(player_2.cash).to eq(80)
         expect(player_1.companies).to eq([private_2])
@@ -82,26 +82,26 @@ module Engine
       end
 
       it 'preserves order on waterfall pass' do
-        subject.process_action(Action::Bid.new(player_1, private_2, 35))
-        subject.process_action(Action::Bid.new(player_2, private_2, 40))
-        subject.process_action(Action::Bid.new(player_3, private_1, 20))
+        subject.process_action(Action::Bid.new(player_1, company: private_2, price: 35))
+        subject.process_action(Action::Bid.new(player_2, company: private_2, price: 40))
+        subject.process_action(Action::Bid.new(player_3, company: private_1, price: 20))
         subject.process_action(Action::Pass.new(player_1))
         expect(subject.current_player).to eq(player_1)
       end
 
       it 'preserves priority' do
-        subject.process_action(Action::Bid.new(player_1, private_1, 20))
-        subject.process_action(Action::Bid.new(player_2, private_2, 30))
-        subject.process_action(Action::Bid.new(player_3, private_3, 40))
+        subject.process_action(Action::Bid.new(player_1, company: private_1, price: 20))
+        subject.process_action(Action::Bid.new(player_2, company: private_2, price: 30))
+        subject.process_action(Action::Bid.new(player_3, company: private_3, price: 40))
         expect(subject.last_to_act).to eq(player_3)
       end
 
       it 'allows passers to come back in' do
-        subject.process_action(Action::Bid.new(player_1, private_2, 35))
-        subject.process_action(Action::Bid.new(player_2, private_2, 40))
+        subject.process_action(Action::Bid.new(player_1, company: private_2, price: 35))
+        subject.process_action(Action::Bid.new(player_2, company: private_2, price: 40))
         subject.process_action(Action::Pass.new(player_3))
-        subject.process_action(Action::Bid.new(player_1, private_3, 45))
-        subject.process_action(Action::Bid.new(player_2, private_3, 50))
+        subject.process_action(Action::Bid.new(player_1, company: private_3, price: 45))
+        subject.process_action(Action::Bid.new(player_2, company: private_3, price: 50))
         expect(subject.current_entity).to eq(player_3)
       end
 

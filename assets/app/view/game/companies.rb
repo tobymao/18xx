@@ -20,7 +20,7 @@ module View
       end
 
       def render_companies(owner, companies)
-        h(:div, [
+        h(:div, { style: { 'margin-bottom': '0.5rem' } }, [
           h(:div, { style: { 'border-bottom': '1px solid gainsboro' } }, owner.name),
           *companies.map { |c| h(Company, company: c) },
         ])

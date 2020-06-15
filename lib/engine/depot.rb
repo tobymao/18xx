@@ -19,7 +19,11 @@ module Engine
       train = @upcoming.first
       @game.log << "-- Event: A #{train.name} train exports --"
       remove_train(train)
-      @game.phase.process_action(Engine::Action::BuyTrain.new(nil, train, 0))
+      @game.phase.process_action(Engine::Action::BuyTrain.new(
+        nil,
+        train: train,
+        price: 0,
+      ))
     end
 
     def reclaim_train(train)
@@ -73,7 +77,9 @@ module Engine
     end
 
     def other_trains(corporation)
-      @trains.reject { |t| [corporation, self, nil].include?(t.owner) }
+      @trains.reject do |train|
+        train.unpurchasable || [corporation, self, nil].include?(train.owner)
+      end
     end
 
     def cash

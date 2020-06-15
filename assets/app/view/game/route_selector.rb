@@ -125,7 +125,7 @@ module View
 
       def actions
         submit = lambda do
-          process_action(Engine::Action::RunRoutes.new(@game.current_entity, active_routes))
+          process_action(Engine::Action::RunRoutes.new(@game.current_entity, routes: active_routes))
           cleanup
         end
 

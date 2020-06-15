@@ -51,8 +51,8 @@ module View
           if next_tokens.size == 1
             action = Engine::Action::PlaceToken.new(
               @game.current_entity,
-              @city,
-              @slot_index
+              city: @city,
+              slot: @slot_index,
             )
 
             process_action(action)

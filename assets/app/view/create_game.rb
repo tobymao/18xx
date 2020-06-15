@@ -29,7 +29,7 @@ module View
           el: :textarea,
           attrs: {
             placeholder: 'Paste JSON Game Data. Will override settings',
-            rows: 50,
+            rows: 35,
             cols: 50,
           },
           container_style: {
@@ -56,7 +56,13 @@ module View
       h(:div, [
         render_input('Game Title', id: :title, el: 'select', children: games),
         render_input('Description', id: :description),
-        render_input('Max Players', id: :max_players, type: :number, attrs: { value: 6 }),
+        render_input(
+          'Max Players',
+          id: :max_players,
+          type: :number,
+          attrs: { value: 6 },
+          input_style: { width: '2.5rem' },
+        ),
       ])
     end
 

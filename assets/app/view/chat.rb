@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
+require 'lib/color'
 require 'view/log'
 
 module View
   class Chat < Snabberb::Component
+    include Lib::Color
     needs :user
     needs :connection
     needs :log, default: [], store: true
@@ -38,7 +40,24 @@ module View
         end
       end
 
-      children << h('input#chatbar', on: { keyup: enter }) if @user
+      chatbar_props = {
+        attrs: {
+          placeholder: 'Send a message',
+        },
+        style: {
+          height: '1.4rem',
+          width: '100%',
+          margin: '0',
+          'box-sizing': 'border-box',
+          padding: '0 0.5rem',
+          'border-radius': '0',
+          background: color_for(:bg2),
+          color: color_for(:font2),
+        },
+        on: { keyup: enter },
+      }
+
+      children << h('textarea#chatbar', chatbar_props) if @user
 
       props = {
         key: 'global_chat',

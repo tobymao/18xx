@@ -74,7 +74,7 @@ module View
         def render_input
           choose = lambda do
             store(:hidden, true, skip: true)
-            process_action(Engine::Action::Bid.new(@player, @selected_company, @selected_company.value))
+            process_action(Engine::Action::Bid.new(@player, company: @selected_company, price: @selected_company.value))
             store(:selected_company, nil, skip: true)
           end
 

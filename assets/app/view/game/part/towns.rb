@@ -7,8 +7,6 @@ module View
   module Game
     module Part
       class Towns < Snabberb::Component
-        ROUTE_COLORS = %i[red blue green purple].freeze
-
         needs :tile
         needs :region_use
         needs :routes
@@ -31,7 +29,7 @@ module View
               p.town == town
             end
           end
-          index ? self.class::ROUTE_COLORS[index] : 'black'
+          index ? Part::Track::ROUTE_COLORS[index] : 'black'
         end
       end
     end

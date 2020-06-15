@@ -8,6 +8,7 @@ require 'view/form'
 
 module View
   class User < Form
+    include Lib::Color
     include GameManager
     include UserManager
 
@@ -29,26 +30,22 @@ module View
             render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
             render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
             h(:div, { style: { 'margin-bottom': '1rem' } }, [render_button('Login') { submit }]),
-            h('a.default-bg', { attrs: { href: '/forgot' } }, 'Forgot Password'),
+            h(:a, { attrs: { href: '/forgot' } }, 'Forgot Password'),
           ]]
         when :profile
           dark = `window.matchMedia('(prefers-color-scheme: dark)').matches`
           ['Profile Settings', [
             render_notifications(@user&.dig(:settings, :notifications)),
             h('div#settings__colors', [
-              render_color(
-                :bg_color,
-                'Background',
-                @user&.dig(:settings, :bg_color),
-                dark ? '#000000' : '#ffffff'
-              ),
-              render_color(
-                :font_color,
-                'Font Color',
-                @user&.dig(:settings, :font_color),
-                dark ? '#ffffff' : '#000000'
-              ),
               render_logo_color(@user&.dig(:settings, :red_logo)),
+              h(:div, [
+                render_color(:bg, 'Main Background', color_for(:bg), dark ? '#000000' : '#ffffff'),
+                render_color(:font, 'Main Font Color', color_for(:font), dark ? '#ffffff' : '#000000'),
+              ]),
+              h(:div, [
+                render_color(:bg2, 'Alternative Background', color_for(:bg2), dark ? '#dcdcdc' : '#d3d3d3'),
+                render_color(:font2, 'Alternative Font Color', color_for(:font2), '#000000'),
+              ]),
             ]),
             render_tile_colors,
             h('div#settings__buttons', [
@@ -82,8 +79,10 @@ module View
 
     def reset_settings
       dark = `window.matchMedia('(prefers-color-scheme: dark)').matches`
-      Native(@inputs[:bg_color]).elm.value = dark ? '#000000' : '#ffffff'
-      Native(@inputs[:font_color]).elm.value = dark ? '#dcdcdc' : '#000000'
+      Native(@inputs[:bg]).elm.value = dark ? '#000000' : '#ffffff'
+      Native(@inputs[:font]).elm.value = dark ? '#dcdcdc' : '#000000'
+      Native(@inputs[:bg2]).elm.value = dark ? '#dcdcdc' : '#d3d3d3'
+      Native(@inputs[:font2]).elm.value = '#000000'
       Native(@inputs[:red_logo]).elm.checked = false
       Lib::Hex::COLOR.each do |color, hex_color|
         Native(@inputs[color]).elm.value = hex_color
@@ -102,9 +101,9 @@ module View
       ])
     end
 
-    def render_color(id, name, color, default)
-      color ||= default
-      render_input(name, id: id, type: :color, attrs: { value: color },)
+    def render_color(id, name, hex_color, default)
+      hex_color ||= default
+      render_input(name, id: id, type: :color, attrs: { value: hex_color },)
     end
 
     def render_logo_color(red_logo)
@@ -119,12 +118,12 @@ module View
     def render_tile_colors
       h('div#settings__tiles', [
         h(:label, 'Map & Tile Colors'),
-        h('div#settings__tiles__buttons', Lib::Hex::COLOR.map do |color, hex_color|
+        h('div#settings__tiles__buttons', Lib::Hex::COLOR.map do |color, _|
           render_input(
             '',
             id: color,
             type: :color,
-            attrs: { title: color, value: @user&.dig(:settings, color) || hex_color },
+            attrs: { title: color == 'white' ? 'plain' : color, value: color_for(color) },
           )
         end),
       ])

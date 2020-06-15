@@ -49,7 +49,7 @@ module Engine
       end
 
       it 'should allow redo if a user sends a message' do
-        action = Engine::Action::Message.new(subject_with_actions.current_entity, 'testing more')
+        action = Engine::Action::Message.new(subject_with_actions.current_entity, message: 'testing more')
         expect(subject_with_actions.redo_possible).to be true
         subject_with_actions.process_action(action)
         expect(subject_with_actions.actions.size).to be 5
@@ -101,7 +101,7 @@ module Engine
         subject_with_actions.process_action(action)
         expect(subject_with_actions.actions.size).to be 5
         expect(subject_with_actions.finished).to be true
-        action = Engine::Action::Message.new(subject_with_actions.current_entity, 'hi')
+        action = Engine::Action::Message.new(subject_with_actions.current_entity, message: 'hi')
         subject_with_actions.process_action(action)
         expect(subject_with_actions.actions.size).to be 6
         expect(subject_with_actions.finished).to be true

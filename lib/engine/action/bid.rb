@@ -7,14 +7,17 @@ module Engine
     class Bid < Base
       attr_reader :company, :price
 
-      def initialize(entity, company, price)
+      def initialize(entity, company:, price:)
         @entity = entity
         @company = company
         @price = price
       end
 
       def self.h_to_args(h, game)
-        [game.company_by_id(h['company']), h['price']]
+        {
+          company: game.company_by_id(h['company']),
+          price: h['price'],
+        }
       end
 
       def args_to_h

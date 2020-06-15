@@ -20,7 +20,11 @@ module View
 
         par_values = @game.stock_market.par_prices.map do |share_price|
           par = lambda do
-            process_action(Engine::Action::Par.new(@game.current_entity, @corporation, share_price))
+            process_action(Engine::Action::Par.new(
+              @game.current_entity,
+              corporation: @corporation,
+              share_price: share_price,
+            ))
           end
 
           h(:div, { style: style, on: { click: par } }, @game.format_currency(share_price.price))

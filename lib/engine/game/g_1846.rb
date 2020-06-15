@@ -4,7 +4,7 @@
 
 require_relative '../config/game/g_1846'
 require_relative 'base'
-require_relative '../publisher'
+require_relative '../minor'
 
 module Engine
   module Game
@@ -44,15 +44,67 @@ module Engine
 
       GREEN_GROUP = %w[C&O ERIE PRR].freeze
 
+      TILE_COST = 20
+
+      attr_reader :minors
+
       def init_companies(players)
         companies = super + @players.size.times.map do |i|
-          Company.new(name: (i + 1).to_s, value: 0, desc: "Choose this card if you don't want to purchase a company")
+          name = (i + 1).to_s
+          Company.new(sym: name, name: name, value: 0, desc: "Choose this card if you don't want to purchase a company")
         end
 
         remove_from_group!(ORANGE_GROUP, companies)
         remove_from_group!(BLUE_GROUP, companies)
 
         companies
+      end
+
+      def michigan_southern
+        @michigan_southern ||= Minor.new(
+          sym: 'MS',
+          name: 'Michigan Southern',
+          coordinates: 'C15',
+          tokens: [0],
+          color: 'pink',
+          text_color: 'black',
+          logo: '1846/MS',
+        )
+      end
+
+      def big4
+        @big4 ||= Minor.new(
+          sym: 'BIG4',
+          name: 'Big 4',
+          coordinates: 'G9',
+          tokens: [0],
+          color: 'cyan',
+          text_color: 'black',
+          logo: '1846/B4',
+        )
+      end
+
+      def minor_by_id(id)
+        case id
+        when michigan_southern.name
+          michigan_southern
+        when big4.name
+          big4
+        else
+          raise
+        end
+      end
+
+      def setup
+        @minors = [michigan_southern, big4]
+
+        @minors.each do |minor|
+          train = @depot.upcoming[0]
+          train.unpurchasable = true
+          minor.buy_train(train, :free)
+          hex = hex_by_id(minor.coordinates)
+          hex.tile.cities[0].place_token(minor, minor.next_token, free: true)
+        end
       end
 
       def remove_from_group!(group, entities)
@@ -76,7 +128,7 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::G1846::Operating.new(@corporations, game: self, round_num: round_num)
+        Round::G1846::Operating.new(@minors + @corporations, game: self, round_num: round_num)
       end
     end
   end

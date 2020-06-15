@@ -7,7 +7,7 @@ module Engine
     class LayTile < Base
       attr_reader :hex, :tile, :rotation
 
-      def initialize(entity, tile, hex, rotation)
+      def initialize(entity, tile:, hex:, rotation:)
         @entity = entity
         @hex = hex
         @tile = tile
@@ -15,7 +15,11 @@ module Engine
       end
 
       def self.h_to_args(h, game)
-        [game.tile_by_id(h['tile']), game.hex_by_id(h['hex']), h['rotation']]
+        {
+          tile: game.tile_by_id(h['tile']),
+          hex: game.hex_by_id(h['hex']),
+          rotation: h['rotation'],
+        }
       end
 
       def args_to_h

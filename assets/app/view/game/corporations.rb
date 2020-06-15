@@ -18,12 +18,12 @@ module View
 
         children << render_corporations(@game.bank, bank_owned)
 
-        h(:div, children)
+        h('div#corp-tab', children)
       end
 
       def render_corporations(owner, corporations)
-        h(:div, [
-          h(:div, { style: { 'border-bottom': '1px solid gainsboro' } }, owner.name),
+        h('div.corp__row', { style: { 'margin-bottom': '0.5rem' } }, [
+          h('div.owner', { style: { 'border-bottom': '1px solid gainsboro' } }, owner.name),
           *corporations.sort_by(&:name).map { |c| h(Corporation, corporation: c) },
         ])
       end
