@@ -159,7 +159,12 @@ label.right {
   display: inline-block;
 }
 
-.inline { display: inline-block }
+.inline {
+  display: inline
+}
+.inline-block {
+  display: inline-block
+}
 
 .margined {
   margin: 1rem 1rem 1rem 0;

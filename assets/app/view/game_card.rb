@@ -144,6 +144,10 @@ module View
       )
     end
 
+    def time_or_date(ts)
+      ts > Time.now - 82800 ? ts.strftime('%T') : ts.strftime('%F')
+    end
+
     def render_body
       props = {
         style: {
@@ -186,15 +190,11 @@ module View
       ]
 
       if new?
-        children << h(:div, { style: { display: 'inline' } }, [h(:strong, 'Max Players: '), @gdata['max_players']])
-        children << h(:div, { style: { display: 'inline', float: 'right' } }, [
+        created_at = Time.at(@gdata['created_at'])
+        children << h('div.inline', [h(:strong, 'Max Players: '), @gdata['max_players']])
+        children << h('div.inline', { style: { float: 'right' } }, [
           h(:strong, 'Created: '),
-          h(:span, { attrs: { title: Time.at(@gdata['created_at']).strftime('%F %T') } },
-            if Time.at(@gdata['created_at']).strftime('%F') == Time.now.strftime('%F')
-              Time.at(@gdata['created_at']).strftime('%T')
-            else
-              Time.at(@gdata['created_at']).strftime('%F')
-            end),
+          h(:span, { attrs: { title: created_at.strftime('%F %T') } }, time_or_date(created_at)),
         ])
       elsif @gdata['status'] == 'finished'
         result = @gdata['result']
@@ -206,25 +206,16 @@ module View
           h(:strong, 'Result: '),
           result,
         ])
-      elsif @gdata['round'] || @gdata['updated_at']
-        children << h(:div, [
-          if @gdata['round']
-            h(:div, { style: { display: 'inline' } }, [
-              h(:strong, 'Round: '),
-              "#{@gdata['round']&.split(' ')&.first} #{@gdata['turn']}",
-            ])
-          end,
-          if @gdata['updated_at']
-            h(:div, { style: { display: 'inline', float: 'right' } }, [
-              h(:strong, 'Updated: '),
-              h(:span, { attrs: { title: Time.at(@gdata['updated_at']).strftime('%F %T') } },
-                if Time.at(@gdata['updated_at']).strftime('%F') == Time.now.strftime('%F')
-                  Time.at(@gdata['updated_at']).strftime('%T')
-                else
-                  Time.at(@gdata['updated_at']).strftime('%F')
-                end),
-            ])
-          end,
+      elsif @gdata['round']
+        children << h('div.inline', [
+          h(:strong, 'Round: '),
+          "#{@gdata['round']&.split(' ')&.first} #{@gdata['turn']}",
+        ])
+
+        updated_at = Time.at(@gdata['updated_at'])
+        children << h('div.inline', { style: { float: 'right' } }, [
+          h(:strong, 'Updated: '),
+          h(:span, { attrs: { title: updated_at.strftime('%F %T') } }, time_or_date(updated_at)),
         ])
       end
 
