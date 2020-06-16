@@ -19,17 +19,12 @@ module View
     def render
       props = {
         style: {
-          display: 'inline-block',
-          border: 'solid 1px currentColor',
-          'border-radius': '10px',
-          overflow: 'hidden',
-          width: '23rem',
+          width: '320px',
           'margin': '0 0.5rem 0.5rem 0',
-          'vertical-align': 'top',
         },
       }
 
-      h(:div, props, [
+      h('div.game.card', props, [
         render_header,
         render_body,
       ])

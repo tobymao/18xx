@@ -79,7 +79,7 @@ label.right {
     background-color: black;
     color: gainsboro;
   }
-  
+
   button, .button, .button-link, input, select, textarea {
     background-color: gainsboro;
   }
@@ -239,4 +239,9 @@ label.right {
 }
 table.center {
   margin: 0.2rem auto;
+}
+
+div.game.card em {
+  font-style: normal;
+  text-decoration: underline;
 }
