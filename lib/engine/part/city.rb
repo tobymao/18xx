@@ -45,13 +45,17 @@ module Engine
         true
       end
 
-      def tokenable?(corporation, free: false)
-        return false unless get_slot(corporation)
-        return false unless (token = corporation.next_token)
-        return false if !free && token.price > corporation.cash
-        return false if @tile.cities.any? { |c| c.tokened_by?(corporation) }
+      def tokenable?(corporation, free: false, token: nil)
+        tokens = Array(token || corporation.next_tokens_by_type)
+        return false unless tokens
 
-        true
+        tokens.any? do |t|
+          next false unless get_slot(t.corporation)
+          next false if !free && t.price > corporation.cash
+          next false if @tile.cities.any? { |c| c.tokened_by?(t.corporation) }
+
+          true
+        end
       end
 
       def get_slot(corporation)
@@ -61,7 +65,9 @@ module Engine
       end
 
       def place_token(corporation, token, free: false)
-        raise GameError, "#{corporation.name} cannot lay token on #{id}" unless tokenable?(corporation, free: free)
+        unless tokenable?(corporation, free: free, token: token)
+          raise GameError, "#{corporation.name} cannot lay token on #{id}"
+        end
 
         token.use!
         exchange_token(token)
