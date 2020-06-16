@@ -22,6 +22,9 @@ class Api
             password: r['password'],
           }.reject { |_, v| v.empty? }
 
+          halt(400, 'User Name already registered') if User.by_name(r['name'])
+          halt(400, 'Email already registered') if User.by_email(r['email'])
+
           login_user(User.create(params))
         end
 
