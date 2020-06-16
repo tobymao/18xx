@@ -97,8 +97,7 @@ module View
         ].freeze
 
         def preferred_render_locations
-          edge_a, edge_b = @city.exits
-          if @num_cities > 1 && (edge_a || edge_b)
+          if @num_cities > 1 && @edge
             return [
               {
                 region_weights: EDGE_TRACK_REGIONS[@edge] + EDGE_CITY_REGIONS[@edge],
