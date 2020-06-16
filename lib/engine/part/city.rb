@@ -45,8 +45,8 @@ module Engine
         true
       end
 
-      def tokenable?(corporation, free: false, token: nil)
-        tokens = Array(token || corporation.next_tokens_by_type)
+      def tokenable?(corporation, free: false, tokens: nil)
+        tokens = Array(tokens || corporation.next_tokens_by_type)
         return false unless tokens
 
         tokens.any? do |t|
@@ -65,7 +65,7 @@ module Engine
       end
 
       def place_token(corporation, token, free: false)
-        unless tokenable?(corporation, free: free, token: token)
+        unless tokenable?(corporation, free: free, tokens: token)
           raise GameError, "#{corporation.name} cannot lay token on #{id}"
         end
 
