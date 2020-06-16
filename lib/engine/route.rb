@@ -138,8 +138,35 @@ module Engine
       paths & other_paths
     end
 
-    def stops
+    def visited_stops
       connections.flat_map(&:nodes).uniq
+    end
+
+    def stops
+      visits = visited_stops
+      distance = @train.distance
+      return visits if distance.is_a?(Numeric)
+
+      token = visits
+        .select { |stop| stop.tokened_by?(corporation) }
+        .max_by { |stop| stop.route_revenue(@phase, @train) }
+
+      grouped = visits.reject { |s| s == token }.group_by(&:type)
+      types_pay = distance.map { |h| [h['nodes'], h['pay']] }.sort_by { |t, _| t.size }
+
+      [token] + types_pay.flat_map do |types, pay|
+        pay -= 1 if types.include?('city')
+
+        node_revenue = types.flat_map do |type|
+          next [] unless (nodes = grouped[type])
+
+          nodes.map { |node| [node, node.route_revenue(@phase, @train)] }
+        end.sort_by(&:last).last(pay)
+
+        node_revenue.each { |node, _| grouped[node.type].delete(node) }
+
+        node_revenue.map(&:first)
+      end
     end
 
     def hexes
@@ -182,23 +209,58 @@ module Engine
       # rubocop:enable Style/GuardClause, Style/IfUnlessModifier
     end
 
+    def check_distance!(visits)
+      distance = @train.distance
+
+      if distance.is_a?(Numeric)
+        raise GameError, "#{visits.size} is too many stops for #{distance} train" if distance < visits.size
+
+        return
+      end
+
+      type_info = Hash.new { |h, k| h[k] = [] }
+
+      distance.each do |h|
+        pay = h['pay']
+        visit = h['visit'] || pay
+        info = { pay: pay, visit: visit }
+        h['nodes'].each { |type| type_info[type] << info }
+      end
+
+      grouped = visits.group_by(&:type)
+
+      grouped.each do |type, group|
+        num = group.size
+
+        type_info[type].sort_by(&:size).each do |info|
+          next unless info[:visit].positive?
+
+          info[:visit] -= num
+          num = info[:visit] * -1
+          break unless num.positive?
+        end
+
+        raise GameError, 'Route has too many stops' if num.positive?
+      end
+    end
+
     def revenue
       return @override[:revenue] if @override
 
-      stops_ = stops
-      raise GameError, 'Route must have at least 2 stops' if @connections.any? && stops_.size < 2
-      raise GameError, "#{stops_.size} is too many stops for #{@train.distance} train" if @train.distance < stops_.size
-      raise GameError, 'Route must contain token' unless (token = stops_.find { |stop| stop.tokened_by?(corporation) })
+      visited = visited_stops
+      raise GameError, 'Route must have at least 2 stops' if @connections.any? && visited.size < 2
+      raise GameError, 'Route must contain token' unless (token = visited.find { |stop| stop.tokened_by?(corporation) })
 
+      check_distance!(visited)
       check_cycles!
       check_overlap!
       check_connected!(token)
 
-      stops.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
+      visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
         raise GameError, "Cannot use group #{key} more than once" unless group.one?
       end
 
-      stops_.map { |stop| stop.route_revenue(@phase, @train) }.sum
+      stops.sum { |stop| stop.route_revenue(@phase, @train) }
     end
 
     def corporation

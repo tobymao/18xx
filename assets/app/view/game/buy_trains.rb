@@ -110,21 +110,26 @@ module View
       end
 
       def from_depot(depot_trains)
-        depot_trains.map do |train|
-          buy_train = lambda do
-            process_action(Engine::Action::BuyTrain.new(
-              @corporation,
-              train: train,
-              price: train.price,
-            ))
+        depot_trains.flat_map do |train|
+          train.variants.sort_by { |_, v| v[:price] }.map do |name, variant|
+            price = variant[:price]
+
+            buy_train = lambda do
+              process_action(Engine::Action::BuyTrain.new(
+                @corporation,
+                train: train,
+                price: price,
+                variant: name,
+              ))
+            end
+
+            source = @depot.discarded.include?(train) ? 'The Discard' : 'The Depot'
+
+            h(:div, [
+              "Train #{name} - #{@game.format_currency(price)} #{source}",
+              h('button.button.margined', { style: { margin: '1rem' }, on: { click: buy_train } }, 'Buy'),
+            ])
           end
-
-          source = @depot.discarded.include?(train) ? 'The Discard' : 'The Depot'
-
-          h(:div, [
-            "Train #{train.name} - #{@game.format_currency(train.price)} #{source}",
-            h('button.button.margined', { style: { margin: '1rem' }, on: { click: buy_train } }, 'Buy'),
-          ])
         end
       end
 

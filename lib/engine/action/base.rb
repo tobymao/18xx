@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
+require_relative '../helper/type'
+
 module Engine
   module Action
     class Base
+      include Helper::Type
+
       attr_reader :entity
       attr_accessor :id
-
-      def self.type(type)
-        type.split('_').map(&:capitalize).join
-      end
 
       def self.from_h(h, game)
         entity = game.send("#{h['entity_type']}_by_id", h['entity'])
@@ -55,16 +55,6 @@ module Engine
 
       def free?
         false
-      end
-
-      def type
-        type_s(self)
-      end
-
-      private
-
-      def type_s(obj)
-        self.class.split(obj.class).last.gsub(/(.)([A-Z])/, '\1_\2').downcase
       end
     end
   end

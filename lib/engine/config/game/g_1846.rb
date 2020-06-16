@@ -347,7 +347,13 @@ module Engine
     },
     {
       "name": "3/5",
-      "distance": 3,
+      "distance": [
+        {
+          "nodes": ["city", "offboard"],
+          "pay": 3,
+          "visit": 5
+        }
+      ],
       "price": 160,
       "variants": [
          {
@@ -360,7 +366,13 @@ module Engine
     },
     {
       "name": "4/6",
-      "distance": 4,
+      "distance": [
+        {
+          "nodes": ["city", "offboard"],
+          "pay": 4,
+          "visit": 6
+        }
+      ],
       "price": 450,
       "variants": [
          {
@@ -378,7 +390,13 @@ module Engine
       "variants": [
         {
           "name": "7/8",
-          "distance": 7,
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "pay": 7,
+              "visit": 8
+            }
+          ],
           "price": 900
         }
       ],
