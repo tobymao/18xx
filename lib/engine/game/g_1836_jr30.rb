@@ -13,6 +13,20 @@ module Engine
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/114572/1836jr-30-rules'
       GAME_DESIGNER = 'David G. D. Hecht'
 
+      def action_processed(action)
+        case action
+        when Action::BuyTrain
+          if !chemins.closed? && action.entity.name == 'Nord'
+            chemins.close!
+            @log << "#{chemins.name} closes"
+          end
+        end
+      end
+
+      def chemins
+        @chemins ||= @companies.find { |company| company.name == 'Chemin de Fer de Lille à Valenciennes' }
+      end
+
       def stock_round
         Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy_sell)
       end
