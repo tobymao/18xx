@@ -145,7 +145,7 @@ module View
     end
 
     def time_or_date(ts)
-      ts > Time.now - 82800 ? ts.strftime('%T') : ts.strftime('%F')
+      ts > Time.now - 82_800 ? ts.strftime('%T') : ts.strftime('%F')
     end
 
     def render_body
