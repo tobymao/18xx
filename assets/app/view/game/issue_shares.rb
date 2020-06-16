@@ -32,7 +32,7 @@ module View
         return nil if shares.empty?
 
         h(:div, [
-          h('div.inline.margined', description),
+          h('div.inline-block.margined', description),
           *shares,
         ])
       end

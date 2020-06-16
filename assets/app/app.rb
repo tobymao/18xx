@@ -32,7 +32,7 @@ class App < Snabberb::Component
         margin: :auto,
         'min-height': '98vh',
         padding: '0.5rem',
-        transition: 'all 1s ease',
+        transition: 'background-color 1s ease',
       },
     }
 

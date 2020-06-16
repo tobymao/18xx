@@ -3,11 +3,11 @@
 Base = Class.new Sequel::Model
 
 class Base
-  def pp_created_at
-    created_at&.strftime('%Y-%m-%d')
+  def created_at_ts
+    created_at&.to_i
   end
 
-  def pp_updated_at
-    updated_at&.strftime('%Y-%m-%d')
+  def updated_at_ts
+    updated_at&.to_i
   end
 end

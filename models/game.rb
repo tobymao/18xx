@@ -110,8 +110,8 @@ class Game < Base
       result: result.to_h,
       actions: actions_h,
       loaded: include_actions,
-      created_at: pp_created_at,
-      updated_at: pp_updated_at,
+      created_at: created_at_ts,
+      updated_at: updated_at_ts,
     }
   end
 end
