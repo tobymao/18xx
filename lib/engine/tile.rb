@@ -219,49 +219,57 @@ module Engine
     # "ct" for "city or town"
     def preferred_city_town_edges
       # cache per rotation
-      @preferred_city_town_edges ||=
-        begin
-          # ct => nums of edges it is connected to
-          ct_edges = Hash.new { |h, k| h[k] = [] }
+      @preferred_city_town_edges ||= compute_city_town_edges
+    end
 
-          # edge => how many tracks/cts are on that edge, plus 0.1
-          # for each track/ct on neighboring edges
-          edge_count = Hash.new(0)
+    def compute_city_town_edges
+      # ct => nums of edges it is connected to
+      ct_edges = Hash.new { |h, k| h[k] = [] }
 
-          # slightly prefer to keep room along bottom to render location name
-          edge_count[0] += 0.1
+      # edge => how many tracks/cts are on that edge, plus 0.1
+      # for each track/ct on neighboring edges
+      edge_count = Hash.new(0)
 
-          # populate ct_edges and edge_count as described in above comments
-          paths.each do |path|
-            next unless (ct = path.city || path.town)
+      if @paths.empty? && @cities.size >= 2
+        # If a tile has no paths but multiple cities, avoid them rendering on top of each other
+        div = 6 / @cities.size
+        @cities.each_with_index { |x, index| edge_count[x] = (index * div) }
+        return edge_count
+      end
 
-            path.exits.each do |edge|
-              ct_edges[ct] << edge
-              edge_count[edge] += 1
-              edge_count[(edge + 1) % 6] += 0.1
-              edge_count[(edge - 1) % 6] += 0.1
-            end
-          end
+      # slightly prefer to keep room along bottom to render location name
+      edge_count[0] += 0.1
 
-          # sort ct_edges so that the lowest edge with any paths will be
-          # handled first
-          sorted = ct_edges.each { |_, e| e.sort! }.sort_by { |_, e| e }
+      # populate ct_edges and edge_count as described in above comments
+      paths.each do |path|
+        next unless (ct = path.city || path.town)
 
-          # construct the final hash to return, updating edge_count along the
-          # way
-          sorted.map do |ct, edges_|
-            edge = edges_.min_by { |e| edge_count[e] }
-
-            # since this edge is being used, increase its count (and that of its
-            # neighbors) to influence what edges will be used for the remaining
-            # cts
-            edge_count[edge] += 1
-            edge_count[(edge + 1) % 6] += 0.1
-            edge_count[(edge - 1) % 6] += 0.1
-
-            [ct, edge]
-          end.to_h
+        path.exits.each do |edge|
+          ct_edges[ct] << edge
+          edge_count[edge] += 1
+          edge_count[(edge + 1) % 6] += 0.1
+          edge_count[(edge - 1) % 6] += 0.1
         end
+      end
+
+      # sort ct_edges so that the lowest edge with any paths will be
+      # handled first
+      sorted = ct_edges.each { |_, e| e.sort! }.sort_by { |_, e| e }
+
+      # construct the final hash to return, updating edge_count along the
+      # way
+      sorted.map do |ct, edges_|
+        edge = edges_.min_by { |e| edge_count[e] }
+
+        # since this edge is being used, increase its count (and that of its
+        # neighbors) to influence what edges will be used for the remaining
+        # cts
+        edge_count[edge] += 1
+        edge_count[(edge + 1) % 6] += 0.1
+        edge_count[(edge - 1) % 6] += 0.1
+
+        [ct, edge]
+      end.to_h
     end
 
     def revenue_to_render
