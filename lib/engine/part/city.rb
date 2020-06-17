@@ -69,11 +69,12 @@ module Engine
           raise GameError, "#{corporation.name} cannot lay token on #{id}"
         end
 
-        token.use!
         exchange_token(token)
       end
 
       def exchange_token(token)
+        token.used = true
+        token.city = self
         @tokens[get_slot(token.corporation)] = token
       end
     end

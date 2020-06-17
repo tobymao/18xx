@@ -17,7 +17,7 @@ module Engine
     def initialize(sym:, name:, **opts)
       @name = sym
       @full_name = name
-      operator_setup(opts)
+      init_operator(opts)
     end
 
     def abilities(_type); end

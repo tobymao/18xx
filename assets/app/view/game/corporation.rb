@@ -170,7 +170,7 @@ module View
               width: '1.5rem',
             },
           }
-          img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if token.used?
+          img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if token.used
 
           token_text = i.zero? ? @corporation.coordinates : token.price
 

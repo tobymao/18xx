@@ -241,13 +241,14 @@ module Engine
       end
 
       def skip_route
-        @current_entity.trains.empty? || !route?
+        @current_entity.runnable_trains.empty? || !route?
       end
 
       def skip_dividend
         return false if @current_routes.any?
 
-        withhold
+        process_dividend(Action::Dividend.new(@current_entity, kind: 'withhold'))
+
         true
       end
 
@@ -290,7 +291,9 @@ module Engine
         trains = {}
         @current_routes.each do |route|
           train = route.train
+          raise GameError, "Cannot run another corporation's train. refresh" if train.owner != @current_entity
           raise GameError, 'Cannot run train twice' if trains[train]
+          raise GameError, 'Cannot run train that operated' if train.operated
 
           trains[train] = true
           hexes = route.hexes.map(&:name).join(', ')
@@ -306,6 +309,7 @@ module Engine
           action,
           revenue
         )
+        @current_entity.trains.each { |train| train.operated = true }
         @current_routes = []
 
         case action.kind
@@ -348,6 +352,7 @@ module Engine
         @step = steps.first
         @current_actions.clear
         log_operation(@current_entity)
+        @current_entity.trains.each { |train| train.operated = false }
         place_home_token(@current_entity) if @home_token_timing == :operate
         next_step! if send("skip_#{@step}")
       end
@@ -520,10 +525,10 @@ module Engine
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 
-        token = action.token || entity.next_token
-        raise GameError, 'Token is already used' if token.used?
+        token = action.token
+        raise GameError, 'Token is already used' if token.used
 
-        price = token&.price || 0
+        price = token.price || 0
         action.city.place_token(entity, token, free: @teleported)
         if price.positive? && !@teleported
           entity.spend(price, @bank)

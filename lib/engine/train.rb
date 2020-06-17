@@ -7,7 +7,7 @@ module Engine
   class Train
     include Ownable
 
-    attr_accessor :obsolete
+    attr_accessor :obsolete, :operated
     attr_reader :available_on, :name, :distance, :discount, :obsolete_on,
                 :rusts_on, :rusted, :variant, :variants
     attr_writer :buyable
@@ -25,6 +25,7 @@ module Engine
       @buyable = true
       @rusted = false
       @obsolete = false
+      @operated = false
       init_variants(opts[:variants])
     end
 

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'abilities'
 require_relative 'operator'
 require_relative 'ownable'
 require_relative 'passer'
@@ -10,6 +11,7 @@ require_relative 'token'
 
 module Engine
   class Corporation
+    include Abilities
     include Operator
     include Ownable
     include Passer
@@ -40,7 +42,8 @@ module Engine
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
 
-      operator_setup(opts)
+      init_abilities(opts[:abilities])
+      init_operator(opts)
     end
 
     def <=>(other)
@@ -124,6 +127,10 @@ module Engine
     end
 
     def abilities(type)
+      if (ability = super)
+        yield ability, self
+      end
+
       @companies.each do |company|
         ability = company.abilities(type)
         yield ability, company if ability

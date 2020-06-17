@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../operating'
+require_relative '../../token'
 
 module Engine
   module Round
@@ -75,6 +76,31 @@ module Engine
             .reject { |bundle| @current_entity.cash < bundle.price }
         end
 
+        def connected_hexes
+          hexes = {}
+
+          @current_entity.abilities(:token) do |ability, _|
+            ability[:hexes].each do |id|
+              hex = @game.hex_by_id(id)
+              hexes[hex] = hex.neighbors.keys
+            end
+          end
+
+          super.merge(hexes)
+        end
+
+        def connected_nodes
+          nodes = {}
+
+          @current_entity.abilities(:token) do |ability, _|
+            ability[:hexes].each do |id|
+              @game.hex_by_id(id).tile.cities.each { |c| nodes[c] = true }
+            end
+          end
+
+          super.merge(nodes)
+        end
+
         private
 
         def ignore_action?(action)
@@ -131,6 +157,23 @@ module Engine
           @game.share_pool.buy_shares(@current_entity, action.bundle)
         end
 
+        def process_buy_company(action)
+          super
+
+          company = action.company
+          return unless (minor = @game.minor_by_id(company.id))
+          raise GameError, 'Cannot buy minor because train tight' unless corp_has_room?
+
+          cash = minor.cash
+          minor.spend(cash, @current_entity)
+          train = minor.trains[0]
+          @current_entity.buy_train(train)
+          minor.tokens[0].swap!(Token.new(@current_entity))
+          @log << "#{@current_entity.name} receives #{@game.format_currency(cash)}"\
+            ", a 2 train, and a token on #{minor.coordinates}"
+          @game.minors.delete(minor)
+        end
+
         def tile_cost(tile, abilities)
           [@game.class::TILE_COST, tile.upgrade_cost(abilities)].max
         end
@@ -146,6 +189,42 @@ module Engine
             @log << "#{entity.name} receives #{@game.format_currency(amount)}"
             @bank.spend(amount, entity)
           end
+        end
+
+        def potential_tiles(hex)
+          return [] if used_teleport(hex) && !connected(hex)
+
+          super
+        end
+
+        def place_token(action)
+          hex = action.city.hex
+
+          if used_teleport(hex)
+            higher =
+              case @current_entity.id
+              when 'B&O'
+                100
+              when 'PRR'
+                60
+              end
+            action.token.price = connected(hex) ? 40 : higher
+            @current_entity.remove_ability(:token)
+          end
+
+          super
+        end
+
+        def connected(hex)
+          @graph.connected_hexes(@current_entity)[hex]
+        end
+
+        def used_teleport(hex)
+          @current_entity.abilities(:token) do |ability, _|
+            return true if ability[:hexes].include?(hex.id)
+          end
+
+          false
         end
       end
     end

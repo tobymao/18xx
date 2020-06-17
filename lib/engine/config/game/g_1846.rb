@@ -236,7 +236,15 @@ module Engine
         80,
         80,
         80,
-        0
+        80
+      ],
+      "abilities": [
+        {
+          "type": "token",
+          "hexes": [
+            "E11"
+          ]
+        }
       ],
       "coordinates": "F20",
       "color": "red",
@@ -266,7 +274,16 @@ module Engine
         0,
         80,
         80,
-        0
+        80
+      ],
+      "abilities": [
+        {
+          "type": "token",
+          "tiles": [],
+          "hexes": [
+            "H12"
+          ]
+        }
       ],
       "coordinates": "G19",
       "color": "blue",
@@ -554,7 +571,8 @@ module Engine
       "tiles": [
         "yellow"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "buy_companies": true
     },
     {
       "name": "2",
@@ -563,7 +581,8 @@ module Engine
         "yellow",
         "green"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "buy_companies": true
     },
     {
       "name": "3",

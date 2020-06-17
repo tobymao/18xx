@@ -2,7 +2,8 @@
 
 module Engine
   class Token
-    attr_reader :corporation, :price, :logo, :type
+    attr_reader :corporation, :logo, :type
+    attr_accessor :city, :price, :used
 
     def initialize(corporation, price: 0, logo: nil, type: :normal)
       @corporation = corporation
@@ -10,14 +11,15 @@ module Engine
       @logo = logo || corporation.logo
       @used = false
       @type = type
+      @city = nil
     end
 
-    def used?
-      @used
-    end
+    def swap!(other_token)
+      @city.tokens.map! { |t| t == self ? nil : t }
+      corporation = other_token.corporation
+      return unless @city.tokenable?(corporation, free: true)
 
-    def use!
-      @used = true
+      @city.place_token(corporation, other_token)
     end
   end
 end
