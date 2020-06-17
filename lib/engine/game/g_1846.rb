@@ -118,7 +118,7 @@ module Engine
 
       def init_corporations(stock_market)
         corporations = super
-        remove_from_group!(GREEN_GROUP, companies)
+        remove_from_group!(GREEN_GROUP, corporations)
         corporations
       end
 
