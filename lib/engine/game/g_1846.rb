@@ -50,8 +50,14 @@ module Engine
 
       def init_companies(players)
         super + @players.size.times.map do |i|
-          name = "Pass (#{i + 1})"
-          Company.new(sym: name, name: name, value: 0, desc: "Choose this card if you don't want to purchase any of the offered companies this round")
+          id = i + 1
+
+          Company.new(
+            sym: id,
+            name: "Pass (#{id})",
+            value: 0,
+            desc: "Choose this card if you don't want to purchase any of the offered companies this round",
+          )
         end
       end
 
