@@ -181,6 +181,7 @@ module Engine
           @log << "#{@current_entity.name} receives #{@game.format_currency(cash)}"\
             ", a 2 train, and a token on #{minor.coordinates}"
           @game.minors.delete(minor)
+          @graph.clear
         end
 
         def tile_cost(tile, abilities)
