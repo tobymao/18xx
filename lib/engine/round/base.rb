@@ -167,6 +167,18 @@ module Engine
         @log << "#{action.entity.name} discards #{train.name}"
       end
 
+      def place_home_token(corporation)
+        return unless corporation.next_token # 1882
+
+        hex = @game.hexes.find { |h| h.coordinates == corporation.coordinates }
+        cities = hex.tile.cities
+        city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+        return unless city.tokenable?(corporation)
+
+        @log << "#{corporation.name} places a token on #{hex.name}"
+        city.place_token(corporation, corporation.next_token)
+      end
+
       private
 
       def potential_tiles(hex)
@@ -228,18 +240,6 @@ module Engine
 
       def tile_cost(tile, abilities)
         tile.upgrade_cost(abilities)
-      end
-
-      def place_home_token(corporation)
-        return unless corporation.next_token # 1882
-
-        hex = @game.hexes.find { |h| h.coordinates == corporation.coordinates }
-        cities = hex.tile.cities
-        city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
-        return unless city.tokenable?(corporation)
-
-        @log << "#{corporation.name} places a token on #{hex.name}"
-        city.place_token(corporation, corporation.next_token)
       end
 
       def payout_companies

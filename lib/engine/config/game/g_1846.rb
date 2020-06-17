@@ -357,8 +357,7 @@ module Engine
       "distance": 2,
       "price": 80,
       "obsolete_on": "4/6",
-      "rusts_on": "6",
-      "num": -1
+      "rusts_on": "6"
     },
     {
       "name": "4",
@@ -377,8 +376,7 @@ module Engine
            ],
            "price": 160
          }
-      ],
-      "num": -1
+      ]
     },
     {
       "name": "5",
@@ -396,8 +394,7 @@ module Engine
            ],
            "price": 450
          }
-      ],
-      "num": -1
+      ]
     },
     {
       "name": "6",

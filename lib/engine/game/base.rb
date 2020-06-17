@@ -489,10 +489,7 @@ module Engine
 
       def init_train_handler
         trains = self.class::TRAINS.flat_map do |train|
-          num = train[:num]
-          num = num_trains(train) if num == -1
-
-          num.times.map do |index|
+          (train[:num] || num_trains(train)).times.map do |index|
             Train.new(**train, index: index)
           end
         end

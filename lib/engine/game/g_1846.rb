@@ -49,15 +49,10 @@ module Engine
       attr_reader :minors
 
       def init_companies(players)
-        companies = super + @players.size.times.map do |i|
+        super + @players.size.times.map do |i|
           name = (i + 1).to_s
           Company.new(sym: name, name: name, value: 0, desc: "Choose this card if you don't want to purchase a company")
         end
-
-        remove_from_group!(ORANGE_GROUP, companies)
-        remove_from_group!(BLUE_GROUP, companies)
-
-        companies
       end
 
       def michigan_southern
@@ -94,6 +89,12 @@ module Engine
       end
 
       def setup
+        remove_from_group!(ORANGE_GROUP, companies)
+        remove_from_group!(BLUE_GROUP, companies)
+        remove_from_group!(GREEN_GROUP, @corporations) do |corporation|
+          @round.place_home_token(corporation)
+        end
+
         @companies.each do |company|
           company.min_price = 1
           company.max_price = company.value
@@ -113,7 +114,14 @@ module Engine
       def remove_from_group!(group, entities)
         remove = group.sort_by { rand }.take([5 - @players.size, 2].min)
         @log << "Removing #{remove.join(', ')}"
-        entities.reject! { |e| remove.include?(e.name) }
+        entities.reject! do |entity|
+          if remove.include?(entity.name)
+            yield entity if block_given?
+            true
+          else
+            false
+          end
+        end
       end
 
       def num_trains(train)
@@ -127,12 +135,6 @@ module Engine
         when '5'
           num_players
         end
-      end
-
-      def init_corporations(stock_market)
-        corporations = super
-        remove_from_group!(GREEN_GROUP, corporations)
-        corporations
       end
 
       def init_round
