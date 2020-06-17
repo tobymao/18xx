@@ -286,6 +286,7 @@ module Engine
             {
                "type":"tile_lay",
                "owner_type":"corporation",
+               "free_tile":"true",
                "hexes":[
                   "B8"
                ],
@@ -305,6 +306,13 @@ module Engine
          "desc":"Owning corporation may place a tile and station token in the CdH hex J8 for only the F60 cost of the mountain. The track is not required to be connected to existing track of this corporation (or any corporation), and can be used as a teleport. This counts as the corporation's track lay for that turn. Blocks hex J8 while owned by player.",
          "sym": "CdH",
          "abilities":[
+            {
+               "type":"blocks_hexes",
+               "owner_type":"player",
+               "hexes":[
+                  "J8"
+               ]
+            },
             {
                "type":"teleport",
                "owner_type":"corporation",

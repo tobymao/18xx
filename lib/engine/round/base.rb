@@ -216,8 +216,11 @@ module Engine
           else
             []
           end
-
-        cost = tile_cost(old_tile, abilities)
+        cost = if action.entity.is_a?(Company) && action.entity.abilities(:tile_lay)['free_tile']
+                 0
+               else
+                 tile_cost(old_tile, abilities)
+               end
         entity.spend(cost, @game.bank) if cost.positive?
 
         @log << "#{action.entity.name}"\
