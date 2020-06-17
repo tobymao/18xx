@@ -215,14 +215,34 @@ module Engine
       "value": 40,
       "revenue": 15,
       "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's reserved hexes (B10, B12).",
-      "sym": "MC"
+      "sym": "MC",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "B10",
+            "B12"
+          ]
+        }
+      ]
     },
     {
       "name": "Ohio & Indiana",
       "value": 40,
       "revenue": 15,
       "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I's reserved hexes (F14, F16).",
-      "sym": "O&I"
+      "sym": "O&I",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "F14",
+            "F16"
+          ]
+        }
+      ]
     }
   ],
   "corporations": [
