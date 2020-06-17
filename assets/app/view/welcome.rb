@@ -2,7 +2,6 @@
 
 module View
   class Welcome < Snabberb::Component
-    needs :user
     needs :app_route, default: nil, store: true
 
     def render
@@ -14,16 +13,9 @@ module View
       }
 
       h('div.half', props, [
-        render_header,
         render_notification,
         render_introduction,
         render_buttons,
-      ])
-    end
-
-    def render_header
-      h('div.card_header', [
-        "Welcome#{@user ? ' ' + @user['name'] : ''}!",
       ])
     end
 
@@ -51,7 +43,6 @@ module View
           background: 'rgb(240, 229, 140)',
           color: 'black',
           'padding': '1em',
-          'margin': '1rem 0',
         },
         props: {
           innerHTML: message,

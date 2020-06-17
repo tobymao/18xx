@@ -15,7 +15,8 @@ module View
 
     def render
       children = [
-        h(Welcome, user: @user),
+        render_header,
+        h(Welcome),
         h(Chat, user: @user, connection: @connection),
       ]
 
@@ -90,6 +91,12 @@ module View
         type: type,
         user: @user,
       )
+    end
+
+    def render_header
+      h('div.card_header', [
+        "Welcome#{@user ? ' ' + @user['name'] : ''}!",
+      ])
     end
   end
 end
