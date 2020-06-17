@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'action/buy_train'
+require_relative 'action/run_routes'
 
 module Engine
   class Phase
@@ -20,6 +21,8 @@ module Engine
         train = action.train
         next! if train.name == @next_on
         rust_trains!(train, action.entity)
+      when Action::RunRoutes
+        rust_obsolete_trains!(action.routes)
       end
     end
 
@@ -83,7 +86,16 @@ module Engine
     end
 
     def rust_trains!(train, entity)
+      obsolete_trains = []
       rusted_trains = []
+
+      @game.trains.each do |t|
+        next if t.obsolete || t.obsolete_on != train.name
+
+        obsolete_trains << t.name
+        t.obsolete = true
+      end
+
       @game.trains.each do |t|
         next if t.rusted || t.rusts_on != train.name
 
@@ -92,7 +104,22 @@ module Engine
         t.rust!
       end
 
+      @log << "-- Event: #{obsolete_trains.uniq.join(', ')} trains are obsolete --" if obsolete_trains.any?
       @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --" if rusted_trains.any?
+    end
+
+    def rust_obsolete_trains!(routes)
+      rusted_trains = []
+
+      routes.each do |route|
+        train = route.train
+        next unless train.obsolete
+
+        rusted_trains << train.name
+        train.rust!
+      end
+
+      @log << '-- Event: Obsolete trains rust --' if rusted_trains.any?
     end
 
     def next!

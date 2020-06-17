@@ -59,7 +59,6 @@ module Engine
         @last_share_sold_price = nil
         @bankrupt = false
 
-        @step = steps.first
         @last_action_step = steps.last
         @current_routes = []
         @current_actions = []
@@ -228,7 +227,6 @@ module Engine
           @step = steps[current_index + 1]
           next_step! if send("skip_#{@step}")
         else
-          @step = steps.first
           @current_entity.pass!
         end
       end
@@ -347,6 +345,7 @@ module Engine
       def start_operating
         return if finished?
 
+        @step = steps.first
         @current_actions.clear
         log_operation(@current_entity)
         place_home_token(@current_entity) if @home_token_timing == :operate

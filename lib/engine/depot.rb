@@ -78,7 +78,7 @@ module Engine
 
     def other_trains(corporation)
       @trains.reject do |train|
-        train.unpurchasable || [corporation, self, nil].include?(train.owner)
+        !train.buyable || [corporation, self, nil].include?(train.owner)
       end
     end
 

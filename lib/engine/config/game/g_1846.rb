@@ -339,46 +339,45 @@ module Engine
       "name": "2",
       "distance": 2,
       "price": 80,
-      "rusts_on": [
-        "6",
-        "7/8"
-      ],
+      "obsolete_on": "4/6",
+      "rusts_on": "6",
       "num": 9
     },
     {
-      "name": "3/5",
-      "distance": [
-        {
-          "nodes": ["city", "offboard"],
-          "pay": 3,
-          "visit": 5
-        }
-      ],
-      "price": 160,
+      "name": "4",
+      "distance": 4,
+      "price": 180,
+      "obsolete_on": "6",
       "variants": [
          {
-           "name": "4",
-           "distance": 4,
-           "price": 180
+           "name": "3/5",
+           "distance": [
+             {
+               "nodes": ["city", "offboard"],
+               "pay": 3,
+               "visit": 5
+             }
+           ],
+           "price": 160
          }
       ],
-      "num": 6
+      "num": 1
     },
     {
-      "name": "4/6",
-      "distance": [
-        {
-          "nodes": ["city", "offboard"],
-          "pay": 4,
-          "visit": 6
-        }
-      ],
-      "price": 450,
+      "name": "5",
+      "distance": 5,
+      "price": 500,
       "variants": [
          {
-           "name": "5",
-           "distance": 5,
-           "price": 500
+           "name": "4/6",
+           "distance": [
+             {
+               "nodes": ["city", "offboard"],
+               "pay": 4,
+               "visit": 6
+             }
+           ],
+           "price": 450
          }
       ],
       "num": 5
