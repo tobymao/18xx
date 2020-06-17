@@ -19,7 +19,7 @@ module View
       end
 
       def generate_last_routes!
-        trains = @game.round.current_entity.trains
+        trains = @game.round.current_entity.runnable_trains
         operating = @game.round.current_entity.operating_history
         last_run = operating[operating.keys.max]&.routes
         return [] unless last_run
@@ -36,7 +36,7 @@ module View
       end
 
       def render
-        trains = @game.round.current_entity.trains
+        trains = @game.round.current_entity.runnable_trains
 
         description = 'Select routes'
         if @routes.empty? && generate_last_routes!.any?

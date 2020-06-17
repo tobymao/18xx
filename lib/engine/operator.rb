@@ -5,7 +5,7 @@ module Engine
     attr_accessor :rusted_self
     attr_reader :color, :coordinates, :logo, :operating_history, :text_color, :tokens, :trains
 
-    def operator_setup(opts)
+    def init_operator(opts)
       @cash = 0
       @trains = []
       @operating_history = {}
@@ -17,6 +17,10 @@ module Engine
       @tokens = opts[:tokens].map { |price| Token.new(self, price: price) }
       @color = opts[:color]
       @text_color = opts[:text_color] || '#ffffff'
+    end
+
+    def runnable_trains
+      @trains.reject(&:operated)
     end
 
     # price is nil, :free, or a positive int
@@ -37,15 +41,15 @@ module Engine
     end
 
     def next_token
-      @tokens.find { |t| !t.used? }
+      @tokens.find { |t| !t.used }
     end
 
     def next_token_by_type(type)
-      @tokens.find { |t| !t.used? && t.type == type }
+      @tokens.find { |t| !t.used && t.type == type }
     end
 
     def next_tokens_by_type
-      @tokens.reject(&:used?).uniq(&:type)
+      @tokens.reject(&:used).uniq(&:type)
     end
   end
 end

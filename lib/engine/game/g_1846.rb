@@ -19,7 +19,7 @@ module Engine
 
       load_from_json(Config::Game::G1846::JSON)
 
-      DEV_STAGE = :prealpha
+      DEV_STAGE = :alpha
 
       GAME_LOCATION = 'Midwest, USA'
       GAME_RULES_URL = 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf'
@@ -90,17 +90,20 @@ module Engine
           michigan_southern
         when big4.name
           big4
-        else
-          raise
         end
       end
 
       def setup
+        @companies.each do |company|
+          company.min_price = 1
+          company.max_price = company.value
+        end
+
         @minors = [michigan_southern, big4]
 
         @minors.each do |minor|
           train = @depot.upcoming[0]
-          train.unpurchasable = true
+          train.buyable = false
           minor.buy_train(train, :free)
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token, free: true)

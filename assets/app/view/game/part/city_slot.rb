@@ -27,7 +27,7 @@ module View
           children << reservation if @reservation
           children << h(Token, token: @token, radius: @radius) if @token
 
-          props = { on: { click: -> { on_click } } }
+          props = { on: { click: ->(event) { on_click(event) } } }
 
           props[:attrs] = { transform: rotation_for_layout } if @num_cities > 1
 
@@ -42,9 +42,11 @@ module View
           )
         end
 
-        def on_click
+        def on_click(event)
           return if @token
           return unless @game.round.can_place_token?
+
+          event.JS.stopPropagation
 
           # If there's a choice of tokens of different types show the selector, otherwise just place
           next_tokens = @game.current_entity.next_tokens_by_type

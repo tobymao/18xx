@@ -72,12 +72,12 @@ module Engine
 
           expect(subject.tile.cities[0].tokens[0]).to have_attributes(
             corporation: corp_1,
-            used?: true,
+            used: true,
           )
 
           expect(subject.tile.cities[0].tokens[1]).to have_attributes(
             corporation: corp_2,
-            used?: true,
+            used: true,
           )
         end
 

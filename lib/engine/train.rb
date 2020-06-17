@@ -7,8 +7,10 @@ module Engine
   class Train
     include Ownable
 
-    attr_reader :available_on, :name, :distance, :discount, :rusts_on, :rusted, :variant, :variants
-    attr_accessor :unpurchasable
+    attr_accessor :obsolete, :operated
+    attr_reader :available_on, :name, :distance, :discount, :obsolete_on,
+                :rusts_on, :rusted, :variant, :variants
+    attr_writer :buyable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
       @id = name
@@ -17,10 +19,13 @@ module Engine
       @price = price
       @index = index
       @rusts_on = opts[:rusts_on]
+      @obsolete_on = opts[:obsolete_on]
       @available_on = opts[:available_on]
       @discount = opts[:discount]
-      @unpurchasable = false
+      @buyable = true
       @rusted = false
+      @obsolete = false
+      @operated = false
       init_variants(opts[:variants])
     end
 
@@ -32,6 +37,7 @@ module Engine
         distance: @distance,
         price: @price,
         rusts_on: @rusts_on,
+        obsolete_on: @obsolete_on,
         discount: @discount,
       }
 
@@ -66,6 +72,10 @@ module Engine
 
     def from_depot?
       owner.is_a?(Depot)
+    end
+
+    def buyable
+      @buyable && !@obsolete
     end
 
     def inspect
