@@ -289,6 +289,10 @@ module Engine
                "hexes":[
                   "B8"
                ],
+                "tiles": [
+                  "2",
+                  "56"
+                ],
                "when":"track",
                "count":1
             }
