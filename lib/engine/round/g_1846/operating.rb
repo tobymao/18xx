@@ -39,9 +39,18 @@ module Engine
           company: 'Company',
         }.freeze
 
-        def select(entities)
+        def select(entities, game)
           minors, corporations = entities.partition(&:minor?)
-          minors + corporations.select(&:floated?).sort
+          corporations.select!(&:floated?)
+          if game.turn == 1
+            corporations.sort_by! do |c|
+              sp = c.share_price
+              [sp.price, sp.corporations.find_index(c)]
+            end
+          else
+            corporations.sort!
+          end
+          minors + corporations
         end
 
         def steps
