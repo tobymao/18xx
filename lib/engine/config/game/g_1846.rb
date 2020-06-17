@@ -577,6 +577,7 @@ module Engine
     {
       "name": "2",
       "train_limit": 4,
+      "on": "4",
       "tiles": [
         "yellow",
         "green"
@@ -586,6 +587,7 @@ module Engine
     },
     {
       "name": "3",
+      "on": "5",
       "train_limit": 3,
       "tiles": [
         "yellow",
@@ -599,6 +601,7 @@ module Engine
     },
     {
       "name": "4",
+      "on": "6",
       "train_limit": 2,
       "tiles": [
         "yellow",

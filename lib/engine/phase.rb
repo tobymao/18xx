@@ -19,7 +19,7 @@ module Engine
       case action
       when Action::BuyTrain
         train = action.train
-        next! if train.name == @next_on
+        next! if train.sym == @next_on
         rust_trains!(train, action.entity)
       when Action::RunRoutes
         rust_obsolete_trains!(action.routes)

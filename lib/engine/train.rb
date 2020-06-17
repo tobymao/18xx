@@ -9,11 +9,11 @@ module Engine
 
     attr_accessor :obsolete, :operated
     attr_reader :available_on, :name, :distance, :discount, :obsolete_on,
-                :rusts_on, :rusted, :variant, :variants
+                :rusts_on, :rusted, :sym, :variant, :variants
     attr_writer :buyable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
-      @id = name
+      @sym = name
       @name = name
       @distance = distance
       @price = price
@@ -57,7 +57,7 @@ module Engine
     end
 
     def id
-      "#{@id}-#{@index}"
+      "#{@sym}-#{@index}"
     end
 
     def rust!
