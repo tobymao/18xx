@@ -29,12 +29,12 @@ module View
 
         P_BOTTOM_LEFT_CORNER = {
           flat: {
-            region_weights: { [19, 20] => 1.0 },
+            region_weights: { [19, 20] => 1.0, [21] => 0.5 },
             x: -30,
             y: 65,
           },
           pointy: {
-            region_weights: { [19, 20] => 1.0 },
+            region_weights: { [19, 20] => 1.0, [21] => 0.5 },
             x: -30,
             y: 61,
           },
@@ -61,18 +61,24 @@ module View
           },
           # top left corner
           {
-            region_weights: { [0, 1] => 1.0 },
+            region_weights: { [0, 1] => 1.0, [2] => 0.5 },
             x: -30,
             y: -65,
           },
           # top right corner
           {
-            region_weights: { [3, 4] => 1.0 },
+            region_weights: { [2] => 0.5, [3, 4] => 1.0 },
             x: 30,
             y: -65,
           },
           # bottom left corner
           P_BOTTOM_LEFT_CORNER[:flat],
+          # edge 1
+          {
+            region_weights: { [12, 13] => 1.0, [14] => 0.5 },
+            x: -50,
+            y: 25,
+          }
         ].freeze
 
         def preferred_render_locations
