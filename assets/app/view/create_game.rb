@@ -65,7 +65,7 @@ module View
         max = range.max = @max_p[title]
         val = range.value.to_i
         range.value = (min..max).include?(val) ? val : max
-        store(:num_players, range.value.to_i)
+        store(:num_players, val)
       end
 
       inputs = [
