@@ -45,19 +45,23 @@ module View
     end
 
     # rubocop:disable Layout/LineLength
-    def render_input(label, placeholder: '', id:, el: 'input', type: 'text', attrs: {}, container_style: {}, label_style: {}, input_style: {}, children: [])
+    def render_input(label, placeholder: '', id:, el: 'input', type: 'text', attrs: {}, on: {}, container_style: {}, label_style: {}, input_style: {}, children: [])
       # rubocop:enable Layout/LineLength
       label_props = {
-        style: label_style,
-        attrs: { for: id },
+        style: {
+          cursor: 'pointer',
+          **label_style,
+        },
+        attrs: { for: id.gsub(/\s/, '-').downcase },
       }
       input_props = {
         style: input_style,
         attrs: {
-          id: id,
+          id: id.gsub(/\s/, '-').downcase,
           type: type,
           **attrs,
         },
+        on: { **on },
       }
       input_props[:attrs][:placeholder] = placeholder if placeholder != ''
       input = h(el, input_props, children)
@@ -69,9 +73,15 @@ module View
       )
     end
 
-    def render_button(text, &block)
+    def render_button(text, style: {}, &block)
       props = {
-        attrs: { type: :button },
+        attrs: {
+          id: text.gsub(/\s/, '-').downcase,
+          type: :button,
+        },
+        style: {
+          **style,
+        },
         on: { click: block },
       }
 
