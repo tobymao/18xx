@@ -78,7 +78,7 @@ module View
             region_weights: { [12, 13] => 1.0, [14] => 0.5 },
             x: -50,
             y: 25,
-          }
+          },
         ].freeze
 
         def preferred_render_locations
