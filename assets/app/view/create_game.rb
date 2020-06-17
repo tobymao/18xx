@@ -59,11 +59,13 @@ module View
       end
 
       limit_range = lambda do
-        min = Native(@inputs[:max_players]).elm.min = @min_p[Native(@inputs[:title]).elm.value]
-        max = Native(@inputs[:max_players]).elm.max = @max_p[Native(@inputs[:title]).elm.value]
-        val = Native(@inputs[:max_players]).elm.value.to_i
-        Native(@inputs[:max_players]).elm.value = (val < min || val > max ? max : val)
-        store(:num_players, Native(@inputs[:max_players]).elm.value.to_i)
+        range = Native(@inputs[:max_players]).elm
+        title = Native(@inputs[:title]).elm.value
+        min = range.min = @min_p[title]
+        max = range.max = @max_p[title]
+        val = range.value.to_i
+        range.value = (min..max).include?(val) ? val : max
+        store(:num_players, range.value.to_i)
       end
 
       inputs = [

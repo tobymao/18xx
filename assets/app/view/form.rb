@@ -52,12 +52,12 @@ module View
           cursor: 'pointer',
           **label_style,
         },
-        attrs: { for: id.gsub(/\s/, '-').downcase },
+        attrs: { for: id },
       }
       input_props = {
         style: input_style,
         attrs: {
-          id: id.gsub(/\s/, '-').downcase,
+          id: id,
           type: type,
           **attrs,
         },
@@ -76,7 +76,6 @@ module View
     def render_button(text, style: {}, &block)
       props = {
         attrs: {
-          id: text.gsub(/\s/, '-').downcase,
           type: :button,
         },
         style: {
