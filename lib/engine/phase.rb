@@ -20,6 +20,13 @@ module Engine
         train = action.train
         next! if train.name == @next_on
         rust_trains!(train, action.entity)
+        @game.companies.map do |company|
+          next unless company.abilities(:close_on_train_buy)
+
+          !company.closed? && action.entity.name == company.abilities(:corporation)
+          company.close!
+          @log << "#{company.name} closes"
+        end
       end
     end
 

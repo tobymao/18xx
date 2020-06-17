@@ -376,6 +376,10 @@ module Engine
                "share":"Nord_0"
             },
             {
+               "type":"close_on_train_buy",
+               "corporation":"Nord"
+            },
+            {
                "type":"no_buy"
             },
             {
