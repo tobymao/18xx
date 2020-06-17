@@ -94,7 +94,7 @@ module View
 
     def mode_input(mode, text)
       click_handler = lambda do
-        store(:mode, mode)
+        store(:mode, mode, skip: true)
         store(:num_players, Native(@inputs[:max_players]).elm.value.to_i)
       end
 
