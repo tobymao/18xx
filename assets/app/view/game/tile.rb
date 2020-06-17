@@ -46,7 +46,8 @@ module View
 
         return false if revenue.uniq.size > 1
 
-        return false if revenue.size == 2
+        total_slots = @tile.cities.sum(&:slots)
+        return false if total_slots < 3 && revenue.size == 2
 
         true
       end
@@ -59,17 +60,18 @@ module View
 
         children = []
 
+        render_revenue = should_render_revenue?
         children << h(Part::Borders, tile: @tile) if @tile.borders.any?
         children << render_tile_part(Part::Track, routes: @routes) if @tile.exits.any?
-        children << render_tile_part(Part::Cities) if @tile.cities.any?
+        children << render_tile_part(Part::Cities, should_render_revenue: !render_revenue) if @tile.cities.any?
         children << render_tile_part(Part::Towns, routes: @routes) if @tile.towns.any?
 
         # OO tiles have different rules...
         children << render_tile_part(Part::LocationName) if @tile.location_name && @tile.cities.size > 1
 
-        children << render_tile_part(Part::Revenue) if should_render_revenue?
-
+        children << render_tile_part(Part::Revenue) if render_revenue
         children << render_tile_part(Part::Label) if @tile.label
+
         children << render_tile_part(Part::Upgrades) if @tile.upgrades.any?
         children << render_tile_part(Part::Blocker) if should_render_blocker?
         children << render_tile_part(Part::LocationName) if @tile.location_name && (@tile.cities.size <= 1)

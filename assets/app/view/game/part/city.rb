@@ -16,6 +16,7 @@ module View
 
         needs :tile
         needs :city
+        needs :should_render_revenue
 
         # key is how many city slots are part of the city; value is the offset for
         # the first city slot
@@ -46,6 +47,14 @@ module View
           [16, 17, 18, 23],
         ].freeze
 
+        EXTRA_SLOT_REGIONS = [
+          [13, 14, 16, 17, 19, 23],
+          [6, 7, 15, 21, 5, 20],
+          [2, 8, 14, 13, 1, 12],
+          [10, 9, 7, 6, 4, 0],
+          [17, 16, 8, 2, 18, 3],
+          [21, 15, 9, 10, 22, 11],
+        ].freeze
         # key: number of slots in city
         # value: [element name (sym), element attrs]
         BOX_ATTRS = {
@@ -85,24 +94,25 @@ module View
           pointy: [nil, 42, 62, 57],
         }.freeze
 
-        OO_REVENUE_ANGLES = [175, -135, 145, -5, 45, -45].freeze
-
         OO_REVENUE_REGIONS = [
-          [19],
-          [5, 12],
-          [5, 12],
-          [4],
-          [11, 18],
-          [11, 18],
+          [[19], true],
+          [[5, 12], true],
+          [[5, 12], false],
+          [[4], true],
+          [[11, 18], true],
+          [[11, 18], false],
         ].freeze
 
         def preferred_render_locations
           if @num_cities > 1 && @edge
+            weights = EDGE_TRACK_REGIONS[@edge] + EDGE_CITY_REGIONS[@edge]
+            weights += EXTRA_SLOT_REGIONS[@edge] if @city.slots != 1
             return [
               {
-                region_weights: EDGE_TRACK_REGIONS[@edge] + EDGE_CITY_REGIONS[@edge],
+                region_weights: weights,
                 x: -Math.sin((@edge * 60) / 180 * Math::PI) * 50,
                 y: Math.cos((@edge * 60) / 180 * Math::PI) * 50,
+                angle: @edge * 60,
               },
             ]
           end
@@ -120,13 +130,12 @@ module View
               CENTER
             end
 
-          x, y = CITY_SLOT_POSITION[@city.slots]
-
           [
             {
               region_weights: region_weights,
-              x: x,
-              y: y,
+              x: 0,
+              y: 0,
+              angle: angle_for_layout, # make center cities always horizontal even on pointy
             },
           ]
         end
@@ -138,13 +147,16 @@ module View
 
         def render_part
           slots = (0..(@city.slots - 1)).zip(@city.tokens).map do |slot_index, token|
-            rotation = (360 / @city.slots) * slot_index
+            slot_rotation = (360 / @city.slots) * slot_index
 
             # use the rotation on the outer <g> to position the slot, then use
             # -rotation on the Slot so its contents are rendered without
             # rotation
-            h(:g, { attrs: { transform: "rotate(#{rotation})" } }, [
-              h(:g, { attrs: { transform: "#{translate} rotate(#{-rotation})" } }, [
+            x, y = CITY_SLOT_POSITION[@city.slots]
+            revert_angle = render_location[:angle]
+            revert_angle += angle_for_layout unless @num_cities > 1 && @edge
+            h(:g, { attrs: { transform: "rotate(#{slot_rotation})" } }, [
+              h(:g, { attrs: { transform: "translate(#{x.round(2)} #{y.round(2)}) rotate(#{-revert_angle})" } }, [
                 h(CitySlot, city: @city,
                             num_cities: @num_cities,
                             token: token,
@@ -161,13 +173,13 @@ module View
           children << render_box(slots.size) if slots.size.between?(2, 6)
           children.concat(slots)
 
-          if (revenue = render_revenue)
+          if @should_render_revenue && (revenue = render_revenue)
             children << revenue
           end
 
           props = @city.solo? ? {} : { on: { click: -> { touch_node(@city) } } }
 
-          props[:attrs] = { transform: rotation_for_layout } if @tile.cities.size == 1
+          props[:attrs] = { transform: "#{translate} #{rotation}" }
 
           h(:g, props, children)
         end
@@ -179,24 +191,16 @@ module View
           revenue = revenues.first
           return if revenue.zero?
 
-          # let View::Game::Tile worry about rendering revenue if there are too many
-          # individual cities (eg, Chi in 1846)
-          return if @num_cities > 2
-
-          angle = angle_for_layout
-
-          x = render_location[:x]
-          y = render_location[:y]
           regions = []
 
-          displacement = REVENUE_DISPLACEMENT[layout][1]
+          displacement = REVENUE_DISPLACEMENT[layout][@city.slots]
+
+          rotation = 0
 
           case @num_cities
           when 1
-            x = 0
-            y = 0
 
-            displacement = REVENUE_DISPLACEMENT[layout][@city.slots]
+            rotation = angle_for_layout
 
             regions = if layout == :flat
                         @city.slots == 1 ? [9, 16] : [11, 18]
@@ -205,20 +209,19 @@ module View
                       end
           when 2
             if @edge
-              angle = OO_REVENUE_ANGLES[@edge]
-              regions = OO_REVENUE_REGIONS[@edge]
+              regions, negative_displacement = OO_REVENUE_REGIONS[@edge]
+              displacement = - displacement if negative_displacement
             end
           end
 
           increment_weight_for_regions(regions)
 
-          h(:g, { attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
-            h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
-              h(:g, { attrs: { transform: "translate(#{displacement} 0)" } }, [
-                h(Part::SingleRevenue,
-                  revenue: revenue,
-                  transform: "rotate(#{-angle})"),
-              ]),
+          revert_angle = render_location[:angle] + rotation
+          h(:g, { attrs: { transform: "rotate(#{rotation})" } }, [
+            h(:g, { attrs: { transform: "translate(#{displacement} 0) rotate(#{-revert_angle})" } }, [
+              h(Part::SingleRevenue,
+                revenue: revenue,
+                transform: rotation_for_layout),
             ]),
           ])
         end
