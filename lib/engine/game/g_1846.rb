@@ -50,11 +50,11 @@ module Engine
 
       def init_companies(players)
         super + @players.size.times.map do |i|
-          id = i + 1
+          name =  "Pass (#{i})"
 
           Company.new(
-            sym: id,
-            name: "Pass (#{id})",
+            sym: name,
+            name: name,
             value: 0,
             desc: "Choose this card if you don't want to purchase any of the offered companies this round",
           )
@@ -95,8 +95,12 @@ module Engine
       end
 
       def setup
-        remove_from_group!(ORANGE_GROUP, companies)
-        remove_from_group!(BLUE_GROUP, companies)
+        remove_from_group!(ORANGE_GROUP, @companies) do |company|
+          @round.companies.delete(company)
+        end
+        remove_from_group!(BLUE_GROUP, @companies) do |company|
+          @round.companies.delete(company)
+        end
         remove_from_group!(GREEN_GROUP, @corporations) do |corporation|
           @round.place_home_token(corporation)
         end
