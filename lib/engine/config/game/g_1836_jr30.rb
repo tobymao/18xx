@@ -302,13 +302,6 @@ module Engine
          "sym": "CdH",
          "abilities":[
             {
-               "type":"blocks_hexes",
-               "owner_type":"player",
-               "hexes":[
-                  "J8"
-               ]
-            },
-            {
                "type":"teleport",
                "owner_type":"corporation",
                 "tiles": [

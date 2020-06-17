@@ -23,9 +23,10 @@ module Engine
         @game.companies.map do |company|
           next unless company.abilities(:close_on_train_buy)
 
-          !company.closed? && action.entity.name == company.abilities(:corporation)
-          company.close!
-          @log << "#{company.name} closes"
+          if !company.closed? && action.entity.name == company.abilities(:close_on_train_buy)['corporation']
+            company.close!
+            @log << "#{company.name} closes"
+          end
         end
       end
     end
