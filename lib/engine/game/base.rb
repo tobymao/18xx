@@ -489,12 +489,19 @@ module Engine
 
       def init_train_handler
         trains = self.class::TRAINS.flat_map do |train|
-          train[:num].times.map do |index|
+          num = train[:num]
+          num = num_trains(train) if num == -1
+
+          num.times.map do |index|
             Train.new(**train, index: index)
           end
         end
 
         Depot.new(trains, self)
+      end
+
+      def num_trains(_train)
+        raise NotImplementedError
       end
 
       def init_corporations(stock_market)

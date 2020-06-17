@@ -116,6 +116,19 @@ module Engine
         entities.reject! { |e| remove.include?(e.name) }
       end
 
+      def num_trains(train)
+        num_players = @players.size
+
+        case train[:name]
+        when '2'
+          num_players + 4
+        when '4'
+          num_players + 1
+        when '5'
+          num_players
+        end
+      end
+
       def init_corporations(stock_market)
         corporations = super
         remove_from_group!(GREEN_GROUP, corporations)

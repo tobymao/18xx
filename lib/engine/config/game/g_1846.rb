@@ -358,7 +358,7 @@ module Engine
       "price": 80,
       "obsolete_on": "4/6",
       "rusts_on": "6",
-      "num": 9
+      "num": -1
     },
     {
       "name": "4",
@@ -378,7 +378,7 @@ module Engine
            "price": 160
          }
       ],
-      "num": 1
+      "num": -1
     },
     {
       "name": "5",
@@ -397,7 +397,7 @@ module Engine
            "price": 450
          }
       ],
-      "num": 5
+      "num": -1
     },
     {
       "name": "6",
