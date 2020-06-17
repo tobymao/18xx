@@ -165,9 +165,9 @@ module Engine
           raise GameError, 'Cannot buy minor because train tight' unless corp_has_room?
 
           cash = minor.cash
-          minor.spend(cash, @current_entity)
+          minor.spend(cash, @current_entity) if cash.positive?
           train = minor.trains[0]
-          @current_entity.buy_train(train)
+          @current_entity.buy_train(train, :free)
           minor.tokens[0].swap!(Token.new(@current_entity))
           @log << "#{@current_entity.name} receives #{@game.format_currency(cash)}"\
             ", a 2 train, and a token on #{minor.coordinates}"
