@@ -32,10 +32,13 @@ module Engine
       end
 
       def description
-        if @sell_buy_order
-          'Sell then Buy Shares'
-        else
+        case @sell_buy_order
+        when :sell_buy_or_buy_sell
           'Buy and Sell Shares'
+        when :sell_buy
+          'Sell then Buy Shares'
+        when :sell_buy_sell
+          'Sell then Buy Shares then Sell'
         end
       end
 
