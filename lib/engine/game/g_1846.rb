@@ -147,6 +147,21 @@ module Engine
         end
       end
 
+      def illinois_central
+        @illinois_central ||= corporation_by_id('IC')
+      end
+
+      def action_processed(action)
+        case action
+        when Action::Par
+          if action.corporation == illinois_central
+            bonus = action.share_price.price
+            @bank.spend(bonus, illinois_central)
+            @log << "#{illinois_central.name} receives a #{format_currency(bonus)} subsidy"
+          end
+        end
+      end
+
       def init_round
         Round::G1846::Draft.new(@players.reverse, game: self)
       end
