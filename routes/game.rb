@@ -133,7 +133,9 @@ class Api
           # POST '/api/game/<game_id>/start
           r.is 'start' do
             engine = Engine::GAMES_BY_TITLE[game.title].new(users.map(&:name), id: game.id)
-            halt(400, 'Player count not supported') unless game.players.size.between?(*Engine.player_range(engine.class))
+            unless game.players.size.between?(*Engine.player_range(engine.class))
+              halt(400, 'Player count not supported')
+            end
 
             set_game_state(game, engine, users)
             game.to_h
