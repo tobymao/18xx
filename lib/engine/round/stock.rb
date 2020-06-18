@@ -32,7 +32,11 @@ module Engine
       end
 
       def description
-        'Sell then Buy Shares'
+        if @sell_buy_order
+          'Sell then Buy Shares'
+        else
+          'Buy and Sell Shares'
+        end
       end
 
       def pass_description
