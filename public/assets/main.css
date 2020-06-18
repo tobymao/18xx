@@ -59,7 +59,7 @@ input, select, textarea {
   cursor: pointer;
   margin: 0.5rem;
 }
-input:not([type="checkbox"]), select {
+input:not([type=radio]):not([type=checkbox]), select {
   height: 2rem;
 }
 input + label, select + label {

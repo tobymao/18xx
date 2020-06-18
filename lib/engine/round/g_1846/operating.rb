@@ -39,9 +39,20 @@ module Engine
           company: 'Company',
         }.freeze
 
-        def select(entities)
+        DIVIDEND_TYPES = %i[payout withhold half].freeze
+
+        def select(entities, game)
           minors, corporations = entities.partition(&:minor?)
-          minors + corporations.select(&:floated?).sort
+          corporations.select!(&:floated?)
+          if game.turn == 1
+            corporations.sort_by! do |c|
+              sp = c.share_price
+              [sp.price, sp.corporations.find_index(c)]
+            end
+          else
+            corporations.sort!
+          end
+          minors + corporations
         end
 
         def steps
@@ -172,6 +183,7 @@ module Engine
           @log << "#{@current_entity.name} receives #{@game.format_currency(cash)}"\
             ", a 2 train, and a token on #{minor.coordinates}"
           @game.minors.delete(minor)
+          @graph.clear
         end
 
         def tile_cost(tile, abilities)
@@ -225,6 +237,25 @@ module Engine
           end
 
           false
+        end
+
+        def half(revenue)
+          withheld = revenue / 2 / 10 * 10
+          @bank.spend(withheld, @current_entity)
+          @log << "#{@current_entity.name} runs for #{@game.format_currency(revenue)} and pays half"
+          @log << "#{@current_entity.name} witholds #{@game.format_currency(withheld)}"
+          payout(revenue - withheld)
+        end
+
+        def change_share_price(_direction, revenue = 0)
+          return if @current_entity.minor?
+
+          price = @current_entity.share_price.price
+          @stock_market.move_left(@current_entity) if revenue < price / 2
+          @stock_market.move_right(@current_entity) if revenue >= price
+          @stock_market.move_right(@current_entity) if revenue >= price * 2
+          @stock_market.move_right(@current_entity) if revenue >= price * 3 && price >= 165
+          log_share_price(@current_entity, price)
         end
       end
     end

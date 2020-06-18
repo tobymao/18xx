@@ -26,7 +26,7 @@ module Engine
         end
 
         def blank?(company)
-          company.name.to_i.positive?
+          company.name.include?('Pass')
         end
 
         def all_blank?

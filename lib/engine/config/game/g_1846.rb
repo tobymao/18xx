@@ -215,14 +215,54 @@ module Engine
       "value": 40,
       "revenue": 15,
       "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's reserved hexes (B10, B12).",
-      "sym": "MC"
+      "sym": "MC",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "B10",
+            "B12"
+          ]
+        }
+      ]
     },
     {
       "name": "Ohio & Indiana",
       "value": 40,
       "revenue": 15,
       "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I's reserved hexes (F14, F16).",
-      "sym": "O&I"
+      "sym": "O&I",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "F14",
+            "F16"
+          ]
+        }
+      ]
+    }
+  ],
+  "minors": [
+    {
+      "sym": "MS",
+      "name": "Michigan Southern",
+      "logo": "1846/MS",
+      "tokens": [0],
+      "coordinates": "C15",
+      "color": "pink",
+      "text_color": "black"
+    },
+    {
+      "sym": "BIG4",
+      "name": "Big 4",
+      "logo": "1846/B4",
+      "tokens": [0],
+      "coordinates": "G9",
+      "color": "cyan",
+      "text_color": "black"
     }
   ],
   "corporations": [
@@ -357,8 +397,7 @@ module Engine
       "distance": 2,
       "price": 80,
       "obsolete_on": "4/6",
-      "rusts_on": "6",
-      "num": -1
+      "rusts_on": "6"
     },
     {
       "name": "4",
@@ -377,8 +416,7 @@ module Engine
            ],
            "price": 160
          }
-      ],
-      "num": -1
+      ]
     },
     {
       "name": "5",
@@ -396,8 +434,7 @@ module Engine
            ],
            "price": 450
          }
-      ],
-      "num": -1
+      ]
     },
     {
       "name": "6",

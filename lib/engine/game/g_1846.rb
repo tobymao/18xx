@@ -4,7 +4,6 @@
 
 require_relative '../config/game/g_1846'
 require_relative 'base'
-require_relative '../minor'
 
 module Engine
   module Game
@@ -46,60 +45,42 @@ module Engine
 
       TILE_COST = 20
 
-      attr_reader :minors
-
       def init_companies(players)
-        companies = super + @players.size.times.map do |i|
-          name = (i + 1).to_s
-          Company.new(sym: name, name: name, value: 0, desc: "Choose this card if you don't want to purchase a company")
+        super + @players.size.times.map do |i|
+          name = "Pass (#{i})"
+
+          Company.new(
+            sym: name,
+            name: name,
+            value: 0,
+            desc: "Choose this card if you don't want to purchase any of the offered companies this round",
+          )
         end
-
-        remove_from_group!(ORANGE_GROUP, companies)
-        remove_from_group!(BLUE_GROUP, companies)
-
-        companies
       end
 
       def michigan_southern
-        @michigan_southern ||= Minor.new(
-          sym: 'MS',
-          name: 'Michigan Southern',
-          coordinates: 'C15',
-          tokens: [0],
-          color: 'pink',
-          text_color: 'black',
-          logo: '1846/MS',
-        )
+        @michigan_southern ||= minor_by_id('MS')
       end
 
       def big4
-        @big4 ||= Minor.new(
-          sym: 'BIG4',
-          name: 'Big 4',
-          coordinates: 'G9',
-          tokens: [0],
-          color: 'cyan',
-          text_color: 'black',
-          logo: '1846/B4',
-        )
-      end
-
-      def minor_by_id(id)
-        case id
-        when michigan_southern.name
-          michigan_southern
-        when big4.name
-          big4
-        end
+        @big4 ||= minor_by_id('BIG4')
       end
 
       def setup
+        remove_from_group!(ORANGE_GROUP, @companies) do |company|
+          @round.companies.delete(company)
+        end
+        remove_from_group!(BLUE_GROUP, @companies) do |company|
+          @round.companies.delete(company)
+        end
+        remove_from_group!(GREEN_GROUP, @corporations) do |corporation|
+          @round.place_home_token(corporation)
+        end
+
         @companies.each do |company|
           company.min_price = 1
           company.max_price = company.value
         end
-
-        @minors = [michigan_southern, big4]
 
         @minors.each do |minor|
           train = @depot.upcoming[0]
@@ -113,7 +94,14 @@ module Engine
       def remove_from_group!(group, entities)
         remove = group.sort_by { rand }.take([5 - @players.size, 2].min)
         @log << "Removing #{remove.join(', ')}"
-        entities.reject! { |e| remove.include?(e.name) }
+        entities.reject! do |entity|
+          if remove.include?(entity.name)
+            yield entity if block_given?
+            true
+          else
+            false
+          end
+        end
       end
 
       def num_trains(train)
@@ -129,10 +117,19 @@ module Engine
         end
       end
 
-      def init_corporations(stock_market)
-        corporations = super
-        remove_from_group!(GREEN_GROUP, corporations)
-        corporations
+      def illinois_central
+        @illinois_central ||= corporation_by_id('IC')
+      end
+
+      def action_processed(action)
+        case action
+        when Action::Par
+          if action.corporation == illinois_central
+            bonus = action.share_price.price
+            @bank.spend(bonus, illinois_central)
+            @log << "#{illinois_central.name} receives a #{format_currency(bonus)} subsidy"
+          end
+        end
       end
 
       def init_round

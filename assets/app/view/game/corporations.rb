@@ -9,7 +9,7 @@ module View
       needs :user, default: nil
 
       def render
-        player_owned, bank_owned = @game.corporations.partition(&:owner)
+        player_owned, bank_owned = (@game.corporations + @game.minors).partition(&:owner)
 
         children = player_owned
           .group_by(&:owner)
