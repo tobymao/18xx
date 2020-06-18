@@ -19,4 +19,9 @@ module Engine
   VISIBLE_GAMES = GAMES.select { |game| %i[alpha beta production].include?(game::DEV_STAGE) }
 
   GAMES_BY_TITLE = GAMES.map { |game| [game.title, game] }.to_h
+
+  def self.player_range(game)
+    counts = game::CERT_LIMIT.keys
+    [counts.min, counts.max]
+  end
 end

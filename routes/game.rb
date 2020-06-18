@@ -91,9 +91,7 @@ class Api
                   action: action,
                 )
 
-                active_players = engine.active_players.map(&:name)
-                acting = users.select { |u| active_players.include?(u.name) }
-                set_game_state(game, acting, engine)
+                acting = set_game_state(game, engine, users)
               end
             end
 
@@ -134,12 +132,10 @@ class Api
 
           # POST '/api/game/<game_id>/start
           r.is 'start' do
-            halt(400, 'Cannot play 1 player') if game.players.size < 2
+            engine = Engine::GAMES_BY_TITLE[game.title].new(users.map(&:name), id: game.id)
+            halt(400, 'Player count not supported') unless game.players.size.between?(*Engine.player_range(engine.class))
 
-            game.update(
-              status: 'active',
-              acting: [users.first.id],
-            )
+            set_game_state(game, engine, users)
             game.to_h
           end
 
@@ -184,7 +180,10 @@ class Api
     game.actions(reload: true).map(&:to_h)
   end
 
-  def set_game_state(game, acting, engine)
+  def set_game_state(game, engine, users)
+    active_players = engine.active_players.map(&:name)
+    acting = users.select { |u| active_players.include?(u.name) }
+
     game.round = engine.round.name
     game.turn = engine.turn
     game.acting = acting.map(&:id)
@@ -198,5 +197,6 @@ class Api
     end
 
     game.save
+    acting
   end
 end
