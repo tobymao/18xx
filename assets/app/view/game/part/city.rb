@@ -16,7 +16,7 @@ module View
 
         needs :tile
         needs :city
-        needs :should_render_revenue
+        needs :show_revenue
 
         # key is how many city slots are part of the city; value is the offset for
         # the first city slot
@@ -106,7 +106,7 @@ module View
         def preferred_render_locations
           if @num_cities > 1 && @edge
             weights = EDGE_TRACK_REGIONS[@edge] + EDGE_CITY_REGIONS[@edge]
-            weights += EXTRA_SLOT_REGIONS[@edge] if @city.slots != 1
+            weights += EXTRA_SLOT_REGIONS[@edge] unless @city.slots == 1
             return [
               {
                 region_weights: weights,
@@ -154,7 +154,7 @@ module View
             # rotation
             x, y = CITY_SLOT_POSITION[@city.slots]
             revert_angle = render_location[:angle]
-            revert_angle += angle_for_layout unless @num_cities > 1 && @edge
+            revert_angle -= angle_for_layout if @num_cities == 1 || !@edge
             h(:g, { attrs: { transform: "rotate(#{slot_rotation})" } }, [
               h(:g, { attrs: { transform: "translate(#{x.round(2)} #{y.round(2)}) rotate(#{-revert_angle})" } }, [
                 h(CitySlot, city: @city,
@@ -173,7 +173,7 @@ module View
           children << render_box(slots.size) if slots.size.between?(2, 6)
           children.concat(slots)
 
-          if @should_render_revenue && (revenue = render_revenue)
+          if @show_revenue && (revenue = render_revenue)
             children << revenue
           end
 
@@ -210,7 +210,7 @@ module View
           when 2
             if @edge
               regions, negative_displacement = OO_REVENUE_REGIONS[@edge]
-              displacement = - displacement if negative_displacement
+              displacement *= -1 if negative_displacement
             end
           end
 
