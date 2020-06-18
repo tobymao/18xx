@@ -27,7 +27,7 @@ module View
         },
       }
 
-      h('div#logo', [
+      h('h1#logo', { style: { margin: '0', fontSize: '1rem' } }, [
         h(:a, a_props, [
           h(:span, logo_props, '18xx'),
           h(:span, '.Games'),

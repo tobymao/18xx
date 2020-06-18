@@ -64,7 +64,7 @@ module View
         },
       }
 
-      h(:div, props, children)
+      h('div#homepage', props, children)
     end
 
     def game_refresh
@@ -94,8 +94,8 @@ module View
     end
 
     def render_header
-      h('div.card_header', [
-        "Welcome#{@user ? ' ' + @user['name'] : ''}!",
+      h('div#greeting.card_header', [
+        h(:h2, "Welcome#{@user ? ' ' + @user['name'] : ''}!"),
       ])
     end
   end
