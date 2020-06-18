@@ -245,6 +245,26 @@ module Engine
       ]
     }
   ],
+  "minors": [
+    {
+      "sym": "MS",
+      "name": "Michigan Southern",
+      "logo": "1846/MS",
+      "tokens": [0],
+      "coordinates": "C15",
+      "color": "pink",
+      "text_color": "black"
+    },
+    {
+      "sym": "BIG4",
+      "name": "Big 4",
+      "logo": "1846/B4",
+      "tokens": [0],
+      "coordinates": "G9",
+      "color": "cyan",
+      "text_color": "black"
+    }
+  ],
   "corporations": [
     {
       "float_percent": 20,

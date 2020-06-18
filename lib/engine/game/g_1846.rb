@@ -4,7 +4,6 @@
 
 require_relative '../config/game/g_1846'
 require_relative 'base'
-require_relative '../minor'
 
 module Engine
   module Game
@@ -46,8 +45,6 @@ module Engine
 
       TILE_COST = 20
 
-      attr_reader :minors
-
       def init_companies(players)
         super + @players.size.times.map do |i|
           name = "Pass (#{i})"
@@ -62,36 +59,11 @@ module Engine
       end
 
       def michigan_southern
-        @michigan_southern ||= Minor.new(
-          sym: 'MS',
-          name: 'Michigan Southern',
-          coordinates: 'C15',
-          tokens: [0],
-          color: 'pink',
-          text_color: 'black',
-          logo: '1846/MS',
-        )
+        @michigan_southern ||= minor_by_id('MS')
       end
 
       def big4
-        @big4 ||= Minor.new(
-          sym: 'BIG4',
-          name: 'Big 4',
-          coordinates: 'G9',
-          tokens: [0],
-          color: 'cyan',
-          text_color: 'black',
-          logo: '1846/B4',
-        )
-      end
-
-      def minor_by_id(id)
-        case id
-        when michigan_southern.name
-          michigan_southern
-        when big4.name
-          big4
-        end
+        @big4 ||= minor_by_id('BIG4')
       end
 
       def setup
@@ -109,8 +81,6 @@ module Engine
           company.min_price = 1
           company.max_price = company.value
         end
-
-        @minors = [michigan_southern, big4]
 
         @minors.each do |minor|
           train = @depot.upcoming[0]
