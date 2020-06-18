@@ -32,7 +32,7 @@ module Engine
       end
 
       def description
-        'Buy and Sell Shares'
+        'Sell then Buy Shares'
       end
 
       def pass_description
