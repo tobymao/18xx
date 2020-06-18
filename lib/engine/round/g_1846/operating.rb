@@ -41,10 +41,10 @@ module Engine
 
         DIVIDEND_TYPES = %i[payout withhold half].freeze
 
-        def select(entities, game)
+        def select(entities, game, round_num)
           minors, corporations = entities.partition(&:minor?)
           corporations.select!(&:floated?)
-          if game.turn == 1
+          if game.turn == 1 && round_num == 1
             corporations.sort_by! do |c|
               sp = c.share_price
               [sp.price, sp.corporations.find_index(c)]

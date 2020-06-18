@@ -45,7 +45,7 @@ module Engine
       DIVIDEND_TYPES = %i[payout withhold].freeze
 
       def initialize(entities, game:, round_num: 1, **opts)
-        super(select(entities, game), game: game, **opts)
+        super(select(entities, game, round_num), game: game, **opts)
         @round_num = round_num
         @home_token_timing = @game.class::HOME_TOKEN_TIMING
         @ebuy_other_value = @game.class::EBUY_OTHER_VALUE
@@ -71,7 +71,7 @@ module Engine
         start_operating
       end
 
-      def select(entities, _game)
+      def select(entities, _game, _round_num)
         entities.select(&:floated?).sort
       end
 
