@@ -47,7 +47,7 @@ module Engine
 
       def init_companies(players)
         super + @players.size.times.map do |i|
-          name = "Pass (#{i})"
+          name = "Pass (#{i + 1})"
 
           Company.new(
             sym: name,
