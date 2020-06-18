@@ -39,6 +39,8 @@ module Engine
           company: 'Company',
         }.freeze
 
+        DIVIDEND_TYPES = %i[payout withhold half].freeze
+
         def select(entities, game)
           minors, corporations = entities.partition(&:minor?)
           corporations.select!(&:floated?)
@@ -235,6 +237,25 @@ module Engine
           end
 
           false
+        end
+
+        def half(revenue)
+          withheld = revenue / 2 / 10 * 10
+          @bank.spend(withheld, @current_entity)
+          @log << "#{@current_entity.name} runs for #{@game.format_currency(revenue)} and pays half"
+          @log << "#{@current_entity.name} witholds #{@game.format_currency(withheld)}"
+          payout(revenue - withheld)
+        end
+
+        def change_share_price(_direction, revenue = 0)
+          return if @current_entity.minor?
+
+          price = @current_entity.share_price.price
+          @stock_market.move_left(@current_entity) if revenue < price / 2
+          @stock_market.move_right(@current_entity) if revenue >= price
+          @stock_market.move_right(@current_entity) if revenue >= price * 2
+          @stock_market.move_right(@current_entity) if revenue >= price * 3 && price >= 165
+          log_share_price(@current_entity, price)
         end
       end
     end

@@ -42,6 +42,8 @@ module Engine
         company: 'Companies',
       }.freeze
 
+      DIVIDEND_TYPES = %i[payout withhold].freeze
+
       def initialize(entities, game:, round_num: 1, **opts)
         super(select(entities, game), game: game, **opts)
         @round_num = round_num
@@ -126,6 +128,10 @@ module Engine
           end
         end
         depot_trains + other_trains
+      end
+
+      def dividend_types
+        self.class::DIVIDEND_TYPES
       end
 
       def active_entities
@@ -311,15 +317,7 @@ module Engine
         )
         @current_entity.trains.each { |train| train.operated = true }
         @current_routes = []
-
-        case action.kind
-        when 'payout'
-          payout(revenue)
-        when 'withhold'
-          withhold(revenue)
-        else
-          raise GameError, "Unknown dividend type #{action.kind}"
-        end
+        send(action.kind, revenue)
       end
 
       def process_buy_train(action)
@@ -407,7 +405,7 @@ module Engine
         else
           @log << "#{name} does not run"
         end
-        change_share_price(:left)
+        change_share_price(0)
       end
 
       def payout(revenue)
@@ -426,7 +424,7 @@ module Engine
         else
           payout_entity(@share_pool, per_share, @current_entity)
         end
-        change_share_price(:right)
+        change_share_price(revenue)
       end
 
       def payout_entity(holder, per_share, receiver = nil)
@@ -442,20 +440,9 @@ module Engine
         @bank.spend(amount, receiver)
       end
 
-      def change_share_price(direction)
-        return if @current_entity.minor?
-
+      def change_share_price(revenue)
         prev = @current_entity.share_price.price
-
-        case direction
-        when :left
-          @stock_market.move_left(@current_entity)
-        when :right
-          @stock_market.move_right(@current_entity)
-        else
-          raise GameError, "Don't know how to move direction #{direction}"
-        end
-
+        revenue.zero? ? @stock_market.move_left(@current_entity) : @stock_market.move_right(@current_entity)
         log_share_price(@current_entity, prev)
       end
 
