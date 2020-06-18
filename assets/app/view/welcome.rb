@@ -7,7 +7,7 @@ module View
     def render
       props = {
         style: {
-          'margin-right': '1.5rem',
+          'margin-right': '1rem',
         },
       }
 
