@@ -215,12 +215,9 @@ module Engine
       end
 
       def reachable_hexes
-        if @step == :home_token
-          homehex = @game.hexes.find { |h| h.coordinates == @current_entity.coordinates }
-          { homehex => true }
-        else
-          @graph.reachable_hexes(@current_entity)
-        end
+        return { @game.hex_by_id(@current_entity.coordinates) => true } if @step == :home_token
+
+        @graph.reachable_hexes(@current_entity)
       end
 
       def route?
@@ -245,11 +242,8 @@ module Engine
       end
 
       def skip_home_token
-        if @home_token_timing == :operate
-          !place_home_token(@current_entity)
-        else
-          true
-        end
+        !(@home_token_timing == :operate &&
+          @game.hex_by_id(@current_entity.coordinates)&.tile&.reserved_by?(@current_entity))
       end
 
       def skip_track; end
@@ -366,6 +360,7 @@ module Engine
         @current_actions.clear
         log_operation(@current_entity)
         @current_entity.trains.each { |train| train.operated = false }
+        place_home_token(@current_entity) if @home_token_timing == :operate
 
         next_step! if send("skip_#{@step}")
       end
@@ -523,8 +518,8 @@ module Engine
       def place_token(action)
         entity = action.entity
         hex = action.city.hex
-        free = @teleported || @step == :home_token
-        if !@game.loading && !connected_nodes[action.city] && !free
+        allow_unconnected = @teleported || @step == :home_token
+        if !@game.loading && !allow_unconnected && !connected_nodes[action.city]
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 
@@ -532,8 +527,8 @@ module Engine
         raise GameError, 'Token is already used' if token.used
 
         price = token.price || 0
-        action.city.place_token(entity, token, free: free)
-        if price.positive? && !free
+        action.city.place_token(entity, token, free: @teleported)
+        if price.positive? && !@teleported
           entity.spend(price, @bank)
           price_log = " for #{@game.format_currency(price)}"
         end
