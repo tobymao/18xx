@@ -235,14 +235,32 @@ module Engine
       "value": 20,
       "revenue": 5,
       "desc": "Blocks Flin Flon (K3).",
-      "sym": "HB"
+      "sym": "HB",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "K3"
+          ]
+        }
+      ]
     },
     {
       "name": "Saskatchewan Central",
       "value": 50,
       "revenue": 10,
       "desc": "During a player's stock turn, in any phase, the player owning this company can close it to \"convert\" to the 10-share corporation SC. This counts as a \"certificate purchase action\". SC shares cannot be purchased by any player unless SC has been converted. The SC floats using the same rules as other corporation. If the private company is sold to a corporation, it no longer can be converted.",
-      "sym": "SC"
+      "sym": "SC",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "D8"
+          ]
+        }
+      ]
     },
     {
       "name": "North West Rebellion",
@@ -262,6 +280,13 @@ module Engine
           "type": "share",
           "share": "random_share",
           "corporations": ["CNR", "CPR", "GT", "HBR", "QLL"]
+        },
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "I7"
+          ]
         }
       ]
     },
@@ -297,6 +322,7 @@ module Engine
         40,
         40
       ],
+      "coordinates": "H4",
       "color": "green"
     },
     {
