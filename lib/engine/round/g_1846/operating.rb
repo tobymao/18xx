@@ -247,7 +247,7 @@ module Engine
           payout(revenue - withheld)
         end
 
-        def change_share_price(_direction, revenue = 0)
+        def change_share_price(revenue)
           return if @current_entity.minor?
 
           price = @current_entity.share_price.price
