@@ -262,18 +262,6 @@ table.center {
   }
 }
 
-.game_row > .card_header {
-  display: grid;
-  grid: 1fr / 10rem 4rem 4rem;
-  align-items: center;
-}
-.game_row a {
-  justify-self: center;
-}
-.game_row a.next {
-  grid-column-start: 3;
-}
-
 div.game.card em {
   font-style: normal;
   text-decoration: underline;

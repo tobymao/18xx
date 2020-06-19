@@ -28,7 +28,15 @@ module View
       children << render_more('Prev', "?#{@type}=#{p - 1}") if p.positive?
       children << render_more('Next', "?#{@type}=#{p + 1}") if @game_row_games.size > @limit
 
-      h('div.card_header', children)
+      props = {
+        style: {
+          display: 'grid',
+          grid: '1fr / 10rem 4rem 4rem',
+          alignItems: 'center',
+        },
+      }
+
+      h('div.card_header', props, children)
     end
 
     def render_more(text, params)
@@ -44,7 +52,11 @@ module View
         on: {
           click: click,
         },
+        style: {
+          justifySelf: 'center',
+        },
       }
+      props[:style][:gridColumnStart] = '3' if text == 'Next'
 
       h("a.#{text.downcase}", props, text)
     end

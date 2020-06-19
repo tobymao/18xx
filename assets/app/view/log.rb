@@ -31,7 +31,7 @@ module View
         on: { scroll: scroll_handler },
         style: {
           overflow: 'auto',
-          padding: '0 0.5rem',
+          padding: '0.5rem',
           'background-color': color_for(:bg2),
           color: color_for(:font2),
           'word-break': 'break-word',
