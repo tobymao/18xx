@@ -32,7 +32,14 @@ module Engine
       end
 
       def description
-        'Buy and Sell Shares'
+        case @sell_buy_order
+        when :sell_buy_or_buy_sell
+          'Buy and Sell Shares'
+        when :sell_buy
+          'Sell then Buy Shares'
+        when :sell_buy_sell
+          'Sell then Buy Shares then Sell'
+        end
       end
 
       def pass_description
