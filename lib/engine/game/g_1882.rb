@@ -13,6 +13,7 @@ module Engine
                       yellow: '#FFF500',
                       brown: '#7b352a')
 
+      AXES = { x: :number, y: :letter }.freeze
       CORPORATIONS_WITHOUT_NEUTRAL = %w[CPR CN].freeze
 
       load_from_json(Config::Game::G1882::JSON)
