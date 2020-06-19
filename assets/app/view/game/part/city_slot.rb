@@ -37,7 +37,7 @@ module View
         def reservation
           h(
             :text,
-            { attrs: { 'text-anchor': 'middle', fill: 'black', transform: 'translate(0 9) scale(1.75)' } },
+            { attrs: { fill: 'black', transform: 'translate(0 9) scale(1.75)' } },
             @reservation,
           )
         end

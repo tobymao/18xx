@@ -193,6 +193,7 @@ p:last-child {
 .tile {
    fill: none;
    stroke-width: 1;
+   text-anchor: middle;
 }
 .tile__block {
   display: inline-block;

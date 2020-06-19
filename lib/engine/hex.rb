@@ -122,6 +122,9 @@ module Engine
       tile.reservations = @tile.reservations
       @tile.reservations.clear
 
+      tile.borders.concat(@tile.borders)
+      @tile.borders.clear
+
       @tile.hex = nil
       tile.hex = self
 

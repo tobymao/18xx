@@ -241,13 +241,30 @@ module Engine
             []
           end
 
-        cost = tile_cost(old_tile, abilities)
+        cost = tile_cost(old_tile, abilities) + border_cost(tile)
         entity.spend(cost, @game.bank) if cost.positive?
 
         @log << "#{action.entity.name}"\
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile ##{tile.name}"\
          " with rotation #{rotation} on #{hex.name}"
+      end
+
+      def border_cost(tile)
+        hex = tile.hex
+
+        tile.borders.dup.sum do |border|
+          next 0 unless (cost = border.cost)
+
+          edge = border.edge
+          neighbor = hex.neighbors[edge]
+          next 0 if !hex.targeting?(neighbor) || !neighbor.targeting?(hex)
+
+          tile.borders.delete(border)
+          neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
+
+          cost
+        end
       end
 
       def tile_cost(tile, abilities)

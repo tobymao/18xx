@@ -51,7 +51,6 @@ module View
             text_attrs = {
               transform: "translate(#{t_x + (width * 0.5)} -1)",
               fill: 'black',
-              'text-anchor': 'middle',
               'dominant-baseline': 'central',
               'font-size': 20,
             }

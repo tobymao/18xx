@@ -91,7 +91,7 @@ module Engine
         cache << upgrade
         upgrade
       when 'border'
-        Part::Border.new(params['edge'])
+        Part::Border.new(params['edge'], params['type'], params['cost'])
       when 'junction'
         junction = Part::Junction.new
         cache << junction
