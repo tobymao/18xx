@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../config/game/g_18_newengland'
+require_relative '../config/game/g_18_new_england'
 require_relative 'base'
 
 module Engine

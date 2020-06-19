@@ -10,7 +10,7 @@ module Engine
       module G18NewEngland
         JSON = <<-'DATA'
 {
-  "filename": "18_newengland",
+  "filename": "18_new_england",
   "modulename": "18NewEngland",
   "currencyFormatStr": "$%d",
   "bankCash": 12000,
@@ -163,7 +163,7 @@ module Engine
     {
       "sym": "AWS",
       "name": "Albany and West Stockbridge Railroad",
-      "logo": "18_newengland/AWS",
+      "logo": "18_new_england/AWS",
       "tokens": [0],
       "coordinates": "C3",
       "color": "#f05f72"
@@ -171,7 +171,7 @@ module Engine
     {
       "sym": "BL",
       "name": "Boston and Lowell Railroad",
-      "logo": "18_newengland/BL",
+      "logo": "18_new_england/BL",
       "tokens": [0],
       "coordinates": "M5",
       "color": "#fbb116",
@@ -180,7 +180,7 @@ module Engine
     {
       "sym": "BP",
       "name": "Boston and Providence Railroad",
-      "logo": "18_newengland/BP",
+      "logo": "18_new_england/BP",
       "tokens": [0],
       "coordinates": "L10",
       "color": "#bdaf32",
@@ -189,7 +189,7 @@ module Engine
     {
       "sym": "CR",
       "name": "Connecticut River Railroad",
-      "logo": "18_newengland/CR",
+      "logo": "18_new_england/CR",
       "tokens": [0],
       "coordinates": "H8",
       "color": "#584232"
@@ -197,7 +197,7 @@ module Engine
     {
       "sym": "CV",
       "name": "Connecticut Valley Railroad",
-      "logo": "18_newengland/CV",
+      "logo": "18_new_england/CV",
       "tokens": [0],
       "coordinates": "F2",
       "color": "#e5df17",
@@ -206,7 +206,7 @@ module Engine
     {
       "sym": "ER",
       "name": "Eastern Railroad",
-      "logo": "18_newengland/ER",
+      "logo": "18_new_england/ER",
       "tokens": [0],
       "coordinates": "H10",
       "color": "#b43e95"
@@ -214,7 +214,7 @@ module Engine
     {
       "sym": "FRR",
       "name": "Fitchburg Railroad",
-      "logo": "18_newengland/FRR",
+      "logo": "18_new_england/FRR",
       "tokens": [0],
       "coordinates": "K3",
       "color": "#2ab24b"
@@ -222,7 +222,7 @@ module Engine
     {
       "sym": "GR",
       "name": "Granite Railway",
-      "logo": "18_newengland/GR",
+      "logo": "18_new_england/GR",
       "tokens": [0],
       "coordinates": "M7",
       "color": "#09743b"
@@ -230,7 +230,7 @@ module Engine
     {
       "sym": "HNH",
       "name": "Hartford and New Haven Railroad",
-      "logo": "18_newengland/HNH",
+      "logo": "18_new_england/HNH",
       "tokens": [0],
       "coordinates": "G13",
       "color": "#ec2785"
@@ -238,7 +238,7 @@ module Engine
     {
       "sym": "NLN",
       "name": "New London Northern Railroad",
-      "logo": "18_newengland/NLN",
+      "logo": "18_new_england/NLN",
       "tokens": [0],
       "coordinates": "E15",
       "color": "#6dcef5"
@@ -246,7 +246,7 @@ module Engine
     {
       "sym": "NYNH",
       "name": "New York and New Haven Railroad",
-      "logo": "18_newengland/NYNH",
+      "logo": "18_new_england/NYNH",
       "tokens": [0],
       "coordinates": "F12",
       "color": "#cf6d28"
@@ -254,7 +254,7 @@ module Engine
     {
       "sym": "NYW",
       "name": "New York, Westchester and Boston Railway",
-      "logo": "18_newengland/NYW",
+      "logo": "18_new_england/NYW",
       "tokens": [0],
       "coordinates": "C19",
       "color": "#ec1e29"
@@ -262,7 +262,7 @@ module Engine
     {
       "sym": "HRR",
       "name": "Hudson Railroad",
-      "logo": "18_newengland/HRR",
+      "logo": "18_new_england/HRR",
       "tokens": [0],
       "coordinates": "C5",
       "color": "#3b60ab"
@@ -270,7 +270,7 @@ module Engine
     {
       "sym": "PE",
       "name": "Poughkeepsie and Eastern Railway",
-      "logo": "18_newengland/PE",
+      "logo": "18_new_england/PE",
       "tokens": [0],
       "coordinates": "C11",
       "color": "#b94e27"
@@ -278,7 +278,7 @@ module Engine
     {
       "sym": "WNR",
       "name": "Worcester, Nashua and Rochester Railroad",
-      "logo": "18_newengland/WNR",
+      "logo": "18_new_england/WNR",
       "tokens": [0],
       "coordinates": "J6",
       "color": "#231f20"
@@ -289,7 +289,7 @@ module Engine
       "float_percent": 60,
       "sym": "B&A",
       "name": "Boston and Albany Railroad",
-      "logo": "18_newengland/B&A",
+      "logo": "18_new_england/B&A",
       "tokens": [
         0,
         40,
@@ -302,7 +302,7 @@ module Engine
       "float_percent": 60,
       "sym": "B&M",
       "name": "Boston and Maine Railroad",
-      "logo": "18_newengland/B&M",
+      "logo": "18_new_england/B&M",
       "tokens": [
         0,
         40,
@@ -316,7 +316,7 @@ module Engine
       "float_percent": 60,
       "sym": "CN",
       "name": "Canadian National Railway",
-      "logo": "18_newengland/CN",
+      "logo": "18_new_england/CN",
       "tokens": [
         0,
         40,
@@ -330,7 +330,7 @@ module Engine
       "float_percent": 60,
       "sym": "CVT",
       "name": "Central Vermont Railway",
-      "logo": "18_newengland/CVT",
+      "logo": "18_new_england/CVT",
       "tokens": [
         0,
         40,
@@ -343,7 +343,7 @@ module Engine
       "float_percent": 60,
       "sym": "D&H",
       "name": "Delaware and Hudson Railway",
-      "logo": "18_newengland/D&H",
+      "logo": "18_new_england/D&H",
       "tokens": [
         0,
         40,
@@ -356,7 +356,7 @@ module Engine
       "float_percent": 60,
       "sym": "NYC",
       "name": "New York Central Railroad",
-      "logo": "18_newengland/NYC",
+      "logo": "18_new_england/NYC",
       "tokens": [
         0,
         40,
@@ -369,7 +369,7 @@ module Engine
       "float_percent": 60,
       "sym": "NYNHH",
       "name": "New York, New Haven and Hartford Railroad",
-      "logo": "18_newengland/NYNHH",
+      "logo": "18_new_england/NYNHH",
       "tokens": [
         0,
         40,
@@ -382,7 +382,7 @@ module Engine
       "float_percent": 60,
       "sym": "PW",
       "name": "Providence and Worcester Railroad",
-      "logo": "18_newengland/PW",
+      "logo": "18_new_england/PW",
       "tokens": [
         0,
         40,
