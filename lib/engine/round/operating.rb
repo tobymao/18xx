@@ -17,6 +17,7 @@ module Engine
       attr_reader :bankrupt, :depot, :phase, :round_num, :step, :current_routes
 
       STEPS = %i[
+        home_token
         track
         token
         route
@@ -26,6 +27,7 @@ module Engine
       ].freeze
 
       STEP_DESCRIPTION = {
+        home_token: 'Lay Home Token',
         track: 'Lay Track',
         token: 'Place a Token',
         route: 'Run Routes',
@@ -193,7 +195,7 @@ module Engine
       end
 
       def can_place_token?
-        @step == :token
+        @step == :token || @step == :home_token
       end
 
       def steps
@@ -213,7 +215,12 @@ module Engine
       end
 
       def reachable_hexes
-        @graph.reachable_hexes(@current_entity)
+        if @step == :home_token
+          homehex = @game.hexes.find { |h| h.coordinates == @current_entity.coordinates }
+          { homehex => true }
+        else
+          @graph.reachable_hexes(@current_entity)
+        end
       end
 
       def route?
@@ -234,6 +241,14 @@ module Engine
           next_step! if send("skip_#{@step}")
         else
           @current_entity.pass!
+        end
+      end
+
+      def skip_home_token
+        if @home_token_timing == :operate
+          !place_home_token(@current_entity)
+        else
+          true
         end
       end
 
@@ -351,7 +366,7 @@ module Engine
         @current_actions.clear
         log_operation(@current_entity)
         @current_entity.trains.each { |train| train.operated = false }
-        place_home_token(@current_entity) if @home_token_timing == :operate
+
         next_step! if send("skip_#{@step}")
       end
 
@@ -508,7 +523,8 @@ module Engine
       def place_token(action)
         entity = action.entity
         hex = action.city.hex
-        if !@game.loading && !connected_nodes[action.city] && !@teleported
+        free = @teleported || @step == :home_token
+        if !@game.loading && !connected_nodes[action.city] && !free
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 
@@ -516,8 +532,8 @@ module Engine
         raise GameError, 'Token is already used' if token.used
 
         price = token.price || 0
-        action.city.place_token(entity, token, free: @teleported)
-        if price.positive? && !@teleported
+        action.city.place_token(entity, token, free: free)
+        if price.positive? && !free
           entity.spend(price, @bank)
           price_log = " for #{@game.format_currency(price)}"
         end

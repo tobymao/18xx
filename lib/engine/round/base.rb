@@ -167,16 +167,28 @@ module Engine
         @log << "#{action.entity.name} discards #{train.name}"
       end
 
+      # returns true if user must choose home token
       def place_home_token(corporation)
-        return unless corporation.next_token # 1882
+        return false unless corporation.next_token # 1882
 
         hex = @game.hexes.find { |h| h.coordinates == corporation.coordinates }
-        cities = hex.tile.cities
+
+        tile = hex.tile
+        if tile.reserved_by?(corporation)
+          @log << "#{corporation.name} must choose city for home token"
+          # Needs further changes to support non-operate home token lay
+          raise GameError('Unsupported') unless @home_token_timing == :operate
+
+          return true
+        end
+
+        cities = tile.cities
         city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
-        return unless city.tokenable?(corporation)
+        return false unless city.tokenable?(corporation)
 
         @log << "#{corporation.name} places a token on #{hex.name}"
         city.place_token(corporation, corporation.next_token)
+        false
       end
 
       private

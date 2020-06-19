@@ -119,6 +119,9 @@ module Engine
         old_city.remove_tokens!
       end
 
+      tile.reservations = @tile.reservations
+      @tile.reservations.clear
+
       @tile.hex = nil
       tile.hex = self
 

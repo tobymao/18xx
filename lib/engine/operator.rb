@@ -3,7 +3,7 @@
 module Engine
   module Operator
     attr_accessor :rusted_self
-    attr_reader :color, :coordinates, :logo, :operating_history, :text_color, :tokens, :trains
+    attr_reader :color, :coordinates, :city, :logo, :operating_history, :text_color, :tokens, :trains
 
     def init_operator(opts)
       @cash = 0
@@ -14,6 +14,7 @@ module Engine
       @rusted_self = false
       @logo = "/logos/#{opts[:logo]}.svg"
       @coordinates = opts[:coordinates]
+      @city = opts[:city]
       @tokens = opts[:tokens].map { |price| Token.new(self, price: price) }
       @color = opts[:color]
       @text_color = opts[:text_color] || '#ffffff'
