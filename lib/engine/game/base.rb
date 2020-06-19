@@ -184,7 +184,7 @@ module Engine
         const_set(:BANK_CASH, data['bankCash'])
         const_set(:CERT_LIMIT, data['certLimit'])
         const_set(:STARTING_CASH, data['startingCash'])
-        const_set(:CAPITALIZATION, data['capitalization'])
+        const_set(:CAPITALIZATION, data['capitalization'].to_sym) if data['capitalization']
         const_set(:MUST_SELL_IN_BLOCKS, data['mustSellInBlocks'])
         const_set(:TILES, data['tiles'])
         const_set(:LOCATION_NAMES, data['locationNames'])
