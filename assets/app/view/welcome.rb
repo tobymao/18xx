@@ -7,12 +7,11 @@ module View
     def render
       props = {
         style: {
-          display: 'inline-block',
           'margin-right': '1rem',
         },
       }
 
-      h('div.half', props, [
+      h('div#welcome.half', props, [
         render_notification,
         render_introduction,
         render_buttons,
@@ -23,10 +22,11 @@ module View
       message = <<~MESSAGE
         <p>1846 is now available for early alpha. It would help most if you played with the intent to find bugs in hot seat mode.
         The private companies have not been implemented yet.
-        <p/>
+        </p>
 
-        Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
+        <p>Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
         <a href='https://docs.google.com/document/d/1nCYnzNMQLrFLZtWdbjfuSx5aIcaOyi27lMYkJxcGayw/edit'>FAQ!</a>
+        </p>
 
         <p>If you're looking to buy these games, please check out
         <a href='https://all-aboardgames.com'>All-Aboard Games</a>,
@@ -34,7 +34,7 @@ module View
         and <a href='https://www.gmtgames.com/'>GMT Games</a>.
         </p>
 
-        You can support this project on <a href='https://www.patreon.com/18xxgames'>Patreon</a>.
+        <p>You can support this project on <a href='https://www.patreon.com/18xxgames'>Patreon</a>.
         </p>
       MESSAGE
 
@@ -42,14 +42,14 @@ module View
         style: {
           background: 'rgb(240, 229, 140)',
           color: 'black',
-          'padding': '1em',
+          marginBottom: '1rem',
         },
         props: {
           innerHTML: message,
         },
       }
 
-      h(:div, props)
+      h('div#notification.padded', props)
     end
 
     def render_introduction
@@ -68,18 +68,15 @@ module View
 
       props = {
         props: { innerHTML: message },
-        style: {
-          margin: '1rem 0',
-        },
       }
 
-      h(:div, props)
+      h('div#introduction', props)
     end
 
     def render_buttons
       props = {
         style: {
-          'margin': '1rem 0',
+          margin: '1rem 0',
         },
       }
 
@@ -93,12 +90,9 @@ module View
         on: {
           click: -> { store(:app_route, '/tutorial?action=1') },
         },
-        style: {
-          'margin-left': '1rem',
-        },
       }
 
-      h(:div, props, [
+      h('div#buttons', props, [
         h('button.button', create_props, 'CREATE A NEW GAME'),
         h('button.button', tutorial_props, 'TUTORIAL'),
       ])

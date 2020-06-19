@@ -20,11 +20,12 @@ module View
 
       props = {
         style: {
-          'box-shadow': '0 2px 0 0 gainsboro',
           display: 'flex',
+          marginBottom: '1rem',
+          padding: '0 1rem 0.5rem 1rem',
+          'box-shadow': '0 2px 0 0 gainsboro',
           'justify-content': 'space-between',
           'line-height': '3rem',
-          padding: '0 1rem 0.5rem 1rem',
         },
       }
 

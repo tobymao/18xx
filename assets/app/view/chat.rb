@@ -49,10 +49,10 @@ module View
           width: '100%',
           margin: '0',
           'box-sizing': 'border-box',
-          padding: '0 0.5rem',
           'border-radius': '0',
           background: color_for(:bg2),
           color: color_for(:font2),
+          resize: 'vertical',
         },
         on: { keyup: enter },
       }
@@ -65,12 +65,11 @@ module View
           destroy: destroy,
         },
         style: {
-          display: 'inline-block',
           'vertical-align': 'top',
         },
       }
 
-      h('div.half', props, children)
+      h('div#chat.half', props, children)
     end
 
     def add_line(data)
