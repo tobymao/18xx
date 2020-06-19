@@ -388,6 +388,7 @@ module Engine
         0,
         40
       ],
+      "coordinates": "J10",
       "color": "purple"
     }
   ],

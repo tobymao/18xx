@@ -24,7 +24,7 @@ module View
         def render_part
           children = []
           children << h(:circle, attrs: { r: @radius, fill: 'white' })
-          children << reservation if @reservation
+          children << reservation if @reservation && !@token
           children << h(Token, token: @token, radius: @radius) if @token
 
           props = { on: { click: ->(event) { on_click(event) } } }
@@ -50,7 +50,7 @@ module View
 
           # If there's a choice of tokens of different types show the selector, otherwise just place
           next_tokens = @game.current_entity.next_tokens_by_type
-          if next_tokens.size == 1
+          if next_tokens.size == 1 || @game.round.step == :home_token
             action = Engine::Action::PlaceToken.new(
               @game.current_entity,
               city: @city,

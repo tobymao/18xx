@@ -17,6 +17,7 @@ module Engine
       attr_reader :bankrupt, :depot, :phase, :round_num, :step, :current_routes
 
       STEPS = %i[
+        home_token
         track
         token
         route
@@ -26,6 +27,7 @@ module Engine
       ].freeze
 
       STEP_DESCRIPTION = {
+        home_token: 'Lay Home Token',
         track: 'Lay Track',
         token: 'Place a Token',
         route: 'Run Routes',
@@ -193,7 +195,7 @@ module Engine
       end
 
       def can_place_token?
-        @step == :token
+        @step == :token || @step == :home_token
       end
 
       def steps
@@ -213,6 +215,8 @@ module Engine
       end
 
       def reachable_hexes
+        return { @game.hex_by_id(@current_entity.coordinates) => true } if @step == :home_token
+
         @graph.reachable_hexes(@current_entity)
       end
 
@@ -235,6 +239,11 @@ module Engine
         else
           @current_entity.pass!
         end
+      end
+
+      def skip_home_token
+        !(@home_token_timing == :operate &&
+          @game.hex_by_id(@current_entity.coordinates)&.tile&.reserved_by?(@current_entity))
       end
 
       def skip_track; end
@@ -352,6 +361,7 @@ module Engine
         log_operation(@current_entity)
         @current_entity.trains.each { |train| train.operated = false }
         place_home_token(@current_entity) if @home_token_timing == :operate
+
         next_step! if send("skip_#{@step}")
       end
 
@@ -508,7 +518,8 @@ module Engine
       def place_token(action)
         entity = action.entity
         hex = action.city.hex
-        if !@game.loading && !connected_nodes[action.city] && !@teleported
+        allow_unconnected = @teleported || @step == :home_token
+        if !@game.loading && !allow_unconnected && !connected_nodes[action.city]
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 
