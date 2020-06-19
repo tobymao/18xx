@@ -234,14 +234,14 @@ module Engine
       "name": "Hudson Bay",
       "value": 20,
       "revenue": 5,
-      "desc": "Blocks Flin Flon (K3).",
+      "desc": "Blocks Flin Flon (C11).",
       "sym": "HB",
       "abilities": [
         {
           "type": "blocks_hexes",
           "owner_type": "player",
           "hexes": [
-            "K3"
+            "C11"
           ]
         }
       ]
@@ -257,7 +257,7 @@ module Engine
           "type": "blocks_hexes",
           "owner_type": "player",
           "hexes": [
-            "D8"
+            "H4"
           ]
         }
       ]
@@ -291,7 +291,7 @@ module Engine
           "type": "blocks_hexes",
           "owner_type": "player",
           "hexes": [
-            "I7"
+            "G9"
           ]
         }
       ]
