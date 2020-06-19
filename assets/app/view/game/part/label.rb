@@ -16,12 +16,12 @@ module View
 
         P_LEFT_CORNER = {
           flat: {
-            region_weights: { LEFT_CORNER => 1.0, (LEFT_CENTER + LEFT_MID) => 0.5 },
+            region_weights: { LEFT_CORNER => 1.0, LEFT_MID => 0.25 },
             x: -71.25,
             y: 0,
           },
           pointy: {
-            region_weights: { LEFT_CORNER => 1.0, (LEFT_CENTER + LEFT_MID) => 0.5 },
+            region_weights: { LEFT_CORNER => 1.0, LEFT_MID => 0.25 },
             x: -67,
             y: 0,
           },
@@ -29,12 +29,12 @@ module View
 
         P_BOTTOM_LEFT_CORNER = {
           flat: {
-            region_weights: { [19, 20] => 1.0, [21] => 0.5 },
+            region_weights: { BOTTOM_LEFT_CORNER => 1.0, [21] => 0.5 },
             x: -30,
             y: 65,
           },
           pointy: {
-            region_weights: { [19, 20] => 1.0, [21] => 0.5 },
+            region_weights: { BOTTOM_LEFT_CORNER => 1.0, [21] => 0.5 },
             x: -30,
             y: 61,
           },
@@ -61,16 +61,17 @@ module View
           },
           # top left corner
           {
-            region_weights: { [0, 1] => 1.0, [2] => 0.5 },
+            region_weights: { UPPER_LEFT_CORNER => 1.0, [2] => 0.5 },
             x: -30,
             y: -65,
           },
           # top right corner
           {
-            region_weights: { [2] => 0.5, [3, 4] => 1.0 },
+            region_weights: { UPPER_RIGHT_CORNER => 1.0, [2] => 0.5 },
             x: 30,
             y: -65,
           },
+          P_LEFT_CORNER[:flat],
           # bottom left corner
           P_BOTTOM_LEFT_CORNER[:flat],
           # edge 1

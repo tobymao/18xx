@@ -24,7 +24,11 @@ module View
         RIGHT_MID = [10, 17].freeze
 
         LEFT_CORNER = [5, 12].freeze
+        UPPER_LEFT_CORNER = [0, 1].freeze
+        UPPER_RIGHT_CORNER = [3, 4].freeze
         RIGHT_CORNER = [11, 18].freeze
+        BOTTOM_RIGHT_CORNER = [22, 23].freeze
+        BOTTOM_LEFT_CORNER = [19, 20].freeze
 
         TRACK_TO_EDGE_0 = [15, 21].freeze
         TRACK_TO_EDGE_1 = [13, 14].freeze
