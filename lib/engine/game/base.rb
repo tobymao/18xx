@@ -63,6 +63,8 @@ module Engine
 
       CERT_LIMIT_COLORS = %i[brown orange yellow].freeze
 
+      MULTIPLE_BUY_COLORS = %i[brown].freeze
+
       CAPITALIZATION = :full
 
       MUST_SELL_IN_BLOCKS = false
@@ -486,7 +488,8 @@ module Engine
       end
 
       def init_stock_market
-        StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_COLORS)
+        StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_COLORS,
+                        multiple_buy_colors: self.class::MULTIPLE_BUY_COLORS)
       end
 
       def init_companies(players)

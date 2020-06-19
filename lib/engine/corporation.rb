@@ -60,6 +60,10 @@ module Engine
       @share_price ? @share_price.counts_for_limit : true
     end
 
+    def buy_multiple?
+      @share_price ? @share_price.buy_multiple? : false
+    end
+
     def can_par?
       return false if @needs_token_to_par && @tokens.empty?
 
