@@ -10,7 +10,7 @@ module Engine
       module G18NewEngland
         JSON = <<-'DATA'
 {
-  "filename": "18_newengland",
+  "filename": "18_new_england",
   "modulename": "18NewEngland",
   "currencyFormatStr": "$%d",
   "bankCash": 12000,
@@ -159,111 +159,237 @@ module Engine
       ]
     }
   ],
+  "minors": [
+    {
+      "sym": "AWS",
+      "name": "Albany and West Stockbridge Railroad",
+      "logo": "18_new_england/AWS",
+      "tokens": [0],
+      "coordinates": "C3",
+      "color": "#f05f72"
+    },
+    {
+      "sym": "BL",
+      "name": "Boston and Lowell Railroad",
+      "logo": "18_new_england/BL",
+      "tokens": [0],
+      "coordinates": "M5",
+      "color": "#fbb116",
+      "text_color": "black"
+    },
+    {
+      "sym": "BP",
+      "name": "Boston and Providence Railroad",
+      "logo": "18_new_england/BP",
+      "tokens": [0],
+      "coordinates": "L10",
+      "color": "#bdaf32",
+      "text_color": "black"
+    },
+    {
+      "sym": "CR",
+      "name": "Connecticut River Railroad",
+      "logo": "18_new_england/CR",
+      "tokens": [0],
+      "coordinates": "H8",
+      "color": "#584232"
+    },
+    {
+      "sym": "CV",
+      "name": "Connecticut Valley Railroad",
+      "logo": "18_new_england/CV",
+      "tokens": [0],
+      "coordinates": "F2",
+      "color": "#e5df17",
+      "text_color": "black"
+    },
+    {
+      "sym": "ER",
+      "name": "Eastern Railroad",
+      "logo": "18_new_england/ER",
+      "tokens": [0],
+      "coordinates": "H10",
+      "color": "#b43e95"
+    },
+    {
+      "sym": "FRR",
+      "name": "Fitchburg Railroad",
+      "logo": "18_new_england/FRR",
+      "tokens": [0],
+      "coordinates": "K3",
+      "color": "#2ab24b"
+    },
+    {
+      "sym": "GR",
+      "name": "Granite Railway",
+      "logo": "18_new_england/GR",
+      "tokens": [0],
+      "coordinates": "M7",
+      "color": "#09743b"
+    },
+    {
+      "sym": "HNH",
+      "name": "Hartford and New Haven Railroad",
+      "logo": "18_new_england/HNH",
+      "tokens": [0],
+      "coordinates": "G13",
+      "color": "#ec2785"
+    },
+    {
+      "sym": "NLN",
+      "name": "New London Northern Railroad",
+      "logo": "18_new_england/NLN",
+      "tokens": [0],
+      "coordinates": "E15",
+      "color": "#6dcef5"
+    },
+    {
+      "sym": "NYNH",
+      "name": "New York and New Haven Railroad",
+      "logo": "18_new_england/NYNH",
+      "tokens": [0],
+      "coordinates": "F12",
+      "color": "#cf6d28"
+    },
+    {
+      "sym": "NYW",
+      "name": "New York, Westchester and Boston Railway",
+      "logo": "18_new_england/NYW",
+      "tokens": [0],
+      "coordinates": "C19",
+      "color": "#ec1e29"
+    },
+    {
+      "sym": "HRR",
+      "name": "Hudson Railroad",
+      "logo": "18_new_england/HRR",
+      "tokens": [0],
+      "coordinates": "C5",
+      "color": "#3b60ab"
+    },
+    {
+      "sym": "PE",
+      "name": "Poughkeepsie and Eastern Railway",
+      "logo": "18_new_england/PE",
+      "tokens": [0],
+      "coordinates": "C11",
+      "color": "#b94e27"
+    },
+    {
+      "sym": "WNR",
+      "name": "Worcester, Nashua and Rochester Railroad",
+      "logo": "18_new_england/WNR",
+      "tokens": [0],
+      "coordinates": "J6",
+      "color": "#231f20"
+    }
+  ],
   "corporations": [
     {
       "float_percent": 60,
       "sym": "B&A",
       "name": "Boston and Albany Railroad",
-      "logo": "18_chesapeake/PRR",
+      "logo": "18_new_england/B&A",
       "tokens": [
         0,
         40,
         80
       ],
       "coordinates": "",
-      "color": "red"
+      "color": "#ec1c24"
     },
     {
       "float_percent": 60,
       "sym": "B&M",
       "name": "Boston and Maine Railroad",
-      "logo": "18_chesapeake/PRR",
+      "logo": "18_new_england/B&M",
       "tokens": [
         0,
         40,
         80
       ],
       "coordinates": "",
-      "color": "green"
+      "color": "#84c77a",
+      "text_color": "black"
     },
     {
       "float_percent": 60,
       "sym": "CN",
       "name": "Canadian National Railway",
-      "logo": "18_chesapeake/PRR",
+      "logo": "18_new_england/CN",
       "tokens": [
         0,
         40,
         80
       ],
       "coordinates": "",
-      "color": "yellow",
+      "color": "#ffd900",
       "text_color": "black"
     },
     {
       "float_percent": 60,
       "sym": "CVT",
       "name": "Central Vermont Railway",
-      "logo": "18_chesapeake/PRR",
+      "logo": "18_new_england/CVT",
       "tokens": [
         0,
         40,
         80
       ],
       "coordinates": "",
-      "color": "purple"
+      "color": "#b43e95"
     },
     {
       "float_percent": 60,
       "sym": "D&H",
       "name": "Delaware and Hudson Railway",
-      "logo": "18_chesapeake/PRR",
+      "logo": "18_new_england/D&H",
       "tokens": [
         0,
         40,
         80
       ],
       "coordinates": "",
-      "color": "darkBlue"
+      "color": "#0d7bb5"
     },
     {
       "float_percent": 60,
       "sym": "NYC",
       "name": "New York Central Railroad",
-      "logo": "18_chesapeake/PRR",
+      "logo": "18_new_england/NYC",
       "tokens": [
         0,
         40,
         80
       ],
       "coordinates": "",
-      "color": "black"
+      "color": "#231f20"
     },
     {
       "float_percent": 60,
       "sym": "NYNHH",
       "name": "New York, New Haven and Hartford Railroad",
-      "logo": "18_chesapeake/PRR",
+      "logo": "18_new_england/NYNHH",
       "tokens": [
         0,
         40,
         80
       ],
       "coordinates": "",
-      "color": "orange"
+      "color": "#f68e1e"
     },
     {
       "float_percent": 60,
-      "sym": "P&W",
+      "sym": "PW",
       "name": "Providence and Worcester Railroad",
-      "logo": "18_chesapeake/PRR",
+      "logo": "18_new_england/PW",
       "tokens": [
         0,
         40,
         80
       ],
       "coordinates": "",
-      "color": "brown"
+      "color": "#833000"
     }
   ],
   "trains": [
@@ -290,19 +416,70 @@ module Engine
     },
     {
       "name": "5E",
-      "distance": 5,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard",
+                  "town"
+               ],
+               "pay":5,
+               "visit":5
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":0,
+               "visit":99
+            }
+         ],
       "price": 500,
       "num": 4
     },
     {
       "name": "6E",
-      "distance": 6,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard",
+                  "town"
+               ],
+               "pay":6,
+               "visit":6
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":0,
+               "visit":99
+            }
+         ],
       "price": 600,
       "num": 3
     },
     {
       "name": "8E",
-      "distance": 8,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard",
+                  "town"
+               ],
+               "pay":8,
+               "visit":8
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":0,
+               "visit":99
+            }
+         ],
       "price": 800,
       "num": 20
     }
