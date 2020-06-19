@@ -322,6 +322,7 @@ module Engine
         40,
         40
       ],
+      "coordinates": "H4",
       "color": "green"
     },
     {
