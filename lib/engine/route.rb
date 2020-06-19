@@ -18,28 +18,25 @@ module Engine
     end
 
     def restore_connections(connection_hexes)
-      connections = connection_hexes.map do |hexes|
+      possibilities = connection_hexes.map do |hexes|
         hex_ids = hexes.map(&:id)
-        complete = hexes[0].all_connections.select(&:complete?)
-        complete.find { |c| c.matches?(hex_ids) }
+        hexes[0].all_connections.select { |c| c.complete? && c.matches?(hex_ids) }
       end
 
-      connections.uniq!
-      connections.compact!
+      if possibilities.one?
+        connection = possibilities[0].find do |conn|
+          conn.nodes.any? { |node| node.tokened_by?(corporation) }
+        end
+        left, right = connection.nodes
+        return if !left || !right
 
-      return unless (first = connections[0])
-
-      if connections.one?
-        @connections << { left: first.nodes[0], right: first.nodes[-1], connection: first }
+        @connections << { left: left, right: right, connection: connection }
       else
-        connections.each_cons(2) do |a, b|
-          middle = (a.nodes & b.nodes)
-          left = (a.nodes - middle)[0]
-          right = (b.nodes - middle)[0]
-          middle = middle[0]
+        possibilities.each_cons(2).with_index do |pair, index|
+          a, b, left, right, middle = find_connections(*pair)
           return @connections.clear if !left || !right
 
-          @connections << { left: left, right: middle, connection: a } if a == first
+          @connections << { left: left, right: middle, connection: a } if index.zero?
           @connections << { left: middle, right: right, connection: b }
         end
       end
@@ -269,6 +266,19 @@ module Engine
 
     def connection_hexes
       connections.map(&:id)
+    end
+
+    def find_connections(connections_a, connections_b)
+      connections_a.each do |a|
+        connections_b.each do |b|
+          middle = (a.nodes & b.nodes)
+          next if middle.empty?
+
+          left = (a.nodes - middle)[0]
+          right = (b.nodes - middle)[0]
+          return [a, b, left, right, middle[0]]
+        end
+      end
     end
   end
 end
