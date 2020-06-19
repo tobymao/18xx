@@ -6,7 +6,6 @@ require_relative 'base'
 module Engine
   module Game
     class G18NewEngland < Base
-
       load_from_json(Config::Game::G18NewEngland::JSON)
 
       def stock_round
