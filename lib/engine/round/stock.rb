@@ -34,11 +34,11 @@ module Engine
       def description
         case @sell_buy_order
         when :sell_buy_or_buy_sell
-          'Buy and Sell Shares'
+          'Buy or Sell Shares'
         when :sell_buy
           'Sell then Buy Shares'
         when :sell_buy_sell
-          'Sell then Buy Shares then Sell'
+          'Sell/Buy/Sell Shares'
         end
       end
 
