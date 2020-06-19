@@ -6,18 +6,21 @@ require_relative 'base'
 module Engine
   module Game
     class G18NewEngland < Base
-      register_colors(green: '#237333',
-                      red: '#d81e3e',
-                      blue: '#0189d1',
-                      lightBlue: '#a2dced',
-                      yellow: '#FFF500',
-                      orange: '#f48221',
-                      brown: '#7b352a')
-
       load_from_json(Config::Game::G18NewEngland::JSON)
 
       def stock_round
         Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy)
+      end
+
+      def setup
+        @minors.each do |minor|
+          train = @depot.upcoming[0]
+          train.buyable = false
+          minor.cash = 200
+          minor.buy_train(train)
+          hex = hex_by_id(minor.coordinates)
+          hex.tile.cities[0].place_token(minor, minor.next_token)
+        end
       end
     end
   end
