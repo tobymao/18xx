@@ -54,9 +54,9 @@ module View
         },
         style: {
           justifySelf: 'center',
+          gridColumnStart: text == 'Next' ? '3' : '2',
         },
       }
-      props[:style][:gridColumnStart] = '3' if text == 'Next'
 
       h("a.#{text.downcase}", props, text)
     end
