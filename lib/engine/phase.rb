@@ -22,7 +22,7 @@ module Engine
         next! if train.sym == @next_on
         rust_trains!(train, action.entity)
         @game.companies.each do |company|
-          next unless (ability = company.abilities(:close))
+          next unless (company.abilities(:close))
 
           if !company.closed? && action.entity.name == company.abilities(:close)['corporation']
             company.close!
