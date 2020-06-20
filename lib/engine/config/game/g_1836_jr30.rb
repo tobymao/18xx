@@ -382,6 +382,7 @@ module Engine
             },
             {
                "type":"close",
+               "when": "train",
                "corporation":"Nord"
             },
             {

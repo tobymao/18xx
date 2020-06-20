@@ -234,19 +234,15 @@ module Engine
         @game.graph.clear
         check_track_restrictions!(old_tile, tile) unless @game.loading
 
-        abilities =
-          if entity.respond_to?(:companies)
-            entity.companies.flat_map(&:all_abilities)
-          else
-            []
-          end
-        cost = if action.entity.is_a?(Company) && action.entity.abilities(:tile_lay)['free']
-                 0
-               else
-                 tile_cost(old_tile, abilities) + border_cost(tile)
-               end
+        free = false
+        entity.abilities(:tile_lay) { |ability| free = ability[:free] }
 
-        entity.spend(cost, @game.bank) if cost.positive?
+        unless free
+          abilities = entity.all_abilities
+          abilities.concat(entity.companies.flat_map(&:all_abilities)) if entity.respond_to?(:companies)
+          cost = tile_cost(old_tile, abilities) + border_cost(tile)
+          entity.spend(cost, @game.bank) if cost.positive?
+        end
 
         @log << "#{action.entity.name}"\
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
