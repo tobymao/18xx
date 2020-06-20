@@ -237,12 +237,16 @@ module Engine
         free = false
         entity.abilities(:tile_lay) { |ability| free = ability[:free] }
 
-        unless free
-          abilities = entity.all_abilities
-          abilities.concat(entity.companies.flat_map(&:all_abilities)) if entity.respond_to?(:companies)
-          cost = tile_cost(old_tile, abilities) + border_cost(tile)
-          entity.spend(cost, @game.bank) if cost.positive?
-        end
+        cost =
+          if free
+            0
+          else
+            abilities = entity.all_abilities
+            abilities.concat(entity.companies.flat_map(&:all_abilities)) if entity.respond_to?(:companies)
+            tile_cost(old_tile, abilities) + border_cost(tile)
+          end
+
+        entity.spend(cost, @game.bank) if cost.positive?
 
         @log << "#{action.entity.name}"\
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
