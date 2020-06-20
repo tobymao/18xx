@@ -3,7 +3,7 @@
 require_relative '../operating'
 require_relative '../../token'
 require_relative '../half_pay'
-require_relative '../corporation_issue'
+require_relative '../issue_shares'
 require_relative '../minor_half_pay'
 
 module Engine
@@ -11,8 +11,9 @@ module Engine
     module G1846
       class Operating < Operating
         include HalfPay
-        include CorporationIssue
+        include IssueShares
         include MinorHalfPay
+
         MINOR_STEPS = %i[
           token_or_track
           route
@@ -203,7 +204,6 @@ module Engine
         end
 
         def change_share_price(_direction, revenue = 0)
-
           return if @current_entity.minor?
 
           price = @current_entity.share_price.price

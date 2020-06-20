@@ -3,7 +3,7 @@
 require_relative '../operating'
 require_relative '../../token'
 require_relative '../half_pay'
-require_relative '../corporation_issue'
+require_relative '../issue_shares'
 require_relative '../minor_half_pay'
 
 module Engine
@@ -11,8 +11,9 @@ module Engine
     module G18EU
       class Operating < Operating
         include HalfPay
-        include CorporationIssue
+        include IssueShares
         include MinorHalfPay
+
         MINOR_STEPS = %i[
           track
           route
@@ -83,7 +84,7 @@ module Engine
           return if @current_entity.minor?
 
           price = @current_entity.share_price.price
-          @stock_market.move_left(@current_entity) if revenue.zero
+          @stock_market.move_left(@current_entity) if revenue.zero?
           @stock_market.move_right(@current_entity) if revenue >= price
           log_share_price(@current_entity, price)
         end

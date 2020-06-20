@@ -2,7 +2,7 @@
 
 module Engine
   module Round
-    module CorporationIssue
+    module IssueShares
       def process_sell_shares(action)
         return super if action.entity.player?
 
