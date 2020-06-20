@@ -32,40 +32,40 @@ module Engine
   "layout": "flat",
   "mustSellInBlocks": false,
   "locationNames": {
-    "A9": "Western Canada (HB +100)",
+    "I1": "Western Canada (HB +100)",
     "B2": "Northern Alberta (HB +100)",
-    "B12": "Lethbridge",
+    "L2": "Lethbridge",
     "C3": "Lloydminster",
-    "C7": "Kindersley",
-    "C11": "Medicine Hat",
-    "C13": "Elkwater",
+    "G3": "Kindersley",
+    "K3": "Medicine Hat",
+    "M3": "Elkwater",
     "D4": "Maidstone",
-    "D6": "Wilkie",
+    "F4": "Wilkie",
     "E5": "North Battleford & Battleford",
-    "E9": "Swift Current",
-    "F4": "Spiritwood",
-    "F14": "Shaunavon",
+    "I5": "Swift Current",
+    "D6": "Spiritwood",
+    "N6": "Shaunavon",
     "G7": "Saskatoon",
-    "H4": "Prince Albert",
-    "H6": "Rosthern & Melfort",
-    "H10": "Moose Jaw",
-    "H12": "Assiniboia",
-    "I3": "Candle Lake",
-    "I7": "Humboldt",
-    "I11": "Rouleau & Mossbank",
+    "D8": "Prince Albert",
+    "F8": "Rosthern & Melfort",
+    "J8": "Moose Jaw",
+    "L8": "Assiniboia",
+    "C9": "Candle Lake",
+    "G9": "Humboldt",
+    "K9": "Rouleau & Mossbank",
     "J10": "Pile o' Bones & Lumsden",
-    "K1": "Sandy Bay",
-    "K3": "Flin Flon",
-    "K7": "Wadena",
-    "K9": "Melville & Fort Qu'Appelle",
-    "K13": "Wayburn & Estevan",
-    "K15": "USA",
-    "L2": "Hudson Bay",
-    "L10": "Moosomin",
+    "A11": "Sandy Bay",
+    "C11": "Flin Flon",
+    "G11": "Wadena",
+    "I11": "Melville & Fort Qu'Appelle",
+    "M11": "Wayburn & Estevan",
+    "O11": "USA",
+    "B12": "Hudson Bay",
+    "J12": "Moosomin",
     "L12": "Carlyle",
-    "L14": "Oxbow",
-    "M9": "Eastern Canada",
-    "M11": "Virden"
+    "N12": "Oxbow",
+    "I13": "Eastern Canada",
+    "K13": "Virden"
   },
   "tiles": {
     "1": 1,
@@ -234,15 +234,33 @@ module Engine
       "name": "Hudson Bay",
       "value": 20,
       "revenue": 5,
-      "desc": "Blocks Flin Flon (K3).",
-      "sym": "HB"
+      "desc": "Blocks Flin Flon (C11).",
+      "sym": "HB",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "C11"
+          ]
+        }
+      ]
     },
     {
       "name": "Saskatchewan Central",
       "value": 50,
       "revenue": 10,
       "desc": "During a player's stock turn, in any phase, the player owning this company can close it to \"convert\" to the 10-share corporation SC. This counts as a \"certificate purchase action\". SC shares cannot be purchased by any player unless SC has been converted. The SC floats using the same rules as other corporation. If the private company is sold to a corporation, it no longer can be converted.",
-      "sym": "SC"
+      "sym": "SC",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "H4"
+          ]
+        }
+      ]
     },
     {
       "name": "North West Rebellion",
@@ -261,7 +279,20 @@ module Engine
         {
           "type": "share",
           "share": "random_share",
-          "corporations": ["CNR", "CPR", "GT", "HBR", "QLL"]
+          "corporations": [
+            "CNR",
+            "CPR",
+            "GT",
+            "HBR",
+            "QLL"
+          ]
+        },
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "G9"
+          ]
         }
       ]
     },
@@ -284,7 +315,9 @@ module Engine
       "sym": "CN",
       "name": "Canadian National",
       "logo": "1882/CN",
-      "tokens": [],
+      "tokens": [
+
+      ],
       "color": "orange",
       "text_color": "black"
     },
@@ -297,6 +330,7 @@ module Engine
         40,
         40
       ],
+      "coordinates": "D8",
       "color": "green"
     },
     {
@@ -308,7 +342,7 @@ module Engine
         40,
         40
       ],
-      "coordinates": "K7",
+      "coordinates": "G11",
       "color": "gold",
       "text_color": "black"
     },
@@ -322,7 +356,7 @@ module Engine
         40,
         40
       ],
-      "coordinates": "E9",
+      "coordinates": "I5",
       "color": "red"
     },
     {
@@ -334,7 +368,7 @@ module Engine
         40,
         40
       ],
-      "coordinates": "H12",
+      "coordinates": "L8",
       "color": "black"
     },
     {
@@ -354,6 +388,7 @@ module Engine
         0,
         40
       ],
+      "coordinates": "J10",
       "color": "purple"
     }
   ],
@@ -406,134 +441,190 @@ module Engine
   "hexes": {
     "red": {
       "offboard=revenue:yellow_40|brown_80;path=a:4,b:_0;path=a:5,b:_0": [
-        "A9"
+        "I1"
       ],
       "offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;path=a:5,b:_0": [
         "B2"
       ],
       "offboard=revenue:yellow_30|brown_30;path=a:3,b:_0": [
-        "K15"
+        "O11"
       ],
       "offboard=revenue:yellow_40|brown_50;path=a:0,b:_0;path=a:1,b:_0": [
-        "L2"
+        "B12"
       ],
       "offboard=revenue:yellow_30|brown_40;path=a:1,b:_0;path=a:2,b:_0": [
-        "M9"
+        "I13"
       ]
     },
     "white": {
       "": [
-        "B4",
-        "B6",
-        "B8",
-        "B10",
-        "C5",
-        "C9",
-        "D2",
-        "D8",
-        "D10",
-        "D12",
-        "E3",
-        "E7",
-        "E11",
-        "E13",
-        "F6",
-        "F8",
-        "F10",
-        "F12",
-        "G5",
-        "G9",
-        "G11",
-        "G13",
-        "H8",
-        "I5",
-        "I9",
-        "I13",
+        "F2",
+        "H2",
         "J2",
-        "J4",
-        "J6",
-        "J8",
-        "J12",
-        "K5",
-        "K11",
+        "B4",
         "L4",
-        "L8"
+        "K5",
+        "M5",
+        "L6",
+        "M7",
+        "M9",
+        "B10",
+        "L10",
+        "K11",
+        "H12"
       ],
       "city=revenue:0": [
-        "C3",
-        "C7",
-        "C11",
-        "D4",
-        "E9",
-        "F4",
-        "G7",
-        "H10",
-        "H12",
-        "I7",
-        "K3",
-        "K7",
-        "L10"
+        "G3",
+        "L8",
+        "G11",
+        "J12"
       ],
-      "town=revenue:0;upgrade=cost:40,terrain:mountain": [
-        "C13"
+      "city=revenue:0;border=edge:1,type:water,cost:20;border=edge:0,type:water,cost:40": [
+        "C3"
+      ],
+      "city=revenue:0;border=edge:0,type:water,cost:20;border=edge:1,type:water,cost:40;border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40;border=edge:5,type:water,cost:40": [
+        "K3"
+      ],
+      "city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40;border=edge:5,type:water,cost:20": [
+        "D4"
+      ],
+      "city=revenue:0;border=edge:0,type:water,cost:40": [
+        "D6"
+      ],
+      "city=revenue:0;border=edge:3,type:water,cost:40;border=edge:5,type:water,cost:40": [
+        "G7"
+      ],
+      "city=revenue:0;border=edge:2,type:water,cost:40": [
+        "J8"
+      ],
+      "city=revenue:0;border=edge:2,type:water,cost:20;border=edge:3,type:water,cost:40": [
+        "G9"
+      ],
+      "city=revenue:0;border=edge:0,type:water,cost:60;border=edge:5,type:water,cost:60": [
+        "C11"
+      ],
+      "city=revenue:0;border=edge:2,type:water,cost:20;border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40": [
+        "I5"
+      ],
+      "town=revenue:0;upgrade=cost:40,terrain:mountain;border=edge:3,type:water,cost:20": [
+        "M3"
+      ],
+      "border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:20": [
+        "D2",
+        "F6"
+      ],
+      "border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40": [
+        "E3",
+        "J6"
+      ],
+      "border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:20;border=edge:5,type:water,cost:40": [
+        "I3",
+        "E7"
+      ],
+      "border=edge:1,type:water,cost:40;border=edge:2,type:water,cost:40;border=edge:3,type:water,cost:40": [
+        "J4",
+        "H8"
+      ],
+      "border=edge:0,type:water,cost:40": [
+        "C5",
+        "G5"
+      ],
+      "border=edge:0,type:water,cost:40;border=edge:5,type:water,cost:20": [
+        "H4"
+      ],
+      "border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40": [
+        "H6"
+      ],
+      "border=edge:0,type:water,cost:20;border=edge:1,type:water,cost:40;border=edge:4,type:water,cost:40;border=edge:5,type:water,cost:40": [
+        "I7"
+      ],
+      "border=edge:3,type:water,cost:20": [
+        "K7"
+      ],
+      "border=edge:0,type:water,cost:40;border=edge:3,type:water,cost:20;border=edge:4,type:water,cost:40;border=edge:5,type:water,cost:40": [
+        "E9"
+      ],
+      "border=edge:5,type:water,cost:60": [
+        "I9"
+      ],
+      "border=edge:0,type:water,cost:60;border=edge:1,type:water,cost:40;border=edge:5,type:water,cost:40": [
+        "D10"
+      ],
+      "border=edge:2,type:water,cost:40;border=edge:3,type:water,cost:60": [
+        "F10",
+        "E11"
+      ],
+      "border=edge:0,type:water,cost:20": [
+        "H10"
+      ],
+      "border=edge:3,type:water,cost:60;border=edge:2,type:water,cost:60": [
+        "D12"
       ],
       "town=revenue:0": [
-        "D6",
         "L12"
       ],
+      "town=revenue:0;border=edge:3,type:water,cost:40": [
+        "F4"
+      ],
       "town=revenue:0;town=revenue:0": [
-        "H6",
-        "I11",
         "K9"
+      ],
+      "town=revenue:0;town=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40": [
+        "I11"
+      ],
+      "town=revenue:0;town=revenue:0;border=edge:0,type:water,cost:40;border=edge:2,type:water,cost:40;border=edge:3,type:water,cost:40;border=edge:5,type:water,cost:20": [
+        "F8"
       ]
     },
     "gray": {
-      "city=revenue:40;path=a:4,b:_0;path=a:_0,b:5": [
-        "B12"
+      "city=revenue:40;path=a:4,b:_0;path=a:_0,b:5;border=edge:4,type:water,cost:40": [
+        "L2"
       ],
       "city=revenue:30;path=a:2,b:_0;path=a:_0,b:4": [
-        "F14"
+        "N6"
       ],
       "path=a:0,b:1": [
-        "G3"
+        "C7"
       ],
-      "city=revenue:30;path=a:0,b:_0;path=a:1,b:_0": [
-        "H4"
+      "city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;border=edge:0,type:water,cost:40": [
+        "D8"
       ],
       "path=a:3,b:4": [
-        "H14"
+        "N8"
       ],
-      "town=revenue:10;path=a:0,b:_0;path=a:_0,b:4": [
-        "I3"
+      "town=revenue:10;path=a:0,b:_0;path=a:_0,b:4;border=edge:0,type:water,cost:20": [
+        "C9"
       ],
       "path=a:2,b:4": [
-        "J14"
+        "N10"
       ],
       "town=revenue:10;path=a:0,b:_0;path=a:_0,b:1": [
-        "K1"
+        "A11"
       ],
       "town=revenue:10;path=a:2,b:_0;path=a:_0,b:3": [
-        "L14"
+        "N12"
       ],
       "city=revenue:20;path=a:2,b:_0": [
-        "M11"
+        "K13"
       ]
     },
     "yellow": {
       "city=revenue:0;city=revenue:0;label=OO": [
-        "E5",
-        "K13"
+        "M11"
       ],
-      "city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:4,b:_1;label=R": [
+      "city=revenue:0;city=revenue:0;label=OO;border=edge:2,type:water,cost:20;border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40": [
+        "E5"
+      ],
+      "city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:4,b:_1;label=R;border=edge:2,type:water,cost:60;border=edge:3,type:water,cost:20;border=edge:4,type:water,cost:40": [
         "J10"
       ],
       "path=a:1,b:3": [
-        "L6"
+        "F12"
       ]
     },
     "blue": {
       "offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:1,b:_0": [
-        "F2"
+        "B6"
       ]
     }
   },

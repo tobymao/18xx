@@ -24,7 +24,7 @@ module View
         def render_part
           children = []
           children << h(:circle, attrs: { r: @radius, fill: 'white' })
-          children << reservation if @reservation
+          children << reservation if @reservation && !@token
           children << h(Token, token: @token, radius: @radius) if @token
 
           props = { on: { click: ->(event) { on_click(event) } } }
@@ -37,7 +37,7 @@ module View
         def reservation
           h(
             :text,
-            { attrs: { 'text-anchor': 'middle', fill: 'black', transform: 'translate(0 9) scale(1.75)' } },
+            { attrs: { fill: 'black', transform: 'translate(0 9) scale(1.75)' } },
             @reservation,
           )
         end
@@ -49,8 +49,8 @@ module View
           event.JS.stopPropagation
 
           # If there's a choice of tokens of different types show the selector, otherwise just place
-          next_tokens = @game.current_entity.next_tokens_by_type
-          if next_tokens.size == 1
+          next_tokens = @game.current_entity.tokens_by_type
+          if next_tokens.size == 1 || @game.round.step == :home_token
             action = Engine::Action::PlaceToken.new(
               @game.current_entity,
               city: @city,

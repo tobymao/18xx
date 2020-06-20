@@ -8,10 +8,33 @@ module View
     module Part
       class Revenue < Base
         P_RIGHT_CORNER = {
-          region_weights_in: LEFT_CORNER + LEFT_MID,
-          region_weights_out: LEFT_CORNER,
+          region_weights: RIGHT_CORNER,
           x: 75,
           y: 0,
+        }.freeze
+
+        P_LEFT_CORNER = {
+          region_weights: LEFT_CORNER,
+          x: -75,
+          y: 0,
+        }.freeze
+
+        P_UPPER_LEFT_CORNER = {
+          region_weights: UPPER_LEFT_CORNER,
+          x: -35,
+          y: -60.62,
+        }.freeze
+
+        P_BOTTOM_LEFT_CORNER = {
+          region_weights: BOTTOM_LEFT_CORNER,
+          x: -35,
+          y: 60.62,
+        }.freeze
+
+        P_BOTTOM_RIGHT_CORNER = {
+          region_weights: BOTTOM_RIGHT_CORNER,
+          x: 35,
+          y: 60.62,
         }.freeze
 
         def preferred_render_locations
@@ -44,7 +67,7 @@ module View
               },
             ]
           else
-            [P_RIGHT_CORNER]
+            [P_RIGHT_CORNER, P_LEFT_CORNER, P_BOTTOM_RIGHT_CORNER, P_UPPER_LEFT_CORNER, P_BOTTOM_LEFT_CORNER]
           end
         end
 

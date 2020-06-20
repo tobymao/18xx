@@ -16,6 +16,7 @@ require_relative '../corporation'
 require_relative '../depot'
 require_relative '../graph'
 require_relative '../hex'
+require_relative '../minor'
 require_relative '../phase'
 require_relative '../player'
 require_relative '../publisher'
@@ -28,8 +29,8 @@ module Engine
   module Game
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
-                  :depot, :finished, :graph, :hexes, :id, :loading, :log, :phase, :players, :operating_rounds, :round,
-                  :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible
+                  :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
+                  :round, :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible
 
       DEV_STAGE = :prealpha
 
@@ -62,6 +63,8 @@ module Engine
 
       CERT_LIMIT_COLORS = %i[brown orange yellow].freeze
 
+      MULTIPLE_BUY_COLORS = %i[brown].freeze
+
       CAPITALIZATION = :full
 
       MUST_SELL_IN_BLOCKS = false
@@ -77,6 +80,15 @@ module Engine
       # left_block_pres -- left one column per block if president
       # left_block -- one row per block
       SELL_MOVEMENT = :down_share
+
+      # :sell_buy_or_buy_sell
+      # :sell_buy
+      # :sell_buy_sell
+      SELL_BUY_ORDER = :sell_buy_or_buy_sell
+
+      # do shares in the pool drop the price?
+      # none, one, each
+      POOL_SHARE_DROP = :none
 
       COMPANIES = [].freeze
 
@@ -109,6 +121,7 @@ module Engine
         %i[shares share],
         %i[share_prices share_price],
         %i[cities city],
+        %i[minors minor],
       ].freeze
 
       # https://en.wikipedia.org/wiki/Linear_congruential_generator#Parameters_in_common_use
@@ -161,11 +174,17 @@ module Engine
           company
         end
 
+        data['minors'] ||= []
+
+        data['minors'].map! do |minor|
+          minor.transform_keys!(&:to_sym)
+          minor[:color] = const_get(:COLORS)[minor[:color]] if const_defined?(:COLORS)
+          minor
+        end
+
         data['corporations'].map! do |corporation|
           corporation.transform_keys!(&:to_sym)
-
           corporation[:color] = const_get(:COLORS)[corporation[:color]] if const_defined?(:COLORS)
-
           corporation
         end
 
@@ -176,7 +195,7 @@ module Engine
         const_set(:BANK_CASH, data['bankCash'])
         const_set(:CERT_LIMIT, data['certLimit'])
         const_set(:STARTING_CASH, data['startingCash'])
-        const_set(:CAPITALIZATION, data['capitalization'])
+        const_set(:CAPITALIZATION, data['capitalization'].to_sym) if data['capitalization']
         const_set(:MUST_SELL_IN_BLOCKS, data['mustSellInBlocks'])
         const_set(:TILES, data['tiles'])
         const_set(:LOCATION_NAMES, data['locationNames'])
@@ -185,6 +204,7 @@ module Engine
         const_set(:TRAINS, data['trains'])
         const_set(:COMPANIES, data['companies'])
         const_set(:CORPORATIONS, data['corporations'])
+        const_set(:MINORS, data['minors'])
         const_set(:HEXES, data['hexes'])
         const_set(:LAYOUT, data['layout'].to_sym)
       end
@@ -221,6 +241,7 @@ module Engine
 
         @companies = init_companies(@players)
         @stock_market = init_stock_market
+        @minors = init_minors
         @corporations = init_corporations(@stock_market)
         @bank = init_bank
         @tiles = init_tiles
@@ -476,7 +497,8 @@ module Engine
       end
 
       def init_stock_market
-        StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_COLORS)
+        StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_COLORS,
+                        multiple_buy_colors: self.class::MULTIPLE_BUY_COLORS)
       end
 
       def init_companies(players)
@@ -489,12 +511,20 @@ module Engine
 
       def init_train_handler
         trains = self.class::TRAINS.flat_map do |train|
-          train[:num].times.map do |index|
+          (train[:num] || num_trains(train)).times.map do |index|
             Train.new(**train, index: index)
           end
         end
 
         Depot.new(trains, self)
+      end
+
+      def num_trains(_train)
+        raise NotImplementedError
+      end
+
+      def init_minors
+        self.class::MINORS.map { |minor| Minor.new(**minor) }
       end
 
       def init_corporations(stock_market)
@@ -526,7 +556,7 @@ module Engine
 
               # reserve corporation home spots
               corporations.select { |c| c.coordinates == coord }.each do |c|
-                tile.cities.first.add_reservation!(c.name)
+                tile.add_reservation!(c.name, c.city)
               end
 
               # name the location (city/town)

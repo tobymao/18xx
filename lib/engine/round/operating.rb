@@ -17,6 +17,7 @@ module Engine
       attr_reader :bankrupt, :depot, :phase, :round_num, :step, :current_routes
 
       STEPS = %i[
+        home_token
         track
         token
         route
@@ -26,6 +27,7 @@ module Engine
       ].freeze
 
       STEP_DESCRIPTION = {
+        home_token: 'Lay Home Token',
         track: 'Lay Track',
         token: 'Place a Token',
         route: 'Run Routes',
@@ -42,8 +44,10 @@ module Engine
         company: 'Companies',
       }.freeze
 
+      DIVIDEND_TYPES = %i[payout withhold].freeze
+
       def initialize(entities, game:, round_num: 1, **opts)
-        super(select(entities), game: game, **opts)
+        super(select(entities, game, round_num), game: game, **opts)
         @round_num = round_num
         @home_token_timing = @game.class::HOME_TOKEN_TIMING
         @ebuy_other_value = @game.class::EBUY_OTHER_VALUE
@@ -69,7 +73,7 @@ module Engine
         start_operating
       end
 
-      def select(entities)
+      def select(entities, _game, _round_num)
         entities.select(&:floated?).sort
       end
 
@@ -126,6 +130,10 @@ module Engine
           end
         end
         depot_trains + other_trains
+      end
+
+      def dividend_types
+        self.class::DIVIDEND_TYPES
       end
 
       def active_entities
@@ -187,7 +195,7 @@ module Engine
       end
 
       def can_place_token?
-        @step == :token
+        @step == :token || @step == :home_token
       end
 
       def steps
@@ -207,6 +215,8 @@ module Engine
       end
 
       def reachable_hexes
+        return { @game.hex_by_id(@current_entity.coordinates) => true } if @step == :home_token
+
         @graph.reachable_hexes(@current_entity)
       end
 
@@ -216,6 +226,11 @@ module Engine
 
       def operating?
         true
+      end
+
+      def skip_current_entity
+        @current_entity.pass!
+        change_entity(nil)
       end
 
       private
@@ -229,6 +244,11 @@ module Engine
         else
           @current_entity.pass!
         end
+      end
+
+      def skip_home_token
+        !(@home_token_timing == :operate &&
+          @game.hex_by_id(@current_entity.coordinates)&.tile&.reserved_by?(@current_entity))
       end
 
       def skip_track; end
@@ -311,15 +331,7 @@ module Engine
         )
         @current_entity.trains.each { |train| train.operated = true }
         @current_routes = []
-
-        case action.kind
-        when 'payout'
-          payout(revenue)
-        when 'withhold'
-          withhold(revenue)
-        else
-          raise GameError, "Unknown dividend type #{action.kind}"
-        end
+        send(action.kind, revenue)
       end
 
       def process_buy_train(action)
@@ -354,6 +366,7 @@ module Engine
         log_operation(@current_entity)
         @current_entity.trains.each { |train| train.operated = false }
         place_home_token(@current_entity) if @home_token_timing == :operate
+
         next_step! if send("skip_#{@step}")
       end
 
@@ -407,7 +420,7 @@ module Engine
         else
           @log << "#{name} does not run"
         end
-        change_share_price(:left)
+        change_share_price(0)
       end
 
       def payout(revenue)
@@ -426,7 +439,7 @@ module Engine
         else
           payout_entity(@share_pool, per_share, @current_entity)
         end
-        change_share_price(:right)
+        change_share_price(revenue)
       end
 
       def payout_entity(holder, per_share, receiver = nil)
@@ -442,20 +455,9 @@ module Engine
         @bank.spend(amount, receiver)
       end
 
-      def change_share_price(direction)
-        return if @current_entity.minor?
-
+      def change_share_price(revenue)
         prev = @current_entity.share_price.price
-
-        case direction
-        when :left
-          @stock_market.move_left(@current_entity)
-        when :right
-          @stock_market.move_right(@current_entity)
-        else
-          raise GameError, "Don't know how to move direction #{direction}"
-        end
-
+        revenue.zero? ? @stock_market.move_left(@current_entity) : @stock_market.move_right(@current_entity)
         log_share_price(@current_entity, prev)
       end
 
@@ -521,7 +523,8 @@ module Engine
       def place_token(action)
         entity = action.entity
         hex = action.city.hex
-        if !@game.loading && !connected_nodes[action.city] && !@teleported
+        allow_unconnected = @teleported || @step == :home_token
+        if !@game.loading && !allow_unconnected && !connected_nodes[action.city]
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 

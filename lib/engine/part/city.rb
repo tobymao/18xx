@@ -45,17 +45,24 @@ module Engine
         true
       end
 
-      def tokenable?(corporation, free: false, tokens: nil)
-        tokens = Array(tokens || corporation.next_tokens_by_type)
-        return false unless tokens
+      def tokenable?(corporation, free: false, tokens: corporation.tokens_by_type)
+        tokens = Array(tokens)
+        return false if tokens.empty?
 
         tokens.any? do |t|
           next false unless get_slot(t.corporation)
           next false if !free && t.price > corporation.cash
           next false if @tile.cities.any? { |c| c.tokened_by?(t.corporation) }
+          next true if @reservations.index(corporation.name)
+
+          next false if @tile.reservations.count { |x| corporation.name != x } >= @tile.cities.sum(&:available_slots)
 
           true
         end
+      end
+
+      def available_slots
+        @tokens.each_with_index.count { |t, i| t.nil? && @reservations[i].nil? }
       end
 
       def get_slot(corporation)
@@ -70,6 +77,7 @@ module Engine
         end
 
         exchange_token(token)
+        tile.reservations.delete(corporation.name)
       end
 
       def exchange_token(token)

@@ -34,6 +34,7 @@ module View
         }.freeze
 
         WATER_PATH = 'M -15 -7 Q -7.5 -15, 0 -7 S 7.5 1, 15 -7M -15 -2  Q -7.5 -10, 0 -2  S 7.5 6, 15 -2'
+        TRIANGLE_PATH = '0,20 10,0 20,20'
 
         def preferred_render_locations
           [
@@ -45,11 +46,7 @@ module View
         end
 
         def render_part
-          text_attrs = {
-            'text-anchor': 'middle',
-            fill: 'black',
-            transform: 'scale(1.5)',
-          }
+          text_attrs = { fill: 'black', transform: 'scale(1.5)' }
           cost = h(:text, { attrs: text_attrs }, @cost)
 
           delta_x = -10
@@ -68,7 +65,7 @@ module View
 
         def mountain(delta_x: 0, delta_y: 0)
           h(:polygon, attrs: { transform: "translate(#{delta_x} #{delta_y})",
-                               points: '0,20 10,0 20,20' })
+                               points: TRIANGLE_PATH })
         end
 
         def water(delta_x: 0, delta_y: 0)

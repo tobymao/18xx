@@ -14,7 +14,7 @@ module View
     def render_content
       inputs = [
         mode_selector,
-        *render_buttons,
+        render_button('Create') { submit },
         render_inputs,
       ]
 
@@ -44,26 +44,46 @@ module View
     end
 
     def render_inputs
+      @min_p = {}
+      @max_p = {}
+
       games = (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).map do |game|
+        @min_p[game.title], @max_p[game.title] = Engine.player_range(game)
+
         title = game.title
         title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
-        if game::DEV_STAGE == :production
-          h(:option, { attrs: { value: game.title } }, title)
-        else
-          h(:option, { attrs: { value: game.title } }, "#{title} (#{game::DEV_STAGE})")
-        end
+        title += " (#{game::DEV_STAGE})" if game::DEV_STAGE != :production
+
+        h(:option, { attrs: { value: game.title } }, title)
       end
-      h(:div, [
-        render_input('Game Title', id: :title, el: 'select', children: games),
-        render_input('Description', id: :description),
+
+      limit_range = lambda do
+        range = Native(@inputs[:max_players]).elm
+        title = Native(@inputs[:title]).elm.value
+        min = range.min = @min_p[title]
+        max = range.max = @max_p[title]
+        val = range.value.to_i
+        range.value = (min..max).include?(val) ? val : max
+        store(:num_players, range.value.to_i)
+      end
+
+      inputs = [
+        render_input('Game Title', id: :title, el: 'select', on: { input: limit_range }, children: games),
+        render_input('Description', placeholder: 'Add a title', id: :description),
         render_input(
-          'Max Players',
+          @mode != :hotseat ? 'Max Players' : 'Players',
           id: :max_players,
           type: :number,
-          attrs: { value: 6 },
+          attrs: {
+            min: @min_p.values.first,
+            max: @max_p.values.first,
+            value: @num_players,
+          },
           input_style: { width: '2.5rem' },
+          on: { input: -> { store(:num_players, Native(@inputs[:max_players]).elm.value.to_i) if @mode == :hotseat } },
         ),
-      ])
+      ]
+      h(:div, inputs)
     end
 
     def mode_selector
@@ -74,28 +94,18 @@ module View
     end
 
     def mode_input(mode, text)
-      props = {
-        attrs: { type: 'radio', name: 'mode_options', checked: @mode == mode },
-        on: { click: -> { store(:mode, mode) } },
-      }
-
-      [
-        h(:input, props),
-        h('label.right', text),
-      ]
-    end
-
-    def render_buttons
-      buttons = []
-
-      buttons << render_button('Create') { submit }
-
-      if @mode == :hotseat
-        buttons << render_button('+ Player') { store(:num_players, @num_players + 1) if @num_players + 1 <= 6 }
-        buttons << render_button('- Player') { store(:num_players, @num_players - 1) if @num_players - 1 >= 2 }
+      click_handler = lambda do
+        store(:mode, mode, skip: true)
+        store(:num_players, Native(@inputs[:max_players]).elm.value.to_i)
       end
 
-      buttons
+      [render_input(
+        text,
+        id: text,
+        type: 'radio',
+        attrs: { name: 'mode_options', checked: @mode == mode },
+        on: { click: click_handler },
+      )]
     end
 
     def submit

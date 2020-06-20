@@ -12,6 +12,9 @@ a.game__nav:focus {
 button {
   margin: 0.5rem 0.5rem 0 0;
 }
+button + button {
+  margin-left: 0.5rem;
+}
 
 .button, .button-link {
   font-size: 14px;
@@ -21,11 +24,7 @@ button {
   border-radius: 5px;
   padding: 0.2rem 1rem;
   cursor: pointer;
-}
-.button-link {
   text-decoration: none;
-  color: initial;
-  background: whitesmoke;
 }
 
 /* prevent hover effects on mobile devices */
@@ -59,7 +58,7 @@ input, select, textarea {
   cursor: pointer;
   margin: 0.5rem;
 }
-input:not([type="checkbox"]), select {
+input:not([type=radio]):not([type=checkbox]), select {
   height: 2rem;
 }
 input + label, select + label {
@@ -72,6 +71,13 @@ label.right {
 .input-container {
   display: inline-block;
   margin-right: 1rem;
+}
+
+p:first-child {
+  margin-top: 0;
+}
+p:last-child {
+  margin-bottom: 0;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -147,6 +153,10 @@ label.right {
   font-weight: bold;
   margin: 1rem 0;
 }
+.card_header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
 
 .back {
   font-size: 1.2rem;
@@ -157,6 +167,9 @@ label.right {
 .half {
   width: 100%;
   display: inline-block;
+}
+@media only screen and (min-width: 900px) {
+  .half { width: 49%; }
 }
 
 .inline {
@@ -169,18 +182,18 @@ label.right {
 .margined {
   margin: 1rem 1rem 1rem 0;
 }
-
 .margined_half {
   margin: 0.5rem 0.5rem 0.5rem 0;
 }
 
-@media only screen and (min-width: 900px) {
-  .half { width: 49%; }
+.padded {
+  padding: 1rem;
 }
 
 .tile {
    fill: none;
    stroke-width: 1;
+   text-anchor: middle;
 }
 .tile__block {
   display: inline-block;
@@ -239,6 +252,15 @@ label.right {
 }
 table.center {
   margin: 0.2rem auto;
+}
+
+#chatlog {
+  height: 200px;
+}
+@media only screen and (min-width: 900px) {
+  #homepage #chatlog {
+    height: 350px;
+  }
 }
 
 div.game.card em {

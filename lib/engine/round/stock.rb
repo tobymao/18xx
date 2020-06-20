@@ -12,13 +12,14 @@ module Engine
 
       PURCHASE_ACTIONS = [Action::BuyShares, Action::Par].freeze
 
-      def initialize(entities, game:, sell_buy_order: :sell_buy_or_buy_sell)
+      def initialize(entities, game:, **opts)
         super
         @share_pool = game.share_pool
         @stock_market = game.stock_market
         @corporations = game.corporations
         @sellable_turn = game.sellable_turn?
-        @sell_buy_order = sell_buy_order
+        @sell_buy_order = game.class::SELL_BUY_ORDER
+        @pool_share_drop = game.class::POOL_SHARE_DROP
         # player => corporation => :now or :prev
         # this differentiates between preventing users from buying shares they sold
         # and preventing users from selling the same shares separately in the some action
@@ -32,7 +33,14 @@ module Engine
       end
 
       def description
-        'Buy and Sell Shares'
+        case @sell_buy_order
+        when :sell_buy_or_buy_sell
+          'Buy or Sell Shares'
+        when :sell_buy
+          'Sell then Buy Shares'
+        when :sell_buy_sell
+          'Sell/Buy/Sell Shares'
+        end
       end
 
       def pass_description
@@ -57,7 +65,13 @@ module Engine
 
         @current_entity.cash >= bundle.price && can_gain?(bundle, @current_entity) &&
           !@players_sold[@current_entity][corporation] &&
-          (@current_actions & self.class::PURCHASE_ACTIONS).none?
+          (can_buy_multiple?(corporation) || !bought?)
+      end
+
+      def can_buy_multiple?(corporation)
+        corporation.buy_multiple? &&
+         @current_actions.none? { |x| x.is_a?(Action::Par) } &&
+         @current_actions.none? { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation != corporation }
       end
 
       def must_sell?
@@ -90,9 +104,10 @@ module Engine
       def can_sell_order?
         case @sell_buy_order
         when :sell_buy_or_buy_sell
-          !(@current_actions.uniq.size == 2 && self.class::PURCHASE_ACTIONS.include?(@current_actions.last))
+          !(@current_actions.uniq(&:class).size == 2 &&
+            self.class::PURCHASE_ACTIONS.include?(@current_actions.last.class))
         when :sell_buy
-          (self.class::PURCHASE_ACTIONS & @current_actions).empty?
+          !bought?
         when :sell_buy_sell
           true
         end
@@ -130,7 +145,7 @@ module Engine
         return if action.is_a?(Action::DiscardTrain)
 
         entity = action.entity
-        @current_actions << action.class
+        @current_actions << action
         @last_to_act = entity
         entity.unpass!
       end
@@ -174,6 +189,17 @@ module Engine
           @stock_market.move_up(corporation)
           log_share_price(corporation, prev)
         end
+
+        return if @pool_share_drop == :none
+
+        @share_pool.shares_by_corporation.each do |corporation, shares|
+          prev = corporation.share_price.price
+          (shares.sum(&:percent) / 10).times do
+            @stock_market.move_left(corporation)
+            break if @pool_share_drop == :one
+          end
+          log_share_price(corporation, prev) if prev != corporation.share_price.price
+        end
       end
 
       def sell_shares(shares)
@@ -197,10 +223,14 @@ module Engine
         a < b ? b - a : b - (a - @entities.size)
       end
 
+      def bought?
+        @current_actions.any? { |x| PURCHASE_ACTIONS.include?(x.class) }
+      end
+
       def log_pass(entity)
         return super if @current_actions.empty?
 
-        action = if @current_actions.include?(Action::BuyShares) || @current_actions.include?(Action::Par)
+        action = if bought?
                    'selling'
                  else
                    'buying'

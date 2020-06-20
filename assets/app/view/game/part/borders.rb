@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require 'lib/hex'
+require 'view/game/part/base'
 
 module View
   module Game
     module Part
-      class Borders < Snabberb::Component
+      class Borders < Base
         needs :tile
+        needs :region_use, default: nil
         needs :user, default: nil, store: true
 
         EDGES = {
@@ -48,20 +50,45 @@ module View
           },
         }.freeze
 
-        def render_borders
-          @tile.borders.map do |border|
-            color = @user&.dig(:settings, @tile&.color) || Lib::Hex::COLOR.fetch(@tile.color)
+        def color(border)
+          color =
+            case border.type
+            when nil
+              @tile.color
+            when :mountain
+              :brown
+            when :water
+              :blue
+            end
 
-            h(:line, attrs: {
-              **EDGES[border.edge],
-              stroke: color,
-              'stroke-width': '4',
-            })
-          end
+          @user&.dig(:settings, color) || Lib::Hex::COLOR.fetch(color)
+        end
+
+        def render_cost(border)
+          edges = EDGES[border.edge]
+
+          x = [edges[:x1], edges[:x2]].sum / 2.0
+          y = [edges[:y1], edges[:y2]].sum / 2.0
+
+          h(:g, { attrs: { transform: "translate(#{x} #{y}), #{rotation_for_layout}" } }, [
+            h(:circle, attrs: { stroke: 'none', fill: color(border), r: '15' }),
+            h('text.tile__text', { attrs: { fill: 'white', stroke: 'white' } }, border.cost.to_s),
+          ])
         end
 
         def render
-          h(:g, render_borders)
+          children = []
+
+          @tile.borders.each do |border|
+            children << h(:line, attrs: {
+              **EDGES[border.edge],
+              stroke: color(border),
+              'stroke-width': '8',
+            })
+            children << render_cost(border) if border.cost
+          end
+
+          h(:g, children)
         end
       end
     end

@@ -13,9 +13,7 @@ module Engine
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/114572/1836jr-30-rules'
       GAME_DESIGNER = 'David G. D. Hecht'
 
-      def stock_round
-        Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy_sell)
-      end
+      SELL_BUY_ORDER = :sell_buy_sell
     end
   end
 end

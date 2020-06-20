@@ -9,15 +9,29 @@ module View
       include Actionable
 
       def render
-        h(:div, [
-          h(UndoAndPass, pass: false),
-          h('button.button.margined', { on: { click: -> { dividend('payout') } } }, 'Payout'),
-          h('button.button.margined', { on: { click: -> { dividend('withhold') } } }, 'Withhold'),
-        ])
-      end
+        @round = @game.round
 
-      def dividend(kind)
-        process_action(Engine::Action::Dividend.new(@game.current_entity, kind: kind))
+        buttons = @round.dividend_types.map do |type|
+          text =
+            case type
+            when :payout
+              'Payout'
+            when :withhold
+              'Withhold'
+            when :half
+              'Half Pay'
+            else
+              type
+            end
+
+          click = lambda do
+            process_action(Engine::Action::Dividend.new(@round.current_entity, kind: type))
+          end
+
+          h('button.button.margined', { on: { click: click } }, text)
+        end
+
+        h(:div, [h(UndoAndPass, pass: false), *buttons])
       end
     end
   end

@@ -51,7 +51,6 @@ module View
               h(:text, { attrs: {
                 fill: 'black',
                 'dominant-baseline': 'baseline',
-                'text-anchor': 'middle',
                 x: 0,
                 y: -5,
 } },

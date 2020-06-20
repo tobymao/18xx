@@ -14,7 +14,7 @@ module Engine
           @companies = game.companies.sort_by { @game.rand }
           @choices = Hash.new { |h, k| h[k] = [] }
           @draw_size = @entities.size + 2
-          @last_to_act = nil
+          @last_to_act = entities.first
         end
 
         def pass_description
@@ -26,7 +26,7 @@ module Engine
         end
 
         def blank?(company)
-          company.name.to_i.positive?
+          company.name.include?('Pass')
         end
 
         def all_blank?
@@ -64,7 +64,6 @@ module Engine
           @companies.clear
           @choices[@current_entity] << company
           @log << "#{@current_entity.name} chooses #{company.name}"
-          @last_to_act = @current_entity
         end
 
         private
@@ -81,7 +80,6 @@ module Engine
             @companies -= available
             @log << "#{@current_entity.name} chooses a company"
             @companies.concat(discarded)
-            @last_to_act = @current_entity
           end
         end
 

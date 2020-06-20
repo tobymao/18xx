@@ -25,7 +25,8 @@ module View
           user_name = @user&.dig('name')
 
           @block_show = user_name &&
-            @player.name == user_name &&
+            @game.players.map(&:name).include?(user_name) &&
+            @player.name != user_name &&
             !Lib::Storage[@game.id]&.dig('master_mode')
 
           h(:div, [

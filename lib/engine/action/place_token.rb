@@ -11,7 +11,7 @@ module Engine
         @entity = entity
         @city = city
         @slot = slot
-        @token = @entity.next_token_by_type(token_type || :normal)
+        @token = @entity.find_token_by_type(token_type)
       end
 
       def self.h_to_args(h, game)

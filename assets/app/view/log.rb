@@ -31,8 +31,6 @@ module View
         on: { scroll: scroll_handler },
         style: {
           overflow: 'auto',
-          height: '200px',
-          width: '100%',
           padding: '0.5rem',
           'background-color': color_for(:bg2),
           color: color_for(:font2),

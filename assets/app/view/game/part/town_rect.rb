@@ -269,7 +269,7 @@ module View
 
           h(:g, { attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
             h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
-              h(:g, { attrs: { transform: "translate(#{displacement} 0)" } }, [
+              h(:g, { attrs: { transform: "translate(#{displacement} 0) #{rotation_for_layout}" } }, [
                 h(SingleRevenue,
                   revenue: revenue,
                   transform: "rotate(#{-angle})"),

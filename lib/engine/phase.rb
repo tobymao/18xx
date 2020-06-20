@@ -19,7 +19,7 @@ module Engine
       case action
       when Action::BuyTrain
         train = action.train
-        next! if train.name == @next_on
+        next! if train.sym == @next_on
         rust_trains!(train, action.entity)
         @game.companies.map do |company|
           next unless company.abilities(:close_on_train_buy)

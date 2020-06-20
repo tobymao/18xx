@@ -15,7 +15,8 @@ module View
 
     def render
       children = [
-        h(Welcome, user: @user),
+        render_header,
+        h(Welcome),
         h(Chat, user: @user, connection: @connection),
       ]
 
@@ -63,7 +64,7 @@ module View
         },
       }
 
-      h(:div, props, children)
+      h('div#homepage', props, children)
     end
 
     def game_refresh
@@ -90,6 +91,12 @@ module View
         type: type,
         user: @user,
       )
+    end
+
+    def render_header
+      h('div#greeting.card_header', [
+        h(:h2, "Welcome#{@user ? ' ' + @user['name'] : ''}!"),
+      ])
     end
   end
 end

@@ -14,7 +14,7 @@ module Engine
   class Tile
     include Config::Tile
 
-    attr_accessor :hex, :legal_rotations, :location_name, :name, :index
+    attr_accessor :hex, :legal_rotations, :location_name, :name, :index, :reservations
     attr_reader :borders, :cities, :color, :edges, :junction, :label, :nodes,
                 :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers
 
@@ -91,7 +91,7 @@ module Engine
         cache << upgrade
         upgrade
       when 'border'
-        Part::Border.new(params['edge'])
+        Part::Border.new(params['edge'], params['type'], params['cost'])
       when 'junction'
         junction = Part::Junction.new
         cache << junction
@@ -119,6 +119,7 @@ module Engine
       @location_name = location_name
       @legal_rotations = []
       @blockers = []
+      @reservations = []
       @preprinted = preprinted
       @index = index
 
@@ -220,6 +221,21 @@ module Engine
     def preferred_city_town_edges
       # cache per rotation
       @preferred_city_town_edges ||= compute_city_town_edges
+    end
+
+    def reserved_by?(corporation)
+      @reservations.any? { |r| r == corporation.name }
+    end
+
+    def add_reservation!(name, city)
+      # Single city, assume the first
+      city = 0 if @cities.one?
+
+      if city
+        @cities[city].add_reservation!(name)
+      else
+        @reservations << name
+      end
     end
 
     def compute_city_town_edges
