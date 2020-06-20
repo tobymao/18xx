@@ -56,9 +56,9 @@ module View
             when nil
               @tile.color
             when :mountain
-              :blue
-            when :water
               :brown
+            when :water
+              :blue
             end
 
           @user&.dig(:settings, color) || Lib::Hex::COLOR.fetch(color)
