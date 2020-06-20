@@ -45,11 +45,12 @@ module Engine
       @tokens.find { |t| !t.used }
     end
 
-    def next_token_by_type(type)
+    def find_token_by_type(type = nil)
+      type ||= :normal
       @tokens.find { |t| !t.used && t.type == type }
     end
 
-    def next_tokens_by_type
+    def tokens_by_type
       @tokens.reject(&:used).uniq(&:type)
     end
   end

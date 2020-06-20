@@ -184,10 +184,11 @@ module Engine
 
         cities = tile.cities
         city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
-        return unless city.tokenable?(corporation)
+        token = corporation.find_token_by_type
+        return unless city.tokenable?(corporation, tokens: token)
 
         @log << "#{corporation.name} places a token on #{hex.name}"
-        city.place_token(corporation, corporation.next_token)
+        city.place_token(corporation, token)
       end
 
       private

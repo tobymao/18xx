@@ -14,7 +14,7 @@ module View
       DISTANCE = TOKEN_SIZE
 
       def render
-        tokens = @game.current_entity.next_tokens_by_type
+        tokens = @game.current_entity.tokens_by_type
         tokens = list_coordinates(tokens, DISTANCE, SIZE).map do |token, left, bottom|
           click = lambda do
             action = Engine::Action::PlaceToken.new(

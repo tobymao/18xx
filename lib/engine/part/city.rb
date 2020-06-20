@@ -45,9 +45,9 @@ module Engine
         true
       end
 
-      def tokenable?(corporation, free: false, tokens: nil)
-        tokens = Array(tokens || corporation.next_tokens_by_type)
-        return false unless tokens
+      def tokenable?(corporation, free: false, tokens: corporation.tokens_by_type)
+        tokens = Array(tokens)
+        return false if tokens.empty?
 
         tokens.any? do |t|
           next false unless get_slot(t.corporation)

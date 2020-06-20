@@ -49,7 +49,7 @@ module View
           event.JS.stopPropagation
 
           # If there's a choice of tokens of different types show the selector, otherwise just place
-          next_tokens = @game.current_entity.next_tokens_by_type
+          next_tokens = @game.current_entity.tokens_by_type
           if next_tokens.size == 1 || @game.round.step == :home_token
             action = Engine::Action::PlaceToken.new(
               @game.current_entity,
