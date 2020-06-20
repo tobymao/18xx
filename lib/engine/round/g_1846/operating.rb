@@ -12,7 +12,6 @@ module Engine
       class Operating < Operating
         include HalfPay
         include CorporationIssue
-        include CorporationRedeem
         include MinorHalfPay
         MINOR_STEPS = %i[
           token_or_track
