@@ -491,15 +491,21 @@ module Engine
         "B10",
         "B12",
         "F14",
-        "F16",
-        "I11",
-        "J6"
+        "F16"
       ],
       "border=edge:5,type:mountain,cost:40": [
         "E19"
       ],
+        "border=edge:4,type:water,cost:40": [
+        "J4"
+      ],
+           "border=edge:1,type:water,cost:40": [
+        "J6"
+      ],
+               "border=edge:3,type:water,cost:40": [
+        "I11"
+      ],
       "city=revenue:0": [
-        "B16",
         "C9",
         "D14",
         "E11",
@@ -509,14 +515,23 @@ module Engine
         "G13",
         "G15"
       ],
+      "city=revenue:0;border=edge:4,type:mountain,cost:40": [
+        "B16"
+      ],
       "city=revenue:0;label=Z": [
-        "E17",
+        "E17"
+      ],
+      "city=revenue:0;label=Z;border=edge:0,type:water,cost:40": [
         "H12"
       ],
+      "upgrade=cost:40,terrain:mountain;border=edge:5,type:water,cost:40": [
+        "F18"
+      ],
       "upgrade=cost:40,terrain:mountain": [
-        "F18",
-        "G17",
         "H16"
+      ],
+      "upgrade=cost:40,terrain:mountain;border=edge:4,type:water,cost:20": [
+        "G17"
       ],
       "upgrade=cost:60,terrain:mountain": [
         "H14"
@@ -536,6 +551,9 @@ module Engine
       "city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0": [
         "I15"
       ],
+      "city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0": [
+        "E21"
+      ],
       "city=revenue:20;path=a:3,b:_0": [
         "K3"
       ]
@@ -544,13 +562,13 @@ module Engine
       "offboard=revenue:yellow_40|brown_10;path=a:4,b:_0": [
         "B8"
       ],
-      "offboard=revenue:yellow_30|brown_50,groups:East;path=a:1,b:_0;label=E": [
+      "offboard=revenue:yellow_30|brown_50,groups:East;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:40 ": [
         "B18"
       ],
       "offboard=revenue:yellow_20|brown_40;path=a:5,b:_0;label=W": [
         "C5"
       ],
-      "offboard=revenue:yellow_40|brown_60,groups:East;path=a:1,b:_0;label=E": [
+      "offboard=revenue:yellow_40|brown_60,groups:East;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:60": [
         "C17"
       ],
       "offboard=revenue:yellow_30|brown_60,hide:1,groups:Buffalo|East;path=a:0,b:_0;border=edge:5": [
@@ -580,7 +598,7 @@ module Engine
       ]
     },
     "yellow": {
-      "city=revenue:40,slots:2;path=a:1,b:_0;path=a:3,b:_0;label=Z;upgrade=cost:40,terrain:water": [
+      "city=revenue:40,slots:2;path=a:1,b:_0;path=a:3,b:_0;label=Z;upgrade=cost:40,terrain:water;border=edge:4,type:mountain,cost:60": [
         "C15"
       ],
       "city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;path=a:0,b:_0;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;label=Chi": [
@@ -589,10 +607,7 @@ module Engine
       "city=revenue:10,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0": [
         "D20"
       ],
-      "city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0": [
-        "E21"
-      ],
-      "city=revenue:10;path=a:5,b:_0": [
+      "city=revenue:10;path=a:5,b:_0;border=edge:1,type:water,cost:20;border=edge:2,type:water,cost:40;border=edge:4,type:mountain,cost:20": [
         "G19"
       ]
     },
