@@ -3,12 +3,18 @@
 require_relative '../operating'
 require_relative '../../token'
 require_relative '../half_pay'
+require_relative '../corporation_issue'
+require_relative '../corporation_redeem'
+require_relative '../minor_half_pay'
 
 module Engine
   module Round
     module G18EU
       class Operating < Operating
         include HalfPay
+        include CorporationIssue
+        include CorporationRedeem
+        include MinorHalfPay
         MINOR_STEPS = %i[
           track
           route
@@ -93,29 +99,6 @@ module Engine
 
         def skip_token_or_track
           skip_track && skip_token
-        end
-
-        def process_sell_shares(action)
-          return super if action.entity.player?
-
-          @game.share_pool.sell_shares(action.bundle)
-        end
-
-        def process_buy_shares(action)
-          @game.share_pool.buy_shares(@current_entity, action.bundle)
-        end
-
-        def payout(revenue)
-          return super if @current_entity.corporation?
-
-          @log << "#{@current_entity.name} pays out #{@game.format_currency(revenue)}"
-
-          amount = revenue / 2
-
-          [@current_entity, @current_entity.owner].each do |entity|
-            @log << "#{entity.name} receives #{@game.format_currency(amount)}"
-            @bank.spend(amount, entity)
-          end
         end
 
         def change_share_price(_direction, revenue = 0)
