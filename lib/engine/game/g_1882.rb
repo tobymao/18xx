@@ -23,11 +23,8 @@ module Engine
       GAME_DESIGNER = 'Marc Voyer'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
 
+      SELL_BUY_ORDER = :sell_buy_sell
       TRACK_RESTRICTION = :permissive
-
-      def stock_round
-        Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy_sell)
-      end
 
       def init_corporations(stock_market)
         min_price = stock_market.par_prices.map(&:price).min

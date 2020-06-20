@@ -8,9 +8,7 @@ module Engine
     class G18NewEngland < Base
       load_from_json(Config::Game::G18NewEngland::JSON)
 
-      def stock_round
-        Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy)
-      end
+      SELL_BUY_ORDER = :sell_buy
 
       def setup
         @minors.each do |minor|

@@ -79,6 +79,15 @@ module Engine
       # left_block -- one row per block
       SELL_MOVEMENT = :down_share
 
+      # :sell_buy_or_buy_sell
+      # :sell_buy
+      # :sell_buy_sell
+      SELL_BUY_ORDER = :sell_buy_or_buy_sell
+
+      # do shares in the pool drop the price?
+      # none, one, each
+      POOL_SHARE_DROP = :none
+
       COMPANIES = [].freeze
 
       CORPORATIONS = [].freeze

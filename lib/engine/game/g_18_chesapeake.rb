@@ -23,6 +23,8 @@ module Engine
       GAME_DESIGNER = 'Scott Petersen'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
 
+      SELL_BUY_ORDER = :sell_buy
+
       def action_processed(action)
         case action
         when Action::BuyTrain
@@ -61,10 +63,6 @@ module Engine
 
       def or_set_finished
         depot.export! if %w[2 3 4].include?(@depot.upcoming.first.name)
-      end
-
-      def stock_round
-        Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy)
       end
     end
   end

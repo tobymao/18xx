@@ -25,7 +25,9 @@ module Engine
       GAME_DESIGNER = 'Thomas Lehmann'
       GAME_PUBLISHER = Publisher::INFO[:gmt_games]
 
+      POOL_SHARE_DROP = :one
       SELL_AFTER = :p_any_operate
+      SELL_BUY_ORDER = :sell_buy
       SELL_MOVEMENT = :left_block_pres
       HOME_TOKEN_TIMING = :float
 
@@ -130,14 +132,36 @@ module Engine
             @log << "#{illinois_central.name} receives a #{format_currency(bonus)} subsidy"
           end
         end
+
+        @corporations.dup.each do |corporation|
+          close_corporation(corporation) if corporation.share_price&.price&.zero?
+        end
+      end
+
+      def close_corporation(corporation)
+        corporation.share_holders.keys.each do |player|
+          player.shares_by_corporation.delete(corporation)
+        end
+
+        @share_pool.shares_by_corporation.delete(corporation)
+
+        hexes.each do |hex|
+          hex.tile.cities.each do |city|
+            next unless city.tokened_by?(corporation)
+
+            city.tokens.map! { |token| token&.corporation == corporation ? nil : token }
+            city.reservations.delete(corporation.name)
+          end
+        end
+
+        corporation.spend(corporation.cash, @bank)
+        @log << "#{corporation.name} closes"
+        @round.skip_current_entity if @round.current_entity == corporation
+        @corporations.delete(corporation)
       end
 
       def init_round
         Round::G1846::Draft.new(@players.reverse, game: self)
-      end
-
-      def stock_round
-        Round::Stock.new(@players, game: self, sell_buy_order: :sell_buy)
       end
 
       def operating_round(round_num)

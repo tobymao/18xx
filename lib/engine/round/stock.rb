@@ -12,13 +12,14 @@ module Engine
 
       PURCHASE_ACTIONS = [Action::BuyShares, Action::Par].freeze
 
-      def initialize(entities, game:, sell_buy_order: :sell_buy_or_buy_sell)
+      def initialize(entities, game:, **opts)
         super
         @share_pool = game.share_pool
         @stock_market = game.stock_market
         @corporations = game.corporations
         @sellable_turn = game.sellable_turn?
-        @sell_buy_order = sell_buy_order
+        @sell_buy_order = game.class::SELL_BUY_ORDER
+        @pool_share_drop = game.class::POOL_SHARE_DROP
         # player => corporation => :now or :prev
         # this differentiates between preventing users from buying shares they sold
         # and preventing users from selling the same shares separately in the some action
@@ -180,6 +181,17 @@ module Engine
           prev = corporation.share_price.price
           @stock_market.move_up(corporation)
           log_share_price(corporation, prev)
+        end
+
+        return if @pool_share_drop == :none
+
+        @share_pool.shares_by_corporation.each do |corporation, shares|
+          prev = corporation.share_price.price
+          (shares.sum(&:percent) / 10).times do
+            @stock_market.move_left(corporation)
+            break if @pool_share_drop == :one
+          end
+          log_share_price(corporation, prev) if prev != corporation.share_price.price
         end
       end
 

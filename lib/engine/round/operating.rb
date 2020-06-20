@@ -228,6 +228,11 @@ module Engine
         true
       end
 
+      def skip_current_entity
+        @current_entity.pass!
+        change_entity(nil)
+      end
+
       private
 
       def next_step!
