@@ -74,8 +74,6 @@ module Engine
           @step == :token_or_track && !skip_token
         end
 
-
-
         def connected_hexes
           hexes = {}
 

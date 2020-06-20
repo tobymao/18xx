@@ -58,8 +58,6 @@ module Engine
           @current_entity.minor? ? self.class::MINOR_STEPS : self.class::STEPS
         end
 
-
-
         private
 
         def skip_issue
