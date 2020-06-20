@@ -3,6 +3,7 @@
 require 'view/game/actionable'
 require 'view/game/part/base'
 require 'view/game/token'
+require 'lib/tile_selector'
 require 'lib/token_selector'
 
 module View
@@ -44,6 +45,7 @@ module View
 
         def on_click(event)
           return if @token
+          return if @tile_selector&.is_a?(Lib::TileSelector)
           return unless @game.round.can_place_token?
 
           event.JS.stopPropagation
