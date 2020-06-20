@@ -3,6 +3,7 @@
 require './spec/spec_helper'
 
 require 'engine/game/g_1889'
+require 'engine/game/g_1882'
 require 'engine/phase'
 require 'engine/round/operating'
 
@@ -87,6 +88,39 @@ module Engine
         market.set_par(corp_0, market.market[8][0])
         7.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
         expect(subject.must_sell?).to eq(false)
+      end
+
+      context '#1882' do
+        let(:game) { Game::G1882.new(players) }
+        let(:corp_0) { game.corporation_by_id('QLL') }
+        let(:corp_0) { game.corporation_by_id('CPR') }
+
+        it 'can buy multiple stocks from ipo in brown' do
+          ipo_share = corp_0.shares[0]
+          market.set_par(corp_0, market.market.last[0]) # 10
+          expect(subject.can_buy?(ipo_share)).to be_truthy
+          entity = subject.current_entity
+          action = Engine::Action::BuyShares.new(subject.current_entity, shares: ipo_share)
+          subject.process_action(action)
+          ipo_share = corp_0.shares[1]
+          expect(subject.current_entity).to eq(entity)
+          expect(subject.can_buy?(ipo_share)).to be_truthy
+          action = Engine::Action::BuyShares.new(entity, shares: ipo_share)
+          subject.process_action(action)
+        end
+
+        it 'cannot buy stocks from second company after buying one brown' do
+          ipo_share = corp_0.shares[0]
+
+          market.set_par(corp_0, market.market.last[0]) # 10
+          expect(subject.can_buy?(ipo_share)).to be_truthy
+          entity = subject.current_entity
+          action = Engine::Action::BuyShares.new(subject.current_entity, shares: ipo_share)
+          subject.process_action(action)
+          ipo_share = corp_1.shares[1]
+          expect(subject.current_entity).to eq(entity)
+          expect(subject.can_buy?(ipo_share)).to be_falsey
+        end
       end
     end
   end

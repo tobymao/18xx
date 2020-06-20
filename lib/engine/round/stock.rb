@@ -65,7 +65,13 @@ module Engine
 
         @current_entity.cash >= bundle.price && can_gain?(bundle, @current_entity) &&
           !@players_sold[@current_entity][corporation] &&
-          (@current_actions & self.class::PURCHASE_ACTIONS).none?
+          (can_buy_multiple?(corporation) || !bought?)
+      end
+
+      def can_buy_multiple?(corporation)
+        corporation.buy_multiple? &&
+         @current_actions.none? { |x| x.is_a?(Action::Par) } &&
+         @current_actions.none? { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation != corporation }
       end
 
       def must_sell?
@@ -98,9 +104,10 @@ module Engine
       def can_sell_order?
         case @sell_buy_order
         when :sell_buy_or_buy_sell
-          !(@current_actions.uniq.size == 2 && self.class::PURCHASE_ACTIONS.include?(@current_actions.last))
+          !(@current_actions.uniq(&:class).size == 2 &&
+            self.class::PURCHASE_ACTIONS.include?(@current_actions.last.class))
         when :sell_buy
-          (self.class::PURCHASE_ACTIONS & @current_actions).empty?
+          !bought?
         when :sell_buy_sell
           true
         end
@@ -138,7 +145,7 @@ module Engine
         return if action.is_a?(Action::DiscardTrain)
 
         entity = action.entity
-        @current_actions << action.class
+        @current_actions << action
         @last_to_act = entity
         entity.unpass!
       end
@@ -216,10 +223,14 @@ module Engine
         a < b ? b - a : b - (a - @entities.size)
       end
 
+      def bought?
+        @current_actions.any? { |x| PURCHASE_ACTIONS.include?(x.class) }
+      end
+
       def log_pass(entity)
         return super if @current_actions.empty?
 
-        action = if @current_actions.include?(Action::BuyShares) || @current_actions.include?(Action::Par)
+        action = if bought?
                    'selling'
                  else
                    'buying'
