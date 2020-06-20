@@ -216,7 +216,7 @@ module Engine
           else
             []
           end
-        cost = if action.entity.is_a?(Company) && action.entity.abilities(:tile_lay)['free_tile']
+        cost = if action.entity.is_a?(Company) && action.entity.abilities(:tile_lay)['free']
                  0
                else
                  tile_cost(old_tile, abilities)

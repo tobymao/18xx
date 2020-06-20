@@ -286,7 +286,7 @@ module Engine
             {
                "type":"tile_lay",
                "owner_type":"corporation",
-               "free_tile":"true",
+               "free":true,
                "hexes":[
                   "B8"
                ],
