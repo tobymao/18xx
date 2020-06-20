@@ -474,7 +474,6 @@ module Engine
         "E9",
         "E13",
         "E15",
-        "E19",
         "F4",
         "F8",
         "F10",
@@ -495,6 +494,9 @@ module Engine
         "F16",
         "I11",
         "J6"
+      ],
+      "border=edge:5,type:mountain,cost:40": [
+        "E19"
       ],
       "city=revenue:0": [
         "B16",
@@ -525,7 +527,7 @@ module Engine
         "A15",
         "C7"
       ],
-      "city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
+      "city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;border=edge:2,type:mountain,cost:40": [
         "F20"
       ],
       "city=revenue:10,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_0": [

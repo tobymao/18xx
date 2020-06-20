@@ -183,7 +183,7 @@ class Api
   end
 
   def set_game_state(game, engine, users)
-    active_players = engine.active_players.map(&:name)
+    active_players = engine.active_player_names
     acting = users.select { |u| active_players.include?(u.name) }
 
     game.round = engine.round.name

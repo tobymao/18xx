@@ -197,9 +197,9 @@ module Engine
           'D6' => [10, 10, 10, 10],
         },
         '1882' => {
-          'H4' => [30],
+          'D8' => [30],
           'J10' => [40, 40],
-          'K15' => [{ yellow: 30, brown: 30 }],
+          'O11' => [{ yellow: 30, brown: 30 }],
         },
       }.each do |game_title, specs|
         game = Engine::GAMES_BY_TITLE[game_title].new(%w[p1 p2 p3])

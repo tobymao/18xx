@@ -14,7 +14,6 @@ module View
           text_attrs = {
             fill: 'black',
             transform: 'translate(0 6)',
-            'text-anchor': 'middle',
           }
 
           h(

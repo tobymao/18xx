@@ -424,6 +424,7 @@ module Engine
         60
       ],
       "coordinates": "H6",
+      "city": 0,
       "color": "blue"
     },
     {

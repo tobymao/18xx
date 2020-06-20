@@ -77,12 +77,11 @@ class App < Snabberb::Component
 
     props = {
       style: {
-        padding: '0 1rem',
-        margin: '1rem 0',
+        margin: '0 1rem',
       },
     }
 
-    h(:div, props, [page])
+    h('div#content', props, [page])
   end
 
   def render_game

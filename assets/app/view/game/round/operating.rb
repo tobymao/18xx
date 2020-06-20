@@ -22,6 +22,8 @@ module View
 
           action =
             case round.step
+            when :home_token
+              h(UndoAndPass, pass: false)
             when :company, :track, :token, :token_or_track
               h(UndoAndPass)
             when :route

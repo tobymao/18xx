@@ -153,7 +153,7 @@ module View
             # -rotation on the Slot so its contents are rendered without
             # rotation
             x, y = CITY_SLOT_POSITION[@city.slots]
-            revert_angle = render_location[:angle]
+            revert_angle = render_location[:angle] + slot_rotation
             revert_angle -= angle_for_layout if @num_cities == 1 || !@edge
             h(:g, { attrs: { transform: "rotate(#{slot_rotation})" } }, [
               h(:g, { attrs: { transform: "translate(#{x.round(2)} #{y.round(2)}) rotate(#{-revert_angle})" } }, [

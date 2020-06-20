@@ -167,16 +167,28 @@ module Engine
         @log << "#{action.entity.name} discards #{train.name}"
       end
 
+      # returns true if user must choose home token
       def place_home_token(corporation)
         return unless corporation.next_token # 1882
 
-        hex = @game.hexes.find { |h| h.coordinates == corporation.coordinates }
-        cities = hex.tile.cities
+        hex = @game.hex_by_id(corporation.coordinates)
+
+        tile = hex.tile
+        if tile.reserved_by?(corporation)
+          @log << "#{corporation.name} must choose city for home token"
+          # Needs further changes to support non-operate home token lay
+          raise GameError, 'Unsupported' unless @home_token_timing == :operate
+
+          return
+        end
+
+        cities = tile.cities
         city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
-        return unless city.tokenable?(corporation)
+        token = corporation.find_token_by_type
+        return unless city.tokenable?(corporation, tokens: token)
 
         @log << "#{corporation.name} places a token on #{hex.name}"
-        city.place_token(corporation, corporation.next_token)
+        city.place_token(corporation, token)
       end
 
       private
@@ -229,13 +241,30 @@ module Engine
             []
           end
 
-        cost = tile_cost(old_tile, abilities)
+        cost = tile_cost(old_tile, abilities) + border_cost(tile)
         entity.spend(cost, @game.bank) if cost.positive?
 
         @log << "#{action.entity.name}"\
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile ##{tile.name}"\
          " with rotation #{rotation} on #{hex.name}"
+      end
+
+      def border_cost(tile)
+        hex = tile.hex
+
+        tile.borders.dup.sum do |border|
+          next 0 unless (cost = border.cost)
+
+          edge = border.edge
+          neighbor = hex.neighbors[edge]
+          next 0 if !hex.targeting?(neighbor) || !neighbor.targeting?(hex)
+
+          tile.borders.delete(border)
+          neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
+
+          cost
+        end
       end
 
       def tile_cost(tile, abilities)
