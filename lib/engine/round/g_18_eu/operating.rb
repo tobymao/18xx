@@ -8,6 +8,7 @@ module Engine
   module Round
     module G18EU
       class Operating < Operating
+        include HalfPay
         MINOR_STEPS = %i[
           track
           route
