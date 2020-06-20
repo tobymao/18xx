@@ -456,122 +456,178 @@ module Engine
         "I13"
       ]
     },
-    "white": {
-      "": [
-        "D2",
-        "F2",
-        "H2",
-        "J2",
-        "E3",
-        "I3",
-        "B4",
-        "H4",
-        "J4",
-        "L4",
-        "C5",
-        "G5",
-        "K5",
-        "M5",
-        "F6",
-        "H6",
-        "J6",
-        "L6",
-        "E7",
-        "I7",
-        "K7",
-        "M7",
-        "H8",
-        "E9",
-        "I9",
-        "M9",
-        "B10",
-        "D10",
-        "F10",
-        "H10",
-        "L10",
-        "E11",
-        "K11",
-        "D12",
-        "H12"
-      ],
-      "city=revenue:0": [
-        "C3",
-        "G3",
-        "K3",
-        "D4",
-        "I5",
-        "D6",
-        "G7",
-        "J8",
-        "L8",
-        "G9",
-        "C11",
-        "G11",
-        "J12"
-      ],
-      "town=revenue:0;upgrade=cost:40,terrain:mountain": [
-        "M3"
-      ],
-      "town=revenue:0": [
-        "F4",
-        "L12"
-      ],
-      "town=revenue:0;town=revenue:0": [
-        "F8",
-        "K9",
-        "I11"
-      ]
-    },
-    "gray": {
-      "city=revenue:40;path=a:4,b:_0;path=a:_0,b:5": [
-        "L2"
-      ],
-      "city=revenue:30;path=a:2,b:_0;path=a:_0,b:4": [
-        "N6"
-      ],
-      "path=a:0,b:1": [
-        "C7"
-      ],
-      "city=revenue:30;path=a:0,b:_0;path=a:1,b:_0": [
-        "D8"
-      ],
-      "path=a:3,b:4": [
-        "N8"
-      ],
-      "town=revenue:10;path=a:0,b:_0;path=a:_0,b:4": [
-        "C9"
-      ],
-      "path=a:2,b:4": [
-        "N10"
-      ],
-      "town=revenue:10;path=a:0,b:_0;path=a:_0,b:1": [
-        "A11"
-      ],
-      "town=revenue:10;path=a:2,b:_0;path=a:_0,b:3": [
-        "N12"
-      ],
-      "city=revenue:20;path=a:2,b:_0": [
-        "K13"
-      ]
-    },
-    "yellow": {
-      "city=revenue:0;city=revenue:0;label=OO": [
-        "E5",
-        "M11"
-      ],
-      "city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:4,b:_1;label=R": [
-        "J10"
-      ],
-      "path=a:1,b:3": [
-        "F12"
-      ]
-    },
-    "blue": {
-      "offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:1,b:_0": [
-        "B6"
-      ]
-    }
-  },
+      "white":{
+         "": [
+            "F2",
+            "H2",
+            "J2",
+            "B4",
+            "L4",
+            "K5",
+            "M5",
+            "L6",
+            "M7",
+            "M9",
+            "B10",
+            "L10",
+            "K11",
+            "H12"
+         ],
+         "city=revenue:0": [
+            "G3",
+            "L8",
+            "G11",
+            "J12"
+         ],
+         "city=revenue:0;border=edge:1,type:water,cost:20;border=edge:0,type:water,cost:40": [
+            "C3"
+         ],
+         "city=revenue:0;border=edge:0,type:water,cost:20;border=edge:1,type:water,cost:40;border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40;border=edge:5,type:water,cost:40": [
+            "K3"
+         ],
+         "city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40;border=edge:5,type:water,cost:20": [
+            "D4"
+         ],
+         "city=revenue:0;border=edge:0,type:water,cost:40": [
+            "D6"
+         ],
+         "city=revenue:0;border=edge:3,type:water,cost:40;border=edge:5,type:water,cost:40": [
+            "G7"
+         ],
+         "city=revenue:0;border=edge:2,type:water,cost:40": [
+            "J8"
+         ],
+         "city=revenue:0;border=edge:2,type:water,cost:20;border=edge:3,type:water,cost:40": [
+            "G9"
+         ],
+         "city=revenue:0;border=edge:0,type:water,cost:60;border=edge:5,type:water,cost:60": [
+            "C11"
+         ],
+         "city=revenue:0;border=edge:2,type:water,cost:20;border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40": [
+            "I5"
+         ],
+         "town=revenue:0;upgrade=cost:40,terrain:mountain;border=edge:3,type:water,cost:20": [
+            "M3"
+         ],
+         "border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:20": [
+            "D2",
+            "F6"
+         ],
+         "border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40": [
+            "E3",
+            "J6"
+         ],
+         "border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:20;border=edge:5,type:water,cost:40": [
+            "I3",
+            "E7"
+         ],
+         "border=edge:1,type:water,cost:40;border=edge:2,type:water,cost:40;border=edge:3,type:water,cost:40": [
+            "J4",
+            "H8"
+         ],
+         "border=edge:0,type:water,cost:40": [
+            "C5",
+            "G5"
+         ],
+         "border=edge:0,type:water,cost:40;border=edge:5,type:water,cost:20": [
+            "H4"
+         ],
+         "border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40": [
+            "H6"
+         ],
+         "border=edge:0,type:water,cost:20;border=edge:1,type:water,cost:40;border=edge:4,type:water,cost:40;border=edge:5,type:water,cost:40": [
+            "I7"
+         ],
+         "border=edge:3,type:water,cost:20": [
+            "K7"
+         ],
+         "border=edge:0,type:water,cost:40;border=edge:3,type:water,cost:20;border=edge:4,type:water,cost:40;border=edge:5,type:water,cost:40": [
+            "E9"
+         ],
+         "border=edge:5,type:water,cost:60": [
+            "I9"
+         ],
+         "border=edge:0,type:water,cost:60;border=edge:1,type:water,cost:40;border=edge:5,type:water,cost:40": [
+            "D10"
+         ],
+         "border=edge:2,type:water,cost:40;border=edge:3,type:water,cost:60": [
+            "F10",
+            "E11"
+         ],
+         "border=edge:0,type:water,cost:20": [
+            "H10"
+         ],
+         "border=edge:3,type:water,cost:60;border=edge:2,type:water,cost:60": [
+            "D12"
+         ],
+         "town=revenue:0": [
+            "L12"
+         ],
+         "town=revenue:0;border=edge:3,type:water,cost:40": [
+            "F4"
+         ],
+         "town=revenue:0;town=revenue:0": [
+            "K9"
+         ],
+         "town=revenue:0;town=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40": [
+            "I11"
+         ],
+         "town=revenue:0;town=revenue:0;border=edge:0,type:water,cost:40;border=edge:2,type:water,cost:40;border=edge:3,type:water,cost:40;border=edge:5,type:water,cost:20": [
+            "F8"
+         ]
+      },
+      "gray":{
+         "city=revenue:40;path=a:4,b:_0;path=a:_0,b:5;border=edge:4,type:water,cost:40": [
+            "L2"
+         ],
+         "city=revenue:30;path=a:2,b:_0;path=a:_0,b:4": [
+            "N6"
+         ],
+         "path=a:0,b:1": [
+            "C7"
+         ],
+         "city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;border=edge:0,type:water,cost:40": [
+            "D8"
+         ],
+         "path=a:3,b:4": [
+            "N8"
+         ],
+         "town=revenue:10;path=a:0,b:_0;path=a:_0,b:4;border=edge:0,type:water,cost:20": [
+            "C9"
+         ],
+         "path=a:2,b:4": [
+            "N10"
+         ],
+         "town=revenue:10;path=a:0,b:_0;path=a:_0,b:1": [
+            "A11"
+         ],
+         "town=revenue:10;path=a:2,b:_0;path=a:_0,b:3": [
+            "N12"
+         ],
+         "city=revenue:20;path=a:2,b:_0": [
+            "K13"
+         ]
+      },
+      "yellow":{
+         "city=revenue:0;city=revenue:0;label=OO": [
+            "M11"
+         ],
+            "city=revenue:0;city=revenue:0;label=OO;border=edge:2,type:water,cost:20;border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40": [
+               "E5"
+            ],
+            "city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:4,b:_1;label=R;border=edge:2,type:water,cost:60;border=edge:3,type:water,cost:20;border=edge:4,type:water,cost:40": [
+               "J10"
+            ],
+            "path=a:1,b:3": [
+               "F12"
+            ]
+         },
+         "blue":{
+            "offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:1,b:_0": [
+               "B6"
+            ]
+         }
+      },
   "phases": [
     {
       "name": "2",
