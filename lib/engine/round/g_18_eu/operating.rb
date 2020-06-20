@@ -4,7 +4,6 @@ require_relative '../operating'
 require_relative '../../token'
 require_relative '../half_pay'
 require_relative '../corporation_issue'
-require_relative '../corporation_redeem'
 require_relative '../minor_half_pay'
 
 module Engine
@@ -13,7 +12,6 @@ module Engine
       class Operating < Operating
         include HalfPay
         include CorporationIssue
-        include CorporationRedeem
         include MinorHalfPay
         MINOR_STEPS = %i[
           track
@@ -60,25 +58,7 @@ module Engine
           @current_entity.minor? ? self.class::MINOR_STEPS : self.class::STEPS
         end
 
-        def issuable_shares
-          num_shares = @current_entity.num_player_shares - @current_entity.num_market_shares
-          bundles = @current_entity.bundles_for_corporation(@current_entity)
-          share_price = @game.stock_market.find_share_price(@current_entity, :left).price
 
-          bundles
-            .each { |bundle| bundle.share_price = share_price }
-            .reject { |bundle| bundle.num_shares > num_shares }
-        end
-
-        def redeemable_shares
-          share_price = @game.stock_market.find_share_price(@current_entity, :right).price
-
-          @game
-            .share_pool
-            .bundles_for_corporation(@current_entity)
-            .each { |bundle| bundle.share_price = share_price }
-            .reject { |bundle| @current_entity.cash < bundle.price }
-        end
 
         private
 
