@@ -48,7 +48,7 @@ module Engine
         '1889' => {
           'blank' => %w[7 8 9],
           'city' => %w[5 6 57],
-          'town' => %w[3 58],
+          'town' => %w[3 58 437],
           '3' => %w[],
           '5' => %w[12 14 15 205 206],
           '6' => %w[12 13 14 15 205 206],
@@ -98,10 +98,10 @@ module Engine
 
           aggregate_failures 'tile upgrades' do
             upgrades.keys.each do |t|
-              tile = game.tile_by_id("#{t}-0") || Tile.for(t)
+              tile = game.hex_by_id(t)&.tile || game.tile_by_id("#{t}-0") || Tile.for(t)
 
               upgrades.keys.each do |u|
-                upgrade = game.tile_by_id("#{u}-0") || Tile.for(u)
+                upgrade = game.hex_by_id(u)&.tile || game.tile_by_id("#{u}-0") || Tile.for(u)
 
                 expected_included = upgrades[t].include?(u)
                 expected_string = "#{t} #{expected_included ? '<' : '!<'} #{u}"

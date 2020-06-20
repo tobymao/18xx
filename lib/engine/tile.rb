@@ -14,7 +14,7 @@ module Engine
   class Tile
     include Config::Tile
 
-    attr_accessor :hex, :legal_rotations, :location_name, :name, :index, :reservations
+    attr_accessor :hex, :icons, :index, :layable_by, :legal_rotations, :location_name, :name, :reservations
     attr_reader :borders, :cities, :color, :edges, :junction, :label, :nodes,
                 :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers
 
@@ -96,6 +96,12 @@ module Engine
         junction = Part::Junction.new
         cache << junction
         junction
+      when 'icon'
+        Part::Icon.new(params['image'],
+                       params.fetch('name', params['image']),
+                       params.fetch('sticky', 'true') == 'true',)
+      when 'layable_by'
+        Part::LayableBy.new(params.split('|'))
       end
     end
 
@@ -116,12 +122,14 @@ module Engine
       @stops = nil
       @edges = nil
       @junction = nil
+      @icons = []
       @location_name = location_name
       @legal_rotations = []
       @blockers = []
       @reservations = []
       @preprinted = preprinted
       @index = index
+      @layable_by = :any
 
       separate_parts
     end
@@ -292,6 +300,10 @@ module Engine
       @revenue_to_render ||= stops.map(&:revenue_to_render)
     end
 
+    def layable_by?(entity_name)
+      (@layable_by == :any) || @layable_by.include?(entity_name)
+    end
+
     private
 
     def separate_parts
@@ -312,6 +324,10 @@ module Engine
           @borders << part
         elsif part.junction?
           @junction = part
+        elsif part.icon?
+          @icons << part
+        elsif part.layable_by?
+          @layable_by = part.entities
         else
           raise "Part #{part} not separated."
         end

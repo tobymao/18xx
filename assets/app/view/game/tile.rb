@@ -76,6 +76,8 @@ module View
         @tile.reservations.each { |x| children << render_tile_part(Part::Reservation, reservation: x) }
         children << h(Part::Borders, tile: @tile) if @tile.borders.any?
 
+        children << render_tile_part(Part::Icons) if @tile.icons.any?
+
         children.flatten!
 
         h('g.tile', children)

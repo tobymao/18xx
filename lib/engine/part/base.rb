@@ -85,6 +85,14 @@ module Engine
         false
       end
 
+      def icon?
+        false
+      end
+
+      def layable_by?
+        false
+      end
+
       def inspect
         "<#{self.class.name}: hex: #{hex&.name}>"
       end

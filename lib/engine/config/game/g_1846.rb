@@ -463,7 +463,6 @@ module Engine
         "F6",
         "G5",
         "H6",
-        "J4",
         "B14",
         "C11",
         "C13",
@@ -507,7 +506,6 @@ module Engine
       ],
       "city=revenue:0": [
         "C9",
-        "D14",
         "E11",
         "G3",
         "G7",
@@ -517,6 +515,9 @@ module Engine
       ],
       "city=revenue:0;border=edge:4,type:mountain,cost:40": [
         "B16"
+      ],
+      "city=revenue:0;icon=image:port": [
+        "D14"
       ],
       "city=revenue:0;label=Z": [
         "E17"
@@ -559,13 +560,13 @@ module Engine
       ]
     },
     "red": {
-      "offboard=revenue:yellow_40|brown_10;path=a:4,b:_0": [
+      "offboard=revenue:yellow_40|brown_10;path=a:4,b:_0;icon=image:port;icon=image:port": [
         "B8"
       ],
       "offboard=revenue:yellow_30|brown_50,groups:East;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:40 ": [
         "B18"
       ],
-      "offboard=revenue:yellow_20|brown_40;path=a:5,b:_0;label=W": [
+      "offboard=revenue:yellow_20|brown_40;path=a:5,b:_0;label=W;icon=image:port": [
         "C5"
       ],
       "offboard=revenue:yellow_40|brown_60,groups:East;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:60": [
@@ -590,7 +591,7 @@ module Engine
       "offboard=revenue:yellow_20|brown_40,groups:East;path=a:2,b:_0;label=E": [
         "H20"
       ],
-      "offboard=revenue:yellow_50|brown_70;path=a:3,b:_0;path=a:4,b:_0;label=W": [
+      "offboard=revenue:yellow_50|brown_70;path=a:3,b:_0;path=a:4,b:_0;label=W;icon=image:port;icon=image:meat": [
         "I1"
       ],
       "offboard=revenue:yellow_50|brown_70;path=a:2,b:_0;path=a:3,b:_0": [
@@ -601,13 +602,13 @@ module Engine
       "city=revenue:40,slots:2;path=a:1,b:_0;path=a:3,b:_0;label=Z;upgrade=cost:40,terrain:water;border=edge:4,type:mountain,cost:60": [
         "C15"
       ],
-      "city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;path=a:0,b:_0;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;label=Chi": [
+      "city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;path=a:0,b:_0;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;label=Chi;icon=image:meat": [
         "D6"
       ],
       "city=revenue:10,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0": [
         "D20"
       ],
-      "city=revenue:10;path=a:5,b:_0;border=edge:1,type:water,cost:20;border=edge:2,type:water,cost:40;border=edge:4,type:mountain,cost:20": [
+      "city=revenue:10;path=a:5,b:_0;border=edge:1,type:water,cost:20;border=edge:2,type:water,cost:40;border=edge:4,type:mountain,cost:20;icon=image:port;icon=image:port": [
         "G19"
       ]
     },

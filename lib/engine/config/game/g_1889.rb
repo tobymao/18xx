@@ -502,11 +502,13 @@ module Engine
         "C10"
       ],
       "town=revenue:0": [
-        "J5",
+        "J5"
+      ],
+      "town=revenue:0;icon=image:port,sticky:false": [
+        "B11",
         "G10",
-        "J9",
         "I12",
-        "B11"
+        "J9"
       ],
       "upgrade=cost:80,terrain:water": [
         "K6"
