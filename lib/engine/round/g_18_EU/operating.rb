@@ -2,6 +2,7 @@
 
 require_relative '../operating'
 require_relative '../../token'
+require_relative '../half_pay'
 
 module Engine
   module Round
@@ -114,14 +115,6 @@ module Engine
             @log << "#{entity.name} receives #{@game.format_currency(amount)}"
             @bank.spend(amount, entity)
           end
-        end
-
-        def half(revenue)
-          withheld = revenue / 2 / 10 * 10
-          @bank.spend(withheld, @current_entity)
-          @log << "#{@current_entity.name} runs for #{@game.format_currency(revenue)} and pays half"
-          @log << "#{@current_entity.name} witholds #{@game.format_currency(withheld)}"
-          payout(revenue - withheld)
         end
 
         def change_share_price(_direction, revenue = 0)
