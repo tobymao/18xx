@@ -21,12 +21,20 @@ module Engine
           :yellow
         end
 
-      SharePrice.new([row, column], price: price, can_par: can_par, color: color,
-                                    unlimited_colors: unlimited_colors, multiple_buy_colors: multiple_buy_colors)
+      SharePrice.new([row, column],
+                     price: price,
+                     can_par: can_par,
+                     color: color,
+                     unlimited_colors: unlimited_colors,
+                     multiple_buy_colors: multiple_buy_colors)
     end
 
-    def initialize(coordinates, price:, can_par: false, color: nil,
-                   unlimited_colors: [], multiple_buy_colors: [])
+    def initialize(coordinates,
+                   price:,
+                   can_par: false,
+                   color: nil,
+                   unlimited_colors: [],
+                   multiple_buy_colors: [])
       @coordinates = coordinates
       @price = price
       @color = color
