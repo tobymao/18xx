@@ -74,9 +74,10 @@ module View
         children << render_tile_part(Part::Blocker) if should_render_blocker?
         children << render_tile_part(Part::LocationName) if @tile.location_name && (@tile.cities.size <= 1)
         @tile.reservations.each { |x| children << render_tile_part(Part::Reservation, reservation: x) }
-        children << h(Part::Borders, tile: @tile) if @tile.borders.any?
-
         children << render_tile_part(Part::Icons) if @tile.icons.any?
+
+        # borders should always be the top layer
+        children << h(Part::Borders, tile: @tile) if @tile.borders.any?
 
         children.flatten!
 

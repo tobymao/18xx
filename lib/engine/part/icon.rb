@@ -11,7 +11,7 @@ module Engine
       def initialize(image, name = nil, sticky = true, preprinted = true)
         @image = "/icons/#{image}.svg"
         @name = name || image
-        @sticky = sticky
+        @sticky = !!sticky
         @preprinted = preprinted
       end
 

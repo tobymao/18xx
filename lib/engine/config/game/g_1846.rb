@@ -516,7 +516,7 @@ module Engine
       "city=revenue:0;border=edge:4,type:mountain,cost:40": [
         "B16"
       ],
-      "city=revenue:0;icon=image:port": [
+      "city=revenue:0;icon=image:port,sticky:1": [
         "D14"
       ],
       "city=revenue:0;label=Z": [
@@ -602,13 +602,13 @@ module Engine
       "city=revenue:40,slots:2;path=a:1,b:_0;path=a:3,b:_0;label=Z;upgrade=cost:40,terrain:water;border=edge:4,type:mountain,cost:60": [
         "C15"
       ],
-      "city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;path=a:0,b:_0;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;label=Chi;icon=image:meat": [
+      "city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;path=a:0,b:_0;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;label=Chi;icon=image:meat,sticky:1": [
         "D6"
       ],
       "city=revenue:10,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0": [
         "D20"
       ],
-      "city=revenue:10;path=a:5,b:_0;border=edge:1,type:water,cost:20;border=edge:2,type:water,cost:40;border=edge:4,type:mountain,cost:20;icon=image:port;icon=image:port": [
+      "city=revenue:10;path=a:5,b:_0;border=edge:1,type:water,cost:20;border=edge:2,type:water,cost:40;border=edge:4,type:mountain,cost:20;icon=image:port,sticky:1;icon=image:port,sticky:1": [
         "G19"
       ]
     },

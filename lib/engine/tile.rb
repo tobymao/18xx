@@ -97,9 +97,7 @@ module Engine
         cache << junction
         junction
       when 'icon'
-        Part::Icon.new(params['image'],
-                       params.fetch('name', params['image']),
-                       params.fetch('sticky', 'true') == 'true',)
+        Part::Icon.new(params['image'], params['name'], params['sticky'])
       when 'layable_by'
         Part::LayableBy.new(params.split('|'))
       end

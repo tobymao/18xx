@@ -1,3 +1,4 @@
+# coding: utf-8
 # frozen_string_literal: true
 
 # File original exported from 18xx-maker/export-rb
@@ -504,7 +505,7 @@ module Engine
       "town=revenue:0": [
         "J5"
       ],
-      "town=revenue:0;icon=image:port,sticky:false": [
+      "town=revenue:0;icon=image:port": [
         "B11",
         "G10",
         "I12",

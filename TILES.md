@@ -70,8 +70,8 @@ game config/code:
     - **image** - *required* - name of image, will be rendered with file at
       `public/icons/#{image}.svg`
     - **name** - name of this icon; default is value given for `image`
-    - **sticky** - `true` indicates the icon should remain visible when a tile
-      upgrade is placed on this hex (default: `true`)
+    - **sticky** - `1` indicates the icon should remain visible when a tile
+      upgrade is placed on this hex (default: `false`)
 - **layable_by** - list of "entities" (companies and corporations) that are
   allowed to lay this tile, specified by a `|`-separated list of
   company/corporation syms
