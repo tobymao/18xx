@@ -2,11 +2,17 @@
 
 require_relative '../operating'
 require_relative '../../token'
+require_relative '../half_pay'
+require_relative '../corporation_issue'
+require_relative '../minor_half_pay'
 
 module Engine
   module Round
     module G1846
       class Operating < Operating
+        include HalfPay
+        include CorporationIssue
+        include MinorHalfPay
         MINOR_STEPS = %i[
           token_or_track
           route
@@ -65,26 +71,6 @@ module Engine
 
         def can_place_token?
           @step == :token_or_track && !skip_token
-        end
-
-        def issuable_shares
-          num_shares = @current_entity.num_player_shares - @current_entity.num_market_shares
-          bundles = @current_entity.bundles_for_corporation(@current_entity)
-          share_price = @game.stock_market.find_share_price(@current_entity, :left).price
-
-          bundles
-            .each { |bundle| bundle.share_price = share_price }
-            .reject { |bundle| bundle.num_shares > num_shares }
-        end
-
-        def redeemable_shares
-          share_price = @game.stock_market.find_share_price(@current_entity, :right).price
-
-          @game
-            .share_pool
-            .bundles_for_corporation(@current_entity)
-            .each { |bundle| bundle.share_price = share_price }
-            .reject { |bundle| @current_entity.cash < bundle.price }
         end
 
         def connected_hexes
@@ -158,16 +144,6 @@ module Engine
           skip_track && skip_token
         end
 
-        def process_sell_shares(action)
-          return super if action.entity.player?
-
-          @game.share_pool.sell_shares(action.bundle)
-        end
-
-        def process_buy_shares(action)
-          @game.share_pool.buy_shares(@current_entity, action.bundle)
-        end
-
         def process_buy_company(action)
           super
 
@@ -188,19 +164,6 @@ module Engine
 
         def tile_cost(tile, abilities)
           [@game.class::TILE_COST, tile.upgrade_cost(abilities)].max
-        end
-
-        def payout(revenue)
-          return super if @current_entity.corporation?
-
-          @log << "#{@current_entity.name} pays out #{@game.format_currency(revenue)}"
-
-          amount = revenue / 2
-
-          [@current_entity, @current_entity.owner].each do |entity|
-            @log << "#{entity.name} receives #{@game.format_currency(amount)}"
-            @bank.spend(amount, entity)
-          end
         end
 
         def potential_tiles(hex)
@@ -239,15 +202,8 @@ module Engine
           false
         end
 
-        def half(revenue)
-          withheld = revenue / 2 / 10 * 10
-          @bank.spend(withheld, @current_entity)
-          @log << "#{@current_entity.name} runs for #{@game.format_currency(revenue)} and pays half"
-          @log << "#{@current_entity.name} witholds #{@game.format_currency(withheld)}"
-          payout(revenue - withheld)
-        end
+        def change_share_price(_direction, revenue = 0)
 
-        def change_share_price(revenue)
           return if @current_entity.minor?
 
           price = @current_entity.share_price.price
