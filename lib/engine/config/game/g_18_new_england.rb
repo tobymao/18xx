@@ -107,7 +107,52 @@ module Engine
     "70": 2,
     "611": 3,
     "216": 2,
-    "911": 4
+    "911": 4,
+    "X1": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:50;city=revenue:50;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_1;path=a:5,b:_1;label=B"
+    },
+    "X2": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=H"
+    },
+    "X3": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_2;label=NH"
+    },
+    "X4": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:70,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B"
+    },
+    "X5": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=H"
+    },
+    "X6": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NH"
+    },
+    "X7": {
+      "count": 1,
+      "color": "gray",
+      "code": "city=revenue:100,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B"
+    },
+    "X8": {
+      "count": 1,
+      "color": "gray",
+      "code": "city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=H"
+    },
+    "X9": {
+      "count": 1,
+      "color": "gray",
+      "code": "city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NH"
+    }
   },
   "market": [
     [
@@ -593,13 +638,8 @@ module Engine
     },
     "gray": {
       "path=a:4,b:5": [
-        "A13"
-      ],
-      "path=a:4,b:5": [
+        "A13",
         "B4"
-      ],
-      "path=a:4,b:5": [
-        "A13"
       ],
       "path=a:2,b:3": [
         "E17"

@@ -14,8 +14,11 @@ module Engine
       GAME_DESIGNER = 'David G. D. Hecht'
 
       SELL_BUY_ORDER = :sell_buy_sell
-
+      TRACK_RESTRICTION = :permissive
       TILE_RESERVATION_BLOCKS_OTHERS = true
+      def operating_round(round_num)
+        Round::G1836Jr30::Operating.new(@corporations, game: self, round_num: round_num)
+      end
     end
   end
 end

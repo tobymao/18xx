@@ -24,7 +24,10 @@ module Engine
           true
         end
 
-      correct_owner_type ? ability : nil
+      return nil unless correct_owner_type
+
+      yield ability if block_given?
+      ability
     end
 
     def remove_ability(type)

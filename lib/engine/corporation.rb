@@ -139,14 +139,21 @@ module Engine
     end
 
     def abilities(type)
+      abilities = []
+
       if (ability = super)
-        yield ability, self
+        abilities << ability
+        yield ability, self if block_given?
       end
 
       @companies.each do |company|
-        ability = company.abilities(type)
-        yield ability, company if ability
+        if (ability = company.abilities(type))
+          abilities << ability
+          yield ability, company if block_given?
+        end
       end
+
+      abilities
     end
   end
 end

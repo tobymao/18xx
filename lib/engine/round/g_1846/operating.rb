@@ -123,7 +123,15 @@ module Engine
         end
 
         def skip_track
-          @current_entity.cash < @game.class::TILE_COST || count_actions(Action::LayTile) > 1
+          free = false
+
+          @current_entity.abilities(:tile_lay) do |ability|
+            ability[:hexes].each do |hex_id|
+              free = true if ability[:free] && @game.hex_by_id(hex_id).tile.preprinted
+            end
+          end
+
+          (!free && @current_entity.cash < @game.class::TILE_COST) || count_actions(Action::LayTile) > 1
         end
 
         def skip_issue
@@ -213,7 +221,7 @@ module Engine
           false
         end
 
-        def change_share_price(_direction, revenue = 0)
+        def change_share_price(revenue = 0)
           return if @current_entity.minor?
 
           price = @current_entity.share_price.price

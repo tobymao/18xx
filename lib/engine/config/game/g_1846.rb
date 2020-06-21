@@ -33,7 +33,7 @@ module Engine
   },
   "capitalization": "incremental",
   "layout": "pointy",
-  "mustSellInBlocks": false,
+  "mustSellInBlocks": true,
   "locationNames": {
     "B8": "Holland",
     "B16": "Port Huron",
@@ -386,6 +386,24 @@ module Engine
         80,
         0
       ],
+      "abilities": [
+         {
+            "type":"tile_lay",
+            "free":true,
+            "hexes":[
+               "E5",
+               "F6",
+               "G5",
+               "H6",
+               "J4"
+            ],
+            "tiles": [
+              "7",
+              "8",
+              "9"
+            ]
+        }
+      ],
       "coordinates": "K3",
       "color": "green",
       "always_market_price": true
@@ -459,10 +477,6 @@ module Engine
   "hexes": {
     "white": {
       "": [
-        "E5",
-        "F6",
-        "G5",
-        "H6",
         "B14",
         "C11",
         "C13",
@@ -495,13 +509,19 @@ module Engine
       "border=edge:5,type:mountain,cost:40": [
         "E19"
       ],
-        "border=edge:4,type:water,cost:40": [
+      "icon=image:1846/ic": [
+        "E5",
+        "F6",
+        "G5",
+        "H6"
+      ],
+      "border=edge:4,type:water,cost:40;icon=image:1846/ic": [
         "J4"
       ],
-           "border=edge:1,type:water,cost:40": [
+      "border=edge:1,type:water,cost:40": [
         "J6"
       ],
-               "border=edge:3,type:water,cost:40": [
+      "border=edge:3,type:water,cost:40": [
         "I11"
       ],
       "city=revenue:0": [
@@ -591,7 +611,7 @@ module Engine
       "offboard=revenue:yellow_20|brown_40,groups:East;path=a:2,b:_0;label=E": [
         "H20"
       ],
-      "offboard=revenue:yellow_50|brown_70;path=a:3,b:_0;path=a:4,b:_0;label=W;icon=image:port;icon=image:meat": [
+      "offboard=revenue:yellow_50|brown_70;path=a:3,b:_0;path=a:4,b:_0;label=W;icon=image:port;icon=image:1846/meat": [
         "I1"
       ],
       "offboard=revenue:yellow_50|brown_70;path=a:2,b:_0;path=a:3,b:_0": [
@@ -602,7 +622,7 @@ module Engine
       "city=revenue:40,slots:2;path=a:1,b:_0;path=a:3,b:_0;label=Z;upgrade=cost:40,terrain:water;border=edge:4,type:mountain,cost:60": [
         "C15"
       ],
-      "city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;path=a:0,b:_0;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;label=Chi;icon=image:meat,sticky:1": [
+      "city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;path=a:0,b:_0;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;label=Chi;icon=image:1846/meat,sticky:1": [
         "D6"
       ],
       "city=revenue:10,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0": [
