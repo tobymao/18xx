@@ -221,7 +221,7 @@ module Engine
           false
         end
 
-        def change_share_price(_direction, revenue = 0)
+        def change_share_price(revenue = 0)
           return if @current_entity.minor?
 
           price = @current_entity.share_price.price
