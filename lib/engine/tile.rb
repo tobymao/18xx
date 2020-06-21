@@ -104,7 +104,7 @@ module Engine
     # rotation 0-5
     def initialize(name, color:, parts:, rotation: 0, preprinted: false, index: 0, location_name: nil)
       @name = name
-      @color = color
+      @color = color.to_sym
       @parts = parts
       @rotation = rotation
       @cities = []

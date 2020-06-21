@@ -92,7 +92,7 @@ module Engine
         next if company.closed?
         next unless (ability = company.abilities(:close))
         next if ability[:when] != :train
-        next if entity.name != ability[:corporation]
+        next if entity.name != ability[:corporation].to_s
 
         company.close!
         @log << "#{company.name} closes"
