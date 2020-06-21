@@ -27,7 +27,7 @@ module Engine
           'city' => @city.id,
           'slot' => @slot,
           'corporation' => @token.corporation.id,
-          'token' => @token.corporation.tokens.find_index(@token),
+          'token' => @token.corporation.tokens.index(@token),
         }
       end
     end
