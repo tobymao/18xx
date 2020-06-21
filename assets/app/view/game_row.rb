@@ -31,7 +31,8 @@ module View
       props = {
         style: {
           display: 'grid',
-          grid: '1fr / 10rem 4rem 4rem',
+          grid: '1fr / minmax(10rem, auto) repeat(2, minmax(3rem, auto)) 1fr',
+          gap: '1rem',
           alignItems: 'center',
         },
       }
