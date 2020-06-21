@@ -15,6 +15,10 @@ module Engine
 
       SELL_BUY_ORDER = :sell_buy_sell
       TRACK_RESTRICTION = :permissive
+
+      def operating_round(round_num)
+        Round::G1836Jr30::Operating.new(@corporations, game: self, round_num: round_num)
+      end
     end
   end
 end
