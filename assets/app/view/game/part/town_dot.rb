@@ -14,6 +14,14 @@ module View
         needs :tile
         needs :town
 
+        REVENUE_DISPLACEMENT = 42
+        REVENUE_ANGLE = -60
+
+        REVENUE_REGIONS = {
+          flat: [9, 16],
+          pointy: [8, 9],
+        }.freeze
+
         CENTER_TOWN = [
           {
             region_weights: CENTER,
@@ -49,8 +57,27 @@ module View
           @tile.towns.size > 1 ? OFFSET_TOWNS : CENTER_TOWN
         end
 
+        def render_revenue
+          revenues = @tile.towns.first.revenue.values.uniq
+          return unless revenues.one?
+
+          revenue = revenues.first
+
+          angle = layout == :pointy ? -60 : 0
+
+          increment_weight_for_regions(REVENUE_REGIONS[layout])
+          h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
+              h(:g, { attrs: { transform: "translate(#{REVENUE_DISPLACEMENT} 0) rotate(#{-angle})" } }, [
+                  h(Part::SingleRevenue,
+                    revenue: revenue,
+                    transform: rotation_for_layout),
+                ]),
+            ])
+        end
+
         def render_part
           children = [h(:circle, attrs: { transform: translate, fill: @color, r: 10 })]
+          children << render_revenue
           children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
           h(:g, children)
         end

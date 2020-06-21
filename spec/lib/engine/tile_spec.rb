@@ -169,6 +169,13 @@ module Engine
             0 => [0, 1, 4, 5],
           },
         },
+        {
+          desc: "18Carolina's G19 hex (Wilmington)",
+          code: 'city=revenue:30;city=revenue:0;path=a:1,b:_0;label=C',
+          expected: {
+            0 => [1, 4],
+          },
+        },
       ].each do |spec|
         describe "with #{spec[:desc]}" do
           tile = Tile.from_code('name', 'color', spec[:code])

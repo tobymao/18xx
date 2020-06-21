@@ -191,6 +191,7 @@ module Engine
             100
          ],
          "coordinates":"G19",
+         "city": 0,
          "color":"deepPink"
       },
       {
@@ -233,6 +234,7 @@ module Engine
             100
          ],
          "coordinates":"G19",
+         "city": 1,
          "color":"yellow",
          "text_color":"black"
       },
@@ -435,7 +437,7 @@ module Engine
          "city=revenue:0;label=C;icon=image:18_carolinas/sc,sticky:1":[
             "J12"
          ],
-         "city=revenue:0;city=revenue:0;path=a:1,b:_0;label=C;icon=image:18_carolinas/ncsc,sticky:1":[
+         "city=revenue:30;city=revenue:0;path=a:1,b:_0;label=C;icon=image:18_carolinas/ncsc,sticky:1":[
             "G19"
          ]
       },
