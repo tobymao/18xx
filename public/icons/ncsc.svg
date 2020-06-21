@@ -1,0 +1,28 @@
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="40" viewBox="0 0 40 40">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        fill: #fdba12;
+      }
+
+      .cls-3 {
+        clip-path: url(#clip-path);
+      }
+
+      .cls-4 {
+        fill: #00a651;
+      }
+    </style>
+    <clipPath id="clip-path">
+      <polygon class="cls-1" points="39.92 0.04 -0.09 40.39 -21.82 7.91 1.35 -16.81 39.92 0.04"/>
+    </clipPath>
+  </defs>
+  <circle class="cls-2" cx="20" cy="20" r="19.62"/>
+  <g class="cls-3">
+    <circle class="cls-4" cx="20.08" cy="20" r="19.62"/>
+  </g>
+</svg>
