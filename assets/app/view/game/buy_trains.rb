@@ -57,7 +57,7 @@ module View
         @depot = round.depot
 
         available = round.buyable_trains.group_by(&:owner)
-        depot_trains = available.delete(@depot)
+        depot_trains = available.delete(@depot) || []
         other_corp_trains = available.sort_by { |c, _| c.owner == @corporation.owner ? 0 : 1 }
         children = []
 
