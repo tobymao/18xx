@@ -55,7 +55,6 @@ module View
           if @game.round.step == :reposition_token
             # There should only be one token in the city
             token = @city.tile.cities.flat_map(&:tokens).find(&:itself)
-            puts token
             action = Engine::Action::MoveToken.new(
               @game.current_entity,
               city: @city,
