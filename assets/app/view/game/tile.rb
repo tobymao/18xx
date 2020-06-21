@@ -21,21 +21,6 @@ module View
         h(part_class, region_use: @region_use, tile: @tile, **kwargs)
       end
 
-      def should_render_blocker?
-        blocker = @tile.blockers.first
-
-        # blocking company should exist...
-        return false if blocker.nil?
-
-        # ...and be open
-        return false if blocker.closed?
-
-        # ...and not have been sold into a corporation yet
-        return false if blocker.owned_by_corporation?
-
-        true
-      end
-
       # if false, then the revenue is rendered by Part::Cities or Part::Towns
       def should_render_revenue?
         revenue = @tile.revenue_to_render
@@ -71,7 +56,7 @@ module View
         children << render_tile_part(Part::Label) if @tile.label
 
         children << render_tile_part(Part::Upgrades) if @tile.upgrades.any?
-        children << render_tile_part(Part::Blocker) if should_render_blocker?
+        children << render_tile_part(Part::Blocker)
         children << render_tile_part(Part::LocationName) if @tile.location_name && (@tile.cities.size <= 1)
         @tile.reservations.each { |x| children << render_tile_part(Part::Reservation, reservation: x) }
         children << h(Part::Borders, tile: @tile) if @tile.borders.any?
