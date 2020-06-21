@@ -532,18 +532,26 @@ module Engine
          "blank":[
             "A11",
             "B12",
-            "C7",
-            "C9",
             "C11",
             "D12",
             "E9",
-            "G3",
-            "G5",
             "H8",
             "I5",
             "I7",
             "K5",
             "J4"
+         ],
+         "border=edge:4,type:impassable":[
+            "C7"
+         ],
+         "border=edge:1,type:impassable":[
+            "C9"
+         ],
+         "border=edge:3,type:impassable":[
+            "G3"
+         ],
+         "border=edge:2,type:impassable;border=edge:3,type:impassable":[
+            "G5"
          ],
          "town=revenue:0;town=revenue:0;upgrade=cost:80,terrain:water":[
             "B8"
@@ -562,10 +570,10 @@ module Engine
             "G9",
             "G11"
          ],
-         "town=revenue:0;upgrade=cost:40,terrain:water":[
+         "town=revenue:0;upgrade=cost:40,terrain:water;border=edge:0,type:impassable;border=edge:5,type:impassable":[
             "F4"
          ],
-         "upgrade=cost:80,terrain:water":[
+         "upgrade=cost:80,terrain:water;border=edge:0,type:impassable":[
             "F6"
          ],
          "town=revenue:0":[

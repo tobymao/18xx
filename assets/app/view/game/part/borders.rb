@@ -59,6 +59,8 @@ module View
               :brown
             when :water
               :blue
+            when :impassable
+              :red
             end
 
           @user&.dig(:settings, color) || Lib::Hex::COLOR.fetch(color)
