@@ -54,8 +54,7 @@ module Engine
           next false if !free && t.price > corporation.cash
           next false if @tile.cities.any? { |c| c.tokened_by?(t.corporation) }
           next true if @reservations.index(corporation.name)
-
-          next false if @tile.reservations.count { |x| corporation.name != x } >= @tile.cities.sum(&:available_slots)
+          next false if @tile.token_blocked_by_reservation?(corporation)
 
           true
         end

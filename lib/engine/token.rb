@@ -14,12 +14,22 @@ module Engine
       @city = nil
     end
 
-    def swap!(other_token)
+    def remove!
       @city.tokens.map! { |t| t == self ? nil : t }
+    end
+
+    def swap!(other_token)
+      remove!
       corporation = other_token.corporation
       return unless @city.tokenable?(corporation, free: true)
 
       @city.place_token(corporation, other_token)
+    end
+
+    def move!(new_city)
+      remove!
+
+      new_city.place_token(@corporation, self, free: true)
     end
   end
 end

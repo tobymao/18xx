@@ -76,6 +76,17 @@ module Engine
             expect(subject.tokenable?(corporation)).to be true
           end
         end
+        context '2 city tile with 1830/1836Jr30 rules' do
+          subject { Tile.for('128', index: 0, reservation_blocks: true).cities[0] } # 2 city tile
+          it 'disallows with different corp reservation on tile' do
+            subject.tile.add_reservation!(corporation2.name, nil)
+            expect(subject.tokenable?(corporation)).to be false
+          end
+          it 'allows with same corp reservation on tile' do
+            subject.tile.add_reservation!(corporation.name, nil)
+            expect(subject.tokenable?(corporation)).to be true
+          end
+        end
       end
 
       describe '#exits' do
