@@ -339,7 +339,8 @@ module Engine
           ],
           "hexes": [
             "D2"
-          ]
+          ],
+          "token_price": 0
         }
       ]
     },

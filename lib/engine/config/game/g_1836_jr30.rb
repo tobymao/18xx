@@ -321,7 +321,8 @@ module Engine
                 ],
                "hexes":[
                   "J8"
-               ]
+               ],
+               "token_price": 0
             }
          ]
       },

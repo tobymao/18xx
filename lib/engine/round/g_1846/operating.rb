@@ -74,31 +74,6 @@ module Engine
           @step == :token_or_track && !skip_token
         end
 
-        def connected_hexes
-          hexes = {}
-
-          @current_entity.abilities(:token) do |ability, _|
-            ability[:hexes].each do |id|
-              hex = @game.hex_by_id(id)
-              hexes[hex] = hex.neighbors.keys
-            end
-          end
-
-          super.merge(hexes)
-        end
-
-        def connected_nodes
-          nodes = {}
-
-          @current_entity.abilities(:token) do |ability, _|
-            ability[:hexes].each do |id|
-              @game.hex_by_id(id).tile.cities.each { |c| nodes[c] = true }
-            end
-          end
-
-          super.merge(nodes)
-        end
-
         private
 
         def ignore_action?(action)
@@ -186,39 +161,9 @@ module Engine
         end
 
         def potential_tiles(hex)
-          return [] if used_teleport(hex) && !connected(hex)
+          return [] unless connected_hexes[hex]
 
           super
-        end
-
-        def place_token(action)
-          hex = action.city.hex
-
-          if used_teleport(hex)
-            higher =
-              case @current_entity.id
-              when 'B&O'
-                100
-              when 'PRR'
-                60
-              end
-            action.token.price = connected(hex) ? 40 : higher
-            @current_entity.remove_ability(:token)
-          end
-
-          super
-        end
-
-        def connected(hex)
-          @graph.connected_hexes(@current_entity)[hex]
-        end
-
-        def used_teleport(hex)
-          @current_entity.abilities(:token) do |ability, _|
-            return true if ability[:hexes].include?(hex.id)
-          end
-
-          false
         end
 
         def change_share_price(revenue = 0)

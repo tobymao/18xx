@@ -280,10 +280,17 @@ module Engine
       ],
       "abilities": [
         {
-          "type": "token",
+          "type": "teleport",
+          "tiles": ["5", "6", "57"],
           "hexes": [
             "E11"
-          ]
+          ],
+          "token_price": 60
+        },
+        {
+          "type": "discounted_token",
+          "hex": "E11",
+          "price": 40
         }
       ],
       "coordinates": "F20",
@@ -318,11 +325,17 @@ module Engine
       ],
       "abilities": [
         {
-          "type": "token",
-          "tiles": [],
+          "type": "teleport",
+          "tiles": ["291", "292", "293"],
           "hexes": [
             "H12"
-          ]
+          ],
+          "token_price": 100
+        },
+        {
+          "type": "discounted_token",
+          "hex": "H12",
+          "price": 40
         }
       ],
       "coordinates": "G19",
@@ -384,7 +397,14 @@ module Engine
         0,
         80,
         80,
-        0
+        80
+      ],
+      "abilities": [
+        {
+          "type": "discounted_token",
+          "hex": "I5",
+          "price": 40
+        }
       ],
       "abilities": [
          {

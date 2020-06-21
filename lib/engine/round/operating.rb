@@ -67,7 +67,11 @@ module Engine
         @current_routes = []
         @current_actions = []
         @teleported = false
+<<<<<<< HEAD
         @ambiguous_hex_token = []
+=======
+        @teleport_token_price = 0
+>>>>>>> 5e5eed3... Fixes 1846 token teleport and discount powers.
 
         payout_companies
         @entities.each { |c| place_home_token(c) } if @home_token_timing == :operating_round
@@ -307,10 +311,11 @@ module Engine
           raise GameError, "#{hex_id} is blocked by #{company.name}" if ability[:hexes].include?(hex_id)
         end
 
-        lay_tile(action)
         @current_entity.abilities(:teleport) do |ability, _|
-          @teleported = ability[:hexes].include?(hex_id) &&
-          ability[:tiles].include?(action.tile.name)
+          if ability[:hexes].include?(hex_id) && ability[:tiles].include?(action.tile.name)
+            @teleported = true
+            @teleport_token_price = ability[:token_price] || 0
+          end
         end
 
         new_tile = action.hex.tile
@@ -323,6 +328,7 @@ module Engine
           @ambiguous_hex_token = [action.hex, token]
           token.remove!
         end
+        lay_tile(action)
       end
 
       def process_place_token(action)
@@ -557,6 +563,7 @@ module Engine
         entity = action.entity
         hex = action.city.hex
         allow_unconnected = @teleported || @step == :home_token
+
         if !@game.loading && !allow_unconnected && !connected_nodes[action.city]
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
@@ -564,9 +571,10 @@ module Engine
         token = action.token
         raise GameError, 'Token is already used' if token.used
 
-        price = token.price || 0
-        action.city.place_token(entity, token, free: @teleported)
-        if price.positive? && !@teleported
+        price = token_price(token, hex)
+        token.price = price
+        action.city.place_token(entity, token)
+        if price.positive?
           entity.spend(price, @bank)
           price_log = " for #{@game.format_currency(price)}"
         end
@@ -581,6 +589,16 @@ module Engine
         end
 
         @graph.clear
+      end
+
+      def token_price(token, hex)
+        @current_entity.abilities(:discounted_token) do |ability, _|
+          return ability[:price] if ability[:hex] == hex.id && reachable_hexes[hex]
+        end
+
+        return @teleport_token_price if @teleported
+
+        token.price || 0
       end
 
       def remove_just_sold_company_abilities
