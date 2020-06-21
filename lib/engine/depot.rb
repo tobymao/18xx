@@ -31,8 +31,7 @@ module Engine
 
       train.owner.remove_train(train)
       train.owner = self
-
-      @discarded << train
+      @discarded << train if @game.class::DISCARDED_TRAINS == :discard
     end
 
     def min_price(corporation)
