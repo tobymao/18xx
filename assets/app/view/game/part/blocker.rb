@@ -83,7 +83,7 @@ module View
           children << render_company_sym if should_render_company_sym?
           children << render_barbell if should_render_barbell?
 
-          h(:g, { attrs: { transform: "#{translate} #{scale}" } }, children)
+          h(:g, { attrs: { transform: "#{translate} #{scale} #{rotation_for_layout}" } }, children)
         end
       end
     end
