@@ -89,7 +89,7 @@ module Engine
         false
       end
 
-      def unlayable?
+      def blocks_lay?
         false
       end
 

@@ -72,7 +72,7 @@ game config/code:
     - **name** - name of this icon; default is value given for `image`
     - **sticky** - `1` indicates the icon should remain visible when a tile
       upgrade is placed on this hex
-- **unlayable** - indicates this can be laid during normal tile-laying steps,
+    - **blocks_lay** - indicates this tile cannot be laid normally
   but can only be laid by special ability, such as a private company's ability.
 
 #### Town/City/Offboard sub parts
