@@ -14,6 +14,7 @@ module Engine
       GAME_DESIGNER = 'David G. D. Hecht'
 
       SELL_BUY_ORDER = :sell_buy_sell
+      TRACK_RESTRICTION = :permissive
     end
   end
 end
