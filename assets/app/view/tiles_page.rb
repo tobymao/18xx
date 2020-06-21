@@ -32,7 +32,7 @@ module View
         when nil
           [0]
         when 'all'
-          (0..5).to_a
+          Engine::Tile::ALL_EDGES
         else
           # apparently separating rotations in URL with '+' works by passing ' '
           # to split here

@@ -18,6 +18,8 @@ module Engine
     attr_reader :blocks_lay, :borders, :cities, :color, :edges, :junction, :label, :nodes,
                 :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers
 
+    ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
+
     def self.for(name, **opts)
       if (code = WHITE[name])
         color = :white
@@ -209,7 +211,7 @@ module Engine
     end
 
     def paths_are_subset_of?(other_paths)
-      (0..5).any? do |ticks|
+      ALL_EDGES.any? do |ticks|
         @paths.all? do |path|
           path = path.rotate(ticks)
           other_paths.any? { |other| path <= other }
@@ -231,7 +233,6 @@ module Engine
     #
     # "ct" for "city or town"
     def preferred_city_town_edges
-      # cache per rotation
       @preferred_city_town_edges ||= compute_city_town_edges
     end
 
@@ -292,11 +293,11 @@ module Engine
 
       # sort ct_edges so that the lowest edge with any paths will be
       # handled first
-      sorted = ct_edges.each { |_, e| e.sort! }.sort_by { |_, e| e }
+      ct_edges = ct_edges.each { |_, e| e.sort! }.sort_by { |_, e| e }
 
       # construct the final hash to return, updating edge_count along the
       # way
-      sorted.map do |ct, edges_|
+      ct_edges = ct_edges.map do |ct, edges_|
         edge = edges_.min_by { |e| edge_count[e] }
 
         # since this edge is being used, increase its count (and that of its
@@ -308,6 +309,15 @@ module Engine
 
         [ct, edge]
       end.to_h
+
+      city_towns = @cities + @towns
+      pathless_cts = city_towns.select { |ct| ct.paths.empty? }
+      if pathless_cts.one? && city_towns.size == 2
+        ct = pathless_cts.first
+        ct_edges[ct] = (ct_edges.values.first + 3) % 6
+      end
+
+      ct_edges
     end
 
     def revenue_to_render

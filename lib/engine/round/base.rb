@@ -136,7 +136,7 @@ module Engine
       def legal_rotations(hex, tile)
         old_paths = hex.tile.paths
 
-        (0..5).select do |rotation|
+        Engine::Tile::ALL_EDGES.select do |rotation|
           tile.rotate!(rotation)
           new_paths = tile.paths
           new_exits = tile.exits
