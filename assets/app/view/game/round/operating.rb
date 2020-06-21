@@ -24,7 +24,7 @@ module View
             case round.step
             when :home_token
               h(UndoAndPass, pass: false)
-            when :company, :track, :token, :token_or_track, :move_token_due_to_ambigious_city
+            when :company, :track, :token, :token_or_track, :reposition_token
               h(UndoAndPass)
             when :route
               h(RouteSelector)

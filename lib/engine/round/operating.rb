@@ -20,7 +20,7 @@ module Engine
         home_token
         track
         token
-        move_token_due_to_ambigious_city
+        reposition_token
         route
         dividend
         train
@@ -32,7 +32,7 @@ module Engine
         track: 'Lay Track',
         token: 'Place a Token',
         route: 'Run Routes',
-        move_token_due_to_ambigious_city: 'Move token due to ambigious city',
+        reposition_token: 'Reposition Token',
         dividend: 'Pay or Withhold Dividends',
         train: 'Buy Trains',
         company: 'Purchase Companies',
@@ -42,7 +42,7 @@ module Engine
       SHORT_STEP_DESCRIPTION = {
         track: 'Track',
         token: 'Token',
-        move_token_due_to_ambigious_city: 'Token Move',
+        reposition_token: 'Reposition Token',
         train: 'Trains',
         company: 'Companies',
       }.freeze
@@ -199,7 +199,7 @@ module Engine
       end
 
       def can_place_token?
-        @step == :token || @step == :home_token || @step == :move_token_due_to_ambigious_city
+        @step == :token || @step == :home_token || @step == :reposition_token
       end
 
       def steps
@@ -219,7 +219,7 @@ module Engine
       end
 
       def reachable_hexes
-        return @ambigious_upgrade.map { |x| [x, true] }.to_h if @step == :move_token_due_to_ambigious_city
+        return @ambigious_upgrade.map { |x| [x, true] }.to_h if @step == :reposition_token
         return { @game.hex_by_id(@current_entity.coordinates) => true } if @step == :home_token
 
         @graph.reachable_hexes(@current_entity)
@@ -256,7 +256,7 @@ module Engine
           @game.hex_by_id(@current_entity.coordinates)&.tile&.reserved_by?(@current_entity))
       end
 
-      def skip_move_token_due_to_ambigious_city
+      def skip_reposition_token
         @ambigious_upgrade.empty?
       end
 
@@ -315,8 +315,8 @@ module Engine
         new_tile = action.hex.tile
         if previous_tile.paths.empty? &&
           new_tile.paths.any? &&
-          new_tile.cities.length > 1 &&
-          new_tile.cities.any? { |x| x.tokens.any? }
+          new_tile.cities.size > 1 &&
+          new_tile.cities.flat_map(&:tokens).any?
           @ambigious_upgrade << action.hex
         end
       end
@@ -546,6 +546,7 @@ module Engine
 
       def move_token(action)
         action.token.move!(action.city)
+        @log << "#{@current_entity.name} moves a token on #{action.city.hex.name}"
       end
 
       def place_token(action)

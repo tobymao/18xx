@@ -52,9 +52,10 @@ module View
 
           # If there's a choice of tokens of different types show the selector, otherwise just place
           next_tokens = @game.current_entity.tokens_by_type
-          if @game.round.step == :move_token_due_to_ambigious_city
+          if @game.round.step == :reposition_token
             # There should only be one token in the city
-            token = @city.tile.cities.map(&:tokens).find(&:any?).compact[0]
+            token = @city.tile.cities.flat_map(&:tokens).find(&:itself)
+            puts token
             action = Engine::Action::MoveToken.new(
               @game.current_entity,
               city: @city,

@@ -44,7 +44,7 @@ module View
           when :track, :token_or_track
             opaque = @round.connected_hexes[@hex]
             clickable ||= opaque
-          when :token, :route, :home_token, :move_token_due_to_ambigious_city
+          when :token, :route, :home_token, :reposition_token
             opaque = @round.reachable_hexes[@hex]
             clickable ||= opaque
           end

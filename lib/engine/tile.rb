@@ -109,7 +109,7 @@ module Engine
                    preprinted: false,
                    index: 0,
                    location_name: nil,
-                   tile_reservation_blocks_others: false)
+                   **opts)
       @name = name
       @color = color.to_sym
       @parts = parts
@@ -133,7 +133,7 @@ module Engine
       @preprinted = preprinted
       @index = index
       @blocks_lay = nil
-      @tile_reservation_blocks_others = tile_reservation_blocks_others
+      @reservation_blocks = opts[:reservation_blocks] || false
 
       separate_parts
     end
@@ -253,7 +253,7 @@ module Engine
     def token_blocked_by_reservation?(corporation)
       return false if @reservations.empty?
 
-      if @tile_reservation_blocks_others
+      if @reservation_blocks
         !@reservations.include?(corporation.name)
       else
         @reservations.count { |x| corporation.name != x } >= @cities.sum(&:available_slots)

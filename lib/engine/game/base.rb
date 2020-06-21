@@ -581,20 +581,24 @@ module Engine
           if val.is_a?(Integer)
             count = val
             count.times.map do |i|
-              Tile.for(name,
-                       index: i,
-                       tile_reservation_blocks_others: self.class::TILE_RESERVATION_BLOCKS_OTHERS)
+              Tile.for(
+                name,
+                index: i,
+                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS
+              )
             end
           else
             count = val['count']
             color = val['color']
             code = val['code']
             count.times.map do |i|
-              Tile.from_code(name,
-                             color,
-                             code,
-                             index: i,
-                             tile_reservation_blocks_others: self.class::TILE_RESERVATION_BLOCKS_OTHERS)
+              Tile.from_code(
+                name,
+                color,
+                code,
+                index: i,
+                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS
+              )
             end
           end
         end
