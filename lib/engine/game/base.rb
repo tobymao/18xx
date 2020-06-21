@@ -109,6 +109,8 @@ module Engine
       # operating_round // 1889 places on first operating round
       HOME_TOKEN_TIMING = :operate
 
+      DISCARDED_TRAINS = :discard # discarded or removed?
+
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
       CACHABLE = [

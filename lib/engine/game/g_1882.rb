@@ -25,6 +25,7 @@ module Engine
 
       SELL_BUY_ORDER = :sell_buy_sell
       TRACK_RESTRICTION = :permissive
+      DISCARDED_TRAINS = :remove
 
       def init_corporations(stock_market)
         min_price = stock_market.par_prices.map(&:price).min
