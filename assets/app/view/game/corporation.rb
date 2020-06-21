@@ -60,6 +60,7 @@ module View
           style: {
             height: '1.6rem',
             width: '1.6rem',
+            padding: '1px',
             'align-self': 'center',
             'justify-self': 'start',
             border: '2px solid currentColor',
