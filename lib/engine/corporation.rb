@@ -130,6 +130,14 @@ module Engine
       %i[orange brown].include?(@share_price&.color) || percent <= 60
     end
 
+    def all_abilities
+      all = @companies.flat_map(&:all_abilities)
+      @abilities.each do |type, _|
+        abilities(type) { |ability| all << ability }
+      end
+      all
+    end
+
     def abilities(type)
       if (ability = super)
         yield ability, self
