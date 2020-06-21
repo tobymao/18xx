@@ -17,7 +17,7 @@ module Engine
         end
 
         def buyable_trains
-          super.reject { |x| x.from_depot? && @depot_trains_bought.include?(x.distance) }
+          super.reject { |x| x.from_depot? && @depot_trains_bought.include?(x.sym) }
         end
 
         def can_buy_train?
@@ -28,7 +28,7 @@ module Engine
           # Since the train won't be in the depot after being bougth store the state now.
           add_to_list = action.train.from_depot?
           super
-          @depot_trains_bought << action.train.distance if add_to_list
+          @depot_trains_bought << action.train.sym if add_to_list
         end
       end
     end
