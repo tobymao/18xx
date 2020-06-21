@@ -14,6 +14,8 @@ module Engine
       GAME_DESIGNER = 'David G. D. Hecht'
 
       SELL_BUY_ORDER = :sell_buy_sell
+
+      TILE_RESERVATION_BLOCKS_OTHERS = true
     end
   end
 end

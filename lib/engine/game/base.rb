@@ -90,6 +90,9 @@ module Engine
       # none, one, each
       POOL_SHARE_DROP = :none
 
+      # do tile reservations completely block other companies?
+      TILE_RESERVATION_BLOCKS_OTHERS = false
+
       COMPANIES = [].freeze
 
       CORPORATIONS = [].freeze
@@ -577,12 +580,22 @@ module Engine
         self.class::TILES.flat_map do |name, val|
           if val.is_a?(Integer)
             count = val
-            count.times.map { |i| Tile.for(name, index: i) }
+            count.times.map do |i|
+              Tile.for(name,
+                       index: i,
+                       tile_reservation_blocks_others: self.class::TILE_RESERVATION_BLOCKS_OTHERS)
+            end
           else
             count = val['count']
             color = val['color']
             code = val['code']
-            count.times.map { |i| Tile.from_code(name, color, code, index: i) }
+            count.times.map do |i|
+              Tile.from_code(name,
+                             color,
+                             code,
+                             index: i,
+                             tile_reservation_blocks_others: self.class::TILE_RESERVATION_BLOCKS_OTHERS)
+            end
           end
         end
       end

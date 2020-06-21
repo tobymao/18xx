@@ -20,6 +20,7 @@ module Engine
         home_token
         track
         token
+        move_token_due_to_ambigious_city
         route
         dividend
         train
@@ -31,6 +32,7 @@ module Engine
         track: 'Lay Track',
         token: 'Place a Token',
         route: 'Run Routes',
+        move_token_due_to_ambigious_city: 'Move token due to ambigious city',
         dividend: 'Pay or Withhold Dividends',
         train: 'Buy Trains',
         company: 'Purchase Companies',
@@ -40,6 +42,7 @@ module Engine
       SHORT_STEP_DESCRIPTION = {
         track: 'Track',
         token: 'Token',
+        move_token_due_to_ambigious_city: 'Token Move',
         train: 'Trains',
         company: 'Companies',
       }.freeze
@@ -67,6 +70,7 @@ module Engine
         @current_routes = []
         @current_actions = []
         @teleported = false
+        @ambigious_upgrade = []
 
         payout_companies
         @entities.each { |c| place_home_token(c) } if @home_token_timing == :operating_round
@@ -195,7 +199,7 @@ module Engine
       end
 
       def can_place_token?
-        @step == :token || @step == :home_token
+        @step == :token || @step == :home_token || @step == :move_token_due_to_ambigious_city
       end
 
       def steps
@@ -215,6 +219,7 @@ module Engine
       end
 
       def reachable_hexes
+        return @ambigious_upgrade.map { |x| [x, true] }.to_h if @step == :move_token_due_to_ambigious_city
         return { @game.hex_by_id(@current_entity.coordinates) => true } if @step == :home_token
 
         @graph.reachable_hexes(@current_entity)
@@ -251,6 +256,10 @@ module Engine
           @game.hex_by_id(@current_entity.coordinates)&.tile&.reserved_by?(@current_entity))
       end
 
+      def skip_move_token_due_to_ambigious_city
+        @ambigious_upgrade.empty?
+      end
+
       def skip_track; end
 
       def skip_token
@@ -285,6 +294,8 @@ module Engine
       end
 
       def process_lay_tile(action)
+        previous_tile = action.hex.tile
+
         hex_id = action.hex.id
 
         # companies with block_hexes should block hexes
@@ -300,10 +311,22 @@ module Engine
           @teleported = ability[:hexes].include?(hex_id) &&
           ability[:tiles].include?(action.tile.name)
         end
+
+        new_tile = action.hex.tile
+        if previous_tile.paths.empty? &&
+          new_tile.paths.any? &&
+          new_tile.cities.length > 1 &&
+          new_tile.cities.any? { |x| x.tokens.any? }
+          @ambigious_upgrade << action.hex
+        end
       end
 
       def process_place_token(action)
         place_token(action)
+      end
+
+      def process_move_token(action)
+        move_token(action)
       end
 
       def process_run_routes(action)
@@ -386,6 +409,7 @@ module Engine
             company.remove_ability(:teleport)
           end
         end
+        @ambigious_upgrade = []
         @last_share_sold_price = nil
         @current_entity = next_entity
         start_operating
@@ -518,6 +542,10 @@ module Engine
         @current_entity.companies << company
         @current_entity.spend(price, entity)
         @log << "#{@current_entity.name} buys #{company.name} from #{entity.name} for #{@game.format_currency(price)}"
+      end
+
+      def move_token(action)
+        action.token.move!(action.city)
       end
 
       def place_token(action)

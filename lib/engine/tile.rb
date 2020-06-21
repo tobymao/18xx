@@ -102,7 +102,14 @@ module Engine
     end
 
     # rotation 0-5
-    def initialize(name, color:, parts:, rotation: 0, preprinted: false, index: 0, location_name: nil)
+    def initialize(name,
+                   color:,
+                   parts:,
+                   rotation: 0,
+                   preprinted: false,
+                   index: 0,
+                   location_name: nil,
+                   tile_reservation_blocks_others: false)
       @name = name
       @color = color.to_sym
       @parts = parts
@@ -126,6 +133,7 @@ module Engine
       @preprinted = preprinted
       @index = index
       @blocks_lay = nil
+      @tile_reservation_blocks_others = tile_reservation_blocks_others
 
       separate_parts
     end
@@ -239,6 +247,16 @@ module Engine
         @cities[city].add_reservation!(name)
       else
         @reservations << name
+      end
+    end
+
+    def token_blocked_by_reservation?(corporation)
+      return false if @reservations.empty?
+
+      if @tile_reservation_blocks_others
+        !@reservations.include?(corporation.name)
+      else
+        @reservations.count { |x| corporation.name != x } >= @cities.sum(&:available_slots)
       end
     end
 

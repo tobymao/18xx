@@ -21,5 +21,11 @@ module Engine
 
       @city.place_token(corporation, other_token)
     end
+
+    def move!(new_city)
+      @city.tokens.map! { |t| t == self ? nil : t }
+
+      new_city.place_token(@corporation, self, free: true)
+    end
   end
 end
