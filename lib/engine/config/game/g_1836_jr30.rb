@@ -286,9 +286,14 @@ module Engine
             {
                "type":"tile_lay",
                "owner_type":"corporation",
+               "free":true,
                "hexes":[
                   "B8"
                ],
+                "tiles": [
+                  "2",
+                  "56"
+                ],
                "when":"track",
                "count":1
             }
@@ -374,6 +379,11 @@ module Engine
             {
                "type":"share",
                "share":"Nord_0"
+            },
+            {
+               "type":"close",
+               "when": "train",
+               "corporation":"Nord"
             },
             {
                "type":"no_buy"

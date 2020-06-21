@@ -18,9 +18,11 @@ module Engine
     def process_action(action)
       case action
       when Action::BuyTrain
+        entity = action.entity
         train = action.train
         next! if train.sym == @next_on
-        rust_trains!(train, action.entity)
+        rust_trains!(train, entity)
+        close_companies_on_train!(entity)
       when Action::RunRoutes
         rust_obsolete_trains!(action.routes)
       end
@@ -82,6 +84,18 @@ module Engine
 
       @game.companies.each do |company|
         company.close! unless company.abilities(:never_closes)
+      end
+    end
+
+    def close_companies_on_train!(entity)
+      @game.companies.each do |company|
+        next if company.closed?
+        next unless (ability = company.abilities(:close))
+        next if ability[:when] != :train
+        next if entity.name != ability[:corporation]
+
+        company.close!
+        @log << "#{company.name} closes"
       end
     end
 

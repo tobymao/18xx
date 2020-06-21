@@ -163,6 +163,16 @@ module Engine
           @graph.clear
         end
 
+        def process_lay_tile(action)
+          if action.tile.color != :yellow
+            raise GameError, 'Cannot upgrade twice' if @current_actions
+              .select { |a| a.is_a?(Action::LayTile) }
+              .any? { |a| a.tile.color != :yellow }
+          end
+
+          super
+        end
+
         def tile_cost(tile, abilities)
           [@game.class::TILE_COST, tile.upgrade_cost(abilities)].max
         end

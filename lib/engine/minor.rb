@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'abilities'
 require_relative 'ownable'
 require_relative 'passer'
 require_relative 'spender'
@@ -7,6 +8,7 @@ require_relative 'operator'
 
 module Engine
   class Minor
+    include Abilities
     include Operator
     include Ownable
     include Passer
@@ -18,6 +20,7 @@ module Engine
       @name = sym
       @full_name = name
       init_operator(opts)
+      init_abilities(opts[:abilities])
     end
 
     def abilities(_type); end
