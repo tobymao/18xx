@@ -40,7 +40,7 @@ module View
 
         def render_part
           children = @icons.map.with_index do |icon, index|
-            h(:image, attrs: { href: icon.image, x: index * -DELTA_X })
+            h(:image, attrs: { href: icon.image, x: index * -DELTA_X, width: "#{ICON_RADIUS * 2}px" })
           end
 
           h(:g, { attrs: { transform: "#{rotation_for_layout} translate(#{-ICON_RADIUS} #{-ICON_RADIUS})" } }, [

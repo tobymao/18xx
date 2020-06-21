@@ -239,7 +239,12 @@ module Engine
         check_track_restrictions!(old_tile, tile) unless @game.loading
 
         free = false
-        entity.abilities(:tile_lay) { |ability| free = ability[:free] }
+
+        entity.abilities(:tile_lay) do |ability|
+          next if !ability[:hexes].include?(hex.id) || !ability[:tiles].include?(tile.name)
+
+          free = ability[:free]
+        end
 
         cost =
           if free

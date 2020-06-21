@@ -123,7 +123,15 @@ module Engine
         end
 
         def skip_track
-          @current_entity.cash < @game.class::TILE_COST || count_actions(Action::LayTile) > 1
+          free = false
+
+          @current_entity.abilities(:tile_lay) do |ability|
+            ability[:hexes].each do |hex_id|
+              free = true if ability[:free] && @game.hex_by_id(hex_id).tile.preprinted
+            end
+          end
+
+          (!free && @current_entity.cash < @game.class::TILE_COST) || count_actions(Action::LayTile) > 1
         end
 
         def skip_issue

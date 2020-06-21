@@ -329,7 +329,7 @@ module Engine
    ],
    "hexes":{
       "white":{
-         "icon=image:nc,sticky:1":[
+         "icon=image:18_carolinas/nc,sticky:1":[
             "B8",
             "B10",
             "B12",
@@ -357,11 +357,11 @@ module Engine
             "F16",
             "F18"
          ],
-         "icon=image:ncsc,sticky:1":[
+         "icon=image:18_carolinas/ncsc,sticky:1":[
             "B6",
             "G17"
          ],
-         "icon=image:sc,sticky:1":[
+         "icon=image:18_carolinas/sc,sticky:1":[
             "E3",
             "F2",
             "F6",
@@ -384,27 +384,27 @@ module Engine
             "I13",
             "J8"
          ],
-         "city=revenue:0;upgrade=cost:40,terrain:water;icon=image:nc,sticky:1":[
+         "city=revenue:0;upgrade=cost:40,terrain:water;icon=image:18_carolinas/nc,sticky:1":[
             "C17"
          ],
-         "city=revenue:0;upgrade=cost:40,terrain:water;icon=image:sc,sticky:1":[
+         "city=revenue:0;upgrade=cost:40,terrain:water;icon=image:18_carolinas/sc,sticky:1":[
             "G9",
             "H6"
          ],
-         "city=revenue:30;city=revenue:0;path=a:0,b:_0;upgrade=cost:40,terrain:water;label=C;icon=image:ncsc,sticky:1":[
+         "city=revenue:30;city=revenue:0;path=a:0,b:_0;upgrade=cost:40,terrain:water;label=C;icon=image:18_carolinas/ncsc,sticky:1":[
             "D10"
          ],
-         "upgrade=cost:40,terrain:water;icon=image:sc,sticky:1":[
+         "upgrade=cost:40,terrain:water;icon=image:18_carolinas/sc,sticky:1":[
             "G5",
             "F4"
          ],
-         "town=revenue:0;town=revenue:0;icon=image:nc,sticky:1":[
+         "town=revenue:0;town=revenue:0;icon=image:18_carolinas/nc,sticky:1":[
             "C15"
          ],
-         "town=revenue:0;town=revenue:0;icon=image:sc,sticky:1":[
+         "town=revenue:0;town=revenue:0;icon=image:18_carolinas/sc,sticky:1":[
             "E7"
          ],
-         "city=revenue:0;icon=image:nc,sticky:1":[
+         "city=revenue:0;icon=image:18_carolinas/nc,sticky:1":[
             "D4",
             "D8",
             "B20",
@@ -412,30 +412,30 @@ module Engine
             "C21",
             "E15"
          ],
-         "city=revenue:0;icon=image:sc,sticky:1":[
+         "city=revenue:0;icon=image:18_carolinas/sc,sticky:1":[
             "E9",
             "E5",
             "G13",
             "H16",
             "I11"
          ],
-         "town=revenue:0;icon=image:nc,sticky:1":[
+         "town=revenue:0;icon=image:18_carolinas/nc,sticky:1":[
             "C9",
             "D12",
             "F20"
          ],
-         "town=revenue:0;icon=image:sc,sticky:1":[
+         "town=revenue:0;icon=image:18_carolinas/sc,sticky:1":[
             "G11",
             "I15",
             "J10"
          ],
-         "town=revenue:0;upgrade=cost:40,terrain:water;icon=image:sc,sticky:1":[
+         "town=revenue:0;upgrade=cost:40,terrain:water;icon=image:18_carolinas/sc,sticky:1":[
             "H12"
          ],
-         "city=revenue:0;label=C;icon=image:sc,sticky:1":[
+         "city=revenue:0;label=C;icon=image:18_carolinas/sc,sticky:1":[
             "J12"
          ],
-         "city=revenue:0;city=revenue:0;path=a:1,b:_0;label=C;icon=image:ncsc,sticky:1":[
+         "city=revenue:0;city=revenue:0;path=a:1,b:_0;label=C;icon=image:18_carolinas/ncsc,sticky:1":[
             "G19"
          ]
       },

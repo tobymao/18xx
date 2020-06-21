@@ -472,7 +472,7 @@ module Engine
         "K11",
         "H12"
       ],
-      "icon=image:NWR,sticky:1": [
+      "icon=image:1882/NWR,sticky:1": [
         "B4"
       ],
       "city=revenue:0": [
@@ -481,16 +481,16 @@ module Engine
         "G11",
         "J12"
       ],
-      "city=revenue:0;border=edge:1,type:water,cost:20;border=edge:0,type:water,cost:40;icon=image:NWR,sticky:1": [
+      "city=revenue:0;border=edge:1,type:water,cost:20;border=edge:0,type:water,cost:40;icon=image:1882/NWR,sticky:1": [
         "C3"
       ],
       "city=revenue:0;border=edge:0,type:water,cost:20;border=edge:1,type:water,cost:40;border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40;border=edge:5,type:water,cost:40": [
         "K3"
       ],
-      "city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40;border=edge:5,type:water,cost:20;icon=image:NWR,sticky:1": [
+      "city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40;border=edge:5,type:water,cost:20;icon=image:1882/NWR,sticky:1": [
         "D4"
       ],
-      "city=revenue:0;border=edge:0,type:water,cost:40;icon=image:NWR,sticky:1": [
+      "city=revenue:0;border=edge:0,type:water,cost:40;icon=image:1882/NWR,sticky:1": [
         "D6"
       ],
       "city=revenue:0;border=edge:3,type:water,cost:40;border=edge:5,type:water,cost:40": [
@@ -514,10 +514,10 @@ module Engine
       "border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:20": [
         "D2"
       ],
-      "border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:20;icon=image:NWR,sticky:1": [
+      "border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:20;icon=image:1882/NWR,sticky:1": [
         "F6"
       ],
-      "border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40;icon=image:NWR,sticky:1": [
+      "border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40;icon=image:1882/NWR,sticky:1": [
         "E3"
       ],
       "border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40": [
@@ -526,14 +526,14 @@ module Engine
       "border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:20;border=edge:5,type:water,cost:40": [
         "I3"
       ],
-      "border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:20;border=edge:5,type:water,cost:40;icon=image:NWR,sticky:1": [
+      "border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:20;border=edge:5,type:water,cost:40;icon=image:1882/NWR,sticky:1": [
         "E7"
       ],
       "border=edge:1,type:water,cost:40;border=edge:2,type:water,cost:40;border=edge:3,type:water,cost:40": [
         "J4",
         "H8"
       ],
-      "border=edge:0,type:water,cost:40;icon=image:NWR,sticky:1": [
+      "border=edge:0,type:water,cost:40;icon=image:1882/NWR,sticky:1": [
         "C5"
       ],
       "border=edge:0,type:water,cost:40": [
@@ -622,7 +622,7 @@ module Engine
       "city=revenue:0;city=revenue:0;label=OO": [
         "M11"
       ],
-      "city=revenue:0;city=revenue:0;label=OO;border=edge:2,type:water,cost:20;border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40;icon=image:NWR,sticky:1": [
+      "city=revenue:0;city=revenue:0;label=OO;border=edge:2,type:water,cost:20;border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40;icon=image:1882/NWR,sticky:1": [
         "E5"
       ],
       "city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:4,b:_1;label=R;border=edge:2,type:water,cost:60;border=edge:3,type:water,cost:20;border=edge:4,type:water,cost:40": [
