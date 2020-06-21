@@ -119,6 +119,15 @@ module Engine
         old_city.remove_tokens!
       end
 
+      @tile.icons.each do |icon|
+        next unless icon.sticky
+
+        new_icon = icon.dup
+        new_icon.preprinted = false
+        tile.icons << new_icon
+      end
+      @tile.icons = @tile.icons.select(&:preprinted)
+
       tile.reservations = @tile.reservations
       @tile.reservations.clear
 

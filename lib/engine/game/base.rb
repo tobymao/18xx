@@ -191,6 +191,11 @@ module Engine
         data['hexes'].transform_keys!(&:to_sym)
         data['hexes'].transform_values!(&:invert)
 
+        hex_ids = data['hexes'].values.map(&:keys).flatten
+
+        dup_hexes = hex_ids.group_by(&:itself).select { |_, v| v.size > 1 } .keys
+        raise GameError, "Found multiple definitions in #{self} for hexes #{dup_hexes}" if dup_hexes.any?
+
         const_set(:CURRENCY_FORMAT_STR, data['currencyFormatStr'])
         const_set(:BANK_CASH, data['bankCash'])
         const_set(:CERT_LIMIT, data['certLimit'])

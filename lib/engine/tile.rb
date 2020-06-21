@@ -14,7 +14,7 @@ module Engine
   class Tile
     include Config::Tile
 
-    attr_accessor :hex, :legal_rotations, :location_name, :name, :index, :reservations
+    attr_accessor :hex, :icons, :index, :unlayable, :legal_rotations, :location_name, :name, :reservations
     attr_reader :borders, :cities, :color, :edges, :junction, :label, :nodes,
                 :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers
 
@@ -96,6 +96,10 @@ module Engine
         junction = Part::Junction.new
         cache << junction
         junction
+      when 'icon'
+        Part::Icon.new(params['image'], params['name'], params['sticky'])
+      when 'unlayable'
+        Part::Unlayable.new
       end
     end
 
@@ -116,12 +120,14 @@ module Engine
       @stops = nil
       @edges = nil
       @junction = nil
+      @icons = []
       @location_name = location_name
       @legal_rotations = []
       @blockers = []
       @reservations = []
       @preprinted = preprinted
       @index = index
+      @unlayable = false
 
       separate_parts
     end
@@ -312,6 +318,10 @@ module Engine
           @borders << part
         elsif part.junction?
           @junction = part
+        elsif part.icon?
+          @icons << part
+        elsif part.unlayable?
+          @unlayable = true
         else
           raise "Part #{part} not separated."
         end

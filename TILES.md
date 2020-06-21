@@ -32,7 +32,8 @@ Optional URL params for above routes:
 
 ### Tile language
 
-Main parts are separated by `;`. Sub parts are separated by `,`.
+Main parts are separated by `;`. Sub parts are separated by `,`. If a sub part
+takes a list of properties, those properties are separated by `|`.
 
 Some parts of a tile are not defined in this string but at other parts of the
 game config/code:
@@ -65,6 +66,14 @@ game config/code:
       the tile's color is drawn on top of the edge's normal black line so that
       two adjacent tiles appear joined
 - **junction** - the center point of a Lawson-style tile
+- **icon**
+    - **image** - *required* - name of image, will be rendered with file at
+      `public/icons/#{image}.svg`
+    - **name** - name of this icon; default is value given for `image`
+    - **sticky** - `1` indicates the icon should remain visible when a tile
+      upgrade is placed on this hex
+- **unlayable** - indicates this can be laid during normal tile-laying steps,
+  but can only be laid by special ability, such as a private company's ability.
 
 #### Town/City/Offboard sub parts
 

@@ -200,6 +200,7 @@ module Engine
           .select { |tile| colors.include?(tile.color) }
           .uniq(&:name)
           .select { |t| hex.tile.upgrades_to?(t) }
+          .reject(&:unlayable)
       end
 
       def sell_and_change_price(bundle, share_pool, stock_market)
@@ -225,10 +226,13 @@ module Engine
         rotation = action.rotation
         old_tile = hex.tile
 
+        tile.rotate!(rotation)
+
+        raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}" unless old_tile.upgrades_to?(tile)
+
         @game.tiles.delete(tile)
         @game.tiles << old_tile unless old_tile.preprinted
 
-        tile.rotate!(rotation)
         hex.lay(tile)
 
         @game.graph.clear
