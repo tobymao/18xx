@@ -19,8 +19,8 @@ module Engine
       STEPS = %i[
         home_token
         track
-        token
         reposition_token
+        token
         route
         dividend
         train
