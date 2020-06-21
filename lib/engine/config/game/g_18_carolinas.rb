@@ -190,7 +190,7 @@ module Engine
             100,
             100
          ],
-         "coordinates":"H16",
+         "coordinates":"G19",
          "color":"deepPink"
       },
       {
@@ -204,7 +204,7 @@ module Engine
             100,
             100
          ],
-         "coordinates":"D8",
+         "coordinates":"D10",
          "color":"orange"
       },
       {
@@ -232,7 +232,7 @@ module Engine
             100,
             100
          ],
-         "coordinates":"C21",
+         "coordinates":"G19",
          "color":"yellow",
          "text_color":"black"
       },
@@ -261,7 +261,7 @@ module Engine
             100,
             100
          ],
-         "coordinates":"J6",
+         "coordinates":"B20",
          "color":"DeepSkyBlue",
          "text_color":"black"
       },
@@ -342,6 +342,7 @@ module Engine
             "C11",
             "C19",
             "C23",
+            "D6",
             "D14",
             "D16",
             "D18",
@@ -361,7 +362,6 @@ module Engine
             "G17"
          ],
          "icon=image:sc,sticky:1":[
-            "D6",
             "E3",
             "F2",
             "F6",
@@ -391,7 +391,7 @@ module Engine
             "G9",
             "H6"
          ],
-         "city=revenue:0;upgrade=cost:40,terrain:water;label=C;icon=image:ncsc,sticky:1":[
+         "city=revenue:30;city=revenue:0;path=a:0,b:_0;upgrade=cost:40,terrain:water;label=C;icon=image:ncsc,sticky:1":[
             "D10"
          ],
          "upgrade=cost:40,terrain:water;icon=image:sc,sticky:1":[
@@ -435,19 +435,29 @@ module Engine
          "city=revenue:0;label=C;icon=image:sc,sticky:1":[
             "J12"
          ],
-         "city=revenue:0;label=C;icon=image:ncsc,sticky:1":[
+         "city=revenue:0;city=revenue:0;path=a:1,b:_0;label=C;icon=image:ncsc,sticky:1":[
             "G19"
          ]
       },
       "red":{
-         "offboard=revenue:yellow_30|green_40|brown_60|gray_80":[
-            "A7"
-         ],
          "offboard=revenue:yellow_40|green_50|brown_60|gray_80;path=a:0,b:_0":[
+            "A7",
             "A23"
          ],
          "offboard=revenue:yellow_40|green_60|brown_80|gray_100;path=a:4,b:_0":[
             "G1"
+         ]
+      },
+      "gray":{
+         "path=a:0,b:4":[
+            "B4"
+         ],
+         "path=a:0,b:3":[
+            "D2",
+            "C3"
+         ],
+         "path=a:3,b:4":[
+            "E1"
          ]
       }
    },
