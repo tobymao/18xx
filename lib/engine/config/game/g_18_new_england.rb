@@ -638,13 +638,8 @@ module Engine
     },
     "gray": {
       "path=a:4,b:5": [
-        "A13"
-      ],
-      "path=a:4,b:5": [
+        "A13",
         "B4"
-      ],
-      "path=a:4,b:5": [
-        "A13"
       ],
       "path=a:2,b:3": [
         "E17"
