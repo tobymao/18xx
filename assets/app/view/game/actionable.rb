@@ -59,11 +59,15 @@ module View
           end
           @connection.safe_post("/game/#{@game_data['id']}/action", json)
         else
-          store(:flash_opts, 'You are not in this game. Moves are temporary. You can clone this game in the tools tab.')
+          store(
+            :flash_opts,
+            'You are not in this game. Moves are temporary. You can clone this game in the tools tab.',
+            skip: true,
+          )
         end
 
-        store(:game, game)
         store(:tile_selector, nil, skip: true)
+        store(:game, game)
       rescue StandardError => e
         store(:game, @game.clone(@game.actions), skip: true)
         store(:flash_opts, e.message)
