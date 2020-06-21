@@ -200,7 +200,7 @@ module Engine
           .select { |tile| colors.include?(tile.color) }
           .uniq(&:name)
           .select { |t| hex.tile.upgrades_to?(t) }
-          .select { |t| t.layable_by?(current_entity.name) }
+          .reject(&:unlayable)
       end
 
       def sell_and_change_price(bundle, share_pool, stock_market)

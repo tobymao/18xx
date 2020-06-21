@@ -71,10 +71,9 @@ game config/code:
       `public/icons/#{image}.svg`
     - **name** - name of this icon; default is value given for `image`
     - **sticky** - `1` indicates the icon should remain visible when a tile
-      upgrade is placed on this hex (default: `false`)
-- **layable_by** - list of "entities" (companies and corporations) that are
-  allowed to lay this tile, specified by a `|`-separated list of
-  company/corporation syms
+      upgrade is placed on this hex
+- **unlayable** - indicates this can be laid during normal tile-laying steps,
+  but can only be laid by special ability, such as a private company's ability.
 
 #### Town/City/Offboard sub parts
 

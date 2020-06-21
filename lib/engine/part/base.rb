@@ -89,7 +89,7 @@ module Engine
         false
       end
 
-      def layable_by?
+      def unlayable?
         false
       end
 

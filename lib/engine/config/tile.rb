@@ -50,7 +50,7 @@ module Engine
         '292' => 'city=revenue:40;path=a:0,b:_0;path=a:2,b:_0;label=Z',
         '293' => 'city=revenue:40;path=a:0,b:_0;path=a:3,b:_0;label=Z',
         # '403' => 'city=revenue:30;town=revenue:30;path=a:0,b:_0;label=B;upgrade=cost:40',
-        '437' => 'town=revenue:30;path=a:0,b:_0;path=a:_0,b:2;icon=image:port;layable_by=MF',
+        '437' => 'town=revenue:30;path=a:0,b:_0;path=a:_0,b:2;icon=image:port;unlayable',
         '438' => 'city=revenue:40;path=a:0,b:_0;path=a:2,b:_0;label=H;upgrade=cost:80',
         '445' => 'town=revenue:10;path=a:0,b:_0;path=a:_0,b:2',
         # '601' => 'city=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:2,b:_1;label=V',
