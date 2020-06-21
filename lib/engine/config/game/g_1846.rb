@@ -33,7 +33,7 @@ module Engine
   },
   "capitalization": "incremental",
   "layout": "pointy",
-  "mustSellInBlocks": false,
+  "mustSellInBlocks": true,
   "locationNames": {
     "B8": "Holland",
     "B16": "Port Huron",
