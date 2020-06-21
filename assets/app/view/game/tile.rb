@@ -50,19 +50,21 @@ module View
         children << render_tile_part(Part::Towns, routes: @routes) if @tile.towns.any?
 
         # OO tiles have different rules...
-        children << render_tile_part(Part::LocationName) if @tile.location_name && @tile.cities.size > 1
+        rendered_loc_name = render_tile_part(Part::LocationName) if @tile.location_name && @tile.cities.size > 1
 
         children << render_tile_part(Part::Revenue) if render_revenue
         children << render_tile_part(Part::Label) if @tile.label
 
         children << render_tile_part(Part::Upgrades) if @tile.upgrades.any?
         children << render_tile_part(Part::Blocker)
-        children << render_tile_part(Part::LocationName) if @tile.location_name && (@tile.cities.size <= 1)
+        rendered_loc_name = render_tile_part(Part::LocationName) if @tile.location_name && (@tile.cities.size <= 1)
         @tile.reservations.each { |x| children << render_tile_part(Part::Reservation, reservation: x) }
         children << render_tile_part(Part::Icons) if @tile.icons.any?
 
         # borders should always be the top layer
         children << h(Part::Borders, tile: @tile) if @tile.borders.any?
+
+        children << rendered_loc_name if rendered_loc_name
 
         children.flatten!
 
