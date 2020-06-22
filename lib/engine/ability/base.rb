@@ -9,7 +9,7 @@ module Engine
       include Helper::Type
       include Ownable
 
-      attr_reader :type, :owner_type, :when
+      attr_reader :type, :owner_type, :when, :count
 
       def initialize(type:, owner_type: nil, count: nil, **opts)
         @type = type&.to_sym

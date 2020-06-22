@@ -16,7 +16,7 @@ module Engine
 
       load_from_json(Config::Game::G18Chesapeake::JSON)
 
-      DEV_STAGE = :beta
+      DEV_STAGE = :production
 
       GAME_LOCATION = nil
       GAME_RULES_URL = 'https://www.dropbox.com/s/e38xzaf14meb2tw/18Chesapeake_Rules.pdf'
@@ -42,11 +42,18 @@ module Engine
       end
 
       def check_special_tile_lay(action, company)
-        return if company.closed? || action.entity == company
-
         company.abilities(:tile_lay) do |ability|
           hexes = ability.hexes
           next unless hexes.include?(action.hex.id)
+
+          if action.entity == company && ability.count.zero?
+            paths = hexes.flat_map do |hex_id|
+              hex_by_id(hex_id).tile.paths
+            end.uniq
+            raise GameError, 'Paths must be connected' if paths.size != paths[0].select(paths).size
+          end
+
+          next if company.closed? || action.entity == company
 
           company.remove_ability(:tile_lay)
           @log << "#{company.name} loses the ability to lay #{hexes}"

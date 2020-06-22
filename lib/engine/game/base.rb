@@ -384,8 +384,8 @@ module Engine
           @undo_possible = true
         end
 
-        @actions << action
         action_processed(action)
+        @actions << action
 
         while @round.finished? && !@finished
           @round.entities.each(&:unpass!)

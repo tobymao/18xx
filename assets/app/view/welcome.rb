@@ -21,7 +21,7 @@ module View
     def render_notification
       message = <<~MESSAGE
         <p>1846 is now available for early alpha. It would help most if you played with the intent to find bugs in hot seat mode.
-        The private companies have not been implemented yet.
+        The private companies have not been implemented yet. 18Chesapeake is now out of beta and in production.
         </p>
 
         <p>Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
