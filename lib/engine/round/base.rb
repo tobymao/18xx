@@ -161,8 +161,9 @@ module Engine
       end
 
       def crowded_corps
-        train_limit = @game.phase.train_limit
-        @game.corporations.select { |c| c.trains.size > train_limit }
+        @game.corporations.select do |c|
+          c.trains.reject(&:obsolete).size > @game.phase.train_limit
+        end
       end
 
       def discard_train(action)

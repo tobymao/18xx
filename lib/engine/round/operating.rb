@@ -146,7 +146,7 @@ module Engine
       end
 
       def corp_has_room?
-        @current_entity.trains.size < @phase.train_limit
+        @current_entity.trains.reject(&:obsolete).size < @phase.train_limit
       end
 
       def can_buy_train?
