@@ -93,6 +93,10 @@ module Engine
         false
       end
 
+      def movement_cost
+        0
+      end
+
       def inspect
         "<#{self.class.name}: hex: #{hex&.name}>"
       end

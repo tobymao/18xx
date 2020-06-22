@@ -208,9 +208,9 @@ module Engine
 
     def check_distance!(visits)
       distance = @train.distance
-
       if distance.is_a?(Numeric)
-        raise GameError, "#{visits.size} is too many stops for #{distance} train" if distance < visits.size
+        route_distance = visits.sum(&:movement_cost)
+        raise GameError, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
 
         return
       end
@@ -227,7 +227,7 @@ module Engine
       grouped = visits.group_by(&:type)
 
       grouped.each do |type, group|
-        num = group.size
+        num = group.sum(&:movement_cost)
 
         type_info[type].sort_by(&:size).each do |info|
           next unless info[:visit].positive?
