@@ -78,6 +78,8 @@ module Engine
           hexes = {}
 
           @current_entity.abilities(:token) do |ability, _|
+            next unless ability[:teleport_price]
+
             ability[:hexes].each do |id|
               hex = @game.hex_by_id(id)
               hexes[hex] = hex.neighbors.keys
@@ -91,6 +93,8 @@ module Engine
           nodes = {}
 
           @current_entity.abilities(:token) do |ability, _|
+            next unless ability[:teleport_price]
+
             ability[:hexes].each do |id|
               @game.hex_by_id(id).tile.cities.each { |c| nodes[c] = true }
             end
@@ -118,8 +122,9 @@ module Engine
 
         def skip_token
           return true if count_actions(Action::PlaceToken).positive?
+          return true unless @current_entity.next_token
 
-          super
+          @current_entity.cash < 40 # Some abilities can get the token down to 40
         end
 
         def skip_track
@@ -186,7 +191,7 @@ module Engine
         end
 
         def potential_tiles(hex)
-          return [] if used_teleport(hex) && !connected(hex)
+          return [] if used_token_ability(hex) && !connected_hexes[hex]
 
           super
         end
@@ -194,26 +199,19 @@ module Engine
         def place_token(action)
           hex = action.city.hex
 
-          if used_teleport(hex)
-            higher =
-              case @current_entity.id
-              when 'B&O'
-                100
-              when 'PRR'
-                60
-              end
-            action.token.price = connected(hex) ? 40 : higher
-            @current_entity.remove_ability(:token)
+          if used_token_ability(hex)
+            @current_entity.abilities(:token) do |ability, _|
+              next action.token.price = ability[:price] if reachable_hexes[hex]
+              next action.token.price = ability[:teleport_price] if ability[:teleport_price]
+            end
           end
 
           super
+
+          @current_entity.remove_ability(:token) if used_token_ability(hex)
         end
 
-        def connected(hex)
-          @graph.connected_hexes(@current_entity)[hex]
-        end
-
-        def used_teleport(hex)
+        def used_token_ability(hex)
           @current_entity.abilities(:token) do |ability, _|
             return true if ability[:hexes].include?(hex.id)
           end
