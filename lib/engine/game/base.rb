@@ -165,11 +165,13 @@ module Engine
 
         data['trains'].map! do |train|
           train.transform_keys!(&:to_sym)
+          train[:variants]&.each { |variant| variant.transform_keys!(&:to_sym) }
+          train
         end
 
         data['companies'].map! do |company|
           company.transform_keys!(&:to_sym)
-          company[:abilities]&.map! { |ability| ability.transform_keys!(&:to_sym) }
+          company[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
           company
         end
 
@@ -183,7 +185,7 @@ module Engine
 
         data['corporations'].map! do |corporation|
           corporation.transform_keys!(&:to_sym)
-          corporation[:abilities]&.map! { |ability| ability.transform_keys!(&:to_sym) }
+          corporation[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
           corporation[:color] = const_get(:COLORS)[corporation[:color]] if const_defined?(:COLORS)
           corporation
         end
