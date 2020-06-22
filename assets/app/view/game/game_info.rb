@@ -81,21 +81,34 @@ module View
               Lib::Color.convert_hex_to_rgba(Part::MultiRevenue::COLOR[phase_color], 0.4)
           end
 
-          buy_text = if phase[:buy_companies]
-                       'Can Buy'
-                     elsif phase[:events]&.include?(:close_companies)
-                       'Close'
-                     else
-                       ''
-                     end
+          buy_text = []
+
+          buy_text << 'Can Buy Companies' if phase[:buy_companies]
+          phase[:events]&.each do |name, _value|
+            buy_text << (@game.class::EVENTS_TEXT[name] ? "#{@game.class::EVENTS_TEXT[name][0]}*" : name)
+          end
 
           h(:tr, [
             h(:td, td_props, phase[:name] + (current_phase == phase ? ' (Current) ' : '')),
             h(:td, td_props, phase[:operating_rounds]),
             h(:td, td_props, phase[:train_limit]),
             h(:td, phase_props, phase_color.capitalize),
-            h(:td, td_props, buy_text),
+            h(:td, td_props, buy_text.join(',')),
           ])
+        end
+
+        phase_text = @game.class::EVENTS_TEXT.map do |_sym, desc|
+          h(:tr, [h(:td, td_props, desc[0]), h(:td, td_props, desc[1])])
+        end
+
+        if phase_text.any?
+          phase_text = [h(:table, [
+            h(:tr, [
+              h(:th, td_props, 'Event'),
+              h(:th, td_props, 'Description'),
+              ]),
+            *phase_text,
+          ])]
         end
 
         props = {
@@ -109,10 +122,11 @@ module View
               h(:th, td_props.merge(attrs: { title: 'Number of Operating Rounds' }), '# OR'),
               h(:th, td_props, 'Train Limit'),
               h(:th, td_props, 'Tiles'),
-              h(:th, td_props, 'Companies'),
+              h(:th, td_props, 'Events'),
             ]),
             *rows,
           ]),
+          *phase_text,
         ])
       end
 
