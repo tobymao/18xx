@@ -11,6 +11,8 @@ module View
         needs :transform, default: 'translate(0 0)'
 
         def render
+          return if @revenue.zero?
+
           text_attrs = {
             fill: 'black',
             transform: 'translate(0 6)',

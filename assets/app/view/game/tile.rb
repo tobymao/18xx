@@ -31,7 +31,7 @@ module View
 
         return false if revenue.uniq.size > 1
 
-        return false if @tile.cities.sum(&:slots) < 3 && @tile.cities.size == 2
+        return false if @tile.cities.sum(&:slots) < 3 && @tile.stops.size == 2
 
         true
       end
