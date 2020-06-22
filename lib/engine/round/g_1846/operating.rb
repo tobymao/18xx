@@ -201,8 +201,8 @@ module Engine
 
           if used_token_ability(hex)
             @current_entity.abilities(:token) do |ability, _|
-              next action.token.price = ability[:price] if reachable_hexes[hex]
-              next action.token.price = ability[:teleport_price] if ability[:teleport_price]
+              next action.token.price = ability.price if reachable_hexes[hex]
+              next action.token.price = ability.teleport_price if ability.teleport_price
             end
           end
 
