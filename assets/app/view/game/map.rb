@@ -28,7 +28,7 @@ module View
         @game.special.current_entity = @selected_company
 
         round =
-          if @game.special.tile_laying_ability.any?
+          if @game.special.tile_laying_ability
             @game.special
           elsif @game.round.operating?
             @game.round

@@ -246,9 +246,9 @@ module Engine
         free = false
 
         entity.abilities(:tile_lay) do |ability|
-          next if !ability[:hexes].include?(hex.id) || !ability[:tiles].include?(tile.name)
+          next if !ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name)
 
-          free = ability[:free]
+          free = ability.free
         end
 
         cost =

@@ -247,7 +247,7 @@ module Engine
 
         return unless (ability = company.abilities(:share))
 
-        share = ability[:share]
+        share = ability.share
         if share.president
           @companies_pending_par << company
         else

@@ -63,17 +63,16 @@ module Engine
       @game.companies.each do |company|
         next unless company.owner
 
-        abilities = company
-          .all_abilities
-          .select { |a| a[:when]&.to_s == @name }
+        company.abilities(:revenue_change) do |ability|
+          next unless ability.when == @name
 
-        abilities.each do |ability|
-          case ability[:type]
-          when :closes
-            company.close!
-          when :revenue_change
-            company.revenue = ability[:revenue]
-          end
+          company.revenue = ability.revenue
+        end
+
+        company.abilities(:close) do |ability|
+          next unless ability.when == @name
+
+          company.close!
         end
       end
     end
@@ -81,12 +80,14 @@ module Engine
     def close_companies_on_train!(entity)
       @game.companies.each do |company|
         next if company.closed?
-        next unless (ability = company.abilities(:close))
-        next if ability[:when] != :train
-        next if entity.name != ability[:corporation].to_s
 
-        company.close!
-        @log << "#{company.name} closes"
+        company.abilities(:close) do |ability|
+          next if ability.when != :train
+          next if entity&.name != ability.corporation
+
+          company.close!
+          @log << "#{company.name} closes"
+        end
       end
     end
 
@@ -95,14 +96,14 @@ module Engine
       rusted_trains = []
 
       @game.trains.each do |t|
-        next if t.obsolete || t.obsolete_on != train.name
+        next if t.obsolete || t.obsolete_on != train.sym
 
         obsolete_trains << t.name
         t.obsolete = true
       end
 
       @game.trains.each do |t|
-        next if t.rusted || t.rusts_on != train.name
+        next if t.rusted || t.rusts_on != train.sym
 
         rusted_trains << t.name
         entity.rusted_self = true if entity && entity == t.owner

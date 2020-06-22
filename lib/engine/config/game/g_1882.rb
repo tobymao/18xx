@@ -254,7 +254,7 @@ module Engine
       "sym": "SC",
       "abilities": [
         {
-          "type": "closes",
+          "type": "close",
           "when": 6
         },
         {
