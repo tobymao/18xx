@@ -250,9 +250,13 @@ module Engine
       "name": "Saskatchewan Central",
       "value": 50,
       "revenue": 10,
-      "desc": "During a player's stock turn, in any phase, the player owning this company can close it to \"convert\" to the 10-share corporation SC. This counts as a \"certificate purchase action\". SC shares cannot be purchased by any player unless SC has been converted. The SC floats using the same rules as other corporation. If the private company is sold to a corporation, it no longer can be converted.",
+      "desc": "During a player's stock turn, in any phase, the player owning this company can close it to \"convert\" to the 10-share corporation SC. This counts as a \"certificate purchase action\". SC shares cannot be purchased by any player unless SC has been converted. The SC floats using the same rules as other corporation. If the private company is sold to a corporation, it no longer can be converted. Closes at the start of Phase 6.",
       "sym": "SC",
       "abilities": [
+        {
+          "type": "close",
+          "when": 6
+        },
         {
           "type": "blocks_hexes",
           "owner_type": "player",
@@ -641,6 +645,7 @@ module Engine
   "phases": [
     {
       "name": "2",
+      "on": "2",
       "train_limit": 4,
       "tiles": [
         "yellow"
@@ -649,34 +654,44 @@ module Engine
     },
     {
       "name": "3",
+      "on": "3",
       "train_limit": 4,
       "tiles": [
         "yellow",
         "green"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "buy_companies": true
     },
     {
       "name": "4",
+      "on": "4",
       "train_limit": 3,
       "tiles": [
         "yellow",
         "green"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "buy_companies": true
     },
     {
       "name": "5",
+      "on": "5",
       "train_limit": 3,
       "tiles": [
         "yellow",
         "green",
         "brown"
       ],
-      "operating_rounds": 3
+      "operating_rounds": 3,
+      "events": {
+        "close_companies": true
+      },
+      "buy_companies": true
     },
     {
       "name": "6",
+      "on": "6",
       "train_limit": 2,
       "tiles": [
         "yellow",
@@ -687,6 +702,7 @@ module Engine
     },
     {
       "name": "D",
+      "on": "D",
       "train_limit": 2,
       "tiles": [
         "yellow",

@@ -181,11 +181,11 @@ module Engine
     end
 
     def upgrade_cost(abilities)
-      ignore = abilities.find { |a| a[:type] == :ignore_terrain }
+      ignore = abilities.find { |a| a.type == :ignore_terrain }
 
       @upgrades.sum do |upgrade|
         cost = upgrade.cost
-        cost = 0 if ignore && upgrade.terrains.uniq == [ignore[:terrain]]
+        cost = 0 if ignore && upgrade.terrains.uniq == [ignore.terrain]
         cost
       end
     end

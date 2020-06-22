@@ -424,7 +424,7 @@ module Engine
       "name": "2",
       "distance": 2,
       "price": 80,
-      "obsolete_on": "4/6",
+      "obsolete_on": "4",
       "rusts_on": "6"
     },
     {

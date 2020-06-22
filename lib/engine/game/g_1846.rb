@@ -46,6 +46,7 @@ module Engine
       GREEN_GROUP = %w[C&O ERIE PRR].freeze
 
       TILE_COST = 20
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove private company tokens']).freeze
 
       def init_companies(players)
         super + @players.size.times.map do |i|
@@ -166,6 +167,10 @@ module Engine
 
       def operating_round(round_num)
         Round::G1846::Operating.new(@minors + @corporations, game: self, round_num: round_num)
+      end
+
+      def event_remove_tokens!
+        # to be implemented
       end
     end
   end

@@ -30,7 +30,7 @@ module View
         def render_company_pending_par
           return [] unless @company_pending_par
 
-          corporation = @company_pending_par.abilities(:share)[:share].corporation
+          corporation = @company_pending_par.abilities(:share).share.corporation
           [
             h(Corporation, corporation: corporation),
             h(Par, corporation: corporation),

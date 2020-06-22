@@ -161,8 +161,9 @@ module Engine
       end
 
       def crowded_corps
-        train_limit = @game.phase.train_limit
-        @game.corporations.select { |c| c.trains.size > train_limit }
+        @game.corporations.select do |c|
+          c.trains.reject(&:obsolete).size > @game.phase.train_limit
+        end
       end
 
       def discard_train(action)
@@ -246,9 +247,9 @@ module Engine
         free = false
 
         entity.abilities(:tile_lay) do |ability|
-          next if !ability[:hexes].include?(hex.id) || !ability[:tiles].include?(tile.name)
+          next if !ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name)
 
-          free = ability[:free]
+          free = ability.free
         end
 
         cost =

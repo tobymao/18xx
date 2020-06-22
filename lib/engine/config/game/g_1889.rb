@@ -330,7 +330,8 @@ module Engine
       "min_players": 4,
       "abilities": [
         {
-          "type": "never_closes",
+          "type": "close",
+          "when": "never",
           "owner_type": "player"
         },
         {

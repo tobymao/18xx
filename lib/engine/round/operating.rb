@@ -146,7 +146,7 @@ module Engine
       end
 
       def corp_has_room?
-        @current_entity.trains.size < @phase.train_limit
+        @current_entity.trains.reject(&:obsolete).size < @phase.train_limit
       end
 
       def can_buy_train?
@@ -304,13 +304,13 @@ module Engine
           next if company.closed?
           next unless (ability = company.abilities(:blocks_hexes))
 
-          raise GameError, "#{hex_id} is blocked by #{company.name}" if ability[:hexes].include?(hex_id)
+          raise GameError, "#{hex_id} is blocked by #{company.name}" if ability.hexes.include?(hex_id)
         end
 
         lay_tile(action)
         @current_entity.abilities(:teleport) do |ability, _|
-          @teleported = ability[:hexes].include?(hex_id) &&
-          ability[:tiles].include?(action.tile.name)
+          @teleported = ability.hexes.include?(hex_id) &&
+          ability.tiles.include?(action.tile.name)
         end
 
         new_tile = action.hex.tile
@@ -339,7 +339,9 @@ module Engine
         trains = {}
         @current_routes.each do |route|
           train = route.train
-          raise GameError, "Cannot run another corporation's train. refresh" if train.owner != @current_entity
+          if train.owner && train.owner != @current_entity
+            raise GameError, "Cannot run another corporation's train. refresh"
+          end
           raise GameError, 'Cannot run train twice' if trains[train]
           raise GameError, 'Cannot run train that operated' if train.operated
 

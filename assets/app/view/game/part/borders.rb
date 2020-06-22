@@ -74,7 +74,7 @@ module View
 
           h(:g, { attrs: { transform: "translate(#{x} #{y}), #{rotation_for_layout}" } }, [
             h(:circle, attrs: { stroke: 'none', fill: color(border), r: '15' }),
-            h('text.tile__text', { attrs: { fill: 'white', stroke: 'white' } }, border.cost.to_s),
+            h('text.tile__text', { attrs: { stroke: 'white' }, style: { fill: 'white' } }, border.cost.to_s),
           ])
         end
 

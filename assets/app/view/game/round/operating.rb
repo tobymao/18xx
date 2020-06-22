@@ -18,7 +18,6 @@ module View
 
         def render
           round = @game.round
-          children = []
 
           action =
             case round.step
@@ -38,14 +37,39 @@ module View
 
           action = h(UndoAndPass, pass: false) if round.ambiguous_token
 
-          children << action
+          left = [action]
           corporation = round.current_entity
-          children << h(Corporation, corporation: corporation)
+          left << h(Corporation, corporation: corporation)
           (corporation.companies + corporation.owner.companies).each do |c|
-            children << h(Company, company: c) if c.abilities(:tile_lay) || c.abilities(:teleport)
+            left << h(Company, inline: false, company: c) if c.abilities(:tile_lay) || c.abilities(:teleport)
           end
-          children << h(Map, game: @game)
-          children << h(BuyCompanies) if round.can_buy_companies?
+
+          div_props = {
+            style: {
+              display: 'flex',
+            },
+          }
+          right = [h(Map, game: @game)]
+          right << h(:div, div_props, [h(BuyCompanies, limit_width: true)]) if round.can_buy_companies?
+
+          left_props = {
+            style: {
+              marginRight: '2rem',
+              verticalAlign: 'top',
+            },
+          }
+
+          right_props = {
+            style: {
+              maxWidth: '100%',
+              width: 'max-content',
+            },
+          }
+
+          children = [
+            h('div.inline-block', left_props, left),
+            h('div.inline-block', right_props, right),
+          ]
 
           h(:div, children)
         end

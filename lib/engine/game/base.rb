@@ -116,6 +116,9 @@ module Engine
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
+      EVENTS_TEXT = { 'close_companies' =>
+        ['Companies Close', 'All companies unless otherwise noted are discarded from the game'] }.freeze
+
       CACHABLE = [
         %i[players player],
         %i[corporations corporation],
@@ -160,22 +163,18 @@ module Engine
           phase.transform_keys!(&:to_sym)
           phase[:tiles]&.map!(&:to_sym)
           phase[:events]&.transform_keys!(&:to_sym)
-
           phase
         end
 
         data['trains'].map! do |train|
           train.transform_keys!(&:to_sym)
+          train[:variants]&.each { |variant| variant.transform_keys!(&:to_sym) }
+          train
         end
 
         data['companies'].map! do |company|
           company.transform_keys!(&:to_sym)
-          company[:abilities]&.map! do |ability|
-            ability.transform_keys!(&:to_sym)
-            ability.transform_values! do |value|
-              value.respond_to?(:to_sym) ? value.to_sym : value
-            end
-          end
+          company[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
           company
         end
 
@@ -189,6 +188,7 @@ module Engine
 
         data['corporations'].map! do |corporation|
           corporation.transform_keys!(&:to_sym)
+          corporation[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
           corporation[:color] = const_get(:COLORS)[corporation[:color]] if const_defined?(:COLORS)
           corporation
         end
@@ -389,8 +389,8 @@ module Engine
           @undo_possible = true
         end
 
-        @actions << action
         action_processed(action)
+        @actions << action
 
         while @round.finished? && !@finished
           @round.entities.each(&:unpass!)
@@ -550,6 +550,16 @@ module Engine
       end
 
       def init_hexes(companies, corporations)
+        blockers = {}
+
+        companies.each do |company|
+          company.abilities(:blocks_hexes) do |ability|
+            ability.hexes.each do |hex|
+              blockers[hex] = company
+            end
+          end
+        end
+
         self.class::HEXES.map do |color, hexes|
           hexes.map do |coords, tile_string|
             coords.map.with_index do |coord, index|
@@ -561,8 +571,9 @@ module Engine
                 end
 
               # add private companies that block tile lays on this hex
-              blocker = companies.find { |c| c.abilities(:blocks_hexes)&.dig(:hexes)&.include?(coord) }
-              tile.add_blocker!(blocker) unless blocker.nil?
+              if (blocker = blockers[coord])
+                tile.add_blocker!(blocker)
+              end
 
               # reserve corporation home spots
               corporations.select { |c| c.coordinates == coord }.each do |c|
@@ -619,22 +630,22 @@ module Engine
         @companies.each do |company|
           next unless (ability = company.abilities(:share))
 
-          case (share = ability[:share].to_s)
+          case (share = ability.share)
           when 'random_president'
             corporation = @corporations[rand % @corporations.size]
             share = corporation.shares[0]
-            ability[:share] = share
+            ability.share = share
             company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
             @log << "#{company.name} comes with the president's share of #{corporation.name}"
           when 'random_share'
-            corporations = ability[:corporations]&.map { |id| corporation_by_id(id) } || @corporations
+            corporations = ability.corporations&.map { |id| corporation_by_id(id) } || @corporations
             corporation = corporations[rand % corporations.size]
             share = corporation.shares.find { |s| !s.president }
-            ability[:share] = share
+            ability.share = share
             company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
             @log << "#{company.name} comes with a #{share.percent}% share of #{corporation.name}"
           else
-            ability[:share] = share_by_id(share)
+            ability.share = share_by_id(share)
           end
         end
       end
@@ -764,6 +775,18 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(@corporations, game: self, round_num: round_num)
+      end
+
+      def event_close_companies!
+        @log << '-- Event: Private companies close --'
+
+        @companies.each do |company|
+          if (ability = company.abilities(:close))
+            next if ability.when == 'never' || @phase.phases.any? { |phase| ability.when == phase[:name] }
+          end
+
+          company.close!
+        end
       end
 
       def cache_objects

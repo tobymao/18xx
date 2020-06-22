@@ -78,9 +78,9 @@ module Engine
           hexes = {}
 
           @current_entity.abilities(:token) do |ability, _|
-            next unless ability[:teleport_price]
-
-            ability[:hexes].each do |id|
+            next unless ability.teleport_price
+            
+            ability.hexes.each do |id|
               hex = @game.hex_by_id(id)
               hexes[hex] = hex.neighbors.keys
             end
@@ -93,9 +93,9 @@ module Engine
           nodes = {}
 
           @current_entity.abilities(:token) do |ability, _|
-            next unless ability[:teleport_price]
-
-            ability[:hexes].each do |id|
+            next unless ability.teleport_price
+            
+            ability.hexes.each do |id|
               @game.hex_by_id(id).tile.cities.each { |c| nodes[c] = true }
             end
           end
@@ -131,8 +131,8 @@ module Engine
           free = false
 
           @current_entity.abilities(:tile_lay) do |ability|
-            ability[:hexes].each do |hex_id|
-              free = true if ability[:free] && @game.hex_by_id(hex_id).tile.preprinted
+            ability.hexes.each do |hex_id|
+              free = true if ability.free && @game.hex_by_id(hex_id).tile.preprinted
             end
           end
 
@@ -213,7 +213,7 @@ module Engine
 
         def used_token_ability(hex)
           @current_entity.abilities(:token) do |ability, _|
-            return true if ability[:hexes].include?(hex.id)
+            return true if ability.hexes.include?(hex.id)
           end
 
           false

@@ -100,7 +100,7 @@ module Engine
       end
 
       corporation.abilities(:teleport) do |ability, _|
-        ability[:hexes].each do |hex_id|
+        ability.hexes.each do |hex_id|
           hex = @game.hex_by_id(hex_id)
           hex.neighbors.each { |e, _| hexes[hex][e] = true }
           hex.tile.nodes.each do |node|
