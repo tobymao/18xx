@@ -57,10 +57,7 @@ module Engine
 
     def trigger_events!
       @events.each do |type, _value|
-        case type
-        when :close_companies
-          close_companies!
-        end
+        @game.send("event_#{type}!")
       end
 
       @game.companies.each do |company|
@@ -71,14 +68,12 @@ module Engine
 
           company.revenue = ability.revenue
         end
-      end
-    end
 
-    def close_companies!
-      @log << '-- Event: Private companies close --'
+        company.abilities(:close) do |ability|
+          next unless ability.when == @name
 
-      @game.companies.each do |company|
-        company.close! unless company.abilities(:never_closes)
+          company.close!
+        end
       end
     end
 

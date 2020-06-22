@@ -4,7 +4,7 @@ require_relative 'connection'
 
 module Engine
   class Hex
-    attr_reader :connections, :coordinates, :layout, :neighbors, :tile, :x, :y, :location_name
+    attr_reader :connections, :coordinates, :layout, :neighbors, :tile, :x, :y, :location_name, :original_tile
 
     DIRECTIONS = {
       flat: {
@@ -68,7 +68,7 @@ module Engine
       @connections = Hash.new { |h, k| h[k] = [] }
       @location_name = location_name
       tile.location_name = location_name
-      @tile = tile
+      @original_tile = @tile = tile
       @tile.hex = self
     end
 
@@ -95,11 +95,14 @@ module Engine
           @tile.cities.zip(tile.cities).to_h
         # if @tile is not blank, ensure connectivity is maintained
         else
-          @tile.cities.map do |old_city|
+          @tile.cities.map.with_index do |old_city, index|
             new_city = tile.cities.find do |city|
               # we want old_edges to be subset of new_edges
               (old_city.exits - city.exits).empty?
             end
+
+            # When downgrading from yellow to no-exit tiles, assume it's the same index
+            new_city ||= tile.cities[index]
             [old_city, new_city]
           end.to_h
         end
@@ -121,6 +124,7 @@ module Engine
 
       @tile.icons.each do |icon|
         next unless icon.sticky
+        next if tile.icons.any? { |x| icon.name == x.name }
 
         new_icon = icon.dup
         new_icon.preprinted = false

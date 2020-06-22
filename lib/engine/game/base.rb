@@ -116,6 +116,9 @@ module Engine
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
+      EVENTS_TEXT = { 'close_companies' =>
+        ['Companies Close', 'All companies unless otherwise noted are discarded from the game'] }.freeze
+
       CACHABLE = [
         %i[players player],
         %i[corporations corporation],
@@ -772,6 +775,18 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(@corporations, game: self, round_num: round_num)
+      end
+
+      def event_close_companies!
+        @log << '-- Event: Private companies close --'
+
+        @companies.each do |company|
+          ability = company.abilities(:close)
+          next if ability&.when == :never
+          next if ability && @phase.phases.any? { |phase| ability.when == phase[:name] }
+
+          company.close!
+        end
       end
 
       def cache_objects

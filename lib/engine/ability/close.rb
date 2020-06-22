@@ -7,7 +7,7 @@ module Engine
     class Close < Base
       attr_reader :corporation
 
-      def setup(corporation:)
+      def setup(corporation: nil)
         @corporation = corporation
       end
     end

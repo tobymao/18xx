@@ -26,6 +26,22 @@ module Engine
       SELL_BUY_ORDER = :sell_buy_sell
       TRACK_RESTRICTION = :permissive
       DISCARDED_TRAINS = :remove
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'nwr' => ['North West Rebellion',
+                  'Remove all yellow tiles from NWR-marked hexes. Station markers remain']
+      ).freeze
+
+      def init_phase
+        phases = self.class::PHASES
+        nwr_phases = %w[3 4 5 6]
+        nwr_phase = nwr_phases[rand % nwr_phases.size]
+        @log << "NWR Rebellion occurs at start of phase #{nwr_phase}"
+        phases.each do |phase|
+          phase[:events] = { nwr: true }.merge(phase[:events] || {}) if phase[:name] == nwr_phase
+        end
+
+        Phase.new(phases, self)
+      end
 
       def init_corporations(stock_market)
         min_price = stock_market.par_prices.map(&:price).min
@@ -47,6 +63,22 @@ module Engine
           end
         end
         corporations
+      end
+
+      def event_nwr!
+        @log << '-- Event: North West Rebellion! --'
+        name = '1882/NWR'
+        @hexes.each do |hex|
+          next unless hex.tile.icons.any? { |icon| icon.name == name }
+
+          next unless hex.tile.color == :yellow
+          next unless hex.tile != hex.original_tile
+
+          @log << "Rebellion destroys tile #{hex.name}"
+          old_tile = hex.tile
+          hex.lay(hex.original_tile)
+          tiles << old_tile
+        end
       end
     end
   end
