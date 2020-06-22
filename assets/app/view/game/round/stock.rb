@@ -79,9 +79,13 @@ module View
             end
 
             # Allow privates to be exchanged for shares
-            exchangable = @game.companies.select do |n|
-              n.abilities(:exchange)&.fetch(:corporation)&.to_s == @selected_corporation.name &&
-                @round.can_gain?(ipo_share, n.owner)
+            exchangable = @game.companies.select do |company|
+              can_exchange = false
+              company.abilities(:exchange) do |ability|
+                can_exchange = ability.corporation == @selected_corporation.name &&
+                  @round.can_gain?(ipo_share, company.owner)
+              end
+              can_exchange
             end
             exchangable.each do |company|
               exchange = lambda do
@@ -89,11 +93,11 @@ module View
               end
               children << if company.owner == @current_entity
                             h('button.button', { on: { click: exchange } },
-                              "Exchange #{company.name} for Share")
+                              "Exchange #{company.sym} for a share")
                           else
                             # This can be done outside of a players turn, but make it clear who owns it
                             h('button.button', { on: { click: exchange } },
-                              "#{company.owner.name} exchanges #{company.name} for Share")
+                              "#{company.owner.name} exchanges #{company.name} for a share")
                           end
             end
 

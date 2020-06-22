@@ -319,7 +319,6 @@ module Engine
       "abilities": [
         {
           "type": "token",
-          "tiles": [],
           "hexes": [
             "H12"
           ]

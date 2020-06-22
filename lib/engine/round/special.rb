@@ -15,9 +15,7 @@ module Engine
       end
 
       def tile_laying_ability
-        return {} unless (ability = @current_entity&.abilities(:tile_lay))
-
-        ability
+        @current_entity&.abilities(:tile_lay)
       end
 
       def can_lay_track?
@@ -25,7 +23,9 @@ module Engine
       end
 
       def connected_hexes
-        tile_laying_ability[:hexes]&.map do |coordinates|
+        return {} unless tile_laying_ability
+
+        tile_laying_ability.hexes.map do |coordinates|
           hex = @game.hex_by_id(coordinates)
           [hex, hex.neighbors.keys]
         end.to_h
@@ -38,10 +38,7 @@ module Engine
         case action
         when Action::LayTile
           lay_tile(action)
-          ability = company.abilities(:tile_lay)
-          ability[:count] ||= 0
-          ability[:count] -= 1
-          company.remove_ability(:tile_lay) unless ability[:count].positive?
+          company.abilities(:tile_lay, &:use!)
         when Action::BuyShares
           owner = company.owner
           bundle = action.bundle
@@ -53,7 +50,7 @@ module Engine
       end
 
       def potential_tiles
-        return [] unless (tiles = tile_laying_ability[:tiles])
+        return [] unless (tiles = tile_laying_ability&.tiles)
 
         tiles.map do |name|
           # this is shit

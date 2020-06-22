@@ -160,7 +160,6 @@ module Engine
           phase.transform_keys!(&:to_sym)
           phase[:tiles]&.map!(&:to_sym)
           phase[:events]&.transform_keys!(&:to_sym)
-
           phase
         end
 
@@ -170,12 +169,7 @@ module Engine
 
         data['companies'].map! do |company|
           company.transform_keys!(&:to_sym)
-          company[:abilities]&.map! do |ability|
-            ability.transform_keys!(&:to_sym)
-            ability.transform_values! do |value|
-              value.respond_to?(:to_sym) ? value.to_sym : value
-            end
-          end
+          company[:abilities]&.map! { |ability| ability.transform_keys!(&:to_sym) }
           company
         end
 
@@ -189,6 +183,7 @@ module Engine
 
         data['corporations'].map! do |corporation|
           corporation.transform_keys!(&:to_sym)
+          corporation[:abilities]&.map! { |ability| ability.transform_keys!(&:to_sym) }
           corporation[:color] = const_get(:COLORS)[corporation[:color]] if const_defined?(:COLORS)
           corporation
         end
@@ -550,6 +545,16 @@ module Engine
       end
 
       def init_hexes(companies, corporations)
+        blockers = {}
+
+        companies.each do |company|
+          company.abilities(:blocks_hexes) do |ability|
+            ability.hexes.each do |hex|
+              blockers[hex] = company
+            end
+          end
+        end
+
         self.class::HEXES.map do |color, hexes|
           hexes.map do |coords, tile_string|
             coords.map.with_index do |coord, index|
@@ -561,8 +566,9 @@ module Engine
                 end
 
               # add private companies that block tile lays on this hex
-              blocker = companies.find { |c| c.abilities(:blocks_hexes)&.dig(:hexes)&.include?(coord) }
-              tile.add_blocker!(blocker) unless blocker.nil?
+              if (blocker = blockers[coord])
+                tile.add_blocker!(blocker)
+              end
 
               # reserve corporation home spots
               corporations.select { |c| c.coordinates == coord }.each do |c|
@@ -619,22 +625,22 @@ module Engine
         @companies.each do |company|
           next unless (ability = company.abilities(:share))
 
-          case (share = ability[:share].to_s)
+          case (share = ability.share)
           when 'random_president'
             corporation = @corporations[rand % @corporations.size]
             share = corporation.shares[0]
-            ability[:share] = share
+            ability.share = share
             company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
             @log << "#{company.name} comes with the president's share of #{corporation.name}"
           when 'random_share'
-            corporations = ability[:corporations]&.map { |id| corporation_by_id(id) } || @corporations
+            corporations = ability.corporations&.map { |id| corporation_by_id(id) } || @corporations
             corporation = corporations[rand % corporations.size]
             share = corporation.shares.find { |s| !s.president }
-            ability[:share] = share
+            ability.share = share
             company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
             @log << "#{company.name} comes with a #{share.percent}% share of #{corporation.name}"
           else
-            ability[:share] = share_by_id(share)
+            ability.share = share_by_id(share)
           end
         end
       end

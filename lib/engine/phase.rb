@@ -66,15 +66,10 @@ module Engine
       @game.companies.each do |company|
         next unless company.owner
 
-        abilities = company
-          .all_abilities
-          .select { |a| a[:when]&.to_s == @name }
+        company.abilities(:revenue_change) do |ability|
+          next unless ability.when == @name
 
-        abilities.each do |ability|
-          case ability[:type]
-          when :revenue_change
-            company.revenue = ability[:revenue]
-          end
+          company.revenue = ability.revenue
         end
       end
     end
@@ -90,12 +85,14 @@ module Engine
     def close_companies_on_train!(entity)
       @game.companies.each do |company|
         next if company.closed?
-        next unless (ability = company.abilities(:close))
-        next if ability[:when] != :train
-        next if entity.name != ability[:corporation].to_s
 
-        company.close!
-        @log << "#{company.name} closes"
+        company.abilities(:close) do |ability|
+          next if ability.when != :train
+          next if entity&.name != ability.corporation
+
+          company.close!
+          @log << "#{company.name} closes"
+        end
       end
     end
 

@@ -304,13 +304,13 @@ module Engine
           next if company.closed?
           next unless (ability = company.abilities(:blocks_hexes))
 
-          raise GameError, "#{hex_id} is blocked by #{company.name}" if ability[:hexes].include?(hex_id)
+          raise GameError, "#{hex_id} is blocked by #{company.name}" if ability.hexes.include?(hex_id)
         end
 
         lay_tile(action)
         @current_entity.abilities(:teleport) do |ability, _|
-          @teleported = ability[:hexes].include?(hex_id) &&
-          ability[:tiles].include?(action.tile.name)
+          @teleported = ability.hexes.include?(hex_id) &&
+          ability.tiles.include?(action.tile.name)
         end
 
         new_tile = action.hex.tile
