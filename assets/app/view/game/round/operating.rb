@@ -47,7 +47,6 @@ module View
           div_props = {
             style: {
               display: 'flex',
-              minWidth: '990px',
             },
           }
           right = [h(Map, game: @game)]
@@ -59,9 +58,17 @@ module View
               verticalAlign: 'top',
             },
           }
+
+          right_props = {
+            style: {
+              maxWidth: '100%',
+              width: 'max-content',
+            },
+          }
+
           children = [
             h('div.inline-block', left_props, left),
-            h('div.inline-block', right),
+            h('div.inline-block', right_props, right),
           ]
 
           h(:div, children)
