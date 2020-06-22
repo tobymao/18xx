@@ -84,13 +84,17 @@ module View
 
             style['background-color'] = Part::Track::ROUTE_COLORS[@routes.index(route)]
             style['color'] = 'white'
+
+            route_td_props = { style: { maxWidth: '230px' } }
+
             children << h(:td, route.stops.size)
             children << h(:td, revenue)
-            children << h(:td, if invalid
-                                 "#{route.hexes.map(&:name).join(', ')} (#{invalid})"
-                               else
-                                 route.hexes.map(&:name).join(', ')
-                               end)
+            children << h(:td, route_td_props,
+                          if invalid
+                            "#{route.hexes.map(&:name).join(', ')} (#{invalid})"
+                          else
+                            route.hexes.map(&:name).join(', ')
+                          end)
           end
           h(:tr, [h(:td, { style: style, on: { click: onclick } }, "Train: #{train.name}"), *children])
         end
@@ -110,7 +114,17 @@ module View
               h(:th, 'Train'),
               h(:th, 'Stops'),
               h(:th, 'Revenue'),
-              h(:th, 'Route (Click revenue centers. Click again to cycle path)'),
+              h(:th, 'Route'),
+            ]),
+            h(:tr, [
+              h(:td),
+              h(:td),
+              h(:td),
+              h(:td, [
+                'Click revenue centers.',
+                h(:br),
+                'Click again to cycle path.',
+              ]),
             ]),
             *trains,
           ]),
@@ -151,12 +165,16 @@ module View
                   rescue Engine::GameError
                     '(Invalid Route)'
                   end
-        h(:div, { style: { overflow: 'auto' } }, [
+        h(:div, { style: { overflow: 'auto', marginBottom: '1rem' } }, [
           h(:div, { style: { width: 'max-content' } }, [
-            h('button.button', { on: { click: submit } }, 'Submit ' + revenue),
-            h('button.button', { style: { 'margin-left': '0.5rem' }, on: { click: clear } }, 'Clear Train'),
-            h('button.button', { style: { 'margin-left': '0.5rem' }, on: { click: clear_all } }, 'Clear All'),
-            h('button.button', { style: { 'margin-left': '0.5rem' }, on: { click: reset_all } }, 'Reset'),
+            h('button.button', { style: { padding: '0.2rem 0.5rem', minWidth: '7em' },
+                                 on: { click: submit } }, 'Submit ' + revenue),
+            h('button.button', { style: { marginLeft: '0.5rem', padding: '0.2rem 0.5rem' },
+                                 on: { click: clear } }, 'Clear Train'),
+            h('button.button', { style: { marginLeft: '0.5rem', padding: '0.2rem 0.5rem' },
+                                 on: { click: clear_all } }, 'Clear All'),
+            h('button.button', { style: { marginLeft: '0.5rem', padding: '0.2rem 0.5rem' },
+                                 on: { click: reset_all } }, 'Reset'),
           ]),
         ])
       end

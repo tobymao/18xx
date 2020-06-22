@@ -8,6 +8,7 @@ module View
       needs :selected_company, default: nil, store: true
       needs :game, store: true
       needs :tile_selector, default: nil, store: true
+      needs :inline, default: true
 
       def selected?
         @company == @selected_company
@@ -65,14 +66,13 @@ module View
 
         props = {
           style: {
-            display: 'inline-block',
             cursor: 'pointer',
             border: 'solid 1px gainsboro',
             'border-radius': '10px',
             overflow: 'hidden',
             padding: '0.5rem',
             margin: '0.5rem 0.5rem 0 0',
-            width: '300px',
+            width: '19rem',
             'text-align': 'center',
             'font-weight': 'bold',
             'vertical-align': 'top',
@@ -83,6 +83,7 @@ module View
           props[:style]['background-color'] = 'lightblue'
           props[:style]['color'] = 'black'
         end
+        props[:style][:display] = 'inline-block' if @inline
 
         children = [
           h(:div, { style: header_style }, 'PRIVATE COMPANY'),

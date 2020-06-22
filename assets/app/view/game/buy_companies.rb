@@ -9,11 +9,13 @@ module View
       include Actionable
 
       needs :selected_company, default: nil, store: true
+      needs :limit_width, default: false
 
       def render
         @corporation = @game.current_entity
+        props = @limit_width ? { style: { flexGrow: '1', width: '0' } } : {}
 
-        h(:div, 'Buy Private Companies', [
+        h(:div, props, [
           *render_companies,
         ].compact)
       end
