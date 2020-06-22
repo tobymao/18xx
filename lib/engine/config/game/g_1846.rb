@@ -285,7 +285,8 @@ module Engine
           "hexes": [
             "E11"
           ],
-          "token_price": 60
+          "token_price": 60,
+          "track_optional": true
         },
         {
           "type": "discounted_token",
@@ -330,7 +331,8 @@ module Engine
           "hexes": [
             "H12"
           ],
-          "token_price": 100
+          "token_price": 100,
+          "track_optional": true
         },
         {
           "type": "discounted_token",

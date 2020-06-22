@@ -67,11 +67,7 @@ module Engine
         @current_routes = []
         @current_actions = []
         @teleported = false
-<<<<<<< HEAD
         @ambiguous_hex_token = []
-=======
-        @teleport_token_price = 0
->>>>>>> 5e5eed3... Fixes 1846 token teleport and discount powers.
 
         payout_companies
         @entities.each { |c| place_home_token(c) } if @home_token_timing == :operating_round
@@ -314,7 +310,6 @@ module Engine
         @current_entity.abilities(:teleport) do |ability, _|
           if ability[:hexes].include?(hex_id) && ability[:tiles].include?(action.tile.name)
             @teleported = true
-            @teleport_token_price = ability[:token_price] || 0
           end
         end
 
@@ -596,7 +591,14 @@ module Engine
           return ability[:price] if ability[:hex] == hex.id && reachable_hexes[hex]
         end
 
-        return @teleport_token_price if @teleported
+        @current_entity.abilities(:teleport) do |ability, _|
+          next unless ability[:track_optional] || @teleported # Teleported is true if a track was laid.
+
+          if ability[:hexes].include?(hex.id)
+            @teleported = true
+            return ability[:token_price] || 0
+          end
+        end
 
         token.price || 0
       end
