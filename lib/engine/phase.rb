@@ -101,14 +101,14 @@ module Engine
       rusted_trains = []
 
       @game.trains.each do |t|
-        next if t.obsolete || t.obsolete_on != train.name
+        next if t.obsolete || t.obsolete_on != train.sym
 
         obsolete_trains << t.name
         t.obsolete = true
       end
 
       @game.trains.each do |t|
-        next if t.rusted || t.rusts_on != train.name
+        next if t.rusted || t.rusts_on != train.sym
 
         rusted_trains << t.name
         entity.rusted_self = true if entity && entity == t.owner
