@@ -36,8 +36,8 @@ module Engine
         nwr_phases = %w[3 4 5 6]
         nwr_phase = nwr_phases[rand % nwr_phases.size]
         @log << "NWR Rebellion occurs at start of phase #{nwr_phase}"
-        phases.each do |x|
-          x[:events] = { nwr: true }.merge(x[:events] || {}) if x[:name] == nwr_phase
+        phases.each do |phase|
+          phase[:events] = { nwr: true }.merge(phase[:events] || {}) if phase[:name] == nwr_phase
         end
 
         Phase.new(phases, self)
@@ -69,9 +69,10 @@ module Engine
         @log << '-- Event: North West Rebellion! --'
         name = '1882/NWR'
         @hexes.each do |hex|
-          next unless hex.tile.icons.any? { |x| x.name == name }
+          next unless hex.tile.icons.any? { |icon| icon.name == name }
 
-          next unless hex.tile.color == :yellow && hex.tile != hex.original_tile
+          next unless hex.tile.color == :yellow
+          next unless hex.tile != hex.original_tile
 
           @log << "Rebellion destroys tile #{hex.name}"
           old_tile = hex.tile

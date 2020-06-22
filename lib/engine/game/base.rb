@@ -773,7 +773,9 @@ module Engine
         @log << '-- Event: Private companies close --'
 
         @companies.each do |company|
-          company.close! unless company.abilities(:closes) || company.abilities(:never_closes)
+          next if company.abilities(:closes) || company.abilities(:never_closes)
+
+          company.close!
         end
       end
 
