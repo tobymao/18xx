@@ -15,6 +15,8 @@ module View
       needs :selected_company, default: nil, store: true
       needs :opacity, default: nil
 
+      EDGE_LENGTH = 50
+      SIDE_TO_SIDE = 87
       FONT_SIZE = 25
       GAP = 25 # GAP between the row/col labels and the map hexes
       SCALE = 0.5 # Scale for the map
@@ -92,9 +94,14 @@ module View
       end
 
       def render_map
-        w_size, h_size = @layout == :flat ? [85, 50] : [50, 85]
-        width = (@cols.size * w_size) + GAP
-        height = (@rows.size * h_size) + GAP
+        if @layout == :flat
+          width = (@cols.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP
+          height = (@rows.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP
+        else
+          width = (@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP
+          height = (@rows.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP
+        end
+
         props = {
           attrs: {
             id: 'map',
