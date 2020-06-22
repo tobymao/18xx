@@ -92,13 +92,14 @@ module View
       end
 
       def render_map
-        w_size, h_size = @layout == :flat ? [85, 50] : [50, 85]
+        flat2flat = 85
+        edge_length = 50
         if @layout == :flat
-          width = @cols.size * 1.5 * h_size + h_size / 2 + 3 * GAP
-          height = (@rows.size / 2 + 0.5) * w_size + 3 * GAP
+          width = (@cols.size * 1.5 + 0.5) * edge_length + 3 * GAP
+          height = (@rows.size / 2 + 0.5) * flat2flat + 3 * GAP
         else
-          width = (@cols.size / 2 + 0.5) * h_size + 3 * GAP
-          height = @rows.size * 1.5 * w_size + w_size / 2 + 3 * GAP
+          width = (@cols.size / 2 + 0.5) * flat2flat + 3 * GAP
+          height = (@rows.size * 1.5 + 0.5) * edge_length + 3 * GAP
         end
 
         props = {
