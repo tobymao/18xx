@@ -138,7 +138,7 @@ module Engine
       all
     end
 
-    def abilities(type)
+    def abilities(type, time = nil)
       abilities = []
 
       if (ability = super)
@@ -147,9 +147,9 @@ module Engine
       end
 
       @companies.each do |company|
-        if (ability = company.abilities(type))
-          abilities << ability
-          yield ability, company if block_given?
+        company.abilities(type, time) do |company_ability|
+          abilities << company_ability
+          yield company_ability, company if block_given?
         end
       end
 

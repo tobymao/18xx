@@ -22,7 +22,7 @@ module Engine
       end
     end
 
-    def abilities(type)
+    def abilities(type, time = nil)
       return nil unless (ability = @abilities[type])
 
       correct_owner_type =
@@ -35,6 +35,7 @@ module Engine
           true
         end
 
+      return nil if time && ability.when != time.to_s
       return nil unless correct_owner_type
 
       yield ability if block_given?
@@ -52,7 +53,7 @@ module Engine
 
     def remove_ability_when(time)
       @abilities.dup.each do |type, ability|
-        remove_ability(type) if ability.when == time
+        remove_ability(type) if ability.when == time.to_s
       end
     end
 

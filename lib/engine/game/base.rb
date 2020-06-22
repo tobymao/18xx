@@ -781,9 +781,9 @@ module Engine
         @log << '-- Event: Private companies close --'
 
         @companies.each do |company|
-          ability = company.abilities(:close)
-          next if ability&.when == :never
-          next if ability && @phase.phases.any? { |phase| ability.when == phase[:name] }
+          if (ability = company.abilities(:close))
+            next if ability.when == 'never' || @phase.phases.any? { |phase| ability.when == phase[:name] }
+          end
 
           company.close!
         end

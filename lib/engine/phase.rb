@@ -63,15 +63,11 @@ module Engine
       @game.companies.each do |company|
         next unless company.owner
 
-        company.abilities(:revenue_change) do |ability|
-          next unless ability.when == @name
-
+        company.abilities(:revenue_change, @name) do |ability|
           company.revenue = ability.revenue
         end
 
-        company.abilities(:close) do |ability|
-          next unless ability.when == @name
-
+        company.abilities(:close, @name) do
           company.close!
         end
       end
@@ -81,8 +77,7 @@ module Engine
       @game.companies.each do |company|
         next if company.closed?
 
-        company.abilities(:close) do |ability|
-          next if ability.when != :train
+        company.abilities(:close, :train) do |ability|
           next if entity&.name != ability.corporation
 
           company.close!
