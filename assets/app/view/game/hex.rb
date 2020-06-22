@@ -38,19 +38,17 @@ module View
         opaque = true
         clickable = @role == :tile_selector
 
-        case @round
-        when Engine::Round::Operating
-          case @round.step
-          when :track, :token_or_track
+        if @round
+          if @round.ambiguous_token
+            opaque = @round.reachable_hexes[@hex]
+            clickable ||= opaque
+          elsif @round.can_lay_track?
             opaque = @round.connected_hexes[@hex]
             clickable ||= opaque
-          when :token, :route, :home_token, :reposition_token
+          elsif @round.can_place_token? || @round.can_run_routes?
             opaque = @round.reachable_hexes[@hex]
             clickable ||= opaque
           end
-        when Engine::Round::Special
-          opaque = @round.connected_hexes[@hex]
-          clickable ||= opaque
         end
 
         props = {

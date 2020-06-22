@@ -106,6 +106,10 @@ module Engine
         false
       end
 
+      def ambiguous_token
+        nil
+      end
+
       def connected_hexes
         {}
       end

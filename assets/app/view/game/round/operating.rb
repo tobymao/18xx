@@ -24,7 +24,7 @@ module View
             case round.step
             when :home_token
               h(UndoAndPass, pass: false)
-            when :company, :track, :token, :token_or_track, :reposition_token
+            when :company, :track, :token, :token_or_track
               h(UndoAndPass)
             when :route
               h(RouteSelector)
@@ -35,6 +35,8 @@ module View
             when :issue
               h(IssueShares)
             end
+
+          action = h(UndoAndPass, pass: false) if round.ambiguous_token
 
           children << action
           corporation = round.current_entity

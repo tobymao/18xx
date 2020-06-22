@@ -19,7 +19,6 @@ module Engine
       STEPS = %i[
         home_token
         track
-        reposition_token
         token
         route
         dividend
@@ -32,7 +31,6 @@ module Engine
         track: 'Lay Track',
         token: 'Place a Token',
         route: 'Run Routes',
-        reposition_token: 'Reposition Token',
         dividend: 'Pay or Withhold Dividends',
         train: 'Buy Trains',
         company: 'Purchase Companies',
@@ -42,7 +40,6 @@ module Engine
       SHORT_STEP_DESCRIPTION = {
         track: 'Track',
         token: 'Token',
-        reposition_token: 'Reposition Token',
         train: 'Trains',
         company: 'Companies',
       }.freeze
@@ -70,7 +67,7 @@ module Engine
         @current_routes = []
         @current_actions = []
         @teleported = false
-        @ambigious_upgrade = []
+        @ambiguous_hex_token = []
 
         payout_companies
         @entities.each { |c| place_home_token(c) } if @home_token_timing == :operating_round
@@ -86,6 +83,10 @@ module Engine
       end
 
       def description
+        if (token = ambiguous_token)
+          return "Must choose token for #{token.corporation.name} at #{@ambiguous_hex_token[0].name}"
+        end
+
         self.class::STEP_DESCRIPTION[@step]
       end
 
@@ -199,7 +200,11 @@ module Engine
       end
 
       def can_place_token?
-        @step == :token || @step == :home_token || @step == :reposition_token
+        @step == :token || @step == :home_token || ambiguous_token
+      end
+
+      def ambiguous_token
+        @ambiguous_hex_token[1]
       end
 
       def steps
@@ -219,7 +224,7 @@ module Engine
       end
 
       def reachable_hexes
-        return @ambigious_upgrade.map { |x| [x, true] }.to_h if @step == :reposition_token
+        return { @ambiguous_hex_token[0] => true } if ambiguous_token
         return { @game.hex_by_id(@current_entity.coordinates) => true } if @step == :home_token
 
         @graph.reachable_hexes(@current_entity)
@@ -254,10 +259,6 @@ module Engine
       def skip_home_token
         !(@home_token_timing == :operate &&
           @game.hex_by_id(@current_entity.coordinates)&.tile&.reserved_by?(@current_entity))
-      end
-
-      def skip_reposition_token
-        @ambigious_upgrade.empty?
       end
 
       def skip_track; end
@@ -313,11 +314,14 @@ module Engine
         end
 
         new_tile = action.hex.tile
+        cities = new_tile.cities
         if previous_tile.paths.empty? &&
           new_tile.paths.any? &&
-          new_tile.cities.size > 1 &&
-          new_tile.cities.flat_map(&:tokens).any?
-          @ambigious_upgrade << action.hex
+          cities.size > 1 &&
+          cities.flat_map(&:tokens).any?
+          token = cities.flat_map(&:tokens).find(&:itself)
+          @ambiguous_hex_token = [action.hex, token]
+          token.remove!
         end
       end
 
@@ -327,6 +331,7 @@ module Engine
 
       def process_move_token(action)
         move_token(action)
+        @ambiguous_hex_token = []
       end
 
       def process_run_routes(action)
@@ -409,7 +414,6 @@ module Engine
             company.remove_ability(:teleport)
           end
         end
-        @ambigious_upgrade = []
         @last_share_sold_price = nil
         @current_entity = next_entity
         start_operating
@@ -427,7 +431,7 @@ module Engine
 
       def ignore_action?(action)
         case action
-        when Action::SellShares
+        when Action::SellShares, Action::MoveToken
           true
         when Action::DiscardTrain, Action::BuyTrain
           crowded_corps.any? || can_buy_train?
