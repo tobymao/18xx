@@ -81,11 +81,10 @@ module View
               Lib::Color.convert_hex_to_rgba(Part::MultiRevenue::COLOR[phase_color], 0.4)
           end
 
-          buy_text = []
-
-          buy_text << 'Can Buy Companies' if phase[:buy_companies]
+          event_text = []
+          event_text << 'Can Buy Companies' if phase[:buy_companies]
           phase[:events]&.each do |name, _value|
-            buy_text << (@game.class::EVENTS_TEXT[name] ? "#{@game.class::EVENTS_TEXT[name][0]}*" : name)
+            event_text << (@game.class::EVENTS_TEXT[name] ? "#{@game.class::EVENTS_TEXT[name][0]}*" : name)
           end
 
           h(:tr, [
@@ -93,7 +92,7 @@ module View
             h(:td, td_props, phase[:operating_rounds]),
             h(:td, td_props, phase[:train_limit]),
             h(:td, phase_props, phase_color.capitalize),
-            h(:td, td_props, buy_text.join(',')),
+            h(:td, td_props, event_text.join(',')),
           ])
         end
 

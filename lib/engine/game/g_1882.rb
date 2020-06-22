@@ -71,10 +71,12 @@ module Engine
         @hexes.each do |hex|
           next unless hex.tile.icons.any? { |x| x.name == name }
 
-          if hex.tile.color == :yellow && hex.tile != hex.original_tile
-            @log << "Rebellion destroys tile #{hex.name}"
-            hex.lay(x.original_tile)
-          end
+          next unless hex.tile.color == :yellow && hex.tile != hex.original_tile
+
+          @log << "Rebellion destroys tile #{hex.name}"
+          old_tile = hex.tile
+          hex.lay(hex.original_tile)
+          tiles << old_tile
         end
       end
     end
