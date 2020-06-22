@@ -79,7 +79,7 @@ module Engine
 
           @current_entity.abilities(:token) do |ability, _|
             next unless ability.teleport_price
-            
+
             ability.hexes.each do |id|
               hex = @game.hex_by_id(id)
               hexes[hex] = hex.neighbors.keys
@@ -94,7 +94,7 @@ module Engine
 
           @current_entity.abilities(:token) do |ability, _|
             next unless ability.teleport_price
-            
+
             ability.hexes.each do |id|
               @game.hex_by_id(id).tile.cities.each { |c| nodes[c] = true }
             end
