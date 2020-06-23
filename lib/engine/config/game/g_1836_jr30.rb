@@ -335,7 +335,8 @@ module Engine
             {
                "type":"exchange",
                "corporation":"B",
-               "owner_type":"player"
+               "owner_type":"player",
+               "from":["ipo","market"]
             },
             {
                "type":"blocks_hexes",
