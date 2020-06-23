@@ -10,6 +10,10 @@ module Engine
     class Special < Base
       attr_writer :current_entity
 
+      def change_entity(_action)
+        # Ignore change entity as special doesn't change entity
+      end
+
       def active_entities
         @entities
       end
