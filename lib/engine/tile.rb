@@ -77,21 +77,24 @@ module Engine
                               params.fetch('slots', 1),
                               params['groups'],
                               params['hide'],
-                              params['visit_cost'])
+                              params['visit_cost'],
+                              params['revenue_mode'])
         cache << city
         city
       when 'town'
         town = Part::Town.new(params['revenue'],
                               params['groups'],
                               params['hide'],
-                              params['visit_cost'])
+                              params['visit_cost'],
+                              params['revenue_mode'])
         cache << town
         town
       when 'offboard'
         offboard = Part::Offboard.new(params['revenue'],
                                       params['groups'],
                                       params['hide'],
-                                      params['visit_cost'])
+                                      params['visit_cost'],
+                                      params['revenue_mode'])
         cache << offboard
         offboard
       when 'label'

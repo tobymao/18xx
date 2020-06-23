@@ -261,7 +261,27 @@ module Engine
         raise GameError, "Cannot use group #{key} more than once" unless group.one?
       end
 
-      stops.sum { |stop| stop.route_revenue(@phase, @train) }
+      stops.sum do |stop|
+        case stop.revenue_mode
+        when :tokens
+          # First check no other tokens in route
+          unless stops.one? { |stop2| stop2.revenue_mode == :tokens }
+            raise GameError, 'Multiple token revenue tiles on route'
+          end
+          raise GameError, "#{stop.tile.location_name} must contain 2 other stops" if stops.size < 3
+
+          per_token = stop.route_revenue(@phase, @train)
+          stops.sum do |stop2|
+            next per_token if stop2.city? && stop2.tokened_by?(@train.owner)
+
+            0
+          end
+        when :normal
+          stop.route_revenue(@phase, @train)
+        else
+          raise GameError, "Unknown revenue mode #{stop.revenue_mode}"
+        end
+      end
     end
 
     def corporation
