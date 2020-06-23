@@ -93,7 +93,7 @@ module Engine
         false
       end
 
-      def movement_cost
+      def visit_cost
         0
       end
 

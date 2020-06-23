@@ -206,10 +206,14 @@ module Engine
       # rubocop:enable Style/GuardClause, Style/IfUnlessModifier
     end
 
+    def distance
+      visited_stops.sum(&:visit_cost)
+    end
+
     def check_distance!(visits)
       distance = @train.distance
       if distance.is_a?(Numeric)
-        route_distance = visits.sum(&:movement_cost)
+        route_distance = visits.sum(&:visit_cost)
         raise GameError, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
 
         return
@@ -227,7 +231,7 @@ module Engine
       grouped = visits.group_by(&:type)
 
       grouped.each do |type, group|
-        num = group.sum(&:movement_cost)
+        num = group.sum(&:visit_cost)
 
         type_info[type].sort_by(&:size).each do |info|
           next unless info[:visit].positive?
