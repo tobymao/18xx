@@ -59,7 +59,7 @@ input, select, textarea {
   margin: 0.5rem;
 }
 input:not([type=radio]):not([type=checkbox]), select {
-  height: 2rem;
+  height: 1.5rem;
 }
 input + label, select + label {
   margin-left: 0.5rem;
@@ -225,11 +225,19 @@ p:last-child {
 
 .card {
   display: inline-block;
+  box-sizing: border-box;
+  width: 20rem;
+  min-width: 240px;
   overflow: hidden;
   vertical-align: top;
   margin: 0.5rem 0.5rem 0 0;
   border: 1px solid gainsboro;
   border-radius: 0.7rem;
+}
+@media only screen and (max-width: 420px) {
+  .card {
+    width: 95vw;
+  }
 }
 .card table {
   line-height: 1.25rem;
