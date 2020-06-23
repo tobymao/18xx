@@ -39,8 +39,8 @@ module View
       }
 
       if @negative_pad
-        props[:style][:padding] = '0.5rem 1.5rem'
-        props[:style][:margin] = '0 -1.5rem'
+        props[:style][:padding] = '0.5rem 2vmin'
+        props[:style][:margin] = '0 -2vmin'
       else
         props[:style]['box-sizing'] = 'border-box'
       end
