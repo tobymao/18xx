@@ -551,13 +551,18 @@ module Engine
 
       def init_hexes(companies, corporations)
         blockers = {}
-
         companies.each do |company|
           company.abilities(:blocks_hexes) do |ability|
             ability.hexes.each do |hex|
               blockers[hex] = company
             end
           end
+        end
+
+        reservations = Hash.new { |k, v| k[v] = [] }
+        corporations.each do |corp|
+          reservations[corp.coordinates].unshift(corp)
+          corp.abilities(:token).flat_map(&:hexes).each { |h| reservations[h] << corp }
         end
 
         self.class::HEXES.map do |color, hexes|
@@ -575,9 +580,9 @@ module Engine
                 tile.add_blocker!(blocker)
               end
 
-              # reserve corporation home spots
-              corporations.select { |c| c.coordinates == coord }.each do |c|
-                tile.add_reservation!(c.name, c.city)
+              # reserve corporation home spots and other token spots
+              reservations[coord].each do |corp|
+                tile.add_reservation!(corp.name, corp.city)
               end
 
               # name the location (city/town)
