@@ -87,7 +87,7 @@ module View
 
             route_td_props = { style: { maxWidth: '230px' } }
 
-            children << h(:td, route.stops.size)
+            children << h(:td, route.distance)
             children << h(:td, revenue)
             children << h(:td, route_td_props,
                           if invalid

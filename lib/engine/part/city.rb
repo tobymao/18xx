@@ -9,8 +9,8 @@ module Engine
       attr_accessor :reservations
       attr_reader :slots, :tokens
 
-      def initialize(revenue, slots = 1, groups = nil, hide = false)
-        super(revenue, groups, hide)
+      def initialize(revenue, slots = 1, groups = nil, hide = false, visit_cost = nil)
+        super(revenue, groups, hide, visit_cost)
         @slots = slots.to_i
         @tokens = Array.new(@slots)
         @reservations = []

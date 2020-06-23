@@ -93,6 +93,10 @@ module Engine
         false
       end
 
+      def visit_cost
+        0
+      end
+
       def inspect
         "<#{self.class.name}: hex: #{hex&.name}>"
       end

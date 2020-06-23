@@ -73,15 +73,25 @@ module Engine
 
         Part::Path.new(params['a'], params['b'])
       when 'city'
-        city = Part::City.new(params['revenue'], params.fetch('slots', 1), params['groups'], params['hide'])
+        city = Part::City.new(params['revenue'],
+                              params.fetch('slots', 1),
+                              params['groups'],
+                              params['hide'],
+                              params['visit_cost'])
         cache << city
         city
       when 'town'
-        town = Part::Town.new(params['revenue'], params['groups'], params['hide'])
+        town = Part::Town.new(params['revenue'],
+                              params['groups'],
+                              params['hide'],
+                              params['visit_cost'])
         cache << town
         town
       when 'offboard'
-        offboard = Part::Offboard.new(params['revenue'], params['groups'], params['hide'])
+        offboard = Part::Offboard.new(params['revenue'],
+                                      params['groups'],
+                                      params['hide'],
+                                      params['visit_cost'])
         cache << offboard
         offboard
       when 'label'
