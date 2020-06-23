@@ -19,6 +19,7 @@ module View
     def render
       props = {
         style: {
+          width: '320px',
           'margin': '0 0.5rem 0.5rem 0',
         },
       }

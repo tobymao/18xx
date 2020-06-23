@@ -21,14 +21,15 @@ module View
       props = {
         style: {
           display: 'flex',
-          marginBottom: '1.5vmin',
-          paddingBottom: '1vmin',
+          marginBottom: '1rem',
+          padding: '0 1rem 0.5rem 1rem',
           'box-shadow': '0 2px 0 0 gainsboro',
           'justify-content': 'space-between',
+          'line-height': '3rem',
         },
       }
 
-      h('div#header', props, [
+      h('div#nav', props, [
         h(Logo),
         render_other_links(other_links),
       ])
@@ -40,7 +41,7 @@ module View
           href: href,
         },
         style: {
-          margin: '0 2vmin',
+          margin: '0 1rem',
         },
       }
       h(:a, props, name)
@@ -51,12 +52,7 @@ module View
         link
       end
 
-      nav_props = {
-        style: {
-          margin: 'auto 0',
-        },
-      }
-      h('div#nav', nav_props, children)
+      h(:div, children)
     end
   end
 end

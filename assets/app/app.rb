@@ -29,8 +29,9 @@ class App < Snabberb::Component
       style: {
         'background-color': @user&.dig(:settings, :bg) || 'inherit',
         color: @user&.dig(:settings, :font) || 'currentColor',
+        margin: :auto,
         'min-height': '98vh',
-        padding: '0.75vmin 2vmin 2vmin 2vmin',
+        padding: '0.5rem',
         transition: 'background-color 1s ease',
       },
     }
@@ -74,7 +75,13 @@ class App < Snabberb::Component
         h(View::Home, user: @user)
       end
 
-    h('div#content', [page])
+    props = {
+      style: {
+        margin: '0 1rem',
+      },
+    }
+
+    h('div#content', props, [page])
   end
 
   def render_game
