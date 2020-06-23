@@ -546,10 +546,10 @@ module Engine
       "city=revenue:0;border=edge:4,type:mountain,cost:40": [
         "B16"
       ],
-      "city=revenue:0;icon=image:port,sticky:1": [
+      "city=revenue:0;icon=image:port,sticky:1;icon=image:1846/lsl,sticky:1": [
         "D14"
       ],
-      "city=revenue:0;label=Z": [
+      "city=revenue:0;label=Z;icon=image:1846/lsl,sticky:1": [
         "E17"
       ],
       "city=revenue:0;label=Z;border=edge:0,type:water,cost:40": [
