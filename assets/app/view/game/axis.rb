@@ -69,7 +69,7 @@ module View
               { attrs: { 'dominant-baseline': 'top' } },
               labels),
             h(:g,
-              { attrs: { transform: "translate(0 #{bottom_t_y - @gap})",
+              { attrs: { transform: "translate(0 #{bottom_t_y - @font_size})",
                          'dominant-baseline': 'baseline' } },
               labels),
           ])
