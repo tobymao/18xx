@@ -359,6 +359,15 @@ module Engine
         80,
         0
       ],
+      "abilities": [
+        {
+          "type": "token",
+          "hexes": [
+            "D20"
+          ],
+          "price": 40
+        }
+      ],
       "coordinates": "E21",
       "color": "yellow",
       "text_color": "black",
