@@ -283,7 +283,9 @@ module Engine
           "type": "token",
           "hexes": [
             "E11"
-          ]
+          ],
+          "price": 40,
+          "teleport_price": 60
         }
       ],
       "coordinates": "F20",
@@ -321,7 +323,9 @@ module Engine
           "type": "token",
           "hexes": [
             "H12"
-          ]
+          ],
+          "price": 40,
+          "teleport_price": 100
         }
       ],
       "coordinates": "G19",
@@ -383,7 +387,7 @@ module Engine
         0,
         80,
         80,
-        0
+        80
       ],
       "abilities": [
          {
@@ -401,6 +405,13 @@ module Engine
               "8",
               "9"
             ]
+        },
+        {
+          "type": "token",
+          "hexes": [
+            "I5"
+          ],
+          "price": 40
         }
       ],
       "coordinates": "K3",
