@@ -154,7 +154,7 @@ module View
         style: {
           overflow: 'auto',
           position: 'sticky',
-          padding: '2vmin 2vmin 4vmin 2vmin',
+          padding: '2vmin 2vmin 1rem 2vmin',
           margin: '-2vmin -2vmin 2vmin -2vmin',
           borderBottom: "1px solid #{color_for(:font2)}",
           top: '0',
