@@ -54,7 +54,7 @@ module View
 
           left_props = {
             style: {
-              marginRight: '1rem',
+              overflow: 'hidden',
               verticalAlign: 'top',
             },
           }
@@ -67,10 +67,8 @@ module View
           }
 
           children = [
-            h('div.inline-block', { style: { overflow: 'hidden', verticalAlign: 'top' } }, [
-              h('div.inline-block', left_props, left),
-            ]),
-            h('div.inline-block', right_props, right),
+            h('div#left.inline-block', left_props, left),
+            h('div#right.inline-block', right_props, right),
           ]
 
           h(:div, children)

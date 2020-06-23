@@ -40,7 +40,7 @@ module View
           href: href,
         },
         style: {
-          margin: '0 2vmin',
+          margin: '0 1rem',
         },
       }
       h(:a, props, name)
