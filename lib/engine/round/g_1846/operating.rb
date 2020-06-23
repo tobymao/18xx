@@ -74,35 +74,6 @@ module Engine
           @step == :token_or_track && !skip_token
         end
 
-        def connected_hexes
-          hexes = {}
-
-          @current_entity.abilities(:token) do |ability, _|
-            next unless ability.teleport_price
-
-            ability.hexes.each do |id|
-              hex = @game.hex_by_id(id)
-              hexes[hex] = hex.neighbors.keys
-            end
-          end
-
-          super.merge(hexes)
-        end
-
-        def connected_nodes
-          nodes = {}
-
-          @current_entity.abilities(:token) do |ability, _|
-            next unless ability.teleport_price
-
-            ability.hexes.each do |id|
-              @game.hex_by_id(id).tile.cities.each { |c| nodes[c] = true }
-            end
-          end
-
-          super.merge(nodes)
-        end
-
         private
 
         def ignore_action?(action)
@@ -122,9 +93,8 @@ module Engine
 
         def skip_token
           return true if count_actions(Action::PlaceToken).positive?
-          return true unless @current_entity.next_token
 
-          @current_entity.cash < 40 # Some abilities can get the token down to 40
+          super
         end
 
         def skip_track
@@ -188,35 +158,6 @@ module Engine
 
         def tile_cost(tile, abilities)
           [@game.class::TILE_COST, tile.upgrade_cost(abilities)].max
-        end
-
-        def potential_tiles(hex)
-          return [] if used_token_ability(hex) && !connected_hexes[hex]
-
-          super
-        end
-
-        def place_token(action)
-          hex = action.city.hex
-
-          if used_token_ability(hex)
-            @current_entity.abilities(:token) do |ability, _|
-              next action.token.price = ability.price if reachable_hexes[hex]
-              next action.token.price = ability.teleport_price if ability.teleport_price
-            end
-          end
-
-          super
-
-          @current_entity.remove_ability(:token) if used_token_ability(hex)
-        end
-
-        def used_token_ability(hex)
-          @current_entity.abilities(:token) do |ability, _|
-            return true if ability.hexes.include?(hex.id)
-          end
-
-          false
         end
 
         def change_share_price(revenue = 0)

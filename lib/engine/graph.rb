@@ -27,18 +27,17 @@ module Engine
       @routes[corporation]
     end
 
-    def can_token?(corporation, free)
-      key = [corporation, free]
-      return @tokens[key] if @tokens.key?(key)
+    def can_token?(corporation)
+      return @tokens[corporation] if @tokens.key?(corporation)
 
       compute(corporation) do |node|
-        if node.tokenable?(corporation, free: free)
-          @tokens[key] = true
+        if node.tokenable?(corporation, free: true)
+          @tokens[corporation] = true
           break
         end
       end
-      @tokens[key] ||= false
-      @tokens[key]
+      @tokens[corporation] ||= false
+      @tokens[corporation]
     end
 
     def connected_hexes(corporation)
@@ -77,6 +76,26 @@ module Engine
 
       tokens = nodes.dup
 
+      corporation.abilities(:token) do |ability, _|
+        ability.hexes.each do |hex_id|
+          @game.hex_by_id(hex_id).tile.cities.each do |node|
+            nodes[node] = true
+            yield node if block_given?
+          end
+        end
+      end
+
+      corporation.abilities(:teleport) do |ability, _|
+        ability.hexes.each do |hex_id|
+          hex = @game.hex_by_id(hex_id)
+          hex.neighbors.each { |e, _| hexes[hex][e] = true }
+          hex.tile.cities.each do |node|
+            nodes[node] = true
+            yield node if block_given?
+          end
+        end
+      end
+
       tokens.keys.each do |node|
         visited = tokens.reject { |token, _| token == node }
         local_nodes = {}
@@ -95,17 +114,6 @@ module Engine
           path.exits.each do |edge|
             edges[edge] = true
             hexes[hex.neighbors[edge]][hex.invert(edge)] = true
-          end
-        end
-      end
-
-      corporation.abilities(:teleport) do |ability, _|
-        ability.hexes.each do |hex_id|
-          hex = @game.hex_by_id(hex_id)
-          hex.neighbors.each { |e, _| hexes[hex][e] = true }
-          hex.tile.nodes.each do |node|
-            nodes[node] = true
-            yield node if block_given?
           end
         end
       end

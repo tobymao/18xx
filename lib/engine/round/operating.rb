@@ -266,8 +266,8 @@ module Engine
       def skip_token
         return true unless (token = @current_entity.next_token)
 
-        (!@teleported && token.price > @current_entity.cash) ||
-          !@graph.can_token?(@current_entity, @teleported)
+        min_token_price(token) > @current_entity.cash ||
+          !@graph.can_token?(@current_entity)
       end
 
       def skip_route
@@ -558,17 +558,19 @@ module Engine
       def place_token(action)
         entity = action.entity
         hex = action.city.hex
-        allow_unconnected = @teleported || @step == :home_token
-        if !@game.loading && !allow_unconnected && !connected_nodes[action.city]
+
+        if !@game.loading && @step != :home_token && !connected_nodes[action.city]
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 
         token = action.token
         raise GameError, 'Token is already used' if token.used
 
-        price = token.price || 0
-        action.city.place_token(entity, token, free: @teleported)
-        if price.positive? && !@teleported
+        price, ability = token_price_ability(token, hex)
+        @current_entity.remove_ability(ability)
+        free = !price.positive?
+        action.city.place_token(entity, token, free: free)
+        unless free
           entity.spend(price, @bank)
           price_log = " for #{@game.format_currency(price)}"
         end
@@ -634,6 +636,32 @@ module Engine
         # to change order. Re-sort only them.
         index = @entities.find_index(@current_entity) + 1
         @entities[index..-1] = @entities[index..-1].sort if index < @entities.size - 1
+      end
+
+      def min_token_price(token)
+        return 0 if @teleported
+
+        prices = [token.price]
+
+        @current_entity.abilities(:token) do |ability, _|
+          prices << ability.price
+          prices << ability.teleport_price
+        end
+
+        prices.compact.min
+      end
+
+      def token_price_ability(token, hex)
+        return [0, :teleport] if @teleported
+
+        @current_entity.abilities(:token) do |ability, _|
+          next unless ability.hexes.include?(hex.id)
+
+          return [ability.price, :token] if reachable_hexes[hex]
+          return [ability.teleport_price, :token] if ability.teleport_price
+        end
+
+        [token.price, nil]
       end
     end
   end

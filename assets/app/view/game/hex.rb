@@ -49,6 +49,11 @@ module View
             opaque = @round.reachable_hexes[@hex]
             clickable ||= opaque
           end
+
+          # for token special ability
+          opaque ||= @hex.tile.cities.any? do |city|
+            @round.connected_nodes[city]
+          end if @round.can_place_token?
         end
 
         props = {

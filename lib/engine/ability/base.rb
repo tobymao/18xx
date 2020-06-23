@@ -16,10 +16,16 @@ module Engine
         @owner_type = owner_type&.to_sym
         @when = opts.delete(:when)&.to_s
         @count = count
+        @used = false
         setup(**opts)
       end
 
+      def used?
+        @used
+      end
+
       def use!
+        @used = true
         return unless @count
 
         @count -= 1
