@@ -54,7 +54,7 @@ module View
 
           left_props = {
             style: {
-              marginRight: '1rem',
+              marginRight: '2rem',
               verticalAlign: 'top',
             },
           }

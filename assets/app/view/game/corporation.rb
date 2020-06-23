@@ -16,6 +16,7 @@ module View
 
         card_style = {
           cursor: 'pointer',
+          width: '20rem',
         }
 
         if @game.round.can_act?(@corporation)

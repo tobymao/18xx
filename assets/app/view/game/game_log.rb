@@ -32,13 +32,13 @@ module View
 
         if @player
           children << h(:div, { style: {
-            margin: '1vmin 0',
+            'margin-top': '0.5rem',
             'display': 'flex',
             'flex-direction': 'row',
           } }, [
             h(:span, { style: {
               'font-weight': 'bold',
-              margin: 'auto 0',
+              'margin-top': '4px',
             } }, [@user['name'] + ':']),
             h(:input,
               style: {
@@ -53,6 +53,7 @@ module View
           style: {
             display: 'inline-block',
             width: '100%',
+            margin: '1rem 0 1rem 0',
           },
         }
 
