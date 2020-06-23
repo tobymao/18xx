@@ -67,7 +67,7 @@ module View
           }
 
           children = [
-            h('div.inline-block', { style: { overflow: 'hidden' } }, [
+            h('div.inline-block', { style: { overflow: 'hidden', verticalAlign: 'top' } }, [
               h('div.inline-block', left_props, left),
             ]),
             h('div.inline-block', right_props, right),
