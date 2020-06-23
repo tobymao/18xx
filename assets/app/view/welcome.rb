@@ -5,13 +5,7 @@ module View
     needs :app_route, default: nil, store: true
 
     def render
-      props = {
-        style: {
-          'margin-right': '1rem',
-        },
-      }
-
-      h('div#welcome.half', props, [
+      h('div#welcome.half', [
         render_notification,
         render_introduction,
         render_buttons,

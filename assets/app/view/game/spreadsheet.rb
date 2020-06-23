@@ -16,7 +16,6 @@ module View
 
         h(:div, { style: {
           overflow: 'auto',
-          margin: '0 -1rem',
         } }, [render_table])
       end
 

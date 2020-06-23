@@ -7,6 +7,14 @@ module View
     needs :user, default: nil, store: true
 
     def render
+      h1_props = {
+        style: {
+          margin: '0',
+          fontSize: '1rem',
+          lineHeight: '3rem',
+          whiteSpace: 'nowrap',
+        },
+      }
       a_props = {
         attrs: { href: '/', title: '18xx.Games' },
         style: {
@@ -27,7 +35,7 @@ module View
         },
       }
 
-      h('h1#logo', { style: { margin: '0', fontSize: '1rem' } }, [
+      h('h1#logo', h1_props, [
         h(:a, a_props, [
           h(:span, logo_props, '18xx'),
           h(:span, '.Games'),
