@@ -232,7 +232,6 @@ p:last-child {
   display: inline-block;
   box-sizing: border-box;
   width: 20rem;
-  min-width: 240px;
   overflow: hidden;
   vertical-align: top;
   margin: 0.5rem 0.5rem 0 0;

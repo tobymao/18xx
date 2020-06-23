@@ -66,7 +66,7 @@ module View
           # Move the position to the middle of the hex
           props = {
            style: {
-             position: 'relative',
+             position: 'absolute',
              left: "#{left}px",
              top: "#{(@tile_selector.y + map_y) * SCALE}px",
            },
@@ -79,6 +79,7 @@ module View
           style: {
             overflow: 'auto',
             margin: '1rem 0',
+            position: 'relative',
           },
         }
 
