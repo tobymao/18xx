@@ -4,9 +4,9 @@ require_relative 'game_error'
 
 module Engine
   class Route
-    attr_reader :last_node, :phase, :train
+    attr_reader :last_node, :phase, :train, :routes
 
-    def initialize(phase, train, connection_hexes: [], routes: [], override: nil)
+    def initialize(game, phase, train, connection_hexes: [], routes: [], override: nil)
       @connections = []
       @phase = phase
       @train = train
@@ -14,6 +14,7 @@ module Engine
       @last_connection = nil
       @routes = routes
       @override = override
+      @game = game
       restore_connections(connection_hexes) if connection_hexes
     end
 
@@ -269,15 +270,7 @@ module Engine
         raise GameError, "Cannot use group #{key} more than once" unless group.one?
       end
 
-      @train.abilities(:bonus) do |bonus|
-        return bonus.calculate_revenue(self)
-      end
-
-      base_revenue
-    end
-
-    def base_revenue
-      stops.sum { |stop| stop.route_revenue(@phase, @train) }
+      @game.revenue_for(self)
     end
 
     def corporation

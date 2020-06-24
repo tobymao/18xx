@@ -484,6 +484,10 @@ module Engine
         @round
       end
 
+      def revenue_for(route)
+        route.stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+      end
+
       private
 
       def init_bank

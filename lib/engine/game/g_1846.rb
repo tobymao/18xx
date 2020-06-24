@@ -3,7 +3,6 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1846'
-require_relative '../ability/east_west_bonus'
 require_relative 'base'
 
 module Engine
@@ -86,10 +85,6 @@ module Engine
           company.max_price = company.value
         end
 
-        trains.each do |train|
-          train.add_ability(Ability::EastWestBonus.new(type: :bonus))
-        end
-
         @minors.each do |minor|
           train = @depot.upcoming[0]
           train.buyable = false
@@ -123,6 +118,30 @@ module Engine
         when '5'
           num_players
         end
+      end
+
+      def revenue_for(route)
+        revenue = super
+
+        stops = route.stops
+        east = stops.find { |stop| stop.groups.include?('E') }
+        west = stops.find { |stop| stop.tile.label&.to_s == 'W' }
+
+        if east && west
+          revenue += east.tile.icons.sum { |icon| icon.name.to_i }
+          revenue += west.tile.icons.sum { |icon| icon.name.to_i }
+        end
+
+        if route.train.owner.companies.include?(mail_contract)
+          longest = route.routes.max_by { |r| [r.visited_stops.size, r.train.id] }
+          revenue += route.visited_stops.size * 10 if route == longest
+        end
+
+        revenue
+      end
+
+      def mail_contract
+        @mail_contract ||= company_by_id('MAIL')
       end
 
       def illinois_central
