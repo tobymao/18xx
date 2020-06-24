@@ -19,6 +19,28 @@ module Engine
       def operating_round(round_num)
         Round::G1836Jr30::Operating.new(@corporations, game: self, round_num: round_num)
       end
+
+      def revenue_for(route)
+        revenue = super
+
+        stops = route.stops
+        port = stops.find { |stop| stop.groups.include?('port') }
+
+        if port
+          raise GameError, "#{port.tile.location_name} must contain 2 other stops" if stops.size < 3
+
+          per_token = port.route_revenue(route.phase, route.train)
+          revenue -= per_token # It's already been counted, so remove
+
+          revenue += stops.sum do |stop|
+            next per_token if stop.city? && stop.tokened_by?(route.train.owner)
+
+            0
+          end
+        end
+
+        revenue
+      end
     end
   end
 end
