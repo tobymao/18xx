@@ -3,6 +3,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1846'
+require_relative '../ability/east_west_bonus'
 require_relative 'base'
 
 module Engine
@@ -83,6 +84,10 @@ module Engine
         @companies.each do |company|
           company.min_price = 1
           company.max_price = company.value
+        end
+
+        trains.each do |train|
+          train.add_ability(Ability::EastWestBonus.new(type: :bonus))
         end
 
         @minors.each do |minor|

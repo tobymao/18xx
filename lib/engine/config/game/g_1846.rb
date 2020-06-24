@@ -593,38 +593,40 @@ module Engine
       "offboard=revenue:yellow_40|brown_10;path=a:4,b:_0;icon=image:port;icon=image:port": [
         "B8"
       ],
-      "offboard=revenue:yellow_30|brown_50,groups:East;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:40 ": [
+      "offboard=revenue:yellow_30|brown_50,groups:E;icon=image:1846/20;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:40 ": [
         "B18"
       ],
-      "offboard=revenue:yellow_20|brown_40;path=a:5,b:_0;label=W;icon=image:port": [
+      "offboard=revenue:yellow_20|brown_40;icon=image:1846/50;path=a:5,b:_0;label=W;icon=image:port;icon=image:port": [
         "C5"
       ],
-      "offboard=revenue:yellow_40|brown_60,groups:East;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:60": [
+      "offboard=revenue:yellow_40|brown_60,groups:E;icon=image:1846/30;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:60": [
         "C17"
       ],
-      "offboard=revenue:yellow_30|brown_60,hide:1,groups:Buffalo|East;path=a:0,b:_0;border=edge:5": [
+      "offboard=revenue:yellow_30|brown_60,hide:1,groups:E;icon=image:1846/30;path=a:0,b:_0;border=edge:5": [
         "C21"
       ],
-      "offboard=revenue:yellow_30|brown_60,groups:Buffalo|East;path=a:1,b:_0;label=E;border=edge:2": [
+      "offboard=revenue:yellow_30|brown_60,groups:E;icon=image:1846/30;path=a:1,b:_0;label=E;border=edge:2": [
         "D22"
       ],
-      "offboard=revenue:yellow_20|brown_50,groups:East;path=a:1,b:_0;label=E": [
-        "E23",
+      "offboard=revenue:yellow_20|brown_50,groups:E;icon=image:1846/30;path=a:1,b:_0;label=E": [
+        "E23"
+      ],
+      "offboard=revenue:yellow_20|brown_50,groups:E;icon=image:1846/20;path=a:1,b:_0;label=E": [
         "I17"
       ],
-      "offboard=revenue:yellow_30|brown_70,hide:1,groups:Pittsburgh|East;path=a:1,b:_0;border=edge:0": [
+      "offboard=revenue:yellow_30|brown_70,hide:1,groups:E;icon=image:1846/20;path=a:1,b:_0;border=edge:0": [
         "F22"
       ],
-      "offboard=revenue:yellow_30|brown_70,groups:Pittsburgh|East;path=a:1,b:_0;path=a:2,b:_0;label=E;border=edge:3": [
+      "offboard=revenue:yellow_30|brown_70,groups:E;icon=image:1846/20;path=a:1,b:_0;path=a:2,b:_0;label=E;border=edge:3": [
         "G21"
       ],
-      "offboard=revenue:yellow_20|brown_40,groups:East;path=a:2,b:_0;label=E": [
+      "offboard=revenue:yellow_20|brown_40,groups:E;icon=image:1846/30;path=a:2,b:_0;label=E": [
         "H20"
       ],
-      "offboard=revenue:yellow_50|brown_70;path=a:3,b:_0;path=a:4,b:_0;label=W;icon=image:port;icon=image:1846/meat": [
+      "offboard=revenue:yellow_50|brown_70,groups:St. Louis;path=a:3,b:_0;path=a:4,b:_0;label=W;icon=image:port;icon=image:1846/meat;icon=image:1846/20": [
         "I1"
       ],
-      "offboard=revenue:yellow_50|brown_70;path=a:2,b:_0;path=a:3,b:_0": [
+      "offboard=revenue:yellow_50|brown_70,groups:Louisville;path=a:2,b:_0;path=a:3,b:_0": [
         "J10"
       ]
     },

@@ -136,7 +136,7 @@ module Engine
     end
 
     def visited_stops
-      connections.flat_map(&:nodes).uniq
+      @connections.flat_map { |c| [c[:left], c[:right]] }.uniq
     end
 
     def stops
@@ -144,24 +144,32 @@ module Engine
       distance = @train.distance
       return visits if distance.is_a?(Numeric)
 
-      token = visits
-        .select { |stop| stop.tokened_by?(corporation) }
-        .max_by { |stop| stop.route_revenue(@phase, @train) }
+      # always include the ends of a route because the user explicitly asked for it
+      included = [visits[0], visits[-1]]
 
-      grouped = visits.reject { |s| s == token }.group_by(&:type)
+      # find the maximal token if not already in the end points
+      if included.none? { |stop| stop.tokened_by?(corporation) }
+        token = visits
+          .select { |stop| stop.tokened_by?(corporation) }
+          .max_by { |stop| stop.route_revenue(@phase, @train) }
+        included << token if token
+      end
+
+      options_by_type = (visits - included).group_by(&:type)
+      included_by_type = included.group_by(&:type)
+
       types_pay = distance.map { |h| [h['nodes'], h['pay']] }.sort_by { |t, _| t.size }
 
-      [token] + types_pay.flat_map do |types, pay|
-        pay -= 1 if types.include?('city')
+      included + types_pay.flat_map do |types, pay|
+        pay -= types.sum { |type| included_by_type[type]&.size || 0 }
 
         node_revenue = types.flat_map do |type|
-          next [] unless (nodes = grouped[type])
+          next [] unless (nodes = options_by_type[type])
 
           nodes.map { |node| [node, node.route_revenue(@phase, @train)] }
         end.sort_by(&:last).last(pay)
 
-        node_revenue.each { |node, _| grouped[node.type].delete(node) }
-
+        node_revenue.each { |node, _| options_by_type[node.type].delete(node) }
         node_revenue.map(&:first)
       end
     end
@@ -261,6 +269,14 @@ module Engine
         raise GameError, "Cannot use group #{key} more than once" unless group.one?
       end
 
+      @train.abilities(:bonus) do |bonus|
+        return bonus.calculate_revenue(self)
+      end
+
+      base_revenue
+    end
+
+    def base_revenue
       stops.sum { |stop| stop.route_revenue(@phase, @train) }
     end
 
