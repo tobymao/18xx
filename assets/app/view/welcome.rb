@@ -14,6 +14,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>1836Jr30 is now available for beta.</p>
+
         <p>1846 is now available for early alpha. It would help most if you played with the intent to find bugs in hot seat mode.
         The private companies have not been implemented yet. 18Chesapeake is now out of beta and in production.
         </p>
