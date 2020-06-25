@@ -138,6 +138,7 @@ module Engine
           cash = minor.cash
           minor.spend(cash, @current_entity) if cash.positive?
           train = minor.trains[0]
+          train.buyable = true
           @current_entity.buy_train(train, :free)
           minor.tokens[0].swap!(Token.new(@current_entity))
           @log << "#{@current_entity.name} receives #{@game.format_currency(cash)}"\
