@@ -21,6 +21,10 @@ module Engine
       end
     end
 
+    def one_d?
+      @one_d ||= @market.one?
+    end
+
     def set_par(corporation, share_price)
       share_price.corporations << corporation
       corporation.share_price = share_price
@@ -39,12 +43,16 @@ module Engine
     end
 
     def move_up(corporation)
+      return move_right(corporation) if one_d?
+
       r, c = corporation.share_price.coordinates
       r -= 1 if r - 1 >= 0
       move(corporation, r, c)
     end
 
     def move_down(corporation)
+      return move_left(corporation) if one_d?
+
       r, c = corporation.share_price.coordinates
       r += 1 if r + 1 < @market.size && share_price(r + 1, c)
       move(corporation, r, c)
