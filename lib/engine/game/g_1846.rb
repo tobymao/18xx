@@ -182,12 +182,6 @@ module Engine
       end
 
       def close_corporation(corporation)
-        corporation.share_holders.keys.each do |player|
-          player.shares_by_corporation.delete(corporation)
-        end
-
-        @share_pool.shares_by_corporation.delete(corporation)
-
         hexes.each do |hex|
           hex.tile.cities.each do |city|
             next unless city.tokened_by?(corporation)
@@ -200,7 +194,17 @@ module Engine
         corporation.spend(corporation.cash, @bank)
         @log << "#{corporation.name} closes"
         @round.skip_current_entity if @round.current_entity == corporation
-        @corporations.delete(corporation)
+
+        if corporation.corporation?
+          corporation.share_holders.keys.each do |player|
+            player.shares_by_corporation.delete(corporation)
+          end
+
+          @share_pool.shares_by_corporation.delete(corporation)
+          @corporations.delete(corporation)
+        else
+          @minors.delete(corporation)
+        end
       end
 
       def init_round
@@ -209,6 +213,12 @@ module Engine
 
       def operating_round(round_num)
         Round::G1846::Operating.new(@minors + @corporations, game: self, round_num: round_num)
+      end
+
+      def event_close_companies!
+        super
+
+        @minors.dup.each { |minor| close_corporation(minor) }
       end
 
       def event_remove_tokens!

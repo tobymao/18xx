@@ -180,7 +180,14 @@ module Engine
       "value": 80,
       "revenue": 0,
       "desc": "Adds $10 per location visited by any one train of the owning corporation. Never closes once purchased by a corporation.",
-      "sym": "MAIL"
+      "sym": "MAIL",
+      "abilities": [
+        {
+          "type": "close",
+          "when": "never",
+          "owner_type": "corporation"
+        }
+      ]
     },
     {
       "name": "Tunnel Blasting Company",
