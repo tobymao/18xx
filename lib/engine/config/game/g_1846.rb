@@ -194,14 +194,49 @@ module Engine
       "value": 60,
       "revenue": 15,
       "desc": "The owning corporation may place a $30 marker in either St. Louis (I1) or Chicago (D6), to add $30 to all routes run to this location.",
-      "sym": "MPC"
+      "sym": "MPC",
+      "abilities": [
+        {
+          "type": "assign_hexes",
+          "hexes": [
+            "I1",
+            "D6"
+          ],
+          "when": "sold",
+          "count": 1,
+          "owner_type": "corporation"
+        },
+        {
+          "type": "assign_corporation",
+          "when": "sold",
+          "count": 1,
+          "owner_type": "corporation"
+        }
+      ]
     },
     {
       "name": "Steamboat Company",
       "value": 40,
       "revenue": 10,
       "desc": "Place or shift the port marker among port locations (B8, C5, D14, G19, I1). Add $20 per port symbol to all routes run to this location by the owning (or assigned) company.",
-      "sym": "SC"
+      "sym": "SC",
+      "abilities": [
+        {
+          "type": "assign_hexes",
+          "hexes": [
+            "B8",
+            "C5",
+            "D14",
+            "I1",
+            "G19"
+          ],
+          "count": 1
+        },
+        {
+          "type": "assign_corporation",
+          "count": 1
+        }
+      ]
     },
     {
       "name": "Lake Shore Line",
@@ -224,6 +259,22 @@ module Engine
             "B10",
             "B12"
           ]
+        },
+        {
+           "type":"tile_lay",
+           "owner_type":"corporation",
+           "free":true,
+           "hexes":[
+              "B10",
+              "B12"
+           ],
+            "tiles": [
+              "7",
+              "8",
+              "9"
+            ],
+           "when":"track",
+           "count": 2
         }
       ]
     },
@@ -241,6 +292,22 @@ module Engine
             "F14",
             "F16"
           ]
+        },
+        {
+           "type":"tile_lay",
+           "owner_type":"corporation",
+           "free":true,
+           "hexes":[
+              "F14",
+              "F16"
+           ],
+            "tiles": [
+              "7",
+              "8",
+              "9"
+            ],
+           "when":"track",
+           "count": 2
         }
       ]
     }

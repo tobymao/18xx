@@ -11,7 +11,7 @@ module Engine
       attr_accessor :id
 
       def self.from_h(h, game)
-        entity = game.send("#{h['entity_type']}_by_id", h['entity'])
+        entity = game.get(h['entity_type'], h['entity'])
         new(entity, **h_to_args(h, game))
       end
 

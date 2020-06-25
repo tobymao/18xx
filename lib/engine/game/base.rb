@@ -230,7 +230,7 @@ module Engine
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
 
-        @seed = @id.to_s.scan(/\d+/).first.to_i
+        @seed = @id.to_s.scan(/\d+/).first.to_i % RAND_M
 
         case self.class::DEV_STAGE
         when :prealpha
@@ -486,6 +486,10 @@ module Engine
 
       def revenue_for(route)
         route.stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+      end
+
+      def get(type, id)
+        send("#{type}_by_id", id)
       end
 
       private

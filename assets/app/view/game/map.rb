@@ -30,7 +30,7 @@ module View
         @game.special.current_entity = @selected_company
 
         round =
-          if @game.special.tile_laying_ability
+          if @game.special.map_abilities
             @game.special
           elsif @game.round.operating?
             @game.round

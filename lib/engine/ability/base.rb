@@ -29,7 +29,7 @@ module Engine
         return unless @count
 
         @count -= 1
-        owner.remove_ability(self) unless @count.positive?
+        owner.remove_ability(@type) unless @count.positive?
       end
 
       def setup(**_opts); end

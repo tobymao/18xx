@@ -2,6 +2,7 @@
 
 require 'lib/hex'
 require 'lib/tile_selector'
+require 'view/game/actionable'
 require 'view/game/runnable'
 require 'view/game/tile'
 require 'view/game/triangular_grid'
@@ -9,6 +10,7 @@ require 'view/game/triangular_grid'
 module View
   module Game
     class Hex < Snabberb::Component
+      include Actionable
       include Runnable
 
       SIZE = 100
@@ -42,7 +44,7 @@ module View
           if @round.ambiguous_token
             opaque = @round.reachable_hexes[@hex]
             clickable ||= opaque
-          elsif @round.can_lay_track?
+          elsif @round.can_assign? || @round.can_lay_track?
             opaque = @round.connected_hexes[@hex]
             clickable ||= opaque
           elsif @round.can_place_token? || @round.can_run_routes?
@@ -101,6 +103,7 @@ module View
 
         case @role
         when :map
+          return process_action(Engine::Action::Assign.new(@round.current_entity, target: @hex)) if @round&.can_assign?
           return unless @round&.can_lay_track?
 
           if @selected && (tile = @tile_selector&.tile)

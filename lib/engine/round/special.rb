@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../action/assign'
 require_relative '../action/lay_tile'
 require_relative '../corporation'
 require_relative '../player'
@@ -18,8 +19,20 @@ module Engine
         @entities
       end
 
+      def map_abilities
+        tile_laying_ability || assign_ability
+      end
+
       def tile_laying_ability
         @current_entity&.abilities(:tile_lay)
+      end
+
+      def assign_ability
+        @current_entity&.abilities(:assign_hexes)
+      end
+
+      def can_assign?
+        !!assign_ability
       end
 
       def can_lay_track?
@@ -27,9 +40,9 @@ module Engine
       end
 
       def connected_hexes
-        return {} unless tile_laying_ability
+        hexes = (assign_ability || tile_laying_ability).hexes || []
 
-        tile_laying_ability.hexes.map do |coordinates|
+        hexes.map do |coordinates|
           hex = @game.hex_by_id(coordinates)
           [hex, hex.neighbors.keys]
         end.to_h
@@ -50,6 +63,11 @@ module Engine
 
           @game.share_pool.buy_shares(owner, bundle, exchange: company)
           company.close!
+        when Action::Assign
+          hex = action.target
+          hex.assign!(company.id)
+          company.abilities(:assign_hexes, &:use!)
+          @game.log << "#{company.name} activates #{hex.name}"
         end
       end
 

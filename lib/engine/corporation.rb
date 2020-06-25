@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'abilities'
+require_relative 'assignable'
 require_relative 'operator'
 require_relative 'ownable'
 require_relative 'passer'
@@ -12,6 +13,7 @@ require_relative 'token'
 module Engine
   class Corporation
     include Abilities
+    include Assignable
     include Operator
     include Ownable
     include Passer

@@ -127,6 +127,16 @@ module Engine
         east = stops.find { |stop| stop.groups.include?('E') }
         west = stops.find { |stop| stop.tile.label&.to_s == 'W' }
 
+        meat = meat_packing.id
+
+        revenue += 20 if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
+
+        steam = steam_boat.id
+
+        if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
+          revenue += 20 * port.tile.icons.select { |icon| icon.name == 'port' }.size
+        end
+
         if east && west
           revenue += east.tile.icons.sum { |icon| icon.name.to_i }
           revenue += west.tile.icons.sum { |icon| icon.name.to_i }
@@ -138,6 +148,14 @@ module Engine
         end
 
         revenue
+      end
+
+      def meat_packing
+        @meat_packing ||= company_by_id('MPC')
+      end
+
+      def steam_boat
+        @steam_boat ||= company_by_id('SC')
       end
 
       def mail_contract
