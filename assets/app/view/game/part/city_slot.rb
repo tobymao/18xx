@@ -39,7 +39,7 @@ module View
           h(
             :text,
             { attrs: { fill: 'black', transform: 'translate(0 9) scale(1.75)' } },
-            @reservation,
+            @reservation.sym,
           )
         end
 

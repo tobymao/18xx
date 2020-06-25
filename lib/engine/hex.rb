@@ -113,6 +113,17 @@ module Engine
 
       # when upgrading, preserve reservations on previous tile
       city_map.each do |old_city, new_city|
+        old_city.reservations.each do |res|
+          abilities = res.abilities(:reservation)
+          next if abilities.nil? || (abilities == [])
+
+          ability = abilities.is_a?(Array) ? abilities.first : abilities
+          next unless ability.hex == coordinates
+
+          ability.tile = new_city.tile
+          ability.city = new_city.index
+        end
+
         new_city.reservations.concat(old_city.reservations)
         old_city.reservations.clear
       end

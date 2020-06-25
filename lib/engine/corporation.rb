@@ -21,11 +21,12 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :share_price
-    attr_reader :capitalization, :companies, :min_price, :name, :full_name
+    attr_reader :capitalization, :companies, :min_price, :name, :full_name, :sym
     attr_writer :par_price
 
     def initialize(sym:, name:, **opts)
       @name = sym
+      @sym = sym
       @full_name = name
       [
         Share.new(self, president: true, percent: 20),

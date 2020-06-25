@@ -68,6 +68,12 @@ module Engine
           company.close!
         end
       end
+
+      (@game.companies + @game.corporations).each do |c|
+        c.all_abilities.each do |ability|
+          c.remove_ability(ability.type) if ability.remove == @name
+        end
+      end
     end
 
     def close_companies_on_train!(entity)
