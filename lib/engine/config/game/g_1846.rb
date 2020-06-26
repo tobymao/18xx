@@ -265,7 +265,28 @@ module Engine
       "value": 40,
       "revenue": 15,
       "desc": "The owning corporation may make an extra $0 cost tile upgrade of either Cleveland (E17) or Toledo (D14), but not both.",
-      "sym": "LSL"
+      "sym": "LSL",
+      "abilities": [
+        {
+           "type":"tile_lay",
+           "owner_type":"corporation",
+           "free":true,
+           "hexes":[
+              "D14",
+              "E17"
+           ],
+            "tiles": [
+              "14",
+              "15",
+              "619",
+              "294",
+              "295",
+              "296"
+            ],
+           "when":"track",
+           "count": 1
+        }
+      ]
     },
     {
       "name": "Michigan Central",
