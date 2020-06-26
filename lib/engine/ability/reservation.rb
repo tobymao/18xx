@@ -8,10 +8,10 @@ module Engine
       attr_accessor :city, :tile
       attr_reader :hex, :slot
 
-      def setup(hex:, city: 0, slot: 0)
+      def setup(hex:, city: nil, slot: nil)
         @hex = hex
-        @city = city
-        @slot = slot
+        @city = city || 0
+        @slot = slot || 0
         @tile = nil
       end
 
