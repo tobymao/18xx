@@ -715,7 +715,7 @@ module Engine
       "offboard=revenue:yellow_30|brown_50,groups:E;icon=image:1846/20;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:40 ": [
         "B18"
       ],
-      "offboard=revenue:yellow_20|brown_40;icon=image:1846/50;path=a:5,b:_0;label=W;icon=image:port;icon=image:port": [
+      "offboard=revenue:yellow_20|brown_40;icon=image:1846/50;path=a:5,b:_0;label=W;icon=image:port": [
         "C5"
       ],
       "offboard=revenue:yellow_40|brown_60,groups:E;icon=image:1846/30;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:60": [
