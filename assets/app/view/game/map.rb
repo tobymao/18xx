@@ -48,7 +48,7 @@ module View
 
         if @tile_selector
           left = (@tile_selector.x + map_x) * SCALE
-
+          top = (@tile_selector.y + map_y) * SCALE
           selector =
             if @tile_selector.is_a?(Lib::TokenSelector)
               # 1882
@@ -58,10 +58,16 @@ module View
             else
               # Selecting column A can cause tiles to go off the edge of the map
               distance = TileSelector::DISTANCE + (TileSelector::TILE_SIZE / 2)
+
+              width, height = map_size
               left = distance if (left - distance).negative?
-              width, _height = map_size
               if (left + distance + TileSelector::DROP_SHADOW_SIZE) >= width
                 left = width - TileSelector::DROP_SHADOW_SIZE - distance
+              end
+
+              top = distance if (top - distance).negative?
+              if (top + distance + TileSelector::DROP_SHADOW_SIZE) >= height
+                top = height - TileSelector::DROP_SHADOW_SIZE - distance
               end
 
               tiles = round.upgradeable_tiles(@tile_selector.hex)
@@ -74,7 +80,7 @@ module View
            style: {
              position: 'absolute',
              left: "#{left}px",
-             top: "#{(@tile_selector.y + map_y) * SCALE}px",
+             top: "#{top}px",
            },
           }
           # This needs to be before the map, so that the relative positioning works
