@@ -16,7 +16,7 @@ module View
       class Operating < Snabberb::Component
         needs :game
 
-        ABILITIES = %i[tile_lay teleport assign_hexes].freeze
+        ABILITIES = %i[tile_lay teleport assign_hexes token].freeze
 
         def render
           round = @game.round

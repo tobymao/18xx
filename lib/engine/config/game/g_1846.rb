@@ -171,7 +171,18 @@ module Engine
       "value": 60,
       "revenue": 10,
       "desc": "Reserves a token slot in Chicago (D6), in which the owning corporation may place an extra token at no cost.",
-      "sym": "C&WI"
+      "sym": "C&WI",
+      "abilities": [
+        {
+          "type": "token",
+          "hexes": [
+            "D6"
+          ],
+          "price": 0,
+          "teleport_price": 0,
+          "extra": true
+        }
+      ]
     },
     {
       "name": "Mail Contract",
