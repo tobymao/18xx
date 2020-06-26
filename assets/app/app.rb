@@ -52,7 +52,7 @@ class App < Snabberb::Component
       case @app_route
       when /new_game/
         h(View::CreateGame)
-      when /game|hotseat|tutorial/
+      when /[^?](game|hotseat|tutorial)/
         render_game
       when /signup/
         h(View::User, user: @user, type: :signup)
