@@ -56,7 +56,7 @@ module View
             owner.player? ? h('div.right', 'Value') : '',
             h('div.right', 'Income'),
           ]),
-          h(:div, [*companies]),
+          h(:div, companies),
         ])
       end
     end

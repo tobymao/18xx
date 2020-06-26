@@ -20,15 +20,15 @@ module View
       end
 
       def ability_usable?
-        return if (@company.all_abilities.map(&:type) & View::Game::Round::Operating::ABILITIES).empty?
+        return if (@company.all_abilities.map(&:type) & Round::Operating::ABILITIES).empty?
 
-        @game.round.can_act?(@company.owner)
+        @game.round.can_act?(@company.owner) || @company.owner.player?
       end
 
       def select_company(event)
         event.JS.stopPropagation
         selected_company = (ability_usable? || purchasable?) && !selected? ? @company : nil
-        store(:tile_selector, nil)
+        store(:tile_selector, nil, skip: true)
         store(:selected_company, selected_company)
       end
 
@@ -82,7 +82,7 @@ module View
 
           props = {
             style: {
-              cursor: ability_usable? || purchasable? ? 'pointer' : 'default',
+              cursor: purchasable? || ability_usable? ? 'pointer' : 'default',
               boxSizing: 'border-box',
               padding: '0.5rem',
               margin: '0.5rem 0.5rem 0 0',

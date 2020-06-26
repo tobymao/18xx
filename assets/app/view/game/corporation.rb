@@ -20,7 +20,7 @@ module View
         card_style = {
           cursor: 'pointer',
         }
-        card_style['border'] = "4px solid #{color_for(:font)}" if @game.round.can_act?(@corporation)
+        card_style['border'] = '4px solid' if @game.round.can_act?(@corporation)
         card_style['display'] = @display
 
         if selected?
