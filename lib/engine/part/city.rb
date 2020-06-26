@@ -85,7 +85,7 @@ module Engine
         end
 
         exchange_token(token)
-        tile.reservations.delete(corporation.name)
+        tile.reservations.delete(corporation)
       end
 
       def exchange_token(token)
