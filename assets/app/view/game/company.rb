@@ -20,7 +20,6 @@ module View
       end
 
       def ability_usable?
-        # TODO: add guard clause for already used abilities
         return if (@company.all_abilities.map(&:type) & View::Game::Round::Operating::ABILITIES).empty?
 
         @game.round.can_act?(@company.owner)
