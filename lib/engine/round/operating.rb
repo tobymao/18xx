@@ -543,6 +543,10 @@ module Engine
         company.owner = @current_entity
         entity.companies.delete(company)
 
+        company.abilities(:assign_corporation) do |ability|
+          @current_entity.assign!(company.sym)
+          ability.use!
+        end
         remove_just_sold_company_abilities
         @just_sold_company = company
 
@@ -567,8 +571,8 @@ module Engine
         token = action.token
         raise GameError, 'Token is already used' if token.used
 
-        token, ability = token_price_ability(token, hex)
-        @current_entity.remove_ability(ability)
+        token, ability_type = token_price_ability(token, hex)
+        @current_entity.remove_ability(ability_type)
         free = !token.price.positive?
         action.city.place_token(entity, token, free: free)
         unless free

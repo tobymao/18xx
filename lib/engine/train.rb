@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'abilities'
 require_relative 'ownable'
 require_relative 'depot'
 
 module Engine
   class Train
-    include Abilities
     include Ownable
 
     attr_accessor :obsolete, :operated
@@ -29,7 +27,6 @@ module Engine
       @obsolete = false
       @operated = false
       init_variants(opts[:variants])
-      init_abilities(opts[:abilities])
     end
 
     def init_variants(variants)

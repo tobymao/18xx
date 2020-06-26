@@ -3,7 +3,6 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1846'
-require_relative '../ability/east_west_bonus'
 require_relative 'base'
 
 module Engine
@@ -62,6 +61,35 @@ module Engine
         end
       end
 
+      def cert_limit
+        num_players = @players.size
+        num_corps = @corporations.size
+        case num_players
+        when 3
+          num_corps == 5 ? 14 : 11
+        when 4
+          case num_corps
+          when 6
+            12
+          when 5
+            10
+          else
+            8
+          end
+        when 5
+          case num_corps
+          when 7
+            11
+          when 6
+            10
+          when 5
+            8
+          else
+            6
+          end
+        end
+      end
+
       def michigan_southern
         @michigan_southern ||= minor_by_id('MS')
       end
@@ -84,10 +112,6 @@ module Engine
         @companies.each do |company|
           company.min_price = 1
           company.max_price = company.value
-        end
-
-        trains.each do |train|
-          train.add_ability(Ability::EastWestBonus.new(type: :bonus))
         end
 
         @minors.each do |minor|
@@ -125,6 +149,48 @@ module Engine
         end
       end
 
+      def revenue_for(route)
+        revenue = super
+
+        stops = route.stops
+        east = stops.find { |stop| stop.groups.include?('E') }
+        west = stops.find { |stop| stop.tile.label&.to_s == 'W' }
+
+        meat = meat_packing.id
+
+        revenue += 20 if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
+
+        steam = steam_boat.id
+
+        if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
+          revenue += 20 * port.tile.icons.select { |icon| icon.name == 'port' }.size
+        end
+
+        if east && west
+          revenue += east.tile.icons.sum { |icon| icon.name.to_i }
+          revenue += west.tile.icons.sum { |icon| icon.name.to_i }
+        end
+
+        if route.train.owner.companies.include?(mail_contract)
+          longest = route.routes.max_by { |r| [r.visited_stops.size, r.train.id] }
+          revenue += route.visited_stops.size * 10 if route == longest
+        end
+
+        revenue
+      end
+
+      def meat_packing
+        @meat_packing ||= company_by_id('MPC')
+      end
+
+      def steam_boat
+        @steam_boat ||= company_by_id('SC')
+      end
+
+      def mail_contract
+        @mail_contract ||= company_by_id('MAIL')
+      end
+
       def illinois_central
         @illinois_central ||= corporation_by_id('IC')
       end
@@ -145,12 +211,6 @@ module Engine
       end
 
       def close_corporation(corporation)
-        corporation.share_holders.keys.each do |player|
-          player.shares_by_corporation.delete(corporation)
-        end
-
-        @share_pool.shares_by_corporation.delete(corporation)
-
         hexes.each do |hex|
           hex.tile.cities.each do |city|
             next unless city.tokened_by?(corporation)
@@ -163,7 +223,17 @@ module Engine
         corporation.spend(corporation.cash, @bank)
         @log << "#{corporation.name} closes"
         @round.skip_current_entity if @round.current_entity == corporation
-        @corporations.delete(corporation)
+
+        if corporation.corporation?
+          corporation.share_holders.keys.each do |player|
+            player.shares_by_corporation.delete(corporation)
+          end
+
+          @share_pool.shares_by_corporation.delete(corporation)
+          @corporations.delete(corporation)
+        else
+          @minors.delete(corporation)
+        end
       end
 
       def init_round
@@ -172,6 +242,12 @@ module Engine
 
       def operating_round(round_num)
         Round::G1846::Operating.new(@minors + @corporations, game: self, round_num: round_num)
+      end
+
+      def event_close_companies!
+        super
+
+        @minors.dup.each { |minor| close_corporation(minor) }
       end
 
       def event_remove_tokens!

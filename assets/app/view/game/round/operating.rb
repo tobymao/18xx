@@ -16,6 +16,8 @@ module View
       class Operating < Snabberb::Component
         needs :game
 
+        ABILITIES = %i[tile_lay teleport assign_hexes].freeze
+
         def render
           round = @game.round
 
@@ -41,7 +43,9 @@ module View
           corporation = round.current_entity
           left << h(Corporation, corporation: corporation)
           (corporation.companies + corporation.owner.companies).each do |c|
-            left << h(Company, inline: false, company: c) if c.abilities(:tile_lay) || c.abilities(:teleport) || c.abilities(:token)
+            next if (c.all_abilities.map(&:type) & ABILITIES).empty?
+
+            left << h(Company, inline: false, company: c)
           end
 
           div_props = {

@@ -14,9 +14,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>1846 is now available for early alpha. It would help most if you played with the intent to find bugs in hot seat mode.
-        The private companies have not been implemented yet. 18Chesapeake is now out of beta and in production.
-        </p>
+        <p>1836Jr30 is now available for beta.</p>
+        <p>1846 is now available for alpha.</p>
 
         <p>Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
         <a href='https://docs.google.com/document/d/1nCYnzNMQLrFLZtWdbjfuSx5aIcaOyi27lMYkJxcGayw/edit'>FAQ!</a>
@@ -48,7 +47,7 @@ module View
 
     def render_introduction
       message = <<~MESSAGE
-        <p>18xx.games is a website where you can play async or real-time 18xx games! Right now only 1889 and 18Chesapeake are implemented
+        <p>18xx.games is a website where you can play async or real-time 18xx games (based on the system originally devised by the brilliant Francis Tresham)! Right now only 1889 and 18Chesapeake are implemented
         but I'm planning on doing many more in the future.</p>
 
         <p>You can play locally with hot seat mode without an account. If you want to play multiplayer, you'll need to create an account.</p>
