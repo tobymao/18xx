@@ -180,7 +180,7 @@ module Engine
           ],
           "price": 0,
           "teleport_price": 0,
-          "extra_token": true
+          "extra": true
         }
       ]
     },

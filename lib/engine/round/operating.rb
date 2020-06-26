@@ -571,7 +571,7 @@ module Engine
         token = action.token
         raise GameError, 'Token is already used' if token.used
 
-        token, ability_type = token_price_ability(token, hex)
+        token, ability_type = adjust_token_price_ability!(token, hex)
         @current_entity.remove_ability(ability_type)
         free = !token.price.positive?
         action.city.place_token(entity, token, free: free)
@@ -656,7 +656,7 @@ module Engine
         prices.compact.min
       end
 
-      def token_price_ability(token, hex)
+      def adjust_token_price_ability!(token, hex)
         if @teleported
           token.price = 0
           return [token, :teleport]
@@ -665,7 +665,7 @@ module Engine
         @current_entity.abilities(:token) do |ability, _|
           next unless ability.hexes.include?(hex.id)
 
-          token = Token.new(@current_entity) if ability.extra_token
+          token = Token.new(@current_entity) if ability.extra
           token.price = ability.teleport_price if ability.teleport_price
           token.price = ability.price if reachable_hexes[hex]
           return [token, :token]
