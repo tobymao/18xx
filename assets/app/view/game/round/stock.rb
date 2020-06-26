@@ -26,10 +26,15 @@ module View
             store(:last_player, @current_entity, skip: true)
           end
 
-          children = [
-            h(UndoAndPass, pass: !@round.must_sell?),
-            *render_corporations,
-          ]
+          children = [h(UndoAndPass, pass: !@round.must_sell?)]
+          if @round.must_sell?
+            children << if @round.current_entity.num_certs > @game.cert_limit
+                          h('div.margined', 'Player must sell stock as above certificate limit')
+                        else
+                          h('div.margined', 'Player must sell stock as above 60% limit in corporation')
+                        end
+          end
+          children += render_corporations
           children << h(Players, game: @game)
           children << h(StockMarket, game: @game)
 
