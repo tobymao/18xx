@@ -98,6 +98,10 @@ module Engine
       (bundle.percent + percent_of(bundle.corporation)) <= 50
     end
 
+    def bank_at_limit?(corporation)
+      percent_of(corporation) >= 50
+    end
+
     private
 
     def distance(player_a, player_b)

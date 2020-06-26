@@ -106,6 +106,10 @@ module Engine
       percent_of(self) <= 100 - @float_percent
     end
 
+    def percent_to_float
+      percent_of(self) - (100 - @float_percent)
+    end
+
     def player?
       false
     end

@@ -74,7 +74,7 @@ module View
         when 'map'
           h(Game::Map, game: @game, opacity: 1.0)
         when 'market'
-          h(Game::StockMarket, game: @game, show_bank: true)
+          h(Game::StockMarket, game: @game, show_bank: true, explain_colors: true)
         when 'tiles'
           h(Game::TileManifest, tiles: @game.tiles, all_tiles: @game.init_tiles, layout: @game.layout)
         when 'companies'
