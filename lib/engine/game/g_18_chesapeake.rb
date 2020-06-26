@@ -19,7 +19,7 @@ module Engine
       DEV_STAGE = :production
 
       GAME_LOCATION = nil
-      GAME_RULES_URL = 'https://www.dropbox.com/s/e38xzaf14meb2tw/18Chesapeake_Rules.pdf'
+      GAME_RULES_URL = 'https://www.dropbox.com/s/x0dsehrxqr1tl6w/18Chesapeake_Rules.pdf'
       GAME_DESIGNER = 'Scott Petersen'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
 
