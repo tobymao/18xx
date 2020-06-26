@@ -29,9 +29,9 @@ module View
           children = [h(UndoAndPass, pass: !@round.must_sell?)]
           if @round.must_sell?
             children << if @round.current_entity.num_certs > @game.cert_limit
-                          h('div.margined', 'Player must sell stock as above certificate limit')
+                          h('div.margined', 'Must sell stock: above certificate limit')
                         else
-                          h('div.margined', 'Player must sell stock as player is above 60% limit in corporation(s)')
+                          h('div.margined', 'Must sell stock: above 60% limit in corporation(s)')
                         end
           end
           children += render_corporations
