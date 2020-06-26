@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_tree 'engine'
 require 'view/game/map'
 
 module View
@@ -14,7 +15,7 @@ module View
 
       return h(:p, "Bad game title: #{game_title}") unless game
 
-      players = Game.player_range(game).max.times.map { |n| "Player #{n + 1}" }
+      players = Engine.player_range(game).max.times.map { |n| "Player #{n + 1}" }
       h(Game::Map, game: game.new(players))
     end
   end
