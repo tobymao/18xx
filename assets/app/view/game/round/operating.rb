@@ -41,7 +41,7 @@ module View
           corporation = round.current_entity
           left << h(Corporation, corporation: corporation)
           (corporation.companies + corporation.owner.companies).each do |c|
-            left << h(Company, inline: false, company: c) if c.abilities(:tile_lay) || c.abilities(:teleport)
+            left << h(Company, inline: false, company: c) if c.abilities(:tile_lay) || c.abilities(:teleport) || c.abilities(:token)
           end
 
           div_props = {

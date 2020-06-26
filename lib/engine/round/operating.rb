@@ -567,13 +567,13 @@ module Engine
         token = action.token
         raise GameError, 'Token is already used' if token.used
 
-        price, ability = token_price_ability(token, hex)
+        token, ability = token_price_ability(token, hex)
         @current_entity.remove_ability(ability)
-        free = !price.positive?
+        free = !token.price.positive?
         action.city.place_token(entity, token, free: free)
         unless free
-          entity.spend(price, @bank)
-          price_log = " for #{@game.format_currency(price)}"
+          entity.spend(token.price, @bank)
+          price_log = " for #{@game.format_currency(token.price)}"
         end
 
         case token.type
@@ -653,16 +653,21 @@ module Engine
       end
 
       def token_price_ability(token, hex)
-        return [0, :teleport] if @teleported
+        if @teleported
+          token.price = 0
+          return [token, :teleport]
+        end
 
         @current_entity.abilities(:token) do |ability, _|
           next unless ability.hexes.include?(hex.id)
 
-          return [ability.price, :token] if reachable_hexes[hex]
-          return [ability.teleport_price, :token] if ability.teleport_price
+          token = Token.new(@current_entity) if ability.extra_token 
+          token.price = ability.teleport_price if ability.teleport_price
+          token.price = ability.price if reachable_hexes[hex]
+          return [token, :token]
         end
 
-        [token.price, nil]
+        [token, nil]
       end
 
       def rust_obsolete_trains!(routes)
