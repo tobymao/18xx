@@ -48,6 +48,7 @@ module Engine
     end
 
     def remove_ability(type)
+      @abilities[type]&.teardown
       @abilities.delete(type)
     end
 

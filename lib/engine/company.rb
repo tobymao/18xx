@@ -35,6 +35,8 @@ module Engine
 
     def close!
       @closed = true
+
+      @abilities.keys.each { |a| remove_ability(a) }
       return unless owner
 
       owner.companies.delete(self)

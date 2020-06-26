@@ -100,13 +100,18 @@ module Engine
 
       def setup
         remove_from_group!(ORANGE_GROUP, @companies) do |company|
+          company.close!
           @round.companies.delete(company)
         end
         remove_from_group!(BLUE_GROUP, @companies) do |company|
+          company.close!
           @round.companies.delete(company)
         end
         remove_from_group!(GREEN_GROUP, @corporations) do |corporation|
           @round.place_home_token(corporation)
+          corporation.abilities(:reservation) do |ability|
+            corporation.remove_ability(ability.type)
+          end
         end
 
         @companies.each do |company|

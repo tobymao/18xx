@@ -181,6 +181,12 @@ module Engine
           "price": 0,
           "teleport_price": 0,
           "extra": true
+        },
+        {
+          "type": "reservation",
+          "hex": "D6",
+          "city": 3,
+          "when": "sold"
         }
       ]
     },
@@ -369,6 +375,11 @@ module Engine
           ],
           "price": 40,
           "teleport_price": 60
+        },
+        {
+          "type": "reservation",
+          "hex": "E11",
+          "remove": "4"
         }
       ],
       "coordinates": "F20",
@@ -409,6 +420,11 @@ module Engine
           ],
           "price": 40,
           "teleport_price": 100
+        },
+        {
+          "type": "reservation",
+          "hex": "H12",
+          "remove": "4"
         }
       ],
       "coordinates": "G19",
@@ -441,6 +457,21 @@ module Engine
         80,
         80,
         0
+      ],
+      "abilities": [
+        {
+          "type": "token",
+          "hexes": [
+            "D20"
+          ],
+          "price": 40
+        },
+        {
+          "type": "reservation",
+          "hex": "D20",
+          "slot": 1,
+          "remove": "4"
+        }
       ],
       "coordinates": "E21",
       "color": "yellow",
@@ -495,6 +526,11 @@ module Engine
             "I5"
           ],
           "price": 40
+        },
+        {
+          "type": "reservation",
+          "hex": "I5",
+          "remove": "4"
         }
       ],
       "coordinates": "K3",
@@ -679,7 +715,7 @@ module Engine
       "offboard=revenue:yellow_30|brown_50,groups:E;icon=image:1846/20;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:40 ": [
         "B18"
       ],
-      "offboard=revenue:yellow_20|brown_40;icon=image:1846/50;path=a:5,b:_0;label=W;icon=image:port;icon=image:port": [
+      "offboard=revenue:yellow_20|brown_40;icon=image:1846/50;path=a:5,b:_0;label=W;icon=image:port": [
         "C5"
       ],
       "offboard=revenue:yellow_40|brown_60,groups:E;icon=image:1846/30;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:60": [
