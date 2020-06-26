@@ -31,7 +31,7 @@ module View
             children << if @round.current_entity.num_certs > @game.cert_limit
                           h('div.margined', 'Player must sell stock as above certificate limit')
                         else
-                          h('div.margined', 'Player must sell stock as above 60% limit in corporation')
+                          h('div.margined', 'Player must sell stock as player is above 60% limit in corporation(s)')
                         end
           end
           children += render_corporations
