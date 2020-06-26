@@ -665,7 +665,7 @@ module Engine
         @current_entity.abilities(:token) do |ability, _|
           next unless ability.hexes.include?(hex.id)
 
-          token = Token.new(@current_entity) if ability.extra_token 
+          token = Token.new(@current_entity) if ability.extra_token
           token.price = ability.teleport_price if ability.teleport_price
           token.price = ability.price if reachable_hexes[hex]
           return [token, :token]
