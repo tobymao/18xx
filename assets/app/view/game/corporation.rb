@@ -108,10 +108,21 @@ module View
           h(:div, sym_props, @corporation.name),
           h(:div, holdings_props, [
             render_trains,
-            render_header_segment(@game.format_currency(@corporation.cash), 'Cash'),
+            render_cash,
           ]),
           render_tokens,
         ])
+      end
+
+      def render_cash
+        cash =
+          if !@corporation.corporation? || @corporation.floated?
+            @game.format_currency(@corporation.cash)
+          else
+            "#{@corporation.percent_to_float}% to float"
+          end
+
+        render_header_segment(cash, 'Cash')
       end
 
       def render_trains
@@ -197,6 +208,7 @@ module View
             @corporation.president?(player),
             player.num_shares_of(@corporation),
             @game.round.did_sell?(@corporation, player),
+            !@corporation.holding_ok?(player, 1),
           ]
         end
 
@@ -209,10 +221,11 @@ module View
         player_rows = player_info
           .select { |_, _, num_shares, did_sell| num_shares.positive? || did_sell }
           .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
-          .map do |player, president, num_shares, did_sell|
+          .map do |player, president, num_shares, did_sell, at_limit|
+            flags = (president ? '*' : '') + (at_limit ? 'L' : '')
             h('tr.player', [
               h("td.name.nowrap.#{president ? 'president' : ''}", player.name),
-              h('td.right', shares_props, "#{president ? '* ' : ''}#{num_shares}"),
+              h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{num_shares}"),
               did_sell ? h('td.italic', 'Sold') : '',
             ])
           end
@@ -232,9 +245,15 @@ module View
         }
 
         if player_rows.any?
+          if !@corporation.counts_for_limit && (color = StockMarket::COLOR_MAP[@corporation.share_price.color])
+            market_tr_props[:style]['background-color'] = Lib::Color.convert_hex_to_rgba(color, 0.4)
+          end
+
           pool_rows << h('tr.market', market_tr_props, [
             h('td.name', 'Market'),
-            h('td.right', shares_props, share_number_str(@corporation.num_market_shares)),
+            h('td.right', shares_props,
+              (@game.share_pool.bank_at_limit?(@corporation) ? 'L ' : '') +
+              share_number_str(@corporation.num_market_shares)),
             h('td.right', share_price_str(@corporation.share_price)),
           ])
         end
