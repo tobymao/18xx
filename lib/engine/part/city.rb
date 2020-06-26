@@ -33,8 +33,12 @@ module Engine
         @tokens.any? { |t| t&.corporation == corporation }
       end
 
+      def find_reservation(corporation)
+        @reservations.find_index { |r| [r, r.owner].include?(corporation) }
+      end
+
       def reserved_by?(corporation)
-        @reservations.any? { |r| [r, r.owner].include?(corporation) }
+        !!find_reservation(corporation)
       end
 
       def add_reservation!(entity, slot = nil)
@@ -57,7 +61,7 @@ module Engine
           next false unless get_slot(t.corporation)
           next false if !free && t.price > corporation.cash
           next false if @tile.cities.any? { |c| c.tokened_by?(t.corporation) }
-          next true if @reservations.any? { |r| [r, r.owner].include?(corporation) }
+          next true if reserved_by?(corporation)
           next false if @tile.token_blocked_by_reservation?(corporation)
 
           true
@@ -69,7 +73,7 @@ module Engine
       end
 
       def get_slot(corporation)
-        reservation = @reservations.find_index { |r| [r, r.owner].include?(corporation) }
+        reservation = find_reservation(corporation)
         reservation || @tokens.find_index.with_index do |t, i|
           t.nil? && @reservations[i].nil?
         end
