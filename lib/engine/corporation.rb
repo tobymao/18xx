@@ -143,7 +143,7 @@ module Engine
     def abilities(type, time = nil)
       abilities = []
 
-      if (ability = super)
+      if (ability = super(type, time, &nil))
         abilities << ability
         yield ability, self if block_given?
       end

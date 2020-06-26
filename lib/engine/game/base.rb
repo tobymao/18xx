@@ -573,15 +573,12 @@ module Engine
                                            city: c.city }
         end
         (corporations + companies).each do |c|
-          abilities = c.abilities(:reservation)
-          next if abilities.nil? || (abilities == [])
-
-          ability = abilities.is_a?(Array) ? abilities.first : abilities
-
-          reservations[ability.hex] << { entity: c,
-                                         city: ability.city.to_i,
-                                         slot: ability.slot.to_i,
-                                         ability: ability }
+          c.abilities(:reservation) do |ability|
+            reservations[ability.hex] << { entity: c,
+                                           city: ability.city.to_i,
+                                           slot: ability.slot.to_i,
+                                           ability: ability }
+          end
         end
 
         self.class::HEXES.map do |color, hexes|
