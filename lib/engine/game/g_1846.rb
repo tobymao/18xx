@@ -163,7 +163,7 @@ module Engine
 
         meat = meat_packing.id
 
-        revenue += 20 if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
+        revenue += 30 if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
 
         steam = steam_boat.id
 
