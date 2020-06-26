@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
+require_relative 'assignable'
 require_relative 'connection'
 
 module Engine
   class Hex
+    include Assignable
+
     attr_reader :connections, :coordinates, :layout, :neighbors, :tile, :x, :y, :location_name, :original_tile
 
     DIRECTIONS = {
@@ -70,6 +73,7 @@ module Engine
       tile.location_name = location_name
       @original_tile = @tile = tile
       @tile.hex = self
+      @activations = []
     end
 
     def id
@@ -109,6 +113,15 @@ module Engine
 
       # when upgrading, preserve reservations on previous tile
       city_map.each do |old_city, new_city|
+        old_city.reservations.each do |entity|
+          entity.abilities(:reservation) do |ability|
+            next unless ability.hex == coordinates
+
+            ability.tile = new_city.tile
+            ability.city = new_city.index
+          end
+        end
+
         new_city.reservations.concat(old_city.reservations)
         old_city.reservations.clear
       end

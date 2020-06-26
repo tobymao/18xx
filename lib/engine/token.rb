@@ -21,7 +21,7 @@ module Engine
     def swap!(other_token)
       remove!
       corporation = other_token.corporation
-      return unless @city.tokenable?(corporation, free: true)
+      return unless @city.tokenable?(corporation, free: true, tokens: [other_token])
 
       @city.place_token(corporation, other_token)
     end

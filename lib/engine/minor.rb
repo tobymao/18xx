@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'assignable'
 require_relative 'abilities'
 require_relative 'ownable'
 require_relative 'passer'
@@ -9,6 +10,7 @@ require_relative 'operator'
 module Engine
   class Minor
     include Abilities
+    include Assignable
     include Operator
     include Ownable
     include Passer

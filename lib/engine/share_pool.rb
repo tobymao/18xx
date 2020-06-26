@@ -38,17 +38,18 @@ module Engine
       share_str = "a #{bundle.percent}% share of #{corporation.name}"
       incremental = corporation.capitalization == :incremental
 
+      from = bundle.owner.corporation? ? 'the IPO' : 'the market'
       if exchange
         case exchange
         when :free
           @log << "#{entity.name} receives #{share_str}"
         when Company
-          @log << "#{entity.name} exchanges #{exchange.name} for #{share_str}"
+          @log << "#{entity.name} exchanges #{exchange.name} from #{from} for #{share_str}"
         end
         transfer_shares(bundle, entity)
       else
         @log << "#{entity.name} buys #{share_str} "\
-          "from #{bundle.owner.corporation? ? 'the IPO' : 'the market'} "\
+          "from #{from} "\
           "for #{@game.format_currency(price)}"
 
         transfer_shares(
@@ -95,6 +96,10 @@ module Engine
 
     def fit_in_bank?(bundle)
       (bundle.percent + percent_of(bundle.corporation)) <= 50
+    end
+
+    def bank_at_limit?(corporation)
+      percent_of(corporation) >= 50
     end
 
     private

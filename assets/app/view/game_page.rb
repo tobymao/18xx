@@ -74,7 +74,7 @@ module View
         when 'map'
           h(Game::Map, game: @game, opacity: 1.0)
         when 'market'
-          h(Game::StockMarket, game: @game, show_bank: true)
+          h(Game::StockMarket, game: @game, show_bank: true, explain_colors: true)
         when 'tiles'
           h(Game::TileManifest, tiles: @game.tiles, all_tiles: @game.init_tiles, layout: @game.layout)
         when 'companies'
@@ -154,8 +154,9 @@ module View
         style: {
           overflow: 'auto',
           position: 'sticky',
-          padding: '1.5rem',
-          margin: '-16px -1.5rem 1.5rem -1.5rem',
+          padding: '1.5rem 2vmin',
+          margin: '-2vmin -2vmin 2vmin -2vmin',
+          borderBottom: "1px solid #{color_for(:font2)}",
           top: '0',
           'background-color': color_for(:bg2),
           'font-size': 'large',
@@ -196,7 +197,7 @@ module View
           onclick: 'return false',
         },
         style: {
-          'margin': '0 1rem 1rem 0',
+          'margin': '0 2vmin 2vmin 0',
           'color': color_for(:font2),
           'text-decoration': route_anchor == anchor[1..-1] ? '' : 'none',
         },
@@ -218,7 +219,7 @@ module View
       game_end = @game.game_ending_description
       description += " - #{game_end}" if game_end
       description += " - Pinned to Version: #{@pin}" if @pin
-      h(:div, { style: { 'font-weight': 'bold' } }, description)
+      h(:div, { style: { 'font-weight': 'bold', margin: '2vmin 0' } }, description)
     end
 
     def render_action

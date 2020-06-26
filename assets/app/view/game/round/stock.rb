@@ -26,10 +26,15 @@ module View
             store(:last_player, @current_entity, skip: true)
           end
 
-          children = [
-            h(UndoAndPass, pass: !@round.must_sell?),
-            *render_corporations,
-          ]
+          children = [h(UndoAndPass, pass: !@round.must_sell?)]
+          if @round.must_sell?
+            children << if @round.current_entity.num_certs > @game.cert_limit
+                          h('div.margined', 'Must sell stock: above certificate limit')
+                        else
+                          h('div.margined', 'Must sell stock: above 60% limit in corporation(s)')
+                        end
+          end
+          children += render_corporations
           children << h(Players, game: @game)
           children << h(StockMarket, game: @game)
 
@@ -56,16 +61,20 @@ module View
           h(:div, { style: { 'margin-top': '0.5rem', width: '320px' } }, [input].compact)
         end
 
+        def buy_share(entity, share)
+          process_action(Engine::Action::BuyShares.new(entity, shares: share))
+        end
+
         def render_ipoed
           ipo_share = @selected_corporation.shares.first
           pool_share = @round.share_pool.shares_by_corporation[@selected_corporation]&.first
 
           buy_ipo = lambda do
-            process_action(Engine::Action::BuyShares.new(@current_entity, shares: ipo_share))
+            buy_share(@current_entity, ipo_share)
           end
 
           buy_pool = lambda do
-            process_action(Engine::Action::BuyShares.new(@current_entity, shares: pool_share))
+            buy_share(@current_entity, pool_share)
           end
 
           children = []
@@ -79,26 +88,27 @@ module View
             end
 
             # Allow privates to be exchanged for shares
-            exchangable = @game.companies.select do |company|
-              can_exchange = false
+            @game.companies.each do |company|
               company.abilities(:exchange) do |ability|
-                can_exchange = ability.corporation == @selected_corporation.name &&
-                  @round.can_gain?(ipo_share, company.owner)
+                next unless ability.corporation == @selected_corporation.name
+
+                prefix =
+                  if company.owner == @current_entity
+                    "Exchange #{company.sym} for "
+                  else
+                    "#{company.owner&.name} exchanges #{company.sym} for"
+                  end
+
+                if ability.from.include?(:ipo) && @round.can_gain?(ipo_share, company.owner)
+                  children << h('button.button', { on: { click: -> { buy_share(company, ipo_share) } } },
+                                "#{prefix} an IPO share")
+                end
+
+                if ability.from.include?(:market) && @round.can_gain?(pool_share, company.owner)
+                  children << h('button.button', { on: { click: -> { buy_share(company, pool_share) } } },
+                                "#{prefix} a Market share")
+                end
               end
-              can_exchange
-            end
-            exchangable.each do |company|
-              exchange = lambda do
-                process_action(Engine::Action::BuyShares.new(company, shares: ipo_share))
-              end
-              children << if company.owner == @current_entity
-                            h('button.button', { on: { click: exchange } },
-                              "Exchange #{company.sym} for a share")
-                          else
-                            # This can be done outside of a players turn, but make it clear who owns it
-                            h('button.button', { on: { click: exchange } },
-                              "#{company.owner.name} exchanges #{company.name} for a share")
-                          end
             end
 
           end

@@ -5,11 +5,13 @@ require_relative 'base'
 module Engine
   module Ability
     class Token < Base
-      attr_reader :hexes, :free
+      attr_reader :hexes, :price, :teleport_price, :extra
 
-      def setup(hexes:, free: nil)
+      def setup(hexes:, price:, teleport_price: nil, extra: nil)
         @hexes = hexes
-        @free = free || false
+        @price = price
+        @teleport_price = teleport_price
+        @extra = extra || false
       end
     end
   end

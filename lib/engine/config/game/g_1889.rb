@@ -309,7 +309,8 @@ module Engine
         {
           "type": "exchange",
           "corporation": "IR",
-          "owner_type": "player"
+          "owner_type": "player",
+          "from": "ipo"
         }
       ]
     },

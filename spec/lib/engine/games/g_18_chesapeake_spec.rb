@@ -16,17 +16,18 @@ module Engine
           'tgg' => 600,
           'wery' => 1028,
         },
-        1689 => {
-          'Eonthar' => 6357,
-          'Jasonbartfast' => 8651,
-          'philcampeau' => 7945,
-          'ynottony105' => 7041,
-        },
         1905 => {
           'Apreche' => 4604,
           'GeekNightsRym' => 4210,
           'agrajag' => 6214,
           'pence' => 4848,
+        },
+        2593 => {
+          'Harshit' => 4661,
+          'isaacbf' => 3848,
+          'jagdish' => 4697,
+          'mfwesq' => 4319,
+          'wery' => 3333,
         },
       }.each do |game_id, result|
         it "#{game_id} matches result exactly" do

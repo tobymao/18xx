@@ -20,13 +20,11 @@ module Engine
     "5": 9000
   },
   "certLimit": {
-    "2": 19,
     "3": 14,
     "4": 12,
     "5": 11
   },
   "startingCash": {
-    "2": 600,
     "3": 400,
     "4": 400,
     "5": 400
@@ -173,14 +171,38 @@ module Engine
       "value": 60,
       "revenue": 10,
       "desc": "Reserves a token slot in Chicago (D6), in which the owning corporation may place an extra token at no cost.",
-      "sym": "C&WI"
+      "sym": "C&WI",
+      "abilities": [
+        {
+          "type": "token",
+          "hexes": [
+            "D6"
+          ],
+          "price": 0,
+          "teleport_price": 0,
+          "extra": true
+        },
+        {
+          "type": "reservation",
+          "hex": "D6",
+          "city": 3,
+          "when": "sold"
+        }
+      ]
     },
     {
       "name": "Mail Contract",
       "value": 80,
       "revenue": 0,
       "desc": "Adds $10 per location visited by any one train of the owning corporation. Never closes once purchased by a corporation.",
-      "sym": "MAIL"
+      "sym": "MAIL",
+      "abilities": [
+        {
+          "type": "close",
+          "when": "never",
+          "owner_type": "corporation"
+        }
+      ]
     },
     {
       "name": "Tunnel Blasting Company",
@@ -194,21 +216,77 @@ module Engine
       "value": 60,
       "revenue": 15,
       "desc": "The owning corporation may place a $30 marker in either St. Louis (I1) or Chicago (D6), to add $30 to all routes run to this location.",
-      "sym": "MPC"
+      "sym": "MPC",
+      "abilities": [
+        {
+          "type": "assign_hexes",
+          "hexes": [
+            "I1",
+            "D6"
+          ],
+          "when": "sold",
+          "count": 1,
+          "owner_type": "corporation"
+        },
+        {
+          "type": "assign_corporation",
+          "when": "sold",
+          "count": 1,
+          "owner_type": "corporation"
+        }
+      ]
     },
     {
       "name": "Steamboat Company",
       "value": 40,
       "revenue": 10,
       "desc": "Place or shift the port marker among port locations (B8, C5, D14, G19, I1). Add $20 per port symbol to all routes run to this location by the owning (or assigned) company.",
-      "sym": "SC"
+      "sym": "SC",
+      "abilities": [
+        {
+          "type": "assign_hexes",
+          "hexes": [
+            "B8",
+            "C5",
+            "D14",
+            "I1",
+            "G19"
+          ],
+          "count": 1
+        },
+        {
+          "type": "assign_corporation",
+          "count": 1
+        }
+      ]
     },
     {
       "name": "Lake Shore Line",
       "value": 40,
       "revenue": 15,
       "desc": "The owning corporation may make an extra $0 cost tile upgrade of either Cleveland (E17) or Toledo (D14), but not both.",
-      "sym": "LSL"
+      "sym": "LSL",
+      "abilities": [
+        {
+           "type":"tile_lay",
+           "owner_type":"corporation",
+           "free":true,
+           "hexes":[
+              "D14",
+              "E17"
+           ],
+            "tiles": [
+              "14",
+              "15",
+              "619",
+              "294",
+              "295",
+              "296"
+            ],
+           "when":"track",
+           "count": 1
+        }
+      ]
     },
     {
       "name": "Michigan Central",
@@ -224,6 +302,22 @@ module Engine
             "B10",
             "B12"
           ]
+        },
+        {
+           "type":"tile_lay",
+           "owner_type":"corporation",
+           "free":true,
+           "hexes":[
+              "B10",
+              "B12"
+           ],
+            "tiles": [
+              "7",
+              "8",
+              "9"
+            ],
+           "when":"track",
+           "count": 2
         }
       ]
     },
@@ -241,6 +335,22 @@ module Engine
             "F14",
             "F16"
           ]
+        },
+        {
+           "type":"tile_lay",
+           "owner_type":"corporation",
+           "free":true,
+           "hexes":[
+              "F14",
+              "F16"
+           ],
+            "tiles": [
+              "7",
+              "8",
+              "9"
+            ],
+           "when":"track",
+           "count": 2
         }
       ]
     }
@@ -283,7 +393,14 @@ module Engine
           "type": "token",
           "hexes": [
             "E11"
-          ]
+          ],
+          "price": 40,
+          "teleport_price": 60
+        },
+        {
+          "type": "reservation",
+          "hex": "E11",
+          "remove": "4"
         }
       ],
       "coordinates": "F20",
@@ -321,7 +438,14 @@ module Engine
           "type": "token",
           "hexes": [
             "H12"
-          ]
+          ],
+          "price": 40,
+          "teleport_price": 100
+        },
+        {
+          "type": "reservation",
+          "hex": "H12",
+          "remove": "4"
         }
       ],
       "coordinates": "G19",
@@ -355,6 +479,21 @@ module Engine
         80,
         0
       ],
+      "abilities": [
+        {
+          "type": "token",
+          "hexes": [
+            "D20"
+          ],
+          "price": 40
+        },
+        {
+          "type": "reservation",
+          "hex": "D20",
+          "slot": 1,
+          "remove": "4"
+        }
+      ],
       "coordinates": "E21",
       "color": "yellow",
       "text_color": "black",
@@ -383,7 +522,7 @@ module Engine
         0,
         80,
         80,
-        0
+        80
       ],
       "abilities": [
          {
@@ -401,6 +540,18 @@ module Engine
               "8",
               "9"
             ]
+        },
+        {
+          "type": "token",
+          "hexes": [
+            "I5"
+          ],
+          "price": 40
+        },
+        {
+          "type": "reservation",
+          "hex": "I5",
+          "remove": "4"
         }
       ],
       "coordinates": "K3",
@@ -535,10 +686,10 @@ module Engine
       "city=revenue:0;border=edge:4,type:mountain,cost:40": [
         "B16"
       ],
-      "city=revenue:0;icon=image:port,sticky:1": [
+      "city=revenue:0;icon=image:port,sticky:1;icon=image:1846/lsl,sticky:1": [
         "D14"
       ],
-      "city=revenue:0;label=Z": [
+      "city=revenue:0;label=Z;icon=image:1846/lsl,sticky:1": [
         "E17"
       ],
       "city=revenue:0;label=Z;border=edge:0,type:water,cost:40": [
@@ -582,38 +733,40 @@ module Engine
       "offboard=revenue:yellow_40|brown_10;path=a:4,b:_0;icon=image:port;icon=image:port": [
         "B8"
       ],
-      "offboard=revenue:yellow_30|brown_50,groups:East;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:40 ": [
+      "offboard=revenue:yellow_30|brown_50,groups:E;icon=image:1846/20;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:40 ": [
         "B18"
       ],
-      "offboard=revenue:yellow_20|brown_40;path=a:5,b:_0;label=W;icon=image:port": [
+      "offboard=revenue:yellow_20|brown_40;icon=image:1846/50;path=a:5,b:_0;label=W;icon=image:port": [
         "C5"
       ],
-      "offboard=revenue:yellow_40|brown_60,groups:East;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:60": [
+      "offboard=revenue:yellow_40|brown_60,groups:E;icon=image:1846/30;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:60": [
         "C17"
       ],
-      "offboard=revenue:yellow_30|brown_60,hide:1,groups:Buffalo|East;path=a:0,b:_0;border=edge:5": [
+      "offboard=revenue:yellow_30|brown_60,hide:1,groups:E;icon=image:1846/30;path=a:0,b:_0;border=edge:5": [
         "C21"
       ],
-      "offboard=revenue:yellow_30|brown_60,groups:Buffalo|East;path=a:1,b:_0;label=E;border=edge:2": [
+      "offboard=revenue:yellow_30|brown_60,groups:E;icon=image:1846/30;path=a:1,b:_0;label=E;border=edge:2": [
         "D22"
       ],
-      "offboard=revenue:yellow_20|brown_50,groups:East;path=a:1,b:_0;label=E": [
-        "E23",
+      "offboard=revenue:yellow_20|brown_50,groups:E;icon=image:1846/30;path=a:1,b:_0;label=E": [
+        "E23"
+      ],
+      "offboard=revenue:yellow_20|brown_50,groups:E;icon=image:1846/20;path=a:1,b:_0;label=E": [
         "I17"
       ],
-      "offboard=revenue:yellow_30|brown_70,hide:1,groups:Pittsburgh|East;path=a:1,b:_0;border=edge:0": [
+      "offboard=revenue:yellow_30|brown_70,hide:1,groups:E;icon=image:1846/20;path=a:1,b:_0;border=edge:0": [
         "F22"
       ],
-      "offboard=revenue:yellow_30|brown_70,groups:Pittsburgh|East;path=a:1,b:_0;path=a:2,b:_0;label=E;border=edge:3": [
+      "offboard=revenue:yellow_30|brown_70,groups:E;icon=image:1846/20;path=a:1,b:_0;path=a:2,b:_0;label=E;border=edge:3": [
         "G21"
       ],
-      "offboard=revenue:yellow_20|brown_40,groups:East;path=a:2,b:_0;label=E": [
+      "offboard=revenue:yellow_20|brown_40,groups:E;icon=image:1846/30;path=a:2,b:_0;label=E": [
         "H20"
       ],
-      "offboard=revenue:yellow_50|brown_70;path=a:3,b:_0;path=a:4,b:_0;label=W;icon=image:port;icon=image:1846/meat": [
+      "offboard=revenue:yellow_50|brown_70,groups:St. Louis;path=a:3,b:_0;path=a:4,b:_0;label=W;icon=image:port;icon=image:1846/meat;icon=image:1846/20": [
         "I1"
       ],
-      "offboard=revenue:yellow_50|brown_70;path=a:2,b:_0;path=a:3,b:_0": [
+      "offboard=revenue:yellow_50|brown_70,groups:Louisville;path=a:2,b:_0;path=a:3,b:_0": [
         "J10"
       ]
     },

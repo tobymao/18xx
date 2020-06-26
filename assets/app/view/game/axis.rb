@@ -52,7 +52,7 @@ module View
             else
               col
             end
-          h(:text, { attrs: { x: x } }, label)
+          h(:text, { attrs: { x: x, dy: '1em' } }, label)
         end
 
         t_x = X_OFFSET + @gap
@@ -66,10 +66,10 @@ module View
           { attrs: { transform: "translate(#{t_x + @font_size} 0)" } },
           [
             h(:g,
-              { attrs: { 'dominant-baseline': 'hanging' } },
+              { attrs: { 'dominant-baseline': 'top' } },
               labels),
             h(:g,
-              { attrs: { transform: "translate(0 #{bottom_t_y})",
+              { attrs: { transform: "translate(0 #{bottom_t_y - @font_size})",
                          'dominant-baseline': 'baseline' } },
               labels),
           ])

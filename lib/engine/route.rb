@@ -4,9 +4,9 @@ require_relative 'game_error'
 
 module Engine
   class Route
-    attr_reader :last_node, :phase, :train
+    attr_reader :last_node, :phase, :train, :routes
 
-    def initialize(phase, train, connection_hexes: [], routes: [], override: nil)
+    def initialize(game, phase, train, connection_hexes: [], routes: [], override: nil)
       @connections = []
       @phase = phase
       @train = train
@@ -14,6 +14,7 @@ module Engine
       @last_connection = nil
       @routes = routes
       @override = override
+      @game = game
       restore_connections(connection_hexes) if connection_hexes
     end
 
@@ -136,7 +137,7 @@ module Engine
     end
 
     def visited_stops
-      connections.flat_map(&:nodes).uniq
+      @connections.flat_map { |c| [c[:left], c[:right]] }.uniq
     end
 
     def stops
@@ -144,24 +145,32 @@ module Engine
       distance = @train.distance
       return visits if distance.is_a?(Numeric)
 
-      token = visits
-        .select { |stop| stop.tokened_by?(corporation) }
-        .max_by { |stop| stop.route_revenue(@phase, @train) }
+      # always include the ends of a route because the user explicitly asked for it
+      included = [visits[0], visits[-1]]
 
-      grouped = visits.reject { |s| s == token }.group_by(&:type)
+      # find the maximal token if not already in the end points
+      if included.none? { |stop| stop.tokened_by?(corporation) }
+        token = visits
+          .select { |stop| stop.tokened_by?(corporation) }
+          .max_by { |stop| stop.route_revenue(@phase, @train) }
+        included << token if token
+      end
+
+      options_by_type = (visits - included).group_by(&:type)
+      included_by_type = included.group_by(&:type)
+
       types_pay = distance.map { |h| [h['nodes'], h['pay']] }.sort_by { |t, _| t.size }
 
-      [token] + types_pay.flat_map do |types, pay|
-        pay -= 1 if types.include?('city')
+      included + types_pay.flat_map do |types, pay|
+        pay -= types.sum { |type| included_by_type[type]&.size || 0 }
 
         node_revenue = types.flat_map do |type|
-          next [] unless (nodes = grouped[type])
+          next [] unless (nodes = options_by_type[type])
 
           nodes.map { |node| [node, node.route_revenue(@phase, @train)] }
         end.sort_by(&:last).last(pay)
 
-        node_revenue.each { |node, _| grouped[node.type].delete(node) }
-
+        node_revenue.each { |node, _| options_by_type[node.type].delete(node) }
         node_revenue.map(&:first)
       end
     end
@@ -206,11 +215,15 @@ module Engine
       # rubocop:enable Style/GuardClause, Style/IfUnlessModifier
     end
 
+    def distance
+      visited_stops.sum(&:visit_cost)
+    end
+
     def check_distance!(visits)
       distance = @train.distance
-
       if distance.is_a?(Numeric)
-        raise GameError, "#{visits.size} is too many stops for #{distance} train" if distance < visits.size
+        route_distance = visits.sum(&:visit_cost)
+        raise GameError, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
 
         return
       end
@@ -227,7 +240,7 @@ module Engine
       grouped = visits.group_by(&:type)
 
       grouped.each do |type, group|
-        num = group.size
+        num = group.sum(&:visit_cost)
 
         type_info[type].sort_by(&:size).each do |info|
           next unless info[:visit].positive?
@@ -257,7 +270,7 @@ module Engine
         raise GameError, "Cannot use group #{key} more than once" unless group.one?
       end
 
-      stops.sum { |stop| stop.route_revenue(@phase, @train) }
+      @game.revenue_for(self)
     end
 
     def corporation

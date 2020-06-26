@@ -31,7 +31,7 @@ module View
             ids.map { |id| @game.hex_by_id(id) }
           end
           # A future enhancement to this could be to find trains and move the routes over
-          @routes << Engine::Route.new(@game.phase, train, connection_hexes: connections, routes: @routes)
+          @routes << Engine::Route.new(@game, @game.phase, train, connection_hexes: connections, routes: @routes)
         end.compact
       end
 
@@ -47,7 +47,7 @@ module View
         end
 
         if !@selected_route && (first_train = trains[0])
-          route = Engine::Route.new(@game.phase, first_train, routes: @routes)
+          route = Engine::Route.new(@game, @game.phase, first_train, routes: @routes)
           @routes << route
           store(:routes, @routes, skip: true)
           store(:selected_route, route, skip: true)
@@ -56,7 +56,7 @@ module View
         trains = trains.map do |train|
           onclick = lambda do
             unless (route = @routes.find { |t| t.train == train })
-              route = Engine::Route.new(@game.phase, train, routes: @routes)
+              route = Engine::Route.new(@game, @game.phase, train, routes: @routes)
               @routes << route
               store(:routes, @routes)
             end
@@ -87,7 +87,7 @@ module View
 
             route_td_props = { style: { maxWidth: '230px' } }
 
-            children << h(:td, route.stops.size)
+            children << h(:td, route.distance)
             children << h(:td, revenue)
             children << h(:td, route_td_props,
                           if invalid

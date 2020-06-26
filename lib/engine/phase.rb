@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'action/buy_train'
-require_relative 'action/run_routes'
 
 module Engine
   class Phase
@@ -23,8 +22,6 @@ module Engine
         next! if train.sym == @next_on
         rust_trains!(train, entity)
         close_companies_on_train!(entity)
-      when Action::RunRoutes
-        rust_obsolete_trains!(action.routes)
       end
     end
 
@@ -71,6 +68,12 @@ module Engine
           company.close!
         end
       end
+
+      (@game.companies + @game.corporations).each do |c|
+        c.all_abilities.each do |ability|
+          c.remove_ability(ability.type) if ability.remove == @name
+        end
+      end
     end
 
     def close_companies_on_train!(entity)
@@ -107,20 +110,6 @@ module Engine
 
       @log << "-- Event: #{obsolete_trains.uniq.join(', ')} trains are obsolete --" if obsolete_trains.any?
       @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --" if rusted_trains.any?
-    end
-
-    def rust_obsolete_trains!(routes)
-      rusted_trains = []
-
-      routes.each do |route|
-        train = route.train
-        next unless train.obsolete
-
-        rusted_trains << train.name
-        train.rust!
-      end
-
-      @log << '-- Event: Obsolete trains rust --' if rusted_trains.any?
     end
 
     def next!

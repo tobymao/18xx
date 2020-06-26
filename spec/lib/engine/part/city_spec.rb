@@ -54,24 +54,24 @@ module Engine
           expect(subject.tokenable?(corporation)).to be true
         end
         it 'disallows with different corp reservation' do
-          subject.add_reservation!(corporation2.name)
+          subject.add_reservation!(corporation2)
           subject.place_token(corporation3, corporation3.next_token, free: true)
           expect(subject.tokenable?(corporation)).to be false
         end
         it 'allows with same corp reservation' do
-          subject.add_reservation!(corporation.name)
+          subject.add_reservation!(corporation)
           subject.place_token(corporation3, corporation3.next_token, free: true)
           expect(subject.tokenable?(corporation)).to be true
         end
         context '2 city tile' do
           subject { Tile.for('128', index: 0).cities[0] } # 2 city tile
           it 'disallows with different corp reservation on tile' do
-            subject.tile.add_reservation!(corporation2.name, nil)
+            subject.tile.add_reservation!(corporation2, nil)
             subject.tile.cities[1].place_token(corporation3, corporation3.next_token, free: true)
             expect(subject.tokenable?(corporation)).to be false
           end
           it 'allows with same corp reservation on tile' do
-            subject.tile.add_reservation!(corporation.name, nil)
+            subject.tile.add_reservation!(corporation, nil)
             subject.tile.cities[1].place_token(corporation3, corporation3.next_token, free: true)
             expect(subject.tokenable?(corporation)).to be true
           end
@@ -79,11 +79,11 @@ module Engine
         context '2 city tile with 1830/1836Jr30 rules' do
           subject { Tile.for('128', index: 0, reservation_blocks: true).cities[0] } # 2 city tile
           it 'disallows with different corp reservation on tile' do
-            subject.tile.add_reservation!(corporation2.name, nil)
+            subject.tile.add_reservation!(corporation2, nil)
             expect(subject.tokenable?(corporation)).to be false
           end
           it 'allows with same corp reservation on tile' do
-            subject.tile.add_reservation!(corporation.name, nil)
+            subject.tile.add_reservation!(corporation, nil)
             expect(subject.tokenable?(corporation)).to be true
           end
         end

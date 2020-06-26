@@ -73,15 +73,25 @@ module Engine
 
         Part::Path.new(params['a'], params['b'])
       when 'city'
-        city = Part::City.new(params['revenue'], params.fetch('slots', 1), params['groups'], params['hide'])
+        city = Part::City.new(params['revenue'],
+                              params.fetch('slots', 1),
+                              params['groups'],
+                              params['hide'],
+                              params['visit_cost'])
         cache << city
         city
       when 'town'
-        town = Part::Town.new(params['revenue'], params['groups'], params['hide'])
+        town = Part::Town.new(params['revenue'],
+                              params['groups'],
+                              params['hide'],
+                              params['visit_cost'])
         cache << town
         town
       when 'offboard'
-        offboard = Part::Offboard.new(params['revenue'], params['groups'], params['hide'])
+        offboard = Part::Offboard.new(params['revenue'],
+                                      params['groups'],
+                                      params['hide'],
+                                      params['visit_cost'])
         cache << offboard
         offboard
       when 'label'
@@ -237,17 +247,17 @@ module Engine
     end
 
     def reserved_by?(corporation)
-      @reservations.any? { |r| r == corporation.name }
+      @reservations.any? { |r| [r, r.owner].include?(corporation) }
     end
 
-    def add_reservation!(name, city)
+    def add_reservation!(entity, city, slot = 0)
       # Single city, assume the first
       city = 0 if @cities.one?
 
       if city
-        @cities[city].add_reservation!(name)
+        @cities[city].add_reservation!(entity, slot)
       else
-        @reservations << name
+        @reservations << entity
       end
     end
 
@@ -255,9 +265,9 @@ module Engine
       return false if @reservations.empty?
 
       if @reservation_blocks
-        !@reservations.include?(corporation.name)
+        !@reservations.include?(corporation)
       else
-        @reservations.count { |x| corporation.name != x } >= @cities.sum(&:available_slots)
+        @reservations.count { |x| corporation != x } >= @cities.sum(&:available_slots)
       end
     end
 
