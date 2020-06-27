@@ -135,9 +135,10 @@ module Engine
         old_city.remove_tokens!
       end
 
+      new_icons = tile.icons.group_by(&:name)
       @tile.icons.each do |icon|
         next unless icon.sticky
-        next if tile.icons.any? { |x| icon.name == x.name }
+        next if new_icons[icon.name]&.pop
 
         new_icon = icon.dup
         new_icon.preprinted = false

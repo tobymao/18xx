@@ -241,6 +241,82 @@ module Engine
           end
         end
       end
+
+      context 'icon preservation' do
+        {
+          '1846' => [
+            {
+              hex: 'D6',
+              initial_icons: %w[meat],
+              lays: [{ tile: '298', rotation: 0, icons: %w[meat] },
+                     { tile: '299', rotation: 0, icons: %w[meat] },
+                     { tile: '300', rotation: 0, icons: %w[meat] }],
+            },
+            {
+              hex: 'D14',
+              initial_icons: %w[port lsl],
+              lays: [{ tile: '5', rotation: 1, icons: %w[port lsl] },
+                     { tile: '14', rotation: 1, icons: %w[port lsl] },
+                     { tile: '611', rotation: 5, icons: %w[port lsl] },
+                     { tile: '51', rotation: 5, icons: %w[port lsl] }],
+            },
+            {
+              hex: 'G19',
+              initial_icons: %w[port port],
+              lays: [{ tile: '14', rotation: 1, icons: %w[port port] }],
+            },
+            {
+              hex: 'J4',
+              initial_icons: %w[ic],
+              lays: [{ tile: '9', rotation: 0, icons: [] }],
+            },
+          ],
+          '1882' => [
+            {
+              hex: 'B4',
+              initial_icons: %w[NWR],
+              lays: [{ tile: '8', rotation: 5, icons: %w[NWR] },
+                     { tile: 'original', rotation: 0, icons: %w[NWR] }],
+            },
+          ],
+          '1889' => [
+            {
+              hex: 'G10',
+              initial_icons: %w[port],
+              lays: [{ tile: '437', rotation: 0, icons: %w[port] }],
+            },
+            {
+              hex: 'I12',
+              initial_icons: %w[port],
+              lays: [{ tile: '58', rotation: 1, icons: [] }],
+            },
+          ],
+        }.each do |game_title, specs|
+          game_class = GAMES_BY_TITLE[game_title]
+          players = Engine.player_range(game_class).max.times.map { |n| "Player #{n + 1}" }
+          game = game_class.new(players)
+          specs.each do |spec|
+            context "hex #{spec[:hex]} in #{game_title}" do
+              hex = game.hex_by_id(spec[:hex])
+
+              it 'has the correct initial icons' do
+                expect(hex.tile.icons.map(&:name)).to eq(spec[:initial_icons])
+              end
+
+              spec[:lays].each do |lay|
+                it "has #{lay[:icons]} after laying tile \"#{lay[:tile]}\"" do
+                  tile = lay[:tile] == 'original' ? hex.original_tile : Tile.for(lay[:tile])
+                  tile.rotate!(lay[:rotation])
+
+                  hex.lay(tile)
+
+                  expect(hex.tile.icons.map(&:name)).to eq(lay[:icons])
+                end
+              end
+            end
+          end
+        end
+      end
     end
   end
 end
