@@ -135,11 +135,10 @@ module Engine
         old_city.remove_tokens!
       end
 
-      @tile.icons.each do |icon|
-        next unless icon.sticky
-        next if tile.icons.any? { |x| icon.name == x.name }
-
-        new_icon = icon.dup
+      sticky_icon_names = @tile.icons.select(&:sticky).map(&:name)
+      new_icon_names = tile.icons.map(&:name)
+      (sticky_icon_names - new_icon_names).each do |icon_name|
+        new_icon = @tile.icons.find { |i| i.name == icon_name }.dup
         new_icon.preprinted = false
         tile.icons << new_icon
       end
