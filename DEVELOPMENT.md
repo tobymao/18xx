@@ -10,7 +10,6 @@ If configuring the droplet from scratch, these are the requirements:
 * `docker`
 * `docker-compose`
 * `make`
-* `postgres`
 * this repo (via `git clone`)
 
 ### Docker
