@@ -30,7 +30,8 @@ module Engine
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
-                  :round, :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible
+                  :round, :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
+                  :round_history
 
       DEV_STAGE = :prealpha
 
@@ -270,6 +271,7 @@ module Engine
         @phase = init_phase
         @operating_rounds = @phase.operating_rounds
 
+        @round_history = []
         @round = init_round
         @special = Round::Special.new(@companies, game: self)
 
@@ -713,6 +715,7 @@ module Engine
             reorder_players
             new_stock_round
           end
+        @round_history << { type: @round.class, first_action: @actions.size }
       end
 
       def game_ending_description
