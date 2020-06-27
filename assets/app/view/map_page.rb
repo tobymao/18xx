@@ -15,7 +15,8 @@ module View
 
       return h(:p, "Bad game title: #{game_title}") unless game
 
-      h(Game::Map, game: game.new(:max))
+      players = Engine.player_range(game).max.times.map { |n| "Player #{n + 1}" }
+      h(Game::Map, game: game.new(players))
     end
   end
 end
