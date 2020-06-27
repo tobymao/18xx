@@ -734,7 +734,7 @@ module Engine
 
         reason_map = {
                        bank: 'Bank Broken',
-                       bankrupt: 'Bankrupcy',
+                       bankrupt: 'Bankruptcy',
                        stockmarket: 'Company hit max stock value',
                      }
         "#{reason_map[reason]}#{after_text}"
