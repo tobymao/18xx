@@ -27,7 +27,7 @@ module View
 
       def select_company(event)
         event.JS.stopPropagation
-        selected_company = (ability_usable? || purchasable?) && !selected? ? @company : nil
+        selected_company = (purchasable? || ability_usable?) && !selected? ? @company : nil
         store(:tile_selector, nil, skip: true)
         store(:selected_company, selected_company)
       end
