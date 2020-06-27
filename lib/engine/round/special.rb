@@ -71,13 +71,14 @@ module Engine
         end
       end
 
-      def potential_tiles
+      def potential_tiles(hex)
         return [] unless (tiles = tile_laying_ability&.tiles)
 
-        tiles.map do |name|
+        potentials = tiles.map do |name|
           # this is shit
           @game.tiles.find { |t| t.name == name }
         end.compact
+        potentials.select { |t| hex.tile.upgrades_to?(t) }
       end
 
       def check_track_restrictions!(_old_tile, _new_tile)
