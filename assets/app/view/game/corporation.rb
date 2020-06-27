@@ -97,32 +97,38 @@ module View
             'justify-self': 'start',
           },
         }
-        holdings_props = {
-          style: {
-            grid: '1fr / 1fr 1fr',
-            gap: '0 0.3rem',
-          },
-        }
+
+        holdings =
+          if !@corporation.corporation? || @corporation.floated?
+            holdings_props = {
+              style: {
+                grid: '1fr / 1fr 1fr',
+                gap: '0 0.3rem',
+              },
+            }
+            h(:div, holdings_props, [
+              render_trains,
+              render_cash,
+            ])
+          else
+            holdings_props = {
+              style: {
+                grid: '1fr / auto-flow',
+                gap: '0 0.3rem',
+              },
+            }
+            h(:div, holdings_props, "#{@corporation.percent_to_float}% to float")
+          end
 
         h('div.corp__holdings', holdings_row_props, [
           h(:div, sym_props, @corporation.name),
-          h(:div, holdings_props, [
-            render_trains,
-            render_cash,
-          ]),
+          holdings,
           render_tokens,
         ])
       end
 
       def render_cash
-        cash =
-          if !@corporation.corporation? || @corporation.floated?
-            @game.format_currency(@corporation.cash)
-          else
-            "#{@corporation.percent_to_float}% to float"
-          end
-
-        render_header_segment(cash, 'Cash')
+        render_header_segment(@game.format_currency(@corporation.cash), 'Cash')
       end
 
       def render_trains
