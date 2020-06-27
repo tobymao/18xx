@@ -227,7 +227,14 @@ module Engine
         @finished = false
         @log = []
         @actions = []
-        @names = names.freeze
+
+        @names =
+          if %i[min max].include?(names)
+            player_count = Engine.player_range(self.class).send(names)
+            player_count.times.map { |n| "Player #{n + 1}" }
+          else
+            names
+          end.freeze
         @players = @names.map { |name| Player.new(name) }
 
         @seed = @id.to_s.scan(/\d+/).first.to_i % RAND_M
