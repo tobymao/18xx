@@ -17,6 +17,7 @@ module View
       def render_bidders
         bidders_style = {
           'font-weight': 'normal',
+          margin: '0 0.5rem',
         }
         names = @bids
           .sort_by(&:price)
@@ -42,40 +43,35 @@ module View
         }
 
         description_style = {
-          margin: '0.5rem 0 0.5rem 0',
+          margin: '0.5rem 0',
           'font-size': '80%',
           'text-align': 'left',
           'font-weight': 'normal',
         }
 
         value_style = {
-          display: 'inline-block',
-          width: '50%',
-          'text-align': 'left',
+          float: 'left',
         }
 
         revenue_style = {
-          display: 'inline-block',
-          width: '50%',
-          'text-align': 'right',
+          float: 'right',
         }
 
         bidders_style = {
-          'margin-top': '1rem',
+          'margin-top': '0.5rem',
+          display: 'inline-block',
+          clear: 'both',
+          width: '100%',
         }
 
         props = {
           style: {
             cursor: 'pointer',
-            border: 'solid 1px gainsboro',
-            'border-radius': '10px',
-            overflow: 'hidden',
+            boxSizing: 'border-box',
             padding: '0.5rem',
             margin: '0.5rem 0.5rem 0 0',
-            width: '19rem',
             'text-align': 'center',
             'font-weight': 'bold',
-            'vertical-align': 'top',
           },
           on: { click: onclick },
         }
@@ -83,16 +79,14 @@ module View
           props[:style]['background-color'] = 'lightblue'
           props[:style]['color'] = 'black'
         end
-        props[:style][:display] = 'inline-block' if @inline
+        props[:style][:display] = 'block' unless @inline
 
         children = [
           h(:div, { style: header_style }, 'PRIVATE COMPANY'),
           h(:div, @company.name),
           h(:div, { style: description_style }, @company.desc),
-          h(:div, [
-            h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}"),
-            h(:div, { style: revenue_style }, "Revenue: #{@game.format_currency(@company.revenue)}"),
-          ]),
+          h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}"),
+          h(:div, { style: revenue_style }, "Revenue: #{@game.format_currency(@company.revenue)}"),
         ]
 
         if @bids&.any?
@@ -100,9 +94,9 @@ module View
           children << render_bidders
         end
 
-        children << h(:div, { style: bidders_style }, "Owner: #{@company.owner.name}") if @company.owner
+        children << h('div.nowrap', { style: bidders_style }, "Owner: #{@company.owner.name}") if @company.owner
 
-        h(:div, props, children)
+        h('div.company.card', props, children)
       end
     end
   end

@@ -10,7 +10,7 @@ module Engine
 
       def initialize(image, name = nil, sticky = true, blocks_lay = nil, preprinted = true)
         @image = "/icons/#{image}.svg"
-        @name = name || image
+        @name = name || image.split('/')[-1]
         @sticky = !!sticky
         @preprinted = preprinted
         @blocks_lay = !!blocks_lay

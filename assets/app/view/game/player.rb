@@ -10,7 +10,6 @@ module View
       def render
         card_style = {
           border: '1px solid gainsboro',
-          width: '20rem',
         }
 
         if @game.round.can_act?(@player)
@@ -32,7 +31,6 @@ module View
       def render_title
         props = {
           style: {
-            'max-width': '20rem',
             padding: '0.4rem',
             'background-color': @game.round.can_act?(@player) ? '#9b9' : color_for(:bg2),
             color: @game.round.can_act?(@player) ? 'black' : color_for(:font2),

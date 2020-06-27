@@ -31,6 +31,7 @@ module Engine
           end
 
           Route.new(
+            game,
             game.phase,
             game.train_by_id(route['train']),
             connection_hexes: connection_hexes,

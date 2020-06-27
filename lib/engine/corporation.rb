@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'abilities'
+require_relative 'assignable'
 require_relative 'operator'
 require_relative 'ownable'
 require_relative 'passer'
@@ -12,6 +13,7 @@ require_relative 'token'
 module Engine
   class Corporation
     include Abilities
+    include Assignable
     include Operator
     include Ownable
     include Passer
@@ -50,8 +52,8 @@ module Engine
       # corporation with higher share price, farthest on the right, and first position on the share price goes first
       sp = share_price
       ops = other.share_price
-      [ops.price, ops.coordinates&.last, -ops.corporations.find_index(other)] <=>
-      [sp.price, sp.coordinates.last, -sp.corporations.find_index(self)]
+      [ops.price, ops.coordinates.last, -ops.coordinates.first, -ops.corporations.find_index(other)] <=>
+      [sp.price, sp.coordinates.last, -sp.coordinates.first, -sp.corporations.find_index(self)]
     end
 
     def counts_for_limit
@@ -104,6 +106,10 @@ module Engine
       percent_of(self) <= 100 - @float_percent
     end
 
+    def percent_to_float
+      percent_of(self) - (100 - @float_percent)
+    end
+
     def player?
       false
     end
@@ -141,7 +147,7 @@ module Engine
     def abilities(type, time = nil)
       abilities = []
 
-      if (ability = super)
+      if (ability = super(type, time, &nil))
         abilities << ability
         yield ability, self if block_given?
       end

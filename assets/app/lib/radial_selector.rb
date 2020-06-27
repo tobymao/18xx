@@ -25,5 +25,7 @@ module Lib
         'pointer-events' => 'auto',
       }
     end
+
+    DROP_SHADOW_SIZE = 5
   end
 end

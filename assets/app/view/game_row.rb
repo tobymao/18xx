@@ -25,8 +25,9 @@ module View
     def render_header(header)
       children = [h(:h2, header)]
       p = page.to_i
+      @offset = @type == :hotseat ? (p * @limit) : 0
       children << render_more('Prev', "?#{@type}=#{p - 1}") if p.positive?
-      children << render_more('Next', "?#{@type}=#{p + 1}") if @game_row_games.size > @limit
+      children << render_more('Next', "?#{@type}=#{p + 1}") if @game_row_games.size > @offset + @limit
 
       props = {
         style: {
@@ -63,7 +64,7 @@ module View
     end
 
     def render_row
-      @game_row_games.map { |game| h(GameCard, gdata: game, user: @user) }.take(@limit)
+      @game_row_games.slice(@offset, @limit).map { |game| h(GameCard, gdata: game, user: @user) }
     end
 
     private

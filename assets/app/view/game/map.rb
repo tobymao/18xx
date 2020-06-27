@@ -30,7 +30,7 @@ module View
         @game.special.current_entity = @selected_company
 
         round =
-          if @game.special.tile_laying_ability
+          if @game.special.map_abilities
             @game.special
           elsif @game.round.operating?
             @game.round
@@ -48,7 +48,7 @@ module View
 
         if @tile_selector
           left = (@tile_selector.x + map_x) * SCALE
-
+          top = (@tile_selector.y + map_y) * SCALE
           selector =
             if @tile_selector.is_a?(Lib::TokenSelector)
               # 1882
@@ -58,17 +58,29 @@ module View
             else
               # Selecting column A can cause tiles to go off the edge of the map
               distance = TileSelector::DISTANCE + (TileSelector::TILE_SIZE / 2)
+
+              width, height = map_size
               left = distance if (left - distance).negative?
+              if (left + distance + TileSelector::DROP_SHADOW_SIZE) >= width
+                left = width - TileSelector::DROP_SHADOW_SIZE - distance
+              end
+
+              top = distance if (top - distance).negative?
+              if (top + distance + TileSelector::DROP_SHADOW_SIZE) >= height
+                top = height - TileSelector::DROP_SHADOW_SIZE - distance
+              end
+
               tiles = round.upgradeable_tiles(@tile_selector.hex)
+
               h(TileSelector, layout: @layout, tiles: tiles)
             end
 
           # Move the position to the middle of the hex
           props = {
            style: {
-             position: 'relative',
+             position: 'absolute',
              left: "#{left}px",
-             top: "#{(@tile_selector.y + map_y) * SCALE}px",
+             top: "#{top}px",
            },
           }
           # This needs to be before the map, so that the relative positioning works
@@ -78,7 +90,8 @@ module View
         props = {
           style: {
             overflow: 'auto',
-            margin: '1rem -1rem',
+            margin: '1rem 0',
+            position: 'relative',
           },
         }
 
@@ -93,14 +106,18 @@ module View
         GAP + (@layout == :flat ? (FONT_SIZE / 2) : FONT_SIZE)
       end
 
-      def render_map
+      def map_size
         if @layout == :flat
-          width = (@cols.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP
-          height = (@rows.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP
+          [(@cols.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP,
+           (@rows.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP]
         else
-          width = (@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP
-          height = (@rows.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP
+          [(@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP,
+           (@rows.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP]
         end
+      end
+
+      def render_map
+        width, height = map_size
 
         props = {
           attrs: {

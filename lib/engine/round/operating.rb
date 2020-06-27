@@ -266,8 +266,8 @@ module Engine
       def skip_token
         return true unless (token = @current_entity.next_token)
 
-        (!@teleported && token.price > @current_entity.cash) ||
-          !@graph.can_token?(@current_entity, @teleported)
+        min_token_price(token) > @current_entity.cash ||
+          !@graph.can_token?(@current_entity)
       end
 
       def skip_route
@@ -354,6 +354,7 @@ module Engine
 
       def process_dividend(action)
         revenue = @current_routes.sum(&:revenue)
+        rust_obsolete_trains!(@current_routes)
         @current_entity.operating_history[[@game.turn, @round_num]] = OperatingInfo.new(
           @current_routes,
           action,
@@ -542,6 +543,10 @@ module Engine
         company.owner = @current_entity
         entity.companies.delete(company)
 
+        company.abilities(:assign_corporation) do |ability|
+          @current_entity.assign!(company.sym)
+          ability.use!
+        end
         remove_just_sold_company_abilities
         @just_sold_company = company
 
@@ -558,19 +563,21 @@ module Engine
       def place_token(action)
         entity = action.entity
         hex = action.city.hex
-        allow_unconnected = @teleported || @step == :home_token
-        if !@game.loading && !allow_unconnected && !connected_nodes[action.city]
+
+        if !@game.loading && @step != :home_token && !connected_nodes[action.city]
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 
         token = action.token
         raise GameError, 'Token is already used' if token.used
 
-        price = token.price || 0
-        action.city.place_token(entity, token, free: @teleported)
-        if price.positive? && !@teleported
-          entity.spend(price, @bank)
-          price_log = " for #{@game.format_currency(price)}"
+        token, ability_type = adjust_token_price_ability!(token, hex)
+        @current_entity.remove_ability(ability_type)
+        free = !token.price.positive?
+        action.city.place_token(entity, token, free: free)
+        unless free
+          entity.spend(token.price, @bank)
+          price_log = " for #{@game.format_currency(token.price)}"
         end
 
         case token.type
@@ -634,6 +641,51 @@ module Engine
         # to change order. Re-sort only them.
         index = @entities.find_index(@current_entity) + 1
         @entities[index..-1] = @entities[index..-1].sort if index < @entities.size - 1
+      end
+
+      def min_token_price(token)
+        return 0 if @teleported
+
+        prices = [token.price]
+
+        @current_entity.abilities(:token) do |ability, _|
+          prices << ability.price
+          prices << ability.teleport_price
+        end
+
+        prices.compact.min
+      end
+
+      def adjust_token_price_ability!(token, hex)
+        if @teleported
+          token.price = 0
+          return [token, :teleport]
+        end
+
+        @current_entity.abilities(:token) do |ability, _|
+          next unless ability.hexes.include?(hex.id)
+
+          token = Token.new(@current_entity) if ability.extra
+          token.price = ability.teleport_price if ability.teleport_price
+          token.price = ability.price if reachable_hexes[hex]
+          return [token, :token]
+        end
+
+        [token, nil]
+      end
+
+      def rust_obsolete_trains!(routes)
+        rusted_trains = []
+
+        routes.each do |route|
+          train = route.train
+          next unless train.obsolete
+
+          rusted_trains << train.name
+          train.rust!
+        end
+
+        @log << '-- Event: Obsolete trains rust --' if rusted_trains.any?
       end
     end
   end

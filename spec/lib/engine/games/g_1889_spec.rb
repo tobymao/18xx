@@ -126,34 +126,5 @@ module Engine
         expect(subject.current_entity).to eq(subject.players.first)
       end
     end
-
-    context 'full game' do
-      {
-        247 => {
-          'fdinh' => 1094,
-          'gugvib' => 1148,
-          'marco4884' => 1089,
-          'vecchioleone' => 305,
-        },
-        314 => {
-          'Rebus' => 1134,
-          'johnhawkhaines' => 260,
-          'scottredracecar' => 1473,
-        },
-        962 => {
-          'Dimikosta' => 3091,
-          'Joshua6' => 4317,
-          'SamK' => 4444,
-          'ventusignis' => 3880,
-        },
-      }.each do |game_id, result|
-        it "#{game_id} matches result exactly" do
-          data = JSON.parse(File.read("spec/fixtures/1889/#{game_id}.json"))
-          players = data['players'].map { |p| p['name'] }
-          expect(described_class.new(players, id: game_id, actions: data['actions']).result).to eq(result)
-          expect(described_class.new(players, id: game_id, actions: data['actions'], strict: true).result).to eq(result)
-        end
-      end
-    end
   end
 end

@@ -94,6 +94,10 @@ module Engine
         false
       end
 
+      def can_assign?
+        false
+      end
+
       def can_lay_track?
         false
       end

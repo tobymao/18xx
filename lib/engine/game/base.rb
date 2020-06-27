@@ -230,7 +230,7 @@ module Engine
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
 
-        @seed = @id.to_s.scan(/\d+/).first.to_i
+        @seed = @id.to_s.scan(/\d+/).first.to_i % RAND_M
 
         case self.class::DEV_STAGE
         when :prealpha
@@ -484,6 +484,14 @@ module Engine
         @round
       end
 
+      def revenue_for(route)
+        route.stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+      end
+
+      def get(type, id)
+        send("#{type}_by_id", id)
+      end
+
       private
 
       def init_bank
@@ -551,12 +559,25 @@ module Engine
 
       def init_hexes(companies, corporations)
         blockers = {}
-
         companies.each do |company|
           company.abilities(:blocks_hexes) do |ability|
             ability.hexes.each do |hex|
               blockers[hex] = company
             end
+          end
+        end
+
+        reservations = Hash.new { |k, v| k[v] = [] }
+        corporations.each do |c|
+          reservations[c.coordinates] << { entity: c,
+                                           city: c.city }
+        end
+        (corporations + companies).each do |c|
+          c.abilities(:reservation) do |ability|
+            reservations[ability.hex] << { entity: c,
+                                           city: ability.city.to_i,
+                                           slot: ability.slot.to_i,
+                                           ability: ability }
           end
         end
 
@@ -570,14 +591,13 @@ module Engine
                   Tile.from_code(coord, color, tile_string, preprinted: true, index: index)
                 end
 
-              # add private companies that block tile lays on this hex
               if (blocker = blockers[coord])
                 tile.add_blocker!(blocker)
               end
 
-              # reserve corporation home spots
-              corporations.select { |c| c.coordinates == coord }.each do |c|
-                tile.add_reservation!(c.name, c.city)
+              reservations[coord].each do |res|
+                res[:ability].tile = tile if res[:ability]
+                tile.add_reservation!(res[:entity], res[:city], res[:slot])
               end
 
               # name the location (city/town)

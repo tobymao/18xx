@@ -8,6 +8,7 @@ module View
       include Lib::Color
       needs :game
       needs :show_bank, default: false
+      needs :explain_colors, default: false
 
       COLOR_MAP = {
         red: '#ffaaaa',
@@ -47,11 +48,12 @@ module View
           color: color_for(:font2),
         )
 
+        colors_in_market = []
         grid = @game.stock_market.market.flat_map do |prices|
           rows = prices.map do |price|
             if price
               style = box_style.merge('background-color' => price.color ? COLOR_MAP[price.color] : color_for(:bg2))
-
+              colors_in_market << price.color unless colors_in_market.include?(price.color)
               corporations = price.corporations
               num = corporations.size
               spacing = num > 1 ? (RIGHT_TOKEN_POS - LEFT_TOKEN_POS) / (num - 1) : 0
@@ -90,6 +92,39 @@ module View
 
         children << h(:div, bank_props, "Bank Cash: #{@game.format_currency(@game.bank.cash)}") if @show_bank
         children.concat(grid)
+
+        if @explain_colors
+          colors_text = [
+            [:red, 'PAR values'],
+            [:yellow, 'Company shares do not count towards cert limit'],
+            [:orange, 'Company shares can be held above 60%'],
+            [:brown, 'Can buy more than one share in the Company per turn'],
+          ]
+          colors_text.each do |color, text|
+            next unless colors_in_market.include?(color)
+
+            style = box_style.merge('background-color' => COLOR_MAP[color])
+
+            line_props = {
+              style: {
+                'margin-top': '1rem',
+              },
+            }
+            text_style = {
+              position: 'relative',
+              display: 'inline-block',
+              padding: "#{PAD}px",
+              height: "#{HEIGHT_TOTAL - 2 * PAD}px",
+              margin: '0',
+              'line-height': "#{HEIGHT_TOTAL - 2 * PAD}px",
+              'vertical-align': 'middle',
+            }
+            children << h(:div, line_props, [
+            h(:div, { style: style }, []),
+            h(:div, { style: text_style }, text),
+])
+          end
+        end
 
         props = {
           style: {
