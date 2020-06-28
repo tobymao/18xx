@@ -115,7 +115,7 @@ module Engine
             end
           end
         end
-        
+
         @companies.each do |company|
           company.min_price = 1
           company.max_price = company.value
