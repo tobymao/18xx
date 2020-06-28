@@ -17,10 +17,11 @@ module View
         def render
           @round = @game.round
           @current_entity = @round.current_entity
-          @company_pending_par = @round.company_pending_par
+          @step = @round.active_step
+          @current_actions = @step.current_actions
 
           h(:div, [
-            h(UndoAndPass, pass: !@company_pending_par),
+            h(UndoAndPass, pass: @current_actions.include?('pass')),
             *render_company_pending_par,
             *render_companies,
             h(Players, game: @game),
@@ -28,9 +29,10 @@ module View
         end
 
         def render_company_pending_par
-          return [] unless @company_pending_par
+          return [] unless @current_actions.include?('par')
 
-          corporation = @company_pending_par.abilities(:share).share.corporation
+          corporation = @step.company_pending_par.abilities(:share).share.corporation
+
           [
             h(Corporation, corporation: corporation),
             h(Par, corporation: corporation),
@@ -38,6 +40,8 @@ module View
         end
 
         def render_companies
+          @selected_company = @step.auctioning_company if @step.auctioning_company
+
           props = {
             style: {
               display: 'inline-block',
@@ -45,21 +49,21 @@ module View
             },
           }
 
-          @round.companies.map do |company|
-            children = [h(Company, company: company, bids: @round.bids[company])]
-            children << render_input if @selected_company == company
+          @step.companies.map do |company|
+            children = [h(Company, company: company, bids: @step.bids[company])]
+            children << render_input(company) if @selected_company == company
             h(:div, props, children)
           end
         end
 
-        def render_input
-          step = @round.min_increment
+        def render_input(company)
+          step = @step.min_increment
 
           input = h(:input, style: { 'margin-right': '1rem' }, props: {
-            value: @round.min_bid(@selected_company),
+            value: @step.min_bid(company),
             step: step,
-            min: @selected_company.min_bid + step,
-            max: @round.max_bid(@current_entity, @selected_company),
+            min: @step.min_bid(company) + step,
+            max: @step.max_bid(@current_entity, company),
             type: 'number',
             size: @current_entity.cash.to_s.size,
           })
@@ -67,8 +71,8 @@ module View
           buy = lambda do
             process_action(Engine::Action::Bid.new(
               @current_entity,
-              company: @selected_company,
-              price: @round.min_bid(@selected_company),
+              company: company,
+              price: @step.min_bid(company),
             ))
             store(:selected_company, nil, skip: true)
           end
@@ -77,16 +81,16 @@ module View
             price = input.JS['elm'].JS['value'].to_i
             process_action(Engine::Action::Bid.new(
               @current_entity,
-              company: @selected_company,
+              company: company,
               price: price,
             ))
             store(:selected_company, nil, skip: true)
           end
 
           company_actions =
-            if @round.may_purchase?(@selected_company)
+            if @step.may_purchase?(company)
               [h('button.button', { on: { click: buy } }, 'Buy')]
-            elsif @selected_company && @round.may_bid?(@selected_company)
+            else
               [
                 input,
                 h('button.button', { on: { click: create_bid } }, 'Place Bid'),
