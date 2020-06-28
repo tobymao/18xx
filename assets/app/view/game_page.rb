@@ -74,7 +74,7 @@ module View
         when 'map'
           h(Game::Map, game: @game, opacity: 1.0)
         when 'market'
-          h(Game::StockMarket, game: @game, show_bank: true, explain_colors: true)
+          h(Game::StockMarket, game: @game, explain_colors: true)
         when 'tiles'
           h(Game::TileManifest, tiles: @game.tiles, all_tiles: @game.init_tiles, layout: @game.layout)
         when 'companies'
@@ -86,7 +86,7 @@ module View
         when 'players'
           h(Game::Players, game: @game)
         when 'spreadsheet'
-          h(Game::Spreadsheet, game: @game, show_bank: true)
+          h(Game::Spreadsheet, game: @game)
         when 'tools'
           h(Game::Tools, game: @game, game_data: @game_data, user: @user)
         end
@@ -228,7 +228,7 @@ module View
 
       case @round
       when Engine::Round::Stock
-        h(Game::Round::Stock, game: @game, show_bank: true)
+        h(Game::Round::Stock, game: @game)
       when Engine::Round::Operating
         h(Game::Round::Operating, game: @game)
       when Engine::Round::Auction

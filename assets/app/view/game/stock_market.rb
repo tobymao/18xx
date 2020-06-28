@@ -82,15 +82,9 @@ module View
           h(:div, { style: { width: 'max-content' } }, rows)
         end
 
-        bank_props = {
-          style: {
-            'margin-bottom': '1rem',
-          },
-        }
-
         children = []
 
-        children << h(:div, bank_props, "Bank Cash: #{@game.format_currency(@game.bank.cash)}") if @show_bank
+        children << h(Bank, game: @game)
         children.concat(grid)
 
         if @explain_colors
