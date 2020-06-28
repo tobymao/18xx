@@ -9,14 +9,25 @@ module View
   module Game
     class Spreadsheet < Snabberb::Component
       needs :game
+      needs :show_bank, default: false
 
       def render
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
 
+        bank_props = {
+          style: {
+            'margin-bottom': '1rem',
+          },
+        }
+
+        children = []
+        children << h(:div, bank_props, "Bank Cash: #{@game.format_currency(@game.bank.cash)}") if @show_bank
+        children << render_table
+
         h(:div, { style: {
           overflow: 'auto',
-        } }, [render_table])
+        } }, children)
       end
 
       def render_table

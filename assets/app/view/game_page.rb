@@ -86,7 +86,7 @@ module View
         when 'players'
           h(Game::Players, game: @game)
         when 'spreadsheet'
-          h(Game::Spreadsheet, game: @game)
+          h(Game::Spreadsheet, game: @game, show_bank: true)
         when 'tools'
           h(Game::Tools, game: @game, game_data: @game_data, user: @user)
         end
@@ -228,7 +228,7 @@ module View
 
       case @round
       when Engine::Round::Stock
-        h(Game::Round::Stock, game: @game)
+        h(Game::Round::Stock, game: @game, show_bank: true)
       when Engine::Round::Operating
         h(Game::Round::Operating, game: @game)
       when Engine::Round::Auction

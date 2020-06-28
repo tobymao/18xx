@@ -16,6 +16,7 @@ module View
 
         needs :selected_corporation, default: nil, store: true
         needs :last_player, default: nil, store: true
+        needs :show_bank, default: false
 
         def render
           @round = @game.round
@@ -36,6 +37,13 @@ module View
           end
           children += render_corporations
           children << h(Players, game: @game)
+
+          bank_props = {
+            style: {
+              'margin-bottom': '1rem',
+            },
+          }
+          children << h(:div, bank_props, "Bank Cash: #{@game.format_currency(@game.bank.cash)}") if @show_bank
           children << h(StockMarket, game: @game)
 
           h(:div, children)
