@@ -1,175 +1,18 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
+require 'engine'
 require 'engine/game/g_1889'
-require 'engine/part/city'
-require 'engine/part/edge'
-require 'engine/part/junction'
-require 'engine/part/label'
-require 'engine/part/offboard'
-require 'engine/part/path'
-require 'engine/part/town'
-require 'engine/part/upgrade'
 require 'engine/tile'
 
-# rubocop: disable Metrics/ModuleLength
 module Engine
   include Engine::Part
 
   describe Tile do
-    let(:edge0) { Edge.new(0) }
-    let(:edge1) { Edge.new(1) }
-    let(:edge2) { Edge.new(2) }
-    let(:edge3) { Edge.new(3) }
-    let(:edge4) { Edge.new(4) }
-    let(:edge5) { Edge.new(5) }
-    let(:city) { City.new('20') }
-    let(:city2) { City.new('30', 2) }
-    let(:kotohira40) { City.new('40', 1) }
-    let(:town) { Town.new('10') }
-    let(:town_a) { Town.new('10', 0) }
-    let(:town_b) { Town.new('10', 1) }
-    let(:junction) { Junction.new }
-
-    describe '.for' do
-      it 'should render basic tile' do
-        expect(Tile.for('8')).to eq(
-          Tile.new('8', color: :yellow, parts: [Path.new(edge0, edge4)])
-        )
-      end
-
-      it 'should render basic tile' do
-        expect(Tile.for('blank')).to eq(
-          Tile.new('blank', color: :white, parts: [])
-        )
-      end
-
-      it 'should render a lawson track tile' do
-        actual = Tile.for('81A')
-
-        expected = Tile.new(
-          '81A',
-          color: :green,
-          parts: [Path.new(edge0, junction), Path.new(edge2, junction), Path.new(edge4, junction)]
-        )
-
-        expect(actual).to eq(expected)
-      end
-
-      it 'should render a city' do
-        expect(Tile.for('57')).to eq(
-          Tile.new('57', color: :yellow, parts: [city, Path.new(edge0, city), Path.new(city, edge3)])
-        )
-      end
-
-      it 'should render a city with two slots' do
-        actual = Tile.for('14')
-        expected = Tile.new(
-          '14',
-          color: :green,
-          parts: [city2, Path.new(edge0, city2), Path.new(edge1, city2), Path.new(edge3, city2), Path.new(edge4, city2)]
-        )
-
-        expect(actual).to eq(expected)
-      end
-
-      it 'should render a tile with a city and a letter (438, 1889 Kotohira)' do
-        actual = Tile.for('438')
-        expected = Tile.new(
-          '438',
-          color: :yellow,
-          parts: [
-            kotohira40,
-            Path.new(edge0, kotohira40),
-            Path.new(kotohira40, edge2),
-            Label.new('H'),
-            Upgrade.new(80),
-]
-        )
-
-        expect(actual).to eq(expected)
-      end
-
-      it 'should render a town' do
-        expect(Tile.for('3')).to eq(
-          Tile.new('3', color: :yellow, parts: [town, Path.new(edge0, town), Path.new(town, edge1)])
-        )
-      end
-
-      it 'should render a double town' do
-        actual = Tile.for('1')
-
-        expected = Tile.new(
-          '1',
-          color: :yellow,
-          parts: [
-            town_a,
-            Path.new(edge0, town_a),
-            Path.new(town_a, edge4),
-            town_b,
-            Path.new(edge1, town_b),
-            Path.new(town_b, edge3),
-          ]
-        )
-        expect(actual).to eq(expected)
-      end
-
-      it 'should render a green town' do
-        actual = Tile.for('87')
-
-        expected = Tile.new(
-          '87',
-          color: :green,
-          parts: [
-            town_a,
-            Path.new(edge0, town_a),
-            Path.new(edge1, town_a),
-            Path.new(edge2, town_a),
-            Path.new(edge3, town_a),
-          ]
-        )
-        expect(actual).to eq(expected)
-      end
-    end
-
-    describe '.from_code' do
-      it 'should render tile with upgrade cost and terrain' do
-        expect(Tile.from_code('name', :white, 'u=c:80,t:mountain+water')).to eq(
-          Tile.new('name', color: :white, parts: [Upgrade.new(80, %i[mountain water])])
-        )
-      end
-
-      it 'should render tile with variable revenue' do
-        code = 'c=r:yellow_30|green_40|brown_50|gray_70'
-        actual = Tile.from_code('tile', :gray, code)
-
-        revenue = 'yellow_30|green_40|brown_50|gray_70'
-
-        expected = Tile.new('tile', color: :gray, parts: [City.new(revenue)])
-
-        expect(actual).to eq(expected)
-      end
-
-      it 'should render an offboard tile' do
-        code = 'o=r:yellow_30|brown_60|diesel_100;p=a:0,b:_0;p=a:1,b:_0'
-        actual = Tile.from_code('test_tile', :red, code)
-
-        revenue = 'yellow_30|brown_60|diesel_100'
-        offboard = Offboard.new(revenue)
-        expected = Tile.new('test_tile',
-                            color: :red,
-                            parts: [offboard,
-                                    Path.new(Edge.new(0), offboard),
-                                    Path.new(Edge.new(1), offboard)])
-
-        expect(actual).to eq(expected)
-      end
-    end
-
     describe '#exits' do
       it 'should have the right exits' do
         expect(Tile.for('6').exits.to_a).to eq([0, 2])
-        expect(Tile.for('7').exits.to_a.sort).to eq([0, 5])
+        expect(Tile.for('7').exits.to_a.sort).to eq([0, 1])
       end
     end
 
@@ -195,14 +38,17 @@ module Engine
     end
 
     describe '#upgrades_to?' do
-      context '1889' do
-        EXPECTED_TILE_UPGRADES = {
+      EXPECTED_TILE_UPGRADES = {
+        '18Chesapeake' => {
+          'X3' => %w[X7],
+          'X4' => %w[X7],
+          'X5' => %w[X7],
+          'X7' => %w[],
+        },
+        '1889' => {
           'blank' => %w[7 8 9],
           'city' => %w[5 6 57],
-          'mtn80' => %w[7 8 9],
-          'mtn+wtr80' => %w[7 8 9],
-          'wtr80' => %w[7 8 9],
-          'town' => %w[3 58],
+          'town' => %w[3 58 437],
           '3' => %w[],
           '5' => %w[12 14 15 205 206],
           '6' => %w[12 13 14 15 205 206],
@@ -243,113 +89,132 @@ module Engine
           '466' => %w[],
           '492' => %w[],
           '611' => %w[],
-        }.freeze
+        },
+      }.freeze
 
-        EXPECTED_TILE_UPGRADES.keys.each do |t|
-          EXPECTED_TILE_UPGRADES.keys.each do |u|
-            tile = Tile.for(t)
-            upgrade = Tile.for(u)
-            included = EXPECTED_TILE_UPGRADES[t].include?(u)
+      EXPECTED_TILE_UPGRADES.each do |game_title, upgrades|
+        it "correctly upgrades tiles for #{game_title}" do
+          game = Engine::GAMES_BY_TITLE[game_title].new(%w[p1 p2 p3])
 
-            it "#{t} can#{included ? '' : 'not'} upgrade to #{u}" do
-              expect(tile.upgrades_to?(upgrade)).to eq(included)
+          aggregate_failures 'tile upgrades' do
+            upgrades.keys.each do |t|
+              tile = game.hex_by_id(t)&.tile || game.tile_by_id("#{t}-0") || Tile.for(t)
+
+              upgrades.keys.each do |u|
+                upgrade = game.hex_by_id(u)&.tile || game.tile_by_id("#{u}-0") || Tile.for(u)
+
+                expected_included = upgrades[t].include?(u)
+                expected_string = "#{t} #{expected_included ? '<' : '!<'} #{u}"
+
+                actual_included = tile.upgrades_to?(upgrade)
+                actual_string = "#{t} #{actual_included ? '<' : '!<'} #{u}"
+
+                expect(actual_string).to eq(expected_string)
+              end
             end
           end
         end
       end
     end
 
-    describe '#paths_with' do
-      context 'selecting a town' do
-        [
-          {
-            tile_ids: %w[1 2 55 56 69 630 631 632 633],
-            town_paths: {
-              0 => [0, 1],
-              1 => [2, 3],
-            }
+    describe '#preferred_city_town_edges' do
+      [
+        {
+          desc: "18Chesapeake's X3",
+          code: 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:3,b:_1;path=a:_1,b:5;label=OO',
+          expected: {
+            0 => [2, 5],
+            1 => [1, 4],
+            2 => [4, 1],
+            3 => [5, 2],
+            4 => [4, 1],
+            5 => [1, 4],
           },
-          {
-            tile_ids: %w[3 4 58 437],
-            town_paths: {
-              0 => [0, 1],
-            }
+        },
+        {
+          desc: "18Chesapeake's X5",
+          code: 'city=revenue:40;city=revenue:40;path=a:3,b:_0;path=a:_0,b:5;path=a:0,b:_1;path=a:_1,b:4;label=OO',
+          expected: {
+            0 => [3, 0],
+            1 => [4, 1],
+            2 => [5, 2],
+            3 => [0, 3],
+            4 => [1, 4],
+            5 => [2, 5],
           },
-          {
-            tile_ids: %w[87],
-            town_paths: {
-              0 => [0, 1, 2, 3],
-            }
+        },
+        {
+          desc: "18Chesapeake's H6 hex (Baltimore)",
+          code: 'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=OO;upgrade=cost:40,terrain:water',
+          expected: {
+            0 => [1, 4],
           },
-        ].each do |spec|
-          spec[:tile_ids].each do |tile_id|
-            tile = Tile.for(tile_id)
+        },
+        {
+          desc: "18Chesapeake's J4 hex (Philadelphia)",
+          code: 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:3,b:_1;label=OO',
+          expected: {
+            0 => [0, 3],
+          },
+        },
+        {
+          desc: "1846's tile #298 (green Chi)",
+          code: 'city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;'\
+                'path=a:0,b:_0;path=a:_0,b:3;'\
+                'path=a:1,b:_1;path=a:_1,b:3;'\
+                'path=a:4,b:_2;path=a:_2,b:3;'\
+                'path=a:5,b:_3;path=a:_3,b:3;'\
+                'label=Chi',
+          expected: {
+            0 => [0, 1, 4, 5],
+          },
+        },
+        {
+          desc: "18Carolina's G19 hex (Wilmington)",
+          code: 'city=revenue:30;city=revenue:0;path=a:1,b:_0;label=C',
+          expected: {
+            0 => [1, 4],
+          },
+        },
+      ].each do |spec|
+        describe "with #{spec[:desc]}" do
+          tile = Tile.from_code('name', 'color', spec[:code])
 
-            spec[:town_paths].each do |town_id, expected_path_ids|
-              town = tile.towns[town_id]
+          spec[:expected].each do |rotation, expected|
+            it "selects #{expected} for rotation #{rotation}" do
+              tile.rotate!(rotation)
+              actual = tile.preferred_city_town_edges
 
-              it "selects the correct paths for town #{town_id} on tile #{tile_id}" do
-                filtered_paths = tile.paths_with(%w[town], town)
+              expected_h = expected.map.with_index do |edge, index|
+                [tile.cities[index], edge]
+              end.to_h
 
-                expected_paths = expected_path_ids.map { |id| tile.paths[id] }
-
-                expect(filtered_paths).to eq(expected_paths)
-              end
+              expect(actual).to eq(expected_h)
             end
           end
         end
       end
+    end
 
-      context 'selecting for edge count' do
-        [
-          {
-            tile_ids: %w[1 2 55 56 69 630 631 632 633],
-            paths_edges: {
-              [0, 1, 2, 3] => 1
-            }
-          },
-          {
-            tile_ids: %w[3 4 5 6 57 58 437],
-            paths_edges: {
-              [0, 1] => 1
-            }
-          },
-          {
-            tile_ids: %w[12 13],
-            paths_edges: {
-              [0, 1, 2] => 1,
-            }
-          },
-          {
-            tile_ids: %w[14 15 87],
-            paths_edges: {
-              [0, 1, 2, 3] => 1,
-            }
-          },
-          {
-            tile_ids: %w[7 8 9],
-            paths_edges: {
-              [0] => 2,
-            }
-          },
-          {
-            tile_ids: %w[16 18 19 20 23 24 25 26 27 28 29],
-            paths_edges: {
-              [0, 1] => 2,
-            }
-          },
-        ].each do |spec|
-          spec[:tile_ids].each do |tile_id|
-            tile = Tile.for(tile_id)
-
-            spec[:paths_edges].each do |expected_path_ids, edge_count|
-              it "selects the paths with #{edge_count} edges on tile #{tile_id}" do
-                filtered_paths = tile.paths_with(%w[edges size], edge_count)
-
-                expected_paths = expected_path_ids.map { |id| tile.paths[id] }
-
-                expect(filtered_paths).to eq(expected_paths)
-              end
+    describe '#revenue_to_render' do
+      {
+        '1846' => {
+          'C15' => [40],
+          'C17' => [{ yellow: 40, brown: 60 }],
+          'D6' => [10, 10, 10, 10],
+        },
+        '1882' => {
+          'D8' => [30],
+          'J10' => [40, 40],
+          'O11' => [{ yellow: 30, brown: 30 }],
+        },
+      }.each do |game_title, specs|
+        game = Engine::GAMES_BY_TITLE[game_title].new(%w[p1 p2 p3])
+        describe game_title do
+          specs.each do |hex, expected_revenue|
+            tile = game.hex_by_id(hex).tile
+            it "returns #{expected_revenue} for #{tile.name}" do
+              expect(tile.revenue_to_render).to eq(expected_revenue)
             end
           end
         end
@@ -357,4 +222,3 @@ module Engine
     end
   end
 end
-# rubocop: enable Metrics/ModuleLength

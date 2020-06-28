@@ -16,4 +16,8 @@ class Session < Base
   def valid?
     created_at.to_datetime > Date.today - EXPIRE_TIME
   end
+
+  def inspect
+    "#{self.class.name} - id: #{id}"
+  end
 end

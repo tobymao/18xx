@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../action/buy_share'
+require_relative 'base'
+require_relative '../action/buy_shares'
 require_relative '../action/par'
 require_relative '../action/sell_shares'
 
@@ -9,13 +10,19 @@ module Engine
     class Stock < Base
       attr_reader :last_to_act, :share_pool, :stock_market
 
-      CERT_LIMIT_COLORS = %w[brown orange yellow].freeze
+      PURCHASE_ACTIONS = [Action::BuyShares, Action::Par].freeze
 
-      def initialize(entities, game:)
+      def initialize(entities, game:, **opts)
         super
         @share_pool = game.share_pool
         @stock_market = game.stock_market
-        @can_sell = game.turn > 1
+        @corporations = game.corporations
+        @sellable_turn = game.sellable_turn?
+        @sell_buy_order = game.class::SELL_BUY_ORDER
+        @pool_share_drop = game.class::POOL_SHARE_DROP
+        # player => corporation => :now or :prev
+        # this differentiates between preventing users from buying shares they sold
+        # and preventing users from selling the same shares separately in the some action
         @players_sold = Hash.new { |h, k| h[k] = {} }
         @current_actions = []
         @last_to_act = nil
@@ -26,74 +33,133 @@ module Engine
       end
 
       def description
-        'Buy and Sell Shares'
+        case @sell_buy_order
+        when :sell_buy_or_buy_sell
+          'Buy or Sell Shares'
+        when :sell_buy
+          'Sell then Buy Shares'
+        when :sell_buy_sell
+          'Sell/Buy/Sell Shares'
+        end
+      end
+
+      def pass_description
+        if @current_actions.empty?
+          'Pass (Share)'
+        else
+          'Done (Share)'
+        end
       end
 
       def stock?
         true
       end
 
-      def can_buy?(share)
-        return unless share
+      # Returns if a share can be bought via a normal buy actions
+      # If a player has sold shares they cannot buy in many 18xx games
+      # Some 18xx games can only buy one share per turn.
+      def can_buy?(bundle)
+        return unless bundle
 
-        corporation = share.corporation
+        corporation = bundle.corporation
 
-        @current_entity.cash >= share.price &&
-          (corporation.share_price&.color == :brown || @current_entity.percent_of(corporation) < 60) &&
+        @current_entity.cash >= bundle.price && can_gain?(bundle, @current_entity) &&
           !@players_sold[@current_entity][corporation] &&
-          (@current_actions & [Action::BuyShare, Action::Par]).none?
+          (can_buy_multiple?(corporation) || !bought?)
+      end
+
+      def can_buy_multiple?(corporation)
+        corporation.buy_multiple? &&
+         @current_actions.none? { |x| x.is_a?(Action::Par) } &&
+         @current_actions.none? { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation != corporation }
       end
 
       def must_sell?
-        num_certs = 0
-        @current_entity.shares.each do |share|
-          num_certs += 1 unless self.class::CERT_LIMIT_COLORS.include?(share.corporation.share_price.color)
-        end
-
-        num_certs > @game.cert_limit
+        @current_entity.num_certs > @game.cert_limit ||
+          !@corporations.all? { |corp| corp.holding_ok?(@current_entity) }
       end
 
-      def can_sell?(shares)
-        return false unless @can_sell
-        return false if shares.empty?
+      def can_sell?(bundle)
+        corporation = bundle.corporation
 
-        corporation = shares.first.corporation
+        timing =
+          case @game.class::SELL_AFTER
+          when :first
+            @game.turn > 1
+          when :operate
+            corporation.operated?
+          when :p_any_operate
+            corporation.operated? || corporation.president?(@current_entity)
+          else
+            raise NotImplementedError
+          end
 
-        !@players_sold[@current_entity][corporation] &&
-          !(@current_actions.uniq.size == 2 && [Action::BuyShare, Action::Par].include?(@current_actions.last)) &&
-          (shares.none?(&:president) ||
-           (corporation.share_holders.reject { |k, _| k == @current_entity }.values.max || 0) > 10)
+        timing &&
+          !(@game.class::MUST_SELL_IN_BLOCKS && @players_sold[@current_entity][corporation] == :now) &&
+          can_sell_order? &&
+          @share_pool.fit_in_bank?(bundle) &&
+          bundle.can_dump?(@current_entity)
+      end
+
+      def can_sell_order?
+        case @sell_buy_order
+        when :sell_buy_or_buy_sell
+          !(@current_actions.uniq(&:class).size == 2 &&
+            self.class::PURCHASE_ACTIONS.include?(@current_actions.last.class))
+        when :sell_buy
+          !bought?
+        when :sell_buy_sell
+          true
+        end
+      end
+
+      def did_sell?(corporation, entity)
+        @players_sold[entity][corporation]
       end
 
       private
 
       def _process_action(action)
         entity = action.entity
-        corporation = action.corporation
-
-        @current_actions << action.class
-        @last_to_act = entity
 
         case action
-        when Action::BuyShare
-          buy_share(entity, action.share)
+        when Action::DiscardTrain
+          discard_train(action)
+        when Action::BuyShares
+          buy_shares(entity, action.bundle)
         when Action::SellShares
-          sell_shares(action.shares)
+          sell_shares(action.bundle)
         when Action::Par
+
           share_price = action.share_price
+          corporation = action.corporation
+          raise GameError, "#{corporation} cannot be parred" unless corporation.can_par?
+
           @stock_market.set_par(corporation, share_price)
           share = corporation.shares.first
-          buy_share(entity, share)
+          buy_shares(entity, share.to_bundle)
         end
       end
 
       def action_processed(action)
-        action.entity.unpass!
+        return if action.is_a?(Action::DiscardTrain)
+
+        entity = action.entity
+        @current_actions << action
+        @last_to_act = entity
+        entity.unpass!
       end
 
       def nothing_to_do?
-        !can_sell?([@current_entity.shares.min_by(&:price)].compact) &&
-          @share_pool.shares.none? { |s| can_buy?(s) }
+        bundles = @current_entity
+          .shares
+          .uniq { |share| [share.corporation.id, share.president] }
+          .map { |share| ShareBundle.new(share, 10) }
+
+        bundles.none? { |bundle| can_sell?(bundle) } &&
+          @share_pool.shares.none? { |s| can_buy?(s.to_bundle) } &&
+          @corporations.none? { |c| can_buy?(c.shares.first&.to_bundle) } &&
+          !must_sell? # this forces a deadlock and a user must undo
       end
 
       def change_entity(_action)
@@ -101,54 +167,75 @@ module Engine
 
         @current_entity.unpass! if @current_actions.any?
         @current_actions.clear
+        @players_sold[@current_entity].each do |k, _|
+          @players_sold[@current_entity][k] = :prev
+        end
         @current_entity = next_entity
       end
 
       def action_finalized(_action)
         while !finished? && nothing_to_do?
           @current_entity.pass!
+          @log << "#{@current_entity.name} has no valid actions and passes"
           @current_entity = next_entity
         end
 
         return unless finished?
 
-        @game.corporations.each do |corporation|
-          next if corporation.share_holders.values.sum < 100
+        sold_out = @corporations.select { |c| c.share_holders.values.sum == 100 }
 
+        sold_out.sort.each do |corporation|
           prev = corporation.share_price.price
           @stock_market.move_up(corporation)
           log_share_price(corporation, prev)
         end
+
+        return if @pool_share_drop == :none
+
+        @share_pool.shares_by_corporation.each do |corporation, shares|
+          prev = corporation.share_price.price
+          (shares.sum(&:percent) / 10).times do
+            @stock_market.move_left(corporation)
+            break if @pool_share_drop == :one
+          end
+          log_share_price(corporation, prev) if prev != corporation.share_price.price
+        end
       end
 
       def sell_shares(shares)
-        share = shares.first
-        entity = share.owner
-        corporation = share.corporation
-        old_p = corporation.owner
-        @players_sold[entity][corporation] = true
+        raise GameError, "Cannot sell shares of #{shares.corporation.name}" unless can_sell?(shares)
+
+        @players_sold[shares.owner][shares.corporation] = :now
         sell_and_change_price(shares, @share_pool, @stock_market)
-
-        return if old_p != entity
-
-        presidential_share_swap(
-          corporation,
-          @entities.min_by { |e| [-e.percent_of(corporation), distance(entity, e)] },
-          old_p,
-          shares.find(&:president),
-        )
       end
 
-      def buy_share(entity, share)
-        corporation = share.corporation
-        @share_pool.buy_share(entity, share)
-        presidential_share_swap(corporation, entity) if corporation.owner != entity
+      def buy_shares(entity, shares)
+        raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" unless can_buy?(shares)
+
+        @share_pool.buy_shares(entity, shares)
+        corporation = shares.corporation
+        place_home_token(corporation) if @game.class::HOME_TOKEN_TIMING == :float && corporation.floated?
       end
 
       def distance(player_a, player_b)
         a = @entities.find_index(player_a)
         b = @entities.find_index(player_b)
         a < b ? b - a : b - (a - @entities.size)
+      end
+
+      def bought?
+        @current_actions.any? { |x| PURCHASE_ACTIONS.include?(x.class) }
+      end
+
+      def log_pass(entity)
+        return super if @current_actions.empty?
+
+        action = if bought?
+                   'selling'
+                 else
+                   'buying'
+                 end
+        @log << "#{entity.name} passes #{action} shares"
       end
     end
   end

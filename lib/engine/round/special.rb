@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../action/assign'
 require_relative '../action/lay_tile'
 require_relative '../corporation'
 require_relative '../player'
@@ -8,40 +9,43 @@ require_relative 'base'
 module Engine
   module Round
     class Special < Base
+      attr_writer :current_entity
+
+      def change_entity(_action)
+        # Ignore change entity as special doesn't change entity
+      end
+
       def active_entities
         @entities
       end
 
-      def current_entity=(new_entity)
-        @current_entity = new_entity
-        @layable_hexes = nil
+      def map_abilities
+        tile_laying_ability || assign_ability
       end
 
       def tile_laying_ability
-        return {} unless (ability = @current_entity&.abilities(:tile_lay))
+        @current_entity&.abilities(:tile_lay)
+      end
 
-        ability
+      def assign_ability
+        @current_entity&.abilities(:assign_hexes)
+      end
+
+      def can_assign?
+        !!assign_ability
       end
 
       def can_lay_track?
         !!tile_laying_ability
       end
 
-      def layable_hexes
-        @layable_hexes ||= tile_laying_ability[:hexes]&.map do |coordinates|
+      def connected_hexes
+        hexes = (assign_ability || tile_laying_ability).hexes || []
+
+        hexes.map do |coordinates|
           hex = @game.hex_by_id(coordinates)
           [hex, hex.neighbors.keys]
         end.to_h
-      end
-
-      def legal_rotations(hex, tile)
-        original_exits = hex.tile.exits
-
-        (0..5).select do |rotation|
-          exits = tile.exits.map { |e| tile.rotate(e, rotation) }
-          ((original_exits & exits).size == original_exits.size) &&
-            exits.all? { |direction| hex.neighbors[direction] }
-        end
       end
 
       private
@@ -51,23 +55,34 @@ module Engine
         case action
         when Action::LayTile
           lay_tile(action)
-          company.remove_ability(:tile_lay)
-        when Action::BuyShare
+          company.abilities(:tile_lay, &:use!)
+        when Action::BuyShares
           owner = company.owner
-          share = action.share
-          corporation = share.corporation
-          @game.share_pool.transfer_share(share, owner)
-          @log << "#{owner.name} exchanges #{company.name} for a share of #{corporation.name}"
-          presidential_share_swap(corporation, owner) if corporation.owner != owner
+          bundle = action.bundle
+          raise GameError, 'Exchanging company would exceed limits' unless can_gain?(bundle, owner)
+
+          @game.share_pool.buy_shares(owner, bundle, exchange: company)
           company.close!
+        when Action::Assign
+          hex = action.target
+          hex.assign!(company.id)
+          company.abilities(:assign_hexes, &:use!)
+          @game.log << "#{company.name} activates #{hex.name}"
         end
       end
 
-      def potential_tiles
-        tile_laying_ability[:tiles]&.map do |name|
+      def potential_tiles(hex)
+        return [] unless (tiles = tile_laying_ability&.tiles)
+
+        potentials = tiles.map do |name|
           # this is shit
           @game.tiles.find { |t| t.name == name }
-        end
+        end.compact
+        potentials.select { |t| hex.tile.upgrades_to?(t) }
+      end
+
+      def check_track_restrictions!(_old_tile, _new_tile)
+        true
       end
     end
   end

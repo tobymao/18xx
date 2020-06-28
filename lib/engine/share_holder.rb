@@ -22,23 +22,25 @@ module Engine
       shares_by_corporation[corporation].sum(&:percent)
     end
 
-    def transfer_share(share, to_entity, spender = nil, receiver = nil)
-      corporation = share.corporation
+    def num_shares_of(corporation)
+      percent_of(corporation) / 10
+    end
 
-      if to_entity.player?
-        corporation.share_holders[to_entity] += share.percent
-      else
-        corporation.share_holders[to_entity] -= share.percent
+    def bundles_for_corporation(corporation)
+      shares = shares_of(corporation).sort_by(&:price)
+
+      bundles = shares.flat_map.with_index do |share, index|
+        bundle = shares.take(index + 1)
+        percent = bundle.sum(&:percent)
+        bundles = [Engine::ShareBundle.new(bundle, percent)]
+        bundles.insert(0, Engine::ShareBundle.new(bundle, percent - 10)) if share.president
+        bundles
       end
+    end
 
-      owner = share.owner
-      owner.shares_by_corporation[corporation].delete(share)
-
-      spender.spend(share.price, receiver) if spender && receiver
-
-      to_entity.shares_by_corporation[corporation] << share
-      share.owner = to_entity
-      share.corporation.owner = to_entity if share.president
+    def dumpable_bundles(corporation)
+      bundles = bundles_for_corporation(corporation)
+      bundles.select { |bundle| bundle.can_dump?(self) }
     end
   end
 end

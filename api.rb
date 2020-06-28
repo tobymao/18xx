@@ -1,14 +1,18 @@
 # frozen_string_literal: true
 
-require 'execjs'
+PRODUCTION = ENV['RACK_ENV'] == 'production'
+
 require 'opal'
+require 'require_all'
 require 'roda'
 require 'snabberb'
 
 require_relative 'models'
-require_relative 'lib/tilt/opal_template'
+require_relative 'lib/assets'
+require_relative 'lib/bus'
+require_relative 'lib/mail'
 
-Dir['./models/**/*.rb'].sort.each { |file| require file }
+require_rel './models'
 
 class Api < Roda
   opts[:check_dynamic_arity] = false
@@ -16,9 +20,9 @@ class Api < Roda
 
   plugin :default_headers,
          'Content-Type' => 'text/html',
-         # 'Strict-Transport-Security'=>'max-age=16070400;', # Uncomment if only allowing https:// access
          'X-Frame-Options' => 'deny',
-         # 'X-Content-Type-Options' => 'nosniff',
+         'X-Content-Type-Options' => 'nosniff',
+         'Cache-Control' => 'no-cache, max-age=0, must-revalidate, no-store',
          'X-XSS-Protection' => '1; mode=block'
 
   plugin :content_security_policy do |csp|
@@ -31,9 +35,12 @@ class Api < Roda
     csp.frame_ancestors :none
   end
 
+  LOGGER = Logger.new($stdout)
+
+  plugin :common_logger, LOGGER
+
   plugin :not_found do
-    @page_title = 'File Not Found'
-    ''
+    halt(404, 'Page not found')
   end
 
   plugin :error_handler
@@ -41,16 +48,9 @@ class Api < Roda
   error do |e|
     puts e.backtrace.reverse
     puts "#{e.class}: #{e.message}"
-    { code: 500, message: e }
+    LOGGER.error e.backtrace
+    { error: e.message }
   end
-
-  plugin :assets, js: 'app.rb'
-
-  compile_assets
-  APP_JS_PATH = assets_opts[:compiled_js_path]
-  APP_JS = "#{APP_JS_PATH}.#{assets_opts[:compiled]['js']}.js"
-  Dir[APP_JS_PATH + '*'].sort.each { |file| File.delete(file) if file != APP_JS }
-  CONTEXT = ExecJS.compile(File.open(APP_JS, 'r:UTF-8', &:read))
 
   plugin :public
   plugin :hash_routes
@@ -59,58 +59,39 @@ class Api < Roda
   plugin :json_parser
   plugin :halt
 
-  PAGE_LIMIT = 10
-  ROOMS = Hash.new { |h, k| h[k] = [] }
+  ASSETS = Assets.new(precompiled: PRODUCTION)
 
-  PING_FUNC = lambda do |*|
-    ROOMS
-      .values
-      .flatten
-      .select(&:empty?)
-      .each { |q| q.push('{"type":"ping"}') }
-  end
+  Bus.configure(DB)
 
-  Thread.new do
-    loop do
-      PING_FUNC.call
-      sleep(10)
-    end
-  end
+  use MessageBus::Rack::Middleware
+  use Rack::Deflater unless PRODUCTION
 
-  Thread.new do
-    DB.listen(:channel, loop: PING_FUNC) do |_, _, payload|
-      notification = JSON.parse(payload)
-      message = JSON.dump(notification['message'])
-      room = ROOMS[notification['room_id']]
-      room.each { |q| q.push(message) }
-    end
-  end
-
-  def notify(room_id, message)
-    notification = {
-      'room_id' => room_id,
-      'message' => message,
-    }
-
-    DB.notify(:channel, payload: JSON.dump(notification))
-  end
-
-  def on_close(room, q)
-    room.delete(q)
-  end
+  STANDARD_ROUTES = %w[
+    / about hotseat login map new_game profile signup tiles tutorial forgot reset
+  ].freeze
 
   Dir['./routes/*'].sort.each { |file| require file }
 
   hash_routes do
     on 'api' do |hr|
       hr.hash_routes :api
+
+      hr.is 'chat', method: 'post' do
+        not_authorized! unless user
+
+        publish(
+          '/chat',
+          50,
+          user: user.to_h,
+          message: hr.params['message'],
+          created_at: Time.now.to_i,
+        )
+      end
     end
   end
 
   route do |r|
-    r.public
-    r.assets
-    puts "************** #{r.path} *************"
+    r.public unless PRODUCTION
 
     r.hash_branches
 
@@ -118,38 +99,87 @@ class Api < Roda
       render_with_games
     end
 
-    r.on %w[/ signup login profile] do
+    r.on STANDARD_ROUTES do
       render_with_games
     end
 
     r.on 'game', Integer do |id|
-      r.halt 404 unless (game = Game[id])
-      render(game_data: game.to_h(include_actions: true))
+      halt(404, 'Game not found') unless (game = Game[id])
+      halt(400, 'Game has not started yet') if game.status == 'new'
+
+      pin = game.settings['pin']
+      render(pin: pin, game_data: pin ? game.to_h(include_actions: true) : game.to_h)
     end
   end
 
   def render_with_games
-    p = 1
-    games = Game
-      .eager(:user, :players)
-      .reverse_order(:id)
-      .limit(PAGE_LIMIT + 1)
-      .offset((p - 1) * PAGE_LIMIT)
-      .all
-    render(games: games.map(&:to_h))
+    render(pin: request.params['pin'], games: Game.home_games(user, **request.params).map(&:to_h))
   end
 
   def render(**needs)
+    return debug(**needs) if request.params['debug'] && !PRODUCTION
+    return render_pin(**needs) if needs[:pin]
+
     script = Snabberb.prerender_script(
       'Index',
       'App',
       'app',
-      javascript_include_tags: assets(:js),
+      javascript_include_tags: ASSETS.js_tags,
       app_route: request.path,
       **needs,
     )
 
-    CONTEXT.eval(script)
+    '<!DOCTYPE html>' + ASSETS.context.eval(script, warmup: request.path.split('/')[1].to_s)
+  end
+
+  def render_pin(**needs)
+    pin = needs[:pin]
+
+    static(
+      desc: "Pin #{pin}",
+      js_tags: "<script type='text/javascript' src='#{Assets::PIN_DIR}#{pin}.js'></script>",
+      attach_func: "Opal.$$.App.$attach('app', #{Snabberb.wrap(app_route: request.path, **needs)})",
+    )
+  end
+
+  def debug(**needs)
+    needs[:disable_user_errors] = true
+    needs = Snabberb.wrap(app_route: request.path, **needs)
+
+    static(
+      desc: 'Debug',
+      js_tags: ASSETS.js_tags,
+      attach_func: "Opal.$$.App.$attach('app', #{needs})",
+    )
+  end
+
+  def static(desc:, js_tags:, attach_func:)
+    <<~HTML
+      <!DOCTYPE html>
+      <html>
+         <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+            <title>18xx.games (#{desc})</title>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css">
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&amp;display=swap">
+            <link rel="icon" type="image/svg+xml" href="/images/icon.svg">
+            <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+            <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+            <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+            <link rel="mask-icon" href="/images/mask.svg" color="#f0e68c">
+            <link rel="manifest" href="/site.webmanifest">
+            <meta rel="msapplication-TileColor" content="#da532c">
+            <meta rel="theme-color" content="#ffffff">
+            <link rel="stylesheet" href="/assets/main.css">
+         </head>
+         <body>
+            <div id="app"></div>
+            #{js_tags}
+            <script>#{attach_func}</script>
+         </body>
+      </html>
+    HTML
   end
 
   def session
@@ -160,5 +190,29 @@ class Api < Roda
 
   def user
     session&.valid? ? session.user : nil
+  end
+
+  def halt(code, message)
+    request.halt(code, error: message)
+  end
+
+  def not_authorized!
+    halt(401, 'You are not authorized to make this request')
+  end
+
+  def publish(channel, limit = nil, **data)
+    MessageBus.publish(
+      channel,
+      data.merge('_client_id': request.params['_client_id']),
+      max_backlog_size: limit,
+    )
+    {}
+  end
+
+  MessageBus.user_id_lookup do |env|
+    next unless (token = env['HTTP_AUTHORIZATION'])
+
+    Session.where(token: token).update(updated_at: Sequel::CURRENT_TIMESTAMP)
+    nil
   end
 end

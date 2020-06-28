@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
-require 'rspec/core/rake_task'
-require 'rubocop/rake_task'
+unless ENV['RACK_ENV'] == 'production'
+  require 'rspec/core/rake_task'
+  require 'rubocop/rake_task'
 
-# Specs
-RSpec::Core::RakeTask.new(:spec)
-RuboCop::RakeTask.new
+  # Specs
+  RSpec::Core::RakeTask.new(:spec)
+  RuboCop::RakeTask.new
 
-task default: %i[spec rubocop]
+  task default: %i[spec rubocop]
+end
 
 # Migrate
-
 migrate = lambda do |env, version|
   ENV['RACK_ENV'] = env
   require_relative 'db'
@@ -57,9 +58,9 @@ task :prod_up do
   migrate.call('production', nil)
 end
 
-desc 'irb with -I lib/ -I assets/js/'
+desc 'irb with -I lib/ -I assets/app/'
 task :irb do
-  sh 'irb -I lib/ -I assets/js/'
+  sh 'irb -I lib/ -I assets/app/'
 end
 
 # Shell
@@ -100,4 +101,32 @@ task 'annotate' do
   DB.loggers.clear
   require 'sequel/annotate'
   Sequel::Annotate.annotate(Dir['models/*.rb'])
+end
+
+desc 'Precompile assets for production'
+task :precompile do
+  require_relative 'lib/assets'
+  bundle = Assets.new(cache: false, make_map: false, compress: true, gzip: true).combine
+
+  # Copy to the pin directory
+  git_rev = `git rev-parse --short HEAD`.strip
+  pin_dir = Assets::OUTPUT_BASE + Assets::PIN_DIR
+  FileUtils.mkdir_p(pin_dir)
+  FileUtils.cp("#{bundle}.gz", "#{pin_dir}/#{git_rev}.js.gz")
+end
+
+desc 'Profile loading data'
+task 'stackprof', [:json] do |_task, args|
+  require 'stackprof'
+  require_relative 'lib/engine'
+  StackProf.run(mode: :cpu, out: 'stackprof.dump', raw: true, interval: 10) do
+    100.times do
+      data = JSON.parse(File.read(args[:json]))
+      Engine::GAMES_BY_TITLE[data['title']].new(
+        data['players'].map { |p| p['name'] },
+        id: data['id'],
+        actions: data['actions'],
+      )
+    end
+  end
 end

@@ -12,10 +12,15 @@ module Engine
 
     attr_reader :name, :companies
 
-    def initialize(name)
+    def initialize(name, count_companies: true)
       @name = name
       @cash = 0
       @companies = []
+      @count_companies = count_companies
+    end
+
+    def value
+      @cash + shares.select { |s| s.corporation.ipoed }.sum(&:price) + @companies.sum(&:value)
     end
 
     def id
@@ -31,7 +36,7 @@ module Engine
     end
 
     def ==(other)
-      @name == other.name
+      @name == other&.name
     end
 
     def player?
@@ -44,6 +49,19 @@ module Engine
 
     def corporation?
       false
+    end
+
+    def minor?
+      false
+    end
+
+    def num_certs
+      num_companies = @count_companies ? companies.size : 0
+      num_companies + shares.count { |s| s.corporation.counts_for_limit }
+    end
+
+    def to_s
+      "#{self.class.name} - #{@name}"
     end
   end
 end

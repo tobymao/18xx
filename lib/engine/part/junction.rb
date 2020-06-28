@@ -1,14 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'base'
+require_relative 'node'
 
 module Engine
   module Part
-    class Junction < Base
-      def ==(other)
-        other.junction?
-      end
-
+    class Junction < Node
       def junction?
         true
       end

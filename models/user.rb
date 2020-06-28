@@ -10,6 +10,14 @@ class User < Base
 
   RESET_WINDOW = 60 * 15 # 15 minutes
 
+  SETTINGS = %w[
+    notifications bg font bg2 font2 red_logo white yellow green brown gray red blue
+  ].freeze
+
+  def update_settings(params)
+    SETTINGS.each { |setting| settings[setting] = params[setting] }
+  end
+
   def self.by_email(email)
     self[Sequel.function(:lower, :email) => email.downcase]
   end
@@ -25,12 +33,25 @@ class User < Base
     super Argon2::Password.create(new_password)
   end
 
-  def to_h
-    {
+  def can_reset?
+    settings['last_password_reset'].to_i < Time.now.to_i - RESET_WINDOW
+  end
+
+  def to_h(for_user: false)
+    h = {
       id: id,
       name: name,
-      created_at: pp_created_at,
-      updated_at: pp_updated_at,
     }
+
+    if for_user
+      h[:email] = email
+      h[:settings] = settings
+    end
+
+    h
+  end
+
+  def inspect
+    "#{self.class.name} - id: #{id} name: #{name}"
   end
 end

@@ -1,72 +1,163 @@
 # frozen_string_literal: true
 
-require_relative '../lib/engine/game/g_1889'
+require_relative '../lib/engine'
 
 class Api
   hash_routes :api do |hr|
     hr.on 'game' do |r|
+      # '/api/game/<game_id>/*'
       r.on Integer do |id|
-        game = Game[id]
+        halt(404, 'Game does not exist') unless (game = Game[id])
 
+        # '/api/game/<game_id>/'
         r.is do
           game.to_h(include_actions: true)
         end
 
-        r.is 'subscribe' do
-          room = ROOMS[id]
-          q = Queue.new
-          room << q
-
-          response['Content-Type'] = 'text/event-stream;charset=UTF-8'
-          response['X-Accel-Buffering'] = 'no' # for nginx
-          response['Transfer-Encoding'] = 'identity'
-
-          stream(loop: true, callback: -> { on_close(room, q) }) do |out|
-            out << "data: #{q.pop}\n\n"
-          end
-        end
-
-        r.is 'refresh' do
-          { type: 'refresh', data: actions_h(game) }
-        end
-
+        # POST '/api/game/<game_id>'
         r.post do
-          r.halt 403 unless GameUser.where(game: game, user: user).exists
+          not_authorized! unless user
 
-          engine = Engine::Game::G1889.new(
-            game.players.map(&:name),
-            actions: actions_h(game),
-          )
+          users = game.ordered_players
 
-          r.is 'action' do
-            action_id = r.params['id']
-            r.halt 400 unless engine.actions.size + 1 == action_id
+          # POST '/api/game/<game_id>/join'
+          r.is 'join' do
+            halt(400, 'Cannot join game because it is full') if users.size >= game.max_players
 
-            params = {
-              game: game,
-              user: user,
-              action_id: action_id,
-              turn: engine.turn,
-              round: engine.round.name,
-            }
-            action = engine.process_action(r.params).actions.last.to_h
-            params[:action] = action
-            Action.create(params)
-            notify(id, type: 'action', data: action)
-            {}
+            GameUser.create(game: game, user: user)
+            game.players(reload: true)
+            game.to_h
           end
 
-          r.is 'rollback' do
-            game.actions.last.destroy
-            notify(id, type: 'refresh', data: actions_h(game))
-            {}
+          not_authorized! unless users.any? { |u| u.id == user.id }
+
+          r.is 'leave' do
+            game.remove_player(user)
+            game.to_h
+          end
+
+          # POST '/api/game/<game_id>/action'
+          r.is 'action' do
+            acting, action = nil
+
+            DB.with_advisory_lock(:action_lock, game.id) do
+              if game.settings['pin']
+                action_id = r.params['id']
+                action = r.params
+                action.delete('_client_id')
+                meta = action.delete('meta')
+                halt(400, 'Game missing metadata') unless meta
+                halt(400, 'Game out of sync') unless actions_h(game).size + 1 == action_id
+
+                Action.create(
+                  game: game,
+                  user: user,
+                  action_id: action_id,
+                  turn: meta['turn'],
+                  round: meta['round'],
+                  action: action,
+                )
+
+                active_players = meta['active_players']
+                acting = users.select { |u| active_players.include?(u.name) }
+
+                game.round = meta['round']
+                game.turn = meta['turn']
+                game.acting = acting.map(&:id)
+
+                game.result = meta['game_result']
+                game.status = meta['game_status']
+
+                game.save
+              else
+                engine = Engine::GAMES_BY_TITLE[game.title].new(
+                  users.map(&:name),
+                  id: game.id,
+                  actions: actions_h(game),
+                )
+
+                action_id = r.params['id']
+                halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
+
+                engine = engine.process_action(r.params)
+                action = engine.actions.last.to_h
+
+                Action.create(
+                  game: game,
+                  user: user,
+                  action_id: action_id,
+                  turn: engine.turn,
+                  round: engine.round.name,
+                  action: action,
+                )
+
+                acting = set_game_state(game, engine, users)
+              end
+            end
+
+            type, user_ids =
+              if action['type'] == 'message'
+                pinged = users.select do |user|
+                  action['message'].include?("@#{user.name}")
+                end
+                ['Received Message', pinged.map(&:id)]
+              elsif game.status == 'finished'
+                ['Game Finished', users.map(&:id)]
+              else
+                ['Your Turn', acting.map(&:id)]
+              end
+
+            if user_ids.any?
+              MessageBus.publish(
+                '/turn',
+                user_ids: user_ids,
+                game_id: game.id,
+                game_url: "#{r.base_url}/game/#{game.id}",
+                type: type,
+              )
+            end
+
+            publish("/game/#{game.id}", **action)
+            game.to_h
+          end
+
+          not_authorized! unless game.user_id == user.id
+
+          # POST '/api/game/<game_id>/delete
+          r.is 'delete' do
+            game_h = game.to_h.merge(deleted: true)
+            game.destroy
+            game_h
+          end
+
+          # POST '/api/game/<game_id>/start
+          r.is 'start' do
+            engine = Engine::GAMES_BY_TITLE[game.title].new(users.map(&:name), id: game.id)
+            unless game.players.size.between?(*Engine.player_range(engine.class))
+              halt(400, 'Player count not supported')
+            end
+
+            set_game_state(game, engine, users)
+            game.to_h
+          end
+
+          # POST '/api/game/<game_id>/kick
+          r.is 'kick' do
+            game.remove_player(r.params['id'])
+            game.to_h
           end
         end
       end
 
-      r.post do
-        r.halt 403 unless user
+      r.get do
+        { games: Game.home_games(user, **r.params).map(&:to_h) }
+      end
 
+      # POST '/api/game[/*]'
+      r.post do
+        not_authorized! unless user
+
+        # POST '/api/game'
         r.is do
           title = r['title']
 
@@ -74,38 +165,13 @@ class Api
             user: user,
             description: r['description'],
             max_players: r['max_players'],
+            settings: { seed: Random.new_seed },
             title: title,
-            round: Engine::Game::G1889.new([]).round.name,
+            round: Engine::GAMES_BY_TITLE[title].new([]).round.name,
           }
 
           game = Game.create(params)
           GameUser.create(game: game, user: user)
-          game.to_h
-        end
-
-        r.halt 404 unless (game = Game[r.params['id']])
-
-        r.is 'join' do
-          GameUser.create(game: game, user: user) if GameUser.where(game: game).count < game.max_players
-          game.to_h
-        end
-
-        r.halt 403 unless GameUser.where(game: game, user: user).exists
-
-        r.is 'leave' do
-          game.remove_player(user)
-          game.to_h
-        end
-
-        r.halt 403 unless game.user_id == user.id
-
-        r.is 'delete' do
-          game.destroy
-          game.to_h
-        end
-
-        r.is 'start' do
-          game.update(status: 'active')
           game.to_h
         end
       end
@@ -114,5 +180,25 @@ class Api
 
   def actions_h(game)
     game.actions(reload: true).map(&:to_h)
+  end
+
+  def set_game_state(game, engine, users)
+    active_players = engine.active_player_names
+    acting = users.select { |u| active_players.include?(u.name) }
+
+    game.round = engine.round.name
+    game.turn = engine.turn
+    game.acting = acting.map(&:id)
+
+    if engine.finished
+      game.result = engine.result
+      game.status = 'finished'
+    else
+      game.result = {}
+      game.status = 'active'
+    end
+
+    game.save
+    acting
   end
 end

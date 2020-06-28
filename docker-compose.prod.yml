@@ -1,0 +1,47 @@
+version: '3.5'
+
+services:
+  rack:
+    command: bash -c "bundle exec rake prod_up && bundle exec unicorn -c config/unicorn.rb"
+    image: 18xx_rack:prod
+    environment:
+      RACK_ENV: production
+      DATABASE_URL: $DATABASE_URL
+      MAIL_JET_KEY: $MAIL_JET_KEY
+      MAIL_JET_SECRET: $MAIL_JET_SECRET
+    build:
+      args:
+        RACK_ENV: production
+    volumes:
+      - ./public:/18xx/public
+
+  queue:
+    image: 18xx_queue:prod
+    command: bundle exec ruby queue.rb
+    environment:
+      RACK_ENV: production
+      DATABASE_URL: $DATABASE_URL
+      MAIL_JET_KEY: $MAIL_JET_KEY
+      MAIL_JET_SECRET: $MAIL_JET_SECRET
+    build:
+      args:
+        RACK_ENV: production
+    volumes:
+      - ./public:/18xx/public
+
+  db:
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+
+  nginx:
+    build: ./nginx/
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./public:/public
+      - /etc/18xxgames/ssl:/etc/18xxgames/ssl
+    depends_on:
+      - rack

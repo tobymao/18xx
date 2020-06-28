@@ -1,115 +1,24 @@
 # frozen_string_literal: true
 
+if RUBY_ENGINE == 'opal'
+  require_tree 'part'
+else
+  require 'require_all'
+  require_rel 'part'
+end
+
 require_relative 'game_error'
-require_relative 'part/city'
-require_relative 'part/town'
-require_relative 'part/edge'
-require_relative 'part/junction'
-require_relative 'part/label'
-require_relative 'part/offboard'
-require_relative 'part/path'
-require_relative 'part/upgrade'
+require_relative 'config/tile'
 
 module Engine
   class Tile
-    # * [t]own     - [r]evenue, local_[id] (default: 0)
-    # * [c]ity     - [r]evenue, local_[id] (default: 0), [s]lots (default 1)
-    # * [o]ffboard - [r]evenues for different phases (separated by "/")
-    # * [p]ath     - endpoints [a] and [b]; the endpoints can be an edge number,
-    #                town/city/offboard reference, or a lawson-style [j]unction
-    # * [l]abel    - large letters on tile
-    # * [u]pgrade  - [c]ost, [t]errain (multiple terrain types separated by "+"),
+    include Config::Tile
 
-    # [r]evenue    - number, list of numbers separated by "/", or something like
-    #                yellow_30|brown_60|diesel_100
+    attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :reservations
+    attr_reader :blocks_lay, :borders, :cities, :color, :edges, :junction, :label, :nodes,
+                :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers
 
-    WHITE = {
-      'blank' => '',
-      'town' => 't=r:0',
-      'city' => 'c=r:0',
-      'mtn80' => 'u=c:80,t:mountain',
-      'wtr80' => 'u=c:80,t:water',
-      'mtn+wtr80' => 'u=c:80,t:mountain+water',
-    }.freeze
-
-    YELLOW = {
-      '1' => 't=r:10;p=a:0,b:_0;p=a:_0,b:4;t=r:10;p=a:1,b:_1;p=a:_1,b:3',
-      '2' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3;t=r:10;p=a:4,b:_1;p=a:_1,b:5',
-      '3' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1',
-      '4' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3',
-      '5' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:1',
-      '6' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:2',
-      '7' => 'p=a:0,b:5',
-      '8' => 'p=a:0,b:4',
-      '9' => 'p=a:0,b:3',
-      '55' => 't=r:10;p=a:0,b:_0;p=a:_0,b:3;t=r:10;p=a:2,b:_1;p=a:_1,b:5',
-      '56' => 't=r:10;p=a:0,b:_0;p=a:_0,b:4;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
-      '57' => 'c=r:20;p=a:0,b:_0;p=a:_0,b:3',
-      '58' => 't=r:10;p=a:0,b:_0;p=a:_0,b:2',
-      '69' => 't=r:10;p=a:1,b:_0;p=a:_0,b:4;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
-      '437' => 't=r:30;p=a:0,b:_0;p=a:_0,b:2;l=P',
-      '438' => 'c=r:40;p=a:0,b:_0;p=a:_0,b:2;l=H;u=c:80',
-      '630' => 't=r:10;p=a:1,b:_0;p=a:_0,b:2;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
-      '631' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1;t=r:10;p=a:3,b:_1;p=a:_1,b:5',
-      '632' => 't=r:10;p=a:0,b:_0;p=a:_0,b:5;t=r:10;p=a:3,b:_1;p=a:_1,b:4',
-      '633' => 't=r:10;p=a:0,b:_0;p=a:_0,b:1;t=r:10;p=a:3,b:_1;p=a:_1,b:4',
-    }.freeze
-
-    GREEN = {
-      '12' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:5,b:_0',
-      '13' => 'c=r:30;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0',
-      '14' => 'c=r:30,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:3,b:_0;p=a:4,b:_0',
-      '15' => 'c=r:30,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0',
-      '16' => 'p=a:0,b:4;p=a:1,b:5',
-      '18' => 'p=a:0,b:3;p=a:1,b:2',
-      '19' => 'p=a:0,b:3;p=a:1,b:5',
-      '20' => 'p=a:0,b:3;p=a:1,b:4',
-      '23' => 'p=a:0,b:3;p=a:0,b:4',
-      '24' => 'p=a:0,b:3;p=a:0,b:2',
-      '25' => 'p=a:0,b:2;p=a:0,b:4',
-      '26' => 'p=a:0,b:3;p=a:0,b:5',
-      '27' => 'p=a:0,b:3;p=a:0,b:1',
-      '28' => 'p=a:0,b:4;p=a:0,b:5',
-      '29' => 'p=a:0,b:1;p=a:0,b:2',
-      '81A' => 'p=a:0,b:j;p=a:2,b:j;p=a:4,b:j',
-      '87' => 't=r:10;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0',
-      '205' => 'c=r:30;p=a:0,b:_0;p=a:1,b:_0;p=a:3,b:_0',
-      '206' => 'c=r:30;p=a:0,b:_0;p=a:3,b:_0;p=a:5,b:_0',
-      '298' => 'c=r:40;c=r:40;c=r:40;c=r:40;l=Chi;'\
-               'p=a:1,b:_0;p=a:0,b:_1;p=a:5,b:_2;p=a:4,b:_3;'\
-               'p=a:_0,b:3;p=a:_2,b:3;p=a:_3,b:3;p=a:_1,b:3',
-      '439' => 'c=r:60,s:2;p=a:0,b:_0;p=a:2,b:_0;p=a:4,b:_0;l=H;u=c:80',
-      '440' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
-    }.freeze
-
-    BROWN = {
-      '39' => 'p=a:0,b:1;p=a:0,b:2;p=a:1,b:2',
-      '40' => 'p=a:0,b:2;p=a:0,b:4;p=a:2,b:4',
-      '41' => 'p=a:0,b:3;p=a:0,b:4;p=a:3,b:4',
-      '42' => 'p=a:0,b:3;p=a:0,b:2;p=a:2,b:3',
-      '45' => 'p=a:0,b:3;p=a:0,b:5;p=a:1,b:3;p=a:1,b:5',
-      '46' => 'p=a:0,b:1;p=a:0,b:3;p=a:1,b:5;p=a:3,b:5',
-      '47' => 'p=a:0,b:2;p=a:0,b:3;p=a:2,b:5;p=a:3,b:5',
-      '448' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0',
-      '465' => 'c=r:40,s:2;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=K',
-      '466' => 'c=r:60,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;l=T',
-      '492' => 'c=r:80,s:3;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0;l=H',
-      '611' => 'c=r:40,s:2;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;',
-      'W5' => 'c=r:50,s:6;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
-    }.freeze
-
-    GRAY = {
-      '456' => 'c=r:70,s:5;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
-      '639' => 'c=r:100,s:4;p=a:0,b:_0;p=a:1,b:_0;p=a:2,b:_0;p=a:3,b:_0;p=a:4,b:_0;p=a:5,b:_0',
-    }.freeze
-
-    RED = {}.freeze
-
-    COLORS = %i[white yellow green brown gray].freeze
-
-    attr_accessor :legal_rotations, :location_name
-    attr_reader :cities, :color, :edges, :junctions, :label, :name,
-                :parts, :preprinted, :rotation, :towns, :upgrades, :offboards, :blockers
+    ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
     def self.for(name, **opts)
       if (code = WHITE[name])
@@ -124,6 +33,8 @@ module Engine
         color = :gray
       elsif (code = RED[name])
         color = :red
+      elsif (code = BLUE[name])
+        color = :blue
       else
         raise Engine::GameError, "Tile '#{name}' not found"
       end
@@ -136,6 +47,7 @@ module Engine
 
       code.split(';').map do |part_code|
         type, params = part_code.split('=')
+        params ||= ''
 
         params = params.split(',').map { |param| param.split(':') }.to_h if params.include?(':')
 
@@ -149,66 +61,101 @@ module Engine
 
     def self.part(type, params, cache)
       case type
-      when 'p'
+      when 'path'
         params = params.map do |k, v|
           case v[0]
           when '_'
             [k, cache[v[1..-1].to_i]]
-          when 'j'
-            [k, Part::Junction.new]
           else
             [k, Part::Edge.new(v)]
           end
         end.to_h
 
         Part::Path.new(params['a'], params['b'])
-      when 'c'
-        city = Part::City.new(params['r'], params.fetch('s', 1), cache.size)
+      when 'city'
+        city = Part::City.new(params['revenue'],
+                              params.fetch('slots', 1),
+                              params['groups'],
+                              params['hide'],
+                              params['visit_cost'])
         cache << city
         city
-      when 't'
-        town = Part::Town.new(params['r'], cache.size)
+      when 'town'
+        town = Part::Town.new(params['revenue'],
+                              params['groups'],
+                              params['hide'],
+                              params['visit_cost'])
         cache << town
         town
-      when 'l'
+      when 'offboard'
+        offboard = Part::Offboard.new(params['revenue'],
+                                      params['groups'],
+                                      params['hide'],
+                                      params['visit_cost'])
+        cache << offboard
+        offboard
+      when 'label'
         label = Part::Label.new(params)
         cache << label
         label
-      when 'u'
-        upgrade = Part::Upgrade.new(params['c'], params['t']&.split('+'))
+      when 'upgrade'
+        upgrade = Part::Upgrade.new(params['cost'], params['terrain']&.split('|'))
         cache << upgrade
         upgrade
-      when 'o'
-        offboard = Part::Offboard.new(params['r'])
-        cache << offboard
-        offboard
+      when 'border'
+        Part::Border.new(params['edge'], params['type'], params['cost'])
+      when 'junction'
+        junction = Part::Junction.new
+        cache << junction
+        junction
+      when 'icon'
+        Part::Icon.new(params['image'], params['name'], params['sticky'], params['blocks_lay'])
       end
     end
 
     # rotation 0-5
-    def initialize(name, color:, parts:, rotation: 0, preprinted: false, index: 0)
+    def initialize(name,
+                   color:,
+                   parts:,
+                   rotation: 0,
+                   preprinted: false,
+                   index: 0,
+                   location_name: nil,
+                   **opts)
       @name = name
-      @color = color
+      @color = color.to_sym
       @parts = parts
       @rotation = rotation
       @cities = []
       @paths = []
-      @_paths_with = {}
       @towns = []
-      @edges = nil
-      @junctions = nil
       @upgrades = []
-      @location_name = nil
       @offboards = []
+      @borders = []
+      @branches = nil
+      @nodes = nil
+      @stops = nil
+      @edges = nil
+      @junction = nil
+      @icons = []
+      @location_name = location_name
       @legal_rotations = []
       @blockers = []
+      @reservations = []
       @preprinted = preprinted
       @index = index
+      @blocks_lay = nil
+      @reservation_blocks = opts[:reservation_blocks] || false
+
       separate_parts
     end
 
     def id
       "#{@name}-#{@index}"
+    end
+
+    def <=>(other)
+      [COLORS.index(@color), @name.to_i] <=> [COLORS.index(other.color), other.name.to_i]
     end
 
     def rotate!(absolute = nil)
@@ -217,9 +164,11 @@ module Engine
         @legal_rotations.first ||
         @rotation
       @rotation = new_rotation
+      @nodes.each(&:clear!)
       @_paths = nil
       @_exits = nil
-      @_paths_with.clear
+      @preferred_city_town_edges = nil
+      self
     end
 
     def rotate(num, ticks = 1)
@@ -230,45 +179,25 @@ module Engine
       @_paths ||= @paths.map { |path| path.rotate(@rotation) }
     end
 
-    def paths_with(props, value)
-      @_paths_with[[props, value]] ||= paths.select do |path_prop|
-        props.each do |prop|
-          path_prop = path_prop.send(prop)
-        end
-
-        path_prop == value
-      end
-    end
-
     def exits
       @_exits ||= @edges.map { |e| rotate(e.num, @rotation) }.uniq
     end
 
     def lawson?
       @lawson ||=
-        [
-          @junctions.any?,
-          [cities.size, towns.size] == [1, 0],
-          ([cities.size, towns.size] == [0, 1]) && ![1, 2].include?(exits.size),
-        ].any?
-    end
-
-    def ==(other)
-      @name == other.name && @color == other.color && @parts == other.parts
+        !!@junction ||
+        (@cities.one? && @towns.empty?) ||
+        ((cities.empty? && towns.one?) && edges.size > 2)
     end
 
     def upgrade_cost(abilities)
-      ignore = abilities.find { |a| a[:type] == :ignore_terrain }
+      ignore = abilities.find { |a| a.type == :ignore_terrain }
 
       @upgrades.sum do |upgrade|
         cost = upgrade.cost
-        cost = 0 if ignore && upgrade.terrains.uniq == [ignore[:terrain]]
+        cost = 0 if ignore && upgrade.terrains.uniq == [ignore.terrain]
         cost
       end
-    end
-
-    def upgrade_tiles(tiles)
-      tiles.uniq(&:name).select { |t| upgrades_to?(t) }
     end
 
     def upgrades_to?(other)
@@ -276,13 +205,14 @@ module Engine
       return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)
 
       # correct label?
-      return false unless label == other.label
+      return false if label != other.label
 
       # honors existing town/city counts?
-      # TODO: this is not true for some OO upgrades, or some tiles where
-      # double-town can be upgraded into a single town
-      return false unless @towns.size == other.towns.size
-      return false unless @cities.size == other.cities.size
+      # - allow labelled cities to upgrade regardless of count; they're probably
+      #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
+      # - TODO: account for games that allow double dits to upgrade to one town
+      return false if @towns.size != other.towns.size
+      return false if !label && @cities.size != other.cities.size
 
       # honors pre-existing track?
       return false unless paths_are_subset_of?(other.paths)
@@ -291,7 +221,7 @@ module Engine
     end
 
     def paths_are_subset_of?(other_paths)
-      (0..5).any? do |ticks|
+      ALL_EDGES.any? do |ticks|
         @paths.all? do |path|
           path = path.rotate(ticks)
           other_paths.any? { |other| path <= other }
@@ -304,10 +234,112 @@ module Engine
       @blockers << private_company
     end
 
+    def inspect
+      "<#{self.class.name}: #{name}, hex: #{@hex&.name}>"
+    end
+
+    # returns hash where keys are cities, and values are the edge the city or
+    # town should be rendered at
+    #
+    # "ct" for "city or town"
+    def preferred_city_town_edges
+      @preferred_city_town_edges ||= compute_city_town_edges
+    end
+
+    def reserved_by?(corporation)
+      @reservations.any? { |r| [r, r.owner].include?(corporation) }
+    end
+
+    def add_reservation!(entity, city, slot = 0)
+      # Single city, assume the first
+      city = 0 if @cities.one?
+
+      if city
+        @cities[city].add_reservation!(entity, slot)
+      else
+        @reservations << entity
+      end
+    end
+
+    def token_blocked_by_reservation?(corporation)
+      return false if @reservations.empty?
+
+      if @reservation_blocks
+        !@reservations.include?(corporation)
+      else
+        @reservations.count { |x| corporation != x } >= @cities.sum(&:available_slots)
+      end
+    end
+
+    def compute_city_town_edges
+      # ct => nums of edges it is connected to
+      ct_edges = Hash.new { |h, k| h[k] = [] }
+
+      # edge => how many tracks/cts are on that edge, plus 0.1
+      # for each track/ct on neighboring edges
+      edge_count = Hash.new(0)
+
+      if @paths.empty? && @cities.size >= 2
+        # If a tile has no paths but multiple cities, avoid them rendering on top of each other
+        div = 6 / @cities.size
+        @cities.each_with_index { |x, index| edge_count[x] = (index * div) }
+        return edge_count
+      end
+
+      # slightly prefer to keep room along bottom to render location name
+      edge_count[0] += 0.1
+
+      # populate ct_edges and edge_count as described in above comments
+      paths.each do |path|
+        next unless (ct = path.city || path.town)
+
+        path.exits.each do |edge|
+          ct_edges[ct] << edge
+          edge_count[edge] += 1
+          edge_count[(edge + 1) % 6] += 0.1
+          edge_count[(edge - 1) % 6] += 0.1
+        end
+      end
+
+      # sort ct_edges so that the lowest edge with any paths will be
+      # handled first
+      ct_edges = ct_edges.each { |_, e| e.sort! }.sort_by { |_, e| e }
+
+      # construct the final hash to return, updating edge_count along the
+      # way
+      ct_edges = ct_edges.map do |ct, edges_|
+        edge = edges_.min_by { |e| edge_count[e] }
+
+        # since this edge is being used, increase its count (and that of its
+        # neighbors) to influence what edges will be used for the remaining
+        # cts
+        edge_count[edge] += 1
+        edge_count[(edge + 1) % 6] += 0.1
+        edge_count[(edge - 1) % 6] += 0.1
+
+        [ct, edge]
+      end.to_h
+
+      city_towns = @cities + @towns
+      pathless_cts = city_towns.select { |ct| ct.paths.empty? }
+      if pathless_cts.one? && city_towns.size == 2
+        ct = pathless_cts.first
+        ct_edges[ct] = (ct_edges.values.first + 3) % 6
+      end
+
+      ct_edges
+    end
+
+    def revenue_to_render
+      @revenue_to_render ||= stops.map(&:revenue_to_render)
+    end
+
     private
 
     def separate_parts
       @parts.each do |part|
+        @blocks_lay ||= part.blocks_lay?
+
         if part.city?
           @cities << part
         elsif part.label?
@@ -320,13 +352,28 @@ module Engine
           @upgrades << part
         elsif part.offboard?
           @offboards << part
+        elsif part.border?
+          @borders << part
+        elsif part.junction?
+          @junction = part
+        elsif part.icon?
+          @icons << part
         else
           raise "Part #{part} not separated."
         end
       end
 
-      @junctions = @paths.map(&:junction)
-      @edges = @paths.flat_map(&:edges)
+      @parts.each.group_by(&:class).values.each do |parts|
+        parts.each.with_index do |part, index|
+          part.index = index
+          part.tile = self
+        end
+      end
+
+      @nodes = @paths.map(&:node).compact.uniq
+      @branches = @paths.map(&:branch).compact.uniq
+      @stops = @paths.map(&:stop).compact.uniq
+      @edges = @paths.flat_map(&:edges).compact.uniq
     end
   end
 end

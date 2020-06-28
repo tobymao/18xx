@@ -9,6 +9,7 @@
 /build/
 /vendor/
 /public/assets/*
+/public/pinned/*
 
 .tags
 .DS_STORE
@@ -17,3 +18,8 @@
 
 # rspec failure tracking
 .rspec_status
+
+/log/
+/db/data/
+
+docker-compose.override.yml

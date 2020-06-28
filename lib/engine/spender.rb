@@ -10,8 +10,13 @@ module Engine
       raise GameError, "#{name} has #{@cash} and cannot spend #{amount}" if (@cash - amount).negative?
     end
 
+    def check_positive(amount)
+      raise GameError, "#{amount} is not valid to spend" unless amount.positive?
+    end
+
     def spend(cash, receiver)
       check_cash(cash)
+      check_positive(cash)
       @cash -= cash
       receiver.cash += cash
     end

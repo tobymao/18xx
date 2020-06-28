@@ -1,18 +1,13 @@
 # frozen_string_literal: true
 
 require_relative 'ownable'
+require_relative 'share_bundle'
 
 module Engine
   class Share
     include Ownable
 
     attr_reader :corporation, :percent, :president
-
-    def self.price(shares)
-      shares.sum do |share|
-        share.percent / 10 * share.corporation.share_price.price
-      end
-    end
 
     def initialize(corporation, owner: nil, president: false, percent: 10, index: 0)
       @corporation = corporation
@@ -23,12 +18,28 @@ module Engine
     end
 
     def id
-      "#{@corporation.name}_#{@index}"
+      "#{@corporation.id}_#{@index}"
+    end
+
+    def num_shares
+      @percent / 10
+    end
+
+    def price_per_share
+      share_price = @owner == corporation ? corporation.par_price : corporation.share_price
+      share_price&.price || corporation.min_price
     end
 
     def price
-      share_price = @owner == corporation ? corporation.par_price : corporation.share_price
-      (share_price&.price || corporation.min_price) * @percent / 10
+      price_per_share * num_shares
+    end
+
+    def to_s
+      "#{self.class.name} - #{id}"
+    end
+
+    def to_bundle
+      ShareBundle.new(self)
     end
   end
 end

@@ -1,18 +1,22 @@
 # frozen_string_literal: true
 
+require_relative '../helper/type'
+
 module Engine
   module Action
     class Base
+      include Helper::Type
+
       attr_reader :entity
       attr_accessor :id
 
       def self.from_h(h, game)
-        entity = game.send("#{h['entity_type']}_by_id", h['entity'])
-        new(entity, *h_to_args(h, game))
+        entity = game.get(h['entity_type'], h['entity'])
+        new(entity, **h_to_args(h, game))
       end
 
       def self.h_to_args(_h, _game)
-        []
+        {}
       end
 
       def self.split(klass)
@@ -23,14 +27,18 @@ module Engine
         @entity = entity
       end
 
+      def [](field)
+        to_h[field]
+      end
+
       def to_h
         {
-          'type' => type_s(self),
+          'type' => type,
           'entity' => entity.id,
           'entity_type' => type_s(entity),
           'id' => @id,
           **args_to_h,
-        }
+        }.reject { |_, v| v.nil? }
       end
 
       def args_to_h
@@ -45,10 +53,8 @@ module Engine
         self.class.from_h(to_h, game)
       end
 
-      private
-
-      def type_s(obj)
-        self.class.split(obj.class).last.gsub(/(.)([A-Z])/, '\1_\2').downcase
+      def free?
+        false
       end
     end
   end

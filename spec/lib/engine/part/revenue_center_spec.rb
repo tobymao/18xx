@@ -3,14 +3,10 @@
 require './spec/spec_helper'
 require 'engine/part/revenue_center'
 
-class DummyClass
-  include Engine::Part::RevenueCenter
-end
-
 module Engine
   module Part
     describe RevenueCenter do
-      subject { DummyClass.new }
+      subject { RevenueCenter.new('0') }
 
       describe '#parse_revenue' do
         it 'parses an integer' do

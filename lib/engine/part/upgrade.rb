@@ -12,10 +12,6 @@ module Engine
         @terrains = terrains&.map(&:to_sym) || []
       end
 
-      def ==(other)
-        other.upgrade? && (@cost == other.cost) && (@terrains == other.terrains)
-      end
-
       def upgrade?
         true
       end

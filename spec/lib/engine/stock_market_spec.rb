@@ -3,13 +3,14 @@
 require './spec/spec_helper'
 
 require 'engine/corporation'
-require 'engine/game/g_1830'
+require 'engine/game/g_1889'
 require 'engine/stock_market'
 
 module Engine
   describe StockMarket do
-    let(:subject) { StockMarket.new(Game::G1830::MARKET) }
-    let(:corporation) { Corporation.new(sym: 'a', name: 'a', tokens: 1) }
+    let(:subject) { StockMarket.new(Game::G1889::MARKET, []) }
+    let(:corporation) { Corporation.new(sym: 'a', name: 'a', tokens: [0]) }
+    let(:corporation_2) { Corporation.new(sym: 'b', name: 'b', tokens: [0]) }
 
     describe '#move_right' do
       it 'moves right' do
@@ -56,12 +57,12 @@ module Engine
         expect(current_price.corporations).to eq([])
       end
 
-      it 'stays put at wall' do
+      it 'moves down at a wall' do
         current_price = subject.market[0][0]
         subject.set_par(corporation, current_price)
         subject.move_left(corporation)
-        expect(corporation.share_price).to be(current_price)
-        expect(current_price.corporations).to eq([corporation])
+        expect(corporation.share_price).to be(subject.market[1][0])
+        expect(current_price.corporations).to eq([])
       end
     end
 
@@ -75,11 +76,20 @@ module Engine
       end
 
       it 'stays put at cliff' do
-        current_price = subject.market[7][0]
+        current_price = subject.market[7][4]
         subject.set_par(corporation, current_price)
         subject.move_down(corporation)
         expect(corporation.share_price).to be(current_price)
         expect(current_price.corporations).to eq([corporation])
+      end
+
+      it 'doesnt change order moving down on a cliff' do
+        current_price = subject.market[7][4]
+        subject.set_par(corporation, current_price)
+        subject.set_par(corporation_2, current_price)
+        subject.move_down(corporation)
+        expect(corporation.share_price).to be(current_price)
+        expect(current_price.corporations.map(&:name)).to eq(%w[a b])
       end
     end
   end

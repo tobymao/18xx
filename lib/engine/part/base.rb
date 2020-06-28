@@ -1,8 +1,26 @@
 # frozen_string_literal: true
 
+require_relative '../helper/type'
+
 module Engine
   module Part
     class Base
+      include Helper::Type
+
+      attr_accessor :index, :tile
+
+      def id
+        "#{tile.id}-#{index}"
+      end
+
+      def hex
+        @tile&.hex
+      end
+
+      def <=(other)
+        self.class == other.class
+      end
+
       def <=>(other)
         if edge? && other.edge?
           num <=> other.num
@@ -15,12 +33,20 @@ module Engine
         end
       end
 
-      def <=(other)
-        self == other
-      end
-
       def rotate(_ticks)
         self
+      end
+
+      def blocks?(_corporation)
+        false
+      end
+
+      def tokened_by?(_corporation)
+        false
+      end
+
+      def tokenable?(_corporation, *)
+        false
       end
 
       def city?
@@ -53,6 +79,26 @@ module Engine
 
       def offboard?
         false
+      end
+
+      def border?
+        false
+      end
+
+      def icon?
+        false
+      end
+
+      def blocks_lay?
+        false
+      end
+
+      def visit_cost
+        0
+      end
+
+      def inspect
+        "<#{self.class.name}: hex: #{hex&.name}>"
       end
     end
   end

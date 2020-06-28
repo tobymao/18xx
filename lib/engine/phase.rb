@@ -4,45 +4,7 @@ require_relative 'action/buy_train'
 
 module Engine
   class Phase
-    attr_reader :buy_companies, :name, :operating_rounds, :train_limit, :tiles
-
-    TWO = {
-      name: '2',
-      operating_rounds: 1,
-      train_limit: 4,
-      buy_companies: false,
-      tiles: :yellow,
-    }.freeze
-
-    THREE = {
-      name: '3',
-      operating_rounds: 2,
-      train_limit: 4,
-      tiles: %i[yellow green].freeze,
-      on: '3',
-    }.freeze
-
-    FOUR = THREE.merge(name: '4', on: '4', train_limit: 3, events: { rust: '2' })
-
-    FIVE = {
-      name: '5',
-      operating_rounds: 3,
-      train_limit: 2,
-      tiles: %i[yellow green brown].freeze,
-      on: '5',
-      events: { close_companies: true },
-    }.freeze
-
-    SIX = FIVE.merge(name: '6', on: '6', events: { rust: '3' })
-
-    D = {
-      name: 'D',
-      operating_rounds: 3,
-      train_limit: 2,
-      tiles: %i[yellow green brown].freeze,
-      on: 'D',
-      events: { rust: '4' },
-    }.freeze
+    attr_reader :buy_companies, :name, :operating_rounds, :train_limit, :tiles, :phases
 
     def initialize(phases, game)
       @index = 0
@@ -55,8 +17,22 @@ module Engine
     def process_action(action)
       case action
       when Action::BuyTrain
-        next! if action.train.name == @next_on
+        entity = action.entity
+        train = action.train
+        next! if train.sym == @next_on
+        rust_trains!(train, entity)
+        close_companies_on_train!(entity)
       end
+    end
+
+    def current
+      @phases[@index]
+    end
+
+    def available?(phase_name)
+      return false unless phase_name
+
+      @phases.find_index { |phase| phase[:name] == phase_name } <= @index
     end
 
     def setup_phase!
@@ -64,7 +40,7 @@ module Engine
 
       @name = phase[:name]
       @operating_rounds = phase[:operating_rounds]
-      @buy_companies = phase[:buy_companies] || true
+      @buy_companies = !!phase[:buy_companies]
       @train_limit = phase[:train_limit]
       @tiles = Array(phase[:tiles])
       @events = phase[:events] || []
@@ -77,45 +53,63 @@ module Engine
     end
 
     def trigger_events!
-      @events.each do |type, value|
-        case type
-        when :rust
-          rust!(value)
-        when :close_companies
-          close_companies!
-        end
+      @events.each do |type, _value|
+        @game.send("event_#{type}!")
       end
 
       @game.companies.each do |company|
-        next unless company.open?
+        next unless company.owner
 
-        abilities = company
-          .all_abilities
-          .select { |a| a[:when] == @name }
+        company.abilities(:revenue_change, @name) do |ability|
+          company.revenue = ability.revenue
+        end
 
-        abilities.each do |ability|
-          case ability[:type]
-          when :revenue_change
-            company.revenue = ability[:revenue]
-          end
+        company.abilities(:close, @name) do
+          company.close!
+        end
+      end
+
+      (@game.companies + @game.corporations).each do |c|
+        c.all_abilities.each do |ability|
+          c.remove_ability(ability.type) if ability.remove == @name
         end
       end
     end
 
-    def rust!(value)
-      @log << "-- Event: #{value} trains rust --"
+    def close_companies_on_train!(entity)
+      @game.companies.each do |company|
+        next if company.closed?
 
-      @game.trains.each do |train|
-        train.rust! if train.name == value
+        company.abilities(:close, :train) do |ability|
+          next if entity&.name != ability.corporation
+
+          company.close!
+          @log << "#{company.name} closes"
+        end
       end
     end
 
-    def close_companies!
-      @log << '-- Event: private companies close --'
+    def rust_trains!(train, entity)
+      obsolete_trains = []
+      rusted_trains = []
 
-      @game.companies.each do |company|
-        company.close! unless company.abilities(:never_closes)
+      @game.trains.each do |t|
+        next if t.obsolete || t.obsolete_on != train.sym
+
+        obsolete_trains << t.name
+        t.obsolete = true
       end
+
+      @game.trains.each do |t|
+        next if t.rusted || t.rusts_on != train.sym
+
+        rusted_trains << t.name
+        entity.rusted_self = true if entity && entity == t.owner
+        t.rust!
+      end
+
+      @log << "-- Event: #{obsolete_trains.uniq.join(', ')} trains are obsolete --" if obsolete_trains.any?
+      @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --" if rusted_trains.any?
     end
 
     def next!

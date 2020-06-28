@@ -1,3 +1,6 @@
+Layout/FirstArgumentIndentation:
+  Enabled: false
+
 Layout/FirstArrayElementIndentation:
   Enabled: false
 
@@ -30,6 +33,9 @@ Metrics/CyclomaticComplexity:
 Metrics/MethodLength:
   Enabled: false
 
+Metrics/ModuleLength:
+  Enabled: false
+
 Metrics/ParameterLists:
   Enabled: false
 
@@ -57,14 +63,17 @@ Style/EmptyCaseCondition:
 Style/MultipleComparison:
   Enabled: false
 
+Style/MultilineIfModifier:
+  Enabled: false
+
 Style/TrailingCommaInArguments:
   Enabled: false
 
 Style/TrailingCommaInArrayLiteral:
-  Enabled: false
+  EnforcedStyleForMultiline: comma
 
 Style/TrailingCommaInHashLiteral:
-  Enabled: false
+  EnforcedStyleForMultiline: comma
 
 Style/DoubleNegation:
   Enabled: false

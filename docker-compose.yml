@@ -3,30 +3,18 @@ version: '3.5'
 services:
   rack:
     build: .
-    image: 18xx_rack:dev
-    volumes:
-      - .:/18xx
-      - /18xx/vendor
-    environment:
-      DATABASE_URL: postgres://root:password@postgres:5432/db_18xx
-    ports:
-      - 9292:9292
     depends_on:
-      - postgres
+      - db
 
-  postgres:
-    image: postgres:12.2
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: db_18xx
-    ports:
-      - 5432:5432
+  queue:
+    build: .
+    depends_on:
+      - db
+      - rack
+
+  db:
+    build: ./db/
     volumes:
-      - /var/lib/postgresql
-
-  adminer:
-    image: adminer
-    restart: always
+      - ./db/data:/var/lib/postgresql/data
     ports:
-      - 8080:8080
+      - 127.0.0.1:5433:5432
