@@ -93,11 +93,9 @@ module View
             children << h('td.right', td_props, route.distance)
             children << h('td.right', td_props, revenue)
             children << h(:td, route.hexes.map(&:name).join(' '))
-          else
-            unless selected
-              style[:border] = '1px solid'
-              style[:padding] = '5px 8px'
-            end
+          elsif !selected
+            style[:border] = '1px solid'
+            style[:padding] = '5px 8px'
           end
 
           invalid_props = {
@@ -135,8 +133,8 @@ module View
         h(:div, div_props, [
           h(UndoAndPass, pass: false),
           h(:h2, { style: { margin: '0.5rem 0 0.2rem' } }, 'Select Routes'),
-          h('div.smallfont', description),
-          h('div.smallfont', 'Click revenue centers, again to cycle paths.'),
+          h('div.small_font', description),
+          h('div.small_font', 'Click revenue centers, again to cycle paths.'),
           h(:table, table_props, [
             h(:thead, [
               h(:tr, [
@@ -146,9 +144,7 @@ module View
                 h(:th, th_route_props, 'Route'),
               ]),
             ]),
-            h(:tbody, [
-              *trains,
-            ]),
+            h(:tbody, trains),
           ]),
           actions,
         ])
