@@ -153,7 +153,7 @@ p:last-child {
   font-weight: bold;
   margin: 1rem 0;
 }
-.card_header h2 {
+.card_header h2, #left h2 {
   margin: 0;
   font-size: 1.2rem;
 }
@@ -193,6 +193,10 @@ p:last-child {
 
 .padded {
   padding: 1rem;
+}
+
+.smallfont {
+  font-size: 90%;
 }
 
 .tile {
@@ -239,13 +243,14 @@ p:last-child {
   border-radius: 0.7rem;
 }
 @media only screen and (max-width: 420px) {
-  .card {
-    width: 95vw;
+  .card, #left {
+    width: 96vw;
   }
 }
 
 @media only screen and (min-width: 421px) {
   #left {
+    width: 20rem;
     margin-right: 1rem;
   }
 }
@@ -263,11 +268,14 @@ p:last-child {
   max-width: 12rem;
 }
 
-.corp div {
+.corp div, .player div {
   display: grid;
+}
+.corp__title div, .corp__holdings div {
   align-self: center;
   justify-self: center;
 }
+
 table.center {
   margin: 0.2rem auto;
 }

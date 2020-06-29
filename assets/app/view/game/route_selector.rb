@@ -7,6 +7,7 @@ module View
   module Game
     class RouteSelector < Snabberb::Component
       include Actionable
+      include Lib::Color
 
       needs :routes, store: true, default: []
       needs :selected_route, store: true, default: nil
@@ -38,9 +39,8 @@ module View
       def render
         trains = @game.round.current_entity.runnable_trains
 
-        description = 'Select routes'
         if @routes.empty? && generate_last_routes!.any?
-          description += ': prior routes are autofilled'
+          description = 'Prior routes are autofilled.'
           @selected_route = @routes.first
           store(:routes, @routes, skip: true)
           store(:selected_route, @selected_route, skip: true)
@@ -53,7 +53,7 @@ module View
           store(:selected_route, route, skip: true)
         end
 
-        trains = trains.map do |train|
+        trains = trains.flat_map do |train|
           onclick = lambda do
             unless (route = @routes.find { |t| t.train == train })
               route = Engine::Route.new(@game, @game.phase, train, routes: @routes)
@@ -66,11 +66,14 @@ module View
           selected = @selected_route&.train == train
 
           style = {
-            border: "solid #{selected ? '4px' : '1px'} currentColor",
+            border: "solid 3px #{selected ? 'currentColor' : color_for(:bg)}",
             display: 'inline-block',
             cursor: selected ? 'default' : 'pointer',
-            margin: '0.5rem 0.5rem 0.5rem 0',
-            padding: '0.5rem',
+            margin: '0.1rem 0rem',
+            padding: '3px 6px',
+            minWidth: '1.5rem',
+            textAlign: 'center',
+            whiteSpace: 'nowrap',
           }
 
           route = active_routes.find { |t| t.train == train }
@@ -85,48 +88,67 @@ module View
             style['background-color'] = Part::Track::ROUTE_COLORS[@routes.index(route)]
             style['color'] = 'white'
 
-            route_td_props = { style: { maxWidth: '230px' } }
+            td_props = { style: { paddingRight: '0.8rem' } }
 
-            children << h(:td, route.distance)
-            children << h(:td, revenue)
-            children << h(:td, route_td_props,
-                          if invalid
-                            "#{route.hexes.map(&:name).join(', ')} (#{invalid})"
-                          else
-                            route.hexes.map(&:name).join(', ')
-                          end)
+            children << h('td.right', td_props, route.distance)
+            children << h('td.right', td_props, revenue)
+            children << h(:td, route.hexes.map(&:name).join(' '))
+          else
+            unless selected
+              style[:border] = '1px solid'
+              style[:padding] = '5px 8px'
+            end
           end
-          h(:tr, [h(:td, { style: style, on: { click: onclick } }, "Train: #{train.name}"), *children])
+
+          invalid_props = {
+            attrs: {
+              colspan: '4',
+            },
+            style: {
+              padding: '0 0 0.4rem 0.4rem',
+            },
+          }
+          [
+            h(:tr, [h(:td, [h(:div, { style: style, on: { click: onclick } }, train.name)]), *children]),
+            invalid ? h(:tr, [h(:td, invalid_props, invalid)]) : '',
+          ]
         end
 
-        props = {
+        div_props = {
           key: 'route_selector',
           hook: {
             destroy: -> { cleanup },
           },
         }
+        table_props = {
+          style: {
+            marginTop: '0.5rem',
+            textAlign: 'left',
+          },
+        }
+        th_route_props = {
+          style: {
+            width: '100%',
+          },
+        }
 
-        h(:div, props, [
+        h(:div, div_props, [
           h(UndoAndPass, pass: false),
-          h('div.margined', description),
-          h(:table, { style: { 'text-align': 'left' } }, [
-            h(:tr, [
-              h(:th, 'Train'),
-              h(:th, 'Stops'),
-              h(:th, 'Revenue'),
-              h(:th, 'Route'),
-            ]),
-            h(:tr, [
-              h(:td),
-              h(:td),
-              h(:td),
-              h(:td, [
-                'Click revenue centers.',
-                h(:br),
-                'Click again to cycle path.',
+          h(:h2, { style: { margin: '0.5rem 0 0.2rem' } }, 'Select Routes'),
+          h('div.smallfont', description),
+          h('div.smallfont', 'Click revenue centers, again to cycle paths.'),
+          h(:table, table_props, [
+            h(:thead, [
+              h(:tr, [
+                h(:th, 'Train'),
+                h(:th, 'Stops'),
+                h(:th, 'Revenue'),
+                h(:th, th_route_props, 'Route'),
               ]),
             ]),
-            *trains,
+            h(:tbody, [
+              *trains,
+            ]),
           ]),
           actions,
         ])
@@ -160,22 +182,32 @@ module View
           store(:routes, @routes)
         end
 
+        button_style = {
+          marginRight: '0.5rem',
+          padding: '0.2rem 0.5rem',
+        }
+        submit_style = {
+          minWidth: '6.5rem',
+          marginTop: '1rem',
+          padding: '0.2rem 0.5rem',
+        }
+
         revenue = begin
                     @game.format_currency(active_routes.sum(&:revenue))
                   rescue Engine::GameError
                     '(Invalid Route)'
                   end
         h(:div, { style: { overflow: 'auto', marginBottom: '1rem' } }, [
-          h(:div, { style: { width: 'max-content' } }, [
-            h('button.button', { style: { padding: '0.2rem 0.5rem', minWidth: '7em' },
-                                 on: { click: submit } }, 'Submit ' + revenue),
-            h('button.button', { style: { marginLeft: '0.5rem', padding: '0.2rem 0.5rem' },
+          h(:div, [
+            h('button.button', { style: button_style,
                                  on: { click: clear } }, 'Clear Train'),
-            h('button.button', { style: { marginLeft: '0.5rem', padding: '0.2rem 0.5rem' },
+            h('button.button', { style: button_style,
                                  on: { click: clear_all } }, 'Clear All'),
-            h('button.button', { style: { marginLeft: '0.5rem', padding: '0.2rem 0.5rem' },
+            h('button.button', { style: button_style,
                                  on: { click: reset_all } }, 'Reset'),
           ]),
+          h('button.button', { style: submit_style,
+                               on: { click: submit } }, 'Submit ' + revenue),
         ])
       end
     end
