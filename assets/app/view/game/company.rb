@@ -20,7 +20,6 @@ module View
       end
 
       def ability_usable?
-        puts @company.all_abilities.map(&:type)
         return if (@company.all_abilities.map(&:type) & Round::Operating::ABILITIES).empty?
 
         @game.round.can_act?(@company.owner) || @company.owner.player?
