@@ -268,14 +268,11 @@ p:last-child {
   max-width: 12rem;
 }
 
-.corp div, .player div {
+.corp div {
   display: grid;
-}
-.corp__title div, .corp__holdings div {
   align-self: center;
   justify-self: center;
 }
-
 table.center {
   margin: 0.2rem auto;
 }
