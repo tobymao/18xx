@@ -40,7 +40,7 @@ module View
       def render_button(bundle, &block)
         h(
           'button.button',
-          { on: { click: block } },
+          { style: { padding: '0.2rem 0.5rem' }, on: { click: block } },
           "#{bundle.num_shares} (#{@game.format_currency(bundle.price)})",
         )
       end
