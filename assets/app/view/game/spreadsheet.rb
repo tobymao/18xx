@@ -3,6 +3,7 @@
 require 'lib/color'
 require 'lib/storage'
 require 'view/link'
+require 'view/game/bank'
 require 'view/game/stock_market'
 
 module View
@@ -14,9 +15,13 @@ module View
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
 
+        children = []
+        children << h(Bank, game: @game)
+        children << render_table
+
         h(:div, { style: {
           overflow: 'auto',
-        } }, [render_table])
+        } }, children)
       end
 
       def render_table
