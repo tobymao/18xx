@@ -30,11 +30,11 @@ module Engine
       end
 
       def current_player
-        @current_entity.player
+        current_entity.player
       end
 
-      def active_entities
-        [@current_entity] + crowded_corps
+      def can_act?(entity)
+        active_entities.include?(entity)
       end
 
       def next_entity
@@ -50,36 +50,8 @@ module Engine
         action.entity.pass!
       end
 
-      def process_action(action)
-        entity = action.entity
-        return @log << action if action.is_a?(Action::Message)
-        raise GameError, 'Game has ended' if @game.finished
-
-        if action.is_a?(Action::EndGame)
-          @log << '-- Game ended by player --'
-          return @game.end_game!
-        end
-
-        raise GameError, "It is not #{entity.name}'s turn" unless can_act?(entity)
-
-        if action.pass?
-          log_pass(entity)
-          pass(action)
-          pass_processed(action)
-        else
-          _process_action(action)
-          action_processed(action)
-        end
-        change_entity(action)
-        action_finalized(action)
-      end
-
       def finished?
         @game.finished || @entities.all?(&:passed?)
-      end
-
-      def can_act?(entity)
-        active_entities.include?(entity)
       end
 
       def auction?
@@ -185,7 +157,7 @@ module Engine
         tile = hex.tile
         if tile.reserved_by?(corporation) && tile.paths.any?
           # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
-          @log << "#{corporation.name} must choose city for home token"
+          @game.log << "#{corporation.name} must choose city for home token"
           # Needs further changes to support non-operate home token lay
           raise GameError, 'Unsupported' unless @home_token_timing == :operate
 
@@ -197,7 +169,7 @@ module Engine
         token = corporation.find_token_by_type
         return unless city.tokenable?(corporation, tokens: token)
 
-        @log << "#{corporation.name} places a token on #{hex.name}"
+        @game.log << "#{corporation.name} places a token on #{hex.name}"
         city.place_token(corporation, token)
       end
 

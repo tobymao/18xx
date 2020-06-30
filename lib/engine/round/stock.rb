@@ -7,7 +7,7 @@ require_relative '../action/sell_shares'
 
 module Engine
   module Round
-    class Stock < Base
+    class Stock < LegacyBase
       attr_reader :index, :share_pool, :stock_market
 
       PURCHASE_ACTIONS = [Action::BuyShares, Action::Par].freeze

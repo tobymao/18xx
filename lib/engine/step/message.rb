@@ -11,6 +11,10 @@ module Engine
         ACTIONS
       end
 
+      def active_entities
+        entities
+      end
+
       def process_message(action)
         @log << action
       end
