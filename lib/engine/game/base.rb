@@ -3,11 +3,13 @@
 if RUBY_ENGINE == 'opal'
   require_tree '../action'
   require_tree '../round'
+  require_tree '../step'
 else
   require 'require_all'
   require 'json'
   require_rel '../action'
   require_rel '../round'
+  require_rel '../step'
 end
 
 require_relative '../bank'
@@ -64,6 +66,8 @@ module Engine
       CERT_LIMIT_COLORS = %i[brown orange yellow].freeze
 
       MULTIPLE_BUY_COLORS = %i[brown].freeze
+
+      MIN_BID_INCREMENT = 5
 
       CAPITALIZATION = :full
 
@@ -755,9 +759,7 @@ module Engine
           # priority deal card goes to the player who will go first if
           # everyone passes starting now.  last_to_act is nil before
           # anyone has gone, in which case the first player has PD.
-          last_to_act = @round.last_to_act
-          priority_idx = last_to_act ? (@players.find_index(last_to_act) + 1) % @players.size : 0
-          @players[priority_idx]
+          @players[@round.index]
         else
           # We're in a round that iterates over something else, like
           # corporations.  The player list was already rotated when we
@@ -767,16 +769,15 @@ module Engine
       end
 
       def reorder_players
-        rotate_players(@round.last_to_act)
+        @players.rotate!(@round.index)
         @log << "#{@players[0].name} has priority deal"
       end
 
-      def rotate_players(last_to_act)
-        @players.rotate!(@players.find_index(last_to_act) + 1) if last_to_act
-      end
-
       def new_auction_round
-        Round::Auction.new(@players, game: self)
+        Round::Auction.new(self, [
+          Step::CompanyPendingPar,
+          Step::WaterfallAuction,
+        ])
       end
 
       def new_stock_round
