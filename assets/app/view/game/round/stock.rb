@@ -37,7 +37,6 @@ module View
           end
           children += render_corporations
           children << h(Players, game: @game)
-          children << h(Bank, game: @game)
           children << h(StockMarket, game: @game)
 
           h(:div, children)
