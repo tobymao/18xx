@@ -10,18 +10,18 @@ module Engine
     GAMES_BY_TITLE['1846'] => {
       2675 => {
         'Halekio' => 2135,
-        'Navor' => 1744,
-        'beginetienne' => 2338,
+        'Navor' => 1750,
+        'beginetienne' => 2340,
       },
       2807 => {
-        'hidarigray' => 6297,
-        'hitoaji' => 6625,
-        'kino111' => 4861,
+        'hidarigray' => 6303,
+        'hitoaji' => 6598,
+        'kino111' => 4863,
       },
       2987 => {
         'Saintis' => 6059,
-        'steak' => 7416,
-        'tomdidiot' => 7668,
+        'steak' => 7425,
+        'tomdidiot' => 7670,
       },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
