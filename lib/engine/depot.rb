@@ -55,7 +55,7 @@ module Engine
       [
         @upcoming.first,
         *@upcoming.select { |t| @game.phase.available?(t.available_on) },
-      ].uniq(&:name) + @discarded.uniq(&:name)
+      ].compact.uniq(&:name) + @discarded.uniq(&:name)
     end
 
     def discountable_trains_for(corporation)
