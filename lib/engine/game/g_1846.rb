@@ -134,10 +134,13 @@ module Engine
       end
 
       def remove_from_group!(group, entities)
-        remove = group.sort_by { rand }.take([5 - @players.size, 2].min)
-        @log << "Removing #{remove.join(', ')}"
+        removals = group.sort_by { rand }.take([5 - @players.size, 2].min)
+        # This looks verbose, but it works around the fact that we can't modify code which includes rand() w/o breaking existing games
+        return if removals.empty?
+
+        @log << "Removing #{removals.join(', ')}"
         entities.reject! do |entity|
-          if remove.include?(entity.name)
+          if removals.include?(entity.name)
             yield entity if block_given?
             true
           else
