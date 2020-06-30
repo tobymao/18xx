@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'view/game/companies'
+
 module View
   module Game
     class Corporation < Snabberb::Component
@@ -7,9 +9,10 @@ module View
       needs :corporation
       needs :selected_corporation, default: nil, store: true
       needs :game, store: true
+      needs :display, default: 'inline-block'
 
       def render
-        onclick = lambda do
+        select_corporation = lambda do
           selected_corporation = selected? ? nil : @corporation
           store(:selected_corporation, selected_corporation)
         end
@@ -17,12 +20,8 @@ module View
         card_style = {
           cursor: 'pointer',
         }
-
-        if @game.round.can_act?(@corporation)
-          card_style['border'] = '1px solid black'
-          card_style['background-color'] = '#dfd'
-          card_style['color'] = 'black'
-        end
+        card_style['border'] = '4px solid' if @game.round.can_act?(@corporation)
+        card_style['display'] = @display
 
         if selected?
           card_style['background-color'] = 'lightblue'
@@ -33,7 +32,7 @@ module View
 
         unless @corporation.minor?
           children << render_shares
-          children << render_companies if @corporation.companies.any?
+          children << h(Companies, owner: @corporation, table: true, game: @game) if @corporation.companies.any?
         end
 
         if @corporation.owner
@@ -41,7 +40,7 @@ module View
           children << h('table.center', [h(:tr, subchildren)])
         end
 
-        h('div.corp.card', { style: card_style, on: { click: onclick } }, children)
+        h('div.corp.card', { style: card_style, on: { click: select_corporation } }, children)
       end
 
       def render_title
@@ -52,6 +51,9 @@ module View
             background: @corporation.color,
             color: @corporation.text_color,
             height: '2.4rem',
+            textDecoration: @game.round.can_act?(@corporation) ? 'underline' : 'none',
+            textDecorationThickness: @game.round.can_act?(@corporation) ? '0.2rem' : 'none',
+            textUnderlineOffset: @game.round.can_act?(@corporation) ? '0.1rem' : 'none',
           },
         }
         logo_props = {
@@ -86,8 +88,8 @@ module View
             grid: '1fr / auto auto auto',
             gap: '0 0.2rem',
             padding: '0.2rem 0.5rem',
-            'background-color': @game.round.can_act?(@corporation) ? '#99bb99' : color_for(:bg2),
-            color: @game.round.can_act?(@corporation) ? 'black' : color_for(:font2),
+            backgroundColor: color_for(:bg2),
+            color: color_for(:font2),
           },
         }
         sym_props = {
@@ -287,35 +289,6 @@ module View
           h(:tbody, [
             *rows,
           ]),
-        ])
-      end
-
-      def render_companies
-        companies = @corporation.companies.map do |company|
-          render_company(company)
-        end
-
-        h('table.center', [
-          h(:thead, [
-            h(:tr, [
-              h(:th, 'Company'),
-              h(:th, 'Income'),
-            ]),
-          ]),
-          h(:tbody, [
-            *companies,
-          ]),
-        ])
-      end
-
-      def render_company(company)
-        props = {
-          style: { 'max-width': '15rem' },
-        }
-
-        h(:tr, [
-          h('td.name.nowrap', props, company.name),
-          h('td.right', @game.format_currency(company.revenue)),
         ])
       end
 
