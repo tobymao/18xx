@@ -41,6 +41,10 @@ module Engine
         active_entities[0]
       end
 
+      def name
+        'Auction Round'
+      end
+
       def description
         active_step.description
       end
