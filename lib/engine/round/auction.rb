@@ -69,14 +69,14 @@ module Engine
         !active_step
       end
 
+      def next_index!
+        @index = (@index + 1) % @entities.size
+      end
+
       private
 
       def clear_cache!
         @active_step = nil
-      end
-
-      def next_index!
-        @index = (@index + 1) % @entities.size
       end
     end
   end
