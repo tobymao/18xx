@@ -100,6 +100,11 @@ module Engine
 
       def setup
         remove_from_group!(ORANGE_GROUP, @companies) do |company|
+          if company.id == 'LSL'
+            %w[D14 E17].each do |hex|
+              hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'lsl' }
+            end
+          end
           company.close!
           @round.companies.delete(company)
         end
