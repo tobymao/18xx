@@ -13,6 +13,16 @@ module Engine
         'Navor' => 1744,
         'beginetienne' => 2338,
       },
+      2807 => {
+        'hidarigray' => 6297,
+        'hitoaji' => 6625,
+        'kino111' => 4861,
+      },
+      2987 => {
+        'Saintis' => 6059,
+        'steak' => 7416,
+        'tomdidiot' => 7668,
+      },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
       1277 => {
