@@ -135,6 +135,9 @@ module Engine
 
       def remove_from_group!(group, entities)
         removals = group.sort_by { rand }.take([5 - @players.size, 2].min)
+        # This looks verbose, but it works around the fact that we can't modify code which includes rand() w/o breaking existing games
+        return unless removals
+
         @log << "Removing #{removals.join(', ')}"
         entities.reject! do |entity|
           if removals.include?(entity.name)
