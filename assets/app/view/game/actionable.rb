@@ -9,7 +9,6 @@ module View
       def self.included(base)
         base.needs :game_data, default: {}, store: true
         base.needs :game, store: true
-        base.needs :fullgame, default: nil, store: true
         base.needs :flash_opts, default: {}, store: true
         base.needs :connection, store: true, default: nil
         base.needs :user, store: true, default: nil
@@ -69,7 +68,6 @@ module View
 
         store(:tile_selector, nil, skip: true)
         store(:game, game)
-        store(:fullgame, game)
       rescue StandardError => e
         store(:game, @game.clone(@game.actions), skip: true)
         store(:flash_opts, e.message)

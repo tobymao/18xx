@@ -719,7 +719,7 @@ module Engine
             reorder_players
             new_stock_round
           end
-        @round_history << { type: @round.class, first_action: @actions.size }
+        @round_history << @actions.size
       end
 
       def game_ending_description

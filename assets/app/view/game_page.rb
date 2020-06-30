@@ -9,7 +9,6 @@ module View
     include Lib::Color
     needs :game_data, store: true
     needs :game, default: nil, store: true
-    needs :fullgame, default: nil, store: true
     needs :connection
     needs :selected_company, default: nil, store: true
     needs :app_route, store: true
@@ -51,19 +50,6 @@ module View
         actions: cursor ? actions.take(cursor) : actions,
         pin: @pin,
       )
-      if @fullgame.nil?
-        @fullgame = if !cursor
-                      @game
-                    else
-                      Engine::GAMES_BY_TITLE[@game_data['title']].new(
-                        @game_data['players'].map { |p| p['name'] },
-                        id: game_id,
-                        actions: actions,
-                        pin: @pin,
-                      )
-                    end
-        store(:fullgame, @fullgame, skip: true)
-      end
       store(:game, @game, skip: true)
     end
 
