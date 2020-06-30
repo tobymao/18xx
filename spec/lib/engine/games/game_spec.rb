@@ -9,9 +9,9 @@ module Engine
   TEST_CASES = {
     GAMES_BY_TITLE['1846'] => {
       2675 => {
-        'Halekio' => 5702,
-        'Navor' => 5479,
-        'beginetienne' => 5959,
+        'Halekio' => 2135,
+        'Navor' => 1744,
+        'beginetienne' => 2338,
       },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
