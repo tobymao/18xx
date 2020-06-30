@@ -8,7 +8,7 @@ require_relative 'base'
 
 module Engine
   module Round
-    class Special < LegacyBase
+    class Special < Base
       attr_writer :current_entity
 
       def change_entity(_action)

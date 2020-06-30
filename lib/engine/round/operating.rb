@@ -8,12 +8,12 @@ else
 end
 
 require_relative '../corporation'
-require_relative 'legacy_base'
+require_relative 'base'
 require_relative '../operating_info'
 
 module Engine
   module Round
-    class Operating < LegacyBase
+    class Operating < Base
       attr_reader :bankrupt, :depot, :phase, :round_num, :step, :current_routes
 
       STEPS = %i[
