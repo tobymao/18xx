@@ -4,11 +4,11 @@ require_relative 'base'
 
 module Engine
   module Ability
-    class IgnoreTerrain < Base
-      attr_reader :terrain
-
-      def setup(terrain:)
+    class TileDiscount < Base
+      attr_reader :terrain, :discount
+      def setup(terrain:, discount:)
         @terrain = terrain.to_sym
+        @discount = discount
       end
     end
   end
