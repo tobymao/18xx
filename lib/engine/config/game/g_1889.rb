@@ -293,7 +293,8 @@ module Engine
       "sym": "SMR",
       "abilities": [
         {
-          "type": "ignore_terrain",
+          "type": "tile_discount",
+          "discount" : 80,
           "terrain": "mountain",
           "owner_type": "corporation"
         }
