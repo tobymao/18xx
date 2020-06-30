@@ -53,11 +53,12 @@ module Engine
           all_blank? || @companies.empty?
         end
 
-        def actions(_entity)
+        def actions(entity)
           return [] if finished?
-          return ACTIONS_WITH_PASS if only_one_company?
 
-          ACTIONS
+          actions = only_one_company? ? ACTIONS_WITH_PASS : ACTIONS
+
+          entity == current_entity ? actions : []
         end
 
         def process_pass(action)

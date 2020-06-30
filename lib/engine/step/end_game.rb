@@ -11,10 +11,6 @@ module Engine
         ACTIONS
       end
 
-      def active_entities
-        entities
-      end
-
       def process_end_game(_action)
         @game.end_game!
       end

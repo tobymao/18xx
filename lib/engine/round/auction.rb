@@ -62,7 +62,6 @@ module Engine
 
         step = @steps.find { |s| s.actions(action.entity).include?(action.type) }
         raise GameError, "No step found for this action: #{action.to_h}" unless step
-        raise GameError, "It is not #{action.entity.name}'s turn" unless step.active_entities.include?(action.entity)
 
         step.send("process_#{action.type}", action)
       end
