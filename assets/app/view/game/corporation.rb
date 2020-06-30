@@ -189,7 +189,12 @@ module View
           }
           img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if token.used
 
-          token_text = i.zero? ? @corporation.coordinates : token.price
+          token_text =
+            if i.zero?
+              @corporation.coordinates
+            else
+              token.city ? token.city.hex.name : token.price
+            end
 
           h(:div, token_column_props, [
             h(:img, img_props),

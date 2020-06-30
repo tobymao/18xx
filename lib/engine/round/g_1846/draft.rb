@@ -6,7 +6,7 @@ module Engine
   module Round
     module G1846
       class Draft < Base
-        attr_reader :companies, :last_to_act
+        attr_reader :companies, :index
 
         def initialize(entities, game:, **_kwargs)
           super
@@ -14,7 +14,7 @@ module Engine
           @companies = game.companies.sort_by { @game.rand }
           @choices = Hash.new { |h, k| h[k] = [] }
           @draw_size = @entities.size + 2
-          @last_to_act = entities.first
+          @index = 0
         end
 
         def pass_description

@@ -206,7 +206,7 @@ module View
           "#{@gdata['round']&.split(' ')&.first} #{@gdata['turn']}",
         ])
 
-        updated_at = Time.at(@gdata['updated_at'])
+        updated_at = Time.at(@gdata['updated_at'].to_i)
         children << h('div.inline', { style: { float: 'right' } }, [
           h(:strong, 'Updated: '),
           h(:span, { attrs: { title: updated_at.strftime('%F %T') } }, time_or_date(updated_at)),
