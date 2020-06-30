@@ -28,6 +28,10 @@ module Engine
         @game.share_pool.buy_shares(action.entity, corporation.shares.first, exchange: :free)
         @round.company_pending_par = nil
       end
+
+      def company_pending_par
+        @round.company_pending_par
+      end
     end
   end
 end

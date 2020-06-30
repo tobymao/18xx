@@ -40,6 +40,8 @@ module View
         end
 
         def render_companies
+          return [] unless @step.actions.include?('bid')
+
           @selected_company = @step.auctioning_company if @step.auctioning_company
 
           props = {
