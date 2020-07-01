@@ -50,13 +50,6 @@ module View
 
     def render_header
       buttons = []
-      if owner?
-        buttons << if @confirm_delete != @gdata['id']
-                     render_button('Delete', -> { store(:confirm_delete, @gdata['id']) })
-                   else
-                     render_button('Confirm', -> { delete_game(@gdata) })
-                   end
-      end
 
       color =
         case @gdata['status']
@@ -75,6 +68,14 @@ module View
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Review')
           FINISHED_GREY
         end
+
+      if owner?
+        buttons << if @confirm_delete != @gdata['id']
+                     render_button('Delete', -> { store(:confirm_delete, @gdata['id']) })
+                   else
+                     render_button('Confirm', -> { delete_game(@gdata) })
+                   end
+      end
 
       buttons << render_button('Start', -> { start_game(@gdata) }) if owner? && new? && players.size > 1
 
