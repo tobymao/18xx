@@ -18,6 +18,7 @@ module View
         needs :city
         needs :num_cities
         needs :radius
+        needs :selected_company, default: nil, store: true
         needs :tile_selector, default: nil, store: true
         needs :reservation, default: nil
         needs :game, default: nil, store: true
@@ -50,6 +51,7 @@ module View
 
           event.JS.stopPropagation
 
+
           # If there's a choice of tokens of different types show the selector, otherwise just place
           next_tokens = @game.current_entity.tokens_by_type
           if (token = @game.round.ambiguous_token)
@@ -64,11 +66,11 @@ module View
             process_action(action)
           elsif next_tokens.size == 1 || @game.round.step == :home_token
             action = Engine::Action::PlaceToken.new(
-              @game.current_entity,
+              @selected_company || @game.current_entity,
               city: @city,
               slot: @slot_index,
             )
-
+            store(:selected_company, nil, skip: true)
             process_action(action)
           else
             store(:tile_selector,

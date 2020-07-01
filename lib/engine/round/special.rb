@@ -20,7 +20,7 @@ module Engine
       end
 
       def map_abilities
-        tile_laying_ability || assign_ability
+        tile_laying_ability || assign_ability || token_ability
       end
 
       def tile_laying_ability
@@ -31,6 +31,10 @@ module Engine
         @current_entity&.abilities(:assign_hexes)
       end
 
+      def token_ability
+        @current_entity&.abilities(:token)
+      end
+
       def can_assign?
         !!assign_ability
       end
@@ -39,8 +43,21 @@ module Engine
         !!tile_laying_ability
       end
 
+      def can_place_token?
+        !!token_ability
+      end
+
       def connected_hexes
         hexes = (assign_ability || tile_laying_ability).hexes || []
+
+        hexes.map do |coordinates|
+          hex = @game.hex_by_id(coordinates)
+          [hex, hex.neighbors.keys]
+        end.to_h
+      end
+
+      def reachable_hexes
+        hexes = token_ability.hexes || []
 
         hexes.map do |coordinates|
           hex = @game.hex_by_id(coordinates)
@@ -54,6 +71,7 @@ module Engine
         company = action.entity
         case action
         when Action::LayTile
+          puts "Special round LayTile"
           lay_tile(action)
           company.abilities(:tile_lay, &:use!)
         when Action::BuyShares
@@ -68,6 +86,14 @@ module Engine
           hex.assign!(company.id)
           company.abilities(:assign_hexes, &:use!)
           @game.log << "#{company.name} activates #{hex.name}"
+        when Action::PlaceToken
+          puts "Special round PlaceToken"
+          @game.log << "Special round PlaceToken"
+
+          #raise GameError, "Special round PlaceToken"
+          #token = Token.new(company.owner)
+          #action.city.place_token(company.owner, token, free: true)
+          #company.abilities(:token, &:use!)
         end
       end
 
