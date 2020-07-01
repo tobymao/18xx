@@ -26,7 +26,7 @@ module View
             else
               @game.round_history[-1]
             end
-          divs << link('<Round', last_round) if last_round
+          divs << link('<<', last_round) if last_round
 
           divs << link('<', cursor ? cursor - 1 : @num_actions - 1)
         end
@@ -35,7 +35,7 @@ module View
           divs << link('>', cursor + 1 < @num_actions ? cursor + 1 : nil)
           store(:round_history, @game.round_history, skip: true) unless @round_history
           next_round = @round_history[@game.round_history.size]
-          divs << link('>Round', next_round) if next_round
+          divs << link('>>', next_round) if next_round
           divs << link('>|')
         end
 
