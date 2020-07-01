@@ -4,7 +4,7 @@ a {
   color: currentColor;
   text-underline-offset: 0.2em;
 }
-a.game__nav:focus {
+nav a:focus, nav a:hover {
   font-weight: bold;
   outline: 0;
 }
@@ -97,6 +97,16 @@ p:last-child {
     background-color: gainsboro;
   }
 }
+
+nav#game_menu {
+  padding: 1rem 2vmin 1rem 2vmin;
+}
+/* Safari 10.1+ hack, affects most browsers on iOS => more space for scroll bar */
+@media not all and (min-resolution:.001dpcm) { @media {
+  nav#game_menu {
+    padding-bottom: 1.5rem;
+  }
+}}
 
 .nowrap {
   overflow: hidden;
@@ -203,6 +213,9 @@ p:last-child {
 .padded {
   padding: 1rem;
 }
+.no_padding {
+  padding: 0;
+}
 
 .small_font {
   font-size: 90%;
@@ -254,9 +267,15 @@ p:last-child {
 .game.card {
   margin: 0 0.5rem 0.5rem 0;
 }
+#entities .card {
+  margin: 0 0 0.5rem 0;
+  width: 100%;
+  max-width: 20rem;
+}
 @media only screen and (max-width: 420px) {
-  .card, #left {
+  .card, #entities .card, #left {
     width: 95.8vw;
+    max-width: 95.8vw;
   }
   .game.card, .card {
     margin-right: 0;

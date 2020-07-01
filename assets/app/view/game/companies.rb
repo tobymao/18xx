@@ -8,11 +8,14 @@ module View
       needs :game
       needs :user, default: nil
       needs :owner, default: nil
-      needs :table, default: false
+      needs :layout, default: 'list'
 
       def render
-        if @table
+        case @layout
+        when 'table'
           render_companies_table(@owner)
+        when 'list'
+          h(:div, @game.companies.sort_by(&:name).map { |c| h(Company, company: c) })
         else
           children = @game
             .companies
@@ -34,19 +37,19 @@ module View
 
       def render_companies_table(owner)
         companies = owner.companies.map do |c|
-          h(Company, company: c, table: true)
+          h(Company, company: c, layout: 'table')
         end
 
         table_props = {
           style: {
             padding: '0 0.5rem',
-            justifySelf: 'stretch',
           },
         }
         row_props = {
           style: {
             grid: owner.player? ? '1fr / 4fr 1fr 1fr' : '1fr / 5fr 1fr',
             justifySelf: 'stretch',
+            gap: '0 0.2rem',
           },
         }
 

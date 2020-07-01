@@ -9,7 +9,7 @@ module View
       needs :game, store: true
       needs :tile_selector, default: nil, store: true
       needs :display, default: 'inline-block'
-      needs :table, default: false
+      needs :layout, default: ''
 
       def selected?
         @company == @selected_company
@@ -45,7 +45,7 @@ module View
       end
 
       def render
-        if @table
+        if @layout == 'table'
           @hidden_divs = {}
           render_company_on_card(@company)
         else
@@ -126,6 +126,7 @@ module View
           style: {
             grid: @company.owner.player? ? 'auto 1fr / 4fr 1fr 1fr [last]' : 'auto 1fr / 5fr 1fr [last]',
             cursor: 'pointer',
+            gap: '0 0.2rem',
           },
         }
         row_props[:on] = { click: ->(event) { select_company(event) } } unless @company.owner.player?
