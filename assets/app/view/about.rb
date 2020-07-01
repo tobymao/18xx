@@ -20,6 +20,15 @@ module View
         <p><a href='https://boardgamegeek.com/boardgameexpansion/173574/1836jr'>1836jr</a> is used with permission from
         David Hecht</p>
 
+        <H2>Special thanks to all the contributors.</H2>
+        <a href='https://github.com/michaeljb'>michaeljb</a>
+        <a href='https://github.com/jenf'>jenf</a>
+        <a href='https://github.com/yzemaze'>yzemaze</a>
+        <a href='https://github.com/dfannius'>dfannius</a>
+        <a href='https://github.com/kelsin'>kelsin</a>
+        <a href='https://github.com/talbatross'>talbatross</a>
+        <a href='https://github.com/scottredracecar'>scottredracecar</a>
+
         <p>This website will always be open-source and free to play. If you'd like support this project, you can become a patron on
         <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>
       MESSAGE
