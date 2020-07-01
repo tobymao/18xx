@@ -87,13 +87,21 @@ module Engine
           company.abilities(:assign_hexes, &:use!)
           @game.log << "#{company.name} activates #{hex.name}"
         when Action::PlaceToken
-          puts "Special round PlaceToken"
-          @game.log << "Special round PlaceToken"
+          city = action.city
+          hex = action.city.hex
+          slot = action.slot
 
-          #raise GameError, "Special round PlaceToken"
-          #token = Token.new(company.owner)
-          #action.city.place_token(company.owner, token, free: true)
-          #company.abilities(:token, &:use!)
+          company.abilities(:token) do |ability, _|
+            next unless city.reserved_by?(company) #ability.location?(action.city.hex, slot)
+
+            token = Token.new(company.owner)
+            action.city.place_token(company.owner, token, free: true)
+            company.abilities(:token, &:use!)
+            @game.graph.clear
+            @log << "#{company.name} places token in #{hex.id} for #{company.owner.name}"
+            return
+          end
+          raise GameError, "#{company.name} can't play token there"
         end
       end
 

@@ -26,7 +26,7 @@ module Engine
         {
           'city' => @city.id,
           'slot' => @slot,
-          'token_type' => @token.type == :normal ? nil : @token.type,
+          'token_type' => @token.nil? || @token.type == :normal ? nil : @token.type,
         }
       end
     end

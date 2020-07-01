@@ -76,7 +76,9 @@ module Engine
 
       tokens = nodes.dup
 
-      corporation.abilities(:token) do |ability, _|
+      corporation.abilities(:token) do |ability, c|
+        next unless c == corporation # Private company token ability uses round/special.rb.
+
         ability.hexes.each do |hex_id|
           @game.hex_by_id(hex_id).tile.cities.each do |node|
             nodes[node] = true
