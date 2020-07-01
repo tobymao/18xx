@@ -53,7 +53,6 @@ module View
 
           event.JS.stopPropagation
 
-
           # If there's a choice of tokens of different types show the selector, otherwise just place
           next_tokens = @game.current_entity.tokens_by_type
           if (token = @game.round.ambiguous_token)

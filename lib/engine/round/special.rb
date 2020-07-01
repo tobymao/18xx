@@ -71,7 +71,6 @@ module Engine
         company = action.entity
         case action
         when Action::LayTile
-          puts "Special round LayTile"
           lay_tile(action)
           company.abilities(:tile_lay, &:use!)
         when Action::BuyShares
@@ -89,19 +88,19 @@ module Engine
         when Action::PlaceToken
           city = action.city
           hex = action.city.hex
-          slot = action.slot
 
-          company.abilities(:token) do |ability, _|
-            next unless city.reserved_by?(company) #ability.location?(action.city.hex, slot)
+          placed = false
+          company.abilities(:token) do |_, _|
+            next unless city.reserved_by?(company)
 
             token = Token.new(company.owner)
             action.city.place_token(company.owner, token, free: true)
             company.abilities(:token, &:use!)
             @game.graph.clear
             @log << "#{company.name} places token in #{hex.id} for #{company.owner.name}"
-            return
+            placed = true
           end
-          raise GameError, "#{company.name} can't play token there"
+          raise GameError, "#{company.name} can't play token there" unless placed
         end
       end
 
