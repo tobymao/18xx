@@ -244,7 +244,7 @@ p:last-child {
 }
 @media only screen and (max-width: 420px) {
   .card, #left {
-    width: 96vw;
+    width: 95vw;
   }
 }
 
