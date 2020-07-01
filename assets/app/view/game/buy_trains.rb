@@ -66,11 +66,7 @@ module View
         children << h(:div, [h(UndoAndPass, pass: !must_buy_train)])
 
         if must_buy_train
-
-          children << h('div.margined',
-                        "#{@corporation.name} must buy a train either from The Depot, The Discard"\
-                        "#{other_corp_trains.any? ? ' or other corporations' : ''}")
-
+          children << h('div.margined', "#{@corporation.name} must buy an available train")
           children += render_president_contributions if @corporation.cash < @depot.min_depot_price
         end
 
