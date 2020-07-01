@@ -13,7 +13,7 @@ module View
 
       def render
         @game_data = @game_data.merge(actions: @actions)
-        @json = `JSON.stringify(#{@game_data.to_n}, null)`
+        @json = `JSON.stringify(#{@game_data.to_n}, null, 2)`
 
         props = {
           style: {
