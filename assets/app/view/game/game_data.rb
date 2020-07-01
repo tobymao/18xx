@@ -8,11 +8,12 @@ module View
       include GameManager
 
       needs :allow_clone, default: true
+      needs :show_json, default: false, store: true
       needs :actions
 
       def render
         @game_data = @game_data.merge(actions: @actions)
-        @json = `JSON.stringify(#{@game_data.to_n}, null, 2)`
+        @json = `JSON.stringify(#{@game_data.to_n}, null)`
 
         props = {
           style: {
@@ -20,10 +21,9 @@ module View
           },
         }
 
-        h(:div, props, [
-          render_clone_game,
-          @json,
-        ])
+        children = [render_clone_game]
+        children << @json if @show_json
+        h(:div, props, children)
       end
 
       def render_clone_game
@@ -45,7 +45,13 @@ module View
         copy_button = h(
           'button.button.margined',
           { on: { click: copy_data } },
-          'Copy Data',
+          'Copy Game Data',
+        )
+
+        show_button = h(
+          'button.button.margined',
+          { on: { click: -> { store(:show_json, !@show_json) } } },
+          (@show_json ? 'Hide Game Data' : 'Show Game Data')
         )
 
         if @allow_clone
@@ -59,10 +65,12 @@ module View
             h(:span, 'Clone this game to play around in hotseat mode'),
             clone_button,
             copy_button,
+            show_button,
           ])
         else
           h('div.margined', [
             copy_button,
+            show_button,
           ])
         end
       end
