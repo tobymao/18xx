@@ -22,6 +22,7 @@ module Engine
       @tokens.clear
     end
 
+    # Can return nil, true or :optional
     def route?(corporation)
       compute(corporation) unless @routes[corporation]
       @routes[corporation]
@@ -106,7 +107,6 @@ module Engine
             nodes[p_node] = true
             yield p_node if block_given?
             local_nodes[p_node] = true
-            @routes[corporation] = true if local_nodes.size > 1
           end
           hex = path.hex
           edges = hexes[hex]
@@ -116,6 +116,20 @@ module Engine
             hexes[hex.neighbors[edge]][hex.invert(edge)] = true
           end
         end
+
+        mandatory_nodes = 0
+        optional_nodes = 0
+        local_nodes.each do |p_node, _truth|
+          case p_node.route
+          when :mandatory
+            mandatory_nodes += 1
+          when :optional
+            optional_nodes += 1
+          end
+        end
+
+        @routes[corporation] = true if mandatory_nodes > 1
+        @routes[corporation] = :optional if mandatory_nodes == 1 && optional_nodes.positive?
       end
 
       hexes.default = nil

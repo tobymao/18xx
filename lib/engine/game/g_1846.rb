@@ -30,6 +30,7 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       SELL_MOVEMENT = :left_block_pres
       HOME_TOKEN_TIMING = :float
+      MUST_BUY_TRAIN = :always
 
       ORANGE_GROUP = [
         'Lake Shore Line',

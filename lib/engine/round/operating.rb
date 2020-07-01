@@ -110,7 +110,7 @@ module Engine
       end
 
       def must_buy_train?
-        !@current_entity.rusted_self && @current_entity.trains.empty? && route?
+        @game.must_buy_train?(@current_entity)
       end
 
       def buyable_trains
@@ -230,10 +230,6 @@ module Engine
         @graph.reachable_hexes(@current_entity)
       end
 
-      def route?
-        @graph.route?(@current_entity)
-      end
-
       def operating?
         true
       end
@@ -271,7 +267,7 @@ module Engine
       end
 
       def skip_route
-        @current_entity.runnable_trains.empty? || !route?
+        @current_entity.runnable_trains.empty? || !@game.route?(@current_entity)
       end
 
       def skip_dividend
