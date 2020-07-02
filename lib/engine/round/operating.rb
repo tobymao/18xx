@@ -267,7 +267,7 @@ module Engine
       end
 
       def skip_route
-        @current_entity.runnable_trains.empty? || !@game.route?(@current_entity)
+        @current_entity.runnable_trains.empty? || !@game.can_run_route?(@current_entity)
       end
 
       def skip_dividend

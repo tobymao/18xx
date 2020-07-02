@@ -20,10 +20,10 @@ module Engine
       @connected_paths.clear
       @reachable_hexes.clear
       @tokens.clear
+      @routes.clear
     end
 
-    # Can return nil, true or :optional
-    def route?(corporation)
+    def route_info(corporation)
       compute(corporation) unless @routes[corporation]
       @routes[corporation]
     end
@@ -97,6 +97,7 @@ module Engine
         end
       end
 
+      routes = {}
       tokens.keys.each do |node|
         visited = tokens.reject { |token, _| token == node }
         local_nodes = {}
@@ -128,8 +129,12 @@ module Engine
           end
         end
 
-        @routes[corporation] = true if mandatory_nodes > 1
-        @routes[corporation] = :optional if mandatory_nodes == 1 && optional_nodes.positive?
+        if mandatory_nodes > 1
+          routes[:route_available] = true
+          routes[:route_train_purchase] = true
+        elsif mandatory_nodes == 1 && optional_nodes.positive?
+          routes[:route_available] = true
+        end
       end
 
       hexes.default = nil
@@ -138,6 +143,7 @@ module Engine
       @connected_hexes[corporation] = hexes
       @connected_nodes[corporation] = nodes
       @connected_paths[corporation] = paths
+      @routes[corporation] = routes
       @reachable_hexes[corporation] = paths.map { |path, _| [path.hex, true] }.to_h
     end
   end
