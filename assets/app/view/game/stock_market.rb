@@ -15,6 +15,7 @@ module View
         brown: '#8b4513',
         orange: '#ffbb55',
         yellow: '#ffff99',
+        black: '#000000',
       }.freeze
 
       PAD = 5                                     # between box contents and border
@@ -53,6 +54,7 @@ module View
           rows = prices.map do |price|
             if price
               style = box_style.merge('background-color' => price.color ? COLOR_MAP[price.color] : color_for(:bg2))
+              style['color'] = 'white' if price.color == :black
               colors_in_market << price.color unless colors_in_market.include?(price.color)
               corporations = price.corporations
               num = corporations.size
@@ -90,9 +92,10 @@ module View
         if @explain_colors
           colors_text = [
             [:red, 'PAR values'],
-            [:yellow, 'Company shares do not count towards cert limit'],
-            [:orange, 'Company shares can be held above 60%'],
-            [:brown, 'Can buy more than one share in the Company per turn'],
+            [:yellow, 'Corporation shares do not count towards cert limit'],
+            [:orange, 'Corporation shares can be held above 60%'],
+            [:brown, 'Can buy more than one share in the Corporation per turn'],
+            [:black, 'Corporation closes'],
           ]
           colors_text.each do |color, text|
             next unless colors_in_market.include?(color)
