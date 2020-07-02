@@ -19,9 +19,9 @@ module Engine
         'kino111' => 4863,
       },
       2987 => {
-        'Saintis' => 6059,
-        'steak' => 7425,
-        'tomdidiot' => 7670,
+        'Saintis' => 6050,
+        'steak' => 7371,
+        'tomdidiot' => 7643,
       },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
