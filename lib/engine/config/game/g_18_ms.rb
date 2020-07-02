@@ -200,7 +200,7 @@ module Engine
          "float_percent":60,
          "sym":"GMO",
          "name":"Gulf, Mobile and Ohio Railroad",
-         "logo":"18MS/GMO",
+         "logo":"18_ms/GMO",
          "tokens":[
             0,
             40,
@@ -214,7 +214,7 @@ module Engine
          "float_percent":60,
          "sym":"IC",
          "name":"Illinois Central Railroad",
-         "logo":"18MS/IC",
+         "logo":"18_ms/IC",
          "tokens":[
             0,
             40,
@@ -227,7 +227,7 @@ module Engine
          "float_percent":60,
          "sym":"L&N",
          "name":"Louisville and Nashville Railroad",
-         "logo":"18MS/L&N",
+         "logo":"18_ms/LN",
          "tokens":[
             0,
             40,
@@ -240,7 +240,7 @@ module Engine
          "float_percent":60,
          "sym":"Fr",
          "name":"Frisco",
-         "logo":"18MS/Frisco",
+         "logo":"18_ms/Fr",
          "tokens":[
             0,
             40,
@@ -253,7 +253,7 @@ module Engine
          "float_percent":60,
          "sym":"WRA",
          "name":"Western Railway of Alabama",
-         "logo":"18MS/WRA",
+         "logo":"18_ms/WRA",
          "tokens":[
             0,
             40,

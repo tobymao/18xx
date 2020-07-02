@@ -229,7 +229,7 @@ module Engine
       {
          "sym":"L&N",
          "name":"Louisville & Nashville Railroad",
-         "logo":"18_al/L&N",
+         "logo":"18_al/LN",
          "tokens":[
             0,
             40,
@@ -242,7 +242,7 @@ module Engine
       {
          "sym":"M&O",
          "name":"Mobile & Ohio Railroad",
-         "logo":"18_al/M&O",
+         "logo":"18_al/MO",
          "tokens":[
             0,
             40,

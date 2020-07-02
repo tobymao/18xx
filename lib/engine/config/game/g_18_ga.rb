@@ -284,7 +284,7 @@ module Engine
          "float_percent":60,
          "sym":"G&F",
          "name":"Georgia and Florida Railroad",
-         "logo":"18_ga/G&F",
+         "logo":"18_ga/GF",
          "tokens":[
             0,
             40
@@ -311,7 +311,7 @@ module Engine
          "float_percent":60,
          "sym":"W&A",
          "name":"Western and Atlantic Railroad",
-         "logo":"18_ga/W&A",
+         "logo":"18_ga/WA",
          "tokens":[
             0,
             40
