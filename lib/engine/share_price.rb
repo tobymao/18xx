@@ -13,6 +13,8 @@ module Engine
         case
         when can_par
           :red
+        when code.include?('blk')
+          :black
         when code.include?('b')
           :brown
         when code.include?('o')
