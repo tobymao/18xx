@@ -33,9 +33,6 @@ module View
             padding: '0.4rem',
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
-            textDecoration: @game.round.can_act?(@player) ? 'underline' : 'none',
-            textDecorationThickness: @game.round.can_act?(@player) ? '0.25rem' : 'none',
-            textUnderlineOffset: @game.round.can_act?(@player) ? '0.2rem' : 'none',
           },
         }
 

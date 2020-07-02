@@ -51,9 +51,6 @@ module View
             background: @corporation.color,
             color: @corporation.text_color,
             height: '2.4rem',
-            textDecoration: @game.round.can_act?(@corporation) ? 'underline' : 'none',
-            textDecorationThickness: @game.round.can_act?(@corporation) ? '0.2rem' : 'none',
-            textUnderlineOffset: @game.round.can_act?(@corporation) ? '0.1rem' : 'none',
           },
         }
         logo_props = {
