@@ -3,6 +3,7 @@
 require 'game_manager'
 require 'lib/storage'
 require 'view/game/game_data'
+require 'view/game/notepad'
 require 'view/game/actionable'
 
 module View
@@ -18,6 +19,7 @@ module View
       def render
         @settings = Lib::Storage[@game.id] || {}
         h(:div, [
+          h(Notepad),
           *render_tools,
           h(GameData, actions: @game.actions.map(&:to_h)),
         ])
