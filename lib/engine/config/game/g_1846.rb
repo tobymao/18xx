@@ -116,7 +116,7 @@ module Engine
   },
   "market": [
     [
-      "Closedblk",
+      "0blk",
       "10",
       "20",
       "30",
