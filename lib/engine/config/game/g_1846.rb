@@ -485,7 +485,7 @@ module Engine
         0,
         80,
         80,
-        0
+        80
       ],
       "abilities": [
         {
