@@ -249,7 +249,7 @@ p:last-child {
   .card, #left {
     width: 96vw;
   }
-  .game.card {
+  .card {
     margin-right: 0;
   }
 }
