@@ -16,6 +16,13 @@ button + button {
   margin-left: 0.5rem;
 }
 
+h2 {
+  font-size: 1.2rem;
+}
+h3 {
+  font-size: 1.1rem;
+}
+
 .button, .button-link {
   font-size: 14px;
   background: whitesmoke;
@@ -155,7 +162,6 @@ p:last-child {
 }
 .card_header h2, #left h2 {
   margin: 0;
-  font-size: 1.2rem;
 }
 
 .back {
@@ -189,6 +195,9 @@ p:last-child {
 }
 .margined_half {
   margin: 0.5rem 0.5rem 0.5rem 0;
+}
+.no_margin {
+  margin: 0;
 }
 
 .padded {
@@ -246,6 +255,12 @@ p:last-child {
   .card, #left {
     width: 95vw;
   }
+  .card {
+    margin-right: 0;
+  }
+}
+#buy_trains .card {
+  margin: 0;
 }
 
 @media only screen and (min-width: 421px) {
