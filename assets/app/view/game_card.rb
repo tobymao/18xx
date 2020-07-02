@@ -69,7 +69,7 @@ module View
           FINISHED_GREY
         end
 
-      if owner?
+      if @gdata['mode'] == :hotseat
         buttons << if @confirm_delete != @gdata['id']
                      render_button('Delete', -> { store(:confirm_delete, @gdata['id']) })
                    else
