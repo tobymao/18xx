@@ -83,6 +83,7 @@ class Assets
   end
 
   def compile(name, lib_path, ns = nil)
+    output = "#{@out_path}/#{name}.js"
     @files << name
     metadata = lib_metadata(ns || name, lib_path)
 
@@ -99,6 +100,8 @@ class Assets
         fresh << file
       end
     end
+
+    return output if stale.empty?
 
     builder = Opal::Builder.new(prerequired: fresh, compiler_options: { requirable: true })
     builder.append_paths(lib_path)
@@ -158,7 +161,6 @@ class Assets
     end.join("\n")
     source += "\nOpal.load('#{name}')"
     source += to_data_uri_comment(source_map) if @make_map
-    output = "#{@out_path}/#{name}.js"
     File.write(output, source)
     output
   end
