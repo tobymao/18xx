@@ -192,7 +192,7 @@ module Engine
 
         return if @pool_share_drop == :none
 
-        @share_pool.shares_by_corporation.each do |corporation, shares|
+        @share_pool.shares_by_corporation.sort.each do |corporation, shares|
           prev = corporation.share_price.price
           (shares.sum(&:percent) / 10).times do
             @stock_market.move_left(corporation)
