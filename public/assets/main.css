@@ -253,7 +253,7 @@ p:last-child {
 }
 @media only screen and (max-width: 420px) {
   .card, #left {
-    width: 95vw;
+    width: 96vw;
   }
   .card {
     margin-right: 0;
