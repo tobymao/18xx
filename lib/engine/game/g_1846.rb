@@ -106,11 +106,11 @@ module Engine
             end
           end
           company.close!
-          @round.companies.delete(company)
+          @round.active_step.companies.delete(company)
         end
         remove_from_group!(BLUE_GROUP, @companies) do |company|
           company.close!
-          @round.companies.delete(company)
+          @round.active_step.companies.delete(company)
         end
         remove_from_group!(GREEN_GROUP, @corporations) do |corporation|
           @round.place_home_token(corporation)
@@ -250,7 +250,7 @@ module Engine
       end
 
       def init_round
-        Round::G1846::Draft.new(@players.reverse, game: self)
+        Round::G1846::Draft.new(self, [Step::G1846::DraftDistribution])
       end
 
       def operating_round(round_num)

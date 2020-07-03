@@ -8,11 +8,6 @@ require 'json'
 module Engine
   TEST_CASES = {
     GAMES_BY_TITLE['1846'] => {
-      2675 => {
-        'Halekio' => 2135,
-        'Navor' => 1750,
-        'beginetienne' => 2340,
-      },
       2807 => {
         'hidarigray' => 6303,
         'hitoaji' => 6598,
