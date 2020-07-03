@@ -59,6 +59,7 @@ module Engine
 
       def process_action(action)
         clear_cache!
+
         step = @steps.find { |s| s.actions(action.entity).include?(action.type) }
         raise GameError, "No step found for this action: #{action.to_h}" unless step
 
@@ -75,6 +76,10 @@ module Engine
 
       def next_index!
         @index = (@index + 1) % @entities.size
+      end
+
+      def reset_index!
+        @index = 0
       end
 
       private

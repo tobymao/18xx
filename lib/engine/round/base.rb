@@ -30,7 +30,7 @@ module Engine
       end
 
       def current_player
-        @current_entity.player
+        current_entity.player
       end
 
       def active_entities
@@ -185,7 +185,7 @@ module Engine
         tile = hex.tile
         if tile.reserved_by?(corporation) && tile.paths.any?
           # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
-          @log << "#{corporation.name} must choose city for home token"
+          @game.log << "#{corporation.name} must choose city for home token"
           # Needs further changes to support non-operate home token lay
           raise GameError, 'Unsupported' unless @home_token_timing == :operate
 
@@ -197,7 +197,7 @@ module Engine
         token = corporation.find_token_by_type
         return unless city.tokenable?(corporation, tokens: token)
 
-        @log << "#{corporation.name} places a token on #{hex.name}"
+        @game.log << "#{corporation.name} places a token on #{hex.name}"
         city.place_token(corporation, token)
       end
 

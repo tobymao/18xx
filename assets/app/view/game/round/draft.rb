@@ -18,10 +18,10 @@ module View
         needs :flash_opts, default: {}, store: true
 
         def render
-          @round = @game.round
-          @player = @round.current_entity
-          @only_one_company = @round.only_one_company?
-
+          round = @game.round
+          @player = round.current_entity
+          @step = round.active_step
+          @current_actions = @step.current_actions
           user_name = @user&.dig('name')
 
           @block_show = user_name &&
@@ -30,7 +30,7 @@ module View
             !Lib::Storage[@game.id]&.dig('master_mode')
 
           h(:div, [
-            h(UndoAndPass, pass: @only_one_company),
+            h(UndoAndPass, pass: @current_actions.include?('pass')),
             render_show_button,
             *render_companies,
             render_player,
@@ -56,7 +56,7 @@ module View
         end
 
         def render_companies
-          return [] if @hidden && !@only_one_company
+          return [] if @hidden && !@step.visible?
 
           props = {
             style: {
@@ -65,7 +65,7 @@ module View
             },
           }
 
-          @round.available.map do |company|
+          @step.available.map do |company|
             children = [h(Company, company: company)]
             children << render_input if @selected_company == company
             h(:div, props, children)

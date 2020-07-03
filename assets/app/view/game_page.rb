@@ -231,10 +231,10 @@ module View
         h(Game::Round::Stock, game: @game)
       when Engine::Round::Operating
         h(Game::Round::Operating, game: @game)
-      when Engine::Round::Auction
-        h(Game::Round::Auction, game: @game)
       when Engine::Round::G1846::Draft
         h(Game::Round::Draft, game: @game)
+      when Engine::Round::Auction
+        h(Game::Round::Auction, game: @game)
       end
     end
 
