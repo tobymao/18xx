@@ -251,11 +251,14 @@ p:last-child {
   border: 1px solid gainsboro;
   border-radius: 0.7rem;
 }
+.game.card {
+  margin: 0 0.5rem 0.5rem 0;
+}
 @media only screen and (max-width: 420px) {
   .card, #left {
-    width: 96vw;
+    width: 95.8vw;
   }
-  .card {
+  .game.card, .card {
     margin-right: 0;
   }
 }

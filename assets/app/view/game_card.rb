@@ -17,13 +17,7 @@ module View
     FINISHED_GREY = '#D3D3D3'
 
     def render
-      props = {
-        style: {
-          'margin': '0 0.5rem 0.5rem 0',
-        },
-      }
-
-      h('div.game.card', props, [
+      h('div.game.card', [
         render_header,
         render_body,
       ])
