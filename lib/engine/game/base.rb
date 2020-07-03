@@ -498,6 +498,14 @@ module Engine
         send("#{type}_by_id", id)
       end
 
+      def all_companies_with_ability(ability)
+        @companies.each do |company|
+          if (found_ability = company.abilities(ability))
+            yield company, found_ability
+          end
+        end
+      end
+
       private
 
       def init_bank
