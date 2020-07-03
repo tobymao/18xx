@@ -16,31 +16,24 @@ module View
             gap: '3rem 1.2rem',
           },
         }
-        column_props = {
-          style: {
-            display: 'grid',
-            alignContent: 'start',
-            justifyContent: 'stretch',
-          },
-        }
 
         players = @game.players
         if (i = players.map(&:name).rindex(@user&.dig(:name)))
           players = players.rotate(i)
         end
 
-        player_owned, bank_owned = (@game.corporations + @game.minors).partition(&:owner)
+        player_owned, bank_owned = (@game.corporations + @game.minors).sort_by(&:name).partition(&:owner)
 
         children = players.map do |p|
-          corps = player_owned.select { |c| c.owner == p }.sort_by(&:name).map { |c| h(Corporation, corporation: c) }
+          corps = player_owned.select { |c| c.owner == p }.map { |c| h(Corporation, corporation: c) }
 
-          h(:div, column_props, [
+          h(:div, [
             h(Player, player: p, game: @game),
             *corps,
           ])
         end
 
-        children << h(:div, column_props, bank_owned.map { |c| h(Corporation, corporation: c) })
+        children << h(:div, bank_owned.map { |c| h(Corporation, corporation: c) })
 
         h('div#entities', div_props, children)
       end
