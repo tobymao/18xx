@@ -130,7 +130,85 @@ module Engine
       "600"
     ]
   ],
-  "companies": [],
+  "companies": [
+    {
+       "name" : "Pittsburgh Steel Mill",
+       "value" : 40,
+       "revenue" : 0,
+       "desc" : "Owning corp may place special Pittsburgh yellow tile during tile-laying, regardless of connectivity.  The hex is not reserved, and the power is lost if another company builds there first.",
+       "sym" : "PSM"
+    },
+    {
+      "name" : "Mountain Engineers",
+      "value" : 40,
+      "revenue" : 0,
+      "desc" : "Owning company receives $20 after laying a yellow tile in a mountain hex.  Any fees must be paid first.",
+      "sym" : "ME"
+    },
+    {
+      "name" : "Ohio Bridge Company",
+      "value" : 40,
+      "revenue" : 0,
+      "desc" : "Comes with one $10 bridge token that may be placed by the owning corp in Louisville, Cincinnati, or Charleston, max one token per city, regardless of connectivity..  Allows owning corp to skip $10 river fee when placing yellow tiles.",
+      "sym" : "OBC"
+    },
+    {
+      "name" : "Union Bridge Company",
+      "value" : 80,
+      "revenue" : 0,
+      "desc" : "Comes with two $10 bridge token that may be placed by the owning corp in Louisville, Cincinnati, or Charleston, max one token per city, regardless of connectivity..  Allows owning corp to skip $10 river fee when placing yellow tiles.",
+      "sym" : "UBC"
+    },
+    {
+      "name" : "Train Station",
+      "value" : 80,
+      "revenue" : 0,
+      "desc" : "Provides an additional station marker for the owning corp, awarded at time of purchase",
+      "sym" : "TS"
+    },
+    {
+      "name" : "Minor Coal Mine",
+      "value" : 30,
+      "revenue" : 0,
+      "desc" : "Comes with one coal mine marker.  When placing a yellow tile in a mountain hex, can place token to avoid $15 terrain fee.  Marked yellow hexes cannot be upgraded.  Hexes pay $10 extra.  May not start or end a route at a coal mine.",
+      "sym" : "MINC"
+    },
+    {
+      "name" : "Coal Mine",
+      "value" : 60,
+      "revenue" : 0,
+      "desc" : "Comes with two coal mine markers.  When placing a yellow tile in a mountain hex, can place token to avoid $15 terrain fee.  Marked yellow hexes cannot be upgraded.  Hexes pay $10 extra.  May not start or end a route at a coal mine.",
+      "sym" : "CM"
+    },
+    {
+      "name" : "Major Coal Mine",
+      "value" : 90,
+      "revenue" : 0,
+      "desc" : "Comes with three coal mine markers.  When placing a yellow tile in a mountain hex, can place token to avoid $15 terrain fee.  Marked yellow hexes cannot be upgraded.  Hexes pay $10 extra.  May not start or end a route at a coal mine.",
+      "sym" : "MAJC"
+    },
+    {
+      "name" : "Minor Mail Contract",
+      "value" : 60,
+      "revenue" : 0,
+      "desc" : "Pays owning corp $10 at the start of each operating round, as long as the company has at least one train.",
+      "sym" : "MINM"
+    },
+    {
+      "name" : "Mail Contract",
+      "value" : 90,
+      "revenue" : 0,
+      "desc" : "Pays owning corp $15 at the start of each operating round, as long as the company has at least one train.",
+      "sym" : "MAIL"
+    },
+    {
+      "name" : "Major Mail Contract",
+      "value" : 120,
+      "revenue" : 0,
+      "desc" : "Pays owning corp $20 at the start of each operating round, as long as the company has at least one train.",
+      "sym" : "MAJM"
+    }
+  ],
   "corporations": [
     {
       "float_percent": 20,
