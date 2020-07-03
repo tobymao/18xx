@@ -167,7 +167,7 @@ class Api
             max_players: r['max_players'],
             settings: { seed: Random.new_seed },
             title: title,
-            round: Engine::GAMES_BY_TITLE[title].new([]).round.name,
+            round: Engine::GAMES_BY_TITLE[title].new([]).round&.name,
           }
 
           game = Game.create(params)

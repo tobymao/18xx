@@ -99,6 +99,9 @@ module Engine
       end
 
       def setup
+        # When creating a game the game will not have enough to start
+        return unless @players.size.between?(*Engine.player_range(self.class))
+
         remove_from_group!(ORANGE_GROUP, @companies) do |company|
           if company.id == 'LSL'
             %w[D14 E17].each do |hex|
