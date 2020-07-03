@@ -67,7 +67,7 @@ module View
 
         if must_buy_train
           children << h(:div, "#{@corporation.name} must buy an available train")
-          children += render_president_contributions if @corporation.cash < @depot.min_depot_price
+          children << render_president_contributions if @corporation.cash < @depot.min_depot_price
         end
 
         h3_props = {
