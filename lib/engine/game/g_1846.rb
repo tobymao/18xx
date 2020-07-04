@@ -231,10 +231,10 @@ module Engine
 
         hexes.each do |hex|
           hex.tile.cities.each do |city|
-            next unless city.tokened_by?(corporation) || city.reserved_by?(corporation)
-
-            city.tokens.map! { |token| token&.corporation == corporation ? nil : token }
-            city.reservations.delete(corporation)
+            if city.tokened_by?(corporation) || city.reserved_by?(corporation)
+              city.tokens.map! { |token| token&.corporation == corporation ? nil : token }
+              city.reservations.delete(corporation)
+            end
           end
         end
 
