@@ -185,7 +185,7 @@ module View
         market_props = { style: {} }
 
         if !corporation.floated?
-          props[:style][:backgroundColor] = '#c6c6c6'
+          props[:style][:backgroundColor] = '#777777'
           props[:style][:color] = 'black'
         elsif !corporation.counts_for_limit && (color = StockMarket::COLOR_MAP[corporation.share_price.color])
           market_props[:style][:backgroundColor] = color
