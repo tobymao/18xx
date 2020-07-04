@@ -98,6 +98,7 @@ class Assets
         stale << file
       else
         fresh << file
+        fresh << file.gsub('.rb', '')
       end
     end
 
