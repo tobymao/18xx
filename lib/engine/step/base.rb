@@ -1,15 +1,18 @@
 # frozen_string_literal: true
 
+require_relative '../passer'
+
 module Engine
   module Step
     class Base
+      include Passer
+
       ACTIONS = [].freeze
 
-      def initialize(game, round, deps: nil, **opts)
+      def initialize(game, round, **opts)
         @game = game
         @log = game.log
         @round = round
-        @deps = deps || []
         @opts = opts
       end
 
@@ -25,6 +28,10 @@ module Engine
         []
       end
 
+      def process_pass(_action)
+        pass!
+      end
+
       def current_actions
         current_entity ? actions(current_entity) : []
       end
@@ -34,7 +41,7 @@ module Engine
       end
 
       def active_entities
-        [entities[index]]
+        [entities[entity_index]]
       end
 
       def round_state
@@ -57,8 +64,8 @@ module Engine
         @round.entities
       end
 
-      def index
-        @round.index
+      def entity_index
+        @round.entity_index
       end
     end
   end

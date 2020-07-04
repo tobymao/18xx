@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
 require_relative 'base'
-require_relative 'payout_companies'
 
 module Engine
   module Step
     class WaterfallAuction < Base
-      include PayoutCompanies
-
       ACTIONS = %w[bid pass].freeze
 
       attr_reader :bids, :companies
@@ -39,7 +36,7 @@ module Engine
           @log << "#{entity.name} passes bidding"
           entity.pass!
           all_passed! if entities.all?(&:passed?)
-          @round.next_index!
+          @round.next_entity_index!
         end
       end
 
@@ -50,7 +47,7 @@ module Engine
           add_bid(action)
         else
           placement_bid(action)
-          @round.next_index!
+          @round.next_entity_index!
         end
       end
 
@@ -134,7 +131,7 @@ module Engine
             resolve_bids
           end
         else
-          payout_companies
+          @game.payout_companies
         end
 
         entities.each(&:unpass!)

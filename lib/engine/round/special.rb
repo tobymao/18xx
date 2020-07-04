@@ -5,11 +5,11 @@ require_relative '../action/lay_tile'
 require_relative '../corporation'
 require_relative '../hex'
 require_relative '../player'
-require_relative 'base'
+require_relative 'legacy'
 
 module Engine
   module Round
-    class Special < Base
+    class Special < Legacy
       attr_writer :current_entity
 
       def change_entity(_action)

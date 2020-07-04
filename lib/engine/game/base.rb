@@ -30,7 +30,7 @@ require_relative '../train'
 module Engine
   module Game
     class Base
-      attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
+      attr_reader :actions, :bank, :bankrupt, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
                   :round, :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
                   :round_history
@@ -231,6 +231,7 @@ module Engine
         @loading = false
         @strict = strict
         @finished = false
+        @bankrupt = false
         @log = []
         @actions = []
         @bankruptcies = 0
@@ -376,6 +377,7 @@ module Engine
       end
 
       def process_action(action)
+        puts action.to_h
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
 
@@ -389,6 +391,7 @@ module Engine
         if action.entity.is_a?(Company)
           @special.process_action(action)
         else
+          puts "#{@round}"
           @round.process_action(action)
         end
 
@@ -506,6 +509,37 @@ module Engine
             yield company, found_ability
           end
         end
+      end
+
+      def payout_companies
+        @companies.select(&:owner).each do |company|
+          next unless (revenue = company.revenue).positive?
+
+          owner = company.owner
+          @bank.spend(revenue, owner)
+          @log << "#{owner.name} collects #{format_currency(revenue)} from #{company.name}"
+        end
+      end
+
+      def place_home_token(corporation)
+        return unless corporation.next_token # 1882
+
+        hex = hex_by_id(corporation.coordinates)
+
+        tile = hex.tile
+        if tile.reserved_by?(corporation) && tile.paths.any?
+          # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
+          # Needs further changes to support non-operate home token lay
+          return @log << "#{corporation.name} must choose city for home token"
+        end
+
+        cities = tile.cities
+        city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+        token = corporation.find_token_by_type
+        return unless city.tokenable?(corporation, tokens: token)
+
+        @log << "#{corporation.name} places a token on #{hex.name}"
+        city.place_token(corporation, token)
       end
 
       private
@@ -759,7 +793,7 @@ module Engine
       end
 
       def game_end_reason
-        return :bankrupt, :immediate if @round.is_a?(Round::Operating) && bankruptcy_limit_reached?
+        return :bankrupt, :immediate if @bankrupt && bankruptcy_limit_reached?
         return :bank, :full_round if @bank.broken?
       end
 
@@ -773,7 +807,7 @@ module Engine
           # priority deal card goes to the player who will go first if
           # everyone passes starting now.  last_to_act is nil before
           # anyone has gone, in which case the first player has PD.
-          @players[@round.index]
+          @players[@round.entity_index]
         else
           # We're in a round that iterates over something else, like
           # corporations.  The player list was already rotated when we
@@ -783,7 +817,7 @@ module Engine
       end
 
       def reorder_players
-        @players.rotate!(@round.index)
+        @players.rotate!(@round.entity_index)
         @log << "#{@players[0].name} has priority deal"
       end
 
@@ -809,7 +843,12 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::Operating.new(@corporations, game: self, round_num: round_num)
+        Round::Operating.new(self, [
+          Step::Track,
+          Step::Token,
+          Step::Route,
+          Step::Train,
+        ], round_num: round_num)
       end
 
       def event_close_companies!

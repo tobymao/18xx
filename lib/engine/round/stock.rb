@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require_relative 'base'
+require_relative 'legacy'
 require_relative '../action/buy_shares'
 require_relative '../action/par'
 require_relative '../action/sell_shares'
 
 module Engine
   module Round
-    class Stock < Base
-      attr_reader :index, :share_pool, :stock_market
+    class Stock < Legacy
+      attr_reader :entity_index, :share_pool, :stock_market
 
       PURCHASE_ACTIONS = [Action::BuyShares, Action::Par].freeze
 
@@ -25,7 +25,7 @@ module Engine
         # and preventing users from selling the same shares separately in the some action
         @players_sold = Hash.new { |h, k| h[k] = {} }
         @current_actions = []
-        @index = 0
+        @entity_index = 0
       end
 
       def name
@@ -146,7 +146,7 @@ module Engine
 
         entity = action.entity
         @current_actions << action
-        @index = @entities.index(entity) + 1
+        @entity_index = @entities.index(entity) + 1
         entity.unpass!
       end
 
