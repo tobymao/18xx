@@ -94,7 +94,11 @@ module Engine
         false
       end
 
-      def can_assign?
+      def can_assign_corporation?
+        false
+      end
+
+      def can_assign_hex?
         false
       end
 

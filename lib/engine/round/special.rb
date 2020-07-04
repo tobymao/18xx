@@ -3,6 +3,7 @@
 require_relative '../action/assign'
 require_relative '../action/lay_tile'
 require_relative '../corporation'
+require_relative '../hex'
 require_relative '../player'
 require_relative 'base'
 
@@ -35,8 +36,16 @@ module Engine
         @current_entity&.abilities(:token)
       end
 
-      def can_assign?
+      def assign_corporation_ability
+        @current_entity&.abilities(:assign_corporation)
+      end
+
+      def can_assign_hex?
         !!assign_ability
+      end
+
+      def can_assign_corporation?
+        !!assign_corporation_ability
       end
 
       def can_lay_track?
@@ -81,10 +90,17 @@ module Engine
           @game.share_pool.buy_shares(owner, bundle, exchange: company)
           company.close!
         when Action::Assign
-          hex = action.target
-          hex.assign!(company.id)
-          company.abilities(:assign_hexes, &:use!)
-          @game.log << "#{company.name} activates #{hex.name}"
+          target = action.target
+          if target.is_a?(Hex) && company.abilities(:assign_hexes)
+            target.assign!(company.id)
+            company.abilities(:assign_hexes, &:use!)
+            @game.log << "#{company.name} is assigned to #{hex.name}"
+          end
+          if target.is_a?(Corportation) && company.abilities(:assign_corporation)
+            target.assign!(company.id)
+            company.abilities(:assign_corporation, &:use!)
+            @game.log << "#{company.name} is assigned to #{hex.name}"
+          end
         when Action::PlaceToken
           city = action.city
           hex = action.city.hex

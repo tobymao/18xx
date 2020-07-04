@@ -7,6 +7,7 @@ module View
       needs :bids, default: nil
       needs :selected_company, default: nil, store: true
       needs :game, store: true
+      needs :round, default: nil, store: true
       needs :tile_selector, default: nil, store: true
       needs :display, default: 'inline-block'
       needs :layout, default: nil
@@ -28,8 +29,10 @@ module View
       def select_company(event)
         event.JS.stopPropagation
         selected_company = (purchasable? || ability_usable?) && !selected? ? @company : nil
+        round = selected_company ? @game.special : @game.round
         store(:tile_selector, nil, skip: true)
         store(:selected_company, selected_company)
+        store(:round, round)
       end
 
       def render_bidders

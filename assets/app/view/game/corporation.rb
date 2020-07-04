@@ -1,20 +1,30 @@
 # frozen_string_literal: true
 
+require 'view/game/actionable'
 require 'view/game/companies'
 
 module View
   module Game
     class Corporation < Snabberb::Component
+      include Actionable
       include Lib::Color
       needs :corporation
+      needs :round, default: nil, store: true
       needs :selected_corporation, default: nil, store: true
       needs :game, store: true
       needs :display, default: 'inline-block'
 
       def render
         select_corporation = lambda do
-          selected_corporation = selected? ? nil : @corporation
-          store(:selected_corporation, selected_corporation)
+          if @round&.can_assign_corporation?
+            puts "Assigning corporation"
+            process_action(Engine::Action::Assign.new(@round.current_entity, target: @corporation))
+            #store(:selected_corporation, nil)
+            puts "Done assigning corporation"
+          else
+            selected_corporation = selected? ? nil : @corporation
+            store(:selected_corporation, selected_corporation)
+          end
         end
 
         card_style = {
