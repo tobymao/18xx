@@ -227,17 +227,23 @@ module Engine
       end
 
       def close_corporation(corporation)
+        @log << "#{corporation.name} closes"
+
         hexes.each do |hex|
           hex.tile.cities.each do |city|
-            next unless city.tokened_by?(corporation)
+            next unless city.tokened_by?(corporation) || city.reserved_by?(corporation)
 
             city.tokens.map! { |token| token&.corporation == corporation ? nil : token }
-            city.reservations.delete(corporation.name)
+            city.reservations.delete(corporation)
           end
         end
 
         corporation.spend(corporation.cash, @bank)
-        @log << "#{corporation.name} closes"
+        corporation.trains.each { |t| t.buyable = false }
+        if corporation.companies.any?
+          @log << "#{corporation.name}'s companies close: #{corporation.companies.map(&:sym).join(', ')}"
+          corporation.companies.dup.each(&:close!)
+        end
         @round.skip_current_entity if @round.current_entity == corporation
 
         if corporation.corporation?
@@ -246,6 +252,7 @@ module Engine
           end
 
           @share_pool.shares_by_corporation.delete(corporation)
+          corporation.share_price.corporations.delete(corporation)
           @corporations.delete(corporation)
         else
           @minors.delete(corporation)
