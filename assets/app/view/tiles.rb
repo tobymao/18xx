@@ -32,7 +32,7 @@ module View
 
         text = tile.preprinted ? '' : '#'
         text += name
-        text += "-#{rotation}" if rotations.size > 1
+        text += "-#{rotation}" unless rotations == [0]
         text += " × #{num}" if num
 
         h('div.tile__block', props, [
