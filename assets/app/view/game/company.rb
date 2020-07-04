@@ -9,7 +9,7 @@ module View
       needs :game, store: true
       needs :tile_selector, default: nil, store: true
       needs :display, default: 'inline-block'
-      needs :layout, default: ''
+      needs :layout, default: nil
 
       def selected?
         @company == @selected_company
@@ -45,7 +45,7 @@ module View
       end
 
       def render
-        if @layout == 'table'
+        if @layout == :table
           @hidden_divs = {}
           render_company_on_card(@company)
         else

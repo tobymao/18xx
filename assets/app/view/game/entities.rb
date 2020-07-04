@@ -23,9 +23,10 @@ module View
         end
 
         player_owned, bank_owned = (@game.corporations + @game.minors).sort_by(&:name).partition(&:owner)
+        player_owned = player_owned.group_by(&:owner)
 
         children = players.map do |p|
-          corps = player_owned.select { |c| c.owner == p }.map { |c| h(Corporation, corporation: c) }
+          corps = player_owned[p]&.map { |c| h(Corporation, corporation: c) }
 
           h(:div, [
             h(Player, player: p, game: @game),

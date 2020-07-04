@@ -77,16 +77,10 @@ module View
           h(Game::StockMarket, game: @game, explain_colors: true)
         when 'tiles'
           h(Game::TileManifest, tiles: @game.tiles, all_tiles: @game.init_tiles, layout: @game.layout)
-        when 'companies'
-          h(Game::Companies, game: @game, user: @user)
-        when 'corporations'
-          h(Game::Corporations, game: @game, user: @user)
         when 'entities'
           h(Game::Entities, game: @game)
         when 'info'
           h(Game::GameInfo, game: @game)
-        when 'players'
-          h(Game::Players, game: @game)
         when 'spreadsheet'
           h(Game::Spreadsheet, game: @game)
         when 'tools'

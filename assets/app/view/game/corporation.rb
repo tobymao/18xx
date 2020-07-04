@@ -32,7 +32,7 @@ module View
 
         unless @corporation.minor?
           children << render_shares
-          children << h(Companies, owner: @corporation, layout: 'table', game: @game) if @corporation.companies.any?
+          children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
         end
 
         if @corporation.owner

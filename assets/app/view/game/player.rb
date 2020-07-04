@@ -22,7 +22,7 @@ module View
           render_body,
         ]
 
-        divs << h(Companies, owner: @player, layout: 'table', game: @game) if @player.companies.any?
+        divs << h(Companies, owner: @player, game: @game) if @player.companies.any?
 
         h('div.player.card', { style: card_style }, divs)
       end
