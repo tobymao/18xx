@@ -54,7 +54,10 @@ module View
           rows = prices.map do |price|
             if price
               style = box_style.merge('background-color' => price.color ? COLOR_MAP[price.color] : color_for(:bg2))
-              style['color'] = 'white' if price.color == :black
+              if price.color == :black
+                style[:color] = 'gainsboro'
+                style[:borderColor] = color_for(:font)
+              end
               colors_in_market << price.color unless colors_in_market.include?(price.color)
               corporations = price.corporations
               num = corporations.size
@@ -101,6 +104,7 @@ module View
             next unless colors_in_market.include?(color)
 
             style = box_style.merge('background-color' => COLOR_MAP[color])
+            style[:borderColor] = color_for(:font) if color == :black
 
             line_props = {
               style: {
