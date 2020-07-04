@@ -661,7 +661,7 @@ module Engine
             corporation = @corporations[rand % @corporations.size]
             share = corporation.shares[0]
             ability.share = share
-            company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
+            company.desc = "Purchasing player takes a president's share (20%) #{corporation.name} and immediately sets its par value. #{company.desc}"
             @log << "#{company.name} comes with the president's share of #{corporation.name}"
           when 'random_share'
             corporations = ability.corporations&.map { |id| corporation_by_id(id) } || @corporations
