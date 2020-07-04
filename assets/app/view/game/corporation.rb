@@ -256,7 +256,8 @@ module View
 
         if player_rows.any?
           if !@corporation.counts_for_limit && (color = StockMarket::COLOR_MAP[@corporation.share_price.color])
-            market_tr_props[:style]['background-color'] = Lib::Color.convert_hex_to_rgba(color, 0.4)
+            market_tr_props[:style][:backgroundColor] = color
+            market_tr_props[:style][:color] = contrast_on(color)
           end
 
           pool_rows << h('tr.market', market_tr_props, [
