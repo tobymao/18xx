@@ -17,13 +17,7 @@ module View
     FINISHED_GREY = '#D3D3D3'
 
     def render
-      props = {
-        style: {
-          'margin': '0 0.5rem 0.5rem 0',
-        },
-      }
-
-      h('div.game.card', props, [
+      h('div.game.card', [
         render_header,
         render_body,
       ])
@@ -50,13 +44,6 @@ module View
 
     def render_header
       buttons = []
-      if owner?
-        buttons << if @confirm_delete != @gdata['id']
-                     render_button('Delete', -> { store(:confirm_delete, @gdata['id']) })
-                   else
-                     render_button('Confirm', -> { delete_game(@gdata) })
-                   end
-      end
 
       color =
         case @gdata['status']
@@ -75,6 +62,14 @@ module View
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Review')
           FINISHED_GREY
         end
+
+      if owner? && (@gdata['status'] == 'new' || @gdata['mode'] == :hotseat)
+        buttons << if @confirm_delete != @gdata['id']
+                     render_button('Delete', -> { store(:confirm_delete, @gdata['id']) })
+                   else
+                     render_button('Confirm', -> { delete_game(@gdata) })
+                   end
+      end
 
       buttons << render_button('Start', -> { start_game(@gdata) }) if owner? && new? && players.size > 1
 
@@ -147,7 +142,6 @@ module View
         style: {
           'line-height': '1.2rem',
           padding: '0.3rem 0.5rem',
-          'word-break': 'break-all',
         },
       }
 
@@ -180,8 +174,8 @@ module View
       children = [
         h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s]),
         h(:div, [h(:strong, 'Description: '), @gdata['description']]),
-        h(:div, [h(:strong, 'Players: '), *p_elm]),
       ]
+      children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'
 
       if new?
         created_at = Time.at(@gdata['created_at'])
@@ -193,7 +187,7 @@ module View
       elsif @gdata['status'] == 'finished'
         result = @gdata['result']
           .sort_by { |_, v| -v }
-          .map { |k, v| "#{k} (#{v})" }
+          .map { |k, v| "#{k.length > 15 ? k[0...14] + '…' : k} #{v}" }
           .join(', ')
 
         children << h(:div, [
@@ -206,7 +200,7 @@ module View
           "#{@gdata['round']&.split(' ')&.first} #{@gdata['turn']}",
         ])
 
-        updated_at = Time.at(@gdata['updated_at'])
+        updated_at = Time.at(@gdata['updated_at'].to_i)
         children << h('div.inline', { style: { float: 'right' } }, [
           h(:strong, 'Updated: '),
           h(:span, { attrs: { title: updated_at.strftime('%F %T') } }, time_or_date(updated_at)),

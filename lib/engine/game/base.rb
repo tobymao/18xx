@@ -3,11 +3,13 @@
 if RUBY_ENGINE == 'opal'
   require_tree '../action'
   require_tree '../round'
+  require_tree '../step'
 else
   require 'require_all'
   require 'json'
   require_rel '../action'
   require_rel '../round'
+  require_rel '../step'
 end
 
 require_relative '../bank'
@@ -30,7 +32,8 @@ module Engine
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
-                  :round, :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible
+                  :round, :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
+                  :round_history
 
       DEV_STAGE = :prealpha
 
@@ -64,6 +67,8 @@ module Engine
       CERT_LIMIT_COLORS = %i[brown orange yellow].freeze
 
       MULTIPLE_BUY_COLORS = %i[brown].freeze
+
+      MIN_BID_INCREMENT = 5
 
       CAPITALIZATION = :full
 
@@ -270,6 +275,7 @@ module Engine
         @phase = init_phase
         @operating_rounds = @phase.operating_rounds
 
+        @round_history = []
         @round = init_round
         @special = Round::Special.new(@companies, game: self)
 
@@ -492,6 +498,14 @@ module Engine
         send("#{type}_by_id", id)
       end
 
+      def all_companies_with_ability(ability)
+        @companies.each do |company|
+          if (found_ability = company.abilities(ability))
+            yield company, found_ability
+          end
+        end
+      end
+
       private
 
       def init_bank
@@ -655,7 +669,8 @@ module Engine
             corporation = @corporations[rand % @corporations.size]
             share = corporation.shares[0]
             ability.share = share
-            company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
+            company.desc = "Purchasing player takes a president's share (20%) of #{corporation.name} \
+            and immediately sets its par value. #{company.desc}"
             @log << "#{company.name} comes with the president's share of #{corporation.name}"
           when 'random_share'
             corporations = ability.corporations&.map { |id| corporation_by_id(id) } || @corporations
@@ -713,6 +728,7 @@ module Engine
             reorder_players
             new_stock_round
           end
+        @round_history << @actions.size
       end
 
       def game_ending_description
@@ -755,9 +771,7 @@ module Engine
           # priority deal card goes to the player who will go first if
           # everyone passes starting now.  last_to_act is nil before
           # anyone has gone, in which case the first player has PD.
-          last_to_act = @round.last_to_act
-          priority_idx = last_to_act ? (@players.find_index(last_to_act) + 1) % @players.size : 0
-          @players[priority_idx]
+          @players[@round.index]
         else
           # We're in a round that iterates over something else, like
           # corporations.  The player list was already rotated when we
@@ -767,16 +781,15 @@ module Engine
       end
 
       def reorder_players
-        rotate_players(@round.last_to_act)
+        @players.rotate!(@round.index)
         @log << "#{@players[0].name} has priority deal"
       end
 
-      def rotate_players(last_to_act)
-        @players.rotate!(@players.find_index(last_to_act) + 1) if last_to_act
-      end
-
       def new_auction_round
-        Round::Auction.new(@players, game: self)
+        Round::Auction.new(self, [
+          Step::CompanyPendingPar,
+          Step::WaterfallAuction,
+        ])
       end
 
       def new_stock_round

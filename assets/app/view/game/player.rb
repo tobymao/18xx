@@ -1,29 +1,28 @@
 # frozen_string_literal: true
 
+require 'view/game/companies'
+
 module View
   module Game
     class Player < Snabberb::Component
       include Lib::Color
       needs :player
       needs :game
+      needs :display, default: 'inline-block'
 
       def render
         card_style = {
-          border: '1px solid gainsboro',
+          border: @game.round.can_act?(@player) ? '4px solid' : '1px solid gainsboro',
+          paddingBottom: '0.2rem',
         }
-
-        if @game.round.can_act?(@player)
-          card_style['border'] = '1px solid black'
-          card_style['background-color'] = '#dfd'
-          card_style['color'] = 'black'
-        end
+        card_style[:display] = @display
 
         divs = [
           render_title,
           render_body,
         ]
 
-        divs << render_companies if @player.companies.any?
+        divs << h(Companies, owner: @player, table: true, game: @game) if @player.companies.any?
 
         h('div.player.card', { style: card_style }, divs)
       end
@@ -32,8 +31,8 @@ module View
         props = {
           style: {
             padding: '0.4rem',
-            'background-color': @game.round.can_act?(@player) ? '#9b9' : color_for(:bg2),
-            color: @game.round.can_act?(@player) ? 'black' : color_for(:font2),
+            backgroundColor: color_for(:bg2),
+            color: color_for(:font2),
           },
         }
 
@@ -160,29 +159,6 @@ module View
           h('td.center', td_props, [h(:div, div_props, [h(:img, logo_props)])]),
           h(:td, td_props, corporation.name + president_marker),
           h('td.right', td_props, "#{shares.sum(&:percent)}%"),
-        ])
-      end
-
-      def render_companies
-        companies = @player.companies.map do |company|
-          render_company(company)
-        end
-
-        h('table.center', [
-          h(:tr, [
-            h(:th, 'Company'),
-            h(:th, 'Value'),
-            h(:th, 'Income'),
-          ]),
-          *companies,
-        ])
-      end
-
-      def render_company(company)
-        h(:tr, [
-          h('td.name.nowrap', company.name),
-          h('td.right', @game.format_currency(company.value)),
-          h('td.right', @game.format_currency(company.revenue)),
         ])
       end
     end

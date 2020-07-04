@@ -249,7 +249,8 @@ module Engine
           "tiles": [
             "437"
           ],
-          "owner_type": "player"
+          "owner_type": "player",
+          "count": 1
         }
       ]
     },
@@ -281,7 +282,8 @@ module Engine
             "206"
           ],
           "when": "sold",
-          "owner_type": "corporation"
+          "owner_type": "corporation",
+          "count": 1
         }
       ]
     },
@@ -293,7 +295,8 @@ module Engine
       "sym": "SMR",
       "abilities": [
         {
-          "type": "ignore_terrain",
+          "type": "tile_discount",
+          "discount" : 80,
           "terrain": "mountain",
           "owner_type": "corporation"
         }

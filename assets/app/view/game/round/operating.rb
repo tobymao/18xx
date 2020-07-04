@@ -42,10 +42,10 @@ module View
           left = [action]
           corporation = round.current_entity
           left << h(Corporation, corporation: corporation)
-          (corporation.companies + corporation.owner.companies).each do |c|
+          corporation.owner.companies.each do |c|
             next if (c.all_abilities.map(&:type) & ABILITIES).empty?
 
-            left << h(Company, inline: false, company: c)
+            left << h(Company, display: 'block', company: c, game: @game)
           end
 
           div_props = {

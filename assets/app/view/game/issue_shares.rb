@@ -31,16 +31,16 @@ module View
 
         return nil if shares.empty?
 
-        h(:div, [
-          h('div.inline-block.margined', description),
-          *shares,
+        h('div.margined', [
+          h('div.inline-block', description),
+          h('div.inline-block', shares),
         ])
       end
 
       def render_button(bundle, &block)
         h(
           'button.button',
-          { on: { click: block } },
+          { style: { padding: '0.2rem 0.5rem' }, on: { click: block } },
           "#{bundle.num_shares} (#{@game.format_currency(bundle.price)})",
         )
       end

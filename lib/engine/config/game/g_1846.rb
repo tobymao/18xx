@@ -116,7 +116,7 @@ module Engine
   },
   "market": [
     [
-      "Closed",
+      "0blk",
       "10",
       "20",
       "30",
@@ -211,7 +211,15 @@ module Engine
       "value": 60,
       "revenue": 20,
       "desc": "Reduces, for the owning corporation, the cost of laying all mountain tiles and tunnel/pass hexsides by $20.",
-      "sym": "TBC"
+      "sym": "TBC",
+      "abilities": [
+        {
+          "type":"tile_discount",
+          "discount": 20,
+          "terrain": "mountain",
+          "owner_type": "corporation"
+        }
+      ]
     },
     {
       "name": "Meat Packing Company",
@@ -479,7 +487,7 @@ module Engine
         0,
         80,
         80,
-        0
+        80
       ],
       "abilities": [
         {

@@ -99,13 +99,21 @@ module Engine
       end
 
       def setup
+        # When creating a game the game will not have enough to start
+        return unless @players.size.between?(*Engine.player_range(self.class))
+
         remove_from_group!(ORANGE_GROUP, @companies) do |company|
+          if company.id == 'LSL'
+            %w[D14 E17].each do |hex|
+              hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'lsl' }
+            end
+          end
           company.close!
-          @round.companies.delete(company)
+          @round.active_step.companies.delete(company)
         end
         remove_from_group!(BLUE_GROUP, @companies) do |company|
           company.close!
-          @round.companies.delete(company)
+          @round.active_step.companies.delete(company)
         end
         remove_from_group!(GREEN_GROUP, @corporations) do |corporation|
           @round.place_home_token(corporation)
@@ -129,10 +137,13 @@ module Engine
       end
 
       def remove_from_group!(group, entities)
-        remove = group.sort_by { rand }.take([5 - @players.size, 2].min)
-        @log << "Removing #{remove.join(', ')}"
+        removals = group.sort_by { rand }.take([5 - @players.size, 2].min)
+        # This looks verbose, but it works around the fact that we can't modify code which includes rand() w/o breaking existing games
+        return if removals.empty?
+
+        @log << "Removing #{removals.join(', ')}"
         entities.reject! do |entity|
-          if remove.include?(entity.name)
+          if removals.include?(entity.name)
             yield entity if block_given?
             true
           else
@@ -242,7 +253,7 @@ module Engine
       end
 
       def init_round
-        Round::G1846::Draft.new(@players.reverse, game: self)
+        Round::G1846::Draft.new(self, [Step::G1846::DraftDistribution])
       end
 
       def operating_round(round_num)
@@ -256,7 +267,27 @@ module Engine
       end
 
       def event_remove_tokens!
-        # to be implemented
+        removals = Hash.new { |h, k| h[k] = {} }
+
+        @corporations.each do |corp|
+          corp.assignments.each do |company, _|
+            removals[company][:corporation] = corp.name
+            corp.remove_assignment!(company)
+          end
+        end
+
+        @hexes.each do |hex|
+          hex.assignments.each do |company, _|
+            removals[company][:hex] = hex.name
+            hex.remove_assignment!(company)
+          end
+        end
+
+        removals.each do |company, removal|
+          hex = removal[:hex]
+          corp = removal[:corporation]
+          @log << "-- Event: #{corp}'s #{company} token removed from #{hex} --"
+        end
       end
     end
   end

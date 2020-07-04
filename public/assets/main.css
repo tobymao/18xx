@@ -16,6 +16,13 @@ button + button {
   margin-left: 0.5rem;
 }
 
+h2 {
+  font-size: 1.2rem;
+}
+h3 {
+  font-size: 1.1rem;
+}
+
 .button, .button-link {
   font-size: 14px;
   background: whitesmoke;
@@ -153,9 +160,8 @@ p:last-child {
   font-weight: bold;
   margin: 1rem 0;
 }
-.card_header h2 {
+.card_header h2, #left h2 {
   margin: 0;
-  font-size: 1.2rem;
 }
 
 .back {
@@ -190,9 +196,16 @@ p:last-child {
 .margined_half {
   margin: 0.5rem 0.5rem 0.5rem 0;
 }
+.no_margin {
+  margin: 0;
+}
 
 .padded {
   padding: 1rem;
+}
+
+.small_font {
+  font-size: 90%;
 }
 
 .tile {
@@ -238,14 +251,24 @@ p:last-child {
   border: 1px solid gainsboro;
   border-radius: 0.7rem;
 }
+.game.card {
+  margin: 0 0.5rem 0.5rem 0;
+}
 @media only screen and (max-width: 420px) {
-  .card {
-    width: 95vw;
+  .card, #left {
+    width: 95.8vw;
   }
+  .game.card, .card {
+    margin-right: 0;
+  }
+}
+#buy_trains .card {
+  margin: 0;
 }
 
 @media only screen and (min-width: 421px) {
   #left {
+    width: 20rem;
     margin-right: 1rem;
   }
 }
@@ -263,11 +286,14 @@ p:last-child {
   max-width: 12rem;
 }
 
-.corp div {
+.corp div, .player div {
   display: grid;
+}
+.corp__title div, .corp__holdings div {
   align-self: center;
   justify-self: center;
 }
+
 table.center {
   margin: 0.2rem auto;
 }

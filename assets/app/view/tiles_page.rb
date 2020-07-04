@@ -69,13 +69,16 @@ module View
 
       # common tile(s)
       else
-        tile_ids = dest.split('+')
-        rendered = tile_ids.flat_map do |id|
+        tile_ids_with_rotation = dest.split('+')
+        rendered = tile_ids_with_rotation.flat_map do |tile_id_with_rotation|
+          id, rotation = tile_id_with_rotation.split('-')
+          rotations = rotation ? [rotation.to_i] : @rotations
+
           render_tile_blocks(
             id,
             layout: layout,
             scale: 3.0,
-            rotations: @rotations,
+            rotations: rotations,
             location_name: @location_name,
           )
         end
@@ -83,18 +86,21 @@ module View
       end
     end
 
-    def render_individual_tile_from_game(game_title, dest)
+    def render_individual_tile_from_game(game_title, hex_or_tile_id)
       game = Engine::GAMES_BY_TITLE[game_title].new(%w[p1 p2 p3])
+
+      id, rotation = hex_or_tile_id.split('-')
+      rotations = rotation ? [rotation.to_i] : @rotations
 
       # TODO?: handle case with big map and uses X for game-specific tiles
       # (i.e., "X1" is the name of a tile *and* a hex)
       tile, name =
-        if game.class::TILES.include?(dest)
-          t = game.tile_by_id("#{dest}-0")
+        if game.class::TILES.include?(id)
+          t = game.tile_by_id("#{id}-0")
           [t, t.name]
         else
-          t = game.hex_by_id(dest).tile
-          [t, dest]
+          t = game.hex_by_id(id).tile
+          [t, id]
         end
 
       render_tile_blocks(
@@ -103,7 +109,7 @@ module View
         tile: tile,
         location_name: tile.location_name || @location_name,
         scale: 3.0,
-        rotations: @rotations,
+        rotations: rotations,
       )
     end
 

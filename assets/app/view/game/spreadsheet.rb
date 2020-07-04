@@ -3,20 +3,26 @@
 require 'lib/color'
 require 'lib/storage'
 require 'view/link'
+require 'view/game/bank'
 require 'view/game/stock_market'
 
 module View
   module Game
     class Spreadsheet < Snabberb::Component
+      include Lib::Color
       needs :game
 
       def render
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
 
+        children = []
+        children << h(Bank, game: @game)
+        children << render_table
+
         h(:div, { style: {
           overflow: 'auto',
-        } }, [render_table])
+        } }, children)
       end
 
       def render_table
@@ -179,9 +185,11 @@ module View
         market_props = { style: {} }
 
         if !corporation.floated?
-          props[:style]['background-color'] = 'rgba(220,220,220,0.4)'
+          props[:style][:backgroundColor] = '#777777'
+          props[:style][:color] = 'black'
         elsif !corporation.counts_for_limit && (color = StockMarket::COLOR_MAP[corporation.share_price.color])
-          market_props[:style]['background-color'] = Lib::Color.convert_hex_to_rgba(color, 0.4)
+          market_props[:style][:backgroundColor] = color
+          market_props[:style][:color] = contrast_on(color)
         end
 
         operating_order_text = ''
@@ -196,7 +204,10 @@ module View
           h(:th, name_props, corporation.name),
           *@game.players.map do |p|
             sold_props = { style: {} }
-            sold_props[:style]['background-color'] = 'rgba(225,0,0,0.4)' if @game.round.did_sell?(corporation, p)
+            if @game.round.did_sell?(corporation, p)
+              sold_props[:style][:backgroundColor] = '#9e0000'
+              sold_props[:style][:color] = 'white'
+            end
             h(:td, sold_props, p.num_shares_of(corporation).to_s + (corporation.president?(p) ? '*' : ''))
           end,
           h(:td, corporation.num_shares_of(corporation)),

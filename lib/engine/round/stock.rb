@@ -8,7 +8,7 @@ require_relative '../action/sell_shares'
 module Engine
   module Round
     class Stock < Base
-      attr_reader :last_to_act, :share_pool, :stock_market
+      attr_reader :index, :share_pool, :stock_market
 
       PURCHASE_ACTIONS = [Action::BuyShares, Action::Par].freeze
 
@@ -25,7 +25,7 @@ module Engine
         # and preventing users from selling the same shares separately in the some action
         @players_sold = Hash.new { |h, k| h[k] = {} }
         @current_actions = []
-        @last_to_act = nil
+        @index = 0
       end
 
       def name
@@ -146,7 +146,7 @@ module Engine
 
         entity = action.entity
         @current_actions << action
-        @last_to_act = entity
+        @index = @entities.index(entity) + 1
         entity.unpass!
       end
 
@@ -192,7 +192,7 @@ module Engine
 
         return if @pool_share_drop == :none
 
-        @share_pool.shares_by_corporation.each do |corporation, shares|
+        @share_pool.shares_by_corporation.sort.each do |corporation, shares|
           prev = corporation.share_price.price
           (shares.sum(&:percent) / 10).times do
             @stock_market.move_left(corporation)
