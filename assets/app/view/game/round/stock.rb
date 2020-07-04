@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/game/actionable'
+require 'view/game/bank'
 require 'view/game/corporation'
 require 'view/game/par'
 require 'view/game/players'

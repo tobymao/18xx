@@ -14,6 +14,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>Using company abilities have changed. When they are corporation owned, you click on them to activate them.</p>
         <p>1836Jr30 is now available for beta.</p>
         <p>1846 is now available for alpha.</p>
 

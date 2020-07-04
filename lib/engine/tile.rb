@@ -191,13 +191,17 @@ module Engine
     end
 
     def upgrade_cost(abilities)
-      ignore = abilities.find { |a| a.type == :ignore_terrain }
+      ability = abilities.find { |a| a.type == :tile_discount }
 
       @upgrades.sum do |upgrade|
-        cost = upgrade.cost
-        cost = 0 if ignore && upgrade.terrains.uniq == [ignore.terrain]
-        cost
+        discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
+        total_cost = upgrade.cost - discount
+        total_cost
       end
+    end
+
+    def terrain
+      @upgrades.flat_map(&:terrains).uniq
     end
 
     def upgrades_to?(other)

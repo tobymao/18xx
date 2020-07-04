@@ -6,6 +6,7 @@ require_relative '../view/game/players.rb'
 class Turn < Snabberb::Component
   needs :game_data
   needs :game_url
+  needs :game, store: true, default: nil
 
   def render
     @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
@@ -13,6 +14,8 @@ class Turn < Snabberb::Component
       id: @game_data['id'],
       actions: @game_data['actions'],
     )
+
+    store(:game, @game, skip: true)
 
     h(:div, [
       render_link,

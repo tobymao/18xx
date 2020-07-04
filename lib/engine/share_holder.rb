@@ -27,6 +27,8 @@ module Engine
     end
 
     def bundles_for_corporation(corporation)
+      return [] unless corporation.ipoed
+
       shares = shares_of(corporation).sort_by(&:price)
 
       bundles = shares.flat_map.with_index do |share, index|
