@@ -200,6 +200,10 @@ module Engine
       end
     end
 
+    def terrain
+      @upgrades.flat_map(&:terrains).uniq
+    end
+
     def upgrades_to?(other)
       # correct color progression?
       return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)

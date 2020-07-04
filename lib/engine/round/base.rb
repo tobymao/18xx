@@ -256,11 +256,14 @@ module Engine
           free = ability.free
         end
 
+        terrain = old_tile.terrain
         cost =
           if free
             0
           else
-            tile_cost(old_tile, entity.all_abilities) + border_cost(tile)
+            border, border_types = border_cost(tile)
+            terrain += border_types if border.positive?
+            tile_cost(old_tile, entity.all_abilities) + border
           end
 
         entity.spend(cost, @game.bank) if cost.positive?
@@ -269,23 +272,38 @@ module Engine
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile ##{tile.name}"\
          " with rotation #{rotation} on #{hex.name}"
+
+        return unless terrain.any?
+
+        @game.all_companies_with_ability(:tile_income) do |company, ability|
+          if terrain.include?(ability.terrain)
+            # If multiple borders are connected bonus counts each individually
+            income = ability.income * terrain.find_all { |t| t == ability.terrain }.size
+            @bank.spend(income, company.owner)
+            @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
+            " for #{ability.terrain} tile with #{company.name}"
+          end
+        end
       end
 
       def border_cost(tile)
         hex = tile.hex
+        types = []
 
-        tile.borders.dup.sum do |border|
+        total_cost = tile.borders.dup.sum do |border|
           next 0 unless (cost = border.cost)
 
           edge = border.edge
           neighbor = hex.neighbors[edge]
           next 0 if !hex.targeting?(neighbor) || !neighbor.targeting?(hex)
 
+          types << border.type
           tile.borders.delete(border)
           neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
 
           cost
         end
+        [total_cost, types]
       end
 
       def tile_cost(tile, abilities)
