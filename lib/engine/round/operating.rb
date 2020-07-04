@@ -681,6 +681,7 @@ module Engine
 
         trains.each do |train|
           next unless train.obsolete
+
           rusted_trains << train.name
           train.rust!
         end
