@@ -194,7 +194,7 @@ module View
         },
         on: { click: change_anchor },
       }
-      route_anchor == anchor[1..-1] ? a_props[:style][:textDecoration] = 'underline' : ''
+      a_props[:style][:textDecoration] = route_anchor == anchor[1..-1] ? 'underline' : 'none'
       li_props = {
         style: {
           float: 'left',

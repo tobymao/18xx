@@ -28,10 +28,9 @@ module View
               'dominant-baseline': 'central',
               transform: 'translate(0 -1)',
             },
-            style: {
-              fontSize: @revenue > 99 ? '18px' : '',
-            },
           }
+
+          text_props[:style] = { fontSize: '18px' } if @revenue > 99
 
           h(
             :g,

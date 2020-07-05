@@ -7,13 +7,6 @@ a {
   color: currentColor;
   text-underline-offset: 0.2em;
 }
-nav a {
-  text-decoration: none;
-}
-nav a:focus, nav a:hover {
-  text-decoration: underline dotted;
-  outline: 0;
-}
 
 button {
   margin: 0.5rem 0.5rem 0 0;
