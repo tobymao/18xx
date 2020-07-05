@@ -292,7 +292,6 @@ module Engine
               "296"
             ],
            "when":"track",
-           "phases": ["2"],
            "count": 1
         }
       ]

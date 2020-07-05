@@ -53,7 +53,6 @@ module Engine
           name = "Pass (#{i + 1})"
 
           Company.new(
-            game: self,
             sym: name,
             name: name,
             value: 0,

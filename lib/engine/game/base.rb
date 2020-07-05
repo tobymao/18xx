@@ -537,7 +537,7 @@ module Engine
         self.class::COMPANIES.map do |company|
           next if players.size < (company[:min_players] || 0)
 
-          Company.new(game: self, **company)
+          Company.new(**company)
         end.compact
       end
 
@@ -556,7 +556,7 @@ module Engine
       end
 
       def init_minors
-        self.class::MINORS.map { |minor| Minor.new(game: self, **minor) }
+        self.class::MINORS.map { |minor| Minor.new(**minor) }
       end
 
       def init_corporations(stock_market)
@@ -564,7 +564,6 @@ module Engine
 
         self.class::CORPORATIONS.map do |corporation|
           Corporation.new(
-            game: self,
             min_price: min_price,
             capitalization: self.class::CAPITALIZATION,
             **corporation,
