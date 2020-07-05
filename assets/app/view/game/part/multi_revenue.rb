@@ -24,7 +24,7 @@ module View
 
             {
               text: text,
-              width: text.size * 13,
+              width: text.size * 16,
               color: phase == :diesel ? :gray : phase,
             }
           end
@@ -37,27 +37,28 @@ module View
           children = computed_revenues.flat_map.with_index do |rev, index|
             fill = COLOR[rev['color']]
             width = rev['width']
-            t_x = (26 * index) - (total_width * 0.5)
+            t_x = (32 * index) - (total_width * 0.5)
 
             rect_attrs = {
               fill: fill,
               transform: "translate(#{t_x} 0)",
-              height: 24,
+              height: 27,
               width: width,
               x: 0,
               y: -12,
             }
 
-            text_attrs = {
-              transform: "translate(#{t_x + (width * 0.5)} -1)",
-              fill: 'black',
-              'dominant-baseline': 'central',
-              'font-size': 20,
+            text_props = {
+              attrs: {
+                transform: "translate(#{t_x + (width * 0.5)} 0)",
+                fill: 'black',
+                'dominant-baseline': 'central',
+              },
             }
 
             [
               h(:rect, attrs: rect_attrs),
-              h(:text, { attrs: text_attrs }, rev['text']),
+              h('text.number', text_props, rev['text']),
             ]
           end
 
