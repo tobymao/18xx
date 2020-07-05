@@ -545,12 +545,12 @@ module Engine
         entity.companies.delete(company)
 
         company.abilities(:assign_corporation) do |ability|
-          Assignable.remove_from_all!(@game.corporations, company.sym) do |unassigned|
+          Assignable.remove_from_all!(@game.corporations, company.id) do |unassigned|
             unless unassigned.name == @current_entity.name
               log_later << "#{company.name} is unassigned from #{unassigned.name}"
             end
           end
-          @current_entity.assign!(company.sym)
+          @current_entity.assign!(company.id)
           ability.use!
           log_later << "#{company.name} is assigned to #{@current_entity.name}"
         end

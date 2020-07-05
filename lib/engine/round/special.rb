@@ -97,8 +97,7 @@ module Engine
             target.assign!(company.id)
             company.abilities(:assign_hexes, &:use!)
             @game.log << "#{company.name} is assigned to #{target.name}"
-          end
-          if target.is_a?(Corporation) && company.abilities(:assign_corporation)
+          elsif target.is_a?(Corporation) && company.abilities(:assign_corporation)
             Assignable.remove_from_all!(@game.corporations, company.id) do |unassigned|
               @game.log << "#{company.name} is unassigned from #{unassigned.name}"
             end
