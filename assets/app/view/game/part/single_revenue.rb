@@ -26,7 +26,7 @@ module View
             attrs: {
               fill: 'black',
               'dominant-baseline': 'central',
-              transform: 'translate(0 -1)'
+              transform: 'translate(0 -1)',
             },
           }
 
