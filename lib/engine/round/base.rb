@@ -240,6 +240,10 @@ module Engine
 
         raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}" unless old_tile.upgrades_to?(tile)
 
+        color = tile.color
+        phase = @game.phase
+        raise GameError, "Not allowed to lay #{color} tiles in Phase #{phase.name}" unless phase.tiles.include?(color)
+
         @game.tiles.delete(tile)
         @game.tiles << old_tile unless old_tile.preprinted
 
