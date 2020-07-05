@@ -30,11 +30,11 @@ require_relative '../train'
 module Engine
   module Game
     class Base
-      attr_reader :actions, :bank, :bankruptcies, :cert_limit, :cities, :companies, :corporations,
+      attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
                   :round, :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
                   :round_history
-      attr_writer :bankruptcies
+      attr_accessor :bankruptcies
 
       DEV_STAGE = :prealpha
 
