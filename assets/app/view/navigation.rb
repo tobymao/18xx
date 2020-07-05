@@ -21,7 +21,6 @@ module View
       props = {
         style: {
           display: 'flex',
-          marginBottom: '1.5vmin',
           paddingBottom: '1vmin',
           'box-shadow': '0 2px 0 0 gainsboro',
           'justify-content': 'space-between',

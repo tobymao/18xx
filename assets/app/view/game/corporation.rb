@@ -32,7 +32,7 @@ module View
 
         unless @corporation.minor?
           children << render_shares
-          children << h(Companies, owner: @corporation, table: true, game: @game) if @corporation.companies.any?
+          children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
         end
 
         if @corporation.owner
@@ -84,7 +84,7 @@ module View
           style: {
             grid: '1fr / auto auto auto',
             gap: '0 0.2rem',
-            padding: '0.2rem 0.5rem',
+            padding: '0.2rem 0.2rem 0.2rem 0.4rem',
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
           },
@@ -96,26 +96,18 @@ module View
             'justify-self': 'start',
           },
         }
+        holdings_props = {
+          style: {
+            grid: '1fr / repeat(auto-fit, auto)',
+            gridAutoFlow: 'column',
+            gap: '0 0.4rem',
+          },
+        }
 
         holdings =
           if !@corporation.corporation? || @corporation.floated?
-            holdings_props = {
-              style: {
-                grid: '1fr / 1fr 1fr',
-                gap: '0 0.3rem',
-              },
-            }
-            h(:div, holdings_props, [
-              render_trains,
-              render_cash,
-            ])
+            h(:div, holdings_props, [render_trains, render_cash])
           else
-            holdings_props = {
-              style: {
-                grid: '1fr / auto-flow',
-                gap: '0 0.3rem',
-              },
-            }
             h(:div, holdings_props, "#{@corporation.percent_to_float}% to float")
           end
 

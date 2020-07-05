@@ -77,14 +77,10 @@ module View
           h(Game::StockMarket, game: @game, explain_colors: true)
         when 'tiles'
           h(Game::TileManifest, tiles: @game.tiles, all_tiles: @game.init_tiles, layout: @game.layout)
-        when 'companies'
-          h(Game::Companies, game: @game, user: @user)
-        when 'corporations'
-          h(Game::Corporations, game: @game, user: @user)
+        when 'entities'
+          h(Game::Entities, game: @game)
         when 'info'
           h(Game::GameInfo, game: @game)
-        when 'players'
-          h(Game::Players, game: @game)
         when 'spreadsheet'
           h(Game::Spreadsheet, game: @game)
         when 'tools'
@@ -132,7 +128,7 @@ module View
       }
 
       h(:div, props, [
-        tabs,
+        menu,
         page,
       ])
     end
@@ -149,13 +145,16 @@ module View
       `document.title = #{title}`
     end
 
-    def tabs
-      props = {
+    def menu
+      nav_props = {
+        attrs: {
+          role: 'navigation',
+          'aria-label': 'Game',
+        },
         style: {
           overflow: 'auto',
           position: 'sticky',
-          padding: '1.5rem 2vmin',
-          margin: '-2vmin -2vmin 2vmin -2vmin',
+          margin: '-1px -2vmin 2vmin -2vmin',
           borderBottom: "1px solid #{color_for(:font2)}",
           top: '0',
           'background-color': color_for(:bg2),
@@ -164,47 +163,47 @@ module View
         },
       }
 
-      buttons = [
-        tab_button('Game'),
-        tab_button('Players', '#players'),
-        tab_button('Corporations', '#corporations'),
-        tab_button('Map', '#map'),
-        tab_button('Market', '#market'),
-        tab_button('Info', '#info'),
-        tab_button('Tiles', '#tiles'),
+      menu_items = [
+        item('Game'),
+        item('Entities', '#entities'),
+        item('Map', '#map'),
+        item('Market', '#market'),
+        item('Info', '#info'),
+        item('Tiles', '#tiles'),
+        item('Spreadsheet', '#spreadsheet'),
+        item('Tools', '#tools'),
       ]
 
-      buttons << tab_button('Companies', '#companies') unless @game.companies.all?(&:closed?)
-
-      buttons.concat([
-        tab_button('Spreadsheet', '#spreadsheet'),
-        tab_button('Tools', '#tools'),
-      ])
-
-      h(:div, props, [
-        h(:div, { style: { width: 'max-content' } }, buttons),
+      h('nav#game_menu', nav_props, [
+        h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),
       ])
     end
 
-    def tab_button(name, anchor = '')
+    def item(name, anchor = '')
       change_anchor = lambda do
         store(:app_route, "#{@app_route.split('#').first}#{anchor}")
       end
 
-      props = {
+      a_props = {
         attrs: {
           href: anchor,
           onclick: 'return false',
         },
         style: {
-          'margin': '0 2vmin 2vmin 0',
           'color': color_for(:font2),
           'text-decoration': route_anchor == anchor[1..-1] ? '' : 'none',
         },
         on: { click: change_anchor },
       }
+      li_props = {
+        style: {
+          float: 'left',
+          margin: '0 0.5rem',
+          listStyle: 'none',
+        },
+      }
 
-      h('a.game__nav', props, name)
+      h(:li, li_props, [h(:a, a_props, name)])
     end
 
     def route_anchor
