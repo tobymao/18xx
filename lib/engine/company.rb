@@ -59,6 +59,10 @@ module Engine
       false
     end
 
+    def find_token_by_type(token_type)
+      return Token.new(@owner)
+    end
+
     def inspect
       "<#{self.class.name}: #{id}>"
     end

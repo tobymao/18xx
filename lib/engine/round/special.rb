@@ -93,7 +93,7 @@ module Engine
           company.abilities(:token) do |_, _|
             next unless city.reserved_by?(company)
 
-            token = Token.new(company.owner)
+            token = action.token
             action.city.place_token(company.owner, token, free: true)
             company.abilities(:token, &:use!)
             @game.graph.clear
