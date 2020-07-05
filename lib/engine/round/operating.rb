@@ -633,6 +633,7 @@ module Engine
 
         player.spend(player.cash, @bank)
 
+        @game.bankruptcies += 1
         @bankrupt = true
       end
 
