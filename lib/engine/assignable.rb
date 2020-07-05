@@ -19,14 +19,12 @@ module Engine
     end
 
     def self.remove_from_all!(assignables, key)
-      unassigned = []
       assignables.each do |assignable|
         if assignable.assigned?(key)
-          unassigned << assignable.name
+          yield assignable if block_given?
           assignable.remove_assignment!(key)
         end
       end
-      unassigned
     end
   end
 end
