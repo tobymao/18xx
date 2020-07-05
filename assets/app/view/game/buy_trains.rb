@@ -228,11 +228,9 @@ module View
         }
 
         rows = @depot.upcoming.group_by(&:name).flat_map do |_, trains|
-          train = trains.first
-          names =  train.variants.values.map { |var| var[:name] }
-          prices = train.variants.values.map { |var| var[:price] }
-          [h(:div, names.join(',')),
-           h(:div, prices.map { |p| @game.format_currency(p) }.join(',')),
+          names_to_prices = trains.first.names_to_prices
+          [h(:div, names_to_prices.keys.join(',')),
+           h(:div, names_to_prices.values.map { |p| @game.format_currency(p) }.join(',')),
            h(:div, trains.size)]
         end
 
