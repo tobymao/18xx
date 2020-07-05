@@ -540,12 +540,19 @@ module Engine
           raise GameError, "Price must be between #{@game.format_currency(min)} and #{@game.format_currency(max)}"
         end
 
+        log_later = []
         company.owner = @current_entity
         entity.companies.delete(company)
 
         company.abilities(:assign_corporation) do |ability|
-          @current_entity.assign!(company.sym)
+          Assignable.remove_from_all!(@game.corporations, company.id) do |unassigned|
+            unless unassigned.name == @current_entity.name
+              log_later << "#{company.name} is unassigned from #{unassigned.name}"
+            end
+          end
+          @current_entity.assign!(company.id)
           ability.use!
+          log_later << "#{company.name} is assigned to #{@current_entity.name}"
         end
         remove_just_sold_company_abilities
         @just_sold_company = company
@@ -553,6 +560,9 @@ module Engine
         @current_entity.companies << company
         @current_entity.spend(price, entity)
         @log << "#{@current_entity.name} buys #{company.name} from #{entity.name} for #{@game.format_currency(price)}"
+        log_later.each do |l|
+          @log << l
+        end
       end
 
       def move_token(action)

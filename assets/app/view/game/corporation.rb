@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'view/game/actionable'
 require 'view/game/companies'
 
 module View
@@ -7,6 +8,7 @@ module View
     class Corporation < Snabberb::Component
       include Lib::Color
       needs :corporation
+      needs :selected_company, default: nil, store: true
       needs :selected_corporation, default: nil, store: true
       needs :game, store: true
       needs :display, default: 'inline-block'
@@ -15,6 +17,12 @@ module View
         select_corporation = lambda do
           selected_corporation = selected? ? nil : @corporation
           store(:selected_corporation, selected_corporation)
+
+          if can_assign_corporation?
+            process_action(Engine::Action::Assign.new(@selected_company, target: @corporation))
+            store(:selected_corporation, nil)
+            store(:selected_company, nil)
+          end
         end
 
         card_style = {
@@ -289,6 +297,10 @@ module View
 
       def selected?
         @corporation == @selected_corporation
+      end
+
+      def can_assign_corporation?
+        @selected_corporation && @selected_company && @game.special.can_assign_corporation?
       end
     end
   end
