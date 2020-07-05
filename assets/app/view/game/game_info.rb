@@ -140,7 +140,7 @@ module View
         @depot.trains.group_by(&:name).each do |name, trains|
           first = trains.first
           rust_schedule[first.rusts_on] = Array(rust_schedule[first.rusts_on]).append(name)
-          obsolete_schedule[trains.first.obsolete_on] = Array(obsolete_schedule[first.obsolete_on]).append(name)
+          obsolete_schedule[first.obsolete_on] = Array(obsolete_schedule[first.obsolete_on]).append(name)
         end
 
         rows = @depot.upcoming.group_by(&:name).map do |name, trains|
@@ -148,12 +148,12 @@ module View
           discounts = train.discount&.group_by { |_k, v| v }&.map do |price, price_discounts|
             price_discounts.map(&:first).join(',') + ' => ' + @game.format_currency(price)
           end
-          names =  train.variants.map { |var| var[1][:name] }
-          prices = train.variants.map { |var| var[1][:price] }
+          names =  train.variants.values.map { |var| var[:name] }
+          prices = train.variants.values.map { |var| var[:price] }
 
           h(:tr, [
-            h(:td, td_props, names.join(', ')),
-            h(:td, td_props, prices.map { |p| @game.format_currency(p) }.join(', ')),
+            h(:td, td_props, names.join(',')),
+            h(:td, td_props, prices.map { |p| @game.format_currency(p) }.join(',')),
             h(:td, td_props, trains.size),
             h(:td, td_props, obsolete_schedule[name]&.join(',') || 'None'),
             h(:td, td_props, rust_schedule[name]&.join(',') || 'None'),
