@@ -15,7 +15,7 @@ module View
 
           circle_props = {
             attrs: {
-              r: 15,
+              r: @revenue > 99 ? 17 : 15,
               fill: 'white',
             },
             style: {
@@ -27,6 +27,9 @@ module View
               fill: 'black',
               'dominant-baseline': 'central',
               transform: 'translate(0 -1)',
+            },
+            style: {
+              fontSize: @revenue > 99 ? '18px' : '',
             },
           }
 
