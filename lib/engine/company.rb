@@ -59,8 +59,8 @@ module Engine
       false
     end
 
-    def find_token_by_type(token_type)
-      return Token.new(@owner)
+    def find_token_by_type(_token_type)
+      Token.new(@owner)
     end
 
     def inspect
