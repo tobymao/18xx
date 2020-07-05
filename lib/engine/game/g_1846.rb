@@ -296,6 +296,10 @@ module Engine
           @log << "-- Event: #{corp}'s #{company} token removed from #{hex} --"
         end
       end
+
+      def bankruptcy_limit_reached?
+        return @bankruptcies >= @players.size - 1
+      end
     end
   end
 end

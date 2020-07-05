@@ -30,10 +30,11 @@ require_relative '../train'
 module Engine
   module Game
     class Base
-      attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
+      attr_reader :actions, :bank, :bankruptcies, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
                   :round, :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
                   :round_history
+      attr_writer :bankruptcies
 
       DEV_STAGE = :prealpha
 
@@ -232,6 +233,7 @@ module Engine
         @finished = false
         @log = []
         @actions = []
+        @bankruptcies = 0
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
 
@@ -757,7 +759,7 @@ module Engine
       end
 
       def game_end_reason
-        return :bankrupt, :immediate if @round.is_a?(Round::Operating) && @round.bankrupt
+        return :bankrupt, :immediate if @round.is_a?(Round::Operating) && bankruptcy_limit_reached?
         return :bank, :full_round if @bank.broken?
       end
 
@@ -831,6 +833,10 @@ module Engine
             instance_variable_get(ivar)[id]
           end
         end
+      end
+
+      def bankruptcy_limit_reached?
+        return @bankruptcies > 0
       end
     end
   end
