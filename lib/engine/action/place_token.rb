@@ -11,7 +11,7 @@ module Engine
         @entity = entity
         @city = city
         @slot = slot
-        @token = @entity.find_token_by_type(token_type) if defined? @entity.find_token_by_type
+        @token = @entity.find_token_by_type(token_type)
       end
 
       def self.h_to_args(h, game)
@@ -26,7 +26,7 @@ module Engine
         {
           'city' => @city.id,
           'slot' => @slot,
-          'token_type' => @token.nil? || @token.type == :normal ? nil : @token.type,
+          'token_type' => @token.type == :normal ? nil : @token.type,
         }
       end
     end
