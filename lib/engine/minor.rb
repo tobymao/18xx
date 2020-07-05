@@ -18,9 +18,10 @@ module Engine
 
     attr_reader :name, :full_name
 
-    def initialize(sym:, name:, **opts)
+    def initialize(sym:, name:, game: nil, **opts)
       @name = sym
       @full_name = name
+      @game = game
       init_operator(opts)
       init_abilities(opts[:abilities])
     end

@@ -9,15 +9,16 @@ module Engine
       include Helper::Type
       include Ownable
 
-      attr_reader :type, :owner_type, :remove, :when, :count
+      attr_reader :type, :owner_type, :remove, :when, :count, :phases
 
-      def initialize(type:, owner_type: nil, count: nil, remove: nil, **opts)
+      def initialize(type:, owner_type: nil, count: nil, remove: nil, phases: nil, **opts)
         @type = type&.to_sym
         @owner_type = owner_type&.to_sym
         @when = opts.delete(:when)&.to_s
         @count = count
         @used = false
         @remove = remove&.to_s
+        @phases = phases
 
         setup(**opts)
       end

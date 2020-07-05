@@ -24,7 +24,7 @@ module Engine
     attr_reader :capitalization, :companies, :min_price, :name, :full_name
     attr_writer :par_price
 
-    def initialize(sym:, name:, **opts)
+    def initialize(sym:, name:, game: nil, **opts)
       @name = sym
       @full_name = name
       [
@@ -43,6 +43,8 @@ module Engine
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
+
+      @game = game
 
       init_abilities(opts[:abilities])
       init_operator(opts)

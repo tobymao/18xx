@@ -53,6 +53,7 @@ module Engine
         corporations = self.class::CORPORATIONS.map do |corporation|
           corporation[:needs_token_to_par] = true if corporation[:sym] == 'CN'
           Corporation.new(
+            game: self,
             min_price: min_price,
             capitalization: self.class::CAPITALIZATION,
             **corporation,

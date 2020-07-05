@@ -11,7 +11,7 @@ module Engine
     attr_accessor :desc, :max_price, :min_price, :revenue, :discount
     attr_reader :name, :sym, :value
 
-    def initialize(sym:, name:, value:, revenue: 0, desc: '', abilities: [], **opts)
+    def initialize(sym:, name:, value:, revenue: 0, desc: '', abilities: [], game: nil, **opts)
       @sym = sym
       @name = name
       @value = value
@@ -21,6 +21,7 @@ module Engine
       @closed = false
       @min_price = @value / 2
       @max_price = @value * 2
+      @game = game
 
       init_abilities(abilities)
     end

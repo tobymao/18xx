@@ -35,6 +35,9 @@ module Engine
           true
         end
 
+      phase = @game&.phase&.current && @game.phase.current['name']
+      return nil if phase && ability.phases && !ability.phases.include?(phase)
+
       return nil if time && ability.when != time.to_s
       return nil unless correct_owner_type
 
