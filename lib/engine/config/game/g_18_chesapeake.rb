@@ -347,7 +347,7 @@ module Engine
       "name": "Baltimore & Ohio Railroad",
       "value": 100,
       "revenue": 0,
-      "desc": "Purchasing player immediately takes a 10% share of the B&O (This does not close the private company). This private company has no other special ability.",
+      "desc": "Purchasing player immediately takes a 10% share of the B&O. This does not close the private company. This private company has no other special ability.",
       "sym": "B&OR",
       "abilities": [
         {
