@@ -1,11 +1,17 @@
-* { font-family: 'Inconsolata', monospace; }
+* { font-family: Lato, sans; }
 
 a {
   color: currentColor;
   text-underline-offset: 0.2em;
 }
+nav a {
+  text-decoration: none;
+}
+nav a.active {
+  text-decoration: underline;
+}
 nav a:focus, nav a:hover {
-  font-weight: bold;
+  text-decoration: underline dotted;
   outline: 0;
 }
 
@@ -217,6 +223,11 @@ nav#game_menu {
   padding: 0;
 }
 
+text.number {
+  font-size: 21px;
+  font-weight: 300;
+}
+
 .small_font {
   font-size: 90%;
 }
@@ -244,7 +255,6 @@ nav#game_menu {
 .tile__text {
   fill: black;
   text-anchor: middle;
-  alignment-baseline: middle;
   dominant-baseline: middle;
   pointer-events: none;
 }
