@@ -10,9 +10,6 @@ a {
 nav a {
   text-decoration: none;
 }
-nav a.active {
-  text-decoration: underline;
-}
 nav a:focus, nav a:hover {
   text-decoration: underline dotted;
   outline: 0;

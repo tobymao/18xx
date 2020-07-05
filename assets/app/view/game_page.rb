@@ -184,7 +184,6 @@ module View
         store(:app_route, "#{@app_route.split('#').first}#{anchor}")
       end
 
-      a_class = route_anchor == anchor[1..-1] ? 'active' : ''
       a_props = {
         attrs: {
           href: anchor,
@@ -195,6 +194,7 @@ module View
         },
         on: { click: change_anchor },
       }
+      route_anchor == anchor[1..-1] ? a_props[:style][:textDecoration] = 'underline' : ''
       li_props = {
         style: {
           float: 'left',
@@ -203,7 +203,7 @@ module View
         },
       }
 
-      h(:li, li_props, [h("a.#{a_class}", a_props, name)])
+      h(:li, li_props, [h(:a, a_props, name)])
     end
 
     def route_anchor
