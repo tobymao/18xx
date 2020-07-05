@@ -9,22 +9,24 @@ module View
       include Actionable
       include Lib::Color
       needs :corporation
-      needs :round, default: nil, store: true
+      needs :selected_company, default: nil, store: true
       needs :selected_corporation, default: nil, store: true
       needs :game, store: true
       needs :display, default: 'inline-block'
 
       def render
         select_corporation = lambda do
-          if @round&.can_assign_corporation?
-            puts "Assigning corporation"
-            process_action(Engine::Action::Assign.new(@round.current_entity, target: @corporation))
-            #store(:selected_corporation, nil)
-            puts "Done assigning corporation"
-          else
-            selected_corporation = selected? ? nil : @corporation
-            store(:selected_corporation, selected_corporation)
-          end
+          selected_corporation = selected? ? nil : @corporation
+          store(:selected_corporation, selected_corporation)
+
+          puts "#{@round.inspect}"
+
+
+          if selected_corporation && @selected_company && @game.special.can_assign_corporation?
+            process_action(Engine::Action::Assign.new(@selected_company, target: @corporation))
+            store(:selected_corporation, nil)
+            store(:selected_company, nil)
+          end       
         end
 
         card_style = {
