@@ -91,6 +91,8 @@ module Engine
           company.close!
         when Action::Assign
           target = action.target
+          raise GameError, "#{company.name} is already assigned to #{target.name}" if target.assigned?(company.id)
+
           if target.is_a?(Hex) && company.abilities(:assign_hexes)
             target.assign!(company.id)
             company.abilities(:assign_hexes, &:use!)
@@ -98,7 +100,6 @@ module Engine
           end
           if target.is_a?(Corporation) && company.abilities(:assign_corporation)
             target.assign!(company.id)
-            company.abilities(:assign_corporation, &:use!)
             @game.log << "#{company.name} is assigned to #{target.name}"
           end
         when Action::PlaceToken

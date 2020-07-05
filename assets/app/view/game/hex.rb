@@ -103,7 +103,9 @@ module View
 
         case @role
         when :map
-          return process_action(Engine::Action::Assign.new(@round.current_entity, target: @hex)) if @round&.can_assign_hex?
+          if @round&.can_assign_hex?
+            return process_action(Engine::Action::Assign.new(@round.current_entity, target: @hex))
+          end
           return unless @round&.can_lay_track?
 
           if @selected && (tile = @tile_selector&.tile)

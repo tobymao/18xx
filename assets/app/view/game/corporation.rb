@@ -19,14 +19,11 @@ module View
           selected_corporation = selected? ? nil : @corporation
           store(:selected_corporation, selected_corporation)
 
-          puts "#{@round.inspect}"
-
-
-          if selected_corporation && @selected_company && @game.special.can_assign_corporation?
+          if can_assign_corporation?
             process_action(Engine::Action::Assign.new(@selected_company, target: @corporation))
             store(:selected_corporation, nil)
             store(:selected_company, nil)
-          end       
+          end
         end
 
         card_style = {
@@ -301,6 +298,10 @@ module View
 
       def selected?
         @corporation == @selected_corporation
+      end
+
+      def can_assign_corporation?
+        @selected_corporation && @selected_company && @game.special.can_assign_corporation?
       end
     end
   end
