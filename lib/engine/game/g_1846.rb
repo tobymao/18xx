@@ -298,7 +298,7 @@ module Engine
       end
 
       def bankruptcy_limit_reached?
-        return @bankruptcies >= @players.size - 1
+        @bankruptcies >= @players.size - 1
       end
     end
   end

@@ -836,7 +836,7 @@ module Engine
       end
 
       def bankruptcy_limit_reached?
-        return @bankruptcies > 0
+        @bankruptcies.positive?
       end
     end
   end
