@@ -52,6 +52,10 @@ module Engine
       @variant.each { |k, v| instance_variable_set("@#{k}", v) }
     end
 
+    def names_to_prices
+      @variants.transform_values { |v| v[:price] }
+    end
+
     def price(exchange_train = nil)
       @price - (@discount&.dig(exchange_train&.name) || 0)
     end

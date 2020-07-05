@@ -227,9 +227,10 @@ module View
           },
         }
 
-        rows = @depot.upcoming.group_by(&:name).flat_map do |name, trains|
-          [h(:div, name),
-           h(:div, @game.format_currency(trains.first.price)),
+        rows = @depot.upcoming.group_by(&:name).flat_map do |_, trains|
+          names_to_prices = trains.first.names_to_prices
+          [h(:div, names_to_prices.keys.join(',')),
+           h(:div, names_to_prices.values.map { |p| @game.format_currency(p) }.join(',')),
            h(:div, trains.size)]
         end
 
