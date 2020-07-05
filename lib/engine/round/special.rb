@@ -94,12 +94,12 @@ module Engine
           if target.is_a?(Hex) && company.abilities(:assign_hexes)
             target.assign!(company.id)
             company.abilities(:assign_hexes, &:use!)
-            @game.log << "#{company.name} is assigned to #{hex.name}"
+            @game.log << "#{company.name} is assigned to #{target.name}"
           end
-          if target.is_a?(Corportation) && company.abilities(:assign_corporation)
+          if target.is_a?(Corporation) && company.abilities(:assign_corporation)
             target.assign!(company.id)
             company.abilities(:assign_corporation, &:use!)
-            @game.log << "#{company.name} is assigned to #{hex.name}"
+            @game.log << "#{company.name} is assigned to #{target.name}"
           end
         when Action::PlaceToken
           city = action.city
