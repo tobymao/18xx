@@ -99,7 +99,9 @@ module Engine
             @game.log << "#{company.name} is assigned to #{target.name}"
           end
           if target.is_a?(Corporation) && company.abilities(:assign_corporation)
+            unassigned = Assignable.remove_from_all!(@game.corporations, company.id)
             target.assign!(company.id)
+            @game.log << "#{company.name} is unassigned from #{unassigned.join(', ')}" unless unassigned.empty?
             @game.log << "#{company.name} is assigned to #{target.name}"
           end
         when Action::PlaceToken

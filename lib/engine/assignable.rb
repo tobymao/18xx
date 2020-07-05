@@ -22,8 +22,8 @@ module Engine
       unassigned = []
       assignables.each do |assignable|
         if assignable.assigned?(key)
-          unassigned << assignable
-          assignable.remove_assignment(key)
+          unassigned << assignable.name
+          assignable.remove_assignment!(key)
         end
       end
       unassigned
