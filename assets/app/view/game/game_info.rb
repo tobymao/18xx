@@ -136,8 +136,11 @@ module View
         }
 
         rust_schedule = {}
+        obsolete_schedule = {}
         @depot.trains.group_by(&:name).each do |name, trains|
-          rust_schedule[trains.first.rusts_on] = Array(rust_schedule[trains.first.rusts_on]).append(name)
+          first = trains.first
+          rust_schedule[first.rusts_on] = Array(rust_schedule[first.rusts_on]).append(name)
+          obsolete_schedule[trains.first.obsolete_on] = Array(obsolete_schedule[first.obsolete_on]).append(name)
         end
 
         rows = @depot.upcoming.group_by(&:name).map do |name, trains|
@@ -145,10 +148,14 @@ module View
           discounts = train.discount&.group_by { |_k, v| v }&.map do |price, price_discounts|
             price_discounts.map(&:first).join(',') + ' => ' + @game.format_currency(price)
           end
+          names =  train.variants.map { |var| var[1][:name] }
+          prices = train.variants.map{ |var| var[1][:price] }
+
           h(:tr, [
-            h(:td, td_props, name),
-            h(:td, td_props, @game.format_currency(train.price)),
+            h(:td, td_props, names.join(', ')),
+            h(:td, td_props, prices.map{ |p| @game.format_currency(p) }.join(', ')),
             h(:td, td_props, trains.size),
+            h(:td, td_props, obsolete_schedule[name]&.join(',') || 'None'),
             h(:td, td_props, rust_schedule[name]&.join(',') || 'None'),
             h(:td, td_props, discounts&.join(' ')),
             h(:td, td_props, train.available_on),
@@ -162,6 +169,7 @@ module View
               h(:th, td_props, 'Type'),
               h(:th, td_props, 'Price'),
               h(:th, td_props, 'Remaining'),
+              h(:th, td_props, 'Phases out'),
               h(:th, td_props, 'Rusts'),
               h(:th, td_props, 'Upgrade Discount'),
               h(:th, td_props.merge(attrs: { title: 'Available after purchase of first train of type' }), 'Available'),
