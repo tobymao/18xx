@@ -21,8 +21,8 @@ module Engine
     def self.remove_from_all!(assignables, key)
       assignables.each do |assignable|
         if assignable.assigned?(key)
-          yield assignable if block_given?
           assignable.remove_assignment!(key)
+          yield assignable if block_given?
         end
       end
     end
