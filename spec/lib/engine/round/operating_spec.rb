@@ -368,6 +368,7 @@ module Engine
         it 'can handle forks' do
           subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('58'), hex: hex_g10, rotation: 0))
           subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('57'), hex: hex_g12, rotation: 0))
+          subject.phase.next!
           subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('15'), hex: hex_g12, rotation: 3))
           subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('9'), hex: hex_h13, rotation: 1))
 
@@ -402,6 +403,7 @@ module Engine
         it 'allows upgrading K4 if Takumatsu is owned by any corporation' do
           company.owner = corporation
           corporation.companies << company
+          subject.phase.next!
           subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('440'), hex: hex_k4, rotation: 0))
         end
       end
