@@ -59,6 +59,12 @@ module Engine
       false
     end
 
+    def find_token_by_type(_token_type)
+      raise GameError, "#{name} does not have a token" unless abilities(:token)
+
+      Token.new(@owner)
+    end
+
     def inspect
       "<#{self.class.name}: #{id}>"
     end

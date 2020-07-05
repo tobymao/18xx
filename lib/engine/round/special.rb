@@ -20,7 +20,7 @@ module Engine
       end
 
       def map_abilities
-        tile_laying_ability || assign_ability
+        tile_laying_ability || assign_ability || token_ability
       end
 
       def tile_laying_ability
@@ -31,6 +31,10 @@ module Engine
         @current_entity&.abilities(:assign_hexes)
       end
 
+      def token_ability
+        @current_entity&.abilities(:token)
+      end
+
       def can_assign?
         !!assign_ability
       end
@@ -39,8 +43,21 @@ module Engine
         !!tile_laying_ability
       end
 
+      def can_place_token?
+        !!token_ability
+      end
+
       def connected_hexes
         hexes = (assign_ability || tile_laying_ability).hexes || []
+
+        hexes.map do |coordinates|
+          hex = @game.hex_by_id(coordinates)
+          [hex, hex.neighbors.keys]
+        end.to_h
+      end
+
+      def reachable_hexes
+        hexes = token_ability.hexes || []
 
         hexes.map do |coordinates|
           hex = @game.hex_by_id(coordinates)
@@ -68,6 +85,22 @@ module Engine
           hex.assign!(company.id)
           company.abilities(:assign_hexes, &:use!)
           @game.log << "#{company.name} activates #{hex.name}"
+        when Action::PlaceToken
+          city = action.city
+          hex = action.city.hex
+
+          placed = false
+          company.abilities(:token) do |_, _|
+            next unless city.reserved_by?(company)
+
+            token = action.token
+            action.city.place_token(company.owner, token, free: true)
+            company.abilities(:token, &:use!)
+            @game.graph.clear
+            @log << "#{company.name} places token in #{hex.id} for #{company.owner.name}"
+            placed = true
+          end
+          raise GameError, "#{company.name} can't play token there" unless placed
         end
       end
 
