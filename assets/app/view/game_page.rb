@@ -78,7 +78,7 @@ module View
         when 'tiles'
           h(Game::TileManifest, tiles: @game.tiles, all_tiles: @game.init_tiles, layout: @game.layout)
         when 'entities'
-          h(Game::Entities, game: @game)
+          h(Game::Entities, game: @game, user: @user)
         when 'info'
           h(Game::GameInfo, game: @game)
         when 'spreadsheet'

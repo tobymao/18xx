@@ -6,7 +6,7 @@ module View
   module Game
     class Entities < Snabberb::Component
       needs :game
-      needs :user, default: nil, store: true
+      needs :user
 
       def render
         div_props = {
