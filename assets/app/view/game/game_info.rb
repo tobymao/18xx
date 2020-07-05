@@ -149,11 +149,11 @@ module View
             price_discounts.map(&:first).join(',') + ' => ' + @game.format_currency(price)
           end
           names =  train.variants.map { |var| var[1][:name] }
-          prices = train.variants.map{ |var| var[1][:price] }
+          prices = train.variants.map { |var| var[1][:price] }
 
           h(:tr, [
             h(:td, td_props, names.join(', ')),
-            h(:td, td_props, prices.map{ |p| @game.format_currency(p) }.join(', ')),
+            h(:td, td_props, prices.map { |p| @game.format_currency(p) }.join(', ')),
             h(:td, td_props, trains.size),
             h(:td, td_props, obsolete_schedule[name]&.join(',') || 'None'),
             h(:td, td_props, rust_schedule[name]&.join(',') || 'None'),
