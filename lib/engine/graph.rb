@@ -20,7 +20,9 @@ module Engine
       @connected_paths.clear
       @reachable_hexes.clear
       @tokens.clear
-      @routes.clear
+      @routes.delete_if do |_, route|
+        !route[:route_train_purchase]
+      end
     end
 
     def route_info(corporation)
@@ -120,7 +122,7 @@ module Engine
 
         mandatory_nodes = 0
         optional_nodes = 0
-        local_nodes.each do |p_node, _truth|
+        local_nodes.each do |p_node, _|
           case p_node.route
           when :mandatory
             mandatory_nodes += 1
