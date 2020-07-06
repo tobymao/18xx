@@ -664,6 +664,15 @@ module Engine
 
       def init_company_abilities
         @companies.each do |company|
+          next unless (ability = company.abilities(:exchange))
+
+          if ability.from.include?('10%_par')
+            corporation = corporation_by_id(ability.corporation)
+            corporation.par_via_exchange = company
+          end
+        end
+
+        @companies.each do |company|
           next unless (ability = company.abilities(:share))
 
           case (share = ability.share)

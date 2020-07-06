@@ -133,11 +133,11 @@ module Engine
 
           share_price = action.share_price
           corporation = action.corporation
-          raise GameError, "#{corporation} cannot be parred" unless corporation.can_par?
+          raise GameError, "#{corporation} cannot be parred" unless corporation.can_par?(action.entity)
 
           @stock_market.set_par(corporation, share_price)
           share = corporation.shares.first
-          buy_shares(entity, share.to_bundle)
+          buy_shares(entity, share.to_bundle, exchange: corporation.par_via_exchange)
         end
       end
 
@@ -209,11 +209,12 @@ module Engine
         sell_and_change_price(shares, @share_pool, @stock_market)
       end
 
-      def buy_shares(entity, shares)
+      def buy_shares(entity, shares, exchange: nil)
         raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" unless can_buy?(shares)
 
-        @share_pool.buy_shares(entity, shares)
+        @share_pool.buy_shares(entity, shares, exchange: exchange)
         corporation = shares.corporation
+        exchange&.close!
         place_home_token(corporation) if @game.class::HOME_TOKEN_TIMING == :float && corporation.floated?
       end
 

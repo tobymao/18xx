@@ -16,7 +16,7 @@ module View
           margin: '0.5rem 0.5rem 0.5rem 0',
         }
 
-        return h(:div, 'Cannot Par') unless @corporation.can_par?
+        return h(:div, 'Cannot Par') unless @corporation.can_par?(@game.current_entity)
 
         par_values = @game.stock_market.par_prices.map do |share_price|
           par = lambda do
