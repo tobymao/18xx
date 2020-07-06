@@ -26,7 +26,7 @@ module View
       end.to_h
     end
 
-    def render_form(name, inputs)
+    def render_form(name, inputs, msg = nil)
       enter = lambda do |event|
         code = event.JS['keyCode']
         submit if code && code == 13
@@ -39,6 +39,7 @@ module View
       id = name.gsub(/\s/, '-').downcase
       h(:form, props, [
         h(:legend, name),
+        msg ? h(:p, msg) : '',
         h("div##{id}", inputs),
         h(:input, attrs: { type: :text }, style: { display: 'none' }),
       ])
