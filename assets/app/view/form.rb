@@ -35,7 +35,7 @@ module View
       props = {
         on: { keyup: enter },
       }
-      h2_props = { style: { marginBottom: '0.3rem' } }
+      h2_props = { style: { margin: '0 0 0.5rem 0' } }
 
       id = name.gsub(/\s/, '-').downcase
       h(:form, props, [
