@@ -11,6 +11,10 @@ module Engine
       GAME_LOCATION = 'Georgia, USA'
       GAME_RULES_URL = 'http://www.diogenes.sacramento.ca.us/18GA_Rules_v3_26.pdf'
       GAME_DESIGNER = 'Mark Derrick'
+
+      def operating_round(round_num)
+        Round::G18GA::Operating.new(@corporations, game: self, round_num: round_num)
+      end
     end
   end
 end

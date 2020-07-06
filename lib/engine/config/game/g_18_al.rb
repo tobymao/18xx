@@ -467,67 +467,81 @@ module Engine
    "phases":[
       {
          "name":"2",
+         "on":"2",
          "train_limit":4,
          "tiles":[
             "yellow"
-         ]
+         ],
+         "operating_rounds": 1
       },
       {
          "name":"3",
+         "on":"3",
          "train_limit":4,
          "tiles":[
             "yellow",
             "green"
          ],
+         "operating_rounds": 2,
          "buy_companies":true
       },
       {
          "name":"4",
+         "on":"4",
          "train_limit":3,
          "tiles":[
             "yellow",
             "green"
          ],
+         "operating_rounds": 2,
          "buy_companies":true
       },
       {
          "name":"5",
+         "on":"5",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
             "brown"
          ],
+         "operating_rounds": 3,
          "events":{
             "close_companies":true
          }
       },
       {
          "name":"6",
+         "on":"6",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
             "brown"
-         ]
+         ],
+         "operating_rounds": 3
       },
       {
          "name":"7",
+         "on":"7",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
             "brown"
-         ]
+         ],
+         "operating_rounds": 3
       },
       {
          "name":"4D",
+         "on":"4D",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
             "brown"
-         ]
+         ],
+         "operating_rounds": 3
       }
    ]
 }

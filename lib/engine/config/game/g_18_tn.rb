@@ -576,7 +576,8 @@ module Engine
          "train_limit":4,
          "tiles":[
             "yellow"
-         ]
+         ],
+         "operating_rounds": 1
       },
       {
          "name":"3",
@@ -585,6 +586,7 @@ module Engine
             "yellow",
             "green"
          ],
+         "operating_rounds": 2,
          "buy_companies":true
       },
       {
@@ -593,7 +595,8 @@ module Engine
          "tiles":[
             "yellow",
             "green"
-         ]
+         ],
+         "operating_rounds": 2
       },
       {
          "name":"5",
@@ -603,6 +606,7 @@ module Engine
             "green",
             "brown"
          ],
+         "operating_rounds": 3,
          "events":{
             "close_companies":true
          }
@@ -614,7 +618,8 @@ module Engine
             "yellow",
             "green",
             "brown"
-         ]
+         ],
+         "operating_rounds": 3
       },
       {
          "name":"8",
@@ -624,7 +629,8 @@ module Engine
             "green",
             "brown",
             "gray"
-         ]
+         ],
+         "operating_rounds": 3
       }
    ]
 }

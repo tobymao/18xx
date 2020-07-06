@@ -11,6 +11,10 @@ module Engine
       GAME_LOCATION = 'Tennessee, USA'
       GAME_RULES_URL = 'http://dl.deepthoughtgames.com/18TN-Rules.pdf'
       GAME_DESIGNER = 'Mark Derrick'
+
+      def operating_round(round_num)
+        Round::G18TN::Operating.new(@corporations, game: self, round_num: round_num)
+      end
     end
   end
 end
