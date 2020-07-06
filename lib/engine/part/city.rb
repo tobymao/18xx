@@ -10,8 +10,8 @@ module Engine
       attr_reader :slots, :tokens
 
       def initialize(revenue, **opts)
-        super(revenue, **opts)
-        @slots = opts[:slots].to_i
+        super
+        @slots = (opts[:slots] || 1).to_i
         @tokens = Array.new(@slots)
         @reservations = []
       end

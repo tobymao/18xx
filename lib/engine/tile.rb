@@ -74,7 +74,7 @@ module Engine
         Part::Path.new(params['a'], params['b'])
       when 'city'
         city = Part::City.new(params['revenue'],
-                              slots: params.fetch('slots', 1),
+                              slots: params['slots'],
                               groups: params['groups'],
                               hide: params['hide'],
                               visit_cost: params['visit_cost'],
