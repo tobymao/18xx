@@ -22,6 +22,7 @@ module View
         style: {
           display: 'flex',
           paddingBottom: '1vmin',
+          marginBottom: '1rem',
           'box-shadow': '0 2px 0 0 gainsboro',
           'justify-content': 'space-between',
         },
