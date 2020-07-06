@@ -39,7 +39,7 @@ module View
 
       id = name.gsub(/\s/, '-').downcase
       h(:form, props, [
-        h(:h2, h2_props, name),
+        h(:legend, [h(:h2, h2_props, name)]),
         h("div##{id}", inputs),
         h(:input, attrs: { type: :text }, style: { display: 'none' }),
       ])
