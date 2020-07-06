@@ -39,9 +39,9 @@ module View
         )
       end
 
-      msg = [h(:a, { attrs: { href: '/signup' } }, 'Signup'), ' or ', h(:a, { attrs: { href: '/login' } }, 'login'),
-             ' to play multiplayer.'] unless @user
-      render_form('Create New Game', inputs, msg)
+      description = [h(:a, { attrs: { href: '/signup' } }, 'Signup'), ' or ',
+                     h(:a, { attrs: { href: '/login' } }, 'login'), ' to play multiplayer.'] unless @user
+      render_form('Create New Game', inputs, description)
     end
 
     def render_inputs
