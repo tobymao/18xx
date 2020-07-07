@@ -10,6 +10,7 @@ module View
     needs :mode, default: :multi, store: true
     needs :num_players, default: 3, store: true
     needs :flash_opts, default: {}, store: true
+    needs :user, default: nil, store: true
 
     def render_content
       inputs = [
@@ -38,9 +39,9 @@ module View
         )
       end
 
-      h(:div, [
-        render_form('Create New Game - You need an account to play multiplayer', inputs),
-      ])
+      description = [h(:a, { attrs: { href: '/signup' } }, 'Signup'), ' or ',
+                     h(:a, { attrs: { href: '/login' } }, 'login'), ' to play multiplayer.'] unless @user
+      render_form('Create New Game', inputs, description)
     end
 
     def render_inputs
