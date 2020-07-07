@@ -24,7 +24,7 @@ module View
       def render_card
         card_props = {
           style: {
-            border: '2px solid red',
+            border: '2px solid salmon',
           },
         }
         title_props = {
