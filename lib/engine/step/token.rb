@@ -16,6 +16,10 @@ module Engine
         ACTIONS
       end
 
+      def sequential?
+        true
+      end
+
       def process_place_token(action)
         entity = action.entity
         hex = action.city.hex

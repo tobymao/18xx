@@ -8,9 +8,11 @@ module Engine
       ACTIONS = %w[lay_tile pass].freeze
 
       def actions(entity)
-        return [] if passed?
-
         entity == current_entity ? ACTIONS : []
+      end
+
+      def sequential?
+        true
       end
 
       def process_lay_tile(action)

@@ -847,6 +847,7 @@ module Engine
           Step::Track,
           Step::Token,
           Step::Route,
+          Step::Dividend,
           Step::Train,
         ], round_num: round_num)
       end

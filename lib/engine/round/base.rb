@@ -68,6 +68,8 @@ module Engine
         clear_cache!
 
         step = @steps.find do |step|
+          next unless step.active?
+
           process = step.actions(action.entity).include?(type)
           blocking = step.blocking?
           raise GameError, "Step #{step} cannot process #{type}" if blocking && !process
@@ -77,11 +79,19 @@ module Engine
         raise GameError, "No step found for action #{type}" unless step
 
         step.send("process_#{action.type}", action)
+
+        @steps.each do |prev|
+          break if prev == step
+          next unless prev.sequential?
+          puts "passing sequential #{prev}"
+
+          prev.pass!
+        end if step.sequential?
         action_processed(action)
       end
 
       def active_step
-        @active_step ||= @steps.find(&:blocking?)
+        @active_step ||= @steps.find { |step| step.active? && step.blocking? }
       end
 
       def finished?

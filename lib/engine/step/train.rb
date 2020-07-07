@@ -6,15 +6,15 @@ module Engine
   module Step
     class Train < Base
       def actions(entity)
-        return [] if passed? || entity != current_entity
+        return [] if entity != current_entity
         return ['buy_train'] if must_buy_train?(entity)
         return ['buy_train', 'pass'] if can_buy_train?(entity)
 
         []
       end
 
-      def process_pass(action)
-        pass!
+      def sequential?
+        true
       end
 
       def can_buy_train?(entity = nil)
