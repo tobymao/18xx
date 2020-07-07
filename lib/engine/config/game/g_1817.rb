@@ -338,7 +338,8 @@ module Engine
         0,
         0
       ],
-      "color": "yellow"
+      "color": "yellow",
+      "text_color": "black"
     },
     {
       "float_percent": 20,
@@ -364,12 +365,13 @@ module Engine
         0,
         0
       ],
-      "color": "white"
+      "color": "white",
+      "text_color": "black"
     },
     {
       "float_percent": 20,
       "sym": "PSNR",
-      "name": "Pittsburg, Shawmut and Northern Railroad",
+      "name": "Pittsburgh, Shawmut and Northern Railroad",
       "logo": "1817/PSNR",
       "tokens": [
         0,
@@ -382,7 +384,7 @@ module Engine
     {
       "float_percent": 20,
       "sym": "PLE",
-      "name": "Pittsburg and Lake Erie Railroad",
+      "name": "Pittsburgh and Lake Erie Railroad",
       "logo": "1817/PLE",
       "tokens": [
         0,
@@ -408,7 +410,7 @@ module Engine
     {
       "float_percent": 20,
       "sym": "R",
-      "name": "Rutland Railraod",
+      "name": "Rutland Railroad",
       "logo": "1817/R",
       "tokens": [
         0,
@@ -429,7 +431,8 @@ module Engine
         0,
         0
       ],
-      "color": "natural"
+      "color": "natural",
+      "text_color": "black"
     },
     {
       "float_percent": 20,
@@ -681,6 +684,7 @@ module Engine
     },
     {
       "name": "2+",
+      "on": "2+",
       "train_limit": 4,
       "tiles": [
         "yellow"
@@ -689,6 +693,7 @@ module Engine
     },
     {
       "name": "3",
+      "on": "3",
       "train_limit": 4,
       "tiles": [
         "yellow",
@@ -698,6 +703,7 @@ module Engine
     },
     {
       "name": "4",
+      "on": "4",
       "train_limit": 3,
       "tiles": [
         "yellow",
@@ -707,6 +713,7 @@ module Engine
     },
     {
       "name": "5",
+      "on": "5",
       "train_limit": 3,
       "tiles": [
         "yellow",
@@ -717,6 +724,7 @@ module Engine
     },
     {
       "name": "6",
+      "on": "6",
       "train_limit": 2,
       "tiles": [
         "yellow",
@@ -727,6 +735,7 @@ module Engine
     },
     {
       "name": "7",
+      "on": "7",
       "train_limit": 2,
       "tiles": [
         "yellow",
@@ -738,6 +747,7 @@ module Engine
     },
     {
       "name": "8",
+      "on": "8",
       "train_limit": 2,
       "tiles": [
         "yellow",
