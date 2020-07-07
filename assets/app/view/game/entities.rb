@@ -37,7 +37,7 @@ module View
 
         children << h(:div, [
           h(Bank, game: @game, layout: :card),
-          *bank_owned.flat_map { |c| h(Corporation, corporation: c) },
+          *bank_owned.map { |c| h(Corporation, corporation: c) },
         ])
 
         h('div#entities', div_props, children)

@@ -11,7 +11,7 @@ module View
       def render
         @depot = @game.depot
 
-        if @layout == 'discarded_trains'
+        if @layout == :discarded_trains
           @depot.discarded.empty? ? '' : discarded_trains
         else
           h(:div, { style: { overflow: 'auto' } }, [render_body])

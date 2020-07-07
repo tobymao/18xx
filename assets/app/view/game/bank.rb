@@ -9,7 +9,7 @@ module View
       needs :layout, default: nil
 
       def render
-        if @layout == 'card'
+        if @layout == :card
           render_card
         else
           props = {
