@@ -100,6 +100,9 @@ module Engine
       end
 
       def setup
+        # When creating a game the game will not have enough to start
+        return unless @players.size.between?(*Engine.player_range(self.class))
+
         remove_from_group!(ORANGE_GROUP, @companies) do |company|
           if company.id == 'LSL'
             %w[D14 E17].each do |hex|
@@ -107,11 +110,11 @@ module Engine
             end
           end
           company.close!
-          @round.companies.delete(company)
+          @round.active_step.companies.delete(company)
         end
         remove_from_group!(BLUE_GROUP, @companies) do |company|
           company.close!
-          @round.companies.delete(company)
+          @round.active_step.companies.delete(company)
         end
         remove_from_group!(GREEN_GROUP, @corporations) do |corporation|
           @round.place_home_token(corporation)
@@ -225,17 +228,23 @@ module Engine
       end
 
       def close_corporation(corporation)
+        @log << "#{corporation.name} closes"
+
         hexes.each do |hex|
           hex.tile.cities.each do |city|
-            next unless city.tokened_by?(corporation)
-
-            city.tokens.map! { |token| token&.corporation == corporation ? nil : token }
-            city.reservations.delete(corporation.name)
+            if city.tokened_by?(corporation) || city.reserved_by?(corporation)
+              city.tokens.map! { |token| token&.corporation == corporation ? nil : token }
+              city.reservations.delete(corporation)
+            end
           end
         end
 
         corporation.spend(corporation.cash, @bank)
-        @log << "#{corporation.name} closes"
+        corporation.trains.each { |t| t.buyable = false }
+        if corporation.companies.any?
+          @log << "#{corporation.name}'s companies close: #{corporation.companies.map(&:sym).join(', ')}"
+          corporation.companies.dup.each(&:close!)
+        end
         @round.skip_current_entity if @round.current_entity == corporation
 
         if corporation.corporation?
@@ -244,6 +253,7 @@ module Engine
           end
 
           @share_pool.shares_by_corporation.delete(corporation)
+          corporation.share_price.corporations.delete(corporation)
           @corporations.delete(corporation)
         else
           @minors.delete(corporation)
@@ -251,7 +261,7 @@ module Engine
       end
 
       def init_round
-        Round::G1846::Draft.new(@players.reverse, game: self)
+        Round::G1846::Draft.new(self, [Step::G1846::DraftDistribution])
       end
 
       def operating_round(round_num)
@@ -265,7 +275,31 @@ module Engine
       end
 
       def event_remove_tokens!
-        # to be implemented
+        removals = Hash.new { |h, k| h[k] = {} }
+
+        @corporations.each do |corp|
+          corp.assignments.each do |company, _|
+            removals[company][:corporation] = corp.name
+            corp.remove_assignment!(company)
+          end
+        end
+
+        @hexes.each do |hex|
+          hex.assignments.each do |company, _|
+            removals[company][:hex] = hex.name
+            hex.remove_assignment!(company)
+          end
+        end
+
+        removals.each do |company, removal|
+          hex = removal[:hex]
+          corp = removal[:corporation]
+          @log << "-- Event: #{corp}'s #{company} token removed from #{hex} --"
+        end
+      end
+
+      def bankruptcy_limit_reached?
+        @bankruptcies >= @players.size - 1
       end
     end
   end

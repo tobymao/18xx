@@ -12,7 +12,6 @@ class Assets
   PIN_DIR = '/pinned/'
 
   def initialize(make_map: true, compress: false, gzip: false, cache: true, precompiled: false)
-    @files = []
     @build_path = 'build'
     @out_path = OUTPUT_BASE + '/assets'
     @root_path = '/assets'
@@ -70,7 +69,6 @@ class Assets
   end
 
   def compile_lib(name, *append_paths)
-    @files << name
     builder = Opal::Builder.new
     append_paths.each { |ap| builder.append_paths(ap) }
     path = "#{@out_path}/#{name}.js"
@@ -83,45 +81,34 @@ class Assets
   end
 
   def compile(name, lib_path, ns = nil)
-    @files << name
+    output = "#{@out_path}/#{name}.js"
     metadata = lib_metadata(ns || name, lib_path)
 
-    stale = []
-    fresh = []
-
-    metadata.each do |file, opts|
+    compilers = metadata.map do |file, opts|
       FileUtils.mkdir_p(opts[:build_path])
       js_path = opts[:js_path]
+      next if @cache && File.exist?(js_path) && File.mtime(js_path) >= opts[:mtime]
 
-      if !@cache || !File.exist?(js_path) || File.mtime(js_path) < opts[:mtime]
-        stale << file
-      else
-        fresh << file
-      end
-    end
+      Opal::Compiler.new(File.read(opts[:path]), file: file, requirable: true)
+    end.compact
 
-    builder = Opal::Builder.new(prerequired: fresh, compiler_options: { requirable: true })
-    builder.append_paths(lib_path)
-
-    stale.each do |file|
-      time = Time.now
-      builder.build(file)
-      puts "Compiling #{file} - #{Time.now - time}"
-    end
+    return output if compilers.empty?
 
     if @make_map
       sm_path = "#{@build_path}/#{name}.json"
       sm_data = File.exist?(sm_path) ? JSON.parse(File.binread(sm_path)) : {}
     end
 
-    builder.processed.each do |processor|
-      file = processor.filename.gsub('./', '')
+    compilers.each do |compiler|
+      file = compiler.file
       raise "#{file} not found put in deps." unless (opts = metadata[file])
 
-      File.write(opts[:js_path], processor.to_s)
+      time = Time.now
+      File.write(opts[:js_path], compiler.compile)
+      puts "Compiling #{file} - #{Time.now - time}"
       next unless @make_map
 
-      source_map = processor.source_map
+      source_map = compiler.source_map
       code = source_map.generated_code + "\n"
       sm_data[file] = {
         'lines' => code.count("\n"),
@@ -158,7 +145,6 @@ class Assets
     end.join("\n")
     source += "\nOpal.load('#{name}')"
     source += to_data_uri_comment(source_map) if @make_map
-    output = "#{@out_path}/#{name}.js"
     File.write(output, source)
     output
   end
@@ -173,7 +159,7 @@ class Assets
       path = file.split('/')[0..-2].join('/')
 
       metadata[file.gsub("#{lib_path}/", '')] = {
-        path: path,
+        path: file,
         build_path: "#{@build_path}/#{path}",
         js_path: "#{@build_path}/#{file.gsub('.rb', '.js')}",
         mtime: mtime,

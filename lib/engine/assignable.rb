@@ -17,5 +17,14 @@ module Engine
     def remove_assignment!(key)
       assignments.delete(key)
     end
+
+    def self.remove_from_all!(assignables, key)
+      assignables.each do |assignable|
+        if assignable.assigned?(key)
+          assignable.remove_assignment!(key)
+          yield assignable if block_given?
+        end
+      end
+    end
   end
 end

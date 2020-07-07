@@ -350,7 +350,7 @@ module Engine
 
       def process_dividend(action)
         revenue = @current_routes.sum(&:revenue)
-        rust_obsolete_trains!(@current_routes)
+        rust_obsolete_trains!(@current_entity.trains)
         @current_entity.operating_history[[@game.turn, @round_num]] = OperatingInfo.new(
           @current_routes,
           action,
@@ -536,12 +536,19 @@ module Engine
           raise GameError, "Price must be between #{@game.format_currency(min)} and #{@game.format_currency(max)}"
         end
 
+        log_later = []
         company.owner = @current_entity
         entity.companies.delete(company)
 
         company.abilities(:assign_corporation) do |ability|
-          @current_entity.assign!(company.sym)
+          Assignable.remove_from_all!(@game.corporations, company.id) do |unassigned|
+            unless unassigned.name == @current_entity.name
+              log_later << "#{company.name} is unassigned from #{unassigned.name}"
+            end
+          end
+          @current_entity.assign!(company.id)
           ability.use!
+          log_later << "#{company.name} is assigned to #{@current_entity.name}"
         end
         remove_just_sold_company_abilities
         @just_sold_company = company
@@ -549,6 +556,9 @@ module Engine
         @current_entity.companies << company
         @current_entity.spend(price, entity)
         @log << "#{@current_entity.name} buys #{company.name} from #{entity.name} for #{@game.format_currency(price)}"
+        log_later.each do |l|
+          @log << l
+        end
       end
 
       def move_token(action)
@@ -629,6 +639,7 @@ module Engine
 
         player.spend(player.cash, @bank)
 
+        @game.bankruptcies += 1
         @bankrupt = true
       end
 
@@ -670,11 +681,12 @@ module Engine
         [token, nil]
       end
 
-      def rust_obsolete_trains!(routes)
+      def rust_obsolete_trains!(trains)
         rusted_trains = []
+        # need to clone since rust! mutates the original
+        trains = trains.clone
 
-        routes.each do |route|
-          train = route.train
+        trains.each do |train|
           next unless train.obsolete
 
           rusted_trains << train.name

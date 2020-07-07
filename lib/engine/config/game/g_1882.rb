@@ -277,7 +277,7 @@ module Engine
       "name": "Trestle Bridge",
       "value": 140,
       "revenue": 0,
-      "desc": "Earns $10 every time a corporation adds track over a river. During setup, a 10% share certificate selected randomly from the corporations (excluding SC) is placed with this company. When purchased during the private auction, the player receives both the company and the certificate.",
+      "desc": "Blocks hex G9 while owned by a player. Earns $10 every time a corporation adds track over a river. During setup, a 10% share certificate selected randomly from the corporations (excluding SC) is placed with this company. When purchased during the private auction, the player receives both the company and the certificate.",
       "sym": "TB",
       "abilities": [
         {
@@ -297,6 +297,11 @@ module Engine
           "hexes": [
             "G9"
           ]
+        },
+        {
+            "type": "tile_income",
+            "income" : 10,
+            "terrain": "water"
         }
       ]
     },

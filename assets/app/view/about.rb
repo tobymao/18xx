@@ -4,7 +4,7 @@ module View
   class About < Snabberb::Component
     def render
       message = <<~MESSAGE
-        <div class="card_header">About 18xx.Games</div>
+        <h2>About 18xx.Games</h2>
         <p>18xx.Games is created and maintained by Toby Mao. It is an open source project, and you can find the
         code on <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
 
@@ -35,7 +35,6 @@ module View
 
       props = {
         props: { innerHTML: message },
-        style: { margin: '2rem 1rem' },
       }
 
       h('div#about', props)

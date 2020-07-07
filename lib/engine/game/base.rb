@@ -34,6 +34,7 @@ module Engine
                   :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
                   :round, :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
                   :round_history
+      attr_accessor :bankruptcies
 
       DEV_STAGE = :prealpha
 
@@ -233,6 +234,7 @@ module Engine
         @finished = false
         @log = []
         @actions = []
+        @bankruptcies = 0
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
 
@@ -509,6 +511,14 @@ module Engine
         send("#{type}_by_id", id)
       end
 
+      def all_companies_with_ability(ability)
+        @companies.each do |company|
+          if (found_ability = company.abilities(ability))
+            yield company, found_ability
+          end
+        end
+      end
+
       private
 
       def init_bank
@@ -672,7 +682,8 @@ module Engine
             corporation = @corporations[rand % @corporations.size]
             share = corporation.shares[0]
             ability.share = share
-            company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
+            company.desc = "Purchasing player takes a president's share (20%) of #{corporation.name} \
+            and immediately sets its par value. #{company.desc}"
             @log << "#{company.name} comes with the president's share of #{corporation.name}"
           when 'random_share'
             corporations = ability.corporations&.map { |id| corporation_by_id(id) } || @corporations
@@ -759,7 +770,7 @@ module Engine
       end
 
       def game_end_reason
-        return :bankrupt, :immediate if @round.is_a?(Round::Operating) && @round.bankrupt
+        return :bankrupt, :immediate if @round.is_a?(Round::Operating) && bankruptcy_limit_reached?
         return :bank, :full_round if @bank.broken?
       end
 
@@ -833,6 +844,10 @@ module Engine
             instance_variable_get(ivar)[id]
           end
         end
+      end
+
+      def bankruptcy_limit_reached?
+        @bankruptcies.positive?
       end
     end
   end

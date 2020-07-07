@@ -46,8 +46,7 @@ module View
         end
 
         def render_part
-          text_attrs = { fill: 'black', transform: 'scale(1.5)' }
-          cost = h(:text, { attrs: text_attrs }, @cost)
+          cost = h('text.number', { attrs: { fill: 'black' } }, @cost)
 
           delta_x = -10
 

@@ -18,6 +18,7 @@ module View
         needs :city
         needs :num_cities
         needs :radius
+        needs :selected_company, default: nil, store: true
         needs :tile_selector, default: nil, store: true
         needs :reservation, default: nil
         needs :game, default: nil, store: true
@@ -46,7 +47,9 @@ module View
         def on_click(event)
           return if @token
           return if @tile_selector&.is_a?(Lib::TileSelector)
-          return unless @game.round.can_place_token?
+
+          round = @selected_company ? @game.special : @game.round
+          return unless round.can_place_token?
 
           event.JS.stopPropagation
 
@@ -64,11 +67,11 @@ module View
             process_action(action)
           elsif next_tokens.size == 1 || @game.round.step == :home_token
             action = Engine::Action::PlaceToken.new(
-              @game.current_entity,
+              @selected_company || @game.current_entity,
               city: @city,
               slot: @slot_index,
             )
-
+            store(:selected_company, nil, skip: true)
             process_action(action)
           else
             store(:tile_selector,

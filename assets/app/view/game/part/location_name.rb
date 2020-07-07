@@ -62,7 +62,7 @@ module View
 
           rendered_name = @name_segments.map.with_index do |segment, index|
             x = 0
-            y = index * LINE_HEIGHT
+            y = index * LINE_HEIGHT + 1
             h(:text, { attrs: { transform: "translate(#{x} #{y})" } }, segment)
           end
 
