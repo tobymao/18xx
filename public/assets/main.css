@@ -25,6 +25,10 @@ h3 {
   font-size: 1.1rem;
 }
 
+p {
+  margin: 0.7rem 0;
+}
+
 .button, .button-link {
   font-size: 14px;
   background: whitesmoke;
