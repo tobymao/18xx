@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'view/game/bank'
 require 'view/game/player'
 
 module View
@@ -34,7 +35,10 @@ module View
           ])
         end
 
-        children << h(:div, bank_owned.map { |c| h(Corporation, corporation: c) })
+        children << h(:div, [
+          h(Bank, game: @game, layout: :card),
+          *bank_owned.flat_map { |c| h(Corporation, corporation: c) },
+        ])
 
         h('div#entities', div_props, children)
       end
