@@ -12,7 +12,6 @@ class Assets
   PIN_DIR = '/pinned/'
 
   def initialize(make_map: true, compress: false, gzip: false, cache: true, precompiled: false)
-    @files = []
     @build_path = 'build'
     @out_path = OUTPUT_BASE + '/assets'
     @root_path = '/assets'
@@ -70,7 +69,6 @@ class Assets
   end
 
   def compile_lib(name, *append_paths)
-    @files << name
     builder = Opal::Builder.new
     append_paths.each { |ap| builder.append_paths(ap) }
     path = "#{@out_path}/#{name}.js"
@@ -84,7 +82,6 @@ class Assets
 
   def compile(name, lib_path, ns = nil)
     output = "#{@out_path}/#{name}.js"
-    @files << name
     metadata = lib_metadata(ns || name, lib_path)
 
     compilers = metadata.map do |file, opts|
