@@ -105,8 +105,16 @@ module View
         ])
 
         if @player == @game.priority_deal_player
+          props = {
+            attrs: { colspan: '2' },
+            style: {
+              background: 'salmon',
+              color: 'black',
+              borderRadius: '3px',
+            },
+          }
           trs << h(:tr, [
-            h('td.center.italic', { attrs: { colspan: '2' } }, 'Priority Deal'),
+            h('td.center.italic', props, 'Priority Deal'),
           ])
         end
 
