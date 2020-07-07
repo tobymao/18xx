@@ -94,7 +94,7 @@ module View
 
         if @explain_colors
           colors_text = [
-            [:red, 'PAR values'],
+            [:red, 'Par values'],
             [:yellow, 'Corporation shares do not count towards cert limit'],
             [:orange, 'Corporation shares can be held above 60%'],
             [:brown, 'Can buy more than one share in the Corporation per turn'],
