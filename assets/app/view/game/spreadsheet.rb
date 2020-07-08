@@ -92,9 +92,9 @@ module View
           h(:tr, [
             render_sort_link({ style: { width: '20px' } }, 'SYM', 'ID'),
             *@game.players.map { |p| h(:th, props, p.name) },
-            h(:th, props, 'IPO'),
+            h(:th, props, @game.class::IPO_NAME),
             h(:th, props, 'Market'),
-            h(:th, props, 'IPO'),
+            h(:th, props, @game.class::IPO_NAME),
             render_sort_link(props, 'Market', 'SHARE_PRICE'),
             render_sort_link(props, 'Cash', 'CASH'),
             render_sort_link(props, 'Operating Order', 'OPERATING_ORDER'),
