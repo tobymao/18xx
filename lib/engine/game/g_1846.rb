@@ -238,7 +238,7 @@ module Engine
           end
         end
 
-        corporation.spend(corporation.cash, @bank)
+        corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
         corporation.trains.each { |t| t.buyable = false }
         if corporation.companies.any?
           @log << "#{corporation.name}'s companies close: #{corporation.companies.map(&:sym).join(', ')}"
