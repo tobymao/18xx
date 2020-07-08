@@ -43,6 +43,7 @@ module Engine
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
+      @destination = opts[:destination] || nil
 
       init_abilities(opts[:abilities])
       init_operator(opts)
@@ -160,6 +161,10 @@ module Engine
       end
 
       abilities
+    end
+
+    def destination?(hex)
+      !@destination.nil? && @destination == hex.name
     end
   end
 end
