@@ -156,6 +156,7 @@ describe 'Assets' do
           needs = {
             game_data: data,
             user: data['user'],
+            disable_user_errors: true,
           }
 
           expect(render(app_route: "/game/#{needs[:game_data]['id']}", **needs)).to include(string)
