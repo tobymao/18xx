@@ -48,6 +48,8 @@ module Engine
       TILE_COST = 20
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove private company tokens']).freeze
 
+      IPO_NAME = 'Treasury'
+
       def init_companies(players)
         super + @players.size.times.map do |i|
           name = "Pass (#{i + 1})"
