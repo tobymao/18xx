@@ -99,6 +99,10 @@ p:last-child {
 th, td {
   padding: 0 0.3rem;
 }
+#game_info tbody > tr:hover, #spreadsheet tbody > tr:hover {
+  background-color: #CCCCCC;
+  color: black;
+}
 
 @media (prefers-color-scheme: dark) {
   body {
@@ -305,9 +309,9 @@ text.number {
   }
 }
 
-.card td.name {
+.name {
   text-align: left;
-  max-width: 12rem;
+  max-width: 9rem;
 }
 
 .corp div, .player div {
