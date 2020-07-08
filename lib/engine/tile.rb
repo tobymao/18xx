@@ -328,6 +328,11 @@ module Engine
       @revenue_to_render ||= stops.map(&:revenue_to_render)
     end
 
+    # Used to set label for a recently placed tile
+    def label=(label_name)
+      @label = Part::Label.new(label_name)
+    end
+
     private
 
     def separate_parts

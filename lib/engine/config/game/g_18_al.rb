@@ -97,7 +97,8 @@ module Engine
       "441a":1,
       "442a":1,
       "443a":1,
-      "444a":2
+      "444b":1,
+      "444m":1
    },
    "market":[
       [
@@ -404,15 +405,17 @@ module Engine
          "upgrade=cost:60,terrain:mountain":[
             "F7"
          ],
-         "city=revenue:0;upgrade=cost:60,terrain:mountain":[
+         "city=revenue:0;upgrade=cost:60,terrain:mountain;label=B;icon=image:18_al/coal,sticky:1":[
             "G4"
          ],
          "city=revenue:0":[
-            "G6",
-            "H3",
             "J7",
             "K2",
             "L5"
+         ],
+         "city=revenue:0;icon=image:18_al/coal,sticky:1":[
+            "G6",
+            "H3"
          ],
          "town=revenue:0":[
             "O6"
@@ -445,7 +448,7 @@ module Engine
          "city=revenue:30;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0":[
             "F1"
          ],
-         "city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0":[
+         "city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;icon=image:18_al/coal,sticky:1":[
             "H5"
          ],
          "city=revenue:yellow_30|brown_40,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0":[
@@ -456,7 +459,7 @@ module Engine
          ]
       },
       "yellow":{
-         "city=revenue:20;path=a:3,b:_0;path=a:4,b:_0":[
+         "city=revenue:20;path=a:3,b:_0;path=a:4,b:_0;icon=image:18_al/coal,sticky:1":[
             "E6"
          ],
          "city=revenue:20;path=a:1,b:_0;path=a:_0,b:5":[
