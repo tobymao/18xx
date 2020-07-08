@@ -64,6 +64,7 @@ module View
 
         def mountain(delta_x: 0, delta_y: 0)
           h(:polygon, attrs: { transform: "translate(#{delta_x} #{delta_y})",
+                               fill: "#cb7745",
                                points: TRIANGLE_PATH })
         end
 
