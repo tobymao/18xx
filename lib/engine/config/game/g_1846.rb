@@ -234,7 +234,6 @@ module Engine
             "I1",
             "D6"
           ],
-          "when": "sold",
           "count": 1,
           "owner_type": "corporation"
         },
