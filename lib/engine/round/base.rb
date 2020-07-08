@@ -269,9 +269,9 @@ module Engine
           if free
             0
           else
-            border, border_types = border_cost(tile)
+            border, border_types = border_cost(tile, entity)
             terrain += border_types if border.positive?
-            tile_cost(old_tile, entity.all_abilities) + border
+            tile_cost(old_tile, entity) + border
           end
 
         entity.spend(cost, @game.bank) if cost.positive?
@@ -294,7 +294,7 @@ module Engine
         end
       end
 
-      def border_cost(tile)
+      def border_cost(tile, entity)
         hex = tile.hex
         types = []
 
@@ -309,13 +309,37 @@ module Engine
           tile.borders.delete(border)
           neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
 
-          cost
+          ability = entity.all_abilities.find do |a|
+            (a.type == :tile_discount) && (border.type == a.terrain)
+          end
+          discount = ability&.discount || 0
+
+          if discount.positive?
+            @log << "#{entity.name} receives a discount of "\
+                    "#{@game.format_currency(discount)} from "\
+                    "#{ability.owner.name}"
+          end
+
+          cost - discount
         end
         [total_cost, types]
       end
 
-      def tile_cost(tile, abilities)
-        tile.upgrade_cost(abilities)
+      def tile_cost(tile, entity)
+        ability = entity.all_abilities.find { |a| a.type == :tile_discount }
+
+        tile.upgrades.sum do |upgrade|
+          discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
+
+          if discount.positive?
+            @log << "#{entity.name} receives a discount of "\
+                    "#{@game.format_currency(discount)} from "\
+                    "#{ability.owner.name}"
+          end
+
+          total_cost = upgrade.cost - discount
+          total_cost
+        end
       end
 
       def payout_companies
