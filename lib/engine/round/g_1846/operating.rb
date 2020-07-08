@@ -157,8 +157,8 @@ module Engine
           super
         end
 
-        def tile_cost(tile, entity, game)
-          [@game.class::TILE_COST, tile.upgrade_cost(entity, game)].max
+        def tile_cost(tile, entity)
+          [@game.class::TILE_COST, super(tile, entity)].max
         end
 
         def change_share_price(revenue = 0)
