@@ -22,11 +22,6 @@ module View
       end
 
       def render_card
-        card_props = {
-          style: {
-            border: '2px solid salmon',
-          },
-        }
         title_props = {
           style: {
             padding: '0.4rem',
@@ -44,8 +39,8 @@ module View
           },
         }
 
-        h('div.bank.card', card_props, [
-          h('div.title.nowrap', title_props, 'The Bank'),
+        h('div.bank.card', [
+          h('div.title.nowrap', title_props, [h(:em, 'The Bank')]),
           h(:div, body_props, [
             h(:div, @game.format_currency(@game.bank.cash)),
             h(GameInfo, game: @game, layout: 'discarded_trains'),
