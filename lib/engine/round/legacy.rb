@@ -17,6 +17,10 @@ module Engine
         @round_num = 1
       end
 
+      def active_step
+        self
+      end
+
       def name
         raise NotImplementedError
       end
@@ -116,6 +120,10 @@ module Engine
 
       def connected_hexes
         {}
+      end
+
+      def available_hex(hex)
+        connected_hexes(hex)
       end
 
       def connected_paths

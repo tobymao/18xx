@@ -326,12 +326,22 @@ module Engine
           .to_h
       end
 
+      def turn_round_num
+        [turn, @round.round_num]
+      end
+
       def current_entity
         @round.current_entity
+        # TODO: This is not quite right
+        #@round.active_step.current_entity.first
       end
 
       def active_players
         @round.active_entities.map(&:owner)
+      end
+
+      def active_step
+        @round.active_step
       end
 
       def active_player_names
@@ -393,7 +403,7 @@ module Engine
         if action.entity.is_a?(Company)
           @special.process_action(action)
         else
-          puts "#{@round}"
+          puts @round.to_s
           @round.process_action(action)
         end
 
@@ -739,6 +749,15 @@ module Engine
         end
 
         @hexes.select { |h| h.tile.cities.any? || h.tile.exits.any? }.each(&:connect!)
+      end
+
+      def rounds
+        case @round
+        when Round::Stock
+          @phase.operating_rounds
+        else
+          1
+        end
       end
 
       def next_round!

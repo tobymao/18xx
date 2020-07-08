@@ -71,7 +71,7 @@ module Engine
           @log << "#{company.name} price decreases from #{@game.format_currency(old_value)} "\
             "to #{@game.format_currency(new_value)}"
 
-          @round.next_entity_index!
+          @round.next_index!
           return if new_value.positive?
 
           @companies.clear
@@ -90,7 +90,7 @@ module Engine
           @companies -= available
           @log << "#{action.entity.name} chooses a company"
           @companies.concat(discarded)
-          @round.next_entity_index!
+          @round.next_index!
           action_finalized
         end
 
@@ -133,6 +133,10 @@ module Engine
             end
 
           @game.bank.spend(company.value, minor) if minor
+        end
+
+        def committed_cash(_player)
+          0
         end
       end
     end

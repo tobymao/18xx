@@ -118,7 +118,7 @@ module Engine
           @round.active_step.companies.delete(company)
         end
         remove_from_group!(GREEN_GROUP, @corporations) do |corporation|
-          @round.place_home_token(corporation)
+          place_home_token(corporation)
           corporation.abilities(:reservation) do |ability|
             corporation.remove_ability(ability.type)
           end

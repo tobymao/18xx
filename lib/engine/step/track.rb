@@ -16,34 +16,34 @@ module Engine
       end
 
       def process_lay_tile(action)
-      #   previous_tile = action.hex.tile
+        #   previous_tile = action.hex.tile
 
-      #   hex_id = action.hex.id
+        #   hex_id = action.hex.id
 
-      #   # companies with block_hexes should block hexes
-      #   @game.companies.each do |company|
-      #     next if company.closed?
-      #     next unless (ability = company.abilities(:blocks_hexes))
+        #   # companies with block_hexes should block hexes
+        #   @game.companies.each do |company|
+        #     next if company.closed?
+        #     next unless (ability = company.abilities(:blocks_hexes))
 
-      #     raise GameError, "#{hex_id} is blocked by #{company.name}" if ability.hexes.include?(hex_id)
-      #   end
+        #     raise GameError, "#{hex_id} is blocked by #{company.name}" if ability.hexes.include?(hex_id)
+        #   end
 
-      #   lay_tile(action)
-      #   @current_entity.abilities(:teleport) do |ability, _|
-      #     @teleported = ability.hexes.include?(hex_id) &&
-      #     ability.tiles.include?(action.tile.name)
-      #   end
+        #   lay_tile(action)
+        #   @current_entity.abilities(:teleport) do |ability, _|
+        #     @teleported = ability.hexes.include?(hex_id) &&
+        #     ability.tiles.include?(action.tile.name)
+        #   end
 
-      #   new_tile = action.hex.tile
-      #   cities = new_tile.cities
-      #   if previous_tile.paths.empty? &&
-      #     new_tile.paths.any? &&
-      #     cities.size > 1 &&
-      #     cities.flat_map(&:tokens).any?
-      #     token = cities.flat_map(&:tokens).find(&:itself)
-      #     @ambiguous_hex_token = [action.hex, token]
-      #     token.remove!
-      #   end
+        #   new_tile = action.hex.tile
+        #   cities = new_tile.cities
+        #   if previous_tile.paths.empty? &&
+        #     new_tile.paths.any? &&
+        #     cities.size > 1 &&
+        #     cities.flat_map(&:tokens).any?
+        #     token = cities.flat_map(&:tokens).find(&:itself)
+        #     @ambiguous_hex_token = [action.hex, token]
+        #     token.remove!
+        #   end
         entity = action.entity
         tile = action.tile
         hex = action.hex

@@ -32,7 +32,7 @@ module View
         round =
           if @game.special.map_abilities
             @game.special
-          elsif @game.round.operating?
+          else
             @game.round
           end
 

@@ -213,7 +213,7 @@ module View
     def render_round
       name = @round.class.name.split(':').last
       description = "#{@game.class.title}: #{name} Round #{@game.turn}"
-      description += ".#{@round.round_num} (of #{@game.operating_rounds})" if @round.operating?
+      description += ".#{@round.round_num} (of #{@game.rounds})" if @game.rounds > 1
       description += @game.finished ? ' - Game Over' : " - #{@round.description}"
       game_end = @game.game_ending_description
       description += " - #{game_end}" if game_end
@@ -222,8 +222,7 @@ module View
     end
 
     def render_action
-      crowded_corps = @round.crowded_corps
-      return h(Game::DiscardTrains, corporations: crowded_corps) if @round.crowded_corps.any?
+      return h(Game::DiscardTrains) if @game.active_step.current_actions.include?('discard_train')
 
       case @round
       when Engine::Round::Stock

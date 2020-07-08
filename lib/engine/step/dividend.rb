@@ -7,13 +7,13 @@ module Engine
     class Dividend < Base
       ACTIONS = %w[dividend].freeze
 
-      def actions(entity)
+      def actions(_entity)
         return [] unless @round.routes
 
         ACTIONS
       end
 
-      def process_dividend(action)
+      def process_dividend(_action)
         pass!
       end
     end

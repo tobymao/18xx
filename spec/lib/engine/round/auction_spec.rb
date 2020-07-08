@@ -92,7 +92,7 @@ module Engine
         subject.process_action(Action::Bid.new(player_1, company: private_1, price: 20))
         subject.process_action(Action::Bid.new(player_2, company: private_2, price: 30))
         subject.process_action(Action::Bid.new(player_3, company: private_3, price: 40))
-        expect(subject.index).to eq(0)
+        expect(subject.entity_index).to eq(0)
       end
 
       it 'allows passers to come back in' do

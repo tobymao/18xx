@@ -17,7 +17,7 @@ module View
             'vertical-align': 'top',
           },
         }
-        overflow = @corporations.map do |corporation|
+        overflow = @game.step.crowded_corps.map do |corporation|
           trains = corporation.trains.map do |train|
             train_props = {
               style: {

@@ -20,7 +20,8 @@ module View
 
         def render
           round = @game.round
-
+          @step = round.active_step
+          @current_actions = @step.current_actions
           action =
             case round.step
             when :home_token
@@ -37,7 +38,7 @@ module View
               h(IssueShares)
             end
 
-          action = h(UndoAndPass, pass: false) if round.ambiguous_token
+          action = h(UndoAndPass, pass: @current_actions.include?('pass'))
 
           left = [action]
           corporation = round.current_entity

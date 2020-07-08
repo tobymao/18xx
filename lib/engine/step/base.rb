@@ -28,6 +28,8 @@ module Engine
         []
       end
 
+      def available_hex(hex); end
+
       def process_pass(_action)
         pass!
       end

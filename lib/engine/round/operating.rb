@@ -19,13 +19,12 @@ module Engine
         @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
       end
 
-      def action_processed(action)
+      def action_processed(_action)
         return if active_step || @entity_index == @entities.size - 1
 
         next_entity_index!
         @steps.each(&:unpass!)
       end
-
 
       # attr_reader :bankrupt, :depot, :phase, :round_num, :step, :current_routes
 

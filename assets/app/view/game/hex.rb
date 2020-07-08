@@ -40,22 +40,9 @@ module View
         opaque = true
         clickable = @role == :tile_selector
 
-        if @round
-          if @round.ambiguous_token
-            opaque = @round.reachable_hexes[@hex]
-            clickable ||= opaque
-          elsif @round.can_assign_hex? || @round.can_lay_track?
-            opaque = @round.connected_hexes[@hex]
-            clickable ||= opaque
-          elsif @round.can_place_token? || @round.can_run_routes?
-            opaque = @round.reachable_hexes[@hex]
-            clickable ||= opaque
-          end
-
-          # for token special ability
-          opaque ||= @hex.tile.cities.any? do |city|
-            @round.connected_nodes[city]
-          end if @round.can_place_token?
+        if @round&.active_step
+          opaque = @round.active_step.available_hex(@hex)
+          clickable ||= opaque
         end
 
         props = {

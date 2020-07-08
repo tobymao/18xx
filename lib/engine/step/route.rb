@@ -19,9 +19,7 @@ module Engine
         trains = {}
         @round.routes.each do |route|
           train = route.train
-          if train.owner && train.owner != entity
-            raise GameError, "Cannot run another corporation's train. refresh"
-          end
+          raise GameError, "Cannot run another corporation's train. refresh" if train.owner && train.owner != entity
           raise GameError, 'Cannot run train twice' if trains[train]
           raise GameError, 'Cannot run train that operated' if train.operated
 

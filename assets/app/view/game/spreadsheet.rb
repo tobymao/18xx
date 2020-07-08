@@ -140,7 +140,7 @@ module View
       end
 
       def render_corporations
-        current_round = @game.round.turn_round_num
+        current_round = @game.turn_round_num
 
         sorted_corporations.map do |order, corporation|
           render_corporation(corporation, order, current_round)

@@ -59,6 +59,15 @@ module Engine
         active_step.active_entities
       end
 
+      # TODO: This is deprecated
+      def can_act?(entity)
+        active_step.current_entity == entity
+      end
+
+      def did_sell?(_corporation, _entity)
+        false
+      end
+
       def pass_description
         active_step.pass_description
       end
@@ -83,6 +92,7 @@ module Engine
         @steps.each do |prev|
           break if prev == step
           next unless prev.sequential?
+
           puts "passing sequential #{prev}"
 
           prev.pass!
@@ -114,48 +124,48 @@ module Engine
 
       def action_processed(_action); end
 
-      #def initialize(entities, game:, **_kwargs)
+      # def initialize(entities, game:, **_kwargs)
       #  @game = game
       #  @entities = entities
       #  @log = game.log
       #  @current_entity = @entities.first
       #  @round_num = 1
-      #end
+      # end
 
-      #def name
+      # def name
       #  raise NotImplementedError
-      #end
+      # end
 
-      #def description
+      # def description
       #  raise NotImplementedError
-      #end
+      # end
 
-      #def pass_description
+      # def pass_description
       #  raise NotImplementedError
-      #end
+      # end
 
-      #def current_player
+      # def current_player
       #  current_entity.player
-      #end
+      # end
 
-      #def active_entities
+      # def active_entities
       #  [@current_entity] + crowded_corps
-      #end
+      # end
 
-      #def next_entity
+      # def next_entity
       #  index = @entities.find_index(@current_entity) + 1
       #  index < @entities.size ? @entities[index] : @entities[0]
-      #end
+      # end
 
-      #def turn_round_num
+      # def turn_round_num
       #  [@game.turn, @round_num]
-      #end
+      # end
 
-      #def pass(action)
+      # def pass(action)
       #  action.entity.pass!
-      #end
+      # end
 
-      #def process_action(action)
+      # def process_action(action)
       #  entity = action.entity
       #  return @log << action if action.is_a?(Action::Message)
       #  raise GameError, 'Game has ended' if @game.finished
@@ -177,65 +187,65 @@ module Engine
       #  end
       #  change_entity(action)
       #  action_finalized(action)
-      #end
+      # end
 
-      #def finished?
+      # def finished?
       #  @game.finished || @entities.all?(&:passed?)
-      #end
+      # end
 
-      #def can_act?(entity)
+      # def can_act?(entity)
       #  active_entities.include?(entity)
-      #end
+      # end
 
-      #def auction?
+      # def auction?
       #  false
-      #end
+      # end
 
-      #def stock?
+      # def stock?
       #  false
-      #end
+      # end
 
-      #def operating?
+      # def operating?
       #  false
-      #end
+      # end
 
-      #def can_assign?
+      # def can_assign?
       #  false
-      #end
+      # end
 
-      #def can_lay_track?
+      # def can_lay_track?
       #  false
-      #end
+      # end
 
-      #def can_run_routes?
+      # def can_run_routes?
       #  false
-      #end
+      # end
 
-      #def can_place_token?
+      # def can_place_token?
       #  false
-      #end
+      # end
 
-      #def ambiguous_token
+      # def ambiguous_token
       #  nil
-      #end
+      # end
 
-      #def connected_hexes
+      # def connected_hexes
       #  {}
-      #end
+      # end
 
-      #def connected_paths
+      # def connected_paths
       #  {}
-      #end
+      # end
 
-      #def connected_nodes
+      # def connected_nodes
       #  {}
-      #end
+      # end
 
-      #def reachable_hexes
+      # def reachable_hexes
       #  {}
-      #end
+      # end
 
-      #def upgradeable_tiles(hex)
+      # def upgradeable_tiles(hex)
       #  potential_tiles(hex).map do |tile|
       #    tile.rotate!(0) # reset tile to no rotation since calculations are absolute
       #    tile.legal_rotations = legal_rotations(hex, tile)
@@ -244,9 +254,9 @@ module Engine
       #    tile.rotate! # rotate it to the first legal rotation
       #    tile
       #  end.compact
-      #end
+      # end
 
-      #def legal_rotations(hex, tile)
+      # def legal_rotations(hex, tile)
       #  old_paths = hex.tile.paths
 
       #  Engine::Tile::ALL_EDGES.select do |rotation|
@@ -258,31 +268,31 @@ module Engine
       #      (new_exits & connected_hexes[hex]).any? &&
       #      old_paths.all? { |path| new_paths.any? { |p| path <= p } }
       #  end
-      #end
+      # end
 
-      #def sellable_bundles(player, corporation)
+      # def sellable_bundles(player, corporation)
       #  bundles = player.bundles_for_corporation(corporation)
       #  bundles.select { |bundle| can_sell?(bundle) }
-      #end
+      # end
 
-      #def did_sell?(_corporation, _entity)
+      # def did_sell?(_corporation, _entity)
       #  false
-      #end
+      # end
 
-      #def crowded_corps
+      # def crowded_corps
       #  @game.corporations.select do |c|
       #    c.trains.reject(&:obsolete).size > @game.phase.train_limit
       #  end
-      #end
+      # end
 
-      #def discard_train(action)
+      # def discard_train(action)
       #  train = action.train
       #  @game.depot.reclaim_train(train)
       #  @log << "#{action.entity.name} discards #{train.name}"
-      #end
+      # end
 
       ## returns true if user must choose home token
-      #def place_home_token(corporation)
+      # def place_home_token(corporation)
       #  return unless corporation.next_token # 1882
 
       #  hex = @game.hex_by_id(corporation.coordinates)
@@ -304,11 +314,11 @@ module Engine
 
       #  @game.log << "#{corporation.name} places a token on #{hex.name}"
       #  city.place_token(corporation, token)
-      #end
+      # end
 
-      #private
+      # private
 
-      #def potential_tiles(hex)
+      # def potential_tiles(hex)
       #  colors = @game.phase.tiles
       #  @game
       #    .tiles
@@ -316,9 +326,9 @@ module Engine
       #    .uniq(&:name)
       #    .select { |t| hex.tile.upgrades_to?(t) }
       #    .reject(&:blocks_lay)
-      #end
+      # end
 
-      #def sell_and_change_price(bundle, share_pool, stock_market)
+      # def sell_and_change_price(bundle, share_pool, stock_market)
       #  corporation = bundle.corporation
       #  price = corporation.share_price.price
       #  was_president = corporation.president?(bundle.owner)
@@ -332,9 +342,9 @@ module Engine
       #    raise NotImplementedError
       #  end
       #  log_share_price(corporation, price)
-      #end
+      # end
 
-      #def lay_tile(action)
+      # def lay_tile(action)
       #  entity = action.entity
       #  tile = action.tile
       #  hex = action.hex
@@ -389,9 +399,9 @@ module Engine
       #      " for #{ability.terrain} tile with #{company.name}"
       #    end
       #  end
-      #end
+      # end
 
-      #def border_cost(tile)
+      # def border_cost(tile)
       #  hex = tile.hex
       #  types = []
 
@@ -409,13 +419,13 @@ module Engine
       #    cost
       #  end
       #  [total_cost, types]
-      #end
+      # end
 
-      #def tile_cost(tile, abilities)
+      # def tile_cost(tile, abilities)
       #  tile.upgrade_cost(abilities)
-      #end
+      # end
 
-      #def payout_companies
+      # def payout_companies
       #  @game.companies.select(&:owner).each do |company|
       #    owner = company.owner
       #    next unless (revenue = company.revenue).positive?
@@ -423,48 +433,48 @@ module Engine
       #    @game.bank.spend(revenue, owner)
       #    @log << "#{owner.name} collects #{@game.format_currency(revenue)} from #{company.name}"
       #  end
-      #end
+      # end
 
-      #def log_share_price(entity, from)
+      # def log_share_price(entity, from)
       #  to = entity.share_price.price
       #  return unless from != to
 
       #  @log << "#{entity.name}'s share price changes from #{@game.format_currency(from)} "\
       #          "to #{@game.format_currency(to)}"
-      #end
+      # end
 
-      #def log_pass(entity)
+      # def log_pass(entity)
       #  @log << "#{entity.name} passes"
-      #end
+      # end
 
       ## methods to override
-      #def _process(_action)
+      # def _process(_action)
       #  raise NotImplementedError
-      #end
+      # end
 
-      #def change_entity(_action)
+      # def change_entity(_action)
       #  @current_entity = next_entity
-      #end
+      # end
 
-      #def pass_processed(_action); end
+      # def pass_processed(_action); end
 
-      #def action_processed(_action); end
+      # def action_processed(_action); end
 
-      #def action_finalized(_action); end
+      # def action_finalized(_action); end
 
       ## Returns if a share can be gained by an entity respecting the cert limit
       ## This works irrespective of if that player has sold this round
       ## such as in 1889 for exchanging Dougo
       ##
-      #def can_gain?(bundle, entity)
+      # def can_gain?(bundle, entity)
       #  return if !bundle || !entity
 
       #  corporation = bundle.corporation
       #  corporation.holding_ok?(entity, bundle.percent) &&
       #  (!corporation.counts_for_limit || entity.num_certs < @game.cert_limit)
-      #end
+      # end
 
-      #def check_track_restrictions!(old_tile, new_tile)
+      # def check_track_restrictions!(old_tile, new_tile)
       #  old_paths = old_tile.paths
       #  changed_city = false
       #  used_new_track = old_paths.empty?
@@ -487,7 +497,7 @@ module Engine
       #  else
       #    raise
       #  end
-      #end
+      # end
     end
   end
 end

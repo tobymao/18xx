@@ -16,6 +16,16 @@ module Engine
         # Ignore change entity as special doesn't change entity
       end
 
+      def current_actions
+        return [] unless @current_entity
+
+        actions = []
+        actions << 'assign' if can_assign_hex? || can_assign_corporation?
+        actions << 'lay_track' if can_lay_track?
+        actions << 'place_token' if can_place_token?
+        actions
+      end
+
       def active_entities
         @entities
       end
@@ -72,6 +82,10 @@ module Engine
           hex = @game.hex_by_id(coordinates)
           [hex, hex.neighbors.keys]
         end.to_h
+      end
+
+      def available_hex(hex)
+        connected_hexes[hex] || reachable_hexes[hex]
       end
 
       private

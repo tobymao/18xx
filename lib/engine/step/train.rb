@@ -8,7 +8,7 @@ module Engine
       def actions(entity)
         return [] if entity != current_entity
         return ['buy_train'] if must_buy_train?(entity)
-        return ['buy_train', 'pass'] if can_buy_train?(entity)
+        return %w[buy_train pass] if can_buy_train?(entity)
 
         []
       end
@@ -36,7 +36,7 @@ module Engine
       end
 
       def process_buy_train(action)
-        puts "buying train"
+        puts 'buying train'
         entity = action.entity
         train = action.train
         price = action.price

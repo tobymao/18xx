@@ -62,13 +62,15 @@ module View
           return if @tile_selector&.is_a?(Lib::TileSelector)
 
           round = @selected_company ? @game.special : @game.round
-          return unless round.can_place_token?
+          actions = @game.active_step.current_actions
+          return unless (%w[move_token place_token] & actions).empty?
 
           event.JS.stopPropagation
 
           # If there's a choice of tokens of different types show the selector, otherwise just place
           next_tokens = @game.current_entity.tokens_by_type
-          if (token = @game.round.ambiguous_token)
+
+          if actions.include?('move_token')
             # There should only be one token in the city
             action = Engine::Action::MoveToken.new(
               @game.current_entity,
@@ -78,7 +80,9 @@ module View
             )
 
             process_action(action)
-          elsif next_tokens.size == 1 || @game.round.step == :home_token
+          elsif next_tokens.size == 1
+            # TODO: this needs to see if it's the home token action, in which case the user has no choice
+            # Maybe the tokens should come from the step.
             action = Engine::Action::PlaceToken.new(
               @selected_company || @game.current_entity,
               city: @city,
