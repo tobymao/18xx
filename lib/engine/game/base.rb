@@ -333,7 +333,7 @@ module Engine
       def current_entity
         @round.current_entity
         # TODO: This is not quite right
-        #@round.active_step.current_entity.first
+        # @round.active_step.current_entity.first
       end
 
       def active_players
@@ -496,8 +496,37 @@ module Engine
         value
       end
 
+      def sellable_bundles(player, corporation)
+        bundles = player.bundles_for_corporation(corporation)
+        bundles.select { |bundle| @round.active_step.can_sell?(bundle) }
+      end
+
       def sellable_turn?
         @turn > 1
+      end
+
+      def sell_shares_and_change_price(bundle)
+        corporation = bundle.corporation
+        price = corporation.share_price.price
+        was_president = corporation.president?(bundle.owner)
+        @share_pool.sell_shares(bundle)
+        case self.class::SELL_MOVEMENT
+        when :down_share
+          bundle.num_shares.times { @stock_market.move_down(corporation) }
+        when :left_block_pres
+          stock_market.move_left(corporation) if was_president
+        else
+          raise NotImplementedError
+        end
+        log_share_price(corporation, price)
+      end
+
+      def log_share_price(entity, from)
+        to = entity.share_price.price
+        return unless from != to
+
+        @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
+                "to #{format_currency(to)}"
       end
 
       def end_game!

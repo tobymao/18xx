@@ -28,6 +28,14 @@ module Engine
         @entity_index = 0
       end
 
+      def current_actions
+        actions = []
+        actions += %w[buy_shares ipo] if can_buy?
+
+        actions << 'sell_shares' if can_sell_any?
+        actions
+      end
+
       def name
         'Stock Round'
       end
@@ -150,16 +158,20 @@ module Engine
         entity.unpass!
       end
 
-      def nothing_to_do?
+      def can_sell_any?
         bundles = @current_entity
           .shares
           .uniq { |share| [share.corporation.id, share.president] }
           .map { |share| ShareBundle.new(share, 10) }
 
-        bundles.none? { |bundle| can_sell?(bundle) } &&
-          @share_pool.shares.none? { |s| can_buy?(s.to_bundle) } &&
-          @corporations.none? { |c| can_buy?(c.shares.first&.to_bundle) } &&
-          !must_sell? # this forces a deadlock and a user must undo
+        bundles.none? { |bundle| can_sell?(bundle) }
+      end
+
+      def nothing_to_do?
+        can_sell_any? &&
+         @share_pool.shares.none? { |s| can_buy?(s.to_bundle) } &&
+         @corporations.none? { |c| can_buy?(c.shares.first&.to_bundle) } &&
+         !must_sell? # this forces a deadlock and a user must undo
       end
 
       def change_entity(_action)
@@ -206,7 +218,7 @@ module Engine
         raise GameError, "Cannot sell shares of #{shares.corporation.name}" unless can_sell?(shares)
 
         @players_sold[shares.owner][shares.corporation] = :now
-        sell_and_change_price(shares, @share_pool, @stock_market)
+        @game.sell_shares_and_change_price(shares)
       end
 
       def buy_shares(entity, shares)

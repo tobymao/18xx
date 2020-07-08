@@ -6,7 +6,11 @@ module Engine
   module Step
     class Train < Base
       def actions(entity)
+        # TODO: This needs to check it actually needs to sell shares.
+        return ['sell_shares'] if entity == current_entity.owner
         return [] if entity != current_entity
+        # TODO: Not sure this is right
+        return %w[sell_shares buy_train] if must_buy_train?(entity)
         return ['buy_train'] if must_buy_train?(entity)
         return %w[buy_train pass] if can_buy_train?(entity)
 
@@ -45,8 +49,7 @@ module Engine
         raise GameError, 'Not a buyable train' unless buyable_trains.include?(train)
 
         remaining = price - entity.cash
-
-        if remaining.positive? && must_buy_train?
+        if remaining.positive? && must_buy_train?(entity)
           cheapest = @depot.min_depot_train
           if train != cheapest && (!@ebuy_other_value || train.from_depot?)
             raise GameError, "Cannot purchase #{train.name} train: #{cheapest.name} train available"
@@ -73,6 +76,40 @@ module Engine
         entity.buy_train(train, price)
       end
 
+      def process_sell_shares(action)
+        raise GameError, "Cannot sell shares of #{action.bundle.corporation.name}" unless can_sell?(action.bundle)
+
+        @last_share_sold_price = action.bundle.price_per_share
+        @game.sell_shares_and_change_price(action.bundle)
+        @round.recalculate_order
+      end
+
+      def can_sell?(bundle)
+        player = bundle.owner
+        # Can't sell president's share
+        return false unless bundle.can_dump?(player)
+
+        # Can only sell as much as you need to afford the train
+        total_cash = bundle.price + player.cash + current_entity.cash
+        return false if total_cash >= @depot.min_depot_price + bundle.price_per_share
+
+        # Can't swap presidency
+        corporation = bundle.corporation
+        if corporation.president?(player) &&
+            (!@game.class::EBUY_PRES_SWAP || corporation == current_entity)
+          share_holders = corporation.share_holders
+          remaining = share_holders[player] - bundle.percent
+          next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
+          return false if remaining < next_highest
+        end
+
+        # Can't oversaturate the market
+        return false unless @game.share_pool.fit_in_bank?(bundle)
+
+        # Otherwise we're good
+        true
+      end
+
       def buyable_trains
         depot_trains = @depot.depot_trains
         other_trains = @depot.other_trains(current_entity)
@@ -84,7 +121,7 @@ module Engine
 
           if @last_share_sold_price
             # 1889, a player cannot contribute to buy a train from another corporation
-            return depot_trains unless @ebuy_other_value
+            return depot_trains unless @game.class::EBUY_OTHER_VALUE
 
             # 18Chesapeake and most others, it's legal to buy trains from other corps until
             # if the player has just sold a share they can buy a train between cash-price_last_share_sold and cash
@@ -99,6 +136,7 @@ module Engine
 
       def setup
         @depot = @game.depot
+        @last_share_sold_price = nil
       end
     end
   end

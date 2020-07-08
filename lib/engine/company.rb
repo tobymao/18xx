@@ -25,6 +25,10 @@ module Engine
       init_abilities(abilities)
     end
 
+    def operator?
+      false
+    end
+
     def id
       @sym
     end

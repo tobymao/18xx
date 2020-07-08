@@ -59,9 +59,8 @@ module Engine
 
         hex.lay(tile)
 
+        check_track_restrictions!(entity, old_tile, tile) unless @game.loading
         @game.graph.clear
-        check_track_restrictions!(old_tile, tile) unless @game.loading
-
         free = false
 
         entity.abilities(:tile_lay) do |ability|
@@ -77,7 +76,7 @@ module Engine
           else
             border, border_types = border_cost(tile)
             terrain += border_types if border.positive?
-            tile_cost(old_tile, entity.all_abilities) + border
+            tile_cost(old_tile, entity) + border
           end
 
         entity.spend(cost, @game.bank) if cost.positive?
@@ -116,13 +115,66 @@ module Engine
           tile.borders.delete(border)
           neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
 
-          cost
+          ability = entity.all_abilities.find do |a|
+            (a.type == :tile_discount) && (border.type == a.terrain)
+          end
+          discount = ability&.discount || 0
+
+          if discount.positive?
+            @log << "#{entity.name} receives a discount of "\
+            "#{@game.format_currency(discount)} from "\
+            "#{ability.owner.name}"
+          end
+
+          cost - discount
         end
         [total_cost, types]
       end
 
-      def tile_cost(tile, abilities)
-        tile.upgrade_cost(abilities)
+      def tile_cost(tile, entity)
+        ability = entity.all_abilities.find { |a| a.type == :tile_discount }
+
+        tile.upgrades.sum do |upgrade|
+          discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
+
+          if discount.positive?
+            @log << "#{entity.name} receives a discount of "\
+                    "#{@game.format_currency(discount)} from "\
+                    "#{ability.owner.name}"
+          end
+
+          total_cost = upgrade.cost - discount
+          total_cost
+        end
+      end
+
+      def check_track_restrictions!(entity, old_tile, new_tile)
+        old_paths = old_tile.paths
+        changed_city = false
+        used_new_track = old_paths.empty?
+
+        new_tile.paths.each do |np|
+          next unless @game.graph.connected_paths(entity)[np]
+
+          op = old_paths.find { |path| path <= np }
+          used_new_track = true unless op
+          changed_city = true if op&.node && op.node.max_revenue != np.node.max_revenue
+        end
+
+        case @game.class::TRACK_RESTRICTION
+        when :permissive
+          true
+        when :restrictive
+          raise GameError, 'Must use new track' unless used_new_track
+        when :semi_restrictive
+          raise GameError, 'Must use new track or change city value' if !used_new_track && !changed_city
+        else
+          raise
+        end
+      end
+
+      def available_hex(hex)
+        @game.graph.connected_hexes(current_entity)[hex]
       end
     end
   end

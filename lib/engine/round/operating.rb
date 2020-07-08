@@ -26,6 +26,13 @@ module Engine
         @steps.each(&:unpass!)
       end
 
+      def recalculate_order
+        # Selling shares may have caused the corporations that haven't operated yet
+        # to change order. Re-sort only them.
+        index = @entity_index + 1
+        @entities[index..-1] = @entities[index..-1].sort if index < @entities.size - 1
+      end
+
       # attr_reader :bankrupt, :depot, :phase, :round_num, :step, :current_routes
 
       # STEPS = %i[
@@ -646,13 +653,6 @@ module Engine
       #   player.spend(player.cash, @bank)
 
       #   @bankrupt = true
-      # end
-
-      # def recalculate_order
-      #   # Selling shares may have caused the corporations that haven't operated yet
-      #   # to change order. Re-sort only them.
-      #   index = @entities.find_index(@current_entity) + 1
-      #   @entities[index..-1] = @entities[index..-1].sort if index < @entities.size - 1
       # end
 
       # def min_token_price(token)

@@ -123,7 +123,7 @@ module Engine
       end
 
       def available_hex(hex)
-        connected_hexes(hex)
+        connected_hexes[hex]
       end
 
       def connected_paths
@@ -221,22 +221,6 @@ module Engine
           .reject(&:blocks_lay)
       end
 
-      def sell_and_change_price(bundle, share_pool, stock_market)
-        corporation = bundle.corporation
-        price = corporation.share_price.price
-        was_president = corporation.president?(bundle.owner)
-        share_pool.sell_shares(bundle)
-        case @game.class::SELL_MOVEMENT
-        when :down_share
-          bundle.num_shares.times { stock_market.move_down(corporation) }
-        when :left_block_pres
-          stock_market.move_left(corporation) if was_president
-        else
-          raise NotImplementedError
-        end
-        log_share_price(corporation, price)
-      end
-
       def lay_tile(action)
         entity = action.entity
         tile = action.tile
@@ -326,14 +310,6 @@ module Engine
           @game.bank.spend(revenue, owner)
           @log << "#{owner.name} collects #{@game.format_currency(revenue)} from #{company.name}"
         end
-      end
-
-      def log_share_price(entity, from)
-        to = entity.share_price.price
-        return unless from != to
-
-        @log << "#{entity.name}'s share price changes from #{@game.format_currency(from)} "\
-                "to #{@game.format_currency(to)}"
       end
 
       def log_pass(entity)
