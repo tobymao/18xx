@@ -48,6 +48,8 @@ module Engine
       TILE_COST = 20
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove private company tokens']).freeze
 
+      IPO_NAME = 'Treasury'
+
       def init_companies(players)
         super + @players.size.times.map do |i|
           name = "Pass (#{i + 1})"
@@ -238,7 +240,7 @@ module Engine
           end
         end
 
-        corporation.spend(corporation.cash, @bank)
+        corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
         corporation.trains.each { |t| t.buyable = false }
         if corporation.companies.any?
           @log << "#{corporation.name}'s companies close: #{corporation.companies.map(&:sym).join(', ')}"

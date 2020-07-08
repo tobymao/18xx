@@ -4,7 +4,11 @@ if (typeof setInterval === 'undefined') { var setInterval = function setInterval
 if (typeof window === 'undefined') {
   window = {
     addEventListener: function() {},
-    matchMedia: function() { return {} },
+    matchMedia: function() {
+      return {
+        matches: function() { return false }
+      }
+    },
     requestAnimationFrame: function() {},
     scrollTo: function() {},
     location: {

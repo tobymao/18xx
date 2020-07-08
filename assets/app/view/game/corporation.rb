@@ -242,7 +242,7 @@ module View
 
         pool_rows = [
           h('tr.ipo', [
-            h('td.name', 'IPO'),
+            h('td.name', @game.class::IPO_NAME),
             h('td.right', shares_props, share_number_str(@corporation.num_ipo_shares)),
             h('td.right', share_price_str(@corporation.par_price)),
           ]),
