@@ -81,7 +81,7 @@ module View
           children = []
           unless @round.must_sell?
             if @round.can_buy?(ipo_share)
-              children << h('button.button.margined_half', { on: { click: buy_ipo } }, 'Buy IPO Share')
+              children << h('button.button.margined_half', { on: { click: buy_ipo } }, "Buy #{@game.class::IPO_NAME} Share")
             end
 
             if @round.can_buy?(pool_share)
@@ -102,7 +102,7 @@ module View
 
                 if ability.from.include?(:ipo) && @round.can_gain?(ipo_share, company.owner)
                   children << h('button.button', { on: { click: -> { buy_share(company, ipo_share) } } },
-                                "#{prefix} an IPO share")
+                                "#{prefix} an #{@game.class::IPO_NAME} share")
                 end
 
                 if ability.from.include?(:market) && @round.can_gain?(pool_share, company.owner)
