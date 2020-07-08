@@ -190,11 +190,18 @@ module Engine
         ((cities.empty? && towns.one?) && edges.size > 2)
     end
 
-    def upgrade_cost(abilities)
-      ability = abilities.find { |a| a.type == :tile_discount }
+    def upgrade_cost(entity, game)
+      ability = entity.all_abilities.find { |a| a.type == :tile_discount }
 
       @upgrades.sum do |upgrade|
         discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
+
+        if discount.positive?
+          game.log << "#{entity.name} receives a discount of "\
+                      "#{game.format_currency(discount)} from "\
+                      "#{ability.owner.name}"
+        end
+
         total_cost = upgrade.cost - discount
         total_cost
       end
