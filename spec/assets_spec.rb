@@ -128,5 +128,39 @@ describe 'Assets' do
       expect(render(app_route: '/game/1#spreadsheet', **needs)).to include('Worth')
       expect(render(app_route: '/game/1#tools', **needs)).to include('Clone this')
     end
+
+    TEST_CASES = [
+      ['1889', 314, 6, 'stock_round', 'Pass (Share)'],
+      ['1889', 314, 13, 'float', 'KO receives ¥700'],
+      ['1889', 314, 21, 'lay_track', '1889: Operating Round 1.1 (of 1) - Lay Track'],
+      ['1889', 314, 22, 'buy_train', 'KO must buy an available train'],
+      ['1889', 314, 46, 'run_routes', '1889: Operating Round 2.1 (of 1) - Run Routes'],
+      ['1889', 314, 47, 'dividends', '1889: Operating Round 2.1 (of 1) - Pay or Withhold Dividends'],
+      ['1889', 314, 78, 'purchase_company', '1889: Operating Round 3.1 (of 1) - Purchase Companies'],
+      ['1889', 314, 336, 'discard_train', 'Discard Trains'],
+      ['1889', 314, 345, 'buy_train_emr', 'TR must buy an available train'],
+      ['1889', 314, nil, 'endgame', '1889: Operating Round 7.1 (of 3) - Game Over - Bankruptcy'],
+      ['1846', 2987, 0, 'draft', '1846: Draft Round 1 - Draft Companies'],
+      ['1846', 2987, 10, 'draft', 'Mail Contract'],
+      ['1846', 2987, 14, 'lay_track_or_token', '1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track'],
+      ['1846', 2987, 45, 'issue_shares', '1846: Operating Round 2.1 (of 2) - Issue or Redeem Shares'],
+      ['1846', 2987, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
+    ].freeze
+
+    TEST_CASES.each do |game, game_id, action, step, string|
+      describe game do
+        it "renders #{step}" do
+          data = JSON.parse(File.read("spec/fixtures/#{game}/#{game_id}.json"))
+          data['actions'] = data['actions'].take(action) if action
+          data[:loaded] = true
+          needs = {
+            game_data: data,
+            user: data['user'],
+          }
+
+          expect(render(app_route: "/game/#{needs[:game_data]['id']}", **needs)).to include(string)
+        end
+      end
+    end
   end
 end
