@@ -23,6 +23,15 @@ module View
         needs :reservation, default: nil
         needs :game, default: nil, store: true
 
+        RESERVATION_FONT_SIZE = {
+          1 => 22,
+          2 => 22,
+          3 => 22,
+          4 => 17,
+          5 => 13,
+          6 => 13,
+        }.freeze
+
         def render_part
           children = []
           children << h(:circle, attrs: { r: @radius, fill: 'white' })
@@ -37,11 +46,15 @@ module View
         end
 
         def reservation
-          h(
-            :text,
-            { attrs: { fill: 'black', transform: 'translate(0 9) scale(1.75)' } },
-            @reservation.id,
-          )
+          text = @reservation.id
+
+          attrs = {
+            fill: 'black',
+            'font-size': "#{RESERVATION_FONT_SIZE[text.size]}px",
+            'dominant-baseline': 'central',
+          }
+
+          h(:text, { attrs: attrs }, text)
         end
 
         def on_click(event)
