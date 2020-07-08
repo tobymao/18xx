@@ -4,10 +4,11 @@ require 'lib/hex'
 
 module Lib
   module Color
+    DARK = `window.matchMedia('(prefers-color-scheme: dark)').matches`
     COLORS = {
-      bg: '#ffffff',
+      bg: DARK ? '#000000' : '#ffffff',
       bg2: '#dcdcdc',
-      font: '#000000',
+      font: DARK ? '#ffffff' : '#000000',
       font2: '#000000',
       **Lib::Hex::COLOR,
     }.freeze
