@@ -48,7 +48,7 @@ module View
         def reservation
           text = @reservation.id
 
-          attrs ={
+          attrs = {
             fill: 'black',
             'font-size': "#{RESERVATION_FONT_SIZE[text.size]}px",
             'dominant-baseline': 'central',
