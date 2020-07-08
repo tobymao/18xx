@@ -6,15 +6,16 @@ module View
   module Game
     class GameInfo < Snabberb::Component
       needs :game
+      needs :layout, default: nil
 
       def render
         @depot = @game.depot
 
-        h(:div,  { style: {
-          overflow: 'auto',
-        } }, [
-          render_body,
-          ])
+        if @layout == :discarded_trains
+          @depot.discarded.empty? ? '' : discarded_trains
+        else
+          h(:div, { style: { overflow: 'auto' } }, [render_body])
+        end
       end
 
       def render_body
@@ -35,7 +36,7 @@ module View
         children << phases
         children << game_info
 
-        h(:div, {}, children)
+        h(:div, children)
       end
 
       def game_info
@@ -193,7 +194,7 @@ module View
         end
 
         h(:div, [
-          h(:div, 'In bank pool:'),
+          h(:div, 'Trains in Bank Pool'),
           h(:table, [
             h(:tr, [
               h(:th, td_props, 'Type'),
