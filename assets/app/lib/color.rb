@@ -4,7 +4,8 @@ require 'lib/hex'
 
 module Lib
   module Color
-    DARK = `window.matchMedia('(prefers-color-scheme: dark)').matches`
+    DARK = `window.matchMedia('(prefers-color-scheme: dark)').matches`.freeze
+
     COLORS = {
       bg: DARK ? '#000000' : '#ffffff',
       bg2: '#dcdcdc',
