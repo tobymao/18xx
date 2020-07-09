@@ -15,6 +15,15 @@ module Engine
         ACTIONS
       end
 
+      DIVIDEND_TYPES = %i[payout withhold].freeze
+      def dividend_types
+        self.class::DIVIDEND_TYPES
+      end
+
+      def description
+        'Pay or Withhold Dividends'
+      end
+
       def skip!
         process_dividend(Action::Dividend.new(current_entity, kind: 'withhold'))
       end

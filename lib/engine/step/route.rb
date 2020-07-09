@@ -35,6 +35,10 @@ module Engine
         pass!
       end
 
+      def available_hex(hex)
+        @game.graph.reachable_hexes(current_entity)[hex]
+      end
+
       def sequential?
         true
       end

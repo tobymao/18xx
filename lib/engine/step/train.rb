@@ -118,6 +118,10 @@ module Engine
         true
       end
 
+      def available_hex(hex)
+        @game.graph.reachable_hexes(current_entity)[hex]
+      end
+
       def buyable_trains
         depot_trains = @depot.depot_trains
         other_trains = @depot.other_trains(current_entity)

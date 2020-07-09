@@ -9,9 +9,9 @@ module View
       include Actionable
 
       def render
-        @round = @game.round
+        @step = @game.active_step
 
-        buttons = @round.dividend_types.map do |type|
+        buttons = @step.dividend_types.map do |type|
           text =
             case type
             when :payout
@@ -25,13 +25,13 @@ module View
             end
 
           click = lambda do
-            process_action(Engine::Action::Dividend.new(@round.current_entity, kind: type))
+            process_action(Engine::Action::Dividend.new(@step.current_entity, kind: type))
           end
 
           h('button.button.margined', { on: { click: click } }, text)
         end
 
-        h(:div, [h(UndoAndPass, pass: false), *buttons])
+        h(:div, [*buttons])
       end
     end
   end

@@ -63,7 +63,7 @@ module View
 
           round = @selected_company ? @game.special : @game.round
           actions = round.active_step.current_actions
-          return unless (%w[move_token place_token] & actions).empty?
+          return if (%w[move_token place_token] & actions).empty?
 
           event.JS.stopPropagation
 

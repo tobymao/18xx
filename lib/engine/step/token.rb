@@ -17,11 +17,15 @@ module Engine
       end
 
       def description
-        'Lay Track'
+        'Place a Token'
       end
 
       def pass_description
-        'Skip (Track)'
+        'Skip (Token)'
+      end
+
+      def available_hex(hex)
+        @game.graph.reachable_hexes(current_entity)[hex]
       end
 
       def sequential?
@@ -32,7 +36,7 @@ module Engine
         entity = action.entity
         hex = action.city.hex
 
-        if !@game.loading && @step != :home_token && !connected_nodes[action.city]
+        if !@game.loading && @step != :home_token && !@game.graph.connected_nodes(entity)[action.city]
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 
