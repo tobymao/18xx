@@ -24,6 +24,11 @@ module Engine
       end
 
       def process_lay_tile(action)
+        lay_tile(action)
+        pass!
+      end
+
+      def lay_tile(action)
         #   previous_tile = action.hex.tile
 
         #   hex_id = action.hex.id
@@ -96,7 +101,6 @@ module Engine
           " lays tile ##{tile.name}"\
           " with rotation #{rotation} on #{hex.name}"
 
-        pass!
         return unless terrain.any?
 
         @game.all_companies_with_ability(:tile_income) do |company, ability|

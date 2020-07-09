@@ -6,8 +6,12 @@ module Engine
   module Step
     class Train < Base
       def actions(entity)
+        # 1846 and a few others minors can't buy trains
+        return [] if entity.minor?
+
         # TODO: This needs to check it actually needs to sell shares.
         return ['sell_shares'] if entity == current_entity.owner
+
         return [] if entity != current_entity
         # TODO: Not sure this is right
         return %w[sell_shares buy_train] if must_buy_train?(entity)

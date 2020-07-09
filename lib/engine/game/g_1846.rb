@@ -266,7 +266,13 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::G1846::Operating.new(@minors + @corporations, game: self, round_num: round_num)
+        Round::G1846::Operating.new(self, [
+          Step::IssueShares,
+          Step::TrackAndToken,
+          Step::Route,
+          Step::Dividend,
+          Step::Train,
+        ], round_num: round_num)
       end
 
       def event_close_companies!
