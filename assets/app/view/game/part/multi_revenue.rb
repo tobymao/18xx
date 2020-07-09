@@ -4,14 +4,7 @@ module View
   module Game
     module Part
       class MultiRevenue < Snabberb::Component
-        COLOR = {
-          white: '#fff',
-          yellow: '#fde900',
-          green: '#71bf44',
-          brown: '#cb7745',
-          gray: '#bcbdc0',
-          red: '#ec232a',
-        }.freeze
+        include Lib::Color
 
         needs :revenues
         needs :transform, default: 'translate(0 0)'
@@ -35,7 +28,8 @@ module View
           end
 
           children = computed_revenues.flat_map.with_index do |rev, index|
-            fill = COLOR[rev['color']]
+            fill = color_for(rev['color'])
+            font_color = contrast_on(fill)
             width = rev['width']
             t_x = (32 * index) - (total_width * 0.5)
 
@@ -51,7 +45,8 @@ module View
             text_props = {
               attrs: {
                 transform: "translate(#{t_x + (width * 0.5)} 0)",
-                fill: 'black',
+                fill: font_color,
+                stroke: font_color,
                 'dominant-baseline': 'central',
               },
             }
