@@ -61,9 +61,7 @@ module View
         other_corp_trains = available.sort_by { |c, _| c.owner == @corporation.owner ? 0 : 1 }
         children = []
 
-        must_buy_train = step.must_buy_train?
-
-        children << h(:div, { style: { marginBottom: '0.5rem' } }, [h(UndoAndPass, pass: !must_buy_train)])
+        must_buy_train = step.must_buy_train?(@corporation)
 
         if must_buy_train
           children << h(:div, "#{@corporation.name} must buy an available train")
@@ -84,7 +82,7 @@ module View
           },
         }
 
-        if (step.can_buy_train? && step.corp_has_room?) || step.must_buy_train?
+        if (step.can_buy_train?(@corporation) && step.has_room?(@corporation)) || step.must_buy_train?(@corporation)
           children << h(:h3, h3_props, 'Available Trains')
           children << h(:div, div_props, [
             *from_depot(depot_trains),
