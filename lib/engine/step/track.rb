@@ -29,12 +29,7 @@ module Engine
         #   hex_id = action.hex.id
 
         #   # companies with block_hexes should block hexes
-        #   @game.companies.each do |company|
-        #     next if company.closed?
-        #     next unless (ability = company.abilities(:blocks_hexes))
 
-        #     raise GameError, "#{hex_id} is blocked by #{company.name}" if ability.hexes.include?(hex_id)
-        #   end
 
         #   lay_tile(action)
         #   @current_entity.abilities(:teleport) do |ability, _|
@@ -57,6 +52,13 @@ module Engine
         hex = action.hex
         rotation = action.rotation
         old_tile = hex.tile
+
+        @game.companies.each do |company|
+             next if company.closed?
+             next unless (ability = company.abilities(:blocks_hexes))
+
+             raise GameError, "#{hex.id} is blocked by #{company.name}" if ability.hexes.include?(hex.id)
+        end
 
         tile.rotate!(rotation)
 

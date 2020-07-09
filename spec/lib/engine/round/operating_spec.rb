@@ -357,7 +357,7 @@ module Engine
       end
     end
 
-    describe '#connected_hexes' do
+    describe '#available_hex' do
       context 'with awa' do
         let(:corporation) { game.corporation_by_id('AR') }
 
