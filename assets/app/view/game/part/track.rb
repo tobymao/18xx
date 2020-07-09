@@ -36,7 +36,7 @@ module View
           elsif @tile.cities.any?
             render_track_for_curvilinear_city
           else
-            @tile.paths.select { |path| path.edges.size == 2 }.map do |path|
+            @tile.paths.select { |path| path.edges.size == 2 }.sort_by { |path| color_for(path) }.map do |path|
               h(TrackCurvilinearPath, region_use: @region_use, path: path, color: color_for(path))
             end
           end
