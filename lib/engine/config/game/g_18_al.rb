@@ -473,7 +473,8 @@ module Engine
          "train_limit":4,
          "tiles":[
             "yellow"
-         ]
+         ],
+         "operating_rounds": 1
       },
       {
          "name":"3",
@@ -482,7 +483,8 @@ module Engine
             "yellow",
             "green"
          ],
-         "buy_companies":true
+         "buy_companies":true,
+         "operating_rounds": 2
       },
       {
          "name":"4",
@@ -491,7 +493,8 @@ module Engine
             "yellow",
             "green"
          ],
-         "buy_companies":true
+         "buy_companies":true,
+         "operating_rounds": 2
       },
       {
          "name":"5",
@@ -503,7 +506,8 @@ module Engine
          ],
          "events":{
             "close_companies":true
-         }
+         },
+         "operating_rounds": 3
       },
       {
          "name":"6",
@@ -512,7 +516,8 @@ module Engine
             "yellow",
             "green",
             "brown"
-         ]
+         ],
+         "operating_rounds": 3
       },
       {
          "name":"7",
@@ -521,7 +526,8 @@ module Engine
             "yellow",
             "green",
             "brown"
-         ]
+         ],
+         "operating_rounds": 3
       },
       {
          "name":"4D",
@@ -530,7 +536,8 @@ module Engine
             "yellow",
             "green",
             "brown"
-         ]
+         ],
+         "operating_rounds": 3
       }
    ]
 }
