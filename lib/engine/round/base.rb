@@ -89,14 +89,7 @@ module Engine
 
         step.send("process_#{action.type}", action)
 
-        @steps.each do |prev|
-          break if prev == step
-          next unless prev.sequential?
-
-          puts "passing sequential #{prev}"
-
-          prev.pass!
-        end if step.sequential?
+        skip_steps
         action_processed(action)
       end
 
@@ -120,6 +113,16 @@ module Engine
 
       def clear_cache!
         @active_step = nil
+      end
+
+      def skip_steps
+        @steps.each do |step|
+          break if step == active_step
+
+          if step.active? && step.blocks? && !step.blocking?
+            step.skip!
+          end
+        end
       end
 
       def action_processed(_action); end

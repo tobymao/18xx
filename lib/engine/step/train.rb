@@ -40,7 +40,6 @@ module Engine
       end
 
       def process_buy_train(action)
-        puts 'buying train'
         entity = action.entity
         train = action.train
         price = action.price

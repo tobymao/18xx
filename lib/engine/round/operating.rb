@@ -17,6 +17,7 @@ module Engine
         @home_token_timing = @game.class::HOME_TOKEN_TIMING
         @game.payout_companies
         @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
+        start_operating
       end
 
       def action_processed(_action)
@@ -24,6 +25,16 @@ module Engine
 
         next_entity_index!
         @steps.each(&:unpass!)
+        start_operating
+      end
+
+      def start_operating
+        return if finished?
+
+        @game.log << "#{current_entity.owner.name} operates #{current_entity.name}"
+        current_entity.trains.each { |train| train.operated = false }
+        place_home_token(current_entity) if @home_token_timing == :operate
+        skip_steps
       end
 
       def recalculate_order

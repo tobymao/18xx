@@ -37,7 +37,7 @@ module Engine
 
       def round_state
         {
-          routes: nil,
+          routes: [],
         }
       end
     end

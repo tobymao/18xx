@@ -199,7 +199,7 @@ module Engine
         sold_out.sort.each do |corporation|
           prev = corporation.share_price.price
           @stock_market.move_up(corporation)
-          log_share_price(corporation, prev)
+          @game.log_share_price(corporation, prev)
         end
 
         return if @pool_share_drop == :none
@@ -210,7 +210,7 @@ module Engine
             @stock_market.move_left(corporation)
             break if @pool_share_drop == :one
           end
-          log_share_price(corporation, prev) if prev != corporation.share_price.price
+          @game.log_share_price(corporation, prev) if prev != corporation.share_price.price
         end
       end
 

@@ -34,6 +34,10 @@ module Engine
         pass!
       end
 
+      def skip!
+        pass!
+      end
+
       def current_actions
         current_entity ? actions(current_entity) : []
       end
