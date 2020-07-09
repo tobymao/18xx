@@ -94,17 +94,17 @@ module View
             h(:th, { attrs: { colspan: or_history_titles.size } }, 'OR History'),
           ]),
           h(:tr, [
-            render_sort_link('SYM', 'ID', style: { padding: '0', whiteSpace: 'nowrap' }),
+            render_sort_link('SYM', 'ID'),
             *@game.players.map { |p| h('th.name.nowrap', p.name) },
             h(:th, @game.class::IPO_NAME),
             h(:th, 'Market'),
             h(:th, @game.class::IPO_NAME),
-            render_sort_link('Market', 'SHARE_PRICE', style: { whiteSpace: 'nowrap' }),
-            render_sort_link('Cash', 'CASH', style: { whiteSpace: 'nowrap' }),
-            render_sort_link('Operating Order', 'OPERATING_ORDER'),
+            render_sort_link('Market', 'SHARE_PRICE', style: { padding: '0' }),
+            render_sort_link('Cash', 'CASH'),
+            render_sort_link('Order', 'OPERATING_ORDER', style: { padding: '0' }),
             h(:th, 'Trains'),
             h(:th, 'Tokens'),
-            h(:th, 'Privates'),
+            h('th.no_padding', 'Privates'),
             h(:th, ''),
             *or_history_titles,
           ]),
@@ -112,7 +112,7 @@ module View
       end
 
       def render_sort_link(title, sort_by, props = {})
-        h(:th, props, [
+        h('th.nowrap', { attrs: { title: 'Sort' } }.merge(props), [
           h(
             Link,
             href: '',
@@ -127,9 +127,9 @@ module View
       end
 
       def sort_order_icon
-        return '(⬇️)' if @spreadsheet_sort_order == 'ASC'
+        return '⬇️' if @spreadsheet_sort_order == 'ASC'
 
-        '(⬆️)'
+        '⬆️'
       end
 
       def mark_sort_column(sort_by)
@@ -138,8 +138,7 @@ module View
       end
 
       def toggle_sort_order
-        Lib::Storage['spreadsheet_sort_order'] = 'ASC' if @spreadsheet_sort_order == 'DESC'
-        Lib::Storage['spreadsheet_sort_order'] = 'DESC' unless @spreadsheet_sort_order == 'DESC'
+        Lib::Storage['spreadsheet_sort_order'] = @spreadsheet_sort_order == 'ASC' ? 'DESC' : 'ASC'
         update
       end
 
@@ -219,7 +218,7 @@ module View
           h(:td, market_props, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
           h(:td, @game.format_currency(corporation.cash)),
           h(:td, operating_order_text),
-          h(:td, corporation.trains.map(&:name).join(',')),
+          h('td.nowrap', corporation.trains.map(&:name).join(', ')),
           h(:td, "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
           render_companies(corporation),
           h('th.no_padding', name_props, corporation.name),
@@ -228,7 +227,7 @@ module View
       end
 
       def render_companies(entity)
-        h(:td, entity.companies.map(&:sym).join(','))
+        h('td.nowrap', entity.companies.map(&:sym).join(', '))
       end
 
       def render_player_privates

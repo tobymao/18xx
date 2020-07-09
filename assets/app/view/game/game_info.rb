@@ -22,7 +22,7 @@ module View
 
       def render_body
         children = upcoming_trains
-        children.concat discarded_trains unless @depot.discarded.empty?
+        children.concat(discarded_trains) if @depot.discarded.any?
         children.concat(phases, game_info)
       end
 
@@ -160,22 +160,24 @@ module View
           ])
         end
 
-        [
-          if @layout == :discarded_trains
-            h(:div, { style: { marginBottom: '-0.5rem' } }, 'Trains in Bank Pool')
-          else
-            h(:h3, 'Trains in Bank Pool')
-          end,
-          h(:table, [
-            h(:thead, [
-              h(:tr, [
-                h(:th, 'Type'),
-                h(:th, 'Price'),
-              ]),
+        table = h(:table, [
+          h(:thead, [
+            h(:tr, [
+              h(:th, 'Type'),
+              h(:th, 'Price'),
             ]),
-            h(:tbody, rows),
           ]),
-        ]
+          h(:tbody, rows),
+        ])
+
+        if @layout == :discarded_trains
+          h(:div, { style: { display: 'grid', justifyItems: 'center' } }, [
+            h(:div, 'Trains in Bank Pool'),
+            table,
+          ])
+        else
+          [h(:h3, 'Trains in Bank Pool'), table]
+        end
       end
     end
   end

@@ -43,7 +43,7 @@ module View
           h('div.title.nowrap', title_props, [h(:em, 'The Bank')]),
           h(:div, body_props, [
             h(:div, @game.format_currency(@game.bank.cash)),
-            *h(GameInfo, game: @game, layout: 'discarded_trains'),
+            h(GameInfo, game: @game, layout: 'discarded_trains'),
           ]),
         ])
       end
