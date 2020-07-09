@@ -49,8 +49,9 @@ module View
           phase_color = Array(phase[:tiles]).last
           phase_props = { style: {} }
           if Part::MultiRevenue::COLOR.include?(phase_color)
-            phase_props[:style][:backgroundColor] = Part::MultiRevenue::COLOR[phase_color]
-            phase_props[:style][:color] = contrast_on(Part::MultiRevenue::COLOR[phase_color])
+            bg_color = color_for(phase_color)
+            phase_props[:style][:backgroundColor] = bg_color
+            phase_props[:style][:color] = contrast_on(bg_color)
           end
 
           event_text = []
