@@ -86,7 +86,7 @@ module Engine
           else
             border, border_types = border_cost(tile)
             terrain += border_types if border.positive?
-            tile_cost(old_tile, entity) + border
+            @game.tile_cost(old_tile, entity) + border
           end
 
         entity.spend(cost, @game.bank) if cost.positive?
@@ -139,23 +139,6 @@ module Engine
           cost - discount
         end
         [total_cost, types]
-      end
-
-      def tile_cost(tile, entity)
-        ability = entity.all_abilities.find { |a| a.type == :tile_discount }
-
-        tile.upgrades.sum do |upgrade|
-          discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
-
-          if discount.positive?
-            @log << "#{entity.name} receives a discount of "\
-                    "#{@game.format_currency(discount)} from "\
-                    "#{ability.owner.name}"
-          end
-
-          total_cost = upgrade.cost - discount
-          total_cost
-        end
       end
 
       def check_track_restrictions!(entity, old_tile, new_tile)

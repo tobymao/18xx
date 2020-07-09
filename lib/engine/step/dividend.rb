@@ -49,7 +49,7 @@ module Engine
         name = entity.name
         if revenue.positive?
           @log << "#{name} withholds #{@game.format_currency(revenue)}"
-          @bank.spend(revenue, entity)
+          @game.bank.spend(revenue, entity)
         else
           @log << "#{name} does not run"
         end

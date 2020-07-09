@@ -142,20 +142,6 @@ module Engine
         @game.upgradeable_tiles(hex)
       end
 
-      def legal_rotations(hex, tile)
-        old_paths = hex.tile.paths
-
-        Engine::Tile::ALL_EDGES.select do |rotation|
-          tile.rotate!(rotation)
-          new_paths = tile.paths
-          new_exits = tile.exits
-
-          new_exits.all? { |edge| hex.neighbors[edge] } &&
-            (new_exits & connected_hexes[hex]).any? &&
-            old_paths.all? { |path| new_paths.any? { |p| path <= p } }
-        end
-      end
-
       def sellable_bundles(player, corporation)
         bundles = player.bundles_for_corporation(corporation)
         bundles.select { |bundle| can_sell?(bundle) }
@@ -179,40 +165,12 @@ module Engine
 
       # returns true if user must choose home token
       def place_home_token(corporation)
-        return unless corporation.next_token # 1882
-
-        hex = @game.hex_by_id(corporation.coordinates)
-
-        tile = hex.tile
-        if tile.reserved_by?(corporation) && tile.paths.any?
-          # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
-          @game.log << "#{corporation.name} must choose city for home token"
-          # Needs further changes to support non-operate home token lay
-          raise GameError, 'Unsupported' unless @home_token_timing == :operate
-
-          return
-        end
-
-        cities = tile.cities
-        city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
-        token = corporation.find_token_by_type
-        return unless city.tokenable?(corporation, tokens: token)
-
-        @game.log << "#{corporation.name} places a token on #{hex.name}"
-        city.place_token(corporation, token)
+        @game.place_home_token(corporation)
       end
 
       private
 
-      def potential_tiles(hex)
-        colors = @game.phase.tiles
-        @game
-          .tiles
-          .select { |tile| colors.include?(tile.color) }
-          .uniq(&:name)
-          .select { |t| hex.tile.upgrades_to?(t) }
-          .reject(&:blocks_lay)
-      end
+
 
       def lay_tile(action)
         entity = action.entity
@@ -248,7 +206,7 @@ module Engine
           else
             border, border_types = border_cost(tile)
             terrain += border_types if border.positive?
-            tile_cost(old_tile, entity.all_abilities) + border
+            @game.tile_cost(old_tile, entity) + border
           end
 
         entity.spend(cost, @game.bank) if cost.positive?
@@ -289,10 +247,6 @@ module Engine
           cost
         end
         [total_cost, types]
-      end
-
-      def tile_cost(tile, abilities)
-        tile.upgrade_cost(abilities)
       end
 
       def payout_companies

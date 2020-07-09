@@ -618,6 +618,23 @@ module Engine
         city.place_token(corporation, token)
       end
 
+      def tile_cost(tile, entity)
+        ability = entity.all_abilities.find { |a| a.type == :tile_discount }
+
+        tile.upgrades.sum do |upgrade|
+          discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
+
+          if discount.positive?
+            @log << "#{entity.name} receives a discount of "\
+                    "#{format_currency(discount)} from "\
+                    "#{ability.owner.name}"
+          end
+
+          total_cost = upgrade.cost - discount
+          total_cost
+        end
+      end
+
       protected
 
       def potential_tiles(hex)

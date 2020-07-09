@@ -16,10 +16,16 @@ module Engine
       SELL_BUY_ORDER = :sell_buy_sell
       TRACK_RESTRICTION = :permissive
       TILE_RESERVATION_BLOCKS_OTHERS = true
-      def operating_round(round_num)
-        Round::G1836Jr30::Operating.new(@corporations, game: self, round_num: round_num)
-      end
 
+      def operating_round(round_num)
+        Round::Operating.new(self, [
+          Step::Track,
+          Step::Token,
+          Step::Route,
+          Step::Dividend,
+          Step::G1836Jr30::Train,
+        ], round_num: round_num)
+      end
       def revenue_for(route)
         revenue = super
 
