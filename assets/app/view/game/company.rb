@@ -16,7 +16,7 @@ module View
       end
 
       def purchasable?
-        !@company.owner || @game.round.operating? && @company.owner.player?
+        !@company.owner || @game.can_buy_company? && @company.owner.player?
       end
 
       def ability_usable?

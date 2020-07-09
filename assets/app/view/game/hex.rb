@@ -23,7 +23,7 @@ module View
       NON_TRANSPARENT_ROLES = %i[tile_selector tile_page].freeze
 
       needs :hex
-      needs :round, default: nil
+      needs :step, default: nil
       needs :tile_selector, default: nil, store: true
       needs :role, default: :map
       needs :opacity, default: nil
@@ -31,8 +31,12 @@ module View
 
       def render
         @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
-        @tile = @selected && @round.can_lay_track? && @tile_selector&.tile ? @tile_selector.tile : @hex.tile
-
+        @tile =
+          if @selected && @step&.current_actions&.include?('lay_tile') && @tile_selector&.tile
+            @tile_selector.tile
+          else
+            @hex.tile
+          end
         children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
         children << h(Tile, tile: @tile) if @tile
         children << h(TriangularGrid) if Lib::Params['grid']
@@ -40,8 +44,8 @@ module View
         opaque = true
         clickable = @role == :tile_selector
 
-        if @round&.active_step
-          opaque = @round.active_step.available_hex(@hex)
+        if @step
+          opaque = @step.available_hex(@hex)
           clickable ||= opaque
         end
 
@@ -81,24 +85,27 @@ module View
       end
 
       def on_hex_click
-        nodes = @hex.tile.nodes
+        return unless @step
 
-        if @round&.can_run_routes?
+        nodes = @hex.tile.nodes
+        current_actions = @step.current_actions
+
+        if current_actions.include?('run_routes')
           touch_node(nodes[0]) if nodes.one?
           return
         end
 
         case @role
         when :map
-          if @round&.can_assign_hex?
-            return process_action(Engine::Action::Assign.new(@round.current_entity, target: @hex))
+          if current_actions.include?('assign')
+            return process_action(Engine::Action::Assign.new(@step.current_entity, target: @hex))
           end
-          return unless @round&.can_lay_track?
+          return unless current_actions.include?('lay_tile')
 
           if @selected && (tile = @tile_selector&.tile)
             @tile_selector.rotate! if tile.hex != @hex
           else
-            store(:tile_selector, Lib::TileSelector.new(@hex, @tile, coordinates, root, @round.current_entity))
+            store(:tile_selector, Lib::TileSelector.new(@hex, @tile, coordinates, root, @step.current_entity))
           end
         when :tile_selector
           @tile_selector.tile = @tile

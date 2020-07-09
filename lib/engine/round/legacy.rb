@@ -139,14 +139,7 @@ module Engine
       end
 
       def upgradeable_tiles(hex)
-        potential_tiles(hex).map do |tile|
-          tile.rotate!(0) # reset tile to no rotation since calculations are absolute
-          tile.legal_rotations = legal_rotations(hex, tile)
-          next if tile.legal_rotations.empty?
-
-          tile.rotate! # rotate it to the first legal rotation
-          tile
-        end.compact
+        @game.upgradeable_tiles(hex)
       end
 
       def legal_rotations(hex, tile)

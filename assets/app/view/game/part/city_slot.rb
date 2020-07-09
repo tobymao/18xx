@@ -62,7 +62,7 @@ module View
           return if @tile_selector&.is_a?(Lib::TileSelector)
 
           round = @selected_company ? @game.special : @game.round
-          actions = @game.active_step.current_actions
+          actions = round.active_step.current_actions
           return unless (%w[move_token place_token] & actions).empty?
 
           event.JS.stopPropagation

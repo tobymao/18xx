@@ -13,6 +13,10 @@ module Engine
         ACTIONS
       end
 
+      def description
+        'Run Routes'
+      end
+
       def process_run_routes(action)
         entity = action.entity
         @round.routes = action.routes

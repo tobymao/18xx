@@ -22,25 +22,14 @@ module View
           round = @game.round
           @step = round.active_step
           @current_actions = @step.current_actions
-          action =
-            case round.step
-            when :home_token
-              h(UndoAndPass, pass: false)
-            when :company, :track, :token, :token_or_track
-              h(UndoAndPass)
-            when :route
-              h(RouteSelector)
-            when :dividend
-              h(Dividend)
-            when :train
-              h(BuyTrains)
-            when :issue
-              h(IssueShares)
-            end
+          action = [h(UndoAndPass, pass: @current_actions.include?('pass'))]
 
-          action = h(UndoAndPass, pass: @current_actions.include?('pass'))
+          action << h(RouteSelector) if @current_actions.include?('run_routes')
+          action << h(Dividend) if @current_actions.include?('dividend')
+          action << h(BuyTrains) if @current_actions.include?('buy_train')
+          action << h(IssueShares) if @current_actions.include?('buy_shares')
 
-          left = [action]
+          left = action
           corporation = round.current_entity
           left << h(Corporation, corporation: corporation)
           corporation.owner.companies.each do |c|
@@ -55,7 +44,7 @@ module View
             },
           }
           right = [h(Map, game: @game)]
-          right << h(:div, div_props, [h(BuyCompanies, limit_width: true)]) if round.can_buy_companies?
+          right << h(:div, div_props, [h(BuyCompanies, limit_width: true)]) if @game.can_buy_any_company?
 
           left_props = {
             style: {

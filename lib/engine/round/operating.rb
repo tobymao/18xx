@@ -33,7 +33,7 @@ module Engine
 
         @game.log << "#{current_entity.owner.name} operates #{current_entity.name}"
         current_entity.trains.each { |train| train.operated = false }
-        place_home_token(current_entity) if @home_token_timing == :operate
+        @game.place_home_token(current_entity) if @home_token_timing == :operate
         skip_steps
       end
 

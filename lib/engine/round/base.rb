@@ -76,12 +76,12 @@ module Engine
         type = action.type
         clear_cache!
 
-        step = @steps.find do |step|
-          next unless step.active?
+        step = @steps.find do |step2|
+          next unless step2.active?
 
-          process = step.actions(action.entity).include?(type)
-          blocking = step.blocking?
-          raise GameError, "Step #{step} cannot process #{type}" if blocking && !process
+          process = step2.actions(action.entity).include?(type)
+          blocking = step2.blocking?
+          raise GameError, "Step #{step2} cannot process #{type}" if blocking && !process
 
           blocking || process
         end
@@ -119,9 +119,7 @@ module Engine
         @steps.each do |step|
           break if step == active_step
 
-          if step.active? && step.blocks? && !step.blocking?
-            step.skip!
-          end
+          step.skip! if step.active? && step.blocks? && !step.blocking?
         end
       end
 

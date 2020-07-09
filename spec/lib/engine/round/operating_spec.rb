@@ -32,9 +32,9 @@ module Engine
     let(:player) { game.players.first }
     let(:player2) { game.players[1] }
 
-    subject { get_to_or }
+    subject { move_to_or! }
 
-    def get_to_or
+    def move_to_or!
       # Move the game into an OR
 
       game.send(:next_round!) until game.round.is_a?(Round::Operating)
@@ -42,9 +42,9 @@ module Engine
       game.round
     end
 
-    def goto_new_or
+    def goto_new_or!
       game.send(:next_round!)
-      get_to_or
+      move_to_or!
     end
 
     def fake_buy_train(train, corp)
@@ -64,7 +64,7 @@ module Engine
     context '#1889' do
       let(:corporation) { game.corporation_by_id('AR') }
       let(:corporation2) { game.corporation_by_id('SR') }
-      subject { get_to_or }
+      subject { move_to_or! }
 
       before :each do
         game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
@@ -232,7 +232,7 @@ module Engine
       let(:game) { Game::G18Chesapeake.new(players) }
       let(:corporation) { game.corporation_by_id('N&W') }
       let(:corporation2) { game.corporation_by_id('PRR') }
-      subject { get_to_or }
+      subject { move_to_or! }
 
       before :each do
         game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
@@ -374,11 +374,11 @@ module Engine
             hex_k8 => [1, 2, 3, 4],
             hex_l7 => [1],
           }
-          subject = goto_new_or
+          subject = goto_new_or!
           hexes.each { |k, v| expect(subject.active_step.available_hex(k)).to eq(v) }
 
           subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('9'), hex: hex_k6, rotation: 0))
-          subject = goto_new_or
+          subject = goto_new_or!
           hexes = {
             hex_j3 => [5],
             hex_j5 => [4],
@@ -396,13 +396,13 @@ module Engine
 
         it 'can handle forks' do
           subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('58'), hex: hex_g10, rotation: 0))
-          goto_new_or.process_action(Action::LayTile.new(corporation, tile: Tile.for('57'), hex: hex_g12, rotation: 0))
+          goto_new_or!.process_action(Action::LayTile.new(corporation, tile: Tile.for('57'), hex: hex_g12, rotation: 0))
 
           game.phase.next!
-          goto_new_or.process_action(Action::LayTile.new(corporation, tile: Tile.for('15'), hex: hex_g12, rotation: 3))
-          goto_new_or.process_action(Action::LayTile.new(corporation, tile: Tile.for('9'), hex: hex_h13, rotation: 1))
+          goto_new_or!.process_action(Action::LayTile.new(corporation, tile: Tile.for('15'), hex: hex_g12, rotation: 3))
+          goto_new_or!.process_action(Action::LayTile.new(corporation, tile: Tile.for('9'), hex: hex_h13, rotation: 1))
 
-          subject = goto_new_or
+          subject = goto_new_or!
           hexes = {
             hex_e8 => [5],
             hex_f7 => [0],

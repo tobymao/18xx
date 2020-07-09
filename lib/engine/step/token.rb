@@ -16,6 +16,14 @@ module Engine
         ACTIONS
       end
 
+      def description
+        'Lay Track'
+      end
+
+      def pass_description
+        'Skip (Track)'
+      end
+
       def sequential?
         true
       end

@@ -213,7 +213,7 @@ module View
     def render_round
       name = @round.class.name.split(':').last
       description = "#{@game.class.title}: #{name} Round #{@game.turn}"
-      description += ".#{@round.round_num} (of #{@game.rounds})" if @game.rounds > 1
+      description += ".#{@round.round_num} (of #{@game.total_rounds})" if @game.total_rounds
       description += @game.finished ? ' - Game Over' : " - #{@round.description}"
       game_end = @game.game_ending_description
       description += " - #{game_end}" if game_end
