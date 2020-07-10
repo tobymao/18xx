@@ -28,8 +28,9 @@ module View
         and <a href='https://www.gmtgames.com/'>GMT Games</a>.
         </p>
 
-        <p>You can support this project on <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>
-            
+        <p>You can support this project on <a href='https://www.patreon.com/18xxgames'>Patreon</a>.
+        </p>
+
         <p>Consider joining the
         <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-8ksy028m-CSZC~G5QtiFv60_jdqqulQ'>18xx slack</a>.
         General 18xx.games discussion is in #18xxgames, development discussion is in #18xxgamesdev (you can ask about
