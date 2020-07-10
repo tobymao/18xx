@@ -270,9 +270,13 @@ module Engine
           Step::IssueShares,
           Step::TrackAndToken,
           Step::Route,
-          Step::Dividend,
+          Step::G1846::Dividend,
           Step::Train,
         ], round_num: round_num)
+      end
+
+      def tile_cost(tile, entity)
+        [TILE_COST, super(tile, entity)].max
       end
 
       def event_close_companies!

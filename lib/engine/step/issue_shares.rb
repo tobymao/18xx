@@ -11,11 +11,20 @@ module Engine
         return [] if entity.minor?
         return [] if !redeemable_shares(entity) && !issuable_shares(entity)
 
-        actions
+        ACTIONS
       end
 
       def description
         'Issue or Redeem Shares'
+      end
+
+      def setup
+        @done_action = false
+      end
+
+      def unpass!
+        super
+        setup
       end
 
       def pass_description

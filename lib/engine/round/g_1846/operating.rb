@@ -1,17 +1,23 @@
 # frozen_string_literal: true
 
 require_relative '../operating'
-require_relative '../../token'
-require_relative '../half_pay'
-require_relative '../issue_shares'
-require_relative '../minor_half_pay'
 
 module Engine
   module Round
     module G1846
       class Operating < Operating
+
         def select_entities
-          @game.minors + @game.corporations.select(&:floated?).sort
+          corporations = @game.corporations.select(&:floated?)
+          if @game.turn == 1 && @round_num == 1
+            corporations.sort_by! do |c|
+              sp = c.share_price
+              [sp.price, sp.corporations.find_index(c)]
+            end
+          else
+            corporations.sort!
+          end
+          @game.minors + corporations
         end
       end
     end

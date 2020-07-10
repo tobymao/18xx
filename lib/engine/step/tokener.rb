@@ -5,7 +5,12 @@ require_relative 'base'
 module Engine
   module Step
     module Tokener
-
+      def can_place_token?(entity)
+        current_entity == entity &&
+          (token = entity.next_token) &&
+          min_token_price(token) <= entity.cash &&
+          @game.graph.can_token?(entity)
+      end
 
       def place_token(entity, city, token)
         hex = city.hex

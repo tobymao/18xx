@@ -10,10 +10,7 @@ module Engine
       ACTIONS = %w[place_token pass].freeze
 
       def actions(entity)
-        return [] if current_entity != entity ||
-          !(token = entity.next_token) ||
-          min_token_price(token) > entity.cash ||
-          !@game.graph.can_token?(entity)
+        return [] unless can_place_token?(entity)
 
         ACTIONS
       end

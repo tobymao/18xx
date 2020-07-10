@@ -2,17 +2,17 @@
 
 require_relative '../operating'
 require_relative '../../token'
-require_relative '../half_pay'
-require_relative '../issue_shares'
-require_relative '../minor_half_pay'
+#require_relative '../half_pay'
+#require_relative '../issue_shares'
+#require_relative '../minor_half_pay'
 
 module Engine
   module Round
     module G18EU
       class Operating < Operating
-        include HalfPay
-        include IssueShares
-        include MinorHalfPay
+        #include HalfPay
+        #include IssueShares
+        #include MinorHalfPay
 
         MINOR_STEPS = %i[
           track
