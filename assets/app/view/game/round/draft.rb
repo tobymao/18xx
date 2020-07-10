@@ -16,6 +16,7 @@ module View
         needs :hidden, default: true, store: true
         needs :user, store: true, default: nil
         needs :flash_opts, default: {}, store: true
+        needs :round, default: nil # , store: true
 
         def render
           round = @game.round
@@ -85,9 +86,32 @@ module View
         def render_player
           return nil if @hidden
 
-          h(:div, [
-            h(Player, player: @player, game: @game),
-          ])
+          draft_dist = @round.steps[-1]
+          drafted = draft_dist.choices[@player]
+
+          player = @player.clone
+          dummy = Engine::Player.new("_dummy_")
+          drafted.select { |company| ! draft_dist.blank?(company) }
+            .each do |company|
+            if !draft_dist.blank?(company)
+              company.owner = player
+              player.spend(company.min_bid, dummy)
+              player.companies << company
+            end
+          end
+
+          props = {
+            style: {
+              display: 'inline-block',
+              'vertical-align': 'top',
+            },
+          }
+
+          children = [h(Player, player: player, game: @game)]
+          drafted.each do |company|
+            children << h(Company, company: company, header_bg: "orange")
+          end
+          h(:div, [h(:div, props, children)])
         end
       end
     end

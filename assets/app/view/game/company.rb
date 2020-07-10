@@ -10,6 +10,7 @@ module View
       needs :tile_selector, default: nil, store: true
       needs :display, default: 'inline-block'
       needs :layout, default: nil
+      needs :header_bg, default: "yellow"
 
       def selected?
         @company == @selected_company
@@ -50,7 +51,7 @@ module View
           render_company_on_card(@company)
         else
           header_style = {
-            background: 'yellow',
+            background: @header_bg,
             border: '1px solid',
             'border-radius': '5px',
             color: 'black',

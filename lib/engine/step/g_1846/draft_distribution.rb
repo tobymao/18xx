@@ -6,7 +6,7 @@ module Engine
   module Step
     module G1846
       class DraftDistribution < Base
-        attr_reader :companies
+        attr_reader :choices, :companies
 
         ACTIONS = %w[bid].freeze
         ACTIONS_WITH_PASS = %w[bid pass].freeze

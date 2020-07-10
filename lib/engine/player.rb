@@ -19,6 +19,10 @@ module Engine
       @count_companies = count_companies
     end
 
+    def initialize_clone(other)
+      @companies = other.companies.clone
+    end
+
     def value
       @cash + shares.select { |s| s.corporation.ipoed }.sum(&:price) + @companies.sum(&:value)
     end
