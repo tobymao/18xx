@@ -16,7 +16,7 @@ module View
         needs :hidden, default: true, store: true
         needs :user, store: true, default: nil
         needs :flash_opts, default: {}, store: true
-        needs :round, default: nil # , store: true
+        needs :round, default: nil, store: true
 
         def render
           round = @game.round
