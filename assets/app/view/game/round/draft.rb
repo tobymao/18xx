@@ -91,9 +91,9 @@ module View
 
           player = @player.clone
           dummy = Engine::Player.new("_dummy_")
-          drafted.select { |company| ! draft_dist.blank?(company) }
+          drafted.reject { |company| draft_dist.blank?(company) }
             .each do |company|
-            if !draft_dist.blank?(company)
+            unless draft_dist.blank?(company)
               company.owner = player
               player.spend(company.min_bid, dummy)
               player.companies << company
@@ -109,7 +109,7 @@ module View
 
           children = [h(Player, player: player, game: @game)]
           drafted.each do |company|
-            children << h(Company, company: company, header_bg: "orange")
+            children << h(Company, company: company, header_bg: 'orange')
           end
           h(:div, [h(:div, props, children)])
         end
