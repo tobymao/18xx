@@ -90,14 +90,14 @@ module View
           drafted = draft_dist.choices[@player]
 
           player = @player.clone
-          dummy = Engine::Player.new("_dummy_")
+          dummy = Engine::Player.new('_dummy_')
           drafted.reject { |company| draft_dist.blank?(company) }
             .each do |company|
-            unless draft_dist.blank?(company)
-              company.owner = player
-              player.spend(company.min_bid, dummy)
-              player.companies << company
-            end
+            next if draft_dist.blank?(company)
+
+            company.owner = player
+            player.spend(company.min_bid, dummy)
+            player.companies << company
           end
 
           props = {
