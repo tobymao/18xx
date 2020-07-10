@@ -91,8 +91,9 @@ module View
 
           player = @player.clone
           dummy = Engine::Player.new('_dummy_')
-          drafted.reject { |company| draft_dist.blank?(company) }
-            .each do |company|
+          drafted.each do |company|
+            next if draft_dist.blank?(company)
+
             company.owner = player
             player.spend(company.min_bid, dummy)
             player.companies << company
