@@ -19,13 +19,16 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(self, [
+          Step::HomeToken,
           Step::Track,
           Step::Token,
           Step::Route,
           Step::Dividend,
           Step::G1836Jr30::Train,
+          Step::PurchaseCompanies,
         ], round_num: round_num)
       end
+
       def revenue_for(route)
         revenue = super
 

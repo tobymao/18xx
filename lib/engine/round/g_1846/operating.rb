@@ -6,7 +6,6 @@ module Engine
   module Round
     module G1846
       class Operating < Operating
-
         def select_entities
           corporations = @game.corporations.select(&:floated?)
           if @game.turn == 1 && @round_num == 1

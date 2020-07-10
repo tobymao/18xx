@@ -32,7 +32,15 @@ module Engine
       ).freeze
 
       def operating_round(round_num)
-        Round::G1882::Operating.new(@corporations, game: self, round_num: round_num)
+        Round::Operating.new(self, [
+          Step::HomeToken,
+          Step::G1882::Track,
+          Step::Token,
+          Step::Route,
+          Step::Dividend,
+          Step::Train,
+          Step::PurchaseCompanies,
+        ], round_num: round_num)
       end
 
       def init_phase

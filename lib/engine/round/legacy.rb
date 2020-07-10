@@ -21,6 +21,8 @@ module Engine
         self
       end
 
+      def setup; end
+
       def name
         raise NotImplementedError
       end
@@ -169,8 +171,6 @@ module Engine
       end
 
       private
-
-
 
       def lay_tile(action)
         entity = action.entity

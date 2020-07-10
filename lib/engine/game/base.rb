@@ -605,8 +605,12 @@ module Engine
         tile = hex.tile
         if tile.reserved_by?(corporation) && tile.paths.any?
           # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
-          # Needs further changes to support non-operate home token lay
-          return @log << "#{corporation.name} must choose city for home token"
+          # otherwise the entity must choose now.
+          @log << "#{corporation.name} must choose city for home token"
+
+          @round.place_home_token << [corporation, hex, corporation.find_token_by_type]
+          @round.clear_cache!
+          return
         end
 
         cities = tile.cities
@@ -873,6 +877,10 @@ module Engine
             reorder_players
             new_stock_round
           end
+
+        # Finalize round setup (for things that need round correctly set like place_home_token)
+        @round.setup
+
         @round_history << @actions.size
       end
 
@@ -958,6 +966,7 @@ module Engine
           Step::Route,
           Step::Dividend,
           Step::Train,
+          Step::PurchaseCompanies,
         ], round_num: round_num)
       end
 

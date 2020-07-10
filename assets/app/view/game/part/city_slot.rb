@@ -68,7 +68,7 @@ module View
           event.JS.stopPropagation
 
           # If there's a choice of tokens of different types show the selector, otherwise just place
-          next_tokens = @game.current_entity.tokens_by_type
+          next_tokens = round.active_step.available_tokens
 
           if actions.include?('move_token')
             # There should only be one token in the city
@@ -81,8 +81,6 @@ module View
 
             process_action(action)
           elsif next_tokens.size == 1
-            # TODO: this needs to see if it's the home token action, in which case the user has no choice
-            # Maybe the tokens should come from the step.
             action = Engine::Action::PlaceToken.new(
               @selected_company || @game.current_entity,
               city: @city,

@@ -10,7 +10,7 @@ module Engine
       end
 
       def select_entities
-        @game.corporations.select(&:floated?).sort
+        @game.minors + @game.corporations.select(&:floated?).sort
       end
 
       def setup

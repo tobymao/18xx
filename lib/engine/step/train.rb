@@ -62,7 +62,7 @@ module Engine
         remaining = price - entity.cash
         if remaining.positive? && must_buy_train?(entity)
           cheapest = @depot.min_depot_train
-          if train != cheapest && (!@game.class::EBUY_OTHER_VALUE|| train.from_depot?)
+          if train != cheapest && (!@game.class::EBUY_OTHER_VALUE || train.from_depot?)
             raise GameError, "Cannot purchase #{train.name} train: #{cheapest.name} train available"
           end
           raise GameError, 'Cannot contribute funds when exchanging' if exchange

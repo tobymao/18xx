@@ -33,8 +33,6 @@ module Engine
           end
           step
         end
-
-        setup
       end
 
       def setup; end
@@ -109,11 +107,11 @@ module Engine
         @entity_index = 0
       end
 
-      private
-
       def clear_cache!
         @active_step = nil
       end
+
+      private
 
       def skip_steps
         @steps.each do |step|

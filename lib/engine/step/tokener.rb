@@ -12,9 +12,13 @@ module Engine
           @game.graph.can_token?(entity)
       end
 
-      def place_token(entity, city, token)
+      def available_tokens
+        current_entity.tokens_by_type
+      end
+
+      def place_token(entity, city, token, teleport: false)
         hex = city.hex
-        if !@game.loading && @step != :home_token && !@game.graph.connected_nodes(entity)[action.city]
+        if !@game.loading && !teleport && !@game.graph.connected_nodes(entity)[city]
           raise GameError, "Cannot place token on #{hex.name} because it is not connected"
         end
 

@@ -272,6 +272,7 @@ module Engine
           Step::Route,
           Step::G1846::Dividend,
           Step::Train,
+          Step::PurchaseCompanies,
         ], round_num: round_num)
       end
 

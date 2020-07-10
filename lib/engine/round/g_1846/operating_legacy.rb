@@ -7,7 +7,6 @@ module Engine
   module Round
     module G1846
       class OperatingLegacy < Operating
-
         MINOR_STEPS = %i[
           token_or_track
           route
@@ -39,7 +38,6 @@ module Engine
           train: 'Train',
           company: 'Company',
         }.freeze
-
 
         def steps
           @current_entity.minor? ? self.class::MINOR_STEPS : self.class::STEPS
@@ -80,7 +78,6 @@ module Engine
           @game.minors.delete(minor)
           @graph.clear
         end
-
       end
     end
   end

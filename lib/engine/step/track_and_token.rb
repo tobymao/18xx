@@ -10,9 +10,9 @@ module Engine
 
       def actions(entity)
         actions = []
-        actions << "lay_tile" if can_lay_tile?(entity)
-        actions << "place_token" if can_place_token?(entity)
-        actions << "pass" if actions.any?
+        actions << 'lay_tile' if can_lay_tile?(entity)
+        actions << 'place_token' if can_place_token?(entity)
+        actions << 'pass' if actions.any?
         actions
       end
 
@@ -69,9 +69,7 @@ module Engine
 
         lay_tile(action)
 
-        if action.tile.color != :yellow
-          @upgraded = true
-        end
+        @upgraded = true if action.tile.color != :yellow
 
         @laid_track += 1
         pass! if @laid_track == 2 && @tokened

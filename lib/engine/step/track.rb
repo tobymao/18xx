@@ -35,23 +35,12 @@ module Engine
 
         #   # companies with block_hexes should block hexes
 
-
         #   lay_tile(action)
         #   @current_entity.abilities(:teleport) do |ability, _|
         #     @teleported = ability.hexes.include?(hex_id) &&
         #     ability.tiles.include?(action.tile.name)
         #   end
 
-        #   new_tile = action.hex.tile
-        #   cities = new_tile.cities
-        #   if previous_tile.paths.empty? &&
-        #     new_tile.paths.any? &&
-        #     cities.size > 1 &&
-        #     cities.flat_map(&:tokens).any?
-        #     token = cities.flat_map(&:tokens).find(&:itself)
-        #     @ambiguous_hex_token = [action.hex, token]
-        #     token.remove!
-        #   end
         entity = action.entity
         tile = action.tile
         hex = action.hex
@@ -59,10 +48,10 @@ module Engine
         old_tile = hex.tile
 
         @game.companies.each do |company|
-             next if company.closed?
-             next unless (ability = company.abilities(:blocks_hexes))
+          next if company.closed?
+          next unless (ability = company.abilities(:blocks_hexes))
 
-             raise GameError, "#{hex.id} is blocked by #{company.name}" if ability.hexes.include?(hex.id)
+          raise GameError, "#{hex.id} is blocked by #{company.name}" if ability.hexes.include?(hex.id)
         end
 
         tile.rotate!(rotation)
@@ -89,13 +78,22 @@ module Engine
           if free
             0
           else
-            border, border_types = border_cost(tile)
+            border, border_types = border_cost(tile, entity)
             terrain += border_types if border.positive?
             @game.tile_cost(old_tile, entity) + border
           end
 
         entity.spend(cost, @game.bank) if cost.positive?
 
+        cities = tile.cities
+        if old_tile.paths.empty? &&
+             tile.paths.any? &&
+             cities.size > 1 &&
+             cities.flat_map(&:tokens).any?
+          token = cities.flat_map(&:tokens).find(&:itself)
+          @round.place_home_token << [entity, action.hex, token]
+          token.remove!
+        end
         @log << "#{action.entity.name}"\
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile ##{tile.name}"\
@@ -107,14 +105,14 @@ module Engine
           if terrain.include?(ability.terrain)
             # If multiple borders are connected bonus counts each individually
             income = ability.income * terrain.find_all { |t| t == ability.terrain }.size
-            @bank.spend(income, company.owner)
+            @game.bank.spend(income, company.owner)
             @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
               " for #{ability.terrain} tile with #{company.name}"
           end
         end
       end
 
-      def border_cost(tile)
+      def border_cost(tile, entity)
         hex = tile.hex
         types = []
 
