@@ -30,7 +30,11 @@ module View
 
         <p>You can support this project on <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>
             
-        <p>Consider joining the <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-8ksy028m-CSZC~G5QtiFv60_jdqqulQ'>18xx slack</a>. General 18xx.games discussion is in #18xxgames, development discussion is in #18xxgamesdev (you can ask about bugs there), and general 18xx chat in #general.</p>
+        <p>Consider joining the
+        <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-8ksy028m-CSZC~G5QtiFv60_jdqqulQ'>18xx slack</a>.
+        General 18xx.games discussion is in #18xxgames, development discussion is in #18xxgamesdev (you can ask about
+        bugs there), and general 18xx chat in #general.
+        </p>
       MESSAGE
 
       props = {
