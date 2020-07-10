@@ -10,6 +10,8 @@ module View
     needs :user
     needs :gdata # can't conflict with game_data
     needs :confirm_delete, store: true, default: false
+    needs :is_joining, store: true, default: nil
+    needs :password, store: true, default: ''
 
     ENTER_GREEN = '#3CB371'
     JOIN_YELLOW = '#F0E58C'
@@ -18,9 +20,10 @@ module View
 
     def render
       h('div.game.card', [
-        render_header,
-        render_body,
-      ])
+          render_header,
+          render_private_join,
+          render_body,
+        ])
     end
 
     def new?
@@ -42,6 +45,24 @@ module View
       acting.include?(player[:id])
     end
 
+    def render_private_join
+      return h(:div, []) unless @is_joining == @gdata['id']
+
+      password_handler = ->(event) { store(:password, Native(event)['target']['value']) }
+      join_handler = lambda do
+        store(:is_joining, nil)
+        join_game(@gdata, @password)
+      end
+      input_params = {
+        attrs: { type: 'text', placeholder: 'Password' },
+        on: { input: password_handler },
+      }
+      h(:div, [
+          h(:input, input_params),
+          render_button('Join', join_handler),
+        ])
+    end
+
     def render_header
       buttons = []
 
@@ -51,6 +72,8 @@ module View
           if owner?
           elsif user_in_game?(@user, @gdata)
             buttons << render_button('Leave', -> { leave_game(@gdata) })
+          elsif players.size < @gdata['max_players'] && @gdata['settings']['private_game']
+            buttons << render_button('Join (private)', -> { store(:is_joining, @gdata['id']) }) unless @is_joining
           elsif players.size < @gdata['max_players']
             buttons << render_button('Join', -> { join_game(@gdata) })
           end
@@ -176,14 +199,15 @@ module View
         h(:div, [h(:strong, 'Description: '), @gdata['description']]),
       ]
       children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'
-
       if new?
+        password = @gdata['settings'] && @gdata['settings']['password']
         created_at = Time.at(@gdata['created_at'])
         children << h('div.inline', [h(:strong, 'Max Players: '), @gdata['max_players']])
         children << h('div.inline', { style: { float: 'right' } }, [
           h(:strong, 'Created: '),
           h(:span, { attrs: { title: created_at.strftime('%F %T') } }, time_or_date(created_at)),
         ])
+        children << h(:div, [h(:strong, 'Password: '), password]) if password
       elsif @gdata['status'] == 'finished'
         result = @gdata['result']
           .sort_by { |_, v| -v }

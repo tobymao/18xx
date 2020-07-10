@@ -11,6 +11,8 @@ module View
     needs :num_players, default: 3, store: true
     needs :flash_opts, default: {}, store: true
     needs :user, default: nil, store: true
+    needs :access, default: :public, store: true
+    needs :password, default: nil, store: true
 
     def render_content
       inputs = [
@@ -37,6 +39,11 @@ module View
             display: 'block',
           },
         )
+      end
+
+      if @mode == :multi
+        inputs << access_selector
+        inputs << password_input if @access == :private
       end
 
       description = [h(:a, { attrs: { href: '/signup' } }, 'Signup'), ' or ',
@@ -107,6 +114,29 @@ module View
         attrs: { name: 'mode_options', checked: @mode == mode },
         on: { click: click_handler },
       )]
+    end
+
+    def access_selector
+      h(:div, { style: { margin: '1rem 0' } }, [
+          render_input(
+            'Public',
+            id: :public,
+            type: 'radio',
+            attrs: { name: 'access_options', checked: @access == :public },
+            on: { click: -> { store(:access, :public) } },
+          ),
+          render_input(
+            'Private',
+            id: :private,
+            type: 'radio',
+            attrs: { name: 'access_options', checked: @access == :private },
+            on: { click: -> { store(:access, :private) } },
+          ),
+        ])
+    end
+
+    def password_input
+      h(:div, [render_input('Password', placeholder: 'For private games', id: :password)])
     end
 
     def submit

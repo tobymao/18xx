@@ -66,8 +66,8 @@ module GameManager
     end
   end
 
-  def join_game(game)
-    @connection.safe_post(url(game, '/join')) do |data|
+  def join_game(game, password = nil)
+    @connection.safe_post(url(game, '/join'), password: password) do |data|
       update_game(data)
     end
   end

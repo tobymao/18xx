@@ -24,11 +24,12 @@ class Api
           r.is 'join' do
             halt(400, 'Cannot join game because it is full') if users.size >= game.max_players
 
+            halt(403, 'Incorrect password for private game') if game.private? && !game.authorized?(r['password'])
+
             GameUser.create(game: game, user: user)
             game.players(reload: true)
             game.to_h
           end
-
           not_authorized! unless users.any? { |u| u.id == user.id }
 
           r.is 'leave' do
@@ -160,12 +161,12 @@ class Api
         # POST '/api/game'
         r.is do
           title = r['title']
-
+          private_game = r['private'] && r['password'] && !r['password'].empty?
           params = {
             user: user,
             description: r['description'],
             max_players: r['max_players'],
-            settings: { seed: Random.new_seed },
+            settings: { seed: Random.new_seed, private_game: private_game, password: r['password'] },
             title: title,
             round: Engine::GAMES_BY_TITLE[title].new([]).round&.name,
           }

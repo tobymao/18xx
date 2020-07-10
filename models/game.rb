@@ -3,6 +3,7 @@
 require_relative 'base'
 
 class Game < Base
+  attr_accessor :user_context
   many_to_one :user
   one_to_many :actions, order: :action_id
   one_to_many :game_users
@@ -83,7 +84,23 @@ class Game < Base
     }.transform_values { |v| v&.to_i || 0 }
 
     opts[:user_id] = user.id if user
-    fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **opts,).all.sort_by(&:id).reverse
+    results = fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **opts,).all.sort_by(&:id).reverse
+    results.each { |game| game.user_context = user }
+    results
+  end
+
+  def password_visible?
+    @user_context && players && players.include?(@user_context)
+  end
+
+  def private?
+    !!settings['private_game']
+  end
+
+  def authorized?(password)
+    return true unless private?
+
+    password == settings['password']
   end
 
   def ordered_players
@@ -94,7 +111,13 @@ class Game < Base
 
   def to_h(include_actions: false)
     actions_h = include_actions ? actions.map(&:to_h) : []
-
+    settings_h = if password_visible?
+                   settings.to_h
+                 else
+                   s = settings.to_h
+                   s.delete 'password'
+                   s
+                 end
     {
       id: id,
       description: description,
@@ -102,7 +125,7 @@ class Game < Base
       players: ordered_players.map(&:to_h),
       max_players: max_players,
       title: title,
-      settings: settings.to_h,
+      settings: settings_h,
       status: status,
       turn: turn,
       round: round,

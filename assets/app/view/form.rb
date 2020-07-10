@@ -22,7 +22,10 @@ module View
       @inputs.map do |key, input|
         input = Native(input)
         elm = input['elm']
-        [key, elm['type'] == 'checkbox' ? elm['checked'] : elm['value']]
+        [
+          key,
+          elm['type'] == 'checkbox' || elm['type'] == 'radio' ? elm['checked'] : elm['value'],
+        ]
       end.to_h
     end
 
