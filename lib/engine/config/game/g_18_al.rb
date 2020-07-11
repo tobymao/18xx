@@ -321,7 +321,7 @@ module Engine
          "name":"4",
          "distance":4,
          "price":300,
-         "rusts_on":"7",
+         "obsolete_on":"7",
          "num":3
       },
       {
@@ -478,6 +478,7 @@ module Engine
       },
       {
          "name":"3",
+         "on":"3",
          "train_limit":4,
          "tiles":[
             "yellow",
@@ -488,6 +489,7 @@ module Engine
       },
       {
          "name":"4",
+         "on":"4",
          "train_limit":3,
          "tiles":[
             "yellow",
@@ -498,6 +500,7 @@ module Engine
       },
       {
          "name":"5",
+         "on":"5",
          "train_limit":2,
          "tiles":[
             "yellow",
@@ -531,11 +534,13 @@ module Engine
       },
       {
          "name":"4D",
+         "on":"4D",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
-            "brown"
+            "brown",
+            "gray"
          ],
          "operating_rounds": 3
       }
