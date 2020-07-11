@@ -120,6 +120,7 @@ module Engine
 
       DISCARDED_TRAINS = :discard # discarded or removed?
 
+      MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
       EVENTS_TEXT = { 'close_companies' =>
@@ -485,6 +486,16 @@ module Engine
 
       def sellable_turn?
         @turn > 1
+      end
+
+      def can_run_route?(entity)
+        @graph.route_info(entity)&.dig(:route_available)
+      end
+
+      def must_buy_train?(entity)
+        !entity.rusted_self && entity.trains.empty? &&
+        (MUST_BUY_TRAIN == :always ||
+         (MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
       end
 
       def end_game!
