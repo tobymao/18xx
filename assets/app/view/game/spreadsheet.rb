@@ -20,7 +20,7 @@ module View
         children << h(Bank, game: @game)
         children << render_table
 
-        h(:div, { style: {
+        h('div#spreadsheet', { style: {
           overflow: 'auto',
         } }, children)
       end
@@ -30,17 +30,21 @@ module View
           margin: '1rem 0 1.5rem 0',
           'text-align': 'center',
         } }, [
-          *render_title,
-          *render_corporations,
-          h(:tr, [
-            h(:td, { style: { width: '20px' } }, ''),
-            h(:th, { attrs: { colspan: @game.players.size } }, 'Player Finances'),
+          h(:thead, render_title),
+          h(:tbody, render_corporations),
+          h(:thead, [
+            h(:tr, [
+              h(:th, ''),
+              h(:th, { attrs: { colspan: @game.players.size } }, 'Player Finances'),
+            ]),
           ]),
-          render_player_cash,
-          render_player_privates,
-          render_player_worth,
-          render_player_certs,
-          ])
+          h(:tbody, [
+            render_player_cash,
+            render_player_privates,
+            render_player_worth,
+            render_player_certs,
+          ]),
+        ])
         # TODO: consider adding OR information (could do both corporation OR revenue and player change in value)
         # TODO: consider adding train availability
       end
@@ -50,7 +54,7 @@ module View
       end
 
       def render_history_titles(corporations)
-        or_history(corporations).map { |turn, round| h(:th, "#{turn}.#{round}") }
+        or_history(corporations).map { |turn, round| h('th.no_padding', "#{turn}.#{round}") }
       end
 
       def render_history(corporation)
@@ -77,38 +81,38 @@ module View
 
       def render_title
         or_history_titles = render_history_titles(@game.corporations)
-        props = { style: { padding: '0 0.3rem' } }
 
         [
           h(:tr, [
-            h(:th, { style: { width: '20px' } }, ''),
+            h(:th, ''),
             h(:th, { attrs: { colspan: @game.players.size } }, 'Players'),
             h(:th, { attrs: { colspan: 2 } }, 'Bank'),
             h(:th, { attrs: { colspan: 2 } }, 'Prices'),
             h(:th, { attrs: { colspan: 4 } }, 'Corporation'),
-            h(:th, { style: { width: '20px' } }, ''),
+            h(:th, ''),
+            h(:th, ''),
             h(:th, { attrs: { colspan: or_history_titles.size } }, 'OR History'),
           ]),
           h(:tr, [
-            render_sort_link({ style: { width: '20px' } }, 'SYM', 'ID'),
-            *@game.players.map { |p| h(:th, props, p.name) },
-            h(:th, props, @game.class::IPO_NAME),
-            h(:th, props, 'Market'),
-            h(:th, props, @game.class::IPO_NAME),
-            render_sort_link(props, 'Market', 'SHARE_PRICE'),
-            render_sort_link(props, 'Cash', 'CASH'),
-            render_sort_link(props, 'Operating Order', 'OPERATING_ORDER'),
-            h(:th, props, 'Trains'),
-            h(:th, props, 'Tokens'),
-            h(:th, props, 'Privates'),
-            h(:th, { style: { width: '20px' } }, ''),
+            render_sort_link('SYM', 'ID'),
+            *@game.players.map { |p| h('th.name.nowrap', p.name) },
+            h(:th, @game.class::IPO_NAME),
+            h(:th, 'Market'),
+            h(:th, @game.class::IPO_NAME),
+            render_sort_link('Market', 'SHARE_PRICE', style: { padding: '0' }),
+            render_sort_link('Cash', 'CASH'),
+            render_sort_link('Order', 'OPERATING_ORDER', style: { padding: '0' }),
+            h(:th, 'Trains'),
+            h(:th, 'Tokens'),
+            h('th.no_padding', 'Privates'),
+            h(:th, ''),
             *or_history_titles,
           ]),
         ]
       end
 
-      def render_sort_link(props, title, sort_by)
-        h(:th, props, [
+      def render_sort_link(title, sort_by, props = {})
+        h('th.nowrap', { attrs: { title: 'Sort' } }.merge(props), [
           h(
             Link,
             href: '',
@@ -123,9 +127,9 @@ module View
       end
 
       def sort_order_icon
-        return '(⬇️)' if @spreadsheet_sort_order == 'ASC'
+        return '⬇️' if @spreadsheet_sort_order == 'ASC'
 
-        '(⬆️)'
+        '⬆️'
       end
 
       def mark_sort_column(sort_by)
@@ -134,8 +138,7 @@ module View
       end
 
       def toggle_sort_order
-        Lib::Storage['spreadsheet_sort_order'] = 'ASC' if @spreadsheet_sort_order == 'DESC'
-        Lib::Storage['spreadsheet_sort_order'] = 'DESC' unless @spreadsheet_sort_order == 'DESC'
+        Lib::Storage['spreadsheet_sort_order'] = @spreadsheet_sort_order == 'ASC' ? 'DESC' : 'ASC'
         update
       end
 
@@ -185,8 +188,7 @@ module View
         market_props = { style: {} }
 
         if !corporation.floated?
-          props[:style][:backgroundColor] = '#777777'
-          props[:style][:color] = 'black'
+          props[:style][:opacity] = '0.6'
         elsif !corporation.counts_for_limit && (color = StockMarket::COLOR_MAP[corporation.share_price.color])
           market_props[:style][:backgroundColor] = color
           market_props[:style][:color] = contrast_on(color)
@@ -216,21 +218,21 @@ module View
           h(:td, market_props, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
           h(:td, @game.format_currency(corporation.cash)),
           h(:td, operating_order_text),
-          h(:td, corporation.trains.map(&:name).join(',')),
+          h('td.nowrap', corporation.trains.map(&:name).join(', ')),
           h(:td, "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
           render_companies(corporation),
-          h(:th, name_props, corporation.name),
+          h('th.no_padding', name_props, corporation.name),
           *render_history(corporation),
         ])
       end
 
       def render_companies(entity)
-        h(:td, entity.companies.map(&:sym).join(','))
+        h('td.nowrap', entity.companies.map(&:sym).join(', '))
       end
 
       def render_player_privates
         h(:tr, [
-          h(:th, 'Privates'),
+          h('th.no_padding', 'Privates'),
           *@game.players.map { |p| render_companies(p) },
         ])
       end
