@@ -21,7 +21,7 @@ module Engine
       end
 
       def revenue_for(route)
-        revenue = super
+        revenue, bonuses = super
 
         stops = route.stops
         port = stops.find { |stop| stop.groups.include?('port') }
@@ -32,14 +32,14 @@ module Engine
           per_token = port.route_revenue(route.phase, route.train)
           revenue -= per_token # It's already been counted, so remove
 
-          revenue += stops.sum do |stop|
+          bonuses['Port'] = stops.sum do |stop|
             next per_token if stop.city? && stop.tokened_by?(route.train.owner)
 
             0
           end
         end
 
-        revenue
+        [revenue, bonuses]
       end
     end
   end

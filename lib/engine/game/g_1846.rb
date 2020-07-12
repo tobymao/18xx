@@ -169,7 +169,7 @@ module Engine
       end
 
       def revenue_for(route)
-        revenue = super
+        revenue, bonuses = super
 
         stops = route.stops
         east = stops.find { |stop| stop.groups.include?('E') }
@@ -177,25 +177,25 @@ module Engine
 
         meat = meat_packing.id
 
-        revenue += 30 if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
+        bonuses['Meat Packing'] = 30 if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
 
         steam = steam_boat.id
 
         if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
-          revenue += 20 * port.tile.icons.select { |icon| icon.name == 'port' }.size
+          bonuses['Steamboat'] = 20 * port.tile.icons.select { |icon| icon.name == 'port' }.size
+
         end
 
         if east && west
-          revenue += east.tile.icons.sum { |icon| icon.name.to_i }
-          revenue += west.tile.icons.sum { |icon| icon.name.to_i }
+          bonuses['East/West'] = east.tile.icons.sum { |icon| icon.name.to_i } + west.tile.icons.sum { |icon| icon.name.to_i }
         end
 
         if route.train.owner.companies.include?(mail_contract)
           longest = route.routes.max_by { |r| [r.visited_stops.size, r.train.id] }
-          revenue += route.visited_stops.size * 10 if route == longest
+          bonuses['Mail Contract'] = route.visited_stops.size * 10 if route == longest
         end
 
-        revenue
+        [revenue, bonuses]
       end
 
       def meat_packing

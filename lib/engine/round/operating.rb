@@ -342,9 +342,27 @@ module Engine
           raise GameError, 'Cannot run train that operated' if train.operated
 
           trains[train] = true
-          hexes = route.hexes.map(&:name).join(', ')
+
+          stops = route.stops
+          hexes = route.hexes.map do |hex|
+            stop = stops.find { |s| s.hex == hex }
+            if stop
+              "#{hex.name}=#{@game.format_currency(stop.route_revenue(route.phase, route.train))}"
+            else
+              "#{hex.name}=skipped"
+            end
+          end.join(', ')
+          revenue, bonuses = route.revenue_and_bonuses
+          bonuses =
+            if bonuses.any?
+              ' bonus (' +
+              bonuses.map { |name, value| "#{name}=#{@game.format_currency(value)}" }.join(', ') +
+               ')'
+            else
+              ''
+            end
           @log << "#{@current_entity.name} runs a #{train.name} train for "\
-            "#{@game.format_currency(route.revenue)} (#{hexes})"
+            "#{@game.format_currency(revenue)} (#{hexes})#{bonuses}"
         end
       end
 

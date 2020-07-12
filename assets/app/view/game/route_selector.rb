@@ -53,6 +53,7 @@ module View
           store(:selected_route, route, skip: true)
         end
 
+        have_bonuses = false
         trains = trains.flat_map do |train|
           onclick = lambda do
             unless (route = @routes.find { |t| t.train == train })
@@ -79,8 +80,9 @@ module View
           route = active_routes.find { |t| t.train == train }
           children = []
           if route
+            revenue, bonuses = route.revenue_and_bonuses
             revenue, invalid = begin
-                                 [@game.format_currency(route.revenue), nil]
+                                 [@game.format_currency(revenue), nil]
                                rescue Engine::GameError => e
                                  ['N/A', e.to_s]
                                end
@@ -92,7 +94,27 @@ module View
 
             children << h('td.right', td_props, route.distance)
             children << h('td.right', td_props, revenue)
-            children << h(:td, route.hexes.map(&:name).join(' '))
+            stops = route.stops.map(&:hex)
+            hexes = route.hexes
+
+            children <<
+            if stops.size != hexes.size
+              h(:td,
+                route.hexes.map do |hex|
+                  if stops.include?(hex)
+                    hex.name + ' '
+                  else
+                    h(:span, { style: { 'text-decoration': 'line-through' } }, hex.name + ' ')
+                  end
+                end)
+            else
+              h(:td, route.hexes.map(&:name).join(' '))
+            end
+
+            if bonuses.any?
+              children << h(:td, bonuses.map { |name, value| "#{name}=#{@game.format_currency(value)}" }.join(', '))
+              have_bonuses = true
+            end
           elsif !selected
             style[:border] = '1px solid'
             style[:padding] = '5px 8px'
@@ -130,6 +152,8 @@ module View
           },
         }
 
+        bonuses = have_bonuses ? [h(:th, 'Bonus')] : []
+
         h(:div, div_props, [
           h(UndoAndPass, pass: false),
           h(:h2, { style: { margin: '0.5rem 0 0.2rem' } }, 'Select Routes'),
@@ -142,6 +166,7 @@ module View
                 h(:th, 'Stops'),
                 h(:th, 'Revenue'),
                 h(:th, th_route_props, 'Route'),
+                *bonuses,
               ]),
             ]),
             h(:tbody, trains),

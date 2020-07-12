@@ -254,8 +254,8 @@ module Engine
       end
     end
 
-    def revenue
-      return @override[:revenue] if @override
+    def revenue_and_bonuses
+      return [@override[:revenue], {}] if @override
 
       visited = visited_stops
       raise GameError, 'Route must have at least 2 stops' if @connections.any? && visited.size < 2
@@ -270,7 +270,13 @@ module Engine
         raise GameError, "Cannot use group #{key} more than once" unless group.one?
       end
 
-      @game.revenue_for(self)
+      revenue, bonuses = @game.revenue_for(self)
+      revenue += bonuses.values.sum
+      [revenue, bonuses]
+    end
+
+    def revenue
+      revenue_and_bonuses.first
     end
 
     def corporation

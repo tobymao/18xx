@@ -86,16 +86,16 @@ module Engine
       end
 
       def revenue_for(route)
-        revenue = super
+        revenue, bonus = super
 
         stops = route.stops
         # East offboards I1, B2
         east = stops.find { |stop| %w[I1 B2].include?(stop.hex.name) }
         # Hudson B12
         west = stops.find { |stop| stop.hex.name == 'B12' }
-        revenue += 100 if east && west
+        bonus['East/Hudson'] = 100 if east && west
 
-        revenue
+        [revenue, bonus]
       end
     end
   end
