@@ -2,6 +2,7 @@
 
 require_relative '../config/game/g_18_ms'
 require_relative 'base'
+require_relative 'company_price_50_to_150_percent'
 
 module Engine
   module Game
@@ -17,6 +18,8 @@ module Engine
       #      def init_round
       #        Round::G18MS::Draft.new(@players.reverse, game: self)
       #      end
+
+      include CompanyPrice50To150Percent
     end
   end
 end
