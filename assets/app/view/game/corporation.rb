@@ -6,6 +6,7 @@ require 'view/game/companies'
 module View
   module Game
     class Corporation < Snabberb::Component
+      include Actionable
       include Lib::Color
       needs :corporation
       needs :selected_company, default: nil, store: true

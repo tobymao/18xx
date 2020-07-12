@@ -12,7 +12,7 @@ module Engine
 {
    "filename":"1836Jr30",
    "modulename":"1836Jr-30",
-   "currencyFormatStr":"F%d",
+   "currencyFormatStr":"%d F",
    "bankCash":6000,
    "certLimit":{
       "2":20,
@@ -629,13 +629,13 @@ module Engine
          ]
       },
       "blue":{
-         "offboard=revenue:green_20|brown_30,groups:port;path=a:4,b:_0;path=a:5,b:_0":[
+         "offboard=revenue:green_20|brown_30,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0":[
             "E3",
             "G1"
          ]
       },
       "green":{
-         "offboard=revenue:green_20|brown_30,groups:port;path=a:3,b:_0;path=a:4,b:_0":[
+         "offboard=revenue:green_20|brown_30,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0":[
             "J2"
          ]
       }

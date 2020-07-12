@@ -52,7 +52,7 @@ module Engine
         # '403' => 'city=revenue:30;town=revenue:30;path=a:0,b:_0;label=B;upgrade=cost:40',
         '437' => 'town=revenue:30;path=a:0,b:_0;path=a:_0,b:2;icon=image:port,blocks_lay:1',
         '438' => 'city=revenue:40;path=a:0,b:_0;path=a:2,b:_0;label=H;upgrade=cost:80',
-        '445' => 'town=revenue:10;path=a:0,b:_0;path=a:_0,b:2',
+        '445' => 'town=revenue:20;path=a:0,b:_0;path=a:_0,b:2;icon=image:18_al/tree,blocks_lay:1',
         # '601' => 'city=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:2,b:_1;label=V',
         '621' => 'city=revenue:30;path=a:0,b:_0;path=a:_0,b:3;label=Y',
         '630' => 'town=revenue:10;town=revenue:10;path=a:2,b:_0;path=a:_0,b:3;path=a:0,b:_1;path=a:_1,b:4',
@@ -442,7 +442,8 @@ module Engine
         '1067' => 'city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:3;path=a:2,b:_1;path=a:_1,b:4',
         '1068' => 'city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:4',
         '61Y' => 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y',
-        '444a' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B·M',
+        '444b' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B',
+        '444m' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=M',
         '891Y' => 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=Y',
       }.freeze
 

@@ -5,15 +5,17 @@ require_relative 'node'
 module Engine
   module Part
     class RevenueCenter < Node
-      attr_reader :groups, :hide, :revenue, :revenue_to_render, :visit_cost
+      attr_reader :groups, :hide, :revenue, :revenue_to_render, :visit_cost, :route
 
       PHASES = %i[yellow green brown gray diesel].freeze
 
-      def initialize(revenue, groups = nil, hide = false, visit_cost = nil)
+      def initialize(revenue, **opts)
         @revenue = parse_revenue(revenue)
-        @groups = (groups || '').split('|')
-        @hide = hide
-        @visit_cost = (visit_cost || 1).to_i
+        @groups = (opts[:groups] || '').split('|')
+        @hide = opts[:hide]
+        @visit_cost = (opts[:visit_cost] || 1).to_i
+
+        @route = (opts[:route] || :mandatory).to_sym
       end
 
       # number, or something like "yellow_30|green_40|brown_50|gray_70|diesel_90"

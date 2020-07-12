@@ -642,7 +642,7 @@ module Engine
       ]
     },
     "blue": {
-      "offboard=revenue:yellow_20|brown_30,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0": [
+      "offboard=revenue:yellow_20|brown_30,visit_cost:0,route:optional;path=a:0,b:_0;path=a:1,b:_0": [
         "B6"
       ]
     }

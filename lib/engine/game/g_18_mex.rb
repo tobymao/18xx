@@ -2,6 +2,7 @@
 
 require_relative '../config/game/g_18_mex'
 require_relative 'base'
+require_relative 'company_price_50_to_150_percent'
 
 module Engine
   module Game
@@ -13,6 +14,7 @@ module Engine
       GAME_RULES_URL = 'https://secure.deepthoughtgames.com/games/18MEX/rules.pdf'
       GAME_DESIGNER = 'Mark Derrick'
 
+      include CompanyPrice50To150Percent
       def setup
         @minors.each do |minor|
           train = @depot.upcoming[0]

@@ -9,8 +9,292 @@ module Engine
         'Operating Round'
       end
 
-      def select_entities
-        @game.minors + @game.corporations.select(&:floated?).sort
+      def description
+        if (token = ambiguous_token)
+          return "Must choose token for #{token.corporation.name} at #{@ambiguous_hex_token[0].name}"
+        end
+
+        self.class::STEP_DESCRIPTION[@step]
+      end
+
+      def pass_description
+        (@step == @last_action_step ? 'Done' : 'Skip') + ' (' + self.class::SHORT_STEP_DESCRIPTION[@step] + ')'
+      end
+
+      def pass(_action)
+        next_step!
+      end
+
+      def finished?
+        @end_game || @bankrupt || super
+      end
+
+      def can_buy_companies?
+        return false unless @phase.buy_companies
+
+        companies = @game.purchasable_companies
+        companies.any? && companies.map(&:min_price).min <= @current_entity.cash
+      end
+
+      def must_buy_train?
+        @game.must_buy_train?(@current_entity)
+      end
+
+      def buyable_trains
+        depot_trains = @depot.depot_trains
+        other_trains = @depot.other_trains(current_entity)
+
+        # If the corporation cannot buy a train, then it can only buy the cheapest available
+        min_depot_train = @depot.min_depot_train
+        if min_depot_train.price > current_entity.cash
+          depot_trains = [min_depot_train]
+
+          if @last_share_sold_price
+            # 1889, a player cannot contribute to buy a train from another corporation
+            return depot_trains unless @ebuy_other_value
+
+            # 18Chesapeake and most others, it's legal to buy trains from other corps until
+            # if the player has just sold a share they can buy a train between cash-price_last_share_sold and cash
+            # e.g. If you had $40 cash, and if the train costs $100 and you've sold a share for $80,
+            # you now have $120 cash the $100 train should still be available to buy
+            min_available_cash = (current_entity.cash + current_entity.owner.cash) - @last_share_sold_price
+            return depot_trains + (other_trains.reject { |x| x.price < min_available_cash })
+          end
+        end
+        depot_trains + other_trains
+      end
+
+      def dividend_types
+        self.class::DIVIDEND_TYPES
+      end
+
+      def active_entities
+        super + crowded_corps
+      end
+
+      def corp_has_room?
+        @current_entity.trains.reject(&:obsolete).size < @phase.train_limit
+      end
+
+      def can_buy_train?
+        can_buy_normal = corp_has_room? &&
+          @current_entity.cash >= @depot.min_price(@current_entity)
+
+        can_buy_normal || @depot
+          .discountable_trains_for(@current_entity)
+          .any? { |_, _, price| @current_entity.cash >= price }
+      end
+
+      def can_act?(entity)
+        return true if @step == :train && active_entities.map(&:owner).include?(entity)
+
+        active_entities.include?(entity)
+      end
+
+      def can_sell?(bundle)
+        player = bundle.owner
+        # Can't sell president's share
+        return false unless bundle.can_dump?(player)
+
+        # Can only sell as much as you need to afford the train
+
+        total_cash = bundle.price + player.cash + @current_entity.cash
+        return false if total_cash >= @depot.min_depot_price + bundle.price_per_share
+
+        # Can't swap presidency
+        corporation = bundle.corporation
+        if corporation.president?(player) &&
+            (!@game.class::EBUY_PRES_SWAP || corporation == @current_entity)
+          share_holders = corporation.share_holders
+          remaining = share_holders[player] - bundle.percent
+          next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
+          return false if remaining < next_highest
+        end
+
+        # Can't oversaturate the market
+        return false unless @share_pool.fit_in_bank?(bundle)
+
+        # Otherwise we're good
+        true
+      end
+
+      def can_lay_track?
+        @step == :track
+      end
+
+      def can_run_routes?
+        @step == :route
+      end
+
+      def can_place_token?
+        @step == :token || @step == :home_token || ambiguous_token
+      end
+
+      def ambiguous_token
+        @ambiguous_hex_token[1]
+      end
+
+      def steps
+        self.class::STEPS
+      end
+
+      def connected_hexes
+        @graph.connected_hexes(@current_entity)
+      end
+
+      def connected_nodes
+        @graph.connected_nodes(@current_entity)
+      end
+
+      def connected_paths
+        @graph.connected_paths(@current_entity)
+      end
+
+      def reachable_hexes
+        return { @ambiguous_hex_token[0] => true } if ambiguous_token
+        return { @game.hex_by_id(@current_entity.coordinates) => true } if @step == :home_token
+
+        @graph.reachable_hexes(@current_entity)
+      end
+
+      def operating?
+        true
+      end
+
+      def skip_current_entity
+        @current_entity.pass!
+        change_entity(nil)
+      end
+
+      private
+
+      def next_step!
+        current_index = steps.find_index(@step)
+
+        if current_index < steps.size - 1
+          @step = steps[current_index + 1]
+          next_step! if send("skip_#{@step}")
+        else
+          @current_entity.pass!
+        end
+      end
+
+      def skip_home_token
+        !(@home_token_timing == :operate &&
+          @game.hex_by_id(@current_entity.coordinates)&.tile&.reserved_by?(@current_entity))
+      end
+
+      def skip_track; end
+
+      def skip_token
+        return true unless (token = @current_entity.next_token)
+
+        min_token_price(token) > @current_entity.cash ||
+          !@graph.can_token?(@current_entity)
+      end
+
+      def skip_route
+        @current_entity.runnable_trains.empty? || !@game.can_run_route?(@current_entity)
+      end
+
+      def skip_dividend
+        return false if @current_routes.any?
+
+        process_dividend(Action::Dividend.new(@current_entity, kind: 'withhold'))
+
+        true
+      end
+
+      def skip_train
+        !can_buy_train? && !must_buy_train?
+      end
+
+      def skip_company
+        !can_buy_companies?
+      end
+
+      def _process_action(action)
+        send("process_#{action.type}", action)
+      end
+
+      def process_lay_tile(action)
+        previous_tile = action.hex.tile
+
+        hex_id = action.hex.id
+
+        # companies with block_hexes should block hexes
+        @game.companies.each do |company|
+          next if company.closed?
+          next unless (ability = company.abilities(:blocks_hexes))
+
+          raise GameError, "#{hex_id} is blocked by #{company.name}" if ability.hexes.include?(hex_id)
+        end
+
+        lay_tile(action)
+        @current_entity.abilities(:teleport) do |ability, _|
+          @teleported = ability.hexes.include?(hex_id) &&
+          ability.tiles.include?(action.tile.name)
+        end
+
+        new_tile = action.hex.tile
+        cities = new_tile.cities
+        if previous_tile.paths.empty? &&
+          new_tile.paths.any? &&
+          cities.size > 1 &&
+          cities.flat_map(&:tokens).any?
+          token = cities.flat_map(&:tokens).find(&:itself)
+          @ambiguous_hex_token = [action.hex, token]
+          token.remove!
+        end
+      end
+
+      def process_place_token(action)
+        place_token(action)
+      end
+
+      def process_move_token(action)
+        move_token(action)
+        @ambiguous_hex_token = []
+      end
+
+      def process_run_routes(action)
+        @current_routes = action.routes
+        trains = {}
+        @current_routes.each do |route|
+          train = route.train
+          if train.owner && train.owner != @current_entity
+            raise GameError, "Cannot run another corporation's train. refresh"
+          end
+          raise GameError, 'Cannot run train twice' if trains[train]
+          raise GameError, 'Cannot run train that operated' if train.operated
+
+          trains[train] = true
+          hexes = route.hexes.map(&:name).join(', ')
+          @log << "#{@current_entity.name} runs a #{train.name} train for "\
+            "#{@game.format_currency(route.revenue)} (#{hexes})"
+        end
+      end
+
+      def process_dividend(action)
+        revenue = @current_routes.sum(&:revenue)
+        rust_obsolete_trains!(@current_entity.trains)
+        @current_entity.operating_history[[@game.turn, @round_num]] = OperatingInfo.new(
+          @current_routes,
+          action,
+          revenue
+        )
+        @current_entity.trains.each { |train| train.operated = true }
+        @current_routes = []
+        send(action.kind, revenue)
+      end
+
+      def process_buy_train(action)
+        buy_train(action.entity, action.train, action.price, action.exchange)
+        @last_share_sold_price = nil
+      end
+
+      def process_discard_train(action)
+        discard_train(action)
       end
 
       def setup

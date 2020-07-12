@@ -30,6 +30,7 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       SELL_MOVEMENT = :left_block_pres
       HOME_TOKEN_TIMING = :float
+      MUST_BUY_TRAIN = :always
 
       ORANGE_GROUP = [
         'Lake Shore Line',
@@ -290,14 +291,14 @@ module Engine
         removals = Hash.new { |h, k| h[k] = {} }
 
         @corporations.each do |corp|
-          corp.assignments.each do |company, _|
+          corp.assignments.dup.each do |company, _|
             removals[company][:corporation] = corp.name
             corp.remove_assignment!(company)
           end
         end
 
         @hexes.each do |hex|
-          hex.assignments.each do |company, _|
+          hex.assignments.dup.each do |company, _|
             removals[company][:hex] = hex.name
             hex.remove_assignment!(company)
           end
