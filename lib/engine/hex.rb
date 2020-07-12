@@ -7,7 +7,8 @@ module Engine
   class Hex
     include Assignable
 
-    attr_reader :connections, :coordinates, :layout, :neighbors, :tile, :x, :y, :location_name, :original_tile
+    attr_accessor :x, :y
+    attr_reader :connections, :coordinates, :layout, :neighbors, :tile, :location_name, :original_tile
 
     DIRECTIONS = {
       flat: {

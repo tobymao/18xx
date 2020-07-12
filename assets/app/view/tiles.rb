@@ -12,7 +12,8 @@ module View
       location_name: nil,
       scale: 1.0,
       opacity: 1.0,
-      rotations: nil
+      rotations: nil,
+      hex_coordinates: nil
     )
       props = {
         style: {
@@ -35,16 +36,20 @@ module View
         text += "-#{rotation}" unless rotations == [0]
         text += " × #{num}" if num
 
+        hex = Engine::Hex.new(hex_coordinates || 'A1',
+                              layout: layout,
+                              location_name: loc_name,
+                              tile: tile)
+        hex.x = 0
+        hex.y = 0
+
         h('div.tile__block', props, [
             h(:div, { style: { 'text-align': 'center', 'font-size': '12px' } }, text),
             h(:svg, { style: { width: '100%', height: '100%' } }, [
               h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
                 h(
                   Game::Hex,
-                  hex: Engine::Hex.new('A1',
-                                       layout: layout,
-                                       location_name: loc_name,
-                                       tile: tile),
+                  hex: hex,
                   role: :tile_page,
                   opacity: opacity,
                 ),
