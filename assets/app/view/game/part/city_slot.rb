@@ -52,11 +52,15 @@ module View
           color = non_home ? '#808080' : 'black'
 
           attrs = {
-            fill: color,
-            stroke: color,
+            fill: 'black',
             'font-size': "#{RESERVATION_FONT_SIZE[text.size]}px",
             'dominant-baseline': 'central',
           }
+
+          if non_home
+            attrs[:stroke] = color
+            attrs[:fill] = color
+          end
 
           h(:text, { attrs: attrs }, text)
         end
