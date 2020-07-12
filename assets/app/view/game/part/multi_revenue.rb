@@ -34,10 +34,10 @@ module View
             revenue['width']
           end
 
-          children = computed_revenues.flat_map.with_index do |rev, index|
+          t_x = -(total_width * 0.5)
+          children = computed_revenues.flat_map do |rev|
             fill = COLOR[rev['color']]
             width = rev['width']
-            t_x = (32 * index) - (total_width * 0.5)
 
             rect_attrs = {
               fill: fill,
@@ -55,7 +55,7 @@ module View
                 'dominant-baseline': 'central',
               },
             }
-
+            t_x += width
             [
               h(:rect, attrs: rect_attrs),
               h('text.number', text_props, rev['text']),
