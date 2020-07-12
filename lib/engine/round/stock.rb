@@ -188,12 +188,12 @@ module Engine
           @stock_market.move_up(corp) if sold_out?(corp)
 
           price_drops =
-            if @pool_share_drop == :none
+            if (@pool_share_drop == :none) || (shares_in_pool = corp.num_market_shares).zero?
               0
-            elsif (shares_in_pool = @share_pool.shares_by_corporation[corp].size).positive?
-              @pool_share_drop == :one ? 1 : shares_in_pool
+            elsif @pool_share_drop == :one
+              1
             else
-              0
+              shares_in_pool
             end
           price_drops.times { @stock_market.move_down(corp) }
 
