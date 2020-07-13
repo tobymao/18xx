@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'tokener'
 require_relative 'track'
 
 module Engine

@@ -19,13 +19,14 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(self, [
+          Step::BuyCompany,
           Step::HomeToken,
           Step::Track,
           Step::Token,
           Step::Route,
           Step::Dividend,
           Step::G1836Jr30::Train,
-          Step::PurchaseCompanies,
+          [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
 

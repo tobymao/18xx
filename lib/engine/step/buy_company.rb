@@ -79,6 +79,10 @@ module Engine
       def round_state
         { just_sold_company: nil }
       end
+
+      def setup
+        @blocks = @opts[:blocks] || false
+      end
     end
   end
 end
