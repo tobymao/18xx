@@ -56,10 +56,10 @@ module Engine
     },
     GAMES_BY_TITLE['1889'] => {
       247 => {
-        'fdinh' => 1094,
-        'gugvib' => 1148,
+        'fdinh' => 1059,
+        'gugvib' => 1073,
         'marco4884' => 1089,
-        'vecchioleone' => 305,
+        'vecchioleone' => 275,
       },
       314 => {
         'Rebus' => 1134,
