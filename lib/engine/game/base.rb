@@ -402,7 +402,7 @@ module Engine
         if action.entity.is_a?(Company)
           @special.process_action(action)
         else
-          #puts @round.to_s
+          # puts @round.to_s
           @round.process_action(action)
         end
 
@@ -527,8 +527,6 @@ module Engine
         @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
                 "to #{format_currency(to)}"
       end
-
-
 
       def can_run_route?(entity)
         @graph.route_info(entity)&.dig(:route_available)
@@ -927,6 +925,7 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           [Step::Bankrupt],
+          Step::DiscardTrain,
           Step::BuyCompany,
           Step::Track,
           Step::Token,

@@ -160,9 +160,9 @@ describe 'Assets' do
             disable_user_errors: true,
           }
 
-          html=render(app_route: "/game/#{needs[:game_data]['id']}", **needs)
+          html = render(app_route: "/game/#{needs[:game_data]['id']}", **needs)
           strings = Array(string)
-          strings.each {|str| expect(html).to include(str)}
+          strings.each { |str| expect(html).to include(str) }
         end
       end
     end

@@ -5,7 +5,6 @@ require_relative 'base'
 module Engine
   module Step
     module Tracker
-
       def lay_tile(action)
         #   previous_tile = action.hex.tile
 
@@ -166,7 +165,7 @@ module Engine
         end.compact
       end
 
-      def legal_tile_rotations(entity, hex, tile)
+      def legal_tile_rotations(_entity, hex, tile)
         old_paths = hex.tile.paths
 
         Engine::Tile::ALL_EDGES.select do |rotation|

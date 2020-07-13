@@ -81,7 +81,7 @@ module Engine
 
           process = step2.actions(action.entity).include?(type)
           blocking = step2.blocking?
-          raise GameError, "Step #{step2} cannot process #{type}" if blocking && !process
+          raise GameError, "Step #{step2} cannot process #{type} at #{action.id}" if blocking && !process
 
           blocking || process
         end
@@ -93,9 +93,10 @@ module Engine
         after_process(action)
       end
 
-      # todo: toby, not entirely convinced this is best, would probably need a rewrite for the special round
+      # TODO: toby, not entirely convinced this is best, would probably need a rewrite for the special round
       def available_actions
         return @available_actions if @available_actions
+
         actions = []
         @steps.each do |step|
           next unless step.active?

@@ -33,6 +33,19 @@ module Engine
         true
       end
 
+      def round_state
+        {
+          check_crowded_corps: false,
+        }
+      end
+
+      def pass!
+        # As a user discards trains after all are bought
+        # wait until the pass occurs to flag to discard trains
+        @round.check_crowded_corps = true
+        super
+      end
+
       def can_buy_train?(entity = nil)
         entity ||= current_entity
         can_buy_normal = has_room?(entity) &&

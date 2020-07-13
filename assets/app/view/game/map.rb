@@ -36,7 +36,6 @@ module View
             @game.round
           end
 
-
         step = round.active_step
         current_entity = step.current_entity
         # move the selected hex to the back so it renders highest in z space

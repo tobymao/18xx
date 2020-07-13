@@ -19,6 +19,7 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(self, [
+          Step::DiscardTrain,
           Step::BuyCompany,
           Step::HomeToken,
           Step::Track,

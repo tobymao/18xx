@@ -8,8 +8,6 @@ module View
     class DiscardTrains < Snabberb::Component
       include Actionable
 
-      needs :corporations
-
       def render
         block_props = {
           style: {
@@ -17,7 +15,7 @@ module View
             'vertical-align': 'top',
           },
         }
-        overflow = @game.step.crowded_corps.map do |corporation|
+        overflow = @game.active_step.crowded_corps.map do |corporation|
           trains = corporation.trains.map do |train|
             train_props = {
               style: {

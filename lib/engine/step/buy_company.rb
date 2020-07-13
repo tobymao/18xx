@@ -59,9 +59,7 @@ module Engine
 
         company.abilities(:assign_corporation) do |ability|
           Assignable.remove_from_all!(@game.corporations, company.id) do |unassigned|
-            if unassigned.name != entity.name
-              log_later << "#{company.name} is unassigned from #{unassigned.name}"
-            end
+            log_later << "#{company.name} is unassigned from #{unassigned.name}" if unassigned.name != entity.name
           end
           entity.assign!(company.id)
           ability.use!

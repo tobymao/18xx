@@ -148,7 +148,7 @@ module Engine
         potentials.select { |t| hex.tile.upgrades_to?(t) }
       end
 
-      def check_track_restrictions!(entity, _old_tile, _new_tile)
+      def check_track_restrictions!(_entity, _old_tile, _new_tile)
         true
       end
     end
