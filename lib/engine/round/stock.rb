@@ -209,7 +209,7 @@ module Engine
             end
           price_drops.times { @stock_market.move_down(corp) }
 
-          log_share_price(corp, prev)
+          @game.log_share_price(corp, prev)
         end
       end
 

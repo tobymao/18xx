@@ -48,7 +48,7 @@ module Engine
       end
 
       def must_buy_train?(entity)
-        !entity.rusted_self && entity.trains.empty? && @game.graph.route?(entity)
+        @game.must_buy_train?(entity)
       end
 
       def process_buy_train(action)
