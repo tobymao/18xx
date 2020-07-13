@@ -977,7 +977,7 @@ module Engine
           Step::Route,
           Step::Dividend,
           Step::Train,
-          Step::PurchaseCompanies,
+          Step::BuyCompany,
         ], round_num: round_num)
       end
 

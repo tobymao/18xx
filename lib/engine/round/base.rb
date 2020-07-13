@@ -74,6 +74,8 @@ module Engine
         type = action.type
         clear_cache!
 
+        before_process(action)
+
         step = @steps.find do |step2|
           next unless step2.active?
 
@@ -88,7 +90,7 @@ module Engine
         step.send("process_#{action.type}", action)
 
         skip_steps
-        action_processed(action)
+        after_process(action)
       end
 
       def active_step
@@ -121,7 +123,9 @@ module Engine
         end
       end
 
-      def action_processed(_action); end
+      def before_process(_action); end
+
+      def after_process(_action); end
 
       # def initialize(entities, game:, **_kwargs)
       #  @game = game

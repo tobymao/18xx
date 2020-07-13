@@ -20,7 +20,13 @@ module Engine
         start_operating
       end
 
-      def action_processed(_action)
+      def before_process(_action)
+        # this is crap, we should block when this happens
+        @just_sold_company&.remove_ability_when(:sold)
+        @just_sold_company = nil
+      end
+
+      def after_process(_action)
         return if active_step || @entity_index == @entities.size - 1
 
         next_entity_index!
@@ -43,7 +49,6 @@ module Engine
         index = @entity_index + 1
         @entities[index..-1] = @entities[index..-1].sort if index < @entities.size - 1
       end
-
     end
   end
 end
