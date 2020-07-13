@@ -528,42 +528,7 @@ module Engine
                 "to #{format_currency(to)}"
       end
 
-      def can_buy_company?
-        return false unless @round.is_a?(Round::Operating)
-        return false unless @phase.buy_companies
-      end
 
-      def can_buy_any_company?
-        return false unless can_buy_company?
-
-        companies = purchasable_companies
-        companies.any? && companies.map(&:min_price).min <= @current_entity.cash
-      end
-
-      def upgradeable_tiles(hex)
-        potential_tiles(hex).map do |tile|
-          tile.rotate!(0) # reset tile to no rotation since calculations are absolute
-          tile.legal_rotations = legal_tile_rotations(hex, tile)
-          next if tile.legal_rotations.empty?
-
-          tile.rotate! # rotate it to the first legal rotation
-          tile
-        end.compact
-      end
-
-      def legal_tile_rotations(hex, tile)
-        old_paths = hex.tile.paths
-
-        Engine::Tile::ALL_EDGES.select do |rotation|
-          tile.rotate!(rotation)
-          new_paths = tile.paths
-          new_exits = tile.exits
-
-          new_exits.all? { |edge| hex.neighbors[edge] } &&
-            (new_exits & @graph.connected_hexes(current_entity)[hex]).any? &&
-            old_paths.all? { |path| new_paths.any? { |p| path <= p } }
-        end
-      end
 
       def can_run_route?(entity)
         @graph.route_info(entity)&.dig(:route_available)
@@ -648,17 +613,6 @@ module Engine
           total_cost = upgrade.cost - discount
           total_cost
         end
-      end
-
-      protected
-
-      def potential_tiles(hex)
-        colors = phase.tiles
-        tiles
-          .select { |tile| colors.include?(tile.color) }
-          .uniq(&:name)
-          .select { |t| hex.tile.upgrades_to?(t) }
-          .reject(&:blocks_lay)
       end
 
       private
@@ -860,7 +814,7 @@ module Engine
 
       def total_rounds
         # Return the total number of rounds for those with more than one.
-        @phase.operating_rounds if @round.is_a?(Round::Operating)
+        @operating_rounds if @round.is_a?(Round::Operating)
       end
 
       def next_round!

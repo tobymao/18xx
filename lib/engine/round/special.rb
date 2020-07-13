@@ -5,13 +5,14 @@ require_relative '../action/lay_tile'
 require_relative '../corporation'
 require_relative '../hex'
 require_relative '../player'
+require_relative '../step/tracker'
 require_relative 'legacy'
 
 module Engine
   module Round
     class Special < Legacy
       attr_writer :current_entity
-
+      include Step::Tracker
       def change_entity(_action)
         # Ignore change entity as special doesn't change entity
       end
@@ -21,7 +22,7 @@ module Engine
 
         actions = []
         actions << 'assign' if can_assign_hex? || can_assign_corporation?
-        actions << 'lay_track' if can_lay_track?
+        actions << 'lay_tile' if can_lay_track?
         actions << 'place_token' if can_place_token?
         actions
       end
@@ -67,7 +68,7 @@ module Engine
       end
 
       def connected_hexes
-        hexes = (assign_ability || tile_laying_ability).hexes || []
+        hexes = (assign_ability || tile_laying_ability)&.hexes || []
 
         hexes.map do |coordinates|
           hex = @game.hex_by_id(coordinates)
@@ -76,7 +77,7 @@ module Engine
       end
 
       def reachable_hexes
-        hexes = token_ability.hexes || []
+        hexes = token_ability&.hexes || []
 
         hexes.map do |coordinates|
           hex = @game.hex_by_id(coordinates)
@@ -147,7 +148,7 @@ module Engine
         potentials.select { |t| hex.tile.upgrades_to?(t) }
       end
 
-      def check_track_restrictions!(_old_tile, _new_tile)
+      def check_track_restrictions!(entity, _old_tile, _new_tile)
         true
       end
     end

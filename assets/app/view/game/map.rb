@@ -36,7 +36,9 @@ module View
             @game.round
           end
 
+
         step = round.active_step
+        current_entity = step.current_entity
         # move the selected hex to the back so it renders highest in z space
         selected_hex = @tile_selector&.hex
         @hexes << @hexes.delete(selected_hex) if @hexes.include?(selected_hex)
@@ -71,7 +73,7 @@ module View
                 top = height - TileSelector::DROP_SHADOW_SIZE - distance
               end
 
-              tiles = @game.upgradeable_tiles(@tile_selector.hex)
+              tiles = step.upgradeable_tiles(current_entity, @tile_selector.hex)
 
               h(TileSelector, layout: @layout, tiles: tiles, step: step)
             end

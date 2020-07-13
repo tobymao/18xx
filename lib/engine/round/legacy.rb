@@ -140,10 +140,6 @@ module Engine
         {}
       end
 
-      def upgradeable_tiles(hex)
-        @game.upgradeable_tiles(hex)
-      end
-
       def sellable_bundles(player, corporation)
         bundles = player.bundles_for_corporation(corporation)
         bundles.select { |bundle| can_sell?(bundle) }

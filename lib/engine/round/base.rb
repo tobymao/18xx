@@ -93,6 +93,20 @@ module Engine
         after_process(action)
       end
 
+      # todo: toby, not entirely convinced this is best, would probably need a rewrite for the special round
+      def available_actions
+        return @available_actions if @available_actions
+        actions = []
+        @steps.each do |step|
+          next unless step.active?
+
+          available_actions = step.actions(step.current_entity)
+          actions += available_actions
+          break if step.blocking?
+        end
+        @available_actions = actions.uniq
+      end
+
       def active_step
         @active_step ||= @steps.find { |step| step.active? && step.blocking? }
       end
@@ -111,6 +125,7 @@ module Engine
 
       def clear_cache!
         @active_step = nil
+        @available_actions = nil
       end
 
       private

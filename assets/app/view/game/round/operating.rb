@@ -21,7 +21,7 @@ module View
         def render
           round = @game.round
           @step = round.active_step
-          @current_actions = @step.current_actions
+          @current_actions = round.available_actions
           action = [h(UndoAndPass, pass: @current_actions.include?('pass'))]
 
           action << h(RouteSelector) if @current_actions.include?('run_routes')
@@ -44,7 +44,7 @@ module View
             },
           }
           right = [h(Map, game: @game)]
-          right << h(:div, div_props, [h(BuyCompanies, limit_width: true)]) if @game.can_buy_any_company?
+          right << h(:div, div_props, [h(BuyCompanies, limit_width: true)]) if @current_actions.include?('buy_company')
 
           left_props = {
             style: {
