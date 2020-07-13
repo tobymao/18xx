@@ -402,7 +402,7 @@ module Engine
         if action.entity.is_a?(Company)
           @special.process_action(action)
         else
-          puts @round.to_s
+          #puts @round.to_s
           @round.process_action(action)
         end
 
@@ -972,12 +972,14 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(self, [
+          [Step::Bankrupt],
+          [Step::BuyCompany, blocks: false],
           Step::Track,
           Step::Token,
           Step::Route,
           Step::Dividend,
           Step::Train,
-          Step::BuyCompany,
+          [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
 

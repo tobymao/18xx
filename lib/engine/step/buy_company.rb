@@ -6,16 +6,25 @@ module Engine
   module Step
     class BuyCompany < Base
       ACTIONS = %w[buy_company pass].freeze
+      ACTIONS_NO_PASS = %w[buy_company].freeze
 
       def actions(entity)
-        companies = @game.purchasable_companies
-
-        return ACTIONS if entity == current_entity &&
-          @game.phase.buy_companies
-          companies.any? &&
-          companies.map(&:min_price).min <= entity.cash
+        return blocks? ? ACTIONS : ACTIONS_NO_PASS if can_buy_company?(entity)
 
         []
+      end
+
+      def can_buy_company?(entity)
+        companies = @game.purchasable_companies
+
+        entity == current_entity &&
+          @game.phase.buy_companies &&
+          companies.any? &&
+          companies.map(&:min_price).min <= entity.cash
+      end
+
+      def blocks?
+        @opts[:blocks]
       end
 
       def description
