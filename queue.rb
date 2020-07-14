@@ -53,6 +53,8 @@ MessageBus.subscribe '/turn', -1 do |msg|
     Mail.send(user, "18xx.games Game: #{game.title} - #{game.id} - #{data['type']}", html)
     LOGGER.info("mail sent for game: #{game.id} to user: #{user.id}")
   end
+rescue Exception => e # rubocop:disable Lint/RescueException
+  puts e
 end
 
 sleep
