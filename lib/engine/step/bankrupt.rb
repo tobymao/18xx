@@ -22,7 +22,7 @@ module Engine
       end
 
       def process_bankrupt(action)
-        player = action.entity
+        player = action.entity.owner
 
         @log << "#{player.name} goes bankrupt and sells remaining shares"
 
