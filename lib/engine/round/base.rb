@@ -93,19 +93,17 @@ module Engine
         after_process(action)
       end
 
-      # TODO: toby, not entirely convinced this is best, would probably need a rewrite for the special round
-      def available_actions
-        return @available_actions if @available_actions
+      def actions_for(entity)
 
         actions = []
         @steps.each do |step|
           next unless step.active?
 
-          available_actions = step.actions(step.current_entity)
+          available_actions = step.actions(entity)
           actions += available_actions
           break if step.blocking?
         end
-        @available_actions = actions.uniq
+        actions.uniq
       end
 
       def active_step

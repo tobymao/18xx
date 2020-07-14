@@ -78,17 +78,7 @@ module View
           # If there's a choice of tokens of different types show the selector, otherwise just place
           next_tokens = round.active_step.available_tokens
 
-          if actions.include?('move_token')
-            # There should only be one token in the city
-            action = Engine::Action::MoveToken.new(
-              @game.current_entity,
-              city: @city,
-              slot: @slot_index,
-              token: token,
-            )
-
-            process_action(action)
-          elsif next_tokens.size == 1
+          if next_tokens.size == 1
             action = Engine::Action::PlaceToken.new(
               @selected_company || @game.current_entity,
               city: @city,

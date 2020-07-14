@@ -21,7 +21,8 @@ module View
         def render
           round = @game.round
           @step = round.active_step
-          @current_actions = round.available_actions
+          corporation = round.current_entity
+          @current_actions = round.actions_for(corporation)
           action = [h(UndoAndPass, pass: @current_actions.include?('pass'))]
 
           action << h(RouteSelector) if @current_actions.include?('run_routes')
@@ -30,7 +31,7 @@ module View
           action << h(IssueShares) if @current_actions.include?('buy_shares')
 
           left = action
-          corporation = round.current_entity
+
           left << h(Corporation, corporation: corporation)
           corporation.owner.companies.each do |c|
             next if (c.all_abilities.map(&:type) & ABILITIES).empty?

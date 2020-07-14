@@ -69,7 +69,10 @@ def migrate_json(filename, fixOne=true)
       attempt_repair(engine, players, data)
       File.write(filename,JSON.pretty_generate(data))
 
-      return if fixOne
+      if fixOne
+        puts "Only fixing one problem"
+        return if fixOne
+      end
     end
     break
   end
