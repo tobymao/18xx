@@ -2,10 +2,24 @@
 
 require_relative 'lib/engine'
 
-def repair(data, broken_action)
+def repair(game, actions, broken_action)
+  optionalish_actions=['message', 'buy_company']
+  action_idx = actions.index(broken_action)
+
   if broken_action['type']=='move_token'
+    # Move token is now place token.
     broken_action['type']='place_token'
     return :inplace
+  elsif broken_action['type']=='pass' && game.is_a?(Engine::Game::G1836Jr30)
+    # Shouldn't need to pass when buying trains
+    prev_actions = actions[0..action_idx-1]
+    prev_action = prev_actions[prev_actions.rindex {|a| !optionalish_actions.include?(a['type']) }]
+    puts prev_action
+    if prev_action['type']=='buy_train'
+      # Delete the pass
+      actions.delete(broken_action)
+      return :deleted
+    end
   end
   raise Exception, 'Cannot fix'
 end
@@ -25,7 +39,7 @@ def attempt_repair(engine, players, data)
       game.process_action(action)
     rescue Engine::GameError => e
       puts "Break at #{action}"
-      repair_type = repair(filtered_actions, action)
+      repair_type = repair(game, filtered_actions, action)
       if repair_type == :inplace
         data['actions'][action['id']-1]=action
       else
@@ -54,7 +68,7 @@ def migrate_json(filename, fixOne=true)
       attempt_repair(engine, players, data)
       File.write(filename,JSON.pretty_generate(data))
 
-      break if fixOne
+      return if fixOne
     end
     break
   end

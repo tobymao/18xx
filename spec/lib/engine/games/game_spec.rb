@@ -56,11 +56,6 @@ module Engine
       },
     },
     GAMES_BY_TITLE['1836Jr30'] => {
-      2608 => {
-        'JC' => 837,
-        'NicolasO' => 1088,
-        'botch' => 60,
-      },
       2809 => {
         'Azureth' => 4833,
         'Navor' => 3034,

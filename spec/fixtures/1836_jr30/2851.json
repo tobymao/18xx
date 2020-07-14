@@ -1,1 +1,4906 @@
-{"id":2851,"description":"Private Portland 5","user":{"id":90,"name":"scottredracecar"},"players":[{"id":2431,"name":"markmenm"},{"id":307,"name":"Shaz"},{"id":90,"name":"scottredracecar"}],"max_players":3,"title":"1836Jr30","settings":{"seed":146073185331420257512372176835514122869},"status":"finished","turn":7,"round":"Operating Round","acting":[307],"result":{"Shaz":5693,"markmenm":3159,"scottredracecar":5021},"actions":[{"id":1,"type":"bid","price":165,"entity":"markmenm","company":"CFL","entity_type":"player"},{"id":2,"type":"bid","price":115,"entity":"Shaz","company":"GCB","entity_type":"player"},{"id":3,"type":"bid","price":170,"entity":"scottredracecar","company":"CFL","entity_type":"player"},{"id":4,"type":"bid","price":120,"entity":"markmenm","company":"GCB","entity_type":"player"},{"id":5,"type":"bid","price":45,"entity":"Shaz","company":"E-SF","entity_type":"player"},{"id":6,"type":"bid","price":75,"entity":"scottredracecar","company":"CdH","entity_type":"player"},{"id":7,"type":"bid","price":50,"entity":"markmenm","company":"E-SF","entity_type":"player"},{"id":8,"type":"bid","price":20,"entity":"Shaz","company":"ACC","entity_type":"player"},{"id":9,"type":"bid","price":55,"entity":"Shaz","company":"E-SF","entity_type":"player"},{"id":10,"type":"bid","price":60,"entity":"markmenm","company":"E-SF","entity_type":"player"},{"id":11,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":12,"type":"bid","price":125,"entity":"Shaz","company":"GCB","entity_type":"player"},{"id":13,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":14,"type":"bid","price":175,"entity":"markmenm","company":"CFL","entity_type":"player"},{"id":15,"type":"bid","price":180,"entity":"scottredracecar","company":"CFL","entity_type":"player"},{"id":16,"type":"bid","price":190,"entity":"markmenm","company":"CFL","entity_type":"player"},{"id":17,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":18,"type":"bid","price":220,"entity":"scottredracecar","company":"CFLV","entity_type":"player"},{"id":19,"type":"par","entity":"scottredracecar","corporation":"Nord","entity_type":"player","share_price":"100,0,6"},{"id":20,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":21,"type":"par","entity":"Shaz","corporation":"HSM","entity_type":"player","share_price":"71,4,6"},{"id":22,"type":"buy_shares","entity":"scottredracecar","shares":["HSM_1"],"entity_type":"player"},{"id":23,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":24,"type":"buy_shares","entity":"Shaz","shares":["HSM_2"],"entity_type":"player"},{"id":25,"type":"buy_shares","entity":"scottredracecar","shares":["HSM_3"],"entity_type":"player"},{"id":26,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":27,"type":"buy_shares","entity":"Shaz","shares":["HSM_4"],"entity_type":"player"},{"id":28,"type":"buy_shares","entity":"scottredracecar","shares":["HSM_5"],"entity_type":"player"},{"id":29,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":30,"type":"buy_shares","entity":"Shaz","shares":["HSM_6"],"entity_type":"player"},{"id":31,"type":"buy_shares","entity":"scottredracecar","shares":["HSM_7"],"entity_type":"player"},{"id":32,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":33,"type":"buy_shares","entity":"Shaz","shares":["HSM_8"],"entity_type":"player"},{"id":34,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":35,"hex":"E7","tile":"57-0","type":"lay_tile","entity":"HSM","rotation":2,"entity_type":"corporation"},{"id":36,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":37,"type":"buy_train","price":80,"train":"2-0","entity":"HSM","entity_type":"corporation"},{"id":38,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":39,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":40,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":41,"hex":"F8","tile":"8-0","type":"lay_tile","entity":"HSM","rotation":2,"entity_type":"corporation"},{"id":42,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":43,"type":"run_routes","entity":"HSM","routes":[{"train":"2-0","connections":[["D6","E7"]]}],"entity_type":"corporation"},{"id":44,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":45,"type":"buy_train","price":80,"train":"2-1","entity":"HSM","entity_type":"corporation"},{"id":46,"type":"sell_shares","entity":"scottredracecar","shares":["HSM_1","HSM_3","HSM_5","HSM_7"],"percent":40,"entity_type":"player"},{"id":47,"type":"par","entity":"scottredracecar","corporation":"B","entity_type":"player","share_price":"76,3,6"},{"id":48,"type":"par","entity":"markmenm","corporation":"NFL","entity_type":"player","share_price":"67,5,6"},{"id":49,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":50,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":51,"type":"buy_shares","entity":"scottredracecar","shares":["B_1"],"entity_type":"player"},{"id":52,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":53,"type":"buy_shares","entity":"markmenm","shares":["NFL_1"],"entity_type":"player"},{"id":54,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":55,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":56,"type":"buy_shares","entity":"scottredracecar","shares":["B_2"],"entity_type":"player"},{"id":57,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":58,"type":"buy_shares","entity":"markmenm","shares":["NFL_2"],"entity_type":"player"},{"id":59,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":60,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":61,"type":"buy_shares","entity":"scottredracecar","shares":["B_3"],"entity_type":"player"},{"id":62,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":63,"type":"buy_shares","entity":"markmenm","shares":["NFL_3"],"entity_type":"player"},{"id":64,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":65,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":66,"type":"buy_shares","entity":"scottredracecar","shares":["B_4"],"entity_type":"player"},{"id":67,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":68,"type":"buy_shares","entity":"markmenm","shares":["NFL_4"],"entity_type":"player"},{"id":69,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":70,"type":"buy_shares","entity":"Shaz","shares":["B_5"],"entity_type":"player"},{"id":71,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":72,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":73,"type":"sell_shares","entity":"markmenm","shares":["NFL_1"],"percent":10,"entity_type":"player"},{"id":74,"type":"buy_shares","entity":"markmenm","shares":["HSM_1"],"entity_type":"player"},{"id":75,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":76,"type":"sell_shares","entity":"Shaz","shares":["HSM_2"],"percent":10,"entity_type":"player"},{"id":77,"type":"buy_shares","entity":"Shaz","shares":["NFL_5"],"entity_type":"player"},{"id":78,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":79,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":80,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":81,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":82,"hex":"H4","tile":"57-1","type":"lay_tile","entity":"B","rotation":1,"entity_type":"corporation"},{"id":83,"city":"57-1-0","slot":0,"type":"place_token","entity":"B","entity_type":"corporation"},{"id":84,"type":"buy_train","price":80,"train":"2-2","entity":"B","entity_type":"corporation"},{"id":85,"type":"pass","entity":"B","entity_type":"corporation"},{"id":86,"hex":"B10","tile":"57-2","type":"lay_tile","entity":"NFL","rotation":2,"entity_type":"corporation"},{"id":87,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":88,"type":"buy_train","price":80,"train":"2-3","entity":"NFL","entity_type":"corporation"},{"id":89,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":90,"hex":"F10","tile":"58-0","type":"lay_tile","entity":"HSM","rotation":5,"entity_type":"corporation"},{"id":91,"city":"57-0-0","slot":0,"type":"place_token","entity":"HSM","entity_type":"corporation"},{"id":92,"type":"run_routes","entity":"HSM","routes":[{"train":"2-0","connections":[["D6","E7"]]},{"train":"2-1","connections":[["E7","F8","F10"]]}],"entity_type":"corporation"},{"id":93,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":94,"type":"buy_train","price":80,"train":"2-4","entity":"HSM","entity_type":"corporation"},{"id":95,"type":"buy_train","price":180,"train":"3-0","entity":"HSM","entity_type":"corporation"},{"id":96,"type":"buy_company","price":220,"entity":"HSM","company":"GCB","entity_type":"corporation"},{"id":97,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":98,"type":"sell_shares","entity":"scottredracecar","shares":["B_1"],"percent":10,"entity_type":"player"},{"id":99,"type":"buy_shares","entity":"scottredracecar","shares":["HSM_3"],"entity_type":"player"},{"id":100,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":101,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":102,"type":"buy_shares","entity":"Shaz","shares":["Nord_1"],"entity_type":"player"},{"id":103,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":104,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":105,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":106,"type":"buy_shares","entity":"Shaz","shares":["Nord_2"],"entity_type":"player"},{"id":107,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":108,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":109,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":110,"type":"buy_shares","entity":"Shaz","shares":["Nord_3"],"entity_type":"player"},{"id":111,"type":"sell_shares","entity":"Shaz","shares":["NFL_5"],"percent":10,"entity_type":"player"},{"id":112,"type":"sell_shares","entity":"Shaz","shares":["B_5"],"percent":10,"entity_type":"player"},{"id":113,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":114,"type":"sell_shares","entity":"scottredracecar","shares":["HSM_3"],"percent":10,"entity_type":"player"},{"id":115,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":116,"type":"buy_shares","entity":"markmenm","shares":["NFL_1"],"entity_type":"player"},{"id":117,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":118,"type":"buy_shares","entity":"Shaz","shares":["Nord_4"],"entity_type":"player"},{"id":119,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":120,"type":"buy_shares","entity":"scottredracecar","shares":["Nord_5"],"entity_type":"player"},{"id":121,"type":"sell_shares","entity":"scottredracecar","shares":["Nord_1","Nord_2","Nord_5"],"percent":30,"entity_type":"player"},{"id":122,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":123,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":124,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":125,"type":"buy_shares","entity":"scottredracecar","shares":["NFL_5"],"entity_type":"player"},{"id":126,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":127,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":128,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":129,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":130,"hex":"I5","tile":"8-1","type":"lay_tile","entity":"Nord","rotation":5,"entity_type":"corporation"},{"id":131,"type":"buy_train","price":180,"train":"3-1","entity":"Nord","entity_type":"corporation"},{"id":132,"type":"buy_train","price":300,"train":"2-0","entity":"Nord","entity_type":"corporation"},{"id":133,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":134,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":135,"hex":"E5","tile":"59-0","type":"lay_tile","entity":"HSM","rotation":1,"entity_type":"corporation"},{"id":136,"type":"run_routes","entity":"HSM","routes":[{"train":"2-1","connections":[["D6","E5"]]},{"train":"2-4","connections":[["D6","E7"]]},{"train":"3-0","connections":[["E7","F8","F10"]]}],"entity_type":"corporation"},{"id":137,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":138,"type":"buy_train","price":180,"train":"3-2","entity":"HSM","entity_type":"corporation"},{"id":139,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":140,"hex":"H6","tile":"53-0","type":"lay_tile","entity":"B","rotation":1,"entity_type":"corporation"},{"id":141,"type":"run_routes","entity":"B","routes":[{"train":"2-2","connections":[["H4","H6"]]}],"entity_type":"corporation"},{"id":142,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":143,"type":"buy_train","price":180,"train":"3-3","entity":"B","entity_type":"corporation"},{"id":144,"type":"buy_train","price":300,"train":"4-0","entity":"B","entity_type":"corporation"},{"id":145,"type":"pass","entity":"B","entity_type":"corporation"},{"id":146,"type":"pass","entity":"B","entity_type":"corporation"},{"id":147,"type":"buy_company","price":80,"entity":"NFL","company":"E-SF","entity_type":"corporation"},{"id":148,"hex":"B8","tile":"2-0","type":"lay_tile","entity":"NFL","rotation":3,"entity_type":"corporation"},{"id":149,"type":"undo","entity":"NFL","entity_type":"corporation"},{"id":150,"hex":"B8","tile":"2-0","type":"lay_tile","entity":"E-SF","rotation":3,"entity_type":"company"},{"id":151,"hex":"C7","tile":"9-0","type":"lay_tile","entity":"NFL","rotation":0,"entity_type":"corporation"},{"id":152,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":153,"type":"buy_train","price":300,"train":"4-1","entity":"NFL","entity_type":"corporation"},{"id":154,"type":"buy_company","price":210,"entity":"NFL","company":"CFL","entity_type":"corporation"},{"id":155,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":156,"type":"undo","entity":"Nord","entity_type":"corporation"},{"id":157,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":158,"hex":"I3","tile":"53-1","type":"lay_tile","entity":"Nord","rotation":0,"entity_type":"corporation"},{"id":159,"type":"undo","entity":"Nord","entity_type":"corporation"},{"id":160,"hex":"J6","tile":"57-3","type":"lay_tile","entity":"Nord","rotation":2,"entity_type":"corporation"},{"id":161,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":162,"type":"run_routes","entity":"Nord","routes":[{"train":"3-1","connections":[["I3","I5","J6"],["I3","J2"]]}],"entity_type":"corporation"},{"id":163,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":164,"type":"buy_train","price":300,"train":"4-2","entity":"Nord","entity_type":"corporation"},{"id":165,"type":"buy_train","price":240,"train":"3-0","entity":"Nord","entity_type":"corporation"},{"id":166,"hex":"E7","tile":"14-0","type":"lay_tile","entity":"HSM","rotation":1,"entity_type":"corporation"},{"id":167,"type":"run_routes","entity":"HSM","routes":[{"train":"3-2","connections":[["D6","E7"],["D6","E5"]]}],"entity_type":"corporation"},{"id":168,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":169,"type":"buy_train","price":450,"train":"5-0","entity":"HSM","entity_type":"corporation"},{"id":170,"type":"discard_train","train":"3-0","entity":"Nord","entity_type":"corporation"},{"id":171,"hex":"G7","tile":"57-0","type":"lay_tile","entity":"B","rotation":0,"entity_type":"corporation"},{"id":172,"type":"pass","entity":"B","entity_type":"corporation"},{"id":173,"type":"run_routes","entity":"B","routes":[{"train":"3-3","connections":[["H4","H6"]]},{"train":"4-0","connections":[["H6","G7"]]}],"entity_type":"corporation"},{"id":174,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":175,"type":"undo","entity":"NFL","entity_type":"corporation"},{"id":176,"type":"redo","entity":"B","entity_type":"corporation"},{"id":177,"hex":"C11","tile":"7-0","type":"lay_tile","entity":"NFL","rotation":2,"entity_type":"corporation"},{"id":178,"type":"run_routes","entity":"NFL","routes":[{"train":"4-1","connections":[["A9","B8"],["A9","B10"]]}],"entity_type":"corporation"},{"id":179,"kind":"withhold","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":180,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":181,"type":"sell_shares","entity":"markmenm","shares":["NFL_2","NFL_3","NFL_4","NFL_1"],"percent":40,"entity_type":"player"},{"id":182,"type":"par","entity":"markmenm","corporation":"NBDS","entity_type":"player","share_price":"82,2,6"},{"id":183,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":184,"type":"buy_shares","entity":"Shaz","shares":["B_1"],"entity_type":"player"},{"id":185,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":186,"type":"buy_shares","entity":"scottredracecar","shares":["Nord_1"],"entity_type":"player"},{"id":187,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":188,"type":"buy_shares","entity":"markmenm","shares":["NBDS_1"],"entity_type":"player"},{"id":189,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":190,"type":"buy_shares","entity":"Shaz","shares":["HSM_5"],"entity_type":"player"},{"id":191,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":192,"type":"buy_shares","entity":"scottredracecar","shares":["Nord_2"],"entity_type":"player"},{"id":193,"type":"sell_shares","entity":"scottredracecar","shares":["Nord_1","Nord_2"],"percent":20,"entity_type":"player"},{"id":194,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":195,"type":"buy_shares","entity":"markmenm","shares":["NBDS_2"],"entity_type":"player"},{"id":196,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":197,"type":"buy_shares","entity":"Shaz","shares":["B_5"],"entity_type":"player"},{"id":198,"type":"sell_shares","entity":"Shaz","shares":["B_1"],"percent":10,"entity_type":"player"},{"id":199,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":200,"type":"par","entity":"scottredracecar","corporation":"GCL","entity_type":"player","share_price":"82,2,6"},{"id":201,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":202,"type":"buy_shares","entity":"markmenm","shares":["NBDS_3"],"entity_type":"player"},{"id":203,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":204,"type":"buy_shares","entity":"Shaz","shares":["NFL_2"],"entity_type":"player"},{"id":205,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":206,"type":"buy_shares","entity":"scottredracecar","shares":["GCL_2"],"entity_type":"player"},{"id":207,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":208,"type":"buy_shares","entity":"markmenm","shares":["NBDS_4"],"entity_type":"player"},{"id":209,"type":"sell_shares","entity":"markmenm","shares":["GCL_1"],"percent":10,"entity_type":"player"},{"id":210,"type":"sell_shares","entity":"markmenm","shares":["NBDS_1"],"percent":10,"entity_type":"player"},{"id":211,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":212,"type":"buy_shares","entity":"Shaz","shares":["NBDS_1"],"entity_type":"player"},{"id":213,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":214,"type":"buy_shares","entity":"scottredracecar","shares":["GCL_3"],"entity_type":"player"},{"id":215,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":216,"type":"buy_shares","entity":"markmenm","shares":["B_1"],"entity_type":"player"},{"id":217,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":218,"type":"sell_shares","entity":"Shaz","shares":["NBDS_1"],"percent":10,"entity_type":"player"},{"id":219,"type":"buy_shares","entity":"Shaz","shares":["GCL_1"],"entity_type":"player"},{"id":220,"type":"sell_shares","entity":"Shaz","shares":["GCL_1"],"percent":10,"entity_type":"player"},{"id":221,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":222,"type":"buy_shares","entity":"scottredracecar","shares":["GCL_4"],"entity_type":"player"},{"id":223,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":224,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":225,"type":"buy_shares","entity":"Shaz","shares":["Nord_5"],"entity_type":"player"},{"id":226,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":227,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":228,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":229,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":230,"hex":"E11","tile":"59-1","type":"lay_tile","entity":"NBDS","rotation":1,"entity_type":"corporation"},{"id":231,"city":"59-1-0","slot":0,"type":"move_token","token":0,"entity":"NBDS","corporation":"NBDS","entity_type":"corporation"},{"id":232,"type":"buy_train","price":450,"train":"5-1","entity":"NBDS","entity_type":"corporation"},{"id":233,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":234,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":235,"type":"buy_train","price":189,"train":"3-3","entity":"GCL","entity_type":"corporation"},{"id":236,"type":"buy_train","price":630,"train":"6-0","entity":"GCL","entity_type":"corporation"},{"id":237,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":238,"hex":"E5","tile":"67-0","type":"lay_tile","entity":"HSM","rotation":1,"entity_type":"corporation"},{"id":239,"type":"run_routes","entity":"HSM","routes":[{"train":"5-0","connections":[["D6","E5"],["D6","E7"],["E7","E5"],["E3","E5"]]}],"entity_type":"corporation"},{"id":240,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":241,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":242,"hex":"F8","tile":"25-0","type":"lay_tile","entity":"B","rotation":2,"entity_type":"corporation"},{"id":243,"city":"14-0-0","slot":1,"type":"place_token","entity":"B","entity_type":"corporation"},{"id":244,"type":"run_routes","entity":"B","routes":[{"train":"4-0","connections":[["H6","G7"],["G7","F8","E7"],["E7","E5"]]}],"entity_type":"corporation"},{"id":245,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":246,"type":"pass","entity":"B","entity_type":"corporation"},{"id":247,"hex":"J6","tile":"15-0","type":"lay_tile","entity":"Nord","rotation":2,"entity_type":"corporation"},{"id":248,"type":"run_routes","entity":"Nord","routes":[{"train":"4-2","connections":[["I3","I5","J6"],["I3","J2"]]}],"entity_type":"corporation"},{"id":249,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":250,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":251,"hex":"B12","tile":"9-1","type":"lay_tile","entity":"NFL","rotation":0,"entity_type":"corporation"},{"id":252,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":253,"type":"run_routes","entity":"NFL","routes":[{"train":"4-1","connections":[["A9","B8"],["A9","B10"],["A13","B12","C11","B10"]]}],"entity_type":"corporation"},{"id":254,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":255,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":256,"hex":"E7","tile":"63-0","type":"lay_tile","entity":"HSM","rotation":0,"entity_type":"corporation"},{"id":257,"type":"run_routes","entity":"HSM","routes":[{"train":"5-0","connections":[["D6","E5"],["D6","E7"],["E5","E7"],["E3","E5"]]}],"entity_type":"corporation"},{"id":258,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":259,"type":"buy_train","price":228,"train":"4-2","entity":"HSM","entity_type":"corporation"},{"id":260,"hex":"I7","tile":"8-2","type":"lay_tile","entity":"Nord","rotation":0,"entity_type":"corporation"},{"id":261,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":262,"type":"sell_shares","entity":"Shaz","shares":["B_5"],"percent":10,"entity_type":"player"},{"id":263,"type":"buy_train","price":630,"train":"6-1","entity":"Nord","entity_type":"corporation"},{"id":264,"hex":"G7","tile":"15-1","type":"lay_tile","entity":"B","rotation":3,"entity_type":"corporation"},{"id":265,"city":"67-0-0","slot":0,"type":"place_token","entity":"B","entity_type":"corporation"},{"id":266,"type":"run_routes","entity":"B","routes":[{"train":"4-0","connections":[["E7","F8","G7"],["E5","E7"],["E3","E5"]]}],"entity_type":"corporation"},{"id":267,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":268,"type":"pass","entity":"B","entity_type":"corporation"},{"id":269,"hex":"E11","tile":"68-0","type":"lay_tile","entity":"NBDS","rotation":0,"entity_type":"corporation"},{"id":270,"type":"run_routes","entity":"NBDS","routes":[{"train":"5-1","connections":[["E13","E11"]]}],"entity_type":"corporation"},{"id":271,"kind":"payout","type":"dividend","entity":"NBDS","entity_type":"corporation"},{"id":272,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":273,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":274,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":275,"hex":"D6","tile":"54-0","type":"lay_tile","entity":"NFL","rotation":3,"entity_type":"corporation"},{"id":276,"city":"54-0-0","slot":0,"type":"place_token","entity":"NFL","entity_type":"corporation"},{"id":277,"type":"run_routes","entity":"NFL","routes":[{"train":"4-1","connections":[["A9","B8"],["A9","B10"],["A13","B12","C11","B10"]]}],"entity_type":"corporation"},{"id":278,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":279,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":280,"hex":"D6","tile":"62-0","type":"lay_tile","entity":"HSM","rotation":3,"entity_type":"corporation"},{"id":281,"type":"undo","entity":"HSM","entity_type":"corporation"},{"id":282,"hex":"E9","tile":"9-2","type":"lay_tile","entity":"HSM","rotation":1,"entity_type":"corporation"},{"id":283,"type":"run_routes","entity":"HSM","routes":[{"train":"5-0","connections":[["H6","G7"],["E7","F8","G7"],["E7","D6"],["E5","D6"]]},{"train":"4-2","connections":[["E11","E9","E7"],["E5","E7"]]}],"entity_type":"corporation"},{"id":284,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":285,"hex":"D6","tile":"62-0","type":"lay_tile","entity":"B","rotation":3,"entity_type":"corporation"},{"id":286,"type":"run_routes","entity":"B","routes":[{"train":"4-0","connections":[["E7","D6"],["E5","E7"],["E3","E5"]]}],"entity_type":"corporation"},{"id":287,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":288,"type":"buy_train","price":1,"train":"6-0","entity":"B","entity_type":"corporation"},{"id":289,"hex":"E9","tile":"23-0","type":"lay_tile","entity":"NBDS","rotation":4,"entity_type":"corporation"},{"id":290,"type":"run_routes","entity":"NBDS","routes":[{"train":"5-1","connections":[["E7","E9","E11"],["E13","E11"]]}],"entity_type":"corporation"},{"id":291,"kind":"payout","type":"dividend","entity":"NBDS","entity_type":"corporation"},{"id":292,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":293,"hex":"I3","tile":"53-1","type":"lay_tile","entity":"Nord","rotation":0,"entity_type":"corporation"},{"id":294,"type":"run_routes","entity":"Nord","routes":[{"train":"6-1","connections":[["H6","I7","J6"],["J6","I5","I3"],["J2","I3"]]}],"entity_type":"corporation"},{"id":295,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":296,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":297,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":298,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":299,"hex":"D8","tile":"8-3","type":"lay_tile","entity":"NFL","rotation":5,"entity_type":"corporation"},{"id":300,"type":"run_routes","entity":"NFL","routes":[{"train":"4-1","connections":[["D6","D8","E9","E11"],["B8","C7","D6"],["A9","B8"]]}],"entity_type":"corporation"},{"id":301,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":302,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":303,"type":"sell_shares","entity":"scottredracecar","shares":["GCL_2","GCL_3","GCL_4"],"percent":30,"entity_type":"player"},{"id":304,"type":"buy_shares","entity":"scottredracecar","shares":["Nord_1"],"entity_type":"player"},{"id":305,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":306,"type":"buy_shares","entity":"markmenm","shares":["Nord_2"],"entity_type":"player"},{"id":307,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":308,"type":"buy_shares","entity":"Shaz","shares":["B_6"],"entity_type":"player"},{"id":309,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":310,"type":"buy_shares","entity":"scottredracecar","shares":["HSM_7"],"entity_type":"player"},{"id":311,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":312,"type":"buy_shares","entity":"markmenm","shares":["HSM_2"],"entity_type":"player"},{"id":313,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":314,"type":"buy_shares","entity":"Shaz","shares":["B_7"],"entity_type":"player"},{"id":315,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":316,"type":"buy_shares","entity":"scottredracecar","shares":["B_8"],"entity_type":"player"},{"id":317,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":318,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":319,"type":"buy_shares","entity":"Shaz","shares":["B_5"],"entity_type":"player"},{"id":320,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":321,"type":"buy_shares","entity":"scottredracecar","shares":["HSM_3"],"entity_type":"player"},{"id":322,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":323,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":324,"type":"buy_shares","entity":"Shaz","shares":["NBDS_1"],"entity_type":"player"},{"id":325,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":326,"type":"buy_shares","entity":"scottredracecar","shares":["NBDS_5"],"entity_type":"player"},{"id":327,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":328,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":329,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":330,"type":"buy_shares","entity":"scottredracecar","shares":["NBDS_6"],"entity_type":"player"},{"id":331,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":332,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":333,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":334,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":335,"hex":"D8","tile":"28-0","type":"lay_tile","entity":"HSM","rotation":1,"entity_type":"corporation"},{"id":336,"type":"run_routes","entity":"HSM","routes":[{"train":"5-0","connections":[["B8","C7","D6"],["E7","D8","D6"],["E7","F8","G7"],["H6","G7"]]},{"train":"4-2","connections":[["E5","D6"],["E7","D6"],["E5","E7"]]}],"entity_type":"corporation"},{"id":337,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":338,"hex":"H6","tile":"61-0","type":"lay_tile","entity":"B","rotation":1,"entity_type":"corporation"},{"id":339,"type":"run_routes","entity":"B","routes":[{"train":"4-0","connections":[["B8","C7","D6"],["E7","D8","D6"],["E7","E9","E11"]]},{"train":"6-0","connections":[["H4","H6"],["G7","H6"],["E7","F8","G7"],["E5","E7"],["E3","E5"]]}],"entity_type":"corporation"},{"id":340,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":341,"hex":"E9","tile":"43-0","type":"lay_tile","entity":"NBDS","rotation":1,"entity_type":"corporation"},{"id":342,"city":"62-0-0","slot":1,"type":"place_token","entity":"NBDS","entity_type":"corporation"},{"id":343,"type":"run_routes","entity":"NBDS","routes":[{"train":"5-1","connections":[["A9","B8"],["B8","C7","D6"],["D6","D8","E9","E11"],["E13","E11"]]}],"entity_type":"corporation"},{"id":344,"kind":"payout","type":"dividend","entity":"NBDS","entity_type":"corporation"},{"id":345,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":346,"hex":"H2","tile":"3-0","type":"lay_tile","entity":"Nord","rotation":4,"entity_type":"corporation"},{"id":347,"type":"run_routes","entity":"Nord","routes":[{"train":"6-1","connections":[["J6","I7","H6"],["J6","I5","I3"],["I3","H2"],["H4","H2"]]}],"entity_type":"corporation"},{"id":348,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":349,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":350,"hex":"D10","tile":"9-3","type":"lay_tile","entity":"NFL","rotation":0,"entity_type":"corporation"},{"id":351,"type":"run_routes","entity":"NFL","routes":[{"train":"4-1","connections":[["E11","E9","D8","D6"],["B8","C7","D6"],["A9","B8"]]}],"entity_type":"corporation"},{"id":352,"kind":"withhold","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":353,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":354,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":355,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":356,"hex":"G7","tile":"63-1","type":"lay_tile","entity":"HSM","rotation":0,"entity_type":"corporation"},{"id":357,"type":"run_routes","entity":"HSM","routes":[{"train":"5-0","connections":[["H6","G7"],["E7","F8","G7"],["E5","E7"]]},{"train":"4-2","connections":[["E7","D8","D6"],["E7","D6"],["E5","D6"]]}],"entity_type":"corporation"},{"id":358,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":359,"hex":"C11","tile":"26-0","type":"lay_tile","entity":"B","rotation":3,"entity_type":"corporation"},{"id":360,"type":"run_routes","entity":"B","routes":[{"train":"4-0","connections":[["E5","D6"],["E7","D6"],["E7","E9","D10","C11","B12","A13"]]},{"train":"6-0","connections":[["H4","H6"],["H6","G7"],["E7","F8","G7"],["E5","E7"],["E3","E5"]]}],"entity_type":"corporation"},{"id":361,"kind":"withhold","type":"dividend","entity":"B","entity_type":"corporation"},{"id":362,"type":"buy_train","price":800,"train":"D-0","entity":"B","exchange":"4-0","entity_type":"corporation"},{"id":363,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":364,"type":"run_routes","entity":"NBDS","routes":[{"train":"5-1","connections":[["A9","B8"],["B8","C7","D6"],["E11","E9","D8","D6"],["E13","E11"]]}],"entity_type":"corporation"},{"id":365,"kind":"payout","type":"dividend","entity":"NBDS","entity_type":"corporation"},{"id":366,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":367,"hex":"H4","tile":"15-1","type":"lay_tile","entity":"Nord","rotation":1,"entity_type":"corporation"},{"id":368,"type":"run_routes","entity":"Nord","routes":[{"train":"6-1","connections":[["J6","I7","H6"],["J6","I5","I3"],["I3","H2"],["H2","H4"]]}],"entity_type":"corporation"},{"id":369,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":370,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":371,"hex":"B10","tile":"14-1","type":"lay_tile","entity":"NFL","rotation":1,"entity_type":"corporation"},{"id":372,"type":"buy_train","price":176,"train":"5-1","entity":"NFL","entity_type":"corporation"},{"id":373,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":374,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":375,"hex":"G5","tile":"8-4","type":"lay_tile","entity":"HSM","rotation":4,"entity_type":"corporation"},{"id":376,"type":"undo","entity":"HSM","entity_type":"corporation"},{"id":377,"hex":"F6","tile":"9-4","type":"lay_tile","entity":"HSM","rotation":2,"entity_type":"corporation"},{"id":378,"type":"run_routes","entity":"HSM","routes":[{"train":"5-0","connections":[["G7","F6","E5"],["E5","D6"],["E7","D6"],["E7","D8","D6"]]}],"entity_type":"corporation"},{"id":379,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":380,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":381,"hex":"C11","tile":"42-0","type":"lay_tile","entity":"B","rotation":3,"entity_type":"corporation"},{"id":382,"type":"undo","entity":"B","entity_type":"corporation"},{"id":383,"hex":"H8","tile":"7-1","type":"lay_tile","entity":"B","rotation":1,"entity_type":"corporation"},{"id":384,"type":"run_routes","entity":"B","routes":[{"train":"6-0","connections":[["E7","E9","D10","C11","B12","A13"],["E7","D8","D6"]]},{"train":"D-0","connections":[["I3","H2"],["H2","H4"],["H6","H4"],["H6","G7"],["G7","F6","E5"],["E5","D6"],["E7","D6"],["E5","E7"],["E3","E5"]]}],"entity_type":"corporation"},{"id":385,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":386,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":387,"type":"buy_train","price":1100,"train":"D-1","entity":"NBDS","entity_type":"corporation"},{"id":388,"hex":"G5","tile":"8-4","type":"lay_tile","entity":"Nord","rotation":4,"entity_type":"corporation"},{"id":389,"type":"run_routes","entity":"Nord","routes":[{"train":"6-1","connections":[["E5","D6"],["G7","F6","E5"],["H4","G5","G7"],["H2","H4"],["I3","H2"]]}],"entity_type":"corporation"},{"id":390,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":391,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":392,"hex":"B10","tile":"63-2","type":"lay_tile","entity":"NFL","rotation":0,"entity_type":"corporation"},{"id":393,"type":"run_routes","entity":"NFL","routes":[{"train":"5-1","connections":[["D6","D8","E9","D10","C11","B12","A13"],["B8","C7","D6"],["A9","B8"],["A9","B10"]]}],"entity_type":"corporation"},{"id":394,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":395,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":396,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":397,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":398,"type":"buy_shares","entity":"markmenm","shares":["NFL_3"],"entity_type":"player"},{"id":399,"type":"buy_shares","entity":"markmenm","shares":["NFL_4"],"entity_type":"player"},{"id":400,"type":"buy_shares","entity":"markmenm","shares":["NFL_1"],"entity_type":"player"},{"id":401,"type":"buy_shares","entity":"markmenm","shares":["NFL_6"],"entity_type":"player"},{"id":402,"type":"buy_shares","entity":"markmenm","shares":["NFL_7"],"entity_type":"player"},{"id":403,"type":"buy_shares","entity":"markmenm","shares":["NFL_8"],"entity_type":"player"},{"id":404,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":405,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":406,"type":"buy_shares","entity":"scottredracecar","shares":["Nord_6"],"entity_type":"player"},{"id":407,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":408,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":409,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":410,"type":"buy_shares","entity":"scottredracecar","shares":["NBDS_7"],"entity_type":"player"},{"id":411,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":412,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":413,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":414,"type":"buy_shares","entity":"scottredracecar","shares":["NBDS_8"],"entity_type":"player"},{"id":415,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":416,"type":"pass","entity":"markmenm","entity_type":"player"},{"id":417,"type":"pass","entity":"Shaz","entity_type":"player"},{"id":418,"type":"pass","entity":"scottredracecar","entity_type":"player"},{"id":419,"hex":"I3","tile":"61-1","type":"lay_tile","entity":"HSM","rotation":0,"entity_type":"corporation"},{"id":420,"type":"run_routes","entity":"HSM","routes":[{"train":"5-0","connections":[["G7","F6","E5"],["E5","D6"],["E7","D6"],["E7","D8","D6"]]}],"entity_type":"corporation"},{"id":421,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":422,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":423,"type":"pass","entity":"B","entity_type":"corporation"},{"id":424,"type":"undo","entity":"B","entity_type":"corporation"},{"id":425,"hex":"C11","tile":"42-0","type":"lay_tile","entity":"B","rotation":3,"entity_type":"corporation"},{"id":426,"type":"run_routes","entity":"B","routes":[{"train":"6-0","connections":[["E7","E9","D10","C11","B12","A13"],["E7","D8","D6"]]},{"train":"D-0","connections":[["H2","I3"],["H2","H4"],["H6","H4"],["H6","G7"],["G7","F6","E5"],["E5","D6"],["E7","D6"],["E5","E7"],["E3","E5"]]}],"entity_type":"corporation"},{"id":427,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":428,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":429,"type":"run_routes","entity":"Nord","routes":[{"train":"6-1","connections":[["E5","D6"],["G7","F6","E5"],["H4","G5","G7"],["H2","H4"],["H2","I3"]]}],"entity_type":"corporation"},{"id":430,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":431,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":432,"hex":"A11","tile":"8-5","type":"lay_tile","entity":"NBDS","rotation":4,"entity_type":"corporation"},{"id":433,"type":"run_routes","entity":"NBDS","routes":[{"train":"D-1","connections":[["A9","B8"],["B8","C7","D6"],["B10","C11","D10","E9","D8","D6"],["B10","A11","A13"]]}],"entity_type":"corporation"},{"id":434,"kind":"payout","type":"dividend","entity":"NBDS","entity_type":"corporation"},{"id":435,"hex":"C9","tile":"9-5","type":"lay_tile","entity":"NFL","rotation":0,"entity_type":"corporation"},{"id":436,"type":"run_routes","entity":"NFL","routes":[{"train":"5-1","connections":[["D6","D8","E9","D10","C11","B12","A13"],["B8","C7","D6"],["A9","B8"],["A9","B10"]]}],"entity_type":"corporation"},{"id":437,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":438,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":439,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":440,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":441,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":442,"type":"run_routes","entity":"HSM","routes":[{"train":"5-0","connections":[["G7","F6","E5"],["E5","D6"],["E7","D6"],["E7","D8","D6"]]}],"entity_type":"corporation"},{"id":443,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":444,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":445,"type":"pass","entity":"B","entity_type":"corporation"},{"id":446,"type":"run_routes","entity":"B","routes":[{"train":"6-0","connections":[["B10","A11","A13"],["B10","C11","D10","E9","E7"],["E7","D8","D6"]]},{"train":"D-0","connections":[["H2","I3"],["H2","H4"],["H6","H4"],["H6","G7"],["G7","F6","E5"],["E5","D6"],["E7","D6"],["E5","E7"],["E3","E5"]]}],"entity_type":"corporation"},{"id":447,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":448,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":449,"type":"run_routes","entity":"Nord","routes":[{"train":"6-1","connections":[["E5","D6"],["G7","F6","E5"],["H4","G5","G7"],["H2","H4"],["H2","I3"]]}],"entity_type":"corporation"},{"id":450,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":451,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":452,"hex":"C7","tile":"26-0","type":"lay_tile","entity":"NBDS","rotation":0,"entity_type":"corporation"},{"id":453,"type":"run_routes","entity":"NBDS","routes":[{"train":"D-1","connections":[["A9","B8"],["B8","C7","D6"],["B10","C11","D10","E9","D8","D6"],["B10","A11","A13"]]}],"entity_type":"corporation"},{"id":454,"kind":"payout","type":"dividend","entity":"NBDS","entity_type":"corporation"},{"id":455,"hex":"D8","tile":"46-0","type":"lay_tile","entity":"NFL","rotation":3,"entity_type":"corporation"},{"id":456,"type":"run_routes","entity":"NFL","routes":[{"train":"5-1","connections":[["D6","D8","E9","D10","C11","B12","A13"],["B8","C7","D6"],["A9","B8"],["A9","B10"]]}],"entity_type":"corporation"},{"id":457,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":458,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":459,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":460,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":461,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":462,"type":"run_routes","entity":"HSM","routes":[{"train":"5-0","connections":[["G7","F6","E5"],["E5","D6"],["E7","D6"],["D6","D8","E7"]]}],"entity_type":"corporation"},{"id":463,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":464,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":465,"type":"pass","entity":"B","entity_type":"corporation"},{"id":466,"type":"run_routes","entity":"B","routes":[{"train":"6-0","connections":[["B10","A11","A13"],["E7","E9","D10","C11","B10"],["D6","D8","E7"]]},{"train":"D-0","connections":[["H2","I3"],["H2","H4"],["H6","H4"],["H6","G7"],["G7","F6","E5"],["E5","D6"],["E7","D6"],["E5","E7"],["E3","E5"]]}],"entity_type":"corporation"},{"id":467,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":468,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":469,"type":"run_routes","entity":"Nord","routes":[{"train":"6-1","connections":[["E5","D6"],["G7","F6","E5"],["H4","G5","G7"],["H2","H4"],["H2","I3"]]}],"entity_type":"corporation"},{"id":470,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":471,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":472,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":473,"type":"run_routes","entity":"NBDS","routes":[{"train":"D-1","connections":[["A9","B8"],["B8","C7","D6"],["D6","D8","E9","D10","C11","B10"],["B10","A11","A13"]]}],"entity_type":"corporation"},{"id":474,"kind":"payout","type":"dividend","entity":"NBDS","entity_type":"corporation"},{"id":475,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":476,"type":"run_routes","entity":"NFL","routes":[{"train":"5-1","connections":[["D6","D8","E9","D10","C11","B12","A13"],["B8","C7","D6"],["A9","B8"],["A9","B10"]]}],"entity_type":"corporation"},{"id":477,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":478,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":479,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":480,"type":"pass","entity":"GCL","entity_type":"corporation"}],"loaded":true,"created_at":1593127229,"updated_at":1593135171}
+{
+  "id": 2851,
+  "description": "Private Portland 5",
+  "user": {
+    "id": 90,
+    "name": "scottredracecar"
+  },
+  "players": [
+    {
+      "id": 2431,
+      "name": "markmenm"
+    },
+    {
+      "id": 307,
+      "name": "Shaz"
+    },
+    {
+      "id": 90,
+      "name": "scottredracecar"
+    }
+  ],
+  "max_players": 3,
+  "title": "1836Jr30",
+  "settings": {
+    "seed": 1.4607318533142025e+38
+  },
+  "status": "finished",
+  "turn": 7,
+  "round": "Operating Round",
+  "acting": [
+    307
+  ],
+  "result": {
+    "Shaz": 5693,
+    "markmenm": 3159,
+    "scottredracecar": 5021
+  },
+  "actions": [
+    {
+      "id": 1,
+      "type": "bid",
+      "price": 165,
+      "entity": "markmenm",
+      "company": "CFL",
+      "entity_type": "player"
+    },
+    {
+      "id": 2,
+      "type": "bid",
+      "price": 115,
+      "entity": "Shaz",
+      "company": "GCB",
+      "entity_type": "player"
+    },
+    {
+      "id": 3,
+      "type": "bid",
+      "price": 170,
+      "entity": "scottredracecar",
+      "company": "CFL",
+      "entity_type": "player"
+    },
+    {
+      "id": 4,
+      "type": "bid",
+      "price": 120,
+      "entity": "markmenm",
+      "company": "GCB",
+      "entity_type": "player"
+    },
+    {
+      "id": 5,
+      "type": "bid",
+      "price": 45,
+      "entity": "Shaz",
+      "company": "E-SF",
+      "entity_type": "player"
+    },
+    {
+      "id": 6,
+      "type": "bid",
+      "price": 75,
+      "entity": "scottredracecar",
+      "company": "CdH",
+      "entity_type": "player"
+    },
+    {
+      "id": 7,
+      "type": "bid",
+      "price": 50,
+      "entity": "markmenm",
+      "company": "E-SF",
+      "entity_type": "player"
+    },
+    {
+      "id": 8,
+      "type": "bid",
+      "price": 20,
+      "entity": "Shaz",
+      "company": "ACC",
+      "entity_type": "player"
+    },
+    {
+      "id": 9,
+      "type": "bid",
+      "price": 55,
+      "entity": "Shaz",
+      "company": "E-SF",
+      "entity_type": "player"
+    },
+    {
+      "id": 10,
+      "type": "bid",
+      "price": 60,
+      "entity": "markmenm",
+      "company": "E-SF",
+      "entity_type": "player"
+    },
+    {
+      "id": 11,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 12,
+      "type": "bid",
+      "price": 125,
+      "entity": "Shaz",
+      "company": "GCB",
+      "entity_type": "player"
+    },
+    {
+      "id": 13,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 14,
+      "type": "bid",
+      "price": 175,
+      "entity": "markmenm",
+      "company": "CFL",
+      "entity_type": "player"
+    },
+    {
+      "id": 15,
+      "type": "bid",
+      "price": 180,
+      "entity": "scottredracecar",
+      "company": "CFL",
+      "entity_type": "player"
+    },
+    {
+      "id": 16,
+      "type": "bid",
+      "price": 190,
+      "entity": "markmenm",
+      "company": "CFL",
+      "entity_type": "player"
+    },
+    {
+      "id": 17,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 18,
+      "type": "bid",
+      "price": 220,
+      "entity": "scottredracecar",
+      "company": "CFLV",
+      "entity_type": "player"
+    },
+    {
+      "id": 19,
+      "type": "par",
+      "entity": "scottredracecar",
+      "corporation": "Nord",
+      "entity_type": "player",
+      "share_price": "100,0,6"
+    },
+    {
+      "id": 20,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 21,
+      "type": "par",
+      "entity": "Shaz",
+      "corporation": "HSM",
+      "entity_type": "player",
+      "share_price": "71,4,6"
+    },
+    {
+      "id": 22,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "HSM_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 23,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 24,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "HSM_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 25,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "HSM_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 26,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 27,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "HSM_4"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 28,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "HSM_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 29,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 30,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "HSM_6"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 31,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "HSM_7"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 32,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 33,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "HSM_8"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 34,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 35,
+      "hex": "E7",
+      "tile": "57-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 36,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 37,
+      "type": "buy_train",
+      "price": 80,
+      "train": "2-0",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 38,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 39,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 40,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 41,
+      "hex": "F8",
+      "tile": "8-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 42,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 43,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "D6",
+              "E7"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 44,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 45,
+      "type": "buy_train",
+      "price": 80,
+      "train": "2-1",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 46,
+      "type": "sell_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "HSM_1",
+        "HSM_3",
+        "HSM_5",
+        "HSM_7"
+      ],
+      "percent": 40,
+      "entity_type": "player"
+    },
+    {
+      "id": 47,
+      "type": "par",
+      "entity": "scottredracecar",
+      "corporation": "B",
+      "entity_type": "player",
+      "share_price": "76,3,6"
+    },
+    {
+      "id": 48,
+      "type": "par",
+      "entity": "markmenm",
+      "corporation": "NFL",
+      "entity_type": "player",
+      "share_price": "67,5,6"
+    },
+    {
+      "id": 49,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 50,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 51,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "B_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 52,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 53,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NFL_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 54,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 55,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 56,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "B_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 57,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 58,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NFL_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 59,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 60,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 61,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "B_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 62,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 63,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NFL_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 64,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 65,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 66,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "B_4"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 67,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 68,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NFL_4"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 69,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 70,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "B_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 71,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 72,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 73,
+      "type": "sell_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NFL_1"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 74,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "HSM_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 75,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 76,
+      "type": "sell_shares",
+      "entity": "Shaz",
+      "shares": [
+        "HSM_2"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 77,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "NFL_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 78,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 79,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 80,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 81,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 82,
+      "hex": "H4",
+      "tile": "57-1",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 83,
+      "city": "57-1-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 84,
+      "type": "buy_train",
+      "price": 80,
+      "train": "2-2",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 85,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 86,
+      "hex": "B10",
+      "tile": "57-2",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 87,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 88,
+      "type": "buy_train",
+      "price": 80,
+      "train": "2-3",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 89,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 90,
+      "hex": "F10",
+      "tile": "58-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 5,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 91,
+      "city": "57-0-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 92,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "D6",
+              "E7"
+            ]
+          ]
+        },
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "E7",
+              "F8",
+              "F10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 93,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 94,
+      "type": "buy_train",
+      "price": 80,
+      "train": "2-4",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 95,
+      "type": "buy_train",
+      "price": 180,
+      "train": "3-0",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 96,
+      "type": "buy_company",
+      "price": 220,
+      "entity": "HSM",
+      "company": "GCB",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 97,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 98,
+      "type": "sell_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "B_1"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 99,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "HSM_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 100,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 101,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 102,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "Nord_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 103,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 104,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 105,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 106,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "Nord_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 107,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 108,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 109,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 110,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "Nord_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 111,
+      "type": "sell_shares",
+      "entity": "Shaz",
+      "shares": [
+        "NFL_5"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 112,
+      "type": "sell_shares",
+      "entity": "Shaz",
+      "shares": [
+        "B_5"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 113,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 114,
+      "type": "sell_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "HSM_3"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 115,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 116,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NFL_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 117,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 118,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "Nord_4"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 119,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 120,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "Nord_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 121,
+      "type": "sell_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "Nord_1",
+        "Nord_2",
+        "Nord_5"
+      ],
+      "percent": 30,
+      "entity_type": "player"
+    },
+    {
+      "id": 122,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 123,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 124,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 125,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "NFL_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 126,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 127,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 128,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 129,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 130,
+      "hex": "I5",
+      "tile": "8-1",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 5,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 131,
+      "type": "buy_train",
+      "price": 180,
+      "train": "3-1",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 132,
+      "type": "buy_train",
+      "price": 300,
+      "train": "2-0",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 133,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 134,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 135,
+      "hex": "E5",
+      "tile": "59-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 136,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "D6",
+              "E5"
+            ]
+          ]
+        },
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "D6",
+              "E7"
+            ]
+          ]
+        },
+        {
+          "train": "3-0",
+          "connections": [
+            [
+              "E7",
+              "F8",
+              "F10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 137,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 138,
+      "type": "buy_train",
+      "price": 180,
+      "train": "3-2",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 139,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 140,
+      "hex": "H6",
+      "tile": "53-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 141,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "H4",
+              "H6"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 142,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 143,
+      "type": "buy_train",
+      "price": 180,
+      "train": "3-3",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 144,
+      "type": "buy_train",
+      "price": 300,
+      "train": "4-0",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 145,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 146,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 147,
+      "type": "buy_company",
+      "price": 80,
+      "entity": "NFL",
+      "company": "E-SF",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 148,
+      "hex": "B8",
+      "tile": "2-0",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 149,
+      "type": "undo",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 150,
+      "hex": "B8",
+      "tile": "2-0",
+      "type": "lay_tile",
+      "entity": "E-SF",
+      "rotation": 3,
+      "entity_type": "company"
+    },
+    {
+      "id": 151,
+      "hex": "C7",
+      "tile": "9-0",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 152,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 153,
+      "type": "buy_train",
+      "price": 300,
+      "train": "4-1",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 154,
+      "type": "buy_company",
+      "price": 210,
+      "entity": "NFL",
+      "company": "CFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 155,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 156,
+      "type": "undo",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 157,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 158,
+      "hex": "I3",
+      "tile": "53-1",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 159,
+      "type": "undo",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 160,
+      "hex": "J6",
+      "tile": "57-3",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 161,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 162,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "3-1",
+          "connections": [
+            [
+              "I3",
+              "I5",
+              "J6"
+            ],
+            [
+              "I3",
+              "J2"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 163,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 164,
+      "type": "buy_train",
+      "price": 300,
+      "train": "4-2",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 165,
+      "type": "buy_train",
+      "price": 240,
+      "train": "3-0",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 166,
+      "hex": "E7",
+      "tile": "14-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 167,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "3-2",
+          "connections": [
+            [
+              "D6",
+              "E7"
+            ],
+            [
+              "D6",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 168,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 169,
+      "type": "buy_train",
+      "price": 450,
+      "train": "5-0",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 170,
+      "type": "discard_train",
+      "train": "3-0",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 171,
+      "hex": "G7",
+      "tile": "57-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 172,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 173,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "3-3",
+          "connections": [
+            [
+              "H4",
+              "H6"
+            ]
+          ]
+        },
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "H6",
+              "G7"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 174,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 175,
+      "type": "undo",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 176,
+      "type": "redo",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 177,
+      "hex": "C11",
+      "tile": "7-0",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 178,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "A9",
+              "B8"
+            ],
+            [
+              "A9",
+              "B10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 179,
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 180,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 181,
+      "type": "sell_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NFL_2",
+        "NFL_3",
+        "NFL_4",
+        "NFL_1"
+      ],
+      "percent": 40,
+      "entity_type": "player"
+    },
+    {
+      "id": 182,
+      "type": "par",
+      "entity": "markmenm",
+      "corporation": "NBDS",
+      "entity_type": "player",
+      "share_price": "82,2,6"
+    },
+    {
+      "id": 183,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 184,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "B_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 185,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 186,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "Nord_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 187,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 188,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NBDS_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 189,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 190,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "HSM_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 191,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 192,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "Nord_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 193,
+      "type": "sell_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "Nord_1",
+        "Nord_2"
+      ],
+      "percent": 20,
+      "entity_type": "player"
+    },
+    {
+      "id": 194,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 195,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NBDS_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 196,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 197,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "B_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 198,
+      "type": "sell_shares",
+      "entity": "Shaz",
+      "shares": [
+        "B_1"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 199,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 200,
+      "type": "par",
+      "entity": "scottredracecar",
+      "corporation": "GCL",
+      "entity_type": "player",
+      "share_price": "82,2,6"
+    },
+    {
+      "id": 201,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 202,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NBDS_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 203,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 204,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "NFL_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 205,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 206,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "GCL_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 207,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 208,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NBDS_4"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 209,
+      "type": "sell_shares",
+      "entity": "markmenm",
+      "shares": [
+        "GCL_1"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 210,
+      "type": "sell_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NBDS_1"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 211,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 212,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "NBDS_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 213,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 214,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "GCL_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 215,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 216,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "B_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 217,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 218,
+      "type": "sell_shares",
+      "entity": "Shaz",
+      "shares": [
+        "NBDS_1"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 219,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "GCL_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 220,
+      "type": "sell_shares",
+      "entity": "Shaz",
+      "shares": [
+        "GCL_1"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 221,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 222,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "GCL_4"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 223,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 224,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 225,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "Nord_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 226,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 227,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 228,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 229,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 230,
+      "hex": "E11",
+      "tile": "59-1",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 231,
+      "city": "59-1-0",
+      "slot": 0,
+      "type": "move_token",
+      "token": 0,
+      "entity": "NBDS",
+      "corporation": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 232,
+      "type": "buy_train",
+      "price": 450,
+      "train": "5-1",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 233,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 234,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 235,
+      "type": "buy_train",
+      "price": 189,
+      "train": "3-3",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 236,
+      "type": "buy_train",
+      "price": 630,
+      "train": "6-0",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 237,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 238,
+      "hex": "E5",
+      "tile": "67-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 239,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "D6",
+              "E5"
+            ],
+            [
+              "D6",
+              "E7"
+            ],
+            [
+              "E7",
+              "E5"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 240,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 241,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 242,
+      "hex": "F8",
+      "tile": "25-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 243,
+      "city": "14-0-0",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 244,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "H6",
+              "G7"
+            ],
+            [
+              "G7",
+              "F8",
+              "E7"
+            ],
+            [
+              "E7",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 245,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 246,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 247,
+      "hex": "J6",
+      "tile": "15-0",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 248,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "4-2",
+          "connections": [
+            [
+              "I3",
+              "I5",
+              "J6"
+            ],
+            [
+              "I3",
+              "J2"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 249,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 250,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 251,
+      "hex": "B12",
+      "tile": "9-1",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 252,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 253,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "A9",
+              "B8"
+            ],
+            [
+              "A9",
+              "B10"
+            ],
+            [
+              "A13",
+              "B12",
+              "C11",
+              "B10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 254,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 255,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 256,
+      "hex": "E7",
+      "tile": "63-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 257,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "D6",
+              "E5"
+            ],
+            [
+              "D6",
+              "E7"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 258,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 259,
+      "type": "buy_train",
+      "price": 228,
+      "train": "4-2",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 260,
+      "hex": "I7",
+      "tile": "8-2",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 261,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 262,
+      "type": "sell_shares",
+      "entity": "Shaz",
+      "shares": [
+        "B_5"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 263,
+      "type": "buy_train",
+      "price": 630,
+      "train": "6-1",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 264,
+      "hex": "G7",
+      "tile": "15-1",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 265,
+      "city": "67-0-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 266,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "E7",
+              "F8",
+              "G7"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 267,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 268,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 269,
+      "hex": "E11",
+      "tile": "68-0",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 270,
+      "type": "run_routes",
+      "entity": "NBDS",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "E13",
+              "E11"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 271,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 272,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 273,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 274,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 275,
+      "hex": "D6",
+      "tile": "54-0",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 276,
+      "city": "54-0-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 277,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "A9",
+              "B8"
+            ],
+            [
+              "A9",
+              "B10"
+            ],
+            [
+              "A13",
+              "B12",
+              "C11",
+              "B10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 278,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 279,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 280,
+      "hex": "D6",
+      "tile": "62-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 281,
+      "type": "undo",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 282,
+      "hex": "E9",
+      "tile": "9-2",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 283,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "H6",
+              "G7"
+            ],
+            [
+              "E7",
+              "F8",
+              "G7"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "D6"
+            ]
+          ]
+        },
+        {
+          "train": "4-2",
+          "connections": [
+            [
+              "E11",
+              "E9",
+              "E7"
+            ],
+            [
+              "E5",
+              "E7"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 284,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 285,
+      "hex": "D6",
+      "tile": "62-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 286,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 287,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 288,
+      "type": "buy_train",
+      "price": 1,
+      "train": "6-0",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 289,
+      "hex": "E9",
+      "tile": "23-0",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 4,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 290,
+      "type": "run_routes",
+      "entity": "NBDS",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "E7",
+              "E9",
+              "E11"
+            ],
+            [
+              "E13",
+              "E11"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 291,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 292,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 293,
+      "hex": "I3",
+      "tile": "53-1",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 294,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "H6",
+              "I7",
+              "J6"
+            ],
+            [
+              "J6",
+              "I5",
+              "I3"
+            ],
+            [
+              "J2",
+              "I3"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 295,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 296,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 297,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 298,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 299,
+      "hex": "D8",
+      "tile": "8-3",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 5,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 300,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "D6",
+              "D8",
+              "E9",
+              "E11"
+            ],
+            [
+              "B8",
+              "C7",
+              "D6"
+            ],
+            [
+              "A9",
+              "B8"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 301,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 302,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 303,
+      "type": "sell_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "GCL_2",
+        "GCL_3",
+        "GCL_4"
+      ],
+      "percent": 30,
+      "entity_type": "player"
+    },
+    {
+      "id": 304,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "Nord_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 305,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 306,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "Nord_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 307,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 308,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "B_6"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 309,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 310,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "HSM_7"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 311,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 312,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "HSM_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 313,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 314,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "B_7"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 315,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 316,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "B_8"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 317,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 318,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 319,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "B_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 320,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 321,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "HSM_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 322,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 323,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 324,
+      "type": "buy_shares",
+      "entity": "Shaz",
+      "shares": [
+        "NBDS_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 325,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 326,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "NBDS_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 327,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 328,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 329,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 330,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "NBDS_6"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 331,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 332,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 333,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 334,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 335,
+      "hex": "D8",
+      "tile": "28-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 336,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "B8",
+              "C7",
+              "D6"
+            ],
+            [
+              "E7",
+              "D8",
+              "D6"
+            ],
+            [
+              "E7",
+              "F8",
+              "G7"
+            ],
+            [
+              "H6",
+              "G7"
+            ]
+          ]
+        },
+        {
+          "train": "4-2",
+          "connections": [
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "E7"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 337,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 338,
+      "hex": "H6",
+      "tile": "61-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 339,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "B8",
+              "C7",
+              "D6"
+            ],
+            [
+              "E7",
+              "D8",
+              "D6"
+            ],
+            [
+              "E7",
+              "E9",
+              "E11"
+            ]
+          ]
+        },
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "G7",
+              "H6"
+            ],
+            [
+              "E7",
+              "F8",
+              "G7"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 340,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 341,
+      "hex": "E9",
+      "tile": "43-0",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 342,
+      "city": "62-0-0",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 343,
+      "type": "run_routes",
+      "entity": "NBDS",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "A9",
+              "B8"
+            ],
+            [
+              "B8",
+              "C7",
+              "D6"
+            ],
+            [
+              "D6",
+              "D8",
+              "E9",
+              "E11"
+            ],
+            [
+              "E13",
+              "E11"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 344,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 345,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 346,
+      "hex": "H2",
+      "tile": "3-0",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 4,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 347,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "J6",
+              "I7",
+              "H6"
+            ],
+            [
+              "J6",
+              "I5",
+              "I3"
+            ],
+            [
+              "I3",
+              "H2"
+            ],
+            [
+              "H4",
+              "H2"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 348,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 349,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 350,
+      "hex": "D10",
+      "tile": "9-3",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 351,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "E11",
+              "E9",
+              "D8",
+              "D6"
+            ],
+            [
+              "B8",
+              "C7",
+              "D6"
+            ],
+            [
+              "A9",
+              "B8"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 352,
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 353,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 354,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 355,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 356,
+      "hex": "G7",
+      "tile": "63-1",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 357,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "H6",
+              "G7"
+            ],
+            [
+              "E7",
+              "F8",
+              "G7"
+            ],
+            [
+              "E5",
+              "E7"
+            ]
+          ]
+        },
+        {
+          "train": "4-2",
+          "connections": [
+            [
+              "E7",
+              "D8",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "D6"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 358,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 359,
+      "hex": "C11",
+      "tile": "26-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 360,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E7",
+              "E9",
+              "D10",
+              "C11",
+              "B12",
+              "A13"
+            ]
+          ]
+        },
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "H6",
+              "G7"
+            ],
+            [
+              "E7",
+              "F8",
+              "G7"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 361,
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 362,
+      "type": "buy_train",
+      "price": 800,
+      "train": "D-0",
+      "entity": "B",
+      "exchange": "4-0",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 363,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 364,
+      "type": "run_routes",
+      "entity": "NBDS",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "A9",
+              "B8"
+            ],
+            [
+              "B8",
+              "C7",
+              "D6"
+            ],
+            [
+              "E11",
+              "E9",
+              "D8",
+              "D6"
+            ],
+            [
+              "E13",
+              "E11"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 365,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 366,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 367,
+      "hex": "H4",
+      "tile": "15-1",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 368,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "J6",
+              "I7",
+              "H6"
+            ],
+            [
+              "J6",
+              "I5",
+              "I3"
+            ],
+            [
+              "I3",
+              "H2"
+            ],
+            [
+              "H2",
+              "H4"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 369,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 370,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 371,
+      "hex": "B10",
+      "tile": "14-1",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 372,
+      "type": "buy_train",
+      "price": 176,
+      "train": "5-1",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 373,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 374,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 375,
+      "hex": "G5",
+      "tile": "8-4",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 4,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 376,
+      "type": "undo",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 377,
+      "hex": "F6",
+      "tile": "9-4",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 378,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E7",
+              "D8",
+              "D6"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 379,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 380,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 381,
+      "hex": "C11",
+      "tile": "42-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 382,
+      "type": "undo",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 383,
+      "hex": "H8",
+      "tile": "7-1",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 384,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "E7",
+              "E9",
+              "D10",
+              "C11",
+              "B12",
+              "A13"
+            ],
+            [
+              "E7",
+              "D8",
+              "D6"
+            ]
+          ]
+        },
+        {
+          "train": "D-0",
+          "connections": [
+            [
+              "I3",
+              "H2"
+            ],
+            [
+              "H2",
+              "H4"
+            ],
+            [
+              "H6",
+              "H4"
+            ],
+            [
+              "H6",
+              "G7"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 385,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 386,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 387,
+      "type": "buy_train",
+      "price": 1100,
+      "train": "D-1",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 388,
+      "hex": "G5",
+      "tile": "8-4",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 4,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 389,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "H4",
+              "G5",
+              "G7"
+            ],
+            [
+              "H2",
+              "H4"
+            ],
+            [
+              "I3",
+              "H2"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 390,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 391,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 392,
+      "hex": "B10",
+      "tile": "63-2",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 393,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "D6",
+              "D8",
+              "E9",
+              "D10",
+              "C11",
+              "B12",
+              "A13"
+            ],
+            [
+              "B8",
+              "C7",
+              "D6"
+            ],
+            [
+              "A9",
+              "B8"
+            ],
+            [
+              "A9",
+              "B10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 394,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 395,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 396,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 397,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 398,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NFL_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 399,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NFL_4"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 400,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NFL_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 401,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NFL_6"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 402,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NFL_7"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 403,
+      "type": "buy_shares",
+      "entity": "markmenm",
+      "shares": [
+        "NFL_8"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 404,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 405,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 406,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "Nord_6"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 407,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 408,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 409,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 410,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "NBDS_7"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 411,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 412,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 413,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 414,
+      "type": "buy_shares",
+      "entity": "scottredracecar",
+      "shares": [
+        "NBDS_8"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 415,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 416,
+      "type": "pass",
+      "entity": "markmenm",
+      "entity_type": "player"
+    },
+    {
+      "id": 417,
+      "type": "pass",
+      "entity": "Shaz",
+      "entity_type": "player"
+    },
+    {
+      "id": 418,
+      "type": "pass",
+      "entity": "scottredracecar",
+      "entity_type": "player"
+    },
+    {
+      "id": 419,
+      "hex": "I3",
+      "tile": "61-1",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 420,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E7",
+              "D8",
+              "D6"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 421,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 422,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 423,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 424,
+      "type": "undo",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 425,
+      "hex": "C11",
+      "tile": "42-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 426,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "E7",
+              "E9",
+              "D10",
+              "C11",
+              "B12",
+              "A13"
+            ],
+            [
+              "E7",
+              "D8",
+              "D6"
+            ]
+          ]
+        },
+        {
+          "train": "D-0",
+          "connections": [
+            [
+              "H2",
+              "I3"
+            ],
+            [
+              "H2",
+              "H4"
+            ],
+            [
+              "H6",
+              "H4"
+            ],
+            [
+              "H6",
+              "G7"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 427,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 428,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 429,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "H4",
+              "G5",
+              "G7"
+            ],
+            [
+              "H2",
+              "H4"
+            ],
+            [
+              "H2",
+              "I3"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 430,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 431,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 432,
+      "hex": "A11",
+      "tile": "8-5",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 4,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 433,
+      "type": "run_routes",
+      "entity": "NBDS",
+      "routes": [
+        {
+          "train": "D-1",
+          "connections": [
+            [
+              "A9",
+              "B8"
+            ],
+            [
+              "B8",
+              "C7",
+              "D6"
+            ],
+            [
+              "B10",
+              "C11",
+              "D10",
+              "E9",
+              "D8",
+              "D6"
+            ],
+            [
+              "B10",
+              "A11",
+              "A13"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 434,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 435,
+      "hex": "C9",
+      "tile": "9-5",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 436,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "D6",
+              "D8",
+              "E9",
+              "D10",
+              "C11",
+              "B12",
+              "A13"
+            ],
+            [
+              "B8",
+              "C7",
+              "D6"
+            ],
+            [
+              "A9",
+              "B8"
+            ],
+            [
+              "A9",
+              "B10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 437,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 438,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 439,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 440,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 441,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 442,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E7",
+              "D8",
+              "D6"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 443,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 444,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 445,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 446,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "B10",
+              "A11",
+              "A13"
+            ],
+            [
+              "B10",
+              "C11",
+              "D10",
+              "E9",
+              "E7"
+            ],
+            [
+              "E7",
+              "D8",
+              "D6"
+            ]
+          ]
+        },
+        {
+          "train": "D-0",
+          "connections": [
+            [
+              "H2",
+              "I3"
+            ],
+            [
+              "H2",
+              "H4"
+            ],
+            [
+              "H6",
+              "H4"
+            ],
+            [
+              "H6",
+              "G7"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 447,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 448,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 449,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "H4",
+              "G5",
+              "G7"
+            ],
+            [
+              "H2",
+              "H4"
+            ],
+            [
+              "H2",
+              "I3"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 450,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 451,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 452,
+      "hex": "C7",
+      "tile": "26-0",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 453,
+      "type": "run_routes",
+      "entity": "NBDS",
+      "routes": [
+        {
+          "train": "D-1",
+          "connections": [
+            [
+              "A9",
+              "B8"
+            ],
+            [
+              "B8",
+              "C7",
+              "D6"
+            ],
+            [
+              "B10",
+              "C11",
+              "D10",
+              "E9",
+              "D8",
+              "D6"
+            ],
+            [
+              "B10",
+              "A11",
+              "A13"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 454,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 455,
+      "hex": "D8",
+      "tile": "46-0",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 456,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "D6",
+              "D8",
+              "E9",
+              "D10",
+              "C11",
+              "B12",
+              "A13"
+            ],
+            [
+              "B8",
+              "C7",
+              "D6"
+            ],
+            [
+              "A9",
+              "B8"
+            ],
+            [
+              "A9",
+              "B10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 457,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 458,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 459,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 460,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 461,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 462,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "D6",
+              "D8",
+              "E7"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 463,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 464,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 465,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 466,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "B10",
+              "A11",
+              "A13"
+            ],
+            [
+              "E7",
+              "E9",
+              "D10",
+              "C11",
+              "B10"
+            ],
+            [
+              "D6",
+              "D8",
+              "E7"
+            ]
+          ]
+        },
+        {
+          "train": "D-0",
+          "connections": [
+            [
+              "H2",
+              "I3"
+            ],
+            [
+              "H2",
+              "H4"
+            ],
+            [
+              "H6",
+              "H4"
+            ],
+            [
+              "H6",
+              "G7"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 467,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 468,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 469,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "H4",
+              "G5",
+              "G7"
+            ],
+            [
+              "H2",
+              "H4"
+            ],
+            [
+              "H2",
+              "I3"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 470,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 471,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 472,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 473,
+      "type": "run_routes",
+      "entity": "NBDS",
+      "routes": [
+        {
+          "train": "D-1",
+          "connections": [
+            [
+              "A9",
+              "B8"
+            ],
+            [
+              "B8",
+              "C7",
+              "D6"
+            ],
+            [
+              "D6",
+              "D8",
+              "E9",
+              "D10",
+              "C11",
+              "B10"
+            ],
+            [
+              "B10",
+              "A11",
+              "A13"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 474,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 475,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 476,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "D6",
+              "D8",
+              "E9",
+              "D10",
+              "C11",
+              "B12",
+              "A13"
+            ],
+            [
+              "B8",
+              "C7",
+              "D6"
+            ],
+            [
+              "A9",
+              "B8"
+            ],
+            [
+              "A9",
+              "B10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 477,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 478,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 479,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 480,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    }
+  ],
+  "loaded": true,
+  "created_at": 1593127229,
+  "updated_at": 1593135171
+}
