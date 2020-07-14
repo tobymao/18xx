@@ -268,13 +268,13 @@ module Engine
 
       def operating_round(round_num)
         Round::G1846::Operating.new(self, [
-          Step::BuyCompany,
+          Step::G1846::BuyCompany,
           Step::IssueShares,
           Step::TrackAndToken,
           Step::Route,
           Step::G1846::Dividend,
           Step::Train,
-          [Step::BuyCompany, blocks: true],
+          [Step::G1846::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
 

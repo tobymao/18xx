@@ -9,6 +9,8 @@ module Engine
       ACTIONS_NO_PASS = %w[buy_company].freeze
 
       def actions(entity)
+        # 1846 and a few others minors can't buy companies
+        return [] if entity.minor?
         return blocks? ? ACTIONS : ACTIONS_NO_PASS if can_buy_company?(entity)
 
         []

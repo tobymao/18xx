@@ -27,6 +27,7 @@ module Engine
 
       def setup
         @tokened = false
+        @upgraded = false
         @laid_track = 0
       end
 
@@ -60,7 +61,7 @@ module Engine
 
         place_token(entity, action.city, action.token)
         @tokened = true
-        pass! if @laid_track
+        pass! if @laid_track == 2
       end
 
       def process_lay_tile(action)

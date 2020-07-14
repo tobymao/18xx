@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative '../token'
 
 module Engine
   module Step
@@ -68,9 +69,9 @@ module Engine
           next unless ability.hexes.include?(hex.id)
 
           # check if this is correct or should be a corporation
-          token = Token.new(entity) if ability.extra
+          token = Engine::Token.new(entity) if ability.extra
           token.price = ability.teleport_price if ability.teleport_price
-          token.price = ability.price if reachable_hexes[hex]
+          token.price = ability.price if @game.graph.reachable_hexes(entity)[hex]
           return [token, :token]
         end
 

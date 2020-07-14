@@ -18,27 +18,18 @@ module Engine
         'Issue or Redeem Shares'
       end
 
-      def setup
-        @done_action = false
-      end
-
-      def unpass!
-        super
-        setup
-      end
-
       def pass_description
-        @done_action ? 'Done (Issue/Redeem)' : 'Skip (Issue/Redeem)'
+        'Skip (Issue/Redeem)'
       end
 
       def process_sell_shares(action)
         @game.share_pool.sell_shares(action.bundle)
-        @done_action = true
+        pass!
       end
 
       def process_buy_shares(action)
         @game.share_pool.buy_shares(action.entity, action.bundle)
-        @done_action = true
+        pass!
       end
 
       def issuable_shares(entity)
