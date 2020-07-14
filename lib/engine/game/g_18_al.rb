@@ -19,6 +19,18 @@ module Engine
       def operating_round(round_num)
         Round::G18AL::Operating.new(@corporations, game: self, round_num: round_num)
       end
+
+      def revenue_for(route)
+        revenue = super
+
+        if route.train.name == '4D'
+          revenue = 2 * revenue - route.stops
+            .select { |stop| stop.hex.tile.towns.any? }
+            .sum { |stop| stop.route_revenue(route.phase, route.train) }
+        end
+
+        revenue
+      end
     end
   end
 end
