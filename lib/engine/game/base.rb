@@ -30,7 +30,7 @@ require_relative '../train'
 module Engine
   module Game
     class Base
-      attr_reader :actions, :bank, :bankrupt, :cert_limit, :cities, :companies, :corporations,
+      attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
                   :round, :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
                   :round_history
@@ -234,7 +234,6 @@ module Engine
         @loading = false
         @strict = strict
         @finished = false
-        @bankrupt = false
         @log = []
         @actions = []
         @bankruptcies = 0
@@ -414,6 +413,8 @@ module Engine
         action_processed(action)
         @actions << action
 
+
+        end_game! if game_end_reason&.last == :immediate
         while @round.finished? && !@finished
           @round.entities.each(&:unpass!)
           next_round!
@@ -481,7 +482,7 @@ module Engine
           value += player.shares_by_corporation.sum do |corporation, shares|
             next 0 if shares.empty?
 
-            last = round.sellable_bundles(player, corporation).last
+            last = sellable_bundles(player, corporation).last
             last ? last.price : 0
           end
         else
@@ -873,7 +874,7 @@ module Engine
       end
 
       def game_end_reason
-        return :bankrupt, :immediate if @bankrupt && bankruptcy_limit_reached?
+        return :bankrupt, :immediate if bankruptcy_limit_reached?
         return :bank, :full_round if @bank.broken?
       end
 

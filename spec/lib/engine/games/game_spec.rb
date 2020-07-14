@@ -45,7 +45,7 @@ module Engine
       },
       314 => {
         'Rebus' => 1134,
-        'johnhawkhaines' => 260,
+        'johnhawkhaines' => 320,
         'scottredracecar' => 1473,
       },
       962 => {
@@ -84,7 +84,9 @@ module Engine
             data = JSON.parse(File.read("spec/fixtures/#{game_path}/#{game_id}.json"))
             players = data['players'].map { |p| p['name'] }
             expect(game.new(players, id: game_id, actions: data['actions']).result).to eq(result)
-            expect(game.new(players, id: game_id, actions: data['actions'], strict: true).result).to eq(result)
+            rungame = game.new(players, id: game_id, actions: data['actions'], strict: true)
+            expect(rungame.result).to eq(result)
+            expect(rungame.finished).to eq(true)
           end
         end
       end
