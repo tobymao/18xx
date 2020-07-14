@@ -1,1 +1,5432 @@
-{"id":2809,"description":"OPEN, GMT+2 and around. 2+ moves/day/player.","user":{"id":175,"name":"Azureth"},"players":[{"id":949,"name":"willbeplaying"},{"id":2225,"name":"Navor"},{"id":175,"name":"Azureth"}],"max_players":3,"title":"1836Jr30","settings":{"seed":202626779405753636323815177229416869911},"status":"finished","turn":6,"round":"Operating Round","acting":[2225],"result":{"Navor":3034,"Azureth":4833,"willbeplaying":2095},"actions":[{"id":1,"type":"message","entity":"Azureth","message":"When games refuse to start, start your owns. xD Never played 36jr, so we'll see how this goes.","entity_type":"player"},{"id":2,"type":"message","entity":"willbeplaying","message":"Haha","entity_type":"player"},{"id":3,"type":"message","entity":"willbeplaying","message":"remember the train limit","entity_type":"player"},{"id":4,"type":"message","entity":"willbeplaying","message":"you cant buy two of the same type in one turn","entity_type":"player"},{"id":5,"type":"bid","price":225,"entity":"willbeplaying","company":"CFLV","entity_type":"player"},{"id":6,"type":"bid","price":20,"entity":"Navor","company":"ACC","entity_type":"player"},{"id":7,"type":"message","entity":"willbeplaying","message":"did the company float at 5 or 6","entity_type":"player"},{"id":8,"type":"message","entity":"willbeplaying","message":"335 or 402?","entity_type":"player"},{"id":9,"type":"message","entity":"Azureth","message":"If it's 30 variant, then I assume it's 6 to float.","entity_type":"player"},{"id":10,"type":"bid","price":165,"entity":"Azureth","company":"CFL","entity_type":"player"},{"id":11,"type":"bid","price":40,"entity":"willbeplaying","company":"E-SF","entity_type":"player"},{"id":12,"type":"message","entity":"willbeplaying","message":"ye","entity_type":"player"},{"id":13,"type":"pass","entity":"Navor","entity_type":"player"},{"id":14,"type":"bid","price":70,"entity":"Azureth","company":"CdH","entity_type":"player"},{"id":15,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":16,"type":"bid","price":110,"entity":"Navor","company":"GCB","entity_type":"player"},{"id":17,"type":"par","entity":"willbeplaying","corporation":"Nord","entity_type":"player","share_price":"82,2,6"},{"id":18,"type":"message","entity":"Azureth","message":"I have no idea how the auction went regarding the \"normal\" meta, but I think I got the GCL share for pretty cheap.","entity_type":"player"},{"id":19,"type":"par","entity":"Azureth","corporation":"GCL","entity_type":"player","share_price":"71,4,6"},{"id":20,"type":"buy_shares","entity":"willbeplaying","shares":["Nord_1"],"entity_type":"player"},{"id":21,"type":"par","entity":"Navor","corporation":"HSM","entity_type":"player","share_price":"76,3,6"},{"id":22,"type":"buy_shares","entity":"Azureth","shares":["GCL_2"],"entity_type":"player"},{"id":23,"type":"message","entity":"Azureth","message":"You can keep byuing GCL on my turns to float it, just to speed it up a little.","entity_type":"player"},{"id":24,"type":"buy_shares","entity":"willbeplaying","shares":["Nord_2"],"entity_type":"player"},{"id":25,"type":"buy_shares","entity":"Navor","shares":["HSM_1"],"entity_type":"player"},{"id":26,"type":"buy_shares","entity":"Azureth","shares":["GCL_3"],"entity_type":"player"},{"id":27,"type":"buy_shares","entity":"willbeplaying","shares":["Nord_3"],"entity_type":"player"},{"id":28,"type":"buy_shares","entity":"Navor","shares":["HSM_2"],"entity_type":"player"},{"id":29,"type":"buy_shares","entity":"Azureth","shares":["GCL_4"],"entity_type":"player"},{"id":30,"type":"buy_shares","entity":"willbeplaying","shares":["Nord_4"],"entity_type":"player"},{"id":31,"type":"buy_shares","entity":"Navor","shares":["HSM_3"],"entity_type":"player"},{"id":32,"type":"buy_shares","entity":"Navor","shares":["HSM_4"],"entity_type":"player"},{"id":33,"type":"message","entity":"willbeplaying","message":"bought and floated everyones companies","entity_type":"player"},{"id":34,"hex":"I5","tile":"7-0","type":"lay_tile","entity":"Nord","rotation":1,"entity_type":"corporation"},{"id":35,"type":"buy_train","price":80,"train":"2-0","entity":"Nord","entity_type":"corporation"},{"id":36,"type":"message","entity":"willbeplaying","message":"remember - only one train buy per turn of the same type","entity_type":"player"},{"id":37,"type":"message","entity":"willbeplaying","message":"you cant buy 2 + 2 trains, but can buy 2 and a 3. Or a 3 and a 4","entity_type":"player"},{"id":38,"hex":"E7","tile":"57-0","type":"lay_tile","entity":"HSM","rotation":2,"entity_type":"corporation"},{"id":39,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":40,"type":"buy_train","price":80,"train":"2-1","entity":"HSM","entity_type":"corporation"},{"id":41,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":42,"hex":"I9","tile":"57-1","type":"lay_tile","entity":"GCL","rotation":1,"entity_type":"corporation"},{"id":43,"type":"buy_train","price":80,"train":"2-2","entity":"GCL","entity_type":"corporation"},{"id":44,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":45,"type":"message","entity":"Azureth","message":"my company is shit, I won't be running next turn either. xD","entity_type":"player"},{"id":46,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":47,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":48,"type":"pass","entity":"Navor","entity_type":"player"},{"id":49,"hex":"H4","tile":"57-2","type":"lay_tile","entity":"Nord","rotation":5,"entity_type":"corporation"},{"id":50,"city":"57-2-0","slot":0,"type":"place_token","entity":"Nord","entity_type":"corporation"},{"id":51,"type":"run_routes","entity":"Nord","routes":[{"train":"2-0","connections":[["I3","I5","H4"]]}],"entity_type":"corporation"},{"id":52,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":53,"type":"buy_train","price":80,"train":"2-3","entity":"Nord","entity_type":"corporation"},{"id":54,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":55,"hex":"F8","tile":"8-0","type":"lay_tile","entity":"HSM","rotation":0,"entity_type":"corporation"},{"id":56,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":57,"type":"run_routes","entity":"HSM","routes":[{"train":"2-1","connections":[["D6","E7"]]}],"entity_type":"corporation"},{"id":58,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":59,"type":"buy_train","price":80,"train":"2-4","entity":"HSM","entity_type":"corporation"},{"id":60,"type":"buy_train","price":180,"train":"3-0","entity":"HSM","entity_type":"corporation"},{"id":61,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":62,"type":"buy_company","price":10,"entity":"HSM","company":"ACC","entity_type":"corporation"},{"id":63,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":64,"hex":"I7","tile":"8-1","type":"lay_tile","entity":"GCL","rotation":2,"entity_type":"corporation"},{"id":65,"type":"buy_train","price":180,"train":"3-1","entity":"GCL","entity_type":"corporation"},{"id":66,"type":"undo","entity":"GCL","entity_type":"corporation"},{"id":67,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":68,"type":"buy_company","price":320,"entity":"GCL","company":"CFL","entity_type":"corporation"},{"id":69,"type":"buy_company","price":130,"entity":"GCL","company":"CdH","entity_type":"corporation"},{"id":70,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":71,"type":"par","entity":"Azureth","corporation":"B","entity_type":"player","share_price":"90,1,6"},{"id":72,"type":"undo","entity":"Azureth","entity_type":"player"},{"id":73,"type":"sell_shares","entity":"Azureth","shares":["GCL_1"],"percent":10,"entity_type":"player"},{"id":74,"type":"par","entity":"Azureth","corporation":"B","entity_type":"player","share_price":"100,0,6"},{"id":75,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":76,"type":"buy_shares","entity":"willbeplaying","shares":["HSM_5"],"entity_type":"player"},{"id":77,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":78,"type":"buy_shares","entity":"Navor","shares":["Nord_5"],"entity_type":"player"},{"id":79,"type":"pass","entity":"Navor","entity_type":"player"},{"id":80,"type":"buy_shares","entity":"Azureth","shares":["B_1"],"entity_type":"player"},{"id":81,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":82,"type":"message","entity":"Azureth","message":"Anyone doing something? Or can I float the B?","entity_type":"player"},{"id":83,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":84,"type":"message","entity":"willbeplaying","message":"I'm passing","entity_type":"player"},{"id":85,"type":"pass","entity":"Navor","entity_type":"player"},{"id":86,"type":"message","entity":"Navor","message":"Autopass plz","entity_type":"player"},{"id":87,"type":"buy_shares","entity":"Azureth","shares":["B_2"],"entity_type":"player"},{"id":88,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":89,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":90,"type":"pass","entity":"Navor","entity_type":"player"},{"id":91,"type":"buy_shares","entity":"Azureth","shares":["B_3"],"entity_type":"player"},{"id":92,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":93,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":94,"type":"pass","entity":"Navor","entity_type":"player"},{"id":95,"type":"buy_shares","entity":"Azureth","shares":["B_4"],"entity_type":"player"},{"id":96,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":97,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":98,"type":"pass","entity":"Navor","entity_type":"player"},{"id":99,"type":"sell_shares","entity":"Azureth","shares":["B_1"],"percent":10,"entity_type":"player"},{"id":100,"type":"buy_shares","entity":"Azureth","shares":["HSM_6"],"entity_type":"player"},{"id":101,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":102,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":103,"type":"pass","entity":"Navor","entity_type":"player"},{"id":104,"type":"message","entity":"Azureth","message":"all happy?","entity_type":"player"},{"id":105,"type":"message","entity":"willbeplaying","message":"ye","entity_type":"player"},{"id":106,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":107,"hex":"H6","tile":"53-0","type":"lay_tile","entity":"B","rotation":1,"entity_type":"corporation"},{"id":108,"type":"buy_train","price":180,"train":"3-1","entity":"B","entity_type":"corporation"},{"id":109,"type":"pass","entity":"B","entity_type":"corporation"},{"id":110,"type":"pass","entity":"B","entity_type":"corporation"},{"id":111,"type":"undo","entity":"Nord","entity_type":"corporation"},{"id":112,"type":"undo","entity":"B","entity_type":"corporation"},{"id":113,"type":"undo","entity":"B","entity_type":"corporation"},{"id":114,"type":"undo","entity":"B","entity_type":"corporation"},{"id":115,"hex":"H4","tile":"14-0","type":"lay_tile","entity":"B","rotation":1,"entity_type":"corporation"},{"id":116,"type":"pass","entity":"B","entity_type":"corporation"},{"id":117,"type":"buy_train","price":180,"train":"3-1","entity":"B","entity_type":"corporation"},{"id":118,"type":"pass","entity":"B","entity_type":"corporation"},{"id":119,"type":"pass","entity":"B","entity_type":"corporation"},{"id":120,"hex":"G3","tile":"8-2","type":"lay_tile","entity":"Nord","rotation":5,"entity_type":"corporation"},{"id":121,"type":"undo","entity":"Nord","entity_type":"corporation"},{"id":122,"hex":"H2","tile":"58-0","type":"lay_tile","entity":"Nord","rotation":2,"entity_type":"corporation"},{"id":123,"type":"run_routes","entity":"Nord","routes":[{"train":"2-0","connections":[["I3","I5","H4"]]},{"train":"2-3","connections":[["H6","H4"]]}],"entity_type":"corporation"},{"id":124,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":125,"type":"buy_train","price":180,"train":"3-2","entity":"Nord","entity_type":"corporation"},{"id":126,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":127,"type":"buy_company","price":80,"entity":"Nord","company":"E-SF","entity_type":"corporation"},{"id":128,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":129,"type":"buy_shares","entity":"GCB","shares":["B_5"],"entity_type":"company"},{"id":130,"hex":"G7","tile":"57-3","type":"lay_tile","entity":"HSM","rotation":0,"entity_type":"corporation"},{"id":131,"city":"57-3-0","slot":0,"type":"place_token","entity":"HSM","entity_type":"corporation"},{"id":132,"type":"run_routes","entity":"HSM","routes":[{"train":"2-1","connections":[["D6","E7"]]},{"train":"2-4","connections":[["H6","G7"]]},{"train":"3-0","connections":[["E7","F8","G7"]]}],"entity_type":"corporation"},{"id":133,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":134,"type":"undo","entity":"HSM","entity_type":"corporation"},{"id":135,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":136,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":137,"hex":"H6","tile":"53-0","type":"lay_tile","entity":"GCL","rotation":1,"entity_type":"corporation"},{"id":138,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":139,"type":"run_routes","entity":"GCL","routes":[{"train":"2-2","connections":[["I9","I7","H6"]]}],"entity_type":"corporation"},{"id":140,"kind":"payout","type":"dividend","entity":"GCL","entity_type":"corporation"},{"id":141,"type":"buy_train","price":180,"train":"3-3","entity":"GCL","entity_type":"corporation"},{"id":142,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":143,"hex":"I3","tile":"53-1","type":"lay_tile","entity":"Nord","rotation":0,"entity_type":"corporation"},{"id":144,"type":"run_routes","entity":"Nord","routes":[{"train":"2-0","connections":[["H4","I5","I3"]]},{"train":"2-3","connections":[["H4","H6"]]},{"train":"3-2","connections":[["H4","H2"],["G1","H2"]]}],"entity_type":"corporation"},{"id":145,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":146,"type":"buy_train","price":300,"train":"4-0","entity":"Nord","entity_type":"corporation"},{"id":147,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":148,"hex":"E5","tile":"59-0","type":"lay_tile","entity":"HSM","rotation":3,"entity_type":"corporation"},{"id":149,"type":"run_routes","entity":"HSM","routes":[{"train":"3-0","connections":[["D6","E7"],["D6","E5"]]}],"entity_type":"corporation"},{"id":150,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":151,"type":"buy_train","price":300,"train":"4-1","entity":"HSM","entity_type":"corporation"},{"id":152,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":153,"hex":"I9","tile":"14-1","type":"lay_tile","entity":"B","rotation":0,"entity_type":"corporation"},{"id":154,"city":"14-1-0","slot":1,"type":"place_token","entity":"B","entity_type":"corporation"},{"id":155,"type":"run_routes","entity":"B","routes":[{"train":"3-1","connections":[["H4","I5","I3"],["H4","H6"]]}],"entity_type":"corporation"},{"id":156,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":157,"type":"buy_train","price":300,"train":"4-2","entity":"B","entity_type":"corporation"},{"id":158,"type":"pass","entity":"B","entity_type":"corporation"},{"id":159,"hex":"H10","tile":"59-1","type":"lay_tile","entity":"GCL","rotation":0,"entity_type":"corporation"},{"id":160,"type":"run_routes","entity":"GCL","routes":[{"train":"3-3","connections":[["H6","I7","I9"],["I9","H10"]]}],"entity_type":"corporation"},{"id":161,"kind":"payout","type":"dividend","entity":"GCL","entity_type":"corporation"},{"id":162,"type":"undo","entity":"GCL","entity_type":"corporation"},{"id":163,"kind":"withhold","type":"dividend","entity":"GCL","entity_type":"corporation"},{"id":164,"type":"buy_train","price":126,"train":"3-1","entity":"GCL","entity_type":"corporation"},{"id":165,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":166,"type":"message","entity":"Azureth","message":"I don't think I like the look of this. xD Oh well, first game is often a mess, esp if others have played it.","entity_type":"player"},{"id":167,"type":"sell_shares","entity":"willbeplaying","shares":["HSM_5"],"percent":10,"entity_type":"player"},{"id":168,"type":"sell_shares","entity":"willbeplaying","shares":["Nord_1"],"percent":10,"entity_type":"player"},{"id":169,"type":"par","entity":"willbeplaying","corporation":"NFL","entity_type":"player","share_price":"82,2,6"},{"id":170,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":171,"type":"message","entity":"willbeplaying","message":"I havent played a complete game - the earlier ones have been deleted by toby :D","entity_type":"player"},{"id":172,"type":"message","entity":"willbeplaying","message":"since they were very early alphas","entity_type":"player"},{"id":173,"type":"message","entity":"willbeplaying","message":"or are still going on","entity_type":"player"},{"id":174,"type":"message","entity":"willbeplaying","message":"NFL for me on my turns thanks","entity_type":"player"},{"id":175,"type":"message","entity":"Azureth","message":"I saw the double trainpurchase was blocked by game. So that's fixed.","entity_type":"player"},{"id":176,"type":"buy_shares","entity":"Navor","shares":["GCL_1"],"entity_type":"player"},{"id":177,"type":"pass","entity":"Navor","entity_type":"player"},{"id":178,"type":"message","entity":"Azureth","message":"damnit, now I need few more Franks. :P","entity_type":"player"},{"id":179,"type":"buy_shares","entity":"Azureth","shares":["HSM_7"],"entity_type":"player"},{"id":180,"type":"sell_shares","entity":"Azureth","shares":["HSM_6"],"percent":10,"entity_type":"player"},{"id":181,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":182,"type":"buy_shares","entity":"willbeplaying","shares":["NFL_1"],"entity_type":"player"},{"id":183,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":184,"type":"buy_shares","entity":"Navor","shares":["B_6"],"entity_type":"player"},{"id":185,"type":"undo","entity":"Navor","entity_type":"player"},{"id":186,"type":"buy_shares","entity":"Navor","shares":["B_1"],"entity_type":"player"},{"id":187,"type":"pass","entity":"Navor","entity_type":"player"},{"id":188,"type":"buy_shares","entity":"Azureth","shares":["Nord_6"],"entity_type":"player"},{"id":189,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":190,"type":"buy_shares","entity":"willbeplaying","shares":["NFL_2"],"entity_type":"player"},{"id":191,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":192,"type":"buy_shares","entity":"Navor","shares":["Nord_7"],"entity_type":"player"},{"id":193,"type":"pass","entity":"Navor","entity_type":"player"},{"id":194,"type":"buy_shares","entity":"Azureth","shares":["GCL_5"],"entity_type":"player"},{"id":195,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":196,"type":"buy_shares","entity":"willbeplaying","shares":["NFL_3"],"entity_type":"player"},{"id":197,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":198,"type":"pass","entity":"Navor","entity_type":"player"},{"id":199,"type":"message","entity":"Azureth","message":"permapass","entity_type":"player"},{"id":200,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":201,"type":"buy_shares","entity":"willbeplaying","shares":["NFL_4"],"entity_type":"player"},{"id":202,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":203,"type":"pass","entity":"Navor","entity_type":"player"},{"id":204,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":205,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":206,"hex":"G3","tile":"8-2","type":"lay_tile","entity":"Nord","rotation":5,"entity_type":"corporation"},{"id":207,"hex":"B8","tile":"56-0","type":"lay_tile","entity":"E-SF","rotation":3,"entity_type":"company"},{"id":208,"type":"run_routes","entity":"Nord","routes":[{"train":"3-2","connections":[["H4","I5","I3"],["J2","I3"]]},{"train":"4-0","connections":[["H4","H6"],["H4","H2"],["G1","H2"]]}],"entity_type":"corporation"},{"id":209,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":210,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":211,"hex":"G7","tile":"15-0","type":"lay_tile","entity":"B","rotation":0,"entity_type":"corporation"},{"id":212,"type":"pass","entity":"B","entity_type":"corporation"},{"id":213,"type":"run_routes","entity":"B","routes":[{"train":"4-2","connections":[["H6","G7"],["H4","H6"],["H4","I5","I3"]]}],"entity_type":"corporation"},{"id":214,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":215,"type":"buy_train","price":450,"train":"5-0","entity":"B","entity_type":"corporation"},{"id":216,"hex":"B10","tile":"57-2","type":"lay_tile","entity":"NFL","rotation":2,"entity_type":"corporation"},{"id":217,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":218,"type":"buy_train","price":450,"train":"5-1","entity":"NFL","entity_type":"corporation"},{"id":219,"type":"buy_train","price":330,"train":"3-2","entity":"NFL","entity_type":"corporation"},{"id":220,"type":"undo","entity":"HSM","entity_type":"corporation"},{"id":221,"type":"buy_train","price":370,"train":"3-2","entity":"NFL","entity_type":"corporation"},{"id":222,"type":"undo","entity":"HSM","entity_type":"corporation"},{"id":223,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":224,"type":"message","entity":"willbeplaying","message":"so tough choosing what to do with the trains","entity_type":"player"},{"id":225,"hex":"E5","tile":"64-0","type":"lay_tile","entity":"HSM","rotation":1,"entity_type":"corporation"},{"id":226,"type":"run_routes","entity":"HSM","routes":[{"train":"3-0","connections":[["D6","E5"],["E3","E5"]]},{"train":"4-1","connections":[["H6","G7"],["E7","F8","G7"],["D6","E7"]]}],"entity_type":"corporation"},{"id":227,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":228,"hex":"H10","tile":"65-0","type":"lay_tile","entity":"GCL","rotation":0,"entity_type":"corporation"},{"id":229,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":230,"type":"undo","entity":"GCL","entity_type":"corporation"},{"id":231,"type":"undo","entity":"GCL","entity_type":"corporation"},{"id":232,"hex":"H10","tile":"67-0","type":"lay_tile","entity":"GCL","rotation":2,"entity_type":"corporation"},{"id":233,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":234,"type":"run_routes","entity":"GCL","routes":[{"train":"3-3","connections":[["H6","I7","I9"]]},{"train":"3-1","connections":[["H12","H10"],["I9","H10"]]}],"entity_type":"corporation"},{"id":235,"kind":"payout","type":"dividend","entity":"GCL","entity_type":"corporation"},{"id":236,"hex":"H4","tile":"63-0","type":"lay_tile","entity":"Nord","rotation":0,"entity_type":"corporation"},{"id":237,"type":"run_routes","entity":"Nord","routes":[{"train":"3-2","connections":[["I3","I5","H4"],["J2","I3"]]},{"train":"4-0","connections":[["H6","H4"],["H2","H4"],["G1","H2"]]}],"entity_type":"corporation"},{"id":238,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":239,"hex":"H6","tile":"61-0","type":"lay_tile","entity":"B","rotation":1,"entity_type":"corporation"},{"id":240,"type":"pass","entity":"B","entity_type":"corporation"},{"id":241,"type":"run_routes","entity":"B","routes":[{"train":"4-2","connections":[["H12","H10"],["I9","H10"],["I9","I7","H6"]]},{"train":"5-0","connections":[["E7","F8","G7"],["G7","H6"],["H4","H6"],["I3","I5","H4"]]}],"entity_type":"corporation"},{"id":242,"kind":"withhold","type":"dividend","entity":"B","entity_type":"corporation"},{"id":243,"hex":"F6","tile":"9-0","type":"lay_tile","entity":"HSM","rotation":2,"entity_type":"corporation"},{"id":244,"type":"run_routes","entity":"HSM","routes":[{"train":"3-0","connections":[["G7","F6","E5"],["G7","H6"]]},{"train":"4-1","connections":[["D6","E7"],["D6","E5"],["E3","E5"]]}],"entity_type":"corporation"},{"id":245,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":246,"hex":"C11","tile":"8-3","type":"lay_tile","entity":"NFL","rotation":0,"entity_type":"corporation"},{"id":247,"city":"57-2-0","slot":0,"type":"place_token","entity":"NFL","entity_type":"corporation"},{"id":248,"type":"run_routes","entity":"NFL","routes":[{"train":"5-1","connections":[["A9","B10"]]}],"entity_type":"corporation"},{"id":249,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":250,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":251,"hex":"I9","tile":"63-1","type":"lay_tile","entity":"GCL","rotation":0,"entity_type":"corporation"},{"id":252,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":253,"type":"run_routes","entity":"GCL","routes":[{"train":"3-3","connections":[["H6","I7","I9"]]},{"train":"3-1","connections":[["H12","H10"],["H10","I9"]]}],"entity_type":"corporation"},{"id":254,"kind":"withhold","type":"dividend","entity":"GCL","entity_type":"corporation"},{"id":255,"type":"sell_shares","entity":"Navor","shares":["GCL_1"],"percent":10,"entity_type":"player"},{"id":256,"type":"par","entity":"Navor","corporation":"NBDS","entity_type":"player","share_price":"100,0,6"},{"id":257,"type":"pass","entity":"Navor","entity_type":"player"},{"id":258,"type":"buy_shares","entity":"Azureth","shares":["Nord_8"],"entity_type":"player"},{"id":259,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":260,"type":"buy_shares","entity":"willbeplaying","shares":["B_6"],"entity_type":"player"},{"id":261,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":262,"type":"buy_shares","entity":"Navor","shares":["B_7"],"entity_type":"player"},{"id":263,"type":"pass","entity":"Navor","entity_type":"player"},{"id":264,"type":"undo","entity":"Azureth","entity_type":"player"},{"id":265,"type":"redo","entity":"Navor","entity_type":"player"},{"id":266,"type":"buy_shares","entity":"Azureth","shares":["B_8"],"entity_type":"player"},{"id":267,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":268,"type":"buy_shares","entity":"willbeplaying","shares":["GCL_1"],"entity_type":"player"},{"id":269,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":270,"type":"sell_shares","entity":"Navor","shares":["Nord_5","Nord_7"],"percent":20,"entity_type":"player"},{"id":271,"type":"buy_shares","entity":"Navor","shares":["NBDS_1"],"entity_type":"player"},{"id":272,"type":"pass","entity":"Navor","entity_type":"player"},{"id":273,"type":"buy_shares","entity":"Azureth","shares":["NFL_5"],"entity_type":"player"},{"id":274,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":275,"type":"message","entity":"Navor","message":"Autobuy NBDS plz","entity_type":"player"},{"id":276,"type":"buy_shares","entity":"willbeplaying","shares":["HSM_8"],"entity_type":"player"},{"id":277,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":278,"type":"buy_shares","entity":"Navor","shares":["NBDS_2"],"entity_type":"player"},{"id":279,"type":"pass","entity":"Navor","entity_type":"player"},{"id":280,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":281,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":282,"type":"buy_shares","entity":"Navor","shares":["NBDS_3"],"entity_type":"player"},{"id":283,"type":"pass","entity":"Navor","entity_type":"player"},{"id":284,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":285,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":286,"type":"buy_shares","entity":"Navor","shares":["NBDS_4"],"entity_type":"player"},{"id":287,"type":"pass","entity":"Navor","entity_type":"player"},{"id":288,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":289,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":290,"type":"pass","entity":"Navor","entity_type":"player"},{"id":291,"hex":"I5","tile":"27-0","type":"lay_tile","entity":"Nord","rotation":1,"entity_type":"corporation"},{"id":292,"type":"run_routes","entity":"Nord","routes":[{"train":"3-2","connections":[["H4","I5","I3"],["J2","I3"]]},{"train":"4-0","connections":[["H4","H6"],["H2","H4"],["G1","H2"]]}],"entity_type":"corporation"},{"id":293,"kind":"withhold","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":294,"type":"message","entity":"Azureth","message":"Just a heads up. Heading to bed soon here so need to pause our semi-live game. :D","entity_type":"player"},{"id":295,"hex":"E11","tile":"59-0","type":"lay_tile","entity":"NBDS","rotation":2,"entity_type":"corporation"},{"id":296,"type":"undo","entity":"NBDS","entity_type":"corporation"},{"id":297,"hex":"E11","tile":"59-0","type":"lay_tile","entity":"NBDS","rotation":1,"entity_type":"corporation"},{"id":298,"city":"59-0-0","slot":0,"type":"move_token","token":0,"entity":"NBDS","corporation":"NBDS","entity_type":"corporation"},{"id":299,"type":"buy_train","price":630,"train":"6-0","entity":"NBDS","entity_type":"corporation"},{"id":300,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":301,"hex":"G7","tile":"63-2","type":"lay_tile","entity":"B","rotation":0,"entity_type":"corporation"},{"id":302,"type":"undo","entity":"B","entity_type":"corporation"},{"id":303,"hex":"I5","tile":"41-0","type":"lay_tile","entity":"B","rotation":1,"entity_type":"corporation"},{"id":304,"city":"15-0-0","slot":1,"type":"place_token","entity":"B","entity_type":"corporation"},{"id":305,"type":"run_routes","entity":"B","routes":[{"train":"4-2","connections":[["H12","H10"],["H10","I9"],["H6","I7","I9"]]},{"train":"5-0","connections":[["G7","F6","E5"],["G7","H6"],["H4","H6"],["H4","I5","I3"]]}],"entity_type":"corporation"},{"id":306,"kind":"withhold","type":"dividend","entity":"B","entity_type":"corporation"},{"id":307,"type":"buy_train","price":800,"train":"D-0","entity":"B","exchange":"4-2","entity_type":"corporation"},{"id":308,"hex":"E7","tile":"14-2","type":"lay_tile","entity":"HSM","rotation":1,"entity_type":"corporation"},{"id":309,"type":"bankrupt","entity":"HSM","entity_type":"corporation"},{"id":310,"type":"message","entity":"Navor","message":"so difficult game...","entity_type":"player"},{"id":311,"type":"undo","entity":"HSM","entity_type":"corporation"},{"id":312,"type":"sell_shares","entity":"Navor","shares":["B_5","B_1","B_7"],"percent":30,"entity_type":"player"},{"id":313,"type":"sell_shares","entity":"Navor","shares":["HSM_1","HSM_2","HSM_3"],"percent":30,"entity_type":"player"},{"id":314,"type":"buy_train","price":630,"train":"6-1","entity":"HSM","entity_type":"corporation"},{"id":315,"type":"message","entity":"Azureth","message":"The dynamics are just so different. Though I feel the private that gives a free cert is almost similar to -30s Camden&Amboy where you really shouldn't let it go too cheap. ","entity_type":"player"},{"id":316,"type":"message","entity":"Azureth","message":"I was afraid that my early second company would just end up eating some 3s and 4s and run out of money, but I was able to withhold for the trains while keeping up with the value of others. Also dipping the GCL to yellow was a lucky strike. :P So few trains to go around.","entity_type":"player"},{"id":317,"type":"message","entity":"Azureth","message":"Also there was the option to buy the train from NBDS to pool the company money some, though that would've robbed you from one train run. Hard to know which one was better.","entity_type":"player"},{"id":318,"type":"message","entity":"Azureth","message":"Also from my very small experience, Antwerp looks like an important token spot.","entity_type":"player"},{"id":319,"type":"message","entity":"Azureth","message":"I was expecting Navor to go for the NBDS one SR earlier, which would've eaten my 3s, though this way I was able to rush out a D. I kinda feel it may have been a snowball from the beginning.","entity_type":"player"},{"id":320,"hex":"D10","tile":"9-1","type":"lay_tile","entity":"NFL","rotation":0,"entity_type":"corporation"},{"id":321,"type":"run_routes","entity":"NFL","routes":[{"train":"5-1","connections":[["A9","B10"]]}],"entity_type":"corporation"},{"id":322,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":323,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":324,"type":"undo","entity":"GCL","entity_type":"corporation"},{"id":325,"type":"undo","entity":"NFL","entity_type":"corporation"},{"id":326,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":327,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":328,"hex":"I7","tile":"23-0","type":"lay_tile","entity":"GCL","rotation":4,"entity_type":"corporation"},{"id":329,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":330,"type":"buy_train","price":80,"train":"5-0","entity":"GCL","entity_type":"corporation"},{"id":331,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":332,"hex":"I7","tile":"43-0","type":"lay_tile","entity":"Nord","rotation":1,"entity_type":"corporation"},{"id":333,"type":"buy_train","price":421,"train":"5-1","entity":"Nord","entity_type":"corporation"},{"id":334,"hex":"E9","tile":"8-4","type":"lay_tile","entity":"NFL","rotation":1,"entity_type":"corporation"},{"id":335,"type":"sell_shares","entity":"willbeplaying","shares":["B_6"],"percent":10,"entity_type":"player"},{"id":336,"type":"sell_shares","entity":"willbeplaying","shares":["GCL_1"],"percent":10,"entity_type":"player"},{"id":337,"type":"sell_shares","entity":"willbeplaying","shares":["Nord_2","Nord_3"],"percent":20,"entity_type":"player"},{"id":338,"type":"sell_shares","entity":"willbeplaying","shares":["NFL_1"],"percent":10,"entity_type":"player"},{"id":339,"type":"undo","entity":"NFL","entity_type":"corporation"},{"id":340,"type":"undo","entity":"NFL","entity_type":"corporation"},{"id":341,"type":"sell_shares","entity":"willbeplaying","shares":["NFL_1","NFL_2","NFL_3"],"percent":30,"entity_type":"player"},{"id":342,"type":"buy_train","price":1100,"train":"D-1","entity":"NFL","entity_type":"corporation"},{"id":343,"type":"message","entity":"willbeplaying","message":"Ufff","entity_type":"player"},{"id":344,"type":"message","entity":"Azureth","message":"But no bankrupcies. I guess that's an achievement too for a first game. xD","entity_type":"player"},{"id":345,"hex":"E9","tile":"24-0","type":"lay_tile","entity":"NBDS","rotation":1,"entity_type":"corporation"},{"id":346,"city":"64-0-1","slot":0,"type":"place_token","entity":"NBDS","entity_type":"corporation"},{"id":347,"type":"undo","entity":"NBDS","entity_type":"corporation"},{"id":348,"city":"14-2-0","slot":1,"type":"place_token","entity":"NBDS","entity_type":"corporation"},{"id":349,"type":"run_routes","entity":"NBDS","routes":[{"train":"6-0","connections":[["E11","E9","E7"],["E5","E7"],["G7","F6","E5"]]}],"entity_type":"corporation"},{"id":350,"kind":"payout","type":"dividend","entity":"NBDS","entity_type":"corporation"},{"id":351,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":352,"hex":"E11","tile":"68-0","type":"lay_tile","entity":"HSM","rotation":0,"entity_type":"corporation"},{"id":353,"type":"undo","entity":"HSM","entity_type":"corporation"},{"id":354,"hex":"E7","tile":"63-2","type":"lay_tile","entity":"HSM","rotation":0,"entity_type":"corporation"},{"id":355,"type":"run_routes","entity":"HSM","routes":[{"train":"6-1","connections":[["G7","H6"],["G7","F8","E7"],["D6","E7"],["D6","E5"],["E3","E5"]]}],"entity_type":"corporation"},{"id":356,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":357,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":358,"hex":"B10","tile":"14-0","type":"lay_tile","entity":"B","rotation":1,"entity_type":"corporation"},{"id":359,"city":"14-0-0","slot":1,"type":"place_token","entity":"B","entity_type":"corporation"},{"id":360,"type":"undo","entity":"B","entity_type":"corporation"},{"id":361,"type":"undo","entity":"B","entity_type":"corporation"},{"id":362,"hex":"D6","tile":"54-0","type":"lay_tile","entity":"B","rotation":3,"entity_type":"corporation"},{"id":363,"city":"63-2-0","slot":1,"type":"place_token","entity":"B","entity_type":"corporation"},{"id":364,"type":"undo","entity":"B","entity_type":"corporation"},{"id":365,"city":"63-2-0","slot":1,"type":"place_token","entity":"B","entity_type":"corporation"},{"id":366,"type":"run_routes","entity":"B","routes":[{"train":"D-0","connections":[["E7","D6"],["E5","E7"],["G7","F6","E5"],["G7","H6"],["H4","H6"],["I9","I7","I5","H4"],["H10","I9"],["H12","H10"]]}],"entity_type":"corporation"},{"id":367,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":368,"type":"pass","entity":"B","entity_type":"corporation"},{"id":369,"hex":"H8","tile":"8-5","type":"lay_tile","entity":"GCL","rotation":3,"entity_type":"corporation"},{"id":370,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":371,"type":"run_routes","entity":"GCL","routes":[{"train":"5-0","connections":[["H4","H6"],["I9","I7","I5","H4"],["H10","I9"],["H12","H10"]]}],"entity_type":"corporation"},{"id":372,"kind":"payout","type":"dividend","entity":"GCL","entity_type":"corporation"},{"id":373,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":374,"hex":"F8","tile":"24-1","type":"lay_tile","entity":"NBDS","rotation":0,"entity_type":"corporation"},{"id":375,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":376,"type":"undo","entity":"NBDS","entity_type":"corporation"},{"id":377,"type":"undo","entity":"NBDS","entity_type":"corporation"},{"id":378,"hex":"F8","tile":"23-1","type":"lay_tile","entity":"NBDS","rotation":2,"entity_type":"corporation"},{"id":379,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":380,"type":"run_routes","entity":"NBDS","routes":[{"train":"6-0","connections":[["E7","D6"],["E5","E7"],["G7","F6","E5"]]}],"entity_type":"corporation"},{"id":381,"kind":"payout","type":"dividend","entity":"NBDS","entity_type":"corporation"},{"id":382,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":383,"hex":"I3","tile":"61-1","type":"lay_tile","entity":"Nord","rotation":0,"entity_type":"corporation"},{"id":384,"type":"undo","entity":"Nord","entity_type":"corporation"},{"id":385,"hex":"H8","tile":"24-1","type":"lay_tile","entity":"Nord","rotation":3,"entity_type":"corporation"},{"id":386,"type":"run_routes","entity":"Nord","routes":[{"train":"5-1","connections":[["H4","H6"],["H2","H4"],["G1","H2"]]}],"entity_type":"corporation"},{"id":387,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":388,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":389,"type":"message","entity":"willbeplaying","message":"oh wow Azureth really blocked the south","entity_type":"player"},{"id":390,"type":"message","entity":"Azureth","message":"well the second green is not my doing","entity_type":"player"},{"id":391,"type":"message","entity":"Azureth","message":"south of Utrech","entity_type":"player"},{"id":392,"type":"message","entity":"Azureth","message":"I was kinda hoping for an overpass to Gronigen, but this works for me too.","entity_type":"player"},{"id":393,"type":"message","entity":"Azureth","message":"The one thing I've learned in 18xx is that no preliminary plan survives the first auction round. xD","entity_type":"player"},{"id":394,"hex":"G5","tile":"8-6","type":"lay_tile","entity":"HSM","rotation":4,"entity_type":"corporation"},{"id":395,"type":"run_routes","entity":"HSM","routes":[{"train":"6-1","connections":[["E5","E7"],["G7","F6","E5"],["H4","G5","G7"],["H2","H4"],["G1","H2"]]}],"entity_type":"corporation"},{"id":396,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":397,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":398,"hex":"D6","tile":"62-0","type":"lay_tile","entity":"B","rotation":3,"entity_type":"corporation"},{"id":399,"type":"run_routes","entity":"B","routes":[{"train":"D-0","connections":[["E3","E5"],["E5","D6"],["E7","D6"],["E5","E7"],["G7","F6","E5"],["G7","H6"],["H4","H6"],["I9","I7","I5","H4"],["H10","I9"],["H12","H10"]]}],"entity_type":"corporation"},{"id":400,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":401,"type":"pass","entity":"B","entity_type":"corporation"},{"id":402,"hex":"E9","tile":"47-0","type":"lay_tile","entity":"NFL","rotation":0,"entity_type":"corporation"},{"id":403,"type":"run_routes","entity":"NFL","routes":[{"train":"D-1","connections":[["E7","E9","D10","C11","B10"],["A9","B10"]]}],"entity_type":"corporation"},{"id":404,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":405,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":406,"type":"message","entity":"willbeplaying","message":"70 run with a Diesel. -.-","entity_type":"player"},{"id":407,"type":"message","entity":"Azureth","message":"uuf","entity_type":"player"},{"id":408,"type":"message","entity":"Azureth","message":"I didn't see the Utrech token was that important. Maybe you should've started building towards Amsterdam earlier?","entity_type":"player"},{"id":409,"type":"message","entity":"willbeplaying","message":"it wont be much better with Nord either","entity_type":"player"},{"id":410,"type":"message","entity":"willbeplaying","message":"yeah","entity_type":"player"},{"id":411,"type":"message","entity":"Azureth","message":"oh ya, my turn. xD","entity_type":"player"},{"id":412,"type":"message","entity":"willbeplaying","message":"first time getting this far in this game","entity_type":"player"},{"id":413,"type":"message","entity":"willbeplaying","message":"the map is very unfamiliar","entity_type":"player"},{"id":414,"type":"message","entity":"Azureth","message":"yeah","entity_type":"player"},{"id":415,"hex":"I11","tile":"7-1","type":"lay_tile","entity":"GCL","rotation":1,"entity_type":"corporation"},{"id":416,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":417,"type":"run_routes","entity":"GCL","routes":[{"train":"5-0","connections":[["H4","H6"],["I9","I7","I5","H4"],["H10","I9"],["H12","H10"]]}],"entity_type":"corporation"},{"id":418,"kind":"payout","type":"dividend","entity":"GCL","entity_type":"corporation"},{"id":419,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":420,"type":"buy_shares","entity":"Azureth","shares":["NBDS_5"],"entity_type":"player"},{"id":421,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":422,"type":"message","entity":"Azureth","message":"HMS is a weird company. Only 2 tokens, so you kinda want to token out of Amsterdam so you don't get blocked. Like that. Perhaps the OO could be placed taht HMS can actually get out that way too, thougt it too is susceptible to tokens.","entity_type":"player"},{"id":423,"type":"message","entity":"Azureth","message":"And I'm not sure how I did it, but I'm slightly proud of my GCL. Massive earner and still in yellow.","entity_type":"player"},{"id":424,"type":"sell_shares","entity":"willbeplaying","shares":["Nord_2","Nord_3"],"percent":20,"entity_type":"player"},{"id":425,"type":"buy_shares","entity":"willbeplaying","shares":["B_5"],"entity_type":"player"},{"id":426,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":427,"type":"buy_shares","entity":"Navor","shares":["B_1"],"entity_type":"player"},{"id":428,"type":"pass","entity":"Navor","entity_type":"player"},{"id":429,"type":"buy_shares","entity":"Azureth","shares":["Nord_1"],"entity_type":"player"},{"id":430,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":431,"type":"message","entity":"Azureth","message":"I mean, I'm not gonna start holding back the punches now. xD I guess I'll take a free presidency cert. Though I do apologize. ","entity_type":"player"},{"id":432,"type":"message","entity":"Azureth","message":"Would you be up for a rematch? I think we'd have a much more balanced experience?","entity_type":"player"},{"id":433,"type":"message","entity":"willbeplaying","message":"Sure. Really fast play. :)","entity_type":"player"},{"id":434,"type":"buy_shares","entity":"willbeplaying","shares":["B_7"],"entity_type":"player"},{"id":435,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":436,"type":"message","entity":"Azureth","message":"Yeah, almost too fast. I'm supposed to be doing work at times. :P ","entity_type":"player"},{"id":437,"type":"buy_shares","entity":"Navor","shares":["B_6"],"entity_type":"player"},{"id":438,"type":"message","entity":"Navor","message":"I agree. Very fast game so I didn't realize a situation.I want rematch kk ","entity_type":"player"},{"id":439,"type":"message","entity":"Azureth","message":"Tomorrow might be slightly slower, since I'm supposed to have a 1870 live game. Curious to see how that map is.","entity_type":"player"},{"id":440,"type":"pass","entity":"Navor","entity_type":"player"},{"id":441,"type":"buy_shares","entity":"Azureth","shares":["Nord_5"],"entity_type":"player"},{"id":442,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":443,"type":"buy_shares","entity":"willbeplaying","shares":["HSM_5"],"entity_type":"player"},{"id":444,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":445,"type":"buy_shares","entity":"Navor","shares":["GCL_1"],"entity_type":"player"},{"id":446,"type":"pass","entity":"Navor","entity_type":"player"},{"id":447,"type":"buy_shares","entity":"Azureth","shares":["Nord_7"],"entity_type":"player"},{"id":448,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":449,"type":"buy_shares","entity":"willbeplaying","shares":["GCL_6"],"entity_type":"player"},{"id":450,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":451,"type":"buy_shares","entity":"Navor","shares":["NFL_1"],"entity_type":"player"},{"id":452,"type":"pass","entity":"Navor","entity_type":"player"},{"id":453,"type":"buy_shares","entity":"Azureth","shares":["Nord_2"],"entity_type":"player"},{"id":454,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":455,"type":"buy_shares","entity":"willbeplaying","shares":["GCL_7"],"entity_type":"player"},{"id":456,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":457,"type":"buy_shares","entity":"Navor","shares":["NFL_2"],"entity_type":"player"},{"id":458,"type":"pass","entity":"Navor","entity_type":"player"},{"id":459,"type":"pass","entity":"Azureth","entity_type":"player"},{"id":460,"type":"pass","entity":"willbeplaying","entity_type":"player"},{"id":461,"type":"pass","entity":"Navor","entity_type":"player"},{"id":462,"hex":"F8","tile":"41-1","type":"lay_tile","entity":"NBDS","rotation":5,"entity_type":"corporation"},{"id":463,"city":"62-0-1","slot":1,"type":"place_token","entity":"NBDS","entity_type":"corporation"},{"id":464,"type":"undo","entity":"NBDS","entity_type":"corporation"},{"id":465,"type":"undo","entity":"NBDS","entity_type":"corporation"},{"id":466,"hex":"G9","tile":"9-2","type":"lay_tile","entity":"NBDS","rotation":2,"entity_type":"corporation"},{"id":467,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":468,"type":"undo","entity":"NBDS","entity_type":"corporation"},{"id":469,"city":"67-0-0","slot":0,"type":"place_token","entity":"NBDS","entity_type":"corporation"},{"id":470,"type":"run_routes","entity":"NBDS","routes":[{"train":"6-0","connections":[["H10","I11","I9"],["H10","G9","F8","E7"],["E7","D6"],["E5","D6"],["E3","E5"]]}],"entity_type":"corporation"},{"id":471,"kind":"payout","type":"dividend","entity":"NBDS","entity_type":"corporation"},{"id":472,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":473,"hex":"B10","tile":"14-0","type":"lay_tile","entity":"B","rotation":1,"entity_type":"corporation"},{"id":474,"type":"run_routes","entity":"B","routes":[{"train":"D-0","connections":[["E3","E5"],["E5","D6"],["E7","D6"],["E5","E7"],["G7","F6","E5"],["G7","H6"],["H4","H6"],["I9","I7","I5","H4"],["H10","I9"],["H12","H10"]]}],"entity_type":"corporation"},{"id":475,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":476,"type":"pass","entity":"B","entity_type":"corporation"},{"id":477,"hex":"F8","tile":"45-0","type":"lay_tile","entity":"HSM","rotation":2,"entity_type":"corporation"},{"id":478,"type":"run_routes","entity":"HSM","routes":[{"train":"6-1","connections":[["E5","E7"],["G7","F6","E5"],["H4","G5","G7"],["H2","H4"],["G1","H2"]]}],"entity_type":"corporation"},{"id":479,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":480,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":481,"hex":"G9","tile":"20-0","type":"lay_tile","entity":"Nord","rotation":2,"entity_type":"corporation"},{"id":482,"type":"undo","entity":"Nord","entity_type":"corporation"},{"id":483,"hex":"I3","tile":"61-1","type":"lay_tile","entity":"Nord","rotation":0,"entity_type":"corporation"},{"id":484,"type":"message","entity":"Azureth","message":"that can't be correct","entity_type":"player"},{"id":485,"type":"message","entity":"Azureth","message":"Paris is giving 60 franks","entity_type":"player"},{"id":486,"type":"run_routes","entity":"Nord","routes":[{"train":"5-1","connections":[["J2","I3"],["H4","I3"],["H4","H6"]]}],"entity_type":"corporation"},{"id":487,"type":"message","entity":"willbeplaying","message":"lol :D","entity_type":"player"},{"id":488,"type":"message","entity":"willbeplaying","message":"it is","entity_type":"player"},{"id":489,"type":"message","entity":"Azureth","message":"Apparently it works differently","entity_type":"player"},{"id":490,"type":"message","entity":"Azureth","message":"Is 20/30 Franks PER token on the route.","entity_type":"player"},{"id":491,"type":"message","entity":"Azureth","message":"Which means that the Harwich is actually a 120 Franks for my B, since it's same with ports.","entity_type":"player"},{"id":492,"type":"message","entity":"Azureth","message":"I though they looked bit lame.","entity_type":"player"},{"id":493,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":494,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":495,"type":"message","entity":"Azureth","message":"It's also NOT a valid route to run to Paris/port and one other, needs atleast two other revenue locations.","entity_type":"player"},{"id":496,"type":"message","entity":"Azureth","message":"Quirks of the game","entity_type":"player"},{"id":497,"hex":"C11","tile":"23-2","type":"lay_tile","entity":"NFL","rotation":2,"entity_type":"corporation"},{"id":498,"type":"run_routes","entity":"NFL","routes":[{"train":"D-1","connections":[["E7","E9","D10","C11","B10"],["A9","B10"]]}],"entity_type":"corporation"},{"id":499,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":500,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":501,"hex":"G9","tile":"20-0","type":"lay_tile","entity":"GCL","rotation":2,"entity_type":"corporation"},{"id":502,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":503,"type":"run_routes","entity":"GCL","routes":[{"train":"5-0","connections":[["H4","H6"],["I9","I7","I5","H4"],["H10","I9"],["H12","H10"]]}],"entity_type":"corporation"},{"id":504,"kind":"payout","type":"dividend","entity":"GCL","entity_type":"corporation"},{"id":505,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":506,"hex":"F10","tile":"3-0","type":"lay_tile","entity":"NBDS","rotation":0,"entity_type":"corporation"},{"id":507,"type":"run_routes","entity":"NBDS","routes":[{"train":"6-0","connections":[["H10","I11","I9"],["H10","G9","F8","E7"],["E7","D6"],["E5","D6"],["E3","E5"]]}],"entity_type":"corporation"},{"id":508,"kind":"payout","type":"dividend","entity":"NBDS","entity_type":"corporation"},{"id":509,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":510,"type":"undo","entity":"HSM","entity_type":"corporation"},{"id":511,"type":"buy_train","price":150,"train":"6-1","entity":"NBDS","entity_type":"corporation"},{"id":512,"type":"undo","entity":"HSM","entity_type":"corporation"},{"id":513,"type":"undo","entity":"NBDS","entity_type":"corporation"},{"id":514,"kind":"payout","type":"dividend","entity":"NBDS","entity_type":"corporation"},{"id":515,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":516,"hex":"F6","tile":"19-0","type":"lay_tile","entity":"HSM","rotation":5,"entity_type":"corporation"},{"id":517,"type":"run_routes","entity":"HSM","routes":[{"train":"6-1","connections":[["E5","E7"],["E5","F6","G7"],["H4","G5","G7"],["H4","I5","I3"]]}],"entity_type":"corporation"},{"id":518,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":519,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":520,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":521,"type":"run_routes","entity":"Nord","routes":[{"train":"5-1","connections":[["J2","I3"],["H4","I3"],["H4","H6"]]}],"entity_type":"corporation"},{"id":522,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":523,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":524,"hex":"C7","tile":"9-3","type":"lay_tile","entity":"B","rotation":0,"entity_type":"corporation"},{"id":525,"type":"run_routes","entity":"B","routes":[{"train":"D-0","connections":[["E3","E5"],["E5","D6"],["E7","D6"],["E5","E7"],["E5","F6","G7"],["G7","H6"],["H4","H6"],["I9","I7","I5","H4"],["H10","I9"],["H12","H10"]]}],"entity_type":"corporation"},{"id":526,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":527,"type":"pass","entity":"B","entity_type":"corporation"},{"id":528,"hex":"D12","tile":"7-2","type":"lay_tile","entity":"NFL","rotation":1,"entity_type":"corporation"},{"id":529,"type":"run_routes","entity":"NFL","routes":[{"train":"D-1","connections":[["E7","E9","D10","C11","B10"],["A9","B10"]]}],"entity_type":"corporation"},{"id":530,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":531,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":532,"hex":"H8","tile":"46-0","type":"lay_tile","entity":"GCL","rotation":3,"entity_type":"corporation"},{"id":533,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":534,"type":"run_routes","entity":"GCL","routes":[{"train":"5-0","connections":[["H4","H6"],["I9","I7","I5","H4"],["H10","I9"],["H12","H10"]]}],"entity_type":"corporation"},{"id":535,"kind":"payout","type":"dividend","entity":"GCL","entity_type":"corporation"},{"id":536,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":537,"hex":"F4","tile":"3-1","type":"lay_tile","entity":"NBDS","rotation":3,"entity_type":"corporation"},{"id":538,"type":"run_routes","entity":"NBDS","routes":[{"train":"6-0","connections":[["H10","I11","I9"],["H10","G9","F8","E7"],["E7","D6"],["E5","D6"],["E3","E5"]]}],"entity_type":"corporation"},{"id":539,"kind":"payout","type":"dividend","entity":"NBDS","entity_type":"corporation"},{"id":540,"type":"pass","entity":"NBDS","entity_type":"corporation"},{"id":541,"hex":"F6","tile":"46-1","type":"lay_tile","entity":"HSM","rotation":5,"entity_type":"corporation"},{"id":542,"type":"run_routes","entity":"HSM","routes":[{"train":"6-1","connections":[["E5","E7"],["E5","F6","G7"],["H4","G5","G7"],["H4","I5","I3"]]}],"entity_type":"corporation"},{"id":543,"kind":"payout","type":"dividend","entity":"HSM","entity_type":"corporation"},{"id":544,"type":"pass","entity":"HSM","entity_type":"corporation"},{"id":545,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":546,"type":"run_routes","entity":"Nord","routes":[{"train":"5-1","connections":[["J2","I3"],["H4","I3"],["H4","H6"]]}],"entity_type":"corporation"},{"id":547,"kind":"payout","type":"dividend","entity":"Nord","entity_type":"corporation"},{"id":548,"type":"pass","entity":"Nord","entity_type":"corporation"},{"id":549,"hex":"G9","tile":"44-0","type":"lay_tile","entity":"B","rotation":2,"entity_type":"corporation"},{"id":550,"type":"run_routes","entity":"B","routes":[{"train":"D-0","connections":[["E3","E5"],["E5","D6"],["E7","D6"],["E5","E7"],["E5","F6","G7"],["G7","F8","F10"],["H6","I7","H8","G9","F10"],["H4","H6"],["I9","I7","I5","H4"],["H10","I9"],["H12","H10"]]}],"entity_type":"corporation"},{"id":551,"kind":"payout","type":"dividend","entity":"B","entity_type":"corporation"},{"id":552,"type":"pass","entity":"B","entity_type":"corporation"},{"id":553,"type":"message","entity":"Azureth","message":"Soo, shall I create a rematch? Not feeling like continuing right away, perhaps like tomorrow morning or evening.","entity_type":"player"},{"id":554,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":555,"type":"run_routes","entity":"NFL","routes":[{"train":"D-1","connections":[["E7","E9","D10","C11","B10"],["A9","B10"]]}],"entity_type":"corporation"},{"id":556,"kind":"payout","type":"dividend","entity":"NFL","entity_type":"corporation"},{"id":557,"type":"pass","entity":"NFL","entity_type":"corporation"},{"id":558,"type":"message","entity":"willbeplaying","message":"ye sure","entity_type":"player"},{"id":559,"type":"message","entity":"willbeplaying","message":"gg","entity_type":"player"},{"id":560,"type":"message","entity":"Azureth","message":"sorry for the massacre.","entity_type":"player"},{"id":561,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":562,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":563,"type":"run_routes","entity":"GCL","routes":[{"train":"5-0","connections":[["H4","H6"],["I9","I7","I5","H4"],["H10","I9"],["H12","H10"]]}],"entity_type":"corporation"},{"id":564,"kind":"payout","type":"dividend","entity":"GCL","entity_type":"corporation"},{"id":565,"type":"pass","entity":"GCL","entity_type":"corporation"},{"id":566,"type":"message","entity":"Azureth","message":"It's up","entity_type":"player"},{"id":567,"type":"message","entity":"Azureth","message":"Just to get it running, but I probably won't make moves till tomorrow.","entity_type":"player"}],"loaded":true,"created_at":1593079161,"updated_at":1593191288}
+{
+  "id": 2809,
+  "description": "OPEN, GMT+2 and around. 2+ moves/day/player.",
+  "user": {
+    "id": 175,
+    "name": "Azureth"
+  },
+  "players": [
+    {
+      "id": 949,
+      "name": "willbeplaying"
+    },
+    {
+      "id": 2225,
+      "name": "Navor"
+    },
+    {
+      "id": 175,
+      "name": "Azureth"
+    }
+  ],
+  "max_players": 3,
+  "title": "1836Jr30",
+  "settings": {
+    "seed": 202626779405753636323815177229416869911
+  },
+  "status": "finished",
+  "turn": 6,
+  "round": "Operating Round",
+  "acting": [
+    2225
+  ],
+  "result": {
+    "Navor": 3034,
+    "Azureth": 4833,
+    "willbeplaying": 2095
+  },
+  "actions": [
+    {
+      "id": 1,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "When games refuse to start, start your owns. xD Never played 36jr, so we'll see how this goes.",
+      "entity_type": "player"
+    },
+    {
+      "id": 2,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "Haha",
+      "entity_type": "player"
+    },
+    {
+      "id": 3,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "remember the train limit",
+      "entity_type": "player"
+    },
+    {
+      "id": 4,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "you cant buy two of the same type in one turn",
+      "entity_type": "player"
+    },
+    {
+      "id": 5,
+      "type": "bid",
+      "price": 225,
+      "entity": "willbeplaying",
+      "company": "CFLV",
+      "entity_type": "player"
+    },
+    {
+      "id": 6,
+      "type": "bid",
+      "price": 20,
+      "entity": "Navor",
+      "company": "ACC",
+      "entity_type": "player"
+    },
+    {
+      "id": 7,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "did the company float at 5 or 6",
+      "entity_type": "player"
+    },
+    {
+      "id": 8,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "335 or 402?",
+      "entity_type": "player"
+    },
+    {
+      "id": 9,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "If it's 30 variant, then I assume it's 6 to float.",
+      "entity_type": "player"
+    },
+    {
+      "id": 10,
+      "type": "bid",
+      "price": 165,
+      "entity": "Azureth",
+      "company": "CFL",
+      "entity_type": "player"
+    },
+    {
+      "id": 11,
+      "type": "bid",
+      "price": 40,
+      "entity": "willbeplaying",
+      "company": "E-SF",
+      "entity_type": "player"
+    },
+    {
+      "id": 12,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "ye",
+      "entity_type": "player"
+    },
+    {
+      "id": 13,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 14,
+      "type": "bid",
+      "price": 70,
+      "entity": "Azureth",
+      "company": "CdH",
+      "entity_type": "player"
+    },
+    {
+      "id": 15,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 16,
+      "type": "bid",
+      "price": 110,
+      "entity": "Navor",
+      "company": "GCB",
+      "entity_type": "player"
+    },
+    {
+      "id": 17,
+      "type": "par",
+      "entity": "willbeplaying",
+      "corporation": "Nord",
+      "entity_type": "player",
+      "share_price": "82,2,6"
+    },
+    {
+      "id": 18,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "I have no idea how the auction went regarding the \"normal\" meta, but I think I got the GCL share for pretty cheap.",
+      "entity_type": "player"
+    },
+    {
+      "id": 19,
+      "type": "par",
+      "entity": "Azureth",
+      "corporation": "GCL",
+      "entity_type": "player",
+      "share_price": "71,4,6"
+    },
+    {
+      "id": 20,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "Nord_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 21,
+      "type": "par",
+      "entity": "Navor",
+      "corporation": "HSM",
+      "entity_type": "player",
+      "share_price": "76,3,6"
+    },
+    {
+      "id": 22,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "GCL_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 23,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "You can keep byuing GCL on my turns to float it, just to speed it up a little.",
+      "entity_type": "player"
+    },
+    {
+      "id": 24,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "Nord_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 25,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "HSM_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 26,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "GCL_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 27,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "Nord_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 28,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "HSM_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 29,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "GCL_4"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 30,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "Nord_4"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 31,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "HSM_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 32,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "HSM_4"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 33,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "bought and floated everyones companies",
+      "entity_type": "player"
+    },
+    {
+      "id": 34,
+      "hex": "I5",
+      "tile": "7-0",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 35,
+      "type": "buy_train",
+      "price": 80,
+      "train": "2-0",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 36,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "remember - only one train buy per turn of the same type",
+      "entity_type": "player"
+    },
+    {
+      "id": 37,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "you cant buy 2 + 2 trains, but can buy 2 and a 3. Or a 3 and a 4",
+      "entity_type": "player"
+    },
+    {
+      "id": 38,
+      "hex": "E7",
+      "tile": "57-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 39,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 40,
+      "type": "buy_train",
+      "price": 80,
+      "train": "2-1",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 41,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 42,
+      "hex": "I9",
+      "tile": "57-1",
+      "type": "lay_tile",
+      "entity": "GCL",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 43,
+      "type": "buy_train",
+      "price": 80,
+      "train": "2-2",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 44,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 45,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "my company is shit, I won't be running next turn either. xD",
+      "entity_type": "player"
+    },
+    {
+      "id": 46,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 47,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 48,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 49,
+      "hex": "H4",
+      "tile": "57-2",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 5,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 50,
+      "city": "57-2-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 51,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "I3",
+              "I5",
+              "H4"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 52,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 53,
+      "type": "buy_train",
+      "price": 80,
+      "train": "2-3",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 54,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 55,
+      "hex": "F8",
+      "tile": "8-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 56,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 57,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "D6",
+              "E7"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 58,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 59,
+      "type": "buy_train",
+      "price": 80,
+      "train": "2-4",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 60,
+      "type": "buy_train",
+      "price": 180,
+      "train": "3-0",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 61,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 62,
+      "type": "buy_company",
+      "price": 10,
+      "entity": "HSM",
+      "company": "ACC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 63,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 64,
+      "hex": "I7",
+      "tile": "8-1",
+      "type": "lay_tile",
+      "entity": "GCL",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 65,
+      "type": "buy_train",
+      "price": 180,
+      "train": "3-1",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 66,
+      "type": "undo",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 67,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 68,
+      "type": "buy_company",
+      "price": 320,
+      "entity": "GCL",
+      "company": "CFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 69,
+      "type": "buy_company",
+      "price": 130,
+      "entity": "GCL",
+      "company": "CdH",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 70,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 71,
+      "type": "par",
+      "entity": "Azureth",
+      "corporation": "B",
+      "entity_type": "player",
+      "share_price": "90,1,6"
+    },
+    {
+      "id": 72,
+      "type": "undo",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 73,
+      "type": "sell_shares",
+      "entity": "Azureth",
+      "shares": [
+        "GCL_1"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 74,
+      "type": "par",
+      "entity": "Azureth",
+      "corporation": "B",
+      "entity_type": "player",
+      "share_price": "100,0,6"
+    },
+    {
+      "id": 75,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 76,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "HSM_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 77,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 78,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "Nord_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 79,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 80,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "B_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 81,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 82,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Anyone doing something? Or can I float the B?",
+      "entity_type": "player"
+    },
+    {
+      "id": 83,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 84,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "I'm passing",
+      "entity_type": "player"
+    },
+    {
+      "id": 85,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 86,
+      "type": "message",
+      "entity": "Navor",
+      "message": "Autopass plz",
+      "entity_type": "player"
+    },
+    {
+      "id": 87,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "B_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 88,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 89,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 90,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 91,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "B_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 92,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 93,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 94,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 95,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "B_4"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 96,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 97,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 98,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 99,
+      "type": "sell_shares",
+      "entity": "Azureth",
+      "shares": [
+        "B_1"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 100,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "HSM_6"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 101,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 102,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 103,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 104,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "all happy?",
+      "entity_type": "player"
+    },
+    {
+      "id": 105,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "ye",
+      "entity_type": "player"
+    },
+    {
+      "id": 106,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 107,
+      "hex": "H6",
+      "tile": "53-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 108,
+      "type": "buy_train",
+      "price": 180,
+      "train": "3-1",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 109,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 110,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 111,
+      "type": "undo",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 112,
+      "type": "undo",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 113,
+      "type": "undo",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 114,
+      "type": "undo",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 115,
+      "hex": "H4",
+      "tile": "14-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 116,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 117,
+      "type": "buy_train",
+      "price": 180,
+      "train": "3-1",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 118,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 119,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 120,
+      "hex": "G3",
+      "tile": "8-2",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 5,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 121,
+      "type": "undo",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 122,
+      "hex": "H2",
+      "tile": "58-0",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 123,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "I3",
+              "I5",
+              "H4"
+            ]
+          ]
+        },
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "H6",
+              "H4"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 124,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 125,
+      "type": "buy_train",
+      "price": 180,
+      "train": "3-2",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 126,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 127,
+      "type": "buy_company",
+      "price": 80,
+      "entity": "Nord",
+      "company": "E-SF",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 128,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 129,
+      "type": "buy_shares",
+      "entity": "GCB",
+      "shares": [
+        "B_5"
+      ],
+      "entity_type": "company"
+    },
+    {
+      "id": 130,
+      "hex": "G7",
+      "tile": "57-3",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 131,
+      "city": "57-3-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 132,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "D6",
+              "E7"
+            ]
+          ]
+        },
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "H6",
+              "G7"
+            ]
+          ]
+        },
+        {
+          "train": "3-0",
+          "connections": [
+            [
+              "E7",
+              "F8",
+              "G7"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 133,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 134,
+      "type": "undo",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 135,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 136,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 137,
+      "hex": "H6",
+      "tile": "53-0",
+      "type": "lay_tile",
+      "entity": "GCL",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 138,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 139,
+      "type": "run_routes",
+      "entity": "GCL",
+      "routes": [
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "I9",
+              "I7",
+              "H6"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 140,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 141,
+      "type": "buy_train",
+      "price": 180,
+      "train": "3-3",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 142,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 143,
+      "hex": "I3",
+      "tile": "53-1",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 144,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "H4",
+              "I5",
+              "I3"
+            ]
+          ]
+        },
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "H4",
+              "H6"
+            ]
+          ]
+        },
+        {
+          "train": "3-2",
+          "connections": [
+            [
+              "H4",
+              "H2"
+            ],
+            [
+              "G1",
+              "H2"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 145,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 146,
+      "type": "buy_train",
+      "price": 300,
+      "train": "4-0",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 147,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 148,
+      "hex": "E5",
+      "tile": "59-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 149,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "3-0",
+          "connections": [
+            [
+              "D6",
+              "E7"
+            ],
+            [
+              "D6",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 150,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 151,
+      "type": "buy_train",
+      "price": 300,
+      "train": "4-1",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 152,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 153,
+      "hex": "I9",
+      "tile": "14-1",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 154,
+      "city": "14-1-0",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 155,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "3-1",
+          "connections": [
+            [
+              "H4",
+              "I5",
+              "I3"
+            ],
+            [
+              "H4",
+              "H6"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 156,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 157,
+      "type": "buy_train",
+      "price": 300,
+      "train": "4-2",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 158,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 159,
+      "hex": "H10",
+      "tile": "59-1",
+      "type": "lay_tile",
+      "entity": "GCL",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 160,
+      "type": "run_routes",
+      "entity": "GCL",
+      "routes": [
+        {
+          "train": "3-3",
+          "connections": [
+            [
+              "H6",
+              "I7",
+              "I9"
+            ],
+            [
+              "I9",
+              "H10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 161,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 162,
+      "type": "undo",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 163,
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 164,
+      "type": "buy_train",
+      "price": 126,
+      "train": "3-1",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 165,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 166,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "I don't think I like the look of this. xD Oh well, first game is often a mess, esp if others have played it.",
+      "entity_type": "player"
+    },
+    {
+      "id": 167,
+      "type": "sell_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "HSM_5"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 168,
+      "type": "sell_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "Nord_1"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 169,
+      "type": "par",
+      "entity": "willbeplaying",
+      "corporation": "NFL",
+      "entity_type": "player",
+      "share_price": "82,2,6"
+    },
+    {
+      "id": 170,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 171,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "I havent played a complete game - the earlier ones have been deleted by toby :D",
+      "entity_type": "player"
+    },
+    {
+      "id": 172,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "since they were very early alphas",
+      "entity_type": "player"
+    },
+    {
+      "id": 173,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "or are still going on",
+      "entity_type": "player"
+    },
+    {
+      "id": 174,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "NFL for me on my turns thanks",
+      "entity_type": "player"
+    },
+    {
+      "id": 175,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "I saw the double trainpurchase was blocked by game. So that's fixed.",
+      "entity_type": "player"
+    },
+    {
+      "id": 176,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "GCL_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 177,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 178,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "damnit, now I need few more Franks. :P",
+      "entity_type": "player"
+    },
+    {
+      "id": 179,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "HSM_7"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 180,
+      "type": "sell_shares",
+      "entity": "Azureth",
+      "shares": [
+        "HSM_6"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 181,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 182,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "NFL_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 183,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 184,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "B_6"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 185,
+      "type": "undo",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 186,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "B_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 187,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 188,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "Nord_6"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 189,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 190,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "NFL_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 191,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 192,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "Nord_7"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 193,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 194,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "GCL_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 195,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 196,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "NFL_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 197,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 198,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 199,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "permapass",
+      "entity_type": "player"
+    },
+    {
+      "id": 200,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 201,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "NFL_4"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 202,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 203,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 204,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 205,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 206,
+      "hex": "G3",
+      "tile": "8-2",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 5,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 207,
+      "hex": "B8",
+      "tile": "56-0",
+      "type": "lay_tile",
+      "entity": "E-SF",
+      "rotation": 3,
+      "entity_type": "company"
+    },
+    {
+      "id": 208,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "3-2",
+          "connections": [
+            [
+              "H4",
+              "I5",
+              "I3"
+            ],
+            [
+              "J2",
+              "I3"
+            ]
+          ]
+        },
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "H4",
+              "H2"
+            ],
+            [
+              "G1",
+              "H2"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 209,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 210,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 211,
+      "hex": "G7",
+      "tile": "15-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 212,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 213,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "4-2",
+          "connections": [
+            [
+              "H6",
+              "G7"
+            ],
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "H4",
+              "I5",
+              "I3"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 214,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 215,
+      "type": "buy_train",
+      "price": 450,
+      "train": "5-0",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 216,
+      "hex": "B10",
+      "tile": "57-2",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 217,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 218,
+      "type": "buy_train",
+      "price": 450,
+      "train": "5-1",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 219,
+      "type": "buy_train",
+      "price": 330,
+      "train": "3-2",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 220,
+      "type": "undo",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 221,
+      "type": "buy_train",
+      "price": 370,
+      "train": "3-2",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 222,
+      "type": "undo",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 223,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 224,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "so tough choosing what to do with the trains",
+      "entity_type": "player"
+    },
+    {
+      "id": 225,
+      "hex": "E5",
+      "tile": "64-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 226,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "3-0",
+          "connections": [
+            [
+              "D6",
+              "E5"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        },
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "H6",
+              "G7"
+            ],
+            [
+              "E7",
+              "F8",
+              "G7"
+            ],
+            [
+              "D6",
+              "E7"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 227,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 228,
+      "hex": "H10",
+      "tile": "65-0",
+      "type": "lay_tile",
+      "entity": "GCL",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 229,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 230,
+      "type": "undo",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 231,
+      "type": "undo",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 232,
+      "hex": "H10",
+      "tile": "67-0",
+      "type": "lay_tile",
+      "entity": "GCL",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 233,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 234,
+      "type": "run_routes",
+      "entity": "GCL",
+      "routes": [
+        {
+          "train": "3-3",
+          "connections": [
+            [
+              "H6",
+              "I7",
+              "I9"
+            ]
+          ]
+        },
+        {
+          "train": "3-1",
+          "connections": [
+            [
+              "H12",
+              "H10"
+            ],
+            [
+              "I9",
+              "H10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 235,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 236,
+      "hex": "H4",
+      "tile": "63-0",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 237,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "3-2",
+          "connections": [
+            [
+              "I3",
+              "I5",
+              "H4"
+            ],
+            [
+              "J2",
+              "I3"
+            ]
+          ]
+        },
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "H6",
+              "H4"
+            ],
+            [
+              "H2",
+              "H4"
+            ],
+            [
+              "G1",
+              "H2"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 238,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 239,
+      "hex": "H6",
+      "tile": "61-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 240,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 241,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "4-2",
+          "connections": [
+            [
+              "H12",
+              "H10"
+            ],
+            [
+              "I9",
+              "H10"
+            ],
+            [
+              "I9",
+              "I7",
+              "H6"
+            ]
+          ]
+        },
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "E7",
+              "F8",
+              "G7"
+            ],
+            [
+              "G7",
+              "H6"
+            ],
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "I3",
+              "I5",
+              "H4"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 242,
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 243,
+      "hex": "F6",
+      "tile": "9-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 244,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "3-0",
+          "connections": [
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "G7",
+              "H6"
+            ]
+          ]
+        },
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "D6",
+              "E7"
+            ],
+            [
+              "D6",
+              "E5"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 245,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 246,
+      "hex": "C11",
+      "tile": "8-3",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 247,
+      "city": "57-2-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 248,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "A9",
+              "B10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 249,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 250,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 251,
+      "hex": "I9",
+      "tile": "63-1",
+      "type": "lay_tile",
+      "entity": "GCL",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 252,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 253,
+      "type": "run_routes",
+      "entity": "GCL",
+      "routes": [
+        {
+          "train": "3-3",
+          "connections": [
+            [
+              "H6",
+              "I7",
+              "I9"
+            ]
+          ]
+        },
+        {
+          "train": "3-1",
+          "connections": [
+            [
+              "H12",
+              "H10"
+            ],
+            [
+              "H10",
+              "I9"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 254,
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 255,
+      "type": "sell_shares",
+      "entity": "Navor",
+      "shares": [
+        "GCL_1"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 256,
+      "type": "par",
+      "entity": "Navor",
+      "corporation": "NBDS",
+      "entity_type": "player",
+      "share_price": "100,0,6"
+    },
+    {
+      "id": 257,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 258,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "Nord_8"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 259,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 260,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "B_6"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 261,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 262,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "B_7"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 263,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 264,
+      "type": "undo",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 265,
+      "type": "redo",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 266,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "B_8"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 267,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 268,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "GCL_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 269,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 270,
+      "type": "sell_shares",
+      "entity": "Navor",
+      "shares": [
+        "Nord_5",
+        "Nord_7"
+      ],
+      "percent": 20,
+      "entity_type": "player"
+    },
+    {
+      "id": 271,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "NBDS_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 272,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 273,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "NFL_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 274,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 275,
+      "type": "message",
+      "entity": "Navor",
+      "message": "Autobuy NBDS plz",
+      "entity_type": "player"
+    },
+    {
+      "id": 276,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "HSM_8"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 277,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 278,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "NBDS_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 279,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 280,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 281,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 282,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "NBDS_3"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 283,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 284,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 285,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 286,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "NBDS_4"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 287,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 288,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 289,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 290,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 291,
+      "hex": "I5",
+      "tile": "27-0",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 292,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "3-2",
+          "connections": [
+            [
+              "H4",
+              "I5",
+              "I3"
+            ],
+            [
+              "J2",
+              "I3"
+            ]
+          ]
+        },
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "H2",
+              "H4"
+            ],
+            [
+              "G1",
+              "H2"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 293,
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 294,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Just a heads up. Heading to bed soon here so need to pause our semi-live game. :D",
+      "entity_type": "player"
+    },
+    {
+      "id": 295,
+      "hex": "E11",
+      "tile": "59-0",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 296,
+      "type": "undo",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 297,
+      "hex": "E11",
+      "tile": "59-0",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 298,
+      "city": "59-0-0",
+      "slot": 0,
+      "type": "place_token",
+      "token": 0,
+      "entity": "NBDS",
+      "corporation": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 299,
+      "type": "buy_train",
+      "price": 630,
+      "train": "6-0",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 300,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 301,
+      "hex": "G7",
+      "tile": "63-2",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 302,
+      "type": "undo",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 303,
+      "hex": "I5",
+      "tile": "41-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 304,
+      "city": "15-0-0",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 305,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "4-2",
+          "connections": [
+            [
+              "H12",
+              "H10"
+            ],
+            [
+              "H10",
+              "I9"
+            ],
+            [
+              "H6",
+              "I7",
+              "I9"
+            ]
+          ]
+        },
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "G7",
+              "H6"
+            ],
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "H4",
+              "I5",
+              "I3"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 306,
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 307,
+      "type": "buy_train",
+      "price": 800,
+      "train": "D-0",
+      "entity": "B",
+      "exchange": "4-2",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 308,
+      "hex": "E7",
+      "tile": "14-2",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 309,
+      "type": "bankrupt",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 310,
+      "type": "message",
+      "entity": "Navor",
+      "message": "so difficult game...",
+      "entity_type": "player"
+    },
+    {
+      "id": 311,
+      "type": "undo",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 312,
+      "type": "sell_shares",
+      "entity": "Navor",
+      "shares": [
+        "B_5",
+        "B_1",
+        "B_7"
+      ],
+      "percent": 30,
+      "entity_type": "player"
+    },
+    {
+      "id": 313,
+      "type": "sell_shares",
+      "entity": "Navor",
+      "shares": [
+        "HSM_1",
+        "HSM_2",
+        "HSM_3"
+      ],
+      "percent": 30,
+      "entity_type": "player"
+    },
+    {
+      "id": 314,
+      "type": "buy_train",
+      "price": 630,
+      "train": "6-1",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 315,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "The dynamics are just so different. Though I feel the private that gives a free cert is almost similar to -30s Camden&Amboy where you really shouldn't let it go too cheap. ",
+      "entity_type": "player"
+    },
+    {
+      "id": 316,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "I was afraid that my early second company would just end up eating some 3s and 4s and run out of money, but I was able to withhold for the trains while keeping up with the value of others. Also dipping the GCL to yellow was a lucky strike. :P So few trains to go around.",
+      "entity_type": "player"
+    },
+    {
+      "id": 317,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Also there was the option to buy the train from NBDS to pool the company money some, though that would've robbed you from one train run. Hard to know which one was better.",
+      "entity_type": "player"
+    },
+    {
+      "id": 318,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Also from my very small experience, Antwerp looks like an important token spot.",
+      "entity_type": "player"
+    },
+    {
+      "id": 319,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "I was expecting Navor to go for the NBDS one SR earlier, which would've eaten my 3s, though this way I was able to rush out a D. I kinda feel it may have been a snowball from the beginning.",
+      "entity_type": "player"
+    },
+    {
+      "id": 320,
+      "hex": "D10",
+      "tile": "9-1",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 321,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "A9",
+              "B10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 322,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 323,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 324,
+      "type": "undo",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 325,
+      "type": "undo",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 326,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 327,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 328,
+      "hex": "I7",
+      "tile": "23-0",
+      "type": "lay_tile",
+      "entity": "GCL",
+      "rotation": 4,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 329,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 330,
+      "type": "buy_train",
+      "price": 80,
+      "train": "5-0",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 331,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 332,
+      "hex": "I7",
+      "tile": "43-0",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 333,
+      "type": "buy_train",
+      "price": 421,
+      "train": "5-1",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 334,
+      "hex": "E9",
+      "tile": "8-4",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 335,
+      "type": "sell_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "B_6"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 336,
+      "type": "sell_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "GCL_1"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 337,
+      "type": "sell_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "Nord_2",
+        "Nord_3"
+      ],
+      "percent": 20,
+      "entity_type": "player"
+    },
+    {
+      "id": 338,
+      "type": "sell_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "NFL_1"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 339,
+      "type": "undo",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 340,
+      "type": "undo",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 341,
+      "type": "sell_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "NFL_1",
+        "NFL_2",
+        "NFL_3"
+      ],
+      "percent": 30,
+      "entity_type": "player"
+    },
+    {
+      "id": 342,
+      "type": "buy_train",
+      "price": 1100,
+      "train": "D-1",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 343,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "Ufff",
+      "entity_type": "player"
+    },
+    {
+      "id": 344,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "But no bankrupcies. I guess that's an achievement too for a first game. xD",
+      "entity_type": "player"
+    },
+    {
+      "id": 345,
+      "hex": "E9",
+      "tile": "24-0",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 346,
+      "city": "64-0-1",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 347,
+      "type": "undo",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 348,
+      "city": "14-2-0",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 349,
+      "type": "run_routes",
+      "entity": "NBDS",
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "E11",
+              "E9",
+              "E7"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 350,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 351,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 352,
+      "hex": "E11",
+      "tile": "68-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 353,
+      "type": "undo",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 354,
+      "hex": "E7",
+      "tile": "63-2",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 355,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "G7",
+              "H6"
+            ],
+            [
+              "G7",
+              "F8",
+              "E7"
+            ],
+            [
+              "D6",
+              "E7"
+            ],
+            [
+              "D6",
+              "E5"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 356,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 357,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 358,
+      "hex": "B10",
+      "tile": "14-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 359,
+      "city": "14-0-0",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 360,
+      "type": "undo",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 361,
+      "type": "undo",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 362,
+      "hex": "D6",
+      "tile": "54-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 363,
+      "city": "63-2-0",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 364,
+      "type": "undo",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 365,
+      "city": "63-2-0",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 366,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "D-0",
+          "connections": [
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "G7",
+              "H6"
+            ],
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "I9",
+              "I7",
+              "I5",
+              "H4"
+            ],
+            [
+              "H10",
+              "I9"
+            ],
+            [
+              "H12",
+              "H10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 367,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 368,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 369,
+      "hex": "H8",
+      "tile": "8-5",
+      "type": "lay_tile",
+      "entity": "GCL",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 370,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 371,
+      "type": "run_routes",
+      "entity": "GCL",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "I9",
+              "I7",
+              "I5",
+              "H4"
+            ],
+            [
+              "H10",
+              "I9"
+            ],
+            [
+              "H12",
+              "H10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 372,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 373,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 374,
+      "hex": "F8",
+      "tile": "24-1",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 375,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 376,
+      "type": "undo",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 377,
+      "type": "undo",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 378,
+      "hex": "F8",
+      "tile": "23-1",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 379,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 380,
+      "type": "run_routes",
+      "entity": "NBDS",
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 381,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 382,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 383,
+      "hex": "I3",
+      "tile": "61-1",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 384,
+      "type": "undo",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 385,
+      "hex": "H8",
+      "tile": "24-1",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 386,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "H2",
+              "H4"
+            ],
+            [
+              "G1",
+              "H2"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 387,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 388,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 389,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "oh wow Azureth really blocked the south",
+      "entity_type": "player"
+    },
+    {
+      "id": 390,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "well the second green is not my doing",
+      "entity_type": "player"
+    },
+    {
+      "id": 391,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "south of Utrech",
+      "entity_type": "player"
+    },
+    {
+      "id": 392,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "I was kinda hoping for an overpass to Gronigen, but this works for me too.",
+      "entity_type": "player"
+    },
+    {
+      "id": 393,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "The one thing I've learned in 18xx is that no preliminary plan survives the first auction round. xD",
+      "entity_type": "player"
+    },
+    {
+      "id": 394,
+      "hex": "G5",
+      "tile": "8-6",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 4,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 395,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "H4",
+              "G5",
+              "G7"
+            ],
+            [
+              "H2",
+              "H4"
+            ],
+            [
+              "G1",
+              "H2"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 396,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 397,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 398,
+      "hex": "D6",
+      "tile": "62-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 399,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "D-0",
+          "connections": [
+            [
+              "E3",
+              "E5"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "G7",
+              "H6"
+            ],
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "I9",
+              "I7",
+              "I5",
+              "H4"
+            ],
+            [
+              "H10",
+              "I9"
+            ],
+            [
+              "H12",
+              "H10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 400,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 401,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 402,
+      "hex": "E9",
+      "tile": "47-0",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 403,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "D-1",
+          "connections": [
+            [
+              "E7",
+              "E9",
+              "D10",
+              "C11",
+              "B10"
+            ],
+            [
+              "A9",
+              "B10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 404,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 405,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 406,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "70 run with a Diesel. -.-",
+      "entity_type": "player"
+    },
+    {
+      "id": 407,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "uuf",
+      "entity_type": "player"
+    },
+    {
+      "id": 408,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "I didn't see the Utrech token was that important. Maybe you should've started building towards Amsterdam earlier?",
+      "entity_type": "player"
+    },
+    {
+      "id": 409,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "it wont be much better with Nord either",
+      "entity_type": "player"
+    },
+    {
+      "id": 410,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "yeah",
+      "entity_type": "player"
+    },
+    {
+      "id": 411,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "oh ya, my turn. xD",
+      "entity_type": "player"
+    },
+    {
+      "id": 412,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "first time getting this far in this game",
+      "entity_type": "player"
+    },
+    {
+      "id": 413,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "the map is very unfamiliar",
+      "entity_type": "player"
+    },
+    {
+      "id": 414,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "yeah",
+      "entity_type": "player"
+    },
+    {
+      "id": 415,
+      "hex": "I11",
+      "tile": "7-1",
+      "type": "lay_tile",
+      "entity": "GCL",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 416,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 417,
+      "type": "run_routes",
+      "entity": "GCL",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "I9",
+              "I7",
+              "I5",
+              "H4"
+            ],
+            [
+              "H10",
+              "I9"
+            ],
+            [
+              "H12",
+              "H10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 418,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 419,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 420,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "NBDS_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 421,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 422,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "HMS is a weird company. Only 2 tokens, so you kinda want to token out of Amsterdam so you don't get blocked. Like that. Perhaps the OO could be placed taht HMS can actually get out that way too, thougt it too is susceptible to tokens.",
+      "entity_type": "player"
+    },
+    {
+      "id": 423,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "And I'm not sure how I did it, but I'm slightly proud of my GCL. Massive earner and still in yellow.",
+      "entity_type": "player"
+    },
+    {
+      "id": 424,
+      "type": "sell_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "Nord_2",
+        "Nord_3"
+      ],
+      "percent": 20,
+      "entity_type": "player"
+    },
+    {
+      "id": 425,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "B_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 426,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 427,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "B_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 428,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 429,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "Nord_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 430,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 431,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "I mean, I'm not gonna start holding back the punches now. xD I guess I'll take a free presidency cert. Though I do apologize. ",
+      "entity_type": "player"
+    },
+    {
+      "id": 432,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Would you be up for a rematch? I think we'd have a much more balanced experience?",
+      "entity_type": "player"
+    },
+    {
+      "id": 433,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "Sure. Really fast play. :)",
+      "entity_type": "player"
+    },
+    {
+      "id": 434,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "B_7"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 435,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 436,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Yeah, almost too fast. I'm supposed to be doing work at times. :P ",
+      "entity_type": "player"
+    },
+    {
+      "id": 437,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "B_6"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 438,
+      "type": "message",
+      "entity": "Navor",
+      "message": "I agree. Very fast game so I didn't realize a situation.I want rematch kk ",
+      "entity_type": "player"
+    },
+    {
+      "id": 439,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Tomorrow might be slightly slower, since I'm supposed to have a 1870 live game. Curious to see how that map is.",
+      "entity_type": "player"
+    },
+    {
+      "id": 440,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 441,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "Nord_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 442,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 443,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "HSM_5"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 444,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 445,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "GCL_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 446,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 447,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "Nord_7"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 448,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 449,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "GCL_6"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 450,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 451,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "NFL_1"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 452,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 453,
+      "type": "buy_shares",
+      "entity": "Azureth",
+      "shares": [
+        "Nord_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 454,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 455,
+      "type": "buy_shares",
+      "entity": "willbeplaying",
+      "shares": [
+        "GCL_7"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 456,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 457,
+      "type": "buy_shares",
+      "entity": "Navor",
+      "shares": [
+        "NFL_2"
+      ],
+      "entity_type": "player"
+    },
+    {
+      "id": 458,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 459,
+      "type": "pass",
+      "entity": "Azureth",
+      "entity_type": "player"
+    },
+    {
+      "id": 460,
+      "type": "pass",
+      "entity": "willbeplaying",
+      "entity_type": "player"
+    },
+    {
+      "id": 461,
+      "type": "pass",
+      "entity": "Navor",
+      "entity_type": "player"
+    },
+    {
+      "id": 462,
+      "hex": "F8",
+      "tile": "41-1",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 5,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 463,
+      "city": "62-0-1",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 464,
+      "type": "undo",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 465,
+      "type": "undo",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 466,
+      "hex": "G9",
+      "tile": "9-2",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 467,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 468,
+      "type": "undo",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 469,
+      "city": "67-0-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 470,
+      "type": "run_routes",
+      "entity": "NBDS",
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "H10",
+              "I11",
+              "I9"
+            ],
+            [
+              "H10",
+              "G9",
+              "F8",
+              "E7"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 471,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 472,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 473,
+      "hex": "B10",
+      "tile": "14-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 474,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "D-0",
+          "connections": [
+            [
+              "E3",
+              "E5"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "G7",
+              "H6"
+            ],
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "I9",
+              "I7",
+              "I5",
+              "H4"
+            ],
+            [
+              "H10",
+              "I9"
+            ],
+            [
+              "H12",
+              "H10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 475,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 476,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 477,
+      "hex": "F8",
+      "tile": "45-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 478,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "G7",
+              "F6",
+              "E5"
+            ],
+            [
+              "H4",
+              "G5",
+              "G7"
+            ],
+            [
+              "H2",
+              "H4"
+            ],
+            [
+              "G1",
+              "H2"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 479,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 480,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 481,
+      "hex": "G9",
+      "tile": "20-0",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 482,
+      "type": "undo",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 483,
+      "hex": "I3",
+      "tile": "61-1",
+      "type": "lay_tile",
+      "entity": "Nord",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 484,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "that can't be correct",
+      "entity_type": "player"
+    },
+    {
+      "id": 485,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Paris is giving 60 franks",
+      "entity_type": "player"
+    },
+    {
+      "id": 486,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "J2",
+              "I3"
+            ],
+            [
+              "H4",
+              "I3"
+            ],
+            [
+              "H4",
+              "H6"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 487,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "lol :D",
+      "entity_type": "player"
+    },
+    {
+      "id": 488,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "it is",
+      "entity_type": "player"
+    },
+    {
+      "id": 489,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Apparently it works differently",
+      "entity_type": "player"
+    },
+    {
+      "id": 490,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Is 20/30 Franks PER token on the route.",
+      "entity_type": "player"
+    },
+    {
+      "id": 491,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Which means that the Harwich is actually a 120 Franks for my B, since it's same with ports.",
+      "entity_type": "player"
+    },
+    {
+      "id": 492,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "I though they looked bit lame.",
+      "entity_type": "player"
+    },
+    {
+      "id": 493,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 494,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 495,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "It's also NOT a valid route to run to Paris/port and one other, needs atleast two other revenue locations.",
+      "entity_type": "player"
+    },
+    {
+      "id": 496,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Quirks of the game",
+      "entity_type": "player"
+    },
+    {
+      "id": 497,
+      "hex": "C11",
+      "tile": "23-2",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 498,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "D-1",
+          "connections": [
+            [
+              "E7",
+              "E9",
+              "D10",
+              "C11",
+              "B10"
+            ],
+            [
+              "A9",
+              "B10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 499,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 500,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 501,
+      "hex": "G9",
+      "tile": "20-0",
+      "type": "lay_tile",
+      "entity": "GCL",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 502,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 503,
+      "type": "run_routes",
+      "entity": "GCL",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "I9",
+              "I7",
+              "I5",
+              "H4"
+            ],
+            [
+              "H10",
+              "I9"
+            ],
+            [
+              "H12",
+              "H10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 504,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 505,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 506,
+      "hex": "F10",
+      "tile": "3-0",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 507,
+      "type": "run_routes",
+      "entity": "NBDS",
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "H10",
+              "I11",
+              "I9"
+            ],
+            [
+              "H10",
+              "G9",
+              "F8",
+              "E7"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 508,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 509,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 510,
+      "type": "undo",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 511,
+      "type": "buy_train",
+      "price": 150,
+      "train": "6-1",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 512,
+      "type": "undo",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 513,
+      "type": "undo",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 514,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 515,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 516,
+      "hex": "F6",
+      "tile": "19-0",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 5,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 517,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "E5",
+              "F6",
+              "G7"
+            ],
+            [
+              "H4",
+              "G5",
+              "G7"
+            ],
+            [
+              "H4",
+              "I5",
+              "I3"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 518,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 519,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 520,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 521,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "J2",
+              "I3"
+            ],
+            [
+              "H4",
+              "I3"
+            ],
+            [
+              "H4",
+              "H6"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 522,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 523,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 524,
+      "hex": "C7",
+      "tile": "9-3",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 525,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "D-0",
+          "connections": [
+            [
+              "E3",
+              "E5"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "E5",
+              "F6",
+              "G7"
+            ],
+            [
+              "G7",
+              "H6"
+            ],
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "I9",
+              "I7",
+              "I5",
+              "H4"
+            ],
+            [
+              "H10",
+              "I9"
+            ],
+            [
+              "H12",
+              "H10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 526,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 527,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 528,
+      "hex": "D12",
+      "tile": "7-2",
+      "type": "lay_tile",
+      "entity": "NFL",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 529,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "D-1",
+          "connections": [
+            [
+              "E7",
+              "E9",
+              "D10",
+              "C11",
+              "B10"
+            ],
+            [
+              "A9",
+              "B10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 530,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 531,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 532,
+      "hex": "H8",
+      "tile": "46-0",
+      "type": "lay_tile",
+      "entity": "GCL",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 533,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 534,
+      "type": "run_routes",
+      "entity": "GCL",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "I9",
+              "I7",
+              "I5",
+              "H4"
+            ],
+            [
+              "H10",
+              "I9"
+            ],
+            [
+              "H12",
+              "H10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 535,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 536,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 537,
+      "hex": "F4",
+      "tile": "3-1",
+      "type": "lay_tile",
+      "entity": "NBDS",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 538,
+      "type": "run_routes",
+      "entity": "NBDS",
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "H10",
+              "I11",
+              "I9"
+            ],
+            [
+              "H10",
+              "G9",
+              "F8",
+              "E7"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 539,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 540,
+      "type": "pass",
+      "entity": "NBDS",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 541,
+      "hex": "F6",
+      "tile": "46-1",
+      "type": "lay_tile",
+      "entity": "HSM",
+      "rotation": 5,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 542,
+      "type": "run_routes",
+      "entity": "HSM",
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "E5",
+              "F6",
+              "G7"
+            ],
+            [
+              "H4",
+              "G5",
+              "G7"
+            ],
+            [
+              "H4",
+              "I5",
+              "I3"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 543,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 544,
+      "type": "pass",
+      "entity": "HSM",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 545,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 546,
+      "type": "run_routes",
+      "entity": "Nord",
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "J2",
+              "I3"
+            ],
+            [
+              "H4",
+              "I3"
+            ],
+            [
+              "H4",
+              "H6"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 547,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 548,
+      "type": "pass",
+      "entity": "Nord",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 549,
+      "hex": "G9",
+      "tile": "44-0",
+      "type": "lay_tile",
+      "entity": "B",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 550,
+      "type": "run_routes",
+      "entity": "B",
+      "routes": [
+        {
+          "train": "D-0",
+          "connections": [
+            [
+              "E3",
+              "E5"
+            ],
+            [
+              "E5",
+              "D6"
+            ],
+            [
+              "E7",
+              "D6"
+            ],
+            [
+              "E5",
+              "E7"
+            ],
+            [
+              "E5",
+              "F6",
+              "G7"
+            ],
+            [
+              "G7",
+              "F8",
+              "F10"
+            ],
+            [
+              "H6",
+              "I7",
+              "H8",
+              "G9",
+              "F10"
+            ],
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "I9",
+              "I7",
+              "I5",
+              "H4"
+            ],
+            [
+              "H10",
+              "I9"
+            ],
+            [
+              "H12",
+              "H10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 551,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 552,
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 553,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Soo, shall I create a rematch? Not feeling like continuing right away, perhaps like tomorrow morning or evening.",
+      "entity_type": "player"
+    },
+    {
+      "id": 554,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 555,
+      "type": "run_routes",
+      "entity": "NFL",
+      "routes": [
+        {
+          "train": "D-1",
+          "connections": [
+            [
+              "E7",
+              "E9",
+              "D10",
+              "C11",
+              "B10"
+            ],
+            [
+              "A9",
+              "B10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 556,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 557,
+      "type": "pass",
+      "entity": "NFL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 558,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "ye sure",
+      "entity_type": "player"
+    },
+    {
+      "id": 559,
+      "type": "message",
+      "entity": "willbeplaying",
+      "message": "gg",
+      "entity_type": "player"
+    },
+    {
+      "id": 560,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "sorry for the massacre.",
+      "entity_type": "player"
+    },
+    {
+      "id": 561,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 562,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 563,
+      "type": "run_routes",
+      "entity": "GCL",
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "I9",
+              "I7",
+              "I5",
+              "H4"
+            ],
+            [
+              "H10",
+              "I9"
+            ],
+            [
+              "H12",
+              "H10"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 564,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 565,
+      "type": "pass",
+      "entity": "GCL",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 566,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "It's up",
+      "entity_type": "player"
+    },
+    {
+      "id": 567,
+      "type": "message",
+      "entity": "Azureth",
+      "message": "Just to get it running, but I probably won't make moves till tomorrow.",
+      "entity_type": "player"
+    }
+  ],
+  "loaded": true,
+  "created_at": 1593079161,
+  "updated_at": 1593191288
+}

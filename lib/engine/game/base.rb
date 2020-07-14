@@ -346,9 +346,7 @@ module Engine
         active_players.map(&:name)
       end
 
-      # Initialize actions respecting the undo state
-      def initialize_actions(actions)
-        @loading = true unless @strict
+      def self.filtered_actions(actions)
         active_undos = []
         filtered_actions = Array.new(actions.size)
 
@@ -370,7 +368,14 @@ module Engine
             filtered_actions[index] = action
           end
         end
+        return filtered_actions, active_undos
+      end
 
+      # Initialize actions respecting the undo state
+      def initialize_actions(actions)
+        @loading = true unless @strict
+
+        filtered_actions, active_undos = self.class.filtered_actions(actions)
         @undo_possible = false
         # replay all actions with a copy
         filtered_actions.each.with_index do |action, index|

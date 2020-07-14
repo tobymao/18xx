@@ -130,3 +130,10 @@ task 'stackprof', [:json] do |_task, args|
     end
   end
 end
+
+desc 'Migrate JSON'
+task 'migrate_json', [:json] do |_task, args|
+  require_relative 'lib/engine'
+  require_relative 'migrate_game'
+  migrate_json(args[:json])
+end
