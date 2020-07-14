@@ -41,7 +41,8 @@ def attempt_repair(engine, players, data)
       puts "Break at #{action}"
       repair_type = repair(game, filtered_actions, action)
       if repair_type == :inplace
-        data['actions'][action['id']-1]=action
+        action_idx = data['actions'].index {|a| a['id'] == action['id']}
+        data['actions'][action_idx]=action
       else
         # Added or moved actions... destroy undo states
         data['actions']=filtered_actions
