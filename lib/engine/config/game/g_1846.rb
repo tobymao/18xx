@@ -176,7 +176,6 @@ module Engine
         {
           "type": "token",
           "owner_type":"corporation",
-          "when": "sold",
           "hexes": [
             "D6"
           ],
@@ -187,8 +186,7 @@ module Engine
         {
           "type": "reservation",
           "hex": "D6",
-          "city": 3,
-          "when": "sold"
+          "city": 3
         }
       ]
     },

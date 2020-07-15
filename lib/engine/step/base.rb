@@ -30,11 +30,21 @@ module Engine
 
       def available_hex(hex); end
 
-      def process_pass(_action)
+      def log_pass(entity)
+        @log << "#{entity.name} passes #{description.downcase}"
+      end
+
+      def log_skip(entity)
+        @log << "#{entity.name} skips #{description.downcase}"
+      end
+
+      def process_pass(action)
+        log_pass(action.entity)
         pass!
       end
 
       def skip!
+        log_skip(current_entity)
         pass!
       end
 
