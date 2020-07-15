@@ -43,6 +43,7 @@ module Engine
         # As a user discards trains after all are bought
         # wait until the pass occurs to flag to discard trains
         @round.check_crowded_corps = true
+        @last_share_sold_price = nil
         super
       end
 
