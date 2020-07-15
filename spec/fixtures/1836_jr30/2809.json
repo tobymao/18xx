@@ -545,20 +545,6 @@
       "entity_type": "corporation"
     },
     {
-      "id": 65,
-      "type": "buy_train",
-      "price": 180,
-      "train": "3-1",
-      "entity": "GCL",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 66,
-      "type": "undo",
-      "entity": "GCL",
-      "entity_type": "corporation"
-    },
-    {
       "id": 67,
       "type": "pass",
       "entity": "GCL",
@@ -585,20 +571,6 @@
       "type": "pass",
       "entity": "GCL",
       "entity_type": "corporation"
-    },
-    {
-      "id": 71,
-      "type": "par",
-      "entity": "Azureth",
-      "corporation": "B",
-      "entity_type": "player",
-      "share_price": "90,1,6"
-    },
-    {
-      "id": 72,
-      "type": "undo",
-      "entity": "Azureth",
-      "entity_type": "player"
     },
     {
       "id": 73,
@@ -841,59 +813,6 @@
       "entity_type": "player"
     },
     {
-      "id": 107,
-      "hex": "H6",
-      "tile": "53-0",
-      "type": "lay_tile",
-      "entity": "B",
-      "rotation": 1,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 108,
-      "type": "buy_train",
-      "price": 180,
-      "train": "3-1",
-      "entity": "B",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 109,
-      "type": "pass",
-      "entity": "B",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 110,
-      "type": "pass",
-      "entity": "B",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 111,
-      "type": "undo",
-      "entity": "Nord",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 112,
-      "type": "undo",
-      "entity": "B",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 113,
-      "type": "undo",
-      "entity": "B",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 114,
-      "type": "undo",
-      "entity": "B",
-      "entity_type": "corporation"
-    },
-    {
       "id": 115,
       "hex": "H4",
       "tile": "14-0",
@@ -926,21 +845,6 @@
       "id": 119,
       "type": "pass",
       "entity": "B",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 120,
-      "hex": "G3",
-      "tile": "8-2",
-      "type": "lay_tile",
-      "entity": "Nord",
-      "rotation": 5,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 121,
-      "type": "undo",
-      "entity": "Nord",
       "entity_type": "corporation"
     },
     {
@@ -1077,19 +981,6 @@
       "entity_type": "corporation"
     },
     {
-      "id": 133,
-      "kind": "payout",
-      "type": "dividend",
-      "entity": "HSM",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 134,
-      "type": "undo",
-      "entity": "HSM",
-      "entity_type": "corporation"
-    },
-    {
       "id": 135,
       "kind": "payout",
       "type": "dividend",
@@ -1109,12 +1000,6 @@
       "type": "lay_tile",
       "entity": "GCL",
       "rotation": 1,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 138,
-      "type": "pass",
-      "entity": "GCL",
       "entity_type": "corporation"
     },
     {
@@ -1369,19 +1254,6 @@
       "entity_type": "corporation"
     },
     {
-      "id": 161,
-      "kind": "payout",
-      "type": "dividend",
-      "entity": "GCL",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 162,
-      "type": "undo",
-      "entity": "GCL",
-      "entity_type": "corporation"
-    },
-    {
       "id": 163,
       "kind": "withhold",
       "type": "dividend",
@@ -1538,21 +1410,6 @@
       "id": 183,
       "type": "pass",
       "entity": "willbeplaying",
-      "entity_type": "player"
-    },
-    {
-      "id": 184,
-      "type": "buy_shares",
-      "entity": "Navor",
-      "shares": [
-        "B_6"
-      ],
-      "entity_type": "player"
-    },
-    {
-      "id": 185,
-      "type": "undo",
-      "entity": "Navor",
       "entity_type": "player"
     },
     {
@@ -1847,34 +1704,6 @@
       "entity_type": "corporation"
     },
     {
-      "id": 219,
-      "type": "buy_train",
-      "price": 330,
-      "train": "3-2",
-      "entity": "NFL",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 220,
-      "type": "undo",
-      "entity": "HSM",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 221,
-      "type": "buy_train",
-      "price": 370,
-      "train": "3-2",
-      "entity": "NFL",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 222,
-      "type": "undo",
-      "entity": "HSM",
-      "entity_type": "corporation"
-    },
-    {
       "id": 223,
       "type": "pass",
       "entity": "NFL",
@@ -1940,33 +1769,6 @@
       "kind": "payout",
       "type": "dividend",
       "entity": "HSM",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 228,
-      "hex": "H10",
-      "tile": "65-0",
-      "type": "lay_tile",
-      "entity": "GCL",
-      "rotation": 0,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 229,
-      "type": "pass",
-      "entity": "GCL",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 230,
-      "type": "undo",
-      "entity": "GCL",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 231,
-      "type": "undo",
-      "entity": "GCL",
       "entity_type": "corporation"
     },
     {
@@ -2373,18 +2175,6 @@
       "entity_type": "player"
     },
     {
-      "id": 264,
-      "type": "undo",
-      "entity": "Azureth",
-      "entity_type": "player"
-    },
-    {
-      "id": 265,
-      "type": "redo",
-      "entity": "Navor",
-      "entity_type": "player"
-    },
-    {
       "id": 266,
       "type": "buy_shares",
       "entity": "Azureth",
@@ -2627,21 +2417,6 @@
       "entity_type": "player"
     },
     {
-      "id": 295,
-      "hex": "E11",
-      "tile": "59-0",
-      "type": "lay_tile",
-      "entity": "NBDS",
-      "rotation": 2,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 296,
-      "type": "undo",
-      "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
       "id": 297,
       "hex": "E11",
       "tile": "59-0",
@@ -2672,21 +2447,6 @@
       "id": 300,
       "type": "pass",
       "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 301,
-      "hex": "G7",
-      "tile": "63-2",
-      "type": "lay_tile",
-      "entity": "B",
-      "rotation": 0,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 302,
-      "type": "undo",
-      "entity": "B",
       "entity_type": "corporation"
     },
     {
@@ -2781,23 +2541,11 @@
       "entity_type": "corporation"
     },
     {
-      "id": 309,
-      "type": "bankrupt",
-      "entity": "HSM",
-      "entity_type": "corporation"
-    },
-    {
       "id": 310,
       "type": "message",
       "entity": "Navor",
       "message": "so difficult game...",
       "entity_type": "player"
-    },
-    {
-      "id": 311,
-      "type": "undo",
-      "entity": "HSM",
-      "entity_type": "corporation"
     },
     {
       "id": 312,
@@ -2893,31 +2641,6 @@
       "entity_type": "corporation"
     },
     {
-      "id": 322,
-      "kind": "payout",
-      "type": "dividend",
-      "entity": "NFL",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 323,
-      "type": "pass",
-      "entity": "NFL",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 324,
-      "type": "undo",
-      "entity": "GCL",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 325,
-      "type": "undo",
-      "entity": "NFL",
-      "entity_type": "corporation"
-    },
-    {
       "id": 326,
       "kind": "payout",
       "type": "dividend",
@@ -3006,39 +2729,6 @@
       "entity_type": "player"
     },
     {
-      "id": 337,
-      "type": "sell_shares",
-      "entity": "willbeplaying",
-      "shares": [
-        "Nord_2",
-        "Nord_3"
-      ],
-      "percent": 20,
-      "entity_type": "player"
-    },
-    {
-      "id": 338,
-      "type": "sell_shares",
-      "entity": "willbeplaying",
-      "shares": [
-        "NFL_1"
-      ],
-      "percent": 10,
-      "entity_type": "player"
-    },
-    {
-      "id": 339,
-      "type": "undo",
-      "entity": "NFL",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 340,
-      "type": "undo",
-      "entity": "NFL",
-      "entity_type": "corporation"
-    },
-    {
       "id": 341,
       "type": "sell_shares",
       "entity": "willbeplaying",
@@ -3079,20 +2769,6 @@
       "type": "lay_tile",
       "entity": "NBDS",
       "rotation": 1,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 346,
-      "city": "64-0-1",
-      "slot": 0,
-      "type": "place_token",
-      "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 347,
-      "type": "undo",
-      "entity": "NBDS",
       "entity_type": "corporation"
     },
     {
@@ -3141,21 +2817,6 @@
       "id": 351,
       "type": "pass",
       "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 352,
-      "hex": "E11",
-      "tile": "68-0",
-      "type": "lay_tile",
-      "entity": "HSM",
-      "rotation": 0,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 353,
-      "type": "undo",
-      "entity": "HSM",
       "entity_type": "corporation"
     },
     {
@@ -3215,55 +2876,12 @@
       "entity_type": "corporation"
     },
     {
-      "id": 358,
-      "hex": "B10",
-      "tile": "14-0",
-      "type": "lay_tile",
-      "entity": "B",
-      "rotation": 1,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 359,
-      "city": "14-0-0",
-      "slot": 1,
-      "type": "place_token",
-      "entity": "B",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 360,
-      "type": "undo",
-      "entity": "B",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 361,
-      "type": "undo",
-      "entity": "B",
-      "entity_type": "corporation"
-    },
-    {
       "id": 362,
       "hex": "D6",
       "tile": "54-0",
       "type": "lay_tile",
       "entity": "B",
       "rotation": 3,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 363,
-      "city": "63-2-0",
-      "slot": 1,
-      "type": "place_token",
-      "entity": "B",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 364,
-      "type": "undo",
-      "entity": "B",
       "entity_type": "corporation"
     },
     {
@@ -3395,33 +3013,6 @@
       "entity_type": "corporation"
     },
     {
-      "id": 374,
-      "hex": "F8",
-      "tile": "24-1",
-      "type": "lay_tile",
-      "entity": "NBDS",
-      "rotation": 0,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 375,
-      "type": "pass",
-      "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 376,
-      "type": "undo",
-      "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 377,
-      "type": "undo",
-      "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
       "id": 378,
       "hex": "F8",
       "tile": "23-1",
@@ -3473,21 +3064,6 @@
       "id": 382,
       "type": "pass",
       "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 383,
-      "hex": "I3",
-      "tile": "61-1",
-      "type": "lay_tile",
-      "entity": "Nord",
-      "rotation": 0,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 384,
-      "type": "undo",
-      "entity": "Nord",
       "entity_type": "corporation"
     },
     {
@@ -4186,53 +3762,12 @@
       "entity_type": "player"
     },
     {
-      "id": 462,
-      "hex": "F8",
-      "tile": "41-1",
-      "type": "lay_tile",
-      "entity": "NBDS",
-      "rotation": 5,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 463,
-      "city": "62-0-1",
-      "slot": 1,
-      "type": "place_token",
-      "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 464,
-      "type": "undo",
-      "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 465,
-      "type": "undo",
-      "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
       "id": 466,
       "hex": "G9",
       "tile": "9-2",
       "type": "lay_tile",
       "entity": "NBDS",
       "rotation": 2,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 467,
-      "type": "pass",
-      "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 468,
-      "type": "undo",
-      "entity": "NBDS",
       "entity_type": "corporation"
     },
     {
@@ -4425,21 +3960,6 @@
       "id": 480,
       "type": "pass",
       "entity": "HSM",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 481,
-      "hex": "G9",
-      "tile": "20-0",
-      "type": "lay_tile",
-      "entity": "Nord",
-      "rotation": 2,
-      "entity_type": "corporation"
-    },
-    {
-      "id": 482,
-      "type": "undo",
-      "entity": "Nord",
       "entity_type": "corporation"
     },
     {
@@ -4707,45 +4227,6 @@
           ]
         }
       ],
-      "entity_type": "corporation"
-    },
-    {
-      "id": 508,
-      "kind": "payout",
-      "type": "dividend",
-      "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 509,
-      "type": "pass",
-      "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 510,
-      "type": "undo",
-      "entity": "HSM",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 511,
-      "type": "buy_train",
-      "price": 150,
-      "train": "6-1",
-      "entity": "NBDS",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 512,
-      "type": "undo",
-      "entity": "HSM",
-      "entity_type": "corporation"
-    },
-    {
-      "id": 513,
-      "type": "undo",
-      "entity": "NBDS",
       "entity_type": "corporation"
     },
     {

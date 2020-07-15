@@ -6,20 +6,31 @@ def repair(game, actions, broken_action)
   optionalish_actions=['message', 'buy_company']
   action_idx = actions.index(broken_action)
 
+  prev_actions = actions[0..action_idx-1]
+  prev_action = prev_actions[prev_actions.rindex {|a| !optionalish_actions.include?(a['type']) }]
+  next_actions = actions[action_idx+1..]
+  next_action = next_actions.find {|a| !optionalish_actions.include?(a['type']) }
+  puts next_action
   if broken_action['type']=='move_token'
     # Move token is now place token.
     broken_action['type']='place_token'
     return :inplace
-  elsif broken_action['type']=='pass' && game.is_a?(Engine::Game::G1836Jr30)
-    # Shouldn't need to pass when buying trains
-    prev_actions = actions[0..action_idx-1]
-    prev_action = prev_actions[prev_actions.rindex {|a| !optionalish_actions.include?(a['type']) }]
-    puts prev_action
-    if prev_action['type']=='buy_train'
-      # Delete the pass
+  elsif broken_action['type']=='pass'
+    if next_action['type']=='run_routes'
+      # Lay token sometimes needed pass when it shouldn't have
       actions.delete(broken_action)
       return :deleted
     end
+
+    if game.is_a?(Engine::Game::G1836Jr30)
+      # Shouldn't need to pass when buying trains
+      if prev_action['type']=='buy_train'
+        # Delete the pass
+        actions.delete(broken_action)
+        return :deleted
+      end
+    end
+
   end
   raise Exception, 'Cannot fix'
 end

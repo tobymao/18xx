@@ -62,6 +62,7 @@ describe 'Assets' do
       expect(render(app_route: '/signup')).to include('Signup')
     end
 
+
     context '/map' do
       {
         # games with config but not full implementation; just do a quick spot check
@@ -148,23 +149,32 @@ describe 'Assets' do
       ['1846', 2987, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
     ].freeze
 
+    def render_game(jsonfile, no_actions, string)
+      data = JSON.parse(File.read(jsonfile))
+      data['actions'] = data['actions'].take(no_actions) if no_actions
+      data[:loaded] = true
+      needs = {
+        game_data: data,
+        user: data['user'],
+        disable_user_errors: true,
+      }
+
+      html = render(app_route: "/game/#{needs[:game_data]['id']}", **needs)
+      strings = Array(string)
+      strings.each { |str| expect(html).to include(str) }
+    end
+
     TEST_CASES.each do |game, game_id, action, step, string|
       describe game do
         it "renders #{step}" do
-          data = JSON.parse(File.read("spec/fixtures/#{game}/#{game_id}.json"))
-          data['actions'] = data['actions'].take(action) if action
-          data[:loaded] = true
-          needs = {
-            game_data: data,
-            user: data['user'],
-            disable_user_errors: true,
-          }
-
-          html = render(app_route: "/game/#{needs[:game_data]['id']}", **needs)
-          strings = Array(string)
-          strings.each { |str| expect(html).to include(str) }
+          render_game("spec/fixtures/#{game}/#{game_id}.json", action, string)
         end
       end
+    end
+
+
+    it 'renders tutorial to the end' do
+      render_game("public/assets/tutorial.json", nil, 'Good luck and have fun!')
     end
   end
 end
