@@ -9,7 +9,7 @@ module Engine
 
       def actions(entity)
         return [] if entity.minor?
-        return [] if !redeemable_shares(entity) && !issuable_shares(entity)
+        return [] if redeemable_shares(entity).empty? && issuable_shares(entity).empty?
 
         ACTIONS
       end
