@@ -60,7 +60,7 @@ module Engine
       end
 
       def adjust_token_price_ability!(entity, token, hex)
-        if @teleported
+        if entity.abilities(:teleport).any?(&:used?)
           token.price = 0
           return [token, :teleport]
         end

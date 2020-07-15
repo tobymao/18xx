@@ -6,18 +6,6 @@ module Engine
   module Step
     module Tracker
       def lay_tile(action)
-        #   previous_tile = action.hex.tile
-
-        #   hex_id = action.hex.id
-
-        #   # companies with block_hexes should block hexes
-
-        #   lay_tile(action)
-        #   @current_entity.abilities(:teleport) do |ability, _|
-        #     @teleported = ability.hexes.include?(hex_id) &&
-        #     ability.tiles.include?(action.tile.name)
-        #   end
-
         entity = action.entity
         tile = action.tile
         hex = action.hex
@@ -48,6 +36,10 @@ module Engine
           next if !ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name)
 
           free = ability.free
+        end
+
+        entity.abilities(:teleport) do |ability, _|
+          ability.use! if ability.hexes.include?(hex.id) && ability.tiles.include?(tile.name)
         end
 
         terrain = old_tile.terrain

@@ -81,7 +81,6 @@ module Engine
 
       corporation.abilities(:token) do |ability, c|
         next unless c == corporation # Private company token ability uses round/special.rb.
-
         next unless ability.teleport_price
 
         ability.hexes.each do |hex_id|
@@ -98,7 +97,7 @@ module Engine
           hex.neighbors.each { |e, _| hexes[hex][e] = true }
           hex.tile.cities.each do |node|
             nodes[node] = true
-            yield node if block_given?
+            yield node if ability.used? && block_given?
           end
         end
       end
