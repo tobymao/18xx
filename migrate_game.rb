@@ -10,6 +10,7 @@ def repair(game, actions, broken_action)
   prev_action = prev_actions[prev_actions.rindex {|a| !optionalish_actions.include?(a['type']) }]
   next_actions = actions[action_idx+1..]
   next_action = next_actions.find {|a| !optionalish_actions.include?(a['type']) }
+  puts game.active_step
   puts next_action
   if broken_action['type']=='move_token'
     # Move token is now place token.
@@ -30,7 +31,10 @@ def repair(game, actions, broken_action)
         return :deleted
       end
     end
-
+  elsif game.active_step.is_a?(Engine::Step::TrackAndToken)
+    pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+    actions.insert(action_idx, pass)
+    return :inserted
   end
   raise Exception, 'Cannot fix'
 end
@@ -41,6 +45,7 @@ def attempt_repair(engine, players, data)
     id: data['id'],
     actions: [],
   )
+  game.instance_variable_set(:@loading, true)
   # Locate the break
   filtered_actions, _active_undos = engine.filtered_actions(data['actions'])
   filtered_actions.compact!
@@ -49,13 +54,17 @@ def attempt_repair(engine, players, data)
     begin
       game.process_action(action)
     rescue Engine::GameError => e
-      puts "Break at #{action}"
+      puts "Break at #{e} #{action}"
       repair_type = repair(game, filtered_actions, action)
       if repair_type == :inplace
         action_idx = data['actions'].index {|a| a['id'] == action['id']}
         data['actions'][action_idx]=action
       else
-        # Added or moved actions... destroy undo states
+        # Added or moved actions... destroy undo states and renumber.
+        filtered_actions.each_with_index do |a, idx|
+          a['original_id'] = a['id'] unless a.include?('original_id')
+          a['id'] = idx+1
+        end
         data['actions']=filtered_actions
       end
       break
@@ -76,7 +85,7 @@ def migrate_json(filename, fixOne=true)
       )
     rescue Engine::GameError => e
       # Need to actually repair
-      puts "Repairing..."
+      puts "Repairing... #{e}"
       attempt_repair(engine, players, data)
       File.write(filename,JSON.pretty_generate(data))
 
