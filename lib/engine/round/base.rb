@@ -85,7 +85,7 @@ module Engine
 
           blocking || process
         end
-        raise GameError, "No step found for action #{type}" unless step
+        raise GameError, "No step found for action #{type} at #{action.id}" unless step
 
         step.send("process_#{action.type}", action)
 
@@ -94,7 +94,6 @@ module Engine
       end
 
       def actions_for(entity)
-
         actions = []
         @steps.each do |step|
           next unless step.active?
@@ -124,7 +123,6 @@ module Engine
 
       def clear_cache!
         @active_step = nil
-        @available_actions = nil
       end
 
       private

@@ -14,15 +14,10 @@ module Engine
       setup_phase!
     end
 
-    def process_action(action)
-      case action
-      when Action::BuyTrain
-        entity = action.entity
-        train = action.train
-        next! if train.sym == @next_on
-        rust_trains!(train, entity)
-        close_companies_on_train!(entity)
-      end
+    def buying_train!(entity, train)
+      next! if train.sym == @next_on
+      rust_trains!(train, entity)
+      close_companies_on_train!(entity)
     end
 
     def current
@@ -45,6 +40,7 @@ module Engine
       @tiles = Array(phase[:tiles])
       @events = phase[:events] || []
       @next_on = @phases[@index + 1]&.dig(:on)
+
       @log << "-- Phase #{@name.capitalize} " \
         "(Operating Rounds: #{@operating_rounds}, Train Limit: #{@train_limit}, "\
         "Available Tiles: #{@tiles.map(&:capitalize).join(', ')} "\

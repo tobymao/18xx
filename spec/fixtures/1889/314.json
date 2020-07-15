@@ -2857,26 +2857,26 @@
       "type": "buy_train"
     },
     {
-      "entity": "AR",
-      "entity_type": "corporation",
-      "id": 335,
-      "price": 450,
-      "train": "5-1",
-      "type": "buy_train"
-    },
-    {
       "entity": "UR",
       "entity_type": "corporation",
-      "id": 336,
+      "id": 335,
       "train": "3-0",
       "type": "discard_train"
     },
     {
       "entity": "SR",
       "entity_type": "corporation",
-      "id": 337,
+      "id": 336,
       "train": "3-2",
       "type": "discard_train"
+    },
+    {
+      "entity": "AR",
+      "entity_type": "corporation",
+      "id": 337,
+      "price": 450,
+      "train": "5-1",
+      "type": "buy_train"
     },
     {
       "entity": "IR",

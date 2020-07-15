@@ -62,7 +62,6 @@ describe 'Assets' do
       expect(render(app_route: '/signup')).to include('Signup')
     end
 
-
     context '/map' do
       {
         # games with config but not full implementation; just do a quick spot check
@@ -137,8 +136,12 @@ describe 'Assets' do
       ['1889', 314, 22, 'buy_train', 'KO must buy an available train'],
       ['1889', 314, 46, 'run_routes', '1889: Operating Round 2.1 (of 1) - Run Routes'],
       ['1889', 314, 47, 'dividends', '1889: Operating Round 2.1 (of 1) - Pay or Withhold Dividends'],
-      ['1889', 314, 78, 'buy_company', ['1889: Operating Round 3.1 (of 1) - Buy Companies', 'Owning corporation may ignore building cost for mountain hexes']],
-      ['1889', 314, 81, 'track_and_buy_company', ['1889: Operating Round 3.1 (of 1) - Lay Track', 'Blocks Takamatsu (K4) while owned by a player.']],
+      ['1889', 314, 78, 'buy_company',
+       ['1889: Operating Round 3.1 (of 1) - Buy Companies',
+        'Owning corporation may ignore building cost for mountain hexes']],
+      ['1889', 314, 81, 'track_and_buy_company',
+       ['1889: Operating Round 3.1 (of 1) - Lay Track',
+        'Blocks Takamatsu (K4) while owned by a player.']],
       ['1889', 314, 336, 'discard_train', 'Discard Trains'],
       ['1889', 314, 345, 'buy_train_emr', 'TR must buy an available train'],
       ['1889', 314, nil, 'endgame', '1889: Operating Round 7.1 (of 3) - Game Over - Bankruptcy'],
@@ -172,9 +175,8 @@ describe 'Assets' do
       end
     end
 
-
     it 'renders tutorial to the end' do
-      render_game("public/assets/tutorial.json", nil, 'Good luck and have fun!')
+      render_game('public/assets/tutorial.json', nil, 'Good luck and have fun!')
     end
   end
 end

@@ -9,22 +9,17 @@ module Engine
       ACTIONS = %w[discard_train].freeze
 
       def actions(entity)
-        puts entity.name
         return [] unless crowded_corps.include?(entity)
 
         ACTIONS
       end
 
       def active_entities
-        puts crowded_corps&.map(&:name)
         [crowded_corps&.first].compact
       end
 
       def active?
-        # Crowded corps is done after the entire of buy trains is completed
-        @round.check_crowded_corps = crowded_corps.any? if @round.check_crowded_corps
-
-        @round.check_crowded_corps
+        crowded_corps.any?
       end
 
       def description
@@ -35,7 +30,6 @@ module Engine
         train = action.train
         @game.depot.reclaim_train(train)
         @log << "#{action.entity.name} discards #{train.name}"
-        @round.check_crowded_corps = false if crowded_corps.none?
       end
 
       def crowded_corps

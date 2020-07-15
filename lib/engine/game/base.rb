@@ -368,7 +368,7 @@ module Engine
             filtered_actions[index] = action
           end
         end
-        return filtered_actions, active_undos
+        [filtered_actions, active_undos]
       end
 
       # Initialize actions respecting the undo state
@@ -392,7 +392,6 @@ module Engine
       end
 
       def process_action(action)
-        puts action.to_h
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
 
@@ -401,12 +400,10 @@ module Engine
           return clone(@actions)
         end
 
-        @phase.process_action(action)
         # company special power actions are processed by a different round handler
         if action.entity.is_a?(Company)
           @special.process_action(action)
         else
-          # puts @round.to_s
           @round.process_action(action)
         end
 
@@ -417,7 +414,6 @@ module Engine
 
         action_processed(action)
         @actions << action
-
 
         end_game! if game_end_reason&.last == :immediate
         while @round.finished? && !@finished

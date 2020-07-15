@@ -33,16 +33,7 @@ module Engine
         true
       end
 
-      def round_state
-        {
-          check_crowded_corps: false,
-        }
-      end
-
       def pass!
-        # As a user discards trains after all are bought
-        # wait until the pass occurs to flag to discard trains
-        @round.check_crowded_corps = true
         @last_share_sold_price = nil
         super
       end
@@ -70,6 +61,7 @@ module Engine
         train = action.train
         price = action.price
         exchange = action.exchange
+        @game.phase.buying_train!(entity, train)
         # Check if the train is actually buyable in the current situation
         raise GameError, 'Not a buyable train' unless buyable_trains.include?(train)
 
