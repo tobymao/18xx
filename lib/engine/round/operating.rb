@@ -35,6 +35,8 @@ module Engine
       end
 
       def start_operating
+        return if @entities.empty?
+
         entity = @entities[@entity_index]
         entity.trains.each { |train| train.operated = false }
         @game.place_home_token(entity) if @home_token_timing == :operate
