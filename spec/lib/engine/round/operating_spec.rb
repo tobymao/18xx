@@ -50,7 +50,7 @@ module Engine
     def fake_buy_train(train, corp)
       game.depot.remove_train(train)
       corp.cash += train.price
-      game.phase.process_action(Action::BuyTrain.new(corp, train: train, price: train.price))
+      game.phase.buying_train!(corp, train)
       corp.buy_train(train, train.price)
     end
 
@@ -186,7 +186,7 @@ module Engine
             corporation.cash = 1000
             train = subject.active_step.buyable_trains.first
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
-            game.phase.process_action(action)
+            fake_buy_train(train, corporation)
             subject.process_action(action)
             expect(corporation.trains.size).to eq(1)
           end
@@ -207,7 +207,7 @@ module Engine
             corporation.cash = 1
             train = subject.active_step.buyable_trains.first
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
-            game.phase.process_action(action)
+            fake_buy_train(train, corporation)
             expect { subject.process_action(action) }.to raise_error GameError
           end
 
@@ -221,7 +221,7 @@ module Engine
             corporation.cash = subject.active_step.buyable_trains.first.price
             train = subject.active_step.buyable_trains.find { |x| x.name == 'D' }
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
-            game.phase.process_action(action)
+            fake_buy_train(train, corporation)
             expect { subject.process_action(action) }.to raise_error GameError
           end
         end
@@ -330,7 +330,7 @@ module Engine
           corporation.cash = subject.active_step.buyable_trains.first.price
           train = subject.active_step.buyable_trains.find { |x| x.name == 'D' }
           action = Action::BuyTrain.new(corporation, train: train, price: train.price)
-          game.phase.process_action(action)
+          fake_buy_train(train, corporation)
           expect { subject.process_action(action) }.to raise_error GameError
         end
 
@@ -341,7 +341,7 @@ module Engine
           train = corporation2.trains.first
           player.cash = train.price
           action = Action::BuyTrain.new(corporation, train: train, price: train.price)
-          game.phase.process_action(action)
+          fake_buy_train(train, corporation)
           subject.process_action(action)
         end
         it 'does not allow purchasing another players train for above price' do
@@ -351,7 +351,7 @@ module Engine
           train = corporation2.trains.first
           player.cash = train.price
           action = Action::BuyTrain.new(corporation, train: train, price: train.price + 1)
-          game.phase.process_action(action)
+          fake_buy_train(train, corporation)
           expect { subject.process_action(action) }.to raise_error GameError
         end
       end

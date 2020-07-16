@@ -47,7 +47,7 @@ module Engine
       end
 
       def min_token_price(token)
-        return 0 if @teleported
+        return 0 if teleported?(token.corporation)
 
         prices = [token.price]
 
@@ -59,8 +59,12 @@ module Engine
         prices.compact.min
       end
 
+      def teleported?(entity)
+        entity.abilities(:teleport).any?(&:used?)
+      end
+
       def adjust_token_price_ability!(entity, token, hex)
-        if entity.abilities(:teleport).any?(&:used?)
+        if teleported?(entity)
           token.price = 0
           return [token, :teleport]
         end

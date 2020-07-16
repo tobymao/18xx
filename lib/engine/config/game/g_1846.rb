@@ -181,6 +181,7 @@ module Engine
           ],
           "price": 0,
           "teleport_price": 0,
+          "count": 1,
           "extra": true
         },
         {
@@ -447,6 +448,7 @@ module Engine
             "H12"
           ],
           "price": 40,
+          "count": 1,
           "teleport_price": 100
         },
         {
@@ -492,6 +494,7 @@ module Engine
           "hexes": [
             "D20"
           ],
+          "count": 1,
           "price": 40
         },
         {
@@ -553,6 +556,7 @@ module Engine
           "hexes": [
             "I5"
           ],
+          "count": 1,
           "price": 40
         },
         {

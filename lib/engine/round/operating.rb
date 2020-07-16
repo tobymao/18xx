@@ -35,12 +35,11 @@ module Engine
       end
 
       def start_operating
-        return if finished?
-
-        @game.log << "#{current_entity.owner.name} operates #{current_entity.name}"
-        current_entity.trains.each { |train| train.operated = false }
-        @game.place_home_token(current_entity) if @home_token_timing == :operate
+        entity = @entities[@entity_index]
+        entity.trains.each { |train| train.operated = false }
+        @game.place_home_token(entity) if @home_token_timing == :operate
         skip_steps
+        @game.log << "#{entity.owner.name} operates #{entity.name}" unless finished?
       end
 
       def recalculate_order

@@ -11,6 +11,8 @@ module Engine
 
       def actions(entity)
         actions = []
+        return actions if entity != current_entity
+
         actions << 'lay_tile' if can_lay_tile?(entity)
         actions << 'place_token' if can_place_token?(entity)
         actions << 'pass' if actions.any?

@@ -28,8 +28,8 @@ module Engine
 
         hex.lay(tile)
 
-        check_track_restrictions!(entity, old_tile, tile) unless @game.loading
         @game.graph.clear
+        check_track_restrictions!(entity, old_tile, tile) unless @game.loading
         free = false
 
         entity.abilities(:tile_lay) do |ability|

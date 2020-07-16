@@ -124,7 +124,7 @@ module Engine
           hex = action.city.hex
 
           placed = false
-          company.abilities(:token) do |_, _|
+          company.abilities(:token) do
             next unless city.reserved_by?(company)
 
             token = action.token

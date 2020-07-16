@@ -145,11 +145,11 @@ describe 'Assets' do
       ['1889', 314, 336, 'discard_train', 'Discard Trains'],
       ['1889', 314, 345, 'buy_train_emr', 'TR must buy an available train'],
       ['1889', 314, nil, 'endgame', '1889: Operating Round 7.1 (of 3) - Game Over - Bankruptcy'],
-      ['1846', 2987, 0, 'draft', '1846: Draft Round 1 - Draft Companies'],
-      ['1846', 2987, 10, 'draft', 'Mail Contract'],
-      ['1846', 2987, 14, 'lay_track_or_token', '1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track'],
-      ['1846', 2987, 45, 'issue_shares', '1846: Operating Round 2.1 (of 2) - Issue or Redeem Shares'],
-      ['1846', 2987, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
+      ['1846', 4123, 0, 'draft', '1846: Draft Round 1 - Draft Companies'],
+      ['1846', 4123, 14, 'draft', 'Mail Contract'],
+      ['1846', 4123, 42, 'lay_track_or_token', '1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track'],
+      ['1846', 4123, 50, 'issue_shares', '1846: Operating Round 1.1 (of 2) - Issue or Redeem Shares'],
+      ['1846', 4123, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
     ].freeze
 
     def render_game(jsonfile, no_actions, string)

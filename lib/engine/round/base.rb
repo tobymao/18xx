@@ -20,8 +20,8 @@ module Engine
       def initialize(game, steps, **opts)
         @game = game
         @entity_index = 0
-        @entities = select_entities
         @round_num = opts[:round_num] || 1
+        @entities = select_entities
 
         @steps = (DEFAULT_STEPS + steps).map do |step, step_opts|
           step_opts ||= {}
@@ -54,12 +54,12 @@ module Engine
       end
 
       def active_entities
-        active_step.active_entities
+        active_step&.active_entities || []
       end
 
       # TODO: This is deprecated
       def can_act?(entity)
-        active_step.current_entity == entity
+        active_step&.current_entity == entity
       end
 
       def did_sell?(_corporation, _entity)
@@ -81,7 +81,7 @@ module Engine
 
           process = step2.actions(action.entity).include?(type)
           blocking = step2.blocking?
-          raise GameError, "Step #{step2} cannot process #{type} at #{action.id}" if blocking && !process
+          raise GameError, "Step #{step2.description} cannot process #{action.to_h}" if blocking && !process
 
           blocking || process
         end
@@ -95,11 +95,13 @@ module Engine
 
       def actions_for(entity)
         actions = []
+        return actions unless entity
+
         @steps.each do |step|
           next unless step.active?
 
           available_actions = step.actions(entity)
-          actions += available_actions
+          actions.concat(available_actions)
           break if step.blocking?
         end
         actions.uniq
@@ -129,9 +131,10 @@ module Engine
 
       def skip_steps
         @steps.each do |step|
-          break if step == active_step
+          next if !step.active? || !step.blocks?
+          break if step.blocking?
 
-          step.skip! if step.active? && step.blocks? && !step.blocking?
+          step.skip!
         end
       end
 
