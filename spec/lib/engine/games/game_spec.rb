@@ -22,6 +22,17 @@ module Engine
       },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
+      1825 => {
+        'Phoofstix' => 8187,
+        'ladycake' => 6380,
+      },
+      3055 => {
+        'CullenF' => 4960,
+        'KillerMonkey' => 3456,
+        'Nastroker' => 4782,
+        'SamK' => 5649,
+        'hhlodesign' => 4472,
+      },
       1277 => {
         'Harshit' => 1216,
         'jagdish' => 1045,

@@ -55,7 +55,7 @@ module Engine
 
           next if company.closed? || action.entity == company
 
-          company.remove_ability(:tile_lay)
+          company.remove_ability(ability)
           @log << "#{company.name} loses the ability to lay #{hexes}"
         end
       end

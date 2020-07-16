@@ -47,14 +47,14 @@ module Engine
       @abilities[ability.type] = ability
     end
 
-    def remove_ability(type)
-      @abilities[type]&.teardown
-      @abilities.delete(type)
+    def remove_ability(ability)
+      ability.teardown
+      @abilities.reject! { |_, a| a == ability }
     end
 
     def remove_ability_when(time)
-      @abilities.dup.each do |type, ability|
-        remove_ability(type) if ability.when == time.to_s
+      all_abilities.each do |ability|
+        remove_ability(ability) if ability.when == time.to_s
       end
     end
 
