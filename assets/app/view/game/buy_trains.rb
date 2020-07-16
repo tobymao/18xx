@@ -82,7 +82,7 @@ module View
           },
         }
 
-        if (step.can_buy_train?(@corporation) && step.has_room?(@corporation)) || step.must_buy_train?(@corporation)
+        if (step.can_buy_train?(@corporation) && step.room?(@corporation)) || step.must_buy_train?(@corporation)
           children << h(:h3, h3_props, 'Available Trains')
           children << h(:div, div_props, [
             *from_depot(depot_trains),

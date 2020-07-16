@@ -40,7 +40,7 @@ module Engine
 
       def can_buy_train?(entity = nil)
         entity ||= current_entity
-        can_buy_normal = has_room?(entity) &&
+        can_buy_normal = room?(entity) &&
           entity.cash >= @depot.min_price(entity)
 
         can_buy_normal || @depot
@@ -48,7 +48,7 @@ module Engine
           .any? { |_, _, price| entity.cash >= price }
       end
 
-      def has_room?(entity)
+      def room?(entity)
         entity.trains.reject(&:obsolete).size < @game.phase.train_limit
       end
 
