@@ -17,7 +17,7 @@ module Engine
         @home_token_timing = @game.class::HOME_TOKEN_TIMING
         @game.payout_companies
         @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
-        start_operating
+        start_operating unless @entities.empty?
       end
 
       def before_process(_action)
@@ -29,13 +29,16 @@ module Engine
       def after_process(_action)
         return if active_step || @entity_index == @entities.size - 1
 
+        next_entity!
+      end
+
+      def next_entity!
         next_entity_index!
         @steps.each(&:unpass!)
         start_operating
       end
 
       def start_operating
-        return if @entities.empty?
 
         entity = @entities[@entity_index]
         entity.trains.each { |train| train.operated = false }

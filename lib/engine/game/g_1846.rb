@@ -247,7 +247,7 @@ module Engine
           @log << "#{corporation.name}'s companies close: #{corporation.companies.map(&:sym).join(', ')}"
           corporation.companies.dup.each(&:close!)
         end
-        @round.skip_current_entity if @round.current_entity == corporation
+        @round.next_entity_index! if @round.current_entity == corporation
 
         if corporation.corporation?
           corporation.share_holders.keys.each do |player|
@@ -268,6 +268,7 @@ module Engine
 
       def operating_round(round_num)
         Round::G1846::Operating.new(self, [
+          Step::Bankrupt,
           Step::G1846::BuyCompany,
           Step::IssueShares,
           Step::TrackAndToken,

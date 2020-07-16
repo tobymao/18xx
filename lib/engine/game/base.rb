@@ -926,7 +926,7 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(self, [
-          [Step::Bankrupt],
+          Step::Bankrupt,
           Step::DiscardTrain,
           Step::BuyCompany,
           Step::Track,

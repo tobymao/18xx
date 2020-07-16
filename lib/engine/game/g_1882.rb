@@ -33,6 +33,7 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(self, [
+          Step::Bankrupt,
           Step::BuyCompany,
           Step::HomeToken,
           Step::G1882::Track,
