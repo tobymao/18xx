@@ -142,7 +142,7 @@ describe 'Assets' do
       ['1889', 314, 81, 'track_and_buy_company',
        ['1889: Operating Round 3.1 (of 1) - Lay Track',
         'Blocks Takamatsu (K4) while owned by a player.']],
-      ['1889', 314, 336, 'discard_train', 'Discard Trains'],
+      ['1889', 314, 335, 'discard_train', 'Discard Trains'],
       ['1889', 314, 345, 'buy_train_emr', 'TR must buy an available train'],
       ['1889', 314, nil, 'endgame', '1889: Operating Round 7.1 (of 3) - Game Over - Bankruptcy'],
       ['1846', 4123, 0, 'draft', '1846: Draft Round 1 - Draft Companies'],

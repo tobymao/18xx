@@ -9,16 +9,16 @@ module Engine
   TEST_CASES = {
     GAMES_BY_TITLE['1846'] => {
       4106 => {
-        "CheesePetrol" => 6137,
-        "Tim Prime" => 6338,
-        "toast" => 7585,
-        "tomusher" => 5431,
+        'CheesePetrol' => 6137,
+        'Tim Prime' => 6338,
+        'toast' => 7585,
+        'tomusher' => 5431,
       },
       4123 => {
-        "Eric_Tama" => 5793,
-        "Siraj" => 5080,
-        "creslin792" => 6178,
-        "markcp" => 6225,
+        'Eric_Tama' => 5793,
+        'Siraj' => 5080,
+        'creslin792' => 6178,
+        'markcp' => 6225,
       },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {

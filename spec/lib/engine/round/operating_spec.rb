@@ -48,6 +48,7 @@ module Engine
     end
 
     def fake_buy_train(train, corp)
+      corp.trains.slice!(2)
       game.depot.remove_train(train)
       corp.cash += train.price
       game.phase.buying_train!(corp, train)
@@ -186,7 +187,6 @@ module Engine
             corporation.cash = 1000
             train = subject.active_step.buyable_trains.first
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
-            fake_buy_train(train, corporation)
             subject.process_action(action)
             expect(corporation.trains.size).to eq(1)
           end
@@ -341,7 +341,7 @@ module Engine
           train = corporation2.trains.first
           player.cash = train.price
           action = Action::BuyTrain.new(corporation, train: train, price: train.price)
-          fake_buy_train(train, corporation)
+
           subject.process_action(action)
         end
         it 'does not allow purchasing another players train for above price' do

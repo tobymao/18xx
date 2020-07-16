@@ -37,7 +37,7 @@ module View
           end
 
         step = round.active_step
-        current_entity = step.current_entity
+        current_entity = step&.current_entity
         # move the selected hex to the back so it renders highest in z space
         selected_hex = @tile_selector&.hex
         @hexes << @hexes.delete(selected_hex) if @hexes.include?(selected_hex)
@@ -48,7 +48,7 @@ module View
 
         children = [render_map]
 
-        if @tile_selector
+        if current_entity && @tile_selector
           left = (@tile_selector.x + map_x) * SCALE
           top = (@tile_selector.y + map_y) * SCALE
           selector =

@@ -884,7 +884,7 @@ module Engine
       def or_set_finished; end
 
       def priority_deal_player
-        if @round.current_entity.player?
+        if @round.current_entity&.player?
           # We're in a round that iterates over players, so the
           # priority deal card goes to the player who will go first if
           # everyone passes starting now.  last_to_act is nil before

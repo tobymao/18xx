@@ -86,7 +86,7 @@ def attempt_repair(engine, players, data)
   end
 end
 
-def migrate_json(filename, fixOne = true)
+def migrate_json(filename, fix_one = true)
   loop do
     data = JSON.parse(File.read(filename))
     players = data['players'].map { |p| p['name'] }
@@ -103,9 +103,9 @@ def migrate_json(filename, fixOne = true)
       attempt_repair(engine, players, data)
       File.write(filename, JSON.pretty_generate(data))
 
-      if fixOne
+      if fix_one
         puts 'Only fixing one problem'
-        return if fixOne
+        return if fix_one
       end
     end
     break

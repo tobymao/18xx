@@ -76,7 +76,7 @@ module View
           ]),
         ]
 
-        if @game.active_step.current_actions.include?('bid')
+        if @game.active_step&.current_actions&.include?('bid')
           committed = @game.active_step.committed_cash(@player)
           trs.concat([
             h(:tr, [

@@ -223,6 +223,7 @@ module View
 
     def render_action
       return h(Game::DiscardTrains) if @game.active_step&.current_actions&.include?('discard_train')
+      return h(Game::Map, game: @game, opacity: 1.0) if @game.finished
 
       case @round
       when Engine::Round::Stock

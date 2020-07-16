@@ -16,7 +16,9 @@ module View
       end
 
       def purchasable?
-        !@company.owner || @game.round.actions_for(@game.current_entity).include?('buy_company') && @company.owner.player?
+        !@company.owner ||
+        @game.round.actions_for(@game.current_entity).include?('buy_company') &&
+        @company.owner.player?
       end
 
       def ability_usable?
