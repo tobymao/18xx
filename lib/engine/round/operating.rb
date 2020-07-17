@@ -27,19 +27,20 @@ module Engine
       end
 
       def after_process(_action)
-        return if active_step || @entity_index == @entities.size - 1
+        return if active_step
 
         next_entity!
       end
 
       def next_entity!
+        return if @entity_index == @entities.size - 1
+
         next_entity_index!
         @steps.each(&:unpass!)
         start_operating
       end
 
       def start_operating
-
         entity = @entities[@entity_index]
         if (ability = teleported?(entity))
           entity.remove_ability(ability)
@@ -48,6 +49,7 @@ module Engine
         @game.place_home_token(entity) if @home_token_timing == :operate
         skip_steps
         @game.log << "#{entity.owner.name} operates #{entity.name}" unless finished?
+        next_entity! if finished?
       end
 
       def recalculate_order

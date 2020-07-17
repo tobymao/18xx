@@ -90,6 +90,7 @@ module Engine
         step.send("process_#{action.type}", action)
 
         skip_steps
+        clear_cache!
         after_process(action)
       end
 

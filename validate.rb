@@ -5,7 +5,7 @@ Dir['./models/**/*.rb'].sort.each { |file| require file }
 Sequel.extension :pg_json_ops
 require './lib/engine'
 load 'migrate_game.rb'
-page = []
+
 
 $count = 0
 $total = 0
@@ -34,6 +34,7 @@ def run_game(game, actions = nil)
 end
 
 def validate_all()
+  page = []
   data = {}
   DB[:games].order(:id).where(Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished]).select(:id).paged_each(rows_per_fetch: 100) do |game|
     page << game

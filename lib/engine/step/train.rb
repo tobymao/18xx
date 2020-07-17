@@ -92,6 +92,7 @@ module Engine
           "#{@game.format_currency(price)} from #{source}"
         entity.buy_train(train, price)
         @bought = true
+        pass! unless can_buy_train?(entity)
       end
 
       def process_sell_shares(action)
