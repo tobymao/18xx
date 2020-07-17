@@ -247,7 +247,7 @@ module Engine
           @log << "#{corporation.name}'s companies close: #{corporation.companies.map(&:sym).join(', ')}"
           corporation.companies.dup.each(&:close!)
         end
-        @round.next_entity_index! if @round.current_entity == corporation
+        @round.force_next_entity! if @round.current_entity == corporation
 
         if corporation.corporation?
           corporation.share_holders.keys.each do |player|

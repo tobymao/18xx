@@ -27,9 +27,17 @@ module Engine
       end
 
       def after_process(_action)
-        return if active_step
+        if active_step
+          return if @entities[@entity_index].owner&.player?
+        end
 
         next_entity!
+      end
+
+      def force_next_entity!
+        @steps.each(&:pass!)
+        next_entity!
+        clear_cache!
       end
 
       def next_entity!

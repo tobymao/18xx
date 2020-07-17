@@ -8,7 +8,7 @@ module Engine
       ACTIONS = %w[buy_shares sell_shares pass].freeze
 
       def actions(entity)
-        return [] if entity.minor?
+        return [] unless entity.corporation?
         return [] if redeemable_shares(entity).empty? && issuable_shares(entity).empty?
 
         ACTIONS
