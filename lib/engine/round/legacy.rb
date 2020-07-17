@@ -7,7 +7,7 @@ require_relative '../share_bundle'
 module Engine
   module Round
     class Legacy
-      attr_reader :entities, :current_entity
+      attr_reader :entities, :current_entity, :round_num
 
       def initialize(entities, game:, **_kwargs)
         @game = game

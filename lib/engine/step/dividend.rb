@@ -33,7 +33,7 @@ module Engine
         revenue = routes.sum(&:revenue)
         rust_obsolete_trains!(routes)
 
-        entity.operating_history[[@game.turn, @round_num]] = OperatingInfo.new(
+        entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
           routes,
           action,
           revenue
