@@ -334,6 +334,7 @@ module Engine
         {
           "type": "teleport",
           "owner_type": "corporation",
+          "count": 1,
           "tiles": [
             "57"
           ],
