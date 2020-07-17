@@ -121,7 +121,7 @@ module Engine
         remove_from_group!(GREEN_GROUP, @corporations) do |corporation|
           place_home_token(corporation)
           corporation.abilities(:reservation) do |ability|
-            corporation.remove_ability(ability.type)
+            corporation.remove_ability(ability)
           end
         end
 

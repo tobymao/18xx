@@ -38,6 +38,9 @@ module Engine
         return if @entities.empty?
 
         entity = @entities[@entity_index]
+        if (ability = teleported?(entity))
+          entity.remove_ability(ability)
+        end
         entity.trains.each { |train| train.operated = false }
         @game.place_home_token(entity) if @home_token_timing == :operate
         skip_steps
@@ -49,6 +52,10 @@ module Engine
         # to change order. Re-sort only them.
         index = @entity_index + 1
         @entities[index..-1] = @entities[index..-1].sort if index < @entities.size - 1
+      end
+
+      def teleported?(entity)
+        entity.abilities(:teleport)&.find(&:used?)
       end
     end
   end

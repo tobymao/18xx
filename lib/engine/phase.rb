@@ -67,7 +67,7 @@ module Engine
 
       (@game.companies + @game.corporations).each do |c|
         c.all_abilities.each do |ability|
-          c.remove_ability(ability.type) if ability.remove == @name
+          c.remove_ability(ability) if ability.remove == @name
         end
       end
     end
