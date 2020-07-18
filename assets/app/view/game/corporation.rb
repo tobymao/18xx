@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/color'
 require 'lib/settings'
 require 'view/game/actionable'
 require 'view/game/companies'
@@ -8,6 +9,7 @@ module View
   module Game
     class Corporation < Snabberb::Component
       include Actionable
+      include Lib::Color
       include Lib::Settings
 
       needs :corporation
