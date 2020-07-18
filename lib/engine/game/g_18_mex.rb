@@ -28,6 +28,21 @@ module Engine
           hex.tile.cities[0].place_token(minor, minor.next_token)
         end
       end
+
+      def operating_round(round_num)
+        Round::Operating.new(self, [
+          Step::Bankrupt,
+          Step::DiscardTrain,
+          Step::BuyCompany,
+          Step::HomeToken,
+          Step::Track,
+          Step::Token,
+          Step::Route,
+          Step::Dividend,
+          Step::SingleDepotTrainBuyBeforePhase4,
+          [Step::BuyCompany, blocks: true],
+        ], round_num: round_num)
+      end
     end
   end
 end
