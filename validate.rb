@@ -34,6 +34,9 @@ def run_game(game, actions = nil)
 end
 
 def validate_all()
+  $count = 0
+  $total = 0
+  $total_time = 0
   page = []
   data = {}
   DB[:games].order(:id).where(Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished]).select(:id).paged_each(rows_per_fetch: 100) do |game|
@@ -67,6 +70,9 @@ def validate_migrated_one(id)
 end
 
 def revalidate_broken(filename)
+  $count = 0
+  $total = 0
+  $total_time = 0
   data = JSON.parse(File.read(filename))
   data = data.map do |game, val|
     if game != 'summary' && !val['finished'] && !val['pin']
