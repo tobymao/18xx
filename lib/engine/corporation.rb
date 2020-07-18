@@ -144,6 +144,12 @@ module Engine
       all
     end
 
+    def remove_ability(ability)
+      return super if ability.owner == self
+
+      @companies.each { |company| company.remove_ability(ability) }
+    end
+
     def abilities(type, time = nil)
       abilities = []
 

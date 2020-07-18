@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative '../auction'
+require_relative '../base'
 
 module Engine
   module Round
     module G1846
-      class Draft < Auction
+      class Draft < Base
         def name
           'Draft Round'
         end

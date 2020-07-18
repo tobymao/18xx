@@ -1,15 +1,18 @@
 # frozen_string_literal: true
 
+require_relative '../passer'
+
 module Engine
   module Step
     class Base
+      include Passer
+
       ACTIONS = [].freeze
 
-      def initialize(game, round, deps: nil, **opts)
+      def initialize(game, round, **opts)
         @game = game
         @log = game.log
         @round = round
-        @deps = deps || []
         @opts = opts
       end
 
@@ -25,6 +28,26 @@ module Engine
         []
       end
 
+      def available_hex(hex); end
+
+      def log_pass(entity)
+        @log << "#{entity.name} passes #{description.downcase}"
+      end
+
+      def log_skip(entity)
+        @log << "#{entity.name} skips #{description.downcase}"
+      end
+
+      def process_pass(action)
+        log_pass(action.entity)
+        pass!
+      end
+
+      def skip!
+        log_skip(current_entity)
+        pass!
+      end
+
       def current_actions
         current_entity ? actions(current_entity) : []
       end
@@ -34,7 +57,7 @@ module Engine
       end
 
       def active_entities
-        [entities[index]]
+        [entities[entity_index]]
       end
 
       def round_state
@@ -49,6 +72,10 @@ module Engine
         true
       end
 
+      def sequential?
+        false
+      end
+
       def setup; end
 
       private
@@ -57,9 +84,12 @@ module Engine
         @round.entities
       end
 
-      def index
-        @round.index
+      def entity_index
+        @round.entity_index
       end
+
+      # The following should be removed when specials are moved to steps
+      def can_gain?; end
     end
   end
 end

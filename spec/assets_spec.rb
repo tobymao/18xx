@@ -136,32 +136,47 @@ describe 'Assets' do
       ['1889', 314, 22, 'buy_train', 'KO must buy an available train'],
       ['1889', 314, 46, 'run_routes', '1889: Operating Round 2.1 (of 1) - Run Routes'],
       ['1889', 314, 47, 'dividends', '1889: Operating Round 2.1 (of 1) - Pay or Withhold Dividends'],
-      ['1889', 314, 78, 'purchase_company', '1889: Operating Round 3.1 (of 1) - Purchase Companies'],
-      ['1889', 314, 336, 'discard_train', 'Discard Trains'],
+      ['1889', 314, 78, 'buy_company',
+       ['1889: Operating Round 3.1 (of 1) - Buy Companies',
+        'Owning corporation may ignore building cost for mountain hexes']],
+      ['1889', 314, 81, 'track_and_buy_company',
+       ['1889: Operating Round 3.1 (of 1) - Lay Track',
+        'Blocks Takamatsu (K4) while owned by a player.']],
+      ['1889', 314, 335, 'discard_train', 'Discard Trains'],
       ['1889', 314, 345, 'buy_train_emr', 'TR must buy an available train'],
       ['1889', 314, nil, 'endgame', '1889: Operating Round 7.1 (of 3) - Game Over - Bankruptcy'],
-      ['1846', 2987, 0, 'draft', '1846: Draft Round 1 - Draft Companies'],
-      ['1846', 2987, 10, 'draft', 'Mail Contract'],
-      ['1846', 2987, 14, 'lay_track_or_token', '1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track'],
-      ['1846', 2987, 45, 'issue_shares', '1846: Operating Round 2.1 (of 2) - Issue or Redeem Shares'],
-      ['1846', 2987, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
+      ['1846', 4123, 0, 'draft', '1846: Draft Round 1 - Draft Companies'],
+      ['1846', 4123, 14, 'draft', 'Mail Contract'],
+      ['1846', 4123, 42, 'lay_track_or_token', '1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track'],
+      ['1846', 4123, 50, 'issue_shares', '1846: Operating Round 1.1 (of 2) - Issue or Redeem Shares'],
+      ['1846', 4123, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
     ].freeze
+
+    def render_game(jsonfile, no_actions, string)
+      data = JSON.parse(File.read(jsonfile))
+      data['actions'] = data['actions'].take(no_actions) if no_actions
+      data[:loaded] = true
+      needs = {
+        game_data: data,
+        user: data['user'],
+        disable_user_errors: true,
+      }
+
+      html = render(app_route: "/game/#{needs[:game_data]['id']}", **needs)
+      strings = Array(string)
+      strings.each { |str| expect(html).to include(str) }
+    end
 
     TEST_CASES.each do |game, game_id, action, step, string|
       describe game do
         it "renders #{step}" do
-          data = JSON.parse(File.read("spec/fixtures/#{game}/#{game_id}.json"))
-          data['actions'] = data['actions'].take(action) if action
-          data[:loaded] = true
-          needs = {
-            game_data: data,
-            user: data['user'],
-            disable_user_errors: true,
-          }
-
-          expect(render(app_route: "/game/#{needs[:game_data]['id']}", **needs)).to include(string)
+          render_game("spec/fixtures/#{game}/#{game_id}.json", action, string)
         end
       end
+    end
+
+    it 'renders tutorial to the end' do
+      render_game('public/assets/tutorial.json', nil, 'Good luck and have fun!')
     end
   end
 end

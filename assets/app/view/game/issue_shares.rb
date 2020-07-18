@@ -9,12 +9,12 @@ module View
       include Actionable
 
       def render
-        @round = @game.round
+        @step = @game.round.active_step
+        @entity = @game.current_entity
 
         h(:div, [
-          h(UndoAndPass),
-          render_shares('Issue', @round.issuable_shares, Engine::Action::SellShares),
-          render_shares('Redeem', @round.redeemable_shares, Engine::Action::BuyShares),
+          render_shares('Issue', @step.issuable_shares(@entity), Engine::Action::SellShares),
+          render_shares('Redeem', @step.redeemable_shares(@entity), Engine::Action::BuyShares),
         ].compact)
       end
 
@@ -22,7 +22,7 @@ module View
         shares = shares.map do |bundle|
           render_button(bundle) do
             process_action(action.new(
-              @round.current_entity,
+              @entity,
               shares: bundle.shares,
               share_price: bundle.share_price,
             ))

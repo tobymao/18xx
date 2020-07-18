@@ -70,23 +70,15 @@ module View
           return if @tile_selector&.is_a?(Lib::TileSelector)
 
           round = @selected_company ? @game.special : @game.round
-          return unless round.can_place_token?
+          actions = round.active_step.current_actions
+          return if (%w[move_token place_token] & actions).empty?
 
           event.JS.stopPropagation
 
           # If there's a choice of tokens of different types show the selector, otherwise just place
-          next_tokens = @game.current_entity.tokens_by_type
-          if (token = @game.round.ambiguous_token)
-            # There should only be one token in the city
-            action = Engine::Action::MoveToken.new(
-              @game.current_entity,
-              city: @city,
-              slot: @slot_index,
-              token: token,
-            )
+          next_tokens = round.active_step.available_tokens
 
-            process_action(action)
-          elsif next_tokens.size == 1 || @game.round.step == :home_token
+          if next_tokens.size == 1
             action = Engine::Action::PlaceToken.new(
               @selected_company || @game.current_entity,
               city: @city,

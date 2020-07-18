@@ -16,6 +16,7 @@ module Engine
 
     def remove!
       @city.tokens.map! { |t| t == self ? nil : t }
+      @used = false
     end
 
     def swap!(other_token)
