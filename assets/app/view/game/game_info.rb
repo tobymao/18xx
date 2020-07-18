@@ -61,7 +61,7 @@ module View
           end
 
           h(:tr, [
-            h(:td, (current_phase == phase ? '⮕ ' : '') + phase[:name]),
+            h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
             h(:td, phase[:operating_rounds]),
             h(:td, phase[:train_limit]),
             h(:td, phase_props, phase_color.capitalize),
@@ -117,7 +117,7 @@ module View
         rows = @depot.upcoming.group_by(&:name).map do |name, trains|
           train = trains.first
           discounts = train.discount&.group_by { |_k, v| v }&.map do |price, price_discounts|
-            price_discounts.map(&:first).join(', ') + ' ⮕ ' + @game.format_currency(price)
+            price_discounts.map(&:first).join(', ') + ' → ' + @game.format_currency(price)
           end
           names_to_prices = train.names_to_prices
 
