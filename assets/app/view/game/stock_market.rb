@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
 require 'view/game/token'
 
 module View
   module Game
     class StockMarket < Snabberb::Component
-      include Lib::Color
+      include Lib::Settings
+
       needs :game
       needs :show_bank, default: false
       needs :explain_colors, default: false

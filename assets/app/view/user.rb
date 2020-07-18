@@ -2,17 +2,21 @@
 
 require 'game_manager'
 require 'user_manager'
+require 'lib/settings'
 require 'view/game_row'
 require 'view/logo'
 require 'view/form'
 
 module View
   class User < Form
-    include Lib::Color
+    include Lib::Settings
     include GameManager
     include UserManager
 
     needs :type
+
+    DARK = `window.matchMedia('(prefers-color-scheme: dark)').matches`.freeze
+    TILE_COLORS = Lib::Hex::COLOR.freeze
 
     def render_content
       title, inputs =
@@ -33,18 +37,17 @@ module View
             h(:a, { attrs: { href: '/forgot' } }, 'Forgot Password'),
           ]]
         when :profile
-          dark = `window.matchMedia('(prefers-color-scheme: dark)').matches`
           ['Profile Settings', [
-            render_notifications(@user&.dig(:settings, :notifications)),
+            render_notifications(setting_for(:notifications)),
             h('div#settings__colors', [
-              render_logo_color(@user&.dig(:settings, :red_logo)),
+              render_logo_color(setting_for(:red_logo)),
               h(:div, [
-                render_color(:bg, 'Main Background', color_for(:bg), dark ? '#000000' : '#ffffff'),
-                render_color(:font, 'Main Font Color', color_for(:font), dark ? '#ffffff' : '#000000'),
+                render_color('Main Background', :bg, color_for(:bg), DARK ? '#000000' : '#ffffff'),
+                render_color('Main Font Color', :font, color_for(:font), DARK ? '#ffffff' : '#000000'),
               ]),
               h(:div, [
-                render_color(:bg2, 'Alternative Background', color_for(:bg2), dark ? '#dcdcdc' : '#d3d3d3'),
-                render_color(:font2, 'Alternative Font Color', color_for(:font2), '#000000'),
+                render_color('Alternative Background', :bg2, color_for(:bg2), DARK ? '#dcdcdc' : '#d3d3d3'),
+                render_color('Alternative Font Color', :font2, color_for(:font2), '#000000'),
               ]),
             ]),
             render_tile_colors,
@@ -77,15 +80,18 @@ module View
       h(:div, children)
     end
 
+    def input_elm(setting)
+      Native(@inputs[setting]).elm
+    end
+
     def reset_settings
-      dark = `window.matchMedia('(prefers-color-scheme: dark)').matches`
-      Native(@inputs[:bg]).elm.value = dark ? '#000000' : '#ffffff'
-      Native(@inputs[:font]).elm.value = dark ? '#dcdcdc' : '#000000'
-      Native(@inputs[:bg2]).elm.value = dark ? '#dcdcdc' : '#d3d3d3'
-      Native(@inputs[:font2]).elm.value = '#000000'
-      Native(@inputs[:red_logo]).elm.checked = false
-      Lib::Hex::COLOR.each do |color, hex_color|
-        Native(@inputs[color]).elm.value = hex_color
+      input_elm(:bg).value = default_for(:bg)
+      input_elm(:font).value = default_for(:font)
+      input_elm(:bg2).value = default_for(:bg2)
+      input_elm(:font2).value = default_for(:font2)
+      input_elm(:red_logo).checked = false
+      TILE_COLORS.each do |color, hex_color|
+        input_elm(color).value = hex_color
       end
       submit
     end
@@ -101,9 +107,9 @@ module View
       ])
     end
 
-    def render_color(id, name, hex_color, default)
+    def render_color(label, id, hex_color, default, attrs = {})
       hex_color ||= default
-      render_input(name, id: id, type: :color, attrs: { value: hex_color },)
+      render_input(label, id: id, type: :color, attrs: { value: hex_color, **attrs },)
     end
 
     def render_logo_color(red_logo)
@@ -118,13 +124,8 @@ module View
     def render_tile_colors
       h('div#settings__tiles', [
         h(:label, 'Map & Tile Colors'),
-        h('div#settings__tiles__buttons', Lib::Hex::COLOR.map do |color, _|
-          render_input(
-            '',
-            id: color,
-            type: :color,
-            attrs: { title: color == 'white' ? 'plain' : color, value: color_for(color) },
-          )
+        h('div#settings__tiles__buttons', TILE_COLORS.map do |color, hex_color|
+          render_color('', color, setting_for(color), hex_color, attrs: { title: color == 'white' ? 'plain' : color })
         end),
       ])
     end
