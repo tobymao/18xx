@@ -19,7 +19,7 @@ module Engine
       end
 
       # number, or something like "yellow_30|green_40|brown_50|gray_70|diesel_90"
-      def parse_revenue(revenue, format)
+      def parse_revenue(revenue, format = nil)
         @revenue =
           if revenue.include?('|')
             rev = revenue.split('|').map { |s| s.split('_') }.map { |c, r| [c.to_sym, r.to_i] }.to_h
