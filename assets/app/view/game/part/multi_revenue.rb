@@ -24,13 +24,13 @@ module View
 
           # Compute total width of rectangles so we can center
           total_width = computed_revenues.sum do |revenue|
-            revenue['width']
+            revenue[:width]
           end
 
           children = computed_revenues.flat_map.with_index do |rev, index|
-            fill = color_for(rev['color'])
+            fill = color_for(rev[:color])
             font_color = contrast_on(fill)
-            width = rev['width']
+            width = rev[:width]
             t_x = (32 * index) - (total_width * 0.5)
 
             rect_attrs = {
@@ -53,7 +53,7 @@ module View
 
             [
               h(:rect, attrs: rect_attrs),
-              h('text.number', text_props, rev['text']),
+              h('text.number', text_props, rev[:text]),
             ]
           end
 
