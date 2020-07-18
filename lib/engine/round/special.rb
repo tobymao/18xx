@@ -27,6 +27,11 @@ module Engine
         actions
       end
 
+      # dirty hack since the one who uses this doesn't actually care
+      def available_tokens
+        [nil]
+      end
+
       def active_entities
         @entities
       end
