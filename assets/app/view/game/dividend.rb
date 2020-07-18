@@ -31,7 +31,7 @@ module View
           h('button.button.margined', { on: { click: click } }, text)
         end
 
-        h(:div, [*buttons])
+        h(:div, buttons)
       end
     end
   end

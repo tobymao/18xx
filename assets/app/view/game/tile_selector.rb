@@ -7,10 +7,12 @@ module View
   module Game
     class TileSelector < Snabberb::Component
       include Lib::RadialSelector
+
       needs :tile_selector, store: true
       needs :layout
       needs :tiles
       needs :step
+
       SCALE = 0.3
       TILE_SIZE = 60
       SIZE = Hex::SIZE * SCALE
