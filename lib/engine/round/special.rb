@@ -5,15 +5,31 @@ require_relative '../action/lay_tile'
 require_relative '../corporation'
 require_relative '../hex'
 require_relative '../player'
-require_relative 'base'
+require_relative '../step/tracker'
+require_relative 'legacy'
 
 module Engine
   module Round
-    class Special < Base
+    class Special < Legacy
       attr_writer :current_entity
-
+      include Step::Tracker
       def change_entity(_action)
         # Ignore change entity as special doesn't change entity
+      end
+
+      def current_actions
+        return [] unless @current_entity
+
+        actions = []
+        actions << 'assign' if can_assign_hex? || can_assign_corporation?
+        actions << 'lay_tile' if can_lay_track?
+        actions << 'place_token' if can_place_token?
+        actions
+      end
+
+      # dirty hack since the one who uses this doesn't actually care
+      def available_tokens
+        [nil]
       end
 
       def active_entities
@@ -57,7 +73,7 @@ module Engine
       end
 
       def connected_hexes
-        hexes = (assign_ability || tile_laying_ability).hexes || []
+        hexes = (assign_ability || tile_laying_ability)&.hexes || []
 
         hexes.map do |coordinates|
           hex = @game.hex_by_id(coordinates)
@@ -66,12 +82,16 @@ module Engine
       end
 
       def reachable_hexes
-        hexes = token_ability.hexes || []
+        hexes = token_ability&.hexes || []
 
         hexes.map do |coordinates|
           hex = @game.hex_by_id(coordinates)
           [hex, hex.neighbors.keys]
         end.to_h
+      end
+
+      def available_hex(hex)
+        connected_hexes[hex] || reachable_hexes[hex]
       end
 
       private
@@ -109,7 +129,7 @@ module Engine
           hex = action.city.hex
 
           placed = false
-          company.abilities(:token) do |_, _|
+          company.abilities(:token) do
             next unless city.reserved_by?(company)
 
             token = action.token
@@ -133,7 +153,7 @@ module Engine
         potentials.select { |t| hex.tile.upgrades_to?(t) }
       end
 
-      def check_track_restrictions!(_old_tile, _new_tile)
+      def check_track_restrictions!(_entity, _old_tile, _new_tile)
         true
       end
     end

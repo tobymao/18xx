@@ -15,7 +15,7 @@ module Engine
         @log << action
       end
 
-      def blocking?
+      def blocks?
         false
       end
     end

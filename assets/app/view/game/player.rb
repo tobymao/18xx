@@ -76,17 +76,18 @@ module View
           ]),
         ]
 
-        if @game.round.auction?
+        if @game.active_step&.current_actions&.include?('bid')
+          committed = @game.active_step.committed_cash(@player)
           trs.concat([
             h(:tr, [
               h(:td, 'Committed'),
-              h('td.right', @game.format_currency(@game.round.committed_cash(@player))),
+              h('td.right', @game.format_currency(committed)),
             ]),
             h(:tr, [
               h(:td, 'Available'),
-              h('td.right', @game.format_currency(@player.cash - @game.round.committed_cash(@player))),
+              h('td.right', @game.format_currency(@player.cash - committed)),
             ]),
-          ])
+          ]) if committed.positive?
         end
 
         trs.concat([

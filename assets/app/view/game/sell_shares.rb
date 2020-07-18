@@ -11,7 +11,7 @@ module View
       needs :selected_corporation, default: nil, store: true
 
       def render
-        buttons = @game.round.sellable_bundles(@player, @selected_corporation).map do |bundle|
+        buttons = @game.sellable_bundles(@player, @selected_corporation).map do |bundle|
           sell = lambda do
             process_action(Engine::Action::SellShares.new(
               @player,

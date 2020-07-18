@@ -20,6 +20,10 @@ module Engine
       @text_color = opts[:text_color] || '#ffffff'
     end
 
+    def operator?
+      true
+    end
+
     def runnable_trains
       @trains.reject(&:operated)
     end

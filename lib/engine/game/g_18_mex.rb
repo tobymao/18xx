@@ -15,7 +15,10 @@ module Engine
       GAME_DESIGNER = 'Mark Derrick'
 
       include CompanyPrice50To150Percent
+
       def setup
+        setup_company_price_50_to_150_percent
+
         @minors.each do |minor|
           train = @depot.upcoming[0]
           train.buyable = false
@@ -24,10 +27,6 @@ module Engine
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token)
         end
-      end
-
-      def operating_round(round_num)
-        Round::G18MEX::Operating.new(@minors + @corporations, game: self, round_num: round_num)
       end
     end
   end

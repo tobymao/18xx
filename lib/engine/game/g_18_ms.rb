@@ -20,6 +20,10 @@ module Engine
       #      end
 
       include CompanyPrice50To150Percent
+
+      def setup
+        setup_company_price_50_to_150_percent
+      end
     end
   end
 end

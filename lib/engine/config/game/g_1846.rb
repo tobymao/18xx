@@ -176,19 +176,18 @@ module Engine
         {
           "type": "token",
           "owner_type":"corporation",
-          "when": "sold",
           "hexes": [
             "D6"
           ],
           "price": 0,
           "teleport_price": 0,
+          "count": 1,
           "extra": true
         },
         {
           "type": "reservation",
           "hex": "D6",
-          "city": 3,
-          "when": "sold"
+          "city": 3
         }
       ]
     },
@@ -449,6 +448,7 @@ module Engine
             "H12"
           ],
           "price": 40,
+          "count": 1,
           "teleport_price": 100
         },
         {
@@ -494,6 +494,7 @@ module Engine
           "hexes": [
             "D20"
           ],
+          "count": 1,
           "price": 40
         },
         {
@@ -555,6 +556,7 @@ module Engine
           "hexes": [
             "I5"
           ],
+          "count": 1,
           "price": 40
         },
         {

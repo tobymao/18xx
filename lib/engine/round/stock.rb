@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require_relative 'base'
+require_relative 'legacy'
 require_relative '../action/buy_shares'
 require_relative '../action/par'
 require_relative '../action/sell_shares'
 
 module Engine
   module Round
-    class Stock < Base
-      attr_reader :index, :share_pool, :stock_market
+    class Stock < Legacy
+      attr_reader :entity_index, :share_pool, :stock_market
 
       PURCHASE_ACTIONS = [Action::BuyShares, Action::Par].freeze
 
@@ -25,7 +25,15 @@ module Engine
         # and preventing users from selling the same shares separately in the some action
         @players_sold = Hash.new { |h, k| h[k] = {} }
         @current_actions = []
-        @index = 0
+        @entity_index = 0
+      end
+
+      def current_actions
+        actions = []
+        actions += %w[buy_shares ipo] if can_buy?
+
+        actions << 'sell_shares' if can_sell_any?
+        actions
       end
 
       def name
@@ -146,20 +154,24 @@ module Engine
 
         entity = action.entity
         @current_actions << action
-        @index = @entities.index(entity) + 1
+        @entity_index = @entities.index(entity) + 1
         entity.unpass!
       end
 
-      def nothing_to_do?
+      def can_sell_any?
         bundles = @current_entity
           .shares
           .uniq { |share| [share.corporation.id, share.president] }
           .map { |share| ShareBundle.new(share, 10) }
 
-        bundles.none? { |bundle| can_sell?(bundle) } &&
-          @share_pool.shares.none? { |s| can_buy?(s.to_bundle) } &&
-          @corporations.none? { |c| can_buy?(c.shares.first&.to_bundle) } &&
-          !must_sell? # this forces a deadlock and a user must undo
+        bundles.none? { |bundle| can_sell?(bundle) }
+      end
+
+      def nothing_to_do?
+        can_sell_any? &&
+         @share_pool.shares.none? { |s| can_buy?(s.to_bundle) } &&
+         @corporations.none? { |c| can_buy?(c.shares.first&.to_bundle) } &&
+         !must_sell? # this forces a deadlock and a user must undo
       end
 
       def change_entity(_action)
@@ -197,7 +209,7 @@ module Engine
             end
           price_drops.times { @stock_market.move_down(corp) }
 
-          log_share_price(corp, prev)
+          @game.log_share_price(corp, prev)
         end
       end
 
@@ -209,7 +221,7 @@ module Engine
         raise GameError, "Cannot sell shares of #{shares.corporation.name}" unless can_sell?(shares)
 
         @players_sold[shares.owner][shares.corporation] = :now
-        sell_and_change_price(shares, @share_pool, @stock_market)
+        @game.sell_shares_and_change_price(shares)
       end
 
       def buy_shares(entity, shares)

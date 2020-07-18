@@ -120,16 +120,16 @@ module View
               mark_sort_column(sort_by)
               toggle_sort_order
             },
-            children: title + (@spreadsheet_sort_by == sort_by ? ' ' + sort_order_icon : ''),
-            class: ''
+            children: title
           ),
+          h(:span, @spreadsheet_sort_by == sort_by ? sort_order_icon : ''),
         ])
       end
 
       def sort_order_icon
-        return '⬇️' if @spreadsheet_sort_order == 'ASC'
+        return '↓' if @spreadsheet_sort_order == 'ASC'
 
-        '⬆️'
+        '↑'
       end
 
       def mark_sort_column(sort_by)
@@ -143,7 +143,7 @@ module View
       end
 
       def render_corporations
-        current_round = @game.round.turn_round_num
+        current_round = @game.turn_round_num
 
         sorted_corporations.map do |order, corporation|
           render_corporation(corporation, order, current_round)

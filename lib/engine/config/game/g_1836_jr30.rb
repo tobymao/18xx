@@ -12,7 +12,7 @@ module Engine
 {
    "filename":"1836Jr30",
    "modulename":"1836Jr-30",
-   "currencyFormatStr":"F%d",
+   "currencyFormatStr":"%d F",
    "bankCash":6000,
    "certLimit":{
       "2":20,

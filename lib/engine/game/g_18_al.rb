@@ -16,8 +16,8 @@ module Engine
 
       include CompanyPrice50To150Percent
 
-      def operating_round(round_num)
-        Round::G18AL::Operating.new(@corporations, game: self, round_num: round_num)
+      def setup
+        setup_company_price_50_to_150_percent
       end
     end
   end
