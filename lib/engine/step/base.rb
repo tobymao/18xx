@@ -6,6 +6,7 @@ module Engine
   module Step
     class Base
       include Passer
+      attr_accessor :acted
 
       ACTIONS = [].freeze
 
@@ -14,6 +15,7 @@ module Engine
         @log = game.log
         @round = round
         @opts = opts
+        @acted = false
       end
 
       def description
@@ -77,6 +79,11 @@ module Engine
       end
 
       def setup; end
+
+      def unpass!
+        super
+        @acted = false
+      end
 
       private
 

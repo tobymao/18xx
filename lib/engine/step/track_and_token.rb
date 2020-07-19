@@ -24,7 +24,7 @@ module Engine
       end
 
       def pass_description
-        'Skip (Token/Track)'
+        @acted ? 'Done (Token/Track)' : 'Skip (Token/Track)'
       end
 
       def setup

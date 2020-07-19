@@ -34,7 +34,7 @@ module Engine
       end
 
       def pass_description
-        'Pass (Companies)'
+        @acted ? 'Done (Companies)' : 'Skip (Companies)'
       end
 
       def sequential?

@@ -45,6 +45,7 @@ module Engine
 
         next_entity_index!
         @steps.each(&:unpass!)
+        @steps.each(&:setup)
         start_operating
       end
 
