@@ -15,7 +15,6 @@ module View
 
     needs :type
 
-    DARK = `window.matchMedia('(prefers-color-scheme: dark)').matches`.freeze
     TILE_COLORS = Lib::Hex::COLOR.freeze
 
     def render_content
@@ -42,12 +41,12 @@ module View
             h('div#settings__colors', [
               render_logo_color(setting_for(:red_logo)),
               h(:div, [
-                render_color('Main Background', :bg, color_for(:bg), DARK ? '#000000' : '#ffffff'),
-                render_color('Main Font Color', :font, color_for(:font), DARK ? '#ffffff' : '#000000'),
+                render_color('Main Background', :bg, color_for(:bg)),
+                render_color('Main Font Color', :font, color_for(:font)),
               ]),
               h(:div, [
-                render_color('Alternative Background', :bg2, color_for(:bg2), DARK ? '#dcdcdc' : '#d3d3d3'),
-                render_color('Alternative Font Color', :font2, color_for(:font2), '#000000'),
+                render_color('Alternative Background', :bg2, color_for(:bg2)),
+                render_color('Alternative Font Color', :font2, color_for(:font2)),
               ]),
             ]),
             render_tile_colors,
@@ -107,8 +106,7 @@ module View
       ])
     end
 
-    def render_color(label, id, hex_color, default, attrs = {})
-      hex_color ||= default
+    def render_color(label, id, hex_color, attrs = {})
       render_input(label, id: id, type: :color, attrs: { value: hex_color, **attrs },)
     end
 
@@ -124,8 +122,8 @@ module View
     def render_tile_colors
       h('div#settings__tiles', [
         h(:label, 'Map & Tile Colors'),
-        h('div#settings__tiles__buttons', TILE_COLORS.map do |color, hex_color|
-          render_color('', color, setting_for(color), hex_color, attrs: { title: color == 'white' ? 'plain' : color })
+        h('div#settings__tiles__buttons', TILE_COLORS.map do |color, _|
+          render_color('', color, setting_for(color), attrs: { title: color == 'white' ? 'plain' : color })
         end),
       ])
     end
