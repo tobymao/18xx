@@ -126,6 +126,18 @@ module Engine
         'ryu' => 2260,
       },
     },
+    GAMES_BY_TITLE['18AL'] => {
+      4711 => {
+        'Bertil' => 4874,
+        'Cecilia' => 4435,
+        'Adam' => 4209,
+      },
+      4712 => {
+        'Adam' => 5780,
+        'Cecilia' => 5116,
+        'Bertil' => 4718,
+      },
+    },
   }.freeze
 
   TEST_CASES.each do |game, results|
