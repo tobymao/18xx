@@ -278,9 +278,9 @@ def migrate_db_actions(data)
             Action.create(
               game: data,
               user: data.user,
-              action_id: game.actions.last.id+1000,
+              action_id: game.actions.last.id,
               turn: game.turn,
-              round: "bob",
+              round: game.round.name,
               action: action,
             )
           end
