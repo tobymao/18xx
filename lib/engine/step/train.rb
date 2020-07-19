@@ -26,7 +26,7 @@ module Engine
       end
 
       def pass_description
-        @bought ? 'Done (Trains)' : 'Skip (Trains)'
+        @acted ? 'Done (Trains)' : 'Skip (Trains)'
       end
 
       def sequential?
@@ -91,7 +91,6 @@ module Engine
         @log << "#{entity.name} #{verb} a #{train.name} train for "\
           "#{@game.format_currency(price)} from #{source}"
         entity.buy_train(train, price)
-        @bought = true
         pass! unless can_buy_train?(entity)
       end
 
@@ -156,7 +155,6 @@ module Engine
       def setup
         @depot = @game.depot
         @last_share_sold_price = nil
-        @bought = false
       end
     end
   end

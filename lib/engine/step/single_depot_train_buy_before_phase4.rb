@@ -14,11 +14,6 @@ module Engine
         @depot_trains_bought = []
       end
 
-      def unpass!
-        super
-        setup
-      end
-
       def process_buy_train(action)
         # Since the train won't be in the depot after being bought store the state now.
         from_depot = action.train.from_depot?

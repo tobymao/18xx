@@ -17,7 +17,7 @@ module Engine
       end
 
       def pass_description
-        'Skip (Track)'
+        @acted ? 'Done (Track)' : 'Skip (Track)'
       end
 
       def sequential?

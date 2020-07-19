@@ -87,6 +87,7 @@ module Engine
         end
         raise GameError, "No step found for action #{type} at #{action.id}" unless step
 
+        step.acted = true
         step.send("process_#{action.type}", action)
 
         skip_steps
