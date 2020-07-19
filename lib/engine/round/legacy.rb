@@ -23,6 +23,8 @@ module Engine
 
       def setup; end
 
+      def clear_cache!; end
+
       def name
         raise NotImplementedError
       end

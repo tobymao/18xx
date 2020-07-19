@@ -141,6 +141,7 @@ module Engine
           end
           raise GameError, "#{company.name} can't play token there" unless placed
         end
+        @game.round.clear_cache!
       end
 
       def potential_tiles(hex)

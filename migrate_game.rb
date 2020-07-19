@@ -28,7 +28,7 @@ def repair(game, original_actions, actions, broken_action)
   prev_action = prev_actions[prev_actions.rindex { |a| !optionalish_actions.include?(a['type']) }]
   next_actions = actions[action_idx + 1..]
   next_action = next_actions.find { |a| !optionalish_actions.include?(a['type']) }
-
+  puts broken_action
   if broken_action['type'] == 'move_token'
     # Move token is now place token.
     broken_action['type'] = 'place_token'
@@ -47,6 +47,11 @@ def repair(game, original_actions, actions, broken_action)
 
     if game.active_step.is_a?(Engine::Round::Stock)
       # some games of 1889 didn't skip the buy companies step correctly
+      actions.delete(broken_action)
+      return
+    end
+    if game.active_step.is_a?(Engine::Step::IssueShares)
+      # some 1846 pass too much
       actions.delete(broken_action)
       return
     end
@@ -69,6 +74,11 @@ def repair(game, original_actions, actions, broken_action)
       actions.insert(action_idx, pass)
       return
     end
+    if game.active_step.is_a?(Engine::Step::IssueShares)
+      pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+      actions.insert(action_idx, pass)
+      return
+    end
     puts prev_action
     if game.active_step.is_a?(Engine::Step::Route) and prev_action['type'] == 'pass'
       actions.delete(prev_action)
@@ -78,6 +88,7 @@ def repair(game, original_actions, actions, broken_action)
       actions.delete(prev_action)
       return
     end
+
   elsif broken_action['type'] == 'buy_train'
     if prev_action['type'] == 'pass' && game.active_step.is_a?(Engine::Step::Track)
       # Remove the pass, as it was probably meant for a token
@@ -137,6 +148,10 @@ def repair(game, original_actions, actions, broken_action)
     pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
     actions.insert(action_idx, pass)
     return
+  elsif game.active_step.is_a?(Engine::Step::IssueShares) && broken_action['type']=='buy_company'
+    # Stray pass from buy trains
+    actions.delete(prev_action)
+    return
   elsif broken_action['type'] == 'dividend' and broken_action['entity_type'] == 'minor'
     actions.delete(broken_action)
     return
@@ -163,6 +178,7 @@ def attempt_repair(actions)
       begin
         game.process_action(action)
       rescue Exception => e
+        puts e.backtrace
         puts "Break at #{e} #{action}"
         ever_repaired = true
         inplace_actions = repair(game, actions, filtered_actions, action)
@@ -277,9 +293,7 @@ def migrate_db_actions(data)
     puts "Pinning #{data.id}"
     pin='00872c2d'
     data.settings['pin']=pin
-    puts data.settings
     data.save
-
   end
   return original_actions
 end

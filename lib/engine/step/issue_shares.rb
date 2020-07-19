@@ -11,7 +11,7 @@ module Engine
         return [] unless entity.corporation?
         return [] if redeemable_shares(entity).empty? && issuable_shares(entity).empty?
 
-        ACTIONS
+        entity == current_entity ? ACTIONS : []
       end
 
       def description
