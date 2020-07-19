@@ -16,7 +16,7 @@ module Engine
       end
 
       def blocks?
-        false
+        @game.finished
       end
     end
   end
