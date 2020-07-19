@@ -10,7 +10,7 @@ module View
       include Actionable
 
       def render
-        h(:div,[
+        h(:div, [
           h(Game::UndoAndPass, pass: false),
           h(Game::Map, game: @game, opacity: 1.0),
           h(Game::Spreadsheet, game: @game),
