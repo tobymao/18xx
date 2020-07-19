@@ -10,9 +10,13 @@ class User < Base
 
   RESET_WINDOW = 60 * 15 # 15 minutes
 
-  SETTINGS = %w[
-    notifications bg font bg2 font2 red_logo white yellow green brown gray red blue
-  ].freeze
+  opts = %w[notifications red_logo bg font bg2 font2 white yellow green brown gray red blue]
+  4.times do |n|
+    %w[color dash width].each do |prop|
+      opts << "r#{n}_#{prop}"
+    end
+  end
+  SETTINGS = opts.freeze
 
   def update_settings(params)
     SETTINGS.each { |setting| settings[setting] = params[setting] }

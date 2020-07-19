@@ -13,9 +13,7 @@ module View
 
         needs :town
         needs :color, default: 'black'
-
-        HEIGHT = 8
-        WIDTH = 32
+        needs :width, default: 8
 
         SINGLE_TOWN_REGIONS = {
           straight: [CENTER] * 6,
@@ -215,12 +213,14 @@ module View
         end
 
         def render_part
+          height = @width.to_i / 2 + 4
+          width = height * 4
           children = [h(:rect, attrs: {
             transform: "#{translate} #{rotation}",
-            x: -WIDTH / 2,
-            y: -HEIGHT / 2,
-            width: WIDTH,
-            height: HEIGHT,
+            x: -width / 2,
+            y: -height / 2,
+            width: width,
+            height: height,
             fill: @color,
             stroke: 'none',
           })]

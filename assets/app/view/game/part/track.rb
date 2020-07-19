@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
 require 'view/game/part/track_curvilinear_path'
 require 'view/game/part/track_curvilinear_half_path'
 require 'view/game/part/track_lawson_path'
@@ -9,9 +10,13 @@ module View
   module Game
     module Part
       class Track < Snabberb::Component
-        # http://mkweb.bcgsc.ca/colorblind/ 13 color palette
-        TRACK_COLOR = '#000000'
-        ROUTE_COLORS = %i[#AA0A3C #0A9B4B #005AC8 #8214A0].freeze
+        include Lib::Settings
+
+        TRACK = {
+          color: '#000000',
+          width: 8,
+          dash: '0',
+        }.freeze
 
         needs :tile
         needs :region_use
@@ -26,11 +31,15 @@ module View
 
           if @tile.offboards.any?
             @tile.paths.select(&:offboard).map do |path|
-              h(TrackOffboard, offboard: path.offboard, region_use: @region_use, path: path, color: color_for(path))
+              h(TrackOffboard, offboard: path.offboard, path: path, region_use: @region_use,
+                               color: prop_for(path, :color), width: prop_for(path, :width),
+                               dash: prop_for(path, :dash),)
             end
           elsif @tile.lawson?
             @tile.paths.select { |path| path.edges.one? }.map do |path|
-              h(TrackLawsonPath, region_use: @region_use, path: path, color: color_for(path))
+              h(TrackLawsonPath, path: path, region_use: @region_use,
+                                 color: prop_for(path, :color), width: prop_for(path, :width),
+                                 dash: prop_for(path, :dash),)
             end
           elsif @tile.towns.any?
             render_track_for_curvilinear_town
@@ -41,7 +50,8 @@ module View
             .map { |path| [path, index_for(path)] }
             .sort_by { |_, index| index || -1 }
             .map do |path, index|
-              h(TrackCurvilinearPath, region_use: @region_use, path: path, color: color_for_index(index))
+              h(TrackCurvilinearPath, region_use: @region_use, path: path, color: prop_for_index(index, :color),
+                                      width: prop_for(path, :width), dash: prop_for(path, :dash),)
             end
           end
         end
@@ -53,13 +63,9 @@ module View
             exits = city.exits
 
             city.paths.map do |path|
-              h(
-                TrackCurvilinearHalfPath,
-                region_use: @region_use,
-                exits: exits,
-                path: path,
-                color: color_for(path),
-              )
+              h(TrackCurvilinearHalfPath, exits: exits, path: path, region_use: @region_use,
+                                          color: prop_for(path, :color), width: prop_for(path, :width),
+                                          dash: prop_for(path, :dash),)
             end
           end
         end
@@ -69,13 +75,9 @@ module View
             exits = town.exits
 
             town.paths.map do |path|
-              h(
-                TrackCurvilinearHalfPath,
-                region_use: @region_use,
-                exits: exits,
-                path: path,
-                color: color_for(path),
-              )
+              h(TrackCurvilinearHalfPath, exits: exits, path: path, region_use: @region_use,
+                                          color: prop_for(path, :color), width: prop_for(path, :width),
+                                          dash: prop_for(path, :dash),)
             end
           end
         end
@@ -86,12 +88,12 @@ module View
           end
         end
 
-        def color_for_index(index)
-          index ? self.class::ROUTE_COLORS[index] : TRACK_COLOR
+        def prop_for_index(index, prop)
+          index ? setting_for("r#{index}_#{prop}") : TRACK[prop]
         end
 
-        def color_for(path)
-          color_for_index(index_for(path))
+        def prop_for(path, prop)
+          prop_for_index(index_for(path), prop)
         end
       end
     end

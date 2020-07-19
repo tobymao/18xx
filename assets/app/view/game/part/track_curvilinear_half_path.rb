@@ -8,6 +8,9 @@ module View
     module Part
       class TrackCurvilinearHalfPath < TrackCurvilinearPath
         needs :exits
+        needs :color, default: 'black'
+        needs :width, default: 8
+        needs :dash, default: '0'
 
         REGIONS = {
           [STOP, :none] => [15, 21],
@@ -90,7 +93,8 @@ module View
               transform: "rotate(#{@rotation})",
               d: SVG_PATH_STRINGS[[@curvilinear_type, @direction]],
               stroke: @color,
-              'stroke-width' => 8,
+              'stroke-width': @width,
+              'stroke-dasharray': @dash,
             },
           }
 
