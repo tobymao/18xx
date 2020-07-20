@@ -78,7 +78,8 @@ module Engine
                               groups: params['groups'],
                               hide: params['hide'],
                               visit_cost: params['visit_cost'],
-                              route: params['route'])
+                              route: params['route'],
+                              format: params['format'])
         cache << city
         city
       when 'town'
@@ -86,7 +87,8 @@ module Engine
                               groups: params['groups'],
                               hide: params['hide'],
                               visit_cost: params['visit_cost'],
-                              route: params['route'])
+                              route: params['route'],
+                              format: params['format'])
         cache << town
         town
       when 'offboard'
@@ -94,7 +96,8 @@ module Engine
                                       groups: params['groups'],
                                       hide: params['hide'],
                                       visit_cost: params['visit_cost'],
-                                      route: params['route'])
+                                      route: params['route'],
+                                      format: params['format'])
         cache << offboard
         offboard
       when 'label'

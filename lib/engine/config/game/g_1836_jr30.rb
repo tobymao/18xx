@@ -629,13 +629,13 @@ module Engine
          ]
       },
       "blue":{
-         "offboard=revenue:green_20|brown_30,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0":[
+         "offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0":[
             "E3",
             "G1"
          ]
       },
       "green":{
-         "offboard=revenue:green_20|brown_30,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0":[
+         "offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0":[
             "J2"
          ]
       }
