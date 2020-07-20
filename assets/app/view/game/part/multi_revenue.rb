@@ -1,10 +1,14 @@
 # frozen_string_literal: true
 
+require 'lib/color'
+require 'lib/settings'
+
 module View
   module Game
     module Part
       class MultiRevenue < Snabberb::Component
         include Lib::Color
+        include Lib::Settings
 
         needs :revenues
         needs :transform, default: 'translate(0 0)'
