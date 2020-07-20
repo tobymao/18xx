@@ -11,10 +11,8 @@ class Api
 
         # '/api/game/<game_id>/'
         r.is do
-          game_data = game.to_h(include_actions: true)
-          # Move user settings and hide from other players
-          game_data[:user_settings] = game_data.dig(:settings, 'players', user.name)
-          game_data[:settings].delete('players')
+          game_data = game.to_h(include_actions: true, player: user&.name)
+
           game_data
         end
 

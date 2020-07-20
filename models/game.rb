@@ -101,9 +101,14 @@ class Game < Base
       .shuffle(random: Random.new(settings['seed'] || 1))
   end
 
-  def to_h(include_actions: false)
+  def to_h(include_actions: false, player: nil)
     actions_h = include_actions ? actions.map(&:to_h) : []
     settings_h = include_actions ? settings.to_h : {}
+
+    # Move user settings and hide from other players
+    user_settings_h = settings_h.dig('players', player)
+    settings_h.delete('players')
+
     {
       id: id,
       description: description,
@@ -112,6 +117,7 @@ class Game < Base
       max_players: max_players,
       title: title,
       settings: settings_h,
+      user_settings: user_settings_h,
       status: status,
       turn: turn,
       round: round,

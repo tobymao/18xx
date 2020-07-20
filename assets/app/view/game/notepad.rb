@@ -10,7 +10,7 @@ module View
       needs :user_notes, default: nil, store: true
 
       def render_content
-        return h(:div) if @game_data[:mode] == :hotseat
+        return h(:div) if @game_data[:mode] == :hotseat || !@game.players.map(&:name).include?(@user&.dig('name'))
 
         saved_notes = @game_data&.dig('user_settings', 'notepad')
 
