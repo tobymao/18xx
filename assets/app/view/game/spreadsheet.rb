@@ -67,7 +67,15 @@ module View
             if hist[x]
               props = {
                 style: {
-                  opacity: hist[x].dividend.kind == 'withhold' ? '0.5' : '1.0',
+                  opacity: case hist[x].dividend.kind
+                           when 'withhold'
+                             '0.5'
+                           when 'half'
+                             '0.75'
+                           else
+                             '1.0'
+                           end,
+                  textDecoration: hist[x].dividend.kind == 'half' ? 'underline dotted' : '',
                   padding: '0 0.15rem',
                 },
               }
