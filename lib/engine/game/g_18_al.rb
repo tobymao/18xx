@@ -45,7 +45,7 @@ module Engine
 
       def ensure_terminus_first_or_last(route, termini)
         route.hexes[1...-1].each do |hex|
-          next unless termini.include? hex.name
+          next unless termini.include?(hex.name)
 
           raise GameError, "#{hex.location_name} must be first or last in route"
         end
