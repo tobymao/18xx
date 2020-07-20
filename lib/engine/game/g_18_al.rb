@@ -50,6 +50,18 @@ module Engine
           raise GameError, "#{hex.location_name} must be first or last in route"
         end
       end
+
+      def revenue_for(route)
+        revenue = super
+
+        if route.train.name == '4D'
+          revenue = 2 * revenue - route.stops
+            .select { |stop| stop.hex.tile.towns.any? }
+            .sum { |stop| stop.route_revenue(route.phase, route.train) }
+        end
+
+        revenue
+      end
     end
   end
 end

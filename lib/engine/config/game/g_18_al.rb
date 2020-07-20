@@ -14,7 +14,7 @@ module Engine
    "currencyFormatStr":"$%d",
    "bankCash":8000,
    "certLimit":{
-      "3":25,
+      "3":15,
       "4":12,
       "5":10
    },
@@ -305,46 +305,158 @@ module Engine
    "trains":[
       {
          "name":"2",
-         "distance":2,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":2,
+               "visit":2
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":100,
          "rusts_on":"4",
          "num":5
       },
       {
          "name":"3",
-         "distance":3,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":3,
+               "visit":3
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":180,
          "rusts_on":"6",
          "num":4
       },
       {
          "name":"4",
-         "distance":4,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":4,
+               "visit":4
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":300,
          "obsolete_on":"7",
          "num":3
       },
       {
          "name":"5",
-         "distance":5,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":5,
+               "visit":5
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":450,
          "num":2
       },
       {
          "name":"6",
-         "distance":6,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":6,
+               "visit":6
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":630,
          "num":1
       },
       {
          "name":"7",
-         "distance":7,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":7,
+               "visit":7
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":700,
          "num":1
       },
       {
          "name":"4D",
-         "distance":4,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":4,
+               "visit":4
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":800,
          "num":5
       }
@@ -514,6 +626,7 @@ module Engine
       },
       {
          "name":"6",
+         "on":"6",
          "train_limit":2,
          "tiles":[
             "yellow",
@@ -524,6 +637,7 @@ module Engine
       },
       {
          "name":"7",
+         "on":"7",
          "train_limit":2,
          "tiles":[
             "yellow",
