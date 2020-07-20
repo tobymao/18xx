@@ -1,17 +1,14 @@
 # frozen_string_literal: true
 
+require 'lib/color'
+require 'lib/settings'
+
 module View
   module Game
     module Part
       class MultiRevenue < Snabberb::Component
-        COLOR = {
-          white: '#fff',
-          yellow: '#fde900',
-          green: '#71bf44',
-          brown: '#cb7745',
-          gray: '#bcbdc0',
-          red: '#ec232a',
-        }.freeze
+        include Lib::Color
+        include Lib::Settings
 
         needs :revenues
         needs :transform, default: 'translate(0 0)'
@@ -31,13 +28,14 @@ module View
 
           # Compute total width of rectangles so we can center
           total_width = computed_revenues.sum do |revenue|
-            revenue['width']
+            revenue[:width]
           end
 
           t_x = -(total_width * 0.5)
           children = computed_revenues.flat_map do |rev|
-            fill = COLOR[rev['color']]
-            width = rev['width']
+            fill = color_for(rev[:color])
+            font_color = contrast_on(fill)
+            width = rev[:width]
 
             rect_attrs = {
               fill: fill,
@@ -51,14 +49,15 @@ module View
             text_props = {
               attrs: {
                 transform: "translate(#{t_x + (width * 0.5)} 0)",
-                fill: 'black',
+                fill: font_color,
+                stroke: font_color,
                 'dominant-baseline': 'central',
               },
             }
             t_x += width
             [
               h(:rect, attrs: rect_attrs),
-              h('text.number', text_props, rev['text']),
+              h('text.number', text_props, rev[:text]),
             ]
           end
 

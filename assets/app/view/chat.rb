@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-require 'lib/color'
+require 'lib/settings'
 require 'view/log'
 
 module View
   class Chat < Snabberb::Component
-    include Lib::Color
+    include Lib::Settings
+
     needs :user
     needs :connection
     needs :log, default: [], store: true

@@ -68,6 +68,12 @@ module View
         store(:num_players, range.value.to_i)
       end
 
+      enforce_range = lambda do
+        elm = Native(@inputs[:max_players]).elm
+        elm.value = elm.max.to_i unless (elm.min.to_i..elm.max.to_i).include?(elm.value.to_i)
+        store(:num_players, elm.value.to_i) if @mode == :hotseat
+      end
+
       inputs = [
         render_input('Game Title', id: :title, el: 'select', on: { input: limit_range }, children: games),
         render_input('Description', placeholder: 'Add a title', id: :description),
@@ -81,7 +87,7 @@ module View
             value: @num_players,
           },
           input_style: { width: '2.5rem' },
-          on: { input: -> { store(:num_players, Native(@inputs[:max_players]).elm.value.to_i) if @mode == :hotseat } },
+          on: { input: enforce_range },
         ),
       ]
       h(:div, inputs)

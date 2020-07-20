@@ -10,6 +10,7 @@ module View
   module Game
     class Spreadsheet < Snabberb::Component
       include Lib::Color
+
       needs :game
 
       def render

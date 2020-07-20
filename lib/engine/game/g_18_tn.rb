@@ -18,6 +18,21 @@ module Engine
       def setup
         setup_company_price_50_to_150_percent
       end
+
+      def operating_round(round_num)
+        Round::Operating.new(self, [
+          Step::Bankrupt,
+          Step::DiscardTrain,
+          Step::BuyCompany,
+          Step::HomeToken,
+          Step::Track,
+          Step::Token,
+          Step::Route,
+          Step::Dividend,
+          Step::SingleDepotTrainBuyBeforePhase4,
+          [Step::BuyCompany, blocks: true],
+        ], round_num: round_num)
+      end
     end
   end
 end

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
+require 'lib/color'
 require 'lib/hex'
+require 'lib/settings'
 require 'view/game/part/base'
 
 module View
@@ -8,6 +10,7 @@ module View
     module Part
       class Borders < Base
         include Lib::Color
+        include Lib::Settings
 
         needs :tile
         needs :region_use, default: nil
@@ -65,7 +68,7 @@ module View
               :red
             end
 
-          @user&.dig(:settings, color) || Lib::Hex::COLOR.fetch(color)
+          setting_for(color)
         end
 
         def render_cost(border)

@@ -2,11 +2,13 @@
 
 require 'lib/connection'
 require 'lib/params'
+require 'lib/settings'
 require_tree './game'
 
 module View
   class GamePage < Snabberb::Component
-    include Lib::Color
+    include Lib::Settings
+
     needs :game_data, store: true
     needs :game, default: nil, store: true
     needs :connection
@@ -223,7 +225,7 @@ module View
 
     def render_action
       return h(Game::DiscardTrains) if @game.active_step&.current_actions&.include?('discard_train')
-      return h(Game::Map, game: @game, opacity: 1.0) if @game.finished
+      return h(Game::GameEnd) if @game.finished
 
       case @round
       when Engine::Round::Stock

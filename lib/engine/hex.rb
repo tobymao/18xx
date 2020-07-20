@@ -148,7 +148,7 @@ module Engine
       @tile.icons = @tile.icons.select(&:preprinted)
 
       tile.reservations = @tile.reservations
-      @tile.reservations = nil
+      @tile.reservations = []
 
       tile.borders.concat(@tile.borders)
       @tile.borders.clear

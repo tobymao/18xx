@@ -269,6 +269,7 @@ module Engine
       def operating_round(round_num)
         Round::G1846::Operating.new(self, [
           Step::Bankrupt,
+          Step::DiscardTrain,
           Step::G1846::BuyCompany,
           Step::IssueShares,
           Step::TrackAndToken,

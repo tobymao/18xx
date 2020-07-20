@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 # rubocop:disable all
-
+Dir['./models/**/*.rb'].sort.each { |file| require file }
+Sequel.extension :pg_json_ops
 require_relative 'lib/engine'
 
 def switch_actions(actions, first, second)
@@ -13,6 +14,7 @@ def switch_actions(actions, first, second)
 
   actions[first_idx] = second
   actions[second_idx] = first
+  return [first, second]
 end
 
 # Returns either the actions that are modified inplace, or nil if inserted/deleted
@@ -26,7 +28,7 @@ def repair(game, original_actions, actions, broken_action)
   prev_action = prev_actions[prev_actions.rindex { |a| !optionalish_actions.include?(a['type']) }]
   next_actions = actions[action_idx + 1..]
   next_action = next_actions.find { |a| !optionalish_actions.include?(a['type']) }
-
+  puts broken_action
   if broken_action['type'] == 'move_token'
     # Move token is now place token.
     broken_action['type'] = 'place_token'
@@ -45,6 +47,11 @@ def repair(game, original_actions, actions, broken_action)
 
     if game.active_step.is_a?(Engine::Round::Stock)
       # some games of 1889 didn't skip the buy companies step correctly
+      actions.delete(broken_action)
+      return
+    end
+    if game.active_step.is_a?(Engine::Step::IssueShares)
+      # some 1846 pass too much
       actions.delete(broken_action)
       return
     end
@@ -67,6 +74,11 @@ def repair(game, original_actions, actions, broken_action)
       actions.insert(action_idx, pass)
       return
     end
+    if game.active_step.is_a?(Engine::Step::IssueShares)
+      pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+      actions.insert(action_idx, pass)
+      return
+    end
     puts prev_action
     if game.active_step.is_a?(Engine::Step::Route) and prev_action['type'] == 'pass'
       actions.delete(prev_action)
@@ -76,6 +88,7 @@ def repair(game, original_actions, actions, broken_action)
       actions.delete(prev_action)
       return
     end
+
   elsif broken_action['type'] == 'buy_train'
     if prev_action['type'] == 'pass' && game.active_step.is_a?(Engine::Step::Track)
       # Remove the pass, as it was probably meant for a token
@@ -83,8 +96,7 @@ def repair(game, original_actions, actions, broken_action)
       return
     end
     if game.active_step.is_a?(Engine::Step::DiscardTrain) && next_action['type'] == 'discard_train'
-      switch_actions(original_actions, broken_action, next_action)
-      return [broken_action, next_action]
+      return switch_actions(original_actions, broken_action, next_action)
     end
     if game.active_step.is_a?(Engine::Step::Track)
       pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
@@ -136,6 +148,10 @@ def repair(game, original_actions, actions, broken_action)
     pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
     actions.insert(action_idx, pass)
     return
+  elsif game.active_step.is_a?(Engine::Step::IssueShares) && broken_action['type']=='buy_company'
+    # Stray pass from buy trains
+    actions.delete(prev_action)
+    return
   elsif broken_action['type'] == 'dividend' and broken_action['entity_type'] == 'minor'
     actions.delete(broken_action)
     return
@@ -162,6 +178,7 @@ def attempt_repair(actions)
       begin
         game.process_action(action)
       rescue Exception => e
+        puts e.backtrace
         puts "Break at #{e} #{action}"
         ever_repaired = true
         inplace_actions = repair(game, actions, filtered_actions, action)
@@ -183,14 +200,15 @@ def attempt_repair(actions)
 
     break unless repaired
   end
-  return actions if ever_repaired
+  repairs = nil if rewritten
+  return [actions, repairs] if ever_repaired
 end
 
-def migrate_data(data, fix_one = true)
+def migrate_data(data)
 players = data['players'].map { |p| p['name'] }
   engine = Engine::GAMES_BY_TITLE[data['title']]
   begin
-    data['actions'] = attempt_repair(data['actions']) do
+    data['actions'], repairs = attempt_repair(data['actions']) do
       engine.new(
         players,
         id: data['id'],
@@ -206,18 +224,19 @@ players = data['players'].map { |p| p['name'] }
 end
 
 # This doesn't write to the database
-def migrate_db_actions(data, fix_one = false)
+def migrate_db_actions_in_mem(data)
   original_actions = data.actions.map(&:to_h)
 
   engine = Engine::GAMES_BY_TITLE[data.title]
   begin
-    actions = attempt_repair(original_actions) do
+    actions, repairs = attempt_repair(original_actions) do
       engine.new(
         data.ordered_players.map(&:name),
         id: data.id,
         actions: [],
       )
     end
+    puts repairs
     return actions || original_actions
   rescue Exception => e
     puts 'Something went wrong', e
@@ -227,8 +246,60 @@ def migrate_db_actions(data, fix_one = false)
   return original_actions
 end
 
-def migrate_json(filename, fix_one = true)
-  data = migrate_data(JSON.parse(File.read(filename)), fix_one)
+def migrate_db_actions(data)
+  original_actions = data.actions.map(&:to_h)
+  engine = Engine::GAMES_BY_TITLE[data.title]
+  begin
+    actions, repairs = attempt_repair(original_actions) do
+      engine.new(
+        data.ordered_players.map(&:name),
+        id: data.id,
+        actions: [],
+      )
+    end
+    if actions
+      if repairs
+        repairs.each do |action|
+          # Find the action index
+          idx = actions.index(action)
+          data.actions[idx].action = action
+          data.actions[idx].save
+        end
+      else # Full rewrite.
+        DB.transaction do
+          Action.where(game: data).delete
+          game = engine.new(
+            data.ordered_players.map(&:name),
+            id: data.id,
+            actions: [],
+          )
+          actions.each do |action|
+            game.process_action(action)
+            Action.create(
+              game: data,
+              user: data.user,
+              action_id: game.actions.last.id,
+              turn: game.turn,
+              round: game.round.name,
+              action: action,
+            )
+          end
+        end
+      end
+    end
+    return actions || original_actions
+  rescue Exception => e
+    puts 'Something went wrong', e
+    puts "Pinning #{data.id}"
+    pin='00872c2d'
+    data.settings['pin']=pin
+    data.save
+  end
+  return original_actions
+end
+
+def migrate_json(filename)
+  data = migrate_data(JSON.parse(File.read(filename)))
   if data
     File.write(filename, JSON.pretty_generate(data))
   else
@@ -239,6 +310,7 @@ end
 def db_to_json(id, filename)
   game = Game[id]
   json = game.to_h(include_actions: true)
+
   File.write(filename, JSON.pretty_generate(json))
 end
 
@@ -247,4 +319,14 @@ def migrate_db_to_json(id, filename)
   json = game.to_h(include_actions: true)
   json['actions'] = migrate_db_actions(game)
   File.write(filename, JSON.pretty_generate(json))
+end
+
+def migrate_all()
+  DB[:games].order(:id).where(Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished]).select(:id).paged_each(rows_per_fetch: 1) do |game|
+    games = Game.eager(:user, :players, :actions).where(id: [game[:id]]).all
+    games.each {|data|
+      migrate_db_actions(data)
+    }
+
+  end
 end

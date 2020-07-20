@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
+
 module View
   module Game
     class Bank < Snabberb::Component
-      include Lib::Color
+      include Lib::Settings
 
       needs :game
       needs :layout, default: nil
