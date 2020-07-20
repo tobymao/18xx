@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-require 'lib/color'
+require 'lib/settings'
 require 'view/log'
 
 module View
   class Chat < Snabberb::Component
-    include Lib::Color
+    include Lib::Settings
+
     needs :user
     needs :connection
     needs :log, default: [], store: true
@@ -74,7 +75,7 @@ module View
 
     def add_line(data)
       name = data[:user][:name]
-      ts = Time.at(data[:created_at]).strftime('%m/%d %H:%M:%S')
+      ts = Time.at(data[:created_at]).strftime('%Y-%m-%d %H:%M:%S')
       message = data[:message]
       store(:log, @log << "#{ts} #{name}: #{message}")
     end

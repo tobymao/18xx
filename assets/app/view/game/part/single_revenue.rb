@@ -13,17 +13,31 @@ module View
         def render
           return h(:g) if @revenue.zero?
 
-          text_attrs = {
-            fill: 'black',
-            transform: 'translate(0 6)',
+          circle_props = {
+            attrs: {
+              r: @revenue > 99 ? 17 : 15,
+              fill: 'white',
+            },
+            style: {
+              stroke: '#777777',
+            },
           }
+          text_props = {
+            attrs: {
+              fill: 'black',
+              'dominant-baseline': 'central',
+              transform: 'translate(0 -1)',
+            },
+          }
+
+          text_props[:style] = { fontSize: '18px' } if @revenue > 99
 
           h(
             :g,
             { attrs: { transform: @transform } },
             [
-              h(:circle, attrs: { r: 14, fill: 'white' }),
-              h(:text, { attrs: text_attrs }, @revenue),
+              h(:circle, circle_props),
+              h('text.number', text_props, @revenue),
             ]
           )
         end

@@ -22,6 +22,10 @@ Optional URL params for above routes:
     least one stop. Preprinted tiles with location names are not
     overridden. This param is ignored at `/tiles/all`.
 * `grid` - show the triangular grid on the hexes to identify regions on the tile
+* Rotation can be specified in `<tile_name>` by adding it after a `-`, e.g.,
+  `/tiles/9-1` renders tile #9 with rotation 1, and `/tiles/7-2+8-2` renders
+  tiles 7 and 8 both with rotation 2. Tiles that have rotation specified in this
+  way ignore the `r=` param.
 
 ### Anatomy of a Tile
 

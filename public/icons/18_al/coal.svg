@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="-12.5 -12.5 25 25">
+    <g class="color-main color-black color-stroke-main color-stroke-black" stroke="#000">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M-7 7L4-4"/>
+        <path stroke-linecap="miter" d="M-5-9Q12-12 9 5 8-8-5-9"/>
+    </g>
+</svg>

@@ -9,14 +9,16 @@ module View
       needs :game, store: true
       needs :tile_selector, default: nil, store: true
       needs :display, default: 'inline-block'
-      needs :table, default: false
+      needs :layout, default: nil
 
       def selected?
         @company == @selected_company
       end
 
       def purchasable?
-        !@company.owner || @game.round.operating? && @company.owner.player?
+        !@company.owner ||
+        @game.round.actions_for(@game.current_entity).include?('buy_company') &&
+        @company.owner.player?
       end
 
       def ability_usable?
@@ -45,7 +47,7 @@ module View
       end
 
       def render
-        if @table
+        if @layout == :table
           @hidden_divs = {}
           render_company_on_card(@company)
         else
@@ -116,19 +118,20 @@ module View
         end
       end
 
-      def render_company_on_card(company)
-        toggle_desc = lambda do
-          display = Native(@hidden_divs[company.sym]).elm.style.display
-          Native(@hidden_divs[company.sym]).elm.style.display = display == 'none' ? 'grid' : 'none'
-        end
+      def toggle_desc(event, company)
+        event.JS.stopPropagation
+        display = Native(@hidden_divs[company.sym]).elm.style.display
+        Native(@hidden_divs[company.sym]).elm.style.display = display == 'none' ? 'grid' : 'none'
+      end
 
-        row_props = {
+      def render_company_on_card(company)
+        name_props = {
           style: {
-            grid: @company.owner.player? ? 'auto 1fr / 4fr 1fr 1fr [last]' : 'auto 1fr / 5fr 1fr [last]',
+            display: 'inline-block',
             cursor: 'pointer',
           },
+          on: { click: ->(event) { toggle_desc(event, company) } },
         }
-        row_props[:on] = { click: ->(event) { select_company(event) } } unless @company.owner.player?
 
         income_props = {
           style: {
@@ -139,13 +142,14 @@ module View
         hidden_props = {
           style: {
             display: 'none',
-            gridColumnEnd: 'span 3',
+            gridColumnEnd: "span #{@company.owner.player? ? '3' : '2'}",
             marginBottom: '0.5rem',
             padding: '0.1rem 0.2rem',
             fontSize: '80%',
             cursor: ability_usable? ? 'pointer' : 'default',
           },
         }
+        hidden_props[:on] = { click: ->(event) { select_company(event) } } if ability_usable? && !@company.owner.player?
         if selected?
           hidden_props[:style]['background-color'] = 'lightblue'
           hidden_props[:style]['color'] = 'black'
@@ -154,12 +158,10 @@ module View
 
         @hidden_divs[company.sym] = h('div#hidden', hidden_props, company.desc)
 
-        h(:div, row_props, [
-          h('span.name.nowrap', { on: { click: toggle_desc } }, company.name),
-          @company.owner.player? ? h('span.right', income_props, @game.format_currency(company.value)) : '',
-          h('span.right', income_props, @game.format_currency(company.revenue)),
-          @hidden_divs[company.sym],
-        ])
+        [h('div.name.nowrap', name_props, company.name),
+         @company.owner.player? ? h('div.right', income_props, @game.format_currency(company.value)) : '',
+         h('div.right', income_props, @game.format_currency(company.revenue)),
+         @hidden_divs[company.sym]]
       end
     end
   end

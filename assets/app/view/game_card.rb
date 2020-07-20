@@ -17,13 +17,7 @@ module View
     FINISHED_GREY = '#D3D3D3'
 
     def render
-      props = {
-        style: {
-          'margin': '0 0.5rem 0.5rem 0',
-        },
-      }
-
-      h('div.game.card', props, [
+      h('div.game.card', [
         render_header,
         render_body,
       ])
@@ -148,7 +142,6 @@ module View
         style: {
           'line-height': '1.2rem',
           padding: '0.3rem 0.5rem',
-          'word-break': 'break-all',
         },
       }
 
@@ -181,8 +174,8 @@ module View
       children = [
         h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s]),
         h(:div, [h(:strong, 'Description: '), @gdata['description']]),
-        h(:div, [h(:strong, 'Players: '), *p_elm]),
       ]
+      children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'
 
       if new?
         created_at = Time.at(@gdata['created_at'])
@@ -194,7 +187,7 @@ module View
       elsif @gdata['status'] == 'finished'
         result = @gdata['result']
           .sort_by { |_, v| -v }
-          .map { |k, v| "#{k} (#{v})" }
+          .map { |k, v| "#{k.length > 15 ? k[0...14] + '…' : k} #{v}" }
           .join(', ')
 
         children << h(:div, [

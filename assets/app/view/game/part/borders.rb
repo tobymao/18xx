@@ -1,12 +1,17 @@
 # frozen_string_literal: true
 
+require 'lib/color'
 require 'lib/hex'
+require 'lib/settings'
 require 'view/game/part/base'
 
 module View
   module Game
     module Part
       class Borders < Base
+        include Lib::Color
+        include Lib::Settings
+
         needs :tile
         needs :region_use, default: nil
         needs :user, default: nil, store: true
@@ -63,7 +68,7 @@ module View
               :red
             end
 
-          @user&.dig(:settings, color) || Lib::Hex::COLOR.fetch(color)
+          setting_for(color)
         end
 
         def render_cost(border)
@@ -72,9 +77,19 @@ module View
           x = [edges[:x1], edges[:x2]].sum / 2.0
           y = [edges[:y1], edges[:y2]].sum / 2.0
 
+          stroke_color = contrast_on(color(border))
+          text_props = {
+            attrs: {
+              stroke: stroke_color,
+              fill: stroke_color,
+              'dominant-baseline': 'central',
+              transform: 'translate(0 1)',
+            },
+          }
+
           h(:g, { attrs: { transform: "translate(#{x} #{y}), #{rotation_for_layout}" } }, [
-            h(:circle, attrs: { stroke: 'none', fill: color(border), r: '15' }),
-            h('text.tile__text', { attrs: { stroke: 'white' }, style: { fill: 'white' } }, border.cost.to_s),
+            h(:circle, attrs: { stroke: 'none', fill: color(border), r: '18' }),
+            h('text.tile__text.number', text_props, border.cost.to_s),
           ])
         end
 

@@ -31,6 +31,20 @@ module Engine
                   'Remove all yellow tiles from NWR-marked hexes. Station markers remain']
       ).freeze
 
+      def operating_round(round_num)
+        Round::Operating.new(self, [
+          Step::Bankrupt,
+          Step::BuyCompany,
+          Step::HomeToken,
+          Step::G1882::Track,
+          Step::Token,
+          Step::Route,
+          Step::Dividend,
+          Step::Train,
+          [Step::BuyCompany, blocks: true],
+        ], round_num: round_num)
+      end
+
       def init_phase
         phases = self.class::PHASES
         nwr_phases = %w[3 4 5 6]
@@ -67,7 +81,7 @@ module Engine
 
       def event_nwr!
         @log << '-- Event: North West Rebellion! --'
-        name = '1882/NWR'
+        name = 'NWR'
         @hexes.each do |hex|
           next unless hex.tile.icons.any? { |icon| icon.name == name }
 
@@ -79,6 +93,19 @@ module Engine
           hex.lay(hex.original_tile)
           tiles << old_tile
         end
+      end
+
+      def revenue_for(route)
+        revenue = super
+
+        stops = route.stops
+        # East offboards I1, B2
+        east = stops.find { |stop| %w[I1 B2].include?(stop.hex.name) }
+        # Hudson B12
+        west = stops.find { |stop| stop.hex.name == 'B12' }
+        revenue += 100 if east && west
+
+        revenue
       end
     end
   end

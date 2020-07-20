@@ -1,12 +1,14 @@
-* { font-family: 'Inconsolata', monospace; }
+* {
+  font-family: Lato, sans;
+  word-spacing: 1px;
+  line-height: 1.25;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 a {
   color: currentColor;
   text-underline-offset: 0.2em;
-}
-a.game__nav:focus {
-  font-weight: bold;
-  outline: 0;
 }
 
 button {
@@ -14,6 +16,20 @@ button {
 }
 button + button {
   margin-left: 0.5rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+}
+h3 {
+  font-size: 1.1rem;
+}
+#game_info h3 {
+  margin-bottom: 0.4rem;
+}
+
+p {
+  margin: 0.7rem 0;
 }
 
 .button, .button-link {
@@ -80,6 +96,14 @@ p:last-child {
   margin-bottom: 0;
 }
 
+th, td {
+  padding: 0 0.3rem;
+}
+#game_info tbody > tr:hover, #spreadsheet tbody > tr:hover {
+  background-color: #CCCCCC;
+  color: black;
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     background-color: black;
@@ -90,6 +114,16 @@ p:last-child {
     background-color: gainsboro;
   }
 }
+
+nav#game_menu {
+  padding: 1rem 2vmin 1rem 2vmin;
+}
+/* Safari 10.1+ hack, affects most browsers on iOS => more space for scroll bar */
+@media not all and (min-resolution:.001dpcm) { @media {
+  nav#game_menu {
+    padding-bottom: 1.5rem;
+  }
+}}
 
 .nowrap {
   overflow: hidden;
@@ -111,10 +145,6 @@ p:last-child {
 }
 .bold {
   font-weight: bold;
-}
-
-#profile-settings {
-  margin-top: 1rem;
 }
 
 #profile-settings > div {
@@ -155,7 +185,6 @@ p:last-child {
 }
 .card_header h2, #left h2 {
   margin: 0;
-  font-size: 1.2rem;
 }
 
 .back {
@@ -190,9 +219,20 @@ p:last-child {
 .margined_half {
   margin: 0.5rem 0.5rem 0.5rem 0;
 }
+.no_margin {
+  margin: 0;
+}
 
 .padded {
   padding: 1rem;
+}
+.no_padding {
+  padding: 0;
+}
+
+text.number {
+  font-size: 21px;
+  font-weight: 300;
 }
 
 .small_font {
@@ -222,7 +262,6 @@ p:last-child {
 .tile__text {
   fill: black;
   text-anchor: middle;
-  alignment-baseline: middle;
   dominant-baseline: middle;
   pointer-events: none;
 }
@@ -242,10 +281,25 @@ p:last-child {
   border: 1px solid gainsboro;
   border-radius: 0.7rem;
 }
+.game.card {
+  margin: 0 0.5rem 0.5rem 0;
+}
+#entities .card {
+  margin: 0 0 0.5rem 0;
+  width: 100%;
+  max-width: 20rem;
+}
 @media only screen and (max-width: 420px) {
-  .card, #left {
-    width: 95vw;
+  .card, #entities .card, #left {
+    width: 95.8vw;
+    max-width: 95.8vw;
   }
+  .game.card, .card {
+    margin-right: 0;
+  }
+}
+#buy_trains .card {
+  margin: 0;
 }
 
 @media only screen and (min-width: 421px) {
@@ -254,18 +308,10 @@ p:last-child {
     margin-right: 1rem;
   }
 }
-.card table {
-  line-height: 1.25rem;
-}
-.card th {
-  padding: 0 0.3rem 0 0.2rem;
-}
-.card td {
-  padding: 0 0.5rem 0 0.3rem;
-}
-.card td.name {
+
+.name {
   text-align: left;
-  max-width: 12rem;
+  max-width: 9rem;
 }
 
 .corp div, .player div {

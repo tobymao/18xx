@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
+
 module View
   class Log < Snabberb::Component
-    include Lib::Color
+    include Lib::Settings
+
     needs :log
     needs :negative_pad, default: false
     needs :follow_scroll, default: true, store: true

@@ -14,7 +14,7 @@ class Index < Snabberb::Layout
         h(:title, '18xx.games'),
         # rubocop:disable Layout/LineLength
         h(:link, attrs: { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css' }),
-        h(:link, attrs: { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap' }),
+        h(:link, attrs: { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap' }),
         h(:link, attrs: { rel: 'icon', type: 'image/svg+xml', href: '/images/icon.svg' }),
         h(:link, attrs: { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/images/favicon-32x32.png' }),
         h(:link, attrs: { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/images/favicon-16x16.png' }),

@@ -2,6 +2,7 @@
 
 require_relative '../config/game/g_18_mex'
 require_relative 'base'
+require_relative 'company_price_50_to_150_percent'
 
 module Engine
   module Game
@@ -13,7 +14,11 @@ module Engine
       GAME_RULES_URL = 'https://secure.deepthoughtgames.com/games/18MEX/rules.pdf'
       GAME_DESIGNER = 'Mark Derrick'
 
+      include CompanyPrice50To150Percent
+
       def setup
+        setup_company_price_50_to_150_percent
+
         @minors.each do |minor|
           train = @depot.upcoming[0]
           train.buyable = false
@@ -25,7 +30,18 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::G18MEX::Operating.new(@minors + @corporations, game: self, round_num: round_num)
+        Round::Operating.new(self, [
+          Step::Bankrupt,
+          Step::DiscardTrain,
+          Step::BuyCompany,
+          Step::HomeToken,
+          Step::Track,
+          Step::Token,
+          Step::Route,
+          Step::Dividend,
+          Step::SingleDepotTrainBuyBeforePhase4,
+          [Step::BuyCompany, blocks: true],
+        ], round_num: round_num)
       end
     end
   end

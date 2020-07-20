@@ -104,7 +104,7 @@ module View
 
         def render_part
           h(:g, { attrs: { transform: "#{translate} #{rotation_for_layout}" } }, [
-            h('text.tile__text', { attrs: { transform: 'scale(2.5)' } }, @label),
+            h('text.tile__text', { attrs: { transform: 'scale(1.5)' } }, @label),
           ])
         end
       end

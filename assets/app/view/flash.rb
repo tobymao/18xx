@@ -23,6 +23,7 @@ module View
           'z-index': '10000',
           'text-align': 'center',
           'background-color': @flash_opts[:color] || 'salmon',
+          color: 'black',
         },
         on: { click: -> { store(:flash_opts, {}) } },
       }

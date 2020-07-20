@@ -74,24 +74,27 @@ module Engine
         Part::Path.new(params['a'], params['b'])
       when 'city'
         city = Part::City.new(params['revenue'],
-                              params.fetch('slots', 1),
-                              params['groups'],
-                              params['hide'],
-                              params['visit_cost'])
+                              slots: params['slots'],
+                              groups: params['groups'],
+                              hide: params['hide'],
+                              visit_cost: params['visit_cost'],
+                              route: params['route'])
         cache << city
         city
       when 'town'
         town = Part::Town.new(params['revenue'],
-                              params['groups'],
-                              params['hide'],
-                              params['visit_cost'])
+                              groups: params['groups'],
+                              hide: params['hide'],
+                              visit_cost: params['visit_cost'],
+                              route: params['route'])
         cache << town
         town
       when 'offboard'
         offboard = Part::Offboard.new(params['revenue'],
-                                      params['groups'],
-                                      params['hide'],
-                                      params['visit_cost'])
+                                      groups: params['groups'],
+                                      hide: params['hide'],
+                                      visit_cost: params['visit_cost'],
+                                      route: params['route'])
         cache << offboard
         offboard
       when 'label'
@@ -190,14 +193,8 @@ module Engine
         ((cities.empty? && towns.one?) && edges.size > 2)
     end
 
-    def upgrade_cost(abilities)
-      ability = abilities.find { |a| a.type == :tile_discount }
-
-      @upgrades.sum do |upgrade|
-        discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
-        total_cost = upgrade.cost - discount
-        total_cost
-      end
+    def terrain
+      @upgrades.flat_map(&:terrains).uniq
     end
 
     def upgrades_to?(other)
@@ -332,6 +329,11 @@ module Engine
 
     def revenue_to_render
       @revenue_to_render ||= stops.map(&:revenue_to_render)
+    end
+
+    # Used to set label for a recently placed tile
+    def label=(label_name)
+      @label = Part::Label.new(label_name)
     end
 
     private

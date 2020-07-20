@@ -1,12 +1,19 @@
 # frozen_string_literal: true
 
+require 'lib/color'
+require 'lib/settings'
+require 'view/game/actionable'
 require 'view/game/companies'
 
 module View
   module Game
     class Corporation < Snabberb::Component
+      include Actionable
       include Lib::Color
+      include Lib::Settings
+
       needs :corporation
+      needs :selected_company, default: nil, store: true
       needs :selected_corporation, default: nil, store: true
       needs :game, store: true
       needs :display, default: 'inline-block'
@@ -15,6 +22,12 @@ module View
         select_corporation = lambda do
           selected_corporation = selected? ? nil : @corporation
           store(:selected_corporation, selected_corporation)
+
+          if can_assign_corporation?
+            process_action(Engine::Action::Assign.new(@selected_company, target: @corporation))
+            store(:selected_corporation, nil)
+            store(:selected_company, nil)
+          end
         end
 
         card_style = {
@@ -32,7 +45,7 @@ module View
 
         unless @corporation.minor?
           children << render_shares
-          children << h(Companies, owner: @corporation, table: true, game: @game) if @corporation.companies.any?
+          children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
         end
 
         if @corporation.owner
@@ -84,7 +97,7 @@ module View
           style: {
             grid: '1fr / auto auto auto',
             gap: '0 0.2rem',
-            padding: '0.2rem 0.5rem',
+            padding: '0.2rem 0.2rem 0.2rem 0.4rem',
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
           },
@@ -96,26 +109,18 @@ module View
             'justify-self': 'start',
           },
         }
+        holdings_props = {
+          style: {
+            grid: '1fr / repeat(auto-fit, auto)',
+            gridAutoFlow: 'column',
+            gap: '0 0.4rem',
+          },
+        }
 
         holdings =
           if !@corporation.corporation? || @corporation.floated?
-            holdings_props = {
-              style: {
-                grid: '1fr / 1fr 1fr',
-                gap: '0 0.3rem',
-              },
-            }
-            h(:div, holdings_props, [
-              render_trains,
-              render_cash,
-            ])
+            h(:div, holdings_props, [render_trains, render_cash])
           else
-            holdings_props = {
-              style: {
-                grid: '1fr / auto-flow',
-                gap: '0 0.3rem',
-              },
-            }
             h(:div, holdings_props, "#{@corporation.percent_to_float}% to float")
           end
 
@@ -242,7 +247,7 @@ module View
 
         pool_rows = [
           h('tr.ipo', [
-            h('td.name', 'IPO'),
+            h('td.name', @game.class::IPO_NAME),
             h('td.right', shares_props, share_number_str(@corporation.num_ipo_shares)),
             h('td.right', share_price_str(@corporation.par_price)),
           ]),
@@ -256,7 +261,8 @@ module View
 
         if player_rows.any?
           if !@corporation.counts_for_limit && (color = StockMarket::COLOR_MAP[@corporation.share_price.color])
-            market_tr_props[:style]['background-color'] = Lib::Color.convert_hex_to_rgba(color, 0.4)
+            market_tr_props[:style][:backgroundColor] = color
+            market_tr_props[:style][:color] = contrast_on(color)
           end
 
           pool_rows << h('tr.market', market_tr_props, [
@@ -296,6 +302,10 @@ module View
 
       def selected?
         @corporation == @selected_corporation
+      end
+
+      def can_assign_corporation?
+        @selected_corporation && @selected_company && @game.special.can_assign_corporation?
       end
     end
   end

@@ -15,7 +15,7 @@ module Engine
         @game.end_game!
       end
 
-      def blocking?
+      def blocks?
         false
       end
     end

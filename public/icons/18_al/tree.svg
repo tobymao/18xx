@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="-12.5 -12.5 25 25">
+    <path class="color-mountain color-stroke-black" fill="#d1ae85" stroke="#000" stroke-linecap="round" stroke-linejoin="round" d="M-2 1h4v8h-4z"/>
+    <path class="color-land color-stroke-black" fill="#59b578" stroke="#000" stroke-linecap="round" stroke-linejoin="round" d="M-6 3l6-13L6 3z"/>
+</svg>

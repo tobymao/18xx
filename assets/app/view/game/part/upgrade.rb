@@ -46,8 +46,7 @@ module View
         end
 
         def render_part
-          text_attrs = { fill: 'black', transform: 'scale(1.5)' }
-          cost = h(:text, { attrs: text_attrs }, @cost)
+          cost = h('text.number', { attrs: { fill: 'black' } }, @cost)
 
           delta_x = -10
 
@@ -65,6 +64,7 @@ module View
 
         def mountain(delta_x: 0, delta_y: 0)
           h(:polygon, attrs: { transform: "translate(#{delta_x} #{delta_y})",
+                               fill: '#cb7745',
                                points: TRIANGLE_PATH })
         end
 

@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
 require 'view/game/companies'
 
 module View
   module Game
     class Player < Snabberb::Component
-      include Lib::Color
+      include Lib::Settings
+
       needs :player
       needs :game
       needs :display, default: 'inline-block'
@@ -22,7 +24,7 @@ module View
           render_body,
         ]
 
-        divs << h(Companies, owner: @player, table: true, game: @game) if @player.companies.any?
+        divs << h(Companies, owner: @player, game: @game) if @player.companies.any?
 
         h('div.player.card', { style: card_style }, divs)
       end
@@ -42,10 +44,11 @@ module View
       def render_body
         props = {
           style: {
-            'margin-top': '0.2rem',
-            'margin-bottom': '0.4rem',
-            display: 'flex',
-            'justify-content': 'center',
+            margin: '0.2rem',
+            display: 'grid',
+            grid: '1fr / auto-flow',
+            justifyItems: 'center',
+            alignItems: 'start',
           },
         }
 
@@ -62,12 +65,6 @@ module View
         num_certs = @player.num_certs
         cert_limit = @game.cert_limit
 
-        table_props = {
-          style: {
-            margin: '0 1rem',
-          },
-        }
-
         td_cert_props = {
           style: {
             color: num_certs > cert_limit ? 'red' : 'currentColor',
@@ -81,17 +78,18 @@ module View
           ]),
         ]
 
-        if @game.round.auction?
+        if @game.active_step&.current_actions&.include?('bid')
+          committed = @game.active_step.committed_cash(@player)
           trs.concat([
             h(:tr, [
               h(:td, 'Committed'),
-              h('td.right', @game.format_currency(@game.round.committed_cash(@player))),
+              h('td.right', @game.format_currency(committed)),
             ]),
             h(:tr, [
               h(:td, 'Available'),
-              h('td.right', @game.format_currency(@player.cash - @game.round.committed_cash(@player))),
+              h('td.right', @game.format_currency(@player.cash - committed)),
             ]),
-          ])
+          ]) if committed.positive?
         end
 
         trs.concat([
@@ -110,28 +108,30 @@ module View
         ])
 
         if @player == @game.priority_deal_player
+          props = {
+            attrs: { colspan: '2' },
+            style: {
+              background: 'salmon',
+              color: 'black',
+              borderRadius: '3px',
+            },
+          }
           trs << h(:tr, [
-            h('td.center.italic', { attrs: { colspan: '2' } }, 'Priority Deal'),
+            h('td.center.italic', props, 'Priority Deal'),
           ])
         end
 
-        h(:table, table_props, trs)
+        h(:table, trs)
       end
 
       def render_shares
-        props = {
-          style: {
-            margin: '0 1rem',
-          },
-        }
-
         shares = @player
           .shares_by_corporation.reject { |_, s| s.empty? }
           .sort_by { |c, s| [s.sum(&:percent), c.president?(@player) ? 1 : 0, c.name] }
           .reverse
           .map { |c, s| render_corporation_shares(c, s) }
 
-        h(:table, props, shares)
+        h(:table, shares)
       end
 
       def render_corporation_shares(corporation, shares)

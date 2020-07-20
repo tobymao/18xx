@@ -25,6 +25,10 @@ module Engine
       init_abilities(abilities)
     end
 
+    def operator?
+      false
+    end
+
     def id
       @sym
     end
@@ -36,7 +40,7 @@ module Engine
     def close!
       @closed = true
 
-      @abilities.keys.each { |a| remove_ability(a) }
+      all_abilities.each { |a| remove_ability(a) }
       return unless owner
 
       owner.companies.delete(self)
@@ -57,6 +61,12 @@ module Engine
 
     def corporation?
       false
+    end
+
+    def find_token_by_type(_token_type)
+      raise GameError, "#{name} does not have a token" unless abilities(:token)
+
+      Token.new(@owner)
     end
 
     def inspect

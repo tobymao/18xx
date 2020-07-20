@@ -16,31 +16,22 @@ module View
       class Operating < Snabberb::Component
         needs :game
 
-        ABILITIES = %i[tile_lay teleport assign_hexes token].freeze
+        ABILITIES = %i[tile_lay teleport assign_hexes assign_corporation token].freeze
 
         def render
           round = @game.round
-
-          action =
-            case round.step
-            when :home_token
-              h(UndoAndPass, pass: false)
-            when :company, :track, :token, :token_or_track
-              h(UndoAndPass)
-            when :route
-              h(RouteSelector)
-            when :dividend
-              h(Dividend)
-            when :train
-              h(BuyTrains)
-            when :issue
-              h(IssueShares)
-            end
-
-          action = h(UndoAndPass, pass: false) if round.ambiguous_token
-
-          left = [action]
+          @step = round.active_step
           corporation = round.current_entity
+          @current_actions = round.actions_for(corporation)
+          action = [h(UndoAndPass, pass: @current_actions.include?('pass'))]
+
+          action << h(RouteSelector) if @current_actions.include?('run_routes')
+          action << h(Dividend) if @current_actions.include?('dividend')
+          action << h(BuyTrains) if @current_actions.include?('buy_train')
+          action << h(IssueShares) if @current_actions.include?('buy_shares')
+
+          left = action
+
           left << h(Corporation, corporation: corporation)
           corporation.owner.companies.each do |c|
             next if (c.all_abilities.map(&:type) & ABILITIES).empty?
@@ -54,7 +45,7 @@ module View
             },
           }
           right = [h(Map, game: @game)]
-          right << h(:div, div_props, [h(BuyCompanies, limit_width: true)]) if round.can_buy_companies?
+          right << h(:div, div_props, [h(BuyCompanies, limit_width: true)]) if @current_actions.include?('buy_company')
 
           left_props = {
             style: {

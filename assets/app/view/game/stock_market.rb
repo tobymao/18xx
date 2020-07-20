@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
 require 'view/game/token'
 
 module View
   module Game
     class StockMarket < Snabberb::Component
-      include Lib::Color
+      include Lib::Settings
+
       needs :game
       needs :show_bank, default: false
       needs :explain_colors, default: false
@@ -54,7 +56,10 @@ module View
           rows = prices.map do |price|
             if price
               style = box_style.merge('background-color' => price.color ? COLOR_MAP[price.color] : color_for(:bg2))
-              style['color'] = 'white' if price.color == :black
+              if price.color == :black
+                style[:color] = 'gainsboro'
+                style[:borderColor] = color_for(:font)
+              end
               colors_in_market << price.color unless colors_in_market.include?(price.color)
               corporations = price.corporations
               num = corporations.size
@@ -91,7 +96,7 @@ module View
 
         if @explain_colors
           colors_text = [
-            [:red, 'PAR values'],
+            [:red, 'Par values'],
             [:yellow, 'Corporation shares do not count towards cert limit'],
             [:orange, 'Corporation shares can be held above 60%'],
             [:brown, 'Can buy more than one share in the Corporation per turn'],
@@ -101,6 +106,7 @@ module View
             next unless colors_in_market.include?(color)
 
             style = box_style.merge('background-color' => COLOR_MAP[color])
+            style[:borderColor] = color_for(:font) if color == :black
 
             line_props = {
               style: {

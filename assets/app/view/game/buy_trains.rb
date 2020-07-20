@@ -20,7 +20,7 @@ module View
         funds_required = @depot.min_depot_price - (@corporation.cash + player.cash)
         if funds_required.positive?
           liquidity = @game.liquidity(player, emergency: true)
-          children << h('div.margined',
+          children << h('div',
                         "To buy the cheapest train the president must raise #{@game.format_currency(funds_required)}"\
                         ", and can sell #{@game.format_currency(liquidity - player.cash)} in shares")
 
@@ -43,7 +43,7 @@ module View
 
           children << render_bankruptcy
         else
-          children << h('div.margined',
+          children << h('div',
                         'To buy the cheapest train the president must contribute'\
                         " #{@game.format_currency(@depot.min_depot_price - @corporation.cash)}")
         end
@@ -52,34 +52,48 @@ module View
       end
 
       def render
-        round = @game.round
-        @corporation = round.current_entity
-        @depot = round.depot
+        step = @game.round.active_step
+        @corporation = step.current_entity
+        @depot = @game.depot
 
-        available = round.buyable_trains.group_by(&:owner)
+        available = step.buyable_trains.group_by(&:owner)
         depot_trains = available.delete(@depot) || []
         other_corp_trains = available.sort_by { |c, _| c.owner == @corporation.owner ? 0 : 1 }
         children = []
 
-        must_buy_train = round.must_buy_train?
-
-        children << h(:div, [h(UndoAndPass, pass: !must_buy_train)])
+        must_buy_train = step.must_buy_train?(@corporation)
 
         if must_buy_train
-          children << h('div.margined', "#{@corporation.name} must buy an available train")
-          children += render_president_contributions if @corporation.cash < @depot.min_depot_price
+          children << h(:div, "#{@corporation.name} must buy an available train")
+          children.concat(render_president_contributions) if @corporation.cash < @depot.min_depot_price
         end
 
-        if (round.can_buy_train? && round.corp_has_room?) || round.must_buy_train?
-          children << h('div.margined', 'Available Trains')
-          children.concat(from_depot(depot_trains))
-          children.concat(other_trains(other_corp_trains)) if other_corp_trains.any?
+        h3_props = {
+          style: {
+            margin: '0.5rem 0 0 0',
+          },
+        }
+        div_props = {
+          style: {
+            display: 'grid',
+            grid: 'auto / minmax(0.7rem, auto) 1fr auto auto',
+            gap: '0.5rem',
+            alignItems: 'center',
+          },
+        }
+
+        if (step.can_buy_train?(@corporation) && step.room?(@corporation)) || step.must_buy_train?(@corporation)
+          children << h(:h3, h3_props, 'Available Trains')
+          children << h(:div, div_props, [
+            *from_depot(depot_trains),
+            *other_corp_trains.any? ? other_trains(other_corp_trains) : '',
+          ])
         end
 
         discountable_trains = @depot.discountable_trains_for(@corporation)
 
         if discountable_trains.any?
-          children << h('div.margined', 'Exchange Trains')
+          children << h(:h3, h3_props, 'Exchange Trains')
 
           discountable_trains.each do |train, discount_train, price|
             exchange_train = lambda do
@@ -94,20 +108,29 @@ module View
             end
 
             children << h(:div, [
-              "#{train.name} -> #{discount_train.name} #{@game.format_currency(price)}",
-              h('button.button.margined', { on: { click: exchange_train } }, 'Exchange'),
+              "#{train.name} -> #{discount_train.name} #{@game.format_currency(price)} ",
+              h('button.button.no_margin', { on: { click: exchange_train } }, 'Exchange'),
             ])
           end
         end
 
-        children << h(:div, [h(:div, 'Remaining Trains'), *remaining_trains])
+        children << h(:h3, h3_props, 'Remaining Trains')
+        children << remaining_trains
 
-        h(:div, {}, children)
+        props = {
+          style: {
+            display: 'grid',
+            rowGap: '0.5rem',
+            marginBottom: '1rem',
+          },
+        }
+
+        h('div#buy_trains', props, children)
       end
 
       def from_depot(depot_trains)
         depot_trains.flat_map do |train|
-          train.variants.sort_by { |_, v| v[:price] }.map do |name, variant|
+          train.variants.sort_by { |_, v| v[:price] }.flat_map do |name, variant|
             price = variant[:price]
 
             buy_train = lambda do
@@ -121,10 +144,10 @@ module View
 
             source = @depot.discarded.include?(train) ? 'The Discard' : 'The Depot'
 
-            h(:div, [
-              "Train #{name} - #{@game.format_currency(price)} #{source}",
-              h('button.button.margined', { style: { margin: '1rem' }, on: { click: buy_train } }, 'Buy'),
-            ])
+            [h(:div, name),
+             h('div.nowrap', source),
+             h('div.right', @game.format_currency(price)),
+             h('button.button.no_margin', { on: { click: buy_train } }, 'Buy')]
           end
         end
       end
@@ -132,11 +155,13 @@ module View
       def other_trains(other_corp_trains)
         hidden_trains = false
         trains_to_buy = other_corp_trains.flat_map do |other, trains|
-          trains.group_by(&:name).map do |name, group|
+          trains.group_by(&:name).flat_map do |name, group|
             input = h(
-              :input,
+              'input.no_margin',
               style: {
-                'margin-left': '1rem',
+                height: '1.2rem',
+                width: '3rem',
+                padding: '0 0 0 0.2rem',
               },
               attrs: {
                 type: 'number',
@@ -159,11 +184,10 @@ module View
             count = group.size
 
             if @show_other_players || other.owner == @corporation.owner
-              h(:div, [
-                "Train #{name} - from #{other.name} (#{other.owner.name})" + (count > 1 ? " (has #{count})" : ''),
-                input,
-                h('button.button.margined', { on: { click: buy_train } }, 'Buy'),
-              ])
+              [h(:div, name),
+               h('div.nowrap', "#{other.name} (#{count > 1 ? "#{count}, " : ''}#{other.owner.name})"),
+               input,
+               h('button.button.no_margin', { on: { click: buy_train } }, 'Buy')]
             else
               hidden_trains = true
               nil
@@ -171,27 +195,49 @@ module View
           end
         end.compact
 
+        button_props = {
+          style: {
+            display: 'grid',
+            gridColumn: '1/4',
+            width: 'max-content',
+          },
+        }
+
         if hidden_trains
-          trains_to_buy << h(:div, [
-            h('button.button.margined',
-              { on: { click: -> { store(:show_other_players, true) } } },
-              'Show trains from other players'),
-          ])
+          trains_to_buy << h('button.button.no_margin',
+                             { on: { click: -> { store(:show_other_players, true) } }, **button_props },
+                             'Show trains from other players')
         elsif @show_other_players
-          trains_to_buy << h(:div, [
-            h('button.button.margined',
-              { on: { click: -> { store(:show_other_players, false) } } },
-              'Hide trains from other players'),
-          ])
+          trains_to_buy << h('button.button.no_margin',
+                             { on: { click: -> { store(:show_other_players, false) } }, **button_props },
+                             'Hide trains from other players')
         end
         trains_to_buy
       end
 
       def remaining_trains
-        @depot.upcoming.group_by(&:name).map do |name, trains|
-          train = trains.first
-          h(:div, "Train: #{name} - #{@game.format_currency(train.price)} x #{trains.size}")
+        div_props = {
+          style: {
+            display: 'grid',
+            grid: 'auto / repeat(3, max-content)',
+            gap: '0 1rem',
+            justifyItems: 'right',
+          },
+        }
+
+        rows = @depot.upcoming.group_by(&:name).flat_map do |_, trains|
+          names_to_prices = trains.first.names_to_prices
+          [h(:div, names_to_prices.keys.join(',')),
+           h(:div, names_to_prices.values.map { |p| @game.format_currency(p) }.join(',')),
+           h(:div, trains.size)]
         end
+
+        h(:div, div_props, [
+          h('div.bold', 'Train'),
+          h('div.bold', 'Cost'),
+          h('div.bold', 'Qty'),
+          *rows,
+        ])
       end
 
       def render_bankruptcy
@@ -201,12 +247,12 @@ module View
 
         props = {
           style: {
-            display: 'block',
+            width: 'max-content',
           },
           on: { click: resign },
         }
 
-        h('button.button.margined', props, 'Declare Bankruptcy')
+        h('button.button', props, 'Declare Bankruptcy')
       end
     end
   end

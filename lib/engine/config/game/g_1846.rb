@@ -170,23 +170,24 @@ module Engine
       "name": "Chicago and Western Indiana",
       "value": 60,
       "revenue": 10,
-      "desc": "Reserves a token slot in Chicago (D6), in which the owning corporation may place an extra token at no cost.",
+      "desc": "Reserves a token slot in Chicago (D6), when purchased the owning corporation may place an extra token at no cost.",
       "sym": "C&WI",
       "abilities": [
         {
           "type": "token",
+          "owner_type":"corporation",
           "hexes": [
             "D6"
           ],
           "price": 0,
           "teleport_price": 0,
+          "count": 1,
           "extra": true
         },
         {
           "type": "reservation",
           "hex": "D6",
-          "city": 3,
-          "when": "sold"
+          "city": 3
         }
       ]
     },
@@ -232,7 +233,6 @@ module Engine
             "I1",
             "D6"
           ],
-          "when": "sold",
           "count": 1,
           "owner_type": "corporation"
         },
@@ -448,6 +448,7 @@ module Engine
             "H12"
           ],
           "price": 40,
+          "count": 1,
           "teleport_price": 100
         },
         {
@@ -493,6 +494,7 @@ module Engine
           "hexes": [
             "D20"
           ],
+          "count": 1,
           "price": 40
         },
         {
@@ -554,6 +556,7 @@ module Engine
           "hexes": [
             "I5"
           ],
+          "count": 1,
           "price": 40
         },
         {

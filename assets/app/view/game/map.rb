@@ -32,21 +32,23 @@ module View
         round =
           if @game.special.map_abilities
             @game.special
-          elsif @game.round.operating?
+          else
             @game.round
           end
 
+        step = round.active_step
+        current_entity = step&.current_entity
         # move the selected hex to the back so it renders highest in z space
         selected_hex = @tile_selector&.hex
         @hexes << @hexes.delete(selected_hex) if @hexes.include?(selected_hex)
 
         @hexes.map! do |hex|
-          h(Hex, hex: hex, round: round, opacity: @opacity)
+          h(Hex, hex: hex, step: step, opacity: @opacity)
         end
 
         children = [render_map]
 
-        if @tile_selector
+        if current_entity && @tile_selector
           left = (@tile_selector.x + map_x) * SCALE
           top = (@tile_selector.y + map_y) * SCALE
           selector =
@@ -70,9 +72,9 @@ module View
                 top = height - TileSelector::DROP_SHADOW_SIZE - distance
               end
 
-              tiles = round.upgradeable_tiles(@tile_selector.hex)
+              tiles = step.upgradeable_tiles(current_entity, @tile_selector.hex)
 
-              h(TileSelector, layout: @layout, tiles: tiles)
+              h(TileSelector, layout: @layout, tiles: tiles, step: step)
             end
 
           # Move the position to the middle of the hex

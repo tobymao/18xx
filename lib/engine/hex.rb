@@ -7,7 +7,8 @@ module Engine
   class Hex
     include Assignable
 
-    attr_reader :connections, :coordinates, :layout, :neighbors, :tile, :x, :y, :location_name, :original_tile
+    attr_accessor :x, :y
+    attr_reader :connections, :coordinates, :layout, :neighbors, :tile, :location_name, :original_tile
 
     DIRECTIONS = {
       flat: {
@@ -147,7 +148,7 @@ module Engine
       @tile.icons = @tile.icons.select(&:preprinted)
 
       tile.reservations = @tile.reservations
-      @tile.reservations.clear
+      @tile.reservations = []
 
       tile.borders.concat(@tile.borders)
       @tile.borders.clear

@@ -91,7 +91,7 @@ class App < Snabberb::Component
       enter_game(@game_data)
     end
 
-    return h(:div, 'Loading game...') unless @game_data&.dig('loaded')
+    return h('div.padded', 'Loading game...') unless @game_data&.dig('loaded')
 
     h(View::GamePage, connection: @connection, user: @user, disable_user_errors: @disable_user_errors)
   end

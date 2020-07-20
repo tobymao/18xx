@@ -19,11 +19,7 @@ module Engine
       train = @upcoming.first
       @game.log << "-- Event: A #{train.name} train exports --"
       remove_train(train)
-      @game.phase.process_action(Engine::Action::BuyTrain.new(
-        nil,
-        train: train,
-        price: 0,
-      ))
+      @game.phase.buying_train!(nil, train)
     end
 
     def reclaim_train(train)

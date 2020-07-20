@@ -8,18 +8,31 @@ require 'json'
 module Engine
   TEST_CASES = {
     GAMES_BY_TITLE['1846'] => {
-      2807 => {
-        'hidarigray' => 6303,
-        'hitoaji' => 6598,
-        'kino111' => 4863,
+      4106 => {
+        'CheesePetrol' => 6137,
+        'Tim Prime' => 6338,
+        'toast' => 7585,
+        'tomusher' => 5431,
       },
-      2987 => {
-        'Saintis' => 6050,
-        'steak' => 7371,
-        'tomdidiot' => 7643,
+      4123 => {
+        'Eric_Tama' => 5793,
+        'Siraj' => 5080,
+        'creslin792' => 6178,
+        'markcp' => 6225,
       },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
+      1825 => {
+        'Phoofstix' => 8187,
+        'ladycake' => 6380,
+      },
+      3055 => {
+        'CullenF' => 4960,
+        'KillerMonkey' => 3456,
+        'Nastroker' => 4782,
+        'SamK' => 5649,
+        'hhlodesign' => 4472,
+      },
       1277 => {
         'Harshit' => 1216,
         'jagdish' => 1045,
@@ -50,7 +63,7 @@ module Engine
       },
       314 => {
         'Rebus' => 1134,
-        'johnhawkhaines' => 260,
+        'johnhawkhaines' => 320,
         'scottredracecar' => 1473,
       },
       962 => {
@@ -61,11 +74,6 @@ module Engine
       },
     },
     GAMES_BY_TITLE['1836Jr30'] => {
-      2608 => {
-        'JC' => 837,
-        'NicolasO' => 1088,
-        'botch' => 60,
-      },
       2809 => {
         'Azureth' => 4833,
         'Navor' => 3034,
@@ -89,7 +97,9 @@ module Engine
             data = JSON.parse(File.read("spec/fixtures/#{game_path}/#{game_id}.json"))
             players = data['players'].map { |p| p['name'] }
             expect(game.new(players, id: game_id, actions: data['actions']).result).to eq(result)
-            expect(game.new(players, id: game_id, actions: data['actions'], strict: true).result).to eq(result)
+            rungame = game.new(players, id: game_id, actions: data['actions'], strict: true)
+            expect(rungame.result).to eq(result)
+            expect(rungame.finished).to eq(true)
           end
         end
       end

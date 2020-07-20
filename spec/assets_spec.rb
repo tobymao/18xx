@@ -120,15 +120,63 @@ describe 'Assets' do
       }
 
       expect(render(app_route: '/game/1', **needs)).to include('Takamatsu E-Railroad')
-      expect(render(app_route: '/game/1#players', **needs)).to include('Player 1')
-      expect(render(app_route: '/game/1#corporations', **needs)).to include('Awa Railroad')
+      expect(render(app_route: '/game/1#entities', **needs)).to include('Entities', 'Player 1', 'Awa Railroad')
       expect(render(app_route: '/game/1#map', **needs)).to include('Kotohira')
       expect(render(app_route: '/game/1#market', **needs)).to include('Bank Cash')
       expect(render(app_route: '/game/1#info', **needs)).to include('Upcoming')
       expect(render(app_route: '/game/1#tiles', **needs)).to include('492')
-      expect(render(app_route: '/game/1#companies', **needs)).to include('Companies')
       expect(render(app_route: '/game/1#spreadsheet', **needs)).to include('Worth')
       expect(render(app_route: '/game/1#tools', **needs)).to include('Clone this')
+    end
+
+    TEST_CASES = [
+      ['1889', 314, 6, 'stock_round', 'Pass (Share)'],
+      ['1889', 314, 13, 'float', 'KO receives ¥700'],
+      ['1889', 314, 21, 'lay_track', '1889: Operating Round 1.1 (of 1) - Lay Track'],
+      ['1889', 314, 22, 'buy_train', 'KO must buy an available train'],
+      ['1889', 314, 46, 'run_routes', '1889: Operating Round 2.1 (of 1) - Run Routes'],
+      ['1889', 314, 47, 'dividends', '1889: Operating Round 2.1 (of 1) - Pay or Withhold Dividends'],
+      ['1889', 314, 78, 'buy_company',
+       ['1889: Operating Round 3.1 (of 1) - Buy Companies',
+        'Owning corporation may ignore building cost for mountain hexes']],
+      ['1889', 314, 81, 'track_and_buy_company',
+       ['1889: Operating Round 3.1 (of 1) - Lay Track',
+        'Blocks Takamatsu (K4) while owned by a player.']],
+      ['1889', 314, 335, 'discard_train', 'Discard Trains'],
+      ['1889', 314, 345, 'buy_train_emr', 'TR must buy an available train'],
+      ['1889', 314, nil, 'endgame', '1889: Operating Round 7.1 (of 3) - Game Over - Bankruptcy'],
+      ['1846', 4123, 0, 'draft', '1846: Draft Round 1 - Draft Companies'],
+      ['1846', 4123, 14, 'draft', 'Mail Contract'],
+      ['1846', 4123, 42, 'lay_track_or_token', '1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track'],
+      ['1846', 4123, 50, 'issue_shares', '1846: Operating Round 1.1 (of 2) - Issue or Redeem Shares'],
+      ['1846', 4123, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
+    ].freeze
+
+    def render_game(jsonfile, no_actions, string)
+      data = JSON.parse(File.read(jsonfile))
+      data['actions'] = data['actions'].take(no_actions) if no_actions
+      data[:loaded] = true
+      needs = {
+        game_data: data,
+        user: data['user'],
+        disable_user_errors: true,
+      }
+
+      html = render(app_route: "/game/#{needs[:game_data]['id']}", **needs)
+      strings = Array(string)
+      strings.each { |str| expect(html).to include(str) }
+    end
+
+    TEST_CASES.each do |game, game_id, action, step, string|
+      describe game do
+        it "renders #{step}" do
+          render_game("spec/fixtures/#{game}/#{game_id}.json", action, string)
+        end
+      end
+    end
+
+    it 'renders tutorial to the end' do
+      render_game('public/assets/tutorial.json', nil, 'Good luck and have fun!')
     end
   end
 end
