@@ -12,6 +12,7 @@ module Engine
       GAME_LOCATION = 'Mississippi, USA'
       GAME_DESIGNER = 'Mark Derrick'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
+      GAME_END_CHECK = { final_or_set: 10 }.freeze
 
       HOME_TOKEN_TIMING = :operating_round
 

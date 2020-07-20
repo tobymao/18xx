@@ -13,6 +13,7 @@ module Engine
       GAME_LOCATION = 'Mexico'
       GAME_RULES_URL = 'https://secure.deepthoughtgames.com/games/18MEX/rules.pdf'
       GAME_DESIGNER = 'Mark Derrick'
+      GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
       include CompanyPrice50To150Percent
 
