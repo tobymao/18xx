@@ -70,8 +70,10 @@ module View
 
       enforce_range = lambda do
         elm = Native(@inputs[:max_players]).elm
-        elm.value = elm.max.to_i unless (elm.min.to_i..elm.max.to_i).include?(elm.value.to_i)
-        store(:num_players, elm.value.to_i) if @mode == :hotseat
+        if elm.value.any?
+          elm.value = elm.max.to_i unless (elm.min.to_i..elm.max.to_i).include?(elm.value.to_i)
+          store(:num_players, elm.value.to_i) if @mode == :hotseat
+        end
       end
 
       inputs = [
@@ -85,6 +87,7 @@ module View
             min: @min_p.values.first,
             max: @max_p.values.first,
             value: @num_players,
+            required: true,
           },
           input_style: { width: '2.5rem' },
           on: { input: enforce_range },
@@ -103,7 +106,9 @@ module View
     def mode_input(mode, text)
       click_handler = lambda do
         store(:mode, mode, skip: true)
-        store(:num_players, Native(@inputs[:max_players]).elm.value.to_i)
+        elm = Native(@inputs[:max_players]).elm
+        elm.value = [elm.value.to_i, elm.min.to_i].max
+        store(:num_players, elm.value.to_i)
       end
 
       [render_input(
