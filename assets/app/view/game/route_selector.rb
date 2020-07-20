@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
 require 'view/game/actionable'
 require 'view/game/undo_and_pass'
 
@@ -7,7 +8,7 @@ module View
   module Game
     class RouteSelector < Snabberb::Component
       include Actionable
-      include Lib::Color
+      include Lib::Settings
 
       needs :routes, store: true, default: []
       needs :selected_route, store: true, default: nil

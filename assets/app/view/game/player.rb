@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
 require 'view/game/companies'
 
 module View
   module Game
     class Player < Snabberb::Component
-      include Lib::Color
+      include Lib::Settings
+
       needs :player
       needs :game
       needs :display, default: 'inline-block'

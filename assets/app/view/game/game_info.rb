@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require 'lib/color'
+require 'lib/settings'
 
 module View
   module Game
     class GameInfo < Snabberb::Component
       include Lib::Color
+      include Lib::Settings
 
       needs :game
       needs :layout, default: nil

@@ -2,11 +2,13 @@
 
 require 'lib/connection'
 require 'lib/params'
+require 'lib/settings'
 require_tree './game'
 
 module View
   class GamePage < Snabberb::Component
-    include Lib::Color
+    include Lib::Settings
+
     needs :game_data, store: true
     needs :game, default: nil, store: true
     needs :connection
