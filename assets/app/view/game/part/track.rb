@@ -39,7 +39,7 @@ module View
           else
             @tile.paths.select { |path| path.edges.size == 2 }
             .map { |path| [path, color_for(path)] }
-            .sort_by { |_, color| color == TRACK_COLOR ? 0 : 1 }
+            .sort_by { |_, color| color == TRACK_COLOR ? 0 : ROUTE_COLORS.index(color) + 1 }
             .map do |path, color|
               h(TrackCurvilinearPath, region_use: @region_use, path: path, color: color)
             end
