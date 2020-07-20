@@ -49,12 +49,13 @@ module View
         current_phase = @game.phase.current
         rows = @game.phase.phases.map do |phase|
           phase_color = Array(phase[:tiles]).last
-          phase_props = { style: {} }
-          if Part::MultiRevenue::COLOR.include?(phase_color)
-            bg_color = color_for(phase_color)
-            phase_props[:style][:backgroundColor] = bg_color
-            phase_props[:style][:color] = contrast_on(bg_color)
-          end
+          bg_color = color_for(phase_color)
+          phase_props = {
+            style: {
+              backgroundColor: bg_color,
+              color: contrast_on(bg_color),
+            },
+          }
 
           event_text = []
           event_text << 'Can Buy Companies' if phase[:buy_companies]
