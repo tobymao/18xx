@@ -10,6 +10,7 @@ module View
     module Part
       class Track < Snabberb::Component
         # http://mkweb.bcgsc.ca/colorblind/ 13 color palette
+        TRACK_COLOR = '#000000'
         ROUTE_COLORS = %i[#AA0A3C #0A9B4B #005AC8 #8214A0].freeze
 
         needs :tile
@@ -36,8 +37,11 @@ module View
           elsif @tile.cities.any?
             render_track_for_curvilinear_city
           else
-            @tile.paths.select { |path| path.edges.size == 2 }.map do |path|
-              h(TrackCurvilinearPath, region_use: @region_use, path: path, color: color_for(path))
+            @tile.paths.select { |path| path.edges.size == 2 }
+            .map { |path| [path, color_for(path)] }
+            .sort_by { |_, color| color == TRACK_COLOR ? 0 : ROUTE_COLORS.index(color) + 1 }
+            .map do |path, color|
+              h(TrackCurvilinearPath, region_use: @region_use, path: path, color: color)
             end
           end
         end
@@ -82,7 +86,7 @@ module View
               path == p
             end
           end
-          index ? self.class::ROUTE_COLORS[index] : '#000000'
+          index ? self.class::ROUTE_COLORS[index] : TRACK_COLOR
         end
       end
     end
