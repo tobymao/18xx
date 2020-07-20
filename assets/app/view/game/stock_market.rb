@@ -14,6 +14,7 @@ module View
 
       COLOR_MAP = {
         red: '#ffaaaa',
+        blue: '#35a7ff',
         brown: '#8b4513',
         orange: '#ffbb55',
         yellow: '#ffff99',
@@ -101,6 +102,7 @@ module View
             [:orange, 'Corporation shares can be held above 60%'],
             [:brown, 'Can buy more than one share in the Corporation per turn'],
             [:black, 'Corporation closes'],
+            [:blue, 'End game trigger'],
           ]
           colors_text.each do |color, text|
             next unless colors_in_market.include?(color)

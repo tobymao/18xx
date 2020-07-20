@@ -49,7 +49,7 @@ module Engine
       #   after: When game should end if check triggered
       # Leave out a reason if game does not support that.
       # Allowed reasons:
-      #  bankrupt, bank
+      #  bankrupt, stock_market, bank
       # Allowed after:
       #  immediate - ends in current turn
       #  current_or - ends at the next end of an OR
@@ -864,6 +864,7 @@ module Engine
         triggers = {
           bankrupt: bankruptcy_limit_reached?,
           bank: @bank.broken?,
+          stock_market: @stock_market.max_reached?,
         }
 
         %i[immediate current_or full_or].each do |after|
@@ -903,6 +904,7 @@ module Engine
         reason_map = {
                        bank: 'Bank Broken',
                        bankrupt: 'Bankruptcy',
+                       stock_market: 'Company hit max stock value',
                      }
         "#{reason_map[reason]}#{after_text}"
       end

@@ -91,6 +91,10 @@ module Engine
       end
     end
 
+    def max_reached?
+      @max_reached
+    end
+
     private
 
     def share_price(row, column)
@@ -103,6 +107,7 @@ module Engine
 
       corporation.share_price.corporations.delete(corporation)
       corporation.share_price = share_price
+      @max_reached = true if share_price.end_game_trigger
       share_price.corporations << corporation
     end
   end
