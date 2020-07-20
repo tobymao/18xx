@@ -38,10 +38,10 @@ module View
             render_track_for_curvilinear_city
           else
             @tile.paths.select { |path| path.edges.size == 2 }
-            .map { |path| [path, color_for(path)] }
-            .sort_by { |_, color| color == TRACK_COLOR ? 0 : ROUTE_COLORS.index(color) + 1 }
-            .map do |path, color|
-              h(TrackCurvilinearPath, region_use: @region_use, path: path, color: color)
+            .map { |path| [path, index_for(path)] }
+            .sort_by { |_, index| index || -1 }
+            .map do |path, index|
+              h(TrackCurvilinearPath, region_use: @region_use, path: path, color: color_for_index(index))
             end
           end
         end
@@ -80,13 +80,18 @@ module View
           end
         end
 
-        def color_for(path)
-          index = @routes_paths.find_index do |route_paths|
-            route_paths.any? do |p|
-              path == p
-            end
+        def index_for(path)
+          @routes_paths.find_index do |route_paths|
+            route_paths.any? { |p| path == p }
           end
+        end
+
+        def color_for_index(index)
           index ? self.class::ROUTE_COLORS[index] : TRACK_COLOR
+        end
+
+        def color_for(path)
+          color_for_index(index_for(path))
         end
       end
     end
