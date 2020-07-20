@@ -3,6 +3,7 @@
 require_relative '../config/game/g_18_al'
 require_relative 'base'
 require_relative 'company_price_50_to_150_percent'
+require_relative 'revenue_4d'
 
 module Engine
   module Game
@@ -16,6 +17,7 @@ module Engine
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
       include CompanyPrice50To150Percent
+      include Revenue4D
 
       def setup
         setup_company_price_50_to_150_percent
@@ -43,15 +45,7 @@ module Engine
           raise GameError, "#{hex.location_name} must be first or last in route"
         end
 
-        revenue = super
-
-        if route.train.name == '4D'
-          revenue = 2 * revenue - route.stops
-            .select { |stop| stop.hex.tile.towns.any? }
-            .sum { |stop| stop.route_revenue(route.phase, route.train) }
-        end
-
-        revenue
+        adjust_revenue_for_4d_train(route, super)
       end
     end
   end
