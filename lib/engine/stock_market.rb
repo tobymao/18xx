@@ -19,6 +19,10 @@ module Engine
           price
         end
       end
+      @par_prices.sort_by! do |p|
+        r, c = p.coordinates
+        [p.price, c, r]
+      end.reverse!
     end
 
     def one_d?
