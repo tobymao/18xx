@@ -4,6 +4,7 @@ require_relative '../config/game/g_18_al'
 require_relative 'base'
 require_relative 'company_price_50_to_150_percent'
 require_relative 'revenue_4d'
+require_relative 'terminus_check'
 
 module Engine
   module Game
@@ -18,6 +19,7 @@ module Engine
 
       include CompanyPrice50To150Percent
       include Revenue4D
+      include TerminusCheck
 
       def setup
         setup_company_price_50_to_150_percent
@@ -39,11 +41,8 @@ module Engine
       end
 
       def revenue_for(route)
-        route.hexes[1...-1].each do |hex|
-          next unless termini.include?(hex.name)
-
-          raise GameError, "#{hex.location_name} must be first or last in route"
-        end
+        # Mobile and Nashville should not be possible to pass through
+        ensure_termini_not_passed_through(route, %w[A4 Q2])
 
         adjust_revenue_for_4d_train(route, super)
       end
