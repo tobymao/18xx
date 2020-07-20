@@ -54,6 +54,8 @@ module Engine
       #  immediate - ends in current turn
       #  current_or - ends at the next end of an OR
       #  full_or - ends at the next end of a complete OR set
+      # Also, you can use final_or_set: <number> to trigger game
+      # end (:full_or) when that OR is reached.
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
       BANK_CASH = 12_000
@@ -873,7 +875,8 @@ module Engine
           end
         end
 
-        nil
+        return :final_or_set, :full_or\
+          if @round.is_a?(Round::Operating) && self.class::GAME_END_CHECK[:final_or_set]&.to_i == turn
       end
 
       def end_now?(after)
@@ -905,6 +908,7 @@ module Engine
                        bank: 'Bank Broken',
                        bankrupt: 'Bankruptcy',
                        stock_market: 'Company hit max stock value',
+                       final_or_set: 'Last OR in game',
                      }
         "#{reason_map[reason]}#{after_text}"
       end
