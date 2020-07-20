@@ -70,7 +70,7 @@ module View
 
       enforce_range = lambda do
         elm = Native(@inputs[:max_players]).elm
-        unless elm.value.empty?
+        if elm.value.any?
           elm.value = elm.max.to_i unless (elm.min.to_i..elm.max.to_i).include?(elm.value.to_i)
           store(:num_players, elm.value.to_i) if @mode == :hotseat
         end
