@@ -23,8 +23,8 @@ module Engine
         'Skip (Token)'
       end
 
-      def available_hex(hex)
-        @game.graph.reachable_hexes(current_entity)[hex]
+      def available_hex(entity, hex)
+        @game.graph.reachable_hexes(entity)[hex]
       end
 
       def sequential?

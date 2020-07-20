@@ -68,10 +68,8 @@ module View
         def on_click(event)
           return if @tile_selector&.is_a?(Lib::TileSelector)
 
-          round = @selected_company ? @game.special : @game.round
-
-          step = round.active_step
-          actions = step.current_actions
+          step = @game.round.active_step(@selected_company)
+          actions = step.actions(@selected_company || step.current_entity)
           return if (%w[move_token place_token] & actions).empty?
           return if @token && !step.can_replace_token?(@token)
 

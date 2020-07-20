@@ -49,7 +49,7 @@ module Engine
         end
       end
 
-      def available_hex(hex)
+      def available_hex(_entity, hex)
         pending_token[:hexes].include?(hex)
       end
 

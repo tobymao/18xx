@@ -24,9 +24,11 @@ module View
           store(:selected_corporation, selected_corporation)
 
           if can_assign_corporation?
-            process_action(Engine::Action::Assign.new(@selected_company, target: @corporation))
-            store(:selected_corporation, nil)
-            store(:selected_company, nil)
+            company = @selected_company
+            target = @corporation
+            store(:selected_corporation, nil, skip: true)
+            store(:selected_company, nil, skip: true)
+            process_action(Engine::Action::Assign.new(company, target: target))
           end
         end
 
@@ -334,7 +336,7 @@ module View
       end
 
       def can_assign_corporation?
-        @selected_corporation && @selected_company && @game.special.can_assign_corporation?
+        @selected_corporation && @selected_company # && @game.special.can_assign_corporation?
       end
     end
   end

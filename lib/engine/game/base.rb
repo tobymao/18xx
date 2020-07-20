@@ -32,7 +32,7 @@ module Engine
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
-                  :round, :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
+                  :round, :share_pool, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
                   :round_history
       attr_accessor :bankruptcies
 
@@ -303,7 +303,6 @@ module Engine
 
         @round_history = []
         @round = init_round
-        @special = Round::Special.new(@companies, game: self)
 
         cache_objects
         connect_hexes
@@ -420,12 +419,7 @@ module Engine
           return clone(@actions)
         end
 
-        # company special power actions are processed by a different round handler
-        if action.entity.is_a?(Company)
-          @special.process_action(action)
-        else
-          @round.process_action(action)
-        end
+        @round.process_action(action)
 
         unless action.is_a?(Action::Message)
           @redo_possible = false
@@ -515,18 +509,6 @@ module Engine
           end
         end
         value
-      end
-
-      # Returns if a share can be gained by an entity respecting the cert limit
-      # This works irrespective of if that player has sold this round
-      # such as in 1889 for exchanging Dougo
-      #
-      def can_gain?(bundle, entity)
-        return if !bundle || !entity
-
-        corporation = bundle.corporation
-        corporation.holding_ok?(entity, bundle.percent) &&
-        (!corporation.counts_for_limit || entity.num_certs < cert_limit)
       end
 
       def sellable_bundles(player, corporation)
@@ -1000,6 +982,8 @@ module Engine
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
+          Step::Exchange,
+          Step::SpecialTrack,
           Step::BuySellParShares,
         ])
       end
@@ -1012,7 +996,9 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
+          Step::Exchange,
           Step::DiscardTrain,
+          Step::SpecialTrack,
           Step::BuyCompany,
           Step::Track,
           Step::Token,

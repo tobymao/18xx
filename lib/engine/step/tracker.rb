@@ -63,7 +63,7 @@ module Engine
         hex.lay(tile)
 
         @game.graph.clear
-        check_track_restrictions!(entity, old_tile, tile) unless @game.loading
+        check_track_restrictions!(entity, old_tile, tile)
         free = false
         discount = 0
 
@@ -154,6 +154,8 @@ module Engine
       end
 
       def check_track_restrictions!(entity, old_tile, new_tile)
+        return if @game.loading || !entity.corporation?
+
         old_paths = old_tile.paths
         changed_city = false
         used_new_track = old_paths.empty?
@@ -178,7 +180,7 @@ module Engine
         end
       end
 
-      def potential_tiles(hex)
+      def potential_tiles(_entity, hex)
         colors = @game.phase.tiles
         @game.tiles
           .select { |tile| colors.include?(tile.color) }
@@ -188,7 +190,7 @@ module Engine
       end
 
       def upgradeable_tiles(entity, hex)
-        potential_tiles(hex).map do |tile|
+        potential_tiles(entity, hex).map do |tile|
           tile.rotate!(0) # reset tile to no rotation since calculations are absolute
           tile.legal_rotations = legal_tile_rotations(entity, hex, tile)
           next if tile.legal_rotations.empty?
@@ -198,7 +200,7 @@ module Engine
         end.compact
       end
 
-      def legal_tile_rotations(_entity, hex, tile)
+      def legal_tile_rotations(entity, hex, tile)
         old_paths = hex.tile.paths
 
         Engine::Tile::ALL_EDGES.select do |rotation|
@@ -207,7 +209,7 @@ module Engine
           new_exits = tile.exits
 
           new_exits.all? { |edge| hex.neighbors[edge] } &&
-            (new_exits & available_hex(hex)).any? &&
+            (new_exits & available_hex(entity, hex)).any? &&
             old_paths.all? { |path| new_paths.any? { |p| path <= p } }
         end
       end

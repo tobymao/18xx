@@ -35,7 +35,7 @@ module Engine
           true
         end
 
-      return nil if time && ability.when != time.to_s
+      return nil if time && ability.when && ability.when != time.to_s
       return nil unless correct_owner_type
 
       yield ability if block_given?
