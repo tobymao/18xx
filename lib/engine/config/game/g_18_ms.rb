@@ -192,7 +192,20 @@ module Engine
          "value":70,
          "revenue":5,
          "desc":"The owning Major Company may purchase an available 3+ Train or 4+ Train from the bank for a discount of $100, which closes this Private Company. This purchase is subject to the normal rules governing train purchases - only during the train-buying step and train limits.",
-         "sym":"M&O"
+         "sym":"M&O",
+         "abilities": [
+            {
+              "type": "train_discount",
+              "discount": 100,
+              "owner_type": "corporation",
+              "trains": [
+                 "3+",
+                 "4+"
+              ],
+              "count": 1,
+              "when": "train"
+            }
+         ]
       }
    ],
    "corporations":[
