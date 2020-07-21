@@ -512,9 +512,21 @@ module Engine
         value
       end
 
+      # Returns if a share can be gained by an entity respecting the cert limit
+      # This works irrespective of if that player has sold this round
+      # such as in 1889 for exchanging Dougo
+      #
+      def can_gain?(bundle, entity)
+        return if !bundle || !entity
+
+        corporation = bundle.corporation
+        corporation.holding_ok?(entity, bundle.percent) &&
+        (!corporation.counts_for_limit || entity.num_certs < cert_limit)
+      end
+
       def sellable_bundles(player, corporation)
         bundles = player.bundles_for_corporation(corporation)
-        bundles.select { |bundle| @round.active_step.can_sell?(bundle) }
+        bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
       end
 
       def sellable_turn?
@@ -950,7 +962,10 @@ module Engine
       end
 
       def stock_round
-        Round::Stock.new(@players, game: self)
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::BuySellParShares,
+        ])
       end
 
       def new_operating_round(round_num = 1)

@@ -69,7 +69,7 @@ module Engine
     def can_par?
       return false if @needs_token_to_par && @tokens.empty?
 
-      true
+      !@ipoed
     end
 
     def par_price

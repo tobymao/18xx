@@ -46,7 +46,7 @@ module Engine
       end
 
       def skip!
-        log_skip(current_entity)
+        log_skip(current_entity) unless @acted
         pass!
       end
 
@@ -94,9 +94,6 @@ module Engine
       def entity_index
         @round.entity_index
       end
-
-      # The following should be removed when specials are moved to steps
-      def can_gain?; end
     end
   end
 end

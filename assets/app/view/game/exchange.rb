@@ -11,7 +11,7 @@ module View
 
       def render_exchange(share, share_origin)
         return nil unless share
-        return nil unless @game.round.active_step.can_gain?(share, @selected_company.owner)
+        return nil unless @game.can_gain?(share, @selected_company.owner)
 
         exchange = lambda do
           process_action(Engine::Action::BuyShares.new(@selected_company, shares: share))

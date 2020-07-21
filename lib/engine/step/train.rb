@@ -95,14 +95,16 @@ module Engine
       end
 
       def process_sell_shares(action)
-        raise GameError, "Cannot sell shares of #{action.bundle.corporation.name}" unless can_sell?(action.bundle)
+        unless can_sell?(action.entity, action.bundle)
+          raise GameError, "Cannot sell shares of #{action.bundle.corporation.name}"
+        end
 
         @last_share_sold_price = action.bundle.price_per_share
         @game.sell_shares_and_change_price(action.bundle)
         @round.recalculate_order
       end
 
-      def can_sell?(bundle)
+      def can_sell?(_entity, bundle)
         player = bundle.owner
         # Can't sell president's share
         return false unless bundle.can_dump?(player)
