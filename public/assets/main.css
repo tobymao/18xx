@@ -351,3 +351,26 @@ div.game.card em {
   font-style: normal;
   text-decoration: underline;
 }
+
+#stock_market .splayed {
+  display: flex;
+  flex-direction: row-reverse;
+  position: absolute;
+  left: 2px;
+  z-index: 1000;
+  padding: 2px;
+  height: 33px;
+  box-sizing: border-box;
+  border: 2px solid;
+  border-color: inherit;
+  border-radius: 5px;
+  box-shadow: 2px 2px #555555;
+  background-color: inherit;
+}
+#stock_market object {
+  position: absolute;
+}
+#stock_market .splayed object {
+  position: static;
+  padding-right: 1px;
+}

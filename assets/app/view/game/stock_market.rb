@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'lib/settings'
+require 'view/game/bank'
 require 'view/game/token'
 
 module View
@@ -11,6 +12,7 @@ module View
       needs :game
       needs :show_bank, default: false
       needs :explain_colors, default: false
+      needs :splayed, default: nil, store: true
 
       COLOR_MAP = {
         red: '#ffaaaa',
@@ -21,11 +23,10 @@ module View
         black: '#000000',
       }.freeze
 
-      PAD = 5                                     # between box contents and border
       BORDER = 1
       WIDTH_TOTAL = 50                            # of entire box, including border
       HEIGHT_TOTAL = 50
-      TOKEN_PAD = 3                               # left/right padding of tokens within box
+      TOKEN_PAD = 2                               # left/right padding of tokens within box
       TOKEN_SIZE = 25
       BOX_WIDTH = WIDTH_TOTAL - 2 * BORDER
       LEFT_MARGIN = TOKEN_PAD                     # left edge of leftmost token
@@ -38,16 +39,14 @@ module View
         space_style = {
           position: 'relative',
           display: 'inline-block',
-          padding: "#{PAD}px",
-          width: "#{WIDTH_TOTAL - 2 * PAD}px",
-          height: "#{HEIGHT_TOTAL - 2 * PAD}px",
-          margin: '0',
+          padding: '5px',
+          boxSizing: 'border-box',
+          width: "#{WIDTH_TOTAL}px",
+          height: "#{HEIGHT_TOTAL}px",
           verticalAlign: 'top',
         }
 
         box_style = space_style.merge(
-          width: "#{WIDTH_TOTAL - 2 * PAD - 2 * BORDER}px",
-          height: "#{HEIGHT_TOTAL - 2 * PAD - 2 * BORDER}px",
           border: "solid #{BORDER}px rgba(0,0,0,0.2)",
           color: color_for(:font2),
         )
@@ -68,19 +67,32 @@ module View
 
               tokens = corporations.map.with_index do |corporation, index|
                 props = {
-                  attrs: { data: corporation.logo, width: "#{TOKEN_SIZE}px" },
+                  attrs: { data: corporation.logo, width: "#{TOKEN_SIZE}px", alt: corporation.name },
                   style: {
-                    position: 'absolute',
                     left: num > 1 ? "#{LEFT_TOKEN_POS + ((num - index - 1) * spacing)}px" : "#{MID_TOKEN_POS}px",
                     zIndex: num - index,
+                    pointerEvents: 'none',
                   },
                 }
                 h(:object, props)
               end
 
-              h(:div, { style: style }, [
-                h(:div, { style: { fontSize: '80%' } }, price.price),
-                h(:div, tokens),
+              if tokens.size > 2
+                id = corporations[0].name
+                box_props = {
+                  attrs: { title: "#{@splayed == id ? 'stack' : 'splay'} tokens" },
+                  style: { cursor: 'pointer', **style },
+                  on: { click: -> { store(:splayed, @splayed == id ? nil : id) } },
+                }
+                token_div = h(:div, { class: { splayed: @splayed == id } }, tokens)
+              else
+                box_props = { style: style }
+                token_div = h(:div, tokens)
+              end
+
+              h(:div, box_props, [
+                h(:div, { style: { 'font-size': '80%' } }, price.price),
+                token_div,
               ])
             else
               h(:div, { style: space_style }, '')
@@ -90,41 +102,36 @@ module View
           h(:div, { style: { width: 'max-content' } }, rows)
         end
 
-        children = []
-
-        children << h(Bank, game: @game)
+        children = [h(Bank, game: @game)]
         children.concat(grid)
 
         if @explain_colors
-          colors_text = [
-            [:red, 'Par values'],
-            [:yellow, 'Corporation shares do not count towards cert limit'],
-            [:orange, 'Corporation shares can be held above 60%'],
-            [:brown, 'Can buy more than one share in the Corporation per turn'],
-            [:black, 'Corporation closes'],
-            [:blue, 'End game trigger'],
-          ]
-          colors_text.each do |color, text|
+          colors_text = {
+            red: 'Par values',
+            yellow: 'Corporation shares do not count towards cert limit',
+            orange: 'Corporation shares can be held above 60%',
+            brown: 'Can buy more than one share in the Corporation per turn',
+            black: 'Corporation closes',
+            blue: 'End game trigger',
+          }
+          legend_items = colors_text.flat_map do |color, text|
             next unless colors_in_market.include?(color)
 
             style = box_style.merge(backgroundColor: COLOR_MAP[color])
             style[:borderColor] = color_for(:font) if color == :black
-
-            line_props = {
-              style: {
-                display: 'grid',
-                grid: '1fr / auto 1fr',
-                gap: '0.5rem',
-                alignItems: 'center',
-                marginTop: '1rem',
-              },
-            }
-
-            children << h(:div, line_props, [
-              h(:div, { style: style }, []),
-              h(:div, text),
-            ])
+            [h(:div, { style: style }, ''), h(:div, text)]
           end
+
+          legend_props = {
+            style: {
+              display: 'grid',
+              grid: 'auto / max-content 1fr',
+              gap: '1rem',
+              marginTop: '1rem',
+              alignItems: 'center',
+            },
+          }
+          children << h(:div, legend_props, legend_items.compact)
         end
 
         props = {
@@ -134,7 +141,7 @@ module View
           },
         }
 
-        h(:div, props, children)
+        h('div#stock_market', props, children)
       end
     end
   end
