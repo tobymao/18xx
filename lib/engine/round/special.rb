@@ -151,7 +151,7 @@ module Engine
           # this is shit
           @game.tiles.find { |t| t.name == name }
         end.compact
-        potentials.select { |t| hex.tile.upgrades_to?(t) }
+        potentials.select { |t| hex.tile.upgrades_to?(t, true) }
       end
 
       def check_track_restrictions!(_entity, _old_tile, _new_tile)

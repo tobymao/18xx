@@ -54,7 +54,8 @@ module Engine
 
         tile.rotate!(rotation)
 
-        raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}" unless old_tile.upgrades_to?(tile)
+        raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}"\
+          unless old_tile.upgrades_to?(tile, entity.company?)
 
         @game.tiles.delete(tile)
         @game.tiles << old_tile unless old_tile.preprinted
