@@ -139,7 +139,7 @@ module Engine
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
       EVENTS_TEXT = { 'close_companies' =>
-        ['Companies Close', 'All companies unless otherwise noted are discarded from the game'] }.freeze
+                      ['Companies Close', 'All companies unless otherwise noted are discarded from the game'] }.freeze
 
       IPO_NAME = 'IPO'
 
@@ -262,15 +262,15 @@ module Engine
           @log << "#{self.class.title} is in prealpha state, no support is provided at all"
         when :alpha
           @log << "#{self.class.title} is currently considered 'alpha',"\
-          ' the rules implementation is likely to not be complete.'
+            ' the rules implementation is likely to not be complete.'
           @log << 'As the implementation improves, games that are not compatible'\
-          ' with the latest version will be deleted.'
+            ' with the latest version will be deleted.'
           @log << 'We suggest that any alpha quality game is concluded within 7 days.'
         when :beta
           @log << "#{self.class.title} is currently considered 'beta',"\
-          ' the rules implementation may allow illegal moves.'
+            ' the rules implementation may allow illegal moves.'
           @log << 'As the implementation improves, games that are not compatible'\
-          ' with the latest version will be given 7 days to be completed before being deleted.'
+            ' with the latest version will be given 7 days to be completed before being deleted.'
           @log << 'Because of this we suggest not playing games that may take months to complete.'
         end
 
@@ -315,7 +315,7 @@ module Engine
         @log << "It is pinned to version #{pin}, if any bugs are raised please include this version number."
         if self.class::DEV_STAGE == :beta
           @log << 'Please note, you have 7 days since the upgrade to complete your game,'\
-          ' after which time it will be deleted.'
+            ' after which time it will be deleted.'
         end
         @log << '----'
       end
@@ -542,7 +542,7 @@ module Engine
         return unless from != to
 
         @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-                "to #{format_currency(to)}"
+          "to #{format_currency(to)}"
       end
 
       def can_run_route?(entity)
@@ -551,8 +551,8 @@ module Engine
 
       def must_buy_train?(entity)
         !entity.rusted_self && entity.trains.empty? &&
-        (self.class::MUST_BUY_TRAIN == :always ||
-         (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
+          (self.class::MUST_BUY_TRAIN == :always ||
+           (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
       end
 
       def end_game!
@@ -621,8 +621,8 @@ module Engine
 
           if discount.positive?
             @log << "#{entity.name} receives a discount of "\
-                    "#{format_currency(discount)} from "\
-                    "#{ability.owner.name}"
+              "#{format_currency(discount)} from "\
+              "#{ability.owner.name}"
           end
 
           total_cost = upgrade.cost - discount
@@ -833,7 +833,7 @@ module Engine
       end
 
       def next_round!
-        if (_result, after = game_end_check)
+        if (_, after = game_end_check)
           return end_game! if end_now?(after)
         end
 
@@ -867,16 +867,16 @@ module Engine
           bankrupt: bankruptcy_limit_reached?,
           bank: @bank.broken?,
           stock_market: @stock_market.max_reached?,
-        }
+        }.select { |_, t| t }
 
         %i[immediate current_or full_or].each do |after|
-          triggers.select { |_r, t| t }.each do |reason, _triggered|
+          triggers.keys.each do |reason|
             return reason, after if self.class::GAME_END_CHECK[reason] == after
           end
         end
 
-        return :final_or_set, :full_or\
-          if @round.is_a?(Round::Operating) && self.class::GAME_END_CHECK[:final_or_set]&.to_i == turn
+        return :final_or_set, :full_or if @round.is_a?(Round::Operating) &&
+          self.class::GAME_END_CHECK[:final_or_set]&.to_i == turn
       end
 
       def end_now?(after)
@@ -905,11 +905,11 @@ module Engine
         end
 
         reason_map = {
-                       bank: 'Bank Broken',
-                       bankrupt: 'Bankruptcy',
-                       stock_market: 'Company hit max stock value',
-                       final_or_set: 'Last OR in game',
-                     }
+          bank: 'Bank Broken',
+          bankrupt: 'Bankruptcy',
+          stock_market: 'Company hit max stock value',
+          final_or_set: 'Last OR in game',
+        }
         "#{reason_map[reason]}#{after_text}"
       end
 
@@ -977,7 +977,8 @@ module Engine
 
         @companies.each do |company|
           if (ability = company.abilities(:close))
-            next if ability.when == 'never' || @phase.phases.any? { |phase| ability.when == phase[:name] }
+            next if ability.when == 'never' ||
+              @phase.phases.any? { |phase| ability.when == phase[:name] }
           end
 
           company.close!
