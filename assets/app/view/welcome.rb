@@ -3,13 +3,15 @@
 module View
   class Welcome < Snabberb::Component
     needs :app_route, default: nil, store: true
+    needs :show_intro, default: true
 
     def render
-      h('div#welcome.half', [
-        render_notification,
-        render_introduction,
-        render_buttons,
-      ])
+      children = [render_notification]
+      puts "*** show bool #{@show_intro}"
+      children << render_introduction if @show_intro
+      children << render_buttons
+
+      h('div#welcome.half', children)
     end
 
     def render_notification
