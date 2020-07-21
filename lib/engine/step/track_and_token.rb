@@ -28,9 +28,8 @@ module Engine
       end
 
       def setup
+        super
         @tokened = false
-        @upgraded = false
-        @laid_track = 0
       end
 
       def unpass!
@@ -55,7 +54,7 @@ module Engine
           end
         end
 
-        (free || entity.cash >= @game.class::TILE_COST) && @laid_track < 2
+        (free || entity.cash >= @game.class::TILE_COST) && super(entity)
       end
 
       def process_place_token(action)
@@ -63,20 +62,12 @@ module Engine
 
         place_token(entity, action.city, action.token)
         @tokened = true
-        pass! if @laid_track == 2
+        pass! unless can_lay_tile?(entity)
       end
 
       def process_lay_tile(action)
-        if action.tile.color != :yellow
-          raise GameError, 'Cannot upgrade twice' if @upgraded
-        end
-
-        lay_tile(action)
-
-        @upgraded = true if action.tile.color != :yellow
-
-        @laid_track += 1
-        pass! if @laid_track == 2 && @tokened
+        lay_tile_action(action)
+        pass! if !can_lay_tile?(action.entity) && @tokened
       end
     end
   end

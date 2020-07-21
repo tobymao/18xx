@@ -9,6 +9,8 @@ module Engine
       ACTIONS = %w[lay_tile pass].freeze
 
       def actions(entity)
+        return [] unless can_lay_tile?(entity)
+
         entity == current_entity ? ACTIONS : []
       end
 
@@ -25,8 +27,8 @@ module Engine
       end
 
       def process_lay_tile(action)
-        lay_tile(action)
-        pass!
+        lay_tile_action(action)
+        pass! unless can_lay_tile?(action.entity)
       end
 
       def available_hex(hex)

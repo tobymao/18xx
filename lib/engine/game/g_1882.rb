@@ -32,6 +32,9 @@ module Engine
       ).freeze
 
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_round, bank: :full_or }.freeze
+      # Two lays or one upgrade, second tile costs 20
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false, cost: 20 }].freeze
+
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
