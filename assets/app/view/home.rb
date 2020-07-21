@@ -16,7 +16,6 @@ module View
     def render
       your_games, other_games = @games.partition { |game| user_in_game?(@user, game) }
 
-      puts "*** #{your_games.size}"
       children = [
         render_header,
         h(Welcome, show_intro: your_games.size < 2),

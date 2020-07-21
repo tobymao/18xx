@@ -7,7 +7,6 @@ module View
 
     def render
       children = [render_notification]
-      puts "*** show bool #{@show_intro}"
       children << render_introduction if @show_intro
       children << render_buttons
 
