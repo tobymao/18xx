@@ -44,8 +44,7 @@ def repair(game, original_actions, actions, broken_action)
       actions.delete(broken_action)
       return
     end
-
-    if game.active_step.is_a?(Engine::Round::Stock)
+    if game.active_step.is_a?(Engine::Step::BuySellParShares)
       # some games of 1889 didn't skip the buy companies step correctly
       actions.delete(broken_action)
       return

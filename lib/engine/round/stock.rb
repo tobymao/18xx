@@ -17,6 +17,10 @@ module Engine
         'Stock Round'
       end
 
+      def setup
+        start_entity
+      end
+
       def after_process(_action)
         return if active_step
 
@@ -33,6 +37,10 @@ module Engine
         end
 
         next_entity_index!
+        start_entity
+      end
+
+      def start_entity
         @steps.each(&:unpass!)
         @steps.each(&:setup)
 

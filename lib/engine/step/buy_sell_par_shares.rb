@@ -160,12 +160,10 @@ module Engine
       end
 
       def can_sell_any?(entity)
-        bundles = entity
-          .shares
-          .uniq { |share| [share.corporation.id, share.president] }
-          .map(&:to_bundle)
-
-        bundles.any? { |bundle| can_sell?(entity, bundle) }
+        @game.corporations.any? do |corporation|
+          bundles = entity.bundles_for_corporation(corporation)
+          bundles.any? { |bundle| can_sell?(entity, bundle) }
+        end
       end
 
       def can_buy_any_from_market?(entity)
