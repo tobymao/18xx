@@ -27,7 +27,7 @@ module Engine
           Step::DiscardTrain,
           Step::BuyCompany,
           Step::HomeToken,
-          Step::Track,
+          Step::G18AL::Track,
           Step::Token,
           Step::Route,
           Step::Dividend,
