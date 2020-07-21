@@ -31,6 +31,7 @@ module Engine
         tile = action.tile
         tile_lay = get_tile_lay(action.entity)
         raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && !tile_lay[:upgrade]
+        raise GameError, 'Cannot lay an yellow now' if tile.color == :yellow && !tile_lay[:lay]
 
         lay_tile(action, tile_lay[:cost])
         @upgraded = true if action.tile.color != :yellow
