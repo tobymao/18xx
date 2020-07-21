@@ -62,10 +62,6 @@ module Engine
         active_step&.current_entity == entity
       end
 
-      def did_sell?(_corporation, _entity)
-        false
-      end
-
       def pass_description
         active_step.pass_description
       end

@@ -143,10 +143,6 @@ module Engine
         bundles.select { |bundle| can_sell?(bundle) }
       end
 
-      def did_sell?(_corporation, _entity)
-        false
-      end
-
       def crowded_corps
         @game.corporations.select do |c|
           c.trains.reject(&:obsolete).size > @game.phase.train_limit

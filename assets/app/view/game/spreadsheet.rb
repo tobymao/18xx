@@ -215,7 +215,7 @@ module View
           h(:th, name_props, corporation.name),
           *@game.players.map do |p|
             sold_props = { style: {} }
-            if @game.round.did_sell?(corporation, p)
+            if @game.round.active_step.did_sell?(corporation, p)
               sold_props[:style][:backgroundColor] = '#9e0000'
               sold_props[:style][:color] = 'white'
             end

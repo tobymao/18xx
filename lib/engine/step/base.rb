@@ -32,6 +32,10 @@ module Engine
 
       def available_hex(hex); end
 
+      def did_sell?(_corporation, _entity)
+        false
+      end
+
       def log_pass(entity)
         @log << "#{entity.name} passes #{description.downcase}"
       end
