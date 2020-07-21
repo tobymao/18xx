@@ -52,6 +52,7 @@ module Engine
       #  bankrupt, stock_market, bank
       # Allowed after:
       #  immediate - ends in current turn
+      #  current_round - ends at the end of the current round
       #  current_or - ends at the next end of an OR
       #  full_or - ends at the next end of a complete OR set
       # Also, you can use final_or_set: <number> to trigger game
@@ -881,7 +882,7 @@ module Engine
           stock_market: @stock_market.max_reached?,
         }.select { |_, t| t }
 
-        %i[immediate current_or full_or].each do |after|
+        %i[immediate current_round current_or full_or].each do |after|
           triggers.keys.each do |reason|
             return reason, after if self.class::GAME_END_CHECK[reason] == after
           end
@@ -893,6 +894,7 @@ module Engine
 
       def end_now?(after)
         return true if after == :immediate
+        return true if after == :current_round
         return false unless @round.is_a?(Round::Operating)
         return true if after == :current_or
 
@@ -909,6 +911,12 @@ module Engine
           after_text = case after
                        when :immediate
                          ' : Game Ends immediately'
+                       when :current_round
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         else
+                           " : Game Ends at conclusion of this round (#{turn})"
+                         end
                        when :current_or
                          " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
                        when :full_or

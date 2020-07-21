@@ -31,6 +31,7 @@ module Engine
                   'Remove all yellow tiles from NWR-marked hexes. Station markers remain']
       ).freeze
 
+      GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_round, bank: :full_or }.freeze
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
