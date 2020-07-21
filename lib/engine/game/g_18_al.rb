@@ -23,6 +23,12 @@ module Engine
 
       def setup
         setup_company_price_50_to_150_percent
+
+        @corporations.each do |corporation|
+          corporation.abilities(:assign_hexes) do |ability|
+            ability.display_value = @hexes.find { |h| h.name == ability.hexes.first }.location_name
+          end
+        end
       end
 
       def operating_round(round_num)
@@ -32,7 +38,7 @@ module Engine
           Step::BuyCompany,
           Step::HomeToken,
           Step::G18AL::Track,
-          Step::Token,
+          Step::G18AL::Token,
           Step::Route,
           Step::Dividend,
           Step::SingleDepotTrainBuyBeforePhase4,

@@ -238,7 +238,17 @@ module Engine
             100
          ],
          "coordinates":"A4",
-         "color":"blue"
+         "color":"blue",
+         "abilities": [
+            {
+              "type": "assign_hexes",
+              "name": "Historical objective",
+              "hexes": [
+                "G4"
+              ],
+              "count": 1
+            }
+         ]
       },
       {
          "sym":"M&O",
@@ -251,7 +261,17 @@ module Engine
             100
          ],
          "coordinates":"Q2",
-         "color":"orange"
+         "color":"orange",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "name": "Historical objective",
+               "hexes": [
+                 "K2"
+               ],
+               "count": 1
+            }
+         ]
       },
       {
          "sym":"WRA",
@@ -264,7 +284,17 @@ module Engine
             100
          ],
          "coordinates":"L5",
-         "color":"red"
+         "color":"red",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "name": "Historical objective",
+               "hexes": [
+                 "J7"
+               ],
+               "count": 1
+            }
+         ]
       },
       {
          "sym":"ATN",
@@ -276,7 +306,17 @@ module Engine
             100
          ],
          "coordinates":"F1",
-         "color":"black"
+         "color":"black",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "name": "Historical objective",
+               "hexes": [
+                 "L1"
+               ],
+               "count": 1
+            }
+         ]
       },
       {
          "sym":"ABC",
@@ -287,7 +327,17 @@ module Engine
             40
          ],
          "coordinates":"G6",
-         "color":"green"
+         "color":"green",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "name": "Historical objective",
+               "hexes": [
+                 "G4"
+               ],
+               "count": 1
+            }
+         ]
       },
       {
          "sym":"TAG",
@@ -299,7 +349,17 @@ module Engine
          ],
          "coordinates":"E6",
          "color":"yellow",
-         "text_color":"black"
+         "text_color":"black",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "name": "Historical objective",
+               "hexes": [
+                 "G4"
+               ],
+               "count": 1
+            }
+         ]
       }
    ],
    "trains":[
