@@ -18,15 +18,15 @@ module View
           @tile.towns.map do |town|
             if @tile.lawson? || @tile.paths.empty?
               h(TownDot, town: town, tile: @tile, region_use: @region_use,
-                         color: prop_for(town, :color), width: prop_for(town, :width))
+                         color: value_for(town, :color), width: value_for(town, :width))
             else
               h(TownRect, town: town, region_use: @region_use,
-                          color: prop_for(town, :color), width: prop_for(town, :width))
+                          color: value_for(town, :color), width: value_for(town, :width))
             end
           end
         end
 
-        def prop_for(town, prop)
+        def value_for(town, prop)
           @routes_paths = @routes.map { |route| route.paths_for(@tile.paths) }
 
           index = @routes_paths.find_index do |route_paths|
