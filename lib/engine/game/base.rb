@@ -605,6 +605,8 @@ module Engine
         end
       end
 
+      def or_set_finished; end
+
       def place_home_token(corporation)
         return unless corporation.next_token # 1882
 
@@ -943,8 +945,6 @@ module Engine
       end
 
       def action_processed(_action); end
-
-      def or_set_finished; end
 
       def priority_deal_player
         if @round.current_entity&.player?
