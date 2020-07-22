@@ -35,6 +35,13 @@ module Engine
       # Two lays or one upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false, cost: 20 }].freeze
 
+      def new_auction_round
+        Round::Auction.new(self, [
+          Step::CompanyPendingPar,
+          Step::G1882::WaterfallAuction,
+        ])
+      end
+
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
