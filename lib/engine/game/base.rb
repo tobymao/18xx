@@ -137,6 +137,11 @@ module Engine
       DISCARDED_TRAINS = :discard # discarded or removed?
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
+
+      # Default tile lay, one tile either upgrade or lay at zero cost
+      # allows multiple lays, value must be either true, false or :not_if_upgraded
+      TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
+
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
       EVENTS_TEXT = { 'close_companies' =>
@@ -410,7 +415,6 @@ module Engine
       def process_action(action)
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
-
         if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
           @actions << action
           return clone(@actions)
@@ -641,6 +645,11 @@ module Engine
           total_cost = upgrade.cost - discount
           total_cost
         end
+      end
+
+      def tile_lays(_entity)
+        # Some games change available lays depending on if minor or corp
+        self.class::TILE_LAYS
       end
 
       private

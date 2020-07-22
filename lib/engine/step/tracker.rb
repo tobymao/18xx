@@ -5,7 +5,40 @@ require_relative 'base'
 module Engine
   module Step
     module Tracker
-      def lay_tile(action)
+      def setup
+        @upgraded = false
+        @laid_track = 0
+      end
+
+      def can_lay_tile?(entity)
+        action = get_tile_lay(entity)
+        return false unless action
+
+        (entity.cash >= action[:cost]) && (action[:lay] || action[:upgrade])
+      end
+
+      def get_tile_lay(entity)
+        action = @game.tile_lays(entity)[@laid_track]&.clone
+        return unless action
+
+        action[:lay] = !@upgraded if action[:lay] == :not_if_upgraded
+        action[:upgrade] = !@upgraded if action[:upgrade] == :not_if_upgraded
+        action[:cost] = action[:cost] || 0
+        action
+      end
+
+      def lay_tile_action(action)
+        tile = action.tile
+        tile_lay = get_tile_lay(action.entity)
+        raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && !tile_lay[:upgrade]
+        raise GameError, 'Cannot lay an yellow now' if tile.color == :yellow && !tile_lay[:lay]
+
+        lay_tile(action, tile_lay[:cost])
+        @upgraded = true if action.tile.color != :yellow
+        @laid_track += 1
+      end
+
+      def lay_tile(action, extra_cost = 0)
         entity = action.entity
         tile = action.tile
         hex = action.hex
@@ -49,7 +82,7 @@ module Engine
           else
             border, border_types = border_cost(tile, entity)
             terrain += border_types if border.positive?
-            @game.tile_cost(old_tile, entity) + border
+            @game.tile_cost(old_tile, entity) + border + extra_cost
           end
 
         entity.spend(cost, @game.bank) if cost.positive?
