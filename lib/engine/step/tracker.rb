@@ -93,7 +93,12 @@ module Engine
              cities.size > 1 &&
              cities.flat_map(&:tokens).any?
           token = cities.flat_map(&:tokens).find(&:itself)
-          @round.place_home_token << [entity, action.hex, token]
+          @round.pending_tokens << {
+            entity: entity,
+            hex: action.hex,
+            token: token,
+          }
+
           token.remove!
         end
         @log << "#{action.entity.name}"\
