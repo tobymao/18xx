@@ -54,7 +54,8 @@ module Engine
 
         tile.rotate!(rotation)
 
-        raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}" unless old_tile.upgrades_to?(tile)
+        raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}"\
+          unless old_tile.upgrades_to?(tile, entity.company?)
 
         @game.tiles.delete(tile)
         @game.tiles << old_tile unless old_tile.preprinted
@@ -64,11 +65,13 @@ module Engine
         @game.graph.clear
         check_track_restrictions!(entity, old_tile, tile) unless @game.loading
         free = false
+        discount = 0
 
         entity.abilities(:tile_lay) do |ability|
           next if !ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name)
 
           free = ability.free
+          discount = ability.discount
         end
 
         entity.abilities(:teleport) do |ability, _|
@@ -82,7 +85,7 @@ module Engine
           else
             border, border_types = border_cost(tile, entity)
             terrain += border_types if border.positive?
-            @game.tile_cost(old_tile, entity) + border + extra_cost
+            @game.tile_cost(old_tile, entity) + border + extra_cost - discount
           end
 
         entity.spend(cost, @game.bank) if cost.positive?

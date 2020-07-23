@@ -201,8 +201,7 @@ module Engine
          "name":"Mexico City-Acapulco Railroad",
          "value":20,
          "revenue":5,
-         "desc":"No special abilities.",
-         "max_price":30
+         "desc":"No special abilities."
       },
       {
          "sym":"KCMO",
@@ -210,7 +209,21 @@ module Engine
          "value":40,
          "revenue":10,
          "desc":"Owning company may place the Copper Canyan tile in E6 for $60 unless that hex is already built.",
-         "max_price":60
+         "abilities": [
+            {
+              "type": "tile_lay",
+              "discount": 60,
+              "owner_type": "corporation",
+              "tiles": [
+                 "470"
+              ],
+              "hexes": [
+                "E6"
+              ],
+              "count": 1,
+              "when": "track"
+            }
+        ]
       },
       {
          "sym":"IR",
@@ -239,7 +252,6 @@ module Engine
          "value":100,
          "revenue":20,
          "desc":"Comes with a 10% share of the Chihuahua Pacific Railway (CHI).",
-         "max_price":150,
          "abilities":[
             {
                "type":"share",
