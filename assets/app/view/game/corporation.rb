@@ -33,12 +33,12 @@ module View
         card_style = {
           cursor: 'pointer',
         }
-        card_style['border'] = '4px solid' if @game.round.can_act?(@corporation)
-        card_style['display'] = @display
+        card_style[:border] = '4px solid' if @game.round.can_act?(@corporation)
+        card_style[:display] = @display
 
         if selected?
-          card_style['background-color'] = 'lightblue'
-          card_style['color'] = 'black'
+          card_style[:backgroundColor] = 'lightblue'
+          card_style[:color] = 'black'
         end
 
         children = [render_title, render_holdings]
@@ -75,17 +75,17 @@ module View
             height: '1.6rem',
             width: '1.6rem',
             padding: '1px',
-            'align-self': 'center',
-            'justify-self': 'start',
+            alignSelf: 'center',
+            justifySelf: 'start',
             border: '2px solid currentColor',
-            'border-radius': '0.5rem',
+            borderRadius: '0.5rem',
           },
         }
         name_props = {
           style: {
             color: 'currentColor',
             display: 'inline-block',
-            'justify-self': 'start',
+            justifySelf: 'start',
           },
         }
 
@@ -107,9 +107,9 @@ module View
         }
         sym_props = {
           style: {
-            'font-size': '1.5rem',
-            'font-weight': 'bold',
-            'justify-self': 'start',
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            justifySelf: 'start',
           },
         }
         holdings_props = {
@@ -151,13 +151,13 @@ module View
         }
         value_props = {
           style: {
-            'max-width': '7.5rem',
-            'font-weight': 'bold',
+            maxWidth: '7.5rem',
+            fontWeight: 'bold',
           },
         }
         key_props = {
           style: {
-            'align-self': 'end',
+            alignSelf: 'end',
           },
         }
         h(:div, segment_props, [
@@ -170,7 +170,7 @@ module View
         token_list_props = {
           style: {
             grid: '1fr / auto-flow',
-            'justify-self': 'right',
+            justifySelf: 'right',
             gap: '0 0.2rem',
           },
         }
@@ -181,7 +181,7 @@ module View
         }
         token_text_props = {
           style: {
-            'align-self': 'end',
+            alignSelf: 'end',
           },
         }
 
@@ -232,7 +232,7 @@ module View
 
         shares_props = {
           style: {
-            'padding-right': '1.5rem',
+            paddingRight: '1.5rem',
           },
         }
 
@@ -258,7 +258,7 @@ module View
 
         market_tr_props = {
           style: {
-            'border-bottom': player_rows.any? ? '1px solid currentColor' : '0',
+            borderBottom: player_rows.any? ? '1px solid currentColor' : '0',
           },
         }
 
@@ -282,7 +282,7 @@ module View
           *player_rows,
         ]
 
-        props = { style: { 'border-collapse': 'collapse' } }
+        props = { style: { borderCollapse: 'collapse' } }
 
         h('table.center', props, [
           h(:thead, [
