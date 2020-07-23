@@ -268,7 +268,7 @@ module Engine
           "type": "exchange",
           "corporation": "SC",
           "owner_type": "player",
-          "from": "10%_par"
+          "from": "par"
         }
       ]
     },
