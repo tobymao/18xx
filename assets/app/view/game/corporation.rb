@@ -98,8 +98,8 @@ module View
       def render_holdings
         holdings_row_props = {
           style: {
-            grid: '1fr / auto auto auto',
-            gap: '0 0.2rem',
+            grid: '1fr / auto auto minmax(4rem, max-content)',
+            gap: '0 0.3rem',
             padding: '0.2rem 0.2rem 0.2rem 0.4rem',
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
@@ -139,14 +139,14 @@ module View
       end
 
       def render_trains
-        train_value = @corporation.trains.empty? ? 'None' : @corporation.trains.map(&:name).join(',')
+        train_value = @corporation.trains.empty? ? 'None' : @corporation.trains.map(&:name).join(' ')
         render_header_segment(train_value, 'Trains')
       end
 
       def render_header_segment(value, key)
         segment_props = {
           style: {
-            grid: '3fr 2fr / 1fr',
+            grid: '25px auto / 1fr',
           },
         }
         value_props = {
@@ -172,11 +172,14 @@ module View
             grid: '1fr / auto-flow',
             justifySelf: 'right',
             gap: '0 0.2rem',
+            width: '100%',
+            overflow: 'auto',
           },
         }
         token_column_props = {
           style: {
-            grid: '3fr 2fr / 1fr',
+            grid: '25px auto / 1fr',
+            justifyItems: 'center',
           },
         }
         token_text_props = {
