@@ -31,8 +31,29 @@ module Engine
                   'Remove all yellow tiles from NWR-marked hexes. Station markers remain']
       ).freeze
 
+      GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_round, bank: :full_or }.freeze
+      # Two lays or one upgrade, second tile costs 20
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false, cost: 20 }].freeze
+
+      def new_auction_round
+        Round::Auction.new(self, [
+          Step::CompanyPendingPar,
+          Step::G1882::WaterfallAuction,
+        ])
+      end
+
       def operating_round(round_num)
-        Round::G1882::Operating.new(@corporations, game: self, round_num: round_num)
+        Round::Operating.new(self, [
+          Step::Bankrupt,
+          Step::BuyCompany,
+          Step::HomeToken,
+          Step::G1882::Track,
+          Step::Token,
+          Step::Route,
+          Step::Dividend,
+          Step::Train,
+          [Step::BuyCompany, blocks: true],
+        ], round_num: round_num)
       end
 
       def init_phase

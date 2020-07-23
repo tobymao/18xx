@@ -15,8 +15,8 @@ module Engine
         @log << action
       end
 
-      def blocking?
-        false
+      def blocks?
+        @game.finished
       end
     end
   end

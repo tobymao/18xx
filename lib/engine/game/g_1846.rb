@@ -30,6 +30,7 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       SELL_MOVEMENT = :left_block_pres
       HOME_TOKEN_TIMING = :float
+      MUST_BUY_TRAIN = :always
 
       ORANGE_GROUP = [
         'Lake Shore Line',
@@ -47,6 +48,11 @@ module Engine
 
       TILE_COST = 20
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove private company tokens']).freeze
+
+      # Two tiles can be laid, only one upgrade
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
+
+      IPO_NAME = 'Treasury'
 
       def init_companies(players)
         super + @players.size.times.map do |i|
@@ -116,9 +122,9 @@ module Engine
           @round.active_step.companies.delete(company)
         end
         remove_from_group!(GREEN_GROUP, @corporations) do |corporation|
-          @round.place_home_token(corporation)
+          place_home_token(corporation)
           corporation.abilities(:reservation) do |ability|
-            corporation.remove_ability(ability.type)
+            corporation.remove_ability(ability)
           end
         end
 
@@ -238,13 +244,13 @@ module Engine
           end
         end
 
-        corporation.spend(corporation.cash, @bank)
+        corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
         corporation.trains.each { |t| t.buyable = false }
         if corporation.companies.any?
           @log << "#{corporation.name}'s companies close: #{corporation.companies.map(&:sym).join(', ')}"
           corporation.companies.dup.each(&:close!)
         end
-        @round.skip_current_entity if @round.current_entity == corporation
+        @round.force_next_entity! if @round.current_entity == corporation
 
         if corporation.corporation?
           corporation.share_holders.keys.each do |player|
@@ -264,7 +270,21 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::G1846::Operating.new(@minors + @corporations, game: self, round_num: round_num)
+        Round::G1846::Operating.new(self, [
+          Step::Bankrupt,
+          Step::DiscardTrain,
+          Step::G1846::BuyCompany,
+          Step::IssueShares,
+          Step::TrackAndToken,
+          Step::Route,
+          Step::G1846::Dividend,
+          Step::Train,
+          [Step::G1846::BuyCompany, blocks: true],
+        ], round_num: round_num)
+      end
+
+      def tile_cost(tile, entity)
+        [TILE_COST, super(tile, entity)].max
       end
 
       def event_close_companies!
@@ -277,14 +297,14 @@ module Engine
         removals = Hash.new { |h, k| h[k] = {} }
 
         @corporations.each do |corp|
-          corp.assignments.each do |company, _|
+          corp.assignments.dup.each do |company, _|
             removals[company][:corporation] = corp.name
             corp.remove_assignment!(company)
           end
         end
 
         @hexes.each do |hex|
-          hex.assignments.each do |company, _|
+          hex.assignments.dup.each do |company, _|
             removals[company][:hex] = hex.name
             hex.remove_assignment!(company)
           end

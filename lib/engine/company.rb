@@ -25,6 +25,10 @@ module Engine
       init_abilities(abilities)
     end
 
+    def operator?
+      false
+    end
+
     def id
       @sym
     end
@@ -36,7 +40,7 @@ module Engine
     def close!
       @closed = true
 
-      @abilities.keys.each { |a| remove_ability(a) }
+      all_abilities.each { |a| remove_ability(a) }
       return unless owner
 
       owner.companies.delete(self)

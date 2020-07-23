@@ -52,18 +52,16 @@ module View
       end
 
       def render
-        round = @game.round
-        @corporation = round.current_entity
-        @depot = round.depot
+        step = @game.round.active_step
+        @corporation = step.current_entity
+        @depot = @game.depot
 
-        available = round.buyable_trains.group_by(&:owner)
+        available = step.buyable_trains.group_by(&:owner)
         depot_trains = available.delete(@depot) || []
         other_corp_trains = available.sort_by { |c, _| c.owner == @corporation.owner ? 0 : 1 }
         children = []
 
-        must_buy_train = round.must_buy_train?
-
-        children << h(:div, { style: { marginBottom: '0.5rem' } }, [h(UndoAndPass, pass: !must_buy_train)])
+        must_buy_train = step.must_buy_train?(@corporation)
 
         if must_buy_train
           children << h(:div, "#{@corporation.name} must buy an available train")
@@ -84,7 +82,7 @@ module View
           },
         }
 
-        if (round.can_buy_train? && round.corp_has_room?) || round.must_buy_train?
+        if (step.can_buy_train?(@corporation) && step.room?(@corporation)) || step.must_buy_train?(@corporation)
           children << h(:h3, h3_props, 'Available Trains')
           children << h(:div, div_props, [
             *from_depot(depot_trains),

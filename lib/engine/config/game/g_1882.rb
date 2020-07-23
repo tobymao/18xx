@@ -129,7 +129,7 @@ module Engine
       "275",
       "300",
       "325",
-      "350"
+      "350e"
     ],
     [
       "70",
@@ -648,7 +648,7 @@ module Engine
       ]
     },
     "blue": {
-      "offboard=revenue:yellow_20|brown_30,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0": [
+      "offboard=revenue:yellow_20|brown_30,visit_cost:0,route:optional;path=a:0,b:_0;path=a:1,b:_0": [
         "B6"
       ]
     }

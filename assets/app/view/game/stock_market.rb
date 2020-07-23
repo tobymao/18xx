@@ -1,17 +1,20 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
 require 'view/game/token'
 
 module View
   module Game
     class StockMarket < Snabberb::Component
-      include Lib::Color
+      include Lib::Settings
+
       needs :game
       needs :show_bank, default: false
       needs :explain_colors, default: false
 
       COLOR_MAP = {
         red: '#ffaaaa',
+        blue: '#35a7ff',
         brown: '#8b4513',
         orange: '#ffbb55',
         yellow: '#ffff99',
@@ -94,11 +97,12 @@ module View
 
         if @explain_colors
           colors_text = [
-            [:red, 'PAR values'],
+            [:red, 'Par values'],
             [:yellow, 'Corporation shares do not count towards cert limit'],
             [:orange, 'Corporation shares can be held above 60%'],
             [:brown, 'Can buy more than one share in the Corporation per turn'],
             [:black, 'Corporation closes'],
+            [:blue, 'End game trigger'],
           ]
           colors_text.each do |color, text|
             next unless colors_in_market.include?(color)

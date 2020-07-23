@@ -14,13 +14,13 @@ module View
     needs :refreshing, default: nil, store: true
 
     def render
+      your_games, other_games = @games.partition { |game| user_in_game?(@user, game) }
+
       children = [
         render_header,
-        h(Welcome),
+        h(Welcome, show_intro: your_games.size < 2),
         h(Chat, user: @user, connection: @connection),
       ]
-
-      your_games, other_games = @games.partition { |game| user_in_game?(@user, game) }
 
       # these will show up in the profile page
       your_games.reject! { |game| game['status'] == 'finished' }

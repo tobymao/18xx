@@ -11,6 +11,8 @@ module Engine
         @entity = entity
         @city = city
         @slot = slot
+        # token may be nil because when you upgrade someone's 00
+        # and place their token, you pretend to be them and you may not have a token
         @token = @entity.find_token_by_type(token_type)
       end
 
@@ -26,7 +28,7 @@ module Engine
         {
           'city' => @city.id,
           'slot' => @slot,
-          'token_type' => @token.type == :normal ? nil : @token.type,
+          'token_type' => @token&.type == :normal ? nil : @token&.type,
         }
       end
     end

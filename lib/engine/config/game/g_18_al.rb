@@ -14,7 +14,7 @@ module Engine
    "currencyFormatStr":"$%d",
    "bankCash":8000,
    "certLimit":{
-      "3":25,
+      "3":15,
       "4":12,
       "5":10
    },
@@ -97,7 +97,8 @@ module Engine
       "441a":1,
       "442a":1,
       "443a":1,
-      "444a":2
+      "444b":1,
+      "444m":1
    },
    "market":[
       [
@@ -116,7 +117,7 @@ module Engine
          "215",
          "240",
          "270",
-         "300"
+         "300e"
       ],
       [
          "55",
@@ -208,7 +209,26 @@ module Engine
          "name":"Brown & Sons Lumber Co.",
          "value":70,
          "revenue":15,
-         "desc":"Owning corporation may lay the Lumber Terminal track tile (number 445) in an empty swamp hex. It need not be connected to an existing station of the corporation.  The corporation need not pay the $20 cost of the swamp hex.  And it does not count as the corporation's one tile lay per turn.  (But it still must be laid during the tile-laying step of the corporation's turn). Laying the tile does not close the B&SLC. The Lumber Terminal tile is permanent, and cannot be upgraded."
+         "desc":"Owning corporation may lay the Lumber Terminal track tile (number 445) in an empty swamp hex. It need not be connected to an existing station of the corporation.  The corporation need not pay the $20 cost of the swamp hex.  And it does not count as the corporation's one tile lay per turn.  (But it still must be laid during the tile-laying step of the corporation's turn). Laying the tile does not close the B&SLC. The Lumber Terminal tile is permanent, and cannot be upgraded.",
+         "abilities": [
+             {
+               "type": "tile_lay",
+               "free":true,
+               "owner_type": "corporation",
+               "tiles": [
+                  "445"
+               ],
+               "hexes": [
+                 "G2",
+                 "M2",
+                 "O4",
+                 "N5",
+                 "P5"
+               ],
+               "count": 1,
+               "when": "track"
+             }
+         ]
       },
       {
          "sym":"M&C",
@@ -237,7 +257,17 @@ module Engine
             100
          ],
          "coordinates":"A4",
-         "color":"blue"
+         "color":"blue",
+         "abilities": [
+            {
+              "type": "assign_hexes",
+              "name": "Historical objective",
+              "hexes": [
+                "G4"
+              ],
+              "count": 1
+            }
+         ]
       },
       {
          "sym":"M&O",
@@ -250,7 +280,17 @@ module Engine
             100
          ],
          "coordinates":"Q2",
-         "color":"orange"
+         "color":"orange",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "name": "Historical objective",
+               "hexes": [
+                 "K2"
+               ],
+               "count": 1
+            }
+         ]
       },
       {
          "sym":"WRA",
@@ -263,7 +303,17 @@ module Engine
             100
          ],
          "coordinates":"L5",
-         "color":"red"
+         "color":"red",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "name": "Historical objective",
+               "hexes": [
+                 "J7"
+               ],
+               "count": 1
+            }
+         ]
       },
       {
          "sym":"ATN",
@@ -275,7 +325,17 @@ module Engine
             100
          ],
          "coordinates":"F1",
-         "color":"black"
+         "color":"black",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "name": "Historical objective",
+               "hexes": [
+                 "L1"
+               ],
+               "count": 1
+            }
+         ]
       },
       {
          "sym":"ABC",
@@ -286,7 +346,17 @@ module Engine
             40
          ],
          "coordinates":"G6",
-         "color":"green"
+         "color":"green",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "name": "Historical objective",
+               "hexes": [
+                 "G4"
+               ],
+               "count": 1
+            }
+         ]
       },
       {
          "sym":"TAG",
@@ -298,52 +368,174 @@ module Engine
          ],
          "coordinates":"E6",
          "color":"yellow",
-         "text_color":"black"
+         "text_color":"black",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "name": "Historical objective",
+               "hexes": [
+                 "G4"
+               ],
+               "count": 1
+            }
+         ]
       }
    ],
    "trains":[
       {
          "name":"2",
-         "distance":2,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":2,
+               "visit":2
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":100,
          "rusts_on":"4",
          "num":5
       },
       {
          "name":"3",
-         "distance":3,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":3,
+               "visit":3
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":180,
          "rusts_on":"6",
          "num":4
       },
       {
          "name":"4",
-         "distance":4,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":4,
+               "visit":4
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":300,
-         "rusts_on":"7",
+         "obsolete_on":"7",
          "num":3
       },
       {
          "name":"5",
-         "distance":5,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":5,
+               "visit":5
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":450,
          "num":2
       },
       {
          "name":"6",
-         "distance":6,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":6,
+               "visit":6
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":630,
          "num":1
       },
       {
          "name":"7",
-         "distance":7,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":7,
+               "visit":7
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":700,
          "num":1
       },
       {
          "name":"4D",
-         "distance":4,
+         "distance":[
+            {
+               "nodes":[
+                  "city",
+                  "offboard"
+               ],
+               "pay":4,
+               "visit":4
+            },
+            {
+               "nodes":[
+                  "town"
+               ],
+               "pay":99,
+               "visit":99
+            }
+         ],
          "price":800,
          "num":5
       }
@@ -404,15 +596,17 @@ module Engine
          "upgrade=cost:60,terrain:mountain":[
             "F7"
          ],
-         "city=revenue:0;upgrade=cost:60,terrain:mountain":[
+         "city=revenue:0;upgrade=cost:60,terrain:mountain;label=B;icon=image:18_al/coal,sticky:1":[
             "G4"
          ],
          "city=revenue:0":[
-            "G6",
-            "H3",
             "J7",
             "K2",
             "L5"
+         ],
+         "city=revenue:0;icon=image:18_al/coal,sticky:1":[
+            "G6",
+            "H3"
          ],
          "town=revenue:0":[
             "O6"
@@ -445,7 +639,7 @@ module Engine
          "city=revenue:30;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0":[
             "F1"
          ],
-         "city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0":[
+         "city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;icon=image:18_al/coal,sticky:1":[
             "H5"
          ],
          "city=revenue:yellow_30|brown_40,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0":[
@@ -456,7 +650,7 @@ module Engine
          ]
       },
       "yellow":{
-         "city=revenue:20;path=a:3,b:_0;path=a:4,b:_0":[
+         "city=revenue:20;path=a:3,b:_0;path=a:4,b:_0;icon=image:18_al/coal,sticky:1":[
             "E6"
          ],
          "city=revenue:20;path=a:1,b:_0;path=a:_0,b:5":[
@@ -470,28 +664,34 @@ module Engine
          "train_limit":4,
          "tiles":[
             "yellow"
-         ]
+         ],
+         "operating_rounds": 1
       },
       {
          "name":"3",
+         "on":"3",
          "train_limit":4,
          "tiles":[
             "yellow",
             "green"
          ],
-         "buy_companies":true
+         "buy_companies":true,
+         "operating_rounds": 2
       },
       {
          "name":"4",
+         "on":"4",
          "train_limit":3,
          "tiles":[
             "yellow",
             "green"
          ],
-         "buy_companies":true
+         "buy_companies":true,
+         "operating_rounds": 2
       },
       {
          "name":"5",
+         "on":"5",
          "train_limit":2,
          "tiles":[
             "yellow",
@@ -500,34 +700,42 @@ module Engine
          ],
          "events":{
             "close_companies":true
-         }
+         },
+         "operating_rounds": 3
       },
       {
          "name":"6",
+         "on":"6",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
             "brown"
-         ]
+         ],
+         "operating_rounds": 3
       },
       {
          "name":"7",
+         "on":"7",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
             "brown"
-         ]
+         ],
+         "operating_rounds": 3
       },
       {
          "name":"4D",
+         "on":"4D",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
-            "brown"
-         ]
+            "brown",
+            "gray"
+         ],
+         "operating_rounds": 3
       }
    ]
 }

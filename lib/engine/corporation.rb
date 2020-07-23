@@ -71,7 +71,7 @@ module Engine
       return false if @par_via_exchange && @par_via_exchange.owner != entity
       return false if @needs_token_to_par && @tokens.empty?
 
-      true
+      !@ipoed
     end
 
     def par_price
@@ -144,6 +144,12 @@ module Engine
         abilities(type) { |ability| all << ability }
       end
       all
+    end
+
+    def remove_ability(ability)
+      return super if ability.owner == self
+
+      @companies.each { |company| company.remove_ability(ability) }
     end
 
     def abilities(type, time = nil)

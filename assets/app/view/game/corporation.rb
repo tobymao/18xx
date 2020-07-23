@@ -1,12 +1,17 @@
 # frozen_string_literal: true
 
+require 'lib/color'
+require 'lib/settings'
 require 'view/game/actionable'
 require 'view/game/companies'
 
 module View
   module Game
     class Corporation < Snabberb::Component
+      include Actionable
       include Lib::Color
+      include Lib::Settings
+
       needs :corporation
       needs :selected_company, default: nil, store: true
       needs :selected_corporation, default: nil, store: true
@@ -42,6 +47,9 @@ module View
           children << render_shares
           children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
         end
+
+        abilities = @corporation.all_abilities.select { |ability| ability.owner.corporation? }
+        children << render_abilities(abilities) if abilities&.any?
 
         if @corporation.owner
           subchildren = (@corporation.operating_history.empty? ? [] : [render_revenue_history])
@@ -217,7 +225,7 @@ module View
             player,
             @corporation.president?(player),
             player.num_shares_of(@corporation),
-            @game.round.did_sell?(@corporation, player),
+            @game.round.active_step.did_sell?(@corporation, player),
             !@corporation.holding_ok?(player, 1),
           ]
         end
@@ -242,7 +250,7 @@ module View
 
         pool_rows = [
           h('tr.ipo', [
-            h('td.name', 'IPO'),
+            h('td.name', @game.class::IPO_NAME),
             h('td.right', shares_props, share_number_str(@corporation.num_ipo_shares)),
             h('td.right', share_price_str(@corporation.par_price)),
           ]),
@@ -293,6 +301,29 @@ module View
       def render_revenue_history
         last_run = @corporation.operating_history[@corporation.operating_history.keys.max].revenue
         h('td.bold', "Last Run: #{@game.format_currency(last_run)}")
+      end
+
+      def render_abilities(abilities)
+        attribute_lines = []
+
+        abilities.each do |ability|
+          attribute_lines << h('div.name.nowrap', ability.name)
+          attribute_lines << h('div.right', ability.display_value || '')
+        end
+
+        table_props = {
+          style: {
+            padding: '0 0.5rem',
+            grid: 'auto / 3fr 2fr',
+            gap: '0 0.2rem',
+          },
+        }
+
+        h('div#company_table', table_props, [
+          h('div.bold', 'Attribute'),
+          h('div.bold.right', 'Value'),
+          *attribute_lines,
+        ])
       end
 
       def selected?

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/color'
-
 module View
   class Logo < Snabberb::Component
     needs :user, default: nil, store: true

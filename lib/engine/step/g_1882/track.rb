@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative '../operating'
+require_relative '../track'
 
 module Engine
-  module Round
+  module Step
     module G1882
-      class Operating < Operating
+      class Track < Track
         def lay_tile(action)
           super
 
@@ -14,7 +14,7 @@ module Engine
           return if !nwr_tile || action.tile.color != :yellow
 
           @game.log << "#{action.entity.name} gains #{@game.format_currency(20)} for laying yellow tile in NWR area"
-          @bank.spend(20, action.entity)
+          @game.bank.spend(20, action.entity)
         end
       end
     end

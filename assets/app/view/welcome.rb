@@ -3,18 +3,19 @@
 module View
   class Welcome < Snabberb::Component
     needs :app_route, default: nil, store: true
+    needs :show_intro, default: true
 
     def render
-      h('div#welcome.half', [
-        render_notification,
-        render_introduction,
-        render_buttons,
-      ])
+      children = [render_notification]
+      children << render_introduction if @show_intro
+      children << render_buttons
+
+      h('div#welcome.half', children)
     end
 
     def render_notification
       message = <<~MESSAGE
-        <p>Using company abilities have changed. When they are corporation owned, you click on them to activate them.</p>
+        <p>We've rewritten the engine so there may be some bugs.</p>
         <p>1836Jr30 is now available for beta.</p>
         <p>1846 is now available for alpha.</p>
 
@@ -29,6 +30,12 @@ module View
         </p>
 
         <p>You can support this project on <a href='https://www.patreon.com/18xxgames'>Patreon</a>.
+        </p>
+
+        <p>Consider joining the
+        <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-8ksy028m-CSZC~G5QtiFv60_jdqqulQ'>18xx slack</a>.
+        General 18xx.games discussion is in #18xxgames, development discussion is in #18xxgamesdev (you can ask about
+        bugs there), and general 18xx chat in #general.
         </p>
       MESSAGE
 

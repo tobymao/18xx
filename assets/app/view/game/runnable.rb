@@ -9,7 +9,9 @@ module View
       end
 
       def touch_node(node)
-        return if !@game&.round&.can_run_routes? || !@selected_route
+        current_actions = @game.active_step.current_actions
+
+        return if !current_actions.include?('run_routes') || !@selected_route
 
         @selected_route.touch_node(node)
         store(:selected_route, @selected_route)
