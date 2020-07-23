@@ -271,6 +271,19 @@ module Engine
       end
     end
 
+    def city_town_edges
+      # Returns a list of each edge a city/town goes to
+      ct_edges = Hash.new { |h, k| h[k] = [] }
+      paths.each do |path|
+        next unless (ct = path.city || path.town)
+
+        path.exits.each do |edge|
+          ct_edges[ct] << edge
+        end
+      end
+      ct_edges
+    end
+
     def compute_city_town_edges
       # ct => nums of edges it is connected to
       ct_edges = Hash.new { |h, k| h[k] = [] }

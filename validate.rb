@@ -64,6 +64,10 @@ def validate_one(id)
   puts run_game(game)
 end
 
+def validate_migrated_one_mem(id)
+  game = Game[id]
+  puts run_game(game, migrate_db_actions_in_mem(game))
+end
 def validate_migrated_one(id)
   game = Game[id]
   puts run_game(game, migrate_db_actions(game))

@@ -97,7 +97,7 @@ module Engine
       private
 
       def _process_action(action)
-        company = action.entity
+        @current_entity = company = action.entity
         case action
         when Action::LayTile
           lay_tile(action)
