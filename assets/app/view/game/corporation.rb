@@ -98,7 +98,7 @@ module View
       def render_holdings
         holdings_row_props = {
           style: {
-            grid: '1fr / auto auto minmax(4rem, max-content)',
+            grid: '1fr / max-content auto minmax(4rem, max-content)',
             gap: '0 0.3rem',
             padding: '0.2rem 0.2rem 0.2rem 0.4rem',
             backgroundColor: color_for(:bg2),
