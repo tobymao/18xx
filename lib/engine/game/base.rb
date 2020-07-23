@@ -616,7 +616,12 @@ module Engine
           # otherwise the entity must choose now.
           @log << "#{corporation.name} must choose city for home token"
 
-          @round.place_home_token << [corporation, hex, corporation.find_token_by_type]
+          @round.pending_tokens << {
+            entity: corporation,
+            hex: hex,
+            token: corporation.find_token_by_type,
+          }
+
           @round.clear_cache!
           return
         end

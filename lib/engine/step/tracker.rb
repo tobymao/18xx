@@ -54,7 +54,8 @@ module Engine
 
         tile.rotate!(rotation)
 
-        raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}" unless old_tile.upgrades_to?(tile)
+        raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}"\
+          unless old_tile.upgrades_to?(tile, entity.company?)
         if !@game.loading && !legal_tile_rotation?(hex, tile)
           raise GameError, "#{old_tile.name} is not legally rotated for #{tile.name}"
         end
@@ -67,11 +68,13 @@ module Engine
         @game.graph.clear
         check_track_restrictions!(entity, old_tile, tile) unless @game.loading
         free = false
+        discount = 0
 
         entity.abilities(:tile_lay) do |ability|
           next if !ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name)
 
           free = ability.free
+          discount = ability.discount
         end
 
         entity.abilities(:teleport) do |ability, _|
@@ -85,7 +88,7 @@ module Engine
           else
             border, border_types = border_cost(tile, entity)
             terrain += border_types if border.positive?
-            @game.tile_cost(old_tile, entity) + border + extra_cost
+            @game.tile_cost(old_tile, entity) + border + extra_cost - discount
           end
 
         entity.spend(cost, @game.bank) if cost.positive?
@@ -96,7 +99,12 @@ module Engine
              cities.size > 1 &&
              cities.flat_map(&:tokens).any?
           token = cities.flat_map(&:tokens).find(&:itself)
-          @round.place_home_token << [entity, action.hex, token]
+          @round.pending_tokens << {
+            entity: entity,
+            hex: action.hex,
+            token: token,
+          }
+
           token.remove!
         end
         @log << "#{action.entity.name}"\

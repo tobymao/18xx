@@ -10,49 +10,58 @@ module Engine
       ACTIONS = %w[place_token].freeze
 
       def actions(entity)
-        return [] unless current_entity == entity
+        return [] unless entity == pending_entity
 
         ACTIONS
       end
 
       def round_state
         {
-          place_home_token: [],
+          pending_tokens: [],
         }
       end
 
       def active?
-        place_home_token
+        pending_entity
       end
 
-      def active_entities
-        [place_home_token&.first].compact
+      def pending_entity
+        pending_token[:entity]
       end
 
-      def place_home_token
-        @round.place_home_token&.first
+      def token
+        pending_token[:token]
+      end
+
+      def pending_token
+        @round.pending_tokens&.first || {}
       end
 
       def description
-        if current_entity != place_home_token[2].corporation
-          "Place #{place_home_token[2].corporation.name} Home Token"
+        if current_entity != token.corporation
+          "Place #{token.corporation.name} Home Token"
         else
           'Place Home Token'
         end
       end
 
       def available_hex(hex)
-        hex == place_home_token[1]
+        hex == pending_token[:hex]
       end
 
       def available_tokens
-        [place_home_token[2]]
+        [token]
       end
 
       def process_place_token(action)
-        # Ignore the token and the corporation doing the laying
-        place_token(place_home_token[2].corporation, action.city, place_home_token[2], teleport: true)
-        @round.place_home_token.shift
+        # the action is faked and doesn't represent the actiual token laid
+        place_token(
+          token.corporation,
+          action.city,
+          token,
+          teleport: true,
+        )
+        @round.pending_tokens.shift
       end
     end
   end
