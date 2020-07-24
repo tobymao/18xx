@@ -48,8 +48,10 @@ module View
           children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
         end
 
-        abilities = @corporation.all_abilities.select { |ability| ability.owner.corporation? }
-        children << render_abilities(abilities) if abilities&.any?
+        abilities_to_display = @corporation.all_abilities.select do |ability|
+          ability.owner.corporation? && ability.description
+        end
+        children << render_abilities(abilities_to_display) if abilities_to_display.any?
 
         if @corporation.owner
           subchildren = (@corporation.operating_history.empty? ? [] : [render_revenue_history])
@@ -308,23 +310,21 @@ module View
 
       def render_abilities(abilities)
         attribute_lines = []
+        props = { style: { display: 'inline-block' } }
 
         abilities.each do |ability|
-          attribute_lines << h('div.name.nowrap', ability.name)
-          attribute_lines << h('div.right', ability.display_value || '')
+          attribute_lines << h('div.nowrap', props, ability.description)
         end
 
         table_props = {
           style: {
-            padding: '0 0.5rem',
-            grid: 'auto / 3fr 2fr',
-            gap: '0 0.2rem',
+            padding: '0.5rem',
+            justifyContent: 'center',
           },
         }
 
-        h('div#company_table', table_props, [
-          h('div.bold', 'Attribute'),
-          h('div.bold.right', 'Value'),
+        h('div#attribute_table', table_props, [
+          h('div.bold', 'Ability'),
           *attribute_lines,
         ])
       end
