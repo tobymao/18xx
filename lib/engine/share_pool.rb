@@ -27,7 +27,6 @@ module Engine
       floated = corporation.floated?
 
       corporation.ipoed = true if bundle.presidents_share
-
       price = bundle.price
       par_price = corporation.par_price&.price
 
@@ -41,16 +40,17 @@ module Engine
 
       from = bundle.owner.corporation? ? "the #{@game.class::IPO_NAME}" : 'the market'
       if exchange
-        price = exchange_price ? exchange_price : 0
+        price = exchange_price || 0
         case exchange
         when :free
           @log << "#{entity.name} receives #{share_str}"
         when Company
-          if exchange_price
-            @log << "#{entity.name} exchanges #{exchange.name} and #{@game.format_currency(price)} from #{from} for #{share_str}"
-          else
-            @log << "#{entity.name} exchanges #{exchange.name} from #{from} for #{share_str}"
-          end
+          @log << if exchange_price
+                    "#{entity.name} exchanges #{exchange.name} and #{@game.format_currency(price)}"\
+                    " from #{from} for #{share_str}"
+                  else
+                    "#{entity.name} exchanges #{exchange.name} from #{from} for #{share_str}"
+                  end
         end
       else
         @log << "#{entity.name} buys #{share_str} "\

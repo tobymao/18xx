@@ -71,7 +71,7 @@ module Engine
         cn_corp = corporations.find { |x| x.name == 'CN' }
         hexes = @hexes.dup
         hexes.select do |hex|
-          hex.tile.cities.any? {|city| city.tokenable?(corporation, free: true) || city.tokened_by?(cn_corp) }
+          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) || city.tokened_by?(cn_corp) }
         end
       end
 
@@ -80,8 +80,8 @@ module Engine
         name = @phase.name
         return unless extra_train.include?(name)
 
-        train_def = self.class::TRAINS.find{|train2| train2[:name] == name}
-        train = Train.new(**train_def, index: train_def[:num]+1)
+        train_def = self.class::TRAINS.find { |train2| train2[:name] == name }
+        train = Train.new(**train_def, index: train_def[:num] + 1)
         @log << "#{corporation.name} adds an extra #{train.name} train to the depot"
         @depot.unshift_train(train)
       end

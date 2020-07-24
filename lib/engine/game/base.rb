@@ -607,7 +607,7 @@ module Engine
 
       def or_set_finished; end
 
-      def home_token_locations(corporation)
+      def home_token_locations(_corporation)
         raise NotImplementedError
       end
 
@@ -622,11 +622,12 @@ module Engine
           # otherwise the entity must choose now.
           @log << "#{corporation.name} must choose city for home token"
 
-          hexes = if hex
-            [hex]
-          else
-            home_token_locations(corporation)
-          end
+          hexes =
+            if hex
+              [hex]
+            else
+              home_token_locations(corporation)
+            end
 
           @round.pending_tokens << {
             entity: corporation,
