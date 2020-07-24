@@ -85,7 +85,6 @@ module Engine
       end
 
       def init_train_handler
-
         depot = super
 
         # Grab the reserve trains that SC can add

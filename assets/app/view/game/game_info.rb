@@ -73,7 +73,7 @@ module View
                 when 3 then "#{index}rd"
                 else "#{index}th"
                 end
-              event_text << (@game.class::EVENTS_TEXT[name] ? "#{@game.class::EVENTS_TEXT[name][0]}(on #{ordinal} purchase of #{train.name} train)*" : name)
+              event_text << "#{@game.class::EVENTS_TEXT[name][0]}(on #{ordinal} purchase of #{train.name} train)*"
             end
           end
 
