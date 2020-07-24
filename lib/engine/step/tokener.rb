@@ -17,6 +17,10 @@ module Engine
         current_entity.tokens_by_type
       end
 
+      def can_replace_token?(_token)
+        false
+      end
+
       def place_token(entity, city, token, teleport: false)
         hex = city.hex
         if !@game.loading && !teleport && !@game.graph.connected_nodes(entity)[city]

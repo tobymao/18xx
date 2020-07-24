@@ -66,17 +66,19 @@ module View
         end
 
         def on_click(event)
-          return if @token
           return if @tile_selector&.is_a?(Lib::TileSelector)
 
           round = @selected_company ? @game.special : @game.round
-          actions = round.active_step.current_actions
+
+          step = round.active_step
+          actions = step.current_actions
           return if (%w[move_token place_token] & actions).empty?
+          return if @token && !step.can_replace_token?(@token)
 
           event.JS.stopPropagation
 
           # If there's a choice of tokens of different types show the selector, otherwise just place
-          next_tokens = round.active_step.available_tokens
+          next_tokens = step.available_tokens
 
           if next_tokens.size == 1
             action = Engine::Action::PlaceToken.new(
