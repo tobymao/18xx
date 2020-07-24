@@ -45,7 +45,6 @@ module Engine
     def unshift_train(train)
       train.owner = self
       @upcoming.unshift(train)
-      @trains.unshift(train)
     end
 
     def remove_train(train)

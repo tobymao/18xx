@@ -16,6 +16,12 @@ module Engine
 
     def buying_train!(entity, train)
       next! if train.sym == @next_on
+
+      train.events.each do |type, _value|
+        @game.send("event_#{type}!")
+      end
+      train.events.clear
+
       rust_trains!(train, entity)
       close_companies_on_train!(entity)
     end

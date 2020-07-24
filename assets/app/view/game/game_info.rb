@@ -62,6 +62,20 @@ module View
           phase[:events]&.each do |name, _value|
             event_text << (@game.class::EVENTS_TEXT[name] ? "#{@game.class::EVENTS_TEXT[name][0]}*" : name)
           end
+          trains = @depot.upcoming.select { |train| train.name == phase[:on] }
+          trains.each.with_index do |train, index0|
+            train.events.each do |name|
+              index = index0 + 1
+              ordinal =
+                case index % 10
+                when 1 then "#{index}st"
+                when 2 then "#{index}nd"
+                when 3 then "#{index}rd"
+                else "#{index}th"
+                end
+              event_text << (@game.class::EVENTS_TEXT[name] ? "#{@game.class::EVENTS_TEXT[name][0]}(on #{ordinal} purchase of #{train.name} train)*" : name)
+            end
+          end
 
           h(:tr, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),

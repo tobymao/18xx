@@ -76,26 +76,35 @@ module Engine
       end
 
       def add_extra_train_when_sc_pars(corporation)
-        extra_train = %w[3 4 5 6]
-        name = depot.upcoming.first&.name
-        return unless extra_train.include?(name)
+        name = depot.upcoming.first.name
+        train = @sc_reserve_trains.find { |t| t.name == name }
+        return unless train
 
-        train_def = self.class::TRAINS.find { |train2| train2[:name] == name }
-        train = Train.new(**train_def, index: train_def[:num] + 1)
         @log << "#{corporation.name} adds an extra #{train.name} train to the depot"
         @depot.unshift_train(train)
       end
 
-      def init_phase
-        phases = self.class::PHASES
-        nwr_phases = %w[3 4 5 6]
-        nwr_phase = nwr_phases[rand % nwr_phases.size]
-        @log << "NWR Rebellion occurs at start of phase #{nwr_phase}"
-        phases.each do |phase|
-          phase[:events] = { nwr: true }.merge(phase[:events] || {}) if phase[:name] == nwr_phase
+      def init_train_handler
+
+        depot = super
+
+        # Grab the reserve trains that SC can add
+        trains = %w[3 4 5 6]
+
+        @sc_reserve_trains = []
+        trains.each do |train_name|
+          train = depot.upcoming.find { |t| t.name == train_name }
+          @sc_reserve_trains << train
+          depot.upcoming.delete(train)
         end
 
-        Phase.new(phases, self)
+        # Due to SC adding an extra train this isn't quite a phase change, so the event needs to be tied to a train.
+        nwr_train = trains[rand % trains.size]
+        @log << "NWR Rebellion occurs on purchase of the currently first #{nwr_train} train"
+        train = depot.upcoming.find { |t| t.name == nwr_train }
+        train.events << 'nwr'
+
+        depot
       end
 
       def init_company_abilities
