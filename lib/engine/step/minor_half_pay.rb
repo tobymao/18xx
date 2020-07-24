@@ -19,17 +19,24 @@ module Engine
         ))
       end
 
+      def share_price(entity, revenue = 0)
+        return super if entity.corporation?
+
+        {}
+      end
+
       def payout(entity, revenue)
         return super if entity.corporation?
 
-        @log << "#{entity.name} pays out #{@game.format_currency(revenue)}"
-
         amount = revenue / 2
+        { company: amount, per_share: amount }
+      end
 
-        [entity, entity.owner].each do |entity2|
-          @log << "#{entity2.name} receives #{@game.format_currency(amount)}"
-          @game.bank.spend(amount, entity2)
-        end
+      def payout_shares(entity, revenue)
+        return super if entity.corporation?
+
+        @log << "#{entity.owner.name} receives #{@game.format_currency(revenue)}"
+        @game.bank.spend(revenue, entity.owner)
       end
     end
   end

@@ -28,9 +28,19 @@ module Engine
         process_dividend(Action::Dividend.new(current_entity, kind: 'withhold'))
       end
 
+      def dividend_options(entity)
+        revenue = routes.sum(&:revenue)
+        dividend_types.map do |type|
+          payout = send(type, entity, revenue)
+          [type, payout.merge(share_price_change(entity, revenue - payout[:company]))]
+        end.to_h
+      end
+
       def process_dividend(action)
         entity = action.entity
         revenue = routes.sum(&:revenue)
+        payout = dividend_options(entity)[action.kind.to_sym]
+
         rust_obsolete_trains!(routes)
 
         entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
@@ -40,26 +50,52 @@ module Engine
         )
 
         entity.trains.each { |train| train.operated = true }
+
         @round.routes = []
-        send(action.kind, entity, revenue)
+
+        unless Dividend::DIVIDEND_TYPES.include? action.kind
+          @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
+        end
+
+        if payout[:company].positive?
+          @log << "#{entity.name} withholds #{@game.format_currency(payout[:company])}"
+          @game.bank.spend(payout[:company], entity)
+        elsif payout[:per_share].zero?
+          @log << "#{entity.name} does not run"
+        end
+
+        payout_shares(entity, revenue - payout[:company]) if payout[:per_share].positive?
+
+        change_share_price(entity, payout)
+
         pass!
       end
 
-      def withhold(entity, revenue = 0)
-        name = entity.name
+      def share_price_change(_entity, revenue)
         if revenue.positive?
-          @log << "#{name} withholds #{@game.format_currency(revenue)}"
-          @game.bank.spend(revenue, entity)
+          { share_direction: :right, share_times: 1 }
         else
-          @log << "#{name} does not run"
+          { share_direction: :left, share_times: 1 }
         end
-        change_share_price(entity, 0)
+      end
+
+      def withhold(_entity, revenue)
+        { company: revenue, per_share: 0 }
       end
 
       def payout(entity, revenue)
+        { company: 0, per_share: payout_per_share(entity, revenue)[0] }
+      end
+
+      def payout_per_share(_entity_, revenue)
         # TODO: actually count shares when we implement 1817, 18Ireland, 18US, etc
         share_count = 10
         per_share = revenue / share_count
+        [per_share, share_count]
+      end
+
+      def payout_shares(entity, revenue)
+        per_share, share_count = payout_per_share(entity, revenue)
         @log << "#{entity.name} pays out #{@game.format_currency(revenue)} = "\
                 "#{@game.format_currency(per_share)} x #{share_count} shares"
 
@@ -72,7 +108,6 @@ module Engine
         else
           payout_entity(entity, @game.share_pool, per_share, entity)
         end
-        change_share_price(entity, revenue)
       end
 
       def payout_entity(entity, holder, per_share, receiver = nil)
@@ -88,9 +123,18 @@ module Engine
         @game.bank.spend(amount, receiver)
       end
 
-      def change_share_price(entity, revenue)
+      def change_share_price(entity, payout)
+        return unless payout[:share_direction]
+
         prev = entity.share_price.price
-        revenue.zero? ? @game.stock_market.move_left(entity) : @game.stock_market.move_right(entity)
+        payout[:share_times].times do
+          case payout[:share_direction]
+          when :left
+            @game.stock_market.move_left(entity)
+          when :right
+            @game.stock_market.move_right(entity)
+          end
+        end
         @game.log_share_price(entity, prev)
       end
 

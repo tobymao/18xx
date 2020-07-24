@@ -11,7 +11,10 @@ module View
       def render
         @step = @game.active_step
 
-        buttons = @step.dividend_types.map do |type|
+        options = @step.dividend_options(@step.current_entity)
+
+        payout_options = @step.dividend_types.map do |type|
+          option = options[type]
           text =
             case type
             when :payout
@@ -27,11 +30,35 @@ module View
           click = lambda do
             process_action(Engine::Action::Dividend.new(@step.current_entity, kind: type))
           end
+          button = h(:td, [h('button.margined', { on: { click: click } }, text)])
+          direction = "#{option[:share_times]} #{option[:share_direction]}"
 
-          h('button.button.margined', { on: { click: click } }, text)
+          h(:tr, [
+            button,
+            h(:td, [@game.format_currency(option[:company])]),
+            h(:td, [@game.format_currency(option[:per_share])]),
+            h(:td, [direction]),
+            ])
         end
 
-        h(:div, buttons)
+        table_props = {
+          style: {
+            marginTop: '0.5rem',
+            textAlign: 'left',
+          },
+        }
+
+        h(:table, table_props, [
+          h(:thead, [
+            h(:tr, [
+              h(:th, 'Dividend'),
+              h(:th, 'Company'),
+              h(:th, 'Per Share'),
+              h(:th, 'Stock Movement'),
+            ]),
+          ]),
+          h(:tbody, payout_options),
+        ])
       end
     end
   end
