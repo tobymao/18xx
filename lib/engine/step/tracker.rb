@@ -203,11 +203,11 @@ module Engine
 
       def legal_tile_rotation?(hex, tile)
         old_paths = hex.tile.paths
-        old_ctedges = hex.tile.city_town_edges.values
+        old_ctedges = hex.tile.city_town_edges
 
         new_paths = tile.paths
         new_exits = tile.exits
-        new_ctedges = tile.city_town_edges.values
+        new_ctedges = tile.city_town_edges
         extra_cities = [0, new_ctedges.size - old_ctedges.size].max
 
         new_exits.all? { |edge| hex.neighbors[edge] } &&

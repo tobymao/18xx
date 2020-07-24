@@ -284,7 +284,7 @@ module Engine
           ct_edges[ct] << edge
         end
       end
-      ct_edges
+      ct_edges.values
     end
 
     def compute_city_town_edges
