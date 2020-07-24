@@ -10,7 +10,7 @@ module Engine
       ACTIONS = %w[place_token].freeze
 
       def actions(entity)
-        return [] unless entity == pending_entity
+        return [] unless entity == current_entity
 
         ACTIONS
       end
@@ -27,6 +27,15 @@ module Engine
 
       def pending_entity
         pending_token[:entity]
+      end
+
+      def current_entity
+        entity = super
+        if entity.player?
+          pending_token[:entity]
+        else
+          entity
+        end
       end
 
       def token
@@ -46,7 +55,7 @@ module Engine
       end
 
       def available_hex(hex)
-        hex == pending_token[:hex]
+        pending_token[:hexes].include?(hex)
       end
 
       def available_tokens
@@ -54,7 +63,7 @@ module Engine
       end
 
       def process_place_token(action)
-        # the action is faked and doesn't represent the actiual token laid
+        # the action is faked and doesn't represent the actual token laid
         place_token(
           token.corporation,
           action.city,

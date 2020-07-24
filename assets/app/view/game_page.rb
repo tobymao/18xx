@@ -224,12 +224,19 @@ module View
     end
 
     def render_action
-      return h(Game::DiscardTrains) if @game.active_step&.current_actions&.include?('discard_train')
       return h(Game::GameEnd) if @game.finished
+
+      entity = @round.active_step.current_entity
+      current_actions = @round.actions_for(entity)
+      return h(Game::DiscardTrains) if current_actions&.include?('discard_train')
 
       case @round
       when Engine::Round::Stock
-        h(Game::Round::Stock, game: @game)
+        if current_actions&.include?('place_token')
+          h(Game::Map, game: @game)
+        else
+          h(Game::Round::Stock, game: @game)
+        end
       when Engine::Round::Operating
         h(Game::Round::Operating, game: @game)
       when Engine::Round::G1846::Draft

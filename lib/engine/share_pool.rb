@@ -18,7 +18,7 @@ module Engine
       'Sharepool'
     end
 
-    def buy_shares(entity, shares, exchange: nil)
+    def buy_shares(entity, shares, exchange: nil, exchange_price: nil)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
       raise GameError, 'Cannot buy share from player' if shares.owner.player?
 
@@ -27,6 +27,7 @@ module Engine
       floated = corporation.floated?
 
       corporation.ipoed = true if bundle.presidents_share
+
       price = bundle.price
       par_price = corporation.par_price&.price
 
@@ -40,18 +41,26 @@ module Engine
 
       from = bundle.owner.corporation? ? "the #{@game.class::IPO_NAME}" : 'the market'
       if exchange
+        price = exchange_price ? exchange_price : 0
         case exchange
         when :free
           @log << "#{entity.name} receives #{share_str}"
         when Company
-          @log << "#{entity.name} exchanges #{exchange.name} from #{from} for #{share_str}"
+          if exchange_price
+            @log << "#{entity.name} exchanges #{exchange.name} and #{@game.format_currency(price)} from #{from} for #{share_str}"
+          else
+            @log << "#{entity.name} exchanges #{exchange.name} from #{from} for #{share_str}"
+          end
         end
-        transfer_shares(bundle, entity)
       else
         @log << "#{entity.name} buys #{share_str} "\
           "from #{from} "\
           "for #{@game.format_currency(price)}"
+      end
 
+      if price.zero?
+        transfer_shares(bundle, entity)
+      else
         transfer_shares(
           bundle,
           entity,
