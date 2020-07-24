@@ -106,12 +106,12 @@ module View
                   end
 
                 if ability.from.include?(:ipo) && @game.can_gain?(ipo_share, company.owner)
-                  children << h('button.button', { on: { click: -> { buy_share(company, ipo_share) } } },
+                  children << h('button.button.margined_half', { on: { click: -> { buy_share(company, ipo_share) } } },
                                 "#{prefix} an #{@game.class::IPO_NAME} share")
                 end
 
                 if ability.from.include?(:market) && @game.can_gain?(pool_share, company.owner)
-                  children << h('button.button', { on: { click: -> { buy_share(company, pool_share) } } },
+                  children << h('button.button.margined_half', { on: { click: -> { buy_share(company, pool_share) } } },
                                 "#{prefix} a Market share")
                 end
               end
