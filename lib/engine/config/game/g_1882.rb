@@ -250,7 +250,7 @@ module Engine
       "name": "Saskatchewan Central",
       "value": 50,
       "revenue": 10,
-      "desc": "During a player's stock turn, in any phase, the player owning this company can close it to \"convert\" to the 10-share corporation SC. This counts as a \"certificate purchase action\". SC shares cannot be purchased by any player unless SC has been converted. The SC floats using the same rules as other corporation. If the private company is sold to a corporation, it no longer can be converted. Closes at the start of Phase 6.",
+      "desc": "During a player's stock turn, in any phase, the player owning this company can close it to \"convert\" to the 10-share corporation SC, paying 10% to become the president. This counts as a \"certificate purchase action\". SC shares cannot be purchased by any player unless SC has been converted. The SC floats using the same rules as other corporation. It chooses it's home token location in any available non-reserved city or replaces a neutral station marker on the map. If the private company is sold to a corporation, it no longer can be converted. Closes at the start of Phase 6.",
       "sym": "SC",
       "abilities": [
         {
@@ -263,6 +263,12 @@ module Engine
           "hexes": [
             "H4"
           ]
+        },
+        {
+          "type": "exchange",
+          "corporation": "SC",
+          "owner_type": "player",
+          "from": "par"
         }
       ]
     },

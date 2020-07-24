@@ -20,7 +20,7 @@ module Engine
     include ShareHolder
     include Spender
 
-    attr_accessor :ipoed, :share_price
+    attr_accessor :ipoed, :share_price, :par_via_exchange
     attr_reader :capitalization, :companies, :min_price, :name, :full_name
     attr_writer :par_price
 
@@ -43,6 +43,7 @@ module Engine
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
+      @par_via_exchange = nil
 
       init_abilities(opts[:abilities])
       init_operator(opts)
@@ -66,7 +67,8 @@ module Engine
       @share_price ? @share_price.buy_multiple? : false
     end
 
-    def can_par?
+    def can_par?(entity)
+      return false if @par_via_exchange && @par_via_exchange.owner != entity
       return false if @needs_token_to_par && @tokens.empty?
 
       !@ipoed

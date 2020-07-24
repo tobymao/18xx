@@ -607,20 +607,34 @@ module Engine
 
       def or_set_finished; end
 
+      def home_token_locations(_corporation)
+        raise NotImplementedError
+      end
+
       def place_home_token(corporation)
         return unless corporation.next_token # 1882
 
         hex = hex_by_id(corporation.coordinates)
 
-        tile = hex.tile
-        if tile.reserved_by?(corporation) && tile.paths.any?
+        tile = hex&.tile
+        if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
+          # If a corp doesn't have an allocated tile, and the first token is used they have a home token.
+          return if corporation.tokens.first&.used && !tile
+
           # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
           # otherwise the entity must choose now.
           @log << "#{corporation.name} must choose city for home token"
 
+          hexes =
+            if hex
+              [hex]
+            else
+              home_token_locations(corporation)
+            end
+
           @round.pending_tokens << {
             entity: corporation,
-            hex: hex,
+            hexes: hexes,
             token: corporation.find_token_by_type,
           }
 

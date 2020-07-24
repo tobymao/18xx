@@ -200,7 +200,7 @@ module View
           img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if token.used
 
           token_text =
-            if i.zero?
+            if i.zero? && @corporation.coordinates
               @corporation.coordinates
             else
               token.city ? token.city.hex.name : token.price

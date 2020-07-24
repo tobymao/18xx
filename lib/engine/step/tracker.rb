@@ -98,7 +98,7 @@ module Engine
           token = cities.flat_map(&:tokens).find(&:itself)
           @round.pending_tokens << {
             entity: entity,
-            hex: action.hex,
+            hexes: [action.hex],
             token: token,
           }
 
