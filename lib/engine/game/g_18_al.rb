@@ -12,6 +12,8 @@ module Engine
       load_from_json(Config::Game::G18AL::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
+      DEV_STAGE = :alpha
+
       GAME_LOCATION = 'Alabama, USA'
       GAME_RULES_URL = 'http://www.diogenes.sacramento.ca.us/18AL_Rules_v1_64.pdf'
       GAME_DESIGNER = 'Mark Derrick'
@@ -26,7 +28,8 @@ module Engine
 
         @corporations.each do |corporation|
           corporation.abilities(:assign_hexes) do |ability|
-            ability.display_value = @hexes.find { |h| h.name == ability.hexes.first }.location_name
+            historical_objective_city_name = @hexes.find { |h| h.name == ability.hexes.first }.location_name
+            ability.description = "Historical objective: #{historical_objective_city_name}"
           end
         end
       end
