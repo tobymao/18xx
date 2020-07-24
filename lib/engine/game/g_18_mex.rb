@@ -16,8 +16,15 @@ module Engine
       GAME_DESIGNER = 'Mark Derrick'
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'minors_closed' => ['Minors closed', 'Minors closed, NdM available'],
+        'ndm_merger' => ['NdM merger', 'NdM merger']
+      ).freeze
+
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
+      ).merge(
+        'ndm_available' => ['NdM available', 'NdM shares available during stock round'],
       ).freeze
 
       include CompanyPrice50To150Percent
@@ -58,6 +65,14 @@ module Engine
         ensure_termini_not_passed_through(route, %w[Q14])
 
         adjust_revenue_for_4d_train(route, super)
+      end
+
+      def event_minors_closed!
+        @log << 'Now minors should close. Not implemented yet!'
+      end
+
+      def event_ndm_merger!
+        @log << 'Now NdM should offer to merge other corporation. Not implemented yet!'
       end
     end
   end
