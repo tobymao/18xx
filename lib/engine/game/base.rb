@@ -618,6 +618,9 @@ module Engine
 
         tile = hex&.tile
         if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
+          # If a corp doesn't have an allocated tile, and the first token is used they have a home token.
+          return if corporation.tokens.first&.used && !tile
+
           # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
           # otherwise the entity must choose now.
           @log << "#{corporation.name} must choose city for home token"

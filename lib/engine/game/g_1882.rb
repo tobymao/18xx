@@ -77,7 +77,7 @@ module Engine
 
       def add_extra_train_when_sc_pars(corporation)
         extra_train = %w[3 4 5 6]
-        name = @phase.name
+        name = depot.upcoming.first&.name
         return unless extra_train.include?(name)
 
         train_def = self.class::TRAINS.find { |train2| train2[:name] == name }

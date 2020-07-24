@@ -10,7 +10,7 @@ module Engine
       ACTIONS = %w[place_token].freeze
 
       def actions(entity)
-        return [] unless entity == current_entity
+        return [] unless entity == pending_entity
 
         ACTIONS
       end
@@ -25,17 +25,12 @@ module Engine
         pending_entity
       end
 
-      def pending_entity
-        pending_token[:entity]
+      def current_entity
+        pending_entity
       end
 
-      def current_entity
-        entity = super
-        if entity.player?
-          pending_token[:entity]
-        else
-          entity
-        end
+      def pending_entity
+        pending_token[:entity]
       end
 
       def token

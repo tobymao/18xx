@@ -35,12 +35,13 @@ module Engine
                                         exchange: corporation.par_via_exchange,
                                         exchange_price: bundle.price_per_share)
 
-            @current_actions << action
             @game.add_extra_train_when_sc_pars(corporation)
 
             # SC chooses home token now.
             @game.place_home_token(corporation)
             corporation.par_via_exchange.close!
+
+            @current_actions << action
           else
             super
           end
