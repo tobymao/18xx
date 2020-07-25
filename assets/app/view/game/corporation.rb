@@ -311,11 +311,8 @@ module View
       end
 
       def render_abilities(abilities)
-        attribute_lines = []
-        props = { style: { display: 'inline-block' } }
-
-        abilities.each do |ability|
-          attribute_lines << h('div.nowrap', props, ability.description)
+        attribute_lines = abilities.map do |ability|
+          h('div.nowrap.inline-block', ability.description)
         end
 
         table_props = {

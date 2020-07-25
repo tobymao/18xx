@@ -10,7 +10,7 @@ module Engine
           super
 
           entity.abilities(:assign_hexes) do |ability|
-            next unless ability.hexes.length == 1
+            next unless ability.hexes.one?
 
             if city.hex.name == ability.hexes.first
               @log << "#{entity.name} receives $100 - #{ability.description}"
