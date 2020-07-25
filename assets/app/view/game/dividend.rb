@@ -33,10 +33,11 @@ module View
           button = h(:td, [h('button.button', { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
           direction = "#{option[:share_times]} #{option[:share_direction]}"
 
+          props = { style: { paddingRight: '1rem' } }
           h(:tr, [
             button,
-            h(:td, [@game.format_currency(option[:company])]),
-            h(:td, [@game.format_currency(option[:per_share])]),
+            h('td.right', props, [@game.format_currency(option[:company])]),
+            h('td.right', props, [@game.format_currency(option[:per_share])]),
             h(:td, [direction]),
             ])
         end
@@ -47,13 +48,14 @@ module View
             textAlign: 'left',
           },
         }
+        share_props = { style: { width: '2.7rem' } }
 
         h(:table, table_props, [
           h(:thead, [
             h(:tr, [
               h(:th, 'Dividend'),
               h(:th, 'Treasury'),
-              h(:th, 'Per Share'),
+              h(:th, share_props, 'Per Share'),
               h(:th, 'Stock moves'),
             ]),
           ]),
