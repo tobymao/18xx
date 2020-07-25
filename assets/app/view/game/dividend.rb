@@ -30,7 +30,7 @@ module View
           click = lambda do
             process_action(Engine::Action::Dividend.new(@step.current_entity, kind: type))
           end
-          button = h(:td, [h('button.margined', { on: { click: click } }, text)])
+          button = h(:td, [h('button.button', { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
           direction = "#{option[:share_times]} #{option[:share_direction]}"
 
           h(:tr, [
@@ -43,7 +43,7 @@ module View
 
         table_props = {
           style: {
-            marginTop: '0.5rem',
+            margin: '0.5rem 0 0 -0.5rem',
             textAlign: 'left',
           },
         }
@@ -52,9 +52,9 @@ module View
           h(:thead, [
             h(:tr, [
               h(:th, 'Dividend'),
-              h(:th, 'Company'),
+              h(:th, 'Treasury'),
               h(:th, 'Per Share'),
-              h(:th, 'Stock Movement'),
+              h(:th, 'Stock moves'),
             ]),
           ]),
           h(:tbody, payout_options),
