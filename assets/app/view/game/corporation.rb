@@ -336,7 +336,7 @@ module View
       end
 
       def can_assign_corporation?
-        @selected_corporation && @selected_company # && @game.special.can_assign_corporation?
+        @selected_corporation && @selected_company&.abilities(:assign)
       end
     end
   end
