@@ -81,6 +81,10 @@ module View
       h(:div, children)
     end
 
+    def route_prop_string(index, prop)
+      "r#{index}_#{prop}"
+    end
+
     def input_elm(setting)
       Native(@inputs[setting]).elm
     end
@@ -97,9 +101,9 @@ module View
       end
 
       ROUTE_COLORS.each_with_index do |hex_color, index|
-        input_elm("r#{index}_color").value = hex_color
-        input_elm("r#{index}_dash").value = '0'
-        input_elm("r#{index}_width").value = 8
+        input_elm(route_prop_string(index, :color)).value = hex_color
+        input_elm(route_prop_string(index, :dash)).value = '0'
+        input_elm(route_prop_string(index, :width)).value = 8
       end
 
       submit
@@ -152,13 +156,13 @@ module View
           h(:label, "Route #{index + 1}"),
           render_color(
             '',
-            "r#{index}_color",
+            route_prop_string(index, :color),
             route_prop(index, :color),
             attrs: { title: 'color of train and route on map' },
           ),
           render_input(
             '',
-            id: "r#{index}_width",
+            id: route_prop_string(index, :width),
             type: :number,
             attrs: {
               title: 'width of route on map',
@@ -170,7 +174,7 @@ module View
           ),
           render_input(
             '',
-            id: "r#{index}_dash",
+            id: route_prop_string(index, :dash),
             type: :text,
             attrs: {
               title: 'dash/gap lengths of route on map, for help hover/click header',
