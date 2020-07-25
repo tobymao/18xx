@@ -8,8 +8,8 @@ module Lib
     # http://mkweb.bcgsc.ca/colorblind/ 12 color palette
     ROUTE_COLORS = %i[#A40122 #008DF9 #00FCCF #FF5AAF].freeze
 
-    ROUTES = ROUTE_COLORS.flat_map.with_index do |color, n|
-      [["r#{n}_color", color], ["r#{n}_dash", '0'], ["r#{n}_width", 8]]
+    ROUTES = ROUTE_COLORS.flat_map.with_index do |color, index|
+      [["r#{index}_color", color], ["r#{index}_dash", '0'], ["r#{index}_width", 8]]
     end.to_h
 
     SETTINGS = {
@@ -37,8 +37,12 @@ module Lib
 
     alias color_for setting_for
 
-    def route_prop(n, prop)
-      setting_for("r#{n}_#{prop}")
+    def route_prop(index, prop)
+      setting_for(route_prop_string(index, prop))
+    end
+
+    def route_prop_string(index, prop)
+      "r#{index}_#{prop}"
     end
   end
 end

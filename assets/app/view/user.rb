@@ -81,10 +81,6 @@ module View
       h(:div, children)
     end
 
-    def route_prop_string(index, prop)
-      "r#{index}_#{prop}"
-    end
-
     def input_elm(setting)
       Native(@inputs[setting]).elm
     end
