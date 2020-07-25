@@ -399,6 +399,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
+          "description": "Reserved $40/$60 Ft. Wayne token",
           "hexes": [
             "E11"
           ],
@@ -444,6 +445,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
+          "description": "Reserved $40/$100 Cincinnati token",
           "hexes": [
             "H12"
           ],
@@ -491,6 +493,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
+          "description": "Reserved $40 Erie token",
           "hexes": [
             "D20"
           ],
@@ -538,6 +541,7 @@ module Engine
          {
             "type":"tile_lay",
             "free":true,
+            "description": "Free tile lay: E5, F6, G5, H6, J4",
             "hexes":[
                "E5",
                "F6",
@@ -553,6 +557,7 @@ module Engine
         },
         {
           "type": "token",
+          "description": "Reserved $40 Centralia token",
           "hexes": [
             "I5"
           ],
