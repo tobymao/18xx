@@ -10,12 +10,12 @@ class User < Base
 
   RESET_WINDOW = 60 * 15 # 15 minutes
 
-  SETTINGS = Array.new(4) do |n|
+  SETTINGS = 4.times.flat_map do |n|
     %w[color dash width].map do |prop|
       "r#{n}_#{prop}"
     end
   end
-  SETTINGS.concat(%w[notifications red_logo bg font bg2 font2 white yellow green brown gray red blue]).flatten!.freeze
+  SETTINGS.concat(%w[notifications red_logo bg font bg2 font2 white yellow green brown gray red blue]).freeze
 
   def update_settings(params)
     SETTINGS.each { |setting| settings[setting] = params[setting] }

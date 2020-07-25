@@ -153,7 +153,7 @@ module View
           render_color(
             '',
             "r#{index}_color",
-            setting_for("r#{index}_color"),
+            route_prop(index, :color),
             attrs: { title: 'color of train and route on map' },
           ),
           render_input(
@@ -164,7 +164,7 @@ module View
               title: 'width of route on map',
               min: 6,
               max: 24,
-              value: setting_for("r#{index}_width"),
+              value: route_prop(index, :width),
             },
             input_style: { width: '2.5rem' },
           ),
@@ -174,7 +174,7 @@ module View
             type: :text,
             attrs: {
               title: 'dash/gap lengths of route on map, for help hover/click header',
-              value: setting_for("r#{index}_dash"),
+              value: route_prop(index, :dash),
             },
             input_style: { width: '2.5rem' },
           ),

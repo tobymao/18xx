@@ -88,7 +88,7 @@ module View
                                  ['N/A', e.to_s]
                                end
 
-            bg_color = setting_for("r#{@routes.index(route)}_color")
+            bg_color = route_prop(@routes.index(route), :color)
             style[:backgroundColor] = bg_color
             style[:color] = contrast_on(bg_color)
 

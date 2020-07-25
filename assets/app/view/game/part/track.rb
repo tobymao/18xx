@@ -89,7 +89,7 @@ module View
         end
 
         def value_for_index(index, prop)
-          index ? setting_for("r#{index}_#{prop}") : TRACK[prop]
+          index ? route_prop(index, prop) : TRACK[prop]
         end
 
         def value_for(path, prop)

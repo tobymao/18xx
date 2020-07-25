@@ -34,7 +34,7 @@ module View
               p.town == town
             end
           end
-          index ? setting_for("r#{index}_#{prop}") : Track::TRACK[prop]
+          index ? route_prop(index, prop) : Track::TRACK[prop]
         end
       end
     end
