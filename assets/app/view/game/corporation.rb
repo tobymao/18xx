@@ -60,7 +60,7 @@ module View
             },
           }
 
-          subchildren = (n = @game.round.entities.find_index(@corporation)) ? [render_operating_order(n)] : []
+          subchildren = render_operating_order
           subchildren << render_revenue_history if @corporation.operating_history.any?
           children << h(:div, props, subchildren)
         end
@@ -315,10 +315,14 @@ module View
         h('div.bold', "Last Run: #{@game.format_currency(last_run)}")
       end
 
-      def render_operating_order(n)
+      def render_operating_order
         round = @game.round
-        div_class = '.bold' if n >= round.entities.find_index(round.current_entity)
-        h("div#{div_class}", "Order: #{n + 1}")
+        if (n = @game.round.entities.find_index(@corporation))
+          div_class = '.bold' if n >= round.entities.find_index(round.current_entity)
+          [h("div#{div_class}", "Order: #{n + 1}")]
+        else
+          []
+        end
       end
 
       def render_abilities(abilities)
