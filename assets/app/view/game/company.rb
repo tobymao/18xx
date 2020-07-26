@@ -81,7 +81,7 @@ module View
               cursor: purchasable? ? 'pointer' : 'default',
               boxSizing: 'border-box',
               padding: '0.5rem',
-              margin: '0.5rem 0.5rem 0 0',
+              margin: '0.5rem 5px 0 0',
               'text-align': 'center',
               'font-weight': 'bold',
             },

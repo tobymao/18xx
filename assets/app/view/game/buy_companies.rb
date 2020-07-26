@@ -13,7 +13,7 @@ module View
 
       def render
         @corporation = @game.current_entity
-        props = @limit_width ? { style: { flexGrow: '1', width: '0', marginRight: '-1rem' } } : {}
+        props = @limit_width ? { style: { flexGrow: '1', width: '0' } } : {}
 
         h(:div, props, [
           *render_companies,
