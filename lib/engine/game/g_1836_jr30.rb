@@ -8,7 +8,7 @@ module Engine
     class G1836Jr30 < Base
       load_from_json(Config::Game::G1836Jr30::JSON)
 
-      DEV_STAGE = :beta
+      DEV_STAGE = :production
       GAME_LOCATION = 'Netherlands'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/114572/1836jr-30-rules'
       GAME_DESIGNER = 'David G. D. Hecht'
