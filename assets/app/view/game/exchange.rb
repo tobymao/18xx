@@ -10,8 +10,9 @@ module View
       needs :selected_company, default: nil, store: true
 
       def render_exchange(share, share_origin)
+        step = @game.round.active_step(@selected_company)
         return nil unless share
-        return nil unless @game.can_gain?(share, @selected_company.owner)
+        return nil if !step.respond_to?(:can_gain?) || !step.can_gain?(@selected_company.owner, share)
 
         exchange = lambda do
           process_action(Engine::Action::BuyShares.new(@selected_company, shares: share))

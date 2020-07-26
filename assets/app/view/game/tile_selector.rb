@@ -11,7 +11,7 @@ module View
       needs :tile_selector, store: true
       needs :layout
       needs :tiles
-      needs :step
+      needs :actions, default: []
 
       SCALE = 0.3
       TILE_SIZE = 60
@@ -21,7 +21,7 @@ module View
       def render
         hexes = @tiles.map do |tile|
           hex = Engine::Hex.new('A1', layout: @layout, tile: tile)
-          h(Hex, hex: hex, step: @step, role: :tile_selector)
+          h(Hex, hex: hex, actions: @actions, role: :tile_selector, clickable: true)
         end
 
         hexes = list_coordinates(hexes, DISTANCE, SIZE).map do |hex, left, bottom|

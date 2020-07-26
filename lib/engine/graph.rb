@@ -25,6 +25,11 @@ module Engine
       end
     end
 
+    def clear_graph_for(corporation)
+      clear
+      @routes.delete(corporation)
+    end
+
     def route_info(corporation)
       compute(corporation) unless @routes[corporation]
       @routes[corporation]

@@ -32,7 +32,7 @@ module Engine
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
-                  :round, :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
+                  :round, :share_pool, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
                   :round_history
       attr_accessor :bankruptcies
 
@@ -303,7 +303,6 @@ module Engine
 
         @round_history = []
         @round = init_round
-        @special = Round::Special.new(@companies, game: self)
 
         cache_objects
         connect_hexes
@@ -420,12 +419,7 @@ module Engine
           return clone(@actions)
         end
 
-        # company special power actions are processed by a different round handler
-        if action.entity.is_a?(Company)
-          @special.process_action(action)
-        else
-          @round.process_action(action)
-        end
+        @round.process_action(action)
 
         unless action.is_a?(Action::Message)
           @redo_possible = false
@@ -517,18 +511,6 @@ module Engine
         value
       end
 
-      # Returns if a share can be gained by an entity respecting the cert limit
-      # This works irrespective of if that player has sold this round
-      # such as in 1889 for exchanging Dougo
-      #
-      def can_gain?(bundle, entity)
-        return if !bundle || !entity
-
-        corporation = bundle.corporation
-        corporation.holding_ok?(entity, bundle.percent) &&
-        (!corporation.counts_for_limit || entity.num_certs < cert_limit)
-      end
-
       def sellable_bundles(player, corporation)
         bundles = player.bundles_for_corporation(corporation)
         bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
@@ -607,20 +589,34 @@ module Engine
 
       def or_set_finished; end
 
+      def home_token_locations(_corporation)
+        raise NotImplementedError
+      end
+
       def place_home_token(corporation)
         return unless corporation.next_token # 1882
 
         hex = hex_by_id(corporation.coordinates)
 
-        tile = hex.tile
-        if tile.reserved_by?(corporation) && tile.paths.any?
+        tile = hex&.tile
+        if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
+          # If a corp doesn't have an allocated tile, and the first token is used they have a home token.
+          return if corporation.tokens.first&.used && !tile
+
           # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
           # otherwise the entity must choose now.
           @log << "#{corporation.name} must choose city for home token"
 
+          hexes =
+            if hex
+              [hex]
+            else
+              home_token_locations(corporation)
+            end
+
           @round.pending_tokens << {
             entity: corporation,
-            hex: hex,
+            hexes: hexes,
             token: corporation.find_token_by_type,
           }
 
@@ -986,6 +982,8 @@ module Engine
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
+          Step::Exchange,
+          Step::SpecialTrack,
           Step::BuySellParShares,
         ])
       end
@@ -998,7 +996,9 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
+          Step::Exchange,
           Step::DiscardTrain,
+          Step::SpecialTrack,
           Step::BuyCompany,
           Step::Track,
           Step::Token,

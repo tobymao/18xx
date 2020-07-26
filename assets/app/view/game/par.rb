@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'view/game/actionable'
+
 module View
   module Game
     class Par < Snabberb::Component
@@ -8,15 +10,7 @@ module View
       needs :corporation
 
       def render
-        style = {
-          cursor: 'pointer',
-          border: 'solid 1px gainsboro',
-          display: 'inline-block',
-          padding: '0.5rem',
-          margin: '0.5rem 0.5rem 0.5rem 0',
-        }
-
-        return h(:div, 'Cannot Par') unless @corporation.can_par?
+        return h(:div, 'Cannot Par') unless @corporation.can_par?(@game.current_entity)
 
         par_values = @game.stock_market.par_prices.map do |share_price|
           par = lambda do
@@ -27,7 +21,7 @@ module View
             ))
           end
 
-          h(:div, { style: style, on: { click: par } }, @game.format_currency(share_price.price))
+          h('button.button', { on: { click: par } }, @game.format_currency(share_price.price))
         end
 
         h(:div, [

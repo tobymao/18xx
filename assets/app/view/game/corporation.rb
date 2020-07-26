@@ -24,21 +24,23 @@ module View
           store(:selected_corporation, selected_corporation)
 
           if can_assign_corporation?
-            process_action(Engine::Action::Assign.new(@selected_company, target: @corporation))
-            store(:selected_corporation, nil)
-            store(:selected_company, nil)
+            company = @selected_company
+            target = @corporation
+            store(:selected_corporation, nil, skip: true)
+            store(:selected_company, nil, skip: true)
+            process_action(Engine::Action::Assign.new(company, target: target))
           end
         end
 
         card_style = {
           cursor: 'pointer',
         }
-        card_style['border'] = '4px solid' if @game.round.can_act?(@corporation)
-        card_style['display'] = @display
+        card_style[:border] = '4px solid' if @game.round.can_act?(@corporation)
+        card_style[:display] = @display
 
         if selected?
-          card_style['background-color'] = 'lightblue'
-          card_style['color'] = 'black'
+          card_style[:backgroundColor] = 'lightblue'
+          card_style[:color] = 'black'
         end
 
         children = [render_title, render_holdings]
@@ -48,8 +50,10 @@ module View
           children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
         end
 
-        abilities = @corporation.all_abilities.select { |ability| ability.owner.corporation? }
-        children << render_abilities(abilities) if abilities&.any?
+        abilities_to_display = @corporation.all_abilities.select do |ability|
+          ability.owner.corporation? && ability.description
+        end
+        children << render_abilities(abilities_to_display) if abilities_to_display.any?
 
         if @corporation.owner
           subchildren = (@corporation.operating_history.empty? ? [] : [render_revenue_history])
@@ -75,17 +79,17 @@ module View
             height: '1.6rem',
             width: '1.6rem',
             padding: '1px',
-            'align-self': 'center',
-            'justify-self': 'start',
+            alignSelf: 'center',
+            justifySelf: 'start',
             border: '2px solid currentColor',
-            'border-radius': '0.5rem',
+            borderRadius: '0.5rem',
           },
         }
         name_props = {
           style: {
             color: 'currentColor',
             display: 'inline-block',
-            'justify-self': 'start',
+            justifySelf: 'start',
           },
         }
 
@@ -98,8 +102,8 @@ module View
       def render_holdings
         holdings_row_props = {
           style: {
-            grid: '1fr / auto auto auto',
-            gap: '0 0.2rem',
+            grid: '1fr / max-content auto minmax(4rem, max-content)',
+            gap: '0 0.3rem',
             padding: '0.2rem 0.2rem 0.2rem 0.4rem',
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
@@ -107,9 +111,9 @@ module View
         }
         sym_props = {
           style: {
-            'font-size': '1.5rem',
-            'font-weight': 'bold',
-            'justify-self': 'start',
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            justifySelf: 'start',
           },
         }
         holdings_props = {
@@ -139,25 +143,25 @@ module View
       end
 
       def render_trains
-        train_value = @corporation.trains.empty? ? 'None' : @corporation.trains.map(&:name).join(',')
+        train_value = @corporation.trains.empty? ? 'None' : @corporation.trains.map(&:name).join(' ')
         render_header_segment(train_value, 'Trains')
       end
 
       def render_header_segment(value, key)
         segment_props = {
           style: {
-            grid: '3fr 2fr / 1fr',
+            grid: '25px auto / 1fr',
           },
         }
         value_props = {
           style: {
-            'max-width': '7.5rem',
-            'font-weight': 'bold',
+            maxWidth: '7.5rem',
+            fontWeight: 'bold',
           },
         }
         key_props = {
           style: {
-            'align-self': 'end',
+            alignSelf: 'end',
           },
         }
         h(:div, segment_props, [
@@ -170,18 +174,21 @@ module View
         token_list_props = {
           style: {
             grid: '1fr / auto-flow',
-            'justify-self': 'right',
+            justifySelf: 'right',
             gap: '0 0.2rem',
+            width: '100%',
+            overflow: 'auto',
           },
         }
         token_column_props = {
           style: {
-            grid: '3fr 2fr / 1fr',
+            grid: '25px auto / 1fr',
+            justifyItems: 'center',
           },
         }
         token_text_props = {
           style: {
-            'align-self': 'end',
+            alignSelf: 'end',
           },
         }
 
@@ -197,7 +204,7 @@ module View
           img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if token.used
 
           token_text =
-            if i.zero?
+            if i.zero? && @corporation.coordinates
               @corporation.coordinates
             else
               token.city ? token.city.hex.name : token.price
@@ -232,7 +239,7 @@ module View
 
         shares_props = {
           style: {
-            'padding-right': '1.5rem',
+            paddingRight: '1.5rem',
           },
         }
 
@@ -258,7 +265,7 @@ module View
 
         market_tr_props = {
           style: {
-            'border-bottom': player_rows.any? ? '1px solid currentColor' : '0',
+            borderBottom: player_rows.any? ? '1px solid currentColor' : '0',
           },
         }
 
@@ -282,7 +289,7 @@ module View
           *player_rows,
         ]
 
-        props = { style: { 'border-collapse': 'collapse' } }
+        props = { style: { borderCollapse: 'collapse' } }
 
         h('table.center', props, [
           h(:thead, [
@@ -304,24 +311,19 @@ module View
       end
 
       def render_abilities(abilities)
-        attribute_lines = []
-
-        abilities.each do |ability|
-          attribute_lines << h('div.name.nowrap', ability.name)
-          attribute_lines << h('div.right', ability.display_value || '')
+        attribute_lines = abilities.map do |ability|
+          h('div.nowrap.inline-block', ability.description)
         end
 
         table_props = {
           style: {
-            padding: '0 0.5rem',
-            grid: 'auto / 3fr 2fr',
-            gap: '0 0.2rem',
+            padding: '0.5rem',
+            justifyContent: 'center',
           },
         }
 
-        h('div#company_table', table_props, [
-          h('div.bold', 'Attribute'),
-          h('div.bold.right', 'Value'),
+        h('div#attribute_table', table_props, [
+          h('div.bold', 'Ability'),
           *attribute_lines,
         ])
       end
@@ -331,7 +333,7 @@ module View
       end
 
       def can_assign_corporation?
-        @selected_corporation && @selected_company && @game.special.can_assign_corporation?
+        @selected_corporation && @selected_company&.abilities(:assign)
       end
     end
   end

@@ -26,7 +26,8 @@ module Engine
 
         @corporations.each do |corporation|
           corporation.abilities(:assign_hexes) do |ability|
-            ability.display_value = @hexes.find { |h| h.name == ability.hexes.first }.location_name
+            historical_objective_city_name = @hexes.find { |h| h.name == ability.hexes.first }.location_name
+            ability.description = "Historical objective: #{historical_objective_city_name}"
           end
         end
       end

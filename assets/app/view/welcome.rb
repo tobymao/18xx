@@ -15,7 +15,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>We've rewritten the engine so there may be some bugs.</p>
+        <p>Using abilities has now changed and hopefully is more intuitive.</p>
         <p>1836Jr30 is now available for beta.</p>
         <p>1846 is now available for alpha.</p>
 

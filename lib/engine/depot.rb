@@ -42,6 +42,12 @@ module Engine
       min_depot_train.price
     end
 
+    def unshift_train(train)
+      train.owner = self
+      @upcoming.unshift(train)
+      @trains.unshift(train)
+    end
+
     def remove_train(train)
       @upcoming.delete(train)
       @discarded.delete(train)

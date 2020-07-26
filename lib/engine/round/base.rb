@@ -62,6 +62,10 @@ module Engine
         active_step&.current_entity == entity
       end
 
+      def teleported?(_entity)
+        false
+      end
+
       def pass_description
         active_step.pass_description
       end
@@ -72,12 +76,12 @@ module Engine
 
         before_process(action)
 
-        step = @steps.find do |step2|
-          next unless step2.active?
+        step = @steps.find do |s|
+          next unless s.active?
 
-          process = step2.actions(action.entity).include?(type)
-          blocking = step2.blocking?
-          raise GameError, "Step #{step2.description} cannot process #{action.to_h}" if blocking && !process
+          process = s.actions(action.entity).include?(type)
+          blocking = s.blocking?
+          raise GameError, "Step #{s.description} cannot process #{action.to_h}" if blocking && !process
 
           blocking || process
         end
@@ -105,7 +109,9 @@ module Engine
         actions.uniq
       end
 
-      def active_step
+      def active_step(entity = nil)
+        return @steps.find { |step| step.active? && step.actions(entity).any? } if entity
+
         @active_step ||= @steps.find { |step| step.active? && step.blocking? }
       end
 

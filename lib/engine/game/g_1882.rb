@@ -35,6 +35,14 @@ module Engine
       # Two lays or one upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false, cost: 20 }].freeze
 
+      def stock_round
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::G1882::HomeToken,
+          Step::G1882::BuySellParShares,
+        ])
+      end
+
       def new_auction_round
         Round::Auction.new(self, [
           Step::CompanyPendingPar,
@@ -56,6 +64,28 @@ module Engine
         ], round_num: round_num)
       end
 
+      def home_token_locations(corporation)
+        raise NotImplementedError unless corporation.name == 'SC'
+
+        # SC, find all locations with neutral or no token
+        cn_corp = corporations.find { |x| x.name == 'CN' }
+        hexes = @hexes.dup
+        hexes.select do |hex|
+          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) || city.tokened_by?(cn_corp) }
+        end
+      end
+
+      def add_extra_train_when_sc_pars(corporation)
+        extra_train = %w[3 4 5 6]
+        name = depot.upcoming.first&.name
+        return unless extra_train.include?(name)
+
+        train_def = self.class::TRAINS.find { |train2| train2[:name] == name }
+        train = Train.new(**train_def, index: train_def[:num] + 1)
+        @log << "#{corporation.name} adds an extra #{train.name} train to the depot"
+        @depot.unshift_train(train)
+      end
+
       def init_phase
         phases = self.class::PHASES
         nwr_phases = %w[3 4 5 6]
@@ -66,6 +96,18 @@ module Engine
         end
 
         Phase.new(phases, self)
+      end
+
+      def init_company_abilities
+        @companies.each do |company|
+          next unless (ability = company.abilities(:exchange))
+
+          if ability.from.include?('par')
+            corporation = corporation_by_id(ability.corporation)
+            corporation.par_via_exchange = company
+          end
+        end
+        super
       end
 
       def init_corporations(stock_market)
