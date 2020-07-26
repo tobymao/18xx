@@ -89,7 +89,7 @@ module Engine
           place_token(
             @entity.owner,
             action.city,
-            action.token,
+            available_tokens[0],
             teleport: ability(@entity).teleport_price,
           )
           @destination = action.city.hex

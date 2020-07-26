@@ -215,7 +215,7 @@ module View
             if i.zero? && @corporation.coordinates
               @corporation.coordinates
             else
-              token.city&.hex ? token.city.hex&.name : token.price
+              token.city ? token.city.hex.name : token.price
             end
 
           h(:div, token_column_props, [
