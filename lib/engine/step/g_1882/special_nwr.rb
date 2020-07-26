@@ -54,7 +54,7 @@ module Engine
         end
 
         def blocks?
-          @state != nil
+          @state
         end
 
         def process_remove_token(action)

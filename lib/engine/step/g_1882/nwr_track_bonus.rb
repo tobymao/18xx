@@ -5,8 +5,7 @@ module Engine
     module G1882
       module NwrTrackBonus
         def tile_nwr?(tile)
-          nwr_name = 'NWR'
-          tile.icons.any? { |icon| icon.name == nwr_name }
+          tile.icons.any? { |icon| icon.name == 'NWR' }
         end
 
         def gain_nwr_bonus(tile, entity)

@@ -5,7 +5,7 @@ require_relative 'base'
 module Engine
   module Action
     class RemoveToken < Base
-      attr_reader :city, :slot, :token
+      attr_reader :city, :slot
 
       def initialize(entity, city:, slot:)
         @entity = entity
@@ -17,7 +17,6 @@ module Engine
         {
           city: game.city_by_id(h['city']),
           slot: h['slot'],
-          token_type: h['token_type'],
         }
       end
 
@@ -25,7 +24,6 @@ module Engine
         {
           'city' => @city.id,
           'slot' => @slot,
-          'token_type' => @token&.type == :normal ? nil : @token&.type,
         }
       end
     end
