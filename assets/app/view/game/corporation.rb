@@ -56,8 +56,17 @@ module View
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
 
         if @corporation.owner
-          subchildren = (@corporation.operating_history.empty? ? [] : [render_revenue_history])
-          children << h('table.center', [h(:tr, subchildren)])
+          props = {
+            style: {
+              grid: '1fr / repeat(2, max-content)',
+              gap: '2rem',
+              justifyContent: 'center',
+            },
+          }
+
+          subchildren = render_operating_order
+          subchildren << render_revenue_history if @corporation.operating_history.any?
+          children << h(:div, props, subchildren)
         end
 
         h('div.corp.card', { style: card_style, on: { click: select_corporation } }, children)
@@ -307,7 +316,17 @@ module View
 
       def render_revenue_history
         last_run = @corporation.operating_history[@corporation.operating_history.keys.max].revenue
-        h('td.bold', "Last Run: #{@game.format_currency(last_run)}")
+        h('div.bold', "Last Run: #{@game.format_currency(last_run)}")
+      end
+
+      def render_operating_order
+        round = @game.round
+        if (n = @game.round.entities.find_index(@corporation))
+          div_class = '.bold' if n >= round.entities.find_index(round.current_entity)
+          [h("div#{div_class}", "Order: #{n + 1}")]
+        else
+          []
+        end
       end
 
       def render_abilities(abilities)
