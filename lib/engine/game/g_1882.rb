@@ -125,7 +125,7 @@ module Engine
         @companies.each do |company|
           next unless (ability = company.abilities(:exchange))
 
-          if ability.from.include?('par')
+          if ability.from.include?(:par)
             corporation = corporation_by_id(ability.corporation)
             corporation.par_via_exchange = company
           end
