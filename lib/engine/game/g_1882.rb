@@ -21,7 +21,7 @@ module Engine
       load_from_json(Config::Game::G1882::JSON)
 
       GAME_LOCATION = 'Assiniboia, Canada'
-      GAME_RULES_URL = 'https://www.boardgamegeek.com/filepage/189409/1882-rules'
+      GAME_RULES_URL = 'https://boardgamegeek.com/thread/2389239/article/35386441#35386441'
       GAME_DESIGNER = 'Marc Voyer'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
 
@@ -107,7 +107,7 @@ module Engine
         nwr_train = trains[rand % trains.size]
         @log << "NWR Rebellion occurs on purchase of the currently first #{nwr_train} train"
         train = depot.upcoming.find { |t| t.name == nwr_train }
-        train.events << { 'type' => 'nwr' }
+        train.events << { 'type': 'nwr' }
 
         depot
       end
