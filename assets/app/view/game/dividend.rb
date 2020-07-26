@@ -31,7 +31,12 @@ module View
             process_action(Engine::Action::Dividend.new(@step.current_entity, kind: type))
           end
           button = h(:td, [h('button.button', { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
-          direction = "#{option[:share_times]} #{option[:share_direction]}"
+          direction =
+            if option[:share_direction]
+              "#{option[:share_times]} #{option[:share_direction]}"
+            else
+              'None'
+            end
 
           props = { style: { paddingRight: '1rem' } }
           h(:tr, [
@@ -39,7 +44,7 @@ module View
             h('td.right', props, [@game.format_currency(option[:company])]),
             h('td.right', props, [@game.format_currency(option[:per_share])]),
             h(:td, [direction]),
-            ])
+          ])
         end
 
         table_props = {
@@ -56,7 +61,7 @@ module View
               h(:th, 'Dividend'),
               h(:th, 'Treasury'),
               h(:th, share_props, 'Per Share'),
-              h(:th, 'Stock moves'),
+              h(:th, 'Stock Moves'),
             ]),
           ]),
           h(:tbody, payout_options),

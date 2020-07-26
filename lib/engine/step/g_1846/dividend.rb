@@ -19,10 +19,14 @@ module Engine
           return { share_direction: :left, share_times: 1 } if revenue < price / 2
 
           times = 0
-          times += 1 if revenue >= price
-          times += 1 if revenue >= price * 2
-          times += 1 if revenue >= price * 3 && price >= 165
-          { share_direction: :right, share_times: times }
+          times = 1 if revenue >= price
+          times = 2 if revenue >= price * 2
+          times = 3 if revenue >= price * 3 && price >= 165
+          if times.positive?
+            { share_direction: :right, share_times: times }
+          else
+            {}
+          end
         end
       end
     end

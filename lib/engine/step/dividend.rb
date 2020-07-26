@@ -39,7 +39,8 @@ module Engine
       def process_dividend(action)
         entity = action.entity
         revenue = routes.sum(&:revenue)
-        payout = dividend_options(entity)[action.kind.to_sym]
+        kind = action.kind.to_sym
+        payout = dividend_options(entity)[kind]
 
         rust_obsolete_trains!(routes)
 
@@ -53,7 +54,7 @@ module Engine
 
         @round.routes = []
 
-        unless Dividend::DIVIDEND_TYPES.include? action.kind
+        unless Dividend::DIVIDEND_TYPES.include?(kind)
           @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
         end
 
