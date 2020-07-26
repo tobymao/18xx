@@ -60,7 +60,7 @@ module View
 
         def render_input
           input = @selected_corporation.ipoed ? render_ipoed : render_pre_ipo
-          h(:div, { style: { 'margin-top': '0.5rem', width: '320px' } }, [input].compact)
+          h(:div, { style: { margin: '0.5rem 0', width: '20rem' } }, [input].compact)
         end
 
         def buy_share(entity, share)
