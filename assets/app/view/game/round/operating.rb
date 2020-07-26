@@ -25,7 +25,10 @@ module View
           left = [h(UndoAndPass, pass: @current_actions.include?('pass'))]
           left << h(RouteSelector) if @current_actions.include?('run_routes')
           left << h(Dividend) if @current_actions.include?('dividend')
-          left << h(BuyTrains) if @current_actions.include?('buy_train')
+          if @current_actions.include?('buy_train')
+            left << h(IssueShares) if @current_actions.include?('sell_shares')
+            left << h(BuyTrains)
+          end
           left << h(IssueShares) if @current_actions.include?('buy_shares')
           left << h(Corporation, corporation: entity)
 

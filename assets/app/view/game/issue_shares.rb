@@ -12,10 +12,17 @@ module View
         @step = @game.round.active_step
         @entity = @game.current_entity
 
-        h(:div, [
-          render_shares('Issue', @step.issuable_shares(@entity), Engine::Action::SellShares),
-          render_shares('Redeem', @step.redeemable_shares(@entity), Engine::Action::BuyShares),
-        ].compact)
+        children = []
+
+        if @step.current_actions.include?('sell_shares')
+          children << render_shares('Issue', @step.issuable_shares(@entity), Engine::Action::SellShares)
+        end
+
+        if @step.current_actions.include?('buy_shares')
+          children << render_shares('Redeem', @step.redeemable_shares(@entity), Engine::Action::BuyShares)
+        end
+
+        h(:div, children.compact)
       end
 
       def render_shares(description, shares, action)

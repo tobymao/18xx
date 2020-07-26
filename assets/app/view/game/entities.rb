@@ -37,6 +37,7 @@ module View
 
         children << h(:div, [
           h(Bank, game: @game, layout: :card),
+          *@game.corporations.select(&:receivership?).map { |c| h(Corporation, corporation: c) },
           *bank_owned.map { |c| h(Corporation, corporation: c) },
         ])
 

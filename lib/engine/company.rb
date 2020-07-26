@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require_relative 'abilities'
+require_relative 'entity'
 require_relative 'ownable'
 
 module Engine
   class Company
     include Abilities
+    include Entity
     include Ownable
 
     attr_accessor :desc, :max_price, :min_price, :revenue, :discount
@@ -23,10 +25,6 @@ module Engine
       @max_price = @value * 2
 
       init_abilities(abilities)
-    end
-
-    def operator?
-      false
     end
 
     def id
@@ -51,20 +49,8 @@ module Engine
       @closed
     end
 
-    def player?
-      false
-    end
-
     def company?
       true
-    end
-
-    def minor?
-      false
-    end
-
-    def corporation?
-      false
     end
 
     def find_token_by_type(_token_type)

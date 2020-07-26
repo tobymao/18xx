@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require_relative 'corporation'
+require_relative 'entity'
 require_relative 'share_bundle'
 require_relative 'share_holder'
 
 module Engine
   class SharePool
+    include Entity
     include ShareHolder
 
     def initialize(game)
@@ -92,16 +94,8 @@ module Engine
       transfer_shares(bundle, self, spender: @bank, receiver: entity)
     end
 
-    def player?
-      false
-    end
-
-    def corporation?
-      false
-    end
-
-    def company?
-      false
+    def share_pool?
+      true
     end
 
     def fit_in_bank?(bundle)
@@ -117,7 +111,7 @@ module Engine
     def distance(player_a, player_b)
       return 0 if !player_a || !player_b
 
-      entities = @game.players
+      entities = @game.players.reject(&:bankrupt)
       a = entities.find_index(player_a)
       b = entities.find_index(player_b)
       a < b ? b - a : b - (a - entities.size)
@@ -148,7 +142,7 @@ module Engine
 
       president = majority_share_holders
         .select { |p| p.num_shares_of(corporation) > 1 }
-        .min_by { |p| distance(previous_president, p) }
+        .min_by { |p| previous_president == self ? 0 : distance(previous_president, p) }
       return unless president
 
       corporation.owner = president

@@ -2,6 +2,7 @@
 
 require_relative 'abilities'
 require_relative 'assignable'
+require_relative 'entity'
 require_relative 'operator'
 require_relative 'ownable'
 require_relative 'passer'
@@ -14,6 +15,7 @@ module Engine
   class Corporation
     include Abilities
     include Assignable
+    include Entity
     include Operator
     include Ownable
     include Passer
@@ -112,20 +114,12 @@ module Engine
       percent_of(self) - (100 - @float_percent)
     end
 
-    def player?
-      false
-    end
-
-    def company?
-      false
-    end
-
     def corporation?
       true
     end
 
-    def minor?
-      false
+    def receivership?
+      owner&.share_pool?
     end
 
     def inspect
