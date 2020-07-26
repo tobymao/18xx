@@ -69,26 +69,37 @@ module View
           return if @tile_selector&.is_a?(Lib::TileSelector)
 
           step = @game.round.active_step(@selected_company)
-          actions = step.actions(@selected_company || step.current_entity)
-          return if (%w[move_token place_token] & actions).empty?
-          return if @token && !step.can_replace_token?(@token)
+          entity = @selected_company || step.current_entity
+          actions = step.actions(entity)
+          return if (%w[remove_token place_token] & actions).empty?
+          return if @token && !step.can_replace_token?(entity, @token)
 
           event.JS.stopPropagation
 
-          # If there's a choice of tokens of different types show the selector, otherwise just place
-          next_tokens = step.available_tokens
-          if next_tokens.size == 1
-            action = Engine::Action::PlaceToken.new(
+          if actions.include?('remove_token')
+            action = Engine::Action::RemoveToken.new(
               @selected_company || @game.current_entity,
               city: @city,
-              slot: @slot_index,
-              token_type: next_tokens[0].type
+              slot: @slot_index
             )
             store(:selected_company, nil, skip: true)
             process_action(action)
           else
-            store(:tile_selector,
-                  Lib::TokenSelector.new(@tile.hex, Hex.coordinates(@tile.hex), @city, @slot_index))
+            # If there's a choice of tokens of different types show the selector, otherwise just place
+            next_tokens = step.available_tokens
+            if next_tokens.size == 1 && actions.include?('place_token')
+              action = Engine::Action::PlaceToken.new(
+                @selected_company || @game.current_entity,
+                city: @city,
+                slot: @slot_index,
+                token_type: next_tokens[0].type
+              )
+              store(:selected_company, nil, skip: true)
+              process_action(action)
+            else
+              store(:tile_selector,
+                    Lib::TokenSelector.new(@tile.hex, Hex.coordinates(@tile.hex), @city, @slot_index))
+            end
           end
         end
       end

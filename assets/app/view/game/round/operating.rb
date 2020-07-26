@@ -20,6 +20,7 @@ module View
           @step = round.active_step
           corporation = round.current_entity
           @current_actions = round.actions_for(corporation)
+          corporation = corporation.owner if corporation.company?
 
           left = [h(UndoAndPass, pass: @current_actions.include?('pass'))]
           left << h(RouteSelector) if @current_actions.include?('run_routes')

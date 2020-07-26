@@ -17,7 +17,7 @@ module Engine
         current_entity.tokens_by_type
       end
 
-      def can_replace_token?(_token)
+      def can_replace_token?(_entity, _token)
         false
       end
 

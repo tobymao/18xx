@@ -55,6 +55,7 @@ module Engine
           Step::Bankrupt,
           Step::BuyCompany,
           Step::HomeToken,
+          Step::G1882::SpecialNWR,
           Step::G1882::Track,
           Step::Token,
           Step::Route,
@@ -96,6 +97,15 @@ module Engine
         end
 
         Phase.new(phases, self)
+      end
+
+      def setup
+        cp = @companies.find { |company| company.name == 'Canadian Pacific' }
+        cp.add_ability(Ability::Close.new(
+          type: :close,
+          when: :train,
+          corporation: cp.abilities(:share).share.corporation.name,
+        ))
       end
 
       def init_company_abilities
