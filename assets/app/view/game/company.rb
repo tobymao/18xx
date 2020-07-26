@@ -21,15 +21,9 @@ module View
         @company.owner.player?
       end
 
-      def ability_usable?
-        return if (@company.all_abilities.map(&:type) & Round::Operating::ABILITIES).empty?
-
-        @game.round.can_act?(@company.owner) || @company.owner.player?
-      end
-
       def select_company(event)
         event.JS.stopPropagation
-        selected_company = (purchasable? || ability_usable?) && !selected? ? @company : nil
+        selected_company = purchasable? && !selected? ? @company : nil
         store(:tile_selector, nil, skip: true)
         store(:selected_company, selected_company)
       end
@@ -84,7 +78,7 @@ module View
 
           props = {
             style: {
-              cursor: purchasable? || ability_usable? ? 'pointer' : 'default',
+              cursor: purchasable? ? 'pointer' : 'default',
               boxSizing: 'border-box',
               padding: '0.5rem',
               margin: '0.5rem 0.5rem 0 0',
@@ -146,15 +140,8 @@ module View
             marginBottom: '0.5rem',
             padding: '0.1rem 0.2rem',
             fontSize: '80%',
-            cursor: ability_usable? ? 'pointer' : 'default',
           },
         }
-        hidden_props[:on] = { click: ->(event) { select_company(event) } } if ability_usable? && !@company.owner.player?
-        if selected?
-          hidden_props[:style]['background-color'] = 'lightblue'
-          hidden_props[:style]['color'] = 'black'
-          hidden_props[:style][:borderRadius] = '0.2rem'
-        end
 
         @hidden_divs[company.sym] = h('div#hidden', hidden_props, company.desc)
 
