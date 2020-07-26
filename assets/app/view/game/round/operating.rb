@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
+require 'view/game/abilities'
 require 'view/game/buy_companies'
 require 'view/game/buy_trains'
 require 'view/game/corporation'
 require 'view/game/dividend'
 require 'view/game/issue_shares'
 require 'view/game/map'
-require 'view/game/undo_and_pass'
 require 'view/game/route_selector'
+require 'view/game/undo_and_pass'
 
 module View
   module Game
@@ -26,6 +27,7 @@ module View
           left << h(Dividend) if @current_actions.include?('dividend')
           left << h(BuyTrains) if @current_actions.include?('buy_train')
           left << h(IssueShares) if @current_actions.include?('buy_shares')
+          left << h(Abilities, user: @user, game: @game)
           left << h(Corporation, corporation: corporation)
 
           div_props = {

@@ -34,11 +34,12 @@ module View
         end
 
         if companies.include?(@selected_company)
-          children << h(:div, { style: { margin: '0.5rem 0' } }, @selected_company.desc)
+          children << h(:div, { style: { margin: '0.2rem 0 0 0' } }, @selected_company.desc)
           children.concat(render_actions)
         end
 
-        h(:div, children)
+        props = { style: { margin: '0.5rem 0' } }
+        h(:div, props, children)
       end
 
       def render_companies(companies)
@@ -48,20 +49,20 @@ module View
               click: -> { store(:selected_company, @selected_company == company ? nil : company) },
             },
             style: {
-              cursor: 'pointer',
               display: 'inline-block',
-              padding: '0.5rem',
+              padding: '0.2rem 0 0 0',
+              cursor: 'pointer',
             },
           }
           props[:style][:textDecoration] = 'underline' if @selected_company == company
 
           company_name = company.name
-          company_name = company_name[0..15] + '...' if company_name.size > 15
+          company_name = company_name[0..16] + '...' if company_name.size > 19
 
           owner_name = company.owner.id
-          owner_name = owner_name[0..10] + '...' if owner_name.size > 10
+          owner_name = owner_name[0..12] + '...' if owner_name.size > 15
 
-          h(:div, props, "#{company_name} (#{owner_name})")
+          h(:a, props, "#{company_name} (#{owner_name})")
         end.compact
       end
 
