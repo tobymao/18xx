@@ -66,6 +66,7 @@ module Engine
           entity,
           spender: entity,
           receiver: incremental && bundle.owner.corporation? ? bundle.owner : @bank,
+          price: price
         )
       end
 
@@ -122,16 +123,17 @@ module Engine
       a < b ? b - a : b - (a - entities.size)
     end
 
-    def transfer_shares(bundle, to_entity, spender: nil, receiver: nil)
+    def transfer_shares(bundle, to_entity, spender: nil, receiver: nil, price: nil)
       corporation = bundle.corporation
       owner = bundle.owner
       previous_president = bundle.president
       percent = bundle.percent
+      price ||= bundle.price
 
       corporation.share_holders[owner] -= percent if owner.player?
       corporation.share_holders[to_entity] += percent if to_entity.player?
 
-      spender.spend(bundle.price, receiver) if spender && receiver
+      spender.spend(price, receiver) if spender && receiver
       bundle.shares.each { |s| move_share(s, to_entity) }
 
       # check if we need to change presidency

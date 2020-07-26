@@ -13,7 +13,7 @@ module Engine
             # SC is ipoed for half price.
 
             corporation = bundle.corporation
-            entity.cash >= bundle.price_per_share && @game.can_gain?(bundle, entity) &&
+            entity.cash >= bundle.price_per_share && can_gain?(entity, bundle) &&
               !@players_sold[entity][corporation] &&
               (can_buy_multiple?(corporation) || !bought?)
           else
