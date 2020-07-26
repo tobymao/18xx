@@ -22,7 +22,7 @@ module View
         ]
 
         if others.any?
-          others.sort! { |company| company.owner.owner.name == @user&.dig(&:name) ? 0 : 1 }
+          others.sort! { |company| company.owner.owner.name == @user&.dig(:name) ? 0 : 1 }
 
           toggle_show = lambda do
             store(:selected_company, nil, skip: true)
