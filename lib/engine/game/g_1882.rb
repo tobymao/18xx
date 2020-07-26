@@ -13,6 +13,8 @@ module Engine
                       yellow: '#FFF500',
                       brown: '#7b352a')
 
+      DEV_STAGE = :alpha
+
       AXES = { x: :number, y: :letter }.freeze
       CORPORATIONS_WITHOUT_NEUTRAL = %w[CPR CN].freeze
 
@@ -167,6 +169,9 @@ module Engine
           hex.lay(hex.original_tile)
           tiles << old_tile
         end
+
+        # Some companies might no longer have valid routes
+        @graph.clear_graph_for_all
       end
 
       def revenue_for(route)

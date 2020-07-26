@@ -320,6 +320,8 @@ module View
       end
 
       def render_operating_order
+        return [] unless @game.round.current_entity.operator?
+
         round = @game.round
         if (n = @game.round.entities.find_index(@corporation))
           div_class = '.bold' if n >= round.entities.find_index(round.current_entity)
