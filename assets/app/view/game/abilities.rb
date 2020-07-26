@@ -14,21 +14,23 @@ module View
         companies = @game.companies.select { |company| !company.closed? && actions_for(company).any? }
         return h(:div) if companies.empty?
 
-        current, other = companies.partition { |company| @game.current_entity.owner == company.owner.owner }
+        current, others = companies.partition { |company| @game.current_entity.owner == company.owner.owner }
 
         children = [
           h('div.inline.margined.bold', 'Abilities:'),
           *render_companies(current),
         ]
 
-        if other.any?
+        if others.any?
+          others.sort! { |company| company.owner.owner.name == @user&.dig(&:name) ? 0 : 1 }
+
           toggle_show = lambda do
             store(:selected_company, nil, skip: true)
             store(:show_other_abilities, !@show_other_abilities)
           end
 
           children << h('button.button', { on: { click: toggle_show } }, @show_other_abilities ? 'Hide' : 'Show')
-          children.concat(render_companies(other)) if @show_other_abilities
+          children.concat(render_companies(others)) if @show_other_abilities
         end
 
         if companies.include?(@selected_company)
@@ -51,7 +53,7 @@ module View
               padding: '0.5rem',
             },
           }
-          props[:style][:backgroundColor] = 'lightblue' if @selected_company == company
+          props[:style][:textDecoration] = 'underline' if @selected_company == company
 
           company_name = company.name
           company_name = company_name[0..15] + '...' if company_name.size > 15
