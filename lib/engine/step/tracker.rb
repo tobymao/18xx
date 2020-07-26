@@ -56,6 +56,9 @@ module Engine
 
         raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}"\
           unless old_tile.upgrades_to?(tile, entity.company?)
+        if !@game.loading && !legal_tile_rotation?(entity, hex, tile)
+          raise GameError, "#{old_tile.name} is not legally rotated for #{tile.name}"
+        end
 
         @game.tiles.delete(tile)
         @game.tiles << old_tile unless old_tile.preprinted
@@ -200,17 +203,28 @@ module Engine
         end.compact
       end
 
-      def legal_tile_rotations(entity, hex, tile)
+      def legal_tile_rotation?(entity, hex, tile)
         old_paths = hex.tile.paths
+        old_ctedges = hex.tile.city_town_edges
 
+        new_paths = tile.paths
+        new_exits = tile.exits
+        new_ctedges = tile.city_town_edges
+        extra_cities = [0, new_ctedges.size - old_ctedges.size].max
+
+        new_exits.all? { |edge| hex.neighbors[edge] } &&
+          (new_exits & available_hex(entity, hex)).any? &&
+          old_paths.all? { |path| new_paths.any? { |p| path <= p } } &&
+          # Count how many cities on the new tile that aren't included by any of the old tile.
+          # Make sure this isn't more than the number of new cities added.
+          # 1836jr30 D6 -> 54 adds more cities
+          extra_cities >= new_ctedges.count { |newct| old_ctedges.all? { |oldct| (newct & oldct).none? } }
+      end
+
+      def legal_tile_rotations(entity, hex, tile)
         Engine::Tile::ALL_EDGES.select do |rotation|
           tile.rotate!(rotation)
-          new_paths = tile.paths
-          new_exits = tile.exits
-
-          new_exits.all? { |edge| hex.neighbors[edge] } &&
-            (new_exits & available_hex(entity, hex)).any? &&
-            old_paths.all? { |path| new_paths.any? { |p| path <= p } }
+          legal_tile_rotation?(entity, hex, tile)
         end
       end
     end
