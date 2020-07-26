@@ -464,6 +464,9 @@ module Engine
                "visit":99
             }
          ],
+         "events":[
+           {"type": "close_companies"}
+         ],
          "price":450,
          "num":2
       },
@@ -692,9 +695,6 @@ module Engine
             "green",
             "brown"
          ],
-         "events":{
-            "close_companies":true
-         },
          "operating_rounds": 3
       },
       {

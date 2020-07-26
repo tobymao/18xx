@@ -444,26 +444,29 @@ module Engine
       "distance": 3,
       "price": 180,
       "rusts_on": "6",
-      "num": 5
+      "num": 6
     },
     {
       "name": "4",
       "distance": 4,
       "price": 300,
       "rusts_on": "D",
-      "num": 4
+      "num": 5
     },
     {
       "name": "5",
       "distance": 5,
       "price": 450,
-      "num": 3
+      "num": 4,
+      "events": [
+        {"type": "close_companies"}
+      ]
     },
     {
       "name": "6",
       "distance": 6,
       "price": 630,
-      "num": 2
+      "num": 3
     },
     {
       "name": "D",
@@ -719,9 +722,6 @@ module Engine
         "brown"
       ],
       "operating_rounds": 3,
-      "events": {
-        "close_companies": true
-      },
       "buy_companies": true
     },
     {
