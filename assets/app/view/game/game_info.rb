@@ -2,12 +2,14 @@
 
 require 'lib/color'
 require 'lib/settings'
+require 'lib/text'
 
 module View
   module Game
     class GameInfo < Snabberb::Component
       include Lib::Color
       include Lib::Settings
+      include Lib::Text
 
       needs :game
       needs :layout, default: nil
@@ -57,49 +59,16 @@ module View
             },
           }
 
-          event_text = []
-          event_text << 'Can Buy Companies' if phase[:buy_companies]
-          phase[:events]&.each do |name, _value|
-            event_text << (@game.class::EVENTS_TEXT[name] ? "#{@game.class::EVENTS_TEXT[name][0]}*" : name)
-          end
-          trains = @depot.upcoming.select { |train| train.name == phase[:on] }
-          trains.each.with_index do |train, index0|
-            train.events.each do |name|
-              index = index0 + 1
-              ordinal =
-                case index % 10
-                when 1 then "#{index}st"
-                when 2 then "#{index}nd"
-                when 3 then "#{index}rd"
-                else "#{index}th"
-                end
-              event_text << "#{@game.class::EVENTS_TEXT[name][0]}(on #{ordinal} purchase of #{train.name} train)*"
-            end
-          end
+          can_buy_companies = phase[:buy_companies] ? 'Can Buy Companies' : ''
 
           h(:tr, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
+            h(:td, phase[:on]),
             h(:td, phase[:operating_rounds]),
             h(:td, phase[:train_limit]),
             h(:td, phase_props, phase_color.capitalize),
-            h(:td, event_text.join(', ')),
+            h(:td, can_buy_companies),
           ])
-        end
-
-        phase_text = @game.class::EVENTS_TEXT.map do |_sym, desc|
-          h(:tr, [h(:td, desc[0]), h(:td, desc[1])])
-        end
-
-        if phase_text.any?
-          phase_text = [h(:table, [
-            h(:thead, [
-              h(:tr, [
-                h(:th, 'Event'),
-                h(:th, 'Description'),
-                ]),
-            ]),
-            h(:tbody, phase_text),
-          ])]
         end
 
         [
@@ -109,6 +78,7 @@ module View
               h(:thead, [
                 h(:tr, [
                   h(:th, 'Phase'),
+                  h(:th, 'On Train'),
                   h(:th, { attrs: { title: 'Number of Operating Rounds' } }, 'ORs'),
                   h(:th, 'Train Limit'),
                   h(:th, 'Tiles'),
@@ -116,8 +86,7 @@ module View
                 ]),
               ]),
               h('tbody.zebra', rows),
-            ]),
-            *phase_text,
+            ])
           ]),
         ]
       end
@@ -138,6 +107,20 @@ module View
           end
           names_to_prices = train.names_to_prices
 
+          event_text = []
+          trains.each.with_index do |train, index|
+            train.events.each do |event|
+              name = event['type']
+              name = "#{@game.class::EVENTS_TEXT[name][0]}*"if @game.class::EVENTS_TEXT[name]
+
+              if index == 0
+                event_text << name
+              else
+                event_text << "#{name}(on #{ordinal(index + 1)} train)"
+              end
+            end
+          end
+
           h(:tr, [
             h(:td, names_to_prices.keys.join(', ')),
             h('td.right', names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
@@ -146,7 +129,24 @@ module View
             h(:td, rust_schedule[name]&.join(', ') || 'None'),
             h(:td, discounts&.join(' ')),
             h(:td, train.available_on),
+            h(:td, event_text.join(', '))
           ])
+        end
+
+        event_text = @game.class::EVENTS_TEXT.map do |_sym, desc|
+          h(:tr, [h(:td, desc[0]), h(:td, desc[1])])
+        end
+
+        if event_text.any?
+          event_text = [h(:table, [
+            h(:thead, [
+              h(:tr, [
+                h(:th, 'Event'),
+                h(:th, 'Description'),
+                ]),
+            ]),
+            h(:tbody, event_text),
+          ])]
         end
 
         [
@@ -162,11 +162,13 @@ module View
                   h(:th, 'Rusts'),
                   h(:th, 'Upgrade Discount'),
                   h(:th, { attrs: { title: 'Available after purchase of first train of type' } }, 'Available'),
+                  h(:th, 'Events')
                 ]),
               ]),
               h('tbody.zebra', rows),
             ]),
           ]),
+          *event_text
         ]
       end
 

@@ -17,8 +17,8 @@ module Engine
     def buying_train!(entity, train)
       next! if train.sym == @next_on
 
-      train.events.each do |type, _value|
-        @game.send("event_#{type}!")
+      train.events.each do |event|
+        @game.send("event_#{event['type']}!")
       end
       train.events.clear
 
@@ -55,9 +55,6 @@ module Engine
     end
 
     def trigger_events!
-      @events.each do |type, _value|
-        @game.send("event_#{type}!")
-      end
 
       @game.companies.each do |company|
         next unless company.owner

@@ -76,9 +76,12 @@ module Engine
       end
 
       def add_extra_train_when_sc_pars(corporation)
-        name = depot.upcoming.first.name
-        train = @sc_reserve_trains.find { |t| t.name == name }
+        first = depot.upcoming.first
+        train = @sc_reserve_trains.find { |t| t.name == first.name }
         return unless train
+
+        # Move events other than NWR rebellion earlier.
+        train.events, first.events = first.events.partition {|e| e['type']!='nwr'}
 
         @log << "#{corporation.name} adds an extra #{train.name} train to the depot"
         @depot.unshift_train(train)
@@ -92,7 +95,7 @@ module Engine
 
         @sc_reserve_trains = []
         trains.each do |train_name|
-          train = depot.upcoming.find { |t| t.name == train_name }
+          train = depot.upcoming.select { |t| t.name == train_name }.last
           @sc_reserve_trains << train
           depot.upcoming.delete(train)
         end
@@ -101,7 +104,7 @@ module Engine
         nwr_train = trains[rand % trains.size]
         @log << "NWR Rebellion occurs on purchase of the currently first #{nwr_train} train"
         train = depot.upcoming.find { |t| t.name == nwr_train }
-        train.events << 'nwr'
+        train.events << {'type': 'nwr'}
 
         depot
       end

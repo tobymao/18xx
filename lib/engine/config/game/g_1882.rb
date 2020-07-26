@@ -433,7 +433,10 @@ module Engine
       "name": "5",
       "distance": 5,
       "price": 450,
-      "num": 4
+      "num": 4,
+      "events": [
+        {"type": "close_companies"}
+      ]
     },
     {
       "name": "6",
@@ -695,9 +698,6 @@ module Engine
         "brown"
       ],
       "operating_rounds": 3,
-      "events": {
-        "close_companies": true
-      },
       "buy_companies": true
     },
     {
