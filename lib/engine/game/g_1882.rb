@@ -107,7 +107,7 @@ module Engine
         nwr_train = trains[rand % trains.size]
         @log << "NWR Rebellion occurs on purchase of the currently first #{nwr_train} train"
         train = depot.upcoming.find { |t| t.name == nwr_train }
-        train.events << { 'type': 'nwr' }
+        train.events << { 'type' => 'nwr' }
 
         depot
       end
