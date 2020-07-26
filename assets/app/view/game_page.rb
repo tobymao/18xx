@@ -256,7 +256,7 @@ module View
         h(Game::GameLog, user: @user),
         h(Game::HistoryControls, num_actions: @num_actions),
         h(Game::EntityOrder, round: @round),
-        h(Game::Abilities, user: @user, game: @game),
+        @round.is_a?(Engine::Round::Operating) ? '' : h(Game::Abilities, user: @user, game: @game),
         render_action,
       ])
     end
