@@ -2,6 +2,7 @@
 
 require_relative 'base'
 require_relative 'tracker'
+
 module Engine
   module Step
     class Track < Base
@@ -9,7 +10,7 @@ module Engine
       ACTIONS = %w[lay_tile pass].freeze
 
       def actions(entity)
-        return [] unless can_lay_tile?(entity)
+        return [] if entity.company? || !can_lay_tile?(entity)
 
         entity == current_entity ? ACTIONS : []
       end
@@ -31,8 +32,8 @@ module Engine
         pass! unless can_lay_tile?(action.entity)
       end
 
-      def available_hex(hex)
-        @game.graph.connected_hexes(current_entity)[hex]
+      def available_hex(entity, hex)
+        @game.graph.connected_hexes(entity)[hex]
       end
     end
   end

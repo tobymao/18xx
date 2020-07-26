@@ -269,10 +269,22 @@ module Engine
         Round::G1846::Draft.new(self, [Step::G1846::DraftDistribution])
       end
 
+      def stock_round
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::Assign,
+          Step::SpecialTrack,
+          Step::BuySellParShares,
+        ])
+      end
+
       def operating_round(round_num)
         Round::G1846::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
+          Step::Assign,
+          Step::SpecialToken,
+          Step::SpecialTrack,
           Step::G1846::BuyCompany,
           Step::IssueShares,
           Step::TrackAndToken,

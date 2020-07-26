@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative 'share_buying'
 
 module Engine
   module Step
     class BuySellParShares < Base
+      include ShareBuying
+
       PURCHASE_ACTIONS = [Action::BuyShares, Action::Par].freeze
 
       def actions(entity)
@@ -73,7 +76,7 @@ module Engine
         return unless bundle
 
         corporation = bundle.corporation
-        entity.cash >= bundle.price && @game.can_gain?(bundle, entity) &&
+        entity.cash >= bundle.price && can_gain?(entity, bundle) &&
           !@players_sold[entity][corporation] &&
           (can_buy_multiple?(corporation) || !bought?)
       end
@@ -136,7 +139,7 @@ module Engine
       def process_par(action)
         share_price = action.share_price
         corporation = action.corporation
-        raise GameError, "#{corporation} cannot be parred" unless corporation.can_par?
+        raise GameError, "#{corporation} cannot be parred" unless corporation.can_par?(action.entity)
 
         @game.stock_market.set_par(corporation, share_price)
         share = corporation.shares.first
@@ -180,7 +183,7 @@ module Engine
       end
 
       def can_ipo_any?(entity)
-        !bought? && @game.corporations.any? { |c| c.can_par? && can_buy?(entity, c.shares.first&.to_bundle) }
+        !bought? && @game.corporations.any? { |c| c.can_par?(entity) && can_buy?(entity, c.shares.first&.to_bundle) }
       end
 
       def sell_shares(entity, shares)
@@ -188,14 +191,6 @@ module Engine
 
         @players_sold[shares.owner][shares.corporation] = :now
         @game.sell_shares_and_change_price(shares)
-      end
-
-      def buy_shares(entity, shares)
-        raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" unless can_buy?(entity, shares)
-
-        @game.share_pool.buy_shares(entity, shares)
-        corporation = shares.corporation
-        @game.place_home_token(corporation) if @game.class::HOME_TOKEN_TIMING == :float && corporation.floated?
       end
 
       def bought?

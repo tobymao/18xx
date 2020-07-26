@@ -59,6 +59,10 @@ module Engine
       true
     end
 
+    def minor?
+      false
+    end
+
     def corporation?
       false
     end

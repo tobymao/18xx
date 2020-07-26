@@ -14,7 +14,7 @@ module Engine
         action = get_tile_lay(entity)
         return false unless action
 
-        (entity.cash >= action[:cost]) && (action[:lay] || action[:upgrade])
+        entity.tokens.any? && (entity.cash >= action[:cost]) && (action[:lay] || action[:upgrade])
       end
 
       def get_tile_lay(entity)
@@ -56,7 +56,7 @@ module Engine
 
         raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}"\
           unless old_tile.upgrades_to?(tile, entity.company?)
-        if !@game.loading && !legal_tile_rotation?(hex, tile)
+        if !@game.loading && !legal_tile_rotation?(entity, hex, tile)
           raise GameError, "#{old_tile.name} is not legally rotated for #{tile.name}"
         end
 
@@ -66,7 +66,7 @@ module Engine
         hex.lay(tile)
 
         @game.graph.clear
-        check_track_restrictions!(entity, old_tile, tile) unless @game.loading
+        check_track_restrictions!(entity, old_tile, tile)
         free = false
         discount = 0
 
@@ -101,7 +101,7 @@ module Engine
           token = cities.flat_map(&:tokens).find(&:itself)
           @round.pending_tokens << {
             entity: entity,
-            hex: action.hex,
+            hexes: [action.hex],
             token: token,
           }
 
@@ -157,6 +157,8 @@ module Engine
       end
 
       def check_track_restrictions!(entity, old_tile, new_tile)
+        return if @game.loading || !entity.corporation?
+
         old_paths = old_tile.paths
         changed_city = false
         used_new_track = old_paths.empty?
@@ -181,7 +183,7 @@ module Engine
         end
       end
 
-      def potential_tiles(hex)
+      def potential_tiles(_entity, hex)
         colors = @game.phase.tiles
         @game.tiles
           .select { |tile| colors.include?(tile.color) }
@@ -191,7 +193,7 @@ module Engine
       end
 
       def upgradeable_tiles(entity, hex)
-        potential_tiles(hex).map do |tile|
+        potential_tiles(entity, hex).map do |tile|
           tile.rotate!(0) # reset tile to no rotation since calculations are absolute
           tile.legal_rotations = legal_tile_rotations(entity, hex, tile)
           next if tile.legal_rotations.empty?
@@ -201,7 +203,7 @@ module Engine
         end.compact
       end
 
-      def legal_tile_rotation?(hex, tile)
+      def legal_tile_rotation?(entity, hex, tile)
         old_paths = hex.tile.paths
         old_ctedges = hex.tile.city_town_edges
 
@@ -211,7 +213,7 @@ module Engine
         extra_cities = [0, new_ctedges.size - old_ctedges.size].max
 
         new_exits.all? { |edge| hex.neighbors[edge] } &&
-          (new_exits & available_hex(hex)).any? &&
+          (new_exits & available_hex(entity, hex)).any? &&
           old_paths.all? { |path| new_paths.any? { |p| path <= p } } &&
           # Count how many cities on the new tile that aren't included by any of the old tile.
           # Make sure this isn't more than the number of new cities added.
@@ -219,10 +221,10 @@ module Engine
           extra_cities >= new_ctedges.count { |newct| old_ctedges.all? { |oldct| (newct & oldct).none? } }
       end
 
-      def legal_tile_rotations(_entity, hex, tile)
+      def legal_tile_rotations(entity, hex, tile)
         Engine::Tile::ALL_EDGES.select do |rotation|
           tile.rotate!(rotation)
-          legal_tile_rotation?(hex, tile)
+          legal_tile_rotation?(entity, hex, tile)
         end
       end
     end

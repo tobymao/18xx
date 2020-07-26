@@ -14,6 +14,11 @@ module Engine
       @city = nil
     end
 
+    def destroy!
+      @corporation.tokens.delete(self)
+      @city.tokens.map! { |t| t == self ? nil : t }
+    end
+
     def remove!
       @city.tokens.map! { |t| t == self ? nil : t }
       @used = false

@@ -132,6 +132,7 @@ module Engine
           end
         else
           @game.payout_companies
+          @game.or_set_finished
         end
 
         entities.each(&:unpass!)

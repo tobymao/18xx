@@ -20,8 +20,10 @@ module Engine
         start_operating unless @entities.empty?
       end
 
-      def before_process(_action)
+      def before_process(action)
         # this is crap, we should block when this happens
+        return if action.type == 'message' || action.entity == @just_sold_company
+
         @just_sold_company&.remove_ability_when(:sold)
         @just_sold_company = nil
       end
