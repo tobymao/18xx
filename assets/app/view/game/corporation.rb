@@ -232,7 +232,7 @@ module View
             player,
             @corporation.president?(player),
             player.num_shares_of(@corporation),
-            @game.round.active_step.did_sell?(@corporation, player),
+            @game.round.active_step&.did_sell?(@corporation, player),
             !@corporation.holding_ok?(player, 1),
           ]
         end
