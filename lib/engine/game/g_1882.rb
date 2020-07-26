@@ -81,7 +81,7 @@ module Engine
         return unless train
 
         # Move events other than NWR rebellion earlier.
-        train.events, first.events = first.events.partition {|e| e['type']!='nwr'}
+        train.events, first.events = first.events.partition { |e| e['type'] != 'nwr' }
 
         @log << "#{corporation.name} adds an extra #{train.name} train to the depot"
         @depot.unshift_train(train)
@@ -104,7 +104,7 @@ module Engine
         nwr_train = trains[rand % trains.size]
         @log << "NWR Rebellion occurs on purchase of the currently first #{nwr_train} train"
         train = depot.upcoming.find { |t| t.name == nwr_train }
-        train.events << {'type': 'nwr'}
+        train.events << { 'type': 'nwr' }
 
         depot
       end

@@ -55,7 +55,6 @@ module Engine
     end
 
     def trigger_events!
-
       @game.companies.each do |company|
         next unless company.owner
 

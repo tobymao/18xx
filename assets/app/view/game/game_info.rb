@@ -86,7 +86,7 @@ module View
                 ]),
               ]),
               h('tbody.zebra', rows),
-            ])
+            ]),
           ]),
         ]
       end
@@ -108,16 +108,16 @@ module View
           names_to_prices = train.names_to_prices
 
           event_text = []
-          trains.each.with_index do |train, index|
-            train.events.each do |event|
+          trains.each.with_index do |train2, index|
+            train2.events.each do |event|
               name = event['type']
-              name = "#{@game.class::EVENTS_TEXT[name][0]}*"if @game.class::EVENTS_TEXT[name]
+              name = "#{@game.class::EVENTS_TEXT[name][0]}*" if @game.class::EVENTS_TEXT[name]
 
-              if index == 0
-                event_text << name
-              else
-                event_text << "#{name}(on #{ordinal(index + 1)} train)"
-              end
+              event_text << if index.zero?
+                              name
+                            else
+                              "#{name}(on #{ordinal(index + 1)} train)"
+                            end
             end
           end
 
@@ -129,7 +129,7 @@ module View
             h(:td, rust_schedule[name]&.join(', ') || 'None'),
             h(:td, discounts&.join(' ')),
             h(:td, train.available_on),
-            h(:td, event_text.join(', '))
+            h(:td, event_text.join(', ')),
           ])
         end
 
@@ -162,13 +162,13 @@ module View
                   h(:th, 'Rusts'),
                   h(:th, 'Upgrade Discount'),
                   h(:th, { attrs: { title: 'Available after purchase of first train of type' } }, 'Available'),
-                  h(:th, 'Events')
+                  h(:th, 'Events'),
                 ]),
               ]),
               h('tbody.zebra', rows),
             ]),
           ]),
-          *event_text
+          *event_text,
         ]
       end
 
