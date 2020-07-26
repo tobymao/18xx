@@ -12,8 +12,6 @@ module Engine
       load_from_json(Config::Game::G18AL::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
-      DEV_STAGE = :alpha
-
       GAME_LOCATION = 'Alabama, USA'
       GAME_RULES_URL = 'http://www.diogenes.sacramento.ca.us/18AL_Rules_v1_64.pdf'
       GAME_DESIGNER = 'Mark Derrick'
