@@ -56,10 +56,17 @@ module View
           name_props[:style][:textDecoration] = 'underline' if @selected_company == company
 
           company_name = company.name
-          company_name = company_name[0..16] + '...' if company_name.size > 19
-
           owner_name = company.owner.id
-          owner_name = owner_name[0..12] + '...' if owner_name.size > 15
+          c_size = company_name.size
+          o_size = owner_name.size
+          if c_size + o_size > 35
+            if o_size < 5
+              company_name = company_name[0..29] + '…' if c_size > 33
+            else
+              company_name = company_name[0..19] + '…' if c_size > 23
+              owner_name = owner_name[0..9] + '…' if o_size > 13
+            end
+          end
 
           div_props = {}
 
