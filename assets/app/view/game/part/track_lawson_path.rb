@@ -8,6 +8,8 @@ module View
       class TrackLawsonPath < Base
         needs :path
         needs :color, default: 'black'
+        needs :width, default: 8
+        needs :dash, default: '0'
 
         def load_from_tile
           @edge_num = @path.edges.first.num
@@ -40,7 +42,8 @@ module View
               transform: "rotate(#{rotation})",
               d: 'M 0 87 L 0 0',
               stroke: @color,
-              'stroke-width' => 8,
+              'stroke-width': @width,
+              'stroke-dasharray': @dash,
             },
           }
 
