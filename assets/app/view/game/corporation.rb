@@ -211,12 +211,11 @@ module View
             },
           }
           img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if token.used
-
           token_text =
             if i.zero? && @corporation.coordinates
               @corporation.coordinates
             else
-              token.city ? token.city.hex.name : token.price
+              token.city&.hex ? token.city.hex&.name : token.price
             end
 
           h(:div, token_column_props, [
@@ -224,6 +223,7 @@ module View
             h(:div, token_text_props, token_text),
           ])
         end
+
         h(:div, token_list_props, tokens_body)
       end
 
