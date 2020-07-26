@@ -17,7 +17,7 @@ module View
         current, others = companies.partition { |company| @game.current_entity.owner == company.owner.owner }
 
         children = [
-          h('h3.inline.bold', 'Abilities'),
+          h(:h3, 'Abilities'),
           *render_companies(current),
         ]
 
@@ -29,11 +29,7 @@ module View
             store(:show_other_abilities, !@show_other_abilities)
           end
 
-          button_props = {
-            style: { margin: '0 0 0 1rem' },
-            on: { click: toggle_show },
-          }
-          children << h('button.button', button_props, @show_other_abilities ? 'Hide' : 'Show Others')
+          children << h('button.button', { on: { click: toggle_show } }, @show_other_abilities ? 'Hide' : 'Show Others')
           children.concat(render_companies(others)) if @show_other_abilities
         end
 
