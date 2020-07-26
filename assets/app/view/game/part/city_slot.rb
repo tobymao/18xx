@@ -84,7 +84,6 @@ module View
               slot: @slot_index,
               token_type: next_tokens[0].type
             )
-            store(:selected_company, nil, skip: true)
             process_action(action)
           else
             store(:tile_selector,
