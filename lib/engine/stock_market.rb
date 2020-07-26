@@ -42,7 +42,7 @@ module Engine
         c += 1
         move(corporation, r, c)
       else
-        move_up(corporation)
+        move_up(corporation) unless one_d?
       end
     end
 
@@ -69,7 +69,7 @@ module Engine
         c -= 1
         move(corporation, r, c)
       else
-        move_down(corporation)
+        move_down(corporation) unless one_d?
       end
     end
 
