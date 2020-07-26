@@ -20,19 +20,20 @@ module View
         pointy: [SIZE * Math.sqrt(3) / 2, SIZE * 3 / 2],
       }.freeze
 
-      NON_TRANSPARENT_ROLES = %i[tile_selector tile_page].freeze
-
       needs :hex
-      needs :step, default: nil
       needs :tile_selector, default: nil, store: true
       needs :role, default: :map
-      needs :opacity, default: nil
+      needs :opacity, default: 1.0
       needs :user, default: nil, store: true
+
+      needs :clickable, default: false
+      needs :actions, default: []
+      needs :entity, default: nil
 
       def render
         @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
         @tile =
-          if @selected && @step&.current_actions&.include?('lay_tile') && @tile_selector&.tile
+          if @selected && @actions.include?('lay_tile') && @tile_selector&.tile
             @tile_selector.tile
           else
             @hex.tile
@@ -40,14 +41,6 @@ module View
         children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
         children << h(Tile, tile: @tile) if @tile
         children << h(TriangularGrid) if Lib::Params['grid']
-
-        opaque = true
-        clickable = @role == :tile_selector
-
-        if @step
-          opaque = @step.available_hex(@hex)
-          clickable ||= opaque
-        end
 
         props = {
           attrs: {
@@ -57,11 +50,10 @@ module View
           },
         }
 
-        opacity_level = opacity(opaque)
-        props[:attrs][:opacity] = opacity_level if opacity_level != 1.0
-        props[:attrs][:cursor] = 'pointer' if clickable
+        props[:attrs][:opacity] = @opacity if @opacity != 1.0
+        props[:attrs][:cursor] = 'pointer' if @clickable
 
-        props[:on] = { click: ->(e) { on_hex_click(e) } } if clickable
+        props[:on] = { click: ->(e) { on_hex_click(e) } } if @clickable
         props[:attrs]['stroke-width'] = 5 if @selected
         h(:g, props, children)
       end
@@ -85,38 +77,28 @@ module View
       end
 
       def on_hex_click
-        return unless @step
+        return if @actions.empty?
 
         nodes = @hex.tile.nodes
-        current_actions = @step.current_actions
 
-        if current_actions.include?('run_routes')
+        if @actions.include?('run_routes')
           touch_node(nodes[0]) if nodes.one?
           return
         end
 
         case @role
         when :map
-          if current_actions.include?('assign')
-            return process_action(Engine::Action::Assign.new(@step.current_entity, target: @hex))
-          end
-          return unless current_actions.include?('lay_tile')
+          return process_action(Engine::Action::Assign.new(@entity, target: @hex)) if @actions.include?('assign')
+          return unless @actions.include?('lay_tile')
 
           if @selected && (tile = @tile_selector&.tile)
             @tile_selector.rotate! if tile.hex != @hex
           else
-            store(:tile_selector, Lib::TileSelector.new(@hex, @tile, coordinates, root, @step.current_entity))
+            store(:tile_selector, Lib::TileSelector.new(@hex, @tile, coordinates, root, @entity))
           end
         when :tile_selector
           @tile_selector.tile = @tile
         end
-      end
-
-      def opacity(opaque)
-        return @opacity if @opacity
-        return 1.0 if NON_TRANSPARENT_ROLES.include?(@role)
-
-        opaque ? 1.0 : 0.5
       end
     end
   end

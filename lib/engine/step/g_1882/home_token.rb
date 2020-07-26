@@ -18,6 +18,8 @@ module Engine
             raise GameError, "Cannot replace #{token.corporation.name} token" unless token.corporation.name == 'CN'
 
             @game.log << "#{action.entity.name} removes neutral token from #{action.city.hex.name}"
+            # CN may no longer have a valid route.
+            @game.graph.clear_graph_for(token.corporation)
             token.destroy!
           end
 

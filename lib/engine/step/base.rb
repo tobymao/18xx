@@ -30,7 +30,7 @@ module Engine
         []
       end
 
-      def available_hex(hex); end
+      def available_hex(entity, hex); end
 
       def did_sell?(_corporation, _entity)
         false

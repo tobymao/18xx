@@ -68,10 +68,8 @@ module View
         def on_click(event)
           return if @tile_selector&.is_a?(Lib::TileSelector)
 
-          round = @selected_company ? @game.special : @game.round
-
-          step = round.active_step
-          actions = step.current_actions
+          step = @game.round.active_step(@selected_company)
+          actions = step.actions(@selected_company || step.current_entity)
           return if (%w[move_token place_token] & actions).empty?
           return if @token && !step.can_replace_token?(@token)
 
@@ -79,12 +77,12 @@ module View
 
           # If there's a choice of tokens of different types show the selector, otherwise just place
           next_tokens = step.available_tokens
-
           if next_tokens.size == 1
             action = Engine::Action::PlaceToken.new(
               @selected_company || @game.current_entity,
               city: @city,
               slot: @slot_index,
+              token_type: next_tokens[0].type
             )
             store(:selected_company, nil, skip: true)
             process_action(action)

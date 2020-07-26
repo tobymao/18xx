@@ -365,7 +365,7 @@ module Engine
           hexes = {
             hex_k8 => [1, 2, 3, 4],
           }
-          hexes.each { |k, v| expect(subject.active_step.available_hex(k)).to eq(v) }
+          hexes.each { |k, v| expect(subject.active_step.available_hex(corporation, k)).to eq(v) }
 
           subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('5'), hex: hex_k8, rotation: 3))
 
@@ -375,7 +375,7 @@ module Engine
             hex_l7 => [1],
           }
           subject = goto_new_or!
-          hexes.each { |k, v| expect(subject.active_step.available_hex(k)).to eq(v) }
+          hexes.each { |k, v| expect(subject.active_step.available_hex(corporation, k)).to eq(v) }
 
           subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('9'), hex: hex_k6, rotation: 0))
           subject = goto_new_or!
@@ -387,7 +387,7 @@ module Engine
             hex_k8 => [1, 2, 3, 4],
             hex_l7 => [1],
           }
-          hexes.each { |k, v| expect(subject.active_step.available_hex(k)).to eq(v) }
+          hexes.each { |k, v| expect(subject.active_step.available_hex(corporation, k)).to eq(v) }
         end
       end
 
@@ -415,7 +415,7 @@ module Engine
             hex_h13 => [2, 1, 4],
             hex_i12 => [1],
           }
-          hexes.each { |k, v| expect(subject.active_step.available_hex(k)).to eq(v) }
+          hexes.each { |k, v| expect(subject.active_step.available_hex(corporation, k)).to eq(v) }
         end
       end
 

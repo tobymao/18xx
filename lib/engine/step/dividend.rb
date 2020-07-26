@@ -9,8 +9,8 @@ module Engine
     class Dividend < Base
       ACTIONS = %w[dividend].freeze
 
-      def actions(_entity)
-        return [] unless routes.any?
+      def actions(entity)
+        return [] if entity.company? || routes.empty?
 
         ACTIONS
       end

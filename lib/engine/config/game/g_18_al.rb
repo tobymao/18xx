@@ -261,7 +261,6 @@ module Engine
          "abilities": [
             {
               "type": "assign_hexes",
-              "name": "Historical objective",
               "hexes": [
                 "G4"
               ],
@@ -284,7 +283,6 @@ module Engine
          "abilities": [
             {
                "type": "assign_hexes",
-               "name": "Historical objective",
                "hexes": [
                  "K2"
                ],
@@ -307,7 +305,6 @@ module Engine
          "abilities": [
             {
                "type": "assign_hexes",
-               "name": "Historical objective",
                "hexes": [
                  "J7"
                ],
@@ -329,7 +326,6 @@ module Engine
          "abilities": [
             {
                "type": "assign_hexes",
-               "name": "Historical objective",
                "hexes": [
                  "L1"
                ],
@@ -350,7 +346,6 @@ module Engine
          "abilities": [
             {
                "type": "assign_hexes",
-               "name": "Historical objective",
                "hexes": [
                  "G4"
                ],
@@ -372,7 +367,6 @@ module Engine
          "abilities": [
             {
                "type": "assign_hexes",
-               "name": "Historical objective",
                "hexes": [
                  "G4"
                ],

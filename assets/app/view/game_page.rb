@@ -256,7 +256,7 @@ module View
         h(Game::GameLog, user: @user),
         h(Game::HistoryControls, num_actions: @num_actions),
         h(Game::EntityOrder, round: @round),
-        h(Game::Exchange),
+        h(Game::Abilities, user: @user, game: @game),
         render_action,
       ])
     end

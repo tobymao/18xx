@@ -169,5 +169,9 @@ module Engine
 
       abilities
     end
+
+    def available_share
+      shares_by_corporation[self].find { |share| !share.president }
+    end
   end
 end

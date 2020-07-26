@@ -24,9 +24,11 @@ module View
           store(:selected_corporation, selected_corporation)
 
           if can_assign_corporation?
-            process_action(Engine::Action::Assign.new(@selected_company, target: @corporation))
-            store(:selected_corporation, nil)
-            store(:selected_company, nil)
+            company = @selected_company
+            target = @corporation
+            store(:selected_corporation, nil, skip: true)
+            store(:selected_company, nil, skip: true)
+            process_action(Engine::Action::Assign.new(company, target: target))
           end
         end
 
@@ -48,8 +50,10 @@ module View
           children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
         end
 
-        abilities = @corporation.all_abilities.select { |ability| ability.owner.corporation? }
-        children << render_abilities(abilities) if abilities&.any?
+        abilities_to_display = @corporation.all_abilities.select do |ability|
+          ability.owner.corporation? && ability.description
+        end
+        children << render_abilities(abilities_to_display) if abilities_to_display.any?
 
         if @corporation.owner
           subchildren = (@corporation.operating_history.empty? ? [] : [render_revenue_history])
@@ -228,7 +232,7 @@ module View
             player,
             @corporation.president?(player),
             player.num_shares_of(@corporation),
-            @game.round.active_step.did_sell?(@corporation, player),
+            @game.round.active_step&.did_sell?(@corporation, player),
             !@corporation.holding_ok?(player, 1),
           ]
         end
@@ -307,24 +311,19 @@ module View
       end
 
       def render_abilities(abilities)
-        attribute_lines = []
-
-        abilities.each do |ability|
-          attribute_lines << h('div.name.nowrap', ability.name)
-          attribute_lines << h('div.right', ability.display_value || '')
+        attribute_lines = abilities.map do |ability|
+          h('div.nowrap.inline-block', ability.description)
         end
 
         table_props = {
           style: {
-            padding: '0 0.5rem',
-            grid: 'auto / 3fr 2fr',
-            gap: '0 0.2rem',
+            padding: '0.5rem',
+            justifyContent: 'center',
           },
         }
 
-        h('div#company_table', table_props, [
-          h('div.bold', 'Attribute'),
-          h('div.bold.right', 'Value'),
+        h('div#attribute_table', table_props, [
+          h('div.bold', 'Ability'),
           *attribute_lines,
         ])
       end
@@ -334,7 +333,7 @@ module View
       end
 
       def can_assign_corporation?
-        @selected_corporation && @selected_company && @game.special.can_assign_corporation?
+        @selected_corporation && @selected_company&.abilities(:assign)
       end
     end
   end
