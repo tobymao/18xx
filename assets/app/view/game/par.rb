@@ -21,11 +21,20 @@ module View
             ))
           end
 
-          h('button.button', { on: { click: par } }, @game.format_currency(share_price.price))
+          props = {
+            style: {
+              width: '2.8rem',
+              marginLeft: '0',
+              padding: '0.2rem 0',
+            },
+            on: { click: par },
+          }
+          h('button.button', props, @game.format_currency(share_price.price))
         end
 
+        div_class = par_values.size < 5 ? '.inline' : ''
         h(:div, [
-          h(:div, 'Par Price:'),
+          h("div#{div_class}", 'Par Price: '),
           *par_values.reverse,
         ])
       end
