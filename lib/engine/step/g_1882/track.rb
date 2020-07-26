@@ -1,20 +1,18 @@
 # frozen_string_literal: true
 
+require_relative '../tracker'
 require_relative '../track'
+require_relative 'nwr_track_bonus'
 
 module Engine
   module Step
     module G1882
       class Track < Track
+        include NwrTrackBonus
+
         def lay_tile(action)
           super
-
-          nwr_name = 'NWR'
-          nwr_tile = action.tile.icons.any? { |icon| icon.name == nwr_name }
-          return if !nwr_tile || action.tile.color != :yellow
-
-          @game.log << "#{action.entity.name} gains #{@game.format_currency(20)} for laying yellow tile in NWR area"
-          @game.bank.spend(20, action.entity)
+          gain_nwr_bonus(action.tile, action.entity)
         end
       end
     end

@@ -12,7 +12,7 @@ module View
 
       def render
         companies = @game.companies.select { |company| !company.closed? && actions_for(company).any? }
-        return h(:div) if companies.empty?
+        return h(:div) if companies.empty? || @game.round.current_entity.company?
 
         current, others = companies.partition { |company| @game.current_entity.owner == company.owner.owner }
 

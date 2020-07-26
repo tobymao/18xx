@@ -18,15 +18,16 @@ module View
         def render
           round = @game.round
           @step = round.active_step
-          corporation = round.current_entity
-          @current_actions = round.actions_for(corporation)
+          entity = round.current_entity
+          @current_actions = round.actions_for(entity)
+          entity = entity.owner if entity.company?
 
           left = [h(UndoAndPass, pass: @current_actions.include?('pass'))]
           left << h(RouteSelector) if @current_actions.include?('run_routes')
           left << h(Dividend) if @current_actions.include?('dividend')
           left << h(BuyTrains) if @current_actions.include?('buy_train')
           left << h(IssueShares) if @current_actions.include?('buy_shares')
-          left << h(Corporation, corporation: corporation)
+          left << h(Corporation, corporation: entity)
 
           div_props = {
             style: {

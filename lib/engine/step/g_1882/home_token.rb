@@ -6,7 +6,7 @@ module Engine
   module Step
     module G1882
       class HomeToken < HomeToken
-        def can_replace_token?(token)
+        def can_replace_token?(_entity, token)
           return true unless token
 
           token.corporation.name == 'CN'

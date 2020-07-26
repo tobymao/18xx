@@ -37,5 +37,10 @@ module Engine
 
       new_city.place_token(@corporation, self, free: true)
     end
+
+    def place(city)
+      @used = true
+      @city = city
+    end
   end
 end
