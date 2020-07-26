@@ -21,7 +21,6 @@ module Engine
 
     def remove!
       @city.tokens.map! { |t| t == self ? nil : t }
-      @city = nil
       @used = false
     end
 
