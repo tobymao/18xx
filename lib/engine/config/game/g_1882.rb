@@ -473,6 +473,7 @@ module Engine
       "distance": 999,
       "price": 1100,
       "num": 9,
+      "available_on": "6",
       "discount": {
         "4": 300,
         "5": 300,
