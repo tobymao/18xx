@@ -222,7 +222,7 @@ module View
             h(:td, sold_props, p.num_shares_of(corporation).to_s + (corporation.president?(p) ? '*' : ''))
           end,
           h(:td, corporation.num_shares_of(corporation)),
-          h(:td, @game.share_pool.num_shares_of(corporation)),
+          h(:td, @game.share_pool.num_shares_of(corporation).to_s + (corporation.receivership? ? '*' : '')),
           h(:td, corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
           h(:td, market_props, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
           h(:td, @game.format_currency(corporation.cash)),

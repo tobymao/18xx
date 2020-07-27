@@ -15,7 +15,6 @@ module Engine
         return [] if entity != current_entity
         # TODO: Not sure this is right
         return %w[sell_shares buy_train] if must_buy_train?(entity)
-        return ['buy_train'] if must_buy_train?(entity)
         return %w[buy_train pass] if can_buy_train?(entity)
 
         []
@@ -62,6 +61,7 @@ module Engine
         price = action.price
         exchange = action.exchange
         @game.phase.buying_train!(entity, train)
+
         # Check if the train is actually buyable in the current situation
         raise GameError, 'Not a buyable train' unless buyable_trains.include?(train)
 
@@ -157,6 +157,10 @@ module Engine
       def setup
         @depot = @game.depot
         @last_share_sold_price = nil
+      end
+
+      def issuable_shares
+        []
       end
     end
   end

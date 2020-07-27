@@ -36,7 +36,7 @@ module Engine
 
         player.spend(player.cash, @game.bank)
 
-        @game.bankruptcies += 1
+        @game.declare_bankrupt(player)
       end
     end
   end

@@ -34,7 +34,6 @@ module Engine
                   :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
                   :round, :share_pool, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
                   :round_history
-      attr_accessor :bankruptcies
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -262,7 +261,6 @@ module Engine
         @finished = false
         @log = []
         @actions = []
-        @bankruptcies = 0
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
 
@@ -295,7 +293,7 @@ module Engine
 
         @depot = init_train_handler
         init_starting_cash(@players, @bank)
-        @share_pool = SharePool.new(self)
+        @share_pool = init_share_pool
         @hexes = init_hexes(@companies, @corporations)
         @graph = Graph.new(self)
 
@@ -340,7 +338,7 @@ module Engine
       end
 
       def inspect
-        "#{self.class.name} - #{self.class.title} #{@players.map(&:name)}"
+        "#{self.class.name} - #{self.class.title} #{players.map(&:name)}"
       end
 
       def result
@@ -655,6 +653,15 @@ module Engine
         end
       end
 
+      def declare_bankrupt(player)
+        if player.bankrupt
+          msg = "#{player.name} is already bankrupt, cannot declare bankruptcy again."
+          raise GameError.new(msg, current_action_id)
+        end
+
+        player.bankrupt = true
+      end
+
       def tile_lays(_entity)
         # Some games change available lays depending on if minor or corp
         self.class::TILE_LAYS
@@ -839,6 +846,10 @@ module Engine
         end
       end
 
+      def init_share_pool
+        SharePool.new(self)
+      end
+
       def connect_hexes
         coordinates = @hexes.map { |h| [[h.x, h.y], h] }.to_h
 
@@ -958,18 +969,20 @@ module Engine
           # priority deal card goes to the player who will go first if
           # everyone passes starting now.  last_to_act is nil before
           # anyone has gone, in which case the first player has PD.
-          @players[@round.entity_index]
+          @players.reject(&:bankrupt)[@round.entity_index]
         else
           # We're in a round that iterates over something else, like
           # corporations.  The player list was already rotated when we
           # left a player-focused round to put the PD player first.
-          @players[0]
+          @players.reject(&:bankrupt).first
         end
       end
 
       def reorder_players
-        @players.rotate!(@round.entity_index)
-        @log << "#{@players[0].name} has priority deal"
+        player = @players.reject(&:bankrupt)[@round.entity_index]
+
+        @players.rotate!(@players.index(player))
+        @log << "#{player.name} has priority deal"
       end
 
       def new_auction_round
@@ -1039,7 +1052,7 @@ module Engine
       end
 
       def bankruptcy_limit_reached?
-        @bankruptcies.positive?
+        @players.any?(&:bankrupt)
       end
     end
   end

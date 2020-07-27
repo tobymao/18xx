@@ -10,7 +10,7 @@ module Engine
   module Round
     class Stock < Base
       def select_entities
-        @game.players
+        @game.players.reject(&:bankrupt)
       end
 
       def name

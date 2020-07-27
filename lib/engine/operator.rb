@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require_relative 'entity'
+
 module Engine
   module Operator
+    include Entity
+
     attr_accessor :rusted_self
     attr_reader :color, :coordinates, :city, :logo, :operating_history, :text_color, :tokens, :trains
 
