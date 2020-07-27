@@ -125,7 +125,7 @@ module View
             h('th.nowrap.no_padding', render_sort_link('Order', :order)),
             h(:th, 'Trains'),
             h(:th, 'Tokens'),
-            h('th.no_padding', 'Privates'),
+            h('th.no_padding', 'Companies'),
             h(:th, ''),
             *or_history_titles,
           ]),
@@ -257,7 +257,7 @@ module View
 
       def render_player_companies
         h(:tr, [
-          h('th.left.top.no_padding', 'Privates'),
+          h('th.left.top.no_padding', 'Companies'),
           *@game.players.map { |p| render_companies(p) },
         ])
       end
