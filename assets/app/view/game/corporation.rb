@@ -248,7 +248,7 @@ module View
 
         shares_props = {
           style: {
-            paddingRight: '1.5rem',
+            paddingRight: '1.3rem',
           },
         }
 
@@ -258,7 +258,7 @@ module View
           .map do |player, president, num_shares, did_sell, at_limit|
             flags = (president ? '*' : '') + (at_limit ? 'L' : '')
             h('tr.player', [
-              h("td.name.nowrap.#{president ? 'president' : ''}", player.name),
+              h("td.left.name.nowrap.#{president ? 'president' : ''}", player.name),
               h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{num_shares}"),
               did_sell ? h('td.italic', 'Sold') : '',
             ])
@@ -266,9 +266,9 @@ module View
 
         pool_rows = [
           h('tr.ipo', [
-            h('td.name', @game.class::IPO_NAME),
+            h('td.left', @game.class::IPO_NAME),
             h('td.right', shares_props, share_number_str(@corporation.num_ipo_shares)),
-            h('td.right', share_price_str(@corporation.par_price)),
+            h('td.padded_number', share_price_str(@corporation.par_price)),
           ]),
         ]
 
@@ -291,11 +291,11 @@ module View
           flags = (@corporation.receivership? ? '*' : '') + (at_limit ? 'L' : '')
 
           pool_rows << h('tr.market', market_tr_props, [
-            h('td.name', 'Market'),
+            h('td.left', 'Market'),
             h('td.right', shares_props,
               flags + ' ' +
               share_number_str(@corporation.num_market_shares)),
-            h('td.right', share_price_str(@corporation.share_price)),
+            h('td.padded_number', share_price_str(@corporation.share_price)),
           ])
         end
 

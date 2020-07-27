@@ -134,6 +134,10 @@ nav#game_menu {
 .right {
   text-align: right;
 }
+.top {
+  vertical-align: top;
+}
+
 .italic {
   font-style: italic;
 }
@@ -228,6 +232,10 @@ nav#game_menu {
 .no_padding {
   padding: 0;
 }
+.padded_number {
+  text-align: right;
+  padding-right: 0.5em;
+}
 
 text.number {
   font-size: 21px;
@@ -309,8 +317,7 @@ text.number {
 }
 
 .name {
-  text-align: left;
-  max-width: 9rem;
+  max-width: 7rem;
 }
 
 .corp div, .player div {

@@ -44,7 +44,7 @@ module View
             render_player_value,
             render_player_liquidity,
             render_player_certs,
-            render_player_privates,
+            render_player_companies,
           ]),
         ])
         # TODO: consider adding OR information (could do both corporation OR revenue and player change in value)
@@ -207,16 +207,16 @@ module View
             },
         }
 
-        props = { style: {} }
+        tr_props = { style: {} }
         market_props = { style: {} }
-
         if !corporation.floated?
-          props[:style][:opacity] = '0.6'
+          tr_props[:style][:opacity] = '0.6'
         elsif !corporation.counts_for_limit && (color = StockMarket::COLOR_MAP[corporation.share_price.color])
           market_props[:style][:backgroundColor] = color
           market_props[:style][:color] = contrast_on(color)
         end
 
+        order_props = { style: { paddingLeft: '1.2em' } }
         operating_order_text = ''
         if operating_order.positive?
           operating_order_text = operating_order.to_s
@@ -225,22 +225,23 @@ module View
           end
         end
 
-        h(:tr, props, [
+        h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
           *@game.players.map do |p|
-            sold_props = { style: {} }
+            sold_props = { style: { paddingLeft: '2rem' } }
             if @game.round.active_step&.did_sell?(corporation, p)
               sold_props[:style][:backgroundColor] = '#9e0000'
               sold_props[:style][:color] = 'white'
             end
-            h(:td, sold_props, p.num_shares_of(corporation).to_s + (corporation.president?(p) ? '*' : ''))
+            h('td.left', sold_props, p.num_shares_of(corporation).to_s + (corporation.president?(p) ? '*' : ''))
           end,
           h(:td, corporation.num_shares_of(corporation)),
           h(:td, @game.share_pool.num_shares_of(corporation).to_s + (corporation.receivership? ? '*' : '')),
-          h(:td, corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
-          h(:td, market_props, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
-          h(:td, @game.format_currency(corporation.cash)),
-          h(:td, operating_order_text),
+          h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
+          h('td.padded_number', market_props,
+            corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
+          h('td.right', @game.format_currency(corporation.cash)),
+          h('td.left', order_props, operating_order_text),
           h('td.nowrap', corporation.trains.map(&:name).join(', ')),
           h(:td, "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
           render_companies(corporation),
@@ -250,12 +251,12 @@ module View
       end
 
       def render_companies(entity)
-        h('td.nowrap', entity.companies.map(&:sym).join(', '))
+        h('td.top.name', entity.companies.map(&:sym).join(', '))
       end
 
-      def render_player_privates
+      def render_player_companies
         h(:tr, [
-          h('th.no_padding', 'Privates'),
+          h('th.top.no_padding', 'Privates'),
           *@game.players.map { |p| render_companies(p) },
         ])
       end
@@ -263,21 +264,21 @@ module View
       def render_player_cash
         h(:tr, [
           h(:th, 'Cash'),
-          *@game.players.map { |p| h(:td, @game.format_currency(p.cash)) },
+          *@game.players.map { |p| h('td.padded_number', @game.format_currency(p.cash)) },
         ])
       end
 
       def render_player_value
         h(:tr, [
           h(:th, 'Value'),
-          *@game.players.map { |p| h(:td, @game.format_currency(p.value)) },
+          *@game.players.map { |p| h('td.padded_number', @game.format_currency(p.value)) },
         ])
       end
 
       def render_player_liquidity
         h(:tr, [
-          h(:th, 'Liquidity'),
-          *@game.players.map { |p| h(:td, @game.format_currency(@game.liquidity(p))) },
+          h('th.no_padding', 'Liquidity'),
+          *@game.players.map { |p| h('td.padded_number', @game.format_currency(@game.liquidity(p))) },
         ])
       end
 
@@ -285,8 +286,8 @@ module View
         cert_limit = @game.cert_limit
         props = { style: { color: 'red' } }
         h(:tr, [
-          h(:th, "Certs/#{cert_limit}"),
-          *@game.players.map { |p| h(:td, p.num_certs > cert_limit ? props : '', p.num_certs) },
+          h('th.no_padding', "Certs/#{cert_limit}"),
+          *@game.players.map { |p| h('td.padded_number', p.num_certs > cert_limit ? props : '', p.num_certs) },
         ])
       end
     end
