@@ -269,6 +269,12 @@ module Engine
         Round::G1846::Draft.new(self, [Step::G1846::DraftDistribution])
       end
 
+      def priority_deal_player
+        return @players.first if @round.is_a?(Round::G1846::Draft)
+
+        super
+      end
+
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
