@@ -43,6 +43,7 @@ module View
             render_player_cash,
             render_player_value,
             render_player_liquidity,
+            render_player_shares,
             render_player_certs,
             render_player_companies,
           ]),
@@ -279,6 +280,13 @@ module View
         h(:tr, [
           h('th.left.no_padding', 'Liquidity'),
           *@game.players.map { |p| h('td.padded_number', @game.format_currency(@game.liquidity(p))) },
+        ])
+      end
+
+      def render_player_shares
+        h(:tr, [
+          h('th.left.no_padding', 'Shares'),
+          *@game.players.map { |p| h('td.padded_number', @game.corporations.sum { |c| p.num_shares_of(c) }) },
         ])
       end
 
