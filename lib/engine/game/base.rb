@@ -36,6 +36,7 @@ module Engine
                   :round_history
       attr_accessor :bankruptcies
 
+      DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
 
       GAME_LOCATION = nil
@@ -171,6 +172,10 @@ module Engine
 
       def self.title
         name.split('::').last.slice(1..-1)
+      end
+
+      def self.<=>(other)
+        [DEV_STAGES.index(self::DEV_STAGE), title] <=> [DEV_STAGES.index(other::DEV_STAGE), other.title]
       end
 
       def self.register_colors(colors)
