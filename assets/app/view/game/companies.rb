@@ -18,7 +18,7 @@ module View
           style: {
             padding: '0 0.5rem',
             grid: @owner.player? ? 'auto / 4fr 1fr 1fr' : 'auto / 5fr 1fr',
-            gap: '0 0.2rem',
+            gap: '0 0.3rem',
           },
         }
 

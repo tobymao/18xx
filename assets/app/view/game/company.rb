@@ -127,12 +127,6 @@ module View
           on: { click: ->(event) { toggle_desc(event, company) } },
         }
 
-        income_props = {
-          style: {
-            paddingRight: '0.3rem',
-          },
-        }
-
         hidden_props = {
           style: {
             display: 'none',
@@ -146,8 +140,8 @@ module View
         @hidden_divs[company.sym] = h('div#hidden', hidden_props, company.desc)
 
         [h('div.nowrap', name_props, company.name),
-         @company.owner.player? ? h('div.right', income_props, @game.format_currency(company.value)) : '',
-         h('div.right', income_props, @game.format_currency(company.revenue)),
+         @company.owner.player? ? h('div.right', @game.format_currency(company.value)) : '',
+         h('div.padded_number', @game.format_currency(company.revenue)),
          @hidden_divs[company.sym]]
       end
     end
