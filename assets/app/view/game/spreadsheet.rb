@@ -91,6 +91,14 @@ module View
       def render_title
         or_history_titles = render_history_titles(@game.corporations)
 
+        p_props = {
+          style: {
+            background: 'salmon',
+            color: 'black',
+            borderRadius: '3px',
+          },
+        }
+
         [
           h(:tr, [
             h(:th, ''),
@@ -104,7 +112,7 @@ module View
           ]),
           h(:tr, [
             render_sort_link('SYM', 'ID'),
-            *@game.players.map { |p| h('th.name.nowrap', p.name) },
+            *@game.players.map { |p| h('th.name.nowrap', p == @game.priority_deal_player ? p_props : '', p.name) },
             h(:th, @game.class::IPO_NAME),
             h(:th, 'Market'),
             h(:th, @game.class::IPO_NAME),
