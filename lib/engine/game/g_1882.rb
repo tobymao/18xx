@@ -170,6 +170,12 @@ module Engine
           tiles << old_tile
         end
 
+        # Temporary workaround, remove the routes from the last OR
+        # The tiles may be destroyed and connect to other hexes causing problems
+        @corporations.each do |c|
+          c.operating_history[c.operating_history.keys.max]&.routes&.clear if c.operating_history.any?
+        end
+
         # Some companies might no longer have valid routes
         @graph.clear_graph_for_all
       end
