@@ -326,7 +326,7 @@ module View
       end
 
       def render_operating_order
-        return [] unless @game.round.current_entity.operator?
+        return [] unless @game.round.current_entity&.operator?
 
         round = @game.round
         if (n = @game.round.entities.find_index(@corporation))
