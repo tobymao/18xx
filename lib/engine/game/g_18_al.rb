@@ -38,6 +38,7 @@ module Engine
           Step::DiscardTrain,
           Step::BuyCompany,
           Step::HomeToken,
+          Step::SpecialTrack,
           Step::G18AL::Track,
           Step::G18AL::Token,
           Step::Route,
