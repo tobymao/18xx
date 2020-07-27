@@ -44,8 +44,8 @@ module View
             render_player_value,
             render_player_liquidity,
             render_player_shares,
-            render_player_certs,
             render_player_companies,
+            render_player_certs,
           ]),
         ])
         # TODO: consider adding OR information (could do both corporation OR revenue and player change in value)
