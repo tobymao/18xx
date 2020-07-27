@@ -358,7 +358,7 @@ module Engine
       end
 
       def active_players
-        @round.active_entities.map(&:owner)
+        @round.active_entities.map(&:player)
       end
 
       def active_step
