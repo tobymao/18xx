@@ -8,8 +8,8 @@ module Engine
     module Tokener
       def can_place_token?(entity)
         current_entity == entity &&
-          (token = entity.next_token) &&
-          min_token_price(token) <= entity.cash &&
+          (tokens = available_tokens).any? &&
+          min_token_price(tokens) <= entity.cash &&
           @game.graph.can_token?(entity)
       end
 
@@ -50,10 +50,11 @@ module Engine
         @game.graph.clear
       end
 
-      def min_token_price(token)
+      def min_token_price(tokens)
+        token = tokens.first
         return 0 if @round.teleported?(token.corporation)
 
-        prices = [token.price]
+        prices = tokens.map(&:price)
 
         token.corporation.abilities(:token) do |ability, _|
           prices << ability.price
