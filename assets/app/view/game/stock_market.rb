@@ -112,22 +112,18 @@ module View
 
             line_props = {
               style: {
-                'margin-top': '1rem',
+                display: 'grid',
+                grid: '1fr / auto 1fr',
+                gap: '0.5rem',
+                alignItems: 'center',
+                marginTop: '1rem',
               },
             }
-            text_style = {
-              position: 'relative',
-              display: 'inline-block',
-              padding: "#{PAD}px",
-              height: "#{HEIGHT_TOTAL - 2 * PAD}px",
-              margin: '0',
-              'line-height': "#{HEIGHT_TOTAL - 2 * PAD}px",
-              'vertical-align': 'middle',
-            }
+
             children << h(:div, line_props, [
-            h(:div, { style: style }, []),
-            h(:div, { style: text_style }, text),
-])
+              h(:div, { style: style }, []),
+              h(:div, text),
+            ])
           end
         end
 
