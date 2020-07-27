@@ -41,9 +41,10 @@ module View
           ]),
           h(:tbody, [
             render_player_cash,
-            render_player_privates,
             render_player_value,
+            render_player_liquidity,
             render_player_certs,
+            render_player_privates,
           ]),
         ])
         # TODO: consider adding OR information (could do both corporation OR revenue and player change in value)
@@ -265,6 +266,13 @@ module View
         h(:tr, [
           h(:th, 'Value'),
           *@game.players.map { |p| h(:td, @game.format_currency(p.value)) },
+        ])
+      end
+
+      def render_player_liquidity
+        h(:tr, [
+          h(:th, 'Liquidity'),
+          *@game.players.map { |p| h(:td, @game.format_currency(@game.liquidity(p))) },
         ])
       end
 
