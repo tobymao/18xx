@@ -115,6 +115,15 @@ module Engine
         'scottredracecar' => 5021,
       },
     },
+    GAMES_BY_TITLE['1882'] => {
+      # This is a partial game and will get replaced as soon as it gets more stable
+      4932 => {
+        'AndrewBucholtz' => 1433,
+        'Jac' => 1232,
+        'MontyBrewster71' => 1040,
+        'Mkjanssen' => 646,
+      },
+    },
   }.freeze
 
   TEST_CASES.each do |game, results|

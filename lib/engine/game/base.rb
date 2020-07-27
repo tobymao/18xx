@@ -598,13 +598,13 @@ module Engine
 
       def place_home_token(corporation)
         return unless corporation.next_token # 1882
+        # If a corp has laid it's first token assume it's their home token
+        return if corporation.tokens.first&.used
 
         hex = hex_by_id(corporation.coordinates)
 
         tile = hex&.tile
         if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
-          # If a corp doesn't have an allocated tile, and the first token is used they have a home token.
-          return if corporation.tokens.first&.used && !tile
 
           # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
           # otherwise the entity must choose now.

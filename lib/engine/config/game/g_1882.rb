@@ -367,7 +367,7 @@ module Engine
       "tokens": [
         0,
         40,
-        40
+        100
       ],
       "coordinates": "D8",
       "color": "green"
@@ -379,7 +379,7 @@ module Engine
       "tokens": [
         0,
         40,
-        40
+        100
       ],
       "coordinates": "G11",
       "color": "gold",
@@ -392,8 +392,8 @@ module Engine
       "tokens": [
         0,
         40,
-        40,
-        40
+        100,
+        100
       ],
       "coordinates": "I5",
       "color": "red"
@@ -405,7 +405,7 @@ module Engine
       "tokens": [
         0,
         40,
-        40
+        100
       ],
       "coordinates": "L8",
       "color": "black"

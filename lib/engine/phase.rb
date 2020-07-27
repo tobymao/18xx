@@ -63,6 +63,7 @@ module Engine
         end
 
         company.abilities(:close, @name) do
+          @log << "Company #{company.name} closes"
           company.close!
         end
       end

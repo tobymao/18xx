@@ -10,9 +10,10 @@ module Engine
       class Track < Track
         include NwrTrackBonus
 
-        def lay_tile(action, extra_cost = 0)
+        def lay_tile(action, extra_cost: 0, entity: nil)
+          entity ||= action.entity
           super
-          gain_nwr_bonus(action.tile, action.entity)
+          gain_nwr_bonus(action.tile, entity)
         end
       end
     end
