@@ -15,6 +15,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>The email provider has been changed. Please check your spam and whitelist any emails from us.</p>
         <p>Using abilities has now changed and hopefully is more intuitive.</p>
         <p>1836Jr30 has finished beta and is now in production.</p>
         <p>1882 is now available for alpha.</p>

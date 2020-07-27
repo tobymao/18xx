@@ -4,7 +4,6 @@ source 'https://rubygems.org'
 
 gem 'argon2'
 gem 'c_lexer'
-gem 'mailjet'
 gem 'message_bus'
 gem 'mini_racer'
 gem 'opal'
