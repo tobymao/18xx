@@ -256,28 +256,28 @@ module View
 
       def render_player_companies
         h(:tr, [
-          h('th.top.no_padding', 'Privates'),
+          h('th.left.top.no_padding', 'Privates'),
           *@game.players.map { |p| render_companies(p) },
         ])
       end
 
       def render_player_cash
         h(:tr, [
-          h(:th, 'Cash'),
+          h('th.left.no_padding', 'Cash'),
           *@game.players.map { |p| h('td.padded_number', @game.format_currency(p.cash)) },
         ])
       end
 
       def render_player_value
         h(:tr, [
-          h(:th, 'Value'),
+          h('th.left.no_padding', 'Value'),
           *@game.players.map { |p| h('td.padded_number', @game.format_currency(p.value)) },
         ])
       end
 
       def render_player_liquidity
         h(:tr, [
-          h('th.no_padding', 'Liquidity'),
+          h('th.left.no_padding', 'Liquidity'),
           *@game.players.map { |p| h('td.padded_number', @game.format_currency(@game.liquidity(p))) },
         ])
       end
@@ -286,7 +286,7 @@ module View
         cert_limit = @game.cert_limit
         props = { style: { color: 'red' } }
         h(:tr, [
-          h('th.no_padding', "Certs/#{cert_limit}"),
+          h('th.left.no_padding', "Certs/#{cert_limit}"),
           *@game.players.map { |p| h('td.padded_number', p.num_certs > cert_limit ? props : '', p.num_certs) },
         ])
       end
