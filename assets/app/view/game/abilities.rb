@@ -13,12 +13,16 @@ module View
         return h(:div) if companies.empty? || @game.round.current_entity.company?
 
         op_round = @game.round.is_a?(Engine::Round::Operating)
-
         current, others = companies.partition { |company| @game.current_entity.owner == company.owner.owner }
 
-        props = { style: { marginRight: '1rem' } }
+        props = {
+          style: {
+            margin: '0 1rem 0 0',
+            display: op_round && current.any? ? '' : 'inline-block',
+          },
+        }
         children = [
-          h('h3.inline', props, 'Abilities'),
+          h(:h3, props, 'Abilities'),
           *render_companies(current, op_round),
         ]
 
@@ -31,7 +35,10 @@ module View
           end
 
           props = {
-            style: { margin: '0.5rem 0.5rem 0 0' },
+            style: {
+              margin: '0.5rem 0.5rem 0 0',
+              width: '7.3rem',
+            },
             on: { click: toggle_show },
           }
           children << h('button.button', props, @show_other_abilities ? 'Hide Others' : 'Show Others')
@@ -52,7 +59,7 @@ module View
           },
         }
 
-        h(:div, [h(:div, props, @selected_company.desc), *render_actions])
+        h(:div, props, [h(:div, @selected_company.desc), *render_actions])
       end
 
       def render_companies(companies, op_round)
@@ -64,7 +71,7 @@ module View
             style: {
               cursor: 'pointer',
               display: 'inline-block',
-              padding: '0.5rem 1rem 0 0',
+              padding: '0.3rem 1rem 0 0',
             },
           }
           props[:style][:textDecoration] = 'underline' if @selected_company == company
