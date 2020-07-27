@@ -33,13 +33,13 @@ module Engine
         raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && !tile_lay[:upgrade]
         raise GameError, 'Cannot lay an yellow now' if tile.color == :yellow && !tile_lay[:lay]
 
-        lay_tile(action, tile_lay[:cost])
+        lay_tile(action, extra_cost: tile_lay[:cost])
         @upgraded = true if action.tile.color != :yellow
         @laid_track += 1
       end
 
-      def lay_tile(action, extra_cost = 0)
-        entity = action.entity
+      def lay_tile(action, extra_cost: 0, entity: nil)
+        entity ||= action.entity
         tile = action.tile
         hex = action.hex
         rotation = action.rotation

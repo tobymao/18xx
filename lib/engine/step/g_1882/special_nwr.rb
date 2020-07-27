@@ -101,15 +101,10 @@ module Engine
         end
 
         def process_lay_tile(action)
-          lay_tile(action)
+          lay_tile(action, entity: action.entity.owner)
           gain_nwr_bonus(action.tile, action.entity.owner)
           ability(action.entity).use!
           @state = nil
-
-          # Clean up pending tokens to be done by the corp rather than the company
-          @round.pending_tokens.each do |pending|
-            pending[:entity] = action.entity.owner if pending[:entity] == action.entity
-          end
         end
 
         # Can't lay neutral tokens, so just provide the next one.
