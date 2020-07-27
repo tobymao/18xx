@@ -39,6 +39,7 @@ module Engine
           Step::DiscardTrain,
           Step::BuyCompany,
           Step::HomeToken,
+          Step::SpecialTrack,
           Step::Track,
           Step::Token,
           Step::Route,
