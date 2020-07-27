@@ -112,14 +112,16 @@ module View
             h(:th, { attrs: { colspan: or_history_titles.size } }, 'OR History'),
           ]),
           h(:tr, [
-            render_sort_link('SYM', 'ID'),
-            *@game.players.map { |p| h('th.name.nowrap', p == @game.priority_deal_player ? p_props : '', p.name) },
+            h(:th, render_sort_link('SYM', :id)),
+            *@game.players.map do |p|
+              h('th.name.nowrap', p == @game.priority_deal_player ? p_props : '', render_sort_link(p.name, p.id))
+            end,
             h(:th, @game.class::IPO_NAME),
             h(:th, 'Market'),
             h(:th, @game.class::IPO_NAME),
-            render_sort_link('Market', 'SHARE_PRICE', style: { padding: '0' }),
-            render_sort_link('Cash', 'CASH'),
-            render_sort_link('Order', 'OPERATING_ORDER', style: { padding: '0' }),
+            h('th.nowrap.no_padding', render_sort_link('Market', :share_price)),
+            h('th.nowrap', render_sort_link('Cash', :cash)),
+            h('th.nowrap.no_padding', render_sort_link('Order', :order)),
             h(:th, 'Trains'),
             h(:th, 'Tokens'),
             h('th.no_padding', 'Privates'),
@@ -129,19 +131,20 @@ module View
         ]
       end
 
-      def render_sort_link(title, sort_by, props = {})
-        h('th.nowrap', { attrs: { title: 'Sort' } }.merge(props), [
+      def render_sort_link(text, sort_by)
+        [
           h(
             Link,
             href: '',
+            title: 'Sort',
             click: lambda {
               mark_sort_column(sort_by)
               toggle_sort_order
             },
-            children: title
+            children: text,
           ),
           h(:span, @spreadsheet_sort_by == sort_by ? sort_order_icon : ''),
-        ])
+        ]
       end
 
       def sort_order_icon
@@ -178,14 +181,16 @@ module View
 
         result.sort_by! do |operating_order, corporation|
           case @spreadsheet_sort_by
-          when 'OPERATING_ORDER'
+          when :order
             operating_order
-          when 'CASH'
+          when :cash
             corporation.cash
-          when 'SHARE_PRICE'
+          when :share_price
             corporation.share_price&.price || 0
-          else
+          when :id
             corporation.id
+          else
+            @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
           end
         end
 
