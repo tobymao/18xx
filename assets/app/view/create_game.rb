@@ -50,7 +50,7 @@ module View
       @min_p = {}
       @max_p = {}
 
-      games = (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).map do |game|
+      games = (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).sort.map do |game|
         @min_p[game.title], @max_p[game.title] = Engine.player_range(game)
 
         title = game.title
