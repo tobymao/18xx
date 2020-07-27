@@ -42,7 +42,7 @@ module View
           h(:tbody, [
             render_player_cash,
             render_player_privates,
-            render_player_worth,
+            render_player_value,
             render_player_certs,
           ]),
         ])
@@ -261,17 +261,19 @@ module View
         ])
       end
 
-      def render_player_worth
+      def render_player_value
         h(:tr, [
-          h(:th, 'Worth'),
+          h(:th, 'Value'),
           *@game.players.map { |p| h(:td, @game.format_currency(p.value)) },
         ])
       end
 
       def render_player_certs
+        cert_limit = @game.cert_limit
+        props = { style: { color: 'red' } }
         h(:tr, [
-          h(:th, 'Certs'),
-          *@game.players.map { |p| h(:td, p.num_certs) },
+          h(:th, "Certs/#{cert_limit}"),
+          *@game.players.map { |p| h(:td, p.num_certs > cert_limit ? props : '', p.num_certs) },
         ])
       end
     end
