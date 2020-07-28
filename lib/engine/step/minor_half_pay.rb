@@ -12,7 +12,7 @@ module Engine
       def skip!
         return super if current_entity.corporation?
 
-        revenue = routes.sum(&:revenue)
+        revenue = @game.routes_revenue(routes)
         process_dividend(Action::Dividend.new(
           current_entity,
           kind: revenue.positive? ? 'payout' : 'withhold',

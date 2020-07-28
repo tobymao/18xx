@@ -568,6 +568,10 @@ module Engine
         route.stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
       end
 
+      def routes_revenue(routes)
+        routes.sum(&:revenue)
+      end
+
       def get(type, id)
         send("#{type}_by_id", id)
       end
