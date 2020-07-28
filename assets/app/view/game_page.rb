@@ -228,17 +228,12 @@ module View
 
       entity = @round.active_step.current_entity
       current_actions = @round.actions_for(entity) || []
-      if current_actions.include?('discard_train')
-        return h(:div, [h(Game::UndoAndPass, pass: false), h(Game::DiscardTrains)])
-      end
+      return h(Game::DiscardTrains) if current_actions.include?('discard_train')
 
       case @round
       when Engine::Round::Stock
         if (%w[place_token lay_tile] & current_actions).any?
-          h(:div, [
-            h(Game::UndoAndPass, pass: false),
-            h(Game::Map, game: @game),
-          ])
+          h(Game::Map, game: @game)
         else
           h(Game::Round::Stock, game: @game)
         end
@@ -260,6 +255,7 @@ module View
         h(Game::HistoryControls, num_actions: @num_actions),
         h(Game::EntityOrder, round: @round),
         h(Game::Abilities, user: @user, game: @game),
+        h(Game::UndoAndPass),
         render_action,
       ])
     end

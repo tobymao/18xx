@@ -28,7 +28,7 @@ module View
             store(:last_player, @current_entity, skip: true)
           end
 
-          children = [h(UndoAndPass, pass: @current_actions.include?('pass'))]
+          children = []
           if @step.respond_to?(:must_sell?) && @step.must_sell?(@current_entity)
             children << if @current_entity.num_certs > @game.cert_limit
                           h('div.margined', 'Must sell stock: above certificate limit')

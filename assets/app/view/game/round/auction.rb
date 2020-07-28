@@ -21,7 +21,6 @@ module View
           @current_actions = @step.current_actions
 
           h(:div, [
-            h(UndoAndPass, pass: @current_actions.include?('pass')),
             *render_company_pending_par,
             *render_companies,
             h(Players, game: @game),
