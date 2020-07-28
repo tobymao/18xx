@@ -74,7 +74,7 @@ module View
         style: {
           position: 'relative',
           padding: '0.3em 0.1rem 0 0.5rem',
-          'background-color': color,
+          backgroundColor: color,
         },
       }
 
@@ -82,7 +82,7 @@ module View
         style: {
           color: 'black',
           display: 'inline-block',
-          'max-width': '13rem',
+          maxWidth: '13rem',
         },
       }
       owner_props = { attrs: { title: @gdata['user']['name'].to_s } }
@@ -101,8 +101,8 @@ module View
         style: {
           top: '1rem',
           float: 'right',
-          'border-radius': '5px',
-          'margin': '0 0.3rem',
+          borderRadius: '5px',
+          margin: '0 0.3rem',
           padding: '0.2rem 0.5rem',
         },
         on: {
@@ -122,8 +122,8 @@ module View
         style: {
           top: '1rem',
           float: 'right',
-          'border-radius': '5px',
-          'margin': '0 0.3rem',
+          borderRadius: '5px',
+          margin: '0 0.3rem',
           padding: '0.2rem 0.5rem',
         },
         class: '.button-link'
@@ -137,7 +137,7 @@ module View
     def render_body
       props = {
         style: {
-          'line-height': '1.2rem',
+          lineHeight: '1.2rem',
           padding: '0.3rem 0.5rem',
         },
       }

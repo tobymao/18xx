@@ -110,13 +110,13 @@ module View
           event_text = []
           trains.each.with_index do |train2, index|
             train2.events.each do |event|
-              name = event['type']
-              name = "#{@game.class::EVENTS_TEXT[name][0]}*" if @game.class::EVENTS_TEXT[name]
+              event_name = event['type']
+              event_name = "#{@game.class::EVENTS_TEXT[event_name][0]}*" if @game.class::EVENTS_TEXT[event_name]
 
               event_text << if index.zero?
-                              name
+                              event_name
                             else
-                              "#{name}(on #{ordinal(index + 1)} train)"
+                              "#{event_name}(on #{ordinal(index + 1)} train)"
                             end
             end
           end

@@ -14,7 +14,7 @@ module View
         companies = @game.companies.select { |company| !company.closed? && actions_for(company).any? }
         return h(:div) if companies.empty? || @game.round.current_entity.company?
 
-        current, others = companies.partition { |company| @game.current_entity.owner == company.owner.owner }
+        current, others = companies.partition { |company| @game.current_entity.player == company.player }
 
         children = [
           h('div.inline.margined.bold', 'Abilities:'),

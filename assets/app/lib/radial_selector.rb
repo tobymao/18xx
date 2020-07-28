@@ -22,7 +22,7 @@ module Lib
         width: "#{size}px",
         height: "#{size}px",
         filter: 'drop-shadow(5px 5px 2px #888)',
-        'pointer-events' => 'auto',
+        pointerEvents: 'auto',
       }
     end
 

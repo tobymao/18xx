@@ -58,8 +58,8 @@ module View
           children: text,
           style: {
             color: 'currentColor',
-            'margin-right': '2rem',
-            'text-decoration': 'none',
+            marginRight: '2rem',
+            textDecoration: 'none',
           },
         )
       end

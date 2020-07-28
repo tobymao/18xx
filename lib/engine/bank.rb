@@ -23,6 +23,10 @@ module Engine
       @broken
     end
 
+    def player
+      nil
+    end
+
     def name
       'The Bank'
     end

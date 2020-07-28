@@ -10,7 +10,7 @@ module View
       def render
         h(:circle,
           on: { click: @click },
-          style: { cursor: 'pointer', 'pointer-events': 'all' },
+          style: { cursor: 'pointer', pointerEvents: 'all' },
           attrs: {
             stroke: 'none',
             transform: @transform,

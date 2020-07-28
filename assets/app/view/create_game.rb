@@ -58,8 +58,6 @@ module View
         title += " (#{game::DEV_STAGE})" if game::DEV_STAGE != :production
         attrs = { value: game.title }
 
-        attrs[:selected] = 'selected' if game.title == '1889'
-
         h(:option, { attrs: attrs }, title)
       end
 
