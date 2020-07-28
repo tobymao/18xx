@@ -31,7 +31,7 @@ module Engine
       def process_dividend(action)
         entity = action.entity
         revenue = routes.sum(&:revenue)
-        rust_obsolete_trains!(routes)
+        rust_obsolete_trains!(entity)
 
         entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
           routes,
@@ -98,16 +98,8 @@ module Engine
         @round.routes
       end
 
-      def rust_obsolete_trains!(routes)
-        rusted_trains = []
-
-        routes.each do |route|
-          train = route.train
-          next unless train.obsolete
-
-          rusted_trains << train.name
-          train.rust!
-        end
+      def rust_obsolete_trains!(entity)
+        (rusted_trains = entity.trains.select(&:obsolete)).each(&:rust!)
 
         @log << '-- Event: Obsolete trains rust --' if rusted_trains.any?
       end
