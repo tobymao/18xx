@@ -38,7 +38,6 @@ module View
 
         h(:div, [
           h(:div, { style: { marginBottom: '1rem', fontWeight: 'bold' } }, 'Discard Trains'),
-          h(UndoAndPass, pass: false),
           *overflow,
         ])
       end
