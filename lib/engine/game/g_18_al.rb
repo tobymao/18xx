@@ -17,6 +17,8 @@ module Engine
       GAME_DESIGNER = 'Mark Derrick'
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Coal Field token removed']).freeze
+
       include CompanyPrice50To150Percent
       include Revenue4D
       include TerminusCheck
@@ -35,6 +37,7 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
+          Step::G18AL::Assign,
           Step::BuyCompany,
           Step::HomeToken,
           Step::SpecialTrack,
@@ -51,7 +54,22 @@ module Engine
         # Mobile and Nashville should not be possible to pass through
         ensure_termini_not_passed_through(route, %w[A4 Q2])
 
-        adjust_revenue_for_4d_train(route, super)
+        revenue = adjust_revenue_for_4d_train(route, super)
+
+        route.corporation.abilities(:hexes_bonus) do |ability|
+          revenue += route.stops.sum { |stop| ability.hexes.include?(stop.hex.id) ? ability.amount : 0 }
+        end
+
+        revenue
+      end
+
+      def event_remove_tokens!
+        @corporations.each do |corporation|
+          corporation.abilities(:hexes_bonus) do |a|
+            @log << "#{corporation.name} removes: #{a.description}"
+            corporation.remove_ability(a)
+          end
+        end
       end
 
       def get_location_name(hex_name)

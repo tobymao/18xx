@@ -202,7 +202,21 @@ module Engine
          "name":"South & North Alabama Railroad",
          "value":40,
          "revenue":10,
-         "desc":"Comes with a Warrior Coal Field token. The owning corporation may place it in Gadsden Anniston Oxmoor Birmingham or Tuscaloosa provided that the corporation owns a train that can reach that city on existing track. Placing the token does NOT close the S&NA. The token makes that city worth an extra $10 (when run to) for that corporation only. The token remains on the board until the first 6 Train is purchased."
+         "desc":"Comes with a Warrior Coal Field token. The owning corporation may place it in one of the city hexes with a mining symbol (Gadsden, Anniston, Oxmoor, Birmingham, or Tuscaloosa) provided that the corporation owns a train that can reach that city on existing track. Placing the token does NOT close the S&NA. The token makes that city worth an extra $10 (when run to) for that corporation only. The token remains on the board until the first 6 Train is purchased.",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "hexes": [
+                 "H3",
+                 "G4",
+                 "H5",
+                 "G6",
+                 "E6"
+               ],
+               "count": 1,
+               "owner_type": "corporation"
+            }
+         ]
       },
       {
          "sym":"BLC",
@@ -490,7 +504,10 @@ module Engine
             }
          ],
          "price":630,
-         "num":1
+         "num":1,
+         "events": [
+            {"type": "remove_tokens"}
+         ]
       },
       {
          "name":"7",
