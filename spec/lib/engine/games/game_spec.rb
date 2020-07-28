@@ -112,16 +112,6 @@ module Engine
       },
     },
     GAMES_BY_TITLE['1882'] => {
-      5019 => {
-        'Aolivei8' => 7493,
-        'bstover' => 6785,
-        'Akado' => 5707,
-      },
-      5008 => {
-        'Jen Freeman' => 1400,
-        'LenaC' => 1206,
-        'rgordona' => 460,
-      },
     },
   }.freeze
 

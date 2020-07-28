@@ -444,20 +444,20 @@ module Engine
       "distance": 3,
       "price": 180,
       "rusts_on": "6",
-      "num": 6
+      "num": 5
     },
     {
       "name": "4",
       "distance": 4,
       "price": 300,
       "rusts_on": "D",
-      "num": 5
+      "num": 4
     },
     {
       "name": "5",
       "distance": 5,
       "price": 450,
-      "num": 4,
+      "num": 3,
       "events": [
         {"type": "close_companies"}
       ]
@@ -472,7 +472,7 @@ module Engine
       "name": "D",
       "distance": 999,
       "price": 1100,
-      "num": 9,
+      "num": 20,
       "available_on": "6",
       "discount": {
         "4": 300,
