@@ -6,7 +6,6 @@ module Engine
   module Step
     module G18Chesapeake
       class SpecialTrack < SpecialTrack
-
         ACTIONS = %w[lay_tile].freeze
 
         def actions(entity)
