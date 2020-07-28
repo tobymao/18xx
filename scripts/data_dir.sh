@@ -11,7 +11,15 @@
 # - postgres requires the data dir to be empty when it initializes, so if a file
 #   like ./db/data/.keep is checked into the repo, it will error out instead of
 #   initializing properly
+# 
+# - if this script is run under one-shot sudo, $USER will be 'root', so 
+#   if user $SUDO_USER exists, use that instead
 
 mkdir -p db/data
 
-[ $(ls -l db/ | grep data | awk '{print $3}' | head -1) = 'root' ] && sudo chown -R $USER:$USER db/data || true
+usr="$SUDO_USER"
+if [ -z "$usr" ]; then
+  usr="$USER"
+fi 
+
+[ $(ls -l db/ | grep data | awk '{print $3}' | head -1) = 'root' ] && sudo chown -R $usr:$usr db/data || true
