@@ -18,7 +18,7 @@ module View
             left: '-26px',
             top: '-50px',
             color: 'black',
-            'font-size': '35px',
+            fontSize: '35px',
           },
           on: { click: -> { lay_tile } },
         }
@@ -31,7 +31,7 @@ module View
             left: '6px',
             top: '-50px',
             color: 'black',
-            'font-size': '35px',
+            fontSize: '35px',
           },
           on: { click: -> { store(:tile_selector, nil) } },
         }

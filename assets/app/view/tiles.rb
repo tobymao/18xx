@@ -44,7 +44,7 @@ module View
         hex.y = 0
 
         h('div.tile__block', props, [
-            h(:div, { style: { 'text-align': 'center', 'font-size': '12px' } }, text),
+            h(:div, { style: { textAlign: 'center', fontSize: '12px' } }, text),
             h(:svg, { style: { width: '100%', height: '100%' } }, [
               h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
                 h(

@@ -66,7 +66,7 @@ module View
           destroy: destroy,
         },
         style: {
-          'vertical-align': 'top',
+          verticalAlign: 'top',
         },
       }
 

@@ -12,9 +12,9 @@ module View
             style: {
               display: 'inline-block',
               height: '1.5rem',
-              'vertical-align': 'top',
-              'margin-right': '1rem',
-              'white-space': 'nowrap',
+              verticalAlign: 'top',
+              marginRight: '1rem',
+              whiteSpace: 'nowrap',
             },
           }
 
@@ -33,13 +33,13 @@ module View
           style = entity_props[:style]
 
           if @round.can_act?(entity)
-            style['text-decoration'] = 'underline'
-            style['font-weight'] = 'bold'
+            style[:textDecoration] = 'underline'
+            style[:fontWeight] = 'bold'
           end
 
           if index.positive?
-            style['border-left'] = 'black solid thin'
-            style['padding-left'] = '1rem'
+            style[:borderLeft] = 'black solid thin'
+            style[:paddingLeft] = '1rem'
           end
 
           children = []
@@ -50,7 +50,7 @@ module View
                 width: '25px',
               },
               style: {
-                'max-height': '1.2rem',
+                maxHeight: '1.2rem',
                 padding: '0 .4rem 0 0',
               },
             }
@@ -58,7 +58,7 @@ module View
               style: {
                 height: '100%',
                 display: 'inline-block',
-                'vertical-align': 'top',
+                verticalAlign: 'top',
               },
             }
             children << h(:span, logo_container_props, [h(:img, logo_props)])
@@ -74,7 +74,7 @@ module View
           key: 'entity_order',
           style: {
             margin: '1rem 0 1rem 0',
-            'font-size': '1.1rem',
+            fontSize: '1.1rem',
             overflow: 'auto',
           },
         }
@@ -82,7 +82,7 @@ module View
         container_props = {
           style: {
             width: 'max-content',
-            'margin-bottom': '0.5rem',
+            marginBottom: '0.5rem',
           },
           key: 'entity_order_container',
         }

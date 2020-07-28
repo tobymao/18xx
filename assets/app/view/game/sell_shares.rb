@@ -28,7 +28,7 @@ module View
           h('button.button.margined_half', { on: { click: sell } }, text)
         end
 
-        h(:div, { style: { 'margin-top': '1rem' } }, buttons.compact)
+        h(:div, { style: { marginTop: '1rem' } }, buttons.compact)
       end
     end
   end
