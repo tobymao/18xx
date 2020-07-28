@@ -26,7 +26,7 @@ module Engine
 
       if possibilities.one?
         connection = possibilities[0].find do |conn|
-          conn&.nodes&.any? { |node| node.tokened_by?(corporation) }
+          conn.nodes.any? { |node| node.tokened_by?(corporation) }
         end
         left, right = connection&.nodes
         return if !left || !right
