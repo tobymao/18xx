@@ -22,7 +22,8 @@ module View
           @current_actions = round.actions_for(entity)
           entity = entity.owner if entity.company?
 
-          left = [h(Game::Abilities, user: @user, game: @game), h(UndoAndPass, pass: @current_actions.include?('pass'))]
+          left = [h(Game::Abilities, user: @user, game: @game),
+                  h(UndoAndPass, pass: @current_actions.include?('pass'))]
           left << h(RouteSelector) if @current_actions.include?('run_routes')
           left << h(Dividend) if @current_actions.include?('dividend')
           if @current_actions.include?('buy_train')

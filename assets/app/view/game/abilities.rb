@@ -7,23 +7,20 @@ module View
       needs :user, default: nil
       needs :selected_company, default: nil, store: true
       needs :show_other_abilities, default: false, store: true
+      needs :show_action, default: false, store: true
 
       def render
         companies = @game.companies.select { |company| !company.closed? && actions_for(company).any? }
         return h(:div) if companies.empty? || @game.round.current_entity.company?
 
-        op_round = @game.round.is_a?(Engine::Round::Operating)
+        @show_action = @game.round.is_a?(Engine::Round::Operating)
         current, others = companies.partition { |company| @game.current_entity.owner == company.owner.owner }
 
-        props = {
-          style: {
-            margin: '0 1rem 0 0',
-            display: op_round && current.any? ? '' : 'inline-block',
-          },
-        }
+        props = { style: { margin: '0 1rem 0 0' } }
+        props[:style][:display] = 'inline-block' if @show_action && current.empty?
         children = [
           h(:h3, props, 'Abilities'),
-          *render_companies(current, op_round),
+          *render_companies(current),
         ]
 
         if others.any?
@@ -42,16 +39,15 @@ module View
             on: { click: toggle_show },
           }
           children << h('button.button', props, @show_other_abilities ? 'Hide Others' : 'Show Others')
-          children.concat(render_companies(others, op_round)) if @show_other_abilities
+          children.concat(render_companies(others)) if @show_other_abilities
         end
 
-        children << render_selected_company_desc if !op_round && companies.include?(@selected_company)
+        children << render_company_action if !@show_action && companies.include?(@selected_company)
 
-        props = { style: { marginBottom: '0.5rem' } }
-        h(:div, props, children)
+        h(:div, { style: { marginBottom: '0.5rem' } }, children)
       end
 
-      def render_selected_company_desc
+      def render_company_action
         props = {
           style: {
             maxWidth: '80rem',
@@ -62,7 +58,7 @@ module View
         h(:div, props, [h(:div, @selected_company.desc), *render_actions])
       end
 
-      def render_companies(companies, op_round)
+      def render_companies(companies)
         companies.flat_map do |company|
           props = {
             on: {
@@ -91,7 +87,7 @@ module View
           end
 
           [h(:a, props, "#{company_name} (#{owner_name})"),
-           op_round && company == @selected_company ? render_selected_company_desc : '']
+           @show_action && company == @selected_company ? render_company_action : '']
         end.compact
       end
 
