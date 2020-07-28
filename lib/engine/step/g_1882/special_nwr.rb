@@ -133,7 +133,8 @@ module Engine
             end
 
           when :place_token
-            ability(entity).hexes.include?(hex.id)
+            ability(entity).hexes.include?(hex.id) &&
+            hex.tile.cities.any? { |c| c.tokenable?(entity.owner, free: true) }
           when :lay_tile
             @game.hex_by_id(hex.id).neighbors.keys if hex == @destination
           end
