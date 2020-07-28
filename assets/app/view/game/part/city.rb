@@ -55,6 +55,15 @@ module View
           [17, 16, 8, 2, 18, 3],
           [21, 15, 9, 10, 22, 11],
         ].freeze
+
+        BORDER_REGIONS = [
+          [15, 7],
+          [14, 8],
+          [7, 9],
+          [8, 16],
+          [9, 15],
+          [16, 14],
+        ].freeze
         # key: number of slots in city
         # value: [element name (sym), element attrs]
         BOX_ATTRS = {
@@ -107,11 +116,22 @@ module View
           if @num_cities > 1 && @edge
             weights = EDGE_TRACK_REGIONS[@edge] + EDGE_CITY_REGIONS[@edge]
             weights += EXTRA_SLOT_REGIONS[@edge] unless @city.slots == 1
+            distance = 50
+
+            # If there's a border on this edge, move the city slightly
+            # towards the center to ensure track is visible.
+            if @tile.borders.any? { |border| border.edge == @edge }
+              distance -= 15
+              weights = {
+                weights => 1.0,
+                BORDER_REGIONS[@edge] => 0.1,
+              }
+            end
             return [
               {
                 region_weights: weights,
-                x: -Math.sin((@edge * 60) / 180 * Math::PI) * 50,
-                y: Math.cos((@edge * 60) / 180 * Math::PI) * 50,
+                x: -Math.sin((@edge * 60) / 180 * Math::PI) * distance,
+                y: Math.cos((@edge * 60) / 180 * Math::PI) * distance,
                 angle: @edge * 60,
               },
             ]
