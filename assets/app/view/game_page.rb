@@ -227,15 +227,18 @@ module View
       return h(Game::GameEnd) if @game.finished
 
       entity = @round.active_step.current_entity
-      current_actions = @round.actions_for(entity)
-      if current_actions&.include?('discard_train')
+      current_actions = @round.actions_for(entity) || []
+      if current_actions.include?('discard_train')
         return h(:div, [h(Game::UndoAndPass, pass: false), h(Game::DiscardTrains)])
       end
 
       case @round
       when Engine::Round::Stock
-        if current_actions&.include?('place_token')
-          h(:div, [h(Game::UndoAndPass, pass: false), h(Game::Map, game: @game)])
+        if (%w[place_token lay_tile] & current_actions).any?
+          h(:div, [
+            h(Game::UndoAndPass, pass: false),
+            h(Game::Map, game: @game),
+          ])
         else
           h(Game::Round::Stock, game: @game)
         end
