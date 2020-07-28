@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/truncate'
 require 'view/game_row'
 require 'view/link'
 
@@ -146,7 +147,7 @@ module View
       }
 
       p_elm = players.map.with_index do |player, index|
-        short_name = player['name'].length > 19 ? player['name'][0..15] + '…' : player['name']
+        short_name = player['name'].truncate(19)
         if owner? && new? && player['id'] != @user['id']
           button_props = {
             on: { click: -> { kick(@gdata, player) } },
@@ -187,7 +188,7 @@ module View
       elsif @gdata['status'] == 'finished'
         result = @gdata['result']
           .sort_by { |_, v| -v }
-          .map { |k, v| "#{k.length > 15 ? k[0..11] + '…' : k} #{v}" }
+          .map { |k, v| "#{k.truncate(15)} #{v}" }
           .join(', ')
 
         children << h(:div, [

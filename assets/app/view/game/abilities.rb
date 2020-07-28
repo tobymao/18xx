@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'lib/truncate'
+
 module View
   module Game
     class Abilities < Snabberb::Component
@@ -72,19 +74,8 @@ module View
           }
           props[:style][:textDecoration] = 'underline' if @selected_company == company
 
-          company_name = company.name
-          owner_name = company.owner.id
-          c_size = company_name.size
-          o_size = owner_name.size
-          limit = 36
-          if c_size + o_size > limit
-            if o_size < 5
-              company_name = company_name[0..(limit - 7)] + '…' if c_size > (limit - 3)
-            else
-              company_name = company_name[0..(limit - 17)] + '…' if c_size > (limit - 13)
-              owner_name = owner_name[0..9] + '…' if o_size > 13
-            end
-          end
+          company_name = company.name.truncate(company.owner.id.size < 5 ? 32 : 19)
+          owner_name = company.owner.id.truncate(15)
 
           [h(:a, props, "#{company_name} (#{owner_name})"),
            @show_action && company == @selected_company ? render_company_action : '']
