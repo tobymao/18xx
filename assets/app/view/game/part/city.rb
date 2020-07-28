@@ -120,7 +120,7 @@ module View
 
             # If there's a border on this edge, move the city slightly
             # towards the center to ensure track is visible.
-            if @city.tile.borders.any? { |border| border.edge == @edge }
+            if @tile.borders.any? { |border| border.edge == @edge }
               distance -= 15
               weights = {
                 weights => 1.0,
