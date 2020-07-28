@@ -147,7 +147,12 @@ module View
       `document.title = #{title}`
     end
 
+    def active_player
+      @game_data[:mode] != :hotseat && !cursor && @game.active_players.map(&:name).include?(@user['name'])
+    end
+
     def menu
+      bg_color = active_player ? YOUR_TURN_ORANGE : color_for(:bg2)
       nav_props = {
         attrs: {
           role: 'navigation',
@@ -159,7 +164,7 @@ module View
           margin: '-1rem -2vmin 2vmin -2vmin',
           borderBottom: "1px solid #{color_for(:font2)}",
           top: '0',
-          'background-color': color_for(:bg2),
+          'background-color': bg_color,
           'font-size': 'large',
           'z-index': '9999',
         },

@@ -8,6 +8,11 @@ module Lib
     # http://mkweb.bcgsc.ca/colorblind/ 12 color palette
     ROUTE_COLORS = %i[#A40122 #008DF9 #00FCCF #FF5AAF].freeze
 
+    ENTER_GREEN = '#3CB371'
+    JOIN_YELLOW = '#F0E58C'
+    YOUR_TURN_ORANGE = '#FF8C00'
+    FINISHED_GREY = '#D3D3D3'
+
     ROUTES = ROUTE_COLORS.flat_map.with_index do |color, index|
       [["r#{index}_color", color], ["r#{index}_dash", '0'], ["r#{index}_width", 8]]
     end.to_h

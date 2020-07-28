@@ -6,16 +6,12 @@ require 'view/link'
 module View
   class GameCard < Snabberb::Component
     include GameManager
+    include Lib::Settings
 
     needs :user
     needs :gdata # can't conflict with game_data
     needs :confirm_delete, store: true, default: false
     needs :confirm_kick, store: true, default: nil
-
-    ENTER_GREEN = '#3CB371'
-    JOIN_YELLOW = '#F0E58C'
-    YOUR_TURN_ORANGE = '#FF8C00'
-    FINISHED_GREY = '#D3D3D3'
 
     def render
       h('div.game.card', [
