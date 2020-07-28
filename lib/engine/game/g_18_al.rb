@@ -26,8 +26,7 @@ module Engine
 
         @corporations.each do |corporation|
           corporation.abilities(:assign_hexes) do |ability|
-            historical_objective_city_name = @hexes.find { |h| h.name == ability.hexes.first }.location_name
-            ability.description = "Historical objective: #{historical_objective_city_name}"
+            ability.description = "Historical objective: #{get_location_name(ability.hexes.first)}"
           end
         end
       end
@@ -53,6 +52,10 @@ module Engine
         ensure_termini_not_passed_through(route, %w[A4 Q2])
 
         adjust_revenue_for_4d_train(route, super)
+      end
+
+      def get_location_name(hex_name)
+        @hexes.find { |h| h.name == hex_name }.location_name
       end
     end
   end
