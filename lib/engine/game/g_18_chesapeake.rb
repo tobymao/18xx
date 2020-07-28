@@ -33,6 +33,29 @@ module Engine
         end
       end
 
+      def stock_round
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::G18Chesapeake::SpecialTrack,
+          Step::BuySellParShares,
+        ])
+      end
+
+      def operating_round(round_num)
+        Round::Operating.new(self, [
+          Step::Bankrupt,
+          Step::DiscardTrain,
+          Step::G18Chesapeake::SpecialTrack,
+          Step::BuyCompany,
+          Step::Track,
+          Step::Token,
+          Step::Route,
+          Step::Dividend,
+          Step::Train,
+          [Step::BuyCompany, blocks: true],
+        ], round_num: round_num)
+      end
+
       def setup
         cornelius.add_ability(Ability::Close.new(
           type: :close,
@@ -45,14 +68,6 @@ module Engine
         company.abilities(:tile_lay) do |ability|
           hexes = ability.hexes
           next unless hexes.include?(action.hex.id)
-
-          if action.entity == company && ability.count.zero?
-            paths = hexes.flat_map do |hex_id|
-              hex_by_id(hex_id).tile.paths
-            end.uniq
-            raise GameError, 'Paths must be connected' if paths.size != paths[0].select(paths).size
-          end
-
           next if company.closed? || action.entity == company
 
           company.remove_ability(ability)
