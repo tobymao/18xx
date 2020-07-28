@@ -29,7 +29,7 @@ module View
       def render_table
         h(:table, { style: {
           margin: '1rem 0 1.5rem 0',
-          'text-align': 'center',
+          textAlign: 'center',
         } }, [
           h(:thead, render_title),
           h(:tbody, render_corporations),

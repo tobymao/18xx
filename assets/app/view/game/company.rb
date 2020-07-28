@@ -30,7 +30,7 @@ module View
 
       def render_bidders
         bidders_style = {
-          'font-weight': 'normal',
+          fontWeight: 'normal',
           margin: '0 0.5rem',
         }
         names = @bids
@@ -48,17 +48,17 @@ module View
           header_style = {
             background: 'yellow',
             border: '1px solid',
-            'border-radius': '5px',
+            borderRadius: '5px',
             color: 'black',
-            'margin-bottom': '0.5rem',
-            'font-size': '90%',
+            marginBottom: '0.5rem',
+            fontSize: '90%',
           }
 
           description_style = {
             margin: '0.5rem 0',
-            'font-size': '80%',
-            'text-align': 'left',
-            'font-weight': 'normal',
+            fontSize: '80%',
+            textAlign: 'left',
+            fontWeight: 'normal',
           }
 
           value_style = {
@@ -70,7 +70,7 @@ module View
           }
 
           bidders_style = {
-            'margin-top': '0.5rem',
+            marginTop: '0.5rem',
             display: 'inline-block',
             clear: 'both',
             width: '100%',
@@ -82,14 +82,14 @@ module View
               boxSizing: 'border-box',
               padding: '0.5rem',
               margin: '0.5rem 5px 0 0',
-              'text-align': 'center',
-              'font-weight': 'bold',
+              textAlign: 'center',
+              fontWeight: 'bold',
             },
             on: { click: ->(event) { select_company(event) } },
           }
           if selected?
-            props[:style]['background-color'] = 'lightblue'
-            props[:style]['color'] = 'black'
+            props[:style][:backgroundColor] = 'lightblue'
+            props[:style][:color] = 'black'
           end
           props[:style][:display] = @display
 

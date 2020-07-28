@@ -16,7 +16,7 @@ module View
         else
           props = {
             style: {
-              'margin-bottom': '1rem',
+              marginBottom: '1rem',
             },
           }
           h(:div, props, "Bank Cash: #{@game.format_currency(@game.bank.cash)}")

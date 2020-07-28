@@ -159,9 +159,9 @@ module View
           margin: '-1rem -2vmin 2vmin -2vmin',
           borderBottom: "1px solid #{color_for(:font2)}",
           top: '0',
-          'background-color': color_for(:bg2),
-          'font-size': 'large',
-          'z-index': '9999',
+          backgroundColor: color_for(:bg2),
+          fontSize: 'large',
+          zIndex: '9999',
         },
       }
 
@@ -192,7 +192,7 @@ module View
           onclick: 'return false',
         },
         style: {
-          'color': color_for(:font2),
+          color: color_for(:font2),
         },
         on: { click: change_anchor },
       }
@@ -220,7 +220,7 @@ module View
       game_end = @game.game_ending_description
       description += " - #{game_end}" if game_end
       description += " - Pinned to Version: #{@pin}" if @pin
-      h(:div, { style: { 'font-weight': 'bold', margin: '2vmin 0' } }, description)
+      h(:div, { style: { fontWeight: 'bold', margin: '2vmin 0' } }, description)
     end
 
     def render_action
