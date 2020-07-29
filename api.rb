@@ -212,7 +212,7 @@ class Api < Roda
   MessageBus.user_id_lookup do |env|
     next unless (token = env['HTTP_AUTHORIZATION'])
 
-    Session.where(token: token).update(updated_at: Sequel::CURRENT_TIMESTAMP)
+    Session.where(token: token).update(updated_at: Sequel::CURRENT_TIMESTAMP, ip: env['REMOTE_ADDR'])
     nil
   end
 end
