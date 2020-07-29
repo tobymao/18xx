@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative '../train'
+require_relative 'buy_train'
 
 module Engine
   module Step
-    class SingleDepotTrainBuyBeforePhase4 < Train
+    class SingleDepotTrainBuyBeforePhase4 < BuyTrain
       def buyable_trains
         super.reject { |x| x.from_depot? && !@game.phase.available?('4') && already_bought_from_depot? }
       end

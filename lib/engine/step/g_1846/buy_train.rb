@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative '../train'
+require_relative '../buy_train'
 
 module Engine
   module Step
     module G1846
-      class Train < Train
+      class BuyTrain < BuyTrain
         def actions(entity)
           return [] if entity.receivership?
 

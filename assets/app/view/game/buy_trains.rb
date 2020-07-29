@@ -54,6 +54,8 @@ module View
       def render
         step = @game.round.active_step
         @corporation = step.current_entity
+        @ability = @selected_company&.abilities(:train_discount, 'train') if @selected_company&.owner == @corporation
+
         @depot = @game.depot
 
         available = step.buyable_trains.group_by(&:owner)
@@ -135,10 +137,11 @@ module View
             .sort_by { |_, v| v[:price] }
             .flat_map do |name, variant|
             price = variant[:price]
+            price = @ability&.discounted_price(train, price) || price
 
             buy_train = lambda do
               process_action(Engine::Action::BuyTrain.new(
-                @corporation,
+                @ability ? @selected_company : @corporation,
                 train: train,
                 price: price,
                 variant: name,

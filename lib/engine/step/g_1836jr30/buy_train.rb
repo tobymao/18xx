@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative '../train'
+require_relative '../buy_train'
 
 module Engine
   module Step
     module G1836Jr30
-      class Train < Train
+      class BuyTrain < BuyTrain
         def buyable_trains
           super.reject { |x| x.from_depot? && @depot_trains_bought.include?(x.sym) }
         end
