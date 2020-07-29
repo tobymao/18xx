@@ -150,6 +150,8 @@ module View
       title = "#{@game.class.title} - #{@game.id} - 18xx.Games"
       title = "* #{title}" if @game.active_player_names.include?(@user&.dig('name'))
       `document.title = #{title}`
+      change_favicon(active_player)
+      change_tab_color(active_player)
     end
 
     def active_player

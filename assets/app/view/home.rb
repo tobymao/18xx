@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'game_manager'
+require 'lib/settings'
 require 'lib/storage'
 require 'view/chat'
 require 'view/game_row'
@@ -9,6 +10,7 @@ require 'view/welcome'
 module View
   class Home < Snabberb::Component
     include GameManager
+    include Lib::Settings
 
     needs :user
     needs :refreshing, default: nil, store: true
@@ -54,6 +56,8 @@ module View
 
       acting = your_games.any? { |game| user_is_acting?(@user, game) }
       `document.title = #{(acting ? '* ' : '') + '18xx.Games'}`
+      change_favicon(acting)
+      change_tab_color(acting)
 
       destroy = lambda do
         `clearTimeout(#{@refreshing})`
