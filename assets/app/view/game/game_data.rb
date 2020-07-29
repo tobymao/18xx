@@ -8,6 +8,7 @@ module View
       include GameManager
 
       needs :allow_clone, default: true
+      needs :allow_delete, default: false
       needs :show_json, default: false, store: true
       needs :actions
 
@@ -54,6 +55,8 @@ module View
           (@show_json ? 'Hide Game Data' : 'Show Game Data')
         )
 
+        buttons = []
+
         if @allow_clone
           clone_button = h(
             'button.button',
@@ -61,18 +64,28 @@ module View
             'Clone Game',
           )
 
-          h('div.margined', [
-            h(:span, 'Clone this game to play around in hotseat mode'),
-            clone_button,
-            copy_button,
-            show_button,
-          ])
-        else
-          h('div.margined', [
-            copy_button,
-            show_button,
-          ])
+          buttons << h(:span, 'Clone this game to play around in hotseat mode')
+          buttons << clone_button
         end
+
+        buttons << copy_button
+        buttons << show_button
+
+        if @allow_delete
+          delete_game = lambda do
+            delete_game(@game_data)
+            store(:app_route, '/')
+          end
+
+          delete_button = h(
+            'button.button.margined',
+            { on: { click: delete_game } },
+            'Delete Game',
+          )
+
+          buttons << delete_button
+        end
+        h('div.margined', buttons)
       end
     end
   end
