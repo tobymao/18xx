@@ -259,7 +259,9 @@ module Engine
 
       visited = visited_stops
       @game.game_error('Route must have at least 2 stops') if @connections.any? && visited.size < 2
-      @game.game_error('Route must contain token') unless (token = visited.find { |stop| stop.tokened_by?(corporation) })
+      unless (token = visited.find { |stop| stop.tokened_by?(corporation) })
+        @game.game_error('Route must contain token')
+      end
 
       check_distance!(visited)
       check_cycles!
