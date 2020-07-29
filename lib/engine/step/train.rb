@@ -63,7 +63,7 @@ module Engine
         @game.phase.buying_train!(entity, train)
 
         # Check if the train is actually buyable in the current situation
-        raise GameError, 'Not a buyable train' unless buyable_trains.include?(train)
+        raise GameError, 'Not a buyable train' unless buyable_train_variants(train).include?(train.variant)
 
         remaining = price - entity.cash
         if remaining.positive? && must_buy_train?(entity)
@@ -152,6 +152,10 @@ module Engine
           end
         end
         depot_trains + other_trains
+      end
+
+      def buyable_train_variants(train)
+        buyable_trains.include?(train) ? train.variants.values : []
       end
 
       def setup
