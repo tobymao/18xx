@@ -120,7 +120,6 @@ module View
         click: click,
         children: text,
         style: {
-          top: '1rem',
           float: 'right',
           borderRadius: '5px',
           margin: '0 0.3rem',

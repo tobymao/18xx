@@ -11,11 +11,24 @@ a {
   text-underline-offset: 0.2em;
 }
 
-button {
-  margin: 0.5rem 0.5rem 0 0;
+button, .button-link {
+  font-size: 14px;
+  background: whitesmoke;
+  color: black;
+  border: solid 1px black;
+  border-radius: 5px;
+  padding: 0.2rem 1rem;
+  margin: 0.5rem 1rem 0 0;
+  line-height: 1rem;
+  cursor: pointer;
+  text-decoration: none;
 }
-button + button {
-  margin-left: 0.5rem;
+button.small {
+  padding: 0.2rem 0.5rem;
+  margin-right: 0.5rem;
+}
+button:last-child {
+  margin-right: 0;
 }
 
 h2 {
@@ -30,16 +43,6 @@ p {
   margin: 0.7rem 0;
 }
 
-.button, .button-link {
-  font-size: 14px;
-  background: whitesmoke;
-  color: black;
-  border: solid 1px black;
-  border-radius: 5px;
-  padding: 0.2rem 1rem;
-  cursor: pointer;
-  text-decoration: none;
-}
 
 /* prevent hover effects on mobile devices */
 @media(hover: hover) and (pointer: fine) {
@@ -50,16 +53,16 @@ p {
   a:active {
     outline: 0;
   }
-  .button:hover, .button-link:hover {
+  button:hover, .button-link:hover {
     background: black;
     border-color: gainsboro;
     color: gainsboro;
     text-decoration: none;
   }
-  .button, .button-link {
+  button, .button-link {
     outline: 0;
   }
-  .button:active, .button-link:active, .button:focus, .button-link:focus {
+  button:active, .button-link:active, button:focus, .button-link:focus {
     outline: 0;
     opacity: 0.8;
   }
@@ -221,6 +224,9 @@ nav#game_menu {
 }
 .margined_half {
   margin: 0.5rem 0.5rem 0.5rem 0;
+}
+.margined_bottom {
+  margin-bottom: 1rem;
 }
 .no_margin {
   margin: 0;
