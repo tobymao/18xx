@@ -41,7 +41,7 @@ module Engine
         port = stops.find { |stop| stop.groups.include?('port') }
 
         if port
-          raise GameError, "#{port.tile.location_name} must contain 2 other stops" if stops.size < 3
+          game_error("#{port.tile.location_name} must contain 2 other stops") if stops.size < 3
 
           per_token = port.route_revenue(route.phase, route.train)
           revenue -= per_token # It's already been counted, so remove

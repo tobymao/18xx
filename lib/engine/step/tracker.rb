@@ -30,8 +30,8 @@ module Engine
       def lay_tile_action(action)
         tile = action.tile
         tile_lay = get_tile_lay(action.entity)
-        raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && !tile_lay[:upgrade]
-        raise GameError, 'Cannot lay an yellow now' if tile.color == :yellow && !tile_lay[:lay]
+        @game.game_error('Cannot lay an upgrade now') if tile.color != :yellow && !tile_lay[:upgrade]
+        @game.game_error('Cannot lay an yellow now') if tile.color == :yellow && !tile_lay[:lay]
 
         lay_tile(action, extra_cost: tile_lay[:cost])
         @upgraded = true if action.tile.color != :yellow
@@ -49,15 +49,15 @@ module Engine
           next if company.closed?
           next unless (ability = company.abilities(:blocks_hexes))
 
-          raise GameError, "#{hex.id} is blocked by #{company.name}" if ability.hexes.include?(hex.id)
+          @game.game_error("#{hex.id} is blocked by #{company.name}") if ability.hexes.include?(hex.id)
         end
 
         tile.rotate!(rotation)
 
-        raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}"\
+        @game.game_error("#{old_tile.name} is not upgradeable to #{tile.name}")\
           unless old_tile.upgrades_to?(tile, entity.company?)
         if !@game.loading && !legal_tile_rotation?(entity, hex, tile)
-          raise GameError, "#{old_tile.name} is not legally rotated for #{tile.name}"
+          @game.game_error("#{old_tile.name} is not legally rotated for #{tile.name}")
         end
 
         @game.tiles.delete(tile)
@@ -175,9 +175,9 @@ module Engine
         when :permissive
           true
         when :restrictive
-          raise GameError, 'Must use new track' unless used_new_track
+          @game.game_error('Must use new track') unless used_new_track
         when :semi_restrictive
-          raise GameError, 'Must use new track or change city value' if !used_new_track && !changed_city
+          @game.game_error('Must use new track or change city value') if !used_new_track && !changed_city
         else
           raise
         end

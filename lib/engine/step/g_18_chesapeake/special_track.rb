@@ -37,7 +37,7 @@ module Engine
               @game.hex_by_id(hex_id).tile.paths
             end.uniq
 
-            raise GameError, 'Paths must be connected' if paths.size != paths[0].select(paths).size
+            @game.game_error('Paths must be connected') if paths.size != paths[0].select(paths).size
           end
 
           @company = company

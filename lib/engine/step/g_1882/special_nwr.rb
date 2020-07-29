@@ -61,7 +61,7 @@ module Engine
           @entity = action.entity
           owner = @entity.owner
           token = action.city.tokens[action.slot]
-          raise GameError, "Cannot remove #{token.corporation.name} token" unless token.corporation == @entity.owner
+          @game.game_error("Cannot remove #{token.corporation.name} token") unless token.corporation == @entity.owner
 
           home_token = owner.tokens.first == token
           token.remove!
