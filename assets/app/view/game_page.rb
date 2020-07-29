@@ -31,7 +31,10 @@ module View
         h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues/' } }, 'raise a bug report'),
         " and include the game id (#{@game_data['id']}) and the following JSON data",
       ])
-      inner << h(Game::GameData, actions: @game_data['actions'], allow_clone: false)
+      inner << h(Game::GameData,
+                 actions: @game_data['actions'],
+                 allow_clone: false,
+                 allow_delete: @game_data[:mode] == :hotseat)
       h(:div, inner)
     end
 
