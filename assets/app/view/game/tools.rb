@@ -29,9 +29,10 @@ module View
           Lib::Storage[@game.id] = @settings.merge('master_mode' => !mode)
           update
         end
+
         h('div.margined', [
-          'Master Mode (Enable to move for others):',
-          h(:button, { style: { margin: '1rem' }, on: { click: toggle } }, mode ? 'Disable' : 'Enable'),
+          h(:button, { on: { click: toggle } }, "#{mode ? 'Disable' : 'Enable'} Master Mode"),
+          h(:label, "#{mode ? 'You can' : 'Enable to'} move for others"),
         ])
       end
 
@@ -44,28 +45,16 @@ module View
                        store(:app_route, @app_route.split('#').first)
                      end
                      [
-                       h(
-                         :button,
-                         { style: { margin: '1rem' }, on: { click: confirm } },
-                         'Confirm End Game',
-                       ),
-                       h(
-                         :button,
-                         { style: { margin: '1rem' }, on: { click: -> { store(:confirm_endgame, false) } } },
-                         'Cancel',
-                       ),
+                       h(:button, { on: { click: confirm } }, 'Confirm End Game'),
+                       h(:button, { on: { click: -> { store(:confirm_endgame, false) } } }, 'Cancel'),
                      ]
                    else
                      [
-                       h(
-                         :button,
-                         { style: { margin: '1rem' }, on: { click: -> { store(:confirm_endgame, true) } } },
-                         'End Game',
-                       ),
+                       h(:button, { on: { click: -> { store(:confirm_endgame, true) } } }, 'End Game'),
                      ]
                    end
 
-        h('div.margined', [h('span', 'End Game:'), *end_game])
+        h('div.margined', end_game)
       end
 
       def render_tools
