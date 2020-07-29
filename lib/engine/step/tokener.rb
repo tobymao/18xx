@@ -24,10 +24,10 @@ module Engine
       def place_token(entity, city, token, teleport: false)
         hex = city.hex
         if !@game.loading && !teleport && !@game.graph.connected_nodes(entity)[city]
-          raise GameError, "Cannot place token on #{hex.name} because it is not connected"
+          @game.game_error("Cannot place token on #{hex.name} because it is not connected")
         end
 
-        raise GameError, 'Token is already used' if token.used
+        @game.game_error('Token is already used') if token.used
 
         token, ability = adjust_token_price_ability!(entity, token, hex)
         entity.remove_ability(ability) if ability

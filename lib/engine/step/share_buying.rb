@@ -6,7 +6,7 @@ module Engine
   module Step
     module ShareBuying
       def buy_shares(entity, shares, exchange: nil)
-        raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" unless can_buy?(entity, shares)
+        @game.game_error("Cannot buy a share of #{shares&.corporation&.name}") unless can_buy?(entity, shares)
 
         @game.share_pool.buy_shares(entity, shares, exchange: exchange)
         corporation = shares.corporation

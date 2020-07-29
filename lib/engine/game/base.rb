@@ -233,7 +233,7 @@ module Engine
         hex_ids = data['hexes'].values.map(&:keys).flatten
 
         dup_hexes = hex_ids.group_by(&:itself).select { |_, v| v.size > 1 } .keys
-        raise GameError, "Found multiple definitions in #{self} for hexes #{dup_hexes}" if dup_hexes.any?
+        game_error("Found multiple definitions in #{self} for hexes #{dup_hexes}") if dup_hexes.any?
 
         const_set(:CURRENCY_FORMAT_STR, data['currencyFormatStr'])
         const_set(:BANK_CASH, data['bankCash'])
@@ -656,7 +656,7 @@ module Engine
       def declare_bankrupt(player)
         if player.bankrupt
           msg = "#{player.name} is already bankrupt, cannot declare bankruptcy again."
-          raise GameError.new(msg, current_action_id)
+          game_error(msg)
         end
 
         player.bankrupt = true
@@ -665,6 +665,10 @@ module Engine
       def tile_lays(_entity)
         # Some games change available lays depending on if minor or corp
         self.class::TILE_LAYS
+      end
+
+      def game_error(msg)
+        raise GameError.new(msg, current_action_id)
       end
 
       private

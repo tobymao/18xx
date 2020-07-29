@@ -47,12 +47,12 @@ module Engine
         price = action.price
         owner = company.owner
 
-        raise GameError, "Cannot buy #{company.name} from #{owner.name}" if owner.is_a?(Corporation)
+        @game.game_error("Cannot buy #{company.name} from #{owner.name}") if owner.is_a?(Corporation)
 
         min = company.min_price
         max = company.max_price
         unless price.between?(min, max)
-          raise GameError, "Price must be between #{@game.format_currency(min)} and #{@game.format_currency(max)}"
+          @game.game_error("Price must be between #{@game.format_currency(min)} and #{@game.format_currency(max)}")
         end
 
         log_later = []

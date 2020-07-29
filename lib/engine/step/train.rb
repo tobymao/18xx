@@ -63,16 +63,16 @@ module Engine
         @game.phase.buying_train!(entity, train)
 
         # Check if the train is actually buyable in the current situation
-        raise GameError, 'Not a buyable train' unless buyable_train_variants(train).include?(train.variant)
+        @game.game_error('Not a buyable train') unless buyable_train_variants(train).include?(train.variant)
 
         remaining = price - entity.cash
         if remaining.positive? && must_buy_train?(entity)
           cheapest = @depot.min_depot_train
           if train != cheapest && (!@game.class::EBUY_OTHER_VALUE || train.from_depot?)
-            raise GameError, "Cannot purchase #{train.name} train: #{cheapest.name} train available"
+            @game.game_error("Cannot purchase #{train.name} train: #{cheapest.name} train available")
           end
-          raise GameError, 'Cannot contribute funds when exchanging' if exchange
-          raise GameError, 'Cannot buy for more than cost' if price > train.price
+          @game.game_error('Cannot contribute funds when exchanging') if exchange
+          @game.game_error('Cannot buy for more than cost') if price > train.price
 
           player = entity.owner
           player.spend(remaining, entity)
@@ -96,7 +96,7 @@ module Engine
 
       def process_sell_shares(action)
         unless can_sell?(action.entity, action.bundle)
-          raise GameError, "Cannot sell shares of #{action.bundle.corporation.name}"
+          @game.game_error("Cannot sell shares of #{action.bundle.corporation.name}")
         end
 
         @last_share_sold_price = action.bundle.price_per_share

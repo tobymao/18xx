@@ -17,7 +17,7 @@ module Engine
       def process_assign(action)
         company = action.entity
         target = action.target
-        raise GameError, "#{company.name} is already assigned to #{target.name}" if target.assigned?(company.id)
+        @game.game_error("#{company.name} is already assigned to #{target.name}") if target.assigned?(company.id)
 
         if target.is_a?(Hex) && company.abilities(:assign_hexes)
           target.assign!(company.id)
