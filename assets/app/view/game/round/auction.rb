@@ -90,11 +90,11 @@ module View
 
           company_actions =
             if @step.may_purchase?(company)
-              [h('button.button', { on: { click: buy } }, 'Buy')]
+              [h(:button, { on: { click: buy } }, 'Buy')]
             else
               [
                 input,
-                h('button.button', { on: { click: create_bid } }, 'Place Bid'),
+                h(:button, { on: { click: create_bid } }, 'Place Bid'),
               ]
             end
 

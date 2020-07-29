@@ -17,7 +17,7 @@ module View
           },
         }
 
-        h('button.button', props, 'Redo')
+        h(:button, props, 'Redo')
       end
     end
   end

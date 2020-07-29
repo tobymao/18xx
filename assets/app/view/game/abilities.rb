@@ -29,7 +29,7 @@ module View
             store(:show_other_abilities, !@show_other_abilities)
           end
 
-          children << h('button.button', { on: { click: toggle_show } }, @show_other_abilities ? 'Hide' : 'Show')
+          children << h(:button, { on: { click: toggle_show } }, @show_other_abilities ? 'Hide' : 'Show')
           children.concat(render_companies(others)) if @show_other_abilities
         end
 

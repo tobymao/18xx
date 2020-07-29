@@ -98,8 +98,8 @@ module View
       }
 
       h('div#buttons', props, [
-        h('button.button', create_props, 'CREATE A NEW GAME'),
-        h('button.button', tutorial_props, 'TUTORIAL'),
+        h(:button, create_props, 'CREATE A NEW GAME'),
+        h(:button, tutorial_props, 'TUTORIAL'),
       ])
     end
   end

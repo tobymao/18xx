@@ -31,7 +31,7 @@ module View
         end
         h('div.margined', [
           'Master Mode (Enable to move for others):',
-          h('button.button', { style: { margin: '1rem' }, on: { click: toggle } }, mode ? 'Disable' : 'Enable'),
+          h(:button, { style: { margin: '1rem' }, on: { click: toggle } }, mode ? 'Disable' : 'Enable'),
         ])
       end
 
@@ -45,12 +45,12 @@ module View
                      end
                      [
                        h(
-                         'button.button',
+                         :button,
                          { style: { margin: '1rem' }, on: { click: confirm } },
                          'Confirm End Game',
                        ),
                        h(
-                         'button.button',
+                         :button,
                          { style: { margin: '1rem' }, on: { click: -> { store(:confirm_endgame, false) } } },
                          'Cancel',
                        ),
@@ -58,7 +58,7 @@ module View
                    else
                      [
                        h(
-                         'button.button',
+                         :button,
                          { style: { margin: '1rem' }, on: { click: -> { store(:confirm_endgame, true) } } },
                          'End Game',
                        ),

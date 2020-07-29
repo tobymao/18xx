@@ -83,14 +83,14 @@ module View
           if @current_actions.include?('buy_shares')
             if @step.can_buy?(@current_entity, ipo_share)
               children << h(
-                'button.button.margined_half',
+                'button.margined_half',
                 { on: { click: buy_ipo } },
                 "Buy #{@game.class::IPO_NAME} Share"
               )
             end
 
             if @step.can_buy?(@current_entity, pool_share)
-              children << h('button.button.margined_half', { on: { click: buy_pool } }, 'Buy Market Share')
+              children << h('button.margined_half', { on: { click: buy_pool } }, 'Buy Market Share')
             end
 
             # Allow privates to be exchanged for shares

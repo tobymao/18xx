@@ -107,7 +107,7 @@ th, td {
     color: gainsboro;
   }
 
-  button, .button, .button-link, input, select, textarea {
+  button, .button-link, input, select, textarea {
     background-color: gainsboro;
   }
 }

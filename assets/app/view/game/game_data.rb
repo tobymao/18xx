@@ -43,20 +43,20 @@ module View
         end
 
         copy_button = h(
-          'button.button.margined',
+          :button,
           { on: { click: copy_data } },
           'Copy Game Data',
         )
 
         show_button = h(
-          'button.button.margined',
+          :button,
           { on: { click: -> { store(:show_json, !@show_json) } } },
           (@show_json ? 'Hide Game Data' : 'Show Game Data')
         )
 
         if @allow_clone
           clone_button = h(
-            'button.button',
+            :button,
             { style: { margin: '1rem' }, on: { click: clone_game } },
             'Clone Game',
           )
