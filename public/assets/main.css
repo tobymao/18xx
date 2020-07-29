@@ -27,7 +27,7 @@ button.small {
   padding: 0.2rem 0.5rem;
   margin-right: 0.5rem;
 }
-button:last-child {
+button:last-child, button.par_price:nth-of-type(6n), button.sell_share:nth-of-type(3n) {
   margin-right: 0;
 }
 
