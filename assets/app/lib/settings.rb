@@ -24,6 +24,7 @@ module Lib
       bg2: DARK ? '#dcdcdc' : '#d3d3d3',
       font: DARK ? '#ffffff' : '#000000',
       font2: '#000000',
+      your_turn: YOUR_TURN_ORANGE,
       **Lib::Hex::COLOR,
       **ROUTES,
     }.freeze

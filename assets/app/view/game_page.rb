@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/color'
 require 'lib/connection'
 require 'lib/params'
 require 'lib/settings'
@@ -7,6 +8,7 @@ require_tree './game'
 
 module View
   class GamePage < Snabberb::Component
+    include Lib::Color
     include Lib::Settings
 
     needs :game_data, store: true
@@ -155,7 +157,7 @@ module View
     end
 
     def menu
-      bg_color = active_player ? YOUR_TURN_ORANGE : color_for(:bg2)
+      bg_color = active_player ? color_for(:your_turn) : color_for(:bg2)
       nav_props = {
         attrs: {
           role: 'navigation',
@@ -168,6 +170,7 @@ module View
           borderBottom: "1px solid #{color_for(:font2)}",
           top: '0',
           backgroundColor: bg_color,
+          color: active_player ? contrast_on(bg_color) : color_for(:font2),
           fontSize: 'large',
           zIndex: '9999',
         },
@@ -199,12 +202,9 @@ module View
           href: anchor,
           onclick: 'return false',
         },
-        style: {
-          color: color_for(:font2),
-        },
+        style: { textDecoration: route_anchor == anchor[1..-1] ? 'underline' : 'none' },
         on: { click: change_anchor },
       }
-      a_props[:style][:textDecoration] = route_anchor == anchor[1..-1] ? 'underline' : 'none'
       li_props = {
         style: {
           float: 'left',

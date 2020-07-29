@@ -49,6 +49,9 @@ module View
                 render_color('Alternative Background', :bg2, color_for(:bg2)),
                 render_color('Alternative Font Color', :font2, color_for(:font2)),
               ]),
+              h(:div, [
+                render_color('Your Turn', :your_turn, color_for(:your_turn)),
+              ]),
             ]),
             render_tile_colors,
             render_route_colors,
@@ -90,6 +93,7 @@ module View
       input_elm(:font).value = default_for(:font)
       input_elm(:bg2).value = default_for(:bg2)
       input_elm(:font2).value = default_for(:font2)
+      input_elm(:your_turn).value = default_for(:your_turn)
       input_elm(:red_logo).checked = false
 
       TILE_COLORS.each do |color, hex_color|

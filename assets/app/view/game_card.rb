@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
+require 'lib/color'
+require 'lib/settings'
 require 'view/game_row'
 require 'view/link'
 
 module View
   class GameCard < Snabberb::Component
     include GameManager
+    include Lib::Color
     include Lib::Settings
 
     needs :user
@@ -42,7 +45,7 @@ module View
     def render_header
       buttons = []
 
-      color =
+      bg_color =
         case @gdata['status']
         when 'new'
           if owner?
@@ -54,7 +57,7 @@ module View
           JOIN_YELLOW
         when 'active'
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Enter')
-          acting?(@user) ? YOUR_TURN_ORANGE : ENTER_GREEN
+          acting?(@user) ? color_for(:your_turn) : ENTER_GREEN
         when 'finished'
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Review')
           FINISHED_GREY
@@ -74,13 +77,13 @@ module View
         style: {
           position: 'relative',
           padding: '0.3em 0.1rem 0 0.5rem',
-          backgroundColor: color,
+          backgroundColor: bg_color,
         },
       }
 
       text_props = {
         style: {
-          color: 'black',
+          color: contrast_on(bg_color),
           display: 'inline-block',
           maxWidth: '13rem',
         },
