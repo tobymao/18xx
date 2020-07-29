@@ -91,6 +91,7 @@ module Engine
 
         @log << "#{entity.name} #{verb} a #{train.name} train for "\
           "#{@game.format_currency(price)} from #{source}"
+
         entity.buy_train(train, price)
         pass! unless can_buy_train?(entity)
       end
@@ -166,6 +167,12 @@ module Engine
 
       def issuable_shares
         []
+      end
+
+      def round_state
+        {
+          trains_bought: [],
+        }
       end
     end
   end
