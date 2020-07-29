@@ -42,7 +42,7 @@ module Engine
         c += 1
         move(corporation, r, c)
       else
-        move_up(corporation)
+        move_up(corporation) unless one_d?
       end
     end
 
@@ -69,26 +69,32 @@ module Engine
         c -= 1
         move(corporation, r, c)
       else
-        move_down(corporation)
+        move_down(corporation) unless one_d?
       end
     end
 
-    def find_share_price(corporation, direction)
+    def find_share_price(corporation, directions)
       r, c = corporation.share_price.coordinates
-      case direction
-      when :left
-        c -= 1
-        share_price(r, c) || share_price(r, c + 1)
-      when :right
-        c += 1
-        share_price(r, c) || share_price(r, c - 1)
-      when :down
-        r -= 1
-        share_price(r, c) || share_price(r + 1, c)
-      when :up
-        r += 1
-        share_price(r, c) || share_price(r - 1, c)
+
+      prices = [share_price(r, c)]
+
+      Array(directions).each do |direction|
+        case direction
+        when :left
+          c -= 1 if c.positive?
+        when :right
+          c += 1
+        when :down
+          r -= 1 if r.positive?
+        when :up
+          r += 1
+        end
+        price = share_price(r, c)
+        break unless price
+
+        prices << price
       end
+      prices.last
     end
 
     def max_reached?

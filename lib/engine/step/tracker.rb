@@ -30,16 +30,16 @@ module Engine
       def lay_tile_action(action)
         tile = action.tile
         tile_lay = get_tile_lay(action.entity)
-        raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && !tile_lay[:upgrade]
-        raise GameError, 'Cannot lay an yellow now' if tile.color == :yellow && !tile_lay[:lay]
+        @game.game_error('Cannot lay an upgrade now') if tile.color != :yellow && !tile_lay[:upgrade]
+        @game.game_error('Cannot lay an yellow now') if tile.color == :yellow && !tile_lay[:lay]
 
-        lay_tile(action, tile_lay[:cost])
+        lay_tile(action, extra_cost: tile_lay[:cost])
         @upgraded = true if action.tile.color != :yellow
         @laid_track += 1
       end
 
-      def lay_tile(action, extra_cost = 0)
-        entity = action.entity
+      def lay_tile(action, extra_cost: 0, entity: nil)
+        entity ||= action.entity
         tile = action.tile
         hex = action.hex
         rotation = action.rotation
@@ -49,13 +49,16 @@ module Engine
           next if company.closed?
           next unless (ability = company.abilities(:blocks_hexes))
 
-          raise GameError, "#{hex.id} is blocked by #{company.name}" if ability.hexes.include?(hex.id)
+          @game.game_error("#{hex.id} is blocked by #{company.name}") if ability.hexes.include?(hex.id)
         end
 
         tile.rotate!(rotation)
 
-        raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}"\
+        @game.game_error("#{old_tile.name} is not upgradeable to #{tile.name}")\
           unless old_tile.upgrades_to?(tile, entity.company?)
+        if !@game.loading && !legal_tile_rotation?(entity, hex, tile)
+          @game.game_error("#{old_tile.name} is not legally rotated for #{tile.name}")
+        end
 
         @game.tiles.delete(tile)
         @game.tiles << old_tile unless old_tile.preprinted
@@ -172,9 +175,9 @@ module Engine
         when :permissive
           true
         when :restrictive
-          raise GameError, 'Must use new track' unless used_new_track
+          @game.game_error('Must use new track') unless used_new_track
         when :semi_restrictive
-          raise GameError, 'Must use new track or change city value' if !used_new_track && !changed_city
+          @game.game_error('Must use new track or change city value') if !used_new_track && !changed_city
         else
           raise
         end
@@ -200,17 +203,28 @@ module Engine
         end.compact
       end
 
-      def legal_tile_rotations(entity, hex, tile)
+      def legal_tile_rotation?(entity, hex, tile)
         old_paths = hex.tile.paths
+        old_ctedges = hex.tile.city_town_edges
 
+        new_paths = tile.paths
+        new_exits = tile.exits
+        new_ctedges = tile.city_town_edges
+        extra_cities = [0, new_ctedges.size - old_ctedges.size].max
+
+        new_exits.all? { |edge| hex.neighbors[edge] } &&
+          (new_exits & available_hex(entity, hex)).any? &&
+          old_paths.all? { |path| new_paths.any? { |p| path <= p } } &&
+          # Count how many cities on the new tile that aren't included by any of the old tile.
+          # Make sure this isn't more than the number of new cities added.
+          # 1836jr30 D6 -> 54 adds more cities
+          extra_cities >= new_ctedges.count { |newct| old_ctedges.all? { |oldct| (newct & oldct).none? } }
+      end
+
+      def legal_tile_rotations(entity, hex, tile)
         Engine::Tile::ALL_EDGES.select do |rotation|
           tile.rotate!(rotation)
-          new_paths = tile.paths
-          new_exits = tile.exits
-
-          new_exits.all? { |edge| hex.neighbors[edge] } &&
-            (new_exits & available_hex(entity, hex)).any? &&
-            old_paths.all? { |path| new_paths.any? { |p| path <= p } }
+          legal_tile_rotation?(entity, hex, tile)
         end
       end
     end

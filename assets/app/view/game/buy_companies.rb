@@ -13,7 +13,7 @@ module View
 
       def render
         @corporation = @game.current_entity
-        props = @limit_width ? { style: { flexGrow: '1', width: '0', marginRight: '-1rem' } } : {}
+        props = @limit_width ? { style: { flexGrow: '1', width: '0' } } : {}
 
         h(:div, props, [
           *render_companies,
@@ -24,7 +24,7 @@ module View
         props = {
           style: {
             display: 'inline-block',
-            'vertical-align': 'top',
+            verticalAlign: 'top',
           },
         }
 
@@ -40,7 +40,7 @@ module View
       end
 
       def render_input
-        input = h(:input, style: { 'margin-right': '1rem' }, props: {
+        input = h(:input, style: { marginRight: '1rem' }, props: {
           value: @selected_company.max_price,
           type: 'number',
           min: @selected_company.min_price,
@@ -60,8 +60,8 @@ module View
 
         props = {
           style: {
-            'text-align': 'center',
-            'margin': '1rem',
+            textAlign: 'center',
+            margin: '1rem',
           },
         }
 

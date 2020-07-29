@@ -147,7 +147,12 @@ module View
       `document.title = #{title}`
     end
 
+    def active_player
+      @game_data[:mode] != :hotseat && !cursor && @game.active_players.map(&:name).include?(@user['name'])
+    end
+
     def menu
+      bg_color = active_player ? YOUR_TURN_ORANGE : color_for(:bg2)
       nav_props = {
         attrs: {
           role: 'navigation',
@@ -159,9 +164,9 @@ module View
           margin: '-1rem -2vmin 2vmin -2vmin',
           borderBottom: "1px solid #{color_for(:font2)}",
           top: '0',
-          'background-color': color_for(:bg2),
-          'font-size': 'large',
-          'z-index': '9999',
+          backgroundColor: bg_color,
+          fontSize: 'large',
+          zIndex: '9999',
         },
       }
 
@@ -192,7 +197,7 @@ module View
           onclick: 'return false',
         },
         style: {
-          'color': color_for(:font2),
+          color: color_for(:font2),
         },
         on: { click: change_anchor },
       }
@@ -220,22 +225,20 @@ module View
       game_end = @game.game_ending_description
       description += " - #{game_end}" if game_end
       description += " - Pinned to Version: #{@pin}" if @pin
-      h(:div, { style: { 'font-weight': 'bold', margin: '2vmin 0' } }, description)
+      h(:div, { style: { fontWeight: 'bold', margin: '2vmin 0' } }, description)
     end
 
     def render_action
       return h(Game::GameEnd) if @game.finished
 
       entity = @round.active_step.current_entity
-      current_actions = @round.actions_for(entity)
-      if current_actions&.include?('discard_train')
-        return h(:div, [h(Game::UndoAndPass, pass: false), h(Game::DiscardTrains)])
-      end
+      current_actions = @round.actions_for(entity) || []
+      return h(Game::DiscardTrains) if current_actions.include?('discard_train')
 
       case @round
       when Engine::Round::Stock
-        if current_actions&.include?('place_token')
-          h(:div, [h(Game::UndoAndPass, pass: false), h(Game::Map, game: @game)])
+        if (%w[place_token lay_tile] & current_actions).any?
+          h(Game::Map, game: @game)
         else
           h(Game::Round::Stock, game: @game)
         end
@@ -257,6 +260,7 @@ module View
         h(Game::HistoryControls, num_actions: @num_actions),
         h(Game::EntityOrder, round: @round),
         h(Game::Abilities, user: @user, game: @game),
+        h(Game::UndoAndPass),
         render_action,
       ])
     end

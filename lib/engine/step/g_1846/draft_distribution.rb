@@ -62,7 +62,7 @@ module Engine
         end
 
         def process_pass(action)
-          raise GameError, 'Cannot pass' unless only_one_company?
+          @game.game_error('Cannot pass') unless only_one_company?
 
           company = @companies[0]
           old_value = company.min_bid

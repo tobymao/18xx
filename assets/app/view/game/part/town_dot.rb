@@ -13,6 +13,7 @@ module View
         needs :color, default: 'black'
         needs :tile
         needs :town
+        needs :width, default: 8
 
         REVENUE_DISPLACEMENT = 42
         REVENUE_ANGLE = -60
@@ -76,7 +77,7 @@ module View
         end
 
         def render_part
-          children = [h(:circle, attrs: { transform: translate, fill: @color, r: 10 })]
+          children = [h(:circle, attrs: { transform: translate, fill: @color, r: 10 * (0.8 + @width.to_i / 40) })]
           children << render_revenue
           children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
           h(:g, children)

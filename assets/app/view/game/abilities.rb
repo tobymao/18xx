@@ -12,9 +12,9 @@ module View
 
       def render
         companies = @game.companies.select { |company| !company.closed? && actions_for(company).any? }
-        return h(:div) if companies.empty?
+        return h(:div) if companies.empty? || @game.round.current_entity.company?
 
-        current, others = companies.partition { |company| @game.current_entity.owner == company.owner.owner }
+        current, others = companies.partition { |company| @game.current_entity.player == company.player }
 
         children = [
           h('div.inline.margined.bold', 'Abilities:'),
@@ -56,10 +56,10 @@ module View
           props[:style][:textDecoration] = 'underline' if @selected_company == company
 
           company_name = company.name
-          company_name = company_name[0..15] + '...' if company_name.size > 15
+          company_name = company_name[0..15] + '...' if company_name.size > 16
 
           owner_name = company.owner.id
-          owner_name = owner_name[0..10] + '...' if owner_name.size > 10
+          owner_name = owner_name[0..10] + '...' if owner_name.size > 11
 
           h(:div, props, "#{company_name} (#{owner_name})")
         end.compact

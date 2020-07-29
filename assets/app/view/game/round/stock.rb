@@ -28,8 +28,8 @@ module View
             store(:last_player, @current_entity, skip: true)
           end
 
-          children = [h(UndoAndPass, pass: @current_actions.include?('pass'))]
-          if @step.must_sell?(@current_entity)
+          children = []
+          if @step.respond_to?(:must_sell?) && @step.must_sell?(@current_entity)
             children << if @current_entity.num_certs > @game.cert_limit
                           h('div.margined', 'Must sell stock: above certificate limit')
                         else
@@ -47,7 +47,7 @@ module View
           props = {
             style: {
               display: 'inline-block',
-              'vertical-align': 'top',
+              verticalAlign: 'top',
             },
           }
 
@@ -60,7 +60,7 @@ module View
 
         def render_input
           input = @selected_corporation.ipoed ? render_ipoed : render_pre_ipo
-          h(:div, { style: { 'margin-top': '0.5rem', width: '320px' } }, [input].compact)
+          h(:div, { style: { margin: '0.5rem 0', width: '20rem' } }, [input].compact)
         end
 
         def buy_share(entity, share)

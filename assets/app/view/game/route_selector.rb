@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/color'
 require 'lib/settings'
 require 'view/game/actionable'
 require 'view/game/undo_and_pass'
@@ -8,6 +9,7 @@ module View
   module Game
     class RouteSelector < Snabberb::Component
       include Actionable
+      include Lib::Color
       include Lib::Settings
 
       needs :routes, store: true, default: []
@@ -67,7 +69,7 @@ module View
           selected = @selected_route&.train == train
 
           style = {
-            border: "solid 3px #{selected ? 'currentColor' : color_for(:bg)}",
+            border: "solid 3px #{selected ? color_for(:font) : color_for(:bg)}",
             display: 'inline-block',
             cursor: selected ? 'default' : 'pointer',
             margin: '0.1rem 0rem',
@@ -86,8 +88,9 @@ module View
                                  ['N/A', e.to_s]
                                end
 
-            style['background-color'] = Part::Track::ROUTE_COLORS[@routes.index(route)]
-            style['color'] = 'white'
+            bg_color = route_prop(@routes.index(route), :color)
+            style[:backgroundColor] = bg_color
+            style[:color] = contrast_on(bg_color)
 
             td_props = { style: { paddingRight: '0.8rem' } }
 

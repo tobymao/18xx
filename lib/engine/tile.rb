@@ -204,6 +204,9 @@ module Engine
       # correct color progression?
       return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)
 
+      # honors pre-existing track?
+      return false unless paths_are_subset_of?(other.paths)
+
       # If special ability then remaining checks is not applicable
       return true if special_lay
 
@@ -216,9 +219,6 @@ module Engine
       # - TODO: account for games that allow double dits to upgrade to one town
       return false if @towns.size != other.towns.size
       return false if !label && @cities.size != other.cities.size
-
-      # honors pre-existing track?
-      return false unless paths_are_subset_of?(other.paths)
 
       true
     end
@@ -272,6 +272,19 @@ module Engine
       else
         @reservations.count { |x| corporation != x } >= @cities.sum(&:available_slots)
       end
+    end
+
+    def city_town_edges
+      # Returns a list of each edge a city/town goes to
+      ct_edges = Hash.new { |h, k| h[k] = [] }
+      paths.each do |path|
+        next unless (ct = path.city || path.town)
+
+        path.exits.each do |edge|
+          ct_edges[ct] << edge
+        end
+      end
+      ct_edges.values
     end
 
     def compute_city_town_edges

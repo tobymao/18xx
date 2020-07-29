@@ -27,7 +27,7 @@ module View
           props = {
             style: {
               display: 'inline-block',
-              'vertical-align': 'top',
+              verticalAlign: 'top',
             },
           }
 
@@ -130,7 +130,10 @@ module View
 
       def from_depot(depot_trains)
         depot_trains.flat_map do |train|
-          train.variants.sort_by { |_, v| v[:price] }.flat_map do |name, variant|
+          train.variants
+            .select { |_, v| @game.round.active_step.buyable_train_variants(train).include?(v) }
+            .sort_by { |_, v| v[:price] }
+            .flat_map do |name, variant|
             price = variant[:price]
 
             buy_train = lambda do

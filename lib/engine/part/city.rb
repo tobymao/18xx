@@ -89,8 +89,7 @@ module Engine
       end
 
       def exchange_token(token)
-        token.used = true
-        token.city = self
+        token.place(self)
         @tokens[get_slot(token.corporation)] = token
       end
     end

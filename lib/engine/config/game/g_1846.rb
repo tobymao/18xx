@@ -618,6 +618,9 @@ module Engine
            ],
            "price": 450
          }
+      ],
+      "events": [
+        {"type": "close_companies"}
       ]
     },
     {
@@ -637,7 +640,10 @@ module Engine
           "price": 900
         }
       ],
-      "num": 9
+      "num": 9,
+      "events": [
+        {"type": "remove_tokens"}
+      ]
     }
   ],
   "hexes": {
@@ -837,10 +843,7 @@ module Engine
         "green",
         "brown"
       ],
-      "operating_rounds": 2,
-      "events": {
-        "close_companies": true
-      }
+      "operating_rounds": 2
     },
     {
       "name": "4",
@@ -852,10 +855,7 @@ module Engine
         "brown",
         "gray"
       ],
-      "operating_rounds": 2,
-      "events": {
-        "remove_tokens": true
-      }
+      "operating_rounds": 2
     }
   ]
 }

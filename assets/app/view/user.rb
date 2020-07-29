@@ -16,6 +16,7 @@ module View
     needs :type
 
     TILE_COLORS = Lib::Hex::COLOR.freeze
+    ROUTE_COLORS = Lib::Settings::ROUTE_COLORS.freeze
 
     def render_content
       title, inputs =
@@ -32,7 +33,7 @@ module View
           ['Login', [
             render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
             render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
-            h(:div, { style: { 'margin-bottom': '1rem' } }, [render_button('Login') { submit }]),
+            h(:div, { style: { marginBottom: '1rem' } }, [render_button('Login') { submit }]),
             h(:a, { attrs: { href: '/forgot' } }, 'Forgot Password'),
           ]]
         when :profile
@@ -50,6 +51,7 @@ module View
               ]),
             ]),
             render_tile_colors,
+            render_route_colors,
             h('div#settings__buttons', [
               render_button('Save Changes') { submit },
               render_button('Reset to Defaults') { reset_settings },
@@ -89,9 +91,17 @@ module View
       input_elm(:bg2).value = default_for(:bg2)
       input_elm(:font2).value = default_for(:font2)
       input_elm(:red_logo).checked = false
+
       TILE_COLORS.each do |color, hex_color|
         input_elm(color).value = hex_color
       end
+
+      ROUTE_COLORS.each_with_index do |hex_color, index|
+        input_elm(route_prop_string(index, :color)).value = hex_color
+        input_elm(route_prop_string(index, :dash)).value = '0'
+        input_elm(route_prop_string(index, :width)).value = 8
+      end
+
       submit
     end
 
@@ -106,8 +116,8 @@ module View
       ])
     end
 
-    def render_color(label, id, hex_color, attrs = {})
-      render_input(label, id: id, type: :color, attrs: { value: hex_color, **attrs },)
+    def render_color(label, id, hex_color, attrs: {})
+      render_input(label, id: id, type: :color, attrs: { value: hex_color, **attrs })
     end
 
     def render_logo_color(red_logo)
@@ -121,10 +131,82 @@ module View
 
     def render_tile_colors
       h('div#settings__tiles', [
-        h(:label, 'Map & Tile Colors'),
+        h(:h3, 'Map & Tile Colors'),
         h('div#settings__tiles__buttons', TILE_COLORS.map do |color, _|
           render_color('', color, setting_for(color), attrs: { title: color == 'white' ? 'plain' : color })
         end),
+      ])
+    end
+
+    def render_route_colors
+      grid_props = {
+        style: {
+          display: 'grid',
+          grid: '1fr / 5rem 4rem 5rem 5rem',
+          alignItems: 'center',
+        },
+      }
+
+      children = ROUTE_COLORS.map.with_index do |_, index|
+        h(:div, grid_props, [
+          h(:label, "Route #{index + 1}"),
+          render_color(
+            '',
+            route_prop_string(index, :color),
+            route_prop(index, :color),
+            attrs: { title: 'color of train and route on map' },
+          ),
+          render_input(
+            '',
+            id: route_prop_string(index, :width),
+            type: :number,
+            attrs: {
+              title: 'width of route on map',
+              min: 6,
+              max: 24,
+              value: route_prop(index, :width),
+            },
+            input_style: { width: '2.5rem' },
+          ),
+          render_input(
+            '',
+            id: route_prop_string(index, :dash),
+            type: :text,
+            attrs: {
+              title: 'dash/gap lengths of route on map, for help hover/click header',
+              value: route_prop(index, :dash),
+            },
+            input_style: { width: '2.5rem' },
+          ),
+        ])
+      end
+
+      header_props = { style: { marginLeft: '0.5rem' } }
+
+      help_message = <<~MESSAGE
+        5 = dash 5, gap 5, [repeat]
+        15 5 7.5 5 = dash 15, gap 5, dash 7.5, gap 5, [repeat]
+        hex width (side to side) = 174
+      MESSAGE
+      link_props = {
+        props: {
+          href: 'https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray',
+          title: help_message,
+        },
+        style: {
+          marginLeft: '0.5rem',
+        },
+      }
+
+      h('div#routes', [
+        h(:h3, 'Trains & Routes'),
+        h(:div, grid_props, [
+          h(:div, ''),
+          h(:div, header_props, 'Color'),
+          h(:div, header_props, 'Width'),
+          h(:a, link_props, 'Dash'),
+        ]),
+        *children,
       ])
     end
 

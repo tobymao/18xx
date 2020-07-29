@@ -180,8 +180,8 @@ module Engine
         entity = bid.entity
         price = bid.price
         min = min_bid(company)
-        raise Engine::GameError, "Minimum bid is #{@game.format_currency(min)} for #{company.name}" if price < min
-        raise GameError, 'Cannot afford bid' if bids_for_player(entity).sum(&:price) > entity.cash
+        @game.game_error("Minimum bid is #{@game.format_currency(min)} for #{company.name}") if price < min
+        @game.game_error('Cannot afford bid') if bids_for_player(entity).sum(&:price) > entity.cash
 
         bids = @bids[company]
         bids.reject! { |b| b.entity == entity }

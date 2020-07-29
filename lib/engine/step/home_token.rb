@@ -44,8 +44,10 @@ module Engine
       def description
         if current_entity != token.corporation
           "Place #{token.corporation.name} Home Token"
-        else
+        elsif token.corporation.tokens.first == token
           'Place Home Token'
+        else
+          'Place Token'
         end
       end
 

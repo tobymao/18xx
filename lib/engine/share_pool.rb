@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require_relative 'corporation'
+require_relative 'entity'
 require_relative 'share_bundle'
 require_relative 'share_holder'
 
 module Engine
   class SharePool
+    include Entity
     include ShareHolder
 
     def initialize(game)
@@ -18,9 +20,13 @@ module Engine
       'Sharepool'
     end
 
+    def player
+      nil
+    end
+
     def buy_shares(entity, shares, exchange: nil, exchange_price: nil)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
-      raise GameError, 'Cannot buy share from player' if shares.owner.player?
+      @game.game_error('Cannot buy share from player') if shares.owner.player?
 
       corporation = bundle.corporation
       ipoed = corporation.ipoed
@@ -66,6 +72,7 @@ module Engine
           entity,
           spender: entity,
           receiver: incremental && bundle.owner.corporation? ? bundle.owner : @bank,
+          price: price
         )
       end
 
@@ -91,16 +98,8 @@ module Engine
       transfer_shares(bundle, self, spender: @bank, receiver: entity)
     end
 
-    def player?
-      false
-    end
-
-    def corporation?
-      false
-    end
-
-    def company?
-      false
+    def share_pool?
+      true
     end
 
     def fit_in_bank?(bundle)
@@ -116,22 +115,23 @@ module Engine
     def distance(player_a, player_b)
       return 0 if !player_a || !player_b
 
-      entities = @game.players
+      entities = @game.players.reject(&:bankrupt)
       a = entities.find_index(player_a)
       b = entities.find_index(player_b)
       a < b ? b - a : b - (a - entities.size)
     end
 
-    def transfer_shares(bundle, to_entity, spender: nil, receiver: nil)
+    def transfer_shares(bundle, to_entity, spender: nil, receiver: nil, price: nil)
       corporation = bundle.corporation
       owner = bundle.owner
       previous_president = bundle.president
       percent = bundle.percent
+      price ||= bundle.price
 
       corporation.share_holders[owner] -= percent if owner.player?
       corporation.share_holders[to_entity] += percent if to_entity.player?
 
-      spender.spend(bundle.price, receiver) if spender && receiver
+      spender.spend(price, receiver) if spender && receiver
       bundle.shares.each { |s| move_share(s, to_entity) }
 
       # check if we need to change presidency
@@ -146,7 +146,7 @@ module Engine
 
       president = majority_share_holders
         .select { |p| p.num_shares_of(corporation) > 1 }
-        .min_by { |p| distance(previous_president, p) }
+        .min_by { |p| previous_president == self ? 0 : distance(previous_president, p) }
       return unless president
 
       corporation.owner = president

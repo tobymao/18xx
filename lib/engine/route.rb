@@ -28,7 +28,7 @@ module Engine
         connection = possibilities[0].find do |conn|
           conn.nodes.any? { |node| node.tokened_by?(corporation) }
         end
-        left, right = connection.nodes
+        left, right = connection&.nodes
         return if !left || !right
 
         @connections << { left: left, right: right, connection: connection }
@@ -193,7 +193,7 @@ module Engine
       @connections.each do |c|
         right = c[:right]
         cycles[c[:left]] = true
-        raise GameError, "Cannot use #{right.hex.name} twice" if cycles[right]
+        @game.game_error("Cannot use #{right.hex.name} twice") if cycles[right]
 
         cycles[right] = true
       end
@@ -201,7 +201,7 @@ module Engine
 
     def check_overlap!
       @routes.flat_map(&:paths).group_by(&:itself).each do |k, v|
-        raise GameError, "Route cannot use same path twice #{k.inspect}" if v.size > 1
+        @game.game_error("Route cannot use same path twice #{k.inspect}") if v.size > 1
       end
     end
 
@@ -210,7 +210,7 @@ module Engine
 
       # rubocop:disable Style/GuardClause, Style/IfUnlessModifier
       if token.select(paths_, corporation: corporation).size != paths_.size
-        raise GameError, 'Route is not connected'
+        @game.game_error('Route is not connected')
       end
       # rubocop:enable Style/GuardClause, Style/IfUnlessModifier
     end
@@ -223,7 +223,7 @@ module Engine
       distance = @train.distance
       if distance.is_a?(Numeric)
         route_distance = visits.sum(&:visit_cost)
-        raise GameError, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
+        @game.game_error("#{route_distance} is too many stops for #{distance} train") if distance < route_distance
 
         return
       end
@@ -250,7 +250,7 @@ module Engine
           break unless num.positive?
         end
 
-        raise GameError, 'Route has too many stops' if num.positive?
+        @game.game_error('Route has too many stops') if num.positive?
       end
     end
 
@@ -258,8 +258,10 @@ module Engine
       return @override[:revenue] if @override
 
       visited = visited_stops
-      raise GameError, 'Route must have at least 2 stops' if @connections.any? && visited.size < 2
-      raise GameError, 'Route must contain token' unless (token = visited.find { |stop| stop.tokened_by?(corporation) })
+      @game.game_error('Route must have at least 2 stops') if @connections.any? && visited.size < 2
+      unless (token = visited.find { |stop| stop.tokened_by?(corporation) })
+        @game.game_error('Route must contain token')
+      end
 
       check_distance!(visited)
       check_cycles!
@@ -267,7 +269,7 @@ module Engine
       check_connected!(token)
 
       visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
-        raise GameError, "Cannot use group #{key} more than once" unless group.one?
+        @game.game_error("Cannot use group #{key} more than once") unless group.one?
       end
 
       @game.revenue_for(self)

@@ -428,7 +428,10 @@ module Engine
          "name":"5",
          "distance":5,
          "price":450,
-         "num":2
+         "num":2,
+         "events":{
+            "close_companies":true
+         }
       },
       {
          "name":"6",
@@ -602,10 +605,7 @@ module Engine
             "yellow",
             "green",
             "brown"
-         ],
-         "events":{
-            "close_companies":true
-         }
+         ]
       },
       {
          "name":"6",

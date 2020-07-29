@@ -13,7 +13,7 @@ module Engine
         @slot = slot
         # token may be nil because when you upgrade someone's 00
         # and place their token, you pretend to be them and you may not have a token
-        @token = @entity.find_token_by_type(token_type)
+        @token = @entity.find_token_by_type(token_type&.to_sym)
       end
 
       def self.h_to_args(h, game)

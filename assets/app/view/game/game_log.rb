@@ -33,17 +33,17 @@ module View
         if @player
           children << h(:div, { style: {
             margin: '1vmin 0',
-            'display': 'flex',
-            'flex-direction': 'row',
+            display: 'flex',
+            flexDirection: 'row',
           } }, [
             h(:span, { style: {
-              'font-weight': 'bold',
+              fontWeight: 'bold',
               margin: 'auto 0',
             } }, [@user['name'] + ':']),
             h(:input,
               style: {
-              'margin-left': '0.5rem',
-              'flex': '1',
+              marginLeft: '0.5rem',
+              flex: '1',
             },
               on: { keyup: enter }),
             ])

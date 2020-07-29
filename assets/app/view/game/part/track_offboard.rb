@@ -9,6 +9,8 @@ module View
         needs :path
         needs :offboard
         needs :color, default: 'black'
+        needs :width, default: 8
+        needs :dash, default: '0'
 
         REGIONS = {
           0 => [21],
@@ -44,7 +46,8 @@ module View
               stroke: 'none',
               'stroke-linecap': 'butt',
               'stroke-linejoin': 'miter',
-              'stroke-width': 6,
+              'stroke-width': @width.to_i * 0.75,
+              'stroke-dasharray': @dash,
             },
           }
 

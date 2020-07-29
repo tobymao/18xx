@@ -20,12 +20,37 @@ module Engine
         'creslin792' => 6178,
         'markcp' => 6225,
       },
+      # bankruptcy sending two corps into receivership, one of them buying a
+      # train immediately; also has emergency share issuing
+      'hs_ynxuqvex_1595710756' => {
+        'Player 1' => 0,
+        'Player 2' => 0,
+        'Player 3' => 1527,
+      },
+      # bankruptcy sending a corp into receivership, unable to buy a train on
+      # the turn of the bankruptcy, and then buying a train on its next turn
+      # thanks to company income; also includes emergency share issuing
+      'hs_gcumggit_1595777670' => {
+        'Player 1' => 0,
+        'Player 2' => 1387,
+        'Player 3' => 0,
+      },
+      # bankruptcy that forces the new president to buy a train, which actually
+      # bankrupts them as well
+      'hs_hxrxpbjl_1595784599' => {
+        'Player 1' => 0,
+        'Player 2' => 0,
+        'Player 3' => 552,
+      },
+      # bankruptcy where the bankruptcy action automatically issues the rest of
+      # the corporation's shares
+      'hs_qxroaokg_1595793382' => {
+        'Player 1' => 1266,
+        'Player 2' => 0,
+        'Player 3' => 0,
+      },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
-      1825 => {
-        'Phoofstix' => 8187,
-        'ladycake' => 6380,
-      },
       3055 => {
         'CullenF' => 4960,
         'KillerMonkey' => 3456,
@@ -85,6 +110,8 @@ module Engine
         'markmenm' => 3159,
         'scottredracecar' => 5021,
       },
+    },
+    GAMES_BY_TITLE['1882'] => {
     },
   }.freeze
 

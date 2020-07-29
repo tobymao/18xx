@@ -13,7 +13,7 @@ module View
             click: -> { process_action(Engine::Action::Undo.new(@game.current_entity)) },
           },
           style: {
-            'margin-right': '1em',
+            marginRight: '1em',
           },
         }
 

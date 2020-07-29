@@ -56,8 +56,17 @@ module View
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
 
         if @corporation.owner
-          subchildren = (@corporation.operating_history.empty? ? [] : [render_revenue_history])
-          children << h('table.center', [h(:tr, subchildren)])
+          props = {
+            style: {
+              grid: '1fr / repeat(2, max-content)',
+              gap: '2rem',
+              justifyContent: 'center',
+            },
+          }
+
+          subchildren = render_operating_order
+          subchildren << render_revenue_history if @corporation.operating_history.any?
+          children << h(:div, props, subchildren)
         end
 
         h('div.corp.card', { style: card_style, on: { click: select_corporation } }, children)
@@ -202,7 +211,6 @@ module View
             },
           }
           img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if token.used
-
           token_text =
             if i.zero? && @corporation.coordinates
               @corporation.coordinates
@@ -215,6 +223,7 @@ module View
             h(:div, token_text_props, token_text),
           ])
         end
+
         h(:div, token_list_props, tokens_body)
       end
 
@@ -232,14 +241,14 @@ module View
             player,
             @corporation.president?(player),
             player.num_shares_of(@corporation),
-            @game.round.active_step.did_sell?(@corporation, player),
+            @game.round.active_step&.did_sell?(@corporation, player),
             !@corporation.holding_ok?(player, 1),
           ]
         end
 
         shares_props = {
           style: {
-            paddingRight: '1.5rem',
+            paddingRight: '1.3rem',
           },
         }
 
@@ -249,7 +258,7 @@ module View
           .map do |player, president, num_shares, did_sell, at_limit|
             flags = (president ? '*' : '') + (at_limit ? 'L' : '')
             h('tr.player', [
-              h("td.name.nowrap.#{president ? 'president' : ''}", player.name),
+              h("td.left.name.nowrap.#{president ? 'president' : ''}", player.name),
               h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{num_shares}"),
               did_sell ? h('td.italic', 'Sold') : '',
             ])
@@ -257,9 +266,9 @@ module View
 
         pool_rows = [
           h('tr.ipo', [
-            h('td.name', @game.class::IPO_NAME),
+            h('td.left', @game.class::IPO_NAME),
             h('td.right', shares_props, share_number_str(@corporation.num_ipo_shares)),
-            h('td.right', share_price_str(@corporation.par_price)),
+            h('td.padded_number', share_price_str(@corporation.par_price)),
           ]),
         ]
 
@@ -274,13 +283,19 @@ module View
             market_tr_props[:style][:backgroundColor] = color
             market_tr_props[:style][:color] = contrast_on(color)
           end
+        end
+
+        if player_rows.any? || @corporation.num_market_shares.positive?
+          at_limit = @game.share_pool.bank_at_limit?(@corporation)
+
+          flags = (@corporation.receivership? ? '*' : '') + (at_limit ? 'L' : '')
 
           pool_rows << h('tr.market', market_tr_props, [
-            h('td.name', 'Market'),
+            h('td.left', 'Market'),
             h('td.right', shares_props,
-              (@game.share_pool.bank_at_limit?(@corporation) ? 'L ' : '') +
+              flags + ' ' +
               share_number_str(@corporation.num_market_shares)),
-            h('td.right', share_price_str(@corporation.share_price)),
+            h('td.padded_number', share_price_str(@corporation.share_price)),
           ])
         end
 
@@ -307,7 +322,19 @@ module View
 
       def render_revenue_history
         last_run = @corporation.operating_history[@corporation.operating_history.keys.max].revenue
-        h('td.bold', "Last Run: #{@game.format_currency(last_run)}")
+        h('div.bold', "Last Run: #{@game.format_currency(last_run)}")
+      end
+
+      def render_operating_order
+        return [] unless @game.round.current_entity&.operator?
+
+        round = @game.round
+        if (n = @game.round.entities.find_index(@corporation))
+          div_class = '.bold' if n >= round.entities.find_index(round.current_entity)
+          [h("div#{div_class}", "Order: #{n + 1}")]
+        else
+          []
+        end
       end
 
       def render_abilities(abilities)

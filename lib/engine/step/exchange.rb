@@ -24,7 +24,7 @@ module Engine
         company = action.entity
         bundle = action.bundle
         unless can_exchange?(company, bundle)
-          raise GameError, "Cannot exchange #{action.entity.id} for #{bundle.corporation.id}"
+          @game.game_error("Cannot exchange #{action.entity.id} for #{bundle.corporation.id}")
         end
 
         buy_shares(company.owner, bundle, exchange: company)

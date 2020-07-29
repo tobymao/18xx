@@ -21,7 +21,6 @@ module View
           @current_actions = @step.current_actions
 
           h(:div, [
-            h(UndoAndPass, pass: @current_actions.include?('pass')),
             *render_company_pending_par,
             *render_companies,
             h(Players, game: @game),
@@ -47,7 +46,7 @@ module View
           props = {
             style: {
               display: 'inline-block',
-              'vertical-align': 'top',
+              verticalAlign: 'top',
             },
           }
 
@@ -61,7 +60,7 @@ module View
         def render_input(company)
           step = @step.min_increment
 
-          input = h(:input, style: { 'margin-right': '1rem' }, props: {
+          input = h(:input, style: { marginRight: '1rem' }, props: {
             value: @step.min_bid(company),
             step: step,
             min: @step.min_bid(company) + step,
@@ -99,7 +98,7 @@ module View
               ]
             end
 
-          h(:div, { style: { 'text-align': 'center', 'margin': '1rem' } }, company_actions)
+          h(:div, { style: { textAlign: 'center', margin: '1rem' } }, company_actions)
         end
       end
     end

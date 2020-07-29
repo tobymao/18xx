@@ -13,7 +13,7 @@ module Engine
             # SC is ipoed for half price.
 
             corporation = bundle.corporation
-            entity.cash >= bundle.price_per_share && @game.can_gain?(bundle, entity) &&
+            entity.cash >= bundle.price_per_share && can_gain?(entity, bundle) &&
               !@players_sold[entity][corporation] &&
               (can_buy_multiple?(corporation) || !bought?)
           else
@@ -25,7 +25,7 @@ module Engine
           if action.corporation.id == 'SC'
             share_price = action.share_price
             corporation = action.corporation
-            raise GameError, "#{corporation} cannot be parred" unless corporation.can_par?(action.entity)
+            @game.game_error("#{corporation} cannot be parred") unless corporation.can_par?(action.entity)
 
             @game.stock_market.set_par(corporation, share_price)
             share = corporation.shares.first

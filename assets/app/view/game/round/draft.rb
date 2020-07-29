@@ -30,7 +30,6 @@ module View
             !Lib::Storage[@game.id]&.dig('master_mode')
 
           h(:div, [
-            h(UndoAndPass, pass: @current_actions.include?('pass')),
             render_show_button,
             *render_companies,
             render_player,
@@ -61,7 +60,7 @@ module View
           props = {
             style: {
               display: 'inline-block',
-              'vertical-align': 'top',
+              verticalAlign: 'top',
             },
           }
 

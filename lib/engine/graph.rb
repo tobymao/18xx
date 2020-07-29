@@ -30,6 +30,12 @@ module Engine
       @routes.delete(corporation)
     end
 
+    def clear_graph_for_all
+      # warning: this is very costly
+      clear
+      @routes.clear
+    end
+
     def route_info(corporation)
       compute(corporation) unless @routes[corporation]
       @routes[corporation]

@@ -15,7 +15,7 @@ module TerminusCheck
     route.hexes[1...-1].each do |hex|
       next unless termini.include?(hex.name)
 
-      raise GameError, "#{hex.location_name} must be first or last in route"
+      game_error("#{hex.location_name} must be first or last in route")
     end
   end
 end

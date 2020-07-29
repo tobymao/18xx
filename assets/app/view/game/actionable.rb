@@ -13,6 +13,7 @@ module View
         base.needs :connection, store: true, default: nil
         base.needs :user, store: true, default: nil
         base.needs :tile_selector, default: nil, store: true
+        base.needs :selected_company, default: nil, store: true
       end
 
       def process_action(action)
@@ -66,6 +67,7 @@ module View
           )
         end
 
+        store(:selected_company, nil, skip: true)
         store(:tile_selector, nil, skip: true)
         store(:game, game)
       rescue StandardError => e

@@ -14,6 +14,7 @@ module Engine
       end
 
       def process_end_game(_action)
+        @log << 'Game ended manually by a user'
         @game.end_game!
       end
 

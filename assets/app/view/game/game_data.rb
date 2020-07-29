@@ -17,7 +17,7 @@ module View
 
         props = {
           style: {
-            'white-space': 'pre-wrap',
+            whiteSpace: 'pre-wrap',
           },
         }
 
