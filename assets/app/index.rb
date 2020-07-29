@@ -11,7 +11,7 @@ class Index < Snabberb::Layout
       h(:head, [
         h(:meta, props: { charset: 'utf-8' }),
         h(:meta, props: view_port),
-        h(:title, '18xx.games'),
+        h(:title, '18xx.Games'),
         # rubocop:disable Layout/LineLength
         h(:link, attrs: { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css' }),
         h(:link, attrs: { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap' }),
