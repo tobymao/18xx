@@ -95,16 +95,16 @@ class Api
               end
             end
 
-            type, user_ids =
+            type, user_ids, force =
               if action['type'] == 'message'
                 pinged = users.select do |user|
                   action['message'].include?("@#{user.name}")
                 end
-                ['Received Message', pinged.map(&:id)]
+                ['Received Message', pinged.map(&:id), false]
               elsif game.status == 'finished'
-                ['Game Finished', users.map(&:id)]
+                ['Game Finished', users.map(&:id), true]
               else
-                ['Your Turn', acting.map(&:id)]
+                ['Your Turn', acting.map(&:id), false]
               end
 
             if user_ids.any?
@@ -114,6 +114,7 @@ class Api
                 game_id: game.id,
                 game_url: "#{r.base_url}/game/#{game.id}",
                 type: type,
+                force: force,
               )
             end
 
