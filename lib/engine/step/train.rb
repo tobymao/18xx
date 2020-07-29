@@ -58,6 +58,7 @@ module Engine
       def process_buy_train(action)
         entity = action.entity
         train = action.train
+        train.variant = action.variant
         price = action.price
         exchange = action.exchange
         @game.phase.buying_train!(entity, train)
