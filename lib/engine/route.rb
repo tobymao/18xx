@@ -35,7 +35,7 @@ module Engine
       else
         possibilities.each_cons(2).with_index do |pair, index|
           a, b, left, right, middle = find_connections(*pair)
-          return @connections.clear if !left || !right
+          return @connections.clear if !left&.hex || !right&.hex || !middle&.hex
 
           @connections << { left: left, right: middle, connection: a } if index.zero?
           @connections << { left: middle, right: right, connection: b }
