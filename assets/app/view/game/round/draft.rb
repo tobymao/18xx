@@ -46,12 +46,14 @@ module View
           props = {
             style: {
               display: 'block',
+              width: '8.5rem',
+              padding: '0.2rem 0',
               margin: '1rem 0',
             },
             on: { click: toggle },
           }
 
-          h('button.button', props, @hidden ? 'Show' : 'Hide')
+          h(:button, props, "#{@hidden ? 'Show' : 'Hide'} Companies")
         end
 
         def render_companies
@@ -78,7 +80,7 @@ module View
             store(:selected_company, nil, skip: true)
           end
 
-          h('button.button.margined', { style: { display: 'block' }, on: { click: choose } }, 'Choose')
+          h('button.margined_bottom', { style: { display: 'block' }, on: { click: choose } }, 'Choose')
         end
 
         def render_player
