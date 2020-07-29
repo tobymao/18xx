@@ -8,16 +8,7 @@ module View
       include Actionable
 
       def render
-        props = {
-          on: {
-            click: -> { process_action(Engine::Action::Redo.new(@game.current_entity)) },
-          },
-          style: {
-            marginRight: '1em',
-          },
-        }
-
-        h(:button, props, 'Redo')
+        h(:button, { on: { click: -> { process_action(Engine::Action::Redo.new(@game.current_entity)) } } }, 'Redo')
       end
     end
   end
