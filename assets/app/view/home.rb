@@ -52,6 +52,9 @@ module View
 
       game_refresh
 
+      acting = your_games.any? { |game| user_is_acting?(@user, game) }
+      `document.title = #{(acting ? '* ' : '') + '18xx.Games'}`
+
       destroy = lambda do
         `clearTimeout(#{@refreshing})`
         store(:refreshing, nil, skip: true)
