@@ -11,7 +11,7 @@ a {
   text-underline-offset: 0.2em;
 }
 
-button, .button-link {
+button, .button_link {
   font-size: 14px;
   background: whitesmoke;
   color: black;
@@ -53,16 +53,16 @@ p {
   a:active {
     outline: 0;
   }
-  button:hover, .button-link:hover {
+  button:hover, .button_link:hover {
     background: black;
     border-color: gainsboro;
     color: gainsboro;
     text-decoration: none;
   }
-  button, .button-link {
+  button, .button_link {
     outline: 0;
   }
-  button:active, .button-link:active, button:focus, .button-link:focus {
+  button:active, .button_link:active, button:focus, .button_link:focus {
     outline: 0;
     opacity: 0.8;
   }
@@ -107,7 +107,7 @@ th, td {
     color: gainsboro;
   }
 
-  button, .button-link, input, select, textarea {
+  button, .button_link, input, select, textarea {
     background-color: gainsboro;
   }
 }

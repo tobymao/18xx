@@ -125,7 +125,7 @@ module View
           margin: '0 0.3rem',
           padding: '0.2rem 0.5rem',
         },
-        class: '.button-link'
+        class: '.button_link'
       )
     end
 
