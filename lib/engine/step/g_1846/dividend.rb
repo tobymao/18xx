@@ -39,7 +39,7 @@ module Engine
           return if current_entity.share_price.price.zero?
 
           @log << "#{current_entity.name} is in receivership and does not own a train."
-          change_share_price(current_entity, 0)
+          change_share_price(current_entity, dividend_options(current_entity)[:withhold])
         end
       end
     end
