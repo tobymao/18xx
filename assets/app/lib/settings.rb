@@ -51,15 +51,15 @@ module Lib
       "r#{index}_#{prop}"
     end
 
-    def change_favicon(change)
-      `document.getElementById('favicon_svg').href = '/images/icon' + #{change ? '_red' : ''} + '.svg'`
-      `document.getElementById('favicon_16').href = '/images/favicon-16x16' + #{change ? '_red' : ''} + '.png'`
-      `document.getElementById('favicon_32').href = '/images/favicon-32x32' + #{change ? '_red' : ''} + '.png'`
-      `document.getElementById('favicon_apple').href = '/apple-touch-icon' + #{change ? '_red' : ''} + '.png'`
+    def change_favicon(active)
+      `document.getElementById('favicon_svg').href = '/images/icon' + #{active ? '_red' : ''} + '.svg'`
+      `document.getElementById('favicon_16').href = '/images/favicon-16x16' + #{active ? '_red' : ''} + '.png'`
+      `document.getElementById('favicon_32').href = '/images/favicon-32x32' + #{active ? '_red' : ''} + '.png'`
+      `document.getElementById('favicon_apple').href = '/apple-touch-icon' + #{active ? '_red' : ''} + '.png'`
     end
 
-    def change_tab_color(change)
-      color = change ? color_for(:your_turn) : color_for(:bg)
+    def change_tab_color(active)
+      color = active ? color_for(:your_turn) : color_for(:bg)
       `document.getElementById('theme_color').content = #{color}`
       `document.getElementById('theme_apple').content = #{color}`
       `document.getElementById('theme_ms').content = #{color}`
