@@ -132,8 +132,8 @@ module View
       )
     end
 
-    def render_time_or_date(timestamp)
-      ts = Time.at(@gdata[timestamp].to_i)
+    def render_time_or_date(ts_key)
+      ts = Time.at(@gdata[ts_key]&.to_i || 0)
       time_or_date = ts > Time.now - 82_800 ? ts.strftime('%T') : ts.strftime('%F')
       h(:span, { attrs: { title: ts.strftime('%F %T') } }, time_or_date)
     end
