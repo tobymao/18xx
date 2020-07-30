@@ -22,7 +22,10 @@ module View
           end
 
           props = {
-            style: { width: 'calc(17.5rem/6)' },
+            style: {
+              width: 'calc(17.5rem/6)',
+              padding: '0.2rem 0',
+            },
             on: { click: par },
           }
           h('button.small.par_price', props, @game.format_currency(share_price.price))
