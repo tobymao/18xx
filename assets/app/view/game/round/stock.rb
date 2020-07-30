@@ -60,7 +60,7 @@ module View
 
         def render_input
           input = @selected_corporation.ipoed ? render_ipoed : render_pre_ipo
-          h(:div, { style: { margin: '0.5rem 0', width: '20rem' } }, [input].compact)
+          h('div.margined_bottom', { style: { width: '20rem' } }, [input].compact)
         end
 
         def buy_share(entity, share)
@@ -83,14 +83,14 @@ module View
           if @current_actions.include?('buy_shares')
             if @step.can_buy?(@current_entity, ipo_share)
               children << h(
-                'button.button.margined_half',
+                :button,
                 { on: { click: buy_ipo } },
                 "Buy #{@game.class::IPO_NAME} Share"
               )
             end
 
             if @step.can_buy?(@current_entity, pool_share)
-              children << h('button.button.margined_half', { on: { click: buy_pool } }, 'Buy Market Share')
+              children << h(:button, { on: { click: buy_pool } }, 'Buy Market Share')
             end
 
             # Allow privates to be exchanged for shares
@@ -106,12 +106,12 @@ module View
                   end
 
                 if ability.from.include?(:ipo) && @step.can_gain?(company.owner, ipo_share)
-                  children << h('button.button.margined_half', { on: { click: -> { buy_share(company, ipo_share) } } },
+                  children << h(:button, { on: { click: -> { buy_share(company, ipo_share) } } },
                                 "#{prefix} an #{@game.class::IPO_NAME} share")
                 end
 
                 if ability.from.include?(:market) && @step.can_gain?(company.owner, pool_share)
-                  children << h('button.button.margined_half', { on: { click: -> { buy_share(company, pool_share) } } },
+                  children << h(:button, { on: { click: -> { buy_share(company, pool_share) } } },
                                 "#{prefix} a Market share")
                 end
               end

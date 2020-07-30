@@ -8,16 +8,7 @@ module View
       include Actionable
 
       def render
-        props = {
-          on: {
-            click: -> { process_action(Engine::Action::Undo.new(@game.current_entity)) },
-          },
-          style: {
-            marginRight: '1em',
-          },
-        }
-
-        h('button.button', props, 'Undo')
+        h(:button, { on: { click: -> { process_action(Engine::Action::Undo.new(@game.current_entity)) } } }, 'Undo')
       end
     end
   end

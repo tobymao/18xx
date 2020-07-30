@@ -109,7 +109,7 @@ module View
 
             children << h(:div, [
               "#{train.name} -> #{discount_train.name} #{@game.format_currency(price)} ",
-              h('button.button.no_margin', { on: { click: exchange_train } }, 'Exchange'),
+              h('button.no_margin', { on: { click: exchange_train } }, 'Exchange'),
             ])
           end
         end
@@ -150,7 +150,7 @@ module View
             [h(:div, name),
              h('div.nowrap', source),
              h('div.right', @game.format_currency(price)),
-             h('button.button.no_margin', { on: { click: buy_train } }, 'Buy')]
+             h('button.no_margin', { on: { click: buy_train } }, 'Buy')]
           end
         end
       end
@@ -190,7 +190,7 @@ module View
               [h(:div, name),
                h('div.nowrap', "#{other.name} (#{count > 1 ? "#{count}, " : ''}#{other.owner.name})"),
                input,
-               h('button.button.no_margin', { on: { click: buy_train } }, 'Buy')]
+               h('button.no_margin', { on: { click: buy_train } }, 'Buy')]
             else
               hidden_trains = true
               nil
@@ -207,11 +207,11 @@ module View
         }
 
         if hidden_trains
-          trains_to_buy << h('button.button.no_margin',
+          trains_to_buy << h('button.no_margin',
                              { on: { click: -> { store(:show_other_players, true) } }, **button_props },
                              'Show trains from other players')
         elsif @show_other_players
-          trains_to_buy << h('button.button.no_margin',
+          trains_to_buy << h('button.no_margin',
                              { on: { click: -> { store(:show_other_players, false) } }, **button_props },
                              'Hide trains from other players')
         end
@@ -255,7 +255,7 @@ module View
           on: { click: resign },
         }
 
-        h('button.button', props, 'Declare Bankruptcy')
+        h(:button, props, 'Declare Bankruptcy')
       end
     end
   end

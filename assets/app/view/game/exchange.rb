@@ -19,7 +19,7 @@ module View
           store(:selected_company, nil, skip: true)
         end
 
-        h('button.button',
+        h(:button,
           { on: { click: exchange } },
           "Exchange #{@selected_company.sym} for a #{share_origin} share of #{share.corporation.name}")
       end

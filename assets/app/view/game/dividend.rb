@@ -30,7 +30,7 @@ module View
           click = lambda do
             process_action(Engine::Action::Dividend.new(@step.current_entity, kind: type))
           end
-          button = h(:td, [h('button.button', { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
+          button = h(:td, [h(:button, { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
           direction =
             if option[:share_direction]
               "#{option[:share_times]} #{option[:share_direction]}"

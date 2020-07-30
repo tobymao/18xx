@@ -113,7 +113,7 @@ module View
         },
       }
 
-      h('button.button', props, text)
+      h(:button, props, text)
     end
 
     def render_link(href, click, text)
@@ -123,13 +123,12 @@ module View
         click: click,
         children: text,
         style: {
-          top: '1rem',
           float: 'right',
           borderRadius: '5px',
           margin: '0 0.3rem',
           padding: '0.2rem 0.5rem',
         },
-        class: '.button-link'
+        class: '.button_link'
       )
     end
 
@@ -158,10 +157,10 @@ module View
           }
 
           elm = if @confirm_kick != [@gdata['id'], player['id']]
-                  h('button.button', button_props, "#{short_name} ❌")
+                  h(:button, button_props, "#{short_name} ❌")
                 else
                   button_props['on'] = { click: -> { kick(@gdata, player) } }
-                  h('button.button', button_props, 'Kick! ❌')
+                  h(:button, button_props, 'Kick! ❌')
                 end
 
         else

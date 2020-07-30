@@ -181,10 +181,6 @@ module View
           store(:routes, @routes)
         end
 
-        button_style = {
-          marginRight: '0.5rem',
-          padding: '0.2rem 0.5rem',
-        }
         submit_style = {
           minWidth: '6.5rem',
           marginTop: '1rem',
@@ -198,15 +194,11 @@ module View
                   end
         h(:div, { style: { overflow: 'auto', marginBottom: '1rem' } }, [
           h(:div, [
-            h('button.button', { style: button_style,
-                                 on: { click: clear } }, 'Clear Train'),
-            h('button.button', { style: button_style,
-                                 on: { click: clear_all } }, 'Clear All'),
-            h('button.button', { style: button_style,
-                                 on: { click: reset_all } }, 'Reset'),
+            h('button.small', { on: { click: clear } }, 'Clear Train'),
+            h('button.small', { on: { click: clear_all } }, 'Clear All'),
+            h('button.small', { on: { click: reset_all } }, 'Reset'),
           ]),
-          h('button.button', { style: submit_style,
-                               on: { click: submit } }, 'Submit ' + revenue),
+          h(:button, { style: submit_style, on: { click: submit } }, 'Submit ' + revenue),
         ])
       end
     end
