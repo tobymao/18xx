@@ -23,6 +23,7 @@ class Api
           # POST '/api/game/<game_id>/join'
           r.is 'join' do
             halt(400, 'Cannot join game because it is full') if users.size >= game.max_players
+            halt(400, 'Cannot join because game has started') unless game.status == 'new'
 
             GameUser.create(game: game, user: user)
             game.players(reload: true)
