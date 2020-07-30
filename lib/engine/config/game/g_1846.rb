@@ -779,7 +779,7 @@ module Engine
       "offboard=revenue:yellow_30|brown_70,hide:1,groups:E;icon=image:1846/20;path=a:1,b:_0;border=edge:0": [
         "F22"
       ],
-      "offboard=revenue:yellow_30|brown_70,groups:E;icon=image:1846/20;path=a:1,b:_0;path=a:2,b:_0;label=E;border=edge:3": [
+      "offboard=revenue:yellow_30|brown_70,groups:E;border=edge:1,type:mountain,cost:20;icon=image:1846/20;path=a:1,b:_0;path=a:2,b:_0;label=E;border=edge:3": [
         "G21"
       ],
       "offboard=revenue:yellow_20|brown_40,groups:E;icon=image:1846/30;path=a:2,b:_0;label=E": [

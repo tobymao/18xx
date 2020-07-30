@@ -151,10 +151,10 @@ describe 'Assets' do
       # ['1846', 4123, 42, 'lay_track_or_token', '1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track'],
       # ['1846', 4123, 50, 'issue_shares', '1846: Operating Round 1.1 (of 2) - Issue or Redeem Shares'],
       # ['1846', 4123, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
-      ['1882', 5147, 241, 'sc_home_token', '1882: Stock Round 5 - Place Home Token'],
-      ['1882', 5147, 280, 'qll_home_token', '1882: Operating Round 5.1 (of 3) - Place Home Token'],
-      ['1882', 5147, 205, 'nwr_place_token', '1882: Operating Round 4.2 (of 2) - NWR: Place Token'],
-      ['1882', 5147, 206, 'nwr_lay_track', '1882: Operating Round 4.2 (of 2) - NWR: Lay Track'],
+      ['1882', 5236, 399, 'sc_home_token', '1882: Stock Round 6 - Place Home Token'],
+      ['1882', 5236, 229, 'qll_home_token', '1882: Operating Round 4.1 (of 1) - Place Home Token'],
+      ['1882', 5236, 370, 'nwr_place_token', '1882: Operating Round 5.2 (of 2) - NWR: Place Token'],
+      ['1882', 5236, 371, 'nwr_lay_track', '1882: Operating Round 5.2 (of 2) - NWR: Lay Track'],
     ].freeze
 
     def render_game(jsonfile, no_actions, string)

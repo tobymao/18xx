@@ -106,10 +106,12 @@ module Engine
       },
     },
     GAMES_BY_TITLE['1882'] => {
-      5147 => {
-        'satamoto' => 7822,
-        'Ariel' => 7574,
-        'MontyBrewster71' => 5383,
+      5236 => {
+        'Akado' => 5333,
+        'starchitect' => 4826,
+        'Dix' => 4429,
+        'nigelsandwich' => 4222,
+        'ryu' => 2260,
       },
     },
   }.freeze
