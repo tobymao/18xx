@@ -316,21 +316,22 @@ module Engine
         @minors.dup.each { |minor| close_corporation(minor) }
 
         %w[D14 E17].each do |hex|
-              hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'lsl' }
-            end
+          hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'lsl' }
+        end
       end
 
       def event_remove_private_tokens!
         # TODO trigger this
         %w[B8 C5 D14 G19 I1].each do |hex|
-              hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'port' }
-            end
+          hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'port' }
+        end
 
         %w[D6 I1].each do |hex|
-              hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'meat' }
-            end
+          hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'meat' }
+        end
 
-        @log << "-- Event: Removed markers for Steamboats and Meat Packing (their bonuses are no longer in effect)"
+        @log << '-- Event: Removed markers for Steamboats and Meat Packing (their bonuses are no longer in effect)'
+      end
 
       def event_remove_tokens!
         removals = Hash.new { |h, k| h[k] = {} }
