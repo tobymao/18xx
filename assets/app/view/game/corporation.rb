@@ -152,8 +152,11 @@ module View
       end
 
       def render_trains
-        train_value = @corporation.trains.empty? ? 'None' : @corporation.trains.map(&:name).join(' ')
-        render_header_segment(train_value, 'Trains')
+        trains = @corporation.trains.map do |train|
+          train.obsolete ? "(#{train.name})" : train.name
+        end
+
+        render_header_segment(trains.empty? ? 'None' : trains.join(' '), 'Trains')
       end
 
       def render_header_segment(value, key)

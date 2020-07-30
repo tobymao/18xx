@@ -148,12 +148,14 @@ module View
 
     def render_title
       title = "#{@game.class.title} - #{@game.id} - 18xx.Games"
-      title = "* #{title}" if @game.active_player_names.include?(@user&.dig(:name))
+      title = "* #{title}" if @game.active_player_names.include?(@user&.dig('name'))
       `document.title = #{title}`
     end
 
     def active_player
-      @game_data[:mode] != :hotseat && !cursor && @game.active_players.map(&:name).include?(@user['name'])
+      @game_data[:mode] != :hotseat &&
+        !cursor &&
+        @game.active_players.map(&:name).include?(@user&.dig('name'))
     end
 
     def menu
