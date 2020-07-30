@@ -132,8 +132,10 @@ module View
       )
     end
 
-    def time_or_date(ts)
-      ts > Time.now - 82_800 ? ts.strftime('%T') : ts.strftime('%F')
+    def render_time_or_date(ts_key)
+      ts = Time.at(@gdata[ts_key]&.to_i || 0)
+      time_or_date = ts > Time.now - 82_800 ? ts.strftime('%T') : ts.strftime('%F')
+      h(:span, { attrs: { title: ts.strftime('%F %T') } }, time_or_date)
     end
 
     def render_body
@@ -181,11 +183,10 @@ module View
       children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'
 
       if new?
-        created_at = Time.at(@gdata['created_at'])
         children << h('div.inline', [h(:strong, 'Max Players: '), @gdata['max_players']])
         children << h('div.inline', { style: { float: 'right' } }, [
           h(:strong, 'Created: '),
-          h(:span, { attrs: { title: created_at.strftime('%F %T') } }, time_or_date(created_at)),
+          render_time_or_date('created_at'),
         ])
       elsif @gdata['status'] == 'finished'
         result = @gdata['result']
@@ -193,9 +194,13 @@ module View
           .map { |k, v| "#{k.length > 15 ? k[0...14] + '…' : k} #{v}" }
           .join(', ')
 
-        children << h(:div, [
+        children << h('div.inline', [
           h(:strong, 'Result: '),
           result,
+        ])
+        children << h('div.inline', { style: { float: 'right', paddingLeft: '1rem' } }, [
+          h(:strong, 'Ended: '),
+          render_time_or_date('updated_at'),
         ])
       elsif @gdata['round']
         children << h('div.inline', [
@@ -203,10 +208,9 @@ module View
           "#{@gdata['round']&.split(' ')&.first} #{@gdata['turn']}",
         ])
 
-        updated_at = Time.at(@gdata['updated_at'].to_i)
         children << h('div.inline', { style: { float: 'right' } }, [
           h(:strong, 'Updated: '),
-          h(:span, { attrs: { title: updated_at.strftime('%F %T') } }, time_or_date(updated_at)),
+          render_time_or_date('updated_at'),
         ])
       end
 
