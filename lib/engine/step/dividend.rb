@@ -29,7 +29,7 @@ module Engine
       end
 
       def dividend_options(entity)
-        revenue = routes.sum(&:revenue)
+        revenue = @game.routes_revenue(routes)
         dividend_types.map do |type|
           payout = send(type, entity, revenue)
           [type, payout.merge(share_price_change(entity, revenue - payout[:company]))]
@@ -38,7 +38,7 @@ module Engine
 
       def process_dividend(action)
         entity = action.entity
-        revenue = routes.sum(&:revenue)
+        revenue = @game.routes_revenue(routes)
         kind = action.kind.to_sym
         payout = dividend_options(entity)[kind]
 
