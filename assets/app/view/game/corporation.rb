@@ -360,7 +360,7 @@ module View
       end
 
       def can_assign_corporation?
-        @selected_corporation && @selected_company&.abilities(:assign)
+        @selected_corporation && @selected_company&.abilities(:assign_corporation)
       end
     end
   end
