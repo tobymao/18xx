@@ -94,6 +94,7 @@ module Engine
       "code": "city=revenue:100,slots:4;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY"
     }
   },
+  "note": "The 80p needs removing!",
   "market": [
     [
       "0",
@@ -107,7 +108,7 @@ module Engine
       "60",
       "65",
       "70",
-      "80",
+      "80p",
       "90",
       "100",
       "110",
