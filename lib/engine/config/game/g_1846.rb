@@ -642,7 +642,8 @@ module Engine
       ],
       "num": 9,
       "events": [
-        {"type": "remove_tokens"}
+        {"type": "remove_tokens"},
+        {"type": "remove_private_markers"}
       ]
     }
   ],

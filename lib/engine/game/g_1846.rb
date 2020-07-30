@@ -320,14 +320,9 @@ module Engine
         end
       end
 
-      def event_remove_private_tokens!
-        # TODO trigger this
-        %w[B8 C5 D14 G19 I1].each do |hex|
-          hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'port' }
-        end
-
-        %w[D6 I1].each do |hex|
-          hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'meat' }
+      def event_remove_private_markers!
+        %w[B8 C5 D6 D14 G19 I1].each do |hex|
+          hex_by_id(hex).tile.icons.clear()
         end
 
         @log << '-- Event: Removed markers for Steamboats and Meat Packing (their bonuses are no longer in effect)'
