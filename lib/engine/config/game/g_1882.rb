@@ -486,13 +486,13 @@ module Engine
       "offboard=revenue:yellow_40|brown_80;path=a:4,b:_0;path=a:5,b:_0": [
         "I1"
       ],
-      "offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;path=a:5,b:_0": [
+      "offboard=revenue:yellow_30|brown_60;border=edge:0,type:water,cost:40;path=a:0,b:_0;path=a:5,b:_0": [
         "B2"
       ],
       "offboard=revenue:yellow_30|brown_30;path=a:3,b:_0": [
         "O11"
       ],
-      "offboard=revenue:yellow_40|brown_50;path=a:0,b:_0;path=a:1,b:_0": [
+      "offboard=revenue:yellow_40|brown_50;border=edge:0,type:water,cost:60;path=a:0,b:_0;path=a:1,b:_0": [
         "B12"
       ],
       "offboard=revenue:yellow_30|brown_40;path=a:1,b:_0;path=a:2,b:_0": [
@@ -503,8 +503,6 @@ module Engine
       "": [
         "F2",
         "H2",
-        "J2",
-        "L4",
         "K5",
         "M5",
         "L6",
@@ -512,8 +510,16 @@ module Engine
         "M9",
         "B10",
         "L10",
-        "K11",
         "H12"
+      ],
+      "border=edge:3,type:water,cost:40": [
+        "K11"
+      ],
+      "border=edge:4,type:water,cost:20": [
+        "J2"
+      ],
+      "border=edge:2,type:water,cost:40": [
+        "L4"
       ],
       "icon=image:1882/NWR,sticky:1": [
         "B4"
@@ -533,7 +539,7 @@ module Engine
       "city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40;border=edge:5,type:water,cost:20;icon=image:1882/NWR,sticky:1": [
         "D4"
       ],
-      "city=revenue:0;border=edge:0,type:water,cost:40;icon=image:1882/NWR,sticky:1": [
+      "city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40;border=edge:4,type:water,cost:40;icon=image:1882/NWR,sticky:1": [
         "D6"
       ],
       "city=revenue:0;border=edge:3,type:water,cost:40;border=edge:5,type:water,cost:40": [
@@ -636,7 +642,7 @@ module Engine
       "city=revenue:30;path=a:2,b:_0;path=a:_0,b:4": [
         "N6"
       ],
-      "path=a:0,b:1": [
+      "path=a:0,b:1;border=edge:1,type:water,cost:40;": [
         "C7"
       ],
       "city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;border=edge:0,type:water,cost:40": [

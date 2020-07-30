@@ -339,9 +339,9 @@ module Engine
          "distance":5,
          "price":500,
          "num":2,
-         "events":{
-            "close_companies":true
-         }
+         "events":[
+           {"type": "close_companies"}
+         ]
       },
       {
          "name":"6",
