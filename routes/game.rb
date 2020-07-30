@@ -32,6 +32,7 @@ class Api
           not_authorized! unless users.any? { |u| u.id == user.id }
 
           r.is 'leave' do
+            halt(400, 'Cannot leave because game has started') unless game.status == 'new'
             game.remove_player(user)
             game.to_h
           end
