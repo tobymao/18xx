@@ -168,6 +168,7 @@ module Engine
           old_tile = hex.tile
           hex.lay(hex.original_tile)
           tiles << old_tile
+          hex.restore_borders
         end
 
         # Some companies might no longer have valid routes

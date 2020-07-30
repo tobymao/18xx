@@ -207,5 +207,13 @@ module Engine
     def inspect
       "<#{self.class.name}: #{name}, tile: #{@tile.name}>"
     end
+
+    def restore_borders
+      edges = @tile.restore_borders
+      edges.each do |edge|
+        neighbor = @neighbors[edge]&.tile
+        neighbor.restore_borders([Hex.invert(edge)]) if tile
+      end
+    end
   end
 end

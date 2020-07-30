@@ -137,6 +137,7 @@ module Engine
       @towns = []
       @upgrades = []
       @offboards = []
+      @original_borders = []
       @borders = []
       @branches = nil
       @nodes = nil
@@ -355,6 +356,20 @@ module Engine
       @label = Part::Label.new(label_name)
     end
 
+    def restore_borders(edges = nil)
+      edges ||= ALL_EDGES
+
+      # Re-add borders that are in the edge list returning those that are missing
+      edges.map do |edge|
+        original = @original_borders.find { |e| e.edge == edge }
+        next unless original
+        next if @borders.include?(original)
+
+        @borders << original
+        edge
+      end.compact
+    end
+
     private
 
     def separate_parts
@@ -374,6 +389,7 @@ module Engine
         elsif part.offboard?
           @offboards << part
         elsif part.border?
+          @original_borders << part
           @borders << part
         elsif part.junction?
           @junction = part
