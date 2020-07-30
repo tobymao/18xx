@@ -6,7 +6,7 @@ module View
     needs :click
     needs :children, default: []
     needs :style, default: {}
-    needs :title, default: nil
+    needs :title, default: ''
     needs :class, default: nil
 
     def render
