@@ -15,13 +15,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>The email provider has been changed. Please check your spam and whitelist any emails from us.</p>
-        <p>Using abilities has now changed and hopefully is more intuitive.</p>
-        <p>1836Jr30 has finished beta and is now in production.</p>
-        <p>1882 is now available for alpha.</p>
-        <p>1846 is now available for alpha.</p>
-
-
+        <p>1846 is now in beta.</p>
         <p>Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
         <a href='https://docs.google.com/document/d/1nCYnzNMQLrFLZtWdbjfuSx5aIcaOyi27lMYkJxcGayw/edit'>FAQ!</a>
         </p>

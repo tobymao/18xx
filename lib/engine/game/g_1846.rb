@@ -19,7 +19,7 @@ module Engine
 
       load_from_json(Config::Game::G1846::JSON)
 
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
 
       GAME_LOCATION = 'Midwest, USA'
       GAME_RULES_URL = 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf'
