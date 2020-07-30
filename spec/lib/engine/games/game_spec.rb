@@ -14,6 +14,18 @@ module Engine
         'toast' => 6978,
         'tomusher' => 5143,
       },
+      3099 => {
+        'Blondie' => 6713,
+        'Emilybry26' => 6115,
+        'MrDiskord' => 3987,
+        'mfmise' => 6338,
+        'sirstevie3' => 4847,
+      },
+      4949 => {
+        'Apreche' => 6619,
+        'GeekNightsRym' => 8956,
+        'pence' => 6718,
+      },
       # bankruptcy sending two corps into receivership, one of them buying a
       # train immediately; also has emergency share issuing
       'hs_ynxuqvex_1595710756' => {
