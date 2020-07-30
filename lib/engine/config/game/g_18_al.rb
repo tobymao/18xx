@@ -202,7 +202,21 @@ module Engine
          "name":"South & North Alabama Railroad",
          "value":40,
          "revenue":10,
-         "desc":"Comes with a Warrior Coal Field token. The owning corporation may place it in Gadsden Anniston Oxmoor Birmingham or Tuscaloosa provided that the corporation owns a train that can reach that city on existing track. Placing the token does NOT close the S&NA. The token makes that city worth an extra $10 (when run to) for that corporation only. The token remains on the board until the first 6 Train is purchased."
+         "desc":"Comes with a Warrior Coal Field token. The owning corporation may place it in one of the city hexes with a mining symbol (Gadsden, Anniston, Oxmoor, Birmingham, or Tuscaloosa) provided that the corporation owns a train that can reach that city on existing track. Placing the token does NOT close the S&NA. The token makes that city worth an extra $10 (when run to) for that corporation only. The token remains on the board until the first 6 Train is purchased.",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "hexes": [
+                 "H3",
+                 "G4",
+                 "H5",
+                 "G6",
+                 "E6"
+               ],
+               "count": 1,
+               "owner_type": "corporation"
+            }
+         ]
       },
       {
          "sym":"BLC",
@@ -235,7 +249,7 @@ module Engine
          "name":"Memphis & Charleston Railroad",
          "value":100,
          "revenue":20,
-         "desc":"When a corporation purchases the Memphis & Charleston, it receives the two train name chits. The corporation may place either or both of these on any trains it owns. Getting or placing the name chits does not close the Memphis & Charleston. Any train which has a name chit, and which makes a run that includes both of the locations named on the chit, has its revenue increased by the amount stated on the chit. The corporation may, on its turn, move the name chits freely among its trains, but each train is limited to at most one name at a time, and each chit may give its bonus to at most one train in each operating turn. The chits last for the rest of the game, unless that corporation changes presidents, in which case both chits are immediately removed from play."
+         "desc":"When a corporation purchases the Memphis & Charleston, it receives the ability to get revenue bonus if certain pair of cities is part of any routes. If any route include Atlanta AND Birmingham (Robert E Lee) a bonus of $20 is added to the revenue. If any run include Nashville AND Mobile (Pan American) a bonus of $40 is added to the revenue. The ability last for the rest of the game, unless that corporation changes presidents, in which it is removed from play."
       },
       {
          "sym":"NDY",
@@ -490,7 +504,10 @@ module Engine
             }
          ],
          "price":630,
-         "num":1
+         "num":1,
+         "events": [
+            {"type": "remove_tokens"}
+         ]
       },
       {
          "name":"7",
