@@ -17,7 +17,9 @@ module Engine
       GAME_DESIGNER = 'Mark Derrick'
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
-      EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Coal Field token removed']).freeze
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'remove_tokens' => ['Remove Tokens', 'Warrior Coal Field token removed']
+      ).freeze
 
       ROUTE_BONUSES = %i[atlanta_birmingham mobile_nashville].freeze
 
