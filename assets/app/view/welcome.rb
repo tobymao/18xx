@@ -15,6 +15,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>All microsoft email domains are blocking 18xx.games. msn, hotmail, live, etc. So you will not be receiving anything.</p>
         <p>1882 and 18AL are both available for alpha testing and 1846 is now in beta.</p>
         <p>Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
         <a href='https://github.com/tobymao/18xx/wiki'>Wiki!</a>
