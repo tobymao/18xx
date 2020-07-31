@@ -360,7 +360,7 @@ module Engine
       edges ||= ALL_EDGES
 
       # Re-add borders that are in the edge list returning those that are missing
-      edges.map do |edge|
+      missing = edges.map do |edge|
         original = @original_borders.find { |e| e.edge == edge }
         next unless original
         next if @borders.include?(original)
@@ -368,6 +368,11 @@ module Engine
         @borders << original
         edge
       end.compact
+
+      missing.each do |edge|
+        neighbor = @hex.neighbors[edge]&.tile
+        neighbor&.restore_borders([Hex.invert(edge)])
+      end
     end
 
     private
