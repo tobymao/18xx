@@ -15,7 +15,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>1882 is now in alpha and 1846 is now in beta.</p>
+        <p>1882 and 18AL is now in alpha and 1846 is now in beta.</p>
         <p>Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
         <a href='https://github.com/tobymao/18xx/wiki'>Wiki!</a>
         </p>
