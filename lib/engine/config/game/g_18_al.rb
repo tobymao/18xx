@@ -202,7 +202,7 @@ module Engine
          "name":"South & North Alabama Railroad",
          "value":40,
          "revenue":10,
-         "desc":"Comes with a Warrior Coal Field token. The owning corporation may place it in one of the city hexes with a mining symbol (Gadsden, Anniston, Oxmoor, Birmingham, or Tuscaloosa) provided that the corporation owns a train that can reach that city on existing track. Placing the token does NOT close the S&NA. The token makes that city worth an extra $10 (when run to) for that corporation only. The token remains on the board until the first 6 Train is purchased.",
+         "desc":"Owning corporation may place the Warrior Coal Field token in one of the city hexes with a mining symbol (Gadsden, Anniston, Oxmoor, Birmingham, or Tuscaloosa) provided that the corporation can reach the city with a route that is in the range of a train owned by the corporation (i.e. not an infinite route). Placing the token does not close the company. The owning corporation adds 10 to revenue for all trains whose route includes the city with the token. The token is removed from the game at the beginning of phase 6.",
          "abilities": [
             {
                "type": "assign_hexes",
@@ -223,7 +223,7 @@ module Engine
          "name":"Brown & Sons Lumber Co.",
          "value":70,
          "revenue":15,
-         "desc":"Owning corporation may lay the Lumber Terminal track tile (number 445) in an empty swamp hex. It need not be connected to an existing station of the corporation.  The corporation need not pay the $20 cost of the swamp hex.  And it does not count as the corporation's one tile lay per turn.  (But it still must be laid during the tile-laying step of the corporation's turn). Laying the tile does not close the B&SLC. The Lumber Terminal tile is permanent, and cannot be upgraded.",
+         "desc":"Owning corporation may during the track laying step lay the Lumber Terminal track tile (/# 445) in an empty swamp hex, which need not be connected to the corporation's station(s). The tile is free and does not count as the corporation's one tile lay per turn. Laying the tile does not close the company. The tile is permanent and cannot be upgraded.",
          "abilities": [
              {
                "type": "tile_lay",
@@ -249,14 +249,14 @@ module Engine
          "name":"Memphis & Charleston Railroad",
          "value":100,
          "revenue":20,
-         "desc":"When a corporation purchases the Memphis & Charleston, it receives the ability to get revenue bonus if certain pair of cities is part of any routes. If any route include Atlanta AND Birmingham (Robert E Lee) a bonus of $20 is added to the revenue. If any run include Nashville AND Mobile (Pan American) a bonus of $40 is added to the revenue. The ability last for the rest of the game, unless that corporation changes presidents, in which it is removed from play."
+         "desc":"Owning corporation receives the Robert E. Lee marker which adds +20 to revenue if a route includes Atlanta and Birmingham and the Pan American marker which adds +40 to revenue if a route includes Nashville and Mobile. Each marker may be assigned to one train each operating round and both markers may be assigned to a single train. The bonuses are permanent unless a new player becomes president of the corporation, in which case they are removed from the game."
       },
       {
          "sym":"NDY",
          "name":"New Decatur Yards",
          "value":120,
          "revenue":20,
-         "desc":"A corporation which owns the New Decatur Yards may during purchase of any one new train from the bank use this ability to reduce the regular price by 50%. This action closes the New Decatur Yards.",
+         "desc":"Owning corporation may purchase one new train from the bank with a discount of 50%, which closes the company.",
          "abilities": [
             {
               "type": "train_discount",
