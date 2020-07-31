@@ -5,8 +5,12 @@ require_relative 'buy_train'
 module Engine
   module Step
     class SingleDepotTrainBuyBeforePhase4 < BuyTrain
-      def buyable_trains
-        super.reject { |x| x.from_depot? && !@game.phase.available?('4') && already_bought_from_depot? }
+      def buyable_trains(entity)
+        super.reject do |train|
+          train.from_depot? &&
+            !@game.phase.available?('4') &&
+            @round.bought_trains.include?(entity)
+        end
       end
 
       def process_buy_train(action)
@@ -14,16 +18,13 @@ module Engine
         super
         return unless from_depot
 
-        @round.trains_bought << {
-          entity: action.entity,
-        }
-        pass! unless buyable_trains.any?
+        entity = action.entity
+        @round.bought_trains << entity
+        pass! unless buyable_trains(entity).any?
       end
 
-      private
-
-      def already_bought_from_depot?
-        @round.trains_bought.find { |e| e[:entity].name == current_entity.name }
+      def round_state
+        { bought_trains: [] }
       end
     end
   end

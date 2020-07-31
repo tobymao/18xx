@@ -21,20 +21,18 @@ module Engine
       end
 
       def process_buy_train(action)
-        actual_buyer = action.entity.owner
+        corporation = action.entity.owner
+        from_depot = action.train.from_depot?
+        buy_train_action(action, corporation)
 
-        buy_train_action(action, actual_buyer)
-
-        @round.trains_bought << {
-          entity: actual_buyer,
-        } if action.train.from_depot?
+        @round.trains_bought << corporation if from_depot
 
         ability = ability(action.entity)
         ability.use! if action.price < action.train.price &&
           ability.discounted_price(action.train, action.train.price) == action.price
         action.entity.close! if ability.count.zero?
 
-        pass! unless can_buy_train?(actual_buyer)
+        pass! unless can_buy_train?(corporation)
       end
 
       def ability(entity)

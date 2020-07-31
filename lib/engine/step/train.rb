@@ -32,7 +32,7 @@ module Engine
         @game.phase.buying_train!(entity, train)
 
         # Check if the train is actually buyable in the current situation
-        @game.game_error('Not a buyable train') unless buyable_train_variants(train).include?(train.variant)
+        @game.game_error('Not a buyable train') unless buyable_train_variants(train, entity).include?(train.variant)
 
         remaining = price - entity.cash
         if remaining.positive? && must_buy_train?(entity)
@@ -100,13 +100,13 @@ module Engine
         true
       end
 
-      def buyable_trains
+      def buyable_trains(entity)
         depot_trains = @depot.depot_trains
-        other_trains = @depot.other_trains(current_entity)
+        other_trains = @depot.other_trains(entity)
 
         # If the corporation cannot buy a train, then it can only buy the cheapest available
         min_depot_train = @depot.min_depot_train
-        if min_depot_train.price > current_entity.cash
+        if min_depot_train.price > entity.cash
           depot_trains = [min_depot_train]
 
           if @last_share_sold_price
@@ -117,15 +117,15 @@ module Engine
             # if the player has just sold a share they can buy a train between cash-price_last_share_sold and cash
             # e.g. If you had $40 cash, and if the train costs $100 and you've sold a share for $80,
             # you now have $120 cash the $100 train should still be available to buy
-            min_available_cash = (current_entity.cash + current_entity.owner.cash) - @last_share_sold_price
+            min_available_cash = (entity.cash + entity.owner.cash) - @last_share_sold_price
             return depot_trains + (other_trains.reject { |x| x.price < min_available_cash })
           end
         end
         depot_trains + other_trains
       end
 
-      def buyable_train_variants(train)
-        buyable_trains.include?(train) ? train.variants.values : []
+      def buyable_train_variants(train, entity)
+        buyable_trains(entity).include?(train) ? train.variants.values : []
       end
 
       def setup
@@ -135,12 +135,6 @@ module Engine
 
       def issuable_shares
         []
-      end
-
-      def round_state
-        {
-          trains_bought: [],
-        }
       end
     end
   end

@@ -58,7 +58,7 @@ module View
 
         @depot = @game.depot
 
-        available = step.buyable_trains.group_by(&:owner)
+        available = step.buyable_trains(@corporation).group_by(&:owner)
         depot_trains = available.delete(@depot) || []
         other_corp_trains = available.sort_by { |c, _| c.owner == @corporation.owner ? 0 : 1 }
         children = []
@@ -133,7 +133,7 @@ module View
       def from_depot(depot_trains)
         depot_trains.flat_map do |train|
           train.variants
-            .select { |_, v| @game.round.active_step.buyable_train_variants(train).include?(v) }
+            .select { |_, v| @game.round.active_step.buyable_train_variants(train, @corporation).include?(v) }
             .sort_by { |_, v| v[:price] }
             .flat_map do |name, variant|
             price = variant[:price]

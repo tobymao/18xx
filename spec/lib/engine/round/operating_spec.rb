@@ -103,29 +103,29 @@ module Engine
 
       describe 'buyable_trains' do
         it 'returns 2 trains in the depot at start' do
-          available = subject.active_step.buyable_trains
+          available = subject.active_step.buyable_trains(corporation)
           expect(available.size).to eq(1)
         end
 
         it 'returns a 2 train in the discard if discarded' do
-          train = subject.active_step.buyable_trains.first
+          train = subject.active_step.buyable_trains(corporation).first
           fake_buy_train(train, corporation)
           game.depot.reclaim_train(train)
 
-          available = subject.active_step.buyable_trains
+          available = subject.active_step.buyable_trains(corporation)
           expect(available.size).to eq(2)
         end
 
         it 'returns trains owned by other corporations' do
-          train = subject.active_step.buyable_trains.first
+          train = subject.active_step.buyable_trains(corporation).first
           fake_buy_train(train, corporation2)
 
-          available = subject.active_step.buyable_trains
+          available = subject.active_step.buyable_trains(corporation)
           expect(available.size).to eq(2)
         end
 
         it 'returns only returns trains in the depot if the corp cannot afford and the player has sold shares' do
-          train = subject.active_step.buyable_trains.first
+          train = subject.active_step.buyable_trains(corporation).first
           fake_buy_train(train, corporation2)
           # Ensure we can sell shares.
           game.share_pool.buy_shares(player, corporation2.shares.first)
@@ -139,22 +139,22 @@ module Engine
             share_price: bundle.price,
             percent: bundle.percent,
           ))
-          available = subject.active_step.buyable_trains
+          available = subject.active_step.buyable_trains(corporation)
           expect(available.size).to eq(1)
         end
 
         it 'returns only returns cheapest trains available if the corp cannot afford any' do
-          while (train = subject.active_step.buyable_trains.first).name == '2'
+          while (train = subject.active_step.buyable_trains(corporation).first).name == '2'
             game.depot.remove_train(train)
             corporation2.buy_train(train, train.price)
           end
           game.depot.reclaim_train(corporation2.trains.first) while corporation2.trains.any?
 
-          available = subject.active_step.buyable_trains
+          available = subject.active_step.buyable_trains(corporation)
           expect(available.size).to eq(2)
 
           corporation.cash = 1
-          available = subject.active_step.buyable_trains
+          available = subject.active_step.buyable_trains(corporation)
           expect(available.size).to eq(1)
         end
 
@@ -162,50 +162,50 @@ module Engine
           it 'allows purchasing with emergency funds if must buy' do
             expect(subject.active_step.must_buy_train?(corporation)).to be true
             corporation.cash = 1
-            train = subject.active_step.buyable_trains.first
+            train = subject.active_step.buyable_trains(corporation).first
             subject.process_action(Action::BuyTrain.new(corporation, train: train, price: train.price))
           end
           it 'does not allow purchasing with emergency funds if no need to buy' do
-            train = subject.active_step.buyable_trains.first
+            train = subject.active_step.buyable_trains(corporation).first
             subject.process_action(Action::BuyTrain.new(corporation, train: train, price: train.price))
             expect(subject.active_step.must_buy_train?(corporation)).to be false
             corporation.cash = 1
-            train = subject.active_step.buyable_trains.first
+            train = subject.active_step.buyable_trains(corporation).first
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             expect { subject.process_action(action) }.to raise_error GameError
           end
           it 'causes a rust event when buying the first 4' do
-            train = subject.active_step.buyable_trains.first
+            train = subject.active_step.buyable_trains(corporation).first
             subject.process_action(Action::BuyTrain.new(corporation, train: train, price: train.price))
             expect(subject.active_step.must_buy_train?(corporation)).to be false
 
             # Move to 4 trains to cause a rust event
-            while (train = subject.active_step.buyable_trains.first).name != '4'
+            while (train = subject.active_step.buyable_trains(corporation).first).name != '4'
               fake_buy_train(train, corporation2)
             end
 
             corporation.cash = 1000
-            train = subject.active_step.buyable_trains.first
+            train = subject.active_step.buyable_trains(corporation).first
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             subject.process_action(action)
             expect(corporation.trains.size).to eq(1)
           end
 
           it 'does not allow purchasing with emergency funds if no need to buy even if it causes a rusting' do
-            train = subject.active_step.buyable_trains.first
+            train = subject.active_step.buyable_trains(corporation).first
             subject.process_action(Action::BuyTrain.new(corporation, train: train, price: train.price))
             expect(subject.active_step.must_buy_train?(corporation)).to be false
 
             # Move to 4 trains to cause a rust event
-            while (train = subject.active_step.buyable_trains.first).name != '4'
+            while (train = subject.active_step.buyable_trains(corporation).first).name != '4'
               fake_buy_train(train, corporation2)
             end
 
-            train = subject.active_step.buyable_trains.first
+            train = subject.active_step.buyable_trains(corporation).first
             corporation2.buy_train(train, train.price)
 
             corporation.cash = 1
-            train = subject.active_step.buyable_trains.first
+            train = subject.active_step.buyable_trains(corporation).first
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             fake_buy_train(train, corporation)
             expect { subject.process_action(action) }.to raise_error GameError
@@ -213,13 +213,13 @@ module Engine
 
           it 'does not allow EMR purchasing diesel when it can afford a 6' do
             # Allow diesels to be purchased
-            while (train = subject.active_step.buyable_trains.first).name != '6'
+            while (train = subject.active_step.buyable_trains(corporation).first).name != '6'
               fake_buy_train(train, corporation2)
             end
-            fake_buy_train(subject.active_step.buyable_trains.first, corporation2)
+            fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation2)
 
-            corporation.cash = subject.active_step.buyable_trains.first.price
-            train = subject.active_step.buyable_trains.find { |x| x.name == 'D' }
+            corporation.cash = subject.active_step.buyable_trains(corporation).first.price
+            train = subject.active_step.buyable_trains(corporation).find { |x| x.name == 'D' }
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             fake_buy_train(train, corporation)
             expect { subject.process_action(action) }.to raise_error GameError
@@ -273,16 +273,16 @@ module Engine
 
       describe 'buyable_trains' do
         it 'returns other corp trains if no shares are sold' do
-          train = subject.active_step.buyable_trains.first
+          train = subject.active_step.buyable_trains(corporation).first
           fake_buy_train(train, corporation2)
           corporation.cash = 1
           player.cash = 1
 
-          available = subject.active_step.buyable_trains
+          available = subject.active_step.buyable_trains(corporation)
           expect(available.size).to eq(2)
         end
         it 'returns other corp trains if sold shares does not exceed face value' do
-          train = subject.active_step.buyable_trains.first
+          train = subject.active_step.buyable_trains(corporation).first
           fake_buy_train(train, corporation2)
           corporation.cash = 1
           player.cash = 1
@@ -294,13 +294,13 @@ module Engine
             share_price: bundle.price,
             percent: bundle.percent,
           ))
-          available = subject.active_step.buyable_trains
+          available = subject.active_step.buyable_trains(corporation)
           expect(available.size).to eq(2)
         end
         it 'returns only depot trains if sold shares exceeds face value' do
-          train = subject.active_step.buyable_trains.first
+          train = subject.active_step.buyable_trains(corporation).first
           fake_buy_train(train, corporation2)
-          while (train = subject.active_step.buyable_trains.first).name != '4'
+          while (train = subject.active_step.buyable_trains(corporation).first).name != '4'
             fake_buy_train(train, corporation2)
           end
 
@@ -314,7 +314,7 @@ module Engine
             share_price: bundle.price,
             percent: bundle.percent,
           ))
-          available = subject.active_step.buyable_trains
+          available = subject.active_step.buyable_trains(corporation)
           expect(available.size).to eq(1)
         end
       end
@@ -322,20 +322,20 @@ module Engine
       describe 'buy_train' do
         it 'does not allow EMR purchasing diesel when it can afford a 6' do
           # Allow diesels to be purchased
-          while (train = subject.active_step.buyable_trains.first).name != '6'
+          while (train = subject.active_step.buyable_trains(corporation).first).name != '6'
             fake_buy_train(train, corporation2)
           end
-          fake_buy_train(subject.active_step.buyable_trains.first, corporation2)
+          fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation2)
 
-          corporation.cash = subject.active_step.buyable_trains.first.price
-          train = subject.active_step.buyable_trains.find { |x| x.name == 'D' }
+          corporation.cash = subject.active_step.buyable_trains(corporation).first.price
+          train = subject.active_step.buyable_trains(corporation).find { |x| x.name == 'D' }
           action = Action::BuyTrain.new(corporation, train: train, price: train.price)
           fake_buy_train(train, corporation)
           expect { subject.process_action(action) }.to raise_error GameError
         end
 
         it 'allows purchasing another players train' do
-          fake_buy_train(subject.active_step.buyable_trains.first, corporation2)
+          fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation2)
 
           corporation.cash = 1
           train = corporation2.trains.first
@@ -345,7 +345,7 @@ module Engine
           subject.process_action(action)
         end
         it 'does not allow purchasing another players train for above price' do
-          fake_buy_train(subject.active_step.buyable_trains.first, corporation2)
+          fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation2)
 
           corporation.cash = 1
           train = corporation2.trains.first

@@ -73,11 +73,11 @@ module Engine
           @round.emergency_issued = true
         end
 
-        def buyable_train_variants(train)
+        def buyable_train_variants(train, entity)
           variants = super
           return variants if variants.size < 2
 
-          cash = current_entity.cash
+          cash = entity.cash
           min, max = variants.sort_by { |v| v[:price] }
           return [min] if (min[:price] <= cash) && (cash < max[:price])
 

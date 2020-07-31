@@ -6,7 +6,7 @@ module Engine
   module Step
     module G1836Jr30
       class BuyTrain < BuyTrain
-        def buyable_trains
+        def buyable_trains(entity)
           super.reject { |x| x.from_depot? && @depot_trains_bought.include?(x.sym) }
         end
 
@@ -24,7 +24,7 @@ module Engine
 
           @depot_trains_bought << action.train.sym
 
-          pass! unless buyable_trains.any?
+          pass! unless buyable_trains(action.entity).any?
         end
       end
     end
