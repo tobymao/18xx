@@ -157,27 +157,29 @@ class Api < Roda
     <<~HTML
       <!DOCTYPE html>
       <html>
-         <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
-            <title>18xx.Games (#{desc})</title>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css">
-            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&amp;display=swap">
-            <link rel="icon" type="image/svg+xml" href="/images/icon.svg">
-            <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
-            <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
-            <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-            <link rel="mask-icon" href="/images/mask.svg" color="#f0e68c">
-            <link rel="manifest" href="/site.webmanifest">
-            <meta rel="msapplication-TileColor" content="#da532c">
-            <meta rel="theme-color" content="#ffffff">
-            <link rel="stylesheet" href="/assets/main.css">
-         </head>
-         <body>
-            <div id="app"></div>
-            #{js_tags}
-            <script>#{attach_func}</script>
-         </body>
+        <head>
+           <meta charset=\"utf-8\">
+           <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0\">
+           <title>18xx.Games</title>
+           <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css\">
+           <link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&amp;display=swap\">
+           <link id=\"favicon_svg\" rel=\"icon\" type=\"image/svg+xml\" href=\"/images/icon.svg\">
+           <link id=\"favicon_32\" rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/images/favicon-32x32.png\">
+           <link id=\"favicon_16\" rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/images/favicon-16x16.png\">
+           <link id=\"favicon_apple\" rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\">
+           <link rel=\"mask-icon\" href=\"/images/mask.svg\" color=\"#f0e68c\">
+           <link rel=\"manifest\" href=\"/site.webmanifest\">
+           <meta rel=\"msapplication-TileColor\" content=\"#da532c\">
+           <meta id=\"theme_color\" rel=\"theme-color\" name=\"theme-color\" content=\"#ffffff\">
+           <meta id=\"theme_ms\" rel=\"msapplication-navbutton-color\" name=\"msapplication-navbutton-color\" content=\"#ffffff\">
+           <meta id=\"theme_apple\" rel=\"apple-mobile-web-app-status-bar-style\" name=\"apple-mobile-web-app-status-bar-style\" content=\"#ffffff\">
+           <link rel=\"stylesheet\" href=\"/assets/main.css\">
+        </head>
+        <body>
+          <div id="app"></div>
+          #{js_tags}
+          <script>#{attach_func}</script>
+        </body>
       </html>
     HTML
   end
