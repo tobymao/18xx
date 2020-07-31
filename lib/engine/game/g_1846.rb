@@ -338,7 +338,9 @@ module Engine
         end
 
         %w[B8 C5 D6 D14 G19 I1].each do |hex|
-          hex_by_id(hex).tile.icons.clear
+          hex_by_id(hex).tile.icons.reject! do |icon|
+            %w[meat port].include?(icon.name)
+          end
         end
 
         removals.each do |company, removal|

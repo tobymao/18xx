@@ -9,22 +9,22 @@ module Engine
   TEST_CASES = {
     GAMES_BY_TITLE['1846'] => {
       4106 => {
-        'CheesePetrol' => 5677,
-        'Tim Prime' => 5914,
-        'toast' => 6978,
-        'tomusher' => 5143,
+        'CheesePetrol' => 6137,
+        'Tim Prime' => 6338,
+        'toast' => 7585,
+        'tomusher' => 5431,
       },
       3099 => {
-        'Blondie' => 6713,
-        'Emilybry26' => 6115,
-        'MrDiskord' => 3987,
-        'mfmise' => 6338,
-        'sirstevie3' => 4847,
+        'Blondie' => 7118,
+        'Emilybry26' => 6405,
+        'MrDiskord' => 4072,
+        'mfmise' => 6548,
+        'sirstevie3' => 4907,
       },
       4949 => {
-        'Apreche' => 6619,
-        'GeekNightsRym' => 8956,
-        'pence' => 6718,
+        'Apreche' => 6822,
+        'GeekNightsRym' => 9154,
+        'pence' => 7002,
       },
       # bankruptcy sending two corps into receivership, one of them buying a
       # train immediately; also has emergency share issuing
