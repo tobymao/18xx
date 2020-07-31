@@ -51,6 +51,17 @@ module View
           ])
 
       # hexes/tiles from a specific game
+      elsif dest == 'custom'
+        location_name = Lib::Params['n']
+        tile = Engine::Tile.from_code(
+          'custom',
+          'yellow',
+          hexes_or_tiles,
+          location_name: location_name
+        )
+        rendered = render_tile_blocks('custom', layout: layout, tile: tile)
+        h('div#tiles', rendered)
+
       elsif hexes_or_tiles
         game_title = dest
         hex_or_tile_ids = hexes_or_tiles.split('+')
