@@ -358,7 +358,7 @@ module Engine
       end
 
       def active_players
-        @round.active_entities.map(&:player)
+        @round.active_entities.map(&:player).compact
       end
 
       def active_step
