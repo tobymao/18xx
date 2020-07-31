@@ -1030,7 +1030,7 @@ module Engine
           Step::Token,
           Step::Route,
           Step::Dividend,
-          Step::Train,
+          Step::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end

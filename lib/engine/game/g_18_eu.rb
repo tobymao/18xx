@@ -30,7 +30,7 @@ module Engine
           Step::Token,
           Step::Route,
           Step::G18EU::Dividend,
-          Step::Train,
+          Step::BuyTrain,
           Step::IssueShares,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)

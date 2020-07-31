@@ -29,7 +29,7 @@ module Engine
           Step::Token,
           Step::Route,
           Step::Dividend,
-          Step::G1836Jr30::Train,
+          Step::G1836Jr30::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end

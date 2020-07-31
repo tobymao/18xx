@@ -51,6 +51,7 @@ module Engine
           Step::G18AL::Token,
           Step::Route,
           Step::Dividend,
+          Step::SpecialBuyTrain,
           Step::SingleDepotTrainBuyBeforePhase4,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
@@ -73,21 +74,16 @@ module Engine
           revenue += route.stops.sum { |stop| ability.hexes.include?(stop.hex.id) ? ability.amount : 0 }
         end
 
-        route_bonuses.each do |type|
-          revenue += route_bonus(route, type)
-        end
-
         revenue
       end
 
       def routes_revenue(routes)
-        # Ensure we only get each route_bonus at most one time
         total_revenue = super
         route_bonuses.each do |type|
-          bonus_amount = routes.first.corporation.abilities(&:amount)
-          times_received = routes.count { |r| route_bonus(r, type).positive? }
+          abilities = routes.first.corporation.abilities(type)
+          return total_revenue if abilities.empty?
 
-          total_revenue -= bonus_amount * (times_received - 1) if times_received > 1
+          total_revenue += routes.map { |r| route_bonus(r, type) }.max
         end if routes.any?
         total_revenue
       end

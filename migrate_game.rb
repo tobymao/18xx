@@ -34,7 +34,7 @@ def repair(game, original_actions, actions, broken_action)
     broken_action['type'] = 'place_token'
     return [broken_action]
   elsif broken_action['type'] == 'pass'
-    if game.active_step.is_a?(Engine::Step::Route) || game.active_step.is_a?(Engine::Step::Train)
+    if game.active_step.is_a?(Engine::Step::Route) || game.active_step.is_a?(Engine::Step::BuyTrain)
       # Lay token sometimes needed pass when it shouldn't have
       actions.delete(broken_action)
       return
@@ -68,7 +68,7 @@ def repair(game, original_actions, actions, broken_action)
       actions.insert(action_idx, pass)
       return
     end
-    if game.active_step.is_a?(Engine::Step::Train) && game.active_step.actions(game.active_step.current_entity).include?('pass')
+    if game.active_step.is_a?(Engine::Step::BuyTrain) && game.active_step.actions(game.active_step.current_entity).include?('pass')
       pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
       actions.insert(action_idx, pass)
       return

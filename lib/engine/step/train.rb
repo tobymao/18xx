@@ -4,39 +4,7 @@ require_relative 'base'
 
 module Engine
   module Step
-    class Train < Base
-      def actions(entity)
-        # 1846 and a few others minors can't buy trains
-        return [] if entity.minor?
-
-        # TODO: This needs to check it actually needs to sell shares.
-        return ['sell_shares'] if entity == current_entity.owner
-
-        return [] if entity != current_entity
-        # TODO: Not sure this is right
-        return %w[sell_shares buy_train] if must_buy_train?(entity)
-        return %w[buy_train pass] if can_buy_train?(entity)
-
-        []
-      end
-
-      def description
-        'Buy Trains'
-      end
-
-      def pass_description
-        @acted ? 'Done (Trains)' : 'Skip (Trains)'
-      end
-
-      def sequential?
-        true
-      end
-
-      def pass!
-        @last_share_sold_price = nil
-        super
-      end
-
+    module Train
       def can_buy_train?(entity = nil)
         entity ||= current_entity
         can_buy_normal = room?(entity) &&
@@ -55,8 +23,8 @@ module Engine
         @game.must_buy_train?(entity)
       end
 
-      def process_buy_train(action)
-        entity = action.entity
+      def buy_train_action(action, entity = nil)
+        entity ||= action.entity
         train = action.train
         train.variant = action.variant
         price = action.price
@@ -91,6 +59,7 @@ module Engine
 
         @log << "#{entity.name} #{verb} a #{train.name} train for "\
           "#{@game.format_currency(price)} from #{source}"
+
         entity.buy_train(train, price)
         pass! unless can_buy_train?(entity)
       end
@@ -166,6 +135,12 @@ module Engine
 
       def issuable_shares
         []
+      end
+
+      def round_state
+        {
+          trains_bought: [],
+        }
       end
     end
   end
