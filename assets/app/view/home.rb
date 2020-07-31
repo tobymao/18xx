@@ -32,10 +32,10 @@ module View
       # Ready, then active, then unstarted, then completed
       your_games.sort_by! do |game|
         [
-          user_is_acting?(@user, game) ? -game['id'] : 0,
-          game['status'] == 'active' ? -game['id'] : 0,
-          game['status'] == 'new' ? -game['id'] : 0,
-          -game['id'],
+          user_is_acting?(@user, game) ? -game['updated_at'] : 0,
+          game['status'] == 'active' ? -game['updated_at'] : 0,
+          game['status'] == 'new' ? -game['created_at'] : 0,
+          -game['updated_at'],
         ]
       end
 
