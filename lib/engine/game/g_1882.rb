@@ -167,7 +167,7 @@ module Engine
 
           @log << "Rebellion destroys tile #{hex.name}"
           old_tile = hex.tile
-          hex.lay(hex.original_tile)
+          hex.lay_downgrade(hex.original_tile)
           tiles << old_tile
         end
 
