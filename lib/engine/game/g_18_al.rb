@@ -12,12 +12,16 @@ module Engine
       load_from_json(Config::Game::G18AL::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
+      DEV_STAGE = :alpha
+
       GAME_LOCATION = 'Alabama, USA'
       GAME_RULES_URL = 'http://www.diogenes.sacramento.ca.us/18AL_Rules_v1_64.pdf'
       GAME_DESIGNER = 'Mark Derrick'
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
-      EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Coal Field token removed']).freeze
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'remove_tokens' => ['Remove Tokens', 'Warrior Coal Field token removed']
+      ).freeze
 
       ROUTE_BONUSES = %i[atlanta_birmingham mobile_nashville].freeze
 

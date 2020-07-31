@@ -25,12 +25,15 @@ module Engine
         from_depot = action.train.from_depot?
         buy_train_action(action, corporation)
 
-        @round.trains_bought << corporation if from_depot
+        @round.bought_trains << corporation if from_depot
 
         ability = ability(action.entity)
         ability.use! if action.price < action.train.price &&
           ability.discounted_price(action.train, action.train.price) == action.price
-        action.entity.close! if ability.count.zero?
+        begin
+          action.entity.close!
+          @log << "#{action.entity.name} closes due to use of discount to buy train"
+        end if ability.count.zero?
 
         pass! unless can_buy_train?(corporation)
       end
