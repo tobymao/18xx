@@ -21,6 +21,18 @@ module Engine
         end
       end
 
+      def available
+        @companies
+      end
+
+      def visible?
+        true
+      end
+
+      def players_visible?
+        true
+      end
+
       def process_pass(action)
         entity = action.entity
 
@@ -99,6 +111,10 @@ module Engine
       def may_purchase?(company)
         active_company_bids { return false }
         company && company == @companies.first
+      end
+
+      def may_choose?(_company)
+        false
       end
 
       def committed_cash(player)
