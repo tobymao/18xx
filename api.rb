@@ -160,7 +160,7 @@ class Api < Roda
         <head>
            <meta charset=\"utf-8\">
            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0\">
-           <title>18xx.Games</title>
+           <title>18xx.Games (#{desc})</title>
            <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css\">
            <link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&amp;display=swap\">
            <link id=\"favicon_svg\" rel=\"icon\" type=\"image/svg+xml\" href=\"/images/icon.svg\">
