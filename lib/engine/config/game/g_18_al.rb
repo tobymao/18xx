@@ -605,7 +605,9 @@ module Engine
          ],
          "town=revenue:0;upgrade=cost:20,terrain:water":[
             "C2",
-            "C6",
+            "C6"
+         ],
+         "city=revenue:0;upgrade=cost:20,terrain:water":[
             "C4"
          ],
          "upgrade=cost:20,terrain:water":[
