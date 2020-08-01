@@ -25,6 +25,20 @@ module Engine
           @companies.first(@draw_size)
         end
 
+        def may_purchase?(_company)
+          false
+        end
+
+        def may_choose?(_company)
+          true
+        end
+
+        def auctioning_company; end
+
+        def bids
+          {}
+        end
+
         def blank?(company)
           company.name.include?('Pass')
         end
@@ -39,6 +53,10 @@ module Engine
 
         def visible?
           only_one_company?
+        end
+
+        def players_visible?
+          false
         end
 
         def name
