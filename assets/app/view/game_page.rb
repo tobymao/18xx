@@ -252,9 +252,9 @@ module View
       when Engine::Round::Operating
         h(Game::Round::Operating, game: @game)
       when Engine::Round::G1846::Draft
-        h(Game::Round::Auction, game: @game)
+        h(Game::Round::Auction, game: @game, user: @user)
       when Engine::Round::Auction
-        h(Game::Round::Auction, game: @game)
+        h(Game::Round::Auction, game: @game, user: @user)
       end
     end
 

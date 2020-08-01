@@ -14,8 +14,8 @@ module View
 
         needs :selected_company, default: nil, store: true
         needs :hidden, default: true, store: true
-        needs :user, store: true, default: nil
         needs :flash_opts, default: {}, store: true
+        needs :user
 
         def render
           @round = @game.round
