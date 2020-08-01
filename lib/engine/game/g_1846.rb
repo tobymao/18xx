@@ -283,7 +283,7 @@ module Engine
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
-          Step::Assign,
+          Step::G1846::Assign,
           Step::SpecialTrack,
           Step::G1846::BuySellParShares,
         ])
@@ -293,7 +293,7 @@ module Engine
         Round::G1846::Operating.new(self, [
           Step::G1846::Bankrupt,
           Step::DiscardTrain,
-          Step::Assign,
+          Step::G1846::Assign,
           Step::SpecialToken,
           Step::SpecialTrack,
           Step::G1846::BuyCompany,

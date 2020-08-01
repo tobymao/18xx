@@ -264,7 +264,7 @@ module Engine
         },
         {
           "type": "assign_corporation",
-          "count": 1
+          "count": 99
         }
       ]
     },

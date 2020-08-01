@@ -19,17 +19,22 @@ module Engine
         target = action.target
         @game.game_error("#{company.name} is already assigned to #{target.name}") if target.assigned?(company.id)
 
-        if target.is_a?(Hex) && company.abilities(:assign_hexes)
+        if target.is_a?(Hex) && (ability = company.abilities(:assign_hexes))
           target.assign!(company.id)
-          company.abilities(:assign_hexes, &:use!)
+          ability.use!
           @log << "#{company.name} is assigned to #{target.name}"
-        elsif target.is_a?(Corporation) && company.abilities(:assign_corporation)
-          Assignable.remove_from_all!(@game.corporations, company.id) do |unassigned|
+        elsif assignable_corporations && (ability = company.abilities(:assign_corporation))
+          Assignable.remove_from_all!(assignable_corporations, company.id) do |unassigned|
             @log << "#{company.name} is unassigned from #{unassigned.name}"
           end
           target.assign!(company.id)
+          ability.use!
           @log << "#{company.name} is assigned to #{target.name}"
         end
+      end
+
+      def assignable_corporations
+        @game.corporations
       end
 
       def available_hex(entity, hex)
