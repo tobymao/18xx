@@ -53,7 +53,7 @@ module View
       # hexes/tiles from a specific game
       elsif dest == 'custom'
         location_name = Lib::Params['n']
-        color =  Lib::Params['c'] || 'yellow'
+        color = Lib::Params['c'] || 'yellow'
         tile = Engine::Tile.from_code(
           'custom',
           color,
