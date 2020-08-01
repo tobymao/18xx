@@ -609,12 +609,14 @@ module Engine
             "C4"
          ],
          "upgrade=cost:20,terrain:water":[
-            "G2",
             "L3",
-            "M2",
             "N3",
+            "O2"
+         ],
+         "upgrade=cost:20,terrain:water;icon=image:18_al/swamp":[
+            "G2",
+            "M2",
             "N5",
-            "O2",
             "O4",
             "P5"
          ],
