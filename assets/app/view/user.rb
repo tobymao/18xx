@@ -68,9 +68,8 @@ module View
       children = [render_form(title, inputs)]
 
       if @type == :profile
-        finished_games = @games.select do |game|
-          user_in_game?(@user, game) && game['status'] == 'finished'
-        end
+        finished_games = @games.select { |game| user_in_game?(@user, game) && game['status'] == 'finished' }
+        .sort_by { |game| -game['updated_at'] }
 
         children << h(
           GameRow,
