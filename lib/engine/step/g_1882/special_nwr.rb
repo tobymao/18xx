@@ -75,7 +75,7 @@ module Engine
             token = Engine::Token.new(cn_corp, price: 0, logo: '/logos/1882/neutral.svg', type: :neutral)
             cn_corp.tokens << token
 
-            # As the city reservation is still for the original company force the lay.
+            action.city.reservations.delete(owner)
             token.place(action.city)
             action.city.tokens[action.slot] = token
           else
