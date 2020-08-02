@@ -117,7 +117,7 @@ module Engine
         false
       end
 
-      def committed_cash(player)
+      def committed_cash(player, _show_hidden = false)
         bids_for_player(player).sum(&:price)
       end
 

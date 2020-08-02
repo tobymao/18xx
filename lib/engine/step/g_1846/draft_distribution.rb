@@ -6,7 +6,7 @@ module Engine
   module Step
     module G1846
       class DraftDistribution < Base
-        attr_reader :companies
+        attr_reader :companies, :choices
 
         ACTIONS = %w[bid].freeze
         ACTIONS_WITH_PASS = %w[bid pass].freeze
@@ -101,7 +101,7 @@ module Engine
         def process_bid(action)
           company = action.company
           @choices[action.entity] << company
-
+          company.owner = action.entity
           discarded = available.sort_by { @game.rand }
           discarded.delete(company)
 
@@ -120,6 +120,7 @@ module Engine
           @choices.each do |player, companies|
             companies.each do |company|
               if blank?(company)
+                company.owner = nil
                 @log << "#{player.name} chose #{company.name}"
               else
                 company.owner = player
@@ -153,8 +154,10 @@ module Engine
           @game.bank.spend(company.value, minor) if minor
         end
 
-        def committed_cash(_player)
-          0
+        def committed_cash(player, show_hidden = false)
+          return 0 unless show_hidden
+
+          choices[player].sum(&:min_bid)
         end
       end
     end

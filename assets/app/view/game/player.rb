@@ -11,6 +11,7 @@ module View
       needs :player
       needs :game
       needs :display, default: 'inline-block'
+      needs :show_hidden, default: false
 
       def render
         card_style = {
@@ -24,7 +25,9 @@ module View
           render_body,
         ]
 
-        divs << h(Companies, owner: @player, game: @game) if @player.companies.any?
+        if @player.companies.any? || @show_hidden
+          divs << h(Companies, owner: @player, game: @game, show_hidden: @show_hidden)
+        end
 
         h('div.player.card', { style: card_style }, divs)
       end
@@ -79,7 +82,7 @@ module View
         ]
 
         if @game.active_step&.current_actions&.include?('bid')
-          committed = @game.active_step.committed_cash(@player)
+          committed = @game.active_step.committed_cash(@player, @show_hidden)
           trs.concat([
             h(:tr, [
               h(:td, 'Committed'),

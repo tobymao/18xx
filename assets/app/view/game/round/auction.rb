@@ -41,7 +41,7 @@ module View
             h(Players, game: @game)
           else
             h(:div, [
-              h(Player, player: @current_entity, game: @game),
+              h(Player, player: @current_entity, game: @game, show_hidden: true),
             ])
           end
         end
