@@ -13,21 +13,40 @@ module Engine
           actions
         end
 
-        # def process_par(action)
-        #   super
-        #   # All corps choose their home token at IPO time
+        def process_bid(action)
+          entity = action.entity
 
-        #   @game.place_home_token(action.corporation)
+          unless @bid
+            @log << "#{entity.name} auctions #{action.corporation.name} for #{@game.format_currency(action.price)}"
+            @game.place_home_token(action.corporation)
+          end
 
-        #   # @todo: then go to an auction
-        # end
+          @bid = action
+        end
 
         def committed_cash
           0
         end
 
+        def min_increment
+          5
+        end
+
+        def min_bid(_corporation)
+          100
+        end
+
+        def max_bid(player, _corporation)
+          [400, player.cash].min
+        end
+
         def can_ipo_any?(entity)
           false
+        end
+
+        def setup
+          super
+          @bid = nil
         end
       end
     end

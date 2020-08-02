@@ -124,9 +124,35 @@ module View
         end
 
         def render_pre_ipo
-          return unless @current_actions.include?('par')
+          return h(Par, corporation: @selected_corporation) if @current_actions.include?('par')
+          return render_bid(@selected_corporation) if @current_actions.include?('bid')
 
-          h(Par, corporation: @selected_corporation)
+          nil
+        end
+
+        def render_bid(corporation)
+          step = @step.min_increment
+
+          price_input = h(:input, style: { marginRight: '1rem' }, props: {
+            value: @step.min_bid(corporation),
+            step: step,
+            min: @step.min_bid(corporation) + step,
+            max: @step.max_bid(@current_entity, corporation),
+            type: 'number',
+            size: @current_entity.cash.to_s.size,
+          })
+
+          place_bid = lambda do
+            process_action(Engine::Action::Bid.new(
+              @current_entity,
+              corporation: corporation,
+              price: Native(price_input)[:elm][:value].to_i,
+            ))
+          end
+
+          bid_button = h(:button, { on: { click: place_bid } }, 'Place Bid')
+
+          h('div.center', [price_input, bid_button])
         end
       end
     end
