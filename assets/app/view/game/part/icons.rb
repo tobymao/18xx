@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require 'view/game/part/base'
+require 'view/game/part/small_item'
 
 module View
   module Game
     module Part
       class Icons < Base
+        include SmallItem
         ICON_RADIUS = 16
         DELTA_X = (ICON_RADIUS * 2) + 2
 
@@ -25,11 +27,7 @@ module View
              }]
 
           elsif layout == :flat
-            [{
-               region_weights: { RIGHT_CORNER => 1 },
-               x: 68,
-               y: 0,
-             }]
+            SMALL_ITEM_LOCATIONS
           end
         end
 
