@@ -19,6 +19,8 @@ module Engine
 
         def actions(entity)
           return [] unless ability(entity)
+          # Disable using NWR private on the dividend screen
+          return [] if @round.routes&.any?
 
           case @state
           when nil
