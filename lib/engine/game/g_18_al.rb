@@ -112,7 +112,6 @@ module Engine
           @companies.each do |company|
             company.abilities(:assign_hexes) do |ability|
               remove_mining_icons(ability.hexes)
-              return nil
             end
           end
         end
