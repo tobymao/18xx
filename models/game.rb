@@ -86,14 +86,28 @@ class Game < Base
     fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **opts,).all.sort_by(&:id).reverse
   end
 
+  SETTINGS = %w[
+    notepad
+  ].freeze
+  def update_player_settings(player, params)
+    clean_params = params.filter { |k, _v| SETTINGS.include? k }
+    settings['players'] ||= {}
+    settings['players'][player] = (settings['players'][player] || {}).merge(clean_params)
+  end
+
   def ordered_players
     players
       .sort_by(&:id)
       .shuffle(random: Random.new(settings['seed'] || 1))
   end
 
-  def to_h(include_actions: false)
+  def to_h(include_actions: false, player: nil)
     actions_h = include_actions ? actions.map(&:to_h) : []
+    settings_h = include_actions ? settings.to_h : {}
+
+    # Move user settings and hide from other players
+    user_settings_h = settings_h.dig('players', player)
+    settings_h.delete('players')
 
     {
       id: id,
@@ -102,7 +116,8 @@ class Game < Base
       players: ordered_players.map(&:to_h),
       max_players: max_players,
       title: title,
-      settings: settings.to_h,
+      settings: settings_h,
+      user_settings: user_settings_h,
       status: status,
       turn: turn,
       round: round,
