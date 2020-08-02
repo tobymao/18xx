@@ -42,11 +42,9 @@ class Api
 
           # POST '/api/game/<game_id>/user_settings'
           r.is 'user_settings' do
-            DB.with_advisory_lock(:action_lock, game.id) do
-              game.update_player_settings(user.name, r.params)
-              game.save
-              game.to_h
-            end
+            game.update_player_settings(user.name, r.params)
+            game.save
+            game.to_h
           end
           # POST '/api/game/<game_id>/action'
           r.is 'action' do
