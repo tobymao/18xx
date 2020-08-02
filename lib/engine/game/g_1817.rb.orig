@@ -33,7 +33,7 @@ module Engine
       GAME_RULES_URL = 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view'
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
+<<<<<<< HEAD
 
       # Two lays with one being an upgrade, second tile costs 20
       # @todo: this cannot be the same tile
@@ -52,6 +52,9 @@ module Engine
           hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
         end
       end
+=======
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
+>>>>>>> master
     end
   end
 end

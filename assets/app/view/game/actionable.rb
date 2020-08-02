@@ -16,6 +16,13 @@ module View
         base.needs :selected_company, default: nil, store: true
       end
 
+      def save_user_settings(settings)
+        @connection.safe_post("/game/#{@game_data['id']}/user_settings", settings)
+
+        @game_data['user_settings'] ||= {}
+        @game_data['user_settings'].merge!(settings)
+      end
+
       def process_action(action)
         hotseat = @game_data[:mode] == :hotseat
         participant = @game.players.map(&:name).include?(@user&.dig('name'))

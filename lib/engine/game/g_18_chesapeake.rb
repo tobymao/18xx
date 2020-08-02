@@ -22,6 +22,7 @@ module Engine
       GAME_RULES_URL = 'https://www.dropbox.com/s/x0dsehrxqr1tl6w/18Chesapeake_Rules.pdf'
       GAME_DESIGNER = 'Scott Petersen'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Chesapeake'
 
       SELL_BUY_ORDER = :sell_buy
 

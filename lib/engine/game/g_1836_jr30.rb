@@ -12,6 +12,7 @@ module Engine
       GAME_LOCATION = 'Netherlands'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/114572/1836jr-30-rules'
       GAME_DESIGNER = 'David G. D. Hecht'
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1836Jr-30'
 
       SELL_BUY_ORDER = :sell_buy_sell
       TRACK_RESTRICTION = :permissive
