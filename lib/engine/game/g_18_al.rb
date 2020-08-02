@@ -17,6 +17,8 @@ module Engine
       GAME_LOCATION = 'Alabama, USA'
       GAME_RULES_URL = 'http://www.diogenes.sacramento.ca.us/18AL_Rules_v1_64.pdf'
       GAME_DESIGNER = 'Mark Derrick'
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18AL'
+
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
