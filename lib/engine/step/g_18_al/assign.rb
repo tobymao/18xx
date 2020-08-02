@@ -28,10 +28,7 @@ module Engine
             amount: 10
           )
           company.owner.add_ability(ability)
-          @game
-            .hexes
-            .select { |hex| hexes.include?(hex.name) }
-            .each { |hex| hex.tile.icons = [] }
+          @game.remove_mining_icons(hexes, exclude: target.id)
 
           @log << "Warrior Coal Field token is placed in #{target_location} (#{target.id})"
           # TODO: the following note can be removed when this can be done automatically

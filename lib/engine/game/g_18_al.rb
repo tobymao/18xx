@@ -96,13 +96,36 @@ module Engine
         @corporations.each do |corporation|
           corporation.abilities(:hexes_bonus) do |a|
             @log << "#{corporation.name} removes: #{a.description}"
+            remove_mining_icons(a.hexes)
             corporation.remove_ability(a)
+          end
+        end
+      end
+
+      def event_close_companies!
+        super
+
+        # Remove mining icons if Warrior Coal Field has not been assigned
+        @corporations.each do |corporation|
+          next if corporation.abilities(:hexes_bonus).empty?
+
+          @companies.each do |company|
+            company.abilities(:assign_hexes) do |ability|
+              remove_mining_icons(ability.hexes)
+              return nil
+            end
           end
         end
       end
 
       def get_location_name(hex_name)
         @hexes.find { |h| h.name == hex_name }.location_name
+      end
+
+      def remove_mining_icons(hexes_to_clear, exclude: nil)
+        @hexes
+          .select { |hex| hexes_to_clear.include?(hex.name) && exclude != hex.name }
+          .each { |hex| hex.tile.icons = [] }
       end
 
       private

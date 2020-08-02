@@ -127,15 +127,11 @@ module Engine
       },
     },
     GAMES_BY_TITLE['18AL'] => {
-      4711 => {
-        'Bertil' => 4874,
-        'Cecilia' => 4435,
-        'Adam' => 4209,
-      },
-      4712 => {
-        'Adam' => 5780,
-        'Cecilia' => 5116,
-        'Bertil' => 4718,
+      4714 => {
+        'Adam' => 3037,
+        'Bertil' => 2836,
+        'Daisy' => 2522,
+        'Cecilia' => 2498,
       },
     },
   }.freeze
