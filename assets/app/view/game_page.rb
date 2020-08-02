@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/color'
 require 'lib/connection'
 require 'lib/params'
 require 'lib/settings'
@@ -7,6 +8,7 @@ require_tree './game'
 
 module View
   class GamePage < Snabberb::Component
+    include Lib::Color
     include Lib::Settings
 
     needs :game_data, store: true
@@ -31,7 +33,10 @@ module View
         h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues/' } }, 'raise a bug report'),
         " and include the game id (#{@game_data['id']}) and the following JSON data",
       ])
-      inner << h(Game::GameData, actions: @game_data['actions'], allow_clone: false)
+      inner << h(Game::GameData,
+                 actions: @game_data['actions'],
+                 allow_clone: false,
+                 allow_delete: @game_data[:mode] == :hotseat)
       h(:div, inner)
     end
 
@@ -142,12 +147,21 @@ module View
     private
 
     def render_title
-      title = "#{@game.class.title} - #{@game.id} - 18xx.games"
-      title = "* #{title}" if @game.active_player_names.include?(@user&.dig(:name))
+      title = "#{@game.class.title} - #{@game.id} - 18xx.Games"
+      title = "* #{title}" if @game.active_player_names.include?(@user&.dig('name'))
       `document.title = #{title}`
+      change_favicon(active_player)
+      change_tab_color(active_player)
+    end
+
+    def active_player
+      @game_data[:mode] != :hotseat &&
+        !cursor &&
+        @game.active_players.map(&:name).include?(@user&.dig('name'))
     end
 
     def menu
+      bg_color = active_player ? color_for(:your_turn) : color_for(:bg2)
       nav_props = {
         attrs: {
           role: 'navigation',
@@ -159,9 +173,10 @@ module View
           margin: '-1rem -2vmin 2vmin -2vmin',
           borderBottom: "1px solid #{color_for(:font2)}",
           top: '0',
-          'background-color': color_for(:bg2),
-          'font-size': 'large',
-          'z-index': '9999',
+          backgroundColor: bg_color,
+          color: active_player ? contrast_on(bg_color) : color_for(:font2),
+          fontSize: 'large',
+          zIndex: '9999',
         },
       }
 
@@ -191,12 +206,9 @@ module View
           href: anchor,
           onclick: 'return false',
         },
-        style: {
-          'color': color_for(:font2),
-        },
+        style: { textDecoration: route_anchor == anchor[1..-1] ? 'underline' : 'none' },
         on: { click: change_anchor },
       }
-      a_props[:style][:textDecoration] = route_anchor == anchor[1..-1] ? 'underline' : 'none'
       li_props = {
         style: {
           float: 'left',
@@ -220,22 +232,29 @@ module View
       game_end = @game.game_ending_description
       description += " - #{game_end}" if game_end
       description += " - Pinned to Version: #{@pin}" if @pin
-      h(:div, { style: { 'font-weight': 'bold', margin: '2vmin 0' } }, description)
+      h(:div, { style: { fontWeight: 'bold', margin: '2vmin 0' } }, description)
     end
 
     def render_action
-      return h(Game::DiscardTrains) if @game.active_step&.current_actions&.include?('discard_train')
       return h(Game::GameEnd) if @game.finished
+
+      entity = @round.active_step.current_entity
+      current_actions = @round.actions_for(entity) || []
+      return h(Game::DiscardTrains) if current_actions.include?('discard_train')
 
       case @round
       when Engine::Round::Stock
-        h(Game::Round::Stock, game: @game)
+        if (%w[place_token lay_tile] & current_actions).any?
+          h(Game::Map, game: @game)
+        else
+          h(Game::Round::Stock, game: @game)
+        end
       when Engine::Round::Operating
         h(Game::Round::Operating, game: @game)
       when Engine::Round::G1846::Draft
-        h(Game::Round::Draft, game: @game)
+        h(Game::Round::Auction, game: @game, user: @user)
       when Engine::Round::Auction
-        h(Game::Round::Auction, game: @game)
+        h(Game::Round::Auction, game: @game, user: @user)
       end
     end
 
@@ -247,7 +266,8 @@ module View
         h(Game::GameLog, user: @user),
         h(Game::HistoryControls, num_actions: @num_actions),
         h(Game::EntityOrder, round: @round),
-        h(Game::Exchange),
+        h(Game::Abilities, user: @user, game: @game),
+        h(Game::UndoAndPass),
         render_action,
       ])
     end

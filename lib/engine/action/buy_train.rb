@@ -5,13 +5,13 @@ require_relative 'base'
 module Engine
   module Action
     class BuyTrain < Base
-      attr_reader :train, :price, :exchange
+      attr_reader :train, :price, :exchange, :variant
 
       def initialize(entity, train:, price:, variant: nil, exchange: nil)
         @entity = entity
         @train = train
         @price = price
-        @train.variant = variant
+        @variant = variant
         @exchange = exchange
       end
 
@@ -28,7 +28,7 @@ module Engine
         {
           'train' => @train.id,
           'price' => @price,
-          'variant' => @train.variants.one? ? nil : @train.name,
+          'variant' => @variant,
           'exchange' => @exchange&.id,
         }
       end

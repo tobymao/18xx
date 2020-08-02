@@ -21,22 +21,16 @@ module View
         @company.owner.player?
       end
 
-      def ability_usable?
-        return if (@company.all_abilities.map(&:type) & Round::Operating::ABILITIES).empty?
-
-        @game.round.can_act?(@company.owner) || @company.owner.player?
-      end
-
       def select_company(event)
         event.JS.stopPropagation
-        selected_company = (purchasable? || ability_usable?) && !selected? ? @company : nil
+        selected_company = purchasable? && !selected? ? @company : nil
         store(:tile_selector, nil, skip: true)
         store(:selected_company, selected_company)
       end
 
       def render_bidders
         bidders_style = {
-          'font-weight': 'normal',
+          fontWeight: 'normal',
           margin: '0 0.5rem',
         }
         names = @bids
@@ -54,17 +48,17 @@ module View
           header_style = {
             background: 'yellow',
             border: '1px solid',
-            'border-radius': '5px',
+            borderRadius: '5px',
             color: 'black',
-            'margin-bottom': '0.5rem',
-            'font-size': '90%',
+            marginBottom: '0.5rem',
+            fontSize: '90%',
           }
 
           description_style = {
             margin: '0.5rem 0',
-            'font-size': '80%',
-            'text-align': 'left',
-            'font-weight': 'normal',
+            fontSize: '80%',
+            textAlign: 'left',
+            fontWeight: 'normal',
           }
 
           value_style = {
@@ -76,7 +70,7 @@ module View
           }
 
           bidders_style = {
-            'margin-top': '0.5rem',
+            marginTop: '0.5rem',
             display: 'inline-block',
             clear: 'both',
             width: '100%',
@@ -84,18 +78,18 @@ module View
 
           props = {
             style: {
-              cursor: purchasable? || ability_usable? ? 'pointer' : 'default',
+              cursor: purchasable? ? 'pointer' : 'default',
               boxSizing: 'border-box',
               padding: '0.5rem',
-              margin: '0.5rem 0.5rem 0 0',
-              'text-align': 'center',
-              'font-weight': 'bold',
+              margin: '0.5rem 5px 0 0',
+              textAlign: 'center',
+              fontWeight: 'bold',
             },
             on: { click: ->(event) { select_company(event) } },
           }
           if selected?
-            props[:style]['background-color'] = 'lightblue'
-            props[:style]['color'] = 'black'
+            props[:style][:backgroundColor] = 'lightblue'
+            props[:style][:color] = 'black'
           end
           props[:style][:display] = @display
 
@@ -133,12 +127,6 @@ module View
           on: { click: ->(event) { toggle_desc(event, company) } },
         }
 
-        income_props = {
-          style: {
-            paddingRight: '0.3rem',
-          },
-        }
-
         hidden_props = {
           style: {
             display: 'none',
@@ -146,21 +134,14 @@ module View
             marginBottom: '0.5rem',
             padding: '0.1rem 0.2rem',
             fontSize: '80%',
-            cursor: ability_usable? ? 'pointer' : 'default',
           },
         }
-        hidden_props[:on] = { click: ->(event) { select_company(event) } } if ability_usable? && !@company.owner.player?
-        if selected?
-          hidden_props[:style]['background-color'] = 'lightblue'
-          hidden_props[:style]['color'] = 'black'
-          hidden_props[:style][:borderRadius] = '0.2rem'
-        end
 
         @hidden_divs[company.sym] = h('div#hidden', hidden_props, company.desc)
 
-        [h('div.name.nowrap', name_props, company.name),
-         @company.owner.player? ? h('div.right', income_props, @game.format_currency(company.value)) : '',
-         h('div.right', income_props, @game.format_currency(company.revenue)),
+        [h('div.nowrap', name_props, company.name),
+         @company.owner.player? ? h('div.right', @game.format_currency(company.value)) : '',
+         h('div.padded_number', @game.format_currency(company.revenue)),
          @hidden_divs[company.sym]]
       end
     end

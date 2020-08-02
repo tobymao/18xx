@@ -14,18 +14,49 @@ module Engine
         'toast' => 7585,
         'tomusher' => 5431,
       },
-      4123 => {
-        'Eric_Tama' => 5793,
-        'Siraj' => 5080,
-        'creslin792' => 6178,
-        'markcp' => 6225,
+      3099 => {
+        'Blondie' => 7118,
+        'Emilybry26' => 6405,
+        'MrDiskord' => 4072,
+        'mfmise' => 6548,
+        'sirstevie3' => 4907,
+      },
+      4949 => {
+        'Apreche' => 6822,
+        'GeekNightsRym' => 9154,
+        'pence' => 7002,
+      },
+      # bankruptcy sending two corps into receivership, one of them buying a
+      # train immediately; also has emergency share issuing
+      'hs_ynxuqvex_1595710756' => {
+        'Player 1' => 0,
+        'Player 2' => 0,
+        'Player 3' => 1527,
+      },
+      # bankruptcy sending a corp into receivership, unable to buy a train on
+      # the turn of the bankruptcy, and then buying a train on its next turn
+      # thanks to company income; also includes emergency share issuing
+      'hs_gcumggit_1595777670' => {
+        'Player 1' => 0,
+        'Player 2' => 1387,
+        'Player 3' => 0,
+      },
+      # bankruptcy that forces the new president to buy a train, which actually
+      # bankrupts them as well
+      'hs_hxrxpbjl_1595784599' => {
+        'Player 1' => 0,
+        'Player 2' => 0,
+        'Player 3' => 552,
+      },
+      # bankruptcy where the bankruptcy action automatically issues the rest of
+      # the corporation's shares
+      'hs_qxroaokg_1595793382' => {
+        'Player 1' => 1266,
+        'Player 2' => 0,
+        'Player 3' => 0,
       },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
-      1825 => {
-        'Phoofstix' => 8187,
-        'ladycake' => 6380,
-      },
       3055 => {
         'CullenF' => 4960,
         'KillerMonkey' => 3456,
@@ -56,10 +87,10 @@ module Engine
     },
     GAMES_BY_TITLE['1889'] => {
       247 => {
-        'fdinh' => 1094,
-        'gugvib' => 1148,
+        'fdinh' => 1059,
+        'gugvib' => 1073,
         'marco4884' => 1089,
-        'vecchioleone' => 305,
+        'vecchioleone' => 275,
       },
       314 => {
         'Rebus' => 1134,
@@ -84,6 +115,23 @@ module Engine
         'Shaz' => 5693,
         'markmenm' => 3159,
         'scottredracecar' => 5021,
+      },
+    },
+    GAMES_BY_TITLE['1882'] => {
+      5236 => {
+        'Akado' => 5333,
+        'starchitect' => 4826,
+        'Dix' => 4429,
+        'nigelsandwich' => 4222,
+        'ryu' => 2260,
+      },
+    },
+    GAMES_BY_TITLE['18AL'] => {
+      4714 => {
+        'Adam' => 3037,
+        'Bertil' => 2836,
+        'Daisy' => 2522,
+        'Cecilia' => 2498,
       },
     },
   }.freeze

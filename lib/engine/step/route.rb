@@ -23,9 +23,9 @@ module Engine
         trains = {}
         @round.routes.each do |route|
           train = route.train
-          raise GameError, "Cannot run another corporation's train. refresh" if train.owner && train.owner != entity
-          raise GameError, 'Cannot run train twice' if trains[train]
-          raise GameError, 'Cannot run train that operated' if train.operated
+          @game.game_error("Cannot run another corporation's train. refresh") if train.owner && train.owner != entity
+          @game.game_error('Cannot run train twice') if trains[train]
+          @game.game_error('Cannot run train that operated') if train.operated
 
           trains[train] = true
           hexes = route.hexes.map(&:name).join(', ')
@@ -35,8 +35,8 @@ module Engine
         pass!
       end
 
-      def available_hex(hex)
-        @game.graph.reachable_hexes(current_entity)[hex]
+      def available_hex(entity, hex)
+        @game.graph.reachable_hexes(entity)[hex]
       end
 
       def sequential?

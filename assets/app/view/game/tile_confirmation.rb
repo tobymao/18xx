@@ -7,7 +7,6 @@ module View
     class TileConfirmation < Snabberb::Component
       include Actionable
 
-      needs :selected_company, store: true, default: nil
       needs :tile_selector, store: true
 
       def render
@@ -19,7 +18,7 @@ module View
             left: '-26px',
             top: '-50px',
             color: 'black',
-            'font-size': '35px',
+            fontSize: '35px',
           },
           on: { click: -> { lay_tile } },
         }
@@ -32,7 +31,7 @@ module View
             left: '6px',
             top: '-50px',
             color: 'black',
-            'font-size': '35px',
+            fontSize: '35px',
           },
           on: { click: -> { store(:tile_selector, nil) } },
         }
@@ -51,7 +50,6 @@ module View
           rotation: @tile_selector.tile.rotation,
         )
         store(:tile_selector, nil, skip: true)
-        store(:selected_company, nil, skip: true)
         process_action(action)
       end
     end

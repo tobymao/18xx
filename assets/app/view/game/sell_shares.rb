@@ -25,10 +25,17 @@ module View
 
           text = "Sell #{num_shares} (#{@game.format_currency(bundle.price)})"
 
-          h('button.button.margined_half', { on: { click: sell } }, text)
+          props = {
+            style: {
+              padding: '0.2rem 0',
+              width: '6rem',
+            },
+            on: { click: sell },
+          }
+          h('button.sell_share', props, text)
         end
 
-        h(:div, { style: { 'margin-top': '1rem' } }, buttons.compact)
+        h(:div, buttons.compact)
       end
     end
   end

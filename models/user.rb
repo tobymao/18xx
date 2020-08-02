@@ -10,9 +10,11 @@ class User < Base
 
   RESET_WINDOW = 60 * 15 # 15 minutes
 
-  SETTINGS = %w[
-    notifications bg font bg2 font2 red_logo white yellow green brown gray red blue
-  ].freeze
+  SETTINGS = (4.times.flat_map do |index|
+    %w[color dash width].map do |prop|
+      "r#{index}_#{prop}"
+    end
+  end + %w[notifications red_logo bg font bg2 font2 your_turn white yellow green brown gray red blue]).freeze
 
   def update_settings(params)
     SETTINGS.each { |setting| settings[setting] = params[setting] }

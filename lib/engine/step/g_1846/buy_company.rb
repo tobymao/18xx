@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../token'
+require_relative '../buy_company'
+require_relative 'receivership_skip'
 
 module Engine
   module Step
     module G1846
       class BuyCompany < BuyCompany
+        include ReceivershipSkip
+
         def room?(entity)
           entity.trains.reject(&:obsolete).size < @game.phase.train_limit
         end
@@ -16,7 +20,8 @@ module Engine
 
           company = action.company
           return unless (minor = @game.minor_by_id(company.id))
-          raise GameError, 'Cannot buy minor because train tight' unless room?(entity)
+
+          @game.game_error('Cannot buy minor because train tight') unless room?(entity)
 
           cash = minor.cash
           minor.spend(cash, entity) if cash.positive?

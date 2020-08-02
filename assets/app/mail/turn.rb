@@ -2,6 +2,7 @@
 
 require_relative '../view/log.rb'
 require_relative '../view/game/players.rb'
+require_relative '../view/game/spreadsheet.rb'
 
 class Turn < Snabberb::Component
   needs :game_data
@@ -21,6 +22,7 @@ class Turn < Snabberb::Component
       render_link,
       h(View::Log, log: @game.log.last(20)),
       h(View::Game::Players, game: @game),
+      h(View::Game::Spreadsheet, game: @game),
     ])
   end
 

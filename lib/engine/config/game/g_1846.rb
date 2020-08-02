@@ -264,7 +264,7 @@ module Engine
         },
         {
           "type": "assign_corporation",
-          "count": 1
+          "count": 99
         }
       ]
     },
@@ -399,6 +399,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
+          "description": "Reserved $40/$60 Ft. Wayne token",
           "hexes": [
             "E11"
           ],
@@ -444,6 +445,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
+          "description": "Reserved $40/$100 Cincinnati token",
           "hexes": [
             "H12"
           ],
@@ -491,6 +493,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
+          "description": "Reserved $40 Erie token",
           "hexes": [
             "D20"
           ],
@@ -538,6 +541,7 @@ module Engine
          {
             "type":"tile_lay",
             "free":true,
+            "description": "Free tile lay: E5, F6, G5, H6, J4",
             "hexes":[
                "E5",
                "F6",
@@ -553,6 +557,7 @@ module Engine
         },
         {
           "type": "token",
+          "description": "Reserved $40 Centralia token",
           "hexes": [
             "I5"
           ],
@@ -613,6 +618,9 @@ module Engine
            ],
            "price": 450
          }
+      ],
+      "events": [
+        {"type": "close_companies"}
       ]
     },
     {
@@ -632,7 +640,10 @@ module Engine
           "price": 900
         }
       ],
-      "num": 9
+      "num": 9,
+      "events": [
+        {"type": "remove_tokens"}
+      ]
     }
   ],
   "hexes": {
@@ -768,7 +779,7 @@ module Engine
       "offboard=revenue:yellow_30|brown_70,hide:1,groups:E;icon=image:1846/20;path=a:1,b:_0;border=edge:0": [
         "F22"
       ],
-      "offboard=revenue:yellow_30|brown_70,groups:E;icon=image:1846/20;path=a:1,b:_0;path=a:2,b:_0;label=E;border=edge:3": [
+      "offboard=revenue:yellow_30|brown_70,groups:E;border=edge:1,type:mountain,cost:20;icon=image:1846/20;path=a:1,b:_0;path=a:2,b:_0;label=E;border=edge:3": [
         "G21"
       ],
       "offboard=revenue:yellow_20|brown_40,groups:E;icon=image:1846/30;path=a:2,b:_0;label=E": [
@@ -832,10 +843,7 @@ module Engine
         "green",
         "brown"
       ],
-      "operating_rounds": 2,
-      "events": {
-        "close_companies": true
-      }
+      "operating_rounds": 2
     },
     {
       "name": "4",
@@ -847,10 +855,7 @@ module Engine
         "brown",
         "gray"
       ],
-      "operating_rounds": 2,
-      "events": {
-        "remove_tokens": true
-      }
+      "operating_rounds": 2
     }
   ]
 }

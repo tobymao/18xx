@@ -32,16 +32,32 @@ module Engine
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
-                  :round, :share_pool, :special, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
+                  :round, :share_pool, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
                   :round_history
-      attr_accessor :bankruptcies
 
+      DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
 
       GAME_LOCATION = nil
       GAME_RULES_URL = nil
       GAME_DESIGNER = nil
       GAME_PUBLISHER = nil
+
+      # Game end check is described as a dictionary
+      # with reason => after
+      #   reason: What kind of game end check to do
+      #   after: When game should end if check triggered
+      # Leave out a reason if game does not support that.
+      # Allowed reasons:
+      #  bankrupt, stock_market, bank
+      # Allowed after:
+      #  immediate - ends in current turn
+      #  current_round - ends at the end of the current round
+      #  current_or - ends at the next end of an OR
+      #  full_or - ends at the next end of a complete OR set
+      # Also, you can use final_or_set: <number> to trigger game
+      # end (:full_or) when that OR is reached.
+      GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
       BANK_CASH = 12_000
 
@@ -121,10 +137,15 @@ module Engine
       DISCARDED_TRAINS = :discard # discarded or removed?
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
+
+      # Default tile lay, one tile either upgrade or lay at zero cost
+      # allows multiple lays, value must be either true, false or :not_if_upgraded
+      TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
+
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
       EVENTS_TEXT = { 'close_companies' =>
-        ['Companies Close', 'All companies unless otherwise noted are discarded from the game'] }.freeze
+                      ['Companies Close', 'All companies unless otherwise noted are discarded from the game'] }.freeze
 
       IPO_NAME = 'IPO'
 
@@ -150,6 +171,10 @@ module Engine
 
       def self.title
         name.split('::').last.slice(1..-1)
+      end
+
+      def self.<=>(other)
+        [DEV_STAGES.index(self::DEV_STAGE), title] <=> [DEV_STAGES.index(other::DEV_STAGE), other.title]
       end
 
       def self.register_colors(colors)
@@ -208,7 +233,7 @@ module Engine
         hex_ids = data['hexes'].values.map(&:keys).flatten
 
         dup_hexes = hex_ids.group_by(&:itself).select { |_, v| v.size > 1 } .keys
-        raise GameError, "Found multiple definitions in #{self} for hexes #{dup_hexes}" if dup_hexes.any?
+        game_error("Found multiple definitions in #{self} for hexes #{dup_hexes}") if dup_hexes.any?
 
         const_set(:CURRENCY_FORMAT_STR, data['currencyFormatStr'])
         const_set(:BANK_CASH, data['bankCash'])
@@ -236,7 +261,6 @@ module Engine
         @finished = false
         @log = []
         @actions = []
-        @bankruptcies = 0
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
 
@@ -247,15 +271,15 @@ module Engine
           @log << "#{self.class.title} is in prealpha state, no support is provided at all"
         when :alpha
           @log << "#{self.class.title} is currently considered 'alpha',"\
-          ' the rules implementation is likely to not be complete.'
+            ' the rules implementation is likely to not be complete.'
           @log << 'As the implementation improves, games that are not compatible'\
-          ' with the latest version will be deleted.'
+            ' with the latest version will be deleted.'
           @log << 'We suggest that any alpha quality game is concluded within 7 days.'
         when :beta
           @log << "#{self.class.title} is currently considered 'beta',"\
-          ' the rules implementation may allow illegal moves.'
+            ' the rules implementation may allow illegal moves.'
           @log << 'As the implementation improves, games that are not compatible'\
-          ' with the latest version will be given 7 days to be completed before being deleted.'
+            ' with the latest version will be given 7 days to be completed before being deleted.'
           @log << 'Because of this we suggest not playing games that may take months to complete.'
         end
 
@@ -269,7 +293,7 @@ module Engine
 
         @depot = init_train_handler
         init_starting_cash(@players, @bank)
-        @share_pool = SharePool.new(self)
+        @share_pool = init_share_pool
         @hexes = init_hexes(@companies, @corporations)
         @graph = Graph.new(self)
 
@@ -282,7 +306,6 @@ module Engine
 
         @round_history = []
         @round = init_round
-        @special = Round::Special.new(@companies, game: self)
 
         cache_objects
         connect_hexes
@@ -300,7 +323,7 @@ module Engine
         @log << "It is pinned to version #{pin}, if any bugs are raised please include this version number."
         if self.class::DEV_STAGE == :beta
           @log << 'Please note, you have 7 days since the upgrade to complete your game,'\
-          ' after which time it will be deleted.'
+            ' after which time it will be deleted.'
         end
         @log << '----'
       end
@@ -315,7 +338,7 @@ module Engine
       end
 
       def inspect
-        "#{self.class.name} - #{self.class.title} #{@players.map(&:name)}"
+        "#{self.class.name} - #{self.class.title} #{players.map(&:name)}"
       end
 
       def result
@@ -335,7 +358,7 @@ module Engine
       end
 
       def active_players
-        @round.active_entities.map(&:owner)
+        @round.active_entities.map(&:player).compact
       end
 
       def active_step
@@ -394,18 +417,12 @@ module Engine
       def process_action(action)
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
-
         if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
           @actions << action
           return clone(@actions)
         end
 
-        # company special power actions are processed by a different round handler
-        if action.entity.is_a?(Company)
-          @special.process_action(action)
-        else
-          @round.process_action(action)
-        end
+        @round.process_action(action)
 
         unless action.is_a?(Action::Message)
           @redo_possible = false
@@ -415,7 +432,7 @@ module Engine
         action_processed(action)
         @actions << action
 
-        end_game! if game_end_reason&.last == :immediate
+        end_game! if game_end_check&.last == :immediate
         while @round.finished? && !@finished
           @round.entities.each(&:unpass!)
           next_round!
@@ -499,7 +516,7 @@ module Engine
 
       def sellable_bundles(player, corporation)
         bundles = player.bundles_for_corporation(corporation)
-        bundles.select { |bundle| @round.active_step.can_sell?(bundle) }
+        bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
       end
 
       def sellable_turn?
@@ -527,7 +544,7 @@ module Engine
         return unless from != to
 
         @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-                "to #{format_currency(to)}"
+          "to #{format_currency(to)}"
       end
 
       def can_run_route?(entity)
@@ -536,8 +553,8 @@ module Engine
 
       def must_buy_train?(entity)
         !entity.rusted_self && entity.trains.empty? &&
-        (self.class::MUST_BUY_TRAIN == :always ||
-         (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
+          (self.class::MUST_BUY_TRAIN == :always ||
+           (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
       end
 
       def end_game!
@@ -549,6 +566,10 @@ module Engine
 
       def revenue_for(route)
         route.stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+      end
+
+      def routes_revenue(routes)
+        routes.sum(&:revenue)
       end
 
       def get(type, id)
@@ -573,18 +594,39 @@ module Engine
         end
       end
 
+      def or_set_finished; end
+
+      def home_token_locations(_corporation)
+        raise NotImplementedError
+      end
+
       def place_home_token(corporation)
         return unless corporation.next_token # 1882
+        # If a corp has laid it's first token assume it's their home token
+        return if corporation.tokens.first&.used
 
         hex = hex_by_id(corporation.coordinates)
 
-        tile = hex.tile
-        if tile.reserved_by?(corporation) && tile.paths.any?
+        tile = hex&.tile
+        if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
+
           # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
           # otherwise the entity must choose now.
           @log << "#{corporation.name} must choose city for home token"
 
-          @round.place_home_token << [corporation, hex, corporation.find_token_by_type]
+          hexes =
+            if hex
+              [hex]
+            else
+              home_token_locations(corporation)
+            end
+
+          @round.pending_tokens << {
+            entity: corporation,
+            hexes: hexes,
+            token: corporation.find_token_by_type,
+          }
+
           @round.clear_cache!
           return
         end
@@ -606,13 +648,31 @@ module Engine
 
           if discount.positive?
             @log << "#{entity.name} receives a discount of "\
-                    "#{format_currency(discount)} from "\
-                    "#{ability.owner.name}"
+              "#{format_currency(discount)} from "\
+              "#{ability.owner.name}"
           end
 
           total_cost = upgrade.cost - discount
           total_cost
         end
+      end
+
+      def declare_bankrupt(player)
+        if player.bankrupt
+          msg = "#{player.name} is already bankrupt, cannot declare bankruptcy again."
+          game_error(msg)
+        end
+
+        player.bankrupt = true
+      end
+
+      def tile_lays(_entity)
+        # Some games change available lays depending on if minor or corp
+        self.class::TILE_LAYS
+      end
+
+      def game_error(msg)
+        raise GameError.new(msg, current_action_id)
       end
 
       private
@@ -794,6 +854,10 @@ module Engine
         end
       end
 
+      def init_share_pool
+        SharePool.new(self)
+      end
+
       def connect_hexes
         coordinates = @hexes.map { |h| [[h.x, h.y], h] }.to_h
 
@@ -818,10 +882,8 @@ module Engine
       end
 
       def next_round!
-        if (_reason, after = game_end_reason)
-          if after != :full_round || (@round.is_a?(Round::Operating) && @round.round_num == @operating_rounds)
-            return end_game!
-          end
+        if (_, after = game_end_check)
+          return end_game! if end_now?(after)
         end
 
         @round =
@@ -849,8 +911,34 @@ module Engine
         @round_history << @actions.size
       end
 
+      def game_end_check
+        triggers = {
+          bankrupt: bankruptcy_limit_reached?,
+          bank: @bank.broken?,
+          stock_market: @stock_market.max_reached?,
+        }.select { |_, t| t }
+
+        %i[immediate current_round current_or full_or].each do |after|
+          triggers.keys.each do |reason|
+            return reason, after if self.class::GAME_END_CHECK[reason] == after
+          end
+        end
+
+        return :final_or_set, :full_or if @round.is_a?(Round::Operating) &&
+          self.class::GAME_END_CHECK[:final_or_set]&.to_i == turn
+      end
+
+      def end_now?(after)
+        return true if after == :immediate
+        return true if after == :current_round
+        return false unless @round.is_a?(Round::Operating)
+        return true if after == :current_or
+
+        @round.round_num == @operating_rounds
+      end
+
       def game_ending_description
-        reason, after = game_end_reason
+        reason, after = game_end_check
         return unless after
 
         after_text = ''
@@ -860,28 +948,28 @@ module Engine
                        when :immediate
                          ' : Game Ends immediately'
                        when :current_round
-                         " : Game Ends at conclusion of this round (#{turn}.#{round_num})"
-                       when :full_round
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         else
+                           " : Game Ends at conclusion of this round (#{turn})"
+                         end
+                       when :current_or
+                         " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                       when :full_or
                          " : Game Ends at conclusion of OR #{turn}.#{operating_rounds}"
                        end
         end
 
         reason_map = {
-                       bank: 'Bank Broken',
-                       bankrupt: 'Bankruptcy',
-                       stockmarket: 'Company hit max stock value',
-                     }
+          bank: 'Bank Broken',
+          bankrupt: 'Bankruptcy',
+          stock_market: 'Company hit max stock value',
+          final_or_set: 'Last OR in game',
+        }
         "#{reason_map[reason]}#{after_text}"
       end
 
-      def game_end_reason
-        return :bankrupt, :immediate if bankruptcy_limit_reached?
-        return :bank, :full_round if @bank.broken?
-      end
-
       def action_processed(_action); end
-
-      def or_set_finished; end
 
       def priority_deal_player
         if @round.current_entity&.player?
@@ -889,18 +977,20 @@ module Engine
           # priority deal card goes to the player who will go first if
           # everyone passes starting now.  last_to_act is nil before
           # anyone has gone, in which case the first player has PD.
-          @players[@round.entity_index]
+          @players.reject(&:bankrupt)[@round.entity_index]
         else
           # We're in a round that iterates over something else, like
           # corporations.  The player list was already rotated when we
           # left a player-focused round to put the PD player first.
-          @players[0]
+          @players.reject(&:bankrupt).first
         end
       end
 
       def reorder_players
-        @players.rotate!(@round.entity_index)
-        @log << "#{@players[0].name} has priority deal"
+        player = @players.reject(&:bankrupt)[@round.entity_index]
+
+        @players.rotate!(@players.index(player))
+        @log << "#{player.name} has priority deal"
       end
 
       def new_auction_round
@@ -916,7 +1006,12 @@ module Engine
       end
 
       def stock_round
-        Round::Stock.new(@players, game: self)
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::Exchange,
+          Step::SpecialTrack,
+          Step::BuySellParShares,
+        ])
       end
 
       def new_operating_round(round_num = 1)
@@ -927,13 +1022,15 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
+          Step::Exchange,
           Step::DiscardTrain,
+          Step::SpecialTrack,
           Step::BuyCompany,
           Step::Track,
           Step::Token,
           Step::Route,
           Step::Dividend,
-          Step::Train,
+          Step::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
@@ -943,7 +1040,8 @@ module Engine
 
         @companies.each do |company|
           if (ability = company.abilities(:close))
-            next if ability.when == 'never' || @phase.phases.any? { |phase| ability.when == phase[:name] }
+            next if ability.when == 'never' ||
+              @phase.phases.any? { |phase| ability.when == phase[:name] }
           end
 
           company.close!
@@ -962,7 +1060,7 @@ module Engine
       end
 
       def bankruptcy_limit_reached?
-        @bankruptcies.positive?
+        @players.any?(&:bankrupt)
       end
     end
   end

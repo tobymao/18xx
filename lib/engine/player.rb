@@ -1,15 +1,18 @@
 # frozen_string_literal: true
 
+require_relative 'entity'
 require_relative 'passer'
 require_relative 'share_holder'
 require_relative 'spender'
 
 module Engine
   class Player
+    include Entity
     include Passer
     include ShareHolder
     include Spender
 
+    attr_accessor :bankrupt
     attr_reader :name, :companies
 
     def initialize(name, count_companies: true)
@@ -41,22 +44,6 @@ module Engine
 
     def player?
       true
-    end
-
-    def company?
-      false
-    end
-
-    def corporation?
-      false
-    end
-
-    def minor?
-      false
-    end
-
-    def operator?
-      false
     end
 
     def num_certs

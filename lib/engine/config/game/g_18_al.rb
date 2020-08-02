@@ -117,7 +117,7 @@ module Engine
          "215",
          "240",
          "270",
-         "300"
+         "300e"
       ],
       [
          "55",
@@ -202,28 +202,75 @@ module Engine
          "name":"South & North Alabama Railroad",
          "value":40,
          "revenue":10,
-         "desc":"Comes with a Warrior Coal Field token. The owning corporation may place it in Gadsden Anniston Oxmoor Birmingham or Tuscaloosa provided that the corporation owns a train that can reach that city on existing track. Placing the token does NOT close the S&NA. The token makes that city worth an extra $10 (when run to) for that corporation only. The token remains on the board until the first 6 Train is purchased."
+         "desc":"Owning corporation may place the Warrior Coal Field token in one of the city hexes with a mining symbol (Gadsden, Anniston, Oxmoor, Birmingham, or Tuscaloosa) provided that the corporation can reach the city with a route that is in the range of a train owned by the corporation (i.e. not an infinite route). Placing the token does not close the company. The owning corporation adds 10 to revenue for all trains whose route includes the city with the token. The token is removed from the game at the beginning of phase 6.",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "hexes": [
+                 "H3",
+                 "G4",
+                 "H5",
+                 "G6",
+                 "E6"
+               ],
+               "count": 1,
+               "owner_type": "corporation"
+            }
+         ]
       },
       {
          "sym":"BLC",
          "name":"Brown & Sons Lumber Co.",
          "value":70,
          "revenue":15,
-         "desc":"Owning corporation may lay the Lumber Terminal track tile (number 445) in an empty swamp hex. It need not be connected to an existing station of the corporation.  The corporation need not pay the $20 cost of the swamp hex.  And it does not count as the corporation's one tile lay per turn.  (But it still must be laid during the tile-laying step of the corporation's turn). Laying the tile does not close the B&SLC. The Lumber Terminal tile is permanent, and cannot be upgraded."
+         "desc":"Owning corporation may during the track laying step lay the Lumber Terminal track tile (/# 445) in an empty swamp hex, which need not be connected to the corporation's station(s). The tile is free and does not count as the corporation's one tile lay per turn. Laying the tile does not close the company. The tile is permanent and cannot be upgraded.",
+         "abilities": [
+             {
+               "type": "tile_lay",
+               "free":true,
+               "owner_type": "corporation",
+               "tiles": [
+                  "445"
+               ],
+               "hexes": [
+                 "G2",
+                 "M2",
+                 "O4",
+                 "N5",
+                 "P5"
+               ],
+               "count": 1,
+               "when": "track"
+             }
+         ]
       },
       {
          "sym":"M&C",
          "name":"Memphis & Charleston Railroad",
          "value":100,
          "revenue":20,
-         "desc":"When a corporation purchases the Memphis & Charleston, it receives the two train name chits. The corporation may place either or both of these on any trains it owns. Getting or placing the name chits does not close the Memphis & Charleston. Any train which has a name chit, and which makes a run that includes both of the locations named on the chit, has its revenue increased by the amount stated on the chit. The corporation may, on its turn, move the name chits freely among its trains, but each train is limited to at most one name at a time, and each chit may give its bonus to at most one train in each operating turn. The chits last for the rest of the game, unless that corporation changes presidents, in which case both chits are immediately removed from play."
+         "desc":"Owning corporation receives the Robert E. Lee marker which adds +20 to revenue if a route includes Atlanta and Birmingham and the Pan American marker which adds +40 to revenue if a route includes Nashville and Mobile. Each marker may be assigned to one train each operating round and both markers may be assigned to a single train. The bonuses are permanent unless a new player becomes president of the corporation, in which case they are removed from the game."
       },
       {
          "sym":"NDY",
          "name":"New Decatur Yards",
          "value":120,
          "revenue":20,
-         "desc":"A corporation which owns the New Decatur Yards may purchase any one new train from the bank for half the regular price. This action closes the New Decatur Yards."
+         "desc":"Owning corporation may purchase one new train from the bank with a discount of 50%, which closes the company.",
+         "abilities": [
+            {
+              "type": "train_discount",
+              "discount": 0.50,
+              "owner_type": "corporation",
+              "trains": [
+                 "3",
+                 "4",
+                 "5"
+              ],
+              "count": 1,
+              "when": "train"
+            }
+         ]
       }
    ],
    "corporations":[
@@ -238,7 +285,16 @@ module Engine
             100
          ],
          "coordinates":"A4",
-         "color":"blue"
+         "color":"blue",
+         "abilities": [
+            {
+              "type": "assign_hexes",
+              "hexes": [
+                "G4"
+              ],
+              "count": 1
+            }
+         ]
       },
       {
          "sym":"M&O",
@@ -251,7 +307,16 @@ module Engine
             100
          ],
          "coordinates":"Q2",
-         "color":"orange"
+         "color":"orange",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "hexes": [
+                 "K2"
+               ],
+               "count": 1
+            }
+         ]
       },
       {
          "sym":"WRA",
@@ -264,7 +329,16 @@ module Engine
             100
          ],
          "coordinates":"L5",
-         "color":"red"
+         "color":"red",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "hexes": [
+                 "J7"
+               ],
+               "count": 1
+            }
+         ]
       },
       {
          "sym":"ATN",
@@ -276,7 +350,16 @@ module Engine
             100
          ],
          "coordinates":"F1",
-         "color":"black"
+         "color":"black",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "hexes": [
+                 "L1"
+               ],
+               "count": 1
+            }
+         ]
       },
       {
          "sym":"ABC",
@@ -287,7 +370,16 @@ module Engine
             40
          ],
          "coordinates":"G6",
-         "color":"green"
+         "color":"green",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "hexes": [
+                 "G4"
+               ],
+               "count": 1
+            }
+         ]
       },
       {
          "sym":"TAG",
@@ -299,7 +391,16 @@ module Engine
          ],
          "coordinates":"E6",
          "color":"yellow",
-         "text_color":"black"
+         "text_color":"black",
+         "abilities": [
+            {
+               "type": "assign_hexes",
+               "hexes": [
+                 "G4"
+               ],
+               "count": 1
+            }
+         ]
       }
    ],
    "trains":[
@@ -391,6 +492,9 @@ module Engine
                "visit":99
             }
          ],
+         "events":[
+           {"type": "close_companies"}
+         ],
          "price":450,
          "num":2
       },
@@ -414,7 +518,10 @@ module Engine
             }
          ],
          "price":630,
-         "num":1
+         "num":1,
+         "events": [
+            {"type": "remove_tokens"}
+         ]
       },
       {
          "name":"7",
@@ -498,16 +605,20 @@ module Engine
          ],
          "town=revenue:0;upgrade=cost:20,terrain:water":[
             "C2",
-            "C6",
+            "C6"
+         ],
+         "city=revenue:0;upgrade=cost:20,terrain:water":[
             "C4"
          ],
          "upgrade=cost:20,terrain:water":[
-            "G2",
             "L3",
-            "M2",
             "N3",
+            "O2"
+         ],
+         "upgrade=cost:20,terrain:water;icon=image:18_al/swamp":[
+            "G2",
+            "M2",
             "N5",
-            "O2",
             "O4",
             "P5"
          ],
@@ -619,9 +730,6 @@ module Engine
             "green",
             "brown"
          ],
-         "events":{
-            "close_companies":true
-         },
          "operating_rounds": 3
       },
       {

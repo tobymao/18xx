@@ -14,6 +14,7 @@ module View
 
       COLOR_MAP = {
         red: '#ffaaaa',
+        blue: '#35a7ff',
         brown: '#8b4513',
         orange: '#ffbb55',
         yellow: '#ffff99',
@@ -41,7 +42,7 @@ module View
           width: "#{WIDTH_TOTAL - 2 * PAD}px",
           height: "#{HEIGHT_TOTAL - 2 * PAD}px",
           margin: '0',
-          'vertical-align': 'top',
+          verticalAlign: 'top',
         }
 
         box_style = space_style.merge(
@@ -55,7 +56,7 @@ module View
         grid = @game.stock_market.market.flat_map do |prices|
           rows = prices.map do |price|
             if price
-              style = box_style.merge('background-color' => price.color ? COLOR_MAP[price.color] : color_for(:bg2))
+              style = box_style.merge(backgroundColor: price.color ? COLOR_MAP[price.color] : color_for(:bg2))
               if price.color == :black
                 style[:color] = 'gainsboro'
                 style[:borderColor] = color_for(:font)
@@ -71,14 +72,14 @@ module View
                   style: {
                     position: 'absolute',
                     left: num > 1 ? "#{LEFT_TOKEN_POS + ((num - index - 1) * spacing)}px" : "#{MID_TOKEN_POS}px",
-                    'z-index' => num - index,
+                    zIndex: num - index,
                   },
                 }
                 h(:object, props)
               end
 
               h(:div, { style: style }, [
-                h(:div, { style: { 'font-size': '80%' } }, price.price),
+                h(:div, { style: { fontSize: '80%' } }, price.price),
                 h(:div, tokens),
               ])
             else
@@ -101,31 +102,28 @@ module View
             [:orange, 'Corporation shares can be held above 60%'],
             [:brown, 'Can buy more than one share in the Corporation per turn'],
             [:black, 'Corporation closes'],
+            [:blue, 'End game trigger'],
           ]
           colors_text.each do |color, text|
             next unless colors_in_market.include?(color)
 
-            style = box_style.merge('background-color' => COLOR_MAP[color])
+            style = box_style.merge(backgroundColor: COLOR_MAP[color])
             style[:borderColor] = color_for(:font) if color == :black
 
             line_props = {
               style: {
-                'margin-top': '1rem',
+                display: 'grid',
+                grid: '1fr / auto 1fr',
+                gap: '0.5rem',
+                alignItems: 'center',
+                marginTop: '1rem',
               },
             }
-            text_style = {
-              position: 'relative',
-              display: 'inline-block',
-              padding: "#{PAD}px",
-              height: "#{HEIGHT_TOTAL - 2 * PAD}px",
-              margin: '0',
-              'line-height': "#{HEIGHT_TOTAL - 2 * PAD}px",
-              'vertical-align': 'middle',
-            }
+
             children << h(:div, line_props, [
-            h(:div, { style: style }, []),
-            h(:div, { style: text_style }, text),
-])
+              h(:div, { style: style }, []),
+              h(:div, text),
+            ])
           end
         end
 

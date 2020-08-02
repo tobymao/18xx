@@ -27,7 +27,7 @@ module View
           props = {
             style: {
               display: 'inline-block',
-              'vertical-align': 'top',
+              verticalAlign: 'top',
             },
           }
 
@@ -54,9 +54,11 @@ module View
       def render
         step = @game.round.active_step
         @corporation = step.current_entity
+        @ability = @selected_company&.abilities(:train_discount, 'train') if @selected_company&.owner == @corporation
+
         @depot = @game.depot
 
-        available = step.buyable_trains.group_by(&:owner)
+        available = step.buyable_trains(@corporation).group_by(&:owner)
         depot_trains = available.delete(@depot) || []
         other_corp_trains = available.sort_by { |c, _| c.owner == @corporation.owner ? 0 : 1 }
         children = []
@@ -109,7 +111,7 @@ module View
 
             children << h(:div, [
               "#{train.name} -> #{discount_train.name} #{@game.format_currency(price)} ",
-              h('button.button.no_margin', { on: { click: exchange_train } }, 'Exchange'),
+              h('button.no_margin', { on: { click: exchange_train } }, 'Exchange'),
             ])
           end
         end
@@ -130,12 +132,16 @@ module View
 
       def from_depot(depot_trains)
         depot_trains.flat_map do |train|
-          train.variants.sort_by { |_, v| v[:price] }.flat_map do |name, variant|
+          train.variants
+            .select { |_, v| @game.round.active_step.buyable_train_variants(train, @corporation).include?(v) }
+            .sort_by { |_, v| v[:price] }
+            .flat_map do |name, variant|
             price = variant[:price]
+            price = @ability&.discounted_price(train, price) || price
 
             buy_train = lambda do
               process_action(Engine::Action::BuyTrain.new(
-                @corporation,
+                @ability ? @selected_company : @corporation,
                 train: train,
                 price: price,
                 variant: name,
@@ -147,7 +153,7 @@ module View
             [h(:div, name),
              h('div.nowrap', source),
              h('div.right', @game.format_currency(price)),
-             h('button.button.no_margin', { on: { click: buy_train } }, 'Buy')]
+             h('button.no_margin', { on: { click: buy_train } }, 'Buy')]
           end
         end
       end
@@ -187,7 +193,7 @@ module View
               [h(:div, name),
                h('div.nowrap', "#{other.name} (#{count > 1 ? "#{count}, " : ''}#{other.owner.name})"),
                input,
-               h('button.button.no_margin', { on: { click: buy_train } }, 'Buy')]
+               h('button.no_margin', { on: { click: buy_train } }, 'Buy')]
             else
               hidden_trains = true
               nil
@@ -204,11 +210,11 @@ module View
         }
 
         if hidden_trains
-          trains_to_buy << h('button.button.no_margin',
+          trains_to_buy << h('button.no_margin',
                              { on: { click: -> { store(:show_other_players, true) } }, **button_props },
                              'Show trains from other players')
         elsif @show_other_players
-          trains_to_buy << h('button.button.no_margin',
+          trains_to_buy << h('button.no_margin',
                              { on: { click: -> { store(:show_other_players, false) } }, **button_props },
                              'Hide trains from other players')
         end
@@ -227,8 +233,8 @@ module View
 
         rows = @depot.upcoming.group_by(&:name).flat_map do |_, trains|
           names_to_prices = trains.first.names_to_prices
-          [h(:div, names_to_prices.keys.join(',')),
-           h(:div, names_to_prices.values.map { |p| @game.format_currency(p) }.join(',')),
+          [h(:div, names_to_prices.keys.join(', ')),
+           h(:div, names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
            h(:div, trains.size)]
         end
 
@@ -252,7 +258,7 @@ module View
           on: { click: resign },
         }
 
-        h('button.button', props, 'Declare Bankruptcy')
+        h(:button, props, 'Declare Bankruptcy')
       end
     end
   end

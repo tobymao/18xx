@@ -1,20 +1,20 @@
 # frozen_string_literal: true
 
+require 'lib/color'
+require 'lib/settings'
 require 'view/game_row'
 require 'view/link'
 
 module View
   class GameCard < Snabberb::Component
     include GameManager
+    include Lib::Color
+    include Lib::Settings
 
     needs :user
     needs :gdata # can't conflict with game_data
     needs :confirm_delete, store: true, default: false
-
-    ENTER_GREEN = '#3CB371'
-    JOIN_YELLOW = '#F0E58C'
-    YOUR_TURN_ORANGE = '#FF8C00'
-    FINISHED_GREY = '#D3D3D3'
+    needs :confirm_kick, store: true, default: nil
 
     def render
       h('div.game.card', [
@@ -39,13 +39,13 @@ module View
       return false unless player
       return false unless (acting = @gdata['acting'])
 
-      acting.include?(player[:id])
+      acting.include?(player['id'])
     end
 
     def render_header
       buttons = []
 
-      color =
+      bg_color =
         case @gdata['status']
         when 'new'
           if owner?
@@ -57,7 +57,7 @@ module View
           JOIN_YELLOW
         when 'active'
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Enter')
-          acting?(@user) ? YOUR_TURN_ORANGE : ENTER_GREEN
+          acting?(@user) ? color_for(:your_turn) : ENTER_GREEN
         when 'finished'
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Review')
           FINISHED_GREY
@@ -77,15 +77,15 @@ module View
         style: {
           position: 'relative',
           padding: '0.3em 0.1rem 0 0.5rem',
-          'background-color': color,
+          backgroundColor: bg_color,
         },
       }
 
       text_props = {
         style: {
-          color: 'black',
+          color: contrast_on(bg_color),
           display: 'inline-block',
-          'max-width': '13rem',
+          maxWidth: '13rem',
         },
       }
       owner_props = { attrs: { title: @gdata['user']['name'].to_s } }
@@ -104,8 +104,8 @@ module View
         style: {
           top: '1rem',
           float: 'right',
-          'border-radius': '5px',
-          'margin': '0 0.3rem',
+          borderRadius: '5px',
+          margin: '0 0.3rem',
           padding: '0.2rem 0.5rem',
         },
         on: {
@@ -113,7 +113,7 @@ module View
         },
       }
 
-      h('button.button', props, text)
+      h(:button, props, text)
     end
 
     def render_link(href, click, text)
@@ -123,24 +123,25 @@ module View
         click: click,
         children: text,
         style: {
-          top: '1rem',
           float: 'right',
-          'border-radius': '5px',
-          'margin': '0 0.3rem',
+          borderRadius: '5px',
+          margin: '0 0.3rem',
           padding: '0.2rem 0.5rem',
         },
-        class: '.button-link'
+        class: '.button_link'
       )
     end
 
-    def time_or_date(ts)
-      ts > Time.now - 82_800 ? ts.strftime('%T') : ts.strftime('%F')
+    def render_time_or_date(ts_key)
+      ts = Time.at(@gdata[ts_key]&.to_i || 0)
+      time_or_date = ts > Time.now - 82_800 ? ts.strftime('%T') : ts.strftime('%F')
+      h(:span, { attrs: { title: ts.strftime('%F %T') } }, time_or_date)
     end
 
     def render_body
       props = {
         style: {
-          'line-height': '1.2rem',
+          lineHeight: '1.2rem',
           padding: '0.3rem 0.5rem',
         },
       }
@@ -149,17 +150,21 @@ module View
         short_name = player['name'].length > 19 ? player['name'][0...18] + '…' : player['name']
         if owner? && new? && player['id'] != @user['id']
           button_props = {
-            on: { click: -> { kick(@gdata, player) } },
-            attrs: {
-              title: "kick #{player['name']}",
-            },
+            on: { click: -> { store(:confirm_kick, [@gdata['id'], player['id']]) } },
+            attrs: { title: "Kick #{player['name']}!" },
             style: {
               padding: '0.1rem 0.3rem',
               margin: '0 0.3rem 0.1rem 0.3rem',
             },
           }
 
-          elm = h('button.button', button_props, short_name)
+          elm = if @confirm_kick != [@gdata['id'], player['id']]
+                  h(:button, button_props, "#{short_name} ❌")
+                else
+                  button_props['on'] = { click: -> { kick(@gdata, player) } }
+                  h(:button, button_props, 'Kick! ❌')
+                end
+
         else
           player_props = { attrs: { title: player['name'].to_s } }
 
@@ -178,11 +183,10 @@ module View
       children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'
 
       if new?
-        created_at = Time.at(@gdata['created_at'])
         children << h('div.inline', [h(:strong, 'Max Players: '), @gdata['max_players']])
         children << h('div.inline', { style: { float: 'right' } }, [
           h(:strong, 'Created: '),
-          h(:span, { attrs: { title: created_at.strftime('%F %T') } }, time_or_date(created_at)),
+          render_time_or_date('created_at'),
         ])
       elsif @gdata['status'] == 'finished'
         result = @gdata['result']
@@ -190,9 +194,13 @@ module View
           .map { |k, v| "#{k.length > 15 ? k[0...14] + '…' : k} #{v}" }
           .join(', ')
 
-        children << h(:div, [
+        children << h('div.inline', [
           h(:strong, 'Result: '),
           result,
+        ])
+        children << h('div.inline', { style: { float: 'right', paddingLeft: '1rem' } }, [
+          h(:strong, 'Ended: '),
+          render_time_or_date('updated_at'),
         ])
       elsif @gdata['round']
         children << h('div.inline', [
@@ -200,10 +208,9 @@ module View
           "#{@gdata['round']&.split(' ')&.first} #{@gdata['turn']}",
         ])
 
-        updated_at = Time.at(@gdata['updated_at'].to_i)
         children << h('div.inline', { style: { float: 'right' } }, [
           h(:strong, 'Updated: '),
-          h(:span, { attrs: { title: updated_at.strftime('%F %T') } }, time_or_date(updated_at)),
+          render_time_or_date('updated_at'),
         ])
       end
 

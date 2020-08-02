@@ -6,10 +6,10 @@ module Engine
     attr_accessor :share_price
 
     def initialize(shares, percent = nil)
-      shares = Array(shares)
-      raise 'All shares must be from the same corporation' unless shares.map(&:corporation).uniq.one?
+      @shares = Array(shares).dup
+      raise 'All shares must be from the same corporation' unless @shares.map(&:corporation).uniq.one?
+      raise 'All shares must be owned by the same owner' unless @shares.map(&:owner).uniq.one?
 
-      @shares = shares
       @percent = percent || @shares.sum(&:percent)
       @share_price = nil
     end
@@ -48,6 +48,14 @@ module Engine
 
     def can_dump?(entity)
       !presidents_share || (corporation.share_holders.reject { |k, _| k == entity }.values.max || 0) > 10
+    end
+
+    def to_bundle
+      self
+    end
+
+    def ==(other)
+      [shares, percent, share_price] == [other.shares, other.percent, other.share_price]
     end
   end
 end

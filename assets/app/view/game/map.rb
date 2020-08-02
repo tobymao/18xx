@@ -27,23 +27,24 @@ module View
         @rows = @hexes.map(&:y).uniq.sort.map(&:next)
         @layout = @game.layout
 
-        @game.special.current_entity = @selected_company
-
-        round =
-          if @game.special.map_abilities
-            @game.special
-          else
-            @game.round
-          end
-
-        step = round.active_step
-        current_entity = step&.current_entity
+        step = @game.round.active_step(@selected_company)
+        current_entity = @selected_company || step&.current_entity
+        actions = step&.actions(current_entity) || []
         # move the selected hex to the back so it renders highest in z space
         selected_hex = @tile_selector&.hex
         @hexes << @hexes.delete(selected_hex) if @hexes.include?(selected_hex)
 
         @hexes.map! do |hex|
-          h(Hex, hex: hex, step: step, opacity: @opacity)
+          clickable = step&.available_hex(current_entity, hex)
+          opacity = clickable ? 1.0 : 0.5
+          h(
+            Hex,
+            hex: hex,
+            opacity: @opacity || opacity,
+            entity: current_entity,
+            clickable: clickable,
+            actions: actions,
+          )
         end
 
         children = [render_map]
@@ -74,7 +75,7 @@ module View
 
               tiles = step.upgradeable_tiles(current_entity, @tile_selector.hex)
 
-              h(TileSelector, layout: @layout, tiles: tiles, step: step)
+              h(TileSelector, layout: @layout, tiles: tiles, actions: actions)
             end
 
           # Move the position to the middle of the hex

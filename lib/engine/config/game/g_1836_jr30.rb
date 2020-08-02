@@ -502,7 +502,10 @@ module Engine
          "name":"5",
          "distance":5,
          "price":450,
-         "num":2
+         "num":2,
+         "events": [
+           {"type": "close_companies"}
+         ]
       },
       {
          "name":"6",
@@ -629,13 +632,13 @@ module Engine
          ]
       },
       "blue":{
-         "offboard=revenue:green_20|brown_30,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0":[
+         "offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0":[
             "E3",
             "G1"
          ]
       },
       "green":{
-         "offboard=revenue:green_20|brown_30,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0":[
+         "offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0":[
             "J2"
          ]
       }
@@ -680,10 +683,7 @@ module Engine
         "green",
         "brown"
       ],
-      "operating_rounds": 3,
-      "events": {
-        "close_companies": true
-      }
+      "operating_rounds": 3
     },
     {
       "name": "6",

@@ -129,7 +129,7 @@ module Engine
       "275",
       "300",
       "325",
-      "350"
+      "350e"
     ],
     [
       "70",
@@ -250,7 +250,7 @@ module Engine
       "name": "Saskatchewan Central",
       "value": 50,
       "revenue": 10,
-      "desc": "During a player's stock turn, in any phase, the player owning this company can close it to \"convert\" to the 10-share corporation SC. This counts as a \"certificate purchase action\". SC shares cannot be purchased by any player unless SC has been converted. The SC floats using the same rules as other corporation. If the private company is sold to a corporation, it no longer can be converted. Closes at the start of Phase 6.",
+      "desc": "Blocks hex H4 while owned by a player. During a player's stock turn, in any phase, the player owning this company can close it to \"convert\" to the 10-share corporation SC, paying 10% to become the president. This counts as a \"certificate purchase action\". SC shares cannot be purchased by any player unless SC has been converted. The SC floats using the same rules as other corporations. It places its home token location in any available non-reserved city or replaces a neutral station marker on the map. If the private company is sold to a corporation, it no longer can be converted. Closes at the start of Phase 6.",
       "sym": "SC",
       "abilities": [
         {
@@ -263,6 +263,12 @@ module Engine
           "hexes": [
             "H4"
           ]
+        },
+        {
+          "type": "exchange",
+          "corporation": "SC",
+          "owner_type": "player",
+          "from": "par"
         }
       ]
     },
@@ -270,8 +276,29 @@ module Engine
       "name": "North West Rebellion",
       "value": 80,
       "revenue": 15,
-      "desc": "A corporation owning this company may move one of its existing on-map station markers located in a non-NWR indicated city to any available NWR-indicated hex city (including OO). There is no cost to this move. There is no track connection requirement. This can occur in addition to, or after, a regular token purchase/placement for an operating round. If the corporation home token is moved, replace it with a neutral marker from the supply. A single tile lay or upgrade may be performed on the destination hex if a station was placed; this is in addition to a regular track lay or upgrade performed by the corporation.",
-      "sym": "NWR"
+      "desc": "A corporation owning this company may move one of its existing on-map station markers located in a non-NWR indicated city to any open NWR indicated hex city, including upgraded cities. There is no cost to perform this action, but it may only be taken one time per game. There is no track connection requirement. This power is in addition to all normal operating turn actions and may be taken at any time during the operating turn. If the corporation home token is moved, replace it with a neutral station marker from the supply. After performing the action, a single (extra) tile lay or upgrade may be performed on the destination hex. This is in addition to a regular track lay(s) or upgrade performed by the corporation.\nException: A corporation’s home token cannot be moved if a neutral station marker already exists in the corporation’s home hex.",
+      "sym": "NWR",
+      "abilities": [
+        {
+          "type": "token",
+          "owner_type":"corporation",
+          "hexes": [
+            "C3", "D4", "D6", "E5"
+          ],
+          "price": 0,
+          "teleport_price": 0,
+          "count": 1
+        },
+        {
+          "type": "tile_lay",
+          "owner_type": "corporation",
+          "count": 1,
+          "hexes": [
+          ],
+          "tiles": [
+          ]
+        }
+      ]
     },
     {
       "name": "Trestle Bridge",
@@ -309,12 +336,15 @@ module Engine
       "name": "Canadian Pacific",
       "value": 180,
       "revenue": 25,
-      "desc": "When purchased during the private auction, this company comes with the 20% president's certificate of the Canadian Pacific (CPR) corporation. The buying player must immediately set the par price for the CPR to any par price. The Canadian Pacific company cannot be purchased by a corporation.",
+      "desc": "When purchased during the private auction, this company comes with the 20% president's certificate of the Canadian Pacific (CPR) corporation. The buying player must immediately set the par price for the CPR to any par price. The Canadian Pacific company cannot be purchased by a corporation. This private company closes at the start of phase 5, or when the CPR purchases a train.",
       "sym": "CP",
       "abilities": [
         {
           "type": "share",
           "share": "CPR_0"
+        },
+        {
+          "type": "no_buy"
         }
       ]
     }
@@ -337,7 +367,7 @@ module Engine
       "tokens": [
         0,
         40,
-        40
+        100
       ],
       "coordinates": "D8",
       "color": "green"
@@ -349,7 +379,7 @@ module Engine
       "tokens": [
         0,
         40,
-        40
+        100
       ],
       "coordinates": "G11",
       "color": "gold",
@@ -362,8 +392,8 @@ module Engine
       "tokens": [
         0,
         40,
-        40,
-        40
+        100,
+        100
       ],
       "coordinates": "I5",
       "color": "red"
@@ -375,7 +405,7 @@ module Engine
       "tokens": [
         0,
         40,
-        40
+        100
       ],
       "coordinates": "L8",
       "color": "black"
@@ -427,19 +457,23 @@ module Engine
       "name": "5",
       "distance": 5,
       "price": 450,
-      "num": 3
+      "num": 3,
+      "events": [
+        {"type": "close_companies"}
+      ]
     },
     {
       "name": "6",
       "distance": 6,
       "price": 630,
-      "num": 2
+      "num": 3
     },
     {
       "name": "D",
       "distance": 999,
       "price": 1100,
-      "num": 9,
+      "num": 20,
+      "available_on": "6",
       "discount": {
         "4": 300,
         "5": 300,
@@ -452,13 +486,13 @@ module Engine
       "offboard=revenue:yellow_40|brown_80;path=a:4,b:_0;path=a:5,b:_0": [
         "I1"
       ],
-      "offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;path=a:5,b:_0": [
+      "offboard=revenue:yellow_30|brown_60;border=edge:0,type:water,cost:40;path=a:0,b:_0;path=a:5,b:_0": [
         "B2"
       ],
       "offboard=revenue:yellow_30|brown_30;path=a:3,b:_0": [
         "O11"
       ],
-      "offboard=revenue:yellow_40|brown_50;path=a:0,b:_0;path=a:1,b:_0": [
+      "offboard=revenue:yellow_40|brown_50;border=edge:0,type:water,cost:60;path=a:0,b:_0;path=a:1,b:_0": [
         "B12"
       ],
       "offboard=revenue:yellow_30|brown_40;path=a:1,b:_0;path=a:2,b:_0": [
@@ -469,8 +503,6 @@ module Engine
       "": [
         "F2",
         "H2",
-        "J2",
-        "L4",
         "K5",
         "M5",
         "L6",
@@ -478,8 +510,16 @@ module Engine
         "M9",
         "B10",
         "L10",
-        "K11",
         "H12"
+      ],
+      "border=edge:3,type:water,cost:40": [
+        "K11"
+      ],
+      "border=edge:4,type:water,cost:20": [
+        "J2"
+      ],
+      "border=edge:2,type:water,cost:40": [
+        "L4"
       ],
       "icon=image:1882/NWR,sticky:1": [
         "B4"
@@ -499,7 +539,7 @@ module Engine
       "city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40;border=edge:5,type:water,cost:20;icon=image:1882/NWR,sticky:1": [
         "D4"
       ],
-      "city=revenue:0;border=edge:0,type:water,cost:40;icon=image:1882/NWR,sticky:1": [
+      "city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40;border=edge:4,type:water,cost:40;icon=image:1882/NWR,sticky:1": [
         "D6"
       ],
       "city=revenue:0;border=edge:3,type:water,cost:40;border=edge:5,type:water,cost:40": [
@@ -602,7 +642,7 @@ module Engine
       "city=revenue:30;path=a:2,b:_0;path=a:_0,b:4": [
         "N6"
       ],
-      "path=a:0,b:1": [
+      "path=a:0,b:1;border=edge:1,type:water,cost:40;": [
         "C7"
       ],
       "city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;border=edge:0,type:water,cost:40": [
@@ -689,9 +729,6 @@ module Engine
         "brown"
       ],
       "operating_rounds": 3,
-      "events": {
-        "close_companies": true
-      },
       "buy_companies": true
     },
     {

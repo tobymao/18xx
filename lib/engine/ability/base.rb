@@ -9,10 +9,12 @@ module Engine
       include Helper::Type
       include Ownable
 
+      attr_accessor :description
       attr_reader :type, :owner_type, :remove, :when, :count
 
-      def initialize(type:, owner_type: nil, count: nil, remove: nil, **opts)
+      def initialize(type:, description: nil, owner_type: nil, count: nil, remove: nil, **opts)
         @type = type&.to_sym
+        @description = description&.to_s
         @owner_type = owner_type&.to_sym
         @when = opts.delete(:when)&.to_s
         @count = count

@@ -18,7 +18,15 @@ module Engine
     let(:corp_3) { game.corporations[3] }
     let(:player_0) { game.players[0] }
     let(:player_1) { game.players[1] }
-    let(:subject) { Round::Stock.new(game.players, game: game) }
+    subject { move_to_sr! }
+
+    def move_to_sr!
+      # Move the game into an SR
+
+      game.send(:next_round!) until game.round.is_a?(Round::Stock)
+
+      game.round
+    end
 
     describe '#can_buy?' do
       it 'can buy yellow at limit' do
@@ -30,12 +38,15 @@ module Engine
         5.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
         5.times { game.share_pool.buy_shares(player_0, corp_1.shares[0]) }
         1.times { game.share_pool.buy_shares(player_0, corp_2.shares[0]) } # at 6-player cert limit
-        expect(subject.can_buy?(corp_2.shares[0])).to eq(false)
-        expect(subject.can_buy?(corp_3.shares[0])).to eq(true)
+        1.times { game.share_pool.buy_shares(player_1, corp_3.shares[0]) } # at 6-player cert limit
+
+        expect(subject.active_step.can_buy?(player_0, corp_2.shares[0])).to eq(false)
+        expect(subject.active_step.can_buy?(player_0, corp_3.shares[0])).to eq(true)
+        expect(subject.active_step.can_buy_any?(player_0)).to eq(true)
       end
 
       it 'works with no par' do
-        expect(subject.can_buy?(corp_0.shares[0])).to be_truthy
+        expect(subject.active_step.can_buy?(player_0, corp_0.shares[0])).to be_truthy
       end
 
       it "can't buy when at cert limit when doing so would gain you the presidency" do
@@ -59,35 +70,35 @@ module Engine
         # Check player 1 is actually the president
         expect(corp_0.president?(player_1)).to eq(true)
 
-        expect(subject.can_buy?(corp_0.shares[0])).to eq(false)
+        expect(subject.active_step.can_buy?(player_0, corp_0.shares[0])).to eq(false)
       end
 
       it 'can\'t buy over 60%' do
         player_0.cash = 10_000
         market.set_par(corp_0, market.market[7][0])
         6.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
-        expect(subject.can_buy?(corp_0.shares[0])).to eq(false)
+        expect(subject.active_step.can_buy?(player_0, corp_0.shares[0])).to eq(false)
       end
 
       it 'can buy orange over 60%' do
         player_0.cash = 10_000
         market.set_par(corp_0, market.market[8][0])
         6.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
-        expect(subject.can_buy?(corp_0.shares[0])).to eq(true)
+        expect(subject.active_step.can_buy?(player_0, corp_0.shares[0])).to eq(true)
       end
 
       it 'must sell when over 60%' do
         player_0.cash = 10_000
         market.set_par(corp_0, market.market[7][0])
         7.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
-        expect(subject.must_sell?).to eq(true)
+        expect(subject.active_step.must_sell?(player_0)).to eq(true)
       end
 
       it 'needn\'t sell orange when over 60%' do
         player_0.cash = 10_000
         market.set_par(corp_0, market.market[8][0])
         7.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
-        expect(subject.must_sell?).to eq(false)
+        expect(subject.active_step.must_sell?(player_0)).to eq(false)
       end
 
       context '#1882' do
@@ -96,30 +107,31 @@ module Engine
         let(:corp_0) { game.corporation_by_id('CPR') }
 
         it 'can buy multiple stocks from ipo in brown' do
-          ipo_share = corp_0.shares[0]
           market.set_par(corp_0, market.market.last[0]) # 10
-          expect(subject.can_buy?(ipo_share)).to be_truthy
+          game.share_pool.buy_shares(player_0, corp_0.shares[0])
+          ipo_share = corp_0.shares[0]
+          expect(subject.active_step.can_buy?(player_0, ipo_share)).to be_truthy
           entity = subject.current_entity
           action = Engine::Action::BuyShares.new(subject.current_entity, shares: ipo_share)
           subject.process_action(action)
           ipo_share = corp_0.shares[1]
           expect(subject.current_entity).to eq(entity)
-          expect(subject.can_buy?(ipo_share)).to be_truthy
+          expect(subject.active_step.can_buy?(player_0, ipo_share)).to be_truthy
           action = Engine::Action::BuyShares.new(entity, shares: ipo_share)
           subject.process_action(action)
         end
 
         it 'cannot buy stocks from second company after buying one brown' do
-          ipo_share = corp_0.shares[0]
-
           market.set_par(corp_0, market.market.last[0]) # 10
-          expect(subject.can_buy?(ipo_share)).to be_truthy
+          game.share_pool.buy_shares(player_0, corp_0.shares[0])
+          ipo_share = corp_0.shares[0]
+          expect(subject.active_step.can_buy?(player_0, ipo_share)).to be_truthy
           entity = subject.current_entity
           action = Engine::Action::BuyShares.new(subject.current_entity, shares: ipo_share)
           subject.process_action(action)
           ipo_share = corp_1.shares[1]
           expect(subject.current_entity).to eq(entity)
-          expect(subject.can_buy?(ipo_share)).to be_falsey
+          expect(subject.active_step.can_buy?(player_0, ipo_share)).to be_falsey
         end
       end
     end

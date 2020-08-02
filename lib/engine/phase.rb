@@ -16,6 +16,12 @@ module Engine
 
     def buying_train!(entity, train)
       next! if train.sym == @next_on
+
+      train.events.each do |event|
+        @game.send("event_#{event['type']}!")
+      end
+      train.events.clear
+
       rust_trains!(train, entity)
       close_companies_on_train!(entity)
     end
@@ -49,10 +55,6 @@ module Engine
     end
 
     def trigger_events!
-      @events.each do |type, _value|
-        @game.send("event_#{type}!")
-      end
-
       @game.companies.each do |company|
         next unless company.owner
 
@@ -61,6 +63,7 @@ module Engine
         end
 
         company.abilities(:close, @name) do
+          @log << "Company #{company.name} closes"
           company.close!
         end
       end

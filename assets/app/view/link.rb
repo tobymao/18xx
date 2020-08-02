@@ -6,6 +6,7 @@ module View
     needs :click
     needs :children, default: []
     needs :style, default: {}
+    needs :title, default: ''
     needs :class, default: nil
 
     def render
@@ -13,6 +14,7 @@ module View
         attrs: {
           href: @href,
           onclick: 'return false',
+          title: @title,
         },
         style: @style,
         on: {

@@ -8,8 +8,8 @@ module Engine
     module Tokener
       def can_place_token?(entity)
         current_entity == entity &&
-          (token = entity.next_token) &&
-          min_token_price(token) <= entity.cash &&
+          (tokens = available_tokens).any? &&
+          min_token_price(tokens) <= entity.cash &&
           @game.graph.can_token?(entity)
       end
 
@@ -17,13 +17,17 @@ module Engine
         current_entity.tokens_by_type
       end
 
+      def can_replace_token?(_entity, _token)
+        false
+      end
+
       def place_token(entity, city, token, teleport: false)
         hex = city.hex
         if !@game.loading && !teleport && !@game.graph.connected_nodes(entity)[city]
-          raise GameError, "Cannot place token on #{hex.name} because it is not connected"
+          @game.game_error("Cannot place token on #{hex.name} because it is not connected")
         end
 
-        raise GameError, 'Token is already used' if token.used
+        @game.game_error('Token is already used') if token.used
 
         token, ability = adjust_token_price_ability!(entity, token, hex)
         entity.remove_ability(ability) if ability
@@ -46,10 +50,11 @@ module Engine
         @game.graph.clear
       end
 
-      def min_token_price(token)
+      def min_token_price(tokens)
+        token = tokens.first
         return 0 if @round.teleported?(token.corporation)
 
-        prices = [token.price]
+        prices = tokens.map(&:price)
 
         token.corporation.abilities(:token) do |ability, _|
           prices << ability.price

@@ -31,6 +31,12 @@ if (typeof localStorage === 'undefined') {
 
 if (typeof document === 'undefined') {
   document = {
+    getElementById: function() {
+      return {
+        content: '',
+        href: ''
+      }
+    }
   }
 }
 

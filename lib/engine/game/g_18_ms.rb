@@ -12,6 +12,7 @@ module Engine
       GAME_LOCATION = 'Mississippi, USA'
       GAME_DESIGNER = 'Mark Derrick'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
+      GAME_END_CHECK = { final_or_set: 10 }.freeze
 
       HOME_TOKEN_TIMING = :operating_round
 
@@ -23,6 +24,23 @@ module Engine
 
       def setup
         setup_company_price_50_to_150_percent
+      end
+
+      def operating_round(round_num)
+        Round::Operating.new(self, [
+          Step::Bankrupt,
+          Step::Exchange,
+          Step::DiscardTrain,
+          Step::SpecialTrack,
+          Step::BuyCompany,
+          Step::Track,
+          Step::Token,
+          Step::Route,
+          Step::Dividend,
+          Step::SpecialBuyTrain,
+          Step::BuyTrain,
+          [Step::BuyCompany, blocks: true],
+        ], round_num: round_num)
       end
     end
   end

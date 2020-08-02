@@ -166,6 +166,12 @@ module Engine
       connect!
     end
 
+    def lay_downgrade(tile)
+      lay(tile)
+      neighbors.each { |_edge, neighbor| neighbor.connect! }
+      tile.restore_borders
+    end
+
     def connect!
       Connection.connect!(self)
     end

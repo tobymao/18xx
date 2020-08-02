@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'game_manager'
+require 'lib/settings'
 require 'lib/storage'
 require 'view/chat'
 require 'view/game_row'
@@ -9,18 +10,19 @@ require 'view/welcome'
 module View
   class Home < Snabberb::Component
     include GameManager
+    include Lib::Settings
 
     needs :user
     needs :refreshing, default: nil, store: true
 
     def render
+      your_games, other_games = @games.partition { |game| user_in_game?(@user, game) }
+
       children = [
         render_header,
-        h(Welcome),
+        h(Welcome, show_intro: your_games.size < 2),
         h(Chat, user: @user, connection: @connection),
       ]
-
-      your_games, other_games = @games.partition { |game| user_in_game?(@user, game) }
 
       # these will show up in the profile page
       your_games.reject! { |game| game['status'] == 'finished' }
@@ -30,10 +32,10 @@ module View
       # Ready, then active, then unstarted, then completed
       your_games.sort_by! do |game|
         [
-          user_is_acting?(@user, game) ? -game['id'] : 0,
-          game['status'] == 'active' ? -game['id'] : 0,
-          game['status'] == 'new' ? -game['id'] : 0,
-          -game['id'],
+          user_is_acting?(@user, game) ? -game['updated_at'] : 0,
+          game['status'] == 'active' ? -game['updated_at'] : 0,
+          game['status'] == 'new' ? -game['created_at'] : 0,
+          -game['updated_at'],
         ]
       end
 
@@ -51,6 +53,11 @@ module View
       render_row(children, 'Finished Games', grouped['finished'], :finished)
 
       game_refresh
+
+      acting = your_games.any? { |game| user_is_acting?(@user, game) }
+      `document.title = #{(acting ? '* ' : '') + '18xx.Games'}`
+      change_favicon(acting)
+      change_tab_color(acting)
 
       destroy = lambda do
         `clearTimeout(#{@refreshing})`

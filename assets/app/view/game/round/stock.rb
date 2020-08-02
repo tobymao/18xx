@@ -19,17 +19,18 @@ module View
         needs :last_player, default: nil, store: true
 
         def render
-          @round = @game.round
+          @step = @game.round.active_step
+          @current_actions = @step.current_actions
 
-          @current_entity = @round.current_entity
+          @current_entity = @step.current_entity
           if @last_player != @current_entity
             store(:selected_corporation, nil, skip: true)
             store(:last_player, @current_entity, skip: true)
           end
 
-          children = [h(UndoAndPass, pass: !@round.must_sell?)]
-          if @round.must_sell?
-            children << if @round.current_entity.num_certs > @game.cert_limit
+          children = []
+          if @step.respond_to?(:must_sell?) && @step.must_sell?(@current_entity)
+            children << if @current_entity.num_certs > @game.cert_limit
                           h('div.margined', 'Must sell stock: above certificate limit')
                         else
                           h('div.margined', 'Must sell stock: above 60% limit in corporation(s)')
@@ -46,7 +47,7 @@ module View
           props = {
             style: {
               display: 'inline-block',
-              'vertical-align': 'top',
+              verticalAlign: 'top',
             },
           }
 
@@ -59,7 +60,7 @@ module View
 
         def render_input
           input = @selected_corporation.ipoed ? render_ipoed : render_pre_ipo
-          h(:div, { style: { 'margin-top': '0.5rem', width: '320px' } }, [input].compact)
+          h('div.margined_bottom', { style: { width: '20rem' } }, [input].compact)
         end
 
         def buy_share(entity, share)
@@ -68,7 +69,7 @@ module View
 
         def render_ipoed
           ipo_share = @selected_corporation.shares.first
-          pool_share = @round.share_pool.shares_by_corporation[@selected_corporation]&.first
+          pool_share = @game.share_pool.shares_by_corporation[@selected_corporation]&.first
 
           buy_ipo = lambda do
             buy_share(@current_entity, ipo_share)
@@ -79,17 +80,17 @@ module View
           end
 
           children = []
-          unless @round.must_sell?
-            if @round.can_buy?(ipo_share)
+          if @current_actions.include?('buy_shares')
+            if @step.can_buy?(@current_entity, ipo_share)
               children << h(
-                'button.button.margined_half',
+                :button,
                 { on: { click: buy_ipo } },
                 "Buy #{@game.class::IPO_NAME} Share"
               )
             end
 
-            if @round.can_buy?(pool_share)
-              children << h('button.button.margined_half', { on: { click: buy_pool } }, 'Buy Market Share')
+            if @step.can_buy?(@current_entity, pool_share)
+              children << h(:button, { on: { click: buy_pool } }, 'Buy Market Share')
             end
 
             # Allow privates to be exchanged for shares
@@ -104,13 +105,13 @@ module View
                     "#{company.owner&.name} exchanges #{company.sym} for"
                   end
 
-                if ability.from.include?(:ipo) && @round.can_gain?(ipo_share, company.owner)
-                  children << h('button.button', { on: { click: -> { buy_share(company, ipo_share) } } },
+                if ability.from.include?(:ipo) && @step.can_gain?(company.owner, ipo_share)
+                  children << h(:button, { on: { click: -> { buy_share(company, ipo_share) } } },
                                 "#{prefix} an #{@game.class::IPO_NAME} share")
                 end
 
-                if ability.from.include?(:market) && @round.can_gain?(pool_share, company.owner)
-                  children << h('button.button', { on: { click: -> { buy_share(company, pool_share) } } },
+                if ability.from.include?(:market) && @step.can_gain?(company.owner, pool_share)
+                  children << h(:button, { on: { click: -> { buy_share(company, pool_share) } } },
                                 "#{prefix} a Market share")
                 end
               end
@@ -123,7 +124,7 @@ module View
         end
 
         def render_pre_ipo
-          return if @round.must_sell?
+          return unless @current_actions.include?('par')
 
           h(Par, corporation: @selected_corporation)
         end

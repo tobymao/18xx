@@ -78,7 +78,8 @@ module Engine
                               groups: params['groups'],
                               hide: params['hide'],
                               visit_cost: params['visit_cost'],
-                              route: params['route'])
+                              route: params['route'],
+                              format: params['format'])
         cache << city
         city
       when 'town'
@@ -86,7 +87,8 @@ module Engine
                               groups: params['groups'],
                               hide: params['hide'],
                               visit_cost: params['visit_cost'],
-                              route: params['route'])
+                              route: params['route'],
+                              format: params['format'])
         cache << town
         town
       when 'offboard'
@@ -94,7 +96,8 @@ module Engine
                                       groups: params['groups'],
                                       hide: params['hide'],
                                       visit_cost: params['visit_cost'],
-                                      route: params['route'])
+                                      route: params['route'],
+                                      format: params['format'])
         cache << offboard
         offboard
       when 'label'
@@ -134,6 +137,7 @@ module Engine
       @towns = []
       @upgrades = []
       @offboards = []
+      @original_borders = []
       @borders = []
       @branches = nil
       @nodes = nil
@@ -197,9 +201,15 @@ module Engine
       @upgrades.flat_map(&:terrains).uniq
     end
 
-    def upgrades_to?(other)
+    def upgrades_to?(other, special_lay = false)
       # correct color progression?
       return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)
+
+      # honors pre-existing track?
+      return false unless paths_are_subset_of?(other.paths)
+
+      # If special ability then remaining checks is not applicable
+      return true if special_lay
 
       # correct label?
       return false if label != other.label
@@ -210,9 +220,6 @@ module Engine
       # - TODO: account for games that allow double dits to upgrade to one town
       return false if @towns.size != other.towns.size
       return false if !label && @cities.size != other.cities.size
-
-      # honors pre-existing track?
-      return false unless paths_are_subset_of?(other.paths)
 
       true
     end
@@ -266,6 +273,19 @@ module Engine
       else
         @reservations.count { |x| corporation != x } >= @cities.sum(&:available_slots)
       end
+    end
+
+    def city_town_edges
+      # Returns a list of each edge a city/town goes to
+      ct_edges = Hash.new { |h, k| h[k] = [] }
+      paths.each do |path|
+        next unless (ct = path.city || path.town)
+
+        path.exits.each do |edge|
+          ct_edges[ct] << edge
+        end
+      end
+      ct_edges.values
     end
 
     def compute_city_town_edges
@@ -336,6 +356,25 @@ module Engine
       @label = Part::Label.new(label_name)
     end
 
+    def restore_borders(edges = nil)
+      edges ||= ALL_EDGES
+
+      # Re-add borders that are in the edge list returning those that are missing
+      missing = edges.map do |edge|
+        original = @original_borders.find { |e| e.edge == edge }
+        next unless original
+        next if @borders.include?(original)
+
+        @borders << original
+        edge
+      end.compact
+
+      missing.each do |edge|
+        neighbor = @hex.neighbors[edge]&.tile
+        neighbor&.restore_borders([Hex.invert(edge)])
+      end
+    end
+
     private
 
     def separate_parts
@@ -355,6 +394,7 @@ module Engine
         elsif part.offboard?
           @offboards << part
         elsif part.border?
+          @original_borders << part
           @borders << part
         elsif part.junction?
           @junction = part

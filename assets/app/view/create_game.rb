@@ -39,8 +39,10 @@ module View
         )
       end
 
-      description = [h(:a, { attrs: { href: '/signup' } }, 'Signup'), ' or ',
-                     h(:a, { attrs: { href: '/login' } }, 'login'), ' to play multiplayer.'] unless @user
+      description = []
+      description += [h(:a, { attrs: { href: '/signup' } }, 'Signup'), ' or ',
+                      h(:a, { attrs: { href: '/login' } }, 'login'), ' to play multiplayer.'] unless @user
+      description << h(:div, 'If you are new to 18xx games then 1889 or 18Chesapeake are good games to begin with.')
       render_form('Create New Game', inputs, description)
     end
 
@@ -48,14 +50,15 @@ module View
       @min_p = {}
       @max_p = {}
 
-      games = (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).map do |game|
+      games = (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).sort.map do |game|
         @min_p[game.title], @max_p[game.title] = Engine.player_range(game)
 
         title = game.title
         title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
         title += " (#{game::DEV_STAGE})" if game::DEV_STAGE != :production
+        attrs = { value: game.title }
 
-        h(:option, { attrs: { value: game.title } }, title)
+        h(:option, { attrs: attrs }, title)
       end
 
       limit_range = lambda do
@@ -70,8 +73,10 @@ module View
 
       enforce_range = lambda do
         elm = Native(@inputs[:max_players]).elm
-        elm.value = elm.max.to_i unless (elm.min.to_i..elm.max.to_i).include?(elm.value.to_i)
-        store(:num_players, elm.value.to_i) if @mode == :hotseat
+        if elm.value.to_i.positive?
+          elm.value = elm.max.to_i unless (elm.min.to_i..elm.max.to_i).include?(elm.value.to_i)
+          store(:num_players, elm.value.to_i) if @mode == :hotseat
+        end
       end
 
       inputs = [
@@ -85,6 +90,7 @@ module View
             min: @min_p.values.first,
             max: @max_p.values.first,
             value: @num_players,
+            required: true,
           },
           input_style: { width: '2.5rem' },
           on: { input: enforce_range },
@@ -103,7 +109,9 @@ module View
     def mode_input(mode, text)
       click_handler = lambda do
         store(:mode, mode, skip: true)
-        store(:num_players, Native(@inputs[:max_players]).elm.value.to_i)
+        elm = Native(@inputs[:max_players]).elm
+        elm.value = [elm.value.to_i, elm.min.to_i].max
+        store(:num_players, elm.value.to_i)
       end
 
       [render_input(

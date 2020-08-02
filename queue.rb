@@ -32,11 +32,11 @@ MessageBus.subscribe '/turn', -1 do |msg|
     .map(&:user_id)
 
   users = users.reject do |user|
-    email_sent = user.settings['email_sent'] || 0
+    next true if user.settings['notifications'] == false
+    next false if data['force']
 
-    connected.include?(user.id) ||
-      user.settings['notifications'] == false ||
-      email_sent > minute_ago.to_i
+    email_sent = user.settings['email_sent'] || 0
+    connected.include?(user.id) || email_sent > minute_ago.to_i
   end
 
   next if users.empty?

@@ -125,7 +125,7 @@ describe 'Assets' do
       expect(render(app_route: '/game/1#market', **needs)).to include('Bank Cash')
       expect(render(app_route: '/game/1#info', **needs)).to include('Upcoming')
       expect(render(app_route: '/game/1#tiles', **needs)).to include('492')
-      expect(render(app_route: '/game/1#spreadsheet', **needs)).to include('Worth')
+      expect(render(app_route: '/game/1#spreadsheet', **needs)).to include('Value')
       expect(render(app_route: '/game/1#tools', **needs)).to include('Clone this')
     end
 
@@ -144,12 +144,18 @@ describe 'Assets' do
         'Blocks Takamatsu (K4) while owned by a player.']],
       ['1889', 314, 335, 'discard_train', 'Discard Trains'],
       ['1889', 314, 345, 'buy_train_emr', 'TR must buy an available train'],
+      ['1889', 314, 444, 'buy_train_emr_shares', 'and can sell ¥650 in shares'],
       ['1889', 314, nil, 'endgame', '1889: Operating Round 7.1 (of 3) - Game Over - Bankruptcy'],
-      ['1846', 4123, 0, 'draft', '1846: Draft Round 1 - Draft Companies'],
-      ['1846', 4123, 14, 'draft', 'Mail Contract'],
-      ['1846', 4123, 42, 'lay_track_or_token', '1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track'],
-      ['1846', 4123, 50, 'issue_shares', '1846: Operating Round 1.1 (of 2) - Issue or Redeem Shares'],
-      ['1846', 4123, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
+      ['1882', 5236, 399, 'sc_home_token', '1882: Stock Round 6 - Place Home Token'],
+      ['1882', 5236, 229, 'qll_home_token', '1882: Operating Round 4.1 (of 1) - Place Home Token'],
+      ['1882', 5236, 370, 'nwr_place_token', '1882: Operating Round 5.2 (of 2) - NWR: Place Token'],
+      ['1882', 5236, 371, 'nwr_lay_track', '1882: Operating Round 5.2 (of 2) - NWR: Lay Track'],
+      ['1846', 3099, 0, 'draft', '1846: Draft Round 1 - Draft Companies'],
+      ['1846', 3099, 18, 'draft', 'Mail Contract'],
+      ['1846', 3099, 48, 'lay_track_or_token', '1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track'],
+      ['1846', 3099, 53, 'issue_shares', '1846: Operating Round 1.1 (of 2) - Issue or Redeem Shares'],
+      ['1846', 3099, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
+      ['18_al', 4714, nil, 'endgame', '18AL: Operating Round 7.2 (of 3) - Game Over - Company hit max stock value'],
     ].freeze
 
     def render_game(jsonfile, no_actions, string)

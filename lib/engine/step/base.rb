@@ -30,7 +30,11 @@ module Engine
         []
       end
 
-      def available_hex(hex); end
+      def available_hex(entity, hex); end
+
+      def did_sell?(_corporation, _entity)
+        false
+      end
 
       def log_pass(entity)
         @log << "#{entity.name} passes #{description.downcase}"
@@ -46,7 +50,7 @@ module Engine
       end
 
       def skip!
-        log_skip(current_entity)
+        log_skip(current_entity) unless @acted
         pass!
       end
 
@@ -94,9 +98,6 @@ module Engine
       def entity_index
         @round.entity_index
       end
-
-      # The following should be removed when specials are moved to steps
-      def can_gain?; end
     end
   end
 end

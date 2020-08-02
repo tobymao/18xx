@@ -18,7 +18,7 @@ module View
         cursor = Lib::Params['action']&.to_i
 
         unless cursor&.zero?
-          divs << link('|<', 0)
+          divs << link('|<', 'Start', 0)
 
           last_round =
             if cursor == @game.actions.size
@@ -26,23 +26,23 @@ module View
             else
               @game.round_history[-1]
             end
-          divs << link('<<', last_round) if last_round
+          divs << link('<<', 'Previous Round', last_round) if last_round
 
-          divs << link('<', cursor ? cursor - 1 : @num_actions - 1)
+          divs << link('<', 'Previous Action', cursor ? cursor - 1 : @num_actions - 1)
         end
 
         if cursor
-          divs << link('>', cursor + 1 < @num_actions ? cursor + 1 : nil)
+          divs << link('>', 'Next Action', cursor + 1 < @num_actions ? cursor + 1 : nil)
           store(:round_history, @game.round_history, skip: true) unless @round_history
           next_round = @round_history[@game.round_history.size]
-          divs << link('>>', next_round) if next_round
-          divs << link('>|')
+          divs << link('>>', 'Next Round', next_round) if next_round
+          divs << link('>|', 'Current')
         end
 
         h(:div, divs)
       end
 
-      def link(text, action_id = nil)
+      def link(text, title, action_id = nil)
         route = Lib::Params.add(@app_route, 'action', action_id)
 
         click = lambda do
@@ -55,11 +55,12 @@ module View
           Link,
           href: route,
           click: click,
+          title: title,
           children: text,
           style: {
             color: 'currentColor',
-            'margin-right': '2rem',
-            'text-decoration': 'none',
+            marginRight: '2rem',
+            textDecoration: 'none',
           },
         )
       end

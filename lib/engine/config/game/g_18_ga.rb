@@ -106,7 +106,7 @@ module Engine
          "230",
          "250",
          "275",
-         "300b"
+         "300e"
       ],
       [
          "55",
@@ -429,7 +429,10 @@ module Engine
             }
          ],
          "price":450,
-         "num":2
+         "num":2,
+         "events":[
+           {"type": "close_companies"}
+         ]
       },
       {
          "name":"6",
@@ -603,10 +606,7 @@ module Engine
             "green",
             "brown"
          ],
-         "operating_rounds":3,
-         "events":{
-            "close_companies":true
-         }
+         "operating_rounds":3
       },
       {
          "name":"6",

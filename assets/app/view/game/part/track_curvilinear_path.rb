@@ -34,6 +34,8 @@ module View
 
         needs :path
         needs :color, default: 'black'
+        needs :width, default: 8
+        needs :dash, default: '0'
 
         # returns SHARP, GENTLE, or STRAIGHT
         def compute_curvilinear_type(edge_a, edge_b)
@@ -86,7 +88,8 @@ module View
               transform: "rotate(#{@rotation})",
               d: SVG_PATH_STRINGS[@curvilinear_type],
               stroke: @color,
-              'stroke-width' => 8,
+              'stroke-width': @width,
+              'stroke-dasharray': @dash,
             },
           }
 

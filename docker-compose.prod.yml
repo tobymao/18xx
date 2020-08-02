@@ -7,8 +7,7 @@ services:
     environment:
       RACK_ENV: production
       DATABASE_URL: $DATABASE_URL
-      MAIL_JET_KEY: $MAIL_JET_KEY
-      MAIL_JET_SECRET: $MAIL_JET_SECRET
+      ELASTIC_KEY: $ELASTIC_KEY
     build:
       args:
         RACK_ENV: production
@@ -21,8 +20,7 @@ services:
     environment:
       RACK_ENV: production
       DATABASE_URL: $DATABASE_URL
-      MAIL_JET_KEY: $MAIL_JET_KEY
-      MAIL_JET_SECRET: $MAIL_JET_SECRET
+      ELASTIC_KEY: $ELASTIC_KEY
     build:
       args:
         RACK_ENV: production

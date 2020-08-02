@@ -8,6 +8,7 @@ module View
       include GameManager
 
       needs :allow_clone, default: true
+      needs :allow_delete, default: false
       needs :show_json, default: false, store: true
       needs :actions
 
@@ -17,16 +18,16 @@ module View
 
         props = {
           style: {
-            'white-space': 'pre-wrap',
+            whiteSpace: 'pre-wrap',
           },
         }
 
-        children = [render_clone_game]
+        children = [render_game_data_buttons]
         children << @json if @show_json
         h(:div, props, children)
       end
 
-      def render_clone_game
+      def render_game_data_buttons
         clone_game = lambda do
           store(:game, nil, skip: true)
           create_hotseat(**@game_data, description: "Cloned from game #{@game_data[:id]}")
@@ -42,37 +43,27 @@ module View
           )
         end
 
-        copy_button = h(
-          'button.button.margined',
-          { on: { click: copy_data } },
-          'Copy Game Data',
-        )
+        buttons = [
+          h(:button, { on: { click: -> { store(:show_json, !@show_json) } } },
+            "#{@show_json ? 'Hide' : 'Show'} Game Data"),
+          h(:button, { on: { click: copy_data } }, 'Copy Game Data'),
+        ]
 
-        show_button = h(
-          'button.button.margined',
-          { on: { click: -> { store(:show_json, !@show_json) } } },
-          (@show_json ? 'Hide Game Data' : 'Show Game Data')
-        )
+        if @allow_delete
+          delete_game = lambda do
+            delete_game(@game_data)
+            store(:app_route, '/')
+          end
+
+          buttons << h(:button, { on: { click: delete_game } }, 'Delete Game')
+        end
 
         if @allow_clone
-          clone_button = h(
-            'button.button',
-            { style: { margin: '1rem' }, on: { click: clone_game } },
-            'Clone Game',
-          )
-
-          h('div.margined', [
-            h(:span, 'Clone this game to play around in hotseat mode'),
-            clone_button,
-            copy_button,
-            show_button,
-          ])
-        else
-          h('div.margined', [
-            copy_button,
-            show_button,
-          ])
+          buttons << h(:button, { on: { click: clone_game } }, 'Clone Game')
+          buttons << h(:label, 'Clone this game to play around in hotseat mode')
         end
+
+        h('div.margined', buttons)
       end
     end
   end

@@ -2,7 +2,6 @@
 
 require 'view/game/buy_companies'
 require 'view/game/buy_trains'
-require 'view/game/company'
 require 'view/game/corporation'
 require 'view/game/dividend'
 require 'view/game/issue_shares'
@@ -16,28 +15,22 @@ module View
       class Operating < Snabberb::Component
         needs :game
 
-        ABILITIES = %i[tile_lay teleport assign_hexes assign_corporation token].freeze
-
         def render
           round = @game.round
           @step = round.active_step
-          corporation = round.current_entity
-          @current_actions = round.actions_for(corporation)
-          action = [h(UndoAndPass, pass: @current_actions.include?('pass'))]
+          entity = round.current_entity
+          @current_actions = round.actions_for(entity)
+          entity = entity.owner if entity.company?
 
-          action << h(RouteSelector) if @current_actions.include?('run_routes')
-          action << h(Dividend) if @current_actions.include?('dividend')
-          action << h(BuyTrains) if @current_actions.include?('buy_train')
-          action << h(IssueShares) if @current_actions.include?('buy_shares')
-
-          left = action
-
-          left << h(Corporation, corporation: corporation)
-          corporation.owner.companies.each do |c|
-            next if (c.all_abilities.map(&:type) & ABILITIES).empty?
-
-            left << h(Company, display: 'block', company: c, game: @game)
+          left = []
+          left << h(RouteSelector) if @current_actions.include?('run_routes')
+          left << h(Dividend) if @current_actions.include?('dividend')
+          if @current_actions.include?('buy_train')
+            left << h(IssueShares) if @current_actions.include?('sell_shares')
+            left << h(BuyTrains)
           end
+          left << h(IssueShares) if @current_actions.include?('buy_shares')
+          left << h(Corporation, corporation: entity)
 
           div_props = {
             style: {

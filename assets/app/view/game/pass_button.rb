@@ -14,7 +14,7 @@ module View
           },
         }
 
-        h('button.button', props, @game.round.pass_description)
+        h(:button, props, @game.round.pass_description)
       end
     end
   end

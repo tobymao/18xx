@@ -23,8 +23,8 @@ module View
           display: 'flex',
           marginBottom: '1rem',
           paddingBottom: '1vmin',
-          'box-shadow': '0 2px 0 0 gainsboro',
-          'justify-content': 'space-between',
+          boxShadow: '0 2px 0 0 gainsboro',
+          justifyContent: 'space-between',
         },
       }
 

@@ -3,23 +3,22 @@
 module View
   class Welcome < Snabberb::Component
     needs :app_route, default: nil, store: true
+    needs :show_intro, default: true
 
     def render
-      h('div#welcome.half', [
-        render_notification,
-        render_introduction,
-        render_buttons,
-      ])
+      children = [render_notification]
+      children << render_introduction if @show_intro
+      children << render_buttons
+
+      h('div#welcome.half', children)
     end
 
     def render_notification
       message = <<~MESSAGE
-        <p>We've rewritten the engine so there may be some bugs.</p>
-        <p>1836Jr30 is now available for beta.</p>
-        <p>1846 is now available for alpha.</p>
-
+        <p>All microsoft email domains are blocking 18xx.games. msn, hotmail, live, etc. So you will not be receiving anything.</p>
+        <p>1882 and 18AL are both available for alpha testing and 1846 is now in beta.</p>
         <p>Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
-        <a href='https://docs.google.com/document/d/1nCYnzNMQLrFLZtWdbjfuSx5aIcaOyi27lMYkJxcGayw/edit'>FAQ!</a>
+        <a href='https://github.com/tobymao/18xx/wiki'>Wiki!</a>
         </p>
 
         <p>If you're looking to buy these games, please check out
@@ -54,8 +53,9 @@ module View
 
     def render_introduction
       message = <<~MESSAGE
-        <p>18xx.games is a website where you can play async or real-time 18xx games (based on the system originally devised by the brilliant Francis Tresham)! Right now only 1889 and 18Chesapeake are implemented
-        but I'm planning on doing many more in the future.</p>
+        <p>18xx.games is a website where you can play async or real-time 18xx games (based on the system originally devised by the brilliant Francis Tresham)!
+        <p>Right now, 1889, 18Chesapeake, 1846, 1836Jr30, and 1882 are fully implemented but I'm planning on doing many more in the future.
+        If you are new to 18xx games then 1889 or 18Chesapeake are good games to begin with.</p>
 
         <p>You can play locally with hot seat mode without an account. If you want to play multiplayer, you'll need to create an account.</p>
 
@@ -93,8 +93,8 @@ module View
       }
 
       h('div#buttons', props, [
-        h('button.button', create_props, 'CREATE A NEW GAME'),
-        h('button.button', tutorial_props, 'TUTORIAL'),
+        h(:button, create_props, 'CREATE A NEW GAME'),
+        h(:button, tutorial_props, 'TUTORIAL'),
       ])
     end
   end

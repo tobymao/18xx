@@ -14,6 +14,11 @@ module Engine
       @city = nil
     end
 
+    def destroy!
+      @corporation.tokens.delete(self)
+      @city.tokens.map! { |t| t == self ? nil : t }
+    end
+
     def remove!
       @city.tokens.map! { |t| t == self ? nil : t }
       @used = false
@@ -31,6 +36,11 @@ module Engine
       remove!
 
       new_city.place_token(@corporation, self, free: true)
+    end
+
+    def place(city)
+      @used = true
+      @city = city
     end
   end
 end

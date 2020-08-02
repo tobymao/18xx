@@ -21,6 +21,18 @@ module Engine
         end
       end
 
+      def available
+        @companies
+      end
+
+      def visible?
+        true
+      end
+
+      def players_visible?
+        true
+      end
+
       def process_pass(action)
         entity = action.entity
 
@@ -101,6 +113,10 @@ module Engine
         company && company == @companies.first
       end
 
+      def may_choose?(_company)
+        false
+      end
+
       def committed_cash(player)
         bids_for_player(player).sum(&:price)
       end
@@ -132,6 +148,7 @@ module Engine
           end
         else
           @game.payout_companies
+          @game.or_set_finished
         end
 
         entities.each(&:unpass!)
@@ -179,9 +196,10 @@ module Engine
         entity = bid.entity
         price = bid.price
         min = min_bid(company)
-        raise Engine::GameError, "Minimum bid is #{@game.format_currency(min)} for #{company.name}" if price < min
-        raise GameError, 'Cannot afford bid' if bids_for_player(entity).sum(&:price) > entity.cash
-
+        @game.game_error("Minimum bid is #{@game.format_currency(min)} for #{company.name}") if price < min
+        if price > max_bid(entity, company)
+          @game.game_error("Cannot afford bid. Maximum possible bid is #{max_bid(entity, company)}")
+        end
         bids = @bids[company]
         bids.reject! { |b| b.entity == entity }
         bids << bid

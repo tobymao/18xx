@@ -2,6 +2,7 @@
 
 require_relative 'abilities'
 require_relative 'assignable'
+require_relative 'entity'
 require_relative 'operator'
 require_relative 'ownable'
 require_relative 'passer'
@@ -14,13 +15,14 @@ module Engine
   class Corporation
     include Abilities
     include Assignable
+    include Entity
     include Operator
     include Ownable
     include Passer
     include ShareHolder
     include Spender
 
-    attr_accessor :ipoed, :share_price
+    attr_accessor :ipoed, :share_price, :par_via_exchange
     attr_reader :capitalization, :companies, :min_price, :name, :full_name
     attr_writer :par_price
 
@@ -43,6 +45,7 @@ module Engine
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
+      @par_via_exchange = nil
 
       init_abilities(opts[:abilities])
       init_operator(opts)
@@ -66,10 +69,11 @@ module Engine
       @share_price ? @share_price.buy_multiple? : false
     end
 
-    def can_par?
+    def can_par?(entity)
+      return false if @par_via_exchange && @par_via_exchange.owner != entity
       return false if @needs_token_to_par && @tokens.empty?
 
-      true
+      !@ipoed
     end
 
     def par_price
@@ -110,20 +114,12 @@ module Engine
       percent_of(self) - (100 - @float_percent)
     end
 
-    def player?
-      false
-    end
-
-    def company?
-      false
-    end
-
     def corporation?
       true
     end
 
-    def minor?
-      false
+    def receivership?
+      owner&.share_pool?
     end
 
     def inspect
@@ -166,6 +162,10 @@ module Engine
       end
 
       abilities
+    end
+
+    def available_share
+      shares_by_corporation[self].find { |share| !share.president }
     end
   end
 end
