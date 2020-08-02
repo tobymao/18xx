@@ -33,6 +33,13 @@ module Engine
 
       STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
 
+      OPTIONAL_RULES = [
+        { sym: :double_yellow_first_or, short_name: 'Extra yellow', desc: '7a: Allow corporation to lay 2 yellows its first OR' },
+        { sym: :LN_home_city_moved, short_name: 'Move L&N home', desc: '7b: Move L&N home city to Decatur - Nashville becomes off board hex' },
+        { sym: :unlimited_4d, short_name: 'Unlimited 4D', desc: '7c: Unlimited number of 4D' },
+        { sym: :hard_rust_t4, short_name: 'Hard rust', desc: '7d: Hard rust for 4 trains' },
+      ].freeze
+
       ASSIGNMENT_TOKENS = {
         'SNAR' => '/icons/18_al/snar_token.svg',
       }.freeze
@@ -43,7 +50,21 @@ module Engine
       end
 
       def setup
+        @recently_floated = []
+
         setup_company_price_50_to_150_percent
+
+        begin
+          @log << 'Optional rule used in this game:'
+          OPTIONAL_RULES.each do |o_r|
+            next unless @optional_rules&.include?(o_r[:sym])
+
+            @log << " * #{o_r[:short_name]} (#{o_r[:desc]})"
+          end
+          move_ln_corporation if @optional_rules&.include?(:LN_home_city_moved)
+          add_extra_4d if @optional_rules&.include?(:unlimited_4d)
+          change_4t_to_hardrust if @optional_rules&.include?(:hard_rust_t4)
+        end if @optional_rules
 
         @corporations.each do |corporation|
           corporation.abilities(:assign_hexes) do |ability|
@@ -74,6 +95,10 @@ module Engine
           Step::SingleDepotTrainBuy,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
+      end
+
+      def or_round_finished
+        @recently_floated = []
       end
 
       def stock_round
@@ -152,6 +177,12 @@ module Engine
         super
       end
 
+      def float_corporation(corporation)
+        @recently_floated << corporation
+
+        super
+      end
+
       def all_potential_upgrades(tile, tile_manifest: false)
         # Lumber terminal cannot be upgraded
         return [] if tile.name == '445'
@@ -166,12 +197,48 @@ module Engine
         upgrades
       end
 
+      def tile_lays(entity)
+        return super if !@optional_rules&.include?(:double_yellow_first_or) ||
+          !@recently_floated&.include?(entity)
+
+        [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+      end
+
       private
 
       def route_bonus(route, type)
         route.corporation.abilities(type).sum do |ability|
           ability.hexes == (ability.hexes & route.hexes.map(&:name)) ? ability.amount : 0
         end
+      end
+
+      def move_ln_corporation
+        ln = corporation_by_id('L&N')
+        previous_hex = @hexes.find { |h| h.name == 'A4' }
+        old_tile = previous_hex.tile
+        tile_string = 'offboard=revenue:yellow_40|brown_50;path=a:0,b:_0;path=a:1,b:_0'
+        previous_hex.tile = Tile.from_code(old_tile.name, old_tile.color, tile_string)
+
+        ln.coordinates = 'C4'
+      end
+
+      def add_extra_4d
+        diesel_trains = @depot.trains.select { |t| t.name == '4D' }
+        diesel = diesel_trains.first
+        (diesel_trains.length + 1).upto(8) do |i|
+          new_4d = diesel.clone
+          new_4d.index = i
+          @depot.add_train(new_4d)
+        end
+      end
+
+      def change_4t_to_hardrust
+        @depot.trains
+          .select { |t| t.name == '4' }
+          .each do |t|
+            t.rusts_on = t.obsolete_on
+            t.obsolete_on = nil
+          end
       end
     end
   end
