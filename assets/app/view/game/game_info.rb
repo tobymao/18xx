@@ -44,6 +44,10 @@ module View
           children << h(:p, [h(:a, { attrs: { href: @game.class::GAME_RULES_URL } }, 'Rules')])
         end
 
+        if @game.class::GAME_INFO_URL
+          children << h(:p, [h(:a, { attrs: { href: @game.class::GAME_INFO_URL } }, 'More info')])
+        end
+
         children
       end
 
