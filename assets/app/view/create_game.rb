@@ -11,6 +11,8 @@ module View
     needs :num_players, default: 3, store: true
     needs :flash_opts, default: {}, store: true
     needs :user, default: nil, store: true
+    needs :optional_rules_available, default: [], store: true
+    needs :optional_rules_selected, default: nil, store: true
 
     def render_content
       inputs = [
@@ -18,6 +20,8 @@ module View
         render_button('Create') { submit },
         render_inputs,
       ]
+      inputs << render_optional if @optional_rules_available.any?
+      @chosen_title = nil
 
       if @mode == :hotseat
         @num_players.times do |index|
@@ -49,9 +53,11 @@ module View
     def render_inputs
       @min_p = {}
       @max_p = {}
+      @optional_rules_per_title = {}
 
       games = (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).sort.map do |game|
         @min_p[game.title], @max_p[game.title] = Engine.player_range(game)
+        @optional_rules_per_title[game.title] = game::OPTIONAL_RULES
 
         title = game.title
         title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
@@ -69,6 +75,8 @@ module View
         val = range.value.to_i
         range.value = (min..max).include?(val) ? val : max
         store(:num_players, range.value.to_i)
+        optional_rules = @optional_rules_per_title[title] || []
+        store(:optional_rules_available, optional_rules)
       end
 
       enforce_range = lambda do
@@ -94,6 +102,31 @@ module View
           },
           input_style: { width: '2.5rem' },
           on: { input: enforce_range },
+        ),
+      ]
+      h(:div, inputs)
+    end
+
+    def render_optional
+      choice_select = lambda do
+        choice = Native(@inputs[:optional_rules_selected]).elm.value
+        store(:optional_rules_selected, choice)
+      end
+
+      optional_rules = []
+      @optional_rules_available.each do |o_r|
+        optional_rules << h(:option, { attrs: { value: o_r[:sym] } }, o_r[:desc])
+      end
+      inputs = [
+        render_input(
+          'Optional rules',
+          id: :optional_rules_selected,
+          el: 'select',
+          attrs: {
+            multiple: true,
+          },
+          on: { input: choice_select },
+          children: optional_rules,
         ),
       ]
       h(:div, inputs)
@@ -144,6 +177,8 @@ module View
           return store(:flash_opts, e.message)
         end
       end
+      game_data[:settings] ||= {}
+      game_data[:settings][:optional_rules_selected] = params[:optional_rules_selected]
 
       create_hotseat(
         id: Time.now.to_i,

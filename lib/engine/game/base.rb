@@ -33,7 +33,8 @@ module Engine
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
-                  :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles
+                  :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
+                  :optional_rules
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -60,6 +61,8 @@ module Engine
       #  one_more_full_or_set - finish the current OR set, then
       #                         end after the next complete OR set
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
+
+      OPTIONAL_RULES = [].freeze
 
       BANKRUPTCY_ALLOWED = true
 
@@ -276,12 +279,13 @@ module Engine
         const_set(:LAYOUT, data['layout'].to_sym)
       end
 
-      def initialize(names, id: 0, actions: [], pin: nil, strict: false)
+      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [])
         @id = id
         @turn = 1
         @final_turn = nil
         @loading = false
         @strict = strict
+        @optional_rules = optional_rules
         @finished = false
         @log = []
         @actions = []
@@ -490,7 +494,7 @@ module Engine
       end
 
       def clone(actions)
-        self.class.new(@names, id: @id, pin: @pin, actions: actions)
+        self.class.new(@names, id: @id, pin: @pin, actions: actions, optional_rules: @optional_rules)
       end
 
       def trains
