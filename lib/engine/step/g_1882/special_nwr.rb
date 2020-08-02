@@ -76,6 +76,7 @@ module Engine
             cn_corp.tokens << token
 
             # As the city reservation is still for the original company force the lay.
+            action.city.remove_reservation!(owner)
             token.place(action.city)
             action.city.tokens[action.slot] = token
           else
