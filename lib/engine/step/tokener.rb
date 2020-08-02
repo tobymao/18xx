@@ -42,9 +42,9 @@ module Engine
         when :neutral
           entity.tokens.delete(token)
           token.corporation.tokens << token
-          @log << "#{entity.name} places a neutral token on #{city.hex.name}#{price_log}"
+          @log << "#{entity.name} places a neutral token on #{hex.name}#{price_log}"
         else
-          @log << "#{entity.name} places a token on #{city.hex.name}#{price_log}"
+          @log << "#{entity.name} places a token on #{hex.name} (#{hex.location_name})#{price_log}"
         end
 
         @game.graph.clear

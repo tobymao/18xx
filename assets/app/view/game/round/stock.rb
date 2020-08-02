@@ -21,9 +21,11 @@ module View
         def render
           @step = @game.round.active_step
           @current_actions = @step.current_actions
+          @auctioning_corporation = @step.auctioning_corporation if @step.respond_to?(:auctioning_corporation)
+          @selected_corporation ||= @auctioning_corporation
 
           @current_entity = @step.current_entity
-          if @last_player != @current_entity
+          if @last_player != @current_entity && !@auctioning_corporation
             store(:selected_corporation, nil, skip: true)
             store(:last_player, @current_entity, skip: true)
           end
@@ -36,7 +38,7 @@ module View
                           h('div.margined', 'Must sell stock: above 60% limit in corporation(s)')
                         end
           end
-          children += render_corporations
+          children.concat(render_corporations)
           children << h(Players, game: @game)
           children << h(StockMarket, game: @game)
 
@@ -52,10 +54,12 @@ module View
           }
 
           @game.corporations.map do |corporation|
+            next if @auctioning_corporation && @auctioning_corporation != corporation
+
             children = [h(Corporation, corporation: corporation)]
             children << render_input if @selected_corporation == corporation
             h(:div, props, children)
-          end
+          end.compact
         end
 
         def render_input
