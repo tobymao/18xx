@@ -559,6 +559,8 @@ module Engine
       end
 
       def end_game!
+        return if @finished
+
         @finished = true
         scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
         @log << "Game over: #{scores.join(', ')}"
