@@ -50,7 +50,11 @@ module View
 
       lines = @log.map do |line|
         if line.is_a?(String)
-          h(:div, line)
+          if line.start_with?('--')
+            h(:div, { style: { fontWeight: 'bold', color: 'green' } }, line)
+          else
+            h(:div, line)
+          end
         elsif line.is_a?(Engine::Action::Message)
           h(:div, { style: { fontWeight: 'bold' } }, "#{line.entity.name}: #{line.message}")
         end
