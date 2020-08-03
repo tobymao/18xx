@@ -341,6 +341,18 @@ table.center {
 #chatlog {
   height: 200px;
 }
+.chatlog-important {
+  font-weight: bold;
+  border-top: dashed 1px #999;
+  border-bottom: dashed 1px #999;
+}
+.chatlog-important:not(:first-child) {
+  margin-top: 1em;
+}
+.chatlog-important + .chatlog-important {
+  border-top: none;
+  margin-top: 0;
+}
 @media only screen and (min-width: 900px) {
   #homepage #chatlog {
     height: 350px;

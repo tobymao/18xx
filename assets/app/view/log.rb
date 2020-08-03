@@ -51,7 +51,7 @@ module View
       lines = @log.map do |line|
         if line.is_a?(String)
           if line.start_with?('--')
-            h(:div, { style: { fontWeight: 'bold', color: 'green' } }, line)
+            h('div.chatlog-important', line)
           else
             h(:div, line)
           end
