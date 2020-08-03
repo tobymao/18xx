@@ -18,6 +18,9 @@ module Engine
         Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
       ).freeze
 
+      # Two lays or one upgrade
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+
       include CompanyPrice50To150Percent
 
       def setup
