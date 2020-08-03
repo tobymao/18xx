@@ -48,6 +48,13 @@ module View
         unless @corporation.minor?
           children << render_shares
           children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
+          if @corporation.can_par?(@game.current_entity)
+            pars = @game.stock_market.par_prices.map do |pp|
+              pp.price if 2 * pp.price <= @game.current_entity.cash
+            end.compact.sort
+            div_content = pars.empty? ? 'Cannot afford to par' : "Par values: #{pars.join('/')}"
+            children << h('div.center', div_content)
+          end
         end
 
         abilities_to_display = @corporation.all_abilities.select do |ability|
