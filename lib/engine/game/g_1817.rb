@@ -34,6 +34,14 @@ module Engine
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
+      SEED_MONEY = 200
+
+      def new_auction_round
+        log << "Seed Money for initial auction is #{format_currency(SEED_MONEY)}"
+        Round::Auction.new(self, [
+          Step::G1817::SelectionAuction,
+        ])
+      end
     end
   end
 end
