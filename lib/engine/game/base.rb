@@ -678,6 +678,15 @@ module Engine
         raise GameError.new(msg, current_action_id)
       end
 
+      def float_corporation(corporation)
+        @log << "#{corporation.name} floats"
+
+        return if corporation.capitalization == :incremental
+
+        @bank.spend(corporation.par_price.price * 10, corporation)
+        @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+      end
+
       private
 
       def init_bank
