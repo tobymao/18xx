@@ -7,7 +7,8 @@ module Engine
     include Entity
 
     attr_accessor :rusted_self
-    attr_reader :color, :coordinates, :city, :logo, :operating_history, :text_color, :tokens, :trains
+    attr_reader :color, :coordinates, :city, :logo, :operating_history, :text_color, :tokens, :trains,
+                :max_loans, :taken_loans
 
     def init_operator(opts)
       @cash = 0
@@ -21,6 +22,8 @@ module Engine
       @city = opts[:city]
       @tokens = opts[:tokens].map { |price| Token.new(self, price: price) }
       @color = opts[:color]
+      @max_loans = opts[:available_loans]
+      @taken_loans = 0
       @text_color = opts[:text_color] || '#ffffff'
     end
 

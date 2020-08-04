@@ -34,6 +34,31 @@ module Engine
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
+
+      # @todo: this needs purchase of the 8 train
+      GAME_END_CHECK = { bankrupt: :immediate }.freeze
+
+      attr_reader :loans_taken, :loans_available, :loan_increments
+
+      def bankruptcy_limit_reached?
+        @players.reject(&:bankrupt).one?
+      end
+
+      def init_bank
+        @loans_taken = 31
+        @loans_available = 14 * 5
+        @loan_increments = 100
+        super
+      end
+
+      def interest_rate
+        # @todo: this needs the OR to fix the price.
+        @interest_fixed || [[5, ((@loans_taken + 4) / 5).to_i * 5].max, 70].min
+      end
+
+      def interest_payable(entity)
+        (interest_rate * entity.taken_loans * @loan_increments) / 100
+      end
     end
   end
 end

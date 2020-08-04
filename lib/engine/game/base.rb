@@ -1065,6 +1065,8 @@ module Engine
       def bankruptcy_limit_reached?
         @players.any?(&:bankrupt)
       end
+
+      def interest_rate; end
     end
   end
 end
