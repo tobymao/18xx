@@ -697,7 +697,10 @@ module Engine
          "tiles":[
             "yellow"
          ],
-         "operating_rounds": 1
+         "operating_rounds": 1,
+         "status":[
+            "limited_train_buy"
+         ]
       },
       {
          "name":"3",
@@ -708,7 +711,8 @@ module Engine
             "green"
          ],
          "status":[
-            "can_buy_companies"
+            "can_buy_companies",
+            "limited_train_buy"
          ],
          "operating_rounds": 2
       },
@@ -721,7 +725,8 @@ module Engine
             "green"
          ],
          "status":[
-            "can_buy_companies"
+            "can_buy_companies",
+            "limited_train_buy"
          ],
          "operating_rounds": 2
       },
