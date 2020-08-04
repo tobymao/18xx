@@ -49,12 +49,12 @@ module View
       end
 
       lines = @log.map do |line|
+        line_props = { style: {} }
         if line.is_a?(String)
           if line.start_with?('--')
-            h('div.chatlog-important', line)
-          else
-            h(:div, line)
+            line_props[:style][:fontWeight] = 'bold'
           end
+          h(:div, line_props, line)
         elsif line.is_a?(Engine::Action::Message)
           h(:div, { style: { fontWeight: 'bold' } }, "#{line.entity.name}: #{line.message}")
         end
