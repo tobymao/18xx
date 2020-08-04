@@ -7,10 +7,10 @@ module Engine
     module G1817
       class BuySellParShares < BuySellParShares
         def actions(entity)
-          return ['bid', 'pass'] if @bid
+          return %w[bid pass] if @bid
 
           actions = super
-          actions |= ['bid', 'pass']
+          actions |= %w[bid pass]
           actions
         end
 
@@ -18,6 +18,18 @@ module Engine
           return super unless @bid
 
           [@bidders[(@bidders.index(@bid.entity) + 1) % @bidders.size]]
+        end
+
+        def pass_description
+          return super unless @bid
+
+          'Pass (Bid)'
+        end
+
+        def log_pass(entity)
+          return super unless @bid
+
+          @log << "#{entity.name} passes on #{@bid.corporation.name}"
         end
 
         def pass!
@@ -32,22 +44,22 @@ module Engine
           corporation = action.corporation
           price = action.price
 
-          unless @bid
-            @log << "#{entity.name} auctions #{corporation.name} for #{@game.format_currency(price)}"
-            @game.place_home_token(action.corporation)
-            @current_actions << action
-          else
+          if @bid
             @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
+          else
+            @log << "#{entity.name} auctions #{corporation.name} for #{@game.format_currency(price)}"
+            @current_actions.clear
+            @game.place_home_token(action.corporation)
+            @bidders = @round.entities.select do |player|
+              player == entity || player.cash >= min_bid(corporation) # also need to add company trade in
+            end
           end
 
           @bid = action
-          @bidders = @round.entities.select do |player|
-            player == entity || player.cash >= min_bid(corporation) # also need to add company trade in
-          end
         end
 
         def finalize_auction
-          return if @bidders.size < 2
+          return if @bidders.size > 1
 
           price = @bid.price / 2
 
@@ -55,7 +67,7 @@ module Engine
             .stock_market
             .market[0]
             .reverse
-            .find { |share_price| share_price.price < price }
+            .find { |sp| sp.price < price }
 
           process_par(Action::Par.new(@bid.entity, corporation: @bid.corporation, share_price: share_price))
           @bid = nil
@@ -81,7 +93,7 @@ module Engine
           [400, player.cash].min
         end
 
-        def can_ipo_any?(entity)
+        def can_ipo_any?(_entity)
           false
         end
 
