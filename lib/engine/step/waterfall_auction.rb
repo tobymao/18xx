@@ -23,7 +23,7 @@ module Engine
         entity = action.entity
 
         if auctioning_company
-          pass_auction(action)
+          pass_auction(action.entity)
         else
           @log << "#{entity.name} passes bidding"
           entity.pass!

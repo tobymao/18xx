@@ -9,7 +9,7 @@ module Engine
         include Auctioner
         ACTIONS = %w[bid pass].freeze
 
-        attr_reader :bids, :companies
+        attr_reader :companies
 
         def description
           'Bid on Companies'
@@ -23,23 +23,34 @@ module Engine
           entity = action.entity
 
           if auctioning_company
-            entity.pass!
-            pass_auction(action)
-
+            @active_bidders.delete(entity)
+            pass_auction(action.entity)
           else
             @log << "#{entity.name} passes bidding"
             entity.pass!
-            all_passed! if entities.all?(&:passed?)
+            return all_passed! if entities.all?(&:passed?)
           end
 
           next_entity!
         end
 
         def next_entity!
-          return if entities.all?(&:passed?)
-
           @round.next_entity_index!
-          next_entity! if entities[entity_index]&.passed?
+          entity = entities[entity_index]
+          if auctioning_company
+            if @active_bidders.include?(entity)
+              # Can they afford the next bid?
+              if min_bid(@auctioning) > max_bid(entity, @auctioning)
+                @active_bidders.delete(entity)
+                pass_auction(entity)
+                next_entity!
+              end
+            else
+              next_entity!
+            end
+          elsif entity&.passed?
+            next_entity!
+          end
         end
 
         def process_bid(action)
@@ -67,6 +78,7 @@ module Engine
           super
           @companies = @game.companies.sort_by(&:min_bid)
           @auctioning = nil
+          @active_bidders = []
           @seed_money = @game.class::SEED_MONEY
         end
 
@@ -105,17 +117,18 @@ module Engine
 
         def selection_bid(bid)
           add_bid(bid)
-          entities.each(&:unpass!)
           @auctioning = bid.company
           @auction_triggerer = bid.entity
+          @active_bidders = entities.dup
         end
 
         def resolve_bids
-          return unless entities.one? { |e| !e.passed? }
+          return unless @active_bidders.one?
 
           winner = @bids[@auctioning].first
           win_bid(winner.entity, winner.company, winner.price)
           @bids.clear
+          @active_bidders.clear
           @auctioning = nil
           entities.each(&:unpass!)
           @round.goto_entity!(@auction_triggerer)

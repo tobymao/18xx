@@ -23,11 +23,9 @@ module Engine
         true
       end
 
-      def pass_auction(action)
-        entity = action.entity
+      def pass_auction(entity)
         @log << "#{entity.name} passes on #{auctioning_company.name}"
 
-        # Remove ourselves from the current bidding, but we can come back in.
         @bids[auctioning_company]&.reject! do |bid|
           bid.entity == entity
         end
