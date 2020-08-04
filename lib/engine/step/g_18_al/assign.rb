@@ -12,9 +12,9 @@ module Engine
 
           target = action.target
           hexes = company.abilities(:assign_hexes)&.hexes
-          target_location = @game.get_location_name(target.id)
+          location = @game.get_location_name(target.id)
           if !@game.loading && @game.graph.reachable_hexes(company.owner).find { |h, _| h.id == target.id }.nil?
-            @game.game_error("#{target_location} is not reachable")
+            @game.game_error("#{location} is not reachable")
           end
 
           super
@@ -23,17 +23,17 @@ module Engine
           # that will be removed in phase 6
           ability = Engine::Ability::HexBonus.new(
             type: :hexes_bonus,
-            description: "Warrior Coal Field token: #{target_location}",
+            description: "Warrior Coal Field token: #{location}",
             hexes: [target.id],
             amount: 10
           )
           company.owner.add_ability(ability)
           @game.remove_mining_icons(hexes, exclude: target.id)
 
-          @log << "Warrior Coal Field token is placed in #{target_location} (#{target.id})"
+          @log << "Warrior Coal Field token is placed in #{location} (#{target.id})"
           # TODO: the following note can be removed when this can be done automatically
-          @log << "Note! It is not verified that #{company.owner.name} owns a train that can run to #{target_location}"
-          @log << "Please undo the assign of Warrior Coal Field token to #{target_location} if it is not legal"
+          @log << "-- Note! It is not verified that #{company.owner.name} owns a train that can run to #{location}"
+          @log << "-- Please undo the assign of Warrior Coal Field token to #{location} if it is not legal"
         end
       end
     end
