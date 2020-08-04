@@ -51,9 +51,7 @@ module View
       lines = @log.map do |line|
         line_props = { style: {} }
         if line.is_a?(String)
-          if line.start_with?('--')
-            line_props[:style][:fontWeight] = 'bold'
-          end
+          line_props[:style][:fontWeight] = 'bold' if line.start_with?('--')
           h(:div, line_props, line)
         elsif line.is_a?(Engine::Action::Message)
           h(:div, { style: { fontWeight: 'bold' } }, "#{line.entity.name}: #{line.message}")
