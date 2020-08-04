@@ -32,6 +32,11 @@ module Engine
           end
         end
 
+        def pass!
+          super
+          @state = nil
+        end
+
         def can_replace_token?(entity, token)
           return true unless token
 
