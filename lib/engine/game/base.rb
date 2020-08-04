@@ -563,7 +563,7 @@ module Engine
 
         @finished = true
         scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
-        @log << "Game over: #{scores.join(', ')}"
+        @log << "-- Game over: #{scores.join(', ')} --"
         @round
       end
 
