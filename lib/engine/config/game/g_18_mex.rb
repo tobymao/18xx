@@ -724,8 +724,7 @@ module Engine
          "train_limit":3,
          "tiles":[
             "yellow"
-         ],
-         "buy_companies":true
+         ]
       },
       {
          "name":"3",
@@ -734,7 +733,9 @@ module Engine
             "yellow",
             "green"
          ],
-         "buy_companies":true
+         "status":[
+            "can_buy_companies"
+         ]
       },
       {
          "name":"4",
@@ -743,7 +744,9 @@ module Engine
             "yellow",
             "green"
          ],
-         "buy_companies":true
+         "status":[
+            "can_buy_companies"
+         ]
       },
       {
          "name":"5",

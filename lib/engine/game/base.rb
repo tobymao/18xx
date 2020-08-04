@@ -148,6 +148,9 @@ module Engine
       EVENTS_TEXT = { 'close_companies' =>
                       ['Companies Close', 'All companies unless otherwise noted are discarded from the game'] }.freeze
 
+      STATUS_TEXT = { 'can_buy_companies' =>
+                      ['Can Buy Companies', 'All corporations can buy companies from players'] }.freeze
+
       IPO_NAME = 'IPO'
 
       CACHABLE = [

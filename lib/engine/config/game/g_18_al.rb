@@ -707,7 +707,9 @@ module Engine
             "yellow",
             "green"
          ],
-         "buy_companies":true,
+         "status":[
+            "can_buy_companies"
+         ],
          "operating_rounds": 2
       },
       {
@@ -718,7 +720,9 @@ module Engine
             "yellow",
             "green"
          ],
-         "buy_companies":true,
+         "status":[
+            "can_buy_companies"
+         ],
          "operating_rounds": 2
       },
       {
