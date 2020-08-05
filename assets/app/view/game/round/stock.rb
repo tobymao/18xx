@@ -36,12 +36,15 @@ module View
                           h('div.margined', 'Must sell stock: above 60% limit in corporation(s)')
                         end
           end
-          par_prices = @game.par_prices_for_entity.map(&:price)
-          par_label = h('div.inline.bold', 'Available par prices: ')
-          par_string = h('div.inline-block',
-                         par_prices.empty? ? 'Cannot afford to par' : par_prices.join('/'))
-          children << h('div.margined', [par_label, par_string])
-          children += render_corporations
+
+          unless @game.corporations.all?(:ipoed)
+            children << h('div.margined', [
+              h('span.bold', 'All par prices: '),
+              h(:span, @game.stock_market.par_prices.map(&:price).sort.join('/')),
+            ])
+          end
+
+          children.concat(render_corporations)
           children << h(Players, game: @game)
           children << h(StockMarket, game: @game)
 

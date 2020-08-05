@@ -10,9 +10,10 @@ module View
       needs :corporation
 
       def render
-        return h(:div, 'Cannot Par') unless @corporation.can_par?(@game.current_entity)
+        entity = @game.current_entity
+        return h(:div, 'Cannot Par') unless @corporation.can_par?(entity)
 
-        par_buttons = @game.par_prices_for_entity.map do |share_price|
+        par_buttons = @game.par_prices_for_entity(entity).map do |share_price|
           par = lambda do
             process_action(Engine::Action::Par.new(
               @game.current_entity,
@@ -29,13 +30,13 @@ module View
             on: { click: par },
           }
           h('button.small.par_price', props, @game.format_currency(share_price.price))
-        end.compact
+        end
 
         div_class = par_buttons.size < 5 ? '.inline' : ''
         h(:div, [
           h("div#{div_class}", { style: { marginTop: '0.5rem' } }, 'Par Price: '),
-          *par_buttons.reverse,
-        ]) unless par_buttons.empty?
+          *par_buttons,
+        ])
       end
     end
   end
