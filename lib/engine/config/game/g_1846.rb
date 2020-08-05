@@ -291,7 +291,7 @@ module Engine
               "295",
               "296"
             ],
-           "special_lay": false,
+           "special": false,
            "when":"track",
            "count": 1
         }

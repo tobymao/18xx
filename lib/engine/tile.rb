@@ -201,7 +201,7 @@ module Engine
       @upgrades.flat_map(&:terrains).uniq
     end
 
-    def upgrades_to?(other, special_lay = false)
+    def upgrades_to?(other, special = false)
       # correct color progression?
       return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)
 
@@ -209,7 +209,7 @@ module Engine
       return false unless paths_are_subset_of?(other.paths)
 
       # If special ability then remaining checks is not applicable
-      return true if special_lay
+      return true if special
 
       # correct label?
       return false if label != other.label

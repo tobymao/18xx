@@ -5,14 +5,14 @@ require_relative 'base'
 module Engine
   module Ability
     class TileLay < Base
-      attr_reader :hexes, :tiles, :free, :discount, :special_lay
+      attr_reader :hexes, :tiles, :free, :discount, :special
 
-      def setup(hexes:, tiles:, free: false, discount: nil, special_lay: true)
+      def setup(hexes:, tiles:, free: false, discount: nil, special: nil)
         @hexes = hexes
         @tiles = tiles
         @free = free
         @discount = discount || 0
-        @special_lay = special_lay
+        @special = special || true
       end
     end
   end
