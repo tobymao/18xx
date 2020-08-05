@@ -103,17 +103,6 @@ module Engine
       percent_of(corporation) >= 50
     end
 
-    private
-
-    def distance(player_a, player_b)
-      return 0 if !player_a || !player_b
-
-      entities = @game.players.reject(&:bankrupt)
-      a = entities.find_index(player_a)
-      b = entities.find_index(player_b)
-      a < b ? b - a : b - (a - entities.size)
-    end
-
     def transfer_shares(bundle, to_entity, spender: nil, receiver: nil, price: nil)
       corporation = bundle.corporation
       owner = bundle.owner
@@ -162,6 +151,17 @@ module Engine
         .take(2).each { |s| move_share(s, swap_to) }
       move_share(presidents_share, president)
       move_share(shares_of(corporation).first, owner) if bundle.partial?
+    end
+
+    private
+
+    def distance(player_a, player_b)
+      return 0 if !player_a || !player_b
+
+      entities = @game.players.reject(&:bankrupt)
+      a = entities.find_index(player_a)
+      b = entities.find_index(player_b)
+      a < b ? b - a : b - (a - entities.size)
     end
 
     def move_share(share, to_entity)
