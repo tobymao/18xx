@@ -29,6 +29,11 @@ module View
           container_style: {
             display: 'block',
           },
+          input_style: {
+            width: '40rem',
+            maxWidth: 'calc(96vw - 1.5rem)',
+            margin: '0.5rem 0',
+          },
           on: {
             change: -> { local_save },
           },

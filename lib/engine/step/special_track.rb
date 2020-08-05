@@ -32,11 +32,12 @@ module Engine
       end
 
       def potential_tiles(entity, hex)
+        special_lay = ability(entity)&.special_lay.nil? || ability(entity)&.special_lay
         colors = @game.phase.tiles
         (ability(entity)&.tiles || [])
           .map { |name| @game.tiles.find { |t| t.name == name } }
           .compact
-          .select { |t| colors.include?(t.color) && hex.tile.upgrades_to?(t, true) }
+          .select { |t| colors.include?(t.color) && hex.tile.upgrades_to?(t, special_lay) }
       end
 
       def ability(entity)

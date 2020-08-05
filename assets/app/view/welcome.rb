@@ -17,8 +17,10 @@ module View
       message = <<~MESSAGE
         <p>All microsoft email domains are blocking 18xx.games. msn, hotmail, live, etc. So you will not be receiving anything.</p>
         <p>1882 and 18AL are both available for alpha testing and 1846 is now in beta.</p>
-        <p>Please file issues <a href='https://github.com/tobymao/18xx/issues'>here</a>. And if you have any questions, check out the
-        <a href='https://github.com/tobymao/18xx/wiki'>Wiki!</a>
+        <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
+        <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
+        If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other
+        resources in our <a href='https://github.com/tobymao/18xx/wiki'>Wiki!</a>
         </p>
 
         <p>If you're looking to buy these games, please check out
@@ -32,8 +34,9 @@ module View
 
         <p>Consider joining the
         <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-8ksy028m-CSZC~G5QtiFv60_jdqqulQ'>18xx slack</a>.
-        General 18xx.games discussion is in #18xxgames, development discussion is in #18xxgamesdev (you can ask about
-        bugs there), and general 18xx chat in #general.
+        General 18xx.games discussion is in <a href='https://18xxgames.slack.com/archives/CV3R3HPUZ'>#18xxgames</a>,
+        development discussion is in <a href='https://18xxgames.slack.com/archives/C012K0CNY5C'>#18xxgamesdev</a>
+        (you can ask about bugs there), and general 18xx chat in <a href='https://18xxgames.slack.com/archives/C68J3MK2A'>#general</a>.
         </p>
       MESSAGE
 
