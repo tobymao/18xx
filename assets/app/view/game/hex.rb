@@ -77,7 +77,7 @@ module View
       end
 
       def on_hex_click
-        return if @actions.empty?
+        return if @actions.empty? && @role != :tile_page
 
         nodes = @hex.tile.nodes
 
@@ -94,8 +94,10 @@ module View
           if @selected && (tile = @tile_selector&.tile)
             @tile_selector.rotate! if tile.hex != @hex
           else
-            store(:tile_selector, Lib::TileSelector.new(@hex, @tile, coordinates, root, @entity))
+            store(:tile_selector, Lib::TileSelector.new(@hex, @tile, coordinates, root, @entity, @role))
           end
+        when :tile_page
+          store(:tile_selector, Lib::TileSelector.new(@hex, @tile, coordinates, root, @entity, @role))
         when :tile_selector
           @tile_selector.tile = @tile
         end

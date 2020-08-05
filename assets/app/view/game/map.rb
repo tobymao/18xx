@@ -56,6 +56,8 @@ module View
             if @tile_selector.is_a?(Lib::TokenSelector)
               # 1882
               h(TokenSelector)
+            elsif @tile_selector.role != :map
+              # Tile selector not for the map
             elsif @tile_selector.hex.tile != @tile_selector.tile
               h(TileConfirmation)
             else
