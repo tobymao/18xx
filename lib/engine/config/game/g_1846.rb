@@ -260,7 +260,7 @@ module Engine
             "I1",
             "G19"
           ],
-          "count": 1
+          "count": 99
         },
         {
           "type": "assign_corporation",
