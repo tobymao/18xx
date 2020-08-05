@@ -2,6 +2,8 @@
 
 require_relative 'base'
 require_relative 'share_buying'
+require_relative '../actions/buy_shares'
+require_relative '../actions/par'
 
 module Engine
   module Step
