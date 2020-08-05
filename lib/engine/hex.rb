@@ -168,7 +168,10 @@ module Engine
 
     def lay_downgrade(tile)
       lay(tile)
-      neighbors.each { |_edge, neighbor| neighbor.connect! }
+      neighbors.each do |_edge, neighbor|
+        neighbor.connections.clear
+        neighbor.connect!
+      end
       tile.restore_borders
     end
 
