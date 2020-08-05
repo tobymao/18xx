@@ -678,13 +678,6 @@ module Engine
         raise GameError.new(msg, current_action_id)
       end
 
-      def par_prices_for_entity(entity)
-        @stock_market
-          .par_prices
-          .select { |p| p.price * 2 <= entity.cash }
-          .sort_by(&:price)
-      end
-
       def float_corporation(corporation)
         @log << "#{corporation.name} floats"
 

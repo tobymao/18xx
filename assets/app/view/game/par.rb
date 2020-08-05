@@ -8,12 +8,19 @@ module View
       include Actionable
 
       needs :corporation
+      needs :hide_prices, default: true
 
       def render
         entity = @game.current_entity
         return h(:div, 'Cannot Par') unless @corporation.can_par?(entity)
 
-        par_buttons = @game.par_prices_for_entity(entity).map do |share_price|
+        prices = @game
+          .stock_market
+          .par_prices
+          .select { |p| !@hide_prices || p.price * 2 <= entity.cash }
+          .sort_by(&:price)
+
+        par_buttons = prices.map do |share_price|
           par = lambda do
             process_action(Engine::Action::Par.new(
               @game.current_entity,
