@@ -83,6 +83,7 @@ module Engine
       def add_extra_train_when_sc_pars(corporation)
         first = depot.upcoming.first
         train = @sc_reserve_trains.find { |t| t.name == first.name }
+        @sc_company = nil
         return unless train
 
         # Move events other than NWR rebellion earlier.
@@ -127,10 +128,11 @@ module Engine
         @companies.each do |company|
           next unless (ability = company.abilities(:exchange))
 
-          if ability.from.include?(:par)
-            corporation = corporation_by_id(ability.corporation)
-            corporation.par_via_exchange = company
-          end
+          next unless ability.from.include?(:par)
+
+          corporation = corporation_by_id(ability.corporation)
+          corporation.par_via_exchange = company
+          @sc_company = company
         end
         super
       end
@@ -187,6 +189,15 @@ module Engine
         revenue += 100 if east && west
 
         revenue
+      end
+
+      def action_processed(_action)
+        return unless @sc_company
+        return if !@sc_company.closed? && !@sc_company&.owner&.corporation?
+
+        @log << 'Saskatchewan Central can no longer be converted to a public corporation'
+        @corporations.reject! { |c| c.id == 'SC' }
+        @sc_company = nil
       end
     end
   end
