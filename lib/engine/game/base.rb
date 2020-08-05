@@ -1065,6 +1065,12 @@ module Engine
       def bankruptcy_limit_reached?
         @players.any?(&:bankrupt)
       end
+
+      def par_prices_for_entity(entity: current_entity)
+        @stock_market.par_prices.map do |p|
+          p if p.price * 2 <= entity.cash
+        end.compact.sort_by(&:price)
+      end
     end
   end
 end
