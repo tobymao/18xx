@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_18_chesapeake'
-require_relative '../g_18_chesapeake/share_pool'
-require_relative '../round/g_18_chesapeake/stock'
 require_relative 'base'
 
 module Engine
@@ -28,10 +26,6 @@ module Engine
 
       SELL_BUY_ORDER = :sell_buy
 
-      def init_share_pool
-        Engine::G18Chesapeake::SharePool.new(self)
-      end
-
       def action_processed(action)
         case action
         when Action::LayTile
@@ -41,7 +35,7 @@ module Engine
       end
 
       def stock_round
-        Round::G18Chesapeake::Stock.new(self, [
+        Round::Stock.new(self, [
           Step::DiscardTrain,
           Step::G18Chesapeake::SpecialTrack,
           Step::BuySellParShares,
@@ -69,20 +63,6 @@ module Engine
           when: :train,
           corporation: cornelius.abilities(:share).share.corporation.name,
         ))
-
-        return unless players.size == 2
-
-        cv_corporation = cornelius.abilities(:share).share.corporation
-
-        @corporations.each do |corporation|
-          next if corporation == cv_corporation
-
-          presidents_share = corporation.shares_by_corporation[corporation].first
-          presidents_share.percent = 30
-
-          final_share = corporation.shares_by_corporation[corporation].last
-          @share_pool.transfer_shares(final_share.to_bundle, @bank)
-        end
       end
 
       def check_special_tile_lay(action, company)
@@ -110,16 +90,6 @@ module Engine
 
       def or_set_finished
         depot.export! if %w[2 3 4].include?(@depot.upcoming.first.name)
-      end
-
-      def float_corporation(corporation)
-        super
-
-        return unless players.size == 2
-
-        @log << "#{corporation.name}'s remaining shares are transferred to the Market"
-        bundle = ShareBundle.new(corporation.shares_of(corporation))
-        @share_pool.transfer_shares(bundle, @share_pool)
       end
     end
   end

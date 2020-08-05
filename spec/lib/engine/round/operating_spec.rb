@@ -9,7 +9,7 @@ require 'engine/round/operating'
 
 module Engine
   describe Round::Operating do
-    let(:players) { %w[a b c] }
+    let(:players) { %w[a b] }
     let(:game) { Game::G1889.new(players) }
     let(:hex_j3) { game.hex_by_id('J3') }
     let(:hex_j5) { game.hex_by_id('J5') }
