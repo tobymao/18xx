@@ -259,8 +259,8 @@ module Engine
         @round.force_next_entity! if @round.current_entity == corporation
 
         if corporation.corporation?
-          corporation.share_holders.keys.each do |player|
-            player.shares_by_corporation.delete(corporation)
+          corporation.share_holders.keys.each do |share_holder|
+            share_holder.shares_by_corporation.delete(corporation)
           end
 
           @share_pool.shares_by_corporation.delete(corporation)
