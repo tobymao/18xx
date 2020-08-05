@@ -87,7 +87,7 @@ module Engine
         corporation = bundle.corporation
         if corporation.president?(player) &&
             (!@game.class::EBUY_PRES_SWAP || corporation == current_entity)
-          share_holders = corporation.player_share_holders
+          share_holders = corporation.share_holders
           remaining = share_holders[player] - bundle.percent
           next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
           return false if remaining < next_highest

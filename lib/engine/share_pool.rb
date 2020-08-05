@@ -76,7 +76,14 @@ module Engine
         )
       end
 
-      @game.float_corporation(corporation) unless floated == corporation.floated?
+      return if floated == corporation.floated?
+
+      @log << "#{corporation.name} floats"
+
+      return if incremental
+
+      @bank.spend(par_price * 10, corporation)
+      @log << "#{corporation.name} receives #{@game.format_currency(corporation.cash)}"
     end
 
     def sell_shares(bundle)
@@ -121,17 +128,17 @@ module Engine
       percent = bundle.percent
       price ||= bundle.price
 
-      corporation.share_holders[owner] -= percent
-      corporation.share_holders[to_entity] += percent
+      corporation.share_holders[owner] -= percent if owner.player?
+      corporation.share_holders[to_entity] += percent if to_entity.player?
 
       spender.spend(price, receiver) if spender && receiver
       bundle.shares.each { |s| move_share(s, to_entity) }
 
       # check if we need to change presidency
-      max_shares = corporation.player_share_holders.values.max
+      max_shares = corporation.share_holders.values.max
 
       majority_share_holders = corporation
-        .player_share_holders
+        .share_holders
         .select { |_, p| p == max_shares }
         .keys
 

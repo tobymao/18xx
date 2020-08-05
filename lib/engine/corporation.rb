@@ -85,19 +85,15 @@ module Engine
     end
 
     def num_player_shares
-      player_share_holders.values.sum / 10
+      share_holders.values.sum / 10
     end
 
     def num_market_shares
-      share_holders.select { |s_h, _| s_h.share_pool? }.values.sum / 10
+      10 - num_ipo_shares - num_player_shares
     end
 
     def share_holders
       @share_holders ||= Hash.new(0)
-    end
-
-    def player_share_holders
-      share_holders.select { |s_h, _| s_h.player? }
     end
 
     def id
