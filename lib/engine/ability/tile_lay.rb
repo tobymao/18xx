@@ -12,7 +12,7 @@ module Engine
         @tiles = tiles
         @free = free
         @discount = discount || 0
-        @special = special || true
+        @special = special.nil? ? true : special
       end
     end
   end
