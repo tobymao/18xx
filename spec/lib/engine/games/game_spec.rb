@@ -147,13 +147,12 @@ module Engine
       results.each do |game_id, result|
         context game_id do
           it 'matches result exactly' do
-            game_path = game.title.gsub(/(.)([A-Z])/, '\1_\2').downcase
-            data = JSON.parse(File.read("spec/fixtures/#{game_path}/#{game_id}.json"))
-            players = data['players'].map { |p| p['name'] }
-            expect(game.new(players, id: game_id, actions: data['actions']).result).to eq(result)
-            rungame = game.new(players, id: game_id, actions: data['actions'], strict: true)
-            expect(rungame.result).to eq(result)
-            expect(rungame.finished).to eq(true)
+            loaded_game = load_game_fixture(game.title, game_id)
+            expect(loaded_game[:loose].result).to eq(result)
+
+            strict_game = loaded_game[:strict]
+            expect(strict_game.result).to eq(result)
+            expect(strict_game.finished).to eq(true)
           end
         end
       end
