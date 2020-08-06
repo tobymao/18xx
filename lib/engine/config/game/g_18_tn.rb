@@ -212,6 +212,7 @@ module Engine
             },
             {
                "type":"tile_lay",
+               "free":true,
                "owner_type":"corporation",
                "hexes":[
                   "H17"
@@ -241,6 +242,7 @@ module Engine
             },
             {
                "type":"tile_lay",
+               "free":true,
                "owner_type":"corporation",
                "hexes":[
                   "F19"
@@ -270,6 +272,7 @@ module Engine
             },
             {
                "type":"tile_lay",
+               "free":true,
                "owner_type":"corporation",
                "hexes":[
                   "H3"
@@ -299,6 +302,7 @@ module Engine
             },
             {
                "type":"tile_lay",
+               "free":true,
                "owner_type":"corporation",
                "hexes":[
                   "E16"
