@@ -39,7 +39,8 @@ module Lib
     end
 
     def setting_for(option)
-      @user&.dig(:settings, option) || SETTINGS[option]
+      setting = @user&.dig(:settings, option)
+      setting.nil? ? SETTINGS[option] : setting
     end
 
     alias color_for setting_for
