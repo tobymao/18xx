@@ -34,10 +34,7 @@ module View
           h(:thead, render_title),
           h(:tbody, render_corporations),
           h(:thead, [
-            h(:tr, [
-              h(:th, ''),
-              h(:th, { attrs: { colspan: @game.players.size } }, 'Player Finances'),
-            ]),
+            h(:tr, { style: { height: '1rem' } }, ''),
           ]),
           h(:tbody, [
             render_player_cash,
@@ -91,9 +88,11 @@ module View
       end
 
       def render_title
+        spacing = ->(cols) { { attrs: { colspan: cols }, style: { letterSpacing: '0.4rem' } } }
+
         or_history_titles = render_history_titles(@game.corporations)
 
-        p_props = {
+        pd_props = {
           style: {
             background: 'salmon',
             color: 'black',
@@ -104,18 +103,18 @@ module View
         [
           h(:tr, [
             h(:th, ''),
-            h(:th, { attrs: { colspan: @game.players.size } }, 'Players'),
-            h(:th, { attrs: { colspan: 2 } }, 'Bank'),
-            h(:th, { attrs: { colspan: 2 } }, 'Prices'),
-            h(:th, { attrs: { colspan: 4 } }, 'Corporation'),
+            h(:th, spacing[@game.players.size], 'Players'),
+            h(:th, spacing[2], 'Bank'),
+            h(:th, spacing[2], 'Prices'),
+            h(:th, spacing[4], 'Corporation'),
             h(:th, ''),
             h(:th, ''),
-            h(:th, { attrs: { colspan: or_history_titles.size } }, 'OR History'),
+            h(:th, spacing[or_history_titles.size], 'OR History'),
           ]),
           h(:tr, [
             h(:th, render_sort_link('SYM', :id)),
             *@game.players.map do |p|
-              h('th.name.nowrap', p == @game.priority_deal_player ? p_props : '', render_sort_link(p.name, p.id))
+              h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
             end,
             h(:th, @game.class::IPO_NAME),
             h(:th, 'Market'),
@@ -220,28 +219,28 @@ module View
         order_props = { style: { paddingLeft: '1.2em' } }
         operating_order_text = ''
         if operating_order.positive?
-          operating_order_text = operating_order.to_s
           corporation.operating_history.each do |history|
-            operating_order_text += '*' if history[0] == current_round
+            operating_order_text = "#{operating_order}#{history[0] == current_round ? '*' : ''}"
           end
         end
 
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
           *@game.players.map do |p|
-            sold_props = { style: { paddingLeft: '2rem' } }
+            sold_props = {}
             if @game.round.active_step&.did_sell?(corporation, p)
               sold_props[:style][:backgroundColor] = '#9e0000'
               sold_props[:style][:color] = 'white'
             end
-            h('td.left', sold_props, p.num_shares_of(corporation).to_s + (corporation.president?(p) ? '*' : ''))
+            h('td.padded_number', sold_props, "#{corporation.president?(p) ? '*' : ''}#{p.num_shares_of(corporation)}")
           end,
-          h(:td, corporation.num_shares_of(corporation)),
-          h(:td, @game.share_pool.num_shares_of(corporation).to_s + (corporation.receivership? ? '*' : '')),
+          h('td.padded_number', corporation.num_shares_of(corporation)),
+          h('td.padded_number',
+            "#{corporation.receivership? ? '*' : ''}#{@game.share_pool.num_shares_of(corporation)}"),
           h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
           h('td.padded_number', market_props,
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
-          h('td.right', @game.format_currency(corporation.cash)),
+          h('td.padded_number', @game.format_currency(corporation.cash)),
           h('td.left', order_props, operating_order_text),
           h('td.nowrap', corporation.trains.map(&:name).join(', ')),
           h(:td, "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
