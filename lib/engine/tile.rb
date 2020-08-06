@@ -63,7 +63,7 @@ module Engine
       case type
       when 'path'
         params = params.map do |k, v|
-        case k
+          case k
           when 'terminal'
             [k, v.to_i]
           else
