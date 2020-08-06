@@ -21,6 +21,17 @@ module Engine
           end
         end
 
+        def get_par_prices(entity, corp)
+          if corp.id == 'SC'
+            @game
+              .stock_market
+              .par_prices
+              .select { |p| p.price <= entity.cash }
+          else
+            super
+          end
+        end
+
         def process_par(action)
           if action.corporation.id == 'SC'
             share_price = action.share_price
