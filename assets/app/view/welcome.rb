@@ -17,7 +17,7 @@ module View
       message = <<~MESSAGE
         <p>The 2 player variant has now been implement for 18Chesapeake!</p>
         <p>All Microsoft email domains are blocking 18xx.games. MSN, Hotmail, Live, etc. So you will not be receiving anything.</p>
-        <p>1882 and 18AL are both available for alpha testing and 1846 is now in beta.</p>
+        <p>18AL is available for alpha testing. 1846 and 1882 are both in beta.</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
         If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other
