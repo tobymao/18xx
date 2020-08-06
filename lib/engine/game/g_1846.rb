@@ -285,7 +285,6 @@ module Engine
         Round::Stock.new(self, [
           Step::DiscardTrain,
           Step::G1846::Assign,
-          Step::SpecialTrack,
           Step::G1846::BuySellParShares,
         ])
       end
