@@ -13,6 +13,7 @@ module View
 
         def load_from_tile
           @edge_num = @path.edges.first.num
+          @terminal = @path.terminal
         end
 
         def preferred_render_locations
@@ -37,15 +38,31 @@ module View
         def render_part
           rotation = 60 * @edge_num
 
-          props = {
-            attrs: {
-              transform: "rotate(#{rotation})",
-              d: 'M 0 87 L 0 0',
-              stroke: @color,
-              'stroke-width': @width,
-              'stroke-dasharray': @dash,
-            },
-          }
+          if (@terminal == 1)
+            # half-way between standard track and off-board track
+            props = {
+              attrs: {
+                transform: "rotate(#{rotation})",
+                d: 'M6 60 L 6 85 L -6 85 L -6 60 L 0 25 Z',
+                fill: @color,
+                stroke: 'none',
+                'stroke-linecap': 'butt',
+                'stroke-linejoin': 'miter',
+                'stroke-width': @width.to_i * 0.75,
+                'stroke-dasharray': @dash,
+              },
+            }
+          else
+            props = {
+              attrs: {
+                transform: "rotate(#{rotation})",
+                d: 'M 0 87 L 0 0',
+                stroke: @color,
+                'stroke-width': @width,
+                'stroke-dasharray': @dash,
+              },
+            }
+          end
 
           [
             h(:path, props),

@@ -63,15 +63,20 @@ module Engine
       case type
       when 'path'
         params = params.map do |k, v|
-          case v[0]
-          when '_'
-            [k, cache[v[1..-1].to_i]]
+        case k
+          when 'terminal'
+            [k, v.to_i]
           else
-            [k, Part::Edge.new(v)]
+            case v[0]
+            when '_'
+              [k, cache[v[1..-1].to_i]]
+            else
+              [k, Part::Edge.new(v)]
+            end
           end
         end.to_h
 
-        Part::Path.new(params['a'], params['b'])
+        Part::Path.new(params['a'], params['b'], params['terminal'])
       when 'city'
         city = Part::City.new(params['revenue'],
                               slots: params['slots'],

@@ -31,12 +31,12 @@ module View
               {
                 region_weights: TOP_ROW,
                 x: 0,
-                y: -48,
+                y: -72,
               },
               {
                 region_weights: BOTTOM_ROW,
                 x: 0,
-                y: 48,
+                y: 69,
               },
             ]
           else
