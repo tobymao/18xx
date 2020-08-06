@@ -62,6 +62,10 @@ module View
             h('div#settings__logout', [
               render_button('Logout') { logout },
             ]),
+            h(:div, [
+              render_button('Delete Account and All Data') { delete },
+              render_input('Type DELETE to confirm', id: :confirm, type: :confirm),
+            ]),
           ]]
         end
 
@@ -211,6 +215,12 @@ module View
         ]),
         *children,
       ])
+    end
+
+    def delete
+      return store(:flash_opts, 'Confirmation not correct') if input_elm(:confirm).value != 'DELETE'
+
+      delete_user
     end
 
     def submit

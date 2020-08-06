@@ -80,6 +80,13 @@ class Api
         r.is 'refresh' do
           login_user(user, new_session: false)
         end
+
+        # POST '/api/user/login'
+        r.is 'delete' do
+          Game.where(id: user.game_users.map(&:game_id)).delete
+          user.destroy
+          {}
+        end
       end
     end
   end

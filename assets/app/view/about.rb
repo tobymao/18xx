@@ -1,24 +1,41 @@
 # frozen_string_literal: true
 
+require 'user_manager'
+
 module View
   class About < Snabberb::Component
+    include UserManager
+
+    needs :needs_consent, default: false
+
     def render
       message = <<~MESSAGE
         <h2>About 18xx.Games</h2>
         <p>18xx.Games is created and maintained by Toby Mao. It is an open source project, and you can find the
-        code on <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
+        code on <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. All games are used with express written consent from their respective rights holders. You can find more information about the games on the <a href='https://github.com/tobymao/18xx/wiki'>wiki</a>.</p>
 
-        <p><a href='https://boardgamegeek.com/boardgame/23540/1889-history-shikoku-railways'>1889</a> is used with permission from
-        Josh Starr at <a href='https://www.grandtrunkgames.com'>Grand Trunk Games</a>.</p>
+        <H2>Privacy Policy</H2>
+        Upon your request and expression of consent, we collect the following data for the purpose of providing services to you. It is removed upon your request to terminate these services.
 
-        <p><a href='https://boardgamegeek.com/boardgame/253608/18chesapeake'>18Chesapeake</a> is used with permission from
-        Scott Petersen at <a href='https://all-aboardgames.com'>All-Aboard Games</a>.</p>
+        <p>
+        <b>Email Addresses</b> are collected in order to send notifications. These notifications can be disabled in the <a href='/profile'>profile</a> page. Emails are not publicly available and not shared to any 3rd party.
+        </p>
 
-        <p><a href='https://boardgamegeek.com/boardgame/17405/1846-race-midwest'>1846</a> is used with permission from
-        <a href='https://sites.google.com/site/ptlehmann/gaming'>Tom Lehmann</a>.</p>
+        <p>
+        <b>IP Addresses</b> are collected when you use the site in order to prevent malicious behavior. These are not publicly available and not shared to any 3rd party.
+        </p>
 
-        <p><a href='https://boardgamegeek.com/boardgameexpansion/173574/1836jr'>1836jr</a> is used with permission from
-        David Hecht</p>
+        <p>
+        <b>Game Data</b> is collected when you play a game and is needed for the game to function. Game Data includes messages sent to others as a part of the game. This is publicly available through the website interface and API.
+        </p>
+
+        <p>
+        <b>Local Storage</b> is used to store local data like hot seat games and master mode. This can only be accessed by your device.
+        </p>
+
+        <p>
+        For questions or requests please file an issue on <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.
+        </p>
 
         <H2>Special thanks to all the contributors.</H2>
         <a href='https://github.com/michaeljb'>michaeljb</a>
@@ -33,11 +50,31 @@ module View
         <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>
       MESSAGE
 
-      props = {
-        props: { innerHTML: message },
-      }
+      children = [h(:div, props: { innerHTML: message })]
 
-      h('div#about', props)
+      if @needs_consent
+        @confirmation = h(:input, attrs: { placeholder: 'Type DELETE to confirm' })
+
+        children << h(:div, [
+          h(:h2, 'In order to continue using your account, you must give consent'),
+          h(:button, { on: { click: -> { consent } } }, 'I agree to the privacy policy'),
+          h(:button, { on: { click: -> { delete } } }, 'Delete my account and all data'),
+          @confirmation,
+        ])
+      end
+
+      h('div#about', children)
+    end
+
+    def consent
+      edit_user(consent: true)
+      store(:app_route, '/')
+    end
+
+    def delete
+      return store(:flash_opts, 'Confirmation not correct') if Native(@confirmation).elm.value != 'DELETE'
+
+      delete_user
     end
   end
 end
