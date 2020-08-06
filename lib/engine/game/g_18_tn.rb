@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_18_tn'
+require_relative '../g_18_tn/share_pool'
 require_relative 'base'
 require_relative 'company_price_50_to_150_percent'
 
@@ -56,6 +57,10 @@ module Engine
         total_revenue - routes.map(&:revenue).min
       end
 
+      def init_share_pool
+        Engine::G18TN::SharePool.new(self)
+      end
+
       def event_civil_war!
         @log << '-- Event: Civil War! --'
         @corporations.each do |c|
@@ -68,6 +73,10 @@ module Engine
             count: 1,
           ))
         end
+      end
+
+      def lnr
+        @lnr ||= company_by_id('LNR')
       end
     end
   end
