@@ -57,7 +57,7 @@ module View
 
           [
             h(Corporation, corporation: corporation),
-            h(Par, corporation: corporation, hide_prices: false),
+            h(Par, corporation: corporation),
           ]
         end
 

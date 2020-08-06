@@ -188,6 +188,13 @@ module Engine
         !bought? && @game.corporations.any? { |c| c.can_par?(entity) && can_buy?(entity, c.shares.first&.to_bundle) }
       end
 
+      def get_par_prices(entity, _corp)
+        @game
+          .stock_market
+          .par_prices
+          .select { |p| p.price * 2 <= entity.cash }
+      end
+
       def sell_shares(entity, shares)
         @game.game_error("Cannot sell shares of #{shares.corporation.name}") unless can_sell?(entity, shares)
 
