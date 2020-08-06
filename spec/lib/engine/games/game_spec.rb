@@ -158,4 +158,12 @@ module Engine
       end
     end
   end
+
+  describe 'bugfix 1353' do
+    it 'should be an invalid route' do
+      expect do
+        load_game_fixture('1889', 5033)
+      end.to raise_error(Engine::GameError, /cannot reuse the same sections of track/)
+    end
+  end
 end

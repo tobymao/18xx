@@ -205,6 +205,14 @@ module Engine
       end
     end
 
+    def check_edge_reuse!
+      dupes = collected_used_edges.group_by(&:itself).select { |_k, v| v.length > 1 }
+      return if dupes.empty?
+
+      hexes = dupes.map(&:first).join(',')
+      @game.game_error("Routes cannot reuse the same sections of track: #{hexes.inspect}")
+    end
+
     def check_connected!(token)
       paths_ = paths.uniq
 
@@ -266,6 +274,7 @@ module Engine
       check_distance!(visited)
       check_cycles!
       check_overlap!
+      check_edge_reuse!
       check_connected!(token)
 
       visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
@@ -281,6 +290,14 @@ module Engine
 
     def connection_hexes
       connections.map(&:id)
+    end
+
+    def used_edges
+      connections.map(&:used_edges)
+    end
+
+    def collected_used_edges
+      @routes.flat_map(&:used_edges).flatten
     end
 
     def find_connections(connections_a, connections_b)

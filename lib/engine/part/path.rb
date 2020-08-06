@@ -34,6 +34,10 @@ module Engine
         on.keys.select { |p| on[p] == 1 }
       end
 
+      def edge_set
+        exits.map { |e| [hex.name, e].join('-') }
+      end
+
       def walk(skip: nil, visited: nil, on: nil)
         return if visited&.[](self)
 
