@@ -416,12 +416,20 @@ module Engine
          "distance":3,
          "price":180,
          "rusts_on":"6",
-         "num":5
+         "num":3
+      },
+      {
+         "name":"3'",
+         "distance":3,
+         "price":180,
+         "rusts_on":"6",
+         "num":2
       },
       {
          "name":"4",
          "distance":4,
          "price":300,
+         "obsolete_on":"6'",
          "num":3
       },
       {
@@ -437,7 +445,13 @@ module Engine
          "name":"6",
          "distance":6,
          "price":600,
-         "num":2
+         "num":1
+      },
+      {
+         "name":"6'",
+         "distance":6,
+         "price":600,
+         "num":1
       },
       {
          "name":"8",
@@ -582,10 +596,23 @@ module Engine
          ],
          "status":[
             {"type": "limited_train_buy"}
-         ]
+         ],
+         "operating_rounds": 1
       },
       {
          "name":"3",
+         "on":"3",
+         "train_limit":4,
+         "tiles":[
+            "yellow",
+            "green"
+         ],
+         "buy_companies":true,
+         "operating_rounds": 2
+      },
+      {
+         "name":"3½",
+         "on":"3'",
          "train_limit":4,
          "tiles":[
             "yellow",
@@ -594,43 +621,63 @@ module Engine
          "status":[
             "can_buy_companies",
             "limited_train_buy"
-         ]
+         ],
+         "operating_rounds": 2
       },
       {
          "name":"4",
+         "on":"4",
          "train_limit":3,
          "tiles":[
             "yellow",
             "green"
-         ]
+         ],
+         "operating_rounds": 2
       },
       {
          "name":"5",
+         "on":"5",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
             "brown"
-         ]
+         ],
+         "operating_rounds": 3
       },
       {
          "name":"6",
+         "on":"6",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
             "brown"
-         ]
+         ],
+         "operating_rounds": 3
+      },
+      {
+         "name":"6½",
+         "on":"6'",
+         "train_limit":2,
+         "tiles":[
+            "yellow",
+            "green",
+            "brown"
+         ],
+         "operating_rounds": 3
       },
       {
          "name":"8",
+         "on":"8",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
             "brown",
             "gray"
-         ]
+         ],
+         "operating_rounds": 3
       }
    ]
 }
