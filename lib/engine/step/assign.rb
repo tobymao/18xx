@@ -20,6 +20,10 @@ module Engine
         @game.game_error("#{company.name} is already assigned to #{target.name}") if target.assigned?(company.id)
 
         if target.is_a?(Hex) && (ability = company.abilities(:assign_hexes))
+          assignable_hexes = ability.hexes.map { |h| @game.hex_by_id(h) }
+          Assignable.remove_from_all!(assignable_hexes, company.id) do |unassigned|
+            @log << "#{company.name} is unassigned from #{unassigned.name}"
+          end
           target.assign!(company.id)
           ability.use!
           @log << "#{company.name} is assigned to #{target.name}"
