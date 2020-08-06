@@ -15,7 +15,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>The 2 player variant has now been implement for 18Chesapeake!</p>
+        <p>The two player variant has now been implemented for 18Chesapeake!</p>
         <p>All Microsoft email domains are blocking 18xx.games. MSN, Hotmail, Live, etc. So you will not be receiving anything.</p>
         <p>18AL is available for alpha testing. 1846 and 1882 are both in beta.</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
