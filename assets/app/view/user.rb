@@ -63,7 +63,7 @@ module View
               render_button('Logout') { logout },
             ]),
             h(:div, [
-              render_button('Delete Account and All Data') { delete },
+              render_button('Delete Account and All Data', style: { marginTop: '0' }) { delete },
               render_input('Type DELETE to confirm', id: :confirm, type: :confirm),
             ]),
           ]]
