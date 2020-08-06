@@ -6,6 +6,7 @@ module Lib
   module Settings
     DARK = `window.matchMedia('(prefers-color-scheme: dark)').matches`.freeze
     # http://mkweb.bcgsc.ca/colorblind/ 12 color palette
+    # change SETTINGS = (n.times ... in models/user.rb accordingly
     ROUTE_COLORS = %i[#A40122 #008DF9 #00FCCF #FF5AAF #8400CD #FF6E3A].freeze
 
     ENTER_GREEN = '#3CB371'
