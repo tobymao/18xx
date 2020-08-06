@@ -65,7 +65,7 @@ module Engine
         params = params.map do |k, v|
           case k
           when 'terminal'
-            [k, v.to_i]
+            [k, v]
           else
             case v[0]
             when '_'
@@ -76,7 +76,7 @@ module Engine
           end
         end.to_h
 
-        Part::Path.new(params['a'], params['b'], params['terminal'])
+        Part::Path.new(params['a'], params['b'], terminal: params['terminal'])
       when 'city'
         city = Part::City.new(params['revenue'],
                               slots: params['slots'],
