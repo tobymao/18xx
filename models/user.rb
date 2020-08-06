@@ -10,7 +10,7 @@ class User < Base
 
   RESET_WINDOW = 60 * 15 # 15 minutes
 
-  SETTINGS = (4.times.flat_map do |index|
+  SETTINGS = (6.times.flat_map do |index|
     %w[color dash width].map do |prop|
       "r#{index}_#{prop}"
     end
