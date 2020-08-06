@@ -21,6 +21,10 @@ module Engine
       # Two lays or one upgrade
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'civil_war' => ['Civil War', 'Companies with trains loose revenue of one train its next OR']
+      ).freeze
+
       include CompanyPrice50To150Percent
 
       def setup
@@ -36,10 +40,34 @@ module Engine
           Step::Track,
           Step::Token,
           Step::Route,
-          Step::Dividend,
+          Step::G18TN::Dividend,
           Step::SingleDepotTrainBuyBeforePhase4,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
+      end
+
+      def routes_revenue(routes)
+        total_revenue = super
+
+        abilities = routes.first&.corporation&.abilities(:civil_war)
+
+        return total_revenue if !abilities || abilities.empty?
+
+        total_revenue - routes.map(&:revenue).min
+      end
+
+      def event_civil_war!
+        @log << '-- Event: Civil War! --'
+        @corporations.each do |c|
+          # No effect if corporation has no trains
+          next if c.trains.empty?
+
+          c.add_ability(Engine::Ability::Base.new(
+            type: :civil_war,
+            description: 'Civil War! (One time effect)',
+            count: 1,
+          ))
+        end
       end
     end
   end

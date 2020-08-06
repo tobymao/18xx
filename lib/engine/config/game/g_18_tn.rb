@@ -423,7 +423,10 @@ module Engine
          "distance":3,
          "price":180,
          "rusts_on":"6",
-         "num":2
+         "num":2,
+         "events":[
+           {"type": "civil_war"}
+         ]
       },
       {
          "name":"4",
