@@ -75,7 +75,8 @@ module Engine
 
         def buyable_train_variants(train, entity)
           variants = super
-          return variants if variants.size < 2
+
+          return variants if (variants.size < 2) || train.owned_by_corporation?
 
           cash = entity.cash
           min, max = variants.sort_by { |v| v[:price] }
