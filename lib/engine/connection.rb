@@ -120,10 +120,6 @@ module Engine
       branch
     end
 
-    def used_edges
-      paths.flat_map(&:edge_set)
-    end
-
     def inspect
       node_str = nodes.map { |node| node.hex&.name || 'null' }.join(',')
       path_str = @paths.map(&:inspect).join(',')

@@ -162,7 +162,10 @@ module Engine
     it 'should be an invalid route' do
       expect do
         load_game_fixture('1889', 5033).loose_game
-      end.to raise_error(Engine::GameError, /cannot reuse the same sections of track/)
+      end.to raise_error(
+        Engine::GameError,
+        /cannot reuse the same sections of track: D9,E8/
+      )
     end
   end
 end
