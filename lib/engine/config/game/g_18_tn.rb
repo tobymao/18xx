@@ -602,7 +602,8 @@ module Engine
             "yellow"
          ],
          "status":[
-            {"type": "limited_train_buy"}
+            "can_buy_companies_operation_round_one",
+            "limited_train_buy"
          ],
          "operating_rounds": 1
       },
@@ -614,7 +615,10 @@ module Engine
             "yellow",
             "green"
          ],
-         "buy_companies":true,
+         "status":[
+            "can_buy_companies",
+            "limited_train_buy"
+         ],
          "operating_rounds": 2
       },
       {

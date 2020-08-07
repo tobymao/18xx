@@ -17,8 +17,11 @@ module Engine
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18TN'
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
-        Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
-      ).freeze
+        'can_buy_companies_operation_round_one' =>
+          ['Can Buy Companies OR 1', 'Corporations can buy companies for face value in OR 1'],
+      ).merge(
+          Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
+        ).freeze
 
       # Two lays or one upgrade
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
@@ -41,11 +44,20 @@ module Engine
       end
 
       def operating_round(round_num)
+        # For OR 1, set company buy price to face value only
+        @companies.each do |company|
+          company.min_price = company.value
+          company.max_price = company.value
+        end if @turn == 1
+
+        # After OR 1, the company buy price is changed to 50%-150%
+        setup_company_price_50_to_150_percent if @turn == 2 && round_num == 1
+
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
           Step::SpecialTrack,
-          Step::BuyCompany,
+          Step::G18TN::BuyCompany,
           Step::HomeToken,
           Step::G18TN::Track,
           Step::Token,
