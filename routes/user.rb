@@ -22,6 +22,7 @@ class Api
             name: r['name'],
             email: r['email'],
             password: r['password'],
+            settings: { notifications: r['notifications'] },
           }.reject { |_, v| v.empty? }
 
           login_user(User.create(params))

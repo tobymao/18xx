@@ -114,7 +114,7 @@ module View
 
     def render_notifications(checked = true)
       h('div#settings__notifications', [
-        @elm_notifications = render_input(
+        render_input(
           'Allow Turn and Message Notifications',
           id: :notifications,
           type: :checkbox,
