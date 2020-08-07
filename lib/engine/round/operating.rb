@@ -28,7 +28,9 @@ module Engine
         @just_sold_company = nil
       end
 
-      def after_process(_action)
+      def after_process(action)
+        return if action.type == 'message'
+
         if active_step
           return if @entities[@entity_index].owner&.player?
         end
