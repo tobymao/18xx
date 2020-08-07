@@ -13,6 +13,7 @@ module View
 
         def load_from_tile
           @edge_num = @path.edges.first.num
+          @terminal = @path.terminal
         end
 
         def preferred_render_locations
@@ -46,6 +47,16 @@ module View
               'stroke-dasharray': @dash,
             },
           }
+
+          props[:attrs].merge!(
+            d: 'M6 60 L 6 85 L -6 85 L -6 60 L 0 25 Z',
+            fill: @color,
+            stroke: 'none',
+            'stroke-linecap': 'butt',
+            'stroke-linejoin': 'miter',
+            'stroke-width': @width.to_i * 0.75,
+            'stroke-dasharray': @dash,
+          ) if @terminal
 
           [
             h(:path, props),
