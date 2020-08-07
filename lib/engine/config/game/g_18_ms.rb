@@ -284,8 +284,7 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "offboard",
-                  "town"
+                  "offboard"
                ],
                "pay":2,
                "visit":2
@@ -307,8 +306,7 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "offboard",
-                  "town"
+                  "offboard"
                ],
                "pay":3,
                "visit":3
@@ -330,8 +328,7 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "offboard",
-                  "town"
+                  "offboard"
                ],
                "pay":4,
                "visit":4
@@ -351,16 +348,16 @@ module Engine
          "name":"5",
          "distance":5,
          "price":500,
-         "num":2,
-         "events":[
-           {"type": "close_companies"}
-         ]
+         "num":2
       },
       {
          "name":"6",
          "distance":6,
          "price":550,
-         "num":2
+         "num":2,
+         "events":[
+           {"type": "close_companies"}
+         ]
       },
       {
          "name":"2D",
@@ -496,30 +493,6 @@ module Engine
          "status":[
             "can_buy_companies"
          ]
-      },
-      {
-         "name":"4",
-         "on":"4",
-         "train_limit":3,
-         "tiles":[
-            "yellow",
-            "green"
-         ],
-         "operating_rounds":2,
-         "status":[
-            "can_buy_companies"
-         ]
-      },
-      {
-         "name":"5",
-         "on":"5",
-         "train_limit":3,
-         "tiles":[
-            "yellow",
-            "green",
-            "brown"
-         ],
-         "operating_rounds":2
       },
       {
          "name":"6",
