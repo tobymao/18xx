@@ -30,6 +30,13 @@ module Engine
 
       def setup
         setup_company_price_50_to_150_percent
+
+        # Illinois Central has a 30% presidency share
+        ic = @corporations.find { |c| c.id == 'IC' }
+        presidents_share = ic.shares_by_corporation[ic].first
+        presidents_share.percent = 30
+        final_share = ic.shares_by_corporation[ic].last
+        @share_pool.transfer_shares(final_share.to_bundle, @bank)
       end
 
       def operating_round(round_num)
