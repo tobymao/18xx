@@ -14,6 +14,7 @@ module View
       needs :actions, default: []
       needs :distance, default: nil
       needs :role, default: :tile_selector
+      needs :unavailable_clickable, default: false
 
       SCALE = 0.3
       TILE_SIZE = 60
@@ -22,9 +23,14 @@ module View
 
       def render
         @distance ||= DISTANCE
-        hexes = @tiles.map do |tile|
+        hexes = @tiles.map do |tile, unavailable|
           hex = Engine::Hex.new('A1', layout: @layout, tile: tile)
-          h(Hex, hex: hex, actions: @actions, role: @role, clickable: true)
+          h(Hex,
+            hex: hex,
+            actions: @actions,
+            role: @role,
+            clickable: @unavailable_clickable || !unavailable,
+            unavailable: unavailable)
         end
 
         hexes = list_coordinates(hexes, @distance, SIZE).map do |hex, left, bottom|

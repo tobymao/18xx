@@ -33,7 +33,7 @@ module Engine
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
                   :round, :share_pool, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
-                  :round_history
+                  :round_history, :all_tiles
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -290,6 +290,7 @@ module Engine
         @corporations = init_corporations(@stock_market)
         @bank = init_bank
         @tiles = init_tiles
+        @all_tiles = init_tiles
         @cert_limit = init_cert_limit
 
         @depot = init_train_handler
@@ -1073,6 +1074,15 @@ module Engine
 
       def bankruptcy_limit_reached?
         @players.any?(&:bankrupt)
+      end
+
+      def all_potential_upgrades(tile)
+        colors = Array(@phase.phases.last[:tiles])
+        @all_tiles
+          .select { |t| colors.include?(t.color) }
+          .uniq(&:name)
+          .select { |t| tile.upgrades_to?(t) }
+          .reject(&:blocks_lay)
       end
     end
   end

@@ -6,6 +6,7 @@ require 'view/game/actionable'
 require 'view/game/runnable'
 require 'view/game/tile'
 require 'view/game/triangular_grid'
+require 'view/game/tile_unavailable'
 
 module View
   module Game
@@ -29,6 +30,7 @@ module View
       needs :clickable, default: false
       needs :actions, default: []
       needs :entity, default: nil
+      needs :unavailable, default: nil
 
       def render
         @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
@@ -41,6 +43,7 @@ module View
         children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
         children << h(Tile, tile: @tile) if @tile
         children << h(TriangularGrid) if Lib::Params['grid']
+        children << h(TileUnavailable, unavailable: @unavailable, layout: @hex.layout) if @unavailable
 
         props = {
           attrs: {
@@ -53,7 +56,7 @@ module View
         props[:attrs][:opacity] = @opacity if @opacity != 1.0
         props[:attrs][:cursor] = 'pointer' if @clickable
 
-        props[:on] = { click: ->(e) { on_hex_click(e) } } if @clickable
+        props[:on] = { click: ->(e) { on_hex_click(e) } }
         props[:attrs]['stroke-width'] = 5 if @selected
         h(:g, props, children)
       end
@@ -78,6 +81,11 @@ module View
 
       def on_hex_click
         return if @actions.empty? && @role != :tile_page
+
+        if !@clickable || @hex == @tile_selector&.hex
+          store(:tile_selector, nil)
+          return
+        end
 
         nodes = @hex.tile.nodes
 

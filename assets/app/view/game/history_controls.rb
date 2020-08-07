@@ -10,6 +10,7 @@ module View
       needs :num_actions, default: 0
       needs :game, store: true
       needs :round_history, default: nil, store: true
+      needs :tile_selector, default: nil, store: true
 
       def render
         return h(:div) if @num_actions.zero?
@@ -46,6 +47,7 @@ module View
         route = Lib::Params.add(@app_route, 'action', action_id)
 
         click = lambda do
+          store(:tile_selector, nil)
           store(:round_history, @game.round_history, skip: true) unless @round_history
           store(:round_history, nil, skip: true) unless action_id
           store(:app_route, route)
