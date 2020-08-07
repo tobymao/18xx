@@ -14,6 +14,7 @@ module Engine
       GAME_RULES_URL = 'http://dl.deepthoughtgames.com/18TN-Rules.pdf'
       GAME_DESIGNER = 'Mark Derrick'
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18TN'
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
