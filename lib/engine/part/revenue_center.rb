@@ -5,7 +5,8 @@ require_relative 'node'
 module Engine
   module Part
     class RevenueCenter < Node
-      attr_reader :groups, :hide, :revenue, :revenue_to_render, :visit_cost, :route
+      attr_accessor :groups
+      attr_reader :hide, :revenue, :revenue_to_render, :visit_cost, :route
 
       PHASES = %i[yellow green brown gray diesel].freeze
 

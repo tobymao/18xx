@@ -125,6 +125,8 @@ module Engine
 
         new_city.reservations.concat(old_city.reservations)
         old_city.reservations.clear
+
+        new_city.groups = old_city.groups
       end
 
       # when upgrading, preserve tokens on previous tile (must be handled after
