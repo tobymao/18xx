@@ -28,16 +28,6 @@ module View
                 x: 0,
                 y: 45,
               },
-              # {
-              #   region_weights: { TOP_ROW => 1.5 },
-              #   x: 0,
-              #   y: -72,
-              # },
-              # {
-              #   region_weights: { BOTTOM_ROW => 1.5 },
-              #   x: 0,
-              #   y: 69,
-              # },
             ]
           else
             SMALL_ITEM_LOCATIONS
