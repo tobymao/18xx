@@ -147,12 +147,11 @@ module Engine
       results.each do |game_id, result|
         context game_id do
           it 'matches result exactly' do
-            loaded_game = load_game_fixture(game.title, game_id)
-            expect(loaded_game[:loose].result).to eq(result)
+            fixture = load_game_fixture(game.title, game_id)
+            expect(fixture.loose_game.result).to eq(result)
 
-            strict_game = loaded_game[:strict]
-            expect(strict_game.result).to eq(result)
-            expect(strict_game.finished).to eq(true)
+            expect(fixture.strict_game.result).to eq(result)
+            expect(fixture.strict_game.finished).to eq(true)
           end
         end
       end
@@ -162,7 +161,7 @@ module Engine
   describe 'bugfix 1353' do
     it 'should be an invalid route' do
       expect do
-        load_game_fixture('1889', 5033)
+        load_game_fixture('1889', 5033).loose_game
       end.to raise_error(Engine::GameError, /cannot reuse the same sections of track/)
     end
   end
