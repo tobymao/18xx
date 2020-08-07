@@ -206,7 +206,7 @@ module Engine
       @upgrades.flat_map(&:terrains).uniq
     end
 
-    def upgrades_to?(other, special = false)
+    def upgrades_to?(game, other, special = false)
       # correct color progression?
       return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)
 
@@ -217,7 +217,7 @@ module Engine
       return true if special
 
       # correct label?
-      return false if label != other.label
+      return false if label != other.label && !game.label_check_override(self, other)
 
       # honors existing town/city counts?
       # - allow labelled cities to upgrade regardless of count; they're probably

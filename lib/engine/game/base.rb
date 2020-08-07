@@ -690,6 +690,10 @@ module Engine
         @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
       end
 
+      def label_check_override(_existing_tile, _upgrade_candidate)
+        false
+      end
+
       private
 
       def init_bank

@@ -527,9 +527,6 @@ module Engine
             "I16",
             "J13"
          ],
-         "city=revenue:0;label=P;upgrade=cost:40,terrain:water":[
-            "F11"
-         ],
          "upgrade=cost:120,terrain:mountain":[
             "F19",
             "H17",
@@ -537,7 +534,7 @@ module Engine
             "G18",
             "G20"
          ],
-         "city=revenue:0;label=P;upgrade=cost:60,terrain:water":[
+         "city=revenue:0;upgrade=cost:60,terrain:water":[
             "H3"
          ],
          "town=revenue:0;upgrade=cost:40,terrain:water":[
@@ -586,10 +583,13 @@ module Engine
          "town=revenue:10;path=a:0,b:_0;path=a:_0,b:3":[
             "D11"
          ],
+         "city=revenue:0;label=N;upgrade=cost:40,terrain:water":[
+            "F11"
+         ],
          "city=revenue:20;path=a:3,b:_0;path=a:5,b:_0":[
             "G6"
          ],
-         "city=revenue:20;path=a:1,b:_0;path=a:5,b:_0;label=P":[
+         "city=revenue:20;path=a:1,b:_0;path=a:5,b:_0;label=C":[
             "H15"
          ]
       }

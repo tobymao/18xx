@@ -39,7 +39,7 @@ module Engine
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::HomeToken,
-          Step::Track,
+          Step::G18TN::Track,
           Step::Token,
           Step::Route,
           Step::G18TN::Dividend,
@@ -78,6 +78,14 @@ module Engine
 
       def lnr
         @lnr ||= company_by_id('LNR')
+      end
+
+      def label_check_override(existing_tile, upgrade_candidate)
+        # This is needed to allow for Memphis (in green) to upgrade either to normal brown (63)
+        # or to the P labeled brown (170)
+        return false if existing_tile.hex.name != 'H3' || existing_tile.color != :green
+
+        upgrade_candidate.name != '63' || upgrade_candidate.name != '170'
       end
     end
   end
