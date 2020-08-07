@@ -30,6 +30,7 @@ module View
         h(:table, { style: {
           margin: '1rem 0 1.5rem 0',
           textAlign: 'center',
+          whiteSpace: 'nowrap',
         } }, [
           h(:thead, render_title),
           h(:tbody, render_corporations),
@@ -119,9 +120,9 @@ module View
             h(:th, @game.class::IPO_NAME),
             h(:th, 'Market'),
             h(:th, @game.class::IPO_NAME),
-            h('th.nowrap.no_padding', render_sort_link('Market', :share_price)),
-            h('th.nowrap', render_sort_link('Cash', :cash)),
-            h('th.nowrap.no_padding', render_sort_link('Order', :order)),
+            h('th.no_padding', render_sort_link('Market', :share_price)),
+            h(:th, render_sort_link('Cash', :cash)),
+            h('th.no_padding', render_sort_link('Order', :order)),
             h(:th, 'Trains'),
             h(:th, 'Tokens'),
             h('th.no_padding', 'Companies'),
@@ -242,7 +243,7 @@ module View
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
           h('td.padded_number', @game.format_currency(corporation.cash)),
           h('td.left', order_props, operating_order_text),
-          h('td.nowrap', corporation.trains.map(&:name).join(', ')),
+          h(:td, corporation.trains.map(&:name).join(', ')),
           h(:td, "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
           render_companies(corporation),
           h('th.no_padding', name_props, corporation.name),
@@ -251,12 +252,12 @@ module View
       end
 
       def render_companies(entity)
-        h('td.top.name', entity.companies.map(&:sym).join(', '))
+        h(:td, entity.companies.map(&:sym).join(', '))
       end
 
       def render_player_companies
         h(:tr, [
-          h('th.left.top.no_padding', 'Companies'),
+          h('th.no_padding', 'Companies'),
           *@game.players.map { |p| render_companies(p) },
         ])
       end
