@@ -371,11 +371,11 @@ module Engine
          "variants":[
             {
                "name":"4D",
+               "price":750,
+               "available_on":"6",
                "distance":[
                   {
-                     "distance":4,
-                     "price":750,
-                     "available_on":"6"
+                     "visit":4
                   }
                ]
             }
