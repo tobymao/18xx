@@ -55,6 +55,12 @@ module Engine
         'Player 2' => 0,
         'Player 3' => 0,
       },
+      'hs_cbxfbqwe_5779' => {
+        'Player 1' => 2180,
+        'Player 2' => 2091,
+        'Player 3' => 1110,
+        'Player 4' => 1589,
+      },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
       3055 => {
