@@ -119,6 +119,10 @@ module Engine
         !active_step
       end
 
+      def goto_entity!(entity)
+        @entity_index = @entities.find_index(entity)
+      end
+
       def next_entity_index!
         @entity_index = (@entity_index + 1) % @entities.size
       end
