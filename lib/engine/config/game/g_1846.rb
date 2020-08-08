@@ -260,7 +260,7 @@ module Engine
             "I1",
             "G19"
           ],
-          "count": 1
+          "count": 99
         },
         {
           "type": "assign_corporation",
@@ -291,6 +291,7 @@ module Engine
               "295",
               "296"
             ],
+           "special": false,
            "when":"track",
            "count": 1
         }
@@ -821,7 +822,9 @@ module Engine
         "yellow"
       ],
       "operating_rounds": 2,
-      "buy_companies": true
+      "status":[
+        "can_buy_companies"
+      ]
     },
     {
       "name": "2",
@@ -832,7 +835,9 @@ module Engine
         "green"
       ],
       "operating_rounds": 2,
-      "buy_companies": true
+      "status":[
+        "can_buy_companies"
+      ]
     },
     {
       "name": "3",

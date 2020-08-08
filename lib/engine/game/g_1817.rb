@@ -34,6 +34,7 @@ module Engine
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
+      SEED_MONEY = 200
 
       # Two lays with one being an upgrade, second tile costs 20
       # @todo: this cannot be the same tile
@@ -51,6 +52,13 @@ module Engine
         hexes.select do |hex|
           hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
         end
+      end
+
+      def new_auction_round
+        log << "Seed Money for initial auction is #{format_currency(SEED_MONEY)}"
+        Round::Auction.new(self, [
+          Step::G1817::SelectionAuction,
+        ])
       end
     end
   end

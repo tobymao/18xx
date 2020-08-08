@@ -25,6 +25,10 @@ module Engine
         'remove_tokens' => ['Remove Tokens', 'Warrior Coal Field token removed']
       ).freeze
 
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
+      ).freeze
+
       ROUTE_BONUSES = %i[atlanta_birmingham mobile_nashville].freeze
 
       include CompanyPrice50To150Percent

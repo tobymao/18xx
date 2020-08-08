@@ -148,6 +148,9 @@ module Engine
       EVENTS_TEXT = { 'close_companies' =>
                       ['Companies Close', 'All companies unless otherwise noted are discarded from the game'] }.freeze
 
+      STATUS_TEXT = { 'can_buy_companies' =>
+                      ['Can Buy Companies', 'All corporations can buy companies from players'] }.freeze
+
       IPO_NAME = 'IPO'
 
       CACHABLE = [
@@ -559,9 +562,11 @@ module Engine
       end
 
       def end_game!
+        return if @finished
+
         @finished = true
         scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
-        @log << "Game over: #{scores.join(', ')}"
+        @log << "-- Game over: #{scores.join(', ')} --"
         @round
       end
 
@@ -674,6 +679,15 @@ module Engine
 
       def game_error(msg)
         raise GameError.new(msg, current_action_id)
+      end
+
+      def float_corporation(corporation)
+        @log << "#{corporation.name} floats"
+
+        return if corporation.capitalization == :incremental
+
+        @bank.spend(corporation.par_price.price * 10, corporation)
+        @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
       end
 
       private

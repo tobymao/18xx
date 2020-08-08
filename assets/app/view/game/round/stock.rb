@@ -38,6 +38,7 @@ module View
                           h('div.margined', 'Must sell stock: above 60% limit in corporation(s)')
                         end
           end
+
           children.concat(render_corporations)
           children << h(Players, game: @game)
           children << h(StockMarket, game: @game)
@@ -101,13 +102,9 @@ module View
             @game.companies.each do |company|
               company.abilities(:exchange) do |ability|
                 next unless ability.corporation == @selected_corporation.name
+                next unless company.owner == @current_entity
 
-                prefix =
-                  if company.owner == @current_entity
-                    "Exchange #{company.sym} for "
-                  else
-                    "#{company.owner&.name} exchanges #{company.sym} for"
-                  end
+                prefix = "Exchange #{company.sym} for "
 
                 if ability.from.include?(:ipo) && @step.can_gain?(company.owner, ipo_share)
                   children << h(:button, { on: { click: -> { buy_share(company, ipo_share) } } },

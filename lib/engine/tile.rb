@@ -63,15 +63,20 @@ module Engine
       case type
       when 'path'
         params = params.map do |k, v|
-          case v[0]
-          when '_'
-            [k, cache[v[1..-1].to_i]]
+          case k
+          when 'terminal'
+            [k, v]
           else
-            [k, Part::Edge.new(v)]
+            case v[0]
+            when '_'
+              [k, cache[v[1..-1].to_i]]
+            else
+              [k, Part::Edge.new(v)]
+            end
           end
         end.to_h
 
-        Part::Path.new(params['a'], params['b'])
+        Part::Path.new(params['a'], params['b'], terminal: params['terminal'])
       when 'city'
         city = Part::City.new(params['revenue'],
                               slots: params['slots'],
@@ -201,7 +206,7 @@ module Engine
       @upgrades.flat_map(&:terrains).uniq
     end
 
-    def upgrades_to?(other, special_lay = false)
+    def upgrades_to?(other, special = false)
       # correct color progression?
       return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)
 
@@ -209,7 +214,7 @@ module Engine
       return false unless paths_are_subset_of?(other.paths)
 
       # If special ability then remaining checks is not applicable
-      return true if special_lay
+      return true if special
 
       # correct label?
       return false if label != other.label

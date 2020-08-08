@@ -18,7 +18,11 @@ describe 'Assets' do
     end
 
     it 'renders home logged in' do
-      expect(render(user: { name: 'toby' })).to include('Welcome toby!')
+      expect(render(user: { name: 'toby', settings: { consent: true } })).to include('Welcome toby!')
+    end
+
+    it 'consent logged in' do
+      expect(render(user: { name: 'toby' })).to include('I agree to the privacy policy')
     end
 
     it 'renders about' do
@@ -116,6 +120,7 @@ describe 'Assets' do
         user: {
           id: 1,
           name: 'Player 1',
+          settings: { consent: true },
         },
       }
 
@@ -164,7 +169,7 @@ describe 'Assets' do
       data[:loaded] = true
       needs = {
         game_data: data,
-        user: data['user'],
+        user: data['user'].merge(settings: { consent: true }),
         disable_user_errors: true,
       }
 

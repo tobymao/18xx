@@ -14,29 +14,19 @@ module View
           if multi_revenue?
             [
               {
-                region_weights: CENTER,
+                region_weights: { CENTER => 1.5 },
                 x: 0,
                 y: 0,
               },
               {
-                region_weights: TOP_MIDDLE_ROW,
-                x: 0,
-                y: -24,
-              },
-              {
-                region_weights: BOTTOM_MIDDLE_ROW,
-                x: 0,
-                y: 24,
-              },
-              {
-                region_weights: TOP_ROW,
+                region_weights: { TOP_MIDDLE_ROW => 1.5 },
                 x: 0,
                 y: -48,
               },
               {
-                region_weights: BOTTOM_ROW,
+                region_weights: { BOTTOM_MIDDLE_ROW => 1.5 },
                 x: 0,
-                y: 48,
+                y: 45,
               },
             ]
           else

@@ -2,8 +2,9 @@
 
 require './spec/spec_helper'
 
-require 'engine/game/g_1889'
 require 'engine/game/g_1882'
+require 'engine/game/g_1889'
+require 'engine/game/g_18_chesapeake'
 require 'engine/phase'
 require 'engine/round/operating'
 
@@ -133,6 +134,68 @@ module Engine
           expect(subject.current_entity).to eq(entity)
           expect(subject.active_step.can_buy?(player_0, ipo_share)).to be_falsey
         end
+      end
+    end
+
+    context '2p 18Chesapeake' do
+      let(:game) { Game::G18Chesapeake.new(%w[a b]) }
+      it '30% presidency, remove share from share pool, allow dumping' do
+        bo = game.corporation_by_id('B&O')
+        cv = game.cornelius.abilities(:share).share.corporation
+        corp = game.corporations.find { |c| ![bo, cv].include?(c) }
+
+        player_0.cash = 10_000
+        player_1.cash = 10_000
+
+        expect_share_counts = lambda do |counts|
+          expect(player_0.num_shares_of(corp)).to eq(counts[0])
+          expect(player_1.num_shares_of(corp)).to eq(counts[1])
+          expect(corp.num_shares_of(corp)).to eq(counts[2])
+          expect(game.share_pool.num_shares_of(corp)).to eq(counts[3])
+          expect(game.bank.num_shares_of(corp)).to eq(counts[4])
+        end
+
+        subject.process_action(
+          Engine::Action::Par.new(player_0, corporation: corp, share_price: game.share_price_by_id('80,3,3'))
+        )
+        expect(corp.owner).to eq(player_0)
+        expect_share_counts.call([3, 0, 7, 0, 1])
+
+        subject.process_action(
+          Engine::Action::BuyShares.new(player_1, shares: corp.available_share, share_price: 80)
+        )
+        expect_share_counts.call([3, 1, 6, 0, 1])
+
+        subject.process_action(
+          Engine::Action::BuyShares.new(player_0, shares: corp.available_share, share_price: 80)
+        )
+        expect_share_counts.call([4, 1, 5, 0, 1])
+
+        subject.process_action(
+          Engine::Action::BuyShares.new(player_1, shares: corp.available_share, share_price: 80)
+        )
+        expect_share_counts.call([4, 2, 0, 4, 1])
+
+        subject.process_action(
+          Engine::Action::BuyShares.new(player_0, shares: game.share_pool.shares_of(corp)[0], share_price: 80)
+        )
+        expect_share_counts.call([5, 2, 0, 3, 1])
+
+        subject.process_action(
+          Engine::Action::BuyShares.new(player_1, shares: game.share_pool.shares_of(corp)[0], share_price: 80)
+        )
+        expect_share_counts.call([5, 3, 0, 1, 2])
+
+        game.send(:next_round!)
+        game.send(:next_round!) until game.round.is_a?(Round::Stock)
+        sr2 = game.round
+
+        bundle = game.sellable_bundles(player_0, corp).find { |b| b.percent == 30 }
+        sr2.process_action(
+          Engine::Action::SellShares.new(player_0, shares: bundle.shares, share_price: 80, percent: 30)
+        )
+        expect(corp.owner).to eq(player_1)
+        expect_share_counts.call([2, 3, 0, 4, 2])
       end
     end
   end

@@ -76,14 +76,7 @@ module Engine
         )
       end
 
-      return if floated == corporation.floated?
-
-      @log << "#{corporation.name} floats"
-
-      return if incremental
-
-      @bank.spend(par_price * 10, corporation)
-      @log << "#{corporation.name} receives #{@game.format_currency(corporation.cash)}"
+      @game.float_corporation(corporation) unless floated == corporation.floated?
     end
 
     def sell_shares(bundle)
@@ -110,17 +103,6 @@ module Engine
       percent_of(corporation) >= 50
     end
 
-    private
-
-    def distance(player_a, player_b)
-      return 0 if !player_a || !player_b
-
-      entities = @game.players.reject(&:bankrupt)
-      a = entities.find_index(player_a)
-      b = entities.find_index(player_b)
-      a < b ? b - a : b - (a - entities.size)
-    end
-
     def transfer_shares(bundle, to_entity, spender: nil, receiver: nil, price: nil)
       corporation = bundle.corporation
       owner = bundle.owner
@@ -128,24 +110,24 @@ module Engine
       percent = bundle.percent
       price ||= bundle.price
 
-      corporation.share_holders[owner] -= percent if owner.player?
-      corporation.share_holders[to_entity] += percent if to_entity.player?
+      corporation.share_holders[owner] -= percent
+      corporation.share_holders[to_entity] += percent
 
       spender.spend(price, receiver) if spender && receiver
       bundle.shares.each { |s| move_share(s, to_entity) }
 
       # check if we need to change presidency
-      max_shares = corporation.share_holders.values.max
+      max_shares = corporation.player_share_holders.values.max
 
       majority_share_holders = corporation
-        .share_holders
+        .player_share_holders
         .select { |_, p| p == max_shares }
         .keys
 
       return if majority_share_holders.any? { |player| player == previous_president }
 
       president = majority_share_holders
-        .select { |p| p.num_shares_of(corporation) > 1 }
+        .select { |p| p.percent_of(corporation) >= corporation.presidents_percent }
         .min_by { |p| previous_president == self ? 0 : distance(previous_president, p) }
       return unless president
 
@@ -162,13 +144,31 @@ module Engine
       # previous president if they haven't sold the president's share
       # give the president the president's share
       # if the owner only sold half of their president's share, take one away
-      swap_to = previous_president.percent_of(corporation) > 10 ? previous_president : self
+      swap_to = previous_president.percent_of(corporation) >= presidents_share.percent ? previous_president : self
+
+      num_shares = presidents_share.percent / corporation.share_percent
 
       president
         .shares_of(corporation)
-        .take(2).each { |s| move_share(s, swap_to) }
+        .take(num_shares).each { |s| move_share(s, swap_to) }
       move_share(presidents_share, president)
-      move_share(shares_of(corporation).first, owner) if bundle.partial?
+
+      return unless bundle.partial?
+
+      difference = bundle.shares.sum(&:percent) - bundle.percent
+      num_shares = difference / corporation.share_percent
+      num_shares.times { move_share(shares_of(corporation).first, owner) }
+    end
+
+    private
+
+    def distance(player_a, player_b)
+      return 0 if !player_a || !player_b
+
+      entities = @game.players.reject(&:bankrupt)
+      a = entities.find_index(player_a)
+      b = entities.find_index(player_b)
+      a < b ? b - a : b - (a - entities.size)
     end
 
     def move_share(share, to_entity)

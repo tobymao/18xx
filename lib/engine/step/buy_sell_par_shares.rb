@@ -2,6 +2,8 @@
 
 require_relative 'base'
 require_relative 'share_buying'
+require_relative '../action/buy_shares'
+require_relative '../action/par'
 
 module Engine
   module Step
@@ -184,6 +186,13 @@ module Engine
 
       def can_ipo_any?(entity)
         !bought? && @game.corporations.any? { |c| c.can_par?(entity) && can_buy?(entity, c.shares.first&.to_bundle) }
+      end
+
+      def get_par_prices(entity, _corp)
+        @game
+          .stock_market
+          .par_prices
+          .select { |p| p.price * 2 <= entity.cash }
       end
 
       def sell_shares(entity, shares)

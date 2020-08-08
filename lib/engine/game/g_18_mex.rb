@@ -16,6 +16,10 @@ module Engine
       GAME_DESIGNER = 'Mark Derrick'
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
+      ).freeze
+
       include CompanyPrice50To150Percent
       include Revenue4D
       include TerminusCheck

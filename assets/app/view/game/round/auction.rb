@@ -23,6 +23,12 @@ module View
           @step = @round.active_step
           @current_actions = @step.current_actions
 
+          user_name = @user&.dig('name')
+          @block_show = user_name &&
+            @game.players.map(&:name).include?(user_name) &&
+            @current_entity.name != user_name &&
+            !Lib::Storage[@game.id]&.dig('master_mode')
+
           if @current_actions.include?('par')
             h(:div, render_company_pending_par)
           else
@@ -59,9 +65,11 @@ module View
           return nil if @step.visible? && @step.players_visible?
 
           toggle = lambda do
-            return store(:flash_opts, 'Enter master mode to reveal other hand. Use this feature fairly.') if @block_show
-
-            store(:hidden, !@hidden)
+            if @block_show
+              store(:flash_opts, 'Enter master mode to reveal other hand. Use this feature fairly.')
+            else
+              store(:hidden, !@hidden)
+            end
           end
 
           props = {
