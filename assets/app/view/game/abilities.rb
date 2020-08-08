@@ -17,7 +17,7 @@ module View
         current, others = companies.partition { |company| @game.current_entity.player == company.player }
 
         children = [
-          h('div.inline.margined.bold', 'Abilities:'),
+          h('h3.inline', { style: { marginRight: '0.5rem' } }, 'Abilities:'),
           *render_companies(current),
         ]
 
@@ -29,16 +29,21 @@ module View
             store(:show_other_abilities, !@show_other_abilities)
           end
 
-          children << h(:button, { on: { click: toggle_show } }, @show_other_abilities ? 'Hide' : 'Show')
+          props = {
+            attrs: { title: "#{@show_other_abilities ? 'Hide' : 'Show'} companies of other players" },
+            style: { width: '7.3rem', margin: '0 0 0 0.5rem' },
+            on: { click: toggle_show },
+          }
+          children << h(:button, props, "#{@show_other_abilities ? 'Hide' : 'Show'} Others")
           children.concat(render_companies(others)) if @show_other_abilities
         end
 
         if companies.include?(@selected_company)
-          children << h(:div, { style: { margin: '0.5rem 0' } }, @selected_company.desc)
+          children << h(:div, { style: { margin: '0.5rem 0 0 0', maxWidth: '60rem' } }, @selected_company.desc)
           children.concat(render_actions)
         end
 
-        h(:div, children)
+        h(:div, { style: { marginBottom: '0.5rem' } }, children)
       end
 
       def render_companies(companies)
@@ -50,7 +55,7 @@ module View
             style: {
               cursor: 'pointer',
               display: 'inline-block',
-              padding: '0.5rem',
+              padding: '0 0.5rem',
             },
           }
           props[:style][:textDecoration] = 'underline' if @selected_company == company
