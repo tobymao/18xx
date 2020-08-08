@@ -706,7 +706,9 @@ module Engine
         "green"
       ],
       "operating_rounds": 2,
-      "buy_companies": true
+      "status":[
+        "can_buy_companies"
+      ]
     },
     {
       "name": "4",
@@ -717,7 +719,9 @@ module Engine
         "green"
       ],
       "operating_rounds": 2,
-      "buy_companies": true
+      "status":[
+        "can_buy_companies"
+      ]
     },
     {
       "name": "5",
@@ -729,7 +733,9 @@ module Engine
         "brown"
       ],
       "operating_rounds": 3,
-      "buy_companies": true
+      "status":[
+        "can_buy_companies"
+      ]
     },
     {
       "name": "6",
