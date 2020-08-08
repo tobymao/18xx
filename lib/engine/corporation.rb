@@ -29,10 +29,13 @@ module Engine
     def initialize(sym:, name:, **opts)
       @name = sym
       @full_name = name
-      [
+      shares = [
         Share.new(self, president: true, percent: 20),
         *8.times.map { |index| Share.new(self, percent: 10, index: index + 1) },
-      ].each { |share| shares_by_corporation[self] << share }
+      ]
+      shares.each { |share| shares_by_corporation[self] << share }
+      @presidents_share = shares.first
+      @second_share = shares[1]
 
       @share_price = nil
       @par_price = nil
@@ -170,6 +173,14 @@ module Engine
 
     def available_share
       shares_by_corporation[self].find { |share| !share.president }
+    end
+
+    def presidents_percent
+      @presidents_share.percent
+    end
+
+    def share_percent
+      @second_share.percent
     end
   end
 end
