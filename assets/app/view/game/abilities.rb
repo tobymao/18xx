@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'lib/truncate'
+
 module View
   module Game
     class Abilities < Snabberb::Component
@@ -55,11 +57,8 @@ module View
           }
           props[:style][:textDecoration] = 'underline' if @selected_company == company
 
-          company_name = company.name
-          company_name = company_name[0..15] + '...' if company_name.size > 16
-
-          owner_name = company.owner.id
-          owner_name = owner_name[0..10] + '...' if owner_name.size > 11
+          company_name = company.name.truncate(company.owner.id.size < 5 ? 32 : 19)
+          owner_name = company.owner.id.truncate
 
           h(:div, props, "#{company_name} (#{owner_name})")
         end.compact

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/truncate'
 require 'lib/settings'
 
 module View
@@ -57,7 +58,7 @@ module View
             children << h(:img, logo_props)
           end
 
-          owner = " (#{entity.owner.name})" if !entity.player? && entity.owner
+          owner = " (#{entity.owner.name.truncate})" if !entity.player? && entity.owner
           children << h(:span, "#{entity.name}#{owner}")
 
           h(:li, entity_props, children)
