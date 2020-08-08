@@ -1,20 +1,22 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
+
 module View
   module Game
     class EntityOrder < Snabberb::Component
       needs :round
 
+      include Lib::Settings
+
       def render
-        divs = @round.entities.map.with_index do |entity, index|
+        items = @round.entities.map.with_index do |entity, index|
           entity_props = {
             key: "entity_#{index}",
             style: {
-              display: 'inline-block',
-              height: '1.5rem',
-              verticalAlign: 'top',
-              marginRight: '1rem',
-              whiteSpace: 'nowrap',
+              float: 'left',
+              listStyle: 'none',
+              paddingRight: '1rem',
             },
           }
 
@@ -34,61 +36,53 @@ module View
 
           if @round.can_act?(entity)
             style[:textDecoration] = 'underline'
+            style[:fontSize] = '1.1rem'
             style[:fontWeight] = 'bold'
           end
 
           if index.positive?
-            style[:borderLeft] = 'black solid thin'
+            style[:borderLeft] = "#{setting_for(:font)} solid thin"
             style[:paddingLeft] = '1rem'
           end
 
           children = []
           if entity.corporation?
             logo_props = {
-              attrs: {
-                src: entity.logo,
-                width: '25px',
-              },
+              attrs: { src: entity.logo },
               style: {
-                maxHeight: '1.2rem',
-                padding: '0 .4rem 0 0',
+                padding: '0 0.4rem 0 0',
+                height: '1.2rem',
               },
             }
-            logo_container_props = {
-              style: {
-                height: '100%',
-                display: 'inline-block',
-                verticalAlign: 'top',
-              },
-            }
-            children << h(:span, logo_container_props, [h(:img, logo_props)])
+            children << h(:img, logo_props)
           end
 
           owner = " (#{entity.owner.name})" if !entity.player? && entity.owner
           children << h(:span, "#{entity.name}#{owner}")
 
-          h(:div, entity_props, children)
+          h(:li, entity_props, children)
         end
 
-        props = {
+        div_props = {
           key: 'entity_order',
+          attrs: { title: 'Order' },
           style: {
-            margin: '1rem 0 1rem 0',
-            fontSize: '1.1rem',
+            margin: '1rem 0',
             overflow: 'auto',
           },
         }
 
-        container_props = {
+        ul_props = {
+          key: 'entity_order_container',
           style: {
             width: 'max-content',
-            marginBottom: '0.5rem',
+            margin: '0',
+            padding: '0',
           },
-          key: 'entity_order_container',
         }
 
-        h(:div, props, [
-          h(:div, container_props, divs),
+        h(:div, div_props, [
+          h(:ul, ul_props, items),
         ])
       end
     end
