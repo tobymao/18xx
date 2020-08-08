@@ -44,7 +44,7 @@ module View
       if dest == 'all'
         h('div#tiles', [
             h('div#all_tiles', [
-                h(:h1, 'Generic Map Hexes and Common Track Tiles'),
+                h(:h2, 'Generic Map Hexes and Common Track Tiles'),
                 *TILE_IDS.flat_map { |t| render_tile_blocks(t, layout: layout) },
               ]),
 
@@ -183,13 +183,13 @@ module View
       end
 
       h("div#hexes_and_tiles_#{game_class.title}", [
-          h(:h1, game_class.title.to_s),
+          h(:h2, game_class.title.to_s),
           h("div#map_hexes_#{game_class.title}", [
-              h(:h2, "#{game_class.title} Map Hexes"),
+              h(:h3, "#{game_class.title} Map Hexes"),
               *rendered_map_hexes,
             ]),
           h("div#game_tiles_#{game_class.title}", [
-              h(:h2, "#{game_class.title} Tile Manifest"),
+              h(:h3, "#{game_class.title} Tile Manifest"),
               *rendered_tiles,
             ]),
         ])
