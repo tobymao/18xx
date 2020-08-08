@@ -2,6 +2,7 @@
 
 require 'lib/color'
 require 'lib/settings'
+require 'lib/truncate'
 require 'view/game_row'
 require 'view/link'
 
@@ -147,7 +148,7 @@ module View
       }
 
       p_elm = players.map.with_index do |player, index|
-        short_name = player['name'].length > 19 ? player['name'][0...18] + '…' : player['name']
+        short_name = player['name'].truncate
         if owner? && new? && player['id'] != @user['id']
           button_props = {
             on: { click: -> { store(:confirm_kick, [@gdata['id'], player['id']]) } },
@@ -191,7 +192,7 @@ module View
       elsif @gdata['status'] == 'finished'
         result = @gdata['result']
           .sort_by { |_, v| -v }
-          .map { |k, v| "#{k.length > 15 ? k[0...14] + '…' : k} #{v}" }
+          .map { |k, v| "#{k.truncate} #{v}" }
           .join(', ')
 
         children << h('div.inline', [

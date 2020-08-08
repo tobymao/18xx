@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'lib/truncate'
+
 module View
   module Game
     class EntityOrder < Snabberb::Component
@@ -64,7 +66,7 @@ module View
             children << h(:span, logo_container_props, [h(:img, logo_props)])
           end
 
-          owner = " (#{entity.owner.name})" if !entity.player? && entity.owner
+          owner = " (#{entity.owner.name.truncate})" if !entity.player? && entity.owner
           children << h(:span, "#{entity.name}#{owner}")
 
           h(:div, entity_props, children)
