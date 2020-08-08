@@ -20,8 +20,15 @@ module Engine
         "Lay Track for #{@company.name}"
       end
 
+      def active_entities
+        @company ? [@company] : super
+      end
+
       def blocks?
-        false
+        return false unless current_entity
+        return false unless current_entity.company?
+        return false unless ability(current_entity)&.blocks
+        @company && ability(@company)
       end
 
       def process_lay_tile(action)
@@ -56,9 +63,11 @@ module Engine
 
       def check_connect(action)
         company = action.entity
-        a = ability(company)
-        hex_ids = a.hexes
-        return unless a&.connect && hex_ids.size > 1
+        tile_ability = ability(company)
+        hex_ids = tile_ability.hexes
+        if !tile_ability&.connect || hex_ids.size < 2
+          return
+        end
 
         if company == @company
           paths = hex_ids.flat_map do |hex_id|
