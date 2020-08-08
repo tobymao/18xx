@@ -146,6 +146,8 @@ module Engine
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token, free: true)
         end
+
+        @last_action = nil
       end
 
       def remove_from_group!(group, entities)
@@ -215,6 +217,14 @@ module Engine
         @steam_boat ||= company_by_id('SC')
       end
 
+      def michigan_central
+        @michigan_central ||= company_by_id('MC')
+      end
+
+      def ohio_indiana
+        @ohio_indiana ||= company_by_id('O&I')
+      end
+
       def mail_contract
         @mail_contract ||= company_by_id('MAIL')
       end
@@ -233,8 +243,27 @@ module Engine
           end
         end
 
+        check_special_tile_lay(action)
+
         @corporations.dup.each do |corporation|
           close_corporation(corporation) if corporation.share_price&.price&.zero?
+        end
+
+        @last_action = action
+      end
+
+      def special_tile_lay?(action)
+        (action.is_a?(Action::LayTile) &&
+         (action.entity == michigan_central || action.entity == ohio_indiana))
+      end
+
+      def check_special_tile_lay(action)
+        return unless special_tile_lay?(@last_action)
+        company = @last_action.entity
+        if !special_tile_lay?(action) || action.entity != company
+          ability = company.abilities(:tile_lay)
+          company.remove_ability(ability)
+          @log << "#{company.name} forfeits second tile lay."
         end
       end
 
