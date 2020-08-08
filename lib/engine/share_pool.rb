@@ -127,7 +127,7 @@ module Engine
       return if majority_share_holders.any? { |player| player == previous_president }
 
       president = majority_share_holders
-        .select { |p| p.num_shares_of(corporation) > 1 }
+        .select { |p| p.percent_of(corporation) >= corporation.presidents_percent }
         .min_by { |p| previous_president == self ? 0 : distance(previous_president, p) }
       return unless president
 
@@ -144,13 +144,20 @@ module Engine
       # previous president if they haven't sold the president's share
       # give the president the president's share
       # if the owner only sold half of their president's share, take one away
-      swap_to = previous_president.percent_of(corporation) > 10 ? previous_president : self
+      swap_to = previous_president.percent_of(corporation) >= presidents_share.percent ? previous_president : self
+
+      num_shares = presidents_share.percent / corporation.share_percent
 
       president
         .shares_of(corporation)
-        .take(2).each { |s| move_share(s, swap_to) }
+        .take(num_shares).each { |s| move_share(s, swap_to) }
       move_share(presidents_share, president)
-      move_share(shares_of(corporation).first, owner) if bundle.partial?
+
+      return unless bundle.partial?
+
+      difference = bundle.shares.sum(&:percent) - bundle.percent
+      num_shares = difference / corporation.share_percent
+      num_shares.times { move_share(shares_of(corporation).first, owner) }
     end
 
     private

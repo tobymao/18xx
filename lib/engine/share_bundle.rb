@@ -47,7 +47,9 @@ module Engine
     end
 
     def can_dump?(entity)
-      !presidents_share || (corporation.player_share_holders.reject { |k, _| k == entity }.values.max || 0) > 10
+      return true unless presidents_share
+
+      (corporation.player_share_holders.reject { |k, _| k == entity }.values.max || 0) >= presidents_share.percent
     end
 
     def to_bundle
