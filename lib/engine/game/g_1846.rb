@@ -258,12 +258,10 @@ module Engine
       end
 
       def check_special_tile_lay(action)
+        company = @last_action&.entity
         return unless special_tile_lay?(@last_action)
-
-        company = @last_action.entity
         return unless (ability = company.abilities(:tile_lay))
-        return unless special_tile_lay?(action)
-        return unless action.entity == company
+        return if action.entity == company
 
         company.remove_ability(ability)
         @log << "#{company.name} forfeits second tile lay."

@@ -25,11 +25,7 @@ module Engine
       end
 
       def blocks?
-        return false unless current_entity
-        return false unless current_entity.company?
-        return false unless ability(current_entity)&.blocks
-
-        @company && ability(@company)
+        ability(@company)&.blocks
       end
 
       def process_lay_tile(action)
@@ -55,7 +51,7 @@ module Engine
       end
 
       def ability(entity)
-        return unless entity.company?
+        return unless entity&.company?
 
         ability = entity.abilities(:tile_lay, 'sold') if @round.respond_to?(:just_sold_company) &&
           entity == @round.just_sold_company
