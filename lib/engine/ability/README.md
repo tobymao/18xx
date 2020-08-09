@@ -19,11 +19,28 @@ These attributes may be set for all ability types
 - `remove`: Game phase when this ability is removed
 - `when`: The game step or phase when this ability is active
 - `count`: The number of times the ability may be used
+- `count_per_or`: The number of times the ability may be used in each OR; the
+  property `count_this_or` is reset to 0 at the start of each OR and increments
+  each time the ability is used
 
 ## assign_corporation
 
 Designate a specific corporation to be the beneficiary of the ability,
-for example Steamboat Company in 1846
+for example Steamboat Company in 1846.
+
+When a company with this ability is sold to a corporation, the company is
+automatically assigned to the new owning corporation. With this configuration,
+the automatic assignment will happen and the company cannot be further
+reassigned:
+
+```
+{
+  "type": "assign_corporation",
+  "when": "sold",
+  "count": 1,
+  "owner_type": "corporation"
+}
+```
 
 ## assign_hexes
 
