@@ -82,7 +82,7 @@ module View
       def on_hex_click
         return if @actions.empty? && @role != :tile_page
 
-        return store(:tile_selector, nil) if !@clickable || @hex == @tile_selector&.hex
+        return store(:tile_selector, nil) if !@clickable || (@hex == @tile_selector&.hex && !@tile_selector.tile)
 
         nodes = @hex.tile.nodes
 
