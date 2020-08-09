@@ -258,13 +258,14 @@ module Engine
       end
 
       def check_special_tile_lay(action)
-        return unless special_tile_lay?(@last_action)
         company = @last_action.entity
+        return unless special_tile_lay?(@last_action)
         return unless (ability = company.abilities(:tile_lay))
-        if !special_tile_lay?(action) || action.entity != company
-          company.remove_ability(ability)
-          @log << "#{company.name} forfeits second tile lay."
-        end
+        return unless special_tile_lay?(action)
+        return unless action.entity == company
+
+        company.remove_ability(ability)
+        @log << "#{company.name} forfeits second tile lay."
       end
 
       def close_corporation(corporation, quiet: false)

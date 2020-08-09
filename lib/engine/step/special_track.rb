@@ -28,6 +28,7 @@ module Engine
         return false unless current_entity
         return false unless current_entity.company?
         return false unless ability(current_entity)&.blocks
+
         @company && ability(@company)
       end
 
@@ -65,9 +66,7 @@ module Engine
         company = action.entity
         tile_ability = ability(company)
         hex_ids = tile_ability.hexes
-        if !tile_ability&.connect || hex_ids.size < 2
-          return
-        end
+        return if !tile_ability&.connect || hex_ids.size < 2
 
         if company == @company
           paths = hex_ids.flat_map do |hex_id|
