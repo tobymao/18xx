@@ -32,7 +32,7 @@ module Engine
           else
             @game.game_error("Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found")
           end
-        when Corporation,Minor
+        when Corporation, Minor
           if assignable_corporations && (ability = company.abilities(:assign_corporation))
             Assignable.remove_from_all!(assignable_corporations, company.id) do |unassigned|
               @log << "#{company.name} is unassigned from #{unassigned.name}"
