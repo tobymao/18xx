@@ -20,10 +20,16 @@ module Engine
       end
     end
 
-    def ability_by_type(type)
-      abilities_ = @abilities.select do |ability|
-        (ability.type == type) &&
-          (!ability.count_per_or || (ability.count_this_or < ability.count_per_or)) &&
+    def abilities(type, time = nil)
+      active_abilities = @abilities.select do |ability|
+        next false unless ability.type == type
+
+        next false if time && ability.when && (ability.when != time.to_s)
+
+        usable_this_or = !ability.count_per_or || (ability.count_this_or < ability.count_per_or)
+        next false unless usable_this_or
+
+        correct_owner_type =
           case ability.owner_type
           when :player
             !owner || owner.player?
@@ -32,21 +38,17 @@ module Engine
           when nil
             true
           end
+        next false unless correct_owner_type
+
+        true
       end
 
-      return nil if abilities_.none?
-      return abilities_.first if abilities_.one?
+      active_abilities.each { |ability| yield ability } if block_given?
 
-      raise GameError, "Duplicate abilities detected; don't know how to disambiguate"
-    end
+      return nil if active_abilities.none?
+      return active_abilities.first if active_abilities.one?
 
-    def abilities(type, time = nil)
-      return nil unless (ability = ability_by_type(type))
-
-      return nil if time && ability.when && ability.when != time.to_s
-
-      yield ability if block_given?
-      ability
+      active_abilities
     end
 
     def add_ability(ability)
