@@ -41,12 +41,14 @@ module Engine
       "E5":"Meridian",
       "E9":"Selma",
       "E11":"Montgomery",
+      "E13":"Atlanta",
       "G3":"Hattiesburg",
       "H4":"Gulfport",
       "H6":"Mobile",
       "H8":"Pensacola",
       "H10":"Tallahassee",
-      "I1":"New Orleans"
+      "I1":"New Orleans",
+      "I3":"Port Sulphur"
    },
    "tiles":{
       "1":1,
@@ -443,25 +445,28 @@ module Engine
          "city=revenue:yellow_40|brown_50;path=a:5,b:_0;path=a:4,b:_0":[
             "A1"
          ],
-         "city=revenue:yellow_51|brown_50;path=a:3,b:_0;path=a:4,b:_0":[
+         "city=revenue:yellow_50|brown_80;path=a:3,b:_0;path=a:4,b:_0":[
             "I1"
-         ],
-         "town=revenue:10":[
-            "I3"
          ],
          "path=a:1,b:5":[
             "A3"
          ],
-         "path=a:0,b:5":[
+         "offboard=revenue:yellow_40|brown_50,hide:1,groups:Atlanta;path=a:0,b:_0;border=edge:5":[
             "D12"
          ],
-         "path=a:2,b:3":[
+         "offboard=revenue:yellow_40|brown_50,groups:Atlanta;path=a:1,b:_0;border=edge:2;border=edge:0":[
+            "E13"
+         ],
+         "offboard=revenue:yellow_40|brown_50,hide:1,groups:Atlanta;path=a:2,b:_0;border=edge:3":[
             "F12"
          ]
       },
       "gray":{
          "city=revenue:yellow_30|brown_60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0":[
             "E1"
+         ],
+         "town=revenue:10;path=a:1,b:_0":[
+            "I3"
          ]
       }
    },
