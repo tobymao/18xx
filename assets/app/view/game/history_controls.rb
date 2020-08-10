@@ -2,10 +2,12 @@
 
 require 'lib/params'
 require 'view/link'
+require 'view/game/actionable'
 
 module View
   module Game
     class HistoryControls < Snabberb::Component
+      include Actionable
       needs :app_route, default: nil, store: true
       needs :num_actions, default: 0
       needs :game, store: true
@@ -49,6 +51,7 @@ module View
           store(:round_history, @game.round_history, skip: true) unless @round_history
           store(:round_history, nil, skip: true) unless action_id
           store(:app_route, route)
+          clear_ui_state
         end
 
         h(

@@ -56,6 +56,8 @@ module View
             if @tile_selector.is_a?(Lib::TokenSelector)
               # 1882
               h(TokenSelector)
+            elsif @tile_selector.role != :map
+              # Tile selector not for the map
             elsif @tile_selector.hex.tile != @tile_selector.tile
               h(TileConfirmation)
             else
@@ -74,8 +76,20 @@ module View
               end
 
               tiles = step.upgradeable_tiles(current_entity, @tile_selector.hex)
+              all_upgrades = @game.all_potential_upgrades(@tile_selector.hex.tile)
 
-              h(TileSelector, layout: @layout, tiles: tiles, actions: actions)
+              select_tiles = all_upgrades.map do |tile|
+                real_tile = tiles.find { |t| t.name == tile.name }
+                if real_tile
+                  [real_tile, nil]
+                elsif !@game.phase.tiles.include?(tile.color)
+                  [tile, 'Later Phase']
+                elsif @game.tiles.none? { |t| t.name == tile.name }
+                  [tile, 'None Left']
+                end
+              end.compact
+
+              h(TileSelector, layout: @layout, tiles: select_tiles, actions: actions)
             end
 
           # Move the position to the middle of the hex

@@ -12,6 +12,9 @@ module View
       needs :layout
       needs :tiles
       needs :actions, default: []
+      needs :distance, default: nil
+      needs :role, default: :tile_selector
+      needs :unavailable_clickable, default: false
 
       SCALE = 0.3
       TILE_SIZE = 60
@@ -19,12 +22,18 @@ module View
       DISTANCE = Hex::SIZE
 
       def render
-        hexes = @tiles.map do |tile|
+        @distance ||= DISTANCE
+        hexes = @tiles.map do |tile, unavailable|
           hex = Engine::Hex.new('A1', layout: @layout, tile: tile)
-          h(Hex, hex: hex, actions: @actions, role: :tile_selector, clickable: true)
+          h(Hex,
+            hex: hex,
+            actions: @actions,
+            role: @role,
+            clickable: @unavailable_clickable || !unavailable,
+            unavailable: unavailable)
         end
 
-        hexes = list_coordinates(hexes, DISTANCE, SIZE).map do |hex, left, bottom|
+        hexes = list_coordinates(hexes, @distance, SIZE).map do |hex, left, bottom|
           h(:svg,
             { style: style(left, bottom, TILE_SIZE) },
             [h(:g, { attrs: { transform: "scale(#{SCALE})" } }, [hex])])

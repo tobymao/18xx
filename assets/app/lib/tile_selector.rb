@@ -2,14 +2,15 @@
 
 module Lib
   class TileSelector
-    attr_reader :entity, :hex, :tile, :x, :y
+    attr_reader :entity, :hex, :tile, :x, :y, :role
 
-    def initialize(hex, tile, coordinates, root, entity)
+    def initialize(hex, tile, coordinates, root, entity, role)
       @hex = hex
       @tile = tile
       @x, @y = coordinates
       @root = root
       @entity = entity
+      @role = role
     end
 
     def tile=(new_tile)
