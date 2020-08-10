@@ -64,6 +64,7 @@ module View
         children = []
 
         must_buy_train = step.must_buy_train?(@corporation)
+        should_buy_train = step.should_buy_train?(@corporation)
 
         h3_props = {
           style: {
@@ -81,6 +82,9 @@ module View
 
         if (step.can_buy_train?(@corporation) && step.room?(@corporation)) || must_buy_train
           children << h(:div, "#{@corporation.name} must buy an available train") if must_buy_train
+          if should_buy_train == :liquidation
+            children << h(:div, "#{@corporation.name} must buy a train or it will be liquidated")
+          end
           children << h(:h3, h3_props, 'Available Trains')
           children << h(:div, div_props, [
             *from_depot(depot_trains),

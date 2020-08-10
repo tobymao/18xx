@@ -22,6 +22,14 @@ module Engine
       @game.phase.buying_train!(nil, train)
     end
 
+    def export_all!(name)
+      @game.log << "-- Event: All #{name} trains are exported --"
+      while (train = @upcoming.first).name == name
+        remove_train(train)
+        @game.phase.buying_train!(nil, train)
+      end
+    end
+
     def reclaim_train(train)
       return unless train.owner
 

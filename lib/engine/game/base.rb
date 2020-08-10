@@ -601,6 +601,8 @@ module Engine
         end
       end
 
+      def or_round_finished; end
+
       def or_set_finished; end
 
       def home_token_locations(_corporation)
@@ -910,9 +912,11 @@ module Engine
             new_operating_round
           when Round::Operating
             if @round.round_num < @operating_rounds
+              or_round_finished
               new_operating_round(@round.round_num + 1)
             else
               @turn += 1
+              or_round_finished
               or_set_finished
               new_stock_round
             end
