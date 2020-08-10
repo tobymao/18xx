@@ -10,7 +10,7 @@ module Engine
     class BuySellParShares < Base
       include ShareBuying
 
-      PURCHASE_ACTIONS = [Action::BuyShares, Action::Par].freeze
+      PURCHASE_ACTIONS = [Action::BuyCompany, Action::BuyShares, Action::Par].freeze
 
       def actions(entity)
         return [] unless entity == current_entity
@@ -19,6 +19,7 @@ module Engine
         actions = []
         actions << 'buy_shares' if can_buy_any?(entity)
         actions << 'par' if can_ipo_any?(entity)
+        actions << 'buy_company' if purchasable_companies(entity).any?
         actions << 'sell_shares' if can_sell_any?(entity)
 
         actions << 'pass' if actions.any?
@@ -188,6 +189,14 @@ module Engine
         !bought? && @game.corporations.any? { |c| c.can_par?(entity) && can_buy?(entity, c.shares.first&.to_bundle) }
       end
 
+      def purchasable_companies(entity)
+        return [] if bought? ||
+          !entity.cash.positive? ||
+          !@game.phase.status.include?('can_buy_companies_from_other_players')
+
+        @game.purchasable_companies(entity)
+      end
+
       def get_par_prices(entity, _corp)
         @game
           .stock_market
@@ -203,7 +212,24 @@ module Engine
       end
 
       def bought?
-        @current_actions.any? { |x| PURCHASE_ACTIONS.include?(x.class) }
+        @current_actions.any? { |x| self.class::PURCHASE_ACTIONS.include?(x.class) }
+      end
+
+      def process_buy_company(action)
+        entity = action.entity
+        company = action.company
+        price = action.price
+        owner = company.owner
+
+        @game.game_error("Cannot buy #{company.name} from #{owner.name}") unless owner.player?
+
+        company.owner = entity
+        owner.companies.delete(company)
+
+        entity.companies << company
+        entity.spend(price, owner)
+        @current_actions << action
+        @log << "-- #{entity.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
       end
     end
   end
