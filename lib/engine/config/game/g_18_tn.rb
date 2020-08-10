@@ -643,6 +643,9 @@ module Engine
             "yellow",
             "green"
          ],
+         "status":[
+            "can_buy_companies"
+         ],
          "operating_rounds": 2
       },
       {

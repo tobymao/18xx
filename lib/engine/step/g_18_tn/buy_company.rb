@@ -7,7 +7,7 @@ module Engine
     module G18TN
       class BuyCompany < BuyCompany
         def can_buy_company?(entity)
-          return if super
+          return true if super
 
           companies = @game.purchasable_companies
 
