@@ -481,7 +481,10 @@ module Engine
          "tiles":[
             "yellow"
          ],
-         "operating_rounds":2
+         "operating_rounds":2,
+         "status":[
+            "can_buy_companies_operation_round_one"
+         ]
       },
       {
          "name":"3",
