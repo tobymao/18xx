@@ -483,7 +483,7 @@ module Engine
          ],
          "operating_rounds":2,
          "status":[
-            "can_buy_companies"
+            "can_buy_companies_operation_round_one"
          ]
       },
       {

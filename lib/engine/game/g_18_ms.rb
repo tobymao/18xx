@@ -18,17 +18,40 @@ module Engine
 
       HOME_TOKEN_TIMING = :operating_round
 
+      COMPANY_1_AND_2 = %w[AGS BS].freeze
+
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'can_buy_companies_operation_round_one' =>
+          ['Can Buy Companies OR 1', 'Corporations can buy AGS/BS companies for face value in OR 1'],
+      ).freeze
+
       #      def init_round
       #        Round::G18MS::Draft.new(@players.reverse, game: self)
       #      end
 
       include CompanyPrice50To150Percent
 
-      def setup
-        setup_company_price_50_to_150_percent
+      def purchasable_companies
+        companies = super
+        return companies unless @phase.status.include?('can_buy_companies_operation_round_one')
+
+        return [] if @turn > 1
+
+        companies.select do |company|
+          COMPANY_1_AND_2.include?(company.id)
+        end
       end
 
       def new_operating_round(round_num = 1)
+        # For OR 1, set company buy price to face value only
+        @companies.each do |company|
+          company.min_price = company.value
+          company.max_price = company.value
+        end if @turn == 1
+
+        # After OR 1, the company buy price is changed to 50%-150%
+        setup_company_price_50_to_150_percent if @turn == 2 && round_num == 1
+
         # Switch to phase 3 if OR1.2 is to start
         @phase.next! if @turn == 1 && round_num == 2
         super
@@ -40,7 +63,7 @@ module Engine
           Step::Exchange,
           Step::DiscardTrain,
           Step::SpecialTrack,
-          Step::BuyCompany,
+          Step::G18MS::BuyCompany,
           Step::Track,
           Step::Token,
           Step::Route,
