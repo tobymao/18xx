@@ -29,6 +29,11 @@ module Engine
       game.round
     end
 
+    def goto_new_sr!
+      game.send(:next_round!)
+      move_to_sr!
+    end
+
     describe '#can_buy?' do
       it 'can buy yellow at limit' do
         player_0.cash = 10_000
@@ -186,12 +191,10 @@ module Engine
         )
         expect_share_counts.call([5, 3, 0, 1, 2])
 
-        game.send(:next_round!)
-        game.send(:next_round!) until game.round.is_a?(Round::Stock)
-        sr2 = game.round
+        subject = goto_new_sr!
 
         bundle = game.sellable_bundles(player_0, corp).find { |b| b.percent == 30 }
-        sr2.process_action(
+        subject.process_action(
           Engine::Action::SellShares.new(player_0, shares: bundle.shares, share_price: 80, percent: 30)
         )
         expect(corp.owner).to eq(player_1)
