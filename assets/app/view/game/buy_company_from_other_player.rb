@@ -25,9 +25,9 @@ module View
           size: max,
         })
         children = [input]
-        @game.round.active_step.purchasable_companies_from_others(@game.current_entity).each do |company|
+        @game.round.active_step.purchasable_companies(@game.current_entity).each do |company|
           children << render_company_buy(input, company)
-        end if @game.round.active_step.can_buy_any_company?(@game.current_entity)
+        end
         h(:div, props, children)
       end
 

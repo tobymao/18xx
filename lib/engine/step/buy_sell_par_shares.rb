@@ -19,7 +19,7 @@ module Engine
         actions = []
         actions << 'buy_shares' if can_buy_any?(entity)
         actions << 'par' if can_ipo_any?(entity)
-        actions << 'buy_company' if can_buy_any_company?(entity)
+        actions << 'buy_company' if purchasable_companies(entity).any?
         actions << 'sell_shares' if can_sell_any?(entity)
 
         actions << 'pass' if actions.any?
@@ -189,15 +189,12 @@ module Engine
         !bought? && @game.corporations.any? { |c| c.can_par?(entity) && can_buy?(entity, c.shares.first&.to_bundle) }
       end
 
-      def purchasable_companies_from_others(entity)
-        @game.purchasable_companies.reject { |c| c.owner == entity }
-      end
+      def purchasable_companies(entity)
+        return [] if bought? ||
+          !entity.cash.positive? ||
+          !@game.phase.status.include?('can_buy_companies_from_other_players')
 
-      def can_buy_any_company?(entity)
-        !bought? &&
-        entity.cash.positive? &&
-        @game.phase.status.include?('can_buy_companies_from_other_players') &&
-        purchasable_companies_from_others(entity).any?
+        @game.purchasable_companies(entity)
       end
 
       def get_par_prices(entity, _corp)

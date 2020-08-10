@@ -490,9 +490,9 @@ module Engine
         self.class::CURRENCY_FORMAT_STR % val
       end
 
-      def purchasable_companies
+      def purchasable_companies(entity = nil)
         @companies.select do |company|
-          company.owner&.player? && !company.abilities(:no_buy)
+          company.owner&.player? && entity != company.owner && !company.abilities(:no_buy)
         end
       end
 
