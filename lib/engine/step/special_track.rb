@@ -51,7 +51,7 @@ module Engine
           .tiles
           .map { |name| @game.tiles.find { |t| t.name == name } }
           .compact
-          .select { |t| @game.phase.tiles.include?(t.color) && hex.tile.upgrades_to?(@game, t, tile_ability.special) }
+          .select { |t| @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, tile_ability.special) }
       end
 
       def ability(entity)
