@@ -19,6 +19,7 @@ module View
         orange: '#ffbb55',
         yellow: '#ffff99',
         black: '#000000',
+        gray: '#888888',
       }.freeze
 
       PAD = 5                                     # between box contents and border
@@ -52,7 +53,7 @@ module View
           color: color_for(:font2),
         )
 
-        colors_in_market = []
+        types_in_market = {}
         grid = @game.stock_market.market.flat_map do |prices|
           rows = prices.map do |price|
             if price
@@ -61,7 +62,7 @@ module View
                 style[:color] = 'gainsboro'
                 style[:borderColor] = color_for(:font)
               end
-              colors_in_market << price.color unless colors_in_market.include?(price.color)
+              types_in_market[price.type] = price.color
               corporations = price.corporations
               num = corporations.size
               spacing = num > 1 ? (RIGHT_TOKEN_POS - LEFT_TOKEN_POS) / (num - 1) : 0
@@ -96,16 +97,20 @@ module View
         children.concat(grid)
 
         if @explain_colors
-          colors_text = [
-            [:red, 'Par values'],
-            [:yellow, 'Corporation shares do not count towards cert limit'],
-            [:orange, 'Corporation shares can be held above 60%'],
-            [:brown, 'Can buy more than one share in the Corporation per turn'],
-            [:black, 'Corporation closes'],
-            [:blue, 'End game trigger'],
+          type_text = [
+            [:par, 'Par values'],
+            [:no_cert_limit, 'Corporation shares do not count towards cert limit'],
+            [:unlimited, 'Corporation shares can be held above 60%'],
+            [:multiple_buy, 'Can buy more than one share in the Corporation per turn'],
+            [:close, 'Corporation closes'],
+            [:endgame, 'End game trigger'],
+            [:liquidation, 'Liquidation'],
+            [:acquisition, 'Acquisition'],
           ]
-          colors_text.each do |color, text|
-            next unless colors_in_market.include?(color)
+          type_text.each do |type, text|
+            next unless types_in_market.include?(type)
+
+            color = types_in_market[type]
 
             style = box_style.merge(backgroundColor: COLOR_MAP[color])
             style[:borderColor] = color_for(:font) if color == :black

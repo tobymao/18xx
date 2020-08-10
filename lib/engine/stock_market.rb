@@ -110,6 +110,7 @@ module Engine
     def move(corporation, row, column)
       share_price = share_price(row, column)
       return if share_price == corporation.share_price
+      return unless share_price.normal_movement?
 
       corporation.share_price.corporations.delete(corporation)
       corporation.share_price = share_price
