@@ -77,6 +77,8 @@ module View
           event.JS.stopPropagation
 
           if actions.include?('remove_token')
+            return unless @token
+
             action = Engine::Action::RemoveToken.new(
               @selected_company || @game.current_entity,
               city: @city,
