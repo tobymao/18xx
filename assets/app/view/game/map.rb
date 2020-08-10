@@ -81,6 +81,7 @@ module View
               select_tiles = all_upgrades.map do |tile|
                 real_tile = tiles.find { |t| t.name == tile.name }
                 if real_tile
+                  tiles.delete(real_tile)
                   [real_tile, nil]
                 elsif !@game.phase.tiles.include?(tile.color)
                   [tile, 'Later Phase']
@@ -88,6 +89,9 @@ module View
                   [tile, 'None Left']
                 end
               end.compact
+
+              # Add tiles that aren't part of all_upgrades (Mitsubishi ferry)
+              select_tiles.append(*tiles.map { |t| [t, nil] })
 
               h(TileSelector, layout: @layout, tiles: select_tiles, actions: actions)
             end
