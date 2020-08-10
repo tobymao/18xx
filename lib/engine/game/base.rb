@@ -1111,7 +1111,7 @@ module Engine
         @all_tiles
           .select { |t| colors.include?(t.color) }
           .uniq(&:name)
-          .select { |t| tile.upgrades_to?(t) }
+          .select { |t| upgrades_to?(tile, t) }
           .reject(&:blocks_lay)
       end
     end
