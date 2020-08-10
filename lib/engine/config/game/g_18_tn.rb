@@ -212,6 +212,7 @@ module Engine
             },
             {
                "type":"tile_lay",
+               "free":true,
                "owner_type":"corporation",
                "hexes":[
                   "H17"
@@ -241,6 +242,7 @@ module Engine
             },
             {
                "type":"tile_lay",
+               "free":true,
                "owner_type":"corporation",
                "hexes":[
                   "F19"
@@ -270,6 +272,7 @@ module Engine
             },
             {
                "type":"tile_lay",
+               "free":true,
                "owner_type":"corporation",
                "hexes":[
                   "H3"
@@ -299,6 +302,7 @@ module Engine
             },
             {
                "type":"tile_lay",
+               "free":true,
                "owner_type":"corporation",
                "hexes":[
                   "E16"
@@ -416,12 +420,23 @@ module Engine
          "distance":3,
          "price":180,
          "rusts_on":"6",
-         "num":5
+         "num":3
+      },
+      {
+         "name":"3'",
+         "distance":3,
+         "price":180,
+         "rusts_on":"6",
+         "num":2,
+         "events":[
+           {"type": "civil_war"}
+         ]
       },
       {
          "name":"4",
          "distance":4,
          "price":300,
+         "obsolete_on":"6'",
          "num":3
       },
       {
@@ -437,7 +452,13 @@ module Engine
          "name":"6",
          "distance":6,
          "price":600,
-         "num":2
+         "num":1
+      },
+      {
+         "name":"6'",
+         "distance":6,
+         "price":600,
+         "num":1
       },
       {
          "name":"8",
@@ -506,9 +527,6 @@ module Engine
             "I16",
             "J13"
          ],
-         "city=revenue:0;label=P;upgrade=cost:40,terrain:water":[
-            "F11"
-         ],
          "upgrade=cost:120,terrain:mountain":[
             "F19",
             "H17",
@@ -516,7 +534,7 @@ module Engine
             "G18",
             "G20"
          ],
-         "city=revenue:0;label=P;upgrade=cost:60,terrain:water":[
+         "city=revenue:0;upgrade=cost:60,terrain:water":[
             "H3"
          ],
          "town=revenue:0;upgrade=cost:40,terrain:water":[
@@ -565,10 +583,13 @@ module Engine
          "town=revenue:10;path=a:0,b:_0;path=a:_0,b:3":[
             "D11"
          ],
+         "city=revenue:0;label=N;upgrade=cost:40,terrain:water":[
+            "F11"
+         ],
          "city=revenue:20;path=a:3,b:_0;path=a:5,b:_0":[
             "G6"
          ],
-         "city=revenue:20;path=a:1,b:_0;path=a:5,b:_0;label=P":[
+         "city=revenue:20;path=a:1,b:_0;path=a:5,b:_0;label=C":[
             "H15"
          ]
       }
@@ -581,11 +602,14 @@ module Engine
             "yellow"
          ],
          "status":[
-            {"type": "limited_train_buy"}
-         ]
+            "can_buy_companies_operation_round_one",
+            "limited_train_buy"
+         ],
+         "operating_rounds": 1
       },
       {
          "name":"3",
+         "on":"3",
          "train_limit":4,
          "tiles":[
             "yellow",
@@ -594,43 +618,80 @@ module Engine
          "status":[
             "can_buy_companies",
             "limited_train_buy"
-         ]
+         ],
+         "operating_rounds": 2
+      },
+      {
+         "name":"3½",
+         "on":"3'",
+         "train_limit":4,
+         "tiles":[
+            "yellow",
+            "green"
+         ],
+         "status":[
+            "can_buy_companies",
+            "limited_train_buy"
+         ],
+         "operating_rounds": 2
       },
       {
          "name":"4",
+         "on":"4",
          "train_limit":3,
          "tiles":[
             "yellow",
             "green"
-         ]
+         ],
+         "status":[
+            "can_buy_companies"
+         ],
+         "operating_rounds": 2
       },
       {
          "name":"5",
+         "on":"5",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
             "brown"
-         ]
+         ],
+         "operating_rounds": 3
       },
       {
          "name":"6",
+         "on":"6",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
             "brown"
-         ]
+         ],
+         "operating_rounds": 3
+      },
+      {
+         "name":"6½",
+         "on":"6'",
+         "train_limit":2,
+         "tiles":[
+            "yellow",
+            "green",
+            "brown"
+         ],
+         "operating_rounds": 3
       },
       {
          "name":"8",
+         "on":"8",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
             "brown",
             "gray"
-         ]
+         ],
+         "operating_rounds": 3
       }
    ]
 }

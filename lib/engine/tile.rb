@@ -206,29 +206,6 @@ module Engine
       @upgrades.flat_map(&:terrains).uniq
     end
 
-    def upgrades_to?(other, special = false)
-      # correct color progression?
-      return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)
-
-      # honors pre-existing track?
-      return false unless paths_are_subset_of?(other.paths)
-
-      # If special ability then remaining checks is not applicable
-      return true if special
-
-      # correct label?
-      return false if label != other.label
-
-      # honors existing town/city counts?
-      # - allow labelled cities to upgrade regardless of count; they're probably
-      #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
-      # - TODO: account for games that allow double dits to upgrade to one town
-      return false if @towns.size != other.towns.size
-      return false if !label && @cities.size != other.cities.size
-
-      true
-    end
-
     def paths_are_subset_of?(other_paths)
       ALL_EDGES.any? do |ticks|
         @paths.all? do |path|

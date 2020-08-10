@@ -146,6 +146,13 @@ module Engine
         'Cecilia' => 2498,
       },
     },
+    GAMES_BY_TITLE['18TN'] => {
+      4715 => {
+        'Player 3' => 5838,
+        'Player 1' => 5422,
+        'Player 2' => 5320,
+      },
+    },
   }.freeze
 
   TEST_CASES.each do |game, results|
