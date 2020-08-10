@@ -8,13 +8,10 @@ module Engine
       def buy_shares(entity, shares, exchange: nil, exchange_price: nil)
         super
 
-        return if @game.turn != 1
+        return if shares.corporation.id != 'L&N' || !@game.lnr.owner
 
-        lnr = @game.company_by_id('LNR')
-        return if !lnr || !lnr.owner
-
-        lnr.close!
-        @log << "#{lnr.name} private company closes as par set"
+        @game.lnr.close!
+        @log << "#{@game.lnr.name} private company closes as par set for #{shares.corporation.name}"
       end
     end
   end
