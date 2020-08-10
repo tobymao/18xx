@@ -23,6 +23,8 @@ module Engine
         @game.must_buy_train?(entity)
       end
 
+      def should_buy_train?(entity); end
+
       def buy_train_action(action, entity = nil)
         entity ||= action.entity
         train = action.train
