@@ -18,25 +18,23 @@ module View
             render_input(key, id: key, el: 'select', on: { input2: :limit_range }, children: values)
           end
         end
-
       end
+
       def render_content
         message = <<~MESSAGE
-        <p>Auto allows you to preprogram your moves ahead of time.</p>
-        <p>As soon as your action is unable to be completed it will be deactivated, and you will need to do your turn.</p>
-        <p>These will be done a few minutes after the previous player has acted.</p>
-        <p>This is presently in development, and so only some actions are available in the stock round.</p>
+          <p>Auto allows you to preprogram your moves ahead of time.</p>
+          <p>As soon as your action is unable to be completed it will be deactivated, and you will need to do your turn.</p>
+          <p>These will be done a few minutes after the previous player has acted.</p>
+          <p>This is presently in development, and so only some actions are available in the stock round.</p>
         MESSAGE
 
         h(:div, '')
 
-        actions =
-
         action_options = [mode_input(nil, 'None')]
 
-        Engine::Automation::available(@game).each do |x|
+        Engine::Automation.available(@game).each do |x|
           action_options << mode_input(x, x.description)
-          action_options += render_selected if x==@mode
+          action_options += render_selected if x == @mode
         end
 
         props = {
@@ -45,21 +43,20 @@ module View
         }
 
         children = [h(:div, props),
-        h(:div, action_options),
-        render_button('Save') { submit },]
+                    h(:div, action_options),
+                    render_button('Save') { submit }]
 
         h(:div, children)
-
       end
 
       def submit
         # Map the parameters back
         puts "Submit! #{params}"
-        fparams = @mode.parameters(@game).map do |k,value|
+        fparams = @mode.parameters(@game).map do |k, value|
           selected = params[k]
           case value
           when Array
-            selected = value.find {|entity| entity.name == selected}
+            selected = value.find { |entity| entity.name == selected }
           end
           [k, selected]
         end.to_h
@@ -81,7 +78,7 @@ module View
           attrs: { name: 'mode_options', checked: @mode == mode },
           on: { click: click_handler },
           label_first: false,
-          container_style: { display: 'block'},
+          container_style: { display: 'block' },
         )
       end
     end

@@ -17,9 +17,8 @@ module Engine
       end
 
       def self.h_to_args(h, game)
-        entity = game.get(h['entity_type'], h['entity'])
         {
-          entity: h['shares'].map { |id| game.share_by_id(id) },
+          entity: game.get(h['entity_type'], h['entity']),
         }
       end
 
@@ -31,18 +30,18 @@ module Engine
       end
 
       def self.available(game)
-        (game.turn == 1) && game.corporations.any? {|e| !e.floated? && e.ipoed }
+        (game.turn == 1) && game.corporations.any? { |e| !e.floated? && e.ipoed }
       end
 
       def self.parameters(game)
-        {:entity => game.corporations.select {|e| !e.floated? && e.ipoed }}
+        { entity: game.corporations.select { |e| !e.floated? && e.ipoed } }
       end
 
       def precondition(game)
-        raise GameError, 'Not first round' unless (game.turn == 1)
-        raise GameError, 'Not stock round' unless (game.round.is_a?(Round::Stock))
-        raise GameError, 'Floated' if (entity.floated?)
-        raise GameError, 'Not IPOed' unless (entity.ipoed)
+        raise GameError, 'Not first round' unless game.turn == 1
+        raise GameError, 'Not stock round' unless game.round.is_a?(Round::Stock)
+        raise GameError, 'Floated' if entity.floated?
+        raise GameError, 'Not IPOed' unless entity.ipoed
       end
 
       def _run(game)

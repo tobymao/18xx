@@ -9,9 +9,9 @@ module Engine
 
       attr_reader :id, :disabled
 
-# {enabled_action_id:101, type:'buy_until_float', entity:'SR', disabled: "Exited stock round"}
-#
-#
+      # {enabled_action_id:101, type:'buy_until_float', entity:'SR', disabled: "Exited stock round"}
+      #
+      #
       def self.from_h(h, game)
         new(id: h['id'], disabled: h['disabled'], **h_to_args(h, game))
       end
@@ -28,7 +28,7 @@ module Engine
         klass.name.split('::')
       end
 
-      def initialize(id:, disabled:false)
+      def initialize(id:, disabled: false)
         @id = id # Marker of where this is processed up to
         @disabled = disabled
       end
@@ -55,11 +55,13 @@ module Engine
       end
 
       def run(game)
+        return if @disabled
+
         begin
           precondition(game)
           _run(game)
-        rescue GameError => a
-          @disabled = a.to_s
+        rescue GameError => e
+          @disabled = e.to_s
         end
       end
     end

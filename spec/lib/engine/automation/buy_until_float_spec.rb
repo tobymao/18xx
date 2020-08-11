@@ -13,7 +13,7 @@ module Engine
       let(:game) { Game::G1889.new(%w[a b]) }
       let(:corporation) { game.corporations.first }
       let(:player) { game.players.first }
-      let(:subject) { BuyUntilFloat.new(entity: corporation, id:101)}
+      let(:subject) { BuyUntilFloat.new(entity: corporation, id: 101) }
 
       def move_to_sr!
         # Move the game into an SR
@@ -24,18 +24,13 @@ module Engine
       end
 
       def pass_until_player
-        while game.current_entity != player
-          game.process_action(Action::Pass.new(game.round.current_entity))
-        end
+        game.process_action(Action::Pass.new(game.round.current_entity)) while game.current_entity != player
       end
 
       describe '#run' do
         it 'disables when not in a stock round' do
           subject.run(game)
           expect(subject.disabled).to be_a(String)
-          $stderr.puts subject.disabled
-          $stderr.puts Automation::AUTOMATIONS
-          $stderr.puts Automation::available(game).size
         end
         it 'disabled when the company has not ipoed' do
           move_to_sr!
@@ -45,7 +40,8 @@ module Engine
         it 'buys when in stock round and company is not floated' do
           move_to_sr!
           pass_until_player
-          game.process_action(Action::Par.new(player, corporation: corporation, share_price: game.stock_market.par_prices.last))
+          par = Action::Par.new(player, corporation: corporation, share_price: game.stock_market.par_prices.last)
+          game.process_action(par)
 
           expect(corporation.ipoed).to be true
           owned = player.num_shares_of(corporation)
@@ -59,14 +55,14 @@ module Engine
         it 'disables when company is floated' do
           move_to_sr!
           pass_until_player
-          player.cash = 10000
-          game.process_action(Action::Par.new(player, corporation: corporation, share_price: game.stock_market.par_prices.last))
+          player.cash = 10_000
+          par = Action::Par.new(player, corporation: corporation, share_price: game.stock_market.par_prices.last)
+          game.process_action(par)
 
           expect(corporation.ipoed).to be true
           owned = player.num_shares_of(corporation)
-          while !corporation.floated?
+          until corporation.floated?
             pass_until_player
-            $stderr.puts player.cash
 
             subject.run(game)
             expect(subject.disabled).to be false
@@ -78,7 +74,6 @@ module Engine
           subject.run(game)
 
           expect(subject.disabled).to be_a(String)
-          $stderr.puts subject.disabled
         end
       end
     end
