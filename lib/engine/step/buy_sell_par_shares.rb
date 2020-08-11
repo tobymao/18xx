@@ -2,6 +2,7 @@
 
 require_relative 'base'
 require_relative 'share_buying'
+require_relative '../action/buy_company.rb'
 require_relative '../action/buy_shares'
 require_relative '../action/par'
 
