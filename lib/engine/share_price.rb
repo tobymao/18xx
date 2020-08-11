@@ -10,22 +10,22 @@ module Engine
       price = code.scan(/\d/).join('').to_i
 
       color, type =
-        case
-        when code.include?('p')
+        case code
+        when /p/
           %i[red par]
-        when code.include?('e')
+        when /e/
           %i[blue endgame]
-        when code.include?('c')
+        when /c/
           %i[black close]
-        when code.include?('b')
+        when /b/
           %i[brown multiple_buy]
-        when code.include?('o')
+        when /o/
           %i[orange unlimited]
-        when code.include?('y')
+        when /y/
           %i[yellow no_cert_limit]
-        when code.include?('l')
+        when /l/
           %i[red liquidation]
-        when code.include?('a')
+        when /a/
           %i[gray acquisition]
         end
 
