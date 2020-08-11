@@ -211,6 +211,7 @@ module Engine
    "corporations":[
       {
          "float_percent":60,
+         "max_ownership_percent":70,
          "sym":"GMO",
          "name":"Gulf, Mobile and Ohio Railroad",
          "logo":"18_ms/GMO",
@@ -225,6 +226,7 @@ module Engine
       },
       {
          "float_percent":60,
+         "max_ownership_percent":70,
          "sym":"IC",
          "name":"Illinois Central Railroad",
          "logo":"18_ms/IC",
@@ -238,6 +240,7 @@ module Engine
       },
       {
          "float_percent":60,
+         "max_ownership_percent":70,
          "sym":"L&N",
          "name":"Louisville and Nashville Railroad",
          "logo":"18_ms/LN",
@@ -251,6 +254,7 @@ module Engine
       },
       {
          "float_percent":60,
+         "max_ownership_percent":70,
          "sym":"Fr",
          "name":"Frisco",
          "logo":"18_ms/Fr",
@@ -264,6 +268,7 @@ module Engine
       },
       {
          "float_percent":60,
+         "max_ownership_percent":70,
          "sym":"WRA",
          "name":"Western Railway of Alabama",
          "logo":"18_ms/WRA",

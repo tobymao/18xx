@@ -45,6 +45,7 @@ module Engine
       @cash = 0
       @capitalization = opts[:capitalization] || :full
       @float_percent = opts[:float_percent] || 60
+      @max_ownership_percent = opts[:max_ownership_percent] || 60
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
@@ -137,7 +138,7 @@ module Engine
     # Is it legal to hold percent shares in this corporation?
     def holding_ok?(share_holder, extra_percent = 0)
       percent = share_holder.percent_of(self) + extra_percent
-      %i[orange brown].include?(@share_price&.color) || percent <= 60
+      %i[orange brown].include?(@share_price&.color) || percent <= @max_ownership_percent
     end
 
     def all_abilities
