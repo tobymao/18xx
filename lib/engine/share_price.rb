@@ -2,8 +2,7 @@
 
 module Engine
   class SharePrice
-    attr_reader :coordinates, :price, :color, :corporations, :can_par, :end_game_trigger,
-                :type
+    attr_reader :coordinates, :price, :color, :corporations, :can_par, :type
 
     def self.from_code(code, row, column, unlimited_colors, multiple_buy_colors: [])
       return nil if !code || code == ''
@@ -16,7 +15,7 @@ module Engine
           %i[red par]
         when code.include?('e')
           %i[blue endgame]
-        when code.include?('blk')
+        when code.include?('c')
           %i[black close]
         when code.include?('b')
           %i[brown multiple_buy]
@@ -48,10 +47,6 @@ module Engine
       @price = price
       @color = color
       @type = type
-      @can_par = type == :par
-      @end_game_trigger = type == :endgame
-      @acquisition = type == :acquisition
-      @liquidation = type == :liquidation
       @corporations = []
       @unlimited_colors = unlimited_colors
       @multiple_buy_colors = multiple_buy_colors
@@ -73,9 +68,25 @@ module Engine
       "#{self.class.name} - #{@price} #{@coordinates}"
     end
 
+    def can_par?
+      @type == :par
+    end
+
+    def end_game_trigger?
+      @type == :endgame
+    end
+
+    def liquidation?
+      @type == :liquidation
+    end
+
+    def acquisition?
+      @type == :acquisition
+    end
+
     def normal_movement?
       # Can be moved into normally, rather than something custom such as not owning a train.
-      !@liquidation
+      @type != :liquidation
     end
   end
 end

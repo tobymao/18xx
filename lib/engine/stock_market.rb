@@ -15,7 +15,7 @@ module Engine
                                        c_index,
                                        unlimited_colors,
                                        multiple_buy_colors: multiple_buy_colors)
-          @par_prices << price if price&.can_par
+          @par_prices << price if price&.can_par?
           price
         end
       end
@@ -114,7 +114,7 @@ module Engine
 
       corporation.share_price.corporations.delete(corporation)
       corporation.share_price = share_price
-      @max_reached = true if share_price.end_game_trigger
+      @max_reached = true if share_price.end_game_trigger?
       share_price.corporations << corporation
     end
   end
