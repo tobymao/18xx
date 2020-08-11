@@ -32,6 +32,7 @@ module Engine
 
         @mobile_city_brown ||= @tiles.find { |t| t.name == 'X31b' }
         @gray_tile ||= @tiles.find { |t| t.name == '446' }
+        @recently_floated = []
       end
 
       def operating_round(round_num)
@@ -51,12 +52,18 @@ module Engine
         ], round_num: round_num)
       end
 
+      def or_round_finished
+        @recently_floated = []
+
+        super
+      end
+
       def revenue_for(route)
         # Diesels double to normal revenue
         route.train.name.end_with?('D') ? 2 * super : super
       end
 
-      def upgrades_to?(from, to, special = false)
+      def upgrades_to?(from, to, _special = false)
         # Only allow tile gray tile (446) in Montgomery (E11) or Birmingham (C9)
         return to.name == '446' if from.color == :brown && HEXES_FOR_GRAY_TILE.include?(from.hex.name)
 
@@ -78,6 +85,18 @@ module Engine
         upgrades |= [@gray_tile] if @gray_tile && tile.name == '63'
 
         upgrades
+      end
+
+      def float_corporation(corporation)
+        @recently_floated << corporation
+
+        super
+      end
+
+      def tile_lays(entity)
+        return super unless @recently_floated.include?(entity)
+
+        [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
       end
     end
   end
