@@ -601,6 +601,8 @@ module Engine
         end
       end
 
+      def sr_finished; end
+
       def or_round_finished; end
 
       def or_set_finished; end
@@ -932,6 +934,7 @@ module Engine
           when Round::Stock
             @operating_rounds = @phase.operating_rounds
             reorder_players
+            sr_finished
             new_operating_round
           when Round::Operating
             if @round.round_num < @operating_rounds

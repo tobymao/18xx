@@ -32,6 +32,10 @@ module Engine
 
       include CompanyPrice50To150Percent
 
+      def setup
+        @previously_floated_corporations = []
+      end
+
       def purchasable_companies
         companies = super
         return companies unless @phase.status.include?('can_buy_companies_operation_round_one')
@@ -56,6 +60,7 @@ module Engine
 
         # Switch to phase 3 if OR1.2 is to start
         @phase.next! if @turn == 1 && round_num == 2
+
         super
       end
 
@@ -82,6 +87,23 @@ module Engine
         when 4 then rust('3+', 30)
         when 5 then rust('4+', 60)
         end
+      end
+
+      def sr_finished
+        # Check for any newly floated corporations
+        @newly_floated_corporations = []
+        @corporations.each do |c|
+          next if !c.floated? || @previously_floated_corporations.include?(c)
+
+          @newly_floated_corporations << c
+          @previously_floated_corporations << c
+        end
+      end
+
+      def tile_lays(entity)
+        return super unless @newly_floated_corporations&.include?(entity)
+
+        [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
       end
 
       private
