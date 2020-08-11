@@ -36,8 +36,13 @@ module Engine
         @previously_floated_corporations = []
       end
 
-      def purchasable_companies
-        companies = super
+      def purchasable_companies(entity = nil)
+        entity ||= current_entity
+        # Only companies owned by the president may be bought
+        companies = super.reject do |c|
+          entity.corporation? && entity.player == c.player
+        end
+
         return companies unless @phase.status.include?('can_buy_companies_operation_round_one')
 
         return [] if @turn > 1
