@@ -45,6 +45,7 @@ module Engine
 
       def new_operating_round(round_num = 1)
         # For OR 1, set company buy price to face value only
+
         @companies.each do |company|
           company.min_price = company.value
           company.max_price = company.value
@@ -86,16 +87,13 @@ module Engine
       private
 
       def rust(train, salvage_value)
-        rusted_trains = []
-        trains.each do |t|
-          next if t.rusted || t.name != train
+        rusted_trains = trains.select { |t| !t.rusted && t.name == train }
+        return if rusted_trains.empty?
 
-          rusted_trains << t.name
+        rusted_trains.each do |t|
           @bank.spend(salvage_value, t.owner)
           t.rust!
         end
-
-        return unless rusted_trains.any?
 
         @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --"
         @log << "Corporations received a salvage value of #{format_currency(salvage_value)} per rusted train"
