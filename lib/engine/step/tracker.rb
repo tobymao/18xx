@@ -55,7 +55,7 @@ module Engine
         tile.rotate!(rotation)
 
         @game.game_error("#{old_tile.name} is not upgradeable to #{tile.name}")\
-          unless old_tile.upgrades_to?(tile, entity.company?)
+          unless @game.upgrades_to?(old_tile, tile, entity.company?)
         if !@game.loading && !legal_tile_rotation?(entity, hex, tile)
           @game.game_error("#{old_tile.name} is not legally rotated for #{tile.name}")
         end
@@ -188,7 +188,7 @@ module Engine
         @game.tiles
           .select { |tile| colors.include?(tile.color) }
           .uniq(&:name)
-          .select { |t| hex.tile.upgrades_to?(t) }
+          .select { |t| @game.upgrades_to?(hex.tile, t) }
           .reject(&:blocks_lay)
       end
 

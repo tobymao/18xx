@@ -491,9 +491,9 @@ module Engine
         self.class::CURRENCY_FORMAT_STR % val
       end
 
-      def purchasable_companies
+      def purchasable_companies(entity = nil)
         @companies.select do |company|
-          company.owner&.player? && !company.abilities(:no_buy)
+          company.owner&.player? && entity != company.owner && !company.abilities(:no_buy)
         end
       end
 
@@ -601,6 +601,8 @@ module Engine
         end
       end
 
+      def or_round_finished; end
+
       def or_set_finished; end
 
       def home_token_locations(_corporation)
@@ -676,6 +678,29 @@ module Engine
       def tile_lays(_entity)
         # Some games change available lays depending on if minor or corp
         self.class::TILE_LAYS
+      end
+
+      def upgrades_to?(from, to, special = false)
+        # correct color progression?
+        return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
+
+        # honors pre-existing track?
+        return false unless from.paths_are_subset_of?(to.paths)
+
+        # If special ability then remaining checks is not applicable
+        return true if special
+
+        # correct label?
+        return false if from.label != to.label
+
+        # honors existing town/city counts?
+        # - allow labelled cities to upgrade regardless of count; they're probably
+        #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
+        # - TODO: account for games that allow double dits to upgrade to one town
+        return false if from.towns.size != to.towns.size
+        return false if !from.label && from.cities.size != to.cities.size
+
+        true
       end
 
       def game_error(msg)
@@ -910,9 +935,11 @@ module Engine
             new_operating_round
           when Round::Operating
             if @round.round_num < @operating_rounds
+              or_round_finished
               new_operating_round(@round.round_num + 1)
             else
               @turn += 1
+              or_round_finished
               or_set_finished
               new_stock_round
             end
@@ -1084,7 +1111,7 @@ module Engine
         @all_tiles
           .select { |t| colors.include?(t.color) }
           .uniq(&:name)
-          .select { |t| tile.upgrades_to?(t) }
+          .select { |t| upgrades_to?(tile, t) }
           .reject(&:blocks_lay)
       end
     end
