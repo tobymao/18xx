@@ -31,7 +31,7 @@ module Engine
       HEX_WITH_P_LABEL = %w[F11 H3 H15].freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-        'civil_war' => ['Civil War', 'Companies with trains loose revenue of one train its next OR']
+        'civil_war' => ['Civil War', 'Companies with trains lose revenue of one train its next OR']
       ).freeze
 
       include CompanyPrice50To150Percent
