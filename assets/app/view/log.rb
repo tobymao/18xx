@@ -53,9 +53,7 @@ module View
         if line.is_a?(String)
           if line.start_with?('--')
             line_props[:style][:fontWeight] = 'bold'
-            if index > 0
-              line_props[:style][:marginTop] = '0.5em'
-            end 
+            line_props[:style][:marginTop] = '0.5em' if index > 0 
           end
           h(:div, line_props, line)
         elsif line.is_a?(Engine::Action::Message)
