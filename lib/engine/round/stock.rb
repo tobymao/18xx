@@ -75,7 +75,7 @@ module Engine
       end
 
       def sold_out?(corporation)
-        corporation.share_holders.values.sum == 100
+        corporation.player_share_holders.values.sum == 100
       end
     end
   end

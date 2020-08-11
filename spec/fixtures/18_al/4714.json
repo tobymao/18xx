@@ -209,6 +209,22 @@
       ]
     },
     {
+      "type": "buy_company",
+      "entity": "Adam",
+      "entity_type": "player",
+      "id": 20.1,
+      "company": "NDY",
+      "price": 1
+    },
+    {
+      "type": "buy_company",
+      "entity": "Cecilia",
+      "entity_type": "player",
+      "id": 20.2,
+      "company": "NDY",
+      "price": 1
+    },
+    {
       "type": "buy_shares",
       "entity": "Daisy",
       "entity_type": "player",
@@ -227,6 +243,18 @@
       ]
     },
     {
+      "type": "pass",
+      "entity": "Adam",
+      "entity_type": "player",
+      "id": 22.1
+    },
+    {
+      "type": "pass",
+      "entity": "Cecilia",
+      "entity_type": "player",
+      "id": 22.2
+    },
+    {
       "type": "buy_shares",
       "entity": "Daisy",
       "entity_type": "player",
@@ -234,6 +262,30 @@
       "shares": [
         "ATN_4"
       ]
+    },
+    {
+      "type": "pass",
+      "entity": "Bertil",
+      "entity_type": "player",
+      "id": 23.1
+    },
+    {
+      "type": "pass",
+      "entity": "Adam",
+      "entity_type": "player",
+      "id": 23.2
+    },
+    {
+      "type": "pass",
+      "entity": "Cecilia",
+      "entity_type": "player",
+      "id": 23.3
+    },
+    {
+      "type": "pass",
+      "entity": "Daisy",
+      "entity_type": "player",
+      "id": 23.4
     },
     {
       "type": "lay_tile",

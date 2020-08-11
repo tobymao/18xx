@@ -55,6 +55,12 @@ module Engine
         'Player 2' => 0,
         'Player 3' => 0,
       },
+      'hs_cbxfbqwe_5779' => {
+        'Player 1' => 2180,
+        'Player 2' => 2091,
+        'Player 3' => 1110,
+        'Player 4' => 1589,
+      },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
       3055 => {
@@ -125,6 +131,12 @@ module Engine
         'nigelsandwich' => 4222,
         'ryu' => 2260,
       },
+      5585 => {
+        'Kerubin08' => 6222,
+        'lychenus' => 5045,
+        'ryu' => 4889,
+        'kiwijohn' => 3237,
+      },
     },
     GAMES_BY_TITLE['18AL'] => {
       4714 => {
@@ -132,6 +144,13 @@ module Engine
         'Bertil' => 2836,
         'Daisy' => 2522,
         'Cecilia' => 2498,
+      },
+    },
+    GAMES_BY_TITLE['18TN'] => {
+      4715 => {
+        'Player 3' => 5838,
+        'Player 1' => 5422,
+        'Player 2' => 5320,
       },
     },
   }.freeze

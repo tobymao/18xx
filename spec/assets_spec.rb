@@ -18,7 +18,11 @@ describe 'Assets' do
     end
 
     it 'renders home logged in' do
-      expect(render(user: { name: 'toby' })).to include('Welcome toby!')
+      expect(render(user: { name: 'toby', settings: { consent: true } })).to include('Welcome toby!')
+    end
+
+    it 'consent logged in' do
+      expect(render(user: { name: 'toby' })).to include('I agree to the privacy policy')
     end
 
     it 'renders about' do
@@ -116,6 +120,7 @@ describe 'Assets' do
         user: {
           id: 1,
           name: 'Player 1',
+          settings: { consent: true },
         },
       }
 
@@ -156,6 +161,7 @@ describe 'Assets' do
       ['1846', 3099, 53, 'issue_shares', '1846: Operating Round 1.1 (of 2) - Issue or Redeem Shares'],
       ['1846', 3099, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
       ['18_al', 4714, nil, 'endgame', '18AL: Operating Round 7.2 (of 3) - Game Over - Company hit max stock value'],
+      ['18_tn', 4715, nil, 'endgame', '18TN: Operating Round 7.2 (of 3) - Game Over - Bank Broken'],
     ].freeze
 
     def render_game(jsonfile, no_actions, string)
@@ -164,7 +170,7 @@ describe 'Assets' do
       data[:loaded] = true
       needs = {
         game_data: data,
-        user: data['user'],
+        user: data['user'].merge(settings: { consent: true }),
         disable_user_errors: true,
       }
 

@@ -35,9 +35,18 @@ module Engine
         bundle = shares.take(index + 1)
         percent = bundle.sum(&:percent)
         bundles = [Engine::ShareBundle.new(bundle, percent)]
-        bundles.insert(0, Engine::ShareBundle.new(bundle, percent - 10)) if share.president
+        if share.president
+          normal_percent = corporation.share_percent
+          difference = corporation.presidents_percent - normal_percent
+          num_partial_bundles = difference / normal_percent
+          (1..num_partial_bundles).each do |n|
+            bundles.insert(0, Engine::ShareBundle.new(bundle, percent - (normal_percent * n)))
+          end
+        end
         bundles
       end
+
+      bundles
     end
 
     def dumpable_bundles(corporation)

@@ -29,10 +29,13 @@ module Engine
     def initialize(sym:, name:, **opts)
       @name = sym
       @full_name = name
-      [
+      shares = [
         Share.new(self, president: true, percent: 20),
         *8.times.map { |index| Share.new(self, percent: 10, index: index + 1) },
-      ].each { |share| shares_by_corporation[self] << share }
+      ]
+      shares.each { |share| shares_by_corporation[self] << share }
+      @presidents_share = shares.first
+      @second_share = shares[1]
 
       @share_price = nil
       @par_price = nil
@@ -85,15 +88,19 @@ module Engine
     end
 
     def num_player_shares
-      share_holders.values.sum / 10
+      player_share_holders.values.sum / 10
     end
 
     def num_market_shares
-      10 - num_ipo_shares - num_player_shares
+      share_holders.select { |s_h, _| s_h.share_pool? }.values.sum / 10
     end
 
     def share_holders
       @share_holders ||= Hash.new(0)
+    end
+
+    def player_share_holders
+      share_holders.select { |s_h, _| s_h.player? }
     end
 
     def id
@@ -134,8 +141,8 @@ module Engine
 
     def all_abilities
       all = @companies.flat_map(&:all_abilities)
-      @abilities.each do |type, _|
-        abilities(type) { |ability| all << ability }
+      @abilities.each do |ability|
+        abilities(ability.type) { |a| all << a }
       end
       all
     end
@@ -166,6 +173,14 @@ module Engine
 
     def available_share
       shares_by_corporation[self].find { |share| !share.president }
+    end
+
+    def presidents_percent
+      @presidents_share.percent
+    end
+
+    def share_percent
+      @second_share.percent
     end
   end
 end

@@ -48,6 +48,8 @@ class App < Snabberb::Component
     refresh_user
     js_handlers
 
+    needs_consent = @user && !@user.dig('settings', 'consent')
+
     page =
       case @app_route
       when /new_game/
@@ -73,6 +75,8 @@ class App < Snabberb::Component
       else
         h(View::Home, user: @user)
       end
+
+    page = h(View::About, needs_consent: true) if needs_consent
 
     h('div#content', [page])
   end

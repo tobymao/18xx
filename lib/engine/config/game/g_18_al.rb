@@ -645,7 +645,7 @@ module Engine
          ]
       },
       "red":{
-         "city=revenue:yellow_40|brown_50;path=a:0,b:_0;path=a:1,b:_0":[
+         "city=revenue:yellow_40|brown_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1":[
             "A4"
          ],
          "offboard=revenue:yellow_40|brown_30;path=a:5,b:_0":[
@@ -660,7 +660,7 @@ module Engine
          "offboard=revenue:yellow_30|brown_40;path=a:2,b:_0;path=a:3,b:_0":[
             "P7"
          ],
-         "city=revenue:yellow_40|brown_50;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0":[
+         "city=revenue:yellow_40|brown_50;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1":[
             "Q2"
          ]
       },
@@ -697,7 +697,11 @@ module Engine
          "tiles":[
             "yellow"
          ],
-         "operating_rounds": 1
+         "operating_rounds": 1,
+         "status":[
+            "can_buy_companies_from_other_players",
+            "limited_train_buy"
+         ]
       },
       {
          "name":"3",
@@ -707,7 +711,11 @@ module Engine
             "yellow",
             "green"
          ],
-         "buy_companies":true,
+         "status":[
+            "can_buy_companies",
+            "can_buy_companies_from_other_players",
+            "limited_train_buy"
+         ],
          "operating_rounds": 2
       },
       {
@@ -718,7 +726,11 @@ module Engine
             "yellow",
             "green"
          ],
-         "buy_companies":true,
+         "status":[
+            "can_buy_companies",
+            "can_buy_companies_from_other_players",
+            "limited_train_buy"
+         ],
          "operating_rounds": 2
       },
       {

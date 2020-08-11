@@ -12,7 +12,7 @@ module Engine
       load_from_json(Config::Game::G18AL::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
 
       GAME_LOCATION = 'Alabama, USA'
       GAME_RULES_URL = 'http://www.diogenes.sacramento.ca.us/18AL_Rules_v1_64.pdf'
@@ -23,6 +23,12 @@ module Engine
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'remove_tokens' => ['Remove Tokens', 'Warrior Coal Field token removed']
+      ).freeze
+
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'can_buy_companies_from_other_players' => ['Interplayer Company Buy', 'Companies can be bought between players']
+      ).merge(
+        Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
       ).freeze
 
       ROUTE_BONUSES = %i[atlanta_birmingham mobile_nashville].freeze

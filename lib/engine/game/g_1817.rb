@@ -34,6 +34,56 @@ module Engine
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
+      SEED_MONEY = 200
+      MUST_BUY_TRAIN = :never
+
+      def new_auction_round
+        log << "Seed Money for initial auction is #{format_currency(SEED_MONEY)}"
+        Round::Auction.new(self, [
+          Step::G1817::SelectionAuction,
+        ])
+      end
+
+      # Two lays with one being an upgrade, second tile costs 20
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
+
+      def stock_round
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::HomeToken,
+          # @todo: This needs customization
+          Step::BuySellParShares,
+        ])
+      end
+
+      def operating_round(round_num)
+        Round::Operating.new(self, [
+          Step::Bankrupt,
+          Step::BuyCompany, # @todo: remove
+          Step::DiscardTrain,
+          Step::G1817::Track,
+          Step::Token,
+          Step::Route,
+          Step::G1817::Dividend,
+          Step::G1817::BuyTrain,
+          # @todo: pay fees on loans, repay loans
+          # @todo: check for liquidation
+        ], round_num: round_num)
+      end
+
+      def or_round_finished
+        if @depot.upcoming.first.name == '2'
+          depot.export_all!('2')
+        else
+          depot.export!
+        end
+      end
+
+      def home_token_locations(corporation)
+        hexes.select do |hex|
+          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+        end
+      end
     end
   end
 end

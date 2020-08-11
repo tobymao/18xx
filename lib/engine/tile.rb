@@ -63,15 +63,20 @@ module Engine
       case type
       when 'path'
         params = params.map do |k, v|
-          case v[0]
-          when '_'
-            [k, cache[v[1..-1].to_i]]
+          case k
+          when 'terminal'
+            [k, v]
           else
-            [k, Part::Edge.new(v)]
+            case v[0]
+            when '_'
+              [k, cache[v[1..-1].to_i]]
+            else
+              [k, Part::Edge.new(v)]
+            end
           end
         end.to_h
 
-        Part::Path.new(params['a'], params['b'])
+        Part::Path.new(params['a'], params['b'], terminal: params['terminal'])
       when 'city'
         city = Part::City.new(params['revenue'],
                               slots: params['slots'],
@@ -199,29 +204,6 @@ module Engine
 
     def terrain
       @upgrades.flat_map(&:terrains).uniq
-    end
-
-    def upgrades_to?(other, special_lay = false)
-      # correct color progression?
-      return false unless COLORS.index(other.color) == (COLORS.index(@color) + 1)
-
-      # honors pre-existing track?
-      return false unless paths_are_subset_of?(other.paths)
-
-      # If special ability then remaining checks is not applicable
-      return true if special_lay
-
-      # correct label?
-      return false if label != other.label
-
-      # honors existing town/city counts?
-      # - allow labelled cities to upgrade regardless of count; they're probably
-      #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
-      # - TODO: account for games that allow double dits to upgrade to one town
-      return false if @towns.size != other.towns.size
-      return false if !label && @cities.size != other.cities.size
-
-      true
     end
 
     def paths_are_subset_of?(other_paths)

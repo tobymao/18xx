@@ -54,6 +54,12 @@ module UserManager
     store(:app_route, '/')
   end
 
+  def delete_user
+    @connection.safe_post('/user/delete')
+    invalidate_user
+    store(:app_route, '/')
+  end
+
   def forgot(params)
     @connection.safe_post('/user/forgot', params) do |data|
       break unless data['result']

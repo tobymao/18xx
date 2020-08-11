@@ -53,7 +53,15 @@ module View
 
       def phases
         current_phase = @game.phase.current
+        phases_events = []
         rows = @game.phase.phases.map do |phase|
+          row_events = []
+
+          phase[:status]&.each do |status|
+            row_events << @game.class::STATUS_TEXT[status] if @game.class::STATUS_TEXT[status]
+          end
+          phases_events.concat(row_events)
+
           phase_color = Array(phase[:tiles]).last
           bg_color = color_for(phase_color)
           phase_props = {
@@ -63,16 +71,30 @@ module View
             },
           }
 
-          can_buy_companies = phase[:buy_companies] ? 'Can Buy Companies' : ''
-
           h(:tr, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
             h(:td, phase[:on]),
             h(:td, phase[:operating_rounds]),
             h(:td, phase[:train_limit]),
             h(:td, phase_props, phase_color.capitalize),
-            h(:td, can_buy_companies),
+            h(:td, row_events.map(&:first).join(', ')),
           ])
+        end
+
+        status_text = phases_events.uniq.map do |short, long|
+          h(:tr, [h(:td, short), h(:td, long)])
+        end
+
+        if status_text.any?
+          status_text = [h(:table, [
+            h(:thead, [
+              h(:tr, [
+                h(:th, 'Status'),
+                h(:th, 'Description'),
+                ]),
+            ]),
+            h(:tbody, status_text),
+          ])]
         end
 
         [
@@ -86,12 +108,13 @@ module View
                   h(:th, { attrs: { title: 'Number of Operating Rounds' } }, 'ORs'),
                   h(:th, 'Train Limit'),
                   h(:th, 'Tiles'),
-                  h(:th, 'Events'),
+                  h(:th, 'Status'),
                 ]),
               ]),
               h('tbody.zebra', rows),
             ]),
           ]),
+          *status_text,
         ]
       end
 
@@ -122,6 +145,7 @@ module View
                             else
                               "#{event_name}(on #{ordinal(index + 1)} train)"
                             end
+              event_text << event_name unless event_text.include?(event_name)
             end
           end
 

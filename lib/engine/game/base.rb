@@ -33,7 +33,7 @@ module Engine
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
                   :round, :share_pool, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
-                  :round_history
+                  :round_history, :all_tiles
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -147,6 +147,9 @@ module Engine
 
       EVENTS_TEXT = { 'close_companies' =>
                       ['Companies Close', 'All companies unless otherwise noted are discarded from the game'] }.freeze
+
+      STATUS_TEXT = { 'can_buy_companies' =>
+                      ['Can Buy Companies', 'All corporations can buy companies from players'] }.freeze
 
       IPO_NAME = 'IPO'
 
@@ -290,6 +293,7 @@ module Engine
         @corporations = init_corporations(@stock_market)
         @bank = init_bank
         @tiles = init_tiles
+        @all_tiles = init_tiles
         @cert_limit = init_cert_limit
 
         @depot = init_train_handler
@@ -487,9 +491,9 @@ module Engine
         self.class::CURRENCY_FORMAT_STR % val
       end
 
-      def purchasable_companies
+      def purchasable_companies(entity = nil)
         @companies.select do |company|
-          company.owner&.player? && !company.abilities(:no_buy)
+          company.owner&.player? && entity != company.owner && !company.abilities(:no_buy)
         end
       end
 
@@ -563,7 +567,7 @@ module Engine
 
         @finished = true
         scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
-        @log << "Game over: #{scores.join(', ')}"
+        @log << "-- Game over: #{scores.join(', ')} --"
         @round
       end
 
@@ -596,6 +600,8 @@ module Engine
           @log << "#{owner.name} collects #{format_currency(revenue)} from #{company.name}"
         end
       end
+
+      def or_round_finished; end
 
       def or_set_finished; end
 
@@ -674,8 +680,40 @@ module Engine
         self.class::TILE_LAYS
       end
 
+      def upgrades_to?(from, to, special = false)
+        # correct color progression?
+        return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
+
+        # honors pre-existing track?
+        return false unless from.paths_are_subset_of?(to.paths)
+
+        # If special ability then remaining checks is not applicable
+        return true if special
+
+        # correct label?
+        return false if from.label != to.label
+
+        # honors existing town/city counts?
+        # - allow labelled cities to upgrade regardless of count; they're probably
+        #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
+        # - TODO: account for games that allow double dits to upgrade to one town
+        return false if from.towns.size != to.towns.size
+        return false if !from.label && from.cities.size != to.cities.size
+
+        true
+      end
+
       def game_error(msg)
         raise GameError.new(msg, current_action_id)
+      end
+
+      def float_corporation(corporation)
+        @log << "#{corporation.name} floats"
+
+        return if corporation.capitalization == :incremental
+
+        @bank.spend(corporation.par_price.price * 10, corporation)
+        @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
       end
 
       private
@@ -897,9 +935,11 @@ module Engine
             new_operating_round
           when Round::Operating
             if @round.round_num < @operating_rounds
+              or_round_finished
               new_operating_round(@round.round_num + 1)
             else
               @turn += 1
+              or_round_finished
               or_set_finished
               new_stock_round
             end
@@ -1064,6 +1104,15 @@ module Engine
 
       def bankruptcy_limit_reached?
         @players.any?(&:bankrupt)
+      end
+
+      def all_potential_upgrades(tile)
+        colors = Array(@phase.phases.last[:tiles])
+        @all_tiles
+          .select { |t| colors.include?(t.color) }
+          .uniq(&:name)
+          .select { |t| upgrades_to?(tile, t) }
+          .reject(&:blocks_lay)
       end
     end
   end
