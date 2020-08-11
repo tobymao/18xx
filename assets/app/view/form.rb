@@ -68,10 +68,12 @@ module View
       input_props[:attrs][:placeholder] = placeholder if placeholder != ''
       input = h(el, input_props, children)
       @inputs[id] = input
+      children = [h(:label, label_props, label), input]
+      children.reverse! unless label_first
       h(
         'div.input-container',
         { style: { **container_style } },
-        [h(:label, label_props, label), input]
+        children
       )
     end
 

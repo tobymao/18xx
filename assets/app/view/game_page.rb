@@ -96,6 +96,8 @@ module View
           h(Game::Spreadsheet, game: @game)
         when 'tools'
           h(Game::Tools, game: @game, game_data: @game_data, user: @user)
+        when 'auto'
+          h(Game::Automation, game: @game)
         end
 
       @connection = nil if @game_data[:mode] == :hotseat || cursor
@@ -206,6 +208,7 @@ module View
         item('Tools', '#tools'),
       ]
 
+      menu_items << item('Auto', '#auto') if @game_data[:mode] != :hotseat && !cursor && !@pin
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),
       ])

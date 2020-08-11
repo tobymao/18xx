@@ -2,9 +2,11 @@
 
 if RUBY_ENGINE == 'opal'
   require_tree 'engine/game'
+  require_tree 'engine/automation'
 else
   require 'require_all'
   require_rel 'engine/game'
+  require_rel 'engine/automation'
 end
 
 module Engine
