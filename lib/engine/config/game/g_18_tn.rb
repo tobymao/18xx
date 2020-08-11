@@ -201,15 +201,8 @@ module Engine
          "name":"Tennessee Copper Co.",
          "value":20,
          "revenue":5,
-         "desc":"Blocks H17. Corporation owner may lay a free yellow tile in H17. It need not be connected to an existing station token of the corporation. It does not count toward the corporation's normal limit of two yellow tile lays per turn.",
+         "desc":"Corporation owner may lay a free yellow tile in H17. It need not be connected to an existing station token of the corporation. It does not count toward the corporation's normal limit of two yellow tile lays per turn.",
          "abilities":[
-            {
-               "type":"blocks_hexes",
-               "owner_type":"player",
-               "hexes":[
-                  "H17"
-               ]
-            },
             {
                "type":"tile_lay",
                "free":true,
@@ -231,15 +224,8 @@ module Engine
          "name":"East Tennessee & Western Carolina Railroad",
          "value":40,
          "revenue":10,
-         "desc":"Blocks F19. Corporation owner may lay a free yellow tile in F19. It need not be connected to an existing station token of the corporation. It does not count toward the corporation's normal limit of two yellow tile lays per turn.",
+         "desc":"Corporation owner may lay a free yellow tile in F19. It need not be connected to an existing station token of the corporation. It does not count toward the corporation's normal limit of two yellow tile lays per turn.",
          "abilities":[
-            {
-               "type":"blocks_hexes",
-               "owner_type":"player",
-               "hexes":[
-                  "F19"
-               ]
-            },
             {
                "type":"tile_lay",
                "free":true,
@@ -261,15 +247,8 @@ module Engine
          "name":"Memphis & Charleston Railroad",
          "value":70,
          "revenue":15,
-         "desc":"Blocks H3. Corporation owner may lay a free yellow tile in H3. It need not be connected to an existing station token of the corporation. It does not count toward the corporation's normal limit of two yellow tile lays per turn.",
+         "desc":"Corporation owner may lay a free yellow tile in H3. It need not be connected to an existing station token of the corporation. It does not count toward the corporation's normal limit of two yellow tile lays per turn.",
          "abilities":[
-            {
-               "type":"blocks_hexes",
-               "owner_type":"player",
-               "hexes":[
-                  "H3"
-               ]
-            },
             {
                "type":"tile_lay",
                "free":true,
@@ -291,15 +270,8 @@ module Engine
          "name":"Oneida & Western Railroad",
          "value":100,
          "revenue":20,
-         "desc":"Blocks E16. Corporation owner may lay a free yellow tile in E16. It need not be connected to an existing station token of the corporation. It does not count toward the corporation's normal limit of two yellow tile lays per turn.",
+         "desc":"Corporation owner may lay a free yellow tile in E16. It need not be connected to an existing station token of the corporation. It does not count toward the corporation's normal limit of two yellow tile lays per turn.",
          "abilities":[
-            {
-               "type":"blocks_hexes",
-               "owner_type":"player",
-               "hexes":[
-                  "E16"
-               ]
-            },
             {
                "type":"tile_lay",
                "free":true,

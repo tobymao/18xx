@@ -105,34 +105,13 @@ module Engine
       end
 
       def upgrades_to?(from, to, special = false)
-        # correct color progression?
-        return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
+        return true if super
 
-        # honors pre-existing track?
-        return false unless from.paths_are_subset_of?(to.paths)
-
-        # If special ability then remaining checks is not applicable
-        return true if special
-
-        # correct label?
-        return false if from.label != to.label && !allowed_upgrade_to_p_label?(from, to)
-
-        # honors existing town/city counts?
-        # - allow labelled cities to upgrade regardless of count; they're probably
-        #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
-        # - TODO: account for games that allow double dits to upgrade to one town
-        return false if from.towns.size != to.towns.size
-        return false if !from.label && from.cities.size != to.cities.size
-
-        true
-      end
-
-      def allowed_upgrade_to_p_label?(from, to)
         # When upgrading from green to brown:
         #   Memphis (H3) has no label. P label or no label is OK.
         #   Chattanooga (H15) has C label. Only P label is OK.
         #   Nashville (F11) has N label. Only P label is OK.
-        HEX_WITH_P_LABEL.include?(from.hex.name) && to.color == :brown && to.label.to_s == 'P'
+        from.color == :green && HEX_WITH_P_LABEL.include?(from.hex.name) && to.color == :brown && to.label.to_s == 'P'
       end
     end
   end
