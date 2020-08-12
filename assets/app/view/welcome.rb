@@ -27,6 +27,7 @@ module View
         <p>If you're looking to buy these games, please check out
         <a href='https://all-aboardgames.com'>All-Aboard Games</a>,
         <a href='https://www.grandtrunkgames.com'>Grand Trunk Games</a>,
+        <a href='https://goldenspikegames.com'>Golden Spike Games</a>,
         and <a href='https://www.gmtgames.com/'>GMT Games</a>.
         </p>
 
