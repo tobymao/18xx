@@ -293,7 +293,7 @@ module Engine
          "name":"Louisville and Nashville Railroad",
          "value":175,
          "revenue":0,
-         "desc":"The purchaser of this private company reveives the president's certificate of the L&N Railroad and must immediately set its par value. The L&N automatically floats once this private company is purchased and is an exception to the normal rule. This private company closes immediately after the par value is set.",
+         "desc":"The purchaser of this private company receives the president's certificate of the L&N Railroad and must immediately set its par value. The L&N automatically floats once this private company is purchased and is an exception to the normal rule. This private company closes immediately after the par value is set.",
          "abilities":[
             {
                "type":"share",
