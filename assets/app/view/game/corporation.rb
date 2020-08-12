@@ -61,6 +61,8 @@ module View
               grid: '1fr / repeat(2, max-content)',
               gap: '2rem',
               justifyContent: 'center',
+              backgroundColor: color_for(:bg2),
+              color: color_for(:font2),
             },
           }
 
@@ -325,7 +327,10 @@ module View
 
       def render_revenue_history
         last_run = @corporation.operating_history[@corporation.operating_history.keys.max].revenue
-        h('div.bold', "Last Run: #{@game.format_currency(last_run)}")
+        h(:div, { style: { display: 'inline' } }, [
+          'Last Run: ',
+          h('span.bold', @game.format_currency(last_run)),
+        ])
       end
 
       def render_operating_order
@@ -333,8 +338,11 @@ module View
 
         round = @game.round
         if (n = @game.round.entities.find_index(@corporation))
-          div_class = '.bold' if n >= round.entities.find_index(round.current_entity)
-          [h("div#{div_class}", "Order: #{n + 1}")]
+          span_class = '.bold' if n >= round.entities.find_index(round.current_entity)
+          [h(:div, { style: { display: 'inline' } }, [
+            'Order: ',
+            h("span#{span_class}", n + 1),
+          ])]
         else
           []
         end
