@@ -14,8 +14,8 @@ module Engine
       raise GameError, "#{amount} is not valid to spend" unless amount.positive?
     end
 
-    def spend(cash, receiver)
-      check_cash(cash)
+    def spend(cash, receiver, allow_overdraw = false)
+      check_cash(cash) unless allow_overdraw
       check_positive(cash)
       @cash -= cash
       receiver.cash += cash

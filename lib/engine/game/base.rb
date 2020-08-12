@@ -102,6 +102,7 @@ module Engine
       # down_block -- down one row per block
       # left_block_pres -- left one column per block if president
       # left_block -- one row per block
+      # none -- don't drop price
       SELL_MOVEMENT = :down_share
 
       # :sell_buy_or_buy_sell
@@ -538,10 +539,12 @@ module Engine
           bundle.num_shares.times { @stock_market.move_down(corporation) }
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
+        when :none
+          nil
         else
           raise NotImplementedError
         end
-        log_share_price(corporation, price)
+        log_share_price(corporation, price) if self.class::SELL_MOVEMENT != :none
       end
 
       def log_share_price(entity, from)
