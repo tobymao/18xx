@@ -199,7 +199,8 @@ module Engine
       @lawson ||=
         !!@junction ||
         (@cities.one? && @towns.empty?) ||
-        ((cities.empty? && towns.one?) && edges.size > 2)
+        ((cities.empty? && towns.one?) && edges.size > 2) ||
+        ((cities.empty? && towns.one?) && edges.size == 1)
     end
 
     def terrain
