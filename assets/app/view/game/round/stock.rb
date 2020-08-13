@@ -37,13 +37,6 @@ module View
                         end
           end
 
-          unless @game.corporations.all?(:ipoed)
-            children << h('div.margined', [
-              h('span.bold', 'All par prices: '),
-              h(:span, @game.stock_market.par_prices.map(&:price).sort.join('/')),
-            ])
-          end
-
           children.concat(render_corporations)
           children << h(Players, game: @game)
           children << h(BuyCompanyFromOtherPlayer, game: @game) if @step.purchasable_companies(@current_entity).any?
