@@ -39,8 +39,8 @@ module Engine
       def purchasable_companies(entity = nil)
         entity ||= current_entity
         # Only companies owned by the president may be bought
-        companies = super.reject do |c|
-          entity.corporation? && entity.player == c.player
+        companies = super.select do |c|
+          c.owned_by?(entity.player)
         end
 
         return companies unless @phase.status.include?('can_buy_companies_operation_round_one')
