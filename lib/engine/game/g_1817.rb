@@ -41,20 +41,6 @@ module Engine
       # @todo: this cannot be the same tile
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
-      def stock_round
-        Round::Stock.new(self, [
-          Step::DiscardTrain,
-          Step::HomeToken,
-          Step::G1817::BuySellParShares,
-        ])
-      end
-
-      def home_token_locations(corporation)
-        hexes.select do |hex|
-          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
-        end
-      end
-
       def new_auction_round
         log << "Seed Money for initial auction is #{format_currency(SEED_MONEY)}"
         Round::Auction.new(self, [
@@ -69,8 +55,7 @@ module Engine
         Round::Stock.new(self, [
           Step::DiscardTrain,
           Step::HomeToken,
-          # @todo: This needs customization
-          Step::BuySellParShares,
+          Step::G1817::BuySellParShares,
         ])
       end
 

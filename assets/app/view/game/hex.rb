@@ -46,6 +46,7 @@ module View
         children << h(TileUnavailable, unavailable: @unavailable, layout: @hex.layout) if @unavailable
 
         props = {
+          key: @hex.id,
           attrs: {
             transform: transform,
             fill: @user&.dig(:settings, @tile&.color) || (Lib::Hex::COLOR[@tile&.color || 'white']),

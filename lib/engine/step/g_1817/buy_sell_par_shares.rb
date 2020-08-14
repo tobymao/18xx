@@ -10,7 +10,7 @@ module Engine
           return %w[bid pass] if @bid
 
           actions = super
-          actions |= %w[bid pass]
+          actions << 'bid' unless bought?
           actions
         end
 
