@@ -106,7 +106,7 @@ module Engine
                 expected_included = upgrades[t].include?(u)
                 expected_string = "#{t} #{expected_included ? '<' : '!<'} #{u}"
 
-                actual_included = tile.upgrades_to?(upgrade)
+                actual_included = game.upgrades_to?(tile, upgrade)
                 actual_string = "#{t} #{actual_included ? '<' : '!<'} #{u}"
 
                 expect(actual_string).to eq(expected_string)

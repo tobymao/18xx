@@ -74,13 +74,17 @@ module View
           )
         end
 
-        store(:selected_company, nil, skip: true)
-        store(:tile_selector, nil, skip: true)
+        clear_ui_state
         store(:game, game)
       rescue StandardError => e
         store(:game, @game.clone(@game.actions), skip: true)
         store(:flash_opts, e.message)
         e.backtrace.each { |line| puts line }
+      end
+
+      def clear_ui_state
+        store(:selected_company, nil, skip: true)
+        store(:tile_selector, nil, skip: true)
       end
     end
   end

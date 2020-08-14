@@ -48,10 +48,13 @@ module View
         props[:style][:boxSizing] = 'border-box'
       end
 
-      lines = @log.map do |line|
+      lines = @log.each_with_index.map do |line, index|
         line_props = { style: {} }
         if line.is_a?(String)
-          line_props[:style][:fontWeight] = 'bold' if line.start_with?('--')
+          if line.start_with?('--')
+            line_props[:style][:fontWeight] = 'bold'
+            line_props[:style][:marginTop] = '0.5em' if index.positive?
+          end
           h(:div, line_props, line)
         elsif line.is_a?(Engine::Action::Message)
           h(:div, { style: { fontWeight: 'bold' } }, "#{line.entity.name}: #{line.message}")

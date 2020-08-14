@@ -41,6 +41,7 @@ module View
 
           children.concat(render_corporations)
           children << h(Players, game: @game)
+          children << h(BuyCompanyFromOtherPlayer, game: @game) if @step.purchasable_companies(@current_entity).any?
           children << h(StockMarket, game: @game)
 
           h(:div, children)

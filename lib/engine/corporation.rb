@@ -141,8 +141,8 @@ module Engine
 
     def all_abilities
       all = @companies.flat_map(&:all_abilities)
-      @abilities.each do |type, _|
-        abilities(type) { |ability| all << ability }
+      @abilities.each do |ability|
+        abilities(ability.type) { |a| all << a }
       end
       all
     end

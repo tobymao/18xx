@@ -43,7 +43,6 @@ module Engine
       def stock_round
         Round::G18Chesapeake::Stock.new(self, [
           Step::DiscardTrain,
-          Step::G18Chesapeake::SpecialTrack,
           Step::BuySellParShares,
         ])
       end
@@ -52,7 +51,7 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
-          Step::G18Chesapeake::SpecialTrack,
+          Step::SpecialTrack,
           Step::BuyCompany,
           Step::Track,
           Step::Token,

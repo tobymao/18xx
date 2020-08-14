@@ -116,7 +116,7 @@ module Engine
   },
   "market": [
     [
-      "0blk",
+      "0c",
       "10",
       "20",
       "30",
@@ -260,11 +260,31 @@ module Engine
             "I1",
             "G19"
           ],
-          "count": 99
+          "count_per_or": 1,
+          "owner_type": "player"
         },
         {
           "type": "assign_corporation",
-          "count": 99
+          "count_per_or": 1,
+          "owner_type": "player"
+        },
+        {
+          "type": "assign_hexes",
+          "hexes": [
+            "B8",
+            "C5",
+            "D14",
+            "I1",
+            "G19"
+          ],
+          "count": 1,
+          "owner_type": "corporation"
+        },
+        {
+          "type": "assign_corporation",
+          "when": "sold",
+          "count": 1,
+          "owner_type": "corporation"
         }
       ]
     },
@@ -326,6 +346,7 @@ module Engine
               "9"
             ],
            "when":"track",
+           "blocks":false,
            "count": 2
         }
       ]
@@ -359,6 +380,7 @@ module Engine
               "9"
             ],
            "when":"track",
+           "blocks": false,
            "count": 2
         }
       ]

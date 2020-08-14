@@ -21,9 +21,9 @@ module View
         if funds_required.positive?
           liquidity = @game.liquidity(player, emergency: true)
           children << h('div',
-                        "To buy the cheapest train the president must raise #{@game.format_currency(funds_required)}"\
-                        ", and can sell #{@game.format_currency(liquidity - player.cash)} in shares")
-
+                        'To buy the cheapest train from the depot the president must raise '\
+                        "#{@game.format_currency(funds_required)}, and can sell "\
+                        "#{@game.format_currency(liquidity - player.cash)} in shares:")
           props = {
             style: {
               display: 'inline-block',
@@ -44,7 +44,7 @@ module View
           children << render_bankruptcy
         else
           children << h('div',
-                        'To buy the cheapest train the president must contribute'\
+                        'To buy the cheapest train from the depot the president must contribute'\
                         " #{@game.format_currency(@depot.min_depot_price - @corporation.cash)}")
         end
 
@@ -64,11 +64,7 @@ module View
         children = []
 
         must_buy_train = step.must_buy_train?(@corporation)
-
-        if must_buy_train
-          children << h(:div, "#{@corporation.name} must buy an available train")
-          children.concat(render_president_contributions) if @corporation.cash < @depot.min_depot_price
-        end
+        should_buy_train = step.should_buy_train?(@corporation)
 
         h3_props = {
           style: {
@@ -84,7 +80,11 @@ module View
           },
         }
 
-        if (step.can_buy_train?(@corporation) && step.room?(@corporation)) || step.must_buy_train?(@corporation)
+        if (step.can_buy_train?(@corporation) && step.room?(@corporation)) || must_buy_train
+          children << h(:div, "#{@corporation.name} must buy an available train") if must_buy_train
+          if should_buy_train == :liquidation
+            children << h(:div, "#{@corporation.name} must buy a train or it will be liquidated")
+          end
           children << h(:h3, h3_props, 'Available Trains')
           children << h(:div, div_props, [
             *from_depot(depot_trains),
@@ -118,6 +118,7 @@ module View
 
         children << h(:h3, h3_props, 'Remaining Trains')
         children << remaining_trains
+        children.concat(render_president_contributions) if must_buy_train && @corporation.cash < @depot.min_depot_price
 
         props = {
           style: {
