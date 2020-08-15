@@ -557,7 +557,9 @@ module Engine
       end
 
       def must_buy_train?(entity)
-        !entity.rusted_self && entity.trains.empty? && !depot.depot_trains.empty? &&
+        !entity.rusted_self &&
+          entity.trains.empty? &&
+          depot.depot_trains.any? &&
           (self.class::MUST_BUY_TRAIN == :always ||
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
       end
