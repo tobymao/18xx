@@ -1020,7 +1020,10 @@ module Engine
           # priority deal card goes to the player who will go first if
           # everyone passes starting now.  last_to_act is nil before
           # anyone has gone, in which case the first player has PD.
-          @players.reject(&:bankrupt)[@round.entity_index]
+          last_to_act = @round.last_to_act
+          solvent_players = @players.reject(&:bankrupt)
+          priority_idx = last_to_act ? (solvent_players.find_index(last_to_act) + 1) % solvent_players.size : 0
+          solvent_players[priority_idx]
         else
           # We're in a round that iterates over something else, like
           # corporations.  The player list was already rotated when we
