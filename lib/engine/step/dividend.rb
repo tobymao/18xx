@@ -32,6 +32,7 @@ module Engine
         revenue = @game.routes_revenue(routes)
         dividend_types.map do |type|
           payout = send(type, entity, revenue)
+          payout[:divs_to_company] = company_dividends(entity, payout[:per_share])
           [type, payout.merge(share_price_change(entity, revenue - payout[:company]))]
         end.to_h
       end
@@ -88,11 +89,27 @@ module Engine
         { company: 0, per_share: payout_per_share(entity, revenue)[0] }
       end
 
+      def dividends_for_entity(entity, holder, per_share)
+        return 0 if (percent = holder.percent_of(entity)).zero?
+        share_count = 10
+        shares = percent / (100 / share_count)
+        shares * per_share
+      end
+
+      def company_dividends(entity, per_share)
+        return 0 if entity.minor?
+        dividends_for_entity(entity, holder_for_company(entity), per_share)
+      end
+
       def payout_per_share(_entity_, revenue)
         # TODO: actually count shares when we implement 1817, 18Ireland, 18US, etc
         share_count = 10
         per_share = revenue / share_count
         [per_share, share_count]
+      end
+
+      def holder_for_company(entity)
+        entity.capitalization == :incremental ? entity : @game.share_pool
       end
 
       def payout_shares(entity, revenue)
@@ -104,23 +121,13 @@ module Engine
           payout_entity(entity, player, per_share)
         end
 
-        if entity.capitalization == :incremental
-          payout_entity(entity, entity, per_share, entity)
-        else
-          payout_entity(entity, @game.share_pool, per_share, entity)
-        end
+        payout_entity(entity, holder_for_company(entity), per_share, entity)
       end
 
       def payout_entity(entity, holder, per_share, receiver = nil)
-        return if (percent = holder.percent_of(entity)).zero?
-
+        amount = dividends_for_entity(entity, holder, per_share)
+        return if amount.zero?
         receiver ||= holder
-        # TODO: actually count shares when we implement 1817, 18Ireland, 18US, etc
-        share_count = 10
-        shares = percent / (100 / share_count)
-        amount = shares * per_share
-        @log << "#{receiver.name} receives #{@game.format_currency(amount)} = "\
-                "#{@game.format_currency(per_share)} x #{shares} shares"
         @game.bank.spend(amount, receiver)
       end
 
