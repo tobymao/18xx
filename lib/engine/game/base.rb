@@ -1110,7 +1110,7 @@ module Engine
         @players.any?(&:bankrupt)
       end
 
-      def all_potential_upgrades(tile)
+      def all_potential_upgrades(tile, _hex = nil)
         colors = Array(@phase.phases.last[:tiles])
         @all_tiles
           .select { |t| colors.include?(t.color) }

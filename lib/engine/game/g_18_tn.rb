@@ -45,6 +45,8 @@ module Engine
         presidents_share.percent = 30
         final_share = ic.shares_by_corporation[ic].last
         @share_pool.transfer_shares(final_share.to_bundle, @bank)
+
+        @brown_p_tile ||= @tiles.find { |t| t.name == '170' }
       end
 
       def operating_round(round_num)
@@ -63,7 +65,7 @@ module Engine
           Step::SpecialTrack,
           Step::G18TN::BuyCompany,
           Step::HomeToken,
-          Step::Track,
+          Step::G18TN::Track,
           Step::Token,
           Step::Route,
           Step::G18TN::Dividend,
@@ -112,6 +114,17 @@ module Engine
         #   Chattanooga (H15) has C label. Only P label is OK.
         #   Nashville (F11) has N label. Only P label is OK.
         from.color == :green && HEX_WITH_P_LABEL.include?(from.hex.name) && to.color == :brown && to.label.to_s == 'P'
+      end
+
+      def all_potential_upgrades(tile, hex = nil)
+        upgrades = super
+
+        return upgrades << @brown_p_tile if
+          @brown_p_tile &&
+          (!hex || HEX_WITH_P_LABEL.include?(hex.name)) &&
+          %w[14 15 619 TN1 TN2].include?(tile.name)
+
+        upgrades
       end
     end
   end

@@ -481,6 +481,7 @@ module Engine
          ],
          "city=revenue:0;upgrade=cost:40,terrain:water":[
             "D7",
+            "F11",
             "F17",
             "H7"
          ],
@@ -554,9 +555,6 @@ module Engine
          ],
          "town=revenue:10;path=a:0,b:_0;path=a:_0,b:3":[
             "D11"
-         ],
-         "city=revenue:0;label=N;upgrade=cost:40,terrain:water":[
-            "F11"
          ],
          "city=revenue:20;path=a:3,b:_0;path=a:5,b:_0":[
             "G6"
