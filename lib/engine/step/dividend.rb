@@ -91,6 +91,7 @@ module Engine
 
       def dividends_for_entity(entity, holder, per_share)
         return 0 if (percent = holder.percent_of(entity)).zero?
+
         share_count = 10
         shares = percent / (100 / share_count)
         shares * per_share
@@ -98,6 +99,7 @@ module Engine
 
       def company_dividends(entity, per_share)
         return 0 if entity.minor?
+
         dividends_for_entity(entity, holder_for_company(entity), per_share)
       end
 
@@ -127,6 +129,7 @@ module Engine
       def payout_entity(entity, holder, per_share, receiver = nil)
         amount = dividends_for_entity(entity, holder, per_share)
         return if amount.zero?
+
         receiver ||= holder
         @game.bank.spend(amount, receiver)
       end
