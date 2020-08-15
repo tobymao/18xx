@@ -157,10 +157,12 @@ module Engine
       },
     },
     GAMES_BY_TITLE['18TN'] => {
-      4715 => {
-        'Player 3' => 5838,
-        'Player 1' => 5422,
-        'Player 2' => 5320,
+      4716 => {
+        'Bertil' => 3110,
+        'Erica' => 2965,
+        'Adam' => 2878,
+        'Cecilia' => 2701,
+        'Daisy' => 2648,
       },
     },
   }.freeze
