@@ -7,10 +7,18 @@ module Engine
     module G1817
       class BuySellParShares < BuySellParShares
         def actions(entity)
+          return [] unless entity.player?
+
+          if available_subsidiaries(entity).any?
+            actions = %w[assign]
+            actions << 'pass' if entity.cash >= @bid.price
+            return actions
+          end
+
           return %w[bid pass] if @bid
 
           actions = super
-          actions << 'bid' unless bought?
+          actions |= %w[bid pass] unless bought?
           actions
         end
 
@@ -21,6 +29,7 @@ module Engine
         end
 
         def pass_description
+          return 'Pass (Subsidiaries)' if available_subsidiaries.any?
           return super unless @bid
 
           'Pass (Bid)'
@@ -34,6 +43,7 @@ module Engine
 
         def pass!
           return super unless @bid
+          return par_corporation if available_subsidiaries.any?
 
           @bidders.delete(current_entity)
           finalize_auction
@@ -48,31 +58,78 @@ module Engine
             @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
           else
             @log << "#{entity.name} auctions #{corporation.name} for #{@game.format_currency(price)}"
+            @round.last_to_act = action.entity
             @current_actions.clear
             @game.place_home_token(action.corporation)
-            @bidders = @round.entities.select do |player|
-              player == entity || player.cash >= min_bid(corporation) # also need to add company trade in
-            end
           end
 
           @bid = action
+
+          @bidders = @round.entities.select do |player|
+            player == entity || bidding_power(player) >= min_bid(corporation)
+          end
+
+          finalize_auction
         end
 
-        def finalize_auction
-          return if @bidders.size > 1
+        def process_assign(action)
+          entity = action.entity
+          company = action.target
+          @game.game_error('Cannot use company in formation') unless available_subsidiaries(entity).include?(company)
+          @subsidiaries << company
+          @log << "#{company.name} used for forming #{@bid.corporation.name} "\
+            "contributing #{@game.format_currency(company.value)} value"
+          par_corporation if available_subsidiaries(entity).empty?
+        end
 
-          price = @bid.price / 2
+        def par_corporation
+          entity = @bid.entity
+          corporation = @bid.corporation
+          price = @bid.price
+          par_price = price / 2
 
           share_price = @game
             .stock_market
             .market[0]
             .reverse
-            .find { |sp| sp.price < price }
+            .find { |sp| sp.price < par_price }
 
           process_par(Action::Par.new(@bid.entity, corporation: @bid.corporation, share_price: share_price))
+          corporation.spend(corporation.cash, entity)
+
+          @subsidiaries.each do |company|
+            company.owner = corporation
+            entity.companies.delete(company)
+            corporation.companies << company
+            price -= company.value
+          end
+
+          entity.spend(price, corporation)
+          @log << "#{corporation.name} starts with #{@game.format_currency(price)}"
+
           @bid = nil
           @bidders = nil
+          @subsidiaries = []
           pass!
+        end
+
+        def finalize_auction
+          return if @bidders.size > 1
+          return if available_subsidiaries
+
+          par_corporation
+        end
+
+        def available_subsidiaries(entity)
+          entity ||= @game.current_entity
+          return [] unless @bidders&.one?
+          return [] if @bid.entity != entity
+
+          total = @subsidiaries.sum(&:value)
+
+          (entity.companies - @subsidiaries).select do |company|
+            @bid.price > company.value + total
+          end
         end
 
         def committed_cash
@@ -90,7 +147,11 @@ module Engine
         end
 
         def max_bid(player, _corporation)
-          [400, player.cash].min
+          [400, bidding_power(player)].min
+        end
+
+        def bidding_power(player)
+          player.cash + player.companies.sum(&:value)
         end
 
         def can_ipo_any?(_entity)
@@ -99,6 +160,7 @@ module Engine
 
         def setup
           super
+          @subsidiaries = []
           @bid ||= nil
         end
 

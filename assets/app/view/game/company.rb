@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
+require 'view/game/actionable'
+
 module View
   module Game
     class Company < Snabberb::Component
+      include Actionable
+
       needs :company
       needs :bids, default: nil
       needs :selected_company, default: nil, store: true
-      needs :game, store: true
       needs :tile_selector, default: nil, store: true
       needs :display, default: 'inline-block'
       needs :layout, default: nil
@@ -15,15 +18,15 @@ module View
         @company == @selected_company
       end
 
-      def purchasable?
-        !@company.owner ||
-        @game.round.actions_for(@game.current_entity).include?('buy_company') &&
-        @company.owner.player?
-      end
-
       def select_company(event)
         event.JS.stopPropagation
-        selected_company = purchasable? && !selected? ? @company : nil
+        entity = @game.current_entity
+        selected_company = selected? ? nil : @company
+
+        if selected_company && @game.round.actions_for(entity).include?('assign')
+          return process_action(Engine::Action::Assign.new(entity, target: selected_company))
+        end
+
         store(:tile_selector, nil, skip: true)
         store(:selected_company, selected_company)
       end
@@ -78,7 +81,7 @@ module View
 
           props = {
             style: {
-              cursor: purchasable? ? 'pointer' : 'default',
+              cursor: 'pointer',
               boxSizing: 'border-box',
               padding: '0.5rem',
               margin: '0.5rem 5px 0 0',

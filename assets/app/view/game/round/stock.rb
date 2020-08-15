@@ -2,6 +2,7 @@
 
 require 'view/game/actionable'
 require 'view/game/bank'
+require 'view/game/company'
 require 'view/game/corporation'
 require 'view/game/par'
 require 'view/game/players'
@@ -58,7 +59,9 @@ module View
           @game.corporations.map do |corporation|
             next if @auctioning_corporation && @auctioning_corporation != corporation
 
-            children = [h(Corporation, corporation: corporation)]
+            children = []
+            children.concat(render_subsidiaries)
+            children << h(Corporation, corporation: corporation)
             children << render_input if @selected_corporation == corporation
             h(:div, props, children)
           end.compact
@@ -155,6 +158,14 @@ module View
           bid_button = h(:button, { on: { click: place_bid } }, 'Place Bid')
 
           h('div.center', [price_input, bid_button])
+        end
+
+        def render_subsidiaries
+          return [] unless @current_actions.include?('assign')
+
+          @step.available_subsidiaries.map do |company|
+            h(Company, company: company)
+          end
         end
       end
     end

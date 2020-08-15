@@ -21,8 +21,7 @@ module Engine
         start_entity
       end
 
-      def after_process(action)
-        @last_to_act = action.entity unless action.pass?
+      def after_process(_action)
         return if active_step
 
         next_entity!

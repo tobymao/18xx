@@ -1017,20 +1017,19 @@ module Engine
       def action_processed(_action); end
 
       def priority_deal_player
+        players = @players.reject(&:bankrupt)
+
         if @round.current_entity&.player?
           # We're in a round that iterates over players, so the
           # priority deal card goes to the player who will go first if
           # everyone passes starting now.  last_to_act is nil before
           # anyone has gone, in which case the first player has PD.
-          last_to_act = @round.last_to_act
-          solvent_players = @players.reject(&:bankrupt)
-          priority_idx = last_to_act ? (solvent_players.find_index(last_to_act) + 1) % solvent_players.size : 0
-          solvent_players[priority_idx]
+          players[((players.index(@round.last_to_act) || -1) + 1) % players.size]
         else
           # We're in a round that iterates over something else, like
           # corporations.  The player list was already rotated when we
           # left a player-focused round to put the PD player first.
-          @players.reject(&:bankrupt).first
+          players.first
         end
       end
 
