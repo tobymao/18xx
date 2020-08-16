@@ -364,7 +364,6 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "town",
                   "offboard"
                ],
                "pay":2,
@@ -388,7 +387,6 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "town",
                   "offboard"
                ],
                "pay":3,
@@ -412,7 +410,6 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "town",
                   "offboard"
                ],
                "pay":4,
@@ -436,7 +433,6 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "town",
                   "offboard"
                ],
                "pay":5,
@@ -462,7 +458,6 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "town",
                   "offboard"
                ],
                "pay":6,
@@ -485,7 +480,6 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "town",
                   "offboard"
                ],
                "pay":8,
