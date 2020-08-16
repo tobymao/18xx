@@ -90,10 +90,8 @@ module Engine
       end
 
       def dividends_for_entity(entity, holder, per_share)
-        return 0 if (percent = holder.percent_of(entity)).zero?
+        return 0 if (shares = holder.num_shares_of(entity)).zero?
 
-        share_count = 10
-        shares = percent / (100 / share_count)
         shares * per_share
       end
 
