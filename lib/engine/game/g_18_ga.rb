@@ -12,6 +12,7 @@ module Engine
       GAME_LOCATION = 'Georgia, USA'
       GAME_RULES_URL = 'http://www.diogenes.sacramento.ca.us/18GA_Rules_v3_26.pdf'
       GAME_DESIGNER = 'Mark Derrick'
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18GA'
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(

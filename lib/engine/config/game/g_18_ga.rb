@@ -190,7 +190,7 @@ module Engine
          "name":"Midland Railroad Co.",
          "value":40,
          "revenue":10,
-         "desc":"A corporation that owns the Midland may lay a tile in the Midland's hex for free, once. The tile need not be connected to an existing station of the corporation. The corporation need not pay the $40 cost of the swamp. And it does not count as the corporation's one tile lay per turn. (But it still must be laid during the tile-laying step of the corporation's turn, and it must not dead-end into a blank side of a red or gray hex, or off the map.) This action does not close the Midland. ",
+         "desc":"Blocks hex F12 while owned by a player. A corporation that owns the Midland may lay a tile in the Midland's hex for free, once. The tile need not be connected to an existing station of the corporation. The corporation need not pay the $40 cost of the swamp. And it does not count as the corporation's one tile lay per turn. (But it still must be laid during the tile-laying step of the corporation's turn, and it must not dead-end into a blank side of a red or gray hex, or off the map.) This action does not close the Midland. ",
          "sym":"MRC",
          "abilities":[
             {
@@ -223,13 +223,6 @@ module Engine
          "sym":"W&SR",
          "abilities":[
             {
-               "type":"blocks_hexes",
-               "owner_type":"player",
-               "hexes":[
-                  "I9"
-               ]
-            },
-            {
                "type":"teleport",
                "owner_type":"corporation",
                "tiles":[
@@ -247,8 +240,37 @@ module Engine
          "name":"Ocilla Southern RR",
          "value":100,
          "revenue":20,
-         "desc":"When a Corporation purchases the Ocilla Southern, the corporation immediately gets the 2 Train marked Free (unless a 4 Train has been purchased or the corporation already has four trains, in which case the free train is removed from play). This acquisition is not considered a train purchase (so it does not prevent the corporation from also purchasing a train on the same turn), and does not close the Ocilla Southern. The free train cannot be sold to another corporation. In all other respects it is a normal 2 Train. ",
-         "sym":"OSR"
+         "desc":"Block hex G7 while owned by a player. When a Corporation purchases the Ocilla Southern, the corporation immediately gets the 2 Train marked Free (unless a 4 Train has been purchased or the corporation already has four trains, in which case the free train is removed from play). This acquisition is not considered a train purchase (so it does not prevent the corporation from also purchasing a train on the same turn), and does not close the Ocilla Southern. The free train cannot be sold to another corporation. In all other respects it is a normal 2 Train. ",
+         "sym":"OSR",
+         "abilities":[
+            {
+               "type":"blocks_hexes",
+               "owner_type":"player",
+               "hexes":[
+                  "G7"
+               ]
+            }
+         ]
+      },
+      {
+         "name":"Macon & Birmingham RR",
+         "value":150,
+         "revenue":25,
+         "desc":"Block hex F4 while owned by a player. Purchasing player immediately takes a 10% share of the Central of Georgia. This does not close the private company. This private company has no other special ability. ",
+         "sym":"M&BR",
+         "abilities": [
+            {
+               "type":"blocks_hexes",
+               "owner_type":"player",
+               "hexes":[
+                  "F4"
+               ]
+            },
+            {
+             "type": "share",
+             "share": "CoG_1"
+            }
+         ]
       }
    ],
    "corporations":[
@@ -342,7 +364,6 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "town",
                   "offboard"
                ],
                "pay":2,
@@ -366,7 +387,6 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "town",
                   "offboard"
                ],
                "pay":3,
@@ -390,7 +410,6 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "town",
                   "offboard"
                ],
                "pay":4,
@@ -414,7 +433,6 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "town",
                   "offboard"
                ],
                "pay":5,
@@ -440,7 +458,6 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "town",
                   "offboard"
                ],
                "pay":6,
@@ -463,7 +480,6 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "town",
                   "offboard"
                ],
                "pay":8,
