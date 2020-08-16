@@ -179,6 +179,7 @@ module Engine
           "hexes": [
             "D6"
           ],
+          "city": 3,
           "price": 0,
           "teleport_price": 0,
           "count": 1,
