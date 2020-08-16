@@ -116,12 +116,12 @@ module Engine
         from.color == :green && HEX_WITH_P_LABEL.include?(from.hex.name) && to.color == :brown && to.label.to_s == 'P'
       end
 
-      def all_potential_upgrades(tile, hex = nil)
+      def all_potential_upgrades(tile)
         upgrades = super
 
         return upgrades << @brown_p_tile if
           @brown_p_tile &&
-          (!hex || HEX_WITH_P_LABEL.include?(hex.name)) &&
+          (!tile.hex || HEX_WITH_P_LABEL.include?(tile.hex.name)) &&
           %w[14 15 619 TN1 TN2].include?(tile.name)
 
         upgrades
