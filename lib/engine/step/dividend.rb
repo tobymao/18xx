@@ -90,9 +90,7 @@ module Engine
       end
 
       def dividends_for_entity(entity, holder, per_share)
-        return 0 if (shares = holder.num_shares_of(entity)).zero?
-
-        shares * per_share
+        holder.num_shares_of(entity) * per_share
       end
 
       def company_dividends(entity, per_share)
