@@ -87,7 +87,7 @@ module View
             process_action(action)
           else
             # If there's a choice of tokens of different types show the selector, otherwise just place
-            next_tokens = step.available_tokens
+            next_tokens = step.available_tokens(entity)
             if next_tokens.size == 1 && actions.include?('place_token')
               action = Engine::Action::PlaceToken.new(
                 @selected_company || @game.current_entity,

@@ -37,6 +37,12 @@ module Engine
         @game.hex_by_id(hex.id).neighbors.keys
       end
 
+      def available_tokens(entity)
+        return super unless ability(entity)&.extra
+
+        [Engine::Token.new(entity.owner)]
+      end
+
       def ability(entity)
         return unless entity.company?
 

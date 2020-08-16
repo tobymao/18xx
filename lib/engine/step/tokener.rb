@@ -8,13 +8,13 @@ module Engine
     module Tokener
       def can_place_token?(entity)
         current_entity == entity &&
-          (tokens = available_tokens).any? &&
+          (tokens = available_tokens(entity)).any? &&
           min_token_price(tokens) <= entity.cash &&
           @game.graph.can_token?(entity)
       end
 
-      def available_tokens
-        current_entity.tokens_by_type
+      def available_tokens(entity)
+        entity.tokens_by_type
       end
 
       def can_replace_token?(_entity, _token)
