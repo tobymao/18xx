@@ -54,22 +54,27 @@ module Engine
 
         @round.routes = []
 
-        unless Dividend::DIVIDEND_TYPES.include?(kind)
-          @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
-        end
+        log_run_payout(entity, kind, revenue, action, payout)
 
-        if payout[:company].positive?
-          @log << "#{entity.name} withholds #{@game.format_currency(payout[:company])}"
-          @game.bank.spend(payout[:company], entity)
-        elsif payout[:per_share].zero?
-          @log << "#{entity.name} does not run"
-        end
+        @game.bank.spend(payout[:company], entity) if payout[:company].positive?
 
         payout_shares(entity, revenue - payout[:company]) if payout[:per_share].positive?
 
         change_share_price(entity, payout)
 
         pass!
+      end
+
+      def log_run_payout(entity, kind, revenue, action, payout)
+        unless Dividend::DIVIDEND_TYPES.include?(kind)
+          @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
+        end
+
+        if payout[:company].positive?
+          @log << "#{entity.name} withholds #{@game.format_currency(payout[:company])}"
+        elsif payout[:per_share].zero?
+          @log << "#{entity.name} does not run"
+        end
       end
 
       def share_price_change(_entity, revenue)
