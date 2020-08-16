@@ -11,8 +11,7 @@ module View
     needs :num_players, default: 3, store: true
     needs :flash_opts, default: {}, store: true
     needs :user, default: nil, store: true
-    needs :optional_rules_available, default: [], store: true
-    needs :optional_rules_selected, default: nil, store: true
+    needs :optional_rules_available, default: nil, store: true
 
     def render_content
       inputs = [
@@ -20,8 +19,6 @@ module View
         render_button('Create') { submit },
         render_inputs,
       ]
-      inputs << render_optional if @optional_rules_available.any?
-      @chosen_title = nil
 
       if @mode == :hotseat
         @num_players.times do |index|
@@ -58,7 +55,7 @@ module View
 
       games = (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).sort.map do |game|
         @min_p[game.title], @max_p[game.title] = Engine.player_range(game)
-        @optional_rules_per_title[game.title] = game::OPTIONAL_RULES
+        @optional_rules_per_title[game.title] = game::OPTIONAL_RULES != [] ? game::OPTIONAL_RULES : nil
 
         title = game.title
         title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
@@ -68,16 +65,20 @@ module View
         h(:option, { attrs: attrs }, title)
       end
 
-      limit_range = lambda do
+      title_change = lambda do
         range = Native(@inputs[:max_players]).elm
         title = Native(@inputs[:title]).elm.value
         min = range.min = @min_p[title]
         max = range.max = @max_p[title]
         val = range.value.to_i
         range.value = (min..max).include?(val) ? val : max
-        store(:num_players, range.value.to_i)
-        optional_rules = @optional_rules_per_title[title] || []
-        store(:optional_rules_available, optional_rules)
+        store(:num_players, range.value.to_i, skip: true)
+
+        if Native(@inputs[:optional_rules_selected])
+          Native(@inputs[:optional_rules_selected]).elm.value = ''
+          @optional_rules_selected = nil
+        end
+        store(:optional_rules_available, @optional_rules_per_title[title])
       end
 
       enforce_range = lambda do
@@ -89,7 +90,7 @@ module View
       end
 
       inputs = [
-        render_input('Game Title', id: :title, el: 'select', on: { input: limit_range }, children: games),
+        render_input('Game Title', id: :title, el: 'select', on: { input: title_change }, children: games),
         render_input('Description', placeholder: 'Add a title', id: :description),
         render_input(
           @mode != :hotseat ? 'Max Players' : 'Players',
@@ -105,19 +106,26 @@ module View
           on: { input: enforce_range },
         ),
       ]
+      inputs << render_optional if @optional_rules_available
+
       h(:div, inputs)
     end
 
     def render_optional
-      choice_select = lambda do
-        choice = Native(@inputs[:optional_rules_selected]).elm.value
-        store(:optional_rules_selected, choice)
+      return unless @optional_rules_available
+
+      save_selection = lambda do
+        @optional_rules_selected = Native(@inputs[:optional_rules_selected]).elm.selectedOptions
+        # TODO: get values from HTML-Collection
+        # https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/selectedOptions
       end
 
       optional_rules = []
       @optional_rules_available.each do |o_r|
         optional_rules << h(:option, { attrs: { value: o_r[:sym] } }, o_r[:desc])
       end
+      store(:optional_rules_available, nil, skip: true) # wipe to prevent rendering on next game creation
+
       inputs = [
         render_input(
           'Optional rules',
@@ -126,7 +134,7 @@ module View
           attrs: {
             multiple: true,
           },
-          on: { input: choice_select },
+          on: { input: save_selection },
           children: optional_rules,
         ),
       ]
