@@ -25,7 +25,7 @@ module Engine
         entity = action.entity
         token_ability = ability(entity)
 
-        if token_ability.check_target(action.city)
+        if token_ability.check_city(action.city)
           place_token(
             entity.owner,
             action.city,
@@ -33,9 +33,8 @@ module Engine
             teleport: token_ability.teleport_price,
           )
         else
-          raise GameError,
-                "#{entity.name} ability can not be used to place token " \
-                "in #{action.city.hex.id}."
+          @game.gate_error("#{entity.name} ability can not be used to place token " \
+                "in #{action.city.hex.id}.")
         end
       end
 

@@ -72,7 +72,7 @@ module Engine
         end
 
         entity.abilities(:token) do |ability, _|
-          next unless ability.check_target(city)
+          next unless ability.check_city(city)
 
           # check if this is correct or should be a corporation
           token = Engine::Token.new(entity) if ability.extra

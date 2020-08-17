@@ -15,10 +15,8 @@ module Engine
         @city = city
       end
 
-      def check_target(city)
-        match_hex_id = @hexes.include?(city.hex.id)
-        match_city = @city.nil? || city == city.tile.cities[@city]
-        match_hex_id && match_city
+      def check_city(city)
+        @hexes.include?(city.hex.id) && (!@city || city == city.tile.cities[@city])
       end
     end
   end
