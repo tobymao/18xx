@@ -9,6 +9,8 @@ module Engine
     class G18GA < Base
       load_from_json(Config::Game::G18GA::JSON)
 
+      DEV_STAGE = :alpha
+
       GAME_LOCATION = 'Georgia, USA'
       GAME_RULES_URL = 'http://www.diogenes.sacramento.ca.us/18GA_Rules_v3_26.pdf'
       GAME_DESIGNER = 'Mark Derrick'
@@ -26,9 +28,9 @@ module Engine
 
         # Place neutral tokens in the off board cities
         @talahassee_token = Engine::Token.new(nil, price: 0, logo: '/logos/1882/neutral.svg', type: :neutral)
-        @talahassee_token.place(city_by_id('E1-0-0'), @log)
+        @talahassee_token.place(city_by_id('E1-0-0'))
         @montgomery_token = Engine::Token.new(nil, price: 0, logo: '/logos/1882/neutral.svg', type: :neutral)
-        @montgomery_token.place(city_by_id('J4-0-0'), @log)
+        @montgomery_token.place(city_by_id('J4-0-0'))
 
         # Remember specific tiles for upgrades check later
         @green_aug_tile ||= @tiles.find { |t| t.name == '453a' }
