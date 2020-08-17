@@ -157,7 +157,7 @@ module Engine
       end
 
       def check_track_restrictions!(entity, old_tile, new_tile)
-        return if @game.loading || !entity.corporation?
+        return if @game.loading || !(entity.corporation? || entity.minor?)
 
         old_paths = old_tile.paths
         changed_city = false
