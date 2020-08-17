@@ -132,6 +132,8 @@ module Engine
         return if amount.zero?
 
         receiver ||= holder
+        @log << "#{receiver.name} receives #{@game.format_currency(amount)} = "\
+                "#{@game.format_currency(per_share)} x #{holder.num_shares_of(entity)} shares"
         @game.bank.spend(amount, receiver)
       end
 
