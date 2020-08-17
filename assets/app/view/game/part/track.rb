@@ -29,15 +29,14 @@ module View
           # Array<Array<Path>>
           @routes_paths = @routes.map { |route| route.paths_for(@tile.paths) }
 
-          tracks = []
-          @tile.paths.select { |path| path.edges.size == 2 }
+          tracks = @tile.paths.select { |path| path.edges.size == 2 }
           .map { |path| [path, index_for(path)] }
           .sort_by { |_, index| index || -1 }
           .map do |path, index|
-            tracks << h(TrackCurvilinearPath, region_use: @region_use, path: path,
-                                              color: value_for_index(index, :color),
-                                              width: value_for(path, :width),
-                                              dash: value_for(path, :dash),)
+            h(TrackCurvilinearPath, region_use: @region_use, path: path,
+                                    color: value_for_index(index, :color),
+                                    width: value_for(path, :width),
+                                    dash: value_for(path, :dash),)
           end
 
           tracks << @tile.paths.map do |path|

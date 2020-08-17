@@ -12,6 +12,17 @@ module View
         needs :width, default: 8
         needs :dash, default: '0'
 
+        EDGE_PERP_ANGLES = [90, 30, -30, -90, -150, 150].freeze
+
+        EDGE_REGIONS = {
+          0 => TRACK_TO_EDGE_0,
+          1 => TRACK_TO_EDGE_1,
+          2 => TRACK_TO_EDGE_2,
+          3 => TRACK_TO_EDGE_3,
+          4 => TRACK_TO_EDGE_4,
+          5 => TRACK_TO_EDGE_5,
+        }.freeze
+
         def load_from_tile
           # for now assumes one edge and one node on path
           @edge = @path.edges.first.num
@@ -55,7 +66,7 @@ module View
           loc1 = end_location
 
           # Currently this only handles the case where the start poing is on an edge
-          edge_perp_angle = [90, 30, -30, -90, -150, 150][@edge]
+          edge_perp_angle = EDGE_PERP_ANGLES[@edge]
 
           distance = Math.sqrt((loc0[:x] - loc1[:x])**2 + (loc0[:y] - loc1[:y])**2)
           mid = { x: (loc0[:x] + loc1[:x]) / 2, y: (loc1[:y] + loc0[:y]) / 2 }
@@ -83,24 +94,15 @@ module View
           }
         end
 
-        def need_bezier
+        def need_bezier?
           # probably not general enough
           (end_location != { x: 0, y: 0 }) && ((@ct_edge != @edge) && ((@ct_edge - @edge).abs != 3))
         end
 
         def preferred_render_locations
-          regions = {
-            0 => TRACK_TO_EDGE_0,
-            1 => TRACK_TO_EDGE_1,
-            2 => TRACK_TO_EDGE_2,
-            3 => TRACK_TO_EDGE_3,
-            4 => TRACK_TO_EDGE_4,
-            5 => TRACK_TO_EDGE_5,
-          }[@edge]
-
           [
             {
-              region_weights: regions,
+              region_weights: EDGE_REGIONS[@edge],
               x: 0,
               y: 0,
             },
@@ -124,7 +126,7 @@ module View
               d: "M #{begin_location[:x].round(2)} #{begin_location[:y].round(2)} "\
                  "Q #{control_location[:x].round(2)} #{control_location[:y].round(2)} "\
                  "#{end_location[:x].round(2)} #{end_location[:y].round(2)}",
-            ) if need_bezier
+            ) if need_bezier?
 
           # terminal tapered track only supported for centered city/town
           props[:attrs].merge!(
