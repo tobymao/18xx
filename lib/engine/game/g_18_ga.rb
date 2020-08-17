@@ -24,6 +24,13 @@ module Engine
       def setup
         setup_company_price_50_to_150_percent
 
+        # Place neutral tokens in the off board cities
+        @talahassee_token = Engine::Token.new(nil, price: 0, logo: '/logos/1882/neutral.svg', type: :neutral)
+        @talahassee_token.place(city_by_id('E1-0-0'), @log)
+        @montgomery_token = Engine::Token.new(nil, price: 0, logo: '/logos/1882/neutral.svg', type: :neutral)
+        @montgomery_token.place(city_by_id('J4-0-0'), @log)
+
+        # Remember specific tiles for upgrades check later
         @green_aug_tile ||= @tiles.find { |t| t.name == '453a' }
         @green_s_tile ||= @tiles.find { |t| t.name == '454a' }
         @brown_b_tile ||= @tiles.find { |t| t.name == '457a' }
@@ -50,7 +57,6 @@ module Engine
 
       def all_potential_upgrades(tile)
         upgrades = super
-        puts("Tile is #{tile.name} and its hex is #{tile.hex&.name}")
 
         # Need only to add more potential tiles if tile manifest (non-matching labels)
         return upgrades if tile.hex&.name != 'A1'
