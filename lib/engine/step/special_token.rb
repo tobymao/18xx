@@ -2,7 +2,6 @@
 
 require_relative 'base'
 require_relative 'tokener'
-require_relative '../game_error'
 
 module Engine
   module Step
@@ -33,7 +32,7 @@ module Engine
             teleport: token_ability.teleport_price,
           )
         else
-          @game.gate_error("#{entity.name} ability can not be used to place token " \
+          @game.game_error("#{entity.name} ability cannot be used to place token " \
                 "in #{action.city.hex.id}.")
         end
       end
