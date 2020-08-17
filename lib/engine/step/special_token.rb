@@ -2,7 +2,6 @@
 
 require_relative 'base'
 require_relative 'tokener'
-require_relative '../game_error'
 
 module Engine
   module Step
@@ -23,19 +22,13 @@ module Engine
 
       def process_place_token(action)
         entity = action.entity
-        token_ability = ability(entity)
 
-        if token_ability.check_city(action.city)
-          place_token(
-            entity.owner,
-            action.city,
-            action.token,
-            teleport: token_ability.teleport_price,
-          )
-        else
-          @game.gate_error("#{entity.name} ability can not be used to place token " \
-                "in #{action.city.hex.id}.")
-        end
+        place_token(
+          entity.owner,
+          action.city,
+          action.token,
+          teleport: ability(entity).teleport_price,
+        )
       end
 
       def available_hex(entity, hex)

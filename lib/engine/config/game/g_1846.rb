@@ -40,7 +40,6 @@ module Engine
     "C9": "South Bend",
     "C15": "Detroit",
     "C17": "Windsor",
-    "D6": "Chicago",
     "D14": "Toledo",
     "D20": "Erie",
     "D22": "Buffalo",
@@ -180,7 +179,6 @@ module Engine
           "hexes": [
             "D6"
           ],
-          "city": 3,
           "price": 0,
           "teleport_price": 0,
           "count": 1,

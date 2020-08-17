@@ -162,5 +162,3 @@ Modified station token placment
   token without connectivity, for the given price.
 - `extra`: If true, this ability may be used in addition to the turn's
   normal token placment step. Default false.
-- `city`: If present, the ability may only be used to token the city
-  with the corresponding index. Integer, default nil.
