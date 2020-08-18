@@ -63,7 +63,7 @@ module Engine
           Step::G18AL::BuyCompany,
           Step::HomeToken,
           Step::SpecialTrack,
-          Step::G18AL::Track,
+          Step::Track,
           Step::G18AL::Token,
           Step::Route,
           Step::Dividend,
@@ -137,6 +137,16 @@ module Engine
         @hexes
           .select { |hex| hexes_to_clear.include?(hex.name) && exclude != hex.name }
           .each { |hex| hex.tile.icons = [] }
+      end
+
+      def upgrades_to?(from, to, special = false)
+        # When upgrading from yellow to green:
+        #   Montgomery has no label in yellow. Green and brown tile for Montgomery
+        #   has M label, and no other tiles are allowed.
+
+        return super if from.color != :yellow || from.hex.name != 'L5'
+
+        to.color == :green && to.label.to_s == 'M'
       end
 
       def all_potential_upgrades(tile)
