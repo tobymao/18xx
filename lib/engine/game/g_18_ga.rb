@@ -27,10 +27,15 @@ module Engine
         setup_company_price_50_to_150_percent
 
         # Place neutral tokens in the off board cities
-        @talahassee_token = Engine::Token.new(nil, price: 0, logo: '/logos/1882/neutral.svg', type: :neutral)
-        @talahassee_token.place(city_by_id('E1-0-0'))
-        @montgomery_token = Engine::Token.new(nil, price: 0, logo: '/logos/1882/neutral.svg', type: :neutral)
-        @montgomery_token.place(city_by_id('J4-0-0'))
+        neutral = Corporation.new(
+          sym: 'N',
+          name: 'Neutral',
+          logo: 'neutral',
+          tokens: [0, 0],
+        )
+
+        city_by_id('E1-0-0').place_token(neutral, neutral.next_token)
+        city_by_id('J4-0-0').place_token(neutral, neutral.next_token)
 
         # Remember specific tiles for upgrades check later
         @green_aug_tile ||= @tiles.find { |t| t.name == '453a' }

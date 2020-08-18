@@ -15,7 +15,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>18GA is now available for alpha testing! Currently the privates are not implemented and neutral tokens don't appear.</p>
+        <p>18GA is now available for alpha testing! Currently the privates are not implemented.</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
         If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other

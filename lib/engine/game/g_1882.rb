@@ -153,7 +153,7 @@ module Engine
         cn_corp = corporations.find { |x| x.name == 'CN' }
         corporations.each do |x|
           unless CORPORATIONS_WITHOUT_NEUTRAL.include?(x.name)
-            x.tokens << Token.new(cn_corp, price: 0, logo: '/logos/1882/neutral.svg', type: :neutral)
+            x.tokens << Token.new(cn_corp, price: 0, logo: '/logos/neutral.svg', type: :neutral)
           end
         end
         corporations
