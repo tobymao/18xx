@@ -34,6 +34,8 @@ module Engine
           tokens: [0, 0],
         )
 
+        neutral.tokens.each { |token| token.type = :neutral }
+
         city_by_id('E1-0-0').place_token(neutral, neutral.next_token)
         city_by_id('J4-0-0').place_token(neutral, neutral.next_token)
 
