@@ -18,6 +18,8 @@ module Engine
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'can_buy_companies_from_other_players' => ['Interplayer Company Buy', 'Companies can be bought between players']
+      ).merge(
         Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
       ).freeze
 
