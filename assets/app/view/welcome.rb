@@ -15,8 +15,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>18GA is nowavailable for alpha testing!</p>
-        <p>The two player variant has now been implemented for 18Chesapeake!</p>
+        <p>18GA is now available for alpha testing!</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
         If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other
