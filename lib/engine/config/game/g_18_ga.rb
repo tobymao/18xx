@@ -37,7 +37,7 @@ module Engine
       "I9":"Waycross",
       "J12":"Jacksonville",
       "E1":"Montgomery",
-      "J4":"Talahassee",
+      "J4":"Tallahassee",
       "A3":"Chattanooga",
       "B10":"Greeneville",
       "G13":"Savannah",
