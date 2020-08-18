@@ -204,6 +204,7 @@ module Engine
             },
             {
                "type":"tile_lay",
+               "free":true,
                "owner_type":"corporation",
                "hexes":[
                   "F12"
