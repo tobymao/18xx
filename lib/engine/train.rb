@@ -10,7 +10,7 @@ module Engine
     attr_accessor :obsolete, :operated, :events
     attr_reader :available_on, :name, :distance, :discount, :obsolete_on,
                 :rusts_on, :rusted, :sym, :variant, :variants
-    attr_writer :buyable
+    attr_writer :buyable, :index
 
     def initialize(name:, distance:, price:, index: 0, **opts)
       @sym = name
