@@ -90,7 +90,7 @@ module View
 
           @stop = @path.stop
           @ct_edge = @tile.preferred_city_town_edges[@stop] if @stop
-          @center = @junction || @tile.stops.size < 2
+          @center = @junction || (@tile.towns.size + @tile.cities.size) < 2
 
           @begin_x = TrackNodePath.lookup_pos_x(@edge, 87)
           @begin_y = TrackNodePath.lookup_pos_y(@edge, 87)
