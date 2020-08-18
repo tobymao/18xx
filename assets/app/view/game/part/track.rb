@@ -39,7 +39,7 @@ module View
                                     dash: value_for(path, :dash),)
           end
 
-          tracks << @tile.paths.map do |path|
+          tracks += @tile.paths.map do |path|
             if path.offboard
               h(TrackOffboard, offboard: path.offboard, path: path, region_use: @region_use,
                                color: value_for(path, :color), width: value_for(path, :width),
