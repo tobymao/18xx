@@ -57,7 +57,7 @@ module View
     def render_introduction
       message = <<~MESSAGE
         <p>18xx.games is a website where you can play async or real-time 18xx games (based on the system originally devised by the brilliant Francis Tresham)!
-        <p>Right now, 1889, 18Chesapeake, 1846, 1836Jr30, and 1882 are fully implemented but I'm planning on doing many more in the future.
+        <p>Right now, 1889, 18Chesapeake, 1846, 1836Jr30, 1882, 18AL, 18GA, and 18TN are implemented.
         If you are new to 18xx games then 1889 or 18Chesapeake are good games to begin with.</p>
 
         <p>You can play locally with hot seat mode without an account. If you want to play multiplayer, you'll need to create an account.</p>
