@@ -30,7 +30,7 @@ module Engine
         end
 
         def log_run_payout(entity, kind, revenue, action, payout)
-          super unless civil_war_effect_with_single_train?(entity)
+          return super unless civil_war_effect_with_single_train?(entity)
 
           @log << "#{entity.name}'s run is ignored due to Civil War"
         end
