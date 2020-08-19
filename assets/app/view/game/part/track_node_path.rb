@@ -23,23 +23,23 @@ module View
           5 => TRACK_TO_EDGE_5,
         }.freeze
 
-        def self.lookup_pos_x(edge, distance)
-          @@edge_x ||= {}
-          @@edge_x["#{edge}_#{distance}"] ||= (-Math.sin((edge * 60) / 180 * Math::PI) * distance).round(2)
+        def edge_x_pos(edge, distance)
+          @@edge_x_pos ||= {}
+          @@edge_x_pos["#{edge}_#{distance}"] ||= (-Math.sin((edge * 60) / 180 * Math::PI) * distance).round(2)
         end
 
-        def self.lookup_pos_y(edge, distance)
-          @@edge_y ||= {}
-          @@edge_y["#{edge}_#{distance}"] ||= (Math.cos((edge * 60) / 180 * Math::PI) * distance).round(2)
+        def edge_y_pos(edge, distance)
+          @@edge_y_pos ||= {}
+          @@edge_y_pos["#{edge}_#{distance}"] ||= (Math.cos((edge * 60) / 180 * Math::PI) * distance).round(2)
         end
 
-        def self.lookup_control_location(begin_x, begin_y, end_x, end_y, edge)
+        def control_location(begin_x, begin_y, end_x, end_y, edge)
           @@control_location ||= {}
           key = "#{begin_x}_#{begin_y}_#{end_x}_#{end_y}"
-          @@control_location[key] ||= TrackNodePath.calculate_control_location(begin_x, begin_y, end_x, end_y, edge)
+          @@control_location[key] ||= calculate_control_location(begin_x, begin_y, end_x, end_y, edge)
         end
 
-        def self.calculate_control_location(begin_x, begin_y, end_x, end_y, edge)
+        def calculate_control_location(begin_x, begin_y, end_x, end_y, edge)
           # calculate the position of the quadratic control point for a bezier curve to
           # be drawn between two points on a tile. If a point is on an edge, the control
           # point will be chosen to make the curve perpendicular to the tile edge.
@@ -49,7 +49,8 @@ module View
           edge_perp_angle = EDGE_PERP_ANGLES[edge]
 
           distance = Math.sqrt((begin_x - end_x)**2 + (begin_y - end_y)**2)
-          mid = { x: (begin_x + end_x) / 2, y: (end_y + begin_y) / 2 }
+          mid_x = (begin_x + end_x) / 2
+          mid_y = (end_y + begin_y) / 2
           angle = Math.atan2(begin_y - end_y, end_x - begin_x)
 
           normal_angle = Math.atan2(end_x - begin_x, end_y - begin_y)
@@ -57,29 +58,29 @@ module View
           # determine what side of curve control point should be on
           # -> want to always arc into the center of tile
           center_angle = Math.atan2(begin_y, -begin_x)
-          normal_angle -= Math::PI if (angle >= 0) && (center_angle < angle) && ((angle - Math::PI) < center_angle) ||
-                                      angle.negative? && (center_angle < angle) ||
-                                      angle.negative? && ((Math::PI + angle) < center_angle)
+          normal_angle -= Math::PI if (angle >= 0 && center_angle < angle && angle - Math::PI < center_angle) ||
+            (angle.negative? && center_angle < angle) ||
+            (angle.negative? && Math::PI + angle < center_angle)
 
           internal_angle = edge_perp_angle / 180 * Math::PI - angle
           offset = (distance / 2 * Math.tan(internal_angle)).abs
 
           {
-            x: (mid[:x] + Math.cos(normal_angle) * offset).round(2),
-            y: (mid[:y] - Math.sin(normal_angle) * offset).round(2),
+            x: (mid_x + Math.cos(normal_angle) * offset).round(2),
+            y: (mid_y - Math.sin(normal_angle) * offset).round(2),
           }
         end
 
         def calculate_stop_x(ct_edge, tile)
           full_distance = 50
           full_distance -= 15 if tile.borders.any? { |border| border.edge == @ct_edge }
-          TrackNodePath.lookup_pos_x(ct_edge, full_distance)
+          edge_x_pos(ct_edge, full_distance)
         end
 
         def calculate_stop_y(ct_edge, tile)
           full_distance = 50
           full_distance -= 15 if tile.borders.any? { |border| border.edge == @ct_edge }
-          TrackNodePath.lookup_pos_y(ct_edge, full_distance)
+          edge_y_pos(ct_edge, full_distance)
         end
 
         def load_from_tile
@@ -92,15 +93,21 @@ module View
           @ct_edge = @tile.preferred_city_town_edges[@stop] if @stop
           @center = @junction || (@tile.towns.size + @tile.cities.size) < 2
 
-          @begin_x = TrackNodePath.lookup_pos_x(@edge, 87)
-          @begin_y = TrackNodePath.lookup_pos_y(@edge, 87)
+          @begin_x = edge_x_pos(@edge, 87)
+          @begin_y = edge_y_pos(@edge, 87)
 
           @end_x = @center ? 0 : calculate_stop_x(@ct_edge, @tile)
           @end_y = @center ? 0 : calculate_stop_y(@ct_edge, @tile)
 
-          @need_bezier = !@center && (@ct_edge != @edge) && ((@ct_edge - @edge).abs != 3)
-          @control_location = TrackNodePath.lookup_control_location(@begin_x, @begin_y,
-                                                                    @end_x, @end_y, @edge) if @need_bezier
+          @need_bezier = !@center && @ct_edge != @edge && (@ct_edge - @edge).abs != 3
+
+          @control_location = control_location(
+            @begin_x,
+            @begin_y,
+            @end_x,
+            @end_y,
+            @edge
+          ) if @need_bezier
         end
 
         def preferred_render_locations
@@ -127,10 +134,10 @@ module View
           }
 
           props[:attrs].merge!(
-              d: "M #{@begin_x} #{@begin_y} "\
-                 "Q #{@control_location[:x]} #{@control_location[:y]} "\
-                 "#{@end_x} #{@end_y}",
-            ) if @need_bezier
+            d: "M #{@begin_x} #{@begin_y} "\
+            "Q #{@control_location[:x]} #{@control_location[:y]} "\
+            "#{@end_x} #{@end_y}",
+          ) if @need_bezier
 
           # terminal tapered track only supported for centered city/town
           props[:attrs].merge!(
@@ -140,13 +147,11 @@ module View
             stroke: 'none',
             'stroke-linecap': 'butt',
             'stroke-linejoin': 'miter',
-            'stroke-width': @width.to_i * 0.75,
+            'stroke-width': (@width.to_i * 0.75).to_s,
             'stroke-dasharray': @dash,
           ) if @terminal
 
-          [
-            h(:path, props),
-          ]
+          h(:path, props)
         end
       end
     end

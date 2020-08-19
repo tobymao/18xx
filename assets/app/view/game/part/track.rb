@@ -29,50 +29,41 @@ module View
           # Array<Array<Path>>
           @routes_paths = @routes.map { |route| route.paths_for(@tile.paths) }
 
-          tracks = @tile.paths.select { |path| path.edges.size == 2 }
-          .map { |path| [path, index_for(path)] }
-          .sort_by { |_, index| index || -1 }
-          .map do |path, index|
-            h(TrackCurvilinearPath, region_use: @region_use, path: path,
-                                    color: value_for_index(index, :color),
-                                    width: value_for(path, :width),
-                                    dash: value_for(path, :dash),)
-          end
+          sorted = @tile
+            .paths
+            .map { |path| [path, index_for(path)] }
+            .sort_by { |_, index| index || -1 }
 
-          more_tracks = @tile.paths.map do |path|
+          sorted.map do |path, index|
+            props = {
+              color: value_for_index(index, :color),
+              width: value_for_index(index, :width),
+              dash: value_for_index(index, :dash),
+            }
+
             if path.offboard
-              h(TrackOffboard, offboard: path.offboard, path: path, region_use: @region_use,
-                               color: value_for(path, :color), width: value_for(path, :width),
-                               dash: value_for(path, :dash),)
+              h(TrackOffboard, offboard: path.offboard, path: path, region_use: @region_use, **props)
             elsif path.junction || path.city || (path.town && path.town.exits.size != 2)
               # assumes only one city/town possible in a path (for now)
-              h(TrackNodePath, tile: @tile, path: path, region_use: @region_use,
-                               color: value_for(path, :color), width: value_for(path, :width),
-                               dash: value_for(path, :dash),)
+              h(TrackNodePath, tile: @tile, path: path, region_use: @region_use, **props)
             elsif path.town
-              h(TrackCurvilinearHalfPath, exits: path.town.exits, path: path, region_use: @region_use,
-                                          color: value_for(path, :color), width: value_for(path, :width),
-                                          dash: value_for(path, :dash),)
+              h(TrackCurvilinearHalfPath, exits: path.town.exits, path: path, region_use: @region_use, **props)
+            else
+              h(TrackCurvilinearPath, region_use: @region_use, path: path, **props)
             end
           end
-          tracks.concat(more_tracks)
-          tracks
         end
 
         private
 
         def index_for(path)
-          @routes_paths.find_index do |route_paths|
+          @routes_paths.index do |route_paths|
             route_paths.any? { |p| path == p }
           end
         end
 
         def value_for_index(index, prop)
           index ? route_prop(index, prop) : TRACK[prop]
-        end
-
-        def value_for(path, prop)
-          value_for_index(index_for(path), prop)
         end
       end
     end
