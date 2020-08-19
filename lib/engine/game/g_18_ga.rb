@@ -23,6 +23,9 @@ module Engine
         Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
       ).freeze
 
+      STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
+      STANDARD_GREEN_CITY_TILES = %w[14 15].freeze
+
       include CompanyPrice50To150Percent
 
       def setup
@@ -56,7 +59,7 @@ module Engine
           Step::G18GA::BuyCompany,
           Step::HomeToken,
           Step::SpecialTrack,
-          Step::G18GA::Track,
+          Step::Track,
           Step::Token,
           Step::Route,
           Step::Dividend,
@@ -65,19 +68,31 @@ module Engine
         ], round_num: round_num)
       end
 
-      YELLOW_CITY_TILES = %w[5 6 57].freeze
-      GREEN_CITY_TILES = %w[14 15].freeze
+      def upgrades_to?(from, to, special = false)
+        # Augusta (D10) use standard tiles for yellow, and special tile for green
+        return to.name == '453a' if from.color == :yellow && from.hex.name == 'D10'
 
-      def all_potential_upgrades(tile)
+        # Savannah (G13) use standard tiles for yellow, and special tile for green
+        return to.name == '454a' if from.color == :yellow && from.hex.name == 'G13'
+
+        # Brunswick (I11) use standard tiles for yellow/green, and special tile for brown
+        return to.name == '457a' if from.color == :green && from.hex.name == 'I11'
+
+        # Macon (F6) use standard tiles for yellow/green, and special tile for brown
+        return to.name == '458a' if from.color == :green && from.hex.name == 'F6'
+
+        super
+      end
+
+      def all_potential_upgrades(tile, tile_manifest: false)
         upgrades = super
 
-        # Need only to add more potential tiles if tile manifest (non-matching labels)
-        return upgrades if tile.hex&.name != 'A1'
+        return upgrades unless tile_manifest
 
-        upgrades << @green_aug_tile if @green_aug_tile && YELLOW_CITY_TILES.include?(tile.name)
-        upgrades << @green_s_tile if @green_s_tile && YELLOW_CITY_TILES.include?(tile.name)
-        upgrades << @brown_b_tile if @brown_b_tile && GREEN_CITY_TILES.include?(tile.name)
-        upgrades << @brown_m_tile if @brown_m_tile && GREEN_CITY_TILES.include?(tile.name)
+        upgrades |= [@green_aug_tile] if @green_aug_tile && STANDARD_YELLOW_CITY_TILES.include?(tile.name)
+        upgrades |= [@green_s_tile] if @green_s_tile && STANDARD_YELLOW_CITY_TILES.include?(tile.name)
+        upgrades |= [@brown_b_tile] if @brown_b_tile && STANDARD_GREEN_CITY_TILES.include?(tile.name)
+        upgrades |= [@brown_m_tile] if @brown_m_tile && STANDARD_GREEN_CITY_TILES.include?(tile.name)
 
         upgrades
       end

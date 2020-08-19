@@ -12,7 +12,7 @@ module View
         return [] unless @tile_selector
         return [] if @tile_selector.role != :tile_page || @tile_selector.hex&.tile&.name != tile.name
 
-        upgrade_tiles = @game.all_potential_upgrades(@tile_selector.hex.tile).map do |t|
+        upgrade_tiles = @game.all_potential_upgrades(@tile_selector.hex.tile, tile_manifest: true).map do |t|
           [t, remaining[t.name]&.any? ? nil : 'None Left']
         end
 

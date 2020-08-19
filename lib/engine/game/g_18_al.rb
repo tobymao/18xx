@@ -33,7 +33,7 @@ module Engine
 
       ROUTE_BONUSES = %i[atlanta_birmingham mobile_nashville].freeze
 
-      YELLOW_CITIES = %w[5 6 57].freeze
+      STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
 
       include CompanyPrice50To150Percent
       include Revenue4D
@@ -140,26 +140,22 @@ module Engine
       end
 
       def upgrades_to?(from, to, special = false)
-        # When upgrading from yellow to green:
-        #   Montgomery has no label in yellow. Green and brown tile for Montgomery
-        #   has M label, and no other tiles are allowed.
+        # If upgrading Montgomery (L5) to green, only M tile #443a is allowed
+        return to.name == '443a' if from.color == :yellow && from.hex.name == 'L5'
 
-        return super if from.color != :yellow || from.hex.name != 'L5'
-
-        to.color == :green && to.label.to_s == 'M'
+        super
       end
 
-      def all_potential_upgrades(tile)
+      def all_potential_upgrades(tile, tile_manifest: false)
         # Lumber terminal cannot be upgraded
         return [] if tile.name == '445'
 
         upgrades = super
 
-        # Add M tile as upgrade posibility to yellow city tiles in the tile manifest
-        return upgrades << @green_m_tile if
-          (!tile.hex || tile.hex.name == 'A1') && # A1 seem to be default hex name for unlaid
-          @green_m_tile &&
-          YELLOW_CITIES.include?(tile.name)
+        return upgrades unless tile_manifest
+
+        # Tile manifest for yellow cities should show M tile as an option
+        upgrades |= [@green_m_tile] if @green_m_tile && STANDARD_YELLOW_CITY_TILES.include?(tile.name)
 
         upgrades
       end
