@@ -156,15 +156,6 @@ module Engine
         'Player 1' => 3362,
       },
     },
-    GAMES_BY_TITLE['18TN'] => {
-      4716 => {
-        'Bertil' => 3110,
-        'Erica' => 2965,
-        'Adam' => 2878,
-        'Cecilia' => 2701,
-        'Daisy' => 2648,
-      },
-    },
   }.freeze
 
   TEST_CASES.each do |game, results|
