@@ -77,7 +77,7 @@ module Engine
 
             # Add a new neutral/CN token
             cn_corp = @game.corporation_by_id('CN')
-            token = Engine::Token.new(cn_corp, price: 0, logo: '/logos/neutral.svg', type: :neutral)
+            token = Engine::Token.new(cn_corp, price: 0, logo: '/logos/1882/neutral.svg', type: :neutral)
             cn_corp.tokens << token
 
             action.city.reservations.delete(owner)

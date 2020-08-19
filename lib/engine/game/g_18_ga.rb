@@ -30,7 +30,7 @@ module Engine
         neutral = Corporation.new(
           sym: 'N',
           name: 'Neutral',
-          logo: 'neutral',
+          logo: 'open_city',
           tokens: [0, 0],
         )
 
