@@ -35,6 +35,7 @@ module Engine
           logo: 'open_city',
           tokens: [0, 0],
         )
+        neutral.owner = @bank
 
         neutral.tokens.each { |token| token.type = :neutral }
 
