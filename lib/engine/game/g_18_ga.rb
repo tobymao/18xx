@@ -53,7 +53,7 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
-          Step::BuyCompany,
+          Step::G18GA::BuyCompany,
           Step::HomeToken,
           Step::SpecialTrack,
           Step::G18GA::Track,
