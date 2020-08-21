@@ -18,6 +18,9 @@ module Engine
         # Can't sell president's share
         return false unless bundle.can_dump?(player)
 
+        # Can't oversaturate the market
+        return false unless @game.share_pool.fit_in_bank?(bundle)
+
         # Can only sell as much as you need to afford the train
         total_cash = bundle.price + available_cash(player)
         return false if total_cash >= needed_cash(player) + bundle.price_per_share
@@ -31,9 +34,6 @@ module Engine
           next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
           return false if remaining < next_highest
         end
-
-        # Can't oversaturate the market
-        return false unless @game.share_pool.fit_in_bank?(bundle)
 
         # Otherwise we're good
         true

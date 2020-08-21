@@ -24,7 +24,7 @@ module View
                         "#{@game.format_currency(funds_required)}, and can sell "\
                         "#{@game.format_currency(liquidity - player.cash)} in shares:")
 
-          children.append(*render_emergency_money_raising(player))
+          children.concat(render_emergency_money_raising(player))
         else
           children << h('div',
                         'To buy the cheapest train from the depot the president must contribute'\

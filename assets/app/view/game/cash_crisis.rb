@@ -19,7 +19,7 @@ module View
         children << h('div',
                       "Player owes the bank #{@game.format_currency(funds_required)} and must sell shares if possible.")
 
-        children.append(*render_emergency_money_raising(player))
+        children.concat(render_emergency_money_raising(player))
 
         h(:div, children)
       end
