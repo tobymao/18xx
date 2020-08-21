@@ -18,7 +18,7 @@ module View
           text =
             case type
             when :payout
-              'Payout'
+              'Pay Out'
             when :withhold
               'Withhold'
             when :half
@@ -41,7 +41,7 @@ module View
           props = { style: { paddingRight: '1rem' } }
           h(:tr, [
             button,
-            h('td.right', props, [@game.format_currency(option[:company])]),
+            h('td.right', props, [@game.format_currency(option[:company] + option[:divs_to_company])]),
             h('td.right', props, [@game.format_currency(option[:per_share])]),
             h(:td, [direction]),
           ])

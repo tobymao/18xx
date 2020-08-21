@@ -2,6 +2,7 @@
 
 require 'view/game/actionable'
 require 'view/game/bank'
+require 'view/game/company'
 require 'view/game/corporation'
 require 'view/game/par'
 require 'view/game/players'
@@ -21,9 +22,11 @@ module View
         def render
           @step = @game.round.active_step
           @current_actions = @step.current_actions
+          @auctioning_corporation = @step.auctioning_corporation if @step.respond_to?(:auctioning_corporation)
+          @selected_corporation ||= @auctioning_corporation
 
           @current_entity = @step.current_entity
-          if @last_player != @current_entity
+          if @last_player != @current_entity && !@auctioning_corporation
             store(:selected_corporation, nil, skip: true)
             store(:last_player, @current_entity, skip: true)
           end
@@ -35,13 +38,6 @@ module View
                         else
                           h('div.margined', 'Must sell stock: above 60% limit in corporation(s)')
                         end
-          end
-
-          unless @game.corporations.all?(:ipoed)
-            children << h('div.margined', [
-              h('span.bold', 'All par prices: '),
-              h(:span, @game.stock_market.par_prices.map(&:price).sort.join('/')),
-            ])
           end
 
           children.concat(render_corporations)
@@ -61,10 +57,14 @@ module View
           }
 
           @game.corporations.map do |corporation|
-            children = [h(Corporation, corporation: corporation)]
+            next if @auctioning_corporation && @auctioning_corporation != corporation
+
+            children = []
+            children.concat(render_subsidiaries)
+            children << h(Corporation, corporation: corporation)
             children << render_input if @selected_corporation == corporation
             h(:div, props, children)
-          end
+          end.compact
         end
 
         def render_input
@@ -129,9 +129,43 @@ module View
         end
 
         def render_pre_ipo
-          return unless @current_actions.include?('par')
+          return h(Par, corporation: @selected_corporation) if @current_actions.include?('par')
+          return render_bid(@selected_corporation) if @current_actions.include?('bid')
 
-          h(Par, corporation: @selected_corporation)
+          nil
+        end
+
+        def render_bid(corporation)
+          step = @step.min_increment
+
+          price_input = h(:input, style: { marginRight: '1rem' }, props: {
+            value: @step.min_bid(corporation),
+            step: step,
+            min: @step.min_bid(corporation) + step,
+            max: @step.max_bid(@current_entity, corporation),
+            type: 'number',
+            size: @current_entity.cash.to_s.size,
+          })
+
+          place_bid = lambda do
+            process_action(Engine::Action::Bid.new(
+              @current_entity,
+              corporation: corporation,
+              price: Native(price_input)[:elm][:value].to_i,
+            ))
+          end
+
+          bid_button = h(:button, { on: { click: place_bid } }, 'Place Bid')
+
+          h('div.center', [price_input, bid_button])
+        end
+
+        def render_subsidiaries
+          return [] unless @current_actions.include?('assign')
+
+          @step.available_subsidiaries.map do |company|
+            h(Company, company: company)
+          end
         end
       end
     end

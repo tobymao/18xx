@@ -293,7 +293,7 @@ module Engine
          "name":"Louisville and Nashville Railroad",
          "value":175,
          "revenue":0,
-         "desc":"The purchaser of this private company reveives the president's certificate of the L&N Railroad and must immediately set its par value. The L&N automatically floats once this private company is purchased and is an exception to the normal rule. This private company closes immediately after the par value is set.",
+         "desc":"The purchaser of this private company receives the president's certificate of the L&N Railroad and must immediately set its par value. The L&N automatically floats once this private company is purchased and is an exception to the normal rule. This private company closes immediately after the par value is set.",
          "abilities":[
             {
                "type":"share",
@@ -461,7 +461,7 @@ module Engine
          ]
       },
       "gray":{
-         "city=revenue:30;path=a:0,b:_0;path=a:_0,b:4;path=a:4,b:_0;path=a:0,b:_0":[
+         "city=revenue:30,loc:2;path=a:0,b:_0;path=a:4,b:_0;path=a:0,b:4":[
             "B13"
          ],
          "town=revenue:yellow_30|brown_40;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0":[
@@ -481,6 +481,7 @@ module Engine
          ],
          "city=revenue:0;upgrade=cost:40,terrain:water":[
             "D7",
+            "F11",
             "F17",
             "H7"
          ],
@@ -554,9 +555,6 @@ module Engine
          ],
          "town=revenue:10;path=a:0,b:_0;path=a:_0,b:3":[
             "D11"
-         ],
-         "city=revenue:0;label=N;upgrade=cost:40,terrain:water":[
-            "F11"
          ],
          "city=revenue:20;path=a:3,b:_0;path=a:5,b:_0":[
             "G6"

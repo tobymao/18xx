@@ -33,6 +33,8 @@ module Engine
 
       ROUTE_BONUSES = %i[atlanta_birmingham mobile_nashville].freeze
 
+      YELLOW_CITIES = %w[5 6 57].freeze
+
       include CompanyPrice50To150Percent
       include Revenue4D
       include TerminusCheck
@@ -49,6 +51,8 @@ module Engine
             ability.description = "Historical objective: #{get_location_name(ability.hexes.first)}"
           end
         end
+
+        @green_m_tile ||= @tiles.find { |t| t.name == '443a' }
       end
 
       def operating_round(round_num)
@@ -59,7 +63,7 @@ module Engine
           Step::G18AL::BuyCompany,
           Step::HomeToken,
           Step::SpecialTrack,
-          Step::G18AL::Track,
+          Step::Track,
           Step::G18AL::Token,
           Step::Route,
           Step::Dividend,
@@ -133,6 +137,31 @@ module Engine
         @hexes
           .select { |hex| hexes_to_clear.include?(hex.name) && exclude != hex.name }
           .each { |hex| hex.tile.icons = [] }
+      end
+
+      def upgrades_to?(from, to, special = false)
+        # When upgrading from yellow to green:
+        #   Montgomery has no label in yellow. Green and brown tile for Montgomery
+        #   has M label, and no other tiles are allowed.
+
+        return super if from.color != :yellow || from.hex.name != 'L5'
+
+        to.color == :green && to.label.to_s == 'M'
+      end
+
+      def all_potential_upgrades(tile)
+        # Lumber terminal cannot be upgraded
+        return [] if tile.name == '445'
+
+        upgrades = super
+
+        # Add M tile as upgrade posibility to yellow city tiles in the tile manifest
+        return upgrades << @green_m_tile if
+          (!tile.hex || tile.hex.name == 'A1') && # A1 seem to be default hex name for unlaid
+          @green_m_tile &&
+          YELLOW_CITIES.include?(tile.name)
+
+        upgrades
       end
 
       private

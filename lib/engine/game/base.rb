@@ -560,7 +560,9 @@ module Engine
       end
 
       def must_buy_train?(entity)
-        !entity.rusted_self && entity.trains.empty? &&
+        !entity.rusted_self &&
+          entity.trains.empty? &&
+          depot.depot_trains.any? &&
           (self.class::MUST_BUY_TRAIN == :always ||
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
       end
@@ -1018,17 +1020,19 @@ module Engine
       def action_processed(_action); end
 
       def priority_deal_player
+        players = @players.reject(&:bankrupt)
+
         if @round.current_entity&.player?
           # We're in a round that iterates over players, so the
           # priority deal card goes to the player who will go first if
           # everyone passes starting now.  last_to_act is nil before
           # anyone has gone, in which case the first player has PD.
-          @players.reject(&:bankrupt)[@round.entity_index]
+          players[((players.index(@round.last_to_act) || -1) + 1) % players.size]
         else
           # We're in a round that iterates over something else, like
           # corporations.  The player list was already rotated when we
           # left a player-focused round to put the PD player first.
-          @players.reject(&:bankrupt).first
+          players.first
         end
       end
 

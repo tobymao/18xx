@@ -96,7 +96,7 @@ module Engine
           place_token(
             @entity.owner,
             action.city,
-            available_tokens[0],
+            available_tokens(@entity)[0],
             teleport: ability(@entity).teleport_price,
           )
           @destination = action.city.hex
@@ -115,8 +115,8 @@ module Engine
         end
 
         # Can't lay neutral tokens, so just provide the next one.
-        def available_tokens
-          [current_entity.owner.next_token]
+        def available_tokens(entity)
+          [entity.owner.next_token]
         end
 
         def upgradeable_tiles(entity, hex)

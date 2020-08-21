@@ -132,22 +132,26 @@ module Engine
 
       def process_buy_shares(action)
         buy_shares(action.entity, action.bundle)
+        @round.last_to_act = action.entity
         @current_actions << action
       end
 
       def process_sell_shares(action)
         sell_shares(action.entity, action.bundle)
+        @round.last_to_act = action.entity
         @current_actions << action
       end
 
       def process_par(action)
         share_price = action.share_price
         corporation = action.corporation
-        @game.game_error("#{corporation} cannot be parred") unless corporation.can_par?(action.entity)
+        entity = action.entity
+        @game.game_error("#{corporation} cannot be parred") unless corporation.can_par?(entity)
 
         @game.stock_market.set_par(corporation, share_price)
         share = corporation.shares.first
-        buy_shares(action.entity, share.to_bundle)
+        buy_shares(entity, share.to_bundle)
+        @round.last_to_act = entity
         @current_actions << action
       end
 

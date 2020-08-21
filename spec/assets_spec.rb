@@ -161,7 +161,6 @@ describe 'Assets' do
       ['1846', 3099, 53, 'issue_shares', '1846: Operating Round 1.1 (of 2) - Issue or Redeem Shares'],
       ['1846', 3099, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
       ['18_al', 4714, nil, 'endgame', '18AL: Operating Round 7.2 (of 3) - Game Over - Company hit max stock value'],
-      ['18_tn', 4715, nil, 'endgame', '18TN: Operating Round 7.2 (of 3) - Game Over - Bank Broken'],
     ].freeze
 
     def render_game(jsonfile, no_actions, string)

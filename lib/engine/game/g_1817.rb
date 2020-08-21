@@ -40,6 +40,9 @@ module Engine
       POOL_SHARE_DROP = :one
       SELL_MOVEMENT = :none
 
+      # Two lays with one being an upgrade, second tile costs 20
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
+
       def new_auction_round
         log << "Seed Money for initial auction is #{format_currency(SEED_MONEY)}"
         Round::Auction.new(self, [
@@ -47,15 +50,11 @@ module Engine
         ])
       end
 
-      # Two lays with one being an upgrade, second tile costs 20
-      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
-
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
           Step::HomeToken,
-          # @todo: This needs customization
-          Step::BuySellParShares,
+          Step::G1817::BuySellParShares,
         ])
       end
 
@@ -63,7 +62,6 @@ module Engine
         Round::G1817::Operating.new(self, [
           Step::Bankrupt, # @todo: needs customization
           Step::G1817::CashCrisis,
-          Step::BuyCompany, # @todo: remove
           Step::DiscardTrain,
           Step::G1817::Track,
           Step::Token,

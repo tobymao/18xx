@@ -38,6 +38,7 @@ module Engine
         if auctioning_company
           add_bid(action)
         else
+          @round.last_to_act = action.entity
           placement_bid(action)
           @round.next_entity_index!
         end

@@ -86,10 +86,9 @@ module Engine
       def buyable_trains(entity)
         depot_trains = @depot.depot_trains
         other_trains = @depot.other_trains(entity)
-
-        # If the corporation cannot buy a train, then it can only buy the cheapest available
+        # If the corporation cannot buy a train, then it can only buy the cheapest available (if there is any...)
         min_depot_train = @depot.min_depot_train
-        if min_depot_train.price > entity.cash
+        if min_depot_train && min_depot_train.price > entity.cash
           depot_trains = [min_depot_train]
 
           if @last_share_sold_price

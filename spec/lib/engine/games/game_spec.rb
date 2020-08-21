@@ -145,12 +145,15 @@ module Engine
         'Daisy' => 2522,
         'Cecilia' => 2498,
       },
-    },
-    GAMES_BY_TITLE['18TN'] => {
-      4715 => {
-        'Player 3' => 5838,
-        'Player 1' => 5422,
-        'Player 2' => 5320,
+      # In this game all trains are bought from depot.
+      # One train is without trains, but as depot is
+      # empty it does not have to buy any trains.
+      # Fix of issue #1446
+      1446 => {
+        'Player 2' => 4120,
+        'Player 4' => 4057,
+        'Player 3' => 3487,
+        'Player 1' => 3362,
       },
     },
   }.freeze
