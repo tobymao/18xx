@@ -16,12 +16,139 @@ module View
 
         EDGE_REGIONS = {
           0 => TRACK_TO_EDGE_0,
+          0.5 => [14, 15],
           1 => TRACK_TO_EDGE_1,
+          1.5 => [7, 14],
           2 => TRACK_TO_EDGE_2,
+          2.5 => [7, 8],
           3 => TRACK_TO_EDGE_3,
+          3.5 => [8, 9],
           4 => TRACK_TO_EDGE_4,
+          4.5 => [9, 16],
           5 => TRACK_TO_EDGE_5,
+          5.5 => [15, 16],
         }.freeze
+
+        EXIT0_TO_EDGE_BEZIER_REGIONS = {
+          0 => [21],
+          0.5 => [21],
+          1 => [13, 14, 15, 21],
+          1.5 => [14, 15, 21],
+          2 => [6, 7, 14, 15, 21],
+          2.5 => [7, 14, 15, 21],
+          3 => [2, 8, 15, 21],
+          3.5 => [9, 15, 16, 21],
+          4 => [9, 10, 15, 16, 21],
+          4.5 => [15, 16, 21],
+          5 => [15, 16, 17, 21],
+          5.5 => [21],
+        }.freeze
+
+        EXIT0_TO_EDGE_LINE_REGIONS = {
+          0 => [21],
+          0.5 => [20, 21],
+          1 => [13, 19, 20],
+          1.5 => [13, 14, 15, 21],
+          2 => [6, 7, 14, 15, 21],
+          2.5 => [7, 14, 15, 21],
+          3 => [2, 8, 15, 21],
+          3.5 => [9, 15, 16, 21],
+          4 => [9, 10, 15, 16, 21],
+          4.5 => [16, 17, 21, 22],
+          5 => [17, 22, 23],
+          5.5 => [21, 22],
+        }.freeze
+
+        EDGE0_TO_EDGE_LINE_REGIONS = {
+          0 => [21],
+          0.5 => [21],
+          1 => [13, 14, 15, 21],
+          1.5 => [14, 15, 21],
+          2 => [6, 7, 14, 15, 21],
+          2.5 => [7, 14, 15, 21],
+          3 => [2, 8, 15, 21],
+          3.5 => [9, 15, 16, 21],
+          4 => [9, 10, 15, 16, 21],
+          4.5 => [15, 16, 21],
+          5 => [15, 16, 17, 21],
+          5.5 => [21],
+        }.freeze
+
+        EDGE0P5_TO_EDGE_LINE_REGIONS = {
+          0.0 => [21],
+          0.5 => [21],
+          1.0 => [13],
+          1.5 => [13, 14],
+          2.0 => [6, 7, 14],
+          2.5 => [7, 14],
+          3.0 => [2, 7, 8, 14],
+          3.5 => [8, 9, 14, 15],
+          4.0 => [9, 10, 15, 16],
+          4.5 => [15, 16],
+          5.0 => [15, 16, 17],
+          5.5 => [15, 21],
+        }.freeze
+
+        # result of rotating tile one position clockwise
+        CW_REGION = {
+          0 => 3,
+          1 => 4,
+          2 => 10,
+          3 => 11,
+          4 => 18,
+          5 => 1,
+          6 => 2,
+          7 => 8,
+          8 => 9,
+          9 => 16,
+          10 => 17,
+          11 => 23,
+          12 => 0,
+          13 => 6,
+          14 => 7,
+          15 => 14,
+          16 => 15,
+          17 => 21,
+          18 => 22,
+          19 => 5,
+          20 => 12,
+          21 => 13,
+          22 => 19,
+          23 => 20,
+        }.freeze
+
+        def regions(edge0, edge1, bezier, exit0)
+          exit0 = !!exit0
+          @@regions ||= {}
+          @@regions["#{edge0}_#{edge1}_#{bezier}_#{exit0}"] ||= calculate_regions(edge0, edge1, bezier, exit0)
+        end
+
+        def calculate_regions(edge0, edge1, bezier, exit0)
+          # assume can never have edge1=edge, edg0=non-edge
+          if edge0.to_f != edge0.to_i.to_f
+            # assume if edge0 is non-integer, then must be a line, no exits
+            rot_edge1 = ((edge1 - edge0) + 0.5) % 6
+            rot_regions = EDGE0P5_TO_EDGE_LINE_REGIONS[rot_edge1]
+          else
+            rot_edge1 = (edge1 - edge0) % 6
+            rot_regions = if exit0 && bezier
+                            EXIT0_TO_EDGE_BEZIER_REGIONS[rot_edge1]
+                          elsif exit0 && !bezier
+                            EXIT0_TO_EDGE_LINE_REGIONS[rot_edge1]
+                          else
+                            EDGE0_TO_EDGE_LINE_REGIONS[rot_edge1]
+                          end
+          end
+          rotate_regions(rot_regions, edge0)
+        end
+
+        def rotate_regions(regions, rot)
+          while rot > 0.5
+            regions = regions.map { |r| CW_REGION[r] }
+            rot -= 1
+          end
+          regions
+        end
 
         def edge_x_pos(edge, distance)
           @@edge_x_pos ||= {}
@@ -84,14 +211,15 @@ module View
         end
 
         def load_from_tile
-          # for now assumes one edge and one node on path
-          @edge = @path.edges.first.num
           @terminal = @path.terminal
           @junction = @path.junction
+          @exit = @path.edges.any?
+          # for now assumes one edge and one node on path
+          @edge = @path.edges.first.num
 
           @stop = @path.stop
           @ct_edge = @tile.preferred_city_town_edges[@stop] if @stop
-          @center = @junction || (@tile.towns.size + @tile.cities.size) < 2
+          @center = @junction || (@stop && !@ct_edge)
 
           @begin_x = edge_x_pos(@edge, 87)
           @begin_y = edge_y_pos(@edge, 87)
@@ -113,7 +241,7 @@ module View
         def preferred_render_locations
           [
             {
-              region_weights: EDGE_REGIONS[@edge],
+              region_weights: @center ? EDGE_REGIONS[@edge] : regions(@edge, @ct_edge, @need_bezier, @exit),
               x: 0,
               y: 0,
             },

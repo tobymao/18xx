@@ -16,7 +16,7 @@ module View
 
         def render
           @tile.towns.map do |town|
-            if @tile.lawson? || @tile.paths.empty?
+            if (@tile.cities.empty? && @tile.towns.one? && (@tile.edges.size != 2)) || @tile.paths.empty?
               h(TownDot, town: town, tile: @tile, region_use: @region_use,
                          color: value_for(town, :color), width: value_for(town, :width))
             else

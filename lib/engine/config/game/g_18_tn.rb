@@ -461,7 +461,7 @@ module Engine
          ]
       },
       "gray":{
-         "city=revenue:30;path=a:0,b:_0;path=a:4,b:_0;path=a:0,b:4":[
+         "city=revenue:30,loc:2;path=a:0,b:_0;path=a:4,b:_0;path=a:0,b:4":[
             "B13"
          ],
          "town=revenue:yellow_30|brown_40;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0":[
