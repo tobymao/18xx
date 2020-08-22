@@ -29,6 +29,8 @@ module Engine
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
       HEX_WITH_P_LABEL = %w[F11 H3 H15].freeze
+      STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
+      GREEN_CITY_TILES = %w[14 15 619 TN1 TN2].freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'civil_war' => ['Civil War', 'Companies with trains lose revenue of one train its next OR']
@@ -47,6 +49,7 @@ module Engine
         @share_pool.transfer_shares(final_share.to_bundle, @bank)
 
         @brown_p_tile ||= @tiles.find { |t| t.name == '170' }
+        @green_nashville_tile ||= @tiles.find { |t| t.name == 'TN2' }
       end
 
       def operating_round(round_num)
@@ -65,7 +68,7 @@ module Engine
           Step::SpecialTrack,
           Step::G18TN::BuyCompany,
           Step::HomeToken,
-          Step::G18TN::Track,
+          Step::Track,
           Step::Token,
           Step::Route,
           Step::G18TN::Dividend,
@@ -107,22 +110,27 @@ module Engine
       end
 
       def upgrades_to?(from, to, special = false)
-        return true if super
-
         # When upgrading from green to brown:
-        #   Memphis (H3) has no label. P label or no label is OK.
-        #   Chattanooga (H15) has C label. Only P label is OK.
-        #   Nashville (F11) has N label. Only P label is OK.
-        from.color == :green && HEX_WITH_P_LABEL.include?(from.hex.name) && to.color == :brown && to.label.to_s == 'P'
+        #   If Memphis (H3), Chattanooga (H15), Nashville (F11)
+        #   only brown P tile (#170) are allowed.
+        return to.name == '170' if from.color == :green && HEX_WITH_P_LABEL.include?(from.hex.name)
+
+        # When upgrading Nashville (F11) from yellow to green, only TN2 from green to brown:
+        return to.name == 'TN2' if from.color == :yellow && from.hex.name == 'F11'
+
+        super
       end
 
-      def all_potential_upgrades(tile)
+      def all_potential_upgrades(tile, tile_manifest: false)
         upgrades = super
 
-        return upgrades << @brown_p_tile if
-          @brown_p_tile &&
-          (!tile.hex || HEX_WITH_P_LABEL.include?(tile.hex.name)) &&
-          %w[14 15 619 TN1 TN2].include?(tile.name)
+        return upgrades unless tile_manifest
+
+        # Tile manifest for yellow standard cities should show N tile (TN1) as an option
+        upgrades |= [@green_nashville_tile] if @green_nashville_tile && STANDARD_YELLOW_CITY_TILES.include?(tile.name)
+
+        # Tile manifest for green cities should show P tile as an option
+        upgrades |= [@brown_p_tile] if @brown_p_tile && GREEN_CITY_TILES.include?(tile.name)
 
         upgrades
       end
