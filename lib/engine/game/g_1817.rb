@@ -36,6 +36,9 @@ module Engine
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
       SEED_MONEY = 200
       MUST_BUY_TRAIN = :never
+      EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
+      POOL_SHARE_DROP = :one
+      SELL_MOVEMENT = :none
 
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
@@ -56,14 +59,16 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::Operating.new(self, [
-          Step::Bankrupt,
+        Round::G1817::Operating.new(self, [
+          Step::Bankrupt, # @todo: needs customization
+          Step::G1817::CashCrisis,
           Step::DiscardTrain,
           Step::G1817::Track,
           Step::Token,
           Step::Route,
           Step::G1817::Dividend,
           Step::G1817::BuyTrain,
+
           # @todo: pay fees on loans, repay loans
           # @todo: check for liquidation
         ], round_num: round_num)

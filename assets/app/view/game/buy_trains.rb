@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
 require 'view/game/actionable'
-require 'view/game/corporation'
-require 'view/game/sell_shares'
-require 'view/game/undo_and_pass'
+require 'view/game/emergency_money'
 
 module View
   module Game
     class BuyTrains < Snabberb::Component
       include Actionable
+      include EmergencyMoney
       needs :show_other_players, default: nil, store: true
       needs :selected_corporation, default: nil, store: true
 
@@ -24,24 +23,8 @@ module View
                         'To buy the cheapest train from the depot the president must raise '\
                         "#{@game.format_currency(funds_required)}, and can sell "\
                         "#{@game.format_currency(liquidity - player.cash)} in shares:")
-          props = {
-            style: {
-              display: 'inline-block',
-              verticalAlign: 'top',
-            },
-          }
 
-          player.shares_by_corporation.each do |corporation, shares|
-            next if shares.empty?
-
-            corp = [h(Corporation, corporation: corporation)]
-
-            corp << h(SellShares, player: @corporation.owner) if @selected_corporation == corporation
-
-            children << h(:div, props, corp)
-          end
-
-          children << render_bankruptcy
+          children.concat(render_emergency_money_raising(player))
         else
           children << h('div',
                         'To buy the cheapest train from the depot the president must contribute'\
@@ -245,21 +228,6 @@ module View
           h('div.bold', 'Qty'),
           *rows,
         ])
-      end
-
-      def render_bankruptcy
-        resign = lambda do
-          process_action(Engine::Action::Bankrupt.new(@corporation))
-        end
-
-        props = {
-          style: {
-            width: 'max-content',
-          },
-          on: { click: resign },
-        }
-
-        h(:button, props, 'Declare Bankruptcy')
       end
     end
   end
