@@ -472,14 +472,10 @@ module Engine
          "tiles":[
             "yellow"
          ],
-         "operating_rounds":2,
-         "status":[
-            "can_buy_companies"
-         ]
+         "operating_rounds":2
       },
       {
          "name":"3",
-         "on":"3",
          "train_limit":3,
          "tiles":[
             "yellow",
@@ -489,30 +485,6 @@ module Engine
          "status":[
             "can_buy_companies"
          ]
-      },
-      {
-         "name":"4",
-         "on":"4",
-         "train_limit":3,
-         "tiles":[
-            "yellow",
-            "green"
-         ],
-         "operating_rounds":2,
-         "status":[
-            "can_buy_companies"
-         ]
-      },
-      {
-         "name":"5",
-         "on":"5",
-         "train_limit":3,
-         "tiles":[
-            "yellow",
-            "green",
-            "brown"
-         ],
-         "operating_rounds":2
       },
       {
          "name":"6",
