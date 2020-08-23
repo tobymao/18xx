@@ -284,8 +284,7 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "offboard",
-                  "town"
+                  "offboard"
                ],
                "pay":2,
                "visit":2
@@ -307,8 +306,7 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "offboard",
-                  "town"
+                  "offboard"
                ],
                "pay":3,
                "visit":3
@@ -330,8 +328,7 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "offboard",
-                  "town"
+                  "offboard"
                ],
                "pay":4,
                "visit":4
@@ -351,16 +348,16 @@ module Engine
          "name":"5",
          "distance":5,
          "price":500,
-         "num":2,
-         "events":[
-           {"type": "close_companies"}
-         ]
+         "num":2
       },
       {
          "name":"6",
          "distance":6,
          "price":550,
-         "num":2
+         "num":2,
+         "events":[
+           {"type": "close_companies"}
+         ]
       },
       {
          "name":"2D",
@@ -371,19 +368,15 @@ module Engine
          "variants":[
             {
                "name":"4D",
-               "distance":[
-                  {
-                     "distance":4,
-                     "price":750,
-                     "available_on":"6"
-                  }
-               ]
+               "price":750,
+               "available_on":"6",
+               "distance":4
             }
          ]
       },
       {
          "name":"5D",
-         "distance":8,
+         "distance":5,
          "price":850,
          "num":1,
          "available_on":"6"
