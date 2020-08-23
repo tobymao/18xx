@@ -93,7 +93,16 @@ module View
           ])
         end
 
-        def render
+        EDGE_TO_REGION = [21, 13, 6, 2, 10, 17].freeze
+        def preferred_render_locations
+          [{
+            region_weights: @tile.borders.map { |b| EDGE_TO_REGION[b.edge] },
+            x: 0,
+            y: 0,
+          }]
+        end
+
+        def render_part
           children = []
 
           @tile.borders.each do |border|

@@ -49,6 +49,7 @@ module View
         children << render_tile_part(Part::Cities, show_revenue: !render_revenue) if @tile.cities.any?
         children << render_tile_part(Part::Towns, routes: @routes) if @tile.towns.any?
 
+        borders = render_tile_part(Part::Borders) if @tile.borders.any?
         # OO tiles have different rules...
         rendered_loc_name = render_tile_part(Part::LocationName) if @tile.location_name && @tile.cities.size > 1
 
@@ -62,7 +63,7 @@ module View
         children << render_tile_part(Part::Icons) if @tile.icons.any?
 
         # borders should always be the top layer
-        children << h(Part::Borders, tile: @tile) if @tile.borders.any?
+        children << borders if borders
 
         children << rendered_loc_name if rendered_loc_name
 
