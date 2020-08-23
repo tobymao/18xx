@@ -12,7 +12,10 @@ module Engine
       GAME_LOCATION = 'Mississippi, USA'
       GAME_DESIGNER = 'Mark Derrick'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
-      GAME_END_CHECK = { final_or_set: 10 }.freeze
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MS'
+
+      # Game ends after 5 * 2 ORs
+      GAME_END_CHECK = { final_or_set: 5 }.freeze
 
       HOME_TOKEN_TIMING = :operating_round
 
