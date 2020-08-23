@@ -49,14 +49,13 @@ module Engine
       "I1":"New Orleans"
    },
    "tiles":{
-      "1":1,
       "3":3,
       "4":3,
       "5":2,
       "6":3,
       "7":4,
-      "8":9,
-      "9":9,
+      "8":10,
+      "9":10,
       "57":3,
       "58":3,
       "14":3,
@@ -87,13 +86,13 @@ module Engine
       "63":4,
       "446":{
          "count":1,
-         "color":"brown",
-         "code":"city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0"
-      },
-      "X31":{
-         "count":1,
          "color":"gray",
-         "code":"city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0"
+         "code":"city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=BM"
+      },
+      "X31b":{
+         "count":1,
+         "color":"brown",
+         "code":"city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Mob"
       }
    },
    "market":[
