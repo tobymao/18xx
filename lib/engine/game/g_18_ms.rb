@@ -27,10 +27,6 @@ module Engine
       HEXES_FOR_GRAY_TILE = %w[C9 E11].freeze
       COMPANY_1_AND_2 = %w[AGS BS].freeze
 
-      #      def init_round
-      #        Round::G18MS::Draft.new(@players.reverse, game: self)
-      #      end
-
       include CompanyPrice50To150Percent
 
       def setup
@@ -71,10 +67,18 @@ module Engine
         ], round_num: round_num)
       end
 
-      def or_round_finished
-        @recently_floated = []
+      def init_round
+        Round::Draft.new(self, [Step::G18MS::SimpleDraft])
+      end
+
+      def priority_deal_player
+        return @players.first if @round.is_a?(Round::Draft)
 
         super
+      end
+
+      def or_round_finished
+        @recently_floated = []
       end
 
       def purchasable_companies(entity = nil)
