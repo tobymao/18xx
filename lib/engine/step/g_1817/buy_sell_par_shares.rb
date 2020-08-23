@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../buy_sell_par_shares'
+require_relative '../../action/take_loan'
 
 module Engine
   module Step
     module G1817
       class BuySellParShares < BuySellParShares
         def actions(entity)
-          return [] unless entity.player?
+          return ['take_loan'] if can_take_loan?(entity)
+          return [] if !entity.player? || @current_actions.any? { |a| a.is_a?(Action::TakeLoan) }
 
           if available_subsidiaries(entity).any?
             actions = %w[assign]
@@ -82,6 +84,18 @@ module Engine
           par_corporation if available_subsidiaries(entity).empty?
         end
 
+        def process_take_loan(action)
+          corporation = action.entity
+          price = corporation.share_price.price
+          loan = action.loan
+          @current_actions << action
+          @log << "#{corporation.owner.name} takes a loan for #{corporation.name} "\
+            "and receives #{@game.format_currency(loan.amount)}"
+          @game.bank.spend(loan.amount, corporation)
+          @game.stock_market.move_left(corporation)
+          @game.log_share_price(corporation, price)
+        end
+
         def par_corporation
           entity = @bid.entity
           corporation = @bid.corporation
@@ -121,7 +135,7 @@ module Engine
         end
 
         def available_subsidiaries(entity)
-          entity ||= @game.current_entity
+          entity ||= current_entity
           return [] unless @bidders&.one?
           return [] if @bid.entity != entity
 
@@ -130,6 +144,12 @@ module Engine
           (entity.companies - @subsidiaries).select do |company|
             @bid.price > company.value + total
           end
+        end
+
+        def can_take_loan?(entity)
+          entity.corporation? &&
+            entity.owned_by?(current_entity) &&
+            entity.loans.size < entity.total_shares
         end
 
         def committed_cash

@@ -23,7 +23,7 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :share_price, :par_via_exchange
-    attr_reader :capitalization, :companies, :min_price, :name, :full_name
+    attr_reader :capitalization, :companies, :min_price, :name, :full_name, :total_shares
     attr_writer :par_price
 
     def initialize(sym:, name:, **opts)
@@ -48,6 +48,7 @@ module Engine
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
+      @total_shares = opts[:total_shares] || 10
       @par_via_exchange = nil
 
       init_abilities(opts[:abilities])
@@ -88,11 +89,11 @@ module Engine
     end
 
     def num_player_shares
-      player_share_holders.values.sum / 10
+      player_share_holders.values.sum / @total_shares
     end
 
     def num_market_shares
-      share_holders.select { |s_h, _| s_h.share_pool? }.values.sum / 10
+      share_holders.select { |s_h, _| s_h.share_pool? }.values.sum / @total_shares
     end
 
     def share_holders

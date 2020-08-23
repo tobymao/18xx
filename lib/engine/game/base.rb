@@ -31,9 +31,9 @@ module Engine
   module Game
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
-                  :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
-                  :round, :share_pool, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
-                  :round_history, :all_tiles
+                  :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
+                  :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
+                  :tiles, :turn, :undo_possible, :redo_possible, :round_history, :all_tiles
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -165,6 +165,7 @@ module Engine
         %i[share_prices share_price],
         %i[cities city],
         %i[minors minor],
+        %i[loans loan],
       ].freeze
 
       # https://en.wikipedia.org/wiki/Linear_congruential_generator#Parameters_in_common_use
@@ -291,6 +292,7 @@ module Engine
         @companies = init_companies(@players)
         @stock_market = init_stock_market
         @minors = init_minors
+        @loans = init_loans
         @corporations = init_corporations(@stock_market)
         @bank = init_bank
         @tiles = init_tiles
@@ -772,6 +774,10 @@ module Engine
 
       def init_minors
         self.class::MINORS.map { |minor| Minor.new(**minor) }
+      end
+
+      def init_loans
+        []
       end
 
       def init_corporations(stock_market)

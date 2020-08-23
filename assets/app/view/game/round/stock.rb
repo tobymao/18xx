@@ -68,8 +68,10 @@ module View
         end
 
         def render_input
-          input = @selected_corporation.ipoed ? render_ipoed : render_pre_ipo
-          h('div.margined_bottom', { style: { width: '20rem' } }, [input].compact)
+          h('div.margined_bottom', { style: { width: '20rem' } }, [
+            @selected_corporation.ipoed ? render_ipoed : render_pre_ipo,
+            render_loan,
+          ].compact)
         end
 
         def buy_share(entity, share)
@@ -166,6 +168,19 @@ module View
           @step.available_subsidiaries.map do |company|
             h(Company, company: company)
           end
+        end
+
+        def render_loan
+          return unless @step.actions(@selected_corporation).include?('take_loan')
+
+          take_loan = lambda do
+            process_action(Engine::Action::TakeLoan.new(
+              @selected_corporation,
+              loan: @game.loans[0],
+            ))
+          end
+
+          h(:button, { on: { click: take_loan } }, 'Take Loan')
         end
       end
     end

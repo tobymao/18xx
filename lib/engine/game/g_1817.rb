@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1817'
+require_relative '../loan.rb'
 require_relative 'base'
 
 module Engine
@@ -86,6 +87,10 @@ module Engine
         hexes.select do |hex|
           hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
         end
+      end
+
+      def init_loans
+        70.times.map { |id| Loan.new(id, 100) }
       end
     end
   end
