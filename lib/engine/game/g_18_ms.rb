@@ -42,6 +42,11 @@ module Engine
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
+
+      def revenue_for(route)
+        # Diesels double to normal revenue
+        route.train.name.end_with?('D') ? 2 * super : super
+      end
     end
   end
 end
