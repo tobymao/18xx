@@ -81,6 +81,14 @@ module Engine
         @recently_floated = []
       end
 
+      def or_set_finished
+        case @turn
+        when 3 then rust('2+', 20)
+        when 4 then rust('3+', 30)
+        when 5 then rust('4+', 60)
+        end
+      end
+
       def purchasable_companies(entity = nil)
         entity ||= current_entity
         # Only companies owned by the president may be bought
@@ -136,6 +144,21 @@ module Engine
         return super unless @recently_floated.include?(entity)
 
         [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+      end
+
+      private
+
+      def rust(train, salvage_value)
+        rusted_trains = trains.select { |t| !t.rusted || t.name == train }
+        return if rusted_trains.empty?
+
+        rusted_trains.each do |t|
+          @bank.spend(salvage_value, t.owner)
+          t.rust!
+        end
+
+        @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --"
+        @log << "Corporations received a salvage value of #{format_currency(salvage_value)} per rusted train"
       end
     end
   end
