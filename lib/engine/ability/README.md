@@ -23,6 +23,10 @@ These attributes may be set for all ability types
   property `count_this_or` is reset to 0 at the start of each OR and increments
   each time the ability is used
 
+## additional_token
+
+Adds 'count' additional tokens to a purchasing company (1817)
+
 ## assign_corporation
 
 Designate a specific corporation to be the beneficiary of the ability,
@@ -134,6 +138,7 @@ Generate extra revenue when tiles are laid on specified terrain types.
 
 - `terrain`: Terrain type for this ability
 - `income`: Extra income per tile lay
+- `owner_only`: Does this income apply to any tile lay (1882 Tresle Bridge) or just the owner (1817 Mountain Engineers)
 
 ## tile_lay
 
