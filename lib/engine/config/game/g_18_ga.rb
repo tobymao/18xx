@@ -226,17 +226,16 @@ module Engine
          "sym":"W&SR",
          "abilities":[
             {
-               "type":"teleport",
+               "type": "token",
                "owner_type":"corporation",
-               "tiles":[
-                  "5",
-                  "6",
-                  "57"
+               "hexes": [
+                 "I9"
                ],
-               "hexes":[
-                  "I9"
-               ]
-            }
+               "price": 0,
+               "teleport_price": 0,
+               "count": 1,
+               "from_owner": true
+             }
          ]
       },
       {
