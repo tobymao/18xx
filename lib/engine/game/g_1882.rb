@@ -13,7 +13,7 @@ module Engine
                       yellow: '#FFF500',
                       brown: '#7b352a')
 
-      DEV_STAGE = :beta
+      DEV_STAGE = :production
 
       AXES = { x: :number, y: :letter }.freeze
       CORPORATIONS_WITHOUT_NEUTRAL = %w[CPR CN].freeze
