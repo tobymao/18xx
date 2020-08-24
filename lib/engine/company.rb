@@ -53,10 +53,8 @@ module Engine
       true
     end
 
-    def find_token_by_type(token_type)
+    def find_token_by_type(_token_type)
       raise GameError, "#{name} does not have a token" unless abilities(:token)
-
-      return @owner.find_token_by_type(token_type) if abilities(:token).from_owner
 
       Token.new(@owner)
     end
