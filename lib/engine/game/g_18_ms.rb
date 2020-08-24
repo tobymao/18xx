@@ -19,7 +19,13 @@ module Engine
 
       HOME_TOKEN_TIMING = :operating_round
 
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'can_buy_companies_operation_round_one' =>
+          ['Can Buy Companies OR 1', 'Corporations can buy AGS/BS companies for face value in OR 1'],
+      ).freeze
+
       HEXES_FOR_GRAY_TILE = %w[C9 E11].freeze
+      COMPANY_1_AND_2 = %w[AGS BS].freeze
 
       #      def init_round
       #        Round::G18MS::Draft.new(@players.reverse, game: self)
@@ -35,13 +41,26 @@ module Engine
         @recently_floated = []
       end
 
+      def new_operating_round(round_num = 1)
+        # For OR 1, set company buy price to face value only
+        @companies.each do |company|
+          company.min_price = company.value
+          company.max_price = company.value
+        end if @turn == 1 && round_num == 1
+
+        # After OR 1, the company buy price is changed to 50%-150%
+        setup_company_price_50_to_150_percent if @turn == 1 && round_num == 2
+
+        super
+      end
+
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::Exchange,
           Step::DiscardTrain,
           Step::SpecialTrack,
-          Step::BuyCompany,
+          Step::G18MS::BuyCompany,
           Step::Track,
           Step::Token,
           Step::Route,
@@ -56,6 +75,22 @@ module Engine
         @recently_floated = []
 
         super
+      end
+
+      def purchasable_companies(entity = nil)
+        entity ||= current_entity
+        # Only companies owned by the president may be bought
+        companies = super.select do |c|
+          c.owned_by?(entity.player)
+        end
+
+        return companies unless @phase.status.include?('can_buy_companies_operation_round_one')
+
+        return [] if @turn > 1
+
+        companies.select do |company|
+          COMPANY_1_AND_2.include?(company.id)
+        end
       end
 
       def revenue_for(route)
