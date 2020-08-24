@@ -110,6 +110,18 @@ module Engine
         route.train.name.end_with?('D') ? 2 * super : super
       end
 
+      def routes_revenue(routes)
+        active_step.current_entity.trains.each do |t|
+          next unless t.name == "#{@turn}+"
+
+          # Trains that are going to be salvaged at the end of this OR
+          # cannot be sold when they have been run
+          t.buyable = false
+        end
+
+        super
+      end
+
       def upgrades_to?(from, to, _special = false)
         # Only allow tile gray tile (446) in Montgomery (E11) or Birmingham (C9)
         return to.name == '446' if from.color == :brown && HEXES_FOR_GRAY_TILE.include?(from.hex.name)
