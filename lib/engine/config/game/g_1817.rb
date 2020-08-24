@@ -95,7 +95,6 @@ module Engine
       "code": "city=revenue:100,slots:4;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY"
     }
   },
-  "note": "The 80p needs removing!",
   "market": [
     [
       "0l",
@@ -138,14 +137,37 @@ module Engine
        "value" : 40,
        "revenue" : 0,
        "desc" : "Owning corp may place special Pittsburgh yellow tile during tile-laying, regardless of connectivity.  The hex is not reserved, and the power is lost if another company builds there first.",
-       "sym" : "PSM"
+       "sym" : "PSM",
+       "abilities": [
+         {
+           "type": "tile_lay",
+           "hexes": [
+             "F13"
+           ],
+           "tiles": [
+             "X00"
+           ],
+           "when": "track",
+           "owner_type": "corporation",
+           "count": 1
+         }
+       ]
     },
     {
       "name" : "Mountain Engineers",
       "value" : 40,
       "revenue" : 0,
       "desc" : "Owning company receives $20 after laying a yellow tile in a mountain hex.  Any fees must be paid first.",
-      "sym" : "ME"
+      "sym" : "ME",
+      "abilities": [
+        {
+            "type": "tile_income",
+            "income" : 20,
+            "terrain": "mountain",
+            "owner_type": "corporation",
+            "owner_only": true
+        }
+      ]
     },
     {
       "name" : "Ohio Bridge Company",
@@ -194,21 +216,45 @@ module Engine
       "value" : 60,
       "revenue" : 0,
       "desc" : "Pays owning corp $10 at the start of each operating round, as long as the company has at least one train.",
-      "sym" : "MINM"
+      "sym" : "MINM",
+      "abilities": [
+        {
+          "type": "revenue_change",
+          "revenue": 10,
+          "when": "has_train",
+          "owner_type": "corporation"
+        }
+      ]
     },
     {
       "name" : "Mail Contract",
       "value" : 90,
       "revenue" : 0,
       "desc" : "Pays owning corp $15 at the start of each operating round, as long as the company has at least one train.",
-      "sym" : "MAIL"
+      "sym" : "MAIL",
+      "abilities": [
+        {
+          "type": "revenue_change",
+          "revenue": 15,
+          "when": "has_train",
+          "owner_type": "corporation"
+        }
+      ]
     },
     {
       "name" : "Major Mail Contract",
       "value" : 120,
       "revenue" : 0,
       "desc" : "Pays owning corp $20 at the start of each operating round, as long as the company has at least one train.",
-      "sym" : "MAJM"
+      "sym" : "MAJM",
+      "abilities": [
+        {
+          "type": "revenue_change",
+          "revenue": 20,
+          "when": "has_train",
+          "owner_type": "corporation"
+        }
+      ]
     }
   ],
   "corporations": [
