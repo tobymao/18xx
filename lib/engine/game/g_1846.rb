@@ -301,11 +301,11 @@ module Engine
       end
 
       def init_round
-        Round::G1846::Draft.new(self, [Step::G1846::DraftDistribution])
+        Round::Draft.new(self, [Step::G1846::DraftDistribution])
       end
 
       def priority_deal_player
-        return @players.first if @round.is_a?(Round::G1846::Draft)
+        return @players.first if @round.is_a?(Round::Draft)
 
         super
       end
