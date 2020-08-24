@@ -116,6 +116,10 @@ module Engine
             entity.companies.delete(company)
             corporation.companies << company
             price -= company.value
+            company.abilities(:additional_token) do |ability|
+              corporation.tokens << Engine::Token.new(corporation)
+              ability.use!
+            end
           end
 
           entity.spend(price, corporation)

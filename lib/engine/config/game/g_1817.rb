@@ -174,21 +174,44 @@ module Engine
       "value" : 40,
       "revenue" : 0,
       "desc" : "Comes with one $10 bridge token that may be placed by the owning corp in Louisville, Cincinnati, or Charleston, max one token per city, regardless of connectivity..  Allows owning corp to skip $10 river fee when placing yellow tiles.",
-      "sym" : "OBC"
+      "sym" : "OBC",
+      "abilities": [
+        {
+          "type": "tile_discount",
+          "discount" : 10,
+          "terrain": "water",
+          "owner_type": "corporation"
+        }
+      ]
     },
     {
       "name" : "Union Bridge Company",
       "value" : 80,
       "revenue" : 0,
       "desc" : "Comes with two $10 bridge token that may be placed by the owning corp in Louisville, Cincinnati, or Charleston, max one token per city, regardless of connectivity..  Allows owning corp to skip $10 river fee when placing yellow tiles.",
-      "sym" : "UBC"
+      "sym" : "UBC",
+      "abilities": [
+        {
+          "type": "tile_discount",
+          "discount" : 10,
+          "terrain": "water",
+          "owner_type": "corporation"
+        }
+      ]
     },
     {
       "name" : "Train Station",
       "value" : 80,
       "revenue" : 0,
       "desc" : "Provides an additional station marker for the owning corp, awarded at time of purchase",
-      "sym" : "TS"
+      "sym" : "TS",
+      "abilities": [
+        {
+            "type": "additional_token",
+            "count" : 1,
+            "owner_type": "corporation"
+        }
+      ]
     },
     {
       "name" : "Minor Coal Mine",
