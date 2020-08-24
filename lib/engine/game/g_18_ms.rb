@@ -160,17 +160,18 @@ module Engine
 
       private
 
-      def rust(train, salvage_value)
-        rusted_trains = trains.select { |t| !t.rusted || t.name == train }
+      def rust(train, salvage)
+        rusted_trains = trains.select { |t| !t.rusted && t.name == train }
         return if rusted_trains.empty?
 
         rusted_trains.each do |t|
-          @bank.spend(salvage_value, t.owner)
+          @bank.spend(salvage, t.owner)
           t.rust!
         end
 
-        @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --"
-        @log << "Corporations received a salvage value of #{format_currency(salvage_value)} per rusted train"
+        @log << "-- Event: #{rusted_trains.map(&:name).uniq.join(', ')} trains rust --"
+        exception = train == '2+' ? ' (except any free 2+ train)' : ''
+        @log << "Corporations salvages #{format_currency(salvage)} from each rusted train#{exception}"
       end
     end
   end
