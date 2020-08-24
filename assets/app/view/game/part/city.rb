@@ -29,41 +29,65 @@ module View
           6 => [0, -50],
         }.freeze
 
-        EDGE_TRACK_REGIONS = [
-          TRACK_TO_EDGE_0,
-          TRACK_TO_EDGE_1,
-          TRACK_TO_EDGE_2,
-          TRACK_TO_EDGE_3,
-          TRACK_TO_EDGE_4,
-          TRACK_TO_EDGE_5,
-        ].freeze
+        EDGE_TRACK_REGIONS = {
+          0 => TRACK_TO_EDGE_0,
+          0.5 => TRACK_TO_EDGE_0P5,
+          1 => TRACK_TO_EDGE_1,
+          1.5 => TRACK_TO_EDGE_1P5,
+          2 => TRACK_TO_EDGE_2,
+          2.5 => TRACK_TO_EDGE_2P5,
+          3 => TRACK_TO_EDGE_3,
+          3.5 => TRACK_TO_EDGE_3P5,
+          4 => TRACK_TO_EDGE_4,
+          4.5 => TRACK_TO_EDGE_4P5,
+          5 => TRACK_TO_EDGE_5,
+          5.5 => TRACK_TO_EDGE_5P5,
+        }.freeze
 
-        EDGE_CITY_REGIONS = [
-          [15, 20, 21, 22],
-          [12, 13, 14, 19],
-          [0, 5, 6, 7],
-          [1, 2, 3, 8],
-          [10, 11, 4, 9],
-          [16, 17, 18, 23],
-        ].freeze
+        EDGE_CITY_REGIONS = {
+          0 => [15, 20, 21, 22],
+          0.5 => [13, 14, 15, 19, 20, 21],
+          1 => [12, 13, 14, 19],
+          1.5 => [5, 6, 7, 12, 13, 14],
+          2 => [0, 5, 6, 7],
+          2.5 => [0, 1, 2, 6, 7, 8],
+          3 => [1, 2, 3, 8],
+          3.5 => [2, 3, 4, 8, 9, 10],
+          4 => [10, 11, 4, 9],
+          4.5 => [9, 10, 11, 16, 17, 18],
+          5 => [16, 17, 18, 23],
+          5.5 => [15, 16, 17, 21, 22, 23],
+        }.freeze
 
-        EXTRA_SLOT_REGIONS = [
-          [13, 14, 16, 17, 19, 23],
-          [6, 7, 15, 21, 5, 20],
-          [2, 8, 14, 13, 1, 12],
-          [10, 9, 7, 6, 4, 0],
-          [17, 16, 8, 2, 18, 3],
-          [21, 15, 9, 10, 22, 11],
-        ].freeze
+        EXTRA_SLOT_REGIONS = {
+          0 => [13, 14, 16, 17, 19, 23],
+          0.5 => [12, 22],
+          1 => [6, 7, 15, 21, 5, 20],
+          1.5 => [0, 19],
+          2 => [2, 8, 14, 13, 1, 12],
+          2.5 => [3, 5],
+          3 => [10, 9, 7, 6, 4, 0],
+          3.5 => [1, 11],
+          4 => [17, 16, 8, 2, 18, 3],
+          4.5 => [4, 17],
+          5 => [21, 15, 9, 10, 22, 11],
+          5.5 => [18, 20],
+        }.freeze
 
-        BORDER_REGIONS = [
-          [15, 7],
-          [14, 8],
-          [7, 9],
-          [8, 16],
-          [9, 15],
-          [16, 14],
-        ].freeze
+        BORDER_REGIONS = {
+          0 => [15, 7],
+          0.5 => [7, 8, 9, 16],
+          1 => [14, 8],
+          1.5 => [8, 9, 15, 16],
+          2 => [7, 9],
+          2.5 => [9, 14, 15, 16],
+          3 => [8, 16],
+          3.5 => [7, 14, 15, 16],
+          4 => [9, 15],
+          4.5 => [7, 8, 14, 15],
+          5 => [16, 14],
+          5.5 => [7, 8, 9, 14],
+        }.freeze
         # key: number of slots in city
         # value: [element name (sym), element attrs]
         BOX_ATTRS = {
@@ -113,7 +137,7 @@ module View
         ].freeze
 
         def preferred_render_locations
-          if @num_cities > 1 && @edge
+          if @edge
             weights = EDGE_TRACK_REGIONS[@edge] + EDGE_CITY_REGIONS[@edge]
             weights += EXTRA_SLOT_REGIONS[@edge] unless @city.slots == 1
             distance = 50

@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
 require 'view/game/actionable'
-require 'view/game/corporation'
-require 'view/game/sell_shares'
-require 'view/game/undo_and_pass'
+require 'view/game/emergency_money'
 
 module View
   module Game
     class BuyTrains < Snabberb::Component
       include Actionable
+      include EmergencyMoney
       needs :show_other_players, default: nil, store: true
       needs :selected_corporation, default: nil, store: true
 
@@ -21,30 +20,14 @@ module View
         if funds_required.positive?
           liquidity = @game.liquidity(player, emergency: true)
           children << h('div',
-                        "To buy the cheapest train the president must raise #{@game.format_currency(funds_required)}"\
-                        ", and can sell #{@game.format_currency(liquidity - player.cash)} in shares")
+                        'To buy the cheapest train from the depot the president must raise '\
+                        "#{@game.format_currency(funds_required)}, and can sell "\
+                        "#{@game.format_currency(liquidity - player.cash)} in shares:")
 
-          props = {
-            style: {
-              display: 'inline-block',
-              verticalAlign: 'top',
-            },
-          }
-
-          player.shares_by_corporation.each do |corporation, shares|
-            next if shares.empty?
-
-            corp = [h(Corporation, corporation: corporation)]
-
-            corp << h(SellShares, player: @corporation.owner) if @selected_corporation == corporation
-
-            children << h(:div, props, corp)
-          end
-
-          children << render_bankruptcy
+          children.concat(render_emergency_money_raising(player))
         else
           children << h('div',
-                        'To buy the cheapest train the president must contribute'\
+                        'To buy the cheapest train from the depot the president must contribute'\
                         " #{@game.format_currency(@depot.min_depot_price - @corporation.cash)}")
         end
 
@@ -64,11 +47,7 @@ module View
         children = []
 
         must_buy_train = step.must_buy_train?(@corporation)
-
-        if must_buy_train
-          children << h(:div, "#{@corporation.name} must buy an available train")
-          children.concat(render_president_contributions) if @corporation.cash < @depot.min_depot_price
-        end
+        should_buy_train = step.should_buy_train?(@corporation)
 
         h3_props = {
           style: {
@@ -84,7 +63,11 @@ module View
           },
         }
 
-        if (step.can_buy_train?(@corporation) && step.room?(@corporation)) || step.must_buy_train?(@corporation)
+        if (step.can_buy_train?(@corporation) && step.room?(@corporation)) || must_buy_train
+          children << h(:div, "#{@corporation.name} must buy an available train") if must_buy_train
+          if should_buy_train == :liquidation
+            children << h(:div, "#{@corporation.name} must buy a train or it will be liquidated")
+          end
           children << h(:h3, h3_props, 'Available Trains')
           children << h(:div, div_props, [
             *from_depot(depot_trains),
@@ -118,6 +101,7 @@ module View
 
         children << h(:h3, h3_props, 'Remaining Trains')
         children << remaining_trains
+        children.concat(render_president_contributions) if must_buy_train && @corporation.cash < @depot.min_depot_price
 
         props = {
           style: {
@@ -244,21 +228,6 @@ module View
           h('div.bold', 'Qty'),
           *rows,
         ])
-      end
-
-      def render_bankruptcy
-        resign = lambda do
-          process_action(Engine::Action::Bankrupt.new(@corporation))
-        end
-
-        props = {
-          style: {
-            width: 'max-content',
-          },
-          on: { click: resign },
-        }
-
-        h(:button, props, 'Declare Bankruptcy')
       end
     end
   end

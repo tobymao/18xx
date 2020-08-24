@@ -2,14 +2,22 @@
 
 require './spec/spec_helper'
 
+require 'engine'
+require 'engine/game/g_1846'
 require 'engine/game/g_1889'
 require 'engine/game/g_18_chesapeake'
 require 'engine/phase'
 require 'engine/round/operating'
 
+RSpec::Matchers.define :be_assigned_to do |expected|
+  match do |actual|
+    expected.assigned?(actual.id)
+  end
+end
+
 module Engine
   describe Round::Operating do
-    let(:players) { %w[a b] }
+    let(:players) { %w[a b c] }
     let(:game) { Game::G1889.new(players) }
     let(:hex_j3) { game.hex_by_id('J3') }
     let(:hex_j5) { game.hex_by_id('J5') }
@@ -437,6 +445,106 @@ module Engine
           corporation.companies << company
           game.phase.next!
           subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('440'), hex: hex_k4, rotation: 0))
+        end
+      end
+    end
+
+    context '1846' do
+      let(:players) { %w[a b c d e] }
+      let(:game) { Game::G1846.new(players) }
+      let(:corporation) { game.corporation_by_id('B&O') }
+      let(:corporation_1) { game.corporation_by_id('PRR') }
+      let(:minor) { game.minor_by_id('MS') }
+      let(:company) { game.company_by_id('SC') }
+      let(:hex_b8) { game.hex_by_id('B8') }
+      let(:hex_d14) { game.hex_by_id('D14') }
+      let(:hex_g19) { game.hex_by_id('G19') }
+
+      subject { move_to_or! }
+
+      before :each do
+        game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
+        corporation.cash = 80
+        corporation.owner = game.players.first
+        company.owner = game.players.first
+      end
+
+      describe 'Steamboat Company' do
+        it 'handles full lifecycle of assigning to hexes and corporations' do
+          expect(company).not_to be_assigned_to(corporation)
+          expect(company).not_to be_assigned_to(corporation_1)
+          expect(company).not_to be_assigned_to(hex_d14)
+          expect(company).not_to be_assigned_to(hex_g19)
+
+          subject.process_action(Action::Assign.new(company, target: hex_d14))
+          expect(company).to be_assigned_to(hex_d14)
+          expect(company).not_to be_assigned_to(hex_g19)
+
+          action = Action::Assign.new(company, target: hex_g19)
+          expect { subject.process_action(action) }.to raise_error GameError
+
+          subject.process_action(Action::Assign.new(company, target: corporation))
+          expect(company).to be_assigned_to(corporation)
+          expect(company).not_to be_assigned_to(corporation_1)
+
+          action = Action::Assign.new(company, target: corporation_1)
+          expect { subject.process_action(action) }.to raise_error GameError
+
+          subject = goto_new_or!
+
+          subject.process_action(Action::Assign.new(company, target: minor))
+          expect(company).not_to be_assigned_to(corporation)
+          expect(company).not_to be_assigned_to(corporation_1)
+          expect(company).to be_assigned_to(minor)
+
+          subject = goto_new_or!
+
+          subject.process_action(Action::Assign.new(company, target: hex_g19))
+          expect(company).not_to be_assigned_to(hex_d14)
+          expect(company).to be_assigned_to(hex_g19)
+
+          subject.process_action(Action::Assign.new(company, target: corporation_1))
+          expect(company).not_to be_assigned_to(corporation)
+          expect(company).not_to be_assigned_to(minor)
+          expect(company).to be_assigned_to(corporation_1)
+
+          subject.process_action(
+            Action::BuyCompany.new(
+              corporation,
+              company: company,
+              price: 1,
+            )
+          )
+          expect(company).to be_assigned_to(corporation)
+          expect(company).to be_assigned_to(hex_g19)
+          expect(company).not_to be_assigned_to(corporation_1)
+          expect(company).not_to be_assigned_to(hex_d14)
+
+          action = Action::Assign.new(company, target: corporation)
+          expect { subject.process_action(action) }.to raise_error GameError
+
+          action = Action::Assign.new(company, target: corporation_1)
+          expect { subject.process_action(action) }.to raise_error GameError
+
+          subject.process_action(Action::Assign.new(company, target: hex_d14))
+          expect(company).to be_assigned_to(hex_d14)
+          expect(company).not_to be_assigned_to(hex_g19)
+
+          action = Action::Assign.new(company, target: hex_g19)
+          expect { subject.process_action(action) }.to raise_error GameError
+
+          subject = goto_new_or!
+
+          expect(company).to be_assigned_to(corporation)
+          expect(company).to be_assigned_to(hex_d14)
+          expect(company).not_to be_assigned_to(corporation_1)
+          expect(company).not_to be_assigned_to(hex_g19)
+
+          action = Action::Assign.new(company, target: hex_g19)
+          expect { subject.process_action(action) }.to raise_error GameError
+
+          action = Action::Assign.new(company, target: corporation_1)
+          expect { subject.process_action(action) }.to raise_error GameError
         end
       end
     end

@@ -23,16 +23,19 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :share_price, :par_via_exchange
-    attr_reader :capitalization, :companies, :min_price, :name, :full_name
+    attr_reader :capitalization, :companies, :min_price, :name, :full_name, :total_shares
     attr_writer :par_price
 
     def initialize(sym:, name:, **opts)
       @name = sym
       @full_name = name
-      [
+      shares = [
         Share.new(self, president: true, percent: 20),
         *8.times.map { |index| Share.new(self, percent: 10, index: index + 1) },
-      ].each { |share| shares_by_corporation[self] << share }
+      ]
+      shares.each { |share| shares_by_corporation[self] << share }
+      @presidents_share = shares.first
+      @second_share = shares[1]
 
       @share_price = nil
       @par_price = nil
@@ -42,9 +45,11 @@ module Engine
       @cash = 0
       @capitalization = opts[:capitalization] || :full
       @float_percent = opts[:float_percent] || 60
+      @max_ownership_percent = opts[:max_ownership_percent] || 60
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
+      @total_shares = opts[:total_shares] || 10
       @par_via_exchange = nil
 
       init_abilities(opts[:abilities])
@@ -85,15 +90,19 @@ module Engine
     end
 
     def num_player_shares
-      share_holders.values.sum / 10
+      player_share_holders.values.sum / @total_shares
     end
 
     def num_market_shares
-      10 - num_ipo_shares - num_player_shares
+      share_holders.select { |s_h, _| s_h.share_pool? }.values.sum / @total_shares
     end
 
     def share_holders
       @share_holders ||= Hash.new(0)
+    end
+
+    def player_share_holders
+      share_holders.select { |s_h, _| s_h.player? }
     end
 
     def id
@@ -129,13 +138,13 @@ module Engine
     # Is it legal to hold percent shares in this corporation?
     def holding_ok?(share_holder, extra_percent = 0)
       percent = share_holder.percent_of(self) + extra_percent
-      %i[orange brown].include?(@share_price&.color) || percent <= 60
+      %i[orange brown].include?(@share_price&.color) || percent <= @max_ownership_percent
     end
 
     def all_abilities
       all = @companies.flat_map(&:all_abilities)
-      @abilities.each do |type, _|
-        abilities(type) { |ability| all << ability }
+      @abilities.each do |ability|
+        abilities(ability.type) { |a| all << a }
       end
       all
     end
@@ -166,6 +175,14 @@ module Engine
 
     def available_share
       shares_by_corporation[self].find { |share| !share.president }
+    end
+
+    def presidents_percent
+      @presidents_share.percent
+    end
+
+    def share_percent
+      @second_share.percent
     end
   end
 end

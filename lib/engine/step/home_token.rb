@@ -55,7 +55,7 @@ module Engine
         pending_token[:hexes].include?(hex)
       end
 
-      def available_tokens
+      def available_tokens(_entity)
         [token]
       end
 

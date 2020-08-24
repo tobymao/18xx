@@ -1,0 +1,182 @@
+# frozen_string_literal: true
+
+require_relative '../base'
+require_relative '../auctioner'
+
+module Engine
+  module Step
+    module G1817
+      class SelectionAuction < Base
+        include Auctioner
+        ACTIONS = %w[bid pass].freeze
+
+        attr_reader :companies
+
+        def description
+          'Bid on Companies'
+        end
+
+        def available
+          @companies
+        end
+
+        def process_pass(action)
+          entity = action.entity
+
+          if auctioning_company
+            @active_bidders.delete(entity)
+            pass_auction(action.entity)
+          else
+            @log << "#{entity.name} passes bidding"
+            entity.pass!
+            return all_passed! if entities.all?(&:passed?)
+          end
+
+          next_entity!
+        end
+
+        def next_entity!
+          @round.next_entity_index!
+          entity = entities[entity_index]
+          if auctioning_company
+            if @active_bidders.include?(entity)
+              # Can they afford the next bid?
+              if min_bid(@auctioning) > max_bid(entity, @auctioning)
+                @active_bidders.delete(entity)
+                pass_auction(entity)
+                next_entity!
+              end
+            else
+              next_entity!
+            end
+          elsif entity&.passed?
+            next_entity!
+          end
+        end
+
+        def process_bid(action)
+          action.entity.unpass!
+
+          if auctioning_company
+            add_bid(action)
+          else
+            selection_bid(action)
+          end
+          next_entity!
+        end
+
+        def actions(entity)
+          return [] if @companies.empty?
+
+          entity == current_entity ? ACTIONS : []
+        end
+
+        def min_increment
+          @game.class::MIN_BID_INCREMENT
+        end
+
+        def setup
+          super
+          @companies = @game.companies.sort_by(&:min_bid)
+          @auctioning = nil
+          @active_bidders = []
+          @seed_money = @game.class::SEED_MONEY
+        end
+
+        def starting_bid(company)
+          [0, company.value - @seed_money].max
+        end
+
+        def min_bid(company)
+          return unless company
+
+          return starting_bid(company) unless @bids[company].any?
+
+          high_bid = highest_bid(company)
+          (high_bid.price || company.min_bid) + min_increment
+        end
+
+        def may_purchase?(_company)
+          false
+        end
+
+        def committed_cash(_player, _show_hidden = false)
+          0
+        end
+
+        def max_bid(player, _company)
+          player.cash
+        end
+
+        private
+
+        def active_company_bids
+          company = @auctioning
+          bids = @bids[company]
+          yield company, bids if bids.any?
+        end
+
+        def selection_bid(bid)
+          add_bid(bid)
+          @auctioning = bid.company
+          @auction_triggerer = bid.entity
+          @active_bidders = entities.dup
+        end
+
+        def resolve_bids
+          return unless @active_bidders.one?
+
+          winner = @bids[@auctioning].first
+          win_bid(winner.entity, winner.company, winner.price)
+          @bids.clear
+          @active_bidders.clear
+          @auctioning = nil
+          entities.each(&:unpass!)
+          @round.goto_entity!(@auction_triggerer)
+        end
+
+        def add_bid(bid)
+          super(bid)
+          company = bid.company
+          entity = bid.entity
+          price = bid.price
+
+          @log << "#{entity.name} bids #{@game.format_currency(price)} for #{bid.company.name},"\
+          " bank will provide #{@game.format_currency(seed_money_provided(company, price))}"
+        end
+
+        def seed_money_provided(company, price)
+          [0, company.value - price].max
+        end
+
+        def win_bid(player, company, price)
+          company.owner = player
+          player.companies << company
+          seed = seed_money_provided(company, price)
+          if seed.positive?
+            @game.bank.cash -= seed
+            @seed_money -= seed
+          end
+          player.spend(price, @game.bank) if price.positive?
+          @companies.delete(company)
+          @log <<
+            if seed.positive?
+              "#{player.name} wins the auction for #{company.name} "\
+                "with a bid of #{@game.format_currency(price)} spending"\
+                " #{@game.format_currency(seed)} seed money, #{@game.format_currency(@seed_money)} seed money remains"
+            else
+              "#{player.name} wins the auction for #{company.name} "\
+                "with a bid of #{@game.format_currency(price)}"
+            end
+        end
+
+        def all_passed!
+          @companies.each { |c| @game.companies.delete(c) }
+          # Need to move entity round once more to be back to the priority deal player
+          @round.next_entity_index!
+          pass!
+        end
+      end
+    end
+  end
+end

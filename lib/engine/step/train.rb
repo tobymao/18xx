@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative 'emergency_money'
 
 module Engine
   module Step
     module Train
+      include EmergencyMoney
       def can_buy_train?(entity = nil)
         entity ||= current_entity
         can_buy_normal = room?(entity) &&
@@ -22,6 +24,8 @@ module Engine
       def must_buy_train?(entity)
         @game.must_buy_train?(entity)
       end
+
+      def should_buy_train?(entity); end
 
       def buy_train_action(action, entity = nil)
         entity ||= action.entity
@@ -65,48 +69,26 @@ module Engine
       end
 
       def process_sell_shares(action)
-        unless can_sell?(action.entity, action.bundle)
-          @game.game_error("Cannot sell shares of #{action.bundle.corporation.name}")
-        end
+        super
 
         @last_share_sold_price = action.bundle.price_per_share
-        @game.sell_shares_and_change_price(action.bundle)
         @round.recalculate_order
       end
 
-      def can_sell?(_entity, bundle)
-        player = bundle.owner
-        # Can't sell president's share
-        return false unless bundle.can_dump?(player)
+      def needed_cash(_entity)
+        @depot.min_depot_price
+      end
 
-        # Can only sell as much as you need to afford the train
-        total_cash = bundle.price + player.cash + current_entity.cash
-        return false if total_cash >= @depot.min_depot_price + bundle.price_per_share
-
-        # Can't swap presidency
-        corporation = bundle.corporation
-        if corporation.president?(player) &&
-            (!@game.class::EBUY_PRES_SWAP || corporation == current_entity)
-          share_holders = corporation.share_holders
-          remaining = share_holders[player] - bundle.percent
-          next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
-          return false if remaining < next_highest
-        end
-
-        # Can't oversaturate the market
-        return false unless @game.share_pool.fit_in_bank?(bundle)
-
-        # Otherwise we're good
-        true
+      def available_cash(player)
+        player.cash + current_entity.cash
       end
 
       def buyable_trains(entity)
         depot_trains = @depot.depot_trains
         other_trains = @depot.other_trains(entity)
-
-        # If the corporation cannot buy a train, then it can only buy the cheapest available
+        # If the corporation cannot buy a train, then it can only buy the cheapest available (if there is any...)
         min_depot_train = @depot.min_depot_train
-        if min_depot_train.price > entity.cash
+        if min_depot_train && min_depot_train.price > entity.cash
           depot_trains = [min_depot_train]
 
           if @last_share_sold_price

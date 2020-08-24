@@ -59,6 +59,7 @@ game config/code:
       be integer to indicate edge number, or an underscore followed by an
       integer to refer by index to a city/town/offboard/junction defined earlier
       on the tile
+    - **terminal** - `1` - indicates that path is part of a non-passthru path, typically for off-board cities. Tapered track will be drawn.
     - **track** - broad/narrow/dual/line/dashed; this option is not yet
       implemented, so track is always broad
 - **label** - large letter(s) on tile (e.g., "Chi", "OO", or "Z")
@@ -66,9 +67,11 @@ game config/code:
     - **cost** - *required* - integer
     - **terrain** - `mountain`/`water` - multiple terrain types separated by `|`
 - **border**
-    - **edge** - integer - which edge to hide from rendering; a line matching
-      the tile's color is drawn on top of the edge's normal black line so that
-      two adjacent tiles appear joined
+    - **edge** - *required* - integer - which edge to modify
+    - **type** - `mountain`/`water`/`impassible` - Border type. If not'
+      specified, a line matching the tile's color is drawn on top of the edge's
+      normal black line so that two adjacent tiles appear joined.
+    - **cost** - integer - cost to cross for mountain/water borders
 - **junction** - the center point of a Lawson-style tile
 - **icon**
     - **image** - *required* - name of image, will be rendered with file at

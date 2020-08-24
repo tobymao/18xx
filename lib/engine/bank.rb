@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require_relative 'entity'
+require_relative 'share_holder'
 require_relative 'spender'
 
 module Engine
   class Bank
+    include Entity
+    include ShareHolder
     include Spender
 
     def initialize(cash, log: [])

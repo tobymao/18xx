@@ -31,9 +31,9 @@ module Engine
   module Game
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
-                  :depot, :finished, :graph, :hexes, :id, :loading, :log, :minors, :phase, :players, :operating_rounds,
-                  :round, :share_pool, :stock_market, :tiles, :turn, :undo_possible, :redo_possible,
-                  :round_history
+                  :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
+                  :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
+                  :tiles, :turn, :undo_possible, :redo_possible, :round_history, :all_tiles
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -102,6 +102,7 @@ module Engine
       # down_block -- down one row per block
       # left_block_pres -- left one column per block if president
       # left_block -- one row per block
+      # none -- don't drop price
       SELL_MOVEMENT = :down_share
 
       # :sell_buy_or_buy_sell
@@ -148,6 +149,9 @@ module Engine
       EVENTS_TEXT = { 'close_companies' =>
                       ['Companies Close', 'All companies unless otherwise noted are discarded from the game'] }.freeze
 
+      STATUS_TEXT = { 'can_buy_companies' =>
+                      ['Can Buy Companies', 'All corporations can buy companies from players'] }.freeze
+
       IPO_NAME = 'IPO'
 
       CACHABLE = [
@@ -161,6 +165,7 @@ module Engine
         %i[share_prices share_price],
         %i[cities city],
         %i[minors minor],
+        %i[loans loan],
       ].freeze
 
       # https://en.wikipedia.org/wiki/Linear_congruential_generator#Parameters_in_common_use
@@ -287,9 +292,11 @@ module Engine
         @companies = init_companies(@players)
         @stock_market = init_stock_market
         @minors = init_minors
+        @loans = init_loans
         @corporations = init_corporations(@stock_market)
         @bank = init_bank
         @tiles = init_tiles
+        @all_tiles = init_tiles
         @cert_limit = init_cert_limit
 
         @depot = init_train_handler
@@ -487,9 +494,9 @@ module Engine
         self.class::CURRENCY_FORMAT_STR % val
       end
 
-      def purchasable_companies
+      def purchasable_companies(entity = nil)
         @companies.select do |company|
-          company.owner&.player? && !company.abilities(:no_buy)
+          company.owner&.player? && entity != company.owner && !company.abilities(:no_buy)
         end
       end
 
@@ -534,10 +541,12 @@ module Engine
           bundle.num_shares.times { @stock_market.move_down(corporation) }
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
+        when :none
+          nil
         else
           raise NotImplementedError
         end
-        log_share_price(corporation, price)
+        log_share_price(corporation, price) if self.class::SELL_MOVEMENT != :none
       end
 
       def log_share_price(entity, from)
@@ -553,7 +562,9 @@ module Engine
       end
 
       def must_buy_train?(entity)
-        !entity.rusted_self && entity.trains.empty? &&
+        !entity.rusted_self &&
+          entity.trains.empty? &&
+          depot.depot_trains.any? &&
           (self.class::MUST_BUY_TRAIN == :always ||
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
       end
@@ -563,7 +574,7 @@ module Engine
 
         @finished = true
         scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
-        @log << "Game over: #{scores.join(', ')}"
+        @log << "-- Game over: #{scores.join(', ')} --"
         @round
       end
 
@@ -596,6 +607,8 @@ module Engine
           @log << "#{owner.name} collects #{format_currency(revenue)} from #{company.name}"
         end
       end
+
+      def or_round_finished; end
 
       def or_set_finished; end
 
@@ -674,8 +687,40 @@ module Engine
         self.class::TILE_LAYS
       end
 
+      def upgrades_to?(from, to, special = false)
+        # correct color progression?
+        return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
+
+        # honors pre-existing track?
+        return false unless from.paths_are_subset_of?(to.paths)
+
+        # If special ability then remaining checks is not applicable
+        return true if special
+
+        # correct label?
+        return false if from.label != to.label
+
+        # honors existing town/city counts?
+        # - allow labelled cities to upgrade regardless of count; they're probably
+        #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
+        # - TODO: account for games that allow double dits to upgrade to one town
+        return false if from.towns.size != to.towns.size
+        return false if !from.label && from.cities.size != to.cities.size
+
+        true
+      end
+
       def game_error(msg)
         raise GameError.new(msg, current_action_id)
+      end
+
+      def float_corporation(corporation)
+        @log << "#{corporation.name} floats"
+
+        return if corporation.capitalization == :incremental
+
+        @bank.spend(corporation.par_price.price * 10, corporation)
+        @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
       end
 
       private
@@ -729,6 +774,10 @@ module Engine
 
       def init_minors
         self.class::MINORS.map { |minor| Minor.new(**minor) }
+      end
+
+      def init_loans
+        []
       end
 
       def init_corporations(stock_market)
@@ -897,9 +946,11 @@ module Engine
             new_operating_round
           when Round::Operating
             if @round.round_num < @operating_rounds
+              or_round_finished
               new_operating_round(@round.round_num + 1)
             else
               @turn += 1
+              or_round_finished
               or_set_finished
               new_stock_round
             end
@@ -975,17 +1026,19 @@ module Engine
       def action_processed(_action); end
 
       def priority_deal_player
+        players = @players.reject(&:bankrupt)
+
         if @round.current_entity&.player?
           # We're in a round that iterates over players, so the
           # priority deal card goes to the player who will go first if
           # everyone passes starting now.  last_to_act is nil before
           # anyone has gone, in which case the first player has PD.
-          @players.reject(&:bankrupt)[@round.entity_index]
+          players[((players.index(@round.last_to_act) || -1) + 1) % players.size]
         else
           # We're in a round that iterates over something else, like
           # corporations.  The player list was already rotated when we
           # left a player-focused round to put the PD player first.
-          @players.reject(&:bankrupt).first
+          players.first
         end
       end
 
@@ -1064,6 +1117,15 @@ module Engine
 
       def bankruptcy_limit_reached?
         @players.any?(&:bankrupt)
+      end
+
+      def all_potential_upgrades(tile, tile_manifest: false) # rubocop:disable Lint/UnusedMethodArgument
+        colors = Array(@phase.phases.last[:tiles])
+        @all_tiles
+          .select { |t| colors.include?(t.color) }
+          .uniq(&:name)
+          .select { |t| upgrades_to?(tile, t) }
+          .reject(&:blocks_lay)
       end
 
       def interest_rate; end

@@ -8,13 +8,13 @@ module Engine
     module Tokener
       def can_place_token?(entity)
         current_entity == entity &&
-          (tokens = available_tokens).any? &&
+          (tokens = available_tokens(entity)).any? &&
           min_token_price(tokens) <= entity.cash &&
           @game.graph.can_token?(entity)
       end
 
-      def available_tokens
-        current_entity.tokens_by_type
+      def available_tokens(entity)
+        entity.tokens_by_type
       end
 
       def can_replace_token?(_entity, _token)
@@ -42,9 +42,9 @@ module Engine
         when :neutral
           entity.tokens.delete(token)
           token.corporation.tokens << token
-          @log << "#{entity.name} places a neutral token on #{city.hex.name}#{price_log}"
+          @log << "#{entity.name} places a neutral token on #{hex.name}#{price_log}"
         else
-          @log << "#{entity.name} places a token on #{city.hex.name}#{price_log}"
+          @log << "#{entity.name} places a token on #{hex.name} (#{hex.location_name})#{price_log}"
         end
 
         @game.graph.clear

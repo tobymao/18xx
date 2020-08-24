@@ -15,8 +15,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>All microsoft email domains are blocking 18xx.games. msn, hotmail, live, etc. So you will not be receiving anything.</p>
-        <p>1882 and 18AL are both available for alpha testing and 1846 is now in beta.</p>
+        <p>1882 has finished beta, now in production!</p>
+        <p>18GA is now available for alpha testing!</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
         If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other
@@ -26,6 +26,7 @@ module View
         <p>If you're looking to buy these games, please check out
         <a href='https://all-aboardgames.com'>All-Aboard Games</a>,
         <a href='https://www.grandtrunkgames.com'>Grand Trunk Games</a>,
+        <a href='https://goldenspikegames.com'>Golden Spike Games</a>,
         and <a href='https://www.gmtgames.com/'>GMT Games</a>.
         </p>
 
@@ -57,7 +58,7 @@ module View
     def render_introduction
       message = <<~MESSAGE
         <p>18xx.games is a website where you can play async or real-time 18xx games (based on the system originally devised by the brilliant Francis Tresham)!
-        <p>Right now, 1889, 18Chesapeake, 1846, 1836Jr30, and 1882 are fully implemented but I'm planning on doing many more in the future.
+        <p>Right now, 1889, 18Chesapeake, 1846, 1836Jr30, 1882, 18AL, 18GA, and 18TN are implemented.
         If you are new to 18xx games then 1889 or 18Chesapeake are good games to begin with.</p>
 
         <p>You can play locally with hot seat mode without an account. If you want to play multiplayer, you'll need to create an account.</p>

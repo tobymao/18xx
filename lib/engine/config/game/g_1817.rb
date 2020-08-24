@@ -45,6 +45,7 @@ module Engine
     "D7": "Toledo",
     "D9": "Cleveland",
     "D19": "Scranton",
+    "E22": "New York",
     "F3": "Indianapolis",
     "F13": "Pittsburgh",
     "F19": "Philadelphia",
@@ -94,12 +95,13 @@ module Engine
       "code": "city=revenue:100,slots:4;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY"
     }
   },
+  "note": "The 80p needs removing!",
   "market": [
     [
-      "0",
-      "40",
-      "40",
-      "40",
+      "0l",
+      "40a",
+      "40a",
+      "40a",
       "40",
       "45",
       "50",
@@ -535,14 +537,16 @@ module Engine
       "offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:0,b:_0": [
         "A28"
       ],
-      "offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:4,b:_0;path=a:5,b:_0": [
+      "offboard=revenue:yellow_30|green_50|brown_60|gray_80;path=a:4,b:_0;path=a:5,b:_0": [
         "D1"
       ],
       "offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
         "H1"
       ],
+      "offboard=revenue:yellow_30|green_50|brown_60|gray_80;path=a:2,b:_0;path=a:3,b:_0": [
+        "J7"
+      ],
       "offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:2,b:_0;path=a:3,b:_0": [
-        "J7",
         "J15"
       ]
     },
@@ -610,12 +614,10 @@ module Engine
         "B23",
         "C4",
         "C6",
-        "C10",
         "C16",
         "C18",
         "D3",
         "D5",
-        "D11",
         "D15",
         "D17",
         "D21",
@@ -640,6 +642,12 @@ module Engine
         "I4",
         "I6",
         "I14"
+      ],
+      "border=edge:5,type:impassable": [
+        "C10"
+      ],
+      "border=edge:2,type:impassable": [
+        "D11"
       ]
     },
     "gray": {
@@ -660,7 +668,7 @@ module Engine
       "city=revenue:30;path=a:3,b:_0;path=a:5,b:_0;label=B": [
         "C26"
       ],
-      "city=revenue:40;city=revenue:40;path=a:3,b:_0;path=a:0,b:_0;label=NY;upgrade=cost:20,terrain:water": [
+      "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_1;label=NY;upgrade=cost:20,terrain:water": [
         "E22"
       ],
       "city=revenue:30;path=a:4,b:_0;path=a:0,b:_0;label=B": [

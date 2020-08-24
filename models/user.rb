@@ -10,14 +10,19 @@ class User < Base
 
   RESET_WINDOW = 60 * 15 # 15 minutes
 
-  SETTINGS = (4.times.flat_map do |index|
+  SETTINGS = (6.times.flat_map do |index|
     %w[color dash width].map do |prop|
       "r#{index}_#{prop}"
     end
-  end + %w[notifications red_logo bg font bg2 font2 your_turn white yellow green brown gray red blue]).freeze
+  end + %w[
+    consent notifications red_logo bg font bg2 font2 your_turn white yellow green
+    brown gray red blue
+  ]).freeze
 
   def update_settings(params)
-    SETTINGS.each { |setting| settings[setting] = params[setting] }
+    params.each do |key, value|
+      settings[key] = value if SETTINGS.include?(key)
+    end
   end
 
   def self.by_email(email)

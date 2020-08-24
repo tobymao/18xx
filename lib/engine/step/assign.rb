@@ -19,17 +19,32 @@ module Engine
         target = action.target
         @game.game_error("#{company.name} is already assigned to #{target.name}") if target.assigned?(company.id)
 
-        if target.is_a?(Hex) && (ability = company.abilities(:assign_hexes))
-          target.assign!(company.id)
-          ability.use!
-          @log << "#{company.name} is assigned to #{target.name}"
-        elsif assignable_corporations && (ability = company.abilities(:assign_corporation))
-          Assignable.remove_from_all!(assignable_corporations, company.id) do |unassigned|
-            @log << "#{company.name} is unassigned from #{unassigned.name}"
+        case target
+        when Hex
+          if (ability = company.abilities(:assign_hexes))
+            assignable_hexes = ability.hexes.map { |h| @game.hex_by_id(h) }
+            Assignable.remove_from_all!(assignable_hexes, company.id) do |unassigned|
+              @log << "#{company.name} is unassigned from #{unassigned.name}"
+            end
+            target.assign!(company.id)
+            ability.use!
+            @log << "#{company.name} is assigned to #{target.name}"
+          else
+            @game.game_error("Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found")
           end
-          target.assign!(company.id)
-          ability.use!
-          @log << "#{company.name} is assigned to #{target.name}"
+        when Corporation, Minor
+          if assignable_corporations && (ability = company.abilities(:assign_corporation))
+            Assignable.remove_from_all!(assignable_corporations, company.id) do |unassigned|
+              @log << "#{company.name} is unassigned from #{unassigned.name}"
+            end
+            target.assign!(company.id)
+            ability.use!
+            @log << "#{company.name} is assigned to #{target.name}"
+          else
+            @game.game_error("Could not assign #{company.name} to #{target.name}; no assignable corporations found")
+          end
+        else
+          @game.game_error("Invalid target #{target} for assigning company #{company.name}")
         end
       end
 

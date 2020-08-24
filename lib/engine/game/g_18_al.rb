@@ -12,7 +12,7 @@ module Engine
       load_from_json(Config::Game::G18AL::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
 
       GAME_LOCATION = 'Alabama, USA'
       GAME_RULES_URL = 'http://www.diogenes.sacramento.ca.us/18AL_Rules_v1_64.pdf'
@@ -25,7 +25,15 @@ module Engine
         'remove_tokens' => ['Remove Tokens', 'Warrior Coal Field token removed']
       ).freeze
 
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'can_buy_companies_from_other_players' => ['Interplayer Company Buy', 'Companies can be bought between players']
+      ).merge(
+        Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
+      ).freeze
+
       ROUTE_BONUSES = %i[atlanta_birmingham mobile_nashville].freeze
+
+      STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
 
       include CompanyPrice50To150Percent
       include Revenue4D
@@ -43,6 +51,8 @@ module Engine
             ability.description = "Historical objective: #{get_location_name(ability.hexes.first)}"
           end
         end
+
+        @green_m_tile ||= @tiles.find { |t| t.name == '443a' }
       end
 
       def operating_round(round_num)
@@ -53,7 +63,7 @@ module Engine
           Step::G18AL::BuyCompany,
           Step::HomeToken,
           Step::SpecialTrack,
-          Step::G18AL::Track,
+          Step::Track,
           Step::G18AL::Token,
           Step::Route,
           Step::Dividend,
@@ -127,6 +137,27 @@ module Engine
         @hexes
           .select { |hex| hexes_to_clear.include?(hex.name) && exclude != hex.name }
           .each { |hex| hex.tile.icons = [] }
+      end
+
+      def upgrades_to?(from, to, special = false)
+        # If upgrading Montgomery (L5) to green, only M tile #443a is allowed
+        return to.name == '443a' if from.color == :yellow && from.hex.name == 'L5'
+
+        super
+      end
+
+      def all_potential_upgrades(tile, tile_manifest: false)
+        # Lumber terminal cannot be upgraded
+        return [] if tile.name == '445'
+
+        upgrades = super
+
+        return upgrades unless tile_manifest
+
+        # Tile manifest for yellow cities should show M tile as an option
+        upgrades |= [@green_m_tile] if @green_m_tile && STANDARD_YELLOW_CITY_TILES.include?(tile.name)
+
+        upgrades
       end
 
       private

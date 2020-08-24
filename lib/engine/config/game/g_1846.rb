@@ -40,6 +40,7 @@ module Engine
     "C9": "South Bend",
     "C15": "Detroit",
     "C17": "Windsor",
+    "D6": "Chicago",
     "D14": "Toledo",
     "D20": "Erie",
     "D22": "Buffalo",
@@ -116,7 +117,7 @@ module Engine
   },
   "market": [
     [
-      "0blk",
+      "0c",
       "10",
       "20",
       "30",
@@ -260,11 +261,31 @@ module Engine
             "I1",
             "G19"
           ],
-          "count": 1
+          "count_per_or": 1,
+          "owner_type": "player"
         },
         {
           "type": "assign_corporation",
-          "count": 99
+          "count_per_or": 1,
+          "owner_type": "player"
+        },
+        {
+          "type": "assign_hexes",
+          "hexes": [
+            "B8",
+            "C5",
+            "D14",
+            "I1",
+            "G19"
+          ],
+          "count": 1,
+          "owner_type": "corporation"
+        },
+        {
+          "type": "assign_corporation",
+          "when": "sold",
+          "count": 1,
+          "owner_type": "corporation"
         }
       ]
     },
@@ -291,6 +312,7 @@ module Engine
               "295",
               "296"
             ],
+           "special": false,
            "when":"track",
            "count": 1
         }
@@ -325,6 +347,7 @@ module Engine
               "9"
             ],
            "when":"track",
+           "blocks":false,
            "count": 2
         }
       ]
@@ -358,6 +381,7 @@ module Engine
               "9"
             ],
            "when":"track",
+           "blocks": false,
            "count": 2
         }
       ]
@@ -821,7 +845,9 @@ module Engine
         "yellow"
       ],
       "operating_rounds": 2,
-      "buy_companies": true
+      "status":[
+        "can_buy_companies"
+      ]
     },
     {
       "name": "2",
@@ -832,7 +858,9 @@ module Engine
         "green"
       ],
       "operating_rounds": 2,
-      "buy_companies": true
+      "status":[
+        "can_buy_companies"
+      ]
     },
     {
       "name": "3",

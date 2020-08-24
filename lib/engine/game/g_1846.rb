@@ -146,6 +146,8 @@ module Engine
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token, free: true)
         end
+
+        @last_action = nil
       end
 
       def remove_from_group!(group, entities)
@@ -215,6 +217,14 @@ module Engine
         @steam_boat ||= company_by_id('SC')
       end
 
+      def michigan_central
+        @michigan_central ||= company_by_id('MC')
+      end
+
+      def ohio_indiana
+        @ohio_indiana ||= company_by_id('O&I')
+      end
+
       def mail_contract
         @mail_contract ||= company_by_id('MAIL')
       end
@@ -233,9 +243,28 @@ module Engine
           end
         end
 
+        check_special_tile_lay(action)
+
         @corporations.dup.each do |corporation|
           close_corporation(corporation) if corporation.share_price&.price&.zero?
         end
+
+        @last_action = action
+      end
+
+      def special_tile_lay?(action)
+        (action.is_a?(Action::LayTile) &&
+         (action.entity == michigan_central || action.entity == ohio_indiana))
+      end
+
+      def check_special_tile_lay(action)
+        company = @last_action&.entity
+        return unless special_tile_lay?(@last_action)
+        return unless (ability = company.abilities(:tile_lay))
+        return if action.entity == company
+
+        company.remove_ability(ability)
+        @log << "#{company.name} forfeits second tile lay."
       end
 
       def close_corporation(corporation, quiet: false)
@@ -259,8 +288,8 @@ module Engine
         @round.force_next_entity! if @round.current_entity == corporation
 
         if corporation.corporation?
-          corporation.share_holders.keys.each do |player|
-            player.shares_by_corporation.delete(corporation)
+          corporation.share_holders.keys.each do |share_holder|
+            share_holder.shares_by_corporation.delete(corporation)
           end
 
           @share_pool.shares_by_corporation.delete(corporation)
@@ -272,11 +301,11 @@ module Engine
       end
 
       def init_round
-        Round::G1846::Draft.new(self, [Step::G1846::DraftDistribution])
+        Round::Draft.new(self, [Step::G1846::DraftDistribution])
       end
 
       def priority_deal_player
-        return @players.first if @round.is_a?(Round::G1846::Draft)
+        return @players.first if @round.is_a?(Round::Draft)
 
         super
       end
@@ -285,7 +314,6 @@ module Engine
         Round::Stock.new(self, [
           Step::DiscardTrain,
           Step::G1846::Assign,
-          Step::SpecialTrack,
           Step::G1846::BuySellParShares,
         ])
       end

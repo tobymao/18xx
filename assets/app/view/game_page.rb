@@ -83,7 +83,7 @@ module View
         when 'market'
           h(Game::StockMarket, game: @game, explain_colors: true)
         when 'tiles'
-          h(Game::TileManifest, tiles: @game.tiles, all_tiles: @game.init_tiles, layout: @game.layout)
+          h(Game::TileManifest, game: @game)
         when 'entities'
           h(Game::Entities, game: @game, user: @user)
         when 'info'
@@ -251,7 +251,7 @@ module View
         end
       when Engine::Round::Operating
         h(Game::Round::Operating, game: @game)
-      when Engine::Round::G1846::Draft
+      when Engine::Round::Draft
         h(Game::Round::Auction, game: @game, user: @user)
       when Engine::Round::Auction
         h(Game::Round::Auction, game: @game, user: @user)

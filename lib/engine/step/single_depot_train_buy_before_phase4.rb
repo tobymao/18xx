@@ -5,6 +5,10 @@ require_relative 'buy_train'
 module Engine
   module Step
     class SingleDepotTrainBuyBeforePhase4 < BuyTrain
+      STATUS_TEXT = {
+        'limited_train_buy' => ['Limited Train Buy', 'Corporations can only buy one train from the bank per OR'],
+      }.freeze
+
       def buyable_trains(entity)
         super.reject do |train|
           train.from_depot? &&

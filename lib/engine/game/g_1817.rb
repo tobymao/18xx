@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1817'
+require_relative '../loan.rb'
 require_relative 'base'
 
 module Engine
@@ -34,6 +35,11 @@ module Engine
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
+      SEED_MONEY = 200
+      MUST_BUY_TRAIN = :never
+      EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
+      POOL_SHARE_DROP = :one
+      SELL_MOVEMENT = :none
 
       # @todo: this needs purchase of the 8 train
       GAME_END_CHECK = { bankrupt: :immediate }.freeze
@@ -58,6 +64,57 @@ module Engine
 
       def interest_payable(entity)
         (interest_rate * entity.taken_loans * @loan_increments) / 100
+      end
+      # Two lays with one being an upgrade, second tile costs 20
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
+
+      def new_auction_round
+        log << "Seed Money for initial auction is #{format_currency(SEED_MONEY)}"
+        Round::Auction.new(self, [
+          Step::G1817::SelectionAuction,
+        ])
+      end
+
+      def stock_round
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::HomeToken,
+          Step::G1817::BuySellParShares,
+        ])
+      end
+
+      def operating_round(round_num)
+        Round::G1817::Operating.new(self, [
+          Step::Bankrupt, # @todo: needs customization
+          Step::G1817::CashCrisis,
+          Step::DiscardTrain,
+          Step::G1817::Track,
+          Step::Token,
+          Step::Route,
+          Step::G1817::Dividend,
+          Step::G1817::BuyTrain,
+
+          # @todo: pay fees on loans, repay loans
+          # @todo: check for liquidation
+        ], round_num: round_num)
+      end
+
+      def or_round_finished
+        if @depot.upcoming.first.name == '2'
+          depot.export_all!('2')
+        else
+          depot.export!
+        end
+      end
+
+      def home_token_locations(corporation)
+        hexes.select do |hex|
+          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+        end
+      end
+
+      def init_loans
+        70.times.map { |id| Loan.new(id, 100) }
       end
     end
   end

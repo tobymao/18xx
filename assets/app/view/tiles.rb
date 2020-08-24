@@ -4,6 +4,8 @@ require 'view/game/hex'
 
 module View
   class Tiles < Snabberb::Component
+    WIDTH = 80
+    HEIGHT = 97
     def render_tile_blocks(
       name,
       layout: nil,
@@ -11,14 +13,16 @@ module View
       tile: nil,
       location_name: nil,
       scale: 1.0,
-      opacity: 1.0,
+      unavailable: nil,
       rotations: nil,
-      hex_coordinates: nil
+      hex_coordinates: nil,
+      clickable: false,
+      extra_children: []
     )
       props = {
         style: {
-          width: "#{80 * scale}px",
-          height: "#{97 * scale}px",
+          width: "#{WIDTH * scale}px",
+          height: "#{HEIGHT * scale}px",
         },
       }
 
@@ -44,6 +48,7 @@ module View
         hex.y = 0
 
         h('div.tile__block', props, [
+            *extra_children,
             h(:div, { style: { textAlign: 'center', fontSize: '12px' } }, text),
             h(:svg, { style: { width: '100%', height: '100%' } }, [
               h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
@@ -51,7 +56,8 @@ module View
                   Game::Hex,
                   hex: hex,
                   role: :tile_page,
-                  opacity: opacity,
+                  unavailable: unavailable,
+                  clickable: clickable,
                 ),
               ]),
             ]),

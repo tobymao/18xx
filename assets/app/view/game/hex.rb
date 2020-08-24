@@ -6,6 +6,7 @@ require 'view/game/actionable'
 require 'view/game/runnable'
 require 'view/game/tile'
 require 'view/game/triangular_grid'
+require 'view/game/tile_unavailable'
 
 module View
   module Game
@@ -29,6 +30,7 @@ module View
       needs :clickable, default: false
       needs :actions, default: []
       needs :entity, default: nil
+      needs :unavailable, default: nil
 
       def render
         @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
@@ -41,8 +43,10 @@ module View
         children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
         children << h(Tile, tile: @tile) if @tile
         children << h(TriangularGrid) if Lib::Params['grid']
+        children << h(TileUnavailable, unavailable: @unavailable, layout: @hex.layout) if @unavailable
 
         props = {
+          key: @hex.id,
           attrs: {
             transform: transform,
             fill: @user&.dig(:settings, @tile&.color) || (Lib::Hex::COLOR[@tile&.color || 'white']),
@@ -53,7 +57,7 @@ module View
         props[:attrs][:opacity] = @opacity if @opacity != 1.0
         props[:attrs][:cursor] = 'pointer' if @clickable
 
-        props[:on] = { click: ->(e) { on_hex_click(e) } } if @clickable
+        props[:on] = { click: ->(e) { on_hex_click(e) } }
         props[:attrs]['stroke-width'] = 5 if @selected
         h(:g, props, children)
       end
@@ -77,7 +81,9 @@ module View
       end
 
       def on_hex_click
-        return if @actions.empty?
+        return if @actions.empty? && @role != :tile_page
+
+        return store(:tile_selector, nil) if !@clickable || (@hex == @tile_selector&.hex && !@tile_selector.tile)
 
         nodes = @hex.tile.nodes
 
@@ -94,8 +100,10 @@ module View
           if @selected && (tile = @tile_selector&.tile)
             @tile_selector.rotate! if tile.hex != @hex
           else
-            store(:tile_selector, Lib::TileSelector.new(@hex, @tile, coordinates, root, @entity))
+            store(:tile_selector, Lib::TileSelector.new(@hex, @tile, coordinates, root, @entity, @role))
           end
+        when :tile_page
+          store(:tile_selector, Lib::TileSelector.new(@hex, @tile, coordinates, root, @entity, @role))
         when :tile_selector
           @tile_selector.tile = @tile
         end
