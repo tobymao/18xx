@@ -8,8 +8,7 @@ module Engine
 
     attr_accessor :rusted_self
     attr_reader :color, :coordinates, :city, :loans, :logo,
-                :operating_history, :text_color, :tokens, :trains,
-                :max_loans, :taken_loans
+                :operating_history, :text_color, :tokens, :trains
 
     def init_operator(opts)
       @cash = 0
@@ -24,8 +23,6 @@ module Engine
       @tokens = opts[:tokens].map { |price| Token.new(self, price: price) }
       @loans = []
       @color = opts[:color]
-      @max_loans = opts[:available_loans]
-      @taken_loans = 0
       @text_color = opts[:text_color] || '#ffffff'
     end
 

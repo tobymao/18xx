@@ -44,27 +44,24 @@ module Engine
       # @todo: this needs purchase of the 8 train
       GAME_END_CHECK = { bankrupt: :immediate }.freeze
 
-      attr_reader :loans_taken, :loans_available, :loan_increments
+      attr_reader :loan_value
 
       def bankruptcy_limit_reached?
         @players.reject(&:bankrupt).one?
       end
 
-      def init_bank
-        @loans_taken = 31
-        @loans_available = 14 * 5
-        @loan_increments = 100
-        super
-      end
-
       def interest_rate
-        # @todo: this needs the OR to fix the price.
-        @interest_fixed || [[5, ((@loans_taken + 4) / 5).to_i * 5].max, 70].min
+        @interest_fixed || [[5, ((loans_taken + 4) / 5).to_i * 5].max, 70].min
       end
 
       def interest_payable(entity)
-        (interest_rate * entity.taken_loans * @loan_increments) / 100
+        (interest_rate * entity.loans.size * @loan_value) / 100
       end
+
+      def maximum_loans(entity)
+        entity.total_shares
+      end
+
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
@@ -76,6 +73,7 @@ module Engine
       end
 
       def stock_round
+        @interest_fixed = nil
         Round::Stock.new(self, [
           Step::DiscardTrain,
           Step::HomeToken,
@@ -84,6 +82,8 @@ module Engine
       end
 
       def operating_round(round_num)
+        @interest_fixed = nil
+        @interest_fixed = interest_rate
         Round::G1817::Operating.new(self, [
           Step::Bankrupt, # @todo: needs customization
           Step::G1817::CashCrisis,
@@ -114,7 +114,22 @@ module Engine
       end
 
       def init_loans
-        70.times.map { |id| Loan.new(id, 100) }
+        @loan_value = 100
+        70.times.map { |id| Loan.new(id, @loan_value) }
+      end
+
+      def take_loan(entity, loan)
+        if entity.loans.size + 1 > maximum_loans(entity)
+          game_error("Cannot take more than #{maximum_loans(entity)} loans")
+        end
+        price = entity.share_price.price
+        @log << "#{entity.owner.name} takes a loan for #{entity.name} "\
+          "and receives #{format_currency(loan.amount)}"
+        @bank.spend(loan.amount, entity)
+        @stock_market.move_left(entity)
+        log_share_price(entity, price)
+        entity.loans << loan
+        @loans.delete(loan)
       end
     end
   end

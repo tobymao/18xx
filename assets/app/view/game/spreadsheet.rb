@@ -111,13 +111,15 @@ module View
           },
         }
 
+        extra = []
+        extra << h(:th, 'Loans') if @game.total_loans
         [
           h(:tr, [
             h(:th, ''),
             h(:th, th_props[@game.players.size], 'Players'),
             h(:th, th_props[2, true], 'Bank'),
             h(:th, th_props[2], 'Prices'),
-            h(:th, th_props[5, true, false], 'Corporation'),
+            h(:th, th_props[5 + extra.size, true, false], 'Corporation'),
             h(:th, ''),
             h(:th, th_props[or_history_titles.size, false, false], 'OR History'),
           ]),
@@ -134,6 +136,7 @@ module View
             h(:th, render_sort_link('Order', :order)),
             h(:th, 'Trains'),
             h(:th, 'Tokens'),
+            *extra,
             h(:th, 'Companies'),
             h(:th, ''),
             *or_history_titles,
@@ -236,6 +239,9 @@ module View
           end
         end
 
+        extra = []
+        extra << h(:td, "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}") if @game.total_loans
+
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
           *@game.players.map do |p|
@@ -256,6 +262,7 @@ module View
           h('td.left', order_props, operating_order_text),
           h(:td, corporation.trains.map(&:name).join(', ')),
           h(:td, "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
+          *extra,
           render_companies(corporation),
           h(:th, name_props, corporation.name),
           *render_history(corporation),

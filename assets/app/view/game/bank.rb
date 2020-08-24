@@ -55,11 +55,11 @@ module View
           ])
           trs << h(:tr, [
             h(:td, 'Loans'),
-            h('td.right', "#{@game.loans_taken}/#{@game.loans_available}"),
+            h('td.right', "#{@game.loans_taken}/#{@game.total_loans}"),
           ])
           trs << h(:tr, [
-            h(:td, 'Loan Increments'),
-            h('td.right', @game.format_currency(@game.loan_increments)),
+            h(:td, 'Loan Value'),
+            h('td.right', @game.format_currency(@game.loan_value)),
           ])
         end
 
