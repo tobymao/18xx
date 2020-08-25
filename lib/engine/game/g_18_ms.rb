@@ -44,8 +44,11 @@ module Engine
           company.max_price = company.value
         end if @turn == 1 && round_num == 1
 
-        # After OR 1, the company buy price is changed to 50%-150%
-        setup_company_price_50_to_150_percent if @turn == 1 && round_num == 2
+        # When OR1.2 is to start setup company prices and switch to green phase
+        if @turn == 1 && round_num == 2
+          setup_company_price_50_to_150_percent
+          @phase.next! if @turn == 1 && round_num == 2
+        end
 
         super
       end
