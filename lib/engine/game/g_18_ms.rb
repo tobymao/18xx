@@ -81,6 +81,14 @@ module Engine
         @recently_floated = []
       end
 
+      def or_set_finished
+        case @turn
+        when 3 then rust('2+', 20)
+        when 4 then rust('3+', 30)
+        when 5 then rust('4+', 60)
+        end
+      end
+
       def purchasable_companies(entity = nil)
         entity ||= current_entity
         # Only companies owned by the president may be bought
@@ -100,6 +108,18 @@ module Engine
       def revenue_for(route)
         # Diesels double to normal revenue
         route.train.name.end_with?('D') ? 2 * super : super
+      end
+
+      def routes_revenue(routes)
+        active_step.current_entity.trains.each do |t|
+          next unless t.name == "#{@turn}+"
+
+          # Trains that are going to be salvaged at the end of this OR
+          # cannot be sold when they have been run
+          t.buyable = false
+        end
+
+        super
       end
 
       def upgrades_to?(from, to, _special = false)
@@ -136,6 +156,22 @@ module Engine
         return super unless @recently_floated.include?(entity)
 
         [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+      end
+
+      private
+
+      def rust(train, salvage)
+        rusted_trains = trains.select { |t| !t.rusted && t.name == train }
+        return if rusted_trains.empty?
+
+        rusted_trains.each do |t|
+          @bank.spend(salvage, t.owner)
+          t.rust!
+        end
+
+        @log << "-- Event: #{rusted_trains.map(&:name).uniq.join(', ')} trains rust --"
+        exception = train == '2+' ? ' (except any free 2+ train)' : ''
+        @log << "Corporations salvages #{format_currency(salvage)} from each rusted train#{exception}"
       end
     end
   end

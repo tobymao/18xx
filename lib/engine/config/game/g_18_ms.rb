@@ -185,7 +185,7 @@ module Engine
          "name":"Mississippi Central Railway",
          "value":60,
          "revenue":5,
-         "desc":"Converts to a 2+ train with no salvage value when placed in a Major Company.",
+         "desc":"Converts to a 2+ train that cannot be salvaged when placed in a Major Company.",
          "sym":"MC"
       },
       {

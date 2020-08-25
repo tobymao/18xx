@@ -66,7 +66,7 @@ module Engine
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
       def new_auction_round
-        log << "Seed Money for initial auction is #{format_currency(SEED_MONEY)}"
+        log << "Seed Money for initial auction is #{format_currency(SEED_MONEY)}" unless @round
         Round::Auction.new(self, [
           Step::G1817::SelectionAuction,
         ])
@@ -84,9 +84,19 @@ module Engine
       def operating_round(round_num)
         @interest_fixed = nil
         @interest_fixed = interest_rate
+        # Revaluate if private companies are owned by corps with trains
+        @companies.each do |company|
+          next unless company.owner
+
+          company.abilities(:revenue_change, 'has_train') do |ability|
+            company.revenue = company.owner.trains.any? ? ability.revenue : 0
+          end
+        end
+
         Round::G1817::Operating.new(self, [
           Step::Bankrupt, # @todo: needs customization
           Step::G1817::CashCrisis,
+          Step::G1817::SpecialTrack,
           Step::DiscardTrain,
           Step::G1817::Track,
           Step::Token,
