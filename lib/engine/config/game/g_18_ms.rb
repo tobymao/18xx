@@ -11,7 +11,7 @@ module Engine
    "filename":"18_ms",
    "modulename":"18MS",
    "currencyFormatStr":"$%d",
-   "bankCash":6000,
+   "bankCash":10000,
    "certLimit":{
       "2":20,
       "3":14,
@@ -89,12 +89,12 @@ module Engine
       "446":{
          "count":1,
          "color":"gray",
-         "code":"city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=BM"
+         "code":"city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=BM"
       },
       "X31b":{
          "count":1,
          "color":"brown",
-         "code":"city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Mob"
+         "code":"city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=Mob"
       }
    },
    "market":[
