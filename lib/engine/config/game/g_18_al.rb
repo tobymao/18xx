@@ -615,7 +615,7 @@ module Engine
             "N3",
             "O2"
          ],
-         "upgrade=cost:20,terrain:water;icon=image:18_al/swamp":[
+         "upgrade=cost:20,terrain:swamp":[
             "G2",
             "M2",
             "N5",
