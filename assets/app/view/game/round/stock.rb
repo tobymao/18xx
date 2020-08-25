@@ -103,28 +103,28 @@ module View
             if @step.can_buy?(@current_entity, pool_share)
               children << h(:button, { on: { click: buy_pool } }, 'Buy Market Share')
             end
+          end
 
-            # Allow privates to be exchanged for shares
-            @game.companies.each do |company|
-              company.abilities(:exchange) do |ability|
-                next unless ability.corporation == @selected_corporation.name
-                next unless company.owner == @current_entity
+          # Allow privates to be exchanged for shares
+          @game.companies.each do |company|
+            company.abilities(:exchange) do |ability|
+              next unless ability.corporation == @selected_corporation.name
+              next unless company.owner == @current_entity
 
-                prefix = "Exchange #{company.sym} for "
+              prefix = "Exchange #{company.sym} for "
 
-                if ability.from.include?(:ipo) && @step.can_gain?(company.owner, ipo_share)
-                  children << h(:button, { on: { click: -> { buy_share(company, ipo_share) } } },
-                                "#{prefix} an #{@game.class::IPO_NAME} share")
-                end
+              if ability.from.include?(:ipo) && @step.can_gain?(company.owner, ipo_share, true)
+                children << h(:button, { on: { click: -> { buy_share(company, ipo_share) } } },
+                              "#{prefix} an #{@game.class::IPO_NAME} share")
+              end
 
-                if ability.from.include?(:market) && @step.can_gain?(company.owner, pool_share)
-                  children << h(:button, { on: { click: -> { buy_share(company, pool_share) } } },
-                                "#{prefix} a Market share")
-                end
+              if ability.from.include?(:market) && @step.can_gain?(company.owner, pool_share, true)
+                children << h(:button, { on: { click: -> { buy_share(company, pool_share) } } },
+                              "#{prefix} a Market share")
               end
             end
-
           end
+
           children << h(SellShares, player: @current_entity)
 
           h(:div, children)

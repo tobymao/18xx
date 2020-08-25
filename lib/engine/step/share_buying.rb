@@ -17,12 +17,13 @@ module Engine
       # This works irrespective of if that player has sold this round
       # such as in 1889 for exchanging Dougo
       #
-      def can_gain?(entity, bundle)
+      def can_gain?(entity, bundle, exchanging = false)
         return if !bundle || !entity
 
         corporation = bundle.corporation
+
         corporation.holding_ok?(entity, bundle.percent) &&
-          (!corporation.counts_for_limit || entity.num_certs < @game.cert_limit)
+          (!corporation.counts_for_limit || exchanging || entity.num_certs < @game.cert_limit)
       end
     end
   end
