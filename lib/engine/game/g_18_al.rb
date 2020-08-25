@@ -140,6 +140,9 @@ module Engine
       end
 
       def upgrades_to?(from, to, special = false)
+        # Lumber terminal cannot be upgraded
+        return false if from.name == '445'
+
         # If upgrading Montgomery (L5) to green, only M tile #443a is allowed
         return to.name == '443a' if from.color == :yellow && from.hex.name == 'L5'
 
