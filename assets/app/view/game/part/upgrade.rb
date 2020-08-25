@@ -33,6 +33,7 @@ module View
           y: -45,
         }.freeze
 
+        SIZE = 20
         WATER_PATH = 'M -15 -7 Q -7.5 -15, 0 -7 S 7.5 1, 15 -7M -15 -2  Q -7.5 -10, 0 -2  S 7.5 6, 15 -2'
         TRIANGLE_PATH = '0,20 10,0 20,20'
 
@@ -51,9 +52,12 @@ module View
           delta_x = -10
 
           terrain = @terrains.map.with_index do |t, index|
+            delta_y = 5 + (20 * index)
             {
-              mountain: mountain(delta_x: delta_x, delta_y: 5 + (20 * index)),
-              water: water(delta_x: delta_x, delta_y: 5 + (20 * index)),
+              mountain: mountain(delta_x: delta_x, delta_y: delta_y),
+              water: water(delta_x: delta_x, delta_y: delta_y),
+              swamp: svg(delta_x: delta_x, delta_y: delta_y, icon: 'swamp'),
+              desert: svg(delta_x: delta_x, delta_y: delta_y, icon: 'cactus'),
             }[t]
           end
 
@@ -72,6 +76,18 @@ module View
           h(:g, { attrs: { transform: "translate(#{10 + delta_x} #{12 + delta_y}) scale(0.7)" } }, [
             h('path.tile__water', attrs: { d: WATER_PATH }),
           ])
+        end
+
+        def svg(delta_x: 0, delta_y: 0, icon:)
+          h(
+            :image, attrs: {
+              href: "/icons/#{icon}.svg",
+              x: delta_x,
+              y: delta_y,
+              height: SIZE,
+              width: SIZE,
+            },
+          )
         end
       end
     end
