@@ -17,7 +17,7 @@ module Engine
       end
 
       def can_buy_company?(entity)
-        companies = @game.purchasable_companies
+        companies = @game.purchasable_companies(entity)
 
         entity == current_entity &&
           @game.phase.status.include?('can_buy_companies') &&
