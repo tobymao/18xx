@@ -113,12 +113,12 @@ module View
 
               prefix = "Exchange #{company.sym} for "
 
-              if ability.from.include?(:ipo) && @step.can_gain?(company.owner, ipo_share, true)
+              if ability.from.include?(:ipo) && @step.can_gain?(company.owner, ipo_share, exchange: true)
                 children << h(:button, { on: { click: -> { buy_share(company, ipo_share) } } },
                               "#{prefix} an #{@game.class::IPO_NAME} share")
               end
 
-              if ability.from.include?(:market) && @step.can_gain?(company.owner, pool_share, true)
+              if ability.from.include?(:market) && @step.can_gain?(company.owner, pool_share, exchange: true)
                 children << h(:button, { on: { click: -> { buy_share(company, pool_share) } } },
                               "#{prefix} a Market share")
               end
