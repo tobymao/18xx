@@ -41,10 +41,32 @@ module View
           },
         }
 
+        trs = []
+        if @game.class::GAME_END_CHECK.include?(:bank)
+          trs << h(:tr, [
+            h(:td, 'Cash'),
+            h('td.right', @game.format_currency(@game.bank.cash)),
+          ])
+        end
+        if (rate = @game.interest_rate)
+          trs << h(:tr, [
+            h(:td, 'Interest per Loan'),
+            h('td.right', @game.format_currency(rate)),
+          ])
+          trs << h(:tr, [
+            h(:td, 'Loans'),
+            h('td.right', "#{@game.loans_taken}/#{@game.total_loans}"),
+          ])
+          trs << h(:tr, [
+            h(:td, 'Loan Value'),
+            h('td.right', @game.format_currency(@game.loan_value)),
+          ])
+        end
+
         h('div.bank.card', [
           h('div.title.nowrap', title_props, [h(:em, 'The Bank')]),
           h(:div, body_props, [
-            h(:div, @game.format_currency(@game.bank.cash)),
+            h(:table, trs),
             h(GameInfo, game: @game, layout: 'discarded_trains'),
           ]),
         ])

@@ -33,7 +33,7 @@ module Engine
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
-                  :tiles, :turn, :undo_possible, :redo_possible, :round_history, :all_tiles
+                  :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -293,6 +293,7 @@ module Engine
         @stock_market = init_stock_market
         @minors = init_minors
         @loans = init_loans
+        @total_loans = @loans.size
         @corporations = init_corporations(@stock_market)
         @bank = init_bank
         @tiles = init_tiles
@@ -780,6 +781,14 @@ module Engine
         []
       end
 
+      def loans_taken
+        @total_loans - @loans.size
+      end
+
+      def maximum_loans(_entity)
+        0
+      end
+
       def init_corporations(stock_market)
         min_price = stock_market.par_prices.map(&:price).min
 
@@ -1127,6 +1136,8 @@ module Engine
           .select { |t| upgrades_to?(tile, t) }
           .reject(&:blocks_lay)
       end
+
+      def interest_rate; end
     end
   end
 end

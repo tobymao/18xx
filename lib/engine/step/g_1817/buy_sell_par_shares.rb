@@ -86,14 +86,9 @@ module Engine
 
         def process_take_loan(action)
           corporation = action.entity
-          price = corporation.share_price.price
           loan = action.loan
           @current_actions << action
-          @log << "#{corporation.owner.name} takes a loan for #{corporation.name} "\
-            "and receives #{@game.format_currency(loan.amount)}"
-          @game.bank.spend(loan.amount, corporation)
-          @game.stock_market.move_left(corporation)
-          @game.log_share_price(corporation, price)
+          @game.take_loan(corporation, loan)
         end
 
         def par_corporation
@@ -153,7 +148,7 @@ module Engine
         def can_take_loan?(entity)
           entity.corporation? &&
             entity.owned_by?(current_entity) &&
-            entity.loans.size < entity.total_shares
+            entity.loans.size < @game.maximum_loans(entity)
         end
 
         def committed_cash

@@ -54,6 +54,7 @@ module View
           ability.owner.corporation? && ability.description
         end
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
+        children << render_loans if @corporation.loans.any?
 
         if @corporation.owner
           props = {
@@ -346,6 +347,25 @@ module View
         else
           []
         end
+      end
+
+      def render_loans
+        props = { style: { borderCollapse: 'collapse' } }
+        h('table.center', props, [
+          h(:thead, [
+            h(:tr, [
+              h(:th, 'Loans'),
+              h(:th, 'Interest Due'),
+            ]),
+          ]),
+          h(:tbody, [
+            h('tr.ipo', [
+              h('td.right', "#{@corporation.loans.size}/"\
+              "#{@game.maximum_loans(@corporation)}"),
+              h('td.padded_number', @game.format_currency(@game.interest_payable(@corporation)).to_s),
+            ]),
+          ]),
+        ])
       end
 
       def render_abilities(abilities)
