@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg4762"
+   version="1.1"
+   viewBox="-16 -16 32 32"
+   height="32"
+   width="32">
+  <metadata
+     id="metadata4768">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs4766" />
+  <circle
+     style="opacity:0.99;fill:#0efffd;fill-opacity:1"
+     id="circle4738"
+     r="15"
+     cy="0"
+     cx="0"
+     stroke-width="1"
+     stroke="#000"
+     fill="#fff" />
+  <g
+     transform="matrix(0.65216063,0,0,0.65216063,0.00447337,5.9789381)"
+     id="g5332">
+    <g
+       id="g4748"
+       style="stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:round">
+      <path
+         d="M 0,-6 V 8"
+         id="path4740"
+         style="fill:#67a7c4" />
+      <path
+         fill="#67a7c47"
+         d="M -5,-3 H 5"
+         id="path4742" />
+      <path
+         d="M -9,5 C -7,11 7,11 9,5 7,9 -7,9 -9,5"
+         id="path4744" />
+      <circle
+         cy="-8"
+         r="2"
+         id="circle4746"
+         cx="0" />
+    </g>
+    <g
+       id="g4754"
+       style="stroke:#67a7c4;stroke-width:2;stroke-linecap:round;stroke-linejoin:round">
+      <path
+         d="M 0,-6 V 8"
+         id="path4750"
+         style="fill:#67a7c4" />
+      <path
+         fill="#67a7c47"
+         d="M -5,-3 H 5"
+         id="path4752" />
+    </g>
+    <g
+       id="g4760"
+       style="fill:none;stroke:#67a7c4;stroke-width:2;stroke-linecap:round;stroke-linejoin:round">
+      <path
+         d="M -9,5 C -7,11 7,11 9,5 7,9 -7,9 -9,5"
+         id="path4756" />
+      <circle
+         cy="-8"
+         r="2"
+         id="circle4758"
+         cx="0" />
+    </g>
+  </g>
+  <text
+     id="text5336"
+     y="-2.1016953"
+     x="-10.160999"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:1.25;font-family:lato;-inkscape-font-specification:'lato Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;"
+     xml:space="preserve"><tspan
+       y="-2.1016953"
+       x="-10.160999"
+       id="tspan5334">20x</tspan></text>
+</svg>

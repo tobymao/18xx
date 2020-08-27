@@ -208,29 +208,35 @@ module View
         }
 
         tokens_body = @corporation.tokens.map.with_index do |token, i|
-          img_props = {
-            attrs: {
-              src: token.logo,
-            },
-            style: {
-              width: '1.5rem',
-            },
-          }
-          img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if token.used
           token_text =
             if i.zero? && @corporation.coordinates
               @corporation.coordinates
             else
               token.city ? token.city.hex.name : token.price
             end
-
-          h(:div, token_column_props, [
-            h(:img, img_props),
-            h(:div, token_text_props, token_text),
-          ])
+          [token.logo, token.used, token_text]
         end
 
-        h(:div, token_list_props, tokens_body)
+        @corporation.assignments.each do |assignment, _active|
+          img = @game.class::ASSIGNMENT_TOKENS[assignment]
+          tokens_body << [img, true, assignment]
+        end
+
+        h(:div, token_list_props, tokens_body.map do |logo, used, text|
+          img_props = {
+            attrs: {
+              src: logo,
+            },
+            style: {
+              width: '1.5rem',
+            },
+          }
+          img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if used
+          h(:div, token_column_props, [
+            h(:img, img_props),
+            h(:div, token_text_props, text),
+          ])
+        end)
       end
 
       def share_price_str(share_price)
