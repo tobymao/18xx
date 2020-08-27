@@ -25,13 +25,16 @@ module View
       def should_render_revenue?
         revenue = @tile.revenue_to_render
 
+        # special case: city with multi-revenue - no choice but to draw separate revenue
+        return true if revenue.any? { |r| !r.is_a?(Numeric) }
+
         return false if revenue.empty?
 
         return false if revenue.first.is_a?(Numeric) && (@tile.cities + @tile.towns).one?
 
         return false if revenue.uniq.size > 1
 
-        return false if @tile.cities.sum(&:slots) < 3 && @tile.stops.size == 2
+        return false if @tile.cities.sum(&:slots) < 3 && (@tile.cities + @tile.towns).size == 2
 
         true
       end
@@ -45,7 +48,7 @@ module View
         children = []
 
         render_revenue = should_render_revenue?
-        children << render_tile_part(Part::Track, routes: @routes) if @tile.exits.any?
+        children << render_tile_part(Part::Track, routes: @routes) if @tile.paths.any?
         children << render_tile_part(Part::Cities, show_revenue: !render_revenue) if @tile.cities.any?
         children << render_tile_part(Part::Towns, routes: @routes) if @tile.towns.any?
 

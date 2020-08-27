@@ -13,7 +13,7 @@ module Engine
       end
 
       def paths
-        @paths ||= @tile.paths.select { |p| p.node == self }
+        @paths ||= @tile.paths.select { |p| p.nodes.any? { |n| n == self } }
       end
 
       def exits

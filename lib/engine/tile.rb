@@ -94,7 +94,8 @@ module Engine
                               hide: params['hide'],
                               visit_cost: params['visit_cost'],
                               route: params['route'],
-                              format: params['format'])
+                              format: params['format'],
+                              loc: params['loc'])
         cache << town
         town
       when 'offboard'
@@ -305,7 +306,7 @@ module Engine
 
       # populate ct_edges and edge_count as described in above comments
       paths.each do |path|
-        next unless (ct = path.city || path.town)
+        next unless path.exits.any? && (ct = path.city || path.town)
 
         path.exits.each do |edge|
           ct_edges[ct] << edge
@@ -343,15 +344,18 @@ module Engine
         ct = pathless_cts.first
         ct_edges[ct] = (ct_edges.values.first + 3) % 6
       end
-      pathless_cts.select do |pct|
-        ct_edges[pct] = compute_loc(pct.loc) if pct.loc
+
+      # take care of city/towns with no exits
+      exitless_cts = city_towns.select { |xct| xct.exits.empty? }
+      exitless_cts.select do |xct|
+        ct_edges[xct] = compute_loc(xct.loc) if xct.loc
       end
 
       ct_edges
     end
 
     def revenue_to_render
-      @revenue_to_render ||= stops.map(&:revenue_to_render)
+      @revenue_to_render ||= (@cities + @towns + @offboards).map(&:revenue_to_render)
     end
 
     # Used to set label for a recently placed tile
@@ -415,9 +419,9 @@ module Engine
         end
       end
 
-      @nodes = @paths.map(&:node).compact.uniq
-      @branches = @paths.map(&:branch).compact.uniq
-      @stops = @paths.map(&:stop).compact.uniq
+      @nodes = @paths.flat_map(&:nodes).compact.uniq
+      @branches = @paths.flat_map(&:branches).compact.uniq
+      @stops = @paths.flat_map(&:stops).compact.uniq
       @edges = @paths.flat_map(&:edges).compact.uniq
     end
   end

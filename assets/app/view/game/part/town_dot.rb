@@ -16,6 +16,7 @@ module View
         needs :width, default: 8
 
         REVENUE_DISPLACEMENT = 42
+        REVENUE_EDGE_DISPLACEMENT = 50
         REVENUE_ANGLE = -60
 
         REVENUE_REGIONS = {
@@ -54,8 +55,22 @@ module View
           },
         ].freeze
 
+        def load_from_tile
+          @edge = @tile.preferred_city_town_edges[@town]
+        end
+
         def preferred_render_locations
-          @tile.towns.size > 1 ? OFFSET_TOWNS : CENTER_TOWN
+          if @edge
+            [
+              {
+                region_weights: TownRect::EDGE_TOWN_REGIONS[@edge],
+                x: -Math.sin((@edge * 60) / 180 * Math::PI) * 50,
+                y: Math.cos((@edge * 60) / 180 * Math::PI) * 50,
+              },
+            ]
+          else
+            @tile.towns.size > 1 ? OFFSET_TOWNS : CENTER_TOWN
+          end
         end
 
         def render_revenue
@@ -66,9 +81,11 @@ module View
 
           angle = layout == :pointy ? -60 : 0
 
+          displacement = @edge ? REVENUE_EDGE_DISPLACEMENT : REVENUE_DISPLACEMENT
+
           increment_weight_for_regions(REVENUE_REGIONS[layout])
           h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
-              h(:g, { attrs: { transform: "translate(#{REVENUE_DISPLACEMENT} 0) rotate(#{-angle})" } }, [
+              h(:g, { attrs: { transform: "translate(#{displacement} 0) rotate(#{-angle})" } }, [
                   h(Part::SingleRevenue,
                     revenue: revenue,
                     transform: rotation_for_layout),

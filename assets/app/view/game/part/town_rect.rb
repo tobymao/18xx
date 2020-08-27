@@ -15,15 +15,15 @@ module View
         needs :color, default: 'black'
         needs :width, default: 8
 
-        SINGLE_TOWN_REGIONS = {
+        SINGLE_STOP_TWO_EXIT_REGIONS = {
           straight: [CENTER] * 6,
           sharp: [
-            [14, 15],
-            [7, 14],
-            [7, 8],
-            [8, 9],
-            [9, 16],
-            [15, 16],
+            [14, 15, 19, 20],
+            [5, 7, 12, 14],
+            [0, 1, 7, 8],
+            [3, 4, 8, 9],
+            [9, 11, 16, 18],
+            [15, 16, 22, 23],
           ],
           gentle: [
             [14],
@@ -35,63 +35,97 @@ module View
           ],
         }.freeze
 
+        MULTIPLE_STOP_TWO_EXIT_REGIONS = {
+          straight: [
+            [15],
+            [14],
+            [7],
+            [8],
+            [9],
+            [16],
+          ],
+          sharp: [
+            [15, 20, 21],
+            [12, 13, 14],
+            [0, 6, 7],
+            [2, 3, 8],
+            [9, 10, 11],
+            [16, 17, 23],
+          ],
+          gentle: [
+            [15, 12],
+            [13, 14],
+            [6, 7],
+            [2, 8],
+            [9, 10],
+            [16, 17],
+          ],
+        }.freeze
+
         EDGE_TOWN_REGIONS = {
-          straight: City::EDGE_CITY_REGIONS,
-          sharp: City::EDGE_CITY_REGIONS,
-          gentle: City::EDGE_CITY_REGIONS,
+          0 => [21],
+          0.5 => [13, 21],
+          1 => [13],
+          1.5 => [6, 13],
+          2 => [6],
+          2.5 => [2, 6],
+          3 => [2],
+          3.5 => [2, 10],
+          4 => [10],
+          4.5 => [10, 17],
+          5 => [17],
+          5.5 => [17, 21],
         }.freeze
 
         # absolute value of angle (in degrees) to tilt the town rectangle relative
         # to a straight line from edge_a to the opposite edge
         RECTANGLE_TILT = {
-          sharp: 10,
-          gentle: 10,
+          sharp: 40,
+          gentle: 15,
         }.freeze
 
         # from center of the hex, how many degrees of offset to apply to
         # positioning the town rectangle; this value will be added/subtracted to
         # (edge_a * 60)
         POSITIONAL_ANGLE = {
-          sharp: 2,
-          gentle: 2,
+          sharp: 12.12,
+          gentle: 6.11,
         }.freeze
 
         DOUBLE_DIT_REVENUE_ANGLES = [10, -130, 130, -10, 50, -50].freeze
         DOUBLE_DIT_REVENUE_REGIONS = City::OO_REVENUE_REGIONS
 
-        # Returns the two edges so that a is the edge to render close to, and
+        # Returns the two edges plus min edge so that a is the edge to render close to, and
         # (a - b).abs is 1, 2 or 3.
-        def normalized_edges
-          @normalized_edges ||=
-            begin
-              edge_a = @tile.preferred_city_town_edges[@town]
-              edge_b = (@town.exits - [edge_a]).first
-              edges = [edge_a, edge_b]
-              edges[edges.index(edges.min)] += 6 if (edge_a - edge_b).abs > 3
-              edges
-            end
-        end
-
-        def min_edge
-          @min_edge ||= normalized_edges.min
+        def self.normalized_edges(edge_a, exits)
+          if edge_a && exits.size == 2
+            edge_b = (exits - [edge_a]).first
+            edges = [edge_a, edge_b]
+            edges[edges.index(edges.min)] += 6 if (edge_a - edge_b).abs > 3
+            edges.append(edges.min)
+          else
+            [edge_a, nil, nil]
+          end
         end
 
         # Returns a symbol of :straight, :gentle or :sharp based on the absolute
         # difference of the normalized edges
-        def track_type
-          @track_type ||=
+        def self.track_type(edges)
+          @@track_type ||= {}
+          @@track_type[edges] ||=
             begin
-              edge_a, edge_b = normalized_edges
+              edge_a, edge_b, = edges
               [nil, :sharp, :gentle, :straight][(edge_a - edge_b).abs]
             end
         end
 
         # Returns a symbol of :left, :right, or :straight based on the direction
         # the track curves starting from edge_a
-        def track_direction
-          @track_direction ||=
+        def self.track_direction(edges)
+          @track_direction ||= {}
+          @track_direction[edges] ||=
             begin
-              edge_a, edge_b = normalized_edges
+              edge_a, edge_b, = edges
 
               if (edge_a - edge_b).abs == 3
                 :straight
@@ -104,37 +138,39 @@ module View
         end
 
         # Returns an array of options for track positions
-        def track_location
-          edge_a, = normalized_edges
+        def self.track_location(tile, town, edges)
+          edge_a, = edges
 
-          loc =
-            if @tile.towns.one?
-              SINGLE_TOWN_REGIONS[track_type][min_edge]
-            else
-              EDGE_TOWN_REGIONS[track_type][edge_a % 6]
-            end
+          loc = if town.exits.size == 2 && tile.stops.one?
+                  SINGLE_STOP_TWO_EXIT_REGIONS[track_type(edges)][edges.last]
+                elsif town.exits.size == 2
+                  MULTIPLE_STOP_TWO_EXIT_REGIONS[track_type(edges)][edge_a % 6]
+                elsif edge_a
+                  EDGE_TOWN_REGIONS[edge_a]
+                else
+                  CENTER
+                end
           [loc]
         end
 
         # Returns an array of rotation options for the town rectangle that
         # corresponds to the positions given from track_location
-        def rotation_angles
-          edge_a, = normalized_edges
+        def self.rotation_angles(tile, town, edges)
+          edge_a, = edges
 
-          if @tile.towns.one?
-            case track_type
+          if town.exits.size == 2 && tile.stops.one?
+            case track_type(edges)
             when :straight
-              [min_edge * 60]
+              [edges.last * 60]
             when :sharp
-              [(min_edge + 2) * 60]
+              [(edges.last + 2) * 60]
             when :gentle
-              [(min_edge * 60) - 30]
+              [(edges.last * 60) - 30]
             end
-          else
+          elsif town.exits.size == 2
+            tilt = RECTANGLE_TILT[track_type(edges)] || 0
 
-            tilt = RECTANGLE_TILT[track_type] || 0
-
-            delta = case track_direction
+            delta = case track_direction(edges)
                     when :straight
                       0
                     when :left
@@ -144,27 +180,43 @@ module View
                     end
 
             [(edge_a * 60) + delta]
+          elsif edge_a
+            [edge_a * 60]
+          else
+            # This town is in the center. Find the orientation of the town
+            # by looking at the first path connected to it
+            path = town.paths.first
+            if !path.edges.empty?
+              [path.edges.first.num * 60]
+            else
+              other_stop = (path.stops - [town]).first
+              other_edge = tile.preferred_city_town_edges[other_stop] if other_stop
+              if other_edge
+                [other_edge * 60]
+              else
+                [0]
+              end
+            end
           end
         end
 
         # Returns an array of weights, location and rotations
-        def position
-          edge_a, = normalized_edges
+        def self.position(tile, town, edges)
+          edge_a, = edges
 
-          if @tile.towns.one?
-
-            angles, positions = case track_type
+          if town.exits.size == 2 && tile.stops.one?
+            angles, positions = case track_type(edges)
                                 when :straight
                                   [[edge_a * 60], [0]]
                                 when :sharp
-                                  [[(min_edge + 0.5) * 60], [43.5]]
+                                  [[(edges.last + 0.5) * 60], [50]]
                                 when :gentle
-                                  [[(min_edge + 1) * 60], [20]]
+                                  [[(edges.last + 1) * 60], [23.2]]
                                 end
-          else
-            positional_angle = POSITIONAL_ANGLE[track_type] || 0
+          elsif town.exits.size == 2
+            positional_angle = POSITIONAL_ANGLE[track_type(edges)] || 0
 
-            delta = case track_direction
+            delta = case track_direction(edges)
                     when :straight
                       0
                     when :left
@@ -175,14 +227,20 @@ module View
 
             angles = [(edge_a * 60) + delta]
 
-            positions = case track_type
+            positions = case track_type(edges)
                         when :straight
                           [40]
                         when :sharp
-                          [60]
+                          [55.70]
                         when :gentle
-                          [53.375]
+                          [48.05]
                         end
+          elsif edge_a
+            angles = [edge_a * 60]
+            positions = [50]
+          else
+            angles = [0]
+            positions = [0]
           end
 
           radians = angles.map { |a| a / 180 * Math::PI }
@@ -190,13 +248,14 @@ module View
           xs = positions.zip(radians).map { |p, r| -Math.sin(r) * p }
           ys = positions.zip(radians).map { |p, r| Math.cos(r) * p }
 
-          track_location.zip(xs, ys, rotation_angles)
+          track_location(tile, town, edges).zip(xs, ys, rotation_angles(tile, town, edges))
         end
 
         # Maps the position method into the required format for
         # preferred_render_locations
         def preferred_render_locations
-          position.map do |weights, x, y, angle|
+          edges = TownRect.normalized_edges(@edge, @town.exits)
+          TownRect.position(@tile, @town, edges).map do |weights, x, y, angle|
             {
               region_weights: weights,
               x: x,
@@ -209,7 +268,7 @@ module View
         def load_from_tile
           @tile = @town.tile
           @edge = @tile.preferred_city_town_edges[@town]
-          @num_towns = @tile.towns.size
+          @num_cts = @tile.cities.size + @tile.towns.size
         end
 
         def render_part
@@ -248,19 +307,30 @@ module View
           reverse_side = false
           regions = []
 
-          # AFAIK no tiles have more than 2 towns
-          case @num_towns
-          when 1
-            angle = rotation_angles[0]
-            reverse_side = track_type == :sharp
+          edges = TownRect.normalized_edges(@edge, @town.exits)
 
-            # for gentle and straight, exact regions vary, but it's always in
-            # CENTER; close enough to always use CENTER and not worry about rotations
-            regions = CENTER
-          when 2
-            angle = DOUBLE_DIT_REVENUE_ANGLES[@edge]
-            displacement = 35
-            regions = DOUBLE_DIT_REVENUE_REGIONS[@edge]
+          if @town.exits.size == 2
+            if @num_cts == 1
+              angle = TownRect.rotation_angles(@tile, @town, edges)[0]
+              reverse_side = TownRect.track_type(edges) == :sharp
+
+              # for gentle and straight, exact regions vary, but it's always in
+              # CENTER; close enough to always use CENTER and not worry about rotations
+              regions = CENTER
+            else
+              angle = DOUBLE_DIT_REVENUE_ANGLES[@edge]
+              displacement = 35
+              regions = DOUBLE_DIT_REVENUE_REGIONS[@edge]
+            end
+          else
+            angle = TownRect.rotation_angles(@tile, @town, edges)[0]
+            if @edge
+              displacement = 35
+              # probably not accurate
+              regions = EDGE_TOWN_REGIONS[@edge]
+            else
+              regions = CENTER
+            end
           end
 
           increment_weight_for_regions(regions)

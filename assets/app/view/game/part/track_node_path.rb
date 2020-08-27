@@ -117,23 +117,25 @@ module View
           23 => 20,
         }.freeze
 
-        def regions(edge0, edge1, bezier, exit0)
+        def regions(edge0, edge1, arc, exit0)
           exit0 = !!exit0
           @@regions ||= {}
-          @@regions["#{edge0}_#{edge1}_#{bezier}_#{exit0}"] ||= calculate_regions(edge0, edge1, bezier, exit0)
+          @@regions["#{edge0}_#{edge1}_#{arc}_#{exit0}"] ||= calculate_regions(edge0, edge1, arc, exit0)
         end
 
-        def calculate_regions(edge0, edge1, bezier, exit0)
-          # assume can never have edge1=edge, edg0=non-edge
-          if edge0.to_f != edge0.to_i.to_f
+        def calculate_regions(edge0, edge1, arc, exit0)
+          # assume can never have edge1=edge, edge0=non-edge
+          if !edge0
+            CENTER
+          elsif edge0.to_f != edge0.to_i.to_f
             # assume if edge0 is non-integer, then must be a line, no exits
             rot_edge1 = ((edge1 - edge0) + 0.5) % 6
             rot_regions = EDGE0P5_TO_EDGE_LINE_REGIONS[rot_edge1]
           else
             rot_edge1 = (edge1 - edge0) % 6
-            rot_regions = if exit0 && bezier
+            rot_regions = if exit0 && arc
                             EXIT0_TO_EDGE_BEZIER_REGIONS[rot_edge1]
-                          elsif exit0 && !bezier
+                          elsif exit0 && !arc
                             EXIT0_TO_EDGE_LINE_REGIONS[rot_edge1]
                           else
                             EDGE0_TO_EDGE_LINE_REGIONS[rot_edge1]
@@ -160,88 +162,183 @@ module View
           @@edge_y_pos["#{edge}_#{distance}"] ||= (Math.cos((edge * 60) / 180 * Math::PI) * distance).round(2)
         end
 
-        def control_location(begin_x, begin_y, end_x, end_y, edge)
-          @@control_location ||= {}
+        def arc_parameters(begin_x, begin_y, end_x, end_y)
+          @@arc_parameters ||= {}
           key = "#{begin_x}_#{begin_y}_#{end_x}_#{end_y}"
-          @@control_location[key] ||= calculate_control_location(begin_x, begin_y, end_x, end_y, edge)
+          @@arc_parameters[key] ||= calculate_arc_parameters(begin_x, begin_y, end_x, end_y)
         end
 
-        def calculate_control_location(begin_x, begin_y, end_x, end_y, edge)
-          # calculate the position of the quadratic control point for a bezier curve to
-          # be drawn between two points on a tile. If a point is on an edge, the control
-          # point will be chosen to make the curve perpendicular to the tile edge.
-          #
-
-          # Currently this only handles the case where the start point is on an edge
-          edge_perp_angle = EDGE_PERP_ANGLES[edge]
-
+        # calculate radius and sweep
+        def calculate_arc_parameters(begin_x, begin_y, end_x, end_y)
           distance = Math.sqrt((begin_x - end_x)**2 + (begin_y - end_y)**2)
-          mid_x = (begin_x + end_x) / 2
-          mid_y = (end_y + begin_y) / 2
-          angle = Math.atan2(begin_y - end_y, end_x - begin_x)
+          angle_b_o = Math.atan2(begin_y, -begin_x)
+          angle_b_e = Math.atan2(begin_y - end_y, end_x - begin_x)
+          angle_e_b_o = angle_b_o - angle_b_e
+          if angle_e_b_o < -Math::PI
+            angle_e_b_o += 2 * Math::PI
+          elsif angle_e_b_o > Math::PI
+            angle_e_b_o -= 2 * Math::PI
+          end
 
-          normal_angle = Math.atan2(end_x - begin_x, end_y - begin_y)
-
-          # determine what side of curve control point should be on
-          # -> want to always arc into the center of tile
-          center_angle = Math.atan2(begin_y, -begin_x)
-          normal_angle -= Math::PI if (angle >= 0 && center_angle < angle && angle - Math::PI < center_angle) ||
-            (angle.negative? && center_angle < angle) ||
-            (angle.negative? && Math::PI + angle < center_angle)
-
-          internal_angle = edge_perp_angle / 180 * Math::PI - angle
-          offset = (distance / 2 * Math.tan(internal_angle)).abs
-
+          radius = (distance / (2.0 * Math.cos(Math::PI / 2.0 - angle_e_b_o.abs))).round(2)
+          sweep = angle_e_b_o.negative? ? 0 : 1
           {
-            x: (mid_x + Math.cos(normal_angle) * offset).round(2),
-            y: (mid_y - Math.sin(normal_angle) * offset).round(2),
+            radius: radius,
+            sweep: sweep,
           }
         end
 
         def calculate_stop_x(ct_edge, tile)
+          return 0 unless ct_edge
+
           full_distance = 50
-          full_distance -= 15 if tile.borders.any? { |border| border.edge == @ct_edge }
+          full_distance -= 15 if tile.borders.any? { |border| border.edge == ct_edge }
           edge_x_pos(ct_edge, full_distance)
         end
 
         def calculate_stop_y(ct_edge, tile)
+          return 0 unless ct_edge
+
           full_distance = 50
-          full_distance -= 15 if tile.borders.any? { |border| border.edge == @ct_edge }
+          full_distance -= 15 if tile.borders.any? { |border| border.edge == ct_edge }
           edge_y_pos(ct_edge, full_distance)
+        end
+
+        def calculate_townrect_xy(ct_edge, town)
+          return [0, 0] unless ct_edge
+
+          edges = TownRect.normalized_edges(ct_edge, town.exits)
+          _weights, x, y, _angle = TownRect.position(@tile, town, edges).first
+          [x.round(2), y.round(2)]
+        end
+
+        def colinear?(x0, y0, x1, y1)
+          @@colinear ||= {}
+          @@colinear["#{x0}_#{y0}_#{x1}_#{y1}"] ||=
+            begin
+              angle_be = Math.atan2(y1 - y0, x1 - x0)
+              angle_bcenter = Math.atan2(-y0, -x0)
+              (angle_be - angle_bcenter).abs < 0.05
+            end
+        end
+
+        def town_rect?(stop)
+          stop&.town? && (stop.paths.any? && (stop.exits.size < 3))
         end
 
         def load_from_tile
           @terminal = @path.terminal
           @junction = @path.junction
           @exit = @path.edges.any?
-          # for now assumes one edge and one node on path
-          @edge = @path.edges.first.num
+          @num_cts = @path.stops.size
+          @num_exits = @path.edges.size
 
-          @stop = @path.stop
-          @ct_edge = @tile.preferred_city_town_edges[@stop] if @stop
-          @center = @junction || (@stop && !@ct_edge)
+          @stop0 = @path.stops.first
+          @stop1 = @path.stops.last if @num_cts > 1
+          @ct_edge0 = @tile.preferred_city_town_edges[@stop0] if @num_cts.positive?
+          @ct_edge1 = @tile.preferred_city_town_edges[@stop1] if @num_cts > 1
 
-          @begin_x = edge_x_pos(@edge, 87)
-          @begin_y = edge_y_pos(@edge, 87)
+          # these are the only possibilities this Class will handle:
+          # 1. exit - exit
+          # 2. exit - junction
+          # 3. exit - city/town
+          # 4. city/town - city/town
 
-          @end_x = @center ? 0 : calculate_stop_x(@ct_edge, @tile)
-          @end_y = @center ? 0 : calculate_stop_y(@ct_edge, @tile)
+          if @num_exits > 1
+            # exit - exit
 
-          @need_bezier = !@center && @ct_edge != @edge && (@ct_edge - @edge).abs != 3
+            @begin_edge = @path.edges.first.num
+            @begin_x = edge_x_pos(@begin_edge, 87)
+            @begin_y = edge_y_pos(@begin_edge, 87)
 
-          @control_location = control_location(
+            @end_edge = @path.edges.last.num
+            @end_x = edge_x_pos(@end_edge, 87)
+            @end_y = edge_y_pos(@end_edge, 87)
+          elsif @num_exits == 1
+            @begin_edge = @path.edges.first.num
+            @begin_x = edge_x_pos(@begin_edge, 87)
+            @begin_y = edge_y_pos(@begin_edge, 87)
+
+            if @junction
+              # exit - junction
+              @end_edge = nil
+              @end_x = 0
+              @end_y = 0
+            else
+              # exit - city/town
+              @ct_edge0 = @tile.preferred_city_town_edges[@stop0] if @stop0
+              @end_edge = @ct_edge0
+              @end_x, @end_y = if town_rect?(@stop0)
+                                 calculate_townrect_xy(@ct_edge0, @stop0)
+                               else
+                                 [
+                                   calculate_stop_x(@ct_edge0, @tile),
+                                   calculate_stop_y(@ct_edge0, @tile),
+                                 ]
+                               end
+            end
+          else
+            # city/town - city/town
+            @ct_edge0 = @tile.preferred_city_town_edges[@stop0] if @stop0
+            @ct_edge1 = @tile.preferred_city_town_edges[@stop1] if @stop1
+
+            if @ct_edge0
+              @begin_edge = @ct_edge0
+              @begin_x, @begin_y = if town_rect?(@stop0)
+                                     calculate_townrect_xy(@ct_edge0, @stop0)
+                                   else
+                                     [
+                                       calculate_stop_x(@ct_edge0, @tile),
+                                       calculate_stop_y(@ct_edge0, @tile),
+                                     ]
+                                   end
+              @end_edge = @ct_edge1
+              @end_x, @end_y = if town_rect?(@stop1)
+                                 calculate_townrect_xy(@ct_edge1, @stop1)
+                               else
+                                 [
+                                   calculate_stop_x(@ct_edge1, @tile),
+                                   calculate_stop_y(@ct_edge1, @tile),
+                                 ]
+                               end
+            else
+              @begin_edge = @ct_edge1
+              @begin_x, @begin_y = if town_rect?(@stop1)
+                                     calculate_townrect_xy(@ct_edge1, @stop1)
+                                   else
+                                     [
+                                       calculate_stop_x(@ct_edge1, @tile),
+                                       calculate_stop_y(@ct_edge1, @tile),
+                                     ]
+                                   end
+              @end_edge = @ct_edge0
+              @end_x, @end_y = if town_rect?(@stop0)
+                                 calculate_townrect_xy(@ct_edge0, @stop0)
+                               else
+                                 [
+                                   calculate_stop_x(@ct_edge0, @tile),
+                                   calculate_stop_y(@ct_edge0, @tile),
+                                 ]
+                               end
+            end
+          end
+
+          @center = !@end_edge
+
+          @need_arc = !@center && @exit && !colinear?(@begin_x, @begin_y, @end_x, @end_y)
+
+          @arc_parameters = arc_parameters(
             @begin_x,
             @begin_y,
             @end_x,
-            @end_y,
-            @edge
-          ) if @need_bezier
+            @end_y
+          ) if @need_arc
         end
 
         def preferred_render_locations
           [
             {
-              region_weights: @center ? EDGE_REGIONS[@edge] : regions(@edge, @ct_edge, @need_bezier, @exit),
+              region_weights: @center ? EDGE_REGIONS[@begin_edge] : regions(@begin_edge, @end_edge, @need_arc, @exit),
               x: 0,
               y: 0,
             },
@@ -249,7 +346,7 @@ module View
         end
 
         def render_part
-          rotation = 60 * @edge
+          rotation = 60 * @begin_edge
 
           props = {
             attrs: {
@@ -263,9 +360,9 @@ module View
 
           props[:attrs].merge!(
             d: "M #{@begin_x} #{@begin_y} "\
-            "Q #{@control_location[:x]} #{@control_location[:y]} "\
-            "#{@end_x} #{@end_y}",
-          ) if @need_bezier
+            "A #{@arc_parameters[:radius]} #{@arc_parameters[:radius]} "\
+            "0 0 #{@arc_parameters[:sweep]} #{@end_x} #{@end_y}",
+          ) if @need_arc
 
           # terminal tapered track only supported for centered city/town
           props[:attrs].merge!(
