@@ -116,24 +116,28 @@ module Engine
       end
 
       def payout_shares(entity, revenue)
-        per_share, share_count = payout_per_share(entity, revenue)
-        @log << "#{entity.name} pays out #{@game.format_currency(revenue)} = "\
-                "#{@game.format_currency(per_share)} x #{share_count} shares"
+        per_share, _share_count = payout_per_share(entity, revenue)
 
+        payouts = {}
         @game.players.each do |player|
-          payout_entity(entity, player, per_share)
+          payout_entity(entity, player, per_share, payouts)
         end
 
-        payout_entity(entity, holder_for_company(entity), per_share, entity)
+        payout_entity(entity, holder_for_company(entity), per_share, payouts, entity)
+        receivers = payouts
+                      .sort_by { |_r, c| -c }
+                      .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
+
+        @log << "#{entity.name} pays out #{@game.format_currency(revenue)} = "\
+                        "#{@game.format_currency(per_share)} (#{receivers})"
       end
 
-      def payout_entity(entity, holder, per_share, receiver = nil)
+      def payout_entity(entity, holder, per_share, payouts, receiver = nil)
         amount = dividends_for_entity(entity, holder, per_share)
         return if amount.zero?
 
         receiver ||= holder
-        @log << "#{receiver.name} receives #{@game.format_currency(amount)} = "\
-                "#{@game.format_currency(per_share)} x #{holder.num_shares_of(entity)} shares"
+        payouts[receiver] = amount
         @game.bank.spend(amount, receiver)
       end
 
