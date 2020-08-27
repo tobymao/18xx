@@ -146,7 +146,7 @@ module Engine
         'Cecilia' => 2498,
       },
       # In this game all trains are bought from depot.
-      # One train is without trains, but as depot is
+      # One corporation is without trains, but as depot is
       # empty it does not have to buy any trains.
       # Fix of issue #1446
       1446 => {
@@ -154,6 +154,14 @@ module Engine
         'Player 4' => 4057,
         'Player 3' => 3487,
         'Player 1' => 3362,
+      },
+    },
+    GAMES_BY_TITLE['18TN'] => {
+      7818 => {
+        'starchitect' => 5615,
+        'nigelsandwich' => 5368,
+        'wynad' => 4355,
+        'MontyBrewster71' => 4354,
       },
     },
   }.freeze

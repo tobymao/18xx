@@ -15,7 +15,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>1882 has finished beta, now in production!</p>
+        <p>1882 and 18AL has finished beta, now in production!</p>
+        <p>18TN is now in beta testing!</p>
         <p>18GA is now available for alpha testing!</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
@@ -23,7 +24,6 @@ module View
         resources in our <a href='https://github.com/tobymao/18xx/wiki'>Wiki!</a>
         </p>
 
-        <p>If you're looking to buy these games, please check out
         <a href='https://all-aboardgames.com'>All-Aboard Games</a>,
         <a href='https://www.grandtrunkgames.com'>Grand Trunk Games</a>,
         <a href='https://goldenspikegames.com'>Golden Spike Games</a>,
