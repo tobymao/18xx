@@ -53,8 +53,8 @@ module Engine
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove private company tokens']).freeze
 
       ASSIGNMENT_TOKENS = {
-        "MPC": '/icons/1846/mpc_token.svg',
-        "SC": '/icons/1846/sc_token.svg',
+        'MPC' => '/icons/1846/mpc_token.svg',
+        'SC' => '/icons/1846/sc_token.svg',
       }.freeze
 
       # Two tiles can be laid, only one upgrade

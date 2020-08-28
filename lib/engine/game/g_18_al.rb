@@ -36,7 +36,7 @@ module Engine
       STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
 
       ASSIGNMENT_TOKENS = {
-        'SNAR': '/icons/18_al/snar_token.svg',
+        'SNAR' => '/icons/18_al/snar_token.svg',
       }.freeze
       include CompanyPrice50To150Percent
       include Revenue4D
