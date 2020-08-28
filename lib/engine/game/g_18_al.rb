@@ -58,6 +58,10 @@ module Engine
         @green_m_tile ||= @tiles.find { |t| t.name == '443a' }
       end
 
+      def south_and_north_alabama_railroad
+        @south_and_north_alabama_railroad ||= company_by_id('SNAR')
+      end
+
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
@@ -110,9 +114,12 @@ module Engine
       def event_remove_tokens!
         @corporations.each do |corporation|
           corporation.abilities(:hexes_bonus) do |a|
-            @log << "#{corporation.name} removes: #{a.description}"
-            remove_mining_icons(a.hexes)
+            assigned_hex = @hexes.find { |h| a.hexes.include?(h.name) }
+            hex_name = assigned_hex.name
+            assigned_hex.remove_assignment!(south_and_north_alabama_railroad.id)
             corporation.remove_ability(a)
+
+            @log << "Warrior Coal Field token is removed from #{get_location_name(hex_name)} (#{hex_name})"
           end
         end
       end
@@ -136,9 +143,9 @@ module Engine
         @hexes.find { |h| h.name == hex_name }.location_name
       end
 
-      def remove_mining_icons(hexes_to_clear, exclude: nil)
+      def remove_mining_icons(hexes_to_clear)
         @hexes
-          .select { |hex| hexes_to_clear.include?(hex.name) && exclude != hex.name }
+          .select { |hex| hexes_to_clear.include?(hex.name) }
           .each { |hex| hex.tile.icons = [] }
       end
 
