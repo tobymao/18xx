@@ -619,19 +619,27 @@ module Engine
             "I6",
             "N9",
             "P9",
-            "F5",
-            "Q10",
+            "F5"
+         ],
+         "upgrade=cost:120,terrain:mountain;border=edge:4,type:impassable":[
+            "Q10"
+         ],
+         "upgrade=cost:120,terrain:mountain;border=edge:3,type:impassable":[
             "R11"
          ],
          "upgrade=cost:60,terrain:mountain":[
             "C2",
             "L11",
             "Q8",
-            "Q12",
-            "N11",
+            "Q12"
+         ],
+         "upgrade=cost:60,terrain:mountain;border=edge:0,type:impassable;border=edge:1,type:impassable":[
+            "N11"
+         ],
+         "upgrade=cost:60,terrain:mountain;border=edge:5,type:impassable":[
             "O12"
          ],
-         "upgrade=cost:20,terrain:mountain":[
+         "upgrade=cost:20,terrain:desert":[
             "E2",
             "C6",
             "D5",
@@ -668,7 +676,7 @@ module Engine
             "I4",
             "O8"
          ],
-         "upgrade=cost:40,terrain:water":[
+         "upgrade=cost:40,terrain:swamp":[
             "G12",
             "K12"
          ],
@@ -684,19 +692,19 @@ module Engine
          "town=revenue:0;upgrade=cost:60,terrain:mountain":[
             "J7"
          ],
-         "town=revenue:0;upgrade=cost:20,terrain:mountain":[
+         "town=revenue:0;upgrade=cost:20,terrain:desert":[
             "K8"
          ],
          "city=revenue:20;path=a:1,b:_0;upgrade=cost:20,terrain:water":[
             "K6"
          ],
-         "city=revenue:20;path=a:4,b:_0;upgrade=cost:40,terrain:water":[
+         "city=revenue:20;path=a:4,b:_0;upgrade=cost:40,terrain:swamp":[
             "M12"
          ],
-         "city=revenue:0;upgrade=cost:40,terrain:water":[
+         "city=revenue:0;upgrade=cost:40,terrain:swamp":[
             "P13"
          ],
-         "town=revenue:0;upgrade=cost:120,terrain:mountain":[
+         "town=revenue:0;upgrade=cost:120,terrain:mountain,terrain:mountain":[
             "S10"
          ],
          "city=revenue:20;path=a:4,b:_0;upgrade=cost:20,terrain:water":[
