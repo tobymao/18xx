@@ -14,9 +14,9 @@ module View
         def preferred_render_locations
           return [l_center, l_up24, l_down24] if @tile.offboards.any?
 
-          return [l_center, l_up40, l_down40] if @tile.towns.one?
+          return [l_center, l_up40, l_down40] if @tile.towns.one? && @tile.cities.empty?
 
-          if @tile.cities.one?
+          if @tile.cities.one? && @tile.towns.empty?
             return case @tile.cities.first.slots
                    when 3
                      [l_down50, l_top]
@@ -42,9 +42,9 @@ module View
               end
             end
 
-            return [center, l_bottom, l_top] if @tile.exits.any?
+            return [center, l_up40, l_down40] if @tile.exits.empty? && @tile.cities.empty?
 
-            return [center, l_up40, l_down40]
+            return [center, l_up40, l_down40, l_bottom, l_top]
           end
 
           []

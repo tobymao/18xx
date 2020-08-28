@@ -222,10 +222,6 @@ module View
             end
         end
 
-        def town_rect?(stop)
-          stop&.town? && (stop.paths.any? && (stop.exits.size < 3))
-        end
-
         def load_from_tile
           @terminal = @path.terminal
           @junction = @path.junction
@@ -268,7 +264,7 @@ module View
               # exit - city/town
               @ct_edge0 = @tile.preferred_city_town_edges[@stop0] if @stop0
               @end_edge = @ct_edge0
-              @end_x, @end_y = if town_rect?(@stop0)
+              @end_x, @end_y = if @stop0.rect?
                                  calculate_townrect_xy(@ct_edge0, @stop0)
                                else
                                  [
@@ -284,7 +280,7 @@ module View
 
             if @ct_edge0
               @begin_edge = @ct_edge0
-              @begin_x, @begin_y = if town_rect?(@stop0)
+              @begin_x, @begin_y = if @stop0.rect?
                                      calculate_townrect_xy(@ct_edge0, @stop0)
                                    else
                                      [
@@ -293,7 +289,7 @@ module View
                                      ]
                                    end
               @end_edge = @ct_edge1
-              @end_x, @end_y = if town_rect?(@stop1)
+              @end_x, @end_y = if @stop1.rect?
                                  calculate_townrect_xy(@ct_edge1, @stop1)
                                else
                                  [
@@ -303,7 +299,7 @@ module View
                                end
             else
               @begin_edge = @ct_edge1
-              @begin_x, @begin_y = if town_rect?(@stop1)
+              @begin_x, @begin_y = if @stop1.rect?
                                      calculate_townrect_xy(@ct_edge1, @stop1)
                                    else
                                      [
@@ -312,7 +308,7 @@ module View
                                      ]
                                    end
               @end_edge = @ct_edge0
-              @end_x, @end_y = if town_rect?(@stop0)
+              @end_x, @end_y = if @stop0.rect?
                                  calculate_townrect_xy(@ct_edge0, @stop0)
                                else
                                  [

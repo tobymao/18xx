@@ -30,17 +30,17 @@ module View
         }.freeze
 
         EDGE_CITY_REGIONS = {
-          0 => [15, 21],
+          0 => [15, 20, 21, 22],
           0.5 => [13, 14, 15, 19, 20, 21],
-          1 => [13, 14],
+          1 => [12, 13, 14, 15],
           1.5 => [5, 6, 7, 12, 13, 14],
-          2 => [6, 7],
+          2 => [0, 5, 6, 7],
           2.5 => [0, 1, 2, 6, 7, 8],
-          3 => [2, 8],
+          3 => [1, 2, 3, 8],
           3.5 => [2, 3, 4, 8, 9, 10],
-          4 => [9, 10],
+          4 => [4, 9, 10, 11],
           4.5 => [9, 10, 11, 16, 17, 18],
-          5 => [16, 17],
+          5 => [16, 17, 18, 23],
           5.5 => [15, 16, 17, 21, 22, 23],
         }.freeze
 
@@ -119,58 +119,58 @@ module View
 
         REVENUE_LOCATIONS_BY_EDGE = {
           0 => [
-                { regions: [23], angle: ANGLE_LOWER_RIGHT },
                 { regions: [19], angle: ANGLE_LOWER_LEFT },
-                { regions: [16], angle: ANGLE_UPPER_RIGHT },
                 { regions: [14], angle: ANGLE_UPPER_LEFT },
+                { regions: [23], angle: ANGLE_LOWER_RIGHT },
+                { regions: [16], angle: ANGLE_UPPER_RIGHT },
                ],
           0.5 => [
-                   { regions: [21], angle: ANGLE_LOWER_RIGHT },
                    { regions: [13], angle: ANGLE_LOWER_LEFT },
-                   { regions: [15], angle: ANGLE_UPPER_RIGHT },
                    { regions: [14], angle: ANGLE_UPPER_LEFT },
+                   { regions: [15], angle: ANGLE_UPPER_RIGHT },
+                   { regions: [21], angle: ANGLE_LOWER_RIGHT },
                  ],
           1 => [
-                { regions: [20], angle: ANGLE_LOWER_RIGHT },
                 { regions: [5], angle: ANGLE_LOWER_LEFT },
-                { regions: [15], angle: ANGLE_UPPER_RIGHT },
                 { regions: [7], angle: ANGLE_UPPER_LEFT },
+                { regions: [15], angle: ANGLE_UPPER_RIGHT },
+                { regions: [20], angle: ANGLE_LOWER_RIGHT },
                ],
           1.5 => [
-                   { regions: [13], angle: ANGLE_LOWER_RIGHT },
                    { regions: [6], angle: ANGLE_LOWER_LEFT },
-                   { regions: [14], angle: ANGLE_UPPER_RIGHT },
+                   { regions: [13], angle: ANGLE_LOWER_RIGHT },
                    { regions: [7], angle: ANGLE_UPPER_LEFT },
+                   { regions: [14], angle: ANGLE_UPPER_RIGHT },
                  ],
           2 => [
                 { regions: [12], angle: ANGLE_LOWER_RIGHT },
-                { regions: [1], angle: ANGLE_LOWER_LEFT },
                 { regions: [14], angle: ANGLE_UPPER_RIGHT },
                 { regions: [8], angle: ANGLE_UPPER_LEFT },
+                { regions: [1], angle: ANGLE_LOWER_LEFT },
                ],
           2.5 => [
                    { regions: [6], angle: ANGLE_LOWER_RIGHT },
-                   { regions: [2], angle: ANGLE_LOWER_LEFT },
                    { regions: [7], angle: ANGLE_UPPER_RIGHT },
                    { regions: [8], angle: ANGLE_UPPER_LEFT },
+                   { regions: [2], angle: ANGLE_LOWER_LEFT },
                  ],
           3 => [
-                { regions: [0], angle: ANGLE_LOWER_RIGHT },
                 { regions: [4], angle: ANGLE_LOWER_LEFT },
-                { regions: [7], angle: ANGLE_UPPER_RIGHT },
+                { regions: [0], angle: ANGLE_LOWER_RIGHT },
                 { regions: [9], angle: ANGLE_UPPER_LEFT },
+                { regions: [7], angle: ANGLE_UPPER_RIGHT },
                ],
           3.5 => [
-                   { regions: [2], angle: ANGLE_LOWER_RIGHT },
                    { regions: [10], angle: ANGLE_LOWER_LEFT },
-                   { regions: [8], angle: ANGLE_UPPER_RIGHT },
                    { regions: [9], angle: ANGLE_UPPER_LEFT },
+                   { regions: [8], angle: ANGLE_UPPER_RIGHT },
+                   { regions: [2], angle: ANGLE_LOWER_RIGHT },
                  ],
           4 => [
-                { regions: [3], angle: ANGLE_LOWER_RIGHT },
                 { regions: [18], angle: ANGLE_LOWER_LEFT },
-                { regions: [8], angle: ANGLE_UPPER_RIGHT },
                 { regions: [16], angle: ANGLE_UPPER_LEFT },
+                { regions: [8], angle: ANGLE_UPPER_RIGHT },
+                { regions: [3], angle: ANGLE_LOWER_RIGHT },
                ],
           4.5 => [
                    { regions: [10], angle: ANGLE_LOWER_RIGHT },
@@ -180,15 +180,15 @@ module View
                  ],
           5 => [
                 { regions: [11], angle: ANGLE_LOWER_RIGHT },
-                { regions: [22], angle: ANGLE_LOWER_LEFT },
                 { regions: [9], angle: ANGLE_UPPER_RIGHT },
                 { regions: [15], angle: ANGLE_UPPER_LEFT },
+                { regions: [22], angle: ANGLE_LOWER_LEFT },
                ],
           5.5 => [
                    { regions: [17], angle: ANGLE_LOWER_RIGHT },
-                   { regions: [21], angle: ANGLE_LOWER_LEFT },
-                   { regions: [16], angle: ANGLE_UPPER_RIGHT },
                    { regions: [15], angle: ANGLE_UPPER_LEFT },
+                   { regions: [16], angle: ANGLE_UPPER_RIGHT },
+                   { regions: [21], angle: ANGLE_LOWER_LEFT },
                  ],
         }.freeze
 
@@ -202,12 +202,12 @@ module View
         ].freeze
 
         CENTER_REVENUE_REGIONS = [
-          [21],
-          [13],
-          [6],
-          [2],
-          [10],
-          [17],
+          [14, 15],
+          [17, 14],
+          [7, 8],
+          [8, 9],
+          [9, 16],
+          [15, 16],
         ].freeze
 
         def preferred_render_locations

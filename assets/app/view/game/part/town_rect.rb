@@ -77,6 +77,22 @@ module View
           5.5 => [17, 21],
         }.freeze
 
+        # bias away from top and bottom if possible
+        EDGE_TOWN_REVENUE_REGIONS = {
+          0 => [[23], false],
+          0.5 => [[12], true],
+          1 => [[5], true],
+          1.5 => [[19], false],
+          2 => [[12], false],
+          2.5 => [[5], false],
+          3 => [[0], false],
+          3.5 => [[11], true],
+          4 => [[18], true],
+          4.5 => [[23], true],
+          5 => [[11], false],
+          5.5 => [[18], false],
+        }.freeze
+
         # absolute value of angle (in degrees) to tilt the town rectangle relative
         # to a straight line from edge_a to the opposite edge
         RECTANGLE_TILT = {
@@ -325,9 +341,8 @@ module View
           else
             angle = TownRect.rotation_angles(@tile, @town, edges)[0]
             if @edge
-              displacement = 35
-              # probably not accurate
-              regions = EDGE_TOWN_REGIONS[@edge]
+              regions, invert = EDGE_TOWN_REVENUE_REGIONS[@edge]
+              displacement = invert ? -35 : 35
             else
               regions = CENTER
             end

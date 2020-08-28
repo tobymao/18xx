@@ -16,12 +16,12 @@ module View
 
         def render
           @tile.towns.map do |town|
-            if town.paths.none? || town.exits.size > 2
-              h(TownDot, town: town, tile: @tile, region_use: @region_use,
-                         color: value_for(town, :color), width: value_for(town, :width))
-            else
+            if town.rect?
               h(TownRect, town: town, region_use: @region_use,
                           color: value_for(town, :color), width: value_for(town, :width))
+            else
+              h(TownDot, town: town, tile: @tile, region_use: @region_use,
+                         color: value_for(town, :color), width: value_for(town, :width))
             end
           end
         end

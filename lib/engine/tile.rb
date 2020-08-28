@@ -337,12 +337,12 @@ module Engine
         [ct, edge]
       end.to_h
 
-      # take care of city/towns with no paths
+      # take care of city/towns with no paths when there is one other city/town
       city_towns = @cities + @towns
       pathless_cts = city_towns.select { |ct| ct.paths.empty? }
       if pathless_cts.one? && city_towns.size == 2
         ct = pathless_cts.first
-        ct_edges[ct] = (ct_edges.values.first + 3) % 6
+        ct_edges[ct] = (ct_edges.values.first + 3) % 6 if ct_edges.values.first
       end
 
       # take care of city/towns with no exits
