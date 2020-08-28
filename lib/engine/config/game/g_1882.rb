@@ -250,7 +250,7 @@ module Engine
       "name": "Saskatchewan Central",
       "value": 50,
       "revenue": 10,
-      "desc": "Blocks hex H4 while owned by a player. During a player's stock turn, in any phase, the player owning this company can close it to \"convert\" to the 10-share corporation SC, paying 10% to become the president. This counts as a \"certificate purchase action\". SC shares cannot be purchased by any player unless SC has been converted. The SC floats using the same rules as other corporations. It places its home token location in any available non-reserved city or replaces a neutral station marker on the map. If the private company is sold to a corporation, it no longer can be converted. Closes at the start of Phase 6.",
+      "desc": "Blocks hex H4 while owned by a player. During a player's stock turn, in any phase, the player owning this company can close it to \"convert\" to the 10-share corporation SC, paying 10% to become the president. This counts as a \"certificate purchase action\". SC shares cannot be purchased by any player unless SC has been converted. The SC floats using the same rules as other corporations. It places its home token location in any available non-reserved city or replaces a neutral station marker on the map. If the next available train is a 3, 4, 5 or 6 adds one more to the available trains. If the private company is sold to a corporation, it no longer can be converted. Closes at the start of Phase 6.",
       "sym": "SC",
       "abilities": [
         {
@@ -539,7 +539,7 @@ module Engine
       "city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40;border=edge:5,type:water,cost:20;icon=image:1882/NWR,sticky:1": [
         "D4"
       ],
-      "city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40;border=edge:4,type:water,cost:40;icon=image:1882/NWR,sticky:1": [
+      "city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40;icon=image:1882/NWR,sticky:1": [
         "D6"
       ],
       "city=revenue:0;border=edge:3,type:water,cost:40;border=edge:5,type:water,cost:40": [
@@ -642,7 +642,7 @@ module Engine
       "city=revenue:30;path=a:2,b:_0;path=a:_0,b:4": [
         "N6"
       ],
-      "path=a:0,b:1;border=edge:1,type:water,cost:40;": [
+      "path=a:0,b:1": [
         "C7"
       ],
       "city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;border=edge:0,type:water,cost:40": [
