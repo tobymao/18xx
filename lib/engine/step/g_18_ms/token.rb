@@ -35,6 +35,12 @@ module Engine
           @log << "Until phase 6 #{entity.name} also receives: #{description}"
           entity.cash += one_time_bonus
         end
+
+        def adjust_token_price_ability!(entity, token, hex)
+          return [token, nil] if @game.active_step.current_entity.corporation?
+
+          super
+        end
       end
     end
   end

@@ -179,7 +179,17 @@ module Engine
          "value":50,
          "revenue":15,
          "desc":"The owning Major Company may lay their cheapest available token for half price. This is not an extra token placement. This ability can only be used once, and using it does not close the private company.",
-         "sym":"M&M"
+         "sym":"M&M",
+         "abilities": [
+            {
+              "type": "token",
+              "owner_type":"corporation",
+              "hexes": [],
+              "discount": 0.5,
+              "count": 1,
+              "from_owner": true
+            }
+         ]
       },
       {
          "name":"Mississippi Central Railway",
