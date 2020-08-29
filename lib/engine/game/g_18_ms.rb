@@ -35,6 +35,18 @@ module Engine
         @mobile_city_brown ||= @tiles.find { |t| t.name == 'X31b' }
         @gray_tile ||= @tiles.find { |t| t.name == '446' }
         @recently_floated = []
+
+        # The last 2+ train will be used as free train for a private
+        # Store it in the company in the meantime
+        neutral = Corporation.new(
+          sym: 'N',
+          name: 'Neutral',
+          tokens: [],
+        )
+        neutral.owner = @bank
+        @free_train = train_by_id('2+-4')
+        @free_train.buyable = false
+        neutral.buy_train(@free_train, :free)
       end
 
       def new_operating_round(round_num = 1)
@@ -94,10 +106,12 @@ module Engine
 
       def purchasable_companies(entity = nil)
         entity ||= current_entity
+        return [] if entity.company?
+
         # Only companies owned by the president may be bought
-        companies = super.select do |c|
-          c.owned_by?(entity.player)
-        end
+        # Allow MC to be bought only before OR 3.1 and there is room for a 2+ train
+        companies = super.select { |c| c.owned_by?(entity.player) }
+        companies.reject! { |c| c.id == 'MC' && (@turn >= 3 || entity.trains.size == @phase.train_limit) }
 
         return companies unless @phase.status.include?('can_buy_companies_operation_round_one')
 
@@ -161,6 +175,13 @@ module Engine
         [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
       end
 
+      def add_free_train(corporation)
+        @free_train.buyable = true
+        corporation.buy_train(@free_train, :free)
+        @free_train.buyable = false
+        @log << "#{corporation.name} receives a bonus non sellable #{@free_train.name} train"
+      end
+
       private
 
       def rust(train, salvage)
@@ -168,7 +189,7 @@ module Engine
         return if rusted_trains.empty?
 
         rusted_trains.each do |t|
-          @bank.spend(salvage, t.owner)
+          @bank.spend(salvage, t.owner) if t.buyable
           t.rust!
         end
 

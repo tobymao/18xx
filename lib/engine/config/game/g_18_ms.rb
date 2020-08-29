@@ -304,7 +304,7 @@ module Engine
             }
          ],
          "price":80,
-         "num":4
+         "num":5
       },
       {
          "name":"3+",
