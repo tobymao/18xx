@@ -14,7 +14,8 @@ module Engine
       end
 
       def available_tokens(entity)
-        entity.tokens_by_type
+        token_holder = entity.company? ? entity.owner : entity
+        token_holder.tokens_by_type
       end
 
       def can_replace_token?(_entity, _token)
