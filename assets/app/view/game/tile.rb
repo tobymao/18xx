@@ -62,6 +62,7 @@ module View
         @tile.reservations.each { |x| children << render_tile_part(Part::Reservation, reservation: x) }
         children << render_tile_part(Part::Icons) if @tile.icons.any?
 
+        children << render_tile_part(Part::Assignments) if @tile.hex.assignments.any?
         # borders should always be the top layer
         children << borders if borders
 
