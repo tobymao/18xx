@@ -24,6 +24,10 @@ module Engine
           ['Can Buy Companies OR 1', 'Corporations can buy AGS/BS companies for face value in OR 1'],
       ).freeze
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'remove_tokens' => ['Remove Tokens', 'New Orleans route bonus removed']
+      ).freeze
+
       HEXES_FOR_GRAY_TILE = %w[C9 E11].freeze
       COMPANY_1_AND_2 = %w[AGS BS].freeze
 
@@ -73,7 +77,7 @@ module Engine
           Step::SpecialTrack,
           Step::G18MS::BuyCompany,
           Step::Track,
-          Step::Token,
+          Step::G18MS::Token,
           Step::Route,
           Step::Dividend,
           Step::SpecialBuyTrain,
@@ -123,8 +127,14 @@ module Engine
       end
 
       def revenue_for(route)
-        # Diesels double to normal revenue
-        route.train.name.end_with?('D') ? 2 * super : super
+        # Diesels double normal revenue
+        revenue = route.train.name.end_with?('D') ? 2 * super : super
+
+        route.corporation.abilities(:hexes_bonus) do |ability|
+          revenue += route.stops.sum { |stop| ability.hexes.include?(stop.hex.id) ? ability.amount : 0 }
+        end
+
+        revenue
       end
 
       def routes_revenue(routes)
@@ -137,6 +147,18 @@ module Engine
         end
 
         super
+      end
+
+      def event_remove_tokens!
+        @corporations.each do |corporation|
+          corporation.abilities(:hexes_bonus) do |a|
+            bonus_hex = @hexes.find { |h| a.hexes.include?(h.name) }
+            hex_name = bonus_hex.name
+            corporation.remove_ability(a)
+
+            @log << "Route bonus is removed from #{get_location_name(hex_name)} (#{hex_name})"
+          end
+        end
       end
 
       def upgrades_to?(from, to, _special = false)
@@ -180,6 +202,16 @@ module Engine
         corporation.buy_train(@free_train, :free)
         @free_train.buyable = false
         @log << "#{corporation.name} receives a bonus non sellable #{@free_train.name} train"
+      end
+
+      def get_location_name(hex_name)
+        @hexes.find { |h| h.name == hex_name }.location_name
+      end
+
+      def remove_icons(hex_to_clear)
+        @hexes
+          .select { |hex| hex_to_clear == hex.name }
+          .each { |hex| hex.tile.icons = [] }
       end
 
       private
