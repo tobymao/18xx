@@ -15,8 +15,7 @@ module Engine
 
           return if action.tile.hex.name != ACTION_HEX_OF_INTEREST ||
             @game.chattanooga_reached ||
-            !@game.loading ||
-            @game.graph.reachable_hexes(entity).find { |h, _| h.name == 'B12' }.nil?
+            (!@game.loading && @game.graph.reachable_hexes(entity).find { |h, _| h.name == 'B12' }.nil?)
 
           @game.chattanooga_reached = true
           @game.remove_icons(BONUS_HEX)
