@@ -7,6 +7,8 @@ require_relative 'company_price_50_to_150_percent'
 module Engine
   module Game
     class G18MS < Base
+      attr_accessor :chattanooga_reached
+
       load_from_json(Config::Game::G18MS::JSON)
 
       GAME_LOCATION = 'Mississippi, USA'
@@ -34,6 +36,7 @@ module Engine
       include CompanyPrice50To150Percent
 
       def setup
+        @chattanooga_reached = false
         setup_company_price_50_to_150_percent
 
         @mobile_city_brown ||= @tiles.find { |t| t.name == 'X31b' }
@@ -76,7 +79,7 @@ module Engine
           Step::DiscardTrain,
           Step::SpecialTrack,
           Step::G18MS::BuyCompany,
-          Step::Track,
+          Step::G18MS::Track,
           Step::G18MS::Token,
           Step::Route,
           Step::Dividend,

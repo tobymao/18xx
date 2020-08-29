@@ -441,7 +441,7 @@ module Engine
          ]
       },
       "red":{
-         "offboard=revenue:yellow_40|brown_60;path=a:1,b:_0":[
+         "offboard=revenue:yellow_40|brown_60;path=a:1,b:_0;icon=image:18_ms/coins":[
             "B12"
          ],
          "offboard=revenue:yellow_30|brown_50;path=a:1,b:_0":[
