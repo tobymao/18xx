@@ -50,6 +50,12 @@ module Engine
         @green_s_tile ||= @tiles.find { |t| t.name == '454a' }
         @brown_b_tile ||= @tiles.find { |t| t.name == '457a' }
         @brown_m_tile ||= @tiles.find { |t| t.name == '458a' }
+
+        # The last 2 train will be used as free train for a private
+        # Store it in neutral corporation in the meantime
+        @free_2_train = train_by_id('2-5')
+        @free_2_train.buyable = false
+        neutral.buy_train(@free_2_train, :free)
       end
 
       def operating_round(round_num)
@@ -95,6 +101,13 @@ module Engine
         upgrades |= [@brown_m_tile] if @brown_m_tile && STANDARD_GREEN_CITY_TILES.include?(tile.name)
 
         upgrades
+      end
+
+      def add_free_two_train(corporation)
+        @free_2_train.buyable = true
+        corporation.buy_train(@free_2_train, :free)
+        @free_2_train.buyable = false
+        @log << "#{corporation.name} receives a bonus non sellable 2 train"
       end
     end
   end

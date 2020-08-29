@@ -382,7 +382,7 @@ module Engine
          ],
          "price":100,
          "rusts_on":"4",
-         "num":5
+         "num":6
       },
       {
          "name":"3",
