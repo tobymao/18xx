@@ -62,11 +62,12 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
+          Step::SpecialToken,
           Step::G18GA::BuyCompany,
           Step::HomeToken,
           Step::SpecialTrack,
           Step::Track,
-          Step::Token,
+          Step::G18GA::Token,
           Step::Route,
           Step::Dividend,
           Step::SingleDepotTrainBuyBeforePhase4,
