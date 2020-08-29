@@ -54,10 +54,18 @@ module Engine
           Step::Track,
           Step::Token,
           Step::Route,
-          Step::Dividend,
+          Step::G18MEX::Dividend,
           Step::SingleDepotTrainBuyBeforePhase4,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
+      end
+
+      def new_stock_round
+        @minors.each do |minor|
+          matching_company = @companies.find { |company| company.sym == minor.name }
+          minor.owner = matching_company.owner
+        end if @turn == 1
+        super
       end
 
       def revenue_for(route)
