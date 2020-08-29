@@ -342,8 +342,7 @@ module Engine
             40
          ],
          "coordinates":"D4",
-         "color":"purple",
-         "city":0
+         "color":"purple"
       },
       {
          "float_percent":60,
