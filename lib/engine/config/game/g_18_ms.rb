@@ -160,18 +160,48 @@ module Engine
    ],
    "companies":[
       {
-         "name":"Atlanta Great Southern Railroad",
+         "name":"Alabama Great Southern Railroad",
          "value":30,
          "revenue":10,
          "desc":"The owning Major Company may lay an extra yellow tile for free. This extra tile must extend existing track and could be used to extend from a yellow or green tile played as a company’s  normal tile lay. This ability can only be used once, and using it does not close the company.",
-         "sym":"AGS"
-      },
+         "sym":"AGS",
+         "abilities": [
+           {
+             "type": "tile_lay",
+             "owner_type": "corporation",
+             "count": 1,
+             "free": true,
+             "special": false,
+             "reachable": true,
+             "hexes": [
+             ],
+             "tiles": [
+             ],
+             "when":"track"
+           }
+         ]
+        },
       {
          "name":"Birmingham Southern Railroad",
          "value":40,
          "revenue":10,
          "desc":"The owning Major Company may lay one or two extra yellow tiles for free. This extra tile lay must extend existing track and could be used to extend from a yellow or green tile played as a company’s normal tile lay. This ability can only be used once during a single operating round, and using it does not close the company.",
-         "sym":"BS"
+         "sym":"BS",
+         "abilities": [
+           {
+             "type": "tile_lay",
+             "owner_type": "corporation",
+             "count": 2,
+             "free": true,
+             "special": false,
+             "reachable": true,
+             "hexes": [
+             ],
+             "tiles": [
+             ],
+             "when":"track"
+           }
+         ]
       },
       {
          "name":"Meridian and Memphis Railway",
