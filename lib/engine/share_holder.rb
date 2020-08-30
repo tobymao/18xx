@@ -23,7 +23,7 @@ module Engine
     end
 
     def num_shares_of(corporation)
-      percent_of(corporation) / 10
+      percent_of(corporation) / corporation.total_shares
     end
 
     def bundles_for_corporation(corporation)

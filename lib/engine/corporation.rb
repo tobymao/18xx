@@ -23,16 +23,19 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :share_price, :par_via_exchange
-    attr_reader :capitalization, :companies, :min_price, :name, :full_name, :total_shares
+    attr_reader :capitalization, :companies, :min_price, :name, :full_name
     attr_writer :par_price
+
+    SHARES = ([20] + Array.new(8, 10)).freeze
 
     def initialize(sym:, name:, **opts)
       @name = sym
       @full_name = name
-      shares = [
-        Share.new(self, president: true, percent: 20),
-        *8.times.map { |index| Share.new(self, percent: 10, index: index + 1) },
-      ]
+
+      shares = (opts[:shares] || SHARES).map.with_index do |percent, index|
+        Share.new(self, president: index.zero?, percent: percent, index: index)
+      end
+
       shares.each { |share| shares_by_corporation[self] << share }
       @presidents_share = shares.first
       @second_share = shares[1]
@@ -49,7 +52,6 @@ module Engine
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
-      @total_shares = opts[:total_shares] || 10
       @par_via_exchange = nil
 
       init_abilities(opts[:abilities])
@@ -85,16 +87,20 @@ module Engine
       @always_market_price ? @share_price : @par_price
     end
 
+    def total_shares
+      100 / share_percent
+    end
+
     def num_ipo_shares
       num_shares_of(self)
     end
 
     def num_player_shares
-      player_share_holders.values.sum / @total_shares
+      player_share_holders.values.sum / total_shares
     end
 
     def num_market_shares
-      share_holders.select { |s_h, _| s_h.share_pool? }.values.sum / @total_shares
+      share_holders.select { |s_h, _| s_h.share_pool? }.values.sum / total_shares
     end
 
     def share_holders
@@ -182,7 +188,7 @@ module Engine
     end
 
     def share_percent
-      @second_share.percent
+      @second_share&.percent || presidents_percent / 2
     end
   end
 end

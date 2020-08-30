@@ -23,7 +23,7 @@ module Engine
     end
 
     def num_shares
-      @percent / 10
+      @percent / corporation.share_percent
     end
 
     def price_per_share

@@ -40,5 +40,9 @@ module Engine
     def minor?
       true
     end
+
+    def total_shares
+      1
+    end
   end
 end

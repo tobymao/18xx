@@ -32,8 +32,8 @@ module Engine
         revenue = @game.routes_revenue(routes)
         dividend_types.map do |type|
           payout = send(type, entity, revenue)
-          payout[:divs_to_company] = company_dividends(entity, payout[:per_share])
-          [type, payout.merge(share_price_change(entity, revenue - payout[:company]))]
+          payout[:divs_to_corporation] = corporation_dividends(entity, payout[:per_share])
+          [type, payout.merge(share_price_change(entity, revenue - payout[:corporation]))]
         end.to_h
       end
 
@@ -57,9 +57,9 @@ module Engine
 
         log_run_payout(entity, kind, revenue, action, payout)
 
-        @game.bank.spend(payout[:company], entity) if payout[:company].positive?
+        @game.bank.spend(payout[:corporation], entity) if payout[:corporation].positive?
 
-        payout_shares(entity, revenue - payout[:company]) if payout[:per_share].positive?
+        payout_shares(entity, revenue - payout[:corporation]) if payout[:per_share].positive?
 
         change_share_price(entity, payout)
 
@@ -71,8 +71,8 @@ module Engine
           @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
         end
 
-        if payout[:company].positive?
-          @log << "#{entity.name} withholds #{@game.format_currency(payout[:company])}"
+        if payout[:corporation].positive?
+          @log << "#{entity.name} withholds #{@game.format_currency(payout[:corporation])}"
         elsif payout[:per_share].zero?
           @log << "#{entity.name} does not run"
         end
@@ -87,21 +87,21 @@ module Engine
       end
 
       def withhold(_entity, revenue)
-        { company: revenue, per_share: 0 }
+        { corporation: revenue, per_share: 0 }
       end
 
       def payout(entity, revenue)
-        { company: 0, per_share: payout_per_share(entity, revenue)[0] }
+        { corporation: 0, per_share: payout_per_share(entity, revenue)[0] }
       end
 
       def dividends_for_entity(entity, holder, per_share)
         holder.num_shares_of(entity) * per_share
       end
 
-      def company_dividends(entity, per_share)
+      def corporation_dividends(entity, per_share)
         return 0 if entity.minor?
 
-        dividends_for_entity(entity, holder_for_company(entity), per_share)
+        dividends_for_entity(entity, holder_for_corporation(entity), per_share)
       end
 
       def payout_per_share(_entity_, revenue)
@@ -111,7 +111,7 @@ module Engine
         [per_share, share_count]
       end
 
-      def holder_for_company(entity)
+      def holder_for_corporation(entity)
         entity.capitalization == :incremental ? entity : @game.share_pool
       end
 
@@ -123,7 +123,7 @@ module Engine
           payout_entity(entity, player, per_share, payouts)
         end
 
-        payout_entity(entity, holder_for_company(entity), per_share, payouts, entity)
+        payout_entity(entity, holder_for_corporation(entity), per_share, payouts, entity)
         receivers = payouts
                       .sort_by { |_r, c| -c }
                       .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')

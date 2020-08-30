@@ -15,7 +15,7 @@ module Engine
     end
 
     def num_shares
-      @percent / 10
+      @percent / corporation.share_percent
     end
 
     def partial?

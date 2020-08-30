@@ -26,7 +26,7 @@ module Engine
         def dividend_options(entity)
           return super unless civil_war_effect_with_single_train?(entity)
 
-          { withhold: { company: 0, per_share: 0, divs_to_company: 0 } }
+          { withhold: { corporation: 0, per_share: 0, divs_to_corporation: 0 } }
         end
 
         def log_run_payout(entity, kind, revenue, action, payout)

@@ -29,7 +29,7 @@ module Engine
         return super if entity.corporation?
 
         amount = revenue / 2
-        { company: amount, per_share: amount }
+        { corporation: amount, per_share: amount }
       end
 
       def payout_shares(entity, revenue)
