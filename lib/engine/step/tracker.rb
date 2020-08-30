@@ -72,7 +72,15 @@ module Engine
         discount = 0
 
         entity.abilities(:tile_lay) do |ability|
-          next if !ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name)
+          next if ability.hexes.any? && (!ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name))
+
+          if ability.reachable &&
+            !@game.loading &&
+            !@game.graph.reachable_hexes(spender)[hex] &&
+            hex.name != spender.coordinates
+
+            @game.game_error("Track laid must be connected to one of #{spender.id}'s stations")
+          end
 
           free = ability.free
           discount = ability.discount
