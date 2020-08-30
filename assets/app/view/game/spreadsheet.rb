@@ -79,7 +79,8 @@ module View
                            else
                              '1.0'
                            end,
-                  textDecoration: hist[x].dividend.kind == 'half' ? 'underline dotted' : '',
+                  textDecorationLine: hist[x].dividend.kind == 'half' ? 'underline' : '',
+                  textDecorationStyle: hist[x].dividend.kind == 'half' ? 'dotted' : '',
                   padding: '0 0.15rem',
                 },
               }
