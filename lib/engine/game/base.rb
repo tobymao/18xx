@@ -1140,6 +1140,10 @@ module Engine
       end
 
       def interest_rate; end
+
+      def president_assisted_buy(_corporation, _train, _price)
+        [0, 0]
+      end
     end
   end
 end

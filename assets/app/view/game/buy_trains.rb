@@ -121,6 +121,7 @@ module View
             .sort_by { |_, v| v[:price] }
             .flat_map do |name, variant|
             price = variant[:price]
+            president_assist, _fee = @game.president_assisted_buy(@corporation, train, price)
             price = @ability&.discounted_price(train, price) || price
 
             buy_train = lambda do
@@ -137,7 +138,7 @@ module View
             [h(:div, name),
              h('div.nowrap', source),
              h('div.right', @game.format_currency(price)),
-             h('button.no_margin', { on: { click: buy_train } }, 'Buy')]
+             h('button.no_margin', { on: { click: buy_train } }, president_assist.positive? ? 'Assisted buy' : 'Buy')]
           end
         end
       end
