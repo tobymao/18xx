@@ -27,7 +27,7 @@ module Engine
         from_depot = action.train.from_depot?
         buy_train_action(action, corporation)
 
-        @round.bought_trains << corporation if from_depot
+        @round.bought_trains << corporation if from_depot && @round.respond_to?(:bought_trains)
 
         ability.use! if action.price < action.train.price &&
           ability.discounted_price(action.train, action.train.price) == action.price
