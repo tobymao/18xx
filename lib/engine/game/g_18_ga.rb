@@ -9,7 +9,7 @@ module Engine
     class G18GA < Base
       load_from_json(Config::Game::G18GA::JSON)
 
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
 
       GAME_LOCATION = 'Georgia, USA'
       GAME_RULES_URL = 'http://www.diogenes.sacramento.ca.us/18GA_Rules_v3_26.pdf'
