@@ -5,8 +5,8 @@ require_relative 'base'
 module Engine
   module Part
     class Path < Base
-      attr_reader :a, :b, :branch, :city, :edges, :junction, :node, :offboard,
-                  :stop, :town, :terminal, :branches, :stops, :nodes
+      attr_reader :a, :b, :city, :edges, :junction, :offboard,
+                  :town, :terminal, :branches, :stops, :nodes
 
       def initialize(a, b, terminal: nil)
         @a = a
@@ -89,29 +89,19 @@ module Engine
             @edges << part
           when part.offboard?
             @offboard = part
-            @stop = part
-            @node = part
             @stops << part
             @nodes << part
           when part.city?
             @city = part
-            @branch = part
-            @stop = part
-            @node = part
             @branches << part
             @stops << part
             @nodes << part
           when part.junction?
             @junction = part
-            @branch = part
-            @node = part
             @branches << part
             @nodes << part
           when part.town?
             @town = part
-            @branch = part
-            @stop = part
-            @node = part
             @branches << part
             @stops << part
             @nodes << part

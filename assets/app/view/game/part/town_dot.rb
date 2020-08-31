@@ -75,7 +75,7 @@ module View
 
         def render_revenue
           revenues = @tile.towns.first.revenue.values.uniq
-          return unless revenues.one?
+          return unless revenues.one? && @town.paths.any?
 
           revenue = revenues.first
 

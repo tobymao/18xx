@@ -16,7 +16,8 @@ module Engine
 
     attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :reservations
     attr_reader :blocks_lay, :borders, :cities, :color, :edges, :junction, :label, :nodes,
-                :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers
+                :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers,
+                :city_towns
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -142,6 +143,8 @@ module Engine
       @cities = []
       @paths = []
       @towns = []
+      @city_towns = []
+      @all_stop = []
       @upgrades = []
       @offboards = []
       @original_borders = []
@@ -338,15 +341,14 @@ module Engine
       end.to_h
 
       # take care of city/towns with no paths when there is one other city/town
-      city_towns = @cities + @towns
-      pathless_cts = city_towns.select { |ct| ct.paths.empty? }
-      if pathless_cts.one? && city_towns.size == 2
+      pathless_cts = @city_towns.select { |ct| ct.paths.empty? }
+      if pathless_cts.one? && @city_towns.size == 2
         ct = pathless_cts.first
         ct_edges[ct] = (ct_edges.values.first + 3) % 6 if ct_edges.values.first
       end
 
       # take care of city/towns with no exits
-      exitless_cts = city_towns.select { |xct| xct.exits.empty? }
+      exitless_cts = @city_towns.select { |xct| xct.exits.empty? }
       exitless_cts.select do |xct|
         ct_edges[xct] = compute_loc(xct.loc) if xct.loc
       end
@@ -355,7 +357,7 @@ module Engine
     end
 
     def revenue_to_render
-      @revenue_to_render ||= (@cities + @towns + @offboards).map(&:revenue_to_render)
+      @revenue_to_render ||= @stops.map(&:revenue_to_render)
     end
 
     # Used to set label for a recently placed tile
@@ -390,12 +392,14 @@ module Engine
 
         if part.city?
           @cities << part
+          @city_towns << part
         elsif part.label?
           @label = part
         elsif part.path?
           @paths << part
         elsif part.town?
           @towns << part
+          @city_towns << part
         elsif part.upgrade?
           @upgrades << part
         elsif part.offboard?

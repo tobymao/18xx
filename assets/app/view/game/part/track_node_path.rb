@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require 'view/game/part/base'
+require 'view/game/part/town_location'
 
 module View
   module Game
     module Part
       class TrackNodePath < Base
+        include TownLocation
+
         needs :tile
         needs :path
         needs :color, default: 'black'
@@ -207,8 +210,8 @@ module View
         def calculate_townrect_xy(ct_edge, town)
           return [0, 0] unless ct_edge
 
-          edges = TownRect.normalized_edges(ct_edge, town.exits)
-          _weights, x, y, _angle = TownRect.position(@tile, town, edges).first
+          edges = normalized_edges(ct_edge, town.exits)
+          _weights, x, y, _angle = town_position(@tile, town, edges).first
           [x.round(2), y.round(2)]
         end
 
@@ -243,7 +246,7 @@ module View
           if @num_exits > 1
             # exit - exit
 
-            @begin_edge = @path.edges.first.num
+            @begin_edge = @path.exits[0]
             @begin_x = edge_x_pos(@begin_edge, 87)
             @begin_y = edge_y_pos(@begin_edge, 87)
 
@@ -251,7 +254,7 @@ module View
             @end_x = edge_x_pos(@end_edge, 87)
             @end_y = edge_y_pos(@end_edge, 87)
           elsif @num_exits == 1
-            @begin_edge = @path.edges.first.num
+            @begin_edge = @path.exits[0]
             @begin_x = edge_x_pos(@begin_edge, 87)
             @begin_y = edge_y_pos(@begin_edge, 87)
 

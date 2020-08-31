@@ -30,11 +30,11 @@ module View
 
         return false if revenue.empty?
 
-        return false if revenue.first.is_a?(Numeric) && (@tile.cities + @tile.towns).one?
+        return false if revenue.first.is_a?(Numeric) && @tile.city_towns.one?
 
         return false if revenue.uniq.size > 1
 
-        return false if @tile.cities.sum(&:slots) < 3 && (@tile.cities + @tile.towns).size == 2
+        return false if @tile.cities.sum(&:slots) < 3 && @tile.city_towns.size == 2
 
         true
       end

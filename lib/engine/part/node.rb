@@ -20,6 +20,10 @@ module Engine
         @exits ||= paths.flat_map(&:exits)
       end
 
+      def rect?
+        false
+      end
+
       def select(paths, corporation: nil)
         on = paths.map { |p| [p, 0] }.to_h
 
@@ -39,7 +43,8 @@ module Engine
         paths.each do |node_path|
           node_path.walk(visited: visited_paths, on: on) do |path, vp|
             yield path
-            next unless (next_node = path.node)
+            # FIXME: for intra-node paths
+            next unless (next_node = path.nodes[0])
             next if next_node == self
             next if corporation && next_node.blocks?(corporation)
 

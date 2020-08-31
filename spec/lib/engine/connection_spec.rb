@@ -19,7 +19,8 @@ module Engine
       end
 
       it 'connects on a new edge' do
-        node = subject.tile.paths[0].node
+        # FIXME: for intra-tile paths
+        node = subject.tile.paths[0].nodes[0]
 
         expect(subject.connections.size).to eq(2)
 

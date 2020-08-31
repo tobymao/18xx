@@ -93,10 +93,6 @@ module Engine
         false
       end
 
-      def rect?
-        false
-      end
-
       def visit_cost
         0
       end
