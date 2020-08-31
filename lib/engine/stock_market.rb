@@ -101,21 +101,21 @@ module Engine
       @max_reached
     end
 
-    private
-
-    def share_price(row, column)
-      @market[row]&.[](column)
-    end
-
-    def move(corporation, row, column)
+    def move(corporation, row, column, force: false)
       share_price = share_price(row, column)
       return if share_price == corporation.share_price
-      return unless share_price.normal_movement?
+      return if !force && !share_price.normal_movement?
 
       corporation.share_price.corporations.delete(corporation)
       corporation.share_price = share_price
       @max_reached = true if share_price.end_game_trigger?
       share_price.corporations << corporation
+    end
+
+    private
+
+    def share_price(row, column)
+      @market[row]&.[](column)
     end
   end
 end

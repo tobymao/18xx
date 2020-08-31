@@ -73,7 +73,7 @@ module Engine
           home_token = owner.tokens.first == token
           token.remove!
           if home_token
-            @game.log << "Remove token from #{action.city.hex.name} and replace with neutral token"
+            @log << "Remove token from #{action.city.hex.name} and replace with neutral token"
 
             # Add a new neutral/CN token
             cn_corp = @game.corporation_by_id('CN')
@@ -84,7 +84,7 @@ module Engine
             token.place(action.city)
             action.city.tokens[action.slot] = token
           else
-            @game.log << "Remove token from #{action.city.hex.name}"
+            @log << "Remove token from #{action.city.hex.name}"
           end
 
           @state = :place_token

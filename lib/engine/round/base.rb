@@ -20,6 +20,7 @@ module Engine
 
       def initialize(game, steps, **opts)
         @game = game
+        @log = game.log
         @entity_index = 0
         @round_num = opts[:round_num] || 1
         @entities = select_entities

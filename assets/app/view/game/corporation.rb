@@ -368,7 +368,7 @@ module View
             h('tr.ipo', [
               h('td.right', "#{@corporation.loans.size}/"\
               "#{@game.maximum_loans(@corporation)}"),
-              h('td.padded_number', @game.format_currency(@game.interest_payable(@corporation)).to_s),
+              h('td.padded_number', @game.format_currency(@game.interest_owed(@corporation)).to_s),
             ]),
           ]),
         ])

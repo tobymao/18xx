@@ -54,7 +54,7 @@ module Engine
         @interest_fixed || [[5, ((loans_taken + 4) / 5).to_i * 5].max, 70].min
       end
 
-      def interest_payable(entity)
+      def interest_owed(entity)
         (interest_rate * entity.loans.size * @loan_value) / 100
       end
 

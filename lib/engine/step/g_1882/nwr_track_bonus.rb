@@ -11,7 +11,7 @@ module Engine
         def gain_nwr_bonus(tile, entity)
           return if !tile_nwr?(tile) || tile.color != :yellow
 
-          @game.log << "#{entity.name} gains #{@game.format_currency(20)} for laying yellow tile in NWR area"
+          @log << "#{entity.name} gains #{@game.format_currency(20)} for laying yellow tile in NWR area"
           @game.bank.spend(20, entity)
         end
       end
