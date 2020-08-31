@@ -294,6 +294,8 @@ module Engine
           return [a, b, left, right, middle[0]]
         end
       end
+
+      []
     end
   end
 end
