@@ -89,7 +89,7 @@ module View
             else
               SINGLE_CITY_ONE_SLOT
             end
-          elsif (@tile.cities.size + @tile.towns.size) > 1
+          elsif @tile.city_towns.size > 1
             MULTI_CITY_LOCATIONS
           elsif layout == :flat
             [P_LEFT_CORNER[layout]]

@@ -309,7 +309,7 @@ module Engine
 
       # populate ct_edges and edge_count as described in above comments
       paths.each do |path|
-        next unless path.exits.any? && (ct = path.city || path.town)
+        next unless (ct = path.city || path.town)
 
         path.exits.each do |edge|
           ct_edges[ct] << edge
@@ -423,10 +423,10 @@ module Engine
         end
       end
 
-      @nodes = @paths.flat_map(&:nodes).compact.uniq
-      @branches = @paths.flat_map(&:branches).compact.uniq
-      @stops = @paths.flat_map(&:stops).compact.uniq
-      @edges = @paths.flat_map(&:edges).compact.uniq
+      @nodes = @paths.flat_map(&:nodes).uniq
+      @branches = @paths.flat_map(&:branches).uniq
+      @stops = @paths.flat_map(&:stops).uniq
+      @edges = @paths.flat_map(&:edges).uniq
     end
   end
 end

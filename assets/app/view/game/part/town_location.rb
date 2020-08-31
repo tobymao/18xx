@@ -91,7 +91,7 @@ module View
                                                     edge_b = exits.find { |e| e != edge_a }
                                                     edges = [edge_a, edge_b]
                                                     edges[edges.index(edges.min)] += 6 if (edge_a - edge_b).abs > 3
-                                                    edges.append(edges.min)
+                                                    edges
                                                   else
                                                     [edge_a, nil]
                                                   end
@@ -180,8 +180,8 @@ module View
             # This town is in the center. Find the orientation of the town
             # by looking at the first path connected to it
             path = town.paths.first
-            if path.edges.any?
-              [path.edges.first.num * 60]
+            if (edge = path.exits&.first)
+              [edge * 60]
             else
               other_stop = (path.stops - [town]).first
               other_edge = tile.preferred_city_town_edges[other_stop] if other_stop

@@ -5,9 +5,8 @@ require_relative 'base'
 module Engine
   module Part
     class Path < Base
-      attr_reader :a, :b, :city, :edges, :junction, :offboard,
-                  :town, :terminal, :branches, :stops, :nodes
-
+      attr_reader :a, :b, :branches, :city, :edges, :junction, :nodes,
+                  :offboard, :stops, :terminal, :town
       def initialize(a, b, terminal: nil)
         @a = a
         @b = b

@@ -53,7 +53,7 @@ module View
         def load_from_tile
           @tile = @town.tile
           @edge = @tile.preferred_city_town_edges[@town]
-          @num_cts = @tile.cities.size + @tile.towns.size
+          @num_cts = @tile.city_towns.size
         end
 
         def render_part
