@@ -168,7 +168,8 @@ module Engine
 
           op = old_paths.find { |path| path <= np }
           used_new_track = true unless op
-          changed_city = true if op&.node && op.node.max_revenue != np.node.max_revenue
+          # FIXME: for intra-tile paths
+          changed_city = true if op && op.nodes[0] && op.nodes[0].max_revenue != np.nodes[0].max_revenue
         end
 
         case @game.class::TRACK_RESTRICTION

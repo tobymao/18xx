@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'lib/settings'
-require 'view/game/part/track_curvilinear_path'
-require 'view/game/part/track_curvilinear_half_path'
 require 'view/game/part/track_node_path'
 require 'view/game/part/track_offboard'
 
@@ -43,13 +41,8 @@ module View
 
             if path.offboard
               h(TrackOffboard, offboard: path.offboard, path: path, region_use: @region_use, **props)
-            elsif path.junction || path.city || (path.town && path.town.exits.size != 2)
-              # assumes only one city/town possible in a path (for now)
-              h(TrackNodePath, tile: @tile, path: path, region_use: @region_use, **props)
-            elsif path.town
-              h(TrackCurvilinearHalfPath, exits: path.town.exits, path: path, region_use: @region_use, **props)
             else
-              h(TrackCurvilinearPath, region_use: @region_use, path: path, **props)
+              h(TrackNodePath, tile: @tile, path: path, region_use: @region_use, **props)
             end
           end
         end

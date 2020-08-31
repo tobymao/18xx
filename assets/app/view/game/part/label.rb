@@ -83,13 +83,13 @@ module View
         ].freeze
 
         def preferred_render_locations
-          if (@tile.cities + @tile.towns).one?
+          if @tile.city_towns.one?
             if @tile.cities.one? && (@tile.cities.first.slots > 1)
               [P_LEFT_CORNER[layout]]
             else
               SINGLE_CITY_ONE_SLOT
             end
-          elsif @tile.cities.size > 1
+          elsif @tile.city_towns.size > 1
             MULTI_CITY_LOCATIONS
           elsif layout == :flat
             [P_LEFT_CORNER[layout]]

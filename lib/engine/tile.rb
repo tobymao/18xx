@@ -16,7 +16,8 @@ module Engine
 
     attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :reservations
     attr_reader :blocks_lay, :borders, :cities, :color, :edges, :junction, :label, :nodes,
-                :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers
+                :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers,
+                :city_towns
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -94,7 +95,8 @@ module Engine
                               hide: params['hide'],
                               visit_cost: params['visit_cost'],
                               route: params['route'],
-                              format: params['format'])
+                              format: params['format'],
+                              loc: params['loc'])
         cache << town
         town
       when 'offboard'
@@ -141,6 +143,8 @@ module Engine
       @cities = []
       @paths = []
       @towns = []
+      @city_towns = []
+      @all_stop = []
       @upgrades = []
       @offboards = []
       @original_borders = []
@@ -336,22 +340,24 @@ module Engine
         [ct, edge]
       end.to_h
 
-      # take care of city/towns with no paths
-      city_towns = @cities + @towns
-      pathless_cts = city_towns.select { |ct| ct.paths.empty? }
-      if pathless_cts.one? && city_towns.size == 2
+      # take care of city/towns with no paths when there is one other city/town
+      pathless_cts = @city_towns.select { |ct| ct.paths.empty? }
+      if pathless_cts.one? && @city_towns.size == 2
         ct = pathless_cts.first
-        ct_edges[ct] = (ct_edges.values.first + 3) % 6
+        ct_edges[ct] = (ct_edges.values.first + 3) % 6 if ct_edges.values.first
       end
-      pathless_cts.select do |pct|
-        ct_edges[pct] = compute_loc(pct.loc) if pct.loc
+
+      # take care of city/towns with no exits
+      exitless_cts = @city_towns.select { |xct| xct.exits.empty? }
+      exitless_cts.select do |xct|
+        ct_edges[xct] = compute_loc(xct.loc) if xct.loc
       end
 
       ct_edges
     end
 
     def revenue_to_render
-      @revenue_to_render ||= stops.map(&:revenue_to_render)
+      @revenue_to_render ||= @stops.map(&:revenue_to_render)
     end
 
     # Used to set label for a recently placed tile
@@ -386,12 +392,14 @@ module Engine
 
         if part.city?
           @cities << part
+          @city_towns << part
         elsif part.label?
           @label = part
         elsif part.path?
           @paths << part
         elsif part.town?
           @towns << part
+          @city_towns << part
         elsif part.upgrade?
           @upgrades << part
         elsif part.offboard?
@@ -415,10 +423,10 @@ module Engine
         end
       end
 
-      @nodes = @paths.map(&:node).compact.uniq
-      @branches = @paths.map(&:branch).compact.uniq
-      @stops = @paths.map(&:stop).compact.uniq
-      @edges = @paths.flat_map(&:edges).compact.uniq
+      @nodes = @paths.flat_map(&:nodes).uniq
+      @branches = @paths.flat_map(&:branches).uniq
+      @stops = @paths.flat_map(&:stops).uniq
+      @edges = @paths.flat_map(&:edges).uniq
     end
   end
 end

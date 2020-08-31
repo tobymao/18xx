@@ -29,21 +29,6 @@ module View
           6 => [0, -50],
         }.freeze
 
-        EDGE_TRACK_REGIONS = {
-          0 => TRACK_TO_EDGE_0,
-          0.5 => TRACK_TO_EDGE_0P5,
-          1 => TRACK_TO_EDGE_1,
-          1.5 => TRACK_TO_EDGE_1P5,
-          2 => TRACK_TO_EDGE_2,
-          2.5 => TRACK_TO_EDGE_2P5,
-          3 => TRACK_TO_EDGE_3,
-          3.5 => TRACK_TO_EDGE_3P5,
-          4 => TRACK_TO_EDGE_4,
-          4.5 => TRACK_TO_EDGE_4P5,
-          5 => TRACK_TO_EDGE_5,
-          5.5 => TRACK_TO_EDGE_5P5,
-        }.freeze
-
         EDGE_CITY_REGIONS = {
           0 => [15, 20, 21, 22],
           0.5 => [13, 14, 15, 19, 20, 21],
@@ -53,24 +38,24 @@ module View
           2.5 => [0, 1, 2, 6, 7, 8],
           3 => [1, 2, 3, 8],
           3.5 => [2, 3, 4, 8, 9, 10],
-          4 => [10, 11, 4, 9],
+          4 => [4, 9, 10, 11],
           4.5 => [9, 10, 11, 16, 17, 18],
           5 => [16, 17, 18, 23],
           5.5 => [15, 16, 17, 21, 22, 23],
         }.freeze
 
         EXTRA_SLOT_REGIONS = {
-          0 => [13, 14, 16, 17, 19, 23],
+          0 => [13, 14, 16, 17, 19, 20, 22, 23],
           0.5 => [12, 22],
-          1 => [6, 7, 15, 21, 5, 20],
+          1 => [5, 6, 7, 12, 15, 19, 20, 21],
           1.5 => [0, 19],
-          2 => [2, 8, 14, 13, 1, 12],
+          2 => [0, 1, 2, 5, 8, 14, 13, 12],
           2.5 => [3, 5],
-          3 => [10, 9, 7, 6, 4, 0],
+          3 => [0, 1, 3, 4, 6, 7, 9, 10],
           3.5 => [1, 11],
-          4 => [17, 16, 8, 2, 18, 3],
+          4 => [17, 16, 18, 8, 2, 18, 3, 4],
           4.5 => [4, 17],
-          5 => [21, 15, 9, 10, 22, 11],
+          5 => [21, 15, 22, 23, 9, 10, 11, 18],
           5.5 => [18, 20],
         }.freeze
 
@@ -127,6 +112,86 @@ module View
           pointy: [nil, 42, 62, 57],
         }.freeze
 
+        ANGLE_UPPER_RIGHT = -60
+        ANGLE_LOWER_RIGHT = 10
+        ANGLE_LOWER_LEFT = 170
+        ANGLE_UPPER_LEFT = -120
+
+        REVENUE_LOCATIONS_BY_EDGE = {
+          0 => [
+            { regions: [19], angle: ANGLE_LOWER_LEFT },
+            { regions: [14], angle: ANGLE_UPPER_LEFT },
+            { regions: [23], angle: ANGLE_LOWER_RIGHT },
+            { regions: [16], angle: ANGLE_UPPER_RIGHT },
+          ],
+          0.5 => [
+            { regions: [12, 13], angle: ANGLE_LOWER_LEFT },
+            { regions: [7, 14], angle: ANGLE_UPPER_LEFT },
+            { regions: [15, 16], angle: ANGLE_UPPER_RIGHT },
+            { regions: [21, 22], angle: ANGLE_LOWER_RIGHT },
+          ],
+          1 => [
+            { regions: [5], angle: ANGLE_LOWER_LEFT },
+            { regions: [7], angle: ANGLE_UPPER_LEFT },
+            { regions: [15], angle: ANGLE_UPPER_RIGHT },
+            { regions: [20], angle: ANGLE_LOWER_RIGHT },
+          ],
+          1.5 => [
+            { regions: [0, 6], angle: ANGLE_LOWER_LEFT },
+            { regions: [13, 19], angle: ANGLE_LOWER_RIGHT },
+            { regions: [7, 8], angle: ANGLE_UPPER_LEFT },
+            { regions: [14, 15], angle: ANGLE_UPPER_RIGHT },
+          ],
+          2 => [
+            { regions: [12], angle: ANGLE_LOWER_RIGHT },
+            { regions: [14], angle: ANGLE_UPPER_RIGHT },
+            { regions: [8], angle: ANGLE_UPPER_LEFT },
+            { regions: [1], angle: ANGLE_LOWER_LEFT },
+          ],
+          2.5 => [
+            { regions: [5, 6], angle: ANGLE_LOWER_RIGHT },
+            { regions: [7, 14], angle: ANGLE_UPPER_RIGHT },
+            { regions: [8, 9], angle: ANGLE_UPPER_LEFT },
+            { regions: [2, 3], angle: ANGLE_LOWER_LEFT },
+          ],
+          3 => [
+            { regions: [4], angle: ANGLE_LOWER_LEFT },
+            { regions: [0], angle: ANGLE_LOWER_RIGHT },
+            { regions: [9], angle: ANGLE_UPPER_LEFT },
+            { regions: [7], angle: ANGLE_UPPER_RIGHT },
+          ],
+          3.5 => [
+            { regions: [10, 11], angle: ANGLE_LOWER_LEFT },
+            { regions: [9, 16], angle: ANGLE_UPPER_LEFT },
+            { regions: [7, 8], angle: ANGLE_UPPER_RIGHT },
+            { regions: [1, 2], angle: ANGLE_LOWER_RIGHT },
+          ],
+          4 => [
+            { regions: [18], angle: ANGLE_LOWER_LEFT },
+            { regions: [16], angle: ANGLE_UPPER_LEFT },
+            { regions: [8], angle: ANGLE_UPPER_RIGHT },
+            { regions: [3], angle: ANGLE_LOWER_RIGHT },
+          ],
+          4.5 => [
+            { regions: [4, 10], angle: ANGLE_LOWER_RIGHT },
+            { regions: [17, 23], angle: ANGLE_LOWER_LEFT },
+            { regions: [8, 9], angle: ANGLE_UPPER_RIGHT },
+            { regions: [15, 16], angle: ANGLE_UPPER_LEFT },
+          ],
+          5 => [
+            { regions: [11], angle: ANGLE_LOWER_RIGHT },
+            { regions: [9], angle: ANGLE_UPPER_RIGHT },
+            { regions: [15], angle: ANGLE_UPPER_LEFT },
+            { regions: [22], angle: ANGLE_LOWER_LEFT },
+          ],
+          5.5 => [
+            { regions: [17, 18], angle: ANGLE_LOWER_RIGHT },
+            { regions: [14, 15], angle: ANGLE_UPPER_LEFT },
+            { regions: [9, 16], angle: ANGLE_UPPER_RIGHT },
+            { regions: [20, 21], angle: ANGLE_LOWER_LEFT },
+          ],
+        }.freeze
+
         OO_REVENUE_REGIONS = [
           [[19], true],
           [[5, 12], true],
@@ -136,9 +201,20 @@ module View
           [[11, 18], false],
         ].freeze
 
+        CENTER_REVENUE_REGIONS = [
+          [14, 15],
+          [17, 14],
+          [7, 8],
+          [8, 9],
+          [9, 16],
+          [15, 16],
+        ].freeze
+
+        CENTER_REVENUE_EDGE_PRIORITY = [1, 2, 3, 4, 0, 5].freeze
+
         def preferred_render_locations
           if @edge
-            weights = EDGE_TRACK_REGIONS[@edge] + EDGE_CITY_REGIONS[@edge]
+            weights = EDGE_CITY_REGIONS[@edge]
             weights += EXTRA_SLOT_REGIONS[@edge] unless @city.slots == 1
             distance = 50
 
@@ -168,7 +244,7 @@ module View
             when (2..4)
               {
                 CENTER => 1.0,
-                (LEFT_CENTER + LEFT_MID + RIGHT_CENTER + RIGHT_MID) => 0.5,
+                (LEFT_CENTER + LEFT_MID + RIGHT_CENTER + RIGHT_MID) => 0.75,
               }
             else
               CENTER
@@ -186,7 +262,7 @@ module View
 
         def load_from_tile
           @edge = @tile.preferred_city_town_edges[@city]
-          @num_cities = @tile.cities.size
+          @num_cts = @tile.cities.size + @tile.towns.size
         end
 
         def render_part
@@ -198,11 +274,11 @@ module View
             # rotation
             x, y = CITY_SLOT_POSITION[@city.slots]
             revert_angle = render_location[:angle] + slot_rotation
-            revert_angle -= angle_for_layout if @num_cities == 1 || !@edge
+            revert_angle -= angle_for_layout if @num_cts == 1 || !@edge
             h(:g, { attrs: { transform: "rotate(#{slot_rotation})" } }, [
               h(:g, { attrs: { transform: "translate(#{x.round(2)} #{y.round(2)}) rotate(#{-revert_angle})" } }, [
                 h(CitySlot, city: @city,
-                            num_cities: @num_cities,
+                            num_cities: @num_cts,
                             token: token,
                             slot_index: slot_index,
                             radius: SLOT_RADIUS,
@@ -217,7 +293,7 @@ module View
           children << render_box(slots.size) if slots.size.between?(2, 6)
           children.concat(slots)
 
-          if @show_revenue && (revenue = render_revenue)
+          if @show_revenue && @city.paths.any? && (revenue = render_revenue)
             children << revenue
           end
 
@@ -241,9 +317,7 @@ module View
 
           rotation = 0
 
-          case @num_cities
-          when 1
-
+          if @num_cts == 1
             rotation = angle_for_layout
 
             regions = if layout == :flat
@@ -251,11 +325,23 @@ module View
                       else
                         @city.slots == 1 ? [8, 9] : [3, 4]
                       end
-          when 2
-            if @edge
-              regions, negative_displacement = OO_REVENUE_REGIONS[@edge]
-              displacement *= -1 if negative_displacement
+          elsif @edge && @city.slots == 1
+            revenue_location = REVENUE_LOCATIONS_BY_EDGE[@edge].min_by { |loc| combined_cost(loc[:regions]) }
+            regions = revenue_location[:regions]
+            rotation = revenue_location[:angle]
+          elsif @edge
+            regions, negative_displacement = OO_REVENUE_REGIONS[@edge]
+            displacement *= -1 if negative_displacement
+          else
+            # pick an edge where there isn't another stop
+            edges = CENTER_REVENUE_EDGE_PRIORITY - @tile.city_towns.flat_map do |stop|
+              next [] if stop == @city || !(edge = @tile.preferred_city_town_edges[stop])
+
+              [edge, (edge - 1) % 6]
             end
+            revenue_edge = edges[0] || 0
+            rotation = 60 * revenue_edge + 120
+            regions = CENTER_REVENUE_REGIONS[revenue_edge]
           end
 
           increment_weight_for_regions(regions)
