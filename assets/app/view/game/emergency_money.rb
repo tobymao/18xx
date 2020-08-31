@@ -24,7 +24,7 @@ module View
           children << h(:div, props, corp)
         end
 
-        children << render_bankruptcy
+        children << render_bankruptcy if @game.round.steps.find { |s| s.respond_to?(:process_bankrupt) }
         children
       end
 
