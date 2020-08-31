@@ -289,9 +289,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "pink"
@@ -304,9 +301,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "gold"
@@ -319,9 +313,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "orange"
@@ -334,9 +325,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "black"
@@ -349,9 +337,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "red"
@@ -364,9 +349,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "brown"
@@ -379,9 +361,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "green"
@@ -394,9 +373,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "violet"
@@ -409,9 +385,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "lightBlue"
@@ -424,9 +397,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "yellow",
@@ -440,9 +410,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "turquoise"
@@ -455,9 +422,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "white",
@@ -471,9 +435,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "brightGreen"
@@ -486,9 +447,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "lime"
@@ -501,9 +459,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "lightBrown"
@@ -516,9 +471,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "blue"
@@ -531,9 +483,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "natural",
@@ -547,9 +496,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "navy"
@@ -562,9 +508,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "lavender"
@@ -577,9 +520,6 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
-        0,
-        0,
-        0,
         0
       ],
       "color": "lavender"

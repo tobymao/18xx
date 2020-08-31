@@ -91,7 +91,7 @@ module Engine
       end
 
       def payout(entity, revenue)
-        { corporation: 0, per_share: payout_per_share(entity, revenue)[0] }
+        { corporation: 0, per_share: payout_per_share(entity, revenue) }
       end
 
       def dividends_for_entity(entity, holder, per_share)
@@ -104,11 +104,8 @@ module Engine
         dividends_for_entity(entity, holder_for_corporation(entity), per_share)
       end
 
-      def payout_per_share(_entity_, revenue)
-        # TODO: actually count shares when we implement 1817, 18Ireland, 18US, etc
-        share_count = 10
-        per_share = revenue / share_count
-        [per_share, share_count]
+      def payout_per_share(entity, revenue)
+        revenue / entity.total_shares
       end
 
       def holder_for_corporation(entity)
@@ -116,7 +113,7 @@ module Engine
       end
 
       def payout_shares(entity, revenue)
-        per_share, _share_count = payout_per_share(entity, revenue)
+        per_share = payout_per_share(entity, revenue)
 
         payouts = {}
         @game.players.each do |player|
