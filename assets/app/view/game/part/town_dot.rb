@@ -97,7 +97,7 @@ module View
           children = [h(:circle, attrs: { transform: translate, fill: @color, r: 10 * (0.8 + @width.to_i / 40) })]
           children << render_revenue
           children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
-          h(:g, children)
+          h(:g, { key: "#{@town.id}-d" }, children)
         end
       end
     end

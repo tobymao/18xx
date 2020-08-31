@@ -121,7 +121,7 @@ module View
 
           angle += 180 if reverse_side
 
-          h(:g, { attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
+          h(:g, { key: "#{@town.id}-r", attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
             h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
               h(:g, { attrs: { transform: "translate(#{displacement} 0) #{rotation_for_layout}" } }, [
                 h(SingleRevenue,
