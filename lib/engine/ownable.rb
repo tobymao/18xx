@@ -17,5 +17,9 @@ module Engine
     def owned_by_corporation?
       owner.is_a?(Corporation)
     end
+
+    def owned_by_player?
+      owner.is_a?(Player)
+    end
   end
 end

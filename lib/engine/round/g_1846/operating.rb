@@ -10,6 +10,10 @@ module Engine
       class Operating < Operating
         attr_accessor :emergency_issued
 
+        def after_setup
+          super unless @game.steamboat.owned_by_player?
+        end
+
         def start_operating
           super
 

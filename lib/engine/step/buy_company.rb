@@ -60,15 +60,23 @@ module Engine
         owner.companies.delete(company)
 
         company.abilities(:assign_corporation) do |ability|
-          Assignable.remove_from_all!(@game.corporations, company.id) do |unassigned|
+          Assignable.remove_from_all!(assignable_corporations, company.id) do |unassigned|
             log_later << "#{company.name} is unassigned from #{unassigned.name}" if unassigned.name != entity.name
           end
           entity.assign!(company.id)
           ability.use!
           log_later << "#{company.name} is assigned to #{entity.name}"
+
+          log_later <<
+            if (assigned_hex = @game.hexes.find { |h| h.assigned?(company.id) })
+              "#{company.name} is still assigned to #{assigned_hex.name}"
+            else
+              "#{company.name} is not assigned to a hex"
+            end
         end
 
         @round.just_sold_company = company
+        @round.company_seller = owner
 
         entity.companies << company
         entity.spend(price, owner)
@@ -76,8 +84,12 @@ module Engine
         log_later.each { |l| @log << l }
       end
 
+      def assignable_corporations(_company = nil)
+        @game.corporations
+      end
+
       def round_state
-        { just_sold_company: nil }
+        { just_sold_company: nil, company_seller: nil }
       end
 
       def setup

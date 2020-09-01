@@ -17,16 +17,12 @@ module Engine
         @home_token_timing = @game.class::HOME_TOKEN_TIMING
         @game.payout_companies
         @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
-        (@game.corporations + @game.minors + @game.companies).each(&:reset_ability_count_this_or)
-        start_operating unless @entities.empty?
+        (@game.corporations + @game.minors + @game.companies).each(&:reset_ability_count_this_or!)
+        after_setup
       end
 
-      def before_process(action)
-        # this is crap, we should block when this happens
-        return if action.type == 'message' || action.entity == @just_sold_company
-
-        @just_sold_company&.remove_ability_when(:sold)
-        @just_sold_company = nil
+      def after_setup
+        start_operating unless @entities.empty?
       end
 
       def after_process(action)
@@ -75,6 +71,10 @@ module Engine
 
       def teleported?(entity)
         entity.abilities(:teleport)&.find(&:used?)
+      end
+
+      def operating?
+        true
       end
     end
   end

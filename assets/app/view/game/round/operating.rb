@@ -2,6 +2,7 @@
 
 require 'view/game/buy_companies'
 require 'view/game/buy_trains'
+require 'view/game/company'
 require 'view/game/corporation'
 require 'view/game/player'
 require 'view/game/dividend'
@@ -21,7 +22,8 @@ module View
           @step = round.active_step
           entity = @step.current_entity
           @current_actions = round.actions_for(entity)
-          entity = entity.owner if entity.company?
+
+          entity = entity.owner if entity.company? && !round.active_entities.one?
 
           left = []
           left << h(RouteSelector) if @current_actions.include?('run_routes')
@@ -35,11 +37,29 @@ module View
           end
           left << h(IssueShares) if @current_actions.include?('buy_shares')
           left << h(Loans, corporation: entity) if (%w[take_loan payoff_loan] & @current_actions).any?
-          left << if entity.player?
-                    h(Player, player: entity, game: @game)
-                  else
-                    h(Corporation, corporation: entity)
-                  end
+
+          if entity.player?
+            left << h(Player, player: entity, game: @game)
+          elsif entity.corporation? || entity.minor?
+            left << h(Corporation, corporation: entity)
+          elsif (company = entity).company?
+            left << h(Company, company: company)
+
+            if company.abilities(:assign_corporation)
+              props = {
+                style: {
+                  display: 'inline-block',
+                  verticalAlign: 'top',
+                },
+              }
+
+              @step.assignable_corporations(company).each do |corporation|
+                component = View::Game::Corporation.new(@root, corporation: corporation, selected_company: company)
+                component.store(:selected_company, company, skip: true)
+                left << h(:div, props, [component.render])
+              end
+            end
+          end
 
           div_props = {
             style: {

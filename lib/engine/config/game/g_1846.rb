@@ -225,7 +225,7 @@ module Engine
       "name": "Meat Packing Company",
       "value": 60,
       "revenue": 15,
-      "desc": "The owning corporation may place a $30 marker in either St. Louis (I1) or Chicago (D6), to add $30 to all routes run to this location.",
+      "desc": "The owning corporation may assign the Meat Packing Company to either St. Louis (I1) or Chicago (D6), to add $30 to all routes it runs to this location.",
       "sym": "MPC",
       "abilities": [
         {
@@ -249,7 +249,7 @@ module Engine
       "name": "Steamboat Company",
       "value": 40,
       "revenue": 10,
-      "desc": "Place or shift the port marker among port locations (B8, C5, D14, G19, I1). Add $20 per port symbol to all routes run to this location by the owning (or assigned) company.",
+      "desc": "At the beginning of each Operating Round, the owning player may assign the Steamboat Company to a corporation/minor and to a port location (B8, C5, D14, G19, I1). Once per Operating Round, the owning corporation may assign the Steamboat Company to a port location. Add $20 per port symbol to all routes run to the assigned location by the owning/assigned corporation/minor.",
       "sym": "SC",
       "abilities": [
         {
@@ -278,7 +278,7 @@ module Engine
             "I1",
             "G19"
           ],
-          "count": 1,
+          "count_per_or": 1,
           "owner_type": "corporation"
         },
         {
