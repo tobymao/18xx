@@ -8,6 +8,7 @@ module Engine
     module G1817
       class Operating < Operating
         attr_accessor :last_player
+        attr_reader :paid_loans
 
         def setup
           @paid_loans = {}
@@ -22,9 +23,11 @@ module Engine
         end
 
         def pay_interest!(entity)
-          return if entity.loans.empty?
           return if @paid_loans[entity]
           return unless @steps.any? { |step| step.passed? && step.is_a?(Step::BuyTrain) }
+
+          @paid_loans[entity] = true
+          return if entity.loans.empty?
 
           bank = @game.bank
           owed = @game.interest_owed(entity)
@@ -37,7 +40,7 @@ module Engine
           end
 
           if owed <= entity.cash
-            @log << "#{entity.name} pays #{owed_fmt} interest"
+            @log << "#{entity.name} pays #{owed_fmt} interest for #{entity.loans.size} loans"
             entity.spend(owed, bank)
             return
           end
@@ -55,7 +58,7 @@ module Engine
           @log << "#{entity.name} cannot afford #{owed_fmt} interest and goes into liquidation#{transferred}"
 
           owner.spend(owed, bank, check_cash: false)
-          @log << "#{owner.name} pays #{owed_fmt} interest"
+          @log << "#{owner.name} pays #{owed_fmt} interest for #{entity.loans.size} loans"
         end
       end
     end

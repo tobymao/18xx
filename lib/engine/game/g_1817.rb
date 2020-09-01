@@ -96,6 +96,7 @@ module Engine
         Round::G1817::Operating.new(self, [
           Step::Bankrupt, # @todo: needs customization
           Step::G1817::CashCrisis,
+          Step::G1817::Loan,
           Step::G1817::SpecialTrack,
           Step::DiscardTrain,
           Step::G1817::Track,
@@ -103,8 +104,6 @@ module Engine
           Step::Route,
           Step::G1817::Dividend,
           Step::G1817::BuyTrain,
-
-          # @todo: pay fees on loans, repay loans
           # @todo: check for liquidation
         ], round_num: round_num)
       end
@@ -133,13 +132,19 @@ module Engine
           game_error("Cannot take more than #{maximum_loans(entity)} loans")
         end
         price = entity.share_price.price
-        @log << "#{entity.owner.name} takes a loan for #{entity.name} "\
-          "and receives #{format_currency(loan.amount)}"
+        name = entity.name
+        name += " (#{entity.owner.name})" if @round.is_a?(Round::Stock)
+        @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
         @bank.spend(loan.amount, entity)
         @stock_market.move_left(entity)
         log_share_price(entity, price)
         entity.loans << loan
         @loans.delete(loan)
+      end
+
+      def can_take_loan?(entity)
+        entity.corporation? &&
+          entity.loans.size < maximum_loans(entity)
       end
     end
   end

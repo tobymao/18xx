@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'view/game/actionable'
-require 'view/game/undo_and_pass'
 
 module View
   module Game
