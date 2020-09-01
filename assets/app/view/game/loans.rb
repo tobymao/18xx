@@ -11,7 +11,6 @@ module View
 
       def render
         actions = @game.round.actions_for(@corporation)
-        puts "** coming here *** #{actions}"
 
         children = []
 
