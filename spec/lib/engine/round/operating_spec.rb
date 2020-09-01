@@ -42,16 +42,21 @@ module Engine
 
     subject { move_to_or! }
 
+    def next_round!
+      game.send(:next_round!)
+      game.round.setup
+    end
+
     def move_to_or!
       # Move the game into an OR
 
-      game.send(:next_round!) until game.round.is_a?(Round::Operating)
+      next_round! until game.round.is_a?(Round::Operating)
 
       game.round
     end
 
     def goto_new_or!
-      game.send(:next_round!)
+      next_round!
       move_to_or!
     end
 
@@ -78,7 +83,7 @@ module Engine
       before :each do
         game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
         game.stock_market.set_par(corporation2, game.stock_market.par_prices[0])
-        game.send(:next_round!)
+        next_round!
 
         corporation.cash = 1000
         corporation.owner = player
@@ -245,7 +250,7 @@ module Engine
       before :each do
         game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
         game.stock_market.set_par(corporation2, game.stock_market.par_prices[0])
-        game.send(:next_round!)
+        next_round!
 
         corporation.cash = 1000
         corporation.owner = player

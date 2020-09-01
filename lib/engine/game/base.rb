@@ -441,10 +441,21 @@ module Engine
         action_processed(action)
         @actions << action
 
-        end_game! if game_end_check&.last == :immediate
+        end_timing = game_end_check&.last
+        end_game! if end_timing == :immediate
+
         while @round.finished? && !@finished
           @round.entities.each(&:unpass!)
-          next_round!
+
+          if end_now?(end_timing)
+            end_game!
+          else
+            next_round!
+
+            # Finalize round setup (for things that need round correctly set like place_home_token)
+            @round.setup
+            @round_history << @actions.size
+          end
         end
 
         self
@@ -576,7 +587,6 @@ module Engine
         @finished = true
         scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
         @log << "-- Game over: #{scores.join(', ')} --"
-        @round
       end
 
       def revenue_for(route)
@@ -943,10 +953,6 @@ module Engine
       end
 
       def next_round!
-        if (_, after = game_end_check)
-          return end_game! if end_now?(after)
-        end
-
         @round =
           case @round
           when Round::Stock
@@ -967,11 +973,6 @@ module Engine
             reorder_players
             new_stock_round
           end
-
-        # Finalize round setup (for things that need round correctly set like place_home_token)
-        @round.setup
-
-        @round_history << @actions.size
       end
 
       def game_end_check
@@ -992,6 +993,7 @@ module Engine
       end
 
       def end_now?(after)
+        return false unless after
         return true if after == :immediate
         return true if after == :current_round
         return false unless @round.is_a?(Round::Operating)
