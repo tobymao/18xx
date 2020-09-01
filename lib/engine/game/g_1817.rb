@@ -41,6 +41,9 @@ module Engine
       POOL_SHARE_DROP = :one
       SELL_MOVEMENT = :none
 
+      ASSIGNMENT_TOKENS = {
+        'bridge' => '/icons/1817/bridge_token.svg',
+      }.freeze
       # @todo: this needs purchase of the 8 train
       GAME_END_CHECK = { bankrupt: :immediate }.freeze
 
@@ -98,6 +101,7 @@ module Engine
           Step::G1817::CashCrisis,
           Step::G1817::Loan,
           Step::G1817::SpecialTrack,
+          Step::G1817::Assign,
           Step::DiscardTrain,
           Step::G1817::Track,
           Step::Token,
@@ -145,6 +149,15 @@ module Engine
       def can_take_loan?(entity)
         entity.corporation? &&
           entity.loans.size < maximum_loans(entity)
+      end
+
+      def revenue_for(route)
+        revenue = super
+
+        stops = route.stops
+        revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
+
+        revenue
       end
     end
   end
