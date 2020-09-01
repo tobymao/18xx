@@ -142,7 +142,7 @@ module View
                 elsif edge_a
                   EDGE_TOWN_REGIONS[edge_a]
                 else
-                  CENTER
+                  Base::CENTER
                 end
           [loc]
         end
