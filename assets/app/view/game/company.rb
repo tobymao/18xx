@@ -109,7 +109,7 @@ module View
             children << render_bidders
           end
 
-          if @company.discount != 0
+          unless @company.discount.zero?
             children << h(
             :div,
             { style: { float: 'center' } },
