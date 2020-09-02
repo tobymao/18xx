@@ -38,8 +38,9 @@ module Engine
         @laid_track += 1
       end
 
-      def lay_tile(action, extra_cost: 0, entity: nil)
+      def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
         entity ||= action.entity
+        spender ||= entity
         tile = action.tile
         hex = action.hex
         rotation = action.rotation
@@ -84,14 +85,14 @@ module Engine
         terrain = old_tile.terrain
         cost =
           if free
-            0
+            extra_cost
           else
             border, border_types = border_cost(tile, entity)
             terrain += border_types if border.positive?
             @game.tile_cost(old_tile, entity) + border + extra_cost - discount
           end
 
-        entity.spend(cost, @game.bank) if cost.positive?
+        spender.spend(cost, @game.bank) if cost.positive?
 
         cities = tile.cities
         if old_tile.paths.empty? &&
@@ -107,7 +108,7 @@ module Engine
 
           token.remove!
         end
-        @log << "#{action.entity.name}"\
+        @log << "#{spender.name}"\
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile ##{tile.name}"\
           " with rotation #{rotation} on #{hex.name}"
