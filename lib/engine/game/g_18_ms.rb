@@ -85,7 +85,7 @@ module Engine
           Step::Route,
           Step::Dividend,
           Step::SpecialBuyTrain,
-          Step::BuyTrain,
+          Step::G18MS::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
@@ -221,6 +221,22 @@ module Engine
         @hexes
           .select { |hex| hex_to_clear == hex.name }
           .each { |hex| hex.tile.icons = [] }
+      end
+
+      def president_assisted_buy(corporation, train, price)
+        # Can only assist if corporation cannot afford the train, but can pay at least 50%.
+        # Corporation also need to own at least one train, and the train need to be permanent.
+        if corporation.trains.size.positive? &&
+          !train.name.include?('+') &&
+          corporation.cash >= price / 2 &&
+          price > corporation.cash
+
+          fee = 50
+          president_assist = price - corporation.cash
+          return [president_assist, fee] unless corporation.owner.cash < president_assist + fee
+        end
+
+        super
       end
 
       private
