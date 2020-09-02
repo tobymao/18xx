@@ -7,13 +7,17 @@ module Engine
   module Step
     module G1817
       class Track < Track
+        # Special track lays act as normal lays for 1817
+        attr_accessor :laid_track
+
         def setup
           super
           @hex = nil
         end
 
         def lay_tile(action, extra_cost: 0, entity: nil)
-          @game.game_error('Can lay and upgrade the same time') if action.hex == @hex
+          @game.game_error('Cannot lay and upgrade the same tile in the same turn') if action.hex == @hex
+          @game.game_error('Cannot upgrade mines') if action.hex.assigned?('mine')
           super
           @hex = action.hex
 

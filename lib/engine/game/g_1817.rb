@@ -43,6 +43,7 @@ module Engine
 
       ASSIGNMENT_TOKENS = {
         'bridge' => '/icons/1817/bridge_token.svg',
+        'mine' => '/icons/1817/mine_token.svg',
       }.freeze
       # @todo: this needs purchase of the 8 train
       GAME_END_CHECK = { bankrupt: :immediate }.freeze
@@ -166,6 +167,12 @@ module Engine
         stops = route.stops
         revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
 
+        mine = 'mine'
+        if route.hexes.first.assigned?(mine) || route.hexes.last.assigned?(mine)
+          game_error('Route cannot start or end with a mine')
+        end
+
+        revenue += 10 * route.all_hexes.count { |hex| hex.assigned?(mine) }
         revenue
       end
 
