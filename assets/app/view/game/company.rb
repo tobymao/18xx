@@ -73,7 +73,7 @@ module View
           }
 
           current_value_style = {
-            float: 'center'
+            float: 'center',
           }
 
           bidders_style = {
@@ -114,7 +114,11 @@ module View
           end
 
           if @company.discount != 0
-            children << h(:div, { style: current_value_style }, "Price: #{@game.format_currency(@company.value-@company.discount)}")
+            children << h(
+            :div,
+            { style: current_value_style },
+            "Price: #{@game.format_currency(@company.value - @company.discount)}"
+          )
           end
 
           children << h('div.nowrap', { style: bidders_style }, "Owner: #{@company.owner.name}") if @company.owner
