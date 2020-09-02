@@ -13,9 +13,8 @@ module Engine
           entity ||= action.entity
           super
 
-          return if action.tile.hex.name != ACTION_HEX_OF_INTEREST ||
-            @game.chattanooga_reached ||
-            @game.loading ||
+          return if @game.chattanooga_reached ||
+            action.tile.hex.name != ACTION_HEX_OF_INTEREST ||
             !@game.graph.reachable_hexes(entity).find { |h, _| h.name == 'B12' }
 
           @game.chattanooga_reached = true
