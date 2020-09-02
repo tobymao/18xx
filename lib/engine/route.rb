@@ -187,6 +187,11 @@ module Engine
         .map(&:hex)
     end
 
+    def all_hexes
+      # All hexes, including those not considered stops (1817 mines)
+      paths.map(&:hex).uniq
+    end
+
     def check_cycles!
       cycles = {}
 

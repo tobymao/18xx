@@ -237,21 +237,99 @@ module Engine
       "value" : 30,
       "revenue" : 0,
       "desc" : "Comes with one coal mine marker.  When placing a yellow tile in a mountain hex, can place token to avoid $15 terrain fee.  Marked yellow hexes cannot be upgraded.  Hexes pay $10 extra revenue and do not count as a stop.  May not start or end a route at a coal mine.",
-      "sym" : "MINC"
+      "sym" : "MINC",
+      "abilities": [
+        {
+          "type": "tile_lay",
+          "hexes": [
+            "B25",
+            "C20",
+            "C24",
+            "E18",
+            "F15",
+            "G12",
+            "G14",
+            "H11",
+            "H13",
+            "H15",
+            "I8",
+            "I10"
+          ],
+          "tiles": [
+            "7","8", "9"
+          ],
+          "free": true,
+          "when": "track",
+          "owner_type": "corporation",
+          "count": 1
+        }
+      ]
     },
     {
       "name" : "Coal Mine",
       "value" : 60,
       "revenue" : 0,
       "desc" : "Comes with two coal mine markers.  When placing a yellow tile in a mountain hex, can place token to avoid $15 terrain fee.  Marked yellow hexes cannot be upgraded.  Hexes pay $10 extra revenue and do not count as a stop.  May not start or end a route at a coal mine.",
-      "sym" : "CM"
+      "sym" : "CM",
+      "abilities": [
+        {
+          "type": "tile_lay",
+          "hexes": [
+            "B25",
+            "C20",
+            "C24",
+            "E18",
+            "F15",
+            "G12",
+            "G14",
+            "H11",
+            "H13",
+            "H15",
+            "I8",
+            "I10"
+          ],
+          "tiles": [
+            "7","8", "9"
+          ],
+          "free": true,
+          "when": "track",
+          "owner_type": "corporation",
+          "count": 2
+        }
+      ]
     },
     {
       "name" : "Major Coal Mine",
       "value" : 90,
       "revenue" : 0,
       "desc" : "Comes with three coal mine markers.  When placing a yellow tile in a mountain hex, can place token to avoid $15 terrain fee.  Marked yellow hexes cannot be upgraded.  Hexes pay $10 extra revenue and do not count as a stop.  May not start or end a route at a coal mine.",
-      "sym" : "MAJC"
+      "sym" : "MAJC",
+      "abilities": [
+        {
+          "type": "tile_lay",
+          "hexes": [
+            "B25",
+            "C20",
+            "C24",
+            "E18",
+            "F15",
+            "G12",
+            "G14",
+            "H11",
+            "H13",
+            "H15",
+            "I8",
+            "I10"
+          ],
+          "tiles": [
+            "7","8", "9"
+          ],
+          "free": true,
+          "when": "track",
+          "owner_type": "corporation",
+          "count": 3
+        }
+      ]
     },
     {
       "name" : "Minor Mail Contract",
