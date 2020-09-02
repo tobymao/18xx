@@ -72,10 +72,6 @@ module View
             float: 'right',
           }
 
-          current_value_style = {
-            float: 'center',
-          }
-
           bidders_style = {
             marginTop: '0.5rem',
             display: 'inline-block',
@@ -116,7 +112,7 @@ module View
           if @company.discount != 0
             children << h(
             :div,
-            { style: current_value_style },
+            { style: { float: 'center' } },
             "Price: #{@game.format_currency(@company.value - @company.discount)}"
           )
           end
