@@ -362,7 +362,8 @@ module Engine
          "price":550,
          "num":2,
          "events":[
-           {"type": "close_companies"}
+           {"type": "close_companies"},
+           {"type": "remove_tokens"}
          ]
       },
       {
@@ -440,7 +441,7 @@ module Engine
          ]
       },
       "red":{
-         "offboard=revenue:yellow_40|brown_60;path=a:1,b:_0":[
+         "offboard=revenue:yellow_40|brown_60;path=a:1,b:_0;icon=image:18_ms/coins":[
             "B12"
          ],
          "offboard=revenue:yellow_30|brown_50;path=a:1,b:_0":[
@@ -449,7 +450,7 @@ module Engine
          "city=revenue:yellow_40|brown_50;path=a:5,b:_0;path=a:4,b:_0":[
             "A1"
          ],
-         "city=revenue:yellow_50|brown_80;path=a:3,b:_0;path=a:4,b:_0":[
+         "city=revenue:yellow_50|brown_80;path=a:3,b:_0;path=a:4,b:_0;icon=image:18_ms/coins":[
             "I1"
          ],
          "path=a:1,b:5":[

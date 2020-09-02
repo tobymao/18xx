@@ -7,9 +7,11 @@ module Engine
     module G18MS
       class BuyCompany < BuyCompany
         def can_buy_company?(entity)
+          return false if entity.company?
+
           companies = @game.purchasable_companies
 
-          entity == current_entity &&
+          entity == @game.current_entity &&
             companies.any? &&
             companies.map(&:min_price).min <= entity.cash
         end

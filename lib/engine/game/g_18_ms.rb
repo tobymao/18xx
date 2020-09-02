@@ -7,6 +7,8 @@ require_relative 'company_price_50_to_150_percent'
 module Engine
   module Game
     class G18MS < Base
+      attr_accessor :chattanooga_reached
+
       load_from_json(Config::Game::G18MS::JSON)
 
       GAME_LOCATION = 'Mississippi, USA'
@@ -24,12 +26,18 @@ module Engine
           ['Can Buy Companies OR 1', 'Corporations can buy AGS/BS companies for face value in OR 1'],
       ).freeze
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'remove_tokens' => ['Remove Tokens', 'New Orleans route bonus removed']
+      ).freeze
+
       HEXES_FOR_GRAY_TILE = %w[C9 E11].freeze
       COMPANY_1_AND_2 = %w[AGS BS].freeze
+      ATLANTA_HEXES = %w[D12 E13 F12].freeze
 
       include CompanyPrice50To150Percent
 
       def setup
+        @chattanooga_reached = false
         setup_company_price_50_to_150_percent
 
         @mobile_city_brown ||= @tiles.find { |t| t.name == 'X31b' }
@@ -72,8 +80,8 @@ module Engine
           Step::DiscardTrain,
           Step::SpecialTrack,
           Step::G18MS::BuyCompany,
-          Step::Track,
-          Step::Token,
+          Step::G18MS::Track,
+          Step::G18MS::Token,
           Step::Route,
           Step::Dividend,
           Step::SpecialBuyTrain,
@@ -123,11 +131,22 @@ module Engine
       end
 
       def revenue_for(route)
-        # Diesels double to normal revenue
-        route.train.name.end_with?('D') ? 2 * super : super
+        revenue = super
+
+        # Diesels double normal revenue
+        revenue *= 2 if route.train.name.end_with?('D')
+
+        route.corporation.abilities(:hexes_bonus) do |ability|
+          revenue += route.stops.sum { |stop| ability.hexes.include?(stop.hex.id) ? ability.amount : 0 }
+        end
+
+        revenue
       end
 
       def routes_revenue(routes)
+        atlanta_stops = routes.count { |r| r.stops.any? { |s| ATLANTA_HEXES.include?(s.hex.id) } }
+        game_error('Atlanta may only be visited once per run') if atlanta_stops > 1
+
         active_step.current_entity.trains.each do |t|
           next unless t.name == "#{@turn}+"
 
@@ -137,6 +156,18 @@ module Engine
         end
 
         super
+      end
+
+      def event_remove_tokens!
+        @corporations.each do |corporation|
+          corporation.abilities(:hexes_bonus) do |a|
+            bonus_hex = @hexes.find { |h| a.hexes.include?(h.name) }
+            hex_name = bonus_hex.name
+            corporation.remove_ability(a)
+
+            @log << "Route bonus is removed from #{get_location_name(hex_name)} (#{hex_name})"
+          end
+        end
       end
 
       def upgrades_to?(from, to, _special = false)
@@ -180,6 +211,16 @@ module Engine
         corporation.buy_train(@free_train, :free)
         @free_train.buyable = false
         @log << "#{corporation.name} receives a bonus non sellable #{@free_train.name} train"
+      end
+
+      def get_location_name(hex_name)
+        @hexes.find { |h| h.name == hex_name }.location_name
+      end
+
+      def remove_icons(hex_to_clear)
+        @hexes
+          .select { |hex| hex_to_clear == hex.name }
+          .each { |hex| hex.tile.icons = [] }
       end
 
       private
