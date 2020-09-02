@@ -707,7 +707,7 @@ module Engine
         "F19",
         "I16"
       ],
-      "city=revenue:0;upgrade=cost:20,terrain:water": [
+      "city=revenue:0;upgrade=cost:20": [
         "D7"
       ],
       "city=revenue:0;upgrade=cost:15,terrain:mountain": [
@@ -742,7 +742,7 @@ module Engine
         "G10",
         "H7"
       ],
-      "upgrade=cost:20,terrain:water": [
+      "upgrade=cost:20": [
         "B9",
         "B27",
         "D25",
