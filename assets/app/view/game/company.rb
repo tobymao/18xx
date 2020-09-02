@@ -109,6 +109,14 @@ module View
             children << render_bidders
           end
 
+          unless @company.discount.zero?
+            children << h(
+            :div,
+            { style: { float: 'center' } },
+            "Price: #{@game.format_currency(@company.value - @company.discount)}"
+          )
+          end
+
           children << h('div.nowrap', { style: bidders_style }, "Owner: #{@company.owner.name}") if @company.owner
 
           h('div.company.card', props, children)
