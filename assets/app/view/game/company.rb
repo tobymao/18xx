@@ -72,6 +72,10 @@ module View
             float: 'right',
           }
 
+          current_value_style = {
+            float: 'center'
+          }
+
           bidders_style = {
             marginTop: '0.5rem',
             display: 'inline-block',
@@ -100,13 +104,17 @@ module View
             h(:div, { style: header_style }, 'PRIVATE COMPANY'),
             h(:div, @company.name),
             h(:div, { style: description_style }, @company.desc),
-            h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value - @company.discount)}"),
+            h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}"),
             h(:div, { style: revenue_style }, "Revenue: #{@game.format_currency(@company.revenue)}"),
           ]
 
           if @bids&.any?
             children << h(:div, { style: bidders_style }, 'Bidders:')
             children << render_bidders
+          end
+
+          if @company.discount != 0
+            children << h(:div, { style: current_value_style }, "Price: #{@game.format_currency(@company.value-@company.discount)}")
           end
 
           children << h('div.nowrap', { style: bidders_style }, "Owner: #{@company.owner.name}") if @company.owner
