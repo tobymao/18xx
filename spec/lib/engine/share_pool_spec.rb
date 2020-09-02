@@ -2,6 +2,8 @@
 
 require './spec/spec_helper'
 
+require 'engine'
+require 'engine/game/g_1846'
 require 'engine/game/g_1889'
 require 'engine/share_pool'
 require 'engine/share_price'
@@ -182,6 +184,63 @@ module Engine
           expect(player_2.shares.size).to eq(3)
           expect(player_1.cash).to eq(420)
           expect(player_2.cash).to eq(380)
+        end
+      end
+    end
+
+    describe '1846' do
+      context 'receivership' do
+        let(:game) { Game::G1846.new(%w[a b c]) }
+        let(:round) { game.round }
+        let(:step) { game.round.active_step }
+
+        before :each do
+          game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
+          corporation.ipoed = true
+          corporation.owner = subject
+
+          presidents_bundle = ShareBundle.new(corporation.shares_of(corporation).first)
+          subject.transfer_shares(presidents_bundle, subject)
+        end
+
+        context 'presidents share alone in share pool' do
+          it 'only a player with one share can buy the partial presidents bundle' do
+            # give player 1 a share
+            bundle = ShareBundle.new(corporation.shares_of(corporation).first)
+            subject.transfer_shares(bundle, player_1)
+
+            expect(corporation.receivership?).to be true
+
+            expect(player_1.num_shares_of(corporation)).to eq(1)
+            expect(player_2.num_shares_of(corporation)).to eq(0)
+            expect(player_3.num_shares_of(corporation)).to eq(0)
+            expect(subject.num_shares_of(corporation)).to eq(2)
+            expect(corporation.num_shares_of(corporation)).to eq(7)
+
+            pool_bundles = subject.bundles_for_corporation(corporation)
+            buyable = pool_bundles.select { |b| step.can_buy?(player_1, b) }
+            bundle = buyable.first
+
+            # only buyable bundle for player 1 is the partial presidents bundle
+            expect(buyable.size).to eq(1)
+
+            # player 2, with no shares, cannot buy any of the bundles in the
+            # pool
+            expect(pool_bundles.select { |b| step.can_buy?(player_2, b) }).to eq([])
+
+            # buy the share
+            action = Engine::Action::BuyShares.new(player_1, shares: bundle.shares, share_price: 150, percent: 10)
+            round.process_action(action)
+
+            # new president
+            expect(player_1.num_shares_of(corporation)).to eq(2)
+            expect(player_2.num_shares_of(corporation)).to eq(0)
+            expect(player_3.num_shares_of(corporation)).to eq(0)
+            expect(subject.num_shares_of(corporation)).to eq(1)
+            expect(corporation.num_shares_of(corporation)).to eq(7)
+            expect(corporation.num_market_shares).to eq(1)
+            expect(corporation.owner).to be(player_1)
+          end
         end
       end
     end

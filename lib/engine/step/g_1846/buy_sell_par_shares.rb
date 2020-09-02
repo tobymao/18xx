@@ -7,13 +7,15 @@ module Engine
     module G1846
       class BuySellParShares < BuySellParShares
         def can_buy?(entity, bundle)
-          if @game.bundle_is_presidents_share_alone_in_pool?(bundle)
-            bundle = bundle.to_bundle
-            return false unless entity.num_shares_of(bundle.corporation) == 1
+          return unless bundle
 
-            percent = 10
-            bundle = ShareBundle.new(bundle.shares, percent)
-          end
+          bundle = bundle.to_bundle
+          corporation = bundle.corporation
+
+          return false if corporation.receivership? &&
+                          bundle.presidents_share &&
+                          ((bundle.num_shares > 1) ||
+                           (entity.num_shares_of(corporation) != 1))
 
           super
         end
