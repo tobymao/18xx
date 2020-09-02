@@ -100,7 +100,7 @@ module View
             h(:div, { style: header_style }, 'PRIVATE COMPANY'),
             h(:div, @company.name),
             h(:div, { style: description_style }, @company.desc),
-            h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value-@company.discount)}"),
+            h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value - @company.discount)}"),
             h(:div, { style: revenue_style }, "Revenue: #{@game.format_currency(@company.revenue)}"),
           ]
 
