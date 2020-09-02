@@ -11,7 +11,6 @@ module View
 
       def render
         actions = @game.round.actions_for(@corporation)
-
         children = []
 
         if actions.include?('take_loan')

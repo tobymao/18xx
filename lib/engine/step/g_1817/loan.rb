@@ -23,7 +23,8 @@ module Engine
 
         def can_payoff?(entity)
           @round.paid_loans[entity] &&
-            entity.cash >= entity.loans[0].amount &&
+            (loan = entity.loans[0]) &&
+            entity.cash >= loan.amount &&
             !@after_payoff_loan
         end
 

@@ -47,6 +47,9 @@ module Engine
       # @todo: this needs purchase of the 8 train
       GAME_END_CHECK = { bankrupt: :immediate }.freeze
 
+      # Two lays with one being an upgrade, second tile costs 20
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
+
       attr_reader :loan_value
 
       def bankruptcy_limit_reached?
@@ -65,8 +68,13 @@ module Engine
         entity.total_shares
       end
 
-      # Two lays with one being an upgrade, second tile costs 20
-      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
+      def home_token_locations(corporation)
+        hexes.select do |hex|
+          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+        end
+      end
+
+      private
 
       def new_auction_round
         log << "Seed Money for initial auction is #{format_currency(SEED_MONEY)}" unless @round
@@ -120,15 +128,45 @@ module Engine
         end
       end
 
-      def home_token_locations(corporation)
-        hexes.select do |hex|
-          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
-        end
+      def next_round!
+        @round =
+          case @round
+          when Round::Stock
+            @operating_rounds = @phase.operating_rounds
+            reorder_players
+            new_operating_round
+          when Round::Operating
+            if @round.round_num < @operating_rounds
+              or_round_finished
+              Round::G1817::Merger.new(self, [
+                Step::G1817::Conversion,
+              ])
+            else
+              @turn += 1
+              or_round_finished
+              or_set_finished
+              new_stock_round
+            end
+          when Round::G1817::Merger
+            new_operating_round(@round.round_num + 1)
+          when init_round.class
+            reorder_players
+            new_stock_round
+          end
       end
 
       def init_loans
         @loan_value = 100
         70.times.map { |id| Loan.new(id, @loan_value) }
+      end
+
+      def revenue_for(route)
+        revenue = super
+
+        stops = route.stops
+        revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
+
+        revenue
       end
 
       def take_loan(entity, loan)
@@ -149,15 +187,6 @@ module Engine
       def can_take_loan?(entity)
         entity.corporation? &&
           entity.loans.size < maximum_loans(entity)
-      end
-
-      def revenue_for(route)
-        revenue = super
-
-        stops = route.stops
-        revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
-
-        revenue
       end
     end
   end
