@@ -75,6 +75,65 @@ module Engine
         end
       end
 
+      def convert(corporation)
+        shares = @_shares.values.select { |share| share.corporation == corporation }
+
+        case corporation.total_shares
+        when 2
+          shares[0].percent = 40
+          shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 1) }
+        when 5
+          shares.each { |share| share.percent = 10 }
+          shares[0].percent = 20
+          shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 4) }
+        else
+          game_error('Cannot convert 10 share corporation')
+        end
+
+        shares.each do |share|
+          corporation.shares_by_corporation[corporation] << share
+          @_shares[share.id] = share
+        end
+      end
+
+      def take_loan(entity, loan)
+        game_error("Cannot take more than #{maximum_loans(entity)} loans") unless can_take_loan?(entity)
+        price = entity.share_price.price
+        name = entity.name
+        name += " (#{entity.owner.name})" if @round.is_a?(Round::Stock)
+        @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
+        @bank.spend(loan.amount, entity)
+        @stock_market.move_left(entity)
+        log_share_price(entity, price)
+        entity.loans << loan
+        @loans.delete(loan)
+      end
+
+      def can_take_loan?(entity)
+        entity.corporation? &&
+          entity.loans.size < maximum_loans(entity) &&
+          @loans.any?
+      end
+
+      def liquidate!(corporation)
+        @stock_market.move(corporation, 0, 0, force: true)
+      end
+
+      def revenue_for(route)
+        revenue = super
+
+        stops = route.stops
+        revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
+
+        mine = 'mine'
+        if route.hexes.first.assigned?(mine) || route.hexes.last.assigned?(mine)
+          game_error('Route cannot start or end with a mine')
+        end
+
+        revenue += 10 * route.all_hexes.count { |hex| hex.assigned?(mine) }
+        revenue
+      end
+
       private
 
       def new_auction_round
@@ -139,6 +198,7 @@ module Engine
           when Round::Operating
             if @round.round_num < @operating_rounds
               or_round_finished
+              @log << "-- Mergers and Acquisition Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
               Round::G1817::Merger.new(self, [
                 Step::G1817::Conversion,
               ])
@@ -159,41 +219,6 @@ module Engine
       def init_loans
         @loan_value = 100
         70.times.map { |id| Loan.new(id, @loan_value) }
-      end
-
-      def revenue_for(route)
-        revenue = super
-
-        stops = route.stops
-        revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
-
-        mine = 'mine'
-        if route.hexes.first.assigned?(mine) || route.hexes.last.assigned?(mine)
-          game_error('Route cannot start or end with a mine')
-        end
-
-        revenue += 10 * route.all_hexes.count { |hex| hex.assigned?(mine) }
-        revenue
-      end
-
-      def take_loan(entity, loan)
-        if entity.loans.size + 1 > maximum_loans(entity)
-          game_error("Cannot take more than #{maximum_loans(entity)} loans")
-        end
-        price = entity.share_price.price
-        name = entity.name
-        name += " (#{entity.owner.name})" if @round.is_a?(Round::Stock)
-        @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
-        @bank.spend(loan.amount, entity)
-        @stock_market.move_left(entity)
-        log_share_price(entity, price)
-        entity.loans << loan
-        @loans.delete(loan)
-      end
-
-      def can_take_loan?(entity)
-        entity.corporation? &&
-          entity.loans.size < maximum_loans(entity)
       end
     end
   end

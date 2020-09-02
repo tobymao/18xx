@@ -255,6 +255,8 @@ module View
         h(Game::Round::Auction, game: @game, user: @user)
       when Engine::Round::Auction
         h(Game::Round::Auction, game: @game, user: @user)
+      when Engine::Round::Merger
+        h(Game::Round::Merger, game: @game)
       end
     end
 
