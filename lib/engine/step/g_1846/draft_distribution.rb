@@ -90,14 +90,13 @@ module Engine
             "to #{@game.format_currency(new_value)}"
 
           @round.next_entity_index!
-          if company.name == 'Big 4'
-            return if new_value > 59
-          elsif company.name == 'Michigan Southern'
-            return if new_value > 79
-          elsif new_value.positive?
-            return true
+          case company.id
+          when 'Big 4'
+            return if new_value >= 60
+          when 'MS'
+            return if new_value >= 80
           else
-            return false
+            return new_value.positive?
           end
 
           @companies.clear
