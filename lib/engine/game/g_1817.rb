@@ -119,6 +119,13 @@ module Engine
         @stock_market.move(corporation, 0, 0, force: true)
       end
 
+      def find_share_price(price)
+        @stock_market
+          .market[0]
+          .reverse
+          .find { |sp| sp.price < price }
+      end
+
       def revenue_for(route)
         revenue = super
 

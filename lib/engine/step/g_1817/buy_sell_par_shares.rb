@@ -95,12 +95,7 @@ module Engine
           price = @bid.price
           par_price = price / 2
 
-          share_price = @game
-            .stock_market
-            .market[0]
-            .reverse
-            .find { |sp| sp.price < par_price }
-
+          share_price = @game.find_share_price(par_price)
           process_par(Action::Par.new(@bid.entity, corporation: @bid.corporation, share_price: share_price))
           corporation.spend(corporation.cash, entity)
 

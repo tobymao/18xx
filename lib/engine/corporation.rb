@@ -190,5 +190,19 @@ module Engine
     def share_percent
       @second_share&.percent || presidents_percent / 2
     end
+
+    def transfer(ownable_type, to)
+      ownables = send(ownable_type)
+      to_ownables = to.send(ownable_type)
+
+      ownables.each do |ownable|
+        ownable.owner = to
+        to_ownables << ownable
+      end
+
+      transferred = ownables.dup
+      ownables.clear
+      transferred
+    end
   end
 end

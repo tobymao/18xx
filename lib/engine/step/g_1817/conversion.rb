@@ -12,6 +12,7 @@ module Engine
 
           actions = []
           actions << 'convert' if !@tokens_needed && [2, 5].include?(entity.total_shares)
+          actions << 'merge' if mergeable(entity).any?
           actions << 'take_loan' if @tokens_needed && @game.can_take_loan?(entity)
           actions << 'pass' if actions.any?
           actions
@@ -28,7 +29,7 @@ module Engine
         end
 
         def description
-          'Convert Corporation'
+          'Convert or Merge Corporation'
         end
 
         def process_take_loan(action)
@@ -44,10 +45,6 @@ module Engine
           purchase_tokens(corporation) if @tokens_needed
 
           super
-        end
-
-        def log_pass(entity)
-          super unless entity.share_price.liquidation?
         end
 
         def process_convert(action)
@@ -73,6 +70,67 @@ module Engine
           purchase_tokens(corporation) unless @game.can_take_loan?(corporation)
         end
 
+        def process_merge(action)
+          corporation = action.entity
+          target = action.corporation
+
+          if !target || !mergeable(corporation).include?(target)
+            @game.game_error("Choose a corporation to merge with #{corporation.name}")
+          end
+
+          receiving = []
+
+          if target.cash.positive?
+            receiving << @game.format_currency(target.cash)
+            target.spend(target.cash, corporation)
+          end
+
+          companies = target.transfer(:companies, corporation).map(&:name)
+          receiving << "companies (#{companies.join(', ')})" if companies.any?
+
+          loans = target.transfer(:loans, corporation).size
+          receiving << "loans (#{loans})" if loans.positive?
+
+          trains = target.transfer(:trains, corporation).map(&:name)
+          receiving << "trains (#{trains})" if trains.any?
+
+          tokens = target.tokens.map do |token|
+            new_token = Engine::Token.new(corporation)
+            corporation.tokens << new_token
+
+            token.swap!(new_token)
+            token.city&.hex&.id
+          end
+          receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
+
+          share_price = @game.find_share_price(corporation.share_price.price + target.share_price.price)
+          price = share_price.price
+          @game.stock_market.move(corporation, *share_price.coordinates)
+
+          @log << "#{corporation.name} merges with #{target.name} "\
+            "at share price #{@game.format_currency(price)} receiving #{receiving.join(', ')}"
+
+          @game.convert(corporation)
+
+          owner = corporation.owner
+          target_owner = target.owner
+
+          if owner != target_owner
+            owner.spend(price, corporation)
+            share = corporation.shares[0]
+            @log << "#{owner.name} buys a #{share.percent}% share for #{@game.format_currency(price)} "\
+              "and receives the president's share"
+            @game.share_pool.buy_shares(target_owner, share.to_bundle, exchange: :free)
+          end
+
+          @game.reset_corporation(target)
+          @round.entities.delete(target)
+        end
+
+        def log_pass(entity)
+          super unless entity.share_price.liquidation?
+        end
+
         def liquidate!(corporation)
           @game.liquidate!(corporation)
           @log << "#{corporation.name} cannot purchase required tokens and liquidates"
@@ -90,6 +148,19 @@ module Engine
           @tokens_needed = nil
           pass!
         end
+
+        def mergeable(corporation)
+          return [] if !corporation.floated? || !corporation.share_price.normal_movement?
+
+          @game.corporations.select do |target|
+            target.floated? &&
+              target.share_price.normal_movement? &&
+              target != corporation &&
+              target.total_shares == corporation.total_shares
+          end
+        end
+
+        private
 
         def setup
           @tokens_needed = nil
