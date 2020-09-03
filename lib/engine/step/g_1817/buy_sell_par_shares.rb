@@ -121,9 +121,8 @@ module Engine
 
         def finalize_auction
           return if @bidders.size > 1
-          return if available_subsidiaries
 
-          par_corporation
+          par_corporation unless available_subsidiaries(@bid.entity).any?
         end
 
         def available_subsidiaries(entity)
