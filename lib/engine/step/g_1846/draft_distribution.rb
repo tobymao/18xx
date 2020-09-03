@@ -96,7 +96,7 @@ module Engine
           when 'MS'
             return if new_value >= 80
           else
-            return new_value.positive?
+            return if new_value.positive?
           end
 
           @companies.clear
