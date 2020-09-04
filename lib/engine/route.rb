@@ -16,6 +16,7 @@ module Engine
       @override = override
       @game = game
       @stops = []
+      @log = game.log
       restore_connections(connection_hexes) if connection_hexes
       update_stops
     end
@@ -153,30 +154,80 @@ module Engine
         return
       end
 
-      z = [1, 2, 3, 4, 5, 6, 7]
-      puts "z test = #{z.combination(7).to_a}"
-      puts "All visits = #{visits.combination(visits.size).to_a}"
+      if visits.empty?
+        @stops = []
+        return
+      end
+
+      # We never have to deal with the "visit" field of the
+      # trainbecause that was already taken care of while calculating
+      # the route.
+
+      # types_pay lists how many locations of each type can be hit. A
+      # 2+2 train (4 locations, at most 2 of which can be cities) looks
+      # like this:
+      #  [[["town"],                     2],
+      #   [["city", "town", "offboard"], 2]]
+      # Stops use the first available slot, so for each stop in this case
+      # we'll try to put it in a town slot if possible and then
+      # in a city/town/offboard slot.
+      types_pay = distance.map { |h| [h['nodes'], h['pay']] }.sort_by { |t, _| t.size }
 
       best_stops = []
       best_revenue = 0
       max_num_stops = [distance.sum{|h| h['pay']}, visits.size].min
-      puts "max_num_stops for #{@train.name} is #{max_num_stops}"
-      puts "visits is #{visits.map{|s| s.hex.name}}"
+      # puts "max_num_stops for #{@train.name} is #{max_num_stops}"
+      # puts "visits is #{visits.map{|s| s.hex.name}}"
       max_num_stops.downto(1) do |num_stops|
-        puts "Trying #{num_stops} stops"
-        puts "Possibilities are #{visits.combination(num_stops).to_a}"
-        visits.combination(num_stops).each do |stops|
-          # TODO: make sure this set of stops is legal
+        # puts "Trying #{num_stops} stops #{num_stops.class}"
+        visits.combination(num_stops.to_i).each do |stops|
+          # puts "Trying #{stops.map{|s| s.hex.name}}"
+
+          # Make sure this set of stops is legal
+
+          # 1) At least stop must have a token
+          if stops.none? { |stop| stop.tokened_by?(corporation) }
+            # puts "No token"
+            next
+          end
+
+          # 2) We can't ask for more revenue centers of a type than are allowed
+          ok = true
+          types_used = Array.new(types_pay.size, 0) # how many slots of each row are filled
+          stops.each do |stop|
+            stop_registered = false
+            types_pay.each_with_index do |pair, i|
+              if pair[0].include?(stop.type)
+                if types_used[i] < pair[1]
+                  types_used[i] += 1
+                  stop_registered = true # we found a place to put this stop
+                  break
+                end
+              end
+            end
+            if !stop_registered
+              ok = false
+              break
+            end
+          end
+          if !ok
+            # puts "Not enough resources"
+            next
+          end
+
           revenue = @game.revenue_for(self, stops)
-          puts "#{num_stops} stops: got #{revenue} for #{stops.map{|s| s.hex.name}}"
+          # puts "#{num_stops} stops: got #{revenue} for #{stops.map{|s| s.hex.name}}"
           if revenue > best_revenue
             best_stops = stops
             best_revenue = revenue 
           end
         end
+
+        # We assume that no stop collection with m < n stops could be
+        # better than a stop collection with n stops.
         break if best_revenue > 0
       end
-      puts "smart code found #{best_revenue} with #{best_stops.map{|s| s.hex.name}}"
+      # puts "new code found #{best_revenue} with #{best_stops.map{|s| s.hex.name}}"
 
       ### Original code below
 
@@ -191,17 +242,10 @@ module Engine
         included << token if token
       end
 
-      # "type" below is city / offboard / town / etc.
-
       # all the stops we could possibly add
       options_by_type = (visits - included).group_by(&:type)
       # hash of type to stops that have already been included
       included_by_type = included.group_by(&:type)
-
-      # e.g. [(["city", "offboard"], 4), ["town"], 99]
-      # We never have to deal with the "visit" field because that was
-      # already taken care of while calculating the route
-      types_pay = distance.map { |h| [h['nodes'], h['pay']] }.sort_by { |t, _| t.size }
 
       @stops = included + types_pay.flat_map do |types, pay|
         # e.g, types = ["city", "offboard"], pay = 4
@@ -223,7 +267,13 @@ module Engine
         # And then return the nodes themselves.
         node_revenue.map(&:first)
       end
-      puts "dumb code found #{@game.revenue_for(self, @stops)} with #{@stops.map{|s| s.hex.name}}"
+      # puts "old code found #{@game.revenue_for(self, @stops)} with #{@stops.map{|s| s.hex.name}}"
+      revenue = @game.revenue_for(self, @stops)
+      if best_revenue != revenue
+        @log << "Undercounted revenue, should be #{best_revenue} for #{best_stops.map{|s| s.hex.name}}, was #{revenue} for #{@stops.map{|s| s.hex.name}}"
+        puts "best route was #{best_revenue} with #{best_stops.map{|s| s.hex.name}}"
+        puts "old code gave revenue #{revenue} with #{@stops.map{|s| s.hex.name}}"
+      end
     end
 
     def hexes
