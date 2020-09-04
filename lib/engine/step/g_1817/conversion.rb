@@ -11,7 +11,7 @@ module Engine
           return [] if !entity.corporation? || entity != current_entity
 
           actions = []
-          actions << 'convert' if !@tokens_needed && [2, 5].include?(entity.total_shares)
+          actions << 'convert' if [2, 5].include?(entity.total_shares)
           actions << 'merge' if mergeable(entity).any?
           actions << 'take_loan' if @tokens_needed && @game.can_take_loan?(entity)
           actions << 'pass' if actions.any?
@@ -66,8 +66,8 @@ module Engine
             end
 
           liquidate!(corporation) if needs_money?(corporation) && !@game.can_take_loan?(corporation)
-
           purchase_tokens(corporation) unless @game.can_take_loan?(corporation)
+          @round.converted = corporation
         end
 
         def process_merge(action)
@@ -125,6 +125,7 @@ module Engine
 
           @game.reset_corporation(target)
           @round.entities.delete(target)
+          @round.converted = corporation
         end
 
         def log_pass(entity)
@@ -164,6 +165,12 @@ module Engine
 
         def setup
           @tokens_needed = nil
+        end
+
+        def round_state
+          {
+            converted: nil,
+          }
         end
 
         def needs_money?(corporation)

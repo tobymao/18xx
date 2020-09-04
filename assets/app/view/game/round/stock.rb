@@ -2,6 +2,7 @@
 
 require 'view/game/actionable'
 require 'view/game/bank'
+require 'view/game/buy_sell_shares'
 require 'view/game/company'
 require 'view/game/corporation'
 require 'view/game/par'
@@ -69,65 +70,9 @@ module View
 
         def render_input
           h('div.margined_bottom', { style: { width: '20rem' } }, [
-            @selected_corporation.ipoed ? render_ipoed : render_pre_ipo,
+            @selected_corporation.ipoed ? h(BuySellShares, corporation: @selected_corporation) : render_pre_ipo,
             render_loan,
           ].compact)
-        end
-
-        def buy_share(entity, share)
-          process_action(Engine::Action::BuyShares.new(entity, shares: share))
-        end
-
-        def render_ipoed
-          ipo_share = @selected_corporation.shares.first
-          pool_share = @game.share_pool.shares_by_corporation[@selected_corporation]&.first
-
-          buy_ipo = lambda do
-            buy_share(@current_entity, ipo_share)
-          end
-
-          buy_pool = lambda do
-            buy_share(@current_entity, pool_share)
-          end
-
-          children = []
-          if @current_actions.include?('buy_shares')
-            if @step.can_buy?(@current_entity, ipo_share)
-              children << h(
-                :button,
-                { on: { click: buy_ipo } },
-                "Buy #{@game.class::IPO_NAME} Share"
-              )
-            end
-
-            if @step.can_buy?(@current_entity, pool_share)
-              children << h(:button, { on: { click: buy_pool } }, 'Buy Market Share')
-            end
-          end
-
-          # Allow privates to be exchanged for shares
-          @game.companies.each do |company|
-            company.abilities(:exchange) do |ability|
-              next unless ability.corporation == @selected_corporation.name
-              next unless company.owner == @current_entity
-
-              prefix = "Exchange #{company.sym} for "
-
-              if ability.from.include?(:ipo) && @step.can_gain?(company.owner, ipo_share, exchange: true)
-                children << h(:button, { on: { click: -> { buy_share(company, ipo_share) } } },
-                              "#{prefix} an #{@game.class::IPO_NAME} share")
-              end
-
-              if ability.from.include?(:market) && @step.can_gain?(company.owner, pool_share, exchange: true)
-                children << h(:button, { on: { click: -> { buy_share(company, pool_share) } } },
-                              "#{prefix} a Market share")
-              end
-            end
-          end
-
-          children << h(SellShares, player: @current_entity)
-
-          h(:div, children)
         end
 
         def render_pre_ipo

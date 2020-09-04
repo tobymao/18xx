@@ -2,6 +2,7 @@
 
 require 'view/game/actionable'
 require 'view/game/corporation'
+require 'view/game/sell_shares'
 
 module View
   module Game
@@ -12,35 +13,43 @@ module View
         needs :selected_corporation, default: nil, store: true
 
         def render
-          @corporation = @game.current_entity
-          @step = @game.round.active_step
-          actions = @game.round.actions_for(@corporation)
-
+          entity = @game.current_entity
+          @round = @game.round
+          step = @round.active_step
+          actions = @round.actions_for(entity)
           children = []
-          children << render_convert if actions.include?('convert')
-          children << render_loan if actions.include?('take_loan')
-          children << render_merge if actions.include?('merge')
-          children << h(Corporation, corporation: @corporation)
 
-          @step.mergeable(@corporation).each do |target|
+          if (%w[buy_shares sell_shares] & actions).any?
+            corporation = @round.converted
+            children << h(BuySellShares, corporation: corporation)
+            children << h(Corporation, corporation: corporation)
+            return h(:div, children)
+          end
+
+          children << render_convert(entity) if actions.include?('convert')
+          children << render_loan(entity) if actions.include?('take_loan')
+          children << render_merge(entity) if actions.include?('merge')
+          children << h(Corporation, corporation: entity)
+
+          step.mergeable(entity).each do |target|
             children << h(Corporation, corporation: target)
           end
 
           h(:div, children)
         end
 
-        def render_convert
+        def render_convert(corporation)
           h(
             :button,
-            { on: { click: -> { process_action(Engine::Action::Convert.new(@corporation)) } } },
+            { on: { click: -> { process_action(Engine::Action::Convert.new(corporation)) } } },
             'Convert',
           )
         end
 
-        def render_merge
+        def render_merge(corporation)
           merge = lambda do
             process_action(Engine::Action::Merge.new(
-              @corporation,
+              corporation,
               corporation: @selected_corporation,
             ))
           end
@@ -48,10 +57,10 @@ module View
           h(:button, { on: { click: merge } }, 'Merge')
         end
 
-        def render_loan
+        def render_loan(corporation)
           take_loan = lambda do
             process_action(Engine::Action::TakeLoan.new(
-              @corporation,
+              corporation,
               loan: @game.loans[0],
             ))
           end

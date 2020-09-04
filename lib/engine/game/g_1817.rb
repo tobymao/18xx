@@ -205,8 +205,9 @@ module Engine
           when Round::Operating
             if @round.round_num < @operating_rounds
               or_round_finished
-              @log << "-- Mergers and Acquisition Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
+              @log << "-- Merger and Conversion Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
               Round::G1817::Merger.new(self, [
+                Step::G1817::PostConversion,
                 Step::G1817::Conversion,
               ])
             else
