@@ -4,7 +4,7 @@ require_relative 'game_error'
 
 module Engine
   class Route
-    attr_reader :last_node, :phase, :train, :routes
+    attr_reader :last_node, :phase, :train, :routes, :stops
 
     def initialize(game, phase, train, connection_hexes: [], routes: [], override: nil)
       @connections = []
@@ -15,7 +15,9 @@ module Engine
       @routes = routes
       @override = override
       @game = game
+      @stops = []
       restore_connections(connection_hexes) if connection_hexes
+      update_stops
     end
 
     def restore_connections(connection_hexes)
@@ -41,11 +43,13 @@ module Engine
           @connections << { left: middle, right: right, connection: b }
         end
       end
+      update_stops
     end
 
     def reset!
       @connections.clear
       @last_node = nil
+      update_stops
     end
 
     def head
@@ -126,6 +130,7 @@ module Engine
       else
         @last_node = node
       end
+      update_stops
     end
 
     def paths
@@ -140,10 +145,13 @@ module Engine
       @connections.flat_map { |c| [c[:left], c[:right]] }.uniq
     end
 
-    def stops
+    def update_stops
       visits = visited_stops
       distance = @train.distance
-      return visits if distance.is_a?(Numeric)
+      if distance.is_a?(Numeric)
+        @stops = visits
+        return
+      end
 
       # always include the ends of a route because the user explicitly asked for it
       included = [visits[0], visits[-1]]
@@ -161,7 +169,7 @@ module Engine
 
       types_pay = distance.map { |h| [h['nodes'], h['pay']] }.sort_by { |t, _| t.size }
 
-      included + types_pay.flat_map do |types, pay|
+      @stops = included + types_pay.flat_map do |types, pay|
         pay -= types.sum { |type| included_by_type[type]&.size || 0 }
 
         node_revenue = types.flat_map do |type|
