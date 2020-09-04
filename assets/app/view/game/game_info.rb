@@ -149,8 +149,6 @@ module View
             end
           end
 
-          puts rust_schedule
-          puts obsolete_schedule
           upcoming_train_content = []
           upcoming_train_content << h(:td, names_to_prices.keys.join(', '))
           upcoming_train_content << h(
