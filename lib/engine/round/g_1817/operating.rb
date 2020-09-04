@@ -14,6 +14,10 @@ module Engine
           @paid_loans = {}
         end
 
+        def select_entities
+          super.reject { |c| c.share_price.liquidation? }
+        end
+
         def after_process(action)
           # Keep track of last_player for Cash Crisis
           entity = action.entity
@@ -46,7 +50,7 @@ module Engine
           end
 
           owner = entity.owner
-          @game.stock_market.move(entity, 0, 0, force: true)
+          @game.liquidate!(entity)
 
           transferred = ''
 

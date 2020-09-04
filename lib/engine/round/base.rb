@@ -29,11 +29,11 @@ module Engine
         @steps = (DEFAULT_STEPS + steps).map do |step, step_opts|
           step_opts ||= {}
           step = step.new(@game, self, **step_opts)
-          step.setup
           step.round_state.each do |key, value|
             singleton_class.class_eval { attr_accessor key }
             send("#{key}=", value)
           end
+          step.setup
           step
         end
       end

@@ -388,6 +388,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "pink"
     },
     {
@@ -400,6 +401,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "gold"
     },
     {
@@ -412,6 +414,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "orange"
     },
     {
@@ -424,6 +427,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "black"
     },
     {
@@ -436,6 +440,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "red"
     },
     {
@@ -448,6 +453,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "brown"
     },
     {
@@ -460,6 +466,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "green"
     },
     {
@@ -472,6 +479,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "violet"
     },
     {
@@ -484,6 +492,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "lightBlue"
     },
     {
@@ -496,6 +505,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "yellow",
       "text_color": "black"
     },
@@ -509,6 +519,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "turquoise"
     },
     {
@@ -521,6 +532,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "white",
       "text_color": "black"
     },
@@ -534,6 +546,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "brightGreen"
     },
     {
@@ -546,6 +559,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "lime"
     },
     {
@@ -558,6 +572,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "lightBrown"
     },
     {
@@ -570,6 +585,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "blue"
     },
     {
@@ -582,6 +598,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "natural",
       "text_color": "black"
     },
@@ -595,6 +612,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "navy"
     },
     {
@@ -607,6 +625,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "lavender"
     },
     {
@@ -619,6 +638,7 @@ module Engine
       "tokens": [
         0
       ],
+      "always_market_price": true,
       "color": "lavender"
     }
   ],

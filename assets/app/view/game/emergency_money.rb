@@ -19,7 +19,7 @@ module View
 
           corp = [h(Corporation, corporation: corporation)]
 
-          corp << h(SellShares, player: player) if @selected_corporation == corporation
+          corp << h(SellShares, player: player, corporation: corporation) if @selected_corporation == corporation
 
           children << h(:div, props, corp)
         end

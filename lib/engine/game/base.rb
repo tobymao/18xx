@@ -734,6 +734,23 @@ module Engine
         @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
       end
 
+      def reset_corporation(corporation)
+        @_shares.reject! do |_, share|
+          next if share.corporation != corporation
+
+          share.owner.shares_by_corporation[corporation].clear
+
+          true
+        end
+
+        corporation.share_price.corporations.delete(corporation)
+        corporation = init_corporations(@stock_market).find { |c| c.id == corporation.id }
+
+        @corporations.map! { |c| c.id == corporation.id ? corporation : c }
+        @_corporations[corporation.id] = corporation
+        corporation.shares.each { |share| @_shares[share.id] = share }
+      end
+
       private
 
       def init_bank

@@ -8,10 +8,10 @@ module View
       include Actionable
 
       needs :player
-      needs :selected_corporation, default: nil, store: true
+      needs :corporation
 
       def render
-        buttons = @game.sellable_bundles(@player, @selected_corporation).map do |bundle|
+        buttons = @game.sellable_bundles(@player, @corporation).map do |bundle|
           sell = lambda do
             process_action(Engine::Action::SellShares.new(
               @player,
