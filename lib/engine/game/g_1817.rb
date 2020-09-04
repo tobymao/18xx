@@ -126,10 +126,9 @@ module Engine
           .find { |sp| sp.price < price }
       end
 
-      def revenue_for(route)
+      def revenue_for(route, stops)
         revenue = super
 
-        stops = route.stops
         revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
 
         mine = 'mine'

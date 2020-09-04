@@ -184,10 +184,9 @@ module Engine
         end
       end
 
-      def revenue_for(route)
+      def revenue_for(route, stops)
         revenue = super
 
-        stops = route.stops
         east = stops.find { |stop| stop.groups.include?('E') }
         west = stops.find { |stop| stop.tile.label&.to_s == 'W' }
 

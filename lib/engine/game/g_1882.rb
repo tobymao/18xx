@@ -178,10 +178,9 @@ module Engine
         @graph.clear_graph_for_all
       end
 
-      def revenue_for(route)
+      def revenue_for(route, stops)
         revenue = super
 
-        stops = route.stops
         # East offboards I1, B2
         east = stops.find { |stop| %w[I1 B2].include?(stop.hex.name) }
         # Hudson B12

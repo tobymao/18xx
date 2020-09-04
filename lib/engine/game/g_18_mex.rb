@@ -68,11 +68,11 @@ module Engine
         super
       end
 
-      def revenue_for(route)
+      def revenue_for(route, stops)
         # Merida should not be possible to pass-through
         ensure_termini_not_passed_through(route, %w[Q14])
 
-        adjust_revenue_for_4d_train(route, super)
+        adjust_revenue_for_4d_train(route, stops, super)
       end
 
       def event_minors_closed!

@@ -87,14 +87,14 @@ module Engine
         ])
       end
 
-      def revenue_for(route)
+      def revenue_for(route, stops)
         # Mobile and Nashville should not be possible to pass through
         ensure_termini_not_passed_through(route, %w[A4 Q2])
 
-        revenue = adjust_revenue_for_4d_train(route, super)
+        revenue = adjust_revenue_for_4d_train(route, stops, super)
 
         route.corporation.abilities(:hexes_bonus) do |ability|
-          revenue += route.stops.sum { |stop| ability.hexes.include?(stop.hex.id) ? ability.amount : 0 }
+          revenue += stops.sum { |stop| ability.hexes.include?(stop.hex.id) ? ability.amount : 0 }
         end
 
         revenue
