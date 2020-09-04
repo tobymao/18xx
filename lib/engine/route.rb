@@ -153,6 +153,33 @@ module Engine
         return
       end
 
+      z = [1, 2, 3, 4, 5, 6, 7]
+      puts "z test = #{z.combination(7).to_a}"
+      puts "All visits = #{visits.combination(visits.size).to_a}"
+
+      best_stops = []
+      best_revenue = 0
+      max_num_stops = [distance.sum{|h| h['pay']}, visits.size].min
+      puts "max_num_stops for #{@train.name} is #{max_num_stops}"
+      puts "visits is #{visits.map{|s| s.hex.name}}"
+      max_num_stops.downto(1) do |num_stops|
+        puts "Trying #{num_stops} stops"
+        puts "Possibilities are #{visits.combination(num_stops).to_a}"
+        visits.combination(num_stops).each do |stops|
+          # TODO: make sure this set of stops is legal
+          revenue = @game.revenue_for(self, stops)
+          puts "#{num_stops} stops: got #{revenue} for #{stops.map{|s| s.hex.name}}"
+          if revenue > best_revenue
+            best_stops = stops
+            best_revenue = revenue 
+          end
+        end
+        break if best_revenue > 0
+      end
+      puts "smart code found #{best_revenue} with #{best_stops.map{|s| s.hex.name}}"
+
+      ### Original code below
+
       # always include the ends of a route because the user explicitly asked for it
       included = [visits[0], visits[-1]]
 
@@ -164,23 +191,39 @@ module Engine
         included << token if token
       end
 
+      # "type" below is city / offboard / town / etc.
+
+      # all the stops we could possibly add
       options_by_type = (visits - included).group_by(&:type)
+      # hash of type to stops that have already been included
       included_by_type = included.group_by(&:type)
 
+      # e.g. [(["city", "offboard"], 4), ["town"], 99]
+      # We never have to deal with the "visit" field because that was
+      # already taken care of while calculating the route
       types_pay = distance.map { |h| [h['nodes'], h['pay']] }.sort_by { |t, _| t.size }
 
       @stops = included + types_pay.flat_map do |types, pay|
+        # e.g, types = ["city", "offboard"], pay = 4
+        # The number we can take of these is reduced by the number we've already taken
         pay -= types.sum { |type| included_by_type[type]&.size || 0 }
 
+        # For each type
         node_revenue = types.flat_map do |type|
+          # nodes are all the nodes of this type we could add
           next [] unless (nodes = options_by_type[type])
 
+          # For each, output [node, revenue from node]
           nodes.map { |node| [node, node.route_revenue(@phase, @train)] }
         end.sort_by(&:last).last(pay)
+        # Then we sort all of those by revenue and take the top 'pay'
 
+        # Now for each of those we remove them from further consideration
         node_revenue.each { |node, _| options_by_type[node.type].delete(node) }
+        # And then return the nodes themselves.
         node_revenue.map(&:first)
       end
+      puts "dumb code found #{@game.revenue_for(self, @stops)} with #{@stops.map{|s| s.hex.name}}"
     end
 
     def hexes
