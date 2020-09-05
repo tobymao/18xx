@@ -7,10 +7,10 @@ module Engine
     def self.connect!(hex)
       connections = {}
 
-      node_paths, paths = hex.tile.paths.partition { |p| p.nodes.any? }
+      node_paths, paths = hex.tile.paths.partition(&:node?)
 
       paths.each do |path|
-        path.walk { |p| node_paths << p if p.nodes.any? }
+        path.walk { |p| node_paths << p if p.node? }
       end
 
       node_paths.uniq.each do |node_path|
@@ -19,14 +19,13 @@ module Engine
           hex = path.hex
           connection = connection.branch!(path)
           next if connection.paths.include?(path)
-          next if connection.nodes.include?(path.nodes[0])
-          next if connection.nodes.include?(path.nodes[1])
+          next if (connection.nodes & path.nodes).any?
           next if connection.paths.any? { |p| p.hex == hex && (p.exits & path.exits).any? }
 
           connections[connection] = true
           connection.add_path(path)
 
-          if path.exits.none?
+          if path.exits.empty?
             hex_connections = hex.connections[:internal]
             hex_connections << connection unless hex_connections.include?(connection)
           else
@@ -71,7 +70,7 @@ module Engine
           node_path = nil
 
           @paths.each do |path|
-            node_path = path if path.nodes.any?
+            node_path = path if path.node?
             path_map[path] = true
           end
 
@@ -96,7 +95,7 @@ module Engine
     end
 
     def nodes
-      @nodes ||= @paths.map(&:nodes).flatten
+      @nodes ||= @paths.flat_map(&:nodes)
     end
 
     def hexes

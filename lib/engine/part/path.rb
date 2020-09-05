@@ -63,6 +63,10 @@ module Engine
         true
       end
 
+      def node?
+        @_node ||= @nodes.any?
+      end
+
       def exits
         @exits ||= @edges.map(&:num)
       end
