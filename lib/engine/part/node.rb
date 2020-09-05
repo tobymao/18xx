@@ -43,17 +43,17 @@ module Engine
         paths.each do |node_path|
           node_path.walk(visited: visited_paths, on: on) do |path, vp|
             yield path
-            # FIXME: for intra-node paths
-            next unless (next_node = path.nodes[0])
-            next if next_node == self
-            next if corporation && next_node.blocks?(corporation)
+            path.nodes.each do |next_node|
+              next if next_node == self
+              next if corporation && next_node.blocks?(corporation)
 
-            next_node.walk(
-              visited: visited,
-              on: on,
-              corporation: corporation,
-              visited_paths: visited_paths.merge(vp),
-            ) { |p| yield p }
+              next_node.walk(
+                visited: visited,
+                on: on,
+                corporation: corporation,
+                visited_paths: visited_paths.merge(vp),
+              ) { |p| yield p }
+            end
           end
         end
       end
