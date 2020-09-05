@@ -3,6 +3,8 @@
 See [`TILES.md`](/TILES.md) for some details and useful routes for tile
 development.
 
+See [Windows Prerequisites](#windows) to get setup on windows
+
 ### Droplet configuration
 
 If configuring the droplet from scratch, these are the requirements:
@@ -86,3 +88,22 @@ Run `docker-compose exec rack rake stackprof[spec/fixtures/18_chesapeake/1277.js
 stackprof --d3-flamegraph stackprof.dump >stackprof.html
 stackprof stackprof.dump
 ```
+
+### Windows
+
+1. [Install Docker Desktop on Windows](https://docs.docker.com/docker-for-windows/install/)
+2. [Install Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+3. [Update to WSL2](https://docs.microsoft.com/en-us/windows/wsl/install-win10#update-to-wsl-2)
+4. [Get set up](https://code.visualstudio.com/blogs/2020/03/02/docker-in-wsl2#_getting-set-up) with Ubuntu, Docker Desktop, Visual Studio Code and WSL2
+
+Something to be clear on Step 4: Click the green item in the bottom left of your status bar after following the above instructions:
+
+![Remote - WSL taskbar](https://code.visualstudio.com/assets/docs/remote/wsl-tutorial/remote-status-bar.png)
+
+This will open the `Command Palette`, choose `Remote-WSL: New Window using Distro...` and then choose your Ubuntu distro.
+
+5. Open your terminal in your remote VS Code window that opens
+6. You will be in your home directory. Navigate to where you would like to clone the repo, and do your `git clone`
+7. Change to your cloned directory and execute `code .`
+
+Visual Studio Code will now have the project open, and you can continue with the [standard directions](#docker).
