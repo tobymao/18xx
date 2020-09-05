@@ -102,7 +102,9 @@ module Engine
 
       @game.trains.each do |t|
         next if t.rusted
-        next unless t.rusts_on == train.sym || (t.obsolete_on == train.sym && @depot.discarded.include?(t))
+
+        should_rust = t.rusts_on == train.sym || (t.obsolete_on == train.sym && @depot.discarded.include?(t))
+        next unless should_rust
 
         rusted_trains << t.name
         entity.rusted_self = true if entity && entity == t.owner
