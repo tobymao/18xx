@@ -10,6 +10,7 @@ module Engine
       @index = 0
       @phases = phases
       @game = game
+      @depot = @game.depot
       @log = @game.log
       setup_phase!
     end
@@ -100,7 +101,8 @@ module Engine
       end
 
       @game.trains.each do |t|
-        next if t.rusted || t.rusts_on != train.sym
+        next if t.rusted
+        next unless t.rusts_on == train.sym || (t.obsolete_on == train.sym && @depot.discarded.include?(t))
 
         rusted_trains << t.name
         entity.rusted_self = true if entity && entity == t.owner
