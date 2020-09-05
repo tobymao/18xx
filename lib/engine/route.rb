@@ -15,34 +15,8 @@ module Engine
       @routes = routes
       @override = override
       @game = game
-      @stops = []
-      restore_connections(connection_hexes) if connection_hexes
-    end
-
-    def restore_connections(connection_hexes)
-      possibilities = connection_hexes.map do |hexes|
-        hex_ids = hexes.map(&:id)
-        hexes[0].all_connections.select { |c| c.complete? && c.matches?(hex_ids) }
-      end
-
-      if possibilities.one?
-        connection = possibilities[0].find do |conn|
-          conn.nodes.any? { |node| node.tokened_by?(corporation) }
-        end
-        left, right = connection&.nodes
-        return if !left || !right
-
-        @connections << { left: left, right: right, connection: connection }
-      else
-        possibilities.each_cons(2).with_index do |pair, index|
-          a, b, left, right, middle = find_connections(*pair)
-          return @connections.clear if !left&.hex || !right&.hex || !middle&.hex
-
-          @connections << { left: left, right: middle, connection: a } if index.zero?
-          @connections << { left: middle, right: right, connection: b }
-        end
-      end
       @stops = nil
+      restore_connections(connection_hexes) if connection_hexes
     end
 
     def reset!
@@ -146,61 +120,6 @@ module Engine
 
     def stops
       @stops ||= compute_stops
-    end
-
-    def compute_stops
-      visits = visited_stops
-      distance = @train.distance
-      return visits if distance.is_a?(Numeric)
-
-      return [] if visits.empty?
-
-      # types_pay lists how many locations of each type can be hit. A
-      # 2+2 train (4 locations, at most 2 of which can be cities) looks
-      # like this:
-      #  [[["town"],                     2],
-      #   [["city", "town", "offboard"], 2]]
-      # Stops use the first available slot, so for each stop in this case
-      # we'll try to put it in a town slot if possible and then
-      # in a city/town/offboard slot.
-      types_pay = distance.map { |h| [h['nodes'], h['pay']] }.sort_by { |t, _| t.size }
-
-      best_stops = []
-      best_revenue = 0
-      max_num_stops = [distance.sum { |h| h['pay'] }, visits.size].min
-      max_num_stops.downto(1) do |num_stops|
-        visits.combination(num_stops.to_i).each do |stops| # to_i to work around Opal bug
-          # Make sure this set of stops is legal
-          # 1) At least one stop must have a token
-          next if stops.none? { |stop| stop.tokened_by?(corporation) }
-
-          # 2) We can't ask for more revenue centers of a type than are allowed
-          ok = true
-          types_used = Array.new(types_pay.size, 0) # how many slots of each row are filled
-          stops.each do |stop|
-            row = types_pay.each_index.find(-> { ok = false }) do |i|
-              types_pay[i][0].include?(stop.type) && types_used[i] < types_pay[i][1]
-            end
-            break unless ok
-
-            types_used[row] += 1
-          end
-
-          next unless ok
-
-          revenue = @game.revenue_for(self, stops)
-          if revenue > best_revenue
-            best_stops = stops
-            best_revenue = revenue
-          end
-        end
-
-        # We assume that no stop collection with m < n stops could be
-        # better than a stop collection with n stops, so if we found
-        # anything usable with this number of stops we return it
-        # immediately.
-        return best_stops if best_revenue.positive?
-      end
     end
 
     def hexes
@@ -329,6 +248,88 @@ module Engine
       end
 
       []
+    end
+
+    private
+
+    def restore_connections(connection_hexes)
+      possibilities = connection_hexes.map do |hexes|
+        hex_ids = hexes.map(&:id)
+        hexes[0].all_connections.select { |c| c.complete? && c.matches?(hex_ids) }
+      end
+
+      if possibilities.one?
+        connection = possibilities[0].find do |conn|
+          conn.nodes.any? { |node| node.tokened_by?(corporation) }
+        end
+        left, right = connection&.nodes
+        return if !left || !right
+
+        @connections << { left: left, right: right, connection: connection }
+      else
+        possibilities.each_cons(2).with_index do |pair, index|
+          a, b, left, right, middle = find_connections(*pair)
+          return @connections.clear if !left&.hex || !right&.hex || !middle&.hex
+
+          @connections << { left: left, right: middle, connection: a } if index.zero?
+          @connections << { left: middle, right: right, connection: b }
+        end
+      end
+    end
+
+    def compute_stops
+      visits = visited_stops
+      distance = @train.distance
+      return visits if distance.is_a?(Numeric)
+
+      return [] if visits.empty?
+
+      # types_pay lists how many locations of each type can be hit. A
+      # 2+2 train (4 locations, at most 2 of which can be cities) looks
+      # like this:
+      #  [[["town"],                     2],
+      #   [["city", "town", "offboard"], 2]]
+      # Stops use the first available slot, so for each stop in this case
+      # we'll try to put it in a town slot if possible and then
+      # in a city/town/offboard slot.
+      types_pay = distance.map { |h| [h['nodes'], h['pay']] }.sort_by { |t, _| t.size }
+
+      best_stops = []
+      best_revenue = 0
+      max_num_stops = [distance.sum { |h| h['pay'] }, visits.size].min
+      max_num_stops.downto(1) do |num_stops|
+        visits.combination(num_stops.to_i).each do |stops| # to_i to work around Opal bug
+          # Make sure this set of stops is legal
+          # 1) At least one stop must have a token
+          next if stops.none? { |stop| stop.tokened_by?(corporation) }
+
+          # 2) We can't ask for more revenue centers of a type than are allowed
+          ok = true
+          types_used = Array.new(types_pay.size, 0) # how many slots of each row are filled
+          stops.each do |stop|
+            row = types_pay.each_index.find(-> { ok = false }) do |i|
+              types_pay[i][0].include?(stop.type) && types_used[i] < types_pay[i][1]
+            end
+            break unless ok
+
+            types_used[row] += 1
+          end
+
+          next unless ok
+
+          revenue = @game.revenue_for(self, stops)
+          if revenue > best_revenue
+            best_stops = stops
+            best_revenue = revenue
+          end
+        end
+
+        # We assume that no stop collection with m < n stops could be
+        # better than a stop collection with n stops, so if we found
+        # anything usable with this number of stops we return it
+        # immediately.
+        return best_stops if best_revenue.positive?
+      end
     end
   end
 end
