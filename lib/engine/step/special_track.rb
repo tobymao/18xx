@@ -29,6 +29,10 @@ module Engine
       end
 
       def process_lay_tile(action)
+        unless allowed_to_lay_tile?(action.entity)
+          @game.game_error("#{@game.current_entity.name} does not own #{action.entity.name}")
+        end
+
         lay_tile(action)
         check_connect(action)
         ability(action.entity).use!
@@ -77,6 +81,19 @@ module Engine
 
       def setup
         @company = nil
+      end
+
+      private
+
+      def allowed_to_lay_tile?(entity)
+        # If corporation owns the company, this is allowed
+        return true if @game.current_entity.corporation? && entity.owner == @game.current_entity
+
+        # This is if tile lay is a continuation of a special tile lay
+        return true if @game.current_entity == entity
+
+        # Player owned company can be used
+        ability(entity).owner_type == :player && entity.owner == @game.current_entity.player
       end
     end
   end
