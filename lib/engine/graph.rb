@@ -120,8 +120,7 @@ module Engine
 
         node.walk(visited: visited, corporation: corporation) do |path|
           paths[path] = true
-          # FIXME: for intra-node paths
-          if (p_node = path.nodes[0])
+          path.nodes.each do |p_node|
             nodes[p_node] = true
             yield p_node if block_given?
             local_nodes[p_node] = true
