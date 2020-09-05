@@ -589,8 +589,8 @@ module Engine
         @log << "-- Game over: #{scores.join(', ')} --"
       end
 
-      def revenue_for(route)
-        route.stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+      def revenue_for(route, stops)
+        stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
       end
 
       def routes_revenue(routes)

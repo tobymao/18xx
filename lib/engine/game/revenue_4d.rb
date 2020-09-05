@@ -10,10 +10,10 @@
 # This is used in any games that uses 4D trains, e.g. 18AL.
 #
 module Revenue4D
-  def adjust_revenue_for_4d_train(route, revenue)
+  def adjust_revenue_for_4d_train(route, stops, revenue)
     return revenue unless route.train.name == '4D'
 
-    2 * revenue - route.stops
+    2 * revenue - stops
       .select { |stop| stop.hex.tile.towns.any? }
       .sum { |stop| stop.route_revenue(route.phase, route.train) }
   end

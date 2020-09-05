@@ -35,10 +35,9 @@ module Engine
         ], round_num: round_num)
       end
 
-      def revenue_for(route)
+      def revenue_for(route, stops)
         revenue = super
 
-        stops = route.stops
         port = stops.find { |stop| stop.groups.include?('port') }
 
         if port

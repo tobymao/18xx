@@ -130,14 +130,14 @@ module Engine
         end
       end
 
-      def revenue_for(route)
+      def revenue_for(route, stops)
         revenue = super
 
         # Diesels double normal revenue
         revenue *= 2 if route.train.name.end_with?('D')
 
         route.corporation.abilities(:hexes_bonus) do |ability|
-          revenue += route.stops.sum { |stop| ability.hexes.include?(stop.hex.id) ? ability.amount : 0 }
+          revenue += stops.sum { |stop| ability.hexes.include?(stop.hex.id) ? ability.amount : 0 }
         end
 
         revenue
