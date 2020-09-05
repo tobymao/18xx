@@ -21,7 +21,7 @@ module Engine
       load_from_json(Config::Game::G1882::JSON)
 
       GAME_LOCATION = 'Assiniboia, Canada'
-      GAME_RULES_URL = 'https://boardgamegeek.com/thread/2389239/article/35386441#35386441'
+      GAME_RULES_URL = 'https://boardgamegeek.com/filepage/206629/1882-rules'
       GAME_DESIGNER = 'Marc Voyer'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1882'
