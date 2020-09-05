@@ -194,7 +194,7 @@ module Engine
 
         revenue += 30 if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
 
-        steam = steam_boat.id
+        steam = steamboat.id
 
         if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
           revenue += 20 * port.tile.icons.select { |icon| icon.name == 'port' }.size
@@ -217,8 +217,8 @@ module Engine
         @meat_packing ||= company_by_id('MPC')
       end
 
-      def steam_boat
-        @steam_boat ||= company_by_id('SC')
+      def steamboat
+        @steamboat ||= company_by_id('SC')
       end
 
       def michigan_central

@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 # rubocop:disable all
+
+require_relative 'models'
+
 Dir['./models/**/*.rb'].sort.each { |file| require file }
 Sequel.extension :pg_json_ops
 require_relative 'lib/engine'
@@ -33,6 +36,14 @@ def repair(game, original_actions, actions, broken_action)
     # Move token is now place token.
     broken_action['type'] = 'place_token'
     return [broken_action]
+  elsif game.active_step.is_a?(Engine::Step::G1889::SpecialTrack)
+    # laying track for Ehime Railway didn't always block, now it needs an
+    # explicit pass
+    if broken_action['entity'] != 'ER'
+      pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+      actions.insert(action_idx, pass)
+      return
+    end
   elsif broken_action['type'] == 'pass'
     if game.active_step.is_a?(Engine::Step::Route) || game.active_step.is_a?(Engine::Step::BuyTrain)
       # Lay token sometimes needed pass when it shouldn't have
@@ -290,7 +301,7 @@ def migrate_db_actions(data)
   rescue Exception => e
     puts 'Something went wrong', e
     puts "Pinning #{data.id}"
-    pin='00872c2d'
+    pin = '056298f6'
     data.settings['pin']=pin
     data.save
   end

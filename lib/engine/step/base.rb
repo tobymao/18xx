@@ -89,6 +89,11 @@ module Engine
         @acted = false
       end
 
+      # see assets/app/view/game/help.rb
+      def help
+        ''
+      end
+
       private
 
       def entities

@@ -33,7 +33,7 @@ module Engine
             @game.game_error("Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found")
           end
         when Corporation, Minor
-          if assignable_corporations && (ability = company.abilities(:assign_corporation))
+          if assignable_corporations(company) && (ability = company.abilities(:assign_corporation))
             Assignable.remove_from_all!(assignable_corporations, company.id) do |unassigned|
               @log << "#{company.name} is unassigned from #{unassigned.name}"
             end
@@ -48,13 +48,14 @@ module Engine
         end
       end
 
-      def assignable_corporations
-        @game.corporations
+      def assignable_corporations(company = nil)
+        @game.corporations.select { |c| c.floated? && !c.assigned?(company&.id) }
       end
 
       def available_hex(entity, hex)
         return unless entity.company?
         return unless entity.abilities(:assign_hexes)&.hexes&.include?(hex.id)
+        return if hex.assigned?(entity.id)
 
         @game.hex_by_id(hex.id).neighbors.keys
       end
