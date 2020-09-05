@@ -19,7 +19,7 @@ module Engine
         ))
       end
 
-      def share_price(entity, revenue = 0)
+      def share_price_change(entity, revenue = 0)
         return super if entity.corporation?
 
         {}
