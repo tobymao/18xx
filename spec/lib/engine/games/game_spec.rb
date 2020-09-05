@@ -15,14 +15,14 @@ module Engine
         'tomusher' => 5431,
       },
       3099 => {
-        'Blondie' => 7118,
-        'Emilybry26' => 6405,
-        'MrDiskord' => 4072,
-        'mfmise' => 6548,
+        'Blondie' => 7123,
+        'Emilybry26' => 6407,
+        'MrDiskord' => 4073,
+        'mfmise' => 6550,
         'sirstevie3' => 4907,
       },
       4949 => {
-        'Apreche' => 6822,
+        'Apreche' => 6828,
         'GeekNightsRym' => 9154,
         'pence' => 7002,
       },
@@ -38,7 +38,7 @@ module Engine
       # thanks to company income; also includes emergency share issuing
       'hs_gcumggit_1595777670' => {
         'Player 1' => 0,
-        'Player 2' => 1387,
+        'Player 2' => 1390,
         'Player 3' => 0,
       },
       # bankruptcy that forces the new president to buy a train, which actually
@@ -51,15 +51,9 @@ module Engine
       # bankruptcy where the bankruptcy action automatically issues the rest of
       # the corporation's shares
       'hs_qxroaokg_1595793382' => {
-        'Player 1' => 1266,
+        'Player 1' => 1276,
         'Player 2' => 0,
         'Player 3' => 0,
-      },
-      'hs_cbxfbqwe_5779' => {
-        'Player 1' => 2180,
-        'Player 2' => 2091,
-        'Player 3' => 1110,
-        'Player 4' => 1589,
       },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {

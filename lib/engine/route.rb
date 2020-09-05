@@ -4,7 +4,7 @@ require_relative 'game_error'
 
 module Engine
   class Route
-    attr_reader :last_node, :phase, :train, :routes, :stops
+    attr_reader :last_node, :phase, :train, :routes
 
     def initialize(game, phase, train, connection_hexes: [], routes: [], override: nil)
       @connections = []
@@ -16,9 +16,7 @@ module Engine
       @override = override
       @game = game
       @stops = []
-      @log = game.log
       restore_connections(connection_hexes) if connection_hexes
-      update_stops
     end
 
     def restore_connections(connection_hexes)
@@ -44,13 +42,13 @@ module Engine
           @connections << { left: middle, right: right, connection: b }
         end
       end
-      update_stops
+      @stops = nil
     end
 
     def reset!
       @connections.clear
       @last_node = nil
-      update_stops
+      @stops = nil
     end
 
     def head
@@ -131,7 +129,7 @@ module Engine
       else
         @last_node = node
       end
-      update_stops
+      @stops = nil
     end
 
     def paths
@@ -146,22 +144,16 @@ module Engine
       @connections.flat_map { |c| [c[:left], c[:right]] }.uniq
     end
 
-    def update_stops
+    def stops
+      @stops ||= compute_stops
+    end
+
+    def compute_stops
       visits = visited_stops
       distance = @train.distance
-      if distance.is_a?(Numeric)
-        @stops = visits
-        return
-      end
+      return visits if distance.is_a?(Numeric)
 
-      if visits.empty?
-        @stops = []
-        return
-      end
-
-      # We never have to deal with the "visit" field of the
-      # trainbecause that was already taken care of while calculating
-      # the route.
+      return [] if visits.empty?
 
       # types_pay lists how many locations of each type can be hit. A
       # 2+2 train (4 locations, at most 2 of which can be cities) looks
@@ -175,104 +167,39 @@ module Engine
 
       best_stops = []
       best_revenue = 0
-      max_num_stops = [distance.sum{|h| h['pay']}, visits.size].min
-      # puts "max_num_stops for #{@train.name} is #{max_num_stops}"
-      # puts "visits is #{visits.map{|s| s.hex.name}}"
+      max_num_stops = [distance.sum { |h| h['pay'] }, visits.size].min
       max_num_stops.downto(1) do |num_stops|
-        # puts "Trying #{num_stops} stops #{num_stops.class}"
-        visits.combination(num_stops.to_i).each do |stops|
-          # puts "Trying #{stops.map{|s| s.hex.name}}"
-
+        visits.combination(num_stops.to_i).each do |stops| # to_i to work around Opal bug
           # Make sure this set of stops is legal
-
-          # 1) At least stop must have a token
-          if stops.none? { |stop| stop.tokened_by?(corporation) }
-            # puts "No token"
-            next
-          end
+          # 1) At least one stop must have a token
+          next if stops.none? { |stop| stop.tokened_by?(corporation) }
 
           # 2) We can't ask for more revenue centers of a type than are allowed
           ok = true
           types_used = Array.new(types_pay.size, 0) # how many slots of each row are filled
           stops.each do |stop|
-            stop_registered = false
-            types_pay.each_with_index do |pair, i|
-              if pair[0].include?(stop.type)
-                if types_used[i] < pair[1]
-                  types_used[i] += 1
-                  stop_registered = true # we found a place to put this stop
-                  break
-                end
-              end
+            row = types_pay.each_index.find(-> { ok = false }) do |i|
+              types_pay[i][0].include?(stop.type) && types_used[i] < types_pay[i][1]
             end
-            if !stop_registered
-              ok = false
-              break
-            end
-          end
-          if !ok
-            # puts "Not enough resources"
-            next
+            break unless ok
+
+            types_used[row] += 1
           end
 
+          next unless ok
+
           revenue = @game.revenue_for(self, stops)
-          # puts "#{num_stops} stops: got #{revenue} for #{stops.map{|s| s.hex.name}}"
           if revenue > best_revenue
             best_stops = stops
-            best_revenue = revenue 
+            best_revenue = revenue
           end
         end
 
         # We assume that no stop collection with m < n stops could be
-        # better than a stop collection with n stops.
-        break if best_revenue > 0
-      end
-      # puts "new code found #{best_revenue} with #{best_stops.map{|s| s.hex.name}}"
-
-      ### Original code below
-
-      # always include the ends of a route because the user explicitly asked for it
-      included = [visits[0], visits[-1]]
-
-      # find the maximal token if not already in the end points
-      if included.none? { |stop| stop.tokened_by?(corporation) }
-        token = visits
-          .select { |stop| stop.tokened_by?(corporation) }
-          .max_by { |stop| stop.route_revenue(@phase, @train) }
-        included << token if token
-      end
-
-      # all the stops we could possibly add
-      options_by_type = (visits - included).group_by(&:type)
-      # hash of type to stops that have already been included
-      included_by_type = included.group_by(&:type)
-
-      @stops = included + types_pay.flat_map do |types, pay|
-        # e.g, types = ["city", "offboard"], pay = 4
-        # The number we can take of these is reduced by the number we've already taken
-        pay -= types.sum { |type| included_by_type[type]&.size || 0 }
-
-        # For each type
-        node_revenue = types.flat_map do |type|
-          # nodes are all the nodes of this type we could add
-          next [] unless (nodes = options_by_type[type])
-
-          # For each, output [node, revenue from node]
-          nodes.map { |node| [node, node.route_revenue(@phase, @train)] }
-        end.sort_by(&:last).last(pay)
-        # Then we sort all of those by revenue and take the top 'pay'
-
-        # Now for each of those we remove them from further consideration
-        node_revenue.each { |node, _| options_by_type[node.type].delete(node) }
-        # And then return the nodes themselves.
-        node_revenue.map(&:first)
-      end
-      # puts "old code found #{@game.revenue_for(self, @stops)} with #{@stops.map{|s| s.hex.name}}"
-      revenue = @game.revenue_for(self, @stops)
-      if best_revenue != revenue
-        @log << "Undercounted revenue, should be #{best_revenue} for #{best_stops.map{|s| s.hex.name}}, was #{revenue} for #{@stops.map{|s| s.hex.name}}"
-        puts "best route was #{best_revenue} with #{best_stops.map{|s| s.hex.name}}"
-        puts "old code gave revenue #{revenue} with #{@stops.map{|s| s.hex.name}}"
+        # better than a stop collection with n stops, so if we found
+        # anything usable with this number of stops we return it
+        # immediately.
+        return best_stops if best_revenue.positive?
       end
     end
 
@@ -378,7 +305,7 @@ module Engine
         @game.game_error("Cannot use group #{key} more than once") unless group.one?
       end
 
-      @game.revenue_for(self, @stops)
+      @game.revenue_for(self, stops)
     end
 
     def corporation
