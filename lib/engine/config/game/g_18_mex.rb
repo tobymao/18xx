@@ -108,11 +108,42 @@ module Engine
       "476":1,
       "477":1,
       "478":1,
+      "479MC":{
+         "count":1,
+         "color":"green",
+         "code":"city=revenue:40,slots:2,loc:center;town=revenue:0,loc:3;path=a:0,b:_0;path=a:4,b:_0;label=MC"
+      },
+      "479P":{
+         "count":1,
+         "color":"green",
+         "code":"town=revenue:10;path=a:3,b:_0;path=a:_0,b:0;upgrade=cost:40,terrain:mountain;label=P"
+      },
       "480":1,
       "481":1,
       "482":1,
       "483":1,
-      "484":1
+      "484":1,
+      "485MC":{
+         "count":1,
+         "color":"brown",
+         "code":"city=revenue:60,slots:3,loc:center;town=revenue:0,loc:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=MC"
+      },
+      "485P":{
+         "count":1,
+         "color":"brown",
+         "code":"town=revenue:10,loc:0;path=a:0,b:_0;path=a:3,b:_0;path=a:5,b:3;label=P"
+      },
+      "486MC":{
+         "count":1,
+         "color":"brown",
+         "code":"city=revenue:50,slots:4,loc:center;town=revenue:0,loc:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=MC"
+      },
+      "486P":{
+         "count":1,
+         "color":"brown",
+         "code":"town=revenue:10,loc:0;path=a:0,b:_0;path=a:3,b:_0;path=a:5,b:3;label=P"
+      },
+      "619":1
    },
    "market":[
       [
@@ -784,13 +815,13 @@ module Engine
          "town=revenue:0;upgrade=cost:20,terrain:desert":[
             "K8"
          ],
-         "city=revenue:20,loc:center;town=revenue:10,loc:1;path=a:_1,b:_0;upgrade=cost:20,terrain:water":[
+         "city=revenue:20,loc:center;town=revenue:10,loc:1;path=a:_1,b:_0;upgrade=cost:20,terrain:water;label=M":[
             "K6"
          ],
-         "city=revenue:20,loc:center;town=revenue:10,loc:4;path=a:_0,b:_1;upgrade=cost:40,terrain:swamp":[
+         "city=revenue:20,loc:center;town=revenue:10,loc:4;path=a:_0,b:_1;upgrade=cost:40,terrain:swamp;label=T":[
             "M12"
          ],
-         "city=revenue:0,loc:center;town=revenue:0,loc:5;upgrade=cost:40,terrain:swamp":[
+         "city=revenue:0,loc:center;town=revenue:0,loc:5;upgrade=cost:40,terrain:swamp;label=V":[
             "P13"
          ],
          "town=revenue:0;upgrade=cost:120,terrain:mountain":[
@@ -804,10 +835,10 @@ module Engine
          "city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0":[
             "E6"
          ],
-         "city=revenue:20,loc:center;town=revenue:0,loc:2;path=a:3,b:_0;path=a:5,b:_0":[
+         "city=revenue:20,loc:center;town=revenue:0,loc:2;path=a:3,b:_0;path=a:5,b:_0;label=MC":[
             "O10"
          ],
-         "town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;upgrade=cost:60,terrain:mountain":[
+         "town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;upgrade=cost:60,terrain:mountain;label=P":[
             "P11"
          ],
          "path=a:1,b:4;upgrade=cost:60,terrain:mountain":[
