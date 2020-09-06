@@ -152,16 +152,28 @@ module View
         private
 
         def l_top
-          y = @name_segments.size > 1 ? 54 : 61
-          {
-            region_weights_in: {
-              TRACK_TO_EDGE_3 => 1,
-              TOP_ROW => 2,
-            },
-            region_weights_out: { TOP_ROW => 1 },
-            x: 0,
-            y: -(y + delta_y),
-          }
+          if layout == :flat
+            y = @name_segments.size > 1 ? 54 : 61
+            {
+             region_weights_in: {
+               TRACK_TO_EDGE_3 => 1,
+               TOP_ROW => 2,
+             },
+             region_weights_out: { TOP_ROW => 1 },
+             x: 0,
+             y: -(y + delta_y),
+            }
+          elsif layout == :pointy
+            y = @name_segments.size > 1 ? 63 : 70
+            {
+             region_weights: {
+               [0, 1] => 1,
+               [2, 3, 5, 6] => 0.5,
+             },
+             x: 0,
+             y: -(y + delta_y),
+            }
+          end
         end
 
         def l_up40
@@ -255,13 +267,20 @@ module View
           y = if @name_segments.size > 1
                 39
               else
-                56
+                layout == :flat ? 56 : 65
               end
 
           loc = { x: 0, y: y + delta_y }
 
-          loc[:region_weights_in] = { TRACK_TO_EDGE_0 => 1, BOTTOM_ROW => 1.5 }
-          loc[:region_weights_out] = { BOTTOM_ROW => 1 }
+          if layout == :flat
+            loc[:region_weights_in] = { TRACK_TO_EDGE_0 => 1, BOTTOM_ROW => 1.5 }
+            loc[:region_weights_out] = { BOTTOM_ROW => 1 }
+          elsif layout == :pointy
+            loc[:region_weights] = {
+              [22, 23] => 1,
+              [17, 18, 20, 21] => 0.5,
+            }
+          end
           loc
         end
       end
