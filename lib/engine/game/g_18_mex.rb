@@ -16,6 +16,8 @@ module Engine
       GAME_DESIGNER = 'Mark Derrick'
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
+      STANDARD_GREEN_CITY_TILES = %w[14 15 619].freeze
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'minors_closed' => ['Minors closed', 'Minors closed, NdM available'],
         'ndm_merger' => ['NdM merger', 'NdM merger']
@@ -42,6 +44,9 @@ module Engine
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token)
         end
+
+        @brown_g_tile ||= @tiles.find { |t| t.name == '480' }
+        @gray_tile ||= @tiles.find { |t| t.name == '455' }
       end
 
       def operating_round(round_num)
@@ -58,6 +63,13 @@ module Engine
           Step::SingleDepotTrainBuyBeforePhase4,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
+      end
+
+      def stock_round
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::G18MEX::BuySellParShares,
+        ])
       end
 
       def new_stock_round
@@ -81,6 +93,34 @@ module Engine
 
       def event_ndm_merger!
         @log << 'Now NdM should offer to merge other corporation. Not implemented yet!'
+      end
+
+      def upgrades_to?(from, to, special = false)
+        # Copper Canyon cannot be upgraded
+        return false if from.name == '470'
+
+        # Guadalajara (O8) can only be upgraded to #480 in brown, and #455 in gray
+        return to.name == '480' if from.color == :green && from.hex.name == 'O8'
+        return to.name == '455' if from.color == :brown && from.hex.name == 'O8'
+
+        super
+      end
+
+      def all_potential_upgrades(tile, tile_manifest: false)
+        # Copper Canyon cannot be upgraded
+        return [] if tile.name == '470'
+
+        upgrades = super
+
+        return upgrades unless tile_manifest
+
+        # Tile manifest for standard green cities should show G tile as an option
+        upgrades |= [@brown_g_tile] if @brown_g_tile && STANDARD_GREEN_CITY_TILES.include?(tile.name)
+
+        # Tile manifest for Guadalajara brown (the G tile) should gray tile as an option
+        upgrades |= [@gray_tile] if @gray_tile && tile.name == '480'
+
+        upgrades
       end
     end
   end
