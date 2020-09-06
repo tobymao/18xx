@@ -137,7 +137,7 @@ module Engine
         revenue *= 2 if route.train.name.end_with?('D')
 
         route.corporation.abilities(:hexes_bonus) do |ability|
-          revenue += stops.sum { |stop| ability.hexes.include?(stop.hex.id) ? ability.amount : 0 }
+          revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
         end
 
         revenue
