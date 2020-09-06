@@ -188,6 +188,7 @@ module View
           h(:th, 'Price'),
           h(:th, 'Remaining'),
         ])
+
         upcoming_train_header << h(:th, 'Phases out') if show_obsolete_shedule
         upcoming_train_header.concat([
           h(:th, 'Rusts'),
