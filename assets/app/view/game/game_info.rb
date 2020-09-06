@@ -149,20 +149,20 @@ module View
             end
           end
 
+          show_obsolete_shedule = obsolete_schedule.any? { |key, _value| !key.nil? }
           upcoming_train_content = []
-          upcoming_train_content << h(:td, names_to_prices.keys.join(', '))
-          upcoming_train_content << h(
-          'td.right',
-          names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')
-        )
-          upcoming_train_content << h(:td, trains.size)
-          if obsolete_schedule.any? { |key, _value| !key.nil? }
-            upcoming_train_content << h(:td, obsolete_schedule[name]&.join(', ') || 'None')
-          end
-          upcoming_train_content << h(:td, rust_schedule[name]&.join(', ') || 'None')
-          upcoming_train_content << h(:td, discounts&.join(' '))
-          upcoming_train_content << h(:td, train.available_on)
-          upcoming_train_content << h(:td, event_text.join(', '))
+          upcoming_train_content.concat([
+            h(:td, names_to_prices.keys.join(', ')),
+            h('td.right', names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
+            h(:td, trains.size),
+          ])
+          upcoming_train_content << h(:td, obsolete_schedule[name]&.join(', ') || 'None') if show_obsolete_shedule
+          upcoming_train_content.concat([
+            h(:td, rust_schedule[name]&.join(', ') || 'None'),
+            h(:td, discounts&.join(' ')),
+            h(:td, train.available_on),
+            h(:td, event_text.join(', ')),
+])
           h(:tr, upcoming_train_content)
         end
 
@@ -183,18 +183,18 @@ module View
         end
 
         upcoming_train_header = []
-        upcoming_train_header << h(:th, 'Type')
-        upcoming_train_header << h(:th, 'Price')
-        upcoming_train_header << h(:th, 'Remaining')
-        upcoming_train_header << h(:th, 'Phases out') if obsolete_schedule.any? { |key, _value| !key.nil? }
-        upcoming_train_header << h(:th, 'Rusts')
-        upcoming_train_header << h(:th, 'Upgrade Discount')
-        upcoming_train_header << h(
-        :th,
-        { attrs: { title: 'Available after purchase of first train of type' } }, 'Available'
-      )
-        upcoming_train_header << h(:th, 'Events')
-
+        upcoming_train_header.concat([
+          h(:th, 'Type'),
+          h(:th, 'Price'),
+          h(:th, 'Remaining'),
+        ])
+        upcoming_train_header << h(:th, 'Phases out') if show_obsolete_shedule
+        upcoming_train_header.concat([
+          h(:th, 'Rusts'),
+          h(:th, 'Upgrade Discount'),
+          h(:th, { attrs: { title: 'Available after purchase of first train of type' } }, 'Available'),
+          h(:th, 'Events'),
+        ])
         [
           h(:h3, 'Upcoming Trains'),
           h(:div, { style: { overflowX: 'auto' } }, [
