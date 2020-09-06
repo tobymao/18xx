@@ -166,7 +166,7 @@ module View
             [:acquisition, 'Acquisition'],
           ]
 
-          types_in_market = @game.stock_market.market.flatten.map { |p| [p.type, p.color] }.to_h
+          types_in_market = @game.stock_market.market.flatten.compact.map { |p| [p.type, p.color] }.to_h
 
           type_text.each do |type, text|
             next unless types_in_market.include?(type)
