@@ -71,7 +71,7 @@ module View
 
         price_style = {
           fontSize: '100%',
-          textAlgign: 'center',
+          textAlign: 'center',
         }
 
         max_num_corps = @game.stock_market.market.first.map { |p| p.corporations.size }.push(MIN_NUM_TOKENS).max
