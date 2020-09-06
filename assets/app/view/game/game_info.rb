@@ -127,6 +127,8 @@ module View
           obsolete_schedule[first.obsolete_on] = Array(obsolete_schedule[first.obsolete_on]).append(name)
         end
 
+        show_obsolete_schedule = obsolete_schedule.keys.any?
+
         rows = @depot.upcoming.group_by(&:name).map do |name, trains|
           train = trains.first
           discounts = train.discount&.group_by { |_k, v| v }&.map do |price, price_discounts|
@@ -149,16 +151,19 @@ module View
             end
           end
 
-          h(:tr, [
+          upcoming_train_content = [
             h(:td, names_to_prices.keys.join(', ')),
             h('td.right', names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
             h(:td, trains.size),
-            h(:td, obsolete_schedule[name]&.join(', ') || 'None'),
+          ]
+          upcoming_train_content << h(:td, obsolete_schedule[name]&.join(', ') || 'None') if show_obsolete_schedule
+          upcoming_train_content.concat([
             h(:td, rust_schedule[name]&.join(', ') || 'None'),
             h(:td, discounts&.join(' ')),
             h(:td, train.available_on),
             h(:td, event_text.join(', ')),
-          ])
+])
+          h(:tr, upcoming_train_content)
         end
 
         event_text = @game.class::EVENTS_TEXT.map do |_sym, desc|
@@ -177,21 +182,25 @@ module View
           ])]
         end
 
+        upcoming_train_header = [
+          h(:th, 'Type'),
+          h(:th, 'Price'),
+          h(:th, 'Remaining'),
+        ]
+
+        upcoming_train_header << h(:th, 'Phases out') if show_obsolete_schedule
+        upcoming_train_header.concat([
+          h(:th, 'Rusts'),
+          h(:th, 'Upgrade Discount'),
+          h(:th, { attrs: { title: 'Available after purchase of first train of type' } }, 'Available'),
+          h(:th, 'Events'),
+        ])
         [
           h(:h3, 'Upcoming Trains'),
           h(:div, { style: { overflowX: 'auto' } }, [
             h(:table, [
               h(:thead, [
-                h(:tr, [
-                  h(:th, 'Type'),
-                  h(:th, 'Price'),
-                  h(:th, 'Remaining'),
-                  h(:th, 'Phases out'),
-                  h(:th, 'Rusts'),
-                  h(:th, 'Upgrade Discount'),
-                  h(:th, { attrs: { title: 'Available after purchase of first train of type' } }, 'Available'),
-                  h(:th, 'Events'),
-                ]),
+                h(:tr, upcoming_train_header),
               ]),
               h('tbody.zebra', rows),
             ]),
