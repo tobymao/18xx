@@ -127,6 +127,8 @@ module View
           obsolete_schedule[first.obsolete_on] = Array(obsolete_schedule[first.obsolete_on]).append(name)
         end
 
+        show_obsolete_schedule = obsolete_schedule.any? { |key, _value| !key.nil? }
+
         rows = @depot.upcoming.group_by(&:name).map do |name, trains|
           train = trains.first
           discounts = train.discount&.group_by { |_k, v| v }&.map do |price, price_discounts|
@@ -149,14 +151,13 @@ module View
             end
           end
 
-          show_obsolete_shedule = obsolete_schedule.any? { |key, _value| !key.nil? }
           upcoming_train_content = []
           upcoming_train_content.concat([
             h(:td, names_to_prices.keys.join(', ')),
             h('td.right', names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
             h(:td, trains.size),
           ])
-          upcoming_train_content << h(:td, obsolete_schedule[name]&.join(', ') || 'None') if show_obsolete_shedule
+          upcoming_train_content << h(:td, obsolete_schedule[name]&.join(', ') || 'None') if show_obsolete_schedule
           upcoming_train_content.concat([
             h(:td, rust_schedule[name]&.join(', ') || 'None'),
             h(:td, discounts&.join(' ')),
@@ -189,7 +190,7 @@ module View
           h(:th, 'Remaining'),
         ])
 
-        upcoming_train_header << h(:th, 'Phases out') if show_obsolete_shedule
+        upcoming_train_header << h(:th, 'Phases out') if show_obsolete_schedule
         upcoming_train_header.concat([
           h(:th, 'Rusts'),
           h(:th, 'Upgrade Discount'),
