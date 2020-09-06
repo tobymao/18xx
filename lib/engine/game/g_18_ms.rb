@@ -75,7 +75,7 @@ module Engine
             next unless p.cash.negative?
 
             debt = -p.cash
-            interest = (debt / 2.0 + 0.5).floor
+            interest = (debt / 2.0).ceil
             p.spend(interest, @bank, check_cash: false)
             @log << "#{p.name} has to borrow another #{format_currency(interest)} as being in debt at end of SR"
           end
