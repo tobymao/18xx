@@ -65,6 +65,13 @@ module Engine
         ], round_num: round_num)
       end
 
+      def stock_round
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::G18MEX::BuySellParShares,
+        ])
+      end
+
       def new_stock_round
         @minors.each do |minor|
           matching_company = @companies.find { |company| company.sym == minor.name }
