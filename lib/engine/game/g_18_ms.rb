@@ -70,12 +70,21 @@ module Engine
           @phase.next! if @turn == 1 && round_num == 2
         end
 
+        if round_num == 1
+          @players.each do |p|
+            next unless p.cash.negative?
+
+            debt = -p.cash
+            interest = (debt / 2.0).ceil
+            p.spend(interest, @bank, check_cash: false)
+            @log << "#{p.name} has to borrow another #{format_currency(interest)} as being in debt at end of SR"
+          end
+        end
         super
       end
 
       def operating_round(round_num)
         Round::Operating.new(self, [
-          Step::Bankrupt,
           Step::Exchange,
           Step::DiscardTrain,
           Step::SpecialTrack,
