@@ -150,6 +150,14 @@ module Engine
         'Player 1' => 3362,
       },
     },
+    GAMES_BY_TITLE['18GA'] => {
+      8643 => {
+        'willbeplaying' => 4074,
+        'Jac' => 3883,
+        'Arbalor' => 3822,
+        'Akado' => 3244,
+      },
+    },
     GAMES_BY_TITLE['18TN'] => {
       7818 => {
         'starchitect' => 5615,
