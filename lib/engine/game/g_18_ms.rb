@@ -79,6 +79,7 @@ module Engine
           Step::Exchange,
           Step::DiscardTrain,
           Step::SpecialTrack,
+          Step::G18MS::SpecialToken,
           Step::G18MS::BuyCompany,
           Step::G18MS::Track,
           Step::G18MS::Token,
