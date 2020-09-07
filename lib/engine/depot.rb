@@ -50,6 +50,10 @@ module Engine
       min_depot_train.variants.map { |_, v| v[:price] }.min
     end
 
+    def max_depot_price
+      depot_trains.max_by(&:price).variants.map { |_, v| v[:price] }.max
+    end
+
     def unshift_train(train)
       train.owner = self
       @upcoming.unshift(train)

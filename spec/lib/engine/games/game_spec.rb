@@ -55,6 +55,14 @@ module Engine
         'Player 2' => 0,
         'Player 3' => 0,
       },
+
+      # President selling a share to buy a 4T when cash + corp treasury can
+      # afford 3/5T
+      'hs_cvjhogoy_1599504419' => {
+        'Player 3' => 295,
+        'Player 2' => 285,
+        'Player 1' => 190,
+      },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
       3055 => {
