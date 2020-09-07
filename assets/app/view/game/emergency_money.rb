@@ -24,13 +24,13 @@ module View
           children << h(:div, props, corp)
         end
 
-        children << render_bankruptcy if @game.round.actions_for(entity).include?('bankrupt')
+        children << render_bankruptcy
         children
       end
 
       def render_bankruptcy
         resign = lambda do
-          process_action(Engine::Action::Bankrupt.new(entity))
+          process_action(Engine::Action::Bankrupt.new(@game.round.active_step.current_entity))
         end
 
         props = {
@@ -41,12 +41,6 @@ module View
         }
 
         h(:button, props, 'Declare Bankruptcy')
-      end
-
-      private
-
-      def entity
-        @game.round.active_step.current_entity
       end
     end
   end

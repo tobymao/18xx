@@ -22,36 +22,7 @@ module Engine
             @log << "#{player.name} pays #{assist} and an additional #{fee} fee to assist buying a #{train.name} train"
           end
 
-          emergency_buy_with_loan = false
-
-          if train == @depot.min_depot_train &&
-            price > entity.cash + player.cash &&
-            must_buy_train?(entity) &&
-            @game.liquidity(player, emergency: true) == player.cash # Nothing more to sell
-
-            # Prepare to take a loan
-            emergency_buy_with_loan = true
-            corporation_cash = entity.cash
-            player_cash = player.cash
-            player_cash = 0 if player_cash.negative?
-            # Add temporary money in the corporation to pay for the train
-            @game.bank.spend(price, entity)
-          end
-
           super
-
-          return unless emergency_buy_with_loan
-
-          # Corporation should have no money left
-          entity.spend(entity.cash, @game.bank)
-
-          # The player borrows the missing amount, and add a $50 interest
-          debt = price - corporation_cash - player_cash
-          interest = 50
-          player.spend(player_cash + debt + interest, @game.bank, check_cash: false)
-          @log << "#{player.name} has to borrow #{@game.format_currency(debt)} to pay for the train"
-          @log << "An extra #{@game.format_currency(interest)} is added to the debt"
-          pass!
         end
       end
     end
