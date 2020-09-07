@@ -46,8 +46,6 @@ module Engine
           super
         end
 
-        private
-
         def can_issue?(entity)
           return false if @round.emergency_issued
           return false unless entity.corporation?

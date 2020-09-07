@@ -233,7 +233,7 @@ module Engine
             fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation2)
 
             corporation.cash = subject.active_step.buyable_trains(corporation).first.price
-            train = subject.active_step.buyable_trains(corporation).find { |x| x.name == 'D' }
+            train = subject.active_step.buyable_trains(corporation).find { |t| t.name == 'D' }
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             fake_buy_train(train, corporation)
             expect { subject.process_action(action) }.to raise_error GameError
@@ -402,7 +402,7 @@ module Engine
           fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation2)
 
           corporation.cash = subject.active_step.buyable_trains(corporation).first.price
-          train = subject.active_step.buyable_trains(corporation).find { |x| x.name == 'D' }
+          train = subject.active_step.buyable_trains(corporation).find { |t| t.name == 'D' }
           action = Action::BuyTrain.new(corporation, train: train, price: train.price)
           fake_buy_train(train, corporation)
           expect { subject.process_action(action) }.to raise_error GameError
@@ -615,6 +615,69 @@ module Engine
 
           subject.process_action(Action::Assign.new(company, target: hex_g19))
           expect(company).to be_assigned_to(hex_g19)
+        end
+      end
+
+      describe 'buy_train' do
+        before :each do
+          # skip past non train-buying actions
+          while (!subject.active_step.is_a?(Engine::Step::Train))
+            action = Action::Pass.new(subject.current_entity)
+            subject.process_action(action)
+          end
+
+          # Allow 7/8 to be purchased
+          while (train = subject.active_step.buyable_trains(corporation).first).name != '6'
+            fake_buy_train(train, corporation_1)
+          end
+          fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation_1)
+
+          # enough cash for a 6
+          corporation.cash = subject.active_step.buyable_trains(corporation).first.price
+        end
+
+        describe 'can afford a 6' do
+          it 'does not allow EMR purchasing a 7/8' do
+            # grab a 7/8 train
+            train = subject.active_step.buyable_trains(corporation).find { |t| t.name == '6' }
+            variant = '7/8'
+            price = train.variants[variant][:price]
+
+            # only buyable variant is 6
+            expect(subject.active_step.buyable_train_variants(train, corporation)).to eq([train.variants['6']])
+
+            expect(corporation.cash).to eq(800)
+            expect(corporation.trains).to be_empty
+
+            # buying it raises error
+            action = Action::BuyTrain.new(corporation, train: train, price: price, variant: variant)
+            expect { subject.process_action(action) }.to raise_error GameError
+          end
+        end
+
+        describe 'cannot afford a 6' do
+          it 'allows EMR purchasing a 7/8' do
+            corporation.cash = corporation.cash - 1
+
+            # grab a 7/8 train
+            train = subject.active_step
+                      .buyable_trains(corporation)
+                      .find { |t| t.owner.is_a?(Depot) }
+            variant = '7/8'
+            price = train.variants[variant][:price]
+
+            initial_president_cash = corporation.owner.cash
+
+            expect(corporation.cash).to eq(799)
+            expect(corporation.trains).to be_empty
+
+            action = Action::BuyTrain.new(corporation, train: train, price: price, variant: variant)
+            subject.process_action(action)
+
+            expect(corporation.cash).to eq(0)
+            expect(corporation.trains.map(&:name)).to eq(%w[7/8])
+            expect(corporation.owner.cash).to eq(initial_president_cash - 101)
+          end
         end
       end
     end

@@ -89,7 +89,8 @@ module Engine
         # If the corporation cannot buy a train, then it can only buy the cheapest available (if there is any...)
         min_depot_train = @depot.min_depot_train
         if min_depot_train && min_depot_train.price > entity.cash
-          depot_trains = [min_depot_train]
+
+          depot_trains = [min_depot_train] if @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
 
           if @last_share_sold_price
             # 1889, a player cannot contribute to buy a train from another corporation
