@@ -42,8 +42,10 @@ module View
                 y: 45,
               },
             ]
-          else
+          elsif layout == :flat
             SMALL_ITEM_LOCATIONS
+          else
+            POINTY_SMALL_ITEM_LOCATIONS
           end
         end
 

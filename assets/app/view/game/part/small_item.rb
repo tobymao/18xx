@@ -73,13 +73,13 @@ module View
         }.freeze
 
         PP_RIGHT_CORNER = {
-          region_weights: [10],
+          region_weights: [9, 10],
           x: 60,
           y: 0,
         }.freeze
 
         PP_LEFT_CORNER = {
-          region_weights: [13],
+          region_weights: [13, 14],
           x: -60,
           y: 0,
         }.freeze
