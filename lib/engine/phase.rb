@@ -92,6 +92,7 @@ module Engine
     def rust_trains!(train, entity)
       obsolete_trains = []
       rusted_trains = []
+      owners = Hash.new(0)
 
       @game.trains.each do |t|
         next if t.obsolete || t.obsolete_on != train.sym
@@ -107,12 +108,14 @@ module Engine
         next unless should_rust
 
         rusted_trains << t.name
+        owners[t.owner.name] += 1
         entity.rusted_self = true if entity && entity == t.owner
         t.rust!
       end
 
       @log << "-- Event: #{obsolete_trains.uniq.join(', ')} trains are obsolete --" if obsolete_trains.any?
-      @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust --" if rusted_trains.any?
+      @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
+        "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --" if rusted_trains.any?
     end
 
     def next!
