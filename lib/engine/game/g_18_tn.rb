@@ -10,7 +10,7 @@ module Engine
     class G18TN < Base
       load_from_json(Config::Game::G18TN::JSON)
 
-      DEV_STAGE = :beta
+      DEV_STAGE = :production
 
       GAME_LOCATION = 'Tennessee, USA'
       GAME_RULES_URL = 'http://dl.deepthoughtgames.com/18TN-Rules.pdf'
