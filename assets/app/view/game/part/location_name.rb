@@ -210,7 +210,7 @@ module View
             x: 0,
             y: -(24 + delta_y),
           }
-          loc[:region_weights] = layout == :flat ? TOP_MIDDLE_ROW : [4, 7, 8, 12]
+          loc[:region_weights] = layout == :flat ? TOP_MIDDLE_ROW : [2, 4, 6, 7, 8, 12]
           loc
         end
 
@@ -224,7 +224,7 @@ module View
 
         def l_down24
           loc = { x: 0, y: 24 }
-          loc[:region_weights] = layout == :flat ? BOTTOM_MIDDLE_ROW : [11, 15, 16, 19]
+          loc[:region_weights] = layout == :flat ? BOTTOM_MIDDLE_ROW : [11, 15, 16, 17, 19, 21]
           loc
         end
 

@@ -8,14 +8,49 @@ module View
     module Part
       class Icons < Base
         include SmallItem
+
+        P_WIDE_TOP_CORNER = {
+          region_weights: [0, 1, 2, 3, 4],
+          x: 0,
+          y: -65,
+        }.freeze
+
+        P_WIDE_BOTTOM_CORNER = {
+          region_weights: [19, 20, 21, 22, 23],
+          x: 0,
+          y: 65,
+        }.freeze
+
+        PP_WIDE_TOP_CORNER = {
+          region_weights: [0, 1, 2, 3, 5, 6],
+          x: 0,
+          y: -65,
+        }.freeze
+
+        PP_WIDE_BOTTOM_CORNER = {
+          region_weights: [17, 18, 20, 21, 22, 23],
+          x: 0,
+          y: 65,
+        }.freeze
+
+        WIDE_ITEM_LOCATIONS = [PP_WIDE_TOP_CORNER,
+                               PP_WIDE_BOTTOM_CORNER].freeze
+
+        POINTY_WIDE_ITEM_LOCATIONS = [PP_WIDE_TOP_CORNER,
+                                      PP_WIDE_BOTTOM_CORNER].freeze
+
         ICON_RADIUS = 16
         DELTA_X = (ICON_RADIUS * 2) + 2
 
         def preferred_render_locations
-          if layout == :pointy
+          if layout == :pointy && @icons.one?
             POINTY_SMALL_ITEM_LOCATIONS
-          elsif layout == :flat
+          elsif layout == :pointy
+            POINTY_WIDE_ITEM_LOCATIONS
+          elsif layout == :flat && @icons.one?
             SMALL_ITEM_LOCATIONS
+          else
+            WIDE_ITEM_LOCATIONS
           end
         end
 
@@ -29,7 +64,7 @@ module View
             h(:image,
               attrs: {
                 href: icon.image,
-                x: index * -DELTA_X,
+                x: ((index - (@icons.size - 1) / 2.0) * -DELTA_X).round(2),
                 width: "#{ICON_RADIUS * 2}px",
                 height: "#{ICON_RADIUS * 2}px",
               })

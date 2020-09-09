@@ -33,6 +33,18 @@ module View
           y: -45,
         }.freeze
 
+        P_RIGHT_CORNER = {
+          region_weights: [11, 18],
+          x: 70,
+          y: 0,
+        }.freeze
+
+        P_LEFT_CORNER = {
+          region_weights: [5, 12],
+          x: -70,
+          y: 0,
+        }.freeze
+
         SIZE = 20
         WATER_PATH = 'M -15 -7 Q -7.5 -15, 0 -7 S 7.5 1, 15 -7M -15 -2  Q -7.5 -10, 0 -2  S 7.5 6, 15 -2'
         TRIANGLE_PATH = '0,20 10,0 20,20'
@@ -43,6 +55,8 @@ module View
             P_TOP_RIGHT_CORNER,
             P_EDGE2,
             P_BOTTOM_LEFT_CORNER,
+            P_RIGHT_CORNER,
+            P_LEFT_CORNER,
           ]
         end
 
