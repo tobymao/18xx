@@ -67,6 +67,10 @@ module Engine
         @_node ||= @nodes.any?
       end
 
+      def terminal?
+        @_terminal ||= !!@terminal
+      end
+
       def exits
         @exits ||= @edges.map(&:num)
       end
