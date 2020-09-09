@@ -270,6 +270,7 @@ module View
         h(Game::EntityOrder, round: @round),
         h(Game::Abilities, user: @user, game: @game),
         h(Game::UndoAndPass),
+        h(Game::Help, game: @game),
         render_action,
       ])
     end

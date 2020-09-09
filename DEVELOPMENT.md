@@ -3,6 +3,8 @@
 See [`TILES.md`](/TILES.md) for some details and useful routes for tile
 development.
 
+See [Developing on Windows](https://github.com/tobymao/18xx/wiki/Developing-For-18xx.games#developing-on-windows) to get setup on Windows
+
 ### Droplet configuration
 
 If configuring the droplet from scratch, these are the requirements:

@@ -58,7 +58,7 @@ module Engine
         prices = tokens.map(&:price)
 
         token.corporation.abilities(:token) do |ability, _|
-          prices << ability.price
+          prices << ability.price(token)
           prices << ability.teleport_price
         end
 
@@ -72,12 +72,12 @@ module Engine
         end
 
         entity.abilities(:token) do |ability, _|
-          next unless ability.hexes.include?(hex.id)
+          next if ability.hexes.any? && !ability.hexes.include?(hex.id)
 
           # check if this is correct or should be a corporation
           token = Engine::Token.new(entity) if ability.extra
           token.price = ability.teleport_price if ability.teleport_price
-          token.price = ability.price if @game.graph.reachable_hexes(entity)[hex]
+          token.price = ability.price(token) if @game.graph.reachable_hexes(entity)[hex]
           return [token, ability]
         end
 

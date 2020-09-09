@@ -22,7 +22,7 @@ module Engine
         def process_buy_shares(action)
           player = action.entity
           buy_shares(player, action.bundle)
-          player.pass! if !player.owner || !can_buy_any?(player)
+          player.pass! if !corporation.president?(player.owner) || !can_buy_any?(player)
         end
 
         def process_sell_shares(action)
@@ -66,6 +66,8 @@ module Engine
         end
 
         def active_entities
+          return [] unless corporation
+
           [@game.players.rotate(@game.players.index(corporation.owner)).find(&:active?)].compact
         end
       end

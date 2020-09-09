@@ -5,9 +5,9 @@ require_relative '../merger'
 module Engine
   module Round
     module G1817
-      class Merger < Merger
+      class Acquisition < Merger
         def name
-          'Merger and Conversion Round'
+          'Acquisition Round'
         end
 
         def select_entities
@@ -17,18 +17,13 @@ module Engine
             .sort
         end
 
-        def after_process(action)
-          return if action.free?
-          return if active_step
+        def after_process(_action)
+          return if !@converted || active_step
 
           @converted = nil
-          @game.players.each(&:unpass!)
+          entities.each(&:unpass!)
           next_entity_index!
-
-          return if @entity_index.zero?
-
-          @steps.each(&:unpass!)
-          @steps.each(&:setup)
+          @steps.each(&:unpass!) unless @entity_index.zero?
         end
 
         def entities

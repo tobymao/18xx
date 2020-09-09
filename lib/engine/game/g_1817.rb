@@ -126,10 +126,9 @@ module Engine
           .find { |sp| sp.price < price }
       end
 
-      def revenue_for(route)
+      def revenue_for(route, stops)
         revenue = super
 
-        stops = route.stops
         revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
 
         mine = 'mine'
@@ -217,6 +216,11 @@ module Engine
               new_stock_round
             end
           when Round::G1817::Merger
+            @log << "-- Acquisition Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
+            Round::G1817::Acquisition.new(self, [
+              Step::G1817::Acquire,
+            ])
+          when Round::G1817::Acquisition
             new_operating_round(@round.round_num + 1)
           when init_round.class
             reorder_players

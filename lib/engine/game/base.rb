@@ -129,6 +129,7 @@ module Engine
 
       EBUY_PRES_SWAP = true # allow presidential swaps of other corps when ebuying
       EBUY_OTHER_VALUE = true # allow ebuying other corp trains for up to face
+      EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
 
       # when is the home token placed? on...
       # operate
@@ -525,6 +526,13 @@ module Engine
           end
         else
           player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, _|
+            case self.class::SELL_AFTER
+            when :operate
+              next unless corporation.operated?
+            when :p_any_operate
+              next unless corporation.operated? || corporation.president?(player)
+            end
+
             max_bundle = player.dumpable_bundles(corporation)
               .select { |bundle| @share_pool&.fit_in_bank?(bundle) }
               .max_by(&:price)
@@ -540,7 +548,7 @@ module Engine
       end
 
       def sellable_turn?
-        @turn > 1
+        self.class::SELL_AFTER == :first ? @turn > 1 : true
       end
 
       def sell_shares_and_change_price(bundle)
@@ -589,8 +597,8 @@ module Engine
         @log << "-- Game over: #{scores.join(', ')} --"
       end
 
-      def revenue_for(route)
-        route.stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+      def revenue_for(route, stops)
+        stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
       end
 
       def routes_revenue(routes)

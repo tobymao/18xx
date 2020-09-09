@@ -32,6 +32,7 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       SELL_MOVEMENT = :left_block_pres
       EBUY_OTHER_VALUE = false
+      EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
       HOME_TOKEN_TIMING = :float
       MUST_BUY_TRAIN = :always
 
@@ -184,10 +185,9 @@ module Engine
         end
       end
 
-      def revenue_for(route)
+      def revenue_for(route, stops)
         revenue = super
 
-        stops = route.stops
         east = stops.find { |stop| stop.groups.include?('E') }
         west = stops.find { |stop| stop.tile.label&.to_s == 'W' }
 
@@ -195,7 +195,7 @@ module Engine
 
         revenue += 30 if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
 
-        steam = steam_boat.id
+        steam = steamboat.id
 
         if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
           revenue += 20 * port.tile.icons.select { |icon| icon.name == 'port' }.size
@@ -218,8 +218,8 @@ module Engine
         @meat_packing ||= company_by_id('MPC')
       end
 
-      def steam_boat
-        @steam_boat ||= company_by_id('SC')
+      def steamboat
+        @steamboat ||= company_by_id('SC')
       end
 
       def michigan_central

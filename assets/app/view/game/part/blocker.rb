@@ -27,15 +27,46 @@ module View
           y: 60,
         }.freeze
 
+        PP_LEFT_CORNER = {
+          region_weights: LEFT_CORNER,
+          x: -65,
+          y: 5,
+        }.freeze
+        PP_BOTTOM_RIGHT = {
+          region_weights: [22, 23],
+          x: 35,
+          y: 60,
+        }.freeze
+        PP_EDGE_1 = {
+          region_weights_in: { [13] => 1, [12, 19] => 0.5 },
+          region_weights_out: [13],
+          x: -50,
+          y: 30,
+        }.freeze
+
+        PP_EDGE_4 = {
+          region_weights_in: { [10] => 1, [4, 11] => 0.5 },
+          region_weights_out: [10],
+          x: 50,
+          y: -30,
+        }.freeze
+
         def preferred_render_locations
           if @tile.parts.one?
             [
               P_CENTER,
             ]
-          else
+          elsif layout == :flat
             [
               P_LEFT_CORNER,
               P_BOTTOM_RIGHT,
+            ]
+          else
+            [
+              P_LEFT_CORNER,
+              PP_BOTTOM_RIGHT,
+              PP_EDGE_4,
+              PP_EDGE_1,
             ]
           end
         end

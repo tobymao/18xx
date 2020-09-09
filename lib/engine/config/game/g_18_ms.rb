@@ -47,8 +47,7 @@ module Engine
       "H6":"Mobile",
       "H8":"Pensacola",
       "H10":"Tallahassee",
-      "I1":"New Orleans",
-      "I3":"Port Sulphur"
+      "I1":"New Orleans"
    },
    "tiles":{
       "3":3,
@@ -179,7 +178,17 @@ module Engine
          "value":50,
          "revenue":15,
          "desc":"The owning Major Company may lay their cheapest available token for half price. This is not an extra token placement. This ability can only be used once, and using it does not close the private company.",
-         "sym":"M&M"
+         "sym":"M&M",
+         "abilities": [
+            {
+              "type": "token",
+              "owner_type":"corporation",
+              "hexes": [],
+              "discount": 0.5,
+              "count": 1,
+              "from_owner": true
+            }
+         ]
       },
       {
          "name":"Mississippi Central Railway",
@@ -450,7 +459,7 @@ module Engine
          "city=revenue:yellow_40|brown_50;path=a:5,b:_0;path=a:4,b:_0":[
             "A1"
          ],
-         "city=revenue:yellow_50|brown_80;path=a:3,b:_0;path=a:4,b:_0;icon=image:18_ms/coins":[
+         "city=revenue:yellow_50|brown_80,loc:center;town=revenue:10,loc:5.5;path=a:3,b:_0;path=a:_1,b:_0;icon=image:18_ms/coins":[
             "I1"
          ],
          "path=a:1,b:5":[
@@ -469,9 +478,6 @@ module Engine
       "gray":{
          "city=revenue:yellow_30|brown_60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0":[
             "E1"
-         ],
-         "town=revenue:10;path=a:1,b:_0":[
-            "I3"
          ]
       }
    },

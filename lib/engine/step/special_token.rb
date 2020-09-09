@@ -32,7 +32,7 @@ module Engine
       end
 
       def available_hex(entity, hex)
-        return unless ability(entity).hexes.include?(hex.id)
+        return if ability(entity).hexes.any? && !ability(entity).hexes.include?(hex.id)
 
         @game.hex_by_id(hex.id).neighbors.keys
       end

@@ -202,12 +202,12 @@ module View
         ].freeze
 
         CENTER_REVENUE_REGIONS = [
-          [14, 15],
-          [17, 14],
-          [7, 8],
-          [8, 9],
-          [9, 16],
-          [15, 16],
+          { [14, 15] => 1.0, [13, 21] => 0.5, [19, 20] => 0.25 },
+          { [7, 14] => 1.0, [6, 13] => 0.5, [5, 12] => 0.25 },
+          { [7, 8] => 1.0, [2, 6] => 0.5, [0, 1] => 0.25 },
+          { [8, 9] => 1.0, [2, 10] => 0.5, [3, 4] => 0.25 },
+          { [9, 16] => 1.0, [10, 17] => 0.5, [11, 18] => 0.25 },
+          { [15, 16] => 1.0, [17, 21] => 0.5, [22, 23] => 0.25 },
         ].freeze
 
         CENTER_REVENUE_EDGE_PRIORITY = [1, 2, 3, 4, 0, 5].freeze
@@ -321,9 +321,9 @@ module View
             rotation = angle_for_layout
 
             regions = if layout == :flat
-                        @city.slots == 1 ? [9, 16] : [11, 18]
+                        @city.slots == 1 ? { [9, 16] => 1.0, [10, 17] => 0.5, [11, 18] => 0.25 } : [11, 18]
                       else
-                        @city.slots == 1 ? [8, 9] : [3, 4]
+                        @city.slots == 1 ? { [8, 9] => 1.0, [2, 10] => 0.5, [3, 4] => 0.25 } : [3, 4]
                       end
           elsif @edge && @city.slots == 1
             revenue_location = REVENUE_LOCATIONS_BY_EDGE[@edge].min_by { |loc| combined_cost(loc[:regions]) }
@@ -344,7 +344,11 @@ module View
             regions = CENTER_REVENUE_REGIONS[revenue_edge]
           end
 
-          increment_weight_for_regions(regions)
+          region_weights = regions
+          region_weights = { region_weights => 1.0 } if region_weights.is_a?(Array)
+          region_weights.each do |r, w|
+            increment_weight_for_regions(r, w)
+          end
 
           revert_angle = render_location[:angle] + rotation
           h(:g, { attrs: { transform: "rotate(#{rotation})" } }, [

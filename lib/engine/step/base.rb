@@ -50,7 +50,7 @@ module Engine
       end
 
       def skip!
-        log_skip(current_entity) unless @acted
+        log_skip(current_entity) if !@acted && current_entity
         pass!
       end
 
@@ -87,6 +87,11 @@ module Engine
       def unpass!
         super
         @acted = false
+      end
+
+      # see assets/app/view/game/help.rb
+      def help
+        ''
       end
 
       private

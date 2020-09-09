@@ -71,7 +71,7 @@ module Engine
       @abilities.map { |a| abilities(a.type) }.compact
     end
 
-    def reset_ability_count_this_or
+    def reset_ability_count_this_or!
       @abilities.each { |a| a.count_this_or = 0 }
     end
   end

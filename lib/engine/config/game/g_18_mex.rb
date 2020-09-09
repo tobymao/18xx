@@ -99,7 +99,51 @@ module Engine
          "count":1,
          "color":"yellow",
          "code":"town=revenue:20,loc:0;path=a:0,b:_0;path=a:3,b:_0;path=a:3,b:4;path=a:4,b:_0;label=CC"
-      }
+      },
+      "471":1,
+      "472":1,
+      "473":1,
+      "474":1,
+      "475":1,
+      "476":1,
+      "477":1,
+      "478":1,
+      "479MC":{
+         "count":1,
+         "color":"green",
+         "code":"city=revenue:40,slots:2,loc:center;town=revenue:0,loc:2.5;path=a:0,b:_0;path=a:4,b:_0;label=MC"
+      },
+      "479P":{
+         "count":1,
+         "color":"green",
+         "code":"town=revenue:10;path=a:3,b:_0;path=a:_0,b:0;upgrade=cost:40,terrain:mountain;label=P"
+      },
+      "480":1,
+      "481":1,
+      "482":1,
+      "483":1,
+      "484":1,
+      "485MC":{
+         "count":1,
+         "color":"brown",
+         "code":"city=revenue:60,slots:3,loc:center;town=revenue:0,loc:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:_1,b:_0;label=MC"
+      },
+      "485P":{
+         "count":1,
+         "color":"brown",
+         "code":"town=revenue:10,loc:0;path=a:0,b:_0;path=a:3,b:_0;path=a:5,b:3;label=P"
+      },
+      "486MC":{
+         "count":1,
+         "color":"brown",
+         "code":"city=revenue:50,slots:4,loc:center;town=revenue:0,loc:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:_1,b:_0;label=MC"
+      },
+      "486P":{
+         "count":1,
+         "color":"brown",
+         "code":"town=revenue:10,loc:0;path=a:0,b:_0;path=a:3,b:_0;path=a:5,b:3;label=P"
+      },
+      "619":1
    },
    "market":[
       [
@@ -230,7 +274,7 @@ module Engine
          "name":"Interoceanic Railroad",
          "value":50,
          "revenue":0,
-         "desc":"Minor company C. Begins in Tampico (L13). Once closed owner receives a 5% share in NdM.",
+         "desc":"Minor company A. Begins in Tampico (M12). Once closed owner receives a 5% share in NdM.",
          "abilities": [
             {
               "type": "no_buy",
@@ -248,7 +292,7 @@ module Engine
          "name":"Sonora-Baja California Railway",
          "value":50,
          "revenue":0,
-         "desc":"Minor company B. Begins in Mazatlán (F11). Once closed owner receives a 5% share in NdM.",
+         "desc":"Minor company B. Begins in Mazatlán (K6). Once closed owner receives a 5% share in NdM.",
          "abilities": [
             {
               "type": "no_buy",
@@ -266,7 +310,7 @@ module Engine
          "name":"Southeastern Railway",
          "value":50,
          "revenue":0,
-         "desc":"Minor company C. Begins in Oaxaca (L19). Once closed owner receives a 10% share in UdY.",
+         "desc":"Minor company C. Begins in Oaxaca (S12). Once closed owner receives a 10% share in UdY.",
          "abilities": [
             {
               "type": "no_buy",
@@ -288,7 +332,7 @@ module Engine
          "abilities":[
             {
                "type":"share",
-               "share":"UdY_1"
+               "share":"CHI_1"
             },
             {
                "type":"blocks_hexes",
@@ -661,7 +705,7 @@ module Engine
          "offboard=revenue:yellow_30|brown_50;path=a:5,b:_0":[
             "B1"
          ],
-         "city=revenue:yellow_10|brown_50;path=a:1,b:_0;path=a:2,b:_0":[
+         "city=revenue:yellow_10|brown_50;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1":[
             "Q14"
          ],
          "offboard=revenue:yellow_30|brown_40;path=a:2,b:_0":[
@@ -771,13 +815,13 @@ module Engine
          "town=revenue:0;upgrade=cost:20,terrain:desert":[
             "K8"
          ],
-         "city=revenue:20,loc:center;town=revenue:10,loc:1;path=a:_1,b:_0;upgrade=cost:20,terrain:water":[
+         "city=revenue:20,loc:center;town=revenue:10,loc:1;path=a:_1,b:_0;upgrade=cost:20,terrain:water;label=M":[
             "K6"
          ],
-         "city=revenue:20,loc:center;town=revenue:10,loc:4;path=a:_0,b:_1;upgrade=cost:40,terrain:swamp":[
+         "city=revenue:20,loc:center;town=revenue:10,loc:4;path=a:_0,b:_1;upgrade=cost:40,terrain:swamp;label=T":[
             "M12"
          ],
-         "city=revenue:0,loc:center;town=revenue:0,loc:5;upgrade=cost:40,terrain:swamp":[
+         "city=revenue:0,loc:center;town=revenue:0,loc:5;upgrade=cost:40,terrain:swamp;label=V":[
             "P13"
          ],
          "town=revenue:0;upgrade=cost:120,terrain:mountain":[
@@ -791,10 +835,10 @@ module Engine
          "city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0":[
             "E6"
          ],
-         "city=revenue:20,loc:center;town=revenue:0,loc:2;path=a:3,b:_0;path=a:5,b:_0":[
+         "city=revenue:20,loc:center;town=revenue:0,loc:2;path=a:3,b:_0;path=a:5,b:_0;label=MC":[
             "O10"
          ],
-         "town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;upgrade=cost:60,terrain:mountain":[
+         "town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;upgrade=cost:60,terrain:mountain;label=P":[
             "P11"
          ],
          "path=a:1,b:4;upgrade=cost:60,terrain:mountain":[

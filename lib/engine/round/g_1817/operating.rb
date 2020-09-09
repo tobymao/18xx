@@ -23,6 +23,12 @@ module Engine
           entity = action.entity
           @last_player = entity.player
           pay_interest!(entity)
+
+          if !active_step && entity.operator? && entity.trains.empty?
+            @log << "#{entity.name} has no trains and liquidates"
+            @game.liquidate!(entity)
+          end
+
           super
         end
 

@@ -78,6 +78,7 @@ module Engine
     context '#1889' do
       let(:corporation) { game.corporation_by_id('AR') }
       let(:corporation2) { game.corporation_by_id('SR') }
+      let(:ehime) { game.company_by_id('ER') }
       subject { move_to_or! }
 
       before :each do
@@ -232,11 +233,71 @@ module Engine
             fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation2)
 
             corporation.cash = subject.active_step.buyable_trains(corporation).first.price
-            train = subject.active_step.buyable_trains(corporation).find { |x| x.name == 'D' }
+            train = subject.active_step.buyable_trains(corporation).find { |t| t.name == 'D' }
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             fake_buy_train(train, corporation)
             expect { subject.process_action(action) }.to raise_error GameError
           end
+        end
+      end
+
+      describe 'blocking for Ehime Railway' do
+        before :each do
+          ehime.owner = game.players[1]
+          game.phase.next!
+        end
+
+        it 'can lay a tile' do
+          expect(subject.active_step).to be_a Engine::Step::BuyTrain
+
+          expect(game.active_players).to eq([game.players[0]])
+
+          subject.process_action(
+            Action::BuyCompany.new(
+              corporation,
+              company: ehime,
+              price: 40,
+            )
+          )
+
+          expect(game.active_players).to eq([game.players[1]])
+          expect(subject.active_step).to be_a Engine::Step::G1889::SpecialTrack
+
+          action = Action::LayTile.new(ehime, tile: game.tile_by_id('14-0'), hex: game.hex_by_id('C4'), rotation: 1)
+          subject.process_action(action)
+
+          expect(subject.active_step).to be_a Engine::Step::BuyTrain
+          expect(game.active_players).to eq([game.players[0]])
+          expect(subject.active_entities).to eq([corporation])
+        end
+
+        it 'requires a pass action if not laying' do
+          expect(subject.active_step).to be_a Engine::Step::BuyTrain
+
+          train = subject.active_step.buyable_trains(corporation).first
+
+          expect(game.active_players).to eq([game.players[0]])
+
+          subject.process_action(
+            Action::BuyCompany.new(
+              corporation,
+              company: ehime,
+              price: 40,
+            )
+          )
+
+          expect(game.active_players).to eq([game.players[1]])
+          expect(subject.active_step).to be_a Engine::Step::G1889::SpecialTrack
+
+          action = Action::BuyTrain.new(corporation, train: train, price: train.price)
+          expect { subject.process_action(action) }.to raise_error(GameError)
+
+          action = Action::Pass.new(ehime)
+          subject.process_action(action)
+
+          expect(subject.active_step).to be_a Engine::Step::BuyTrain
+          expect(game.active_players).to eq([game.players[0]])
+          expect(subject.active_entities).to eq([corporation])
         end
       end
     end
@@ -341,7 +402,7 @@ module Engine
           fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation2)
 
           corporation.cash = subject.active_step.buyable_trains(corporation).first.price
-          train = subject.active_step.buyable_trains(corporation).find { |x| x.name == 'D' }
+          train = subject.active_step.buyable_trains(corporation).find { |t| t.name == 'D' }
           action = Action::BuyTrain.new(corporation, train: train, price: train.price)
           fake_buy_train(train, corporation)
           expect { subject.process_action(action) }.to raise_error GameError
@@ -459,7 +520,8 @@ module Engine
       let(:game) { Game::G1846.new(players) }
       let(:corporation) { game.corporation_by_id('B&O') }
       let(:corporation_1) { game.corporation_by_id('PRR') }
-      let(:minor) { game.minor_by_id('MS') }
+      let(:big4) { game.minor_by_id('BIG4') }
+      let(:ms) { game.minor_by_id('MS') }
       let(:company) { game.company_by_id('SC') }
       let(:hex_b8) { game.hex_by_id('B8') }
       let(:hex_d14) { game.hex_by_id('D14') }
@@ -469,9 +531,16 @@ module Engine
 
       before :each do
         game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
+        corporation.ipoed = true
         corporation.cash = 80
-        corporation.owner = game.players.first
+
+        bundle = ShareBundle.new(corporation.shares.first)
+        game.share_pool.transfer_shares(bundle, game.players.first)
+
         company.owner = game.players.first
+
+        ms.owner = game.players[1]
+        big4.owner = game.players[2]
       end
 
       describe 'Steamboat Company' do
@@ -497,10 +566,10 @@ module Engine
 
           subject = goto_new_or!
 
-          subject.process_action(Action::Assign.new(company, target: minor))
+          subject.process_action(Action::Assign.new(company, target: ms))
           expect(company).not_to be_assigned_to(corporation)
           expect(company).not_to be_assigned_to(corporation_1)
-          expect(company).to be_assigned_to(minor)
+          expect(company).to be_assigned_to(ms)
 
           subject = goto_new_or!
 
@@ -510,7 +579,7 @@ module Engine
 
           subject.process_action(Action::Assign.new(company, target: corporation_1))
           expect(company).not_to be_assigned_to(corporation)
-          expect(company).not_to be_assigned_to(minor)
+          expect(company).not_to be_assigned_to(ms)
           expect(company).to be_assigned_to(corporation_1)
 
           subject.process_action(
@@ -545,11 +614,144 @@ module Engine
           expect(company).not_to be_assigned_to(corporation_1)
           expect(company).not_to be_assigned_to(hex_g19)
 
-          action = Action::Assign.new(company, target: hex_g19)
-          expect { subject.process_action(action) }.to raise_error GameError
-
           action = Action::Assign.new(company, target: corporation_1)
           expect { subject.process_action(action) }.to raise_error GameError
+
+          subject.process_action(Action::Assign.new(company, target: hex_g19))
+          expect(company).to be_assigned_to(hex_g19)
+        end
+      end
+
+      describe 'buy_train' do
+        before :each do
+          # skip past non train-buying actions
+          until subject.active_step.is_a?(Engine::Step::Train)
+            action = Action::Pass.new(subject.current_entity)
+            subject.process_action(action)
+          end
+
+          # Allow 7/8 to be purchased
+          while (train = subject.active_step.buyable_trains(corporation).first).name != '6'
+            fake_buy_train(train, corporation_1)
+          end
+          fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation_1)
+
+          # enough cash for a 6
+          corporation.cash = subject.active_step.buyable_trains(corporation).first.price
+        end
+
+        describe 'corporation can afford a 6' do
+          before :each do
+            corporation.cash = 800
+          end
+
+          it 'does not allow president contributing cash to purchase a 7/8' do
+            # grab a 7/8 train
+            train = subject.active_step.buyable_trains(corporation).find { |t| t.name == '6' }
+            variant = '7/8'
+            price = train.variants[variant][:price]
+
+            # only buyable variant is 6
+            expect(subject.active_step.buyable_train_variants(train, corporation)).to eq([train.variants['6']])
+
+            expect(corporation.cash).to eq(800)
+            expect(corporation.trains).to be_empty
+
+            # buying it raises error
+            action = Action::BuyTrain.new(corporation, train: train, price: price, variant: variant)
+            expect { subject.process_action(action) }.to raise_error GameError
+          end
+
+          it 'does allow the corporation to emergency issue shares to purchase a 7/8' do
+            bundle = game.emergency_issuable_bundles(corporation).first
+
+            subject.process_action(Action::SellShares.new(
+                                     corporation,
+                                     shares: bundle.shares,
+                                     share_price: bundle.price,
+                                     percent: bundle.percent,
+                                   ))
+
+            expect(corporation.cash).to eq(912)
+
+            buyable_depot_trains = subject.active_step.buyable_trains(corporation).select { |t| t.owner.is_a?(Depot) }
+            expect(buyable_depot_trains.size).to eq(1)
+
+            train = buyable_depot_trains.first
+            variant = '7/8'
+            price = train.variants[variant][:price]
+
+            action = Action::BuyTrain.new(corporation, train: train, price: price, variant: variant)
+            subject.process_action(action)
+
+            expect(corporation.cash).to eq(12)
+            expect(corporation.trains.map(&:name)).to eq(%w[7/8])
+          end
+        end
+
+        describe 'corporation cannot afford a 6' do
+          before :each do
+            corporation.cash = 799
+          end
+
+          it 'allows president contributing cash to purchase a 7/8' do
+            # grab a 7/8 train
+            train = subject.active_step
+                      .buyable_trains(corporation)
+                      .find { |t| t.owner.is_a?(Depot) }
+            variant = '7/8'
+            price = train.variants[variant][:price]
+
+            initial_president_cash = corporation.owner.cash
+
+            expect(corporation.cash).to eq(799)
+            expect(corporation.trains).to be_empty
+
+            action = Action::BuyTrain.new(corporation, train: train, price: price, variant: variant)
+            subject.process_action(action)
+
+            expect(corporation.cash).to eq(0)
+            expect(corporation.trains.map(&:name)).to eq(%w[7/8])
+            expect(corporation.owner.cash).to eq(initial_president_cash - 101)
+          end
+
+          it 'allows president selling shares to purchase a 7/8 even if a 6 is affordable with the presidential cash' do
+            player = corporation.owner
+            player.cash = 1
+
+            # give the president a 3rd share that they can sell
+            bundle = ShareBundle.new(corporation.shares[0])
+            game.share_pool.transfer_shares(bundle, player)
+
+            # add shares to the pool so the corp may not issue any
+            bundle = ShareBundle.new(corporation.shares.slice(0..2))
+            game.share_pool.transfer_shares(bundle, game.share_pool)
+            expect(game.emergency_issuable_bundles(corporation)).to be_empty
+
+            bundle = player.dumpable_bundles(corporation).first
+            subject.process_action(Action::SellShares.new(
+                                     player,
+                                     shares: bundle.shares,
+                                     share_price: bundle.price,
+                                     percent: bundle.percent,
+                                   ))
+
+            expect(player.cash).to eq(138)
+            expect(corporation.cash).to eq(799)
+
+            buyable_depot_trains = subject.active_step.buyable_trains(corporation).select { |t| t.owner.is_a?(Depot) }
+            expect(buyable_depot_trains.size).to eq(1)
+            train = buyable_depot_trains.first
+            variant = '7/8'
+            price = train.variants[variant][:price]
+
+            action = Action::BuyTrain.new(corporation, train: train, price: price, variant: variant)
+            subject.process_action(action)
+
+            expect(player.cash).to eq(37)
+            expect(corporation.cash).to eq(0)
+            expect(corporation.trains.map(&:name)).to eq(%w[7/8])
+          end
         end
       end
     end
