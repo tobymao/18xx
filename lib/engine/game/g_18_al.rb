@@ -4,7 +4,6 @@ require_relative '../config/game/g_18_al'
 require_relative 'base'
 require_relative 'company_price_50_to_150_percent'
 require_relative 'revenue_4d'
-require_relative 'terminus_check'
 
 module Engine
   module Game
@@ -40,7 +39,6 @@ module Engine
       }.freeze
       include CompanyPrice50To150Percent
       include Revenue4D
-      include TerminusCheck
 
       def route_bonuses
         ROUTE_BONUSES
@@ -88,9 +86,6 @@ module Engine
       end
 
       def revenue_for(route, stops)
-        # Mobile and Nashville should not be possible to pass through
-        ensure_termini_not_passed_through(route, %w[A4 Q2])
-
         revenue = adjust_revenue_for_4d_train(route, stops, super)
 
         route.corporation.abilities(:hexes_bonus) do |ability|

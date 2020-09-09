@@ -46,6 +46,7 @@ module Engine
             path.nodes.each do |next_node|
               next if next_node == self
               next if corporation && next_node.blocks?(corporation)
+              next if path.terminal?
 
               next_node.walk(
                 visited: visited,
