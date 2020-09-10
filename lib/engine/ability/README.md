@@ -78,10 +78,10 @@ Exchange this company for a share of a corporation.
 
 ## hex_bonus
 
-????
+Give a route bonus if at least one of the hexes are included in the route.
 
-- `hexes`:
-- `amount`:
+- `hexes`: Name of hexes that gives a bonus.
+- `amount`: Revenue bonus.
 
 ## no_buy
 
@@ -156,14 +156,17 @@ normal tile lay actions.
   connect to each other. Default true.
 - `blocks`: If true and `count` is greater than 1, all tile lays must
   be performed at once.
+- `reachable`: If true, when tile layed, a check is done if one of the
+  controlling corporation's station tokens are reachable; if not a game
+  error is triggered. Default false.
 
 ## token
 
-Modified station token placment
+Modified station token placement
 
 - `hexes`: Array of hex coordinates where this ability may be used
 - `price`: Price for placing token
 - `teleport_price`: If present, this ability may be used to place a
   token without connectivity, for the given price.
 - `extra`: If true, this ability may be used in addition to the turn's
-  normal token placment step. Default false.
+  normal token placement step. Default false.
