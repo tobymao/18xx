@@ -23,7 +23,8 @@ module View
         entity = @game.current_entity
         selected_company = selected? ? nil : @company
 
-        if selected_company && @game.round.actions_for(entity).include?('assign') && entity.respond_to?(:assign!)
+        if selected_company && @game.round.actions_for(entity).include?('assign') &&
+          (@game.class::ALL_COMPANIES_ASSIGNABLE || entity.respond_to?(:assign!))
           return process_action(Engine::Action::Assign.new(entity, target: selected_company))
         end
 

@@ -40,6 +40,7 @@ module Engine
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
       POOL_SHARE_DROP = :one
       SELL_MOVEMENT = :none
+      ALL_COMPANIES_ASSIGNABLE = true
 
       ASSIGNMENT_TOKENS = {
         'bridge' => '/icons/1817/bridge_token.svg',
