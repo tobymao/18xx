@@ -728,8 +728,7 @@ module Engine
          ],
          "status":[
             "can_buy_companies",
-            "can_buy_companies_from_other_players",
-            "limited_train_buy"
+            "can_buy_companies_from_other_players"
          ],
          "operating_rounds": 2
       },
