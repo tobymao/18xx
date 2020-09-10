@@ -217,19 +217,19 @@ module Engine
             expect(subject.num_shares_of(corporation)).to eq(2)
             expect(corporation.num_shares_of(corporation)).to eq(7)
 
-            pool_bundles = subject.bundles_for_corporation(corporation)
-            buyable = pool_bundles.select { |b| step.can_buy?(player_1, b) }
-            bundle = buyable.first
+            shares = subject.shares_by_corporation[corporation]
+            buyable = shares.select { |b| step.can_buy?(player_1, b) }
 
             # only buyable bundle for player 1 is the partial presidents bundle
             expect(buyable.size).to eq(1)
+            share = buyable.first
 
             # player 2, with no shares, cannot buy any of the bundles in the
             # pool
-            expect(pool_bundles.select { |b| step.can_buy?(player_2, b) }).to eq([])
+            expect(shares.select { |b| step.can_buy?(player_2, b) }).to eq([])
 
             # buy the share
-            action = Engine::Action::BuyShares.new(player_1, shares: bundle.shares, share_price: 150, percent: 10)
+            action = Engine::Action::BuyShares.new(player_1, shares: share, share_price: 150, percent: 20)
             round.process_action(action)
 
             # new president
@@ -240,6 +240,7 @@ module Engine
             expect(corporation.num_shares_of(corporation)).to eq(7)
             expect(corporation.num_market_shares).to eq(1)
             expect(corporation.owner).to be(player_1)
+            expect(player_1.cash).to eq(250)
           end
         end
       end

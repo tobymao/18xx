@@ -12,12 +12,26 @@ module Engine
           bundle = bundle.to_bundle
           corporation = bundle.corporation
 
-          return false if corporation.receivership? &&
-                          bundle.presidents_share &&
-                          ((bundle.num_shares > 1) ||
-                           (entity.num_shares_of(corporation) != 1))
+          if corporation.receivership? && bundle.presidents_share
+            return false if entity.num_shares_of(corporation).zero?
 
-          super
+            bundle = ShareBundle.new(bundle.shares, 10)
+          end
+
+          super(entity, bundle)
+        end
+
+        def process_buy_shares(action)
+          bundle = action.bundle
+
+          if bundle&.corporation&.receivership? && bundle.presidents_share
+            action = Action::BuyShares.new(action.entity,
+                                           shares: bundle.shares,
+                                           share_price: bundle.share_price,
+                                           percent: 10)
+          end
+
+          super(action)
         end
       end
     end
