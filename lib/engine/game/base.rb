@@ -155,6 +155,8 @@ module Engine
 
       IPO_NAME = 'IPO'
 
+      ALL_COMPANIES_ASSIGNABLE = false
+
       CACHABLE = [
         %i[players player],
         %i[corporations corporation],
