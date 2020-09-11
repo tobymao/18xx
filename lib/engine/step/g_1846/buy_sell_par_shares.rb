@@ -22,7 +22,7 @@ module Engine
         end
 
         def process_buy_shares(action)
-          bundle = action.bundle
+          return super unless (bundle = action.bundle)
 
           if bundle&.corporation&.receivership? && bundle.presidents_share
             action = Action::BuyShares.new(action.entity,

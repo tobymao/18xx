@@ -160,10 +160,6 @@ module Engine
       num_shares.times { move_share(shares_of(corporation).first, owner) }
     end
 
-    def companies
-      []
-    end
-
     private
 
     def distance(player_a, player_b)
