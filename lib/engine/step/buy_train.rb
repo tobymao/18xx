@@ -31,10 +31,6 @@ module Engine
         @acted ? 'Done (Trains)' : 'Skip (Trains)'
       end
 
-      def sequential?
-        true
-      end
-
       def pass!
         @last_share_sold_price = nil
         super

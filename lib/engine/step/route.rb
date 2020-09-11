@@ -39,10 +39,6 @@ module Engine
         @game.graph.reachable_hexes(entity)[hex]
       end
 
-      def sequential?
-        true
-      end
-
       def round_state
         {
           routes: [],

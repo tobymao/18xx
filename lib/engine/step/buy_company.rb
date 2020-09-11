@@ -37,10 +37,6 @@ module Engine
         @acted ? 'Done (Companies)' : 'Skip (Companies)'
       end
 
-      def sequential?
-        true
-      end
-
       def process_buy_company(action)
         entity = action.entity
         company = action.company
