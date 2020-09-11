@@ -34,6 +34,19 @@ module View
           },
         }.freeze
 
+        P_RIGHT_CORNER = {
+          flat: {
+            region_weights: { RIGHT_CORNER => 1.0, RIGHT_MID => 0.25 },
+            x: 71.25,
+            y: 0,
+          },
+          pointy: {
+            region_weights: { RIGHT_CORNER => 1.0, [10] => 0.25 },
+            x: 67,
+            y: 0,
+          },
+        }.freeze
+
         P_BOTTOM_LEFT_CORNER = {
           flat: {
             region_weights: { BOTTOM_LEFT_CORNER => 1.0, [21] => 0.5 },
@@ -79,7 +92,7 @@ module View
             y: -65,
           },
           P_LEFT_CORNER[:flat],
-          # bottom left corner
+          P_RIGHT_CORNER[:flat],
           P_BOTTOM_LEFT_CORNER[:flat],
           # edge 1
           {
@@ -102,27 +115,32 @@ module View
             x: -50,
             y: -31,
           },
-          # edge 5
-          {
-            region_weights: { [17] => 1.0, [18, 23] => 0.25 },
-            x: 50,
-            y: 37,
-          },
           # top left corner
           {
             region_weights: { UPPER_LEFT_CORNER => 1.0 },
             x: -30,
             y: -65,
           },
+          P_LEFT_CORNER[:pointy],
+          P_BOTTOM_LEFT_CORNER[:pointy],
           # top right corner
           {
             region_weights: { UPPER_RIGHT_CORNER => 1.0, [2] => 0.5 },
             x: 30,
             y: -65,
           },
-          P_LEFT_CORNER[:pointy],
-          # bottom left corner
-          P_BOTTOM_LEFT_CORNER[:pointy],
+          # edge 4
+          {
+            region_weights: { [10] => 1.0, [4, 11] => 0.25 },
+            x: 67,
+            y: 0,
+          },
+          # edge 5
+          {
+            region_weights: { [17] => 1.0, [18, 23] => 0.25 },
+            x: 50,
+            y: 37,
+          },
           # edge 1
           {
             region_weights: { [13, 14] => 1.0 },
