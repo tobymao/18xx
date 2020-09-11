@@ -2,22 +2,25 @@
 
 require_relative '../buy_sell_par_shares'
 require_relative '../../action/take_loan'
+require_relative 'passable_auction'
 
 module Engine
   module Step
     module G1817
       class BuySellParShares < BuySellParShares
+        include PassableAuction
+
         def actions(entity)
           return ['take_loan'] if @game.can_take_loan?(entity) && entity.owned_by?(current_entity)
           return [] if !entity.player? || @current_actions.any? { |a| a.is_a?(Action::TakeLoan) }
 
           if available_subsidiaries(entity).any?
             actions = %w[assign]
-            actions << 'pass' if entity.cash >= @bid.price
+            actions << 'pass' if entity.cash >= @winning_bid.price
             return actions
           end
 
-          return %w[bid pass] if @bid
+          return %w[bid pass] if @auctioning
 
           actions = super
           actions |= %w[bid pass] unless bought?
@@ -25,38 +28,51 @@ module Engine
         end
 
         def active_entities
-          return super unless @bid
+          return [@winning_bid.entity] if @winning_bid
+          return super unless @auctioning
 
-          [@bidders[(@bidders.index(@bid.entity) + 1) % @bidders.size]]
+          [@active_bidders[(@active_bidders.index(highest_bid(@auctioning).entity) + 1) % @active_bidders.size]]
+        end
+
+        def auctioning_corporation
+          return @winning_bid.corporation if @winning_bid
+
+          @auctioning
         end
 
         def pass_description
           return 'Pass (Subsidiaries)' if available_subsidiaries.any?
-          return super unless @bid
+          return super unless @auctioning
 
           'Pass (Bid)'
         end
 
         def log_pass(entity)
-          return super unless @bid
-
-          @log << "#{entity.name} passes on #{@bid.corporation.name}"
+          return super unless @auctioning
         end
 
         def pass!
-          return super unless @bid
-          return par_corporation if available_subsidiaries.any?
+          return par_corporation if @winning_bid
+          return super unless @auctioning
 
-          @bidders.delete(current_entity)
-          finalize_auction
+          pass_auction(current_entity)
+          resolve_bids
         end
 
         def process_bid(action)
+          if auctioning
+            add_bid(action)
+          else
+            selection_bid(action)
+          end
+        end
+
+        def add_bid(action)
           entity = action.entity
           corporation = action.corporation
           price = action.price
 
-          if @bid
+          if @auctioning
             @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
           else
             @log << "#{entity.name} auctions #{corporation.name} for #{@game.format_currency(price)}"
@@ -64,22 +80,18 @@ module Engine
             @current_actions.clear
             @game.place_home_token(action.corporation)
           end
+          super(action)
 
-          @bid = action
-
-          @bidders = @round.entities.select do |player|
-            player == entity || bidding_power(player) >= min_bid(corporation)
-          end
-
-          finalize_auction
+          resolve_bids
         end
 
         def process_assign(action)
           entity = action.entity
           company = action.target
+          corporation = @winning_bid.corporation
           @game.game_error('Cannot use company in formation') unless available_subsidiaries(entity).include?(company)
           @subsidiaries << company
-          @log << "#{company.name} used for forming #{@bid.corporation.name} "\
+          @log << "#{company.name} used for forming #{corporation.name} "\
             "contributing #{@game.format_currency(company.value)} value"
           par_corporation if available_subsidiaries(entity).empty?
         end
@@ -90,13 +102,14 @@ module Engine
         end
 
         def par_corporation
-          entity = @bid.entity
-          corporation = @bid.corporation
-          price = @bid.price
+          entity = @winning_bid.entity
+          corporation = @winning_bid.corporation
+          price = @winning_bid.price
           par_price = price / 2
 
           share_price = @game.find_share_price(par_price)
-          process_par(Action::Par.new(@bid.entity, corporation: @bid.corporation, share_price: share_price))
+          action = Action::Par.new(@winning_bid.entity, corporation: @winning_bid.corporation, share_price: share_price)
+          process_par(action)
           corporation.spend(corporation.cash, entity)
 
           @subsidiaries.each do |company|
@@ -113,27 +126,25 @@ module Engine
           entity.spend(price, corporation)
           @log << "#{corporation.name} starts with #{@game.format_currency(price)}"
 
-          @bid = nil
-          @bidders = nil
+          @auctioning = nil
+          @winning_bid = nil
           @subsidiaries = []
           pass!
         end
 
-        def finalize_auction
-          return if @bidders.size > 1
-
-          par_corporation unless available_subsidiaries(@bid.entity).any?
+        def win_bid(winner)
+          @winning_bid = winner
+          par_corporation unless available_subsidiaries(winner.entity).any?
         end
 
         def available_subsidiaries(entity)
           entity ||= current_entity
-          return [] unless @bidders&.one?
-          return [] if @bid.entity != entity
+          return [] if !@winning_bid || @winning_bid.entity != entity
 
           total = @subsidiaries.sum(&:value)
 
           (entity.companies - @subsidiaries).select do |company|
-            @bid.price > company.value + total
+            @winning_bid.price > company.value + total
           end
         end
 
@@ -141,14 +152,10 @@ module Engine
           0
         end
 
-        def min_increment
-          5
-        end
+        def min_bid(corporation)
+          return 100 unless @auctioning
 
-        def min_bid(_corporation)
-          return 100 unless @bid
-
-          @bid.price + min_increment
+          highest_bid(corporation).price + min_increment
         end
 
         def max_bid(player, _corporation)
@@ -164,13 +171,9 @@ module Engine
         end
 
         def setup
+          setup_auction
           super
           @subsidiaries = []
-          @bid ||= nil
-        end
-
-        def auctioning_corporation
-          @bid&.corporation
         end
       end
     end

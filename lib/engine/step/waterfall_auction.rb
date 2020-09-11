@@ -22,7 +22,7 @@ module Engine
       def process_pass(action)
         entity = action.entity
 
-        if auctioning_company
+        if auctioning
           pass_auction(action.entity)
         else
           @log << "#{entity.name} passes bidding"
@@ -35,7 +35,7 @@ module Engine
       def process_bid(action)
         action.entity.unpass!
 
-        if auctioning_company
+        if auctioning
           add_bid(action)
         else
           @round.last_to_act = action.entity
@@ -45,7 +45,7 @@ module Engine
       end
 
       def active_entities
-        active_company_bids do |_, bids|
+        active_bids do |_, bids|
           return [bids.min_by(&:price).entity]
         end
 
@@ -57,7 +57,7 @@ module Engine
 
         correct = false
 
-        active_company_bids do |_company, bids|
+        active_bids do |_company, bids|
           correct = bids.min_by(&:price).entity == entity
         end
 
@@ -65,7 +65,7 @@ module Engine
       end
 
       def setup
-        super
+        setup_auction
         @companies = @game.companies.sort_by(&:min_bid)
         @cheapest = @companies.first
         @bidders = Hash.new { |h, k| h[k] = [] }
@@ -86,7 +86,7 @@ module Engine
       end
 
       def may_purchase?(company)
-        active_company_bids { return false }
+        active_bids { return false }
         company && company == @companies.first
       end
 
@@ -123,7 +123,7 @@ module Engine
         entities.each(&:unpass!)
       end
 
-      def active_company_bids
+      def active_bids
         company = @companies[0]
         bids = @bids[company]
         yield company, bids if bids.any?
@@ -142,7 +142,7 @@ module Engine
       def resolve_bids
         while (bids = @bids[@companies.first])
           break if bids.empty?
-          break @log << "#{auctioning_company.name} goes up for auction" unless bids.one?
+          break @log << "#{auctioning.name} goes up for auction" unless bids.one?
 
           accept_bid(bids.first)
         end

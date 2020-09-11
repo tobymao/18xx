@@ -89,7 +89,7 @@ module View
           return [] if @hidden && !@step.visible?
           return [] unless @current_actions.include?('bid')
 
-          @selected_company = @step.auctioning_company if @step.auctioning_company
+          @selected_company = @step.auctioning if @step.auctioning
 
           props = {
             style: {
