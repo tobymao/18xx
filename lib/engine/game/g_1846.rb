@@ -3,7 +3,6 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1846'
-require_relative '../g_1846/share_pool'
 require_relative 'base'
 
 module Engine
@@ -74,10 +73,6 @@ module Engine
             desc: "Choose this card if you don't want to purchase any of the offered companies this round",
           )
         end
-      end
-
-      def init_share_pool
-        Engine::G1846::SharePool.new(self)
       end
 
       def cert_limit
@@ -436,17 +431,6 @@ module Engine
         return [biggest_bundle] if biggest_bundle
 
         []
-      end
-
-      def bundle_is_presidents_share_alone_in_pool?(bundle)
-        return unless bundle
-
-        bundle = bundle.to_bundle
-
-        bundle.corporation.receivership? &&
-          bundle.presidents_share &&
-          bundle.shares.one? &&
-          @share_pool.shares_of(bundle.corporation).one?
       end
     end
   end
