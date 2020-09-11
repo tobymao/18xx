@@ -47,7 +47,7 @@ module Engine
     end
 
     def min_depot_price
-      min_depot_train.variants.map { |_, v| v[:price] }.min
+      min_depot_train&.variants&.map { |_, v| v[:price] }&.min
     end
 
     def max_depot_price
