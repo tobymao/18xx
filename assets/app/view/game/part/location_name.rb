@@ -11,8 +11,8 @@ module View
         BACKGROUND_COLOR = '#FFFFFF'
         BACKGROUND_OPACITY = '0.5'
 
-        def edge_at_bottom?(edge = nil)
-          edge&.zero? || edge == 5 || edge == 5.5
+        def edge_at_bottom?(edge)
+          edge&.zero? || edge&.to_i == 5
         end
 
         def preferred_render_locations
@@ -46,16 +46,17 @@ module View
               end
             end
 
+            ct_edges = @tile.city_towns.map { |c| @tile.preferred_city_town_edges[c] }
             # flat map: if two cities, and they are on edges 0 and 3, pick the center.
             if layout == :flat && @tile.cities.size == 2 &&
-                ([0, 3] - @tile.city_towns.map { |c| @tile.preferred_city_town_edges[c] }).empty?
+                ([0, 3] - ct_edges).empty?
               return [center]
             end
 
             # pointy map: if two cities or towns, and neither of them are on edges 1 or 4 or in the center,
             # pick the center.
             if layout == :pointy && @tile.city_towns.size == 2 &&
-                ([1, 4] - @tile.city_towns.map { |ct| @tile.preferred_city_town_edges[ct] }).size == 2 &&
+                ([1, 4] - ct_edges).size == 2 &&
                 @tile.city_towns.all? { |ct| @tile.preferred_city_town_edges[ct] }
               return [center]
             end
