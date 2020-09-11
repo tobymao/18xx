@@ -23,10 +23,6 @@ module Engine
         @acted ? 'Done (Track)' : 'Skip (Track)'
       end
 
-      def sequential?
-        true
-      end
-
       def process_lay_tile(action)
         lay_tile_action(action)
         pass! unless can_lay_tile?(action.entity)

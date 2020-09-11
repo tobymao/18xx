@@ -78,10 +78,6 @@ module Engine
         true
       end
 
-      def sequential?
-        false
-      end
-
       def setup; end
 
       def unpass!

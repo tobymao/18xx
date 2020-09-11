@@ -27,10 +27,6 @@ module Engine
         @game.graph.reachable_hexes(entity)[hex]
       end
 
-      def sequential?
-        true
-      end
-
       def process_place_token(action)
         entity = action.entity
 

@@ -37,10 +37,6 @@ module Engine
         setup
       end
 
-      def sequential?
-        true
-      end
-
       def can_place_token?(entity)
         super && !@tokened
       end
