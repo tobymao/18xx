@@ -94,21 +94,20 @@ module Engine
         depot_trains = @depot.depot_trains
         other_trains = @depot.other_trains(entity)
 
-        if entity.cash < (@depot.min_depot_price || 0)
+        if entity.cash < @depot.min_depot_price
           depot_trains = [@depot.min_depot_train] if @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
 
           if @last_share_sold_price
-            other_trains =
-              if @game.class::EBUY_OTHER_VALUE
-                must_spend = (entity.cash + entity.owner.cash) - @last_share_sold_price + 1
-                other_trains.reject { |t| t.price < must_spend }
-              else
-                []
-              end
+            if @game.class::EBUY_OTHER_VALUE
+              must_spend = (entity.cash + entity.owner.cash) - @last_share_sold_price + 1
+              other_trains.reject! { |t| t.price < must_spend }
+            else
+              other_trains = []
+            end
           end
         end
 
-        depot_trains.concat(other_trains)
+        depot_trains + other_trains
       end
 
       def buyable_train_variants(train, entity)

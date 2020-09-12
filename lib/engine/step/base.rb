@@ -90,10 +90,6 @@ module Engine
         ''
       end
 
-      def last_share_issued_price
-        nil
-      end
-
       private
 
       def entities
