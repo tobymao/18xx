@@ -48,7 +48,7 @@ module Engine
       @status = phase[:status] || []
       @next_on = @phases[@index + 1]&.dig(:on)
 
-      @log << "-- Phase #{@name.capitalize} " \
+      @log << "-- Phase #{@name} " \
         "(Operating Rounds: #{@operating_rounds}, Train Limit: #{@train_limit}, "\
         "Available Tiles: #{@tiles.map(&:capitalize).join(', ')} "\
         ') --'
