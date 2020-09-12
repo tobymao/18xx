@@ -224,7 +224,7 @@ module Engine
          "name":"Mississippi Central Railway",
          "value":60,
          "revenue":5,
-         "desc":"Converts to a 2+ train that cannot be salvaged when placed in a Major Company.",
+         "desc":"The owning Major Company exchanges this private for a special 2+ train when purchased. (This 2+ train may not be sold.) This exchange occurs immediately when purchased. If this exchange would place the Major Company over the train limit of 3, the purchase is not allowed. If this Private Company is not purchased by the end of OR 2.2, it may not be sold to a Major Company and counts against the owner's certificate limit until it closed upon the start of Phase 6.",
          "sym":"MC"
       },
       {

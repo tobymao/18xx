@@ -216,11 +216,12 @@ module Engine
         [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
       end
 
-      def add_free_train(corporation)
+      def add_free_train_and_close_company(corporation, company)
         @free_train.buyable = true
         corporation.buy_train(@free_train, :free)
         @free_train.buyable = false
-        @log << "#{corporation.name} receives a bonus non sellable #{@free_train.name} train"
+        company.close!
+        @log << "#{corporation.name} exchanges #{company.name} for a free non sellable #{@free_train.name} train"
       end
 
       def get_location_name(hex_name)
