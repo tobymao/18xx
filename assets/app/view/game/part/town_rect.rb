@@ -33,7 +33,7 @@ module View
           5.5 => [[18], false],
         }.freeze
 
-        DOUBLE_DIT_REVENUE_ANGLES = [10, -130, 130, -10, 50, -50].freeze
+        DOUBLE_DIT_REVENUE_ANGLES = [170, -130, 130, -10, 50, -50].freeze
         DOUBLE_DIT_REVENUE_REGIONS = City::OO_REVENUE_REGIONS
 
         # Maps the position method into the required format for
@@ -105,7 +105,7 @@ module View
             else
               angle = DOUBLE_DIT_REVENUE_ANGLES[@edge]
               displacement = 35
-              regions = DOUBLE_DIT_REVENUE_REGIONS[@edge]
+              regions, = DOUBLE_DIT_REVENUE_REGIONS[@edge]
             end
           else
             angle = town_rotation_angles(@tile, @town, edges)[0]

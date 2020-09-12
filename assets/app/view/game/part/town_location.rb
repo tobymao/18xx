@@ -231,7 +231,14 @@ module View
                         end
           elsif edge_a
             angles = [edge_a * 60]
-            positions = [50]
+            # need to push town close to edge if 3 or 4 slot city on same tile
+            positions = if tile.cities.one? && tile.cities[0].slots == 3
+                          [65]
+                        elsif tile.cities.one? && tile.cities[0].slots == 4
+                          [70]
+                        else
+                          [50]
+                        end
           else
             angles = [0]
             positions = [0]

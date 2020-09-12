@@ -33,7 +33,7 @@ module Engine
           true
         end
 
-        def auctioning_company; end
+        def auctioning; end
 
         def bids
           {}
