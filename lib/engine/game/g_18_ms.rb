@@ -34,6 +34,10 @@ module Engine
       COMPANY_1_AND_2 = %w[AGS BS].freeze
       ATLANTA_HEXES = %w[D12 E13 F12].freeze
 
+      def p2_company
+        @p2_company ||= company_by_id('BS')
+      end
+
       include CompanyPrice50To150Percent
 
       def setup
@@ -78,7 +82,7 @@ module Engine
           Step::Bankrupt,
           Step::Exchange,
           Step::DiscardTrain,
-          Step::SpecialTrack,
+          Step::G18MS::SpecialTrack,
           Step::G18MS::SpecialToken,
           Step::G18MS::BuyCompany,
           Step::G18MS::Track,
