@@ -32,7 +32,6 @@ module Engine
 
       HEXES_FOR_GRAY_TILE = %w[C9 E11].freeze
       COMPANY_1_AND_2 = %w[AGS BS].freeze
-      ATLANTA_HEXES = %w[D12 E13 F12].freeze
 
       include CompanyPrice50To150Percent
 
@@ -145,9 +144,6 @@ module Engine
       end
 
       def routes_revenue(routes)
-        atlanta_stops = routes.count { |r| r.stops.any? { |s| ATLANTA_HEXES.include?(s.hex.id) } }
-        game_error('Atlanta may only be visited once per run') if atlanta_stops > 1
-
         active_step.current_entity.trains.each do |t|
           next unless t.name == "#{@turn}+"
 

@@ -41,7 +41,7 @@ module Engine
       "E5":"Meridian",
       "E9":"Selma",
       "E11":"Montgomery",
-      "E13":"Atlanta",
+      "E15":"Atlanta",
       "G3":"Hattiesburg",
       "H4":"Gulfport",
       "H6":"Mobile",
@@ -465,14 +465,17 @@ module Engine
          "path=a:1,b:5":[
             "A3"
          ],
-         "offboard=revenue:yellow_40|brown_50,hide:1,groups:Atlanta;path=a:0,b:_0;border=edge:5":[
+         "path=a:0,b:5":[
             "D12"
          ],
-         "offboard=revenue:yellow_40|brown_50,groups:Atlanta;path=a:1,b:_0;border=edge:2;border=edge:0":[
+         "path=a:0,b:4;path=a:1,b:4;path=a:2,b:4":[
             "E13"
          ],
-         "offboard=revenue:yellow_40|brown_50,hide:1,groups:Atlanta;path=a:2,b:_0;border=edge:3":[
+         "path=a:2,b:3":[
             "F12"
+         ],
+         "offboard=revenue:yellow_40|brown_50;path=a:1,b:_0":[
+            "E15"
          ]
       },
       "gray":{
