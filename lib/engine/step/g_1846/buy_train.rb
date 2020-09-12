@@ -58,9 +58,18 @@ module Engine
           corporation = action.entity
           bundle = action.bundle
 
-          if !can_issue?(corporation) || !issuable_shares(corporation).include?(bundle)
+          issuable = issuable_shares(corporation)
+          bundle_index = issuable.index(bundle)
+
+          if !can_issue?(corporation) || !bundle_index
             @game.game_error("#{corporation.name} cannot issue share bundle: #{bundle.shares}")
           end
+
+          @last_share_issued_price = if bundle_index.zero?
+                                       bundle.price
+                                     else
+                                       bundle.price - issuable[bundle_index - 1].price
+                                     end
 
           @game.share_pool.sell_shares(bundle)
 
@@ -71,14 +80,24 @@ module Engine
           @round.emergency_issued = true
         end
 
+        def buyable_trains(entity)
+          trains = super
+          @last_share_issued_price ? trains.select(&:from_depot?) : trains
+        end
+
         def buyable_train_variants(train, entity)
           variants = super
 
           return variants if (variants.size < 2) || train.owned_by_corporation?
 
-          cash = entity.cash
           min, max = variants.sort_by { |v| v[:price] }
-          return [min] if (min[:price] <= cash) && (cash < max[:price])
+          return [min] if ((min[:price] <= entity.cash) && (entity.cash < max[:price])) || entity.receivership?
+
+          if (last_cash_raised = @last_share_sold_price || @last_share_issued_price)
+            must_spend = entity.cash - last_cash_raised + 1
+            must_spend += entity.owner.cash if @last_share_sold_price
+            variants.reject! { |v| v[:price] < must_spend }
+          end
 
           variants
         end

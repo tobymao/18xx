@@ -68,6 +68,15 @@ module Engine
       corp.buy_train(train, train.price)
     end
 
+    def real_buy_depot_train(corporation, variant)
+      train = subject.active_step
+                .buyable_trains(corporation)
+                .find(&:from_depot?)
+      price = train.variants[variant][:price]
+      action = Action::BuyTrain.new(corporation, train: train, price: price, variant: variant)
+      subject.process_action(action)
+    end
+
     before :each do
       game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
       corporation.cash = 100
@@ -150,7 +159,7 @@ module Engine
           subject.process_action(Action::SellShares.new(
             player,
             shares: bundle.shares,
-            share_price: bundle.price,
+            share_price: bundle.price_per_share,
             percent: bundle.percent,
           ))
           available = subject.active_step.buyable_trains(corporation)
@@ -365,7 +374,7 @@ module Engine
           subject.process_action(Action::SellShares.new(
             player,
             shares: bundle.shares,
-            share_price: bundle.price,
+            share_price: bundle.price_per_share,
             percent: bundle.percent,
           ))
           available = subject.active_step.buyable_trains(corporation)
@@ -381,11 +390,12 @@ module Engine
           corporation.cash = 1
           player.cash = 1
 
-          bundle = player.bundles_for_corporation(corporation2)[1]
+          bundle = player.bundles_for_corporation(corporation2)[3]
+
           subject.process_action(Action::SellShares.new(
             player,
             shares: bundle.shares,
-            share_price: bundle.price,
+            share_price: bundle.price_per_share,
             percent: bundle.percent,
           ))
           available = subject.active_step.buyable_trains(corporation)
@@ -646,20 +656,17 @@ module Engine
           end
 
           it 'does not allow president contributing cash to purchase a 7/8' do
-            # grab a 7/8 train
-            train = subject.active_step.buyable_trains(corporation).find { |t| t.name == '6' }
-            variant = '7/8'
-            price = train.variants[variant][:price]
-
             # only buyable variant is 6
+            train = subject.active_step
+                      .buyable_trains(corporation)
+                      .find(&:from_depot?)
             expect(subject.active_step.buyable_train_variants(train, corporation)).to eq([train.variants['6']])
 
             expect(corporation.cash).to eq(800)
             expect(corporation.trains).to be_empty
 
             # buying it raises error
-            action = Action::BuyTrain.new(corporation, train: train, price: price, variant: variant)
-            expect { subject.process_action(action) }.to raise_error GameError
+            expect { real_buy_depot_train(corporation, '7/8') }.to raise_error GameError, 'Not a buyable train'
           end
 
           it 'does allow the corporation to emergency issue shares to purchase a 7/8' do
@@ -668,21 +675,16 @@ module Engine
             subject.process_action(Action::SellShares.new(
                                      corporation,
                                      shares: bundle.shares,
-                                     share_price: bundle.price,
+                                     share_price: bundle.price_per_share,
                                      percent: bundle.percent,
                                    ))
 
             expect(corporation.cash).to eq(912)
 
-            buyable_depot_trains = subject.active_step.buyable_trains(corporation).select { |t| t.owner.is_a?(Depot) }
+            buyable_depot_trains = subject.active_step.buyable_trains(corporation).select(&:from_depot?)
             expect(buyable_depot_trains.size).to eq(1)
 
-            train = buyable_depot_trains.first
-            variant = '7/8'
-            price = train.variants[variant][:price]
-
-            action = Action::BuyTrain.new(corporation, train: train, price: price, variant: variant)
-            subject.process_action(action)
+            real_buy_depot_train(corporation, '7/8')
 
             expect(corporation.cash).to eq(12)
             expect(corporation.trains.map(&:name)).to eq(%w[7/8])
@@ -694,63 +696,98 @@ module Engine
             corporation.cash = 799
           end
 
-          it 'allows president contributing cash to purchase a 7/8' do
-            # grab a 7/8 train
-            train = subject.active_step
-                      .buyable_trains(corporation)
-                      .find { |t| t.owner.is_a?(Depot) }
-            variant = '7/8'
-            price = train.variants[variant][:price]
+          describe 'has shares to issue' do
+            describe 'with stock price of 112' do
+              before :each do
+                game.stock_market.set_par(corporation, game.stock_market.par_prices[3])
+              end
 
-            initial_president_cash = corporation.owner.cash
+              it 'can issue one share to buy a 6 and not a 7/8' do
+                bundle = game.emergency_issuable_bundles(corporation).first
 
-            expect(corporation.cash).to eq(799)
-            expect(corporation.trains).to be_empty
+                subject.process_action(Action::SellShares.new(
+                                         corporation,
+                                         shares: bundle.shares,
+                                         share_price: bundle.price_per_share,
+                                         percent: bundle.percent,
+                                       ))
+                expect { real_buy_depot_train(corporation, '7/8') }.to raise_error GameError, 'Not a buyable train'
 
-            action = Action::BuyTrain.new(corporation, train: train, price: price, variant: variant)
-            subject.process_action(action)
+                real_buy_depot_train(corporation, '6')
+                expect(corporation.trains.map(&:name)).to eq(%w[6])
+              end
 
-            expect(corporation.cash).to eq(0)
-            expect(corporation.trains.map(&:name)).to eq(%w[7/8])
-            expect(corporation.owner.cash).to eq(initial_president_cash - 101)
+              it 'can issue two shares to buy a 7/8 and not a 6' do
+                bundles = game.emergency_issuable_bundles(corporation)
+                bundle = bundles[1]
+
+                subject.process_action(Action::SellShares.new(
+                                         corporation,
+                                         shares: bundle.shares,
+                                         share_price: bundle.price_per_share,
+                                         percent: bundle.percent,
+                                       ))
+                expect { real_buy_depot_train(corporation, '6') }.to raise_error GameError, 'Not a buyable train'
+                real_buy_depot_train(corporation, '7/8')
+                expect(corporation.trains.map(&:name)).to eq(%w[7/8])
+              end
+            end
+
+            it 'does not allow president contributing cash to purchase a 7/8' do
+              expect { real_buy_depot_train(corporation, '7/8') }.to raise_error GameError, 'Not a buyable train'
+            end
           end
 
-          it 'allows president selling shares to purchase a 7/8 even if a 6 is affordable with the presidential cash' do
-            player = corporation.owner
-            player.cash = 1
+          describe 'no shares to issue' do
+            before :each do
+              # add shares to the pool so the corp may not issue any
+              bundle = ShareBundle.new(corporation.shares.slice(0..2))
+              game.share_pool.transfer_shares(bundle, game.share_pool)
+              expect(game.emergency_issuable_bundles(corporation)).to be_empty
+            end
 
-            # give the president a 3rd share that they can sell
-            bundle = ShareBundle.new(corporation.shares[0])
-            game.share_pool.transfer_shares(bundle, player)
+            it 'allows president contributing cash to purchase a 7/8' do
+              initial_president_cash = corporation.owner.cash
 
-            # add shares to the pool so the corp may not issue any
-            bundle = ShareBundle.new(corporation.shares.slice(0..2))
-            game.share_pool.transfer_shares(bundle, game.share_pool)
-            expect(game.emergency_issuable_bundles(corporation)).to be_empty
+              expect(corporation.cash).to eq(799)
+              expect(corporation.trains).to be_empty
 
-            bundle = player.dumpable_bundles(corporation).first
-            subject.process_action(Action::SellShares.new(
-                                     player,
-                                     shares: bundle.shares,
-                                     share_price: bundle.price,
-                                     percent: bundle.percent,
-                                   ))
+              real_buy_depot_train(corporation, '7/8')
 
-            expect(player.cash).to eq(138)
-            expect(corporation.cash).to eq(799)
+              expect(corporation.cash).to eq(0)
+              expect(corporation.trains.map(&:name)).to eq(%w[7/8])
+              expect(corporation.owner.cash).to eq(initial_president_cash - 101)
+            end
 
-            buyable_depot_trains = subject.active_step.buyable_trains(corporation).select { |t| t.owner.is_a?(Depot) }
-            expect(buyable_depot_trains.size).to eq(1)
-            train = buyable_depot_trains.first
-            variant = '7/8'
-            price = train.variants[variant][:price]
+            it 'allows president selling shares to purchase a 7/8 even if a 6 is affordable '\
+               'with the presidential cash' do
+              player = corporation.owner
+              player.cash = 1
 
-            action = Action::BuyTrain.new(corporation, train: train, price: price, variant: variant)
-            subject.process_action(action)
+              # give the president a 3rd share that they can sell
+              bundle = ShareBundle.new(corporation.shares[0])
+              game.share_pool.transfer_shares(bundle, player)
 
-            expect(player.cash).to eq(37)
-            expect(corporation.cash).to eq(0)
-            expect(corporation.trains.map(&:name)).to eq(%w[7/8])
+              bundle = player.dumpable_bundles(corporation).first
+              subject.process_action(Action::SellShares.new(
+                                       player,
+                                       shares: bundle.shares,
+                                       share_price: bundle.price_per_share,
+                                       percent: bundle.percent,
+                                     ))
+
+              expect(player.cash).to eq(138)
+              expect(corporation.cash).to eq(799)
+
+              buyable_depot_trains = subject.active_step.buyable_trains(corporation).select(&:from_depot?)
+              expect(buyable_depot_trains.size).to eq(1)
+
+              real_buy_depot_train(corporation, '7/8')
+
+              expect(player.cash).to eq(37)
+              expect(corporation.cash).to eq(0)
+              expect(corporation.trains.map(&:name)).to eq(%w[7/8])
+            end
           end
         end
       end

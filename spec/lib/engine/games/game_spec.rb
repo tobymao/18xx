@@ -21,11 +21,6 @@ module Engine
         'mfmise' => 6550,
         'sirstevie3' => 4907,
       },
-      4949 => {
-        'Apreche' => 6828,
-        'GeekNightsRym' => 9154,
-        'pence' => 7002,
-      },
       # bankruptcy sending two corps into receivership, one of them buying a
       # train immediately; also has emergency share issuing
       'hs_ynxuqvex_1595710756' => {
