@@ -162,7 +162,7 @@ module Engine
       {
          "name":"Alabama Great Southern Railroad",
          "value":30,
-         "revenue":10,
+         "revenue":15,
          "desc":"The owning Major Company may lay an extra yellow tile for free. This extra tile must extend existing track and could be used to extend from a yellow or green tile played as a company’s  normal tile lay. This ability can only be used once, and using it does not close the company.",
          "sym":"AGS",
          "abilities": [
