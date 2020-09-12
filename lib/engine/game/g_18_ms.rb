@@ -70,15 +70,24 @@ module Engine
         # When OR1.2 is to start setup company prices and switch to green phase
         if @turn == 1 && round_num == 2
           setup_company_price_50_to_150_percent
-          @phase.next! if @turn == 1 && round_num == 2
+          @phase.next!
         end
 
+        if round_num == 1
+          @players.each do |p|
+            next unless p.cash.negative?
+
+            debt = -p.cash
+            interest = (debt / 2.0).ceil
+            p.spend(interest, @bank, check_cash: false)
+            @log << "#{p.name} has to borrow another #{format_currency(interest)} as being in debt at end of SR"
+          end
+        end
         super
       end
 
       def operating_round(round_num)
         Round::Operating.new(self, [
-          Step::Bankrupt,
           Step::Exchange,
           Step::DiscardTrain,
           Step::G18MS::SpecialTrack,

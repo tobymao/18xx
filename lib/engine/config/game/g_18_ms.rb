@@ -540,7 +540,6 @@ module Engine
       },
       {
          "name":"6",
-         "on":"6",
          "train_limit":3,
          "tiles":[
             "yellow",
@@ -551,7 +550,6 @@ module Engine
       },
       {
          "name":"D",
-         "on":"2D",
          "train_limit":3,
          "tiles":[
             "yellow",
