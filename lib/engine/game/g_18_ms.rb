@@ -255,14 +255,18 @@ module Engine
         rusted_trains = trains.select { |t| !t.rusted && t.name == train }
         return if rusted_trains.empty?
 
+        owners = Hash.new(0)
         rusted_trains.each do |t|
-          @bank.spend(salvage, t.owner) if t.buyable
+          if t.owner.corporation? && t.owner.full_name != 'Neutral'
+            @bank.spend(salvage, t.owner)
+            owners[t.owner.name] += 1
+          end
           t.rust!
         end
 
-        @log << "-- Event: #{rusted_trains.map(&:name).uniq.join(', ')} trains rust --"
-        exception = train == '2+' ? ' (except any free 2+ train)' : ''
-        @log << "Corporations salvages #{format_currency(salvage)} from each rusted train#{exception}"
+        @log << "-- Event: #{rusted_trains.map(&:name).uniq} trains rust " \
+          "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
+        @log << "Corporations salvages #{format_currency(salvage)} from each rusted train"
       end
     end
   end
