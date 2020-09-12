@@ -69,11 +69,7 @@ module Engine
         end
       end
 
-      (@game.companies + @game.corporations).each do |c|
-        c.all_abilities.each do |ability|
-          c.remove_ability(ability) if ability.remove == @name
-        end
-      end
+      (@game.companies + @game.corporations).each { |c| c.remove_ability_when(@name) }
     end
 
     def close_companies_on_train!(entity)

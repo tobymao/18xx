@@ -71,6 +71,8 @@ module Engine
             end
         end
 
+        company.remove_ability_when(:sold)
+
         @round.just_sold_company = company
         @round.company_seller = owner
 

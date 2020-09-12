@@ -8,6 +8,7 @@ require 'engine/game/g_1889'
 require 'engine/game/g_18_chesapeake'
 require 'engine/phase'
 require 'engine/round/operating'
+require 'engine/action/place_token'
 
 RSpec::Matchers.define :be_assigned_to do |expected|
   match do |actual|
@@ -60,6 +61,14 @@ module Engine
       move_to_or!
     end
 
+    def goto_train_step!
+      # skip past non train-buying actions
+      until subject.active_step.is_a?(Engine::Step::Train)
+        action = Action::Pass.new(subject.current_entity)
+        subject.process_action(action)
+      end
+    end
+
     def fake_buy_train(train, corp)
       corp.trains.slice!(2)
       game.depot.remove_train(train)
@@ -75,6 +84,13 @@ module Engine
       price = train.variants[variant][:price]
       action = Action::BuyTrain.new(corporation, train: train, price: price, variant: variant)
       subject.process_action(action)
+    end
+
+    def remove_trains_until!(train)
+      until (t = game.depot.depot_trains.first).name == train
+        game.depot.remove_train(t)
+      end
+      t
     end
 
     before :each do
@@ -532,7 +548,6 @@ module Engine
       let(:corporation_1) { game.corporation_by_id('PRR') }
       let(:big4) { game.minor_by_id('BIG4') }
       let(:ms) { game.minor_by_id('MS') }
-      let(:company) { game.company_by_id('SC') }
       let(:hex_b8) { game.hex_by_id('B8') }
       let(:hex_d14) { game.hex_by_id('D14') }
       let(:hex_g19) { game.hex_by_id('G19') }
@@ -547,13 +562,16 @@ module Engine
         bundle = ShareBundle.new(corporation.shares.first)
         game.share_pool.transfer_shares(bundle, game.players.first)
 
-        company.owner = game.players.first
-
         ms.owner = game.players[1]
         big4.owner = game.players[2]
       end
 
       describe 'Steamboat Company' do
+        let(:company) { game.company_by_id('SC') }
+        before :each do
+          company.owner = game.players.first
+        end
+
         it 'handles full lifecycle of assigning to hexes and corporations' do
           expect(company).not_to be_assigned_to(corporation)
           expect(company).not_to be_assigned_to(corporation_1)
@@ -632,13 +650,114 @@ module Engine
         end
       end
 
+      describe 'C&WI' do
+        let(:company) { game.company_by_id('C&WI') }
+        let(:tile) { game.hex_by_id('D6').tile }
+        let(:city) { tile.cities[3] }
+        let(:cities) { tile.cities }
+
+        before :each do
+          company.owner = game.players.first
+        end
+
+        describe 'reservation' do
+          before :each do
+            expect(city.reservations).to eq([company])
+          end
+
+          it 'is removed if owned by a player when a 5 train is bought' do
+            goto_train_step!
+            train = remove_trains_until!('5')
+            corporation.cash = train.price
+
+            subject.process_action(
+              Action::BuyTrain.new(
+                corporation,
+                train: train,
+                price: train.price,
+              )
+            )
+
+            expect(city.reservations).to eq([])
+          end
+
+          it 'is removed when a corporation buys in the C&WI' do
+            subject.process_action(
+              Action::BuyCompany.new(
+                corporation,
+                company: company,
+                price: 1,
+              )
+            )
+
+            expect(city.reservations).to eq([])
+          end
+        end
+
+        describe 'token placement' do
+          before :each do
+            subject.process_action(
+              Action::BuyCompany.new(
+                corporation,
+                company: company,
+                price: 1,
+              )
+            )
+          end
+
+          describe 'can place' do
+            before :each do
+              expect(city.tokens).to eq([nil])
+            end
+
+            it 'on the yellow Chi tile, city 3' do
+              subject.process_action(Action::PlaceToken.new(company, city: city, slot: 0))
+              expect(city.tokens.map(&:corporation)).to eq([corporation])
+            end
+
+            it 'on the green Chi tile, city 3' do
+              expect(city.revenue.values.uniq).to eq([10])
+              game.hex_by_id('D6').lay(game.tile_by_id('298-0'))
+              city = game.hex_by_id('D6').tile.cities[3]
+              expect(city.revenue.values.uniq).to eq([40])
+
+              subject.process_action(Action::PlaceToken.new(company, city: city, slot: 0))
+              expect(city.tokens.map(&:corporation)).to eq([corporation])
+            end
+          end
+
+          describe 'cannot place' do
+            before :each do
+              expect(city.tokens).to eq([nil])
+            end
+
+            after :each do
+              expect(city.tokens).to eq([nil])
+            end
+
+            (0..2).each do |other_city|
+              it "on yellow Chi tile, city #{other_city}" do
+                action = Action::PlaceToken.new(company, city: cities[other_city], slot: 0)
+                expect { subject.process_action(action) }.to raise_error GameError, /can only place token on D6 city 3/
+              end
+
+              it "on green Chi tile, city #{other_city}" do
+                expect(city.revenue.values.uniq).to eq([10])
+                game.hex_by_id('D6').lay(game.tile_by_id('298-0'))
+                city = game.hex_by_id('D6').tile.cities[other_city]
+                expect(city.revenue.values.uniq).to eq([40])
+
+                action = Action::PlaceToken.new(company, city: city, slot: 0)
+                expect { subject.process_action(action) }.to raise_error GameError, /can only place token on D6 city 3/
+              end
+            end
+          end
+        end
+      end
+
       describe 'buy_train' do
         before :each do
-          # skip past non train-buying actions
-          until subject.active_step.is_a?(Engine::Step::Train)
-            action = Action::Pass.new(subject.current_entity)
-            subject.process_action(action)
-          end
+          goto_train_step!
 
           # Allow 7/8 to be purchased
           while (train = subject.active_step.buyable_trains(corporation).first).name != '6'

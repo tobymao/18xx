@@ -22,10 +22,16 @@ module Engine
         false
       end
 
-      def place_token(entity, city, token, teleport: false)
+      def place_token(entity, city, token, teleport: false, special_ability: nil)
         hex = city.hex
         if !@game.loading && !teleport && !@game.graph.connected_nodes(entity)[city]
-          @game.game_error("Cannot place token on #{hex.name} because it is not connected")
+          city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
+          @game.game_error("Cannot place token on #{hex.name}#{city_string} because it is not connected")
+        end
+
+        if special_ability&.city && (special_ability.city != city.index)
+          @game.game_error("#{special_ability.owner.name} can only place token on #{hex.name} city "\
+                           "#{special_ability.city}, not on city #{city.index}")
         end
 
         @game.game_error('Token is already used') if token.used
