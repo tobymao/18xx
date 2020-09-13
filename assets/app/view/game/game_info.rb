@@ -128,6 +128,7 @@ module View
         end
 
         show_obsolete_schedule = obsolete_schedule.keys.any?
+        events = []
 
         rows = @depot.upcoming.group_by(&:name).map do |name, trains|
           train = trains.first
@@ -140,7 +141,10 @@ module View
           trains.each.with_index do |train2, index|
             train2.events.each do |event|
               event_name = event['type']
-              event_name = "#{@game.class::EVENTS_TEXT[event_name][0]}*" if @game.class::EVENTS_TEXT[event_name]
+              if @game.class::EVENTS_TEXT[event_name]
+                events << event_name
+                event_name = "#{@game.class::EVENTS_TEXT[event_name][0]}*"
+              end
 
               event_text << if index.zero?
                               event_name
@@ -166,9 +170,11 @@ module View
           h(:tr, upcoming_train_content)
         end
 
-        event_text = @game.class::EVENTS_TEXT.map do |_sym, desc|
-          h(:tr, [h(:td, desc[0]), h(:td, desc[1])])
-        end
+        event_text = @game.class::EVENTS_TEXT
+          .select { |sym, _desc| events.include?(sym) }
+          .map do |_sym, desc|
+            h(:tr, [h(:td, desc[0]), h(:td, desc[1])])
+          end
 
         if event_text.any?
           event_text = [h(:table, [

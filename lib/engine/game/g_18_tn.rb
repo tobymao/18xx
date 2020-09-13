@@ -22,7 +22,7 @@ module Engine
         'can_buy_companies_operation_round_one' =>
           ['Can Buy Companies OR 1', 'Corporations can buy companies for face value in OR 1'],
       ).merge(
-          Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
+          Step::SingleDepotTrainBuy::STATUS_TEXT
         ).freeze
 
       # Two lays or one upgrade
@@ -72,7 +72,7 @@ module Engine
           Step::Token,
           Step::Route,
           Step::G18TN::Dividend,
-          Step::SingleDepotTrainBuyBeforePhase4,
+          Step::SingleDepotTrainBuy,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
