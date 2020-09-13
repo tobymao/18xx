@@ -29,11 +29,6 @@ module Engine
             must_buy_train?(entity) &&
             @game.liquidity(player, emergency: true) == player.cash # Nothing more to sell
 
-            name, variant = train.variants.min_by { |_, v| v[:price] }
-            @game.game_error("Must buy cheapest train, and #{name} is cheaper than #{action.variant}") if name &&
-              name != action.variant &&
-              variant[:price] < price
-
             # Prepare to take a loan
             emergency_buy_with_loan = true
             corporation_cash = entity.cash
