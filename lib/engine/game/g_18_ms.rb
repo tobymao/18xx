@@ -21,6 +21,9 @@ module Engine
 
       HOME_TOKEN_TIMING = :operating_round
 
+      EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false # Emergency buy can buy any available trains
+      EBUY_PRES_SWAP = false # Do not allow presidental swap during emergency buy
+
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         'can_buy_companies_operation_round_one' =>
           ['Can Buy Companies OR 1', 'Corporations can buy AGS/BS companies for face value in OR 1'],
