@@ -132,6 +132,7 @@ module Engine
       EBUY_OTHER_VALUE = true # allow ebuying other corp trains for up to face
       EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true # if ebuying from depot, must buy cheapest train
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false # corporation must issue shares before ebuy (if possible)
+      EBUY_SELL_MORE_THAN_NEEDED = false # true if corporation may continue to sell shares even though enough funds
 
       # when is the home token placed? on...
       # operate

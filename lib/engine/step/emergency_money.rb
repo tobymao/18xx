@@ -22,8 +22,10 @@ module Engine
         return false unless @game.share_pool.fit_in_bank?(bundle)
 
         # Can only sell as much as you need to afford the train
-        total_cash = bundle.price + available_cash(player)
-        return false if total_cash >= needed_cash(player) + bundle.price_per_share
+        unless @game.class::EBUY_SELL_MORE_THAN_NEEDED
+          total_cash = bundle.price + available_cash(player)
+          return false if total_cash >= needed_cash(player) + bundle.price_per_share
+        end
 
         # Can't swap presidency
         corporation = bundle.corporation
