@@ -20,6 +20,8 @@ module Engine
       # Game ends after 5 * 2 ORs
       GAME_END_CHECK = { final_or_set: 5 }.freeze
 
+      BANKRUPTCY_ALLOWED = false
+
       HOME_TOKEN_TIMING = :operating_round
 
       EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false # Emergency buy can buy any available trains

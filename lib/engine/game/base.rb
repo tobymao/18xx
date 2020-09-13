@@ -60,6 +60,8 @@ module Engine
       # end (:full_or) when that OR is reached.
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
+      BANKRUPTCY_ALLOWED = true
+
       BANK_CASH = 12_000
 
       CURRENCY_FORMAT_STR = '$%d'
@@ -767,6 +769,22 @@ module Engine
 
       def emergency_issuable_bundles(_corporation)
         []
+      end
+
+      def emergency_issuable_cash(corporation)
+        emergency_issuable_bundles(corporation).max_by(&:num_shares)&.price || 0
+      end
+
+      def can_go_bankrupt?(player, corporation)
+        return false unless self.class::BANKRUPTCY_ALLOWED
+
+        total_emr_buying_power(player, corporation) < @depot.min_depot_price
+      end
+
+      def total_emr_buying_power(player, corporation)
+        corporation.cash +
+          emergency_issuable_cash(corporation) +
+          liquidity(player, emergency: true)
       end
 
       private
