@@ -41,7 +41,7 @@ module View
         end
 
         def render_players
-          return nil if !@step.players_visible? && @hidden
+          return nil if !@step.players_visible? && hidden?
 
           if @step.players_visible?
             h(Players, game: @game)
@@ -68,6 +68,13 @@ module View
             if @block_show
               store(:flash_opts, 'Enter master mode to reveal other hand. Use this feature fairly.')
             else
+              if @current_actions.include?('pass')
+                @step.before_process_pass = lambda do
+                  store(:hidden, true, skip: true)
+                  @step.before_process_pass = -> {}
+                end
+              end
+
               store(:hidden, !@hidden)
             end
           end
@@ -82,11 +89,11 @@ module View
             on: { click: toggle },
           }
 
-          h(:button, props, "#{@hidden ? 'Show' : 'Hide'} #{@step.visible? ? 'Player' : 'Companies'}")
+          h(:button, props, "#{hidden? ? 'Show' : 'Hide'} #{@step.visible? ? 'Player' : 'Companies'}")
         end
 
         def render_companies
-          return [] if @hidden && !@step.visible?
+          return [] if hidden? && !@step.visible?
           return [] unless @current_actions.include?('bid')
 
           @selected_company = @step.auctioning if @step.auctioning
@@ -159,6 +166,10 @@ module View
             end
 
           h(:div, { style: { textAlign: 'center', margin: '1rem' } }, company_actions)
+        end
+
+        def hidden?
+          @block_show || @hidden
         end
       end
     end
