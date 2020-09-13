@@ -16,7 +16,7 @@ module View
         needs :token
         needs :slot_index, default: 0
         needs :city
-        needs :num_cities
+        needs :edge
         needs :radius
         needs :selected_company, default: nil, store: true
         needs :tile_selector, default: nil, store: true
@@ -40,7 +40,7 @@ module View
 
           props = { on: { click: ->(event) { on_click(event) } } }
 
-          props[:attrs] = { transform: rotation_for_layout } if @num_cities > 1
+          props[:attrs] = { transform: rotation_for_layout } if @edge
 
           h(:g, props, children)
         end
