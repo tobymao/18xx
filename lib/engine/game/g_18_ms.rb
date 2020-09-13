@@ -21,6 +21,9 @@ module Engine
 
       HOME_TOKEN_TIMING = :operating_round
 
+      EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false # Emergency buy can buy any available trains
+      EBUY_PRES_SWAP = false # Do not allow presidental swap during emergency buy
+
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         'can_buy_companies_operation_round_one' =>
           ['Can Buy Companies OR 1', 'Corporations can buy AGS/BS companies for face value in OR 1'],
@@ -163,7 +166,7 @@ module Engine
           # Trains that are going to be salvaged at the end of this OR
           # cannot be sold when they have been run
           t.buyable = false
-        end
+        end if @round.round_num == 2
 
         super
       end
@@ -216,11 +219,12 @@ module Engine
         [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
       end
 
-      def add_free_train(corporation)
+      def add_free_train_and_close_company(corporation, company)
         @free_train.buyable = true
         corporation.buy_train(@free_train, :free)
         @free_train.buyable = false
-        @log << "#{corporation.name} receives a bonus non sellable #{@free_train.name} train"
+        company.close!
+        @log << "#{corporation.name} exchanges #{company.name} for a free non sellable #{@free_train.name} train"
       end
 
       def get_location_name(hex_name)
@@ -255,14 +259,18 @@ module Engine
         rusted_trains = trains.select { |t| !t.rusted && t.name == train }
         return if rusted_trains.empty?
 
+        owners = Hash.new(0)
         rusted_trains.each do |t|
-          @bank.spend(salvage, t.owner) if t.buyable
+          if t.owner.corporation? && t.owner.full_name != 'Neutral'
+            @bank.spend(salvage, t.owner)
+            owners[t.owner.name] += 1
+          end
           t.rust!
         end
 
-        @log << "-- Event: #{rusted_trains.map(&:name).uniq.join(', ')} trains rust --"
-        exception = train == '2+' ? ' (except any free 2+ train)' : ''
-        @log << "Corporations salvages #{format_currency(salvage)} from each rusted train#{exception}"
+        @log << "-- Event: #{rusted_trains.map(&:name).uniq} trains rust " \
+          "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
+        @log << "Corporations salvages #{format_currency(salvage)} from each rusted train"
       end
     end
   end

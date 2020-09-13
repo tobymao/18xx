@@ -162,7 +162,7 @@ module Engine
       {
          "name":"Alabama Great Southern Railroad",
          "value":30,
-         "revenue":10,
+         "revenue":15,
          "desc":"The owning Major Company may lay an extra yellow tile for free. This extra tile must extend existing track and could be used to extend from a yellow or green tile played as a company’s  normal tile lay. This ability can only be used once, and using it does not close the company.",
          "sym":"AGS",
          "abilities": [
@@ -224,7 +224,7 @@ module Engine
          "name":"Mississippi Central Railway",
          "value":60,
          "revenue":5,
-         "desc":"Converts to a 2+ train that cannot be salvaged when placed in a Major Company.",
+         "desc":"The owning Major Company exchanges this private for a special 2+ train when purchased. (This 2+ train may not be sold.) This exchange occurs immediately when purchased. If this exchange would place the Major Company over the train limit of 3, the purchase is not allowed. If this Private Company is not purchased by the end of OR 2.2, it may not be sold to a Major Company and counts against the owner's certificate limit until it closed upon the start of Phase 6.",
          "sym":"MC"
       },
       {

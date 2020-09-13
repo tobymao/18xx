@@ -23,7 +23,7 @@ module Engine
           return unless company.id == 'MC'
 
           entity = action.entity
-          @game.add_free_train(entity)
+          @game.add_free_train_and_close_company(entity, company)
         end
       end
     end
