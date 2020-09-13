@@ -163,7 +163,7 @@ module Engine
           # Trains that are going to be salvaged at the end of this OR
           # cannot be sold when they have been run
           t.buyable = false
-        end
+        end if @round.round_num == 2
 
         super
       end
