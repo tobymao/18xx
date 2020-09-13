@@ -20,7 +20,7 @@ module Engine
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         'can_buy_companies_from_other_players' => ['Interplayer Company Buy', 'Companies can be bought between players']
       ).merge(
-        Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
+        Step::SingleDepotTrainBuy::STATUS_TEXT
       ).freeze
 
       STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
@@ -70,7 +70,7 @@ module Engine
           Step::G18GA::Token,
           Step::Route,
           Step::Dividend,
-          Step::SingleDepotTrainBuyBeforePhase4,
+          Step::SingleDepotTrainBuy,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
