@@ -48,6 +48,7 @@ module Engine
 
           @game.game_error('Cannot contribute funds when exchanging') if exchange
           @game.game_error('Cannot buy for more than cost') if price > train.price
+          @game.game_error('Cannot contribute funds when affordable trains exist') if cheapest.price <= entity.cash
 
           player = entity.owner
           player.spend(remaining, entity)
