@@ -14,18 +14,25 @@ module Engine
       end
 
       def can_sell?(_entity, bundle)
+        return false unless sellable_bundle?(bundle)
+
+        # Can only sell as much as you need to afford the train
+        player = bundle.owner
+        unless @game.class::EBUY_SELL_MORE_THAN_NEEDED
+          total_cash = bundle.price + available_cash(player)
+          return false if total_cash >= needed_cash(player) + bundle.price_per_share
+        end
+
+        true
+      end
+
+      def sellable_bundle?(bundle)
         player = bundle.owner
         # Can't sell president's share
         return false unless bundle.can_dump?(player)
 
         # Can't oversaturate the market
         return false unless @game.share_pool.fit_in_bank?(bundle)
-
-        # Can only sell as much as you need to afford the train
-        unless @game.class::EBUY_SELL_MORE_THAN_NEEDED
-          total_cash = bundle.price + available_cash(player)
-          return false if total_cash >= needed_cash(player) + bundle.price_per_share
-        end
 
         # Can't swap presidency
         corporation = bundle.corporation

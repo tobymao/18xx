@@ -247,7 +247,7 @@ module Engine
 
           fee = 50
           president_assist = price - corporation.cash
-          return [president_assist, fee] unless corporation.owner.cash < president_assist + fee
+          return [president_assist, fee] unless corporation.player.cash < president_assist + fee
         end
 
         super

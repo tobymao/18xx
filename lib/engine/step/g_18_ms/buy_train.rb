@@ -24,10 +24,11 @@ module Engine
 
           emergency_buy_with_loan = false
 
-          if train == @depot.min_depot_train &&
-            price > entity.cash + player.cash &&
-            must_buy_train?(entity) &&
-            @game.liquidity(player, emergency: true) == player.cash # Nothing more to sell
+          if price > entity.cash + player.cash && must_buy_train?(entity)
+
+            if can_sell_anything?(player, entity)
+              @game.game_error("#{player.name} may not loan money as long as #{entity.name} has shares to sell")
+            end
 
             # Prepare to take a loan
             emergency_buy_with_loan = true
@@ -56,6 +57,18 @@ module Engine
           @log << "#{player.name} has to borrow #{@game.format_currency(debt)} to pay for the train"
           @log << "An extra #{@game.format_currency(interest)} is added to the debt"
           pass!
+        end
+
+        private
+
+        def can_sell_anything?(player)
+          bundles = []
+          @game.corporations.each do |c|
+            bundles = player.bundles_for_corporation(c)
+            return true if bundles.select { |bundle| sellable_bundle?(bundle) }.any?
+          end
+
+          false
         end
       end
     end
