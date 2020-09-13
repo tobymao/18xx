@@ -6,7 +6,7 @@ module Engine
   module Step
     class Base
       include Passer
-      attr_accessor :acted, :before_process_pass
+      attr_accessor :acted
 
       ACTIONS = [].freeze
 
@@ -16,7 +16,6 @@ module Engine
         @round = round
         @opts = opts
         @acted = false
-        @before_process_pass = -> {}
       end
 
       def description
@@ -46,7 +45,6 @@ module Engine
       end
 
       def process_pass(action)
-        @before_process_pass.call
         log_pass(action.entity)
         pass!
       end

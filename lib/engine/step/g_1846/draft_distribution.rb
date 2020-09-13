@@ -80,8 +80,6 @@ module Engine
         end
 
         def process_pass(action)
-          @before_process_pass.call
-
           @game.game_error('Cannot pass') unless only_one_company?
 
           company = @companies[0]
