@@ -372,7 +372,9 @@ module Engine
       end
 
       def active_players
-        @round.active_entities.map(&:player).compact
+        players_ = @round.active_entities.map(&:player).compact
+
+        players_.empty? ? @players.reject(&:bankrupt) : players_
       end
 
       def active_step

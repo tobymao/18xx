@@ -24,7 +24,7 @@ module Engine
       def process_bankrupt(action)
         player = action.entity.owner
 
-        @log << "#{player.name} goes bankrupt and sells remaining shares"
+        @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
 
         player.shares_by_corporation.each do |corporation, _|
           next unless corporation.share_price # if a corporation has not parred

@@ -10,7 +10,7 @@ module Engine
           corp = action.entity
           player = corp.owner
 
-          @log << "#{player.name} goes bankrupt and sells remaining shares"
+          @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
 
           # first, the corporation issues as many shares as they can
           if (bundle = @game.emergency_issuable_bundles(corp).max_by(&:num_shares))
@@ -42,7 +42,7 @@ module Engine
             @game.sell_shares_and_change_price(bundle)
 
             if corporation.owner == player
-              @log << "#{corporation.name} enters receivership (it has no president)"
+              @log << "-- #{corporation.name} enters receivership (it has no president) --"
               corporation.owner = @game.share_pool
             end
           end
