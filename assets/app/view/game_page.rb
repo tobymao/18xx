@@ -19,6 +19,7 @@ module View
     needs :user
     needs :disable_user_errors
     needs :connected, default: false, store: true
+    needs :before_process_pass, default: -> {}, store: true
 
     def render_broken_game(e)
       inner = [h(:div, "We're sorry this game cannot be continued due to #{e}")]
@@ -252,7 +253,7 @@ module View
       when Engine::Round::Operating
         h(Game::Round::Operating, game: @game)
       when Engine::Round::Draft
-        h(Game::Round::Auction, game: @game, user: @user)
+        h(Game::Round::Auction, game: @game, user: @user, before_process_pass: @before_process_pass)
       when Engine::Round::Auction
         h(Game::Round::Auction, game: @game, user: @user)
       when Engine::Round::Merger
@@ -269,7 +270,7 @@ module View
         h(Game::HistoryControls, num_actions: @num_actions),
         h(Game::EntityOrder, round: @round),
         h(Game::Abilities, user: @user, game: @game),
-        h(Game::UndoAndPass),
+        h(Game::UndoAndPass, before_process_pass: @before_process_pass),
         h(Game::Help, game: @game),
         render_action,
       ])

@@ -16,6 +16,7 @@ module View
         needs :hidden, default: true, store: true
         needs :flash_opts, default: {}, store: true
         needs :user
+        needs :before_process_pass, store: true
 
         def render
           @round = @game.round
@@ -29,6 +30,8 @@ module View
             @current_entity.name != user_name &&
             !Lib::Storage[@game.id]&.dig('master_mode')
 
+          store(:before_process_pass, -> { hide! }, skip: true) if @current_actions.include?('pass')
+
           if @current_actions.include?('par')
             h(:div, render_company_pending_par)
           else
@@ -41,7 +44,7 @@ module View
         end
 
         def render_players
-          return nil if !@step.players_visible? && @hidden
+          return nil if !@step.players_visible? && hidden?
 
           if @step.players_visible?
             h(Players, game: @game)
@@ -82,11 +85,11 @@ module View
             on: { click: toggle },
           }
 
-          h(:button, props, "#{@hidden ? 'Show' : 'Hide'} #{@step.visible? ? 'Player' : 'Companies'}")
+          h(:button, props, "#{hidden? ? 'Show' : 'Hide'} #{@step.visible? ? 'Player' : 'Companies'}")
         end
 
         def render_companies
-          return [] if @hidden && !@step.visible?
+          return [] if hidden? && !@step.visible?
           return [] unless @current_actions.include?('bid')
 
           @selected_company = @step.auctioning if @step.auctioning
@@ -107,7 +110,7 @@ module View
 
         def render_input(company)
           buy = lambda do
-            store(:hidden, true, skip: true)
+            hide!
             process_action(Engine::Action::Bid.new(
               @current_entity,
               company: company,
@@ -117,7 +120,7 @@ module View
           end
 
           choose = lambda do
-            store(:hidden, true, skip: true)
+            hide!
             process_action(Engine::Action::Bid.new(@current_entity,
                                                    company: @selected_company,
                                                    price: @selected_company.value))
@@ -143,7 +146,7 @@ module View
               })
 
               create_bid = lambda do
-                store(:hidden, true, skip: true)
+                hide!
                 price = input.JS['elm'].JS['value'].to_i
                 process_action(Engine::Action::Bid.new(
                   @current_entity,
@@ -159,6 +162,14 @@ module View
             end
 
           h(:div, { style: { textAlign: 'center', margin: '1rem' } }, company_actions)
+        end
+
+        def hide!
+          store(:hidden, true, skip: true)
+        end
+
+        def hidden?
+          @block_show || @hidden
         end
       end
     end
