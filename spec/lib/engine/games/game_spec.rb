@@ -16,8 +16,6 @@ module Engine
         'Player 2' => 1390,
         'Player 3' => 0,
       },
-      },
-
       # President selling a share to buy a 4T when cash + corp treasury can
       # afford 3/5T
       'hs_cvjhogoy_1599504419' => {
