@@ -592,6 +592,11 @@ module Engine
           "type": "reservation",
           "hex": "I5",
           "remove": "4"
+        },
+        {
+           "type": "base",
+           "description": "Receives subsidy equal to its par price",
+           "remove": "par"
         }
       ],
       "coordinates": "K3",

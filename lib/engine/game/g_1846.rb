@@ -238,6 +238,7 @@ module Engine
         case action
         when Action::Par
           if action.corporation == illinois_central
+            illinois_central.remove_ability_when(:par)
             bonus = action.share_price.price
             @bank.spend(bonus, illinois_central)
             @log << "#{illinois_central.name} receives a #{format_currency(bonus)} subsidy"
