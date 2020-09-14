@@ -15,6 +15,8 @@ module View
         needs :width, default: 8
         needs :dash, default: '0'
 
+        PARALLEL_SPACING = [8, 6, 4].freeze
+
         EDGE_PERP_ANGLES = [90, 30, -30, -90, -150, 150].freeze
 
         EDGE_REGIONS = {
@@ -332,6 +334,17 @@ module View
             @end_x,
             @end_y
           ) if @need_arc
+
+          return unless @path.parallel? && @begin_edge
+
+          shift = (@path.lane_index * 2 - @path.lanes + 1) * (@width + PARALLEL_SPACING[@path.lanes - 2]) / 2.0
+          delta_x = (shift * Math.cos(@begin_edge * 60.0 * Math::PI / 180.0)).round(2)
+          delta_y = (shift * Math.sin(@begin_edge * 60.0 * Math::PI / 180.0)).round(2)
+
+          @begin_x += delta_x
+          @begin_y += delta_y
+          @end_x += delta_x
+          @end_y += delta_y
         end
 
         def preferred_render_locations

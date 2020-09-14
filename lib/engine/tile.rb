@@ -63,10 +63,14 @@ module Engine
     def self.part(type, params, cache)
       case type
       when 'path'
+        num_lanes = 1
         params = params.map do |k, v|
           case k
           when 'terminal'
             [k, v]
+          when 'lanes'
+            num_lanes = v.to_i
+            [k, num_lanes]
           else
             case v[0]
             when '_'
@@ -77,7 +81,14 @@ module Engine
           end
         end.to_h
 
-        Part::Path.new(params['a'], params['b'], terminal: params['terminal'])
+        if num_lanes < 2
+          Part::Path.new(params['a'], params['b'], terminal: params['terminal'])
+        else
+          num_lanes.times.map do |index|
+            Part::Path.new(params['a'], params['b'], terminal: params['terminal'],
+                                                     lanes: num_lanes, lane_index: index)
+          end
+        end
       when 'city'
         city = Part::City.new(params['revenue'],
                               slots: params['slots'],
@@ -138,7 +149,7 @@ module Engine
                    **opts)
       @name = name
       @color = color.to_sym
-      @parts = parts
+      @parts = parts&.flatten
       @rotation = rotation
       @cities = []
       @paths = []
