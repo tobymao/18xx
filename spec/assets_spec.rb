@@ -176,9 +176,7 @@ describe 'Assets' do
         'Blondie may assign Steamboat Company to a new hex and/or corporation or minor.',
         'Add $20 per port symbol to all routes run to the assigned location '\
         'by the owning/assigned corporation/minor.']],
-      ['1846', 'hs_cvjhogoy_1599504419', 49, 'buy_train_emr_shares', 'and can sell $60 in shares'],
-      ['1846', 3099, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
-
+      ['1846', 'hs_cvjhogoy_1599504419', 49, 'buy_train_emr_shares', 'has $60 in sellable shares'],
       ['1846', 'hs_sudambau_1600037415', 37, 'buy_train',
        ['GT has $280',
         '!!can issue shares']],
