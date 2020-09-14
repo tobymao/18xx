@@ -67,10 +67,8 @@ module Engine
         private
 
         def can_sell_anything?(player)
-          bundles = []
           @game.corporations.each do |c|
-            bundles = player.bundles_for_corporation(c)
-            return true if bundles.select { |bundle| sellable_bundle?(bundle) }.any?
+            return true if player.bundles_for_corporation(c).any? { |bundle| sellable_bundle?(bundle) }
           end
 
           false
