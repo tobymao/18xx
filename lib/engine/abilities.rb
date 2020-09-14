@@ -63,7 +63,7 @@ module Engine
 
     def remove_ability_when(time)
       all_abilities.each do |ability|
-        remove_ability(ability) if ability.when == time.to_s
+        remove_ability(ability) if ability.remove == time.to_s
       end
     end
 
