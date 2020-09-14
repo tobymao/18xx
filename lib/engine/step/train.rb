@@ -125,7 +125,7 @@ module Engine
         @depot = @game.depot
         @last_share_sold_price = nil
         @last_share_issued_price = nil
-        @corporations_sold ||= []
+        @corporations_sold = []
       end
 
       def issuable_shares
