@@ -17,28 +17,46 @@ module View
         children = []
 
         cash = @corporation.cash + player.cash
-        funds_required = @depot.min_depot_price - cash
-        funds_allowed = @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST ? funds_required : @depot.max_depot_price - cash
+        share_funds_required = @depot.min_depot_price - cash
+        share_funds_allowed = if @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
+                                share_funds_required
+                              else
+                                @depot.max_depot_price - cash
+                              end
+        share_funds_possible = @game.liquidity(player, emergency: true) - player.cash
 
-        if funds_required.positive?
-          liquidity = @game.liquidity(player, emergency: true)
-          children << h('div',
-                        'To buy the cheapest train from the depot the president must raise '\
-                        "#{@game.format_currency(funds_required)}, and can sell "\
-                        "#{@game.format_currency(liquidity - player.cash)} in shares:")
-          children.concat(render_emergency_money_raising(player))
-        elsif funds_allowed.positive?
-          liquidity = @game.liquidity(player, emergency: true)
-          children << h('div',
-                        'To buy the most expensive train from the depot the president must '\
-                        "raise #{@game.format_currency(funds_allowed)}, and can sell "\
-                        "#{@game.format_currency(liquidity - player.cash)} in shares:")
-          children.concat(render_emergency_money_raising(player))
-        else
-          children << h('div',
-                        'To buy the cheapest train from the depot the president must contribute'\
-                        " #{@game.format_currency(@depot.min_depot_price - @corporation.cash)}")
+        children << h(:div, "#{player.name} must contribute "\
+                            "#{@game.format_currency(@depot.min_depot_price - @corporation.cash)} "\
+                            "for #{@corporation.name} to afford a train from the Depot.")
+
+        children << h(:div, "#{player.name} has #{@game.format_currency(player.cash)} in cash.")
+
+        if share_funds_allowed.positive?
+          children << h(:div, "#{player.name} has #{@game.format_currency(share_funds_possible)} "\
+                              'in sellable shares.')
         end
+
+        if share_funds_required.positive?
+          children << h(:div, "#{player.name} must sell shares to raise at least "\
+                              "#{@game.format_currency(share_funds_required)}.")
+        end
+
+        if share_funds_allowed.positive? &&
+           (share_funds_allowed != share_funds_required) &&
+           (share_funds_possible >= share_funds_allowed)
+          children << h(:div, "#{player.name} may continue to sell shares until raising up to "\
+                              "#{@game.format_currency(share_funds_allowed)}.")
+        end
+
+        if share_funds_possible < share_funds_required
+          children << h(:div, "#{player.name} does not have enough liquidity to "\
+                              "contribute towards #{@corporation.name} buying a train "\
+                              "from the Depot. #{@corporation.name} must buy a "\
+                              "train from another corporation, or #{player.name} must "\
+                              'declare bankruptcy.')
+        end
+
+        children.concat(render_emergency_money_raising(player)) if share_funds_allowed.positive?
 
         children
       end
@@ -110,7 +128,17 @@ module View
 
         children << h(:h3, h3_props, 'Remaining Trains')
         children << remaining_trains
-        children.concat(render_president_contributions) if must_buy_train && @corporation.cash < @depot.min_depot_price
+
+        children << h(:div, "#{@corporation.name} has #{@game.format_currency(@corporation.cash)}.")
+        if (issuable_cash = @game.emergency_issuable_cash(@corporation)).positive?
+          children << h(:div, "#{@corporation.name} can issue shares to raise up to "\
+                              "#{@game.format_currency(issuable_cash)} (the corporation "\
+                              'must issue shares before the president may contribute).')
+        end
+
+        if must_buy_train && step.ebuy_president_can_contribute?(@corporation)
+          children.concat(render_president_contributions)
+        end
 
         props = {
           style: {

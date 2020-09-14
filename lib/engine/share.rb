@@ -42,5 +42,9 @@ module Engine
     def to_bundle
       ShareBundle.new(self)
     end
+
+    def inspect
+      "<Share: #{@corporation.id} #{@percent}%>"
+    end
   end
 end

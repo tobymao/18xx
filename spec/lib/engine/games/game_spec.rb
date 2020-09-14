@@ -36,13 +36,6 @@ module Engine
         'Player 2' => 1390,
         'Player 3' => 0,
       },
-      # bankruptcy that forces the new president to buy a train, which actually
-      # bankrupts them as well
-      'hs_hxrxpbjl_1595784599' => {
-        'Player 1' => 0,
-        'Player 2' => 0,
-        'Player 3' => 552,
-      },
       # bankruptcy where the bankruptcy action automatically issues the rest of
       # the corporation's shares
       'hs_qxroaokg_1595793382' => {
@@ -57,6 +50,11 @@ module Engine
         'Player 3' => 295,
         'Player 2' => 285,
         'Player 1' => 190,
+      },
+      'hs_sudambau_1600037415' => {
+        'Player 1' => 530,
+        'Player 2' => 508,
+        'Player 3' => 0,
       },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
@@ -89,12 +87,6 @@ module Engine
       },
     },
     GAMES_BY_TITLE['1889'] => {
-      247 => {
-        'fdinh' => 1059,
-        'gugvib' => 1073,
-        'marco4884' => 1089,
-        'vecchioleone' => 275,
-      },
       314 => {
         'Rebus' => 1134,
         'johnhawkhaines' => 320,
