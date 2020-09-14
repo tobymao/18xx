@@ -435,7 +435,7 @@ module Engine
         {
           "type": "reservation",
           "hex": "E11",
-          "remove": "4"
+          "remove": "IV"
         }
       ],
       "coordinates": "F20",
@@ -482,7 +482,7 @@ module Engine
         {
           "type": "reservation",
           "hex": "H12",
-          "remove": "4"
+          "remove": "IV"
         }
       ],
       "coordinates": "G19",
@@ -530,7 +530,7 @@ module Engine
           "type": "reservation",
           "hex": "D20",
           "slot": 1,
-          "remove": "4"
+          "remove": "IV"
         }
       ],
       "coordinates": "E21",
@@ -593,7 +593,13 @@ module Engine
         {
           "type": "reservation",
           "hex": "I5",
-          "remove": "4"
+
+          "remove": "IV"
+        },
+        {
+           "type": "base",
+           "description": "Receives subsidy equal to its par price",
+           "remove": "par"
         }
       ],
       "coordinates": "K3",
@@ -841,7 +847,7 @@ module Engine
   },
   "phases": [
     {
-      "name": "1",
+      "name": "I",
       "train_limit": 4,
       "tiles": [
         "yellow"
@@ -852,7 +858,7 @@ module Engine
       ]
     },
     {
-      "name": "2",
+      "name": "II",
       "train_limit": 4,
       "on": "4",
       "tiles": [
@@ -865,7 +871,7 @@ module Engine
       ]
     },
     {
-      "name": "3",
+      "name": "III",
       "on": "5",
       "train_limit": 3,
       "tiles": [
@@ -876,7 +882,7 @@ module Engine
       "operating_rounds": 2
     },
     {
-      "name": "4",
+      "name": "IV",
       "on": "6",
       "train_limit": 2,
       "tiles": [

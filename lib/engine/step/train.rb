@@ -137,6 +137,12 @@ module Engine
           !@last_share_issued_price &&
           @game.emergency_issuable_bundles(corporation).any?
       end
+
+      def ebuy_president_can_contribute?(corporation)
+        return false unless corporation.cash < @game.depot.min_depot_price
+
+        !must_issue_before_ebuy?(corporation)
+      end
     end
   end
 end

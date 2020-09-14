@@ -263,6 +263,82 @@ module Engine
             fake_buy_train(train, corporation)
             expect { subject.process_action(action) }.to raise_error GameError
           end
+
+          describe 'bankruptcy' do
+            let(:corporation3) { game.corporation_by_id('TR') }
+
+            before :each do
+              # give corporation a route so that a train must be bought
+              hex = game.hex_by_id(corporation.coordinates)
+              tile = game.tile_by_id('6-0')
+              hex.lay(tile.rotate!(2))
+
+              game.stock_market.set_par(corporation3, game.stock_market.par_prices[0])
+              corporation3.cash = 1000
+              corporation3.ipoed = true
+
+              next_round! # get past turn 1 so shares are sellable
+
+              # skip past non train-buying actions
+              until game.active_step.is_a?(Engine::Step::Train)
+                action = Action::Pass.new(game.current_entity)
+                game.process_action(action)
+              end
+            end
+
+            it 'does not allow declaring bankruptcy when president has enough cash to buy a train' do
+              train = remove_trains_until!('6')
+
+              corporation.cash = train.price - 1
+              corporation.player.cash = 1
+
+              action = Action::Bankrupt.new(corporation)
+              expect { subject.process_action(action) }.to raise_error GameError, /Cannot go bankrupt/
+            end
+
+            it 'does not allow declaring bankruptcy when president has enough sellable shares to buy a train' do
+              # buy another share of corporation2 for some liquidity; other
+              # player has same number of shares and corporation2s cannot be
+              # dumped during 1889 EMR
+              game.share_pool.buy_shares(corporation.player, corporation2.shares.first)
+
+              # get to the right operating corporation
+              game.round.next_entity! until game.current_entity == corporation
+
+              # 6T, cost is $630
+              remove_trains_until!('6')
+
+              corporation.cash = 600
+              corporation.player.cash = 29
+
+              expect(game.liquidity(player, emergency: true)).to eq(119)
+
+              action = Action::Bankrupt.new(corporation)
+              expect { subject.process_action(action) }.to raise_error GameError, /Cannot go bankrupt/
+            end
+
+            it 'does allow declaring bankruptcy when president does not have enough liquidity to buy a train' do
+              # buy another share of corporation2 for some liquidity; other
+              # player has same number of shares and corporation2s cannot be
+              # dumped during 1889 EMR
+              game.share_pool.buy_shares(corporation.player, corporation2.shares.first)
+
+              # get to the right operating corporation
+              game.round.next_entity! until game.current_entity == corporation
+
+              # 6T, cost is $630
+              remove_trains_until!('6')
+
+              corporation.cash = 530
+              corporation.player.cash = 9
+
+              expect(game.liquidity(player, emergency: true)).to eq(99)
+
+              action = Action::Bankrupt.new(corporation)
+              subject.process_action(action)
+              expect(game.send(:bankruptcy_limit_reached?)).to be true
+            end
+          end
         end
       end
 

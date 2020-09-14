@@ -152,7 +152,13 @@ describe 'Assets' do
         'Blocks C4 while owned by a player.']],
       ['1889', 314, 336, 'discard_train', 'Discard Trains'],
       ['1889', 314, 346, 'buy_train_emr', 'TR must buy an available train'],
-      ['1889', 314, 445, 'buy_train_emr_shares', 'and can sell ¥650 in shares'],
+      ['1889', 314, 445, 'buy_train_emr_shares',
+       ['KO has ¥582'],
+       ['johnhawkhaines must contribute ¥518 for KO to afford a train from the Depot'],
+       ['johnhawkhaines has ¥74 in cash'],
+       ['johnhawkhaines has ¥650 in sellable shares'],
+       ['johnhawkhaines must sell shares to raise at least ¥444'],
+       ['!!Bankruptcy']],
       ['1889', 314, nil, 'endgame', '1889: Operating Round 7.1 (of 3) - Game Over - Bankruptcy'],
       ['1882', 5236, 399, 'sc_home_token', '1882: Stock Round 6 - Place Home Token'],
       ['1882', 5236, 229, 'qll_home_token', '1882: Operating Round 4.1 (of 1) - Place Home Token'],
@@ -171,6 +177,31 @@ describe 'Assets' do
         'Add $20 per port symbol to all routes run to the assigned location '\
         'by the owning/assigned corporation/minor.']],
       ['1846', 'hs_cvjhogoy_1599504419', 49, 'buy_train_emr_shares', 'and can sell $60 in shares'],
+      ['1846', 3099, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
+
+      ['1846', 'hs_sudambau_1600037415', 37, 'buy_train',
+       ['GT has $280',
+        '!!can issue shares']],
+      ['1846', 'hs_sudambau_1600037415', 44, 'buy_train_issuing',
+       ['B&amp;O has $120',
+        'B&amp;O can issue shares to raise up to $40',
+        '!!Bankruptcy']],
+      ['1846', 'hs_sudambau_1600037415', 52, 'buy_train_president_cash',
+       ['B&amp;O has $146',
+        'Player 3 must contribute $14 for B&amp;O to afford a train from the Depot.',
+        'Player 3 has $15',
+        'Player 3 has $0 in sellable shares',
+        '!!Bankruptcy']],
+      ['1846', 'hs_sudambau_1600037415', 62, 'buy_train_bankrupt',
+       ['B&amp;O has $0',
+        'Player 3 must contribute $160 for B&amp;O to afford a train from the Depot.',
+        'Player 3 has $15',
+        'Player 3 has $0 in sellable shares',
+        'Player 3 must sell shares to raise at least $145.',
+        'Player 3 does not have enough liquidity to contribute towards B&amp;O buying a '\
+         'train from the Depot. B&amp;O must buy a train from another corporation, or Player 3 '\
+         'must declare bankruptcy.',
+        'Declare Bankruptcy']],
       ['18_al', 4714, nil, 'endgame', '18AL: Operating Round 7.2 (of 3) - Game Over - Company hit max stock value'],
       ['18_ga', 8643, nil, 'endgame', '18GA: Operating Round 8.1 (of 3) - Game Over - Bank Broken'],
       ['18_tn', 7818, nil, 'endgame', '18TN: Operating Round 8.2 (of 3) - Game Over - Bank Broken'],
@@ -188,11 +219,17 @@ describe 'Assets' do
 
       html = render(app_route: "/game/#{needs[:game_data]['id']}", **needs)
       strings = Array(string)
-      strings.each { |str| expect(html).to include(str) }
+      strings.each do |str|
+        if str =~ /^!!/
+          expect(html).not_to include(str.slice(2..))
+        else
+          expect(html).to include(str)
+        end
+      end
     end
 
     TEST_CASES.each do |game, game_id, action, step, string|
-      describe game do
+      describe "#{game} #{game_id}" do
         it "renders #{step}" do
           render_game("spec/fixtures/#{game}/#{game_id}.json", action, string)
         end

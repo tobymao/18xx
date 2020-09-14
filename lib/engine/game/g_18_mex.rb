@@ -23,7 +23,7 @@ module Engine
       ).freeze
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
-        Step::SingleDepotTrainBuyBeforePhase4::STATUS_TEXT
+        Step::SingleDepotTrainBuy::STATUS_TEXT
       ).merge(
         'ndm_available' => ['NdM available', 'NdM shares available during stock round'],
       ).freeze
@@ -58,7 +58,7 @@ module Engine
           Step::Token,
           Step::Route,
           Step::G18MEX::Dividend,
-          Step::SingleDepotTrainBuyBeforePhase4,
+          Step::SingleDepotTrainBuy,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
