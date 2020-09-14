@@ -180,6 +180,7 @@ module Engine
           "hexes": [
             "D6"
           ],
+          "city": 3,
           "price": 0,
           "teleport_price": 0,
           "count": 1,
@@ -187,6 +188,7 @@ module Engine
         },
         {
           "type": "reservation",
+          "remove": "sold",
           "hex": "D6",
           "city": 3
         }

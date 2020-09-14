@@ -176,9 +176,7 @@ describe 'Assets' do
         'Blondie may assign Steamboat Company to a new hex and/or corporation or minor.',
         'Add $20 per port symbol to all routes run to the assigned location '\
         'by the owning/assigned corporation/minor.']],
-      ['1846', 'hs_cvjhogoy_1599504419', 49, 'buy_train_emr_shares', 'has $60 in sellable shares.'],
-      ['1846', 3099, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
-
+      ['1846', 'hs_cvjhogoy_1599504419', 49, 'buy_train_emr_shares', 'has $60 in sellable shares'],
       ['1846', 'hs_sudambau_1600037415', 37, 'buy_train',
        ['GT has $280',
         '!!can issue shares']],
@@ -202,7 +200,6 @@ describe 'Assets' do
          'train from the Depot. B&amp;O must buy a train from another corporation, or Player 3 '\
          'must declare bankruptcy.',
         'Declare Bankruptcy']],
-
       ['18_al', 4714, nil, 'endgame', '18AL: Operating Round 7.2 (of 3) - Game Over - Company hit max stock value'],
       ['18_ga', 8643, nil, 'endgame', '18GA: Operating Round 8.1 (of 3) - Game Over - Bank Broken'],
       ['18_tn', 7818, nil, 'endgame', '18TN: Operating Round 8.2 (of 3) - Game Over - Bank Broken'],

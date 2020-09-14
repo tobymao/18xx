@@ -28,6 +28,7 @@ module Engine
           action.city,
           action.token,
           teleport: ability(entity).teleport_price,
+          special_ability: ability(entity),
         )
       end
 

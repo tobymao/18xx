@@ -8,26 +8,6 @@ require 'json'
 module Engine
   TEST_CASES = {
     GAMES_BY_TITLE['1846'] => {
-      4106 => {
-        'CheesePetrol' => 6137,
-        'Tim Prime' => 6338,
-        'toast' => 7585,
-        'tomusher' => 5431,
-      },
-      3099 => {
-        'Blondie' => 7123,
-        'Emilybry26' => 6407,
-        'MrDiskord' => 4073,
-        'mfmise' => 6550,
-        'sirstevie3' => 4907,
-      },
-      # bankruptcy sending two corps into receivership, one of them buying a
-      # train immediately; also has emergency share issuing
-      'hs_ynxuqvex_1595710756' => {
-        'Player 1' => 0,
-        'Player 2' => 0,
-        'Player 3' => 1527,
-      },
       # bankruptcy sending a corp into receivership, unable to buy a train on
       # the turn of the bankruptcy, and then buying a train on its next turn
       # thanks to company income; also includes emergency share issuing
@@ -36,14 +16,6 @@ module Engine
         'Player 2' => 1390,
         'Player 3' => 0,
       },
-      # bankruptcy where the bankruptcy action automatically issues the rest of
-      # the corporation's shares
-      'hs_qxroaokg_1595793382' => {
-        'Player 1' => 1276,
-        'Player 2' => 0,
-        'Player 3' => 0,
-      },
-
       # President selling a share to buy a 4T when cash + corp treasury can
       # afford 3/5T
       'hs_cvjhogoy_1599504419' => {
