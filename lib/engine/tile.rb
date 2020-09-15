@@ -67,6 +67,8 @@ module Engine
           case k
           when 'terminal'
             [k, v]
+          when 'lanes'
+            [k, v.to_i]
           else
             case v[0]
             when '_'
@@ -77,7 +79,10 @@ module Engine
           end
         end.to_h
 
-        Part::Path.new(params['a'], params['b'], terminal: params['terminal'])
+        (params['lanes'] || 1).times.map do |index|
+          Part::Path.new(params['a'], params['b'], terminal: params['terminal'],
+                                                   lanes: params['lanes'], lane_index: index)
+        end
       when 'city'
         city = Part::City.new(params['revenue'],
                               slots: params['slots'],
@@ -138,7 +143,7 @@ module Engine
                    **opts)
       @name = name
       @color = color.to_sym
-      @parts = parts
+      @parts = parts&.flatten
       @rotation = rotation
       @cities = []
       @paths = []

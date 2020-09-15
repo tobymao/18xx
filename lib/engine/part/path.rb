@@ -5,9 +5,9 @@ require_relative 'base'
 module Engine
   module Part
     class Path < Base
-      attr_reader :a, :b, :branches, :city, :edges, :junction, :nodes,
-                  :offboard, :stops, :terminal, :town
-      def initialize(a, b, terminal: nil)
+      attr_reader :a, :b, :branches, :city, :edges, :junction, :lanes, :lane_index,
+                  :nodes, :offboard, :stops, :terminal, :town
+      def initialize(a, b, terminal: nil, lanes: nil, lane_index: 0)
         @a = a
         @b = b
         @edges = []
@@ -15,6 +15,8 @@ module Engine
         @stops = []
         @nodes = []
         @terminal = !!terminal
+        @lanes = lanes || 1
+        @lane_index = lane_index
 
         separate_parts
       end
@@ -71,12 +73,17 @@ module Engine
         @_terminal ||= !!@terminal
       end
 
+      def parallel?
+        @_parallel ||= @lanes > 1
+      end
+
       def exits
         @exits ||= @edges.map(&:num)
       end
 
       def rotate(ticks)
-        path = Path.new(@a.rotate(ticks), @b.rotate(ticks), terminal: @terminal)
+        path = Path.new(@a.rotate(ticks), @b.rotate(ticks),
+                        terminal: @terminal, lanes: @lanes, lane_index: @lane_index)
         path.index = index
         path.tile = @tile
         path
@@ -84,7 +91,11 @@ module Engine
 
       def inspect
         name = self.class.name.split('::').last
-        "<#{name}: hex: #{hex&.name}, exit: #{exits}>"
+        if parallel?
+          "<#{name}: hex: #{hex&.name}, exit: #{exits}, lane_index: #{@lane_index}>"
+        else
+          "<#{name}: hex: #{hex&.name}, exit: #{exits}>"
+        end
       end
 
       private

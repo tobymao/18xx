@@ -44,7 +44,7 @@ module Engine
     end
 
     def select(node, other)
-      other_paths = @routes.reject { |r| r == self }.flat_map(&:paths)
+      other_paths = @routes.flat_map(&:paths)
       nodes = [node, other]
 
       node.hex.all_connections.select do |c|
@@ -235,11 +235,13 @@ module Engine
       connections.map(&:id)
     end
 
-    def find_connections(connections_a, connections_b)
+    def find_connections(connections_a, connections_b, other_paths)
+      connections_a = connections_a.select { |a| (a.paths & other_paths).empty? }
+      connections_b = connections_b.select { |b| (b.paths & other_paths).empty? }
       connections_a.each do |a|
         connections_b.each do |b|
-          middle = (a.nodes & b.nodes)
-          next if middle.empty?
+          next if (middle = (a.nodes & b.nodes)).empty?
+          next if (b.paths & a.paths).any?
 
           left = (a.nodes - middle)[0]
           right = (b.nodes - middle)[0]
@@ -258,9 +260,12 @@ module Engine
         hexes[0].all_connections.select { |c| c.complete? && c.matches?(hex_ids) }
       end
 
+      other_paths = @routes.reject { |r| r == self }.flat_map(&:paths)
+
       if possibilities.one?
         connection = possibilities[0].find do |conn|
-          conn.nodes.any? { |node| node.tokened_by?(corporation) }
+          conn.nodes.any? { |node| node.tokened_by?(corporation) } &&
+            (conn.paths & other_paths).empty?
         end
         left, right = connection&.nodes
         return if !left || !right
@@ -268,11 +273,14 @@ module Engine
         @connections << { left: left, right: right, connection: connection }
       else
         possibilities.each_cons(2).with_index do |pair, index|
-          a, b, left, right, middle = find_connections(*pair)
+          a, b, left, right, middle = find_connections(*pair, other_paths)
           return @connections.clear if !left&.hex || !right&.hex || !middle&.hex
 
           @connections << { left: left, right: middle, connection: a } if index.zero?
           @connections << { left: middle, right: right, connection: b }
+
+          other_paths.concat(a.paths) if index.zero?
+          other_paths.concat(b.paths)
         end
       end
     end
