@@ -279,8 +279,7 @@ module Engine
           @connections << { left: left, right: middle, connection: a } if index.zero?
           @connections << { left: middle, right: right, connection: b }
 
-          other_paths.concat(a.paths) if index.zero?
-          other_paths.concat(b.paths)
+          other_paths.concat(a.paths)
         end
       end
     end
