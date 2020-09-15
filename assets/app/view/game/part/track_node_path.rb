@@ -335,7 +335,7 @@ module View
             @end_y
           ) if @need_arc
 
-          return unless @path.parallel? && @begin_edge
+          return if !@path.parallel? || !@begin_edge
 
           shift = (@path.lane_index * 2 - @path.lanes + 1) * (@width + PARALLEL_SPACING[@path.lanes - 2]) / 2.0
           delta_x = (shift * Math.cos(@begin_edge * 60.0 * Math::PI / 180.0)).round(2)

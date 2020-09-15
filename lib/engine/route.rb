@@ -236,12 +236,11 @@ module Engine
     end
 
     def find_connections(connections_a, connections_b, other_paths)
-      connections_a.each do |a|
-        next if (a.paths & other_paths).any?
-
-        connections_b.each do |b|
+      connections_a.select { |a0| (a0.paths & other_paths).empty? }.each do |a|
+        avoid_paths = a.paths + other_paths
+        connections_b.select { |b0| (b0.paths & avoid_paths).empty? }.each do |b|
           middle = (a.nodes & b.nodes)
-          next if middle.empty? || (b.paths & other_paths).any? || (b.paths & a.paths).any?
+          next if middle.empty?
 
           left = (a.nodes - middle)[0]
           right = (b.nodes - middle)[0]
