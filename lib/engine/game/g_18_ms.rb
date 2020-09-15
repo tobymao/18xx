@@ -26,6 +26,7 @@ module Engine
 
       EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false # Emergency buy can buy any available trains
       EBUY_PRES_SWAP = false # Do not allow presidental swap during emergency buy
+      EBUY_SELL_MORE_THAN_NEEDED = true # Allow to sell extra to force buy a more expensive train
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         'can_buy_companies_operation_round_one' =>
@@ -254,7 +255,7 @@ module Engine
 
           fee = 50
           president_assist = price - corporation.cash
-          return [president_assist, fee] unless corporation.owner.cash < president_assist + fee
+          return [president_assist, fee] unless corporation.player.cash < president_assist + fee
         end
 
         super
