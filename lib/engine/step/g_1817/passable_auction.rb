@@ -44,6 +44,7 @@ module Engine
           @active_bidders = entities.select do |player|
             player == @auction_triggerer || max_bid(player, @auctioning) >= min_bid(@auctioning)
           end
+          resolve_bids
         end
 
         def add_bid(bid)
