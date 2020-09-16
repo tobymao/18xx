@@ -204,35 +204,41 @@ module Engine
   ],
   "companies": [
     {
+      "sym": "MHBRC",
       "name": "Melbourne & Hobson's Bay Railway Company",
       "value": 40,
       "revenue": 5,
       "desc": "No special abilities."
     },
     {
+      "sym": "SRC",
       "name": "Sydney Railway Company",
       "value": 80,
       "revenue": 10,
       "desc": "If the company is owned by a Public Company or its Director, that company can, on one occasion, develop a cost-incurring desert hex for 40£ less than it would otherwise cost"
     },
     {
+      "sym": "TR",
       "name": "Tasmanian Railways",
       "value": 140,
       "revenue": 15,
       "desc": "The Tasmania tile can be placed by a Public Company on one of the dark blue hexes. This is in addition to the company's normal build that turn."
     },
     {
+      "sym": "GHAN",
       "name": "The Ghan",
       "value": 220,
       "revenue": 20,
       "desc": "The owner has a one-time discount of £100 on the purchase of a 2E train, 'The Ghan'"
     },
     {
+      "sym": "TAR",
       "name": "Trans-Australian Railway",
       "revenue": 25,
       "desc": "The owner receives in addition a 10% share in the QR."
     },
     {
+      "sym": "NAR",
       "name": "North Australian Railway",
       "revenue": 30,
       "desc": "The owner receives in addition the Director's Share share in the CAR, which must start at a par value of 100£."
