@@ -15,7 +15,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>18GA and 18TN have finished beta and are now in production!</p>
+        <p>18MS is now in alpha!</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
         If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other
@@ -56,7 +56,7 @@ module View
     def render_introduction
       message = <<~MESSAGE
         <p>18xx.games is a website where you can play async or real-time 18xx games (based on the system originally devised by the brilliant Francis Tresham)!
-        <p>Right now, 1889, 18Chesapeake, 1846, 1836Jr30, 1882, 18AL, 18GA, and 18TN are implemented.
+        <p>Right now, 1836Jr30, 1846, 1882, 1889, 18AL, 18Chesapeake, 18GA, 18MS, and 18TN are implemented.
         If you are new to 18xx games then 1889 or 18Chesapeake are good games to begin with.</p>
 
         <p>You can play locally with hot seat mode without an account. If you want to play multiplayer, you'll need to create an account.</p>
