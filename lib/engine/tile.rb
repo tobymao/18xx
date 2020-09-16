@@ -304,7 +304,7 @@ module Engine
         return ct_edges
       end
       # if a tile has no cities and exactly one town that doesn't have two exits, place in center
-      if @cities.empty? && @towns.one? && (exits.size != 2) && !compute_loc(@towns.first.loc)
+      if @cities.empty? && @towns.one? && (@towns[0].exits.size != 2) && !compute_loc(@towns.first.loc)
         ct_edges[@towns.first] = nil
         return ct_edges
       end

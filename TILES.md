@@ -60,8 +60,8 @@ game config/code:
       integer to refer by index to a city/town/offboard/junction defined earlier
       on the tile
     - **terminal** - `1` - indicates that path is part of a non-passthru path, typically for off-board cities. Tapered track will be drawn.
-    - **track** - broad/narrow/dual/line/dashed; this option is not yet
-      implemented, so track is always broad
+    - **lanes** - integer - number of parallel paths. Effectively creates multiple copies of this path, each uniquely identified.
+    - **track** - `broad/narrow/line/dashed`; this option is not yet implemented, so track is always broad
 - **label** - large letter(s) on tile (e.g., "Chi", "OO", or "Z")
 - **upgrade**
     - **cost** - *required* - integer
