@@ -105,11 +105,6 @@ module Engine
     "238": 1,
     "239": 3,
     "240": 2,
-    "241": {
-      "count": 1,
-      "color": "water",
-      "code": "path=a:3,b:_0;path=a:4,b:_0"
-    },
     "611": 4,
     "915": 1
   },
@@ -204,42 +199,44 @@ module Engine
   ],
   "companies": [
     {
-      "sym": "MHBRC",
+      "sym": "PX",
       "name": "Melbourne & Hobson's Bay Railway Company",
       "value": 40,
       "revenue": 5,
       "desc": "No special abilities."
     },
     {
-      "sym": "SRC",
+      "sym": "P2",
       "name": "Sydney Railway Company",
       "value": 80,
       "revenue": 10,
       "desc": "If the company is owned by a Public Company or its Director, that company can, on one occasion, develop a cost-incurring desert hex for 40£ less than it would otherwise cost"
     },
     {
-      "sym": "TR",
+      "sym": "P3",
       "name": "Tasmanian Railways",
       "value": 140,
       "revenue": 15,
       "desc": "The Tasmania tile can be placed by a Public Company on one of the dark blue hexes. This is in addition to the company's normal build that turn."
     },
     {
-      "sym": "GHAN",
+      "sym": "P4",
       "name": "The Ghan",
       "value": 220,
       "revenue": 20,
       "desc": "The owner has a one-time discount of £100 on the purchase of a 2E train, 'The Ghan'"
     },
     {
-      "sym": "TAR",
+      "sym": "P5",
       "name": "Trans-Australian Railway",
+      "value": 0,
       "revenue": 25,
       "desc": "The owner receives in addition a 10% share in the QR."
     },
     {
-      "sym": "NAR",
+      "sym": "P6",
       "name": "North Australian Railway",
+      "value": 0,
       "revenue": 30,
       "desc": "The owner receives in addition the Director's Share share in the CAR, which must start at a par value of 100£."
     }
