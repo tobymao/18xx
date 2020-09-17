@@ -1,0 +1,4788 @@
+{
+  "id": 9882,
+  "description": "Playtest Deluxe",
+  "user": {
+    "id": 2363,
+    "name": "Mark Derrick"
+  },
+  "players": [
+    {
+      "id": 523,
+      "name": "MontyBrewster71"
+    },
+    {
+      "id": 2363,
+      "name": "Mark Derrick"
+    },
+    {
+      "id": 1027,
+      "name": "TIE53"
+    }
+  ],
+  "max_players": 3,
+  "title": "18MS",
+  "settings": {
+    "seed": 1.2805474889858868e+37
+  },
+  "user_settings": null,
+  "status": "finished",
+  "turn": 5,
+  "round": "Operating Round",
+  "acting": [
+    523,
+    2363,
+    1027
+  ],
+  "result": {
+    "TIE53": 4407,
+    "Mark Derrick": 3733,
+    "MontyBrewster71": 3357
+  },
+  "actions": [
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 1,
+      "message": "hi all"
+    },
+    {
+      "type": "bid",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 2,
+      "company": "BS",
+      "price": 40
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 3,
+      "message": "Hi all!"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 4,
+      "message": "Hi"
+    },
+    {
+      "type": "bid",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 5,
+      "company": "AGS",
+      "price": 30
+    },
+    {
+      "type": "bid",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 6,
+      "company": "M&M",
+      "price": 50
+    },
+    {
+      "type": "par",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 7,
+      "corporation": "WRA",
+      "share_price": "90,0,4"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 8,
+      "message": "The key thing is to judge whether to withhold to buy an extra permanent train"
+    },
+    {
+      "type": "par",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 9,
+      "corporation": "L&N",
+      "share_price": "80,1,4"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 10,
+      "message": "I got greedy this afternoon and bought 3 3Ts. It didn't work out in my favor"
+    },
+    {
+      "type": "par",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 11,
+      "corporation": "GMO",
+      "share_price": "80,1,4"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 12,
+      "message": "This will be my first..."
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 13,
+      "message": "No, buy fast but never three of any non-perm train"
+    },
+    {
+      "type": "buy_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 14,
+      "shares": [
+        "WRA_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 15,
+      "shares": [
+        "L&N_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 16,
+      "shares": [
+        "GMO_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 17,
+      "shares": [
+        "WRA_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 18,
+      "message": "If I had gotten a second company, it would have been fine. But I didn't, and it wasn't"
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 19,
+      "shares": [
+        "L&N_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 20,
+      "shares": [
+        "GMO_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 21,
+      "shares": [
+        "WRA_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 22,
+      "shares": [
+        "L&N_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 23,
+      "shares": [
+        "GMO_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 24,
+      "shares": [
+        "WRA_4"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 25,
+      "shares": [
+        "L&N_4"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 26,
+      "shares": [
+        "GMO_4"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 27,
+      "shares": [
+        "L&N_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 28,
+      "shares": [
+        "GMO_5"
+      ],
+      "percent": 10
+    },
+    {
+      "id": 29,
+      "hex": "E11",
+      "tile": "6-0",
+      "type": "lay_tile",
+      "entity": "WRA",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 30,
+      "type": "pass",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 31,
+      "type": "buy_train",
+      "price": 80,
+      "train": "2+-0",
+      "entity": "WRA",
+      "variant": "2+",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 32,
+      "type": "buy_train",
+      "price": 80,
+      "train": "2+-1",
+      "entity": "WRA",
+      "variant": "2+",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 33,
+      "message": "you can't hit ATL twice"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 34,
+      "message": "btw"
+    },
+    {
+      "id": 35,
+      "type": "undo",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 36,
+      "message": "To select a route to Atlanta, select the hex containing atlanta, not the converging track"
+    },
+    {
+      "id": 37,
+      "type": "undo",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 38,
+      "type": "undo",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 39,
+      "type": "undo",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 40,
+      "message": "you can only hit it once, though, right?"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 41,
+      "hex": "E11",
+      "tile": "6-0",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 42,
+      "hex": "E9",
+      "tile": "6-1",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 43
+    },
+    {
+      "type": "buy_train",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 44,
+      "train": "2+-0",
+      "price": 80,
+      "variant": "2+"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 45,
+      "message": "right, once per RR per OR"
+    },
+    {
+      "type": "buy_train",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 46,
+      "train": "2+-1",
+      "price": 80,
+      "variant": "2+"
+    },
+    {
+      "type": "pass",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 47
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 48,
+      "message": "I missed that. Thanks."
+    },
+    {
+      "type": "buy_company",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 49,
+      "company": "AGS",
+      "price": 30
+    },
+    {
+      "type": "lay_tile",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 50,
+      "hex": "C9",
+      "tile": "6-2",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "AGS",
+      "entity_type": "company",
+      "id": 51,
+      "hex": "B10",
+      "tile": "8-0",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 52,
+      "hex": "C7",
+      "tile": "5-0",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 53
+    },
+    {
+      "type": "buy_train",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 54,
+      "train": "2+-2",
+      "price": 80,
+      "variant": "2+"
+    },
+    {
+      "type": "buy_train",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 55,
+      "train": "2+-3",
+      "price": 80,
+      "variant": "2+"
+    },
+    {
+      "type": "pass",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 56
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 57,
+      "hex": "H6",
+      "tile": "57-0",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 58,
+      "hex": "H4",
+      "tile": "4-0",
+      "rotation": 1
+    },
+    {
+      "type": "buy_train",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 59,
+      "train": "3+-0",
+      "price": 180,
+      "variant": "3+"
+    },
+    {
+      "type": "buy_train",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 60,
+      "train": "3+-1",
+      "price": 180,
+      "variant": "3+"
+    },
+    {
+      "type": "pass",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 61
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 62,
+      "message": "I'm only buying 2!!"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 63,
+      "hex": "D8",
+      "tile": "9-0",
+      "rotation": 2
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 64,
+      "message": "Atta boy!"
+    },
+    {
+      "type": "place_token",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 65,
+      "city": "5-0-0",
+      "slot": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 66,
+      "routes": [
+        {
+          "train": "2+-0",
+          "connections": [
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ]
+          ]
+        },
+        {
+          "train": "2+-1",
+          "connections": [
+            [
+              "E9",
+              "D8",
+              "C7"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 67,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 68,
+      "train": "3+-2",
+      "price": 180,
+      "variant": "3+"
+    },
+    {
+      "type": "buy_company",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 69,
+      "company": "M&M",
+      "price": 75
+    },
+    {
+      "type": "lay_tile",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 70,
+      "hex": "C9",
+      "tile": "619-0",
+      "rotation": 3
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 71,
+      "message": "So, what is the point of the three exits to Atlanta if only one can be used per OR?"
+    },
+    {
+      "type": "run_routes",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 72,
+      "routes": [
+        {
+          "train": "2+-2",
+          "connections": [
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        },
+        {
+          "train": "2+-3",
+          "connections": [
+            [
+              "C7",
+              "C9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 73,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 74,
+      "train": "3+-3",
+      "price": 180,
+      "variant": "3+"
+    },
+    {
+      "type": "buy_company",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 75,
+      "company": "BS",
+      "price": 60
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 76,
+      "message": "It was to use the existing track on the 18Dixie map without having to make special green and brown tiles for Montgomery."
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BS",
+      "entity_type": "company",
+      "id": 77,
+      "hex": "H8",
+      "tile": "4-1",
+      "rotation": 1
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 78,
+      "message": "ahhh"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BS",
+      "entity_type": "company",
+      "id": 79,
+      "hex": "H2",
+      "tile": "8-1",
+      "rotation": 4
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 80,
+      "message": "This game was originally an extra game that came with 18Dixie"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 81,
+      "hex": "H6",
+      "tile": "15-0",
+      "rotation": 1
+    },
+    {
+      "type": "place_token",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 82,
+      "city": "I1-0-0",
+      "slot": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 83,
+      "routes": [
+        {
+          "train": "3+-0",
+          "connections": [
+            [
+              "I1"
+            ],
+            [
+              "I1",
+              "H2",
+              "H4"
+            ],
+            [
+              "H4",
+              "H6"
+            ]
+          ]
+        },
+        {
+          "train": "3+-1",
+          "connections": [
+            [
+              "H10",
+              "H8"
+            ],
+            [
+              "H8",
+              "H6"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 84,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 85
+    },
+    {
+      "type": "buy_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 86,
+      "shares": [
+        "WRA_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 87
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 88,
+      "shares": [
+        "GMO_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 89
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 90,
+      "shares": [
+        "WRA_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 91
+    },
+    {
+      "type": "buy_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 92,
+      "shares": [
+        "GMO_7"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 93
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 94,
+      "shares": [
+        "GMO_8"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 95
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 96,
+      "shares": [
+        "L&N_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 97
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 98
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 99
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 100
+    },
+    {
+      "type": "lay_tile",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 101,
+      "hex": "C7",
+      "tile": "14-0",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 102
+    },
+    {
+      "type": "run_routes",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 103,
+      "routes": [
+        {
+          "train": "2+-0",
+          "connections": [
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ]
+          ]
+        },
+        {
+          "train": "2+-1",
+          "connections": [
+            [
+              "E9",
+              "D8",
+              "C7"
+            ]
+          ]
+        },
+        {
+          "train": "3+-2",
+          "connections": [
+            [
+              "C9",
+              "C7"
+            ],
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 104,
+      "kind": "payout"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 105,
+      "hex": "H2",
+      "tile": "25-0",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 106,
+      "routes": [
+        {
+          "train": "3+-0",
+          "connections": [
+            [
+              "I1"
+            ],
+            [
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "H4",
+              "H6"
+            ]
+          ]
+        },
+        {
+          "train": "3+-1",
+          "connections": [
+            [
+              "H10",
+              "H8"
+            ],
+            [
+              "H8",
+              "H6"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 107,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 108
+    },
+    {
+      "type": "lay_tile",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 109,
+      "hex": "E11",
+      "tile": "15-1",
+      "rotation": 1
+    },
+    {
+      "type": "place_token",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 110,
+      "city": "15-1-0",
+      "slot": 1
+    },
+    {
+      "type": "run_routes",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 111,
+      "routes": [
+        {
+          "train": "2+-2",
+          "connections": [
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        },
+        {
+          "train": "2+-3",
+          "connections": [
+            [
+              "C9",
+              "C7"
+            ]
+          ]
+        },
+        {
+          "train": "3+-3",
+          "connections": [
+            [
+              "E9",
+              "E11"
+            ],
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 112,
+      "kind": "payout"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 113,
+      "hex": "C5",
+      "tile": "4-2",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 114
+    },
+    {
+      "type": "run_routes",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 115,
+      "routes": [
+        {
+          "train": "2+-0",
+          "connections": [
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ]
+          ]
+        },
+        {
+          "train": "2+-1",
+          "connections": [
+            [
+              "E9",
+              "D8",
+              "C7"
+            ]
+          ]
+        },
+        {
+          "train": "3+-2",
+          "connections": [
+            [
+              "C7",
+              "C5"
+            ],
+            [
+              "C9",
+              "C7"
+            ],
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 116,
+      "kind": "payout"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 117,
+      "hex": "G1",
+      "tile": "8-2",
+      "rotation": 3
+    },
+    {
+      "type": "run_routes",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 118,
+      "routes": [
+        {
+          "train": "3+-0",
+          "connections": [
+            [
+              "I1"
+            ],
+            [
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "H4",
+              "H6"
+            ]
+          ]
+        },
+        {
+          "train": "3+-1",
+          "connections": [
+            [
+              "H10",
+              "H8"
+            ],
+            [
+              "H8",
+              "H6"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 119,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 120
+    },
+    {
+      "type": "lay_tile",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 121,
+      "hex": "D10",
+      "tile": "9-1",
+      "rotation": 2
+    },
+    {
+      "type": "place_token",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 122,
+      "city": "6-1-0",
+      "slot": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 123,
+      "routes": [
+        {
+          "train": "2+-2",
+          "connections": [
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        },
+        {
+          "train": "2+-3",
+          "connections": [
+            [
+              "C9",
+              "C7"
+            ]
+          ]
+        },
+        {
+          "train": "3+-3",
+          "connections": [
+            [
+              "E9",
+              "E11"
+            ],
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 124,
+      "kind": "withhold"
+    },
+    {
+      "type": "buy_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 125,
+      "shares": [
+        "L&N_7"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 126
+    },
+    {
+      "id": 127,
+      "type": "sell_shares",
+      "entity": "Mark Derrick",
+      "shares": [
+        "GMO_6"
+      ],
+      "percent": 10,
+      "entity_type": "player"
+    },
+    {
+      "id": 128,
+      "type": "undo",
+      "entity": "Mark Derrick",
+      "entity_type": "player"
+    },
+    {
+      "type": "sell_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 129,
+      "shares": [
+        "GMO_6",
+        "GMO_8"
+      ],
+      "percent": 20
+    },
+    {
+      "type": "sell_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 130,
+      "shares": [
+        "L&N_1",
+        "L&N_2"
+      ],
+      "percent": 20
+    },
+    {
+      "type": "par",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 131,
+      "corporation": "IC",
+      "share_price": "90,0,4"
+    },
+    {
+      "type": "sell_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 132,
+      "shares": [
+        "L&N_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "sell_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 133,
+      "shares": [
+        "WRA_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "par",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 134,
+      "corporation": "Fr",
+      "share_price": "90,0,4"
+    },
+    {
+      "type": "buy_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 135,
+      "shares": [
+        "IC_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 136
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 137,
+      "message": "About how long did your game take this afternoon?"
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 138,
+      "shares": [
+        "IC_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 139
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 140,
+      "shares": [
+        "Fr_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 141
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 142,
+      "message": "Under an hour"
+    },
+    {
+      "type": "buy_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 143,
+      "shares": [
+        "Fr_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 144
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 145,
+      "message": "wow, that's fast play. I wanted this to be a short game that still feels like a whole game..."
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 146,
+      "shares": [
+        "IC_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 147
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 148,
+      "shares": [
+        "Fr_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 149
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 150,
+      "message": "I think 60-90 minutes feels right for most groups.  "
+    },
+    {
+      "type": "buy_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 151,
+      "shares": [
+        "Fr_4"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 152,
+      "message": "(or at least most groups I'd want to play with)"
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 153
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 154,
+      "shares": [
+        "IC_4"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 155
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 156,
+      "shares": [
+        "Fr_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 157
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 158
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 159,
+      "shares": [
+        "WRA_7"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 160
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 161,
+      "shares": [
+        "Fr_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 162
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 163
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 164
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 165
+    },
+    {
+      "type": "lay_tile",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 166,
+      "hex": "E9",
+      "tile": "619-1",
+      "rotation": 0
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 167,
+      "message": "As often as not, the player with only one RR wins in 3 player games. You have to finagle to get extra trains to beat that is what I've found...."
+    },
+    {
+      "id": 168,
+      "type": "pass",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 169,
+      "type": "run_routes",
+      "entity": "WRA",
+      "routes": [
+        {
+          "train": "3+-2",
+          "connections": [
+            [
+              "C7",
+              "C5"
+            ],
+            [
+              "C9",
+              "C7"
+            ],
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 170,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 171,
+      "type": "buy_train",
+      "price": 300,
+      "train": "4+-0",
+      "entity": "WRA",
+      "variant": "4+",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 172,
+      "type": "pass",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 173,
+      "hex": "F2",
+      "tile": "8-3",
+      "type": "lay_tile",
+      "entity": "GMO",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 174,
+      "city": "E1-0-0",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "GMO",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 175,
+      "message": "you better token Birmingham, WRA. I'm ok if you want to go back"
+    },
+    {
+      "id": 176,
+      "type": "undo",
+      "entity": "GMO",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 177,
+      "type": "undo",
+      "entity": "GMO",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 178,
+      "type": "undo",
+      "entity": "GMO",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 179,
+      "type": "undo",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 180,
+      "type": "undo",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 181,
+      "type": "undo",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 182,
+      "type": "undo",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 183,
+      "city": "619-0-0",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 184,
+      "type": "undo",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "place_token",
+      "entity": "M&M",
+      "entity_type": "company",
+      "id": 185,
+      "city": "619-0-0",
+      "slot": 1
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 186,
+      "message": "Don't tempt me, LOL"
+    },
+    {
+      "type": "run_routes",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 187,
+      "routes": [
+        {
+          "train": "3+-2",
+          "connections": [
+            [
+              "C7",
+              "C5"
+            ],
+            [
+              "C9",
+              "C7"
+            ],
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 188,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 189,
+      "train": "4+-0",
+      "price": 300,
+      "variant": "4+"
+    },
+    {
+      "type": "pass",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 190
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 191,
+      "hex": "F2",
+      "tile": "8-3",
+      "rotation": 0
+    },
+    {
+      "type": "place_token",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 192,
+      "city": "E1-0-0",
+      "slot": 1
+    },
+    {
+      "type": "run_routes",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 193,
+      "routes": [
+        {
+          "train": "3+-0",
+          "connections": [
+            [
+              "I1"
+            ],
+            [
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "H4",
+              "H6"
+            ]
+          ]
+        },
+        {
+          "train": "3+-1",
+          "connections": [
+            [
+              "H10",
+              "H8"
+            ],
+            [
+              "H8",
+              "H6"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 194,
+      "message": "Definitely a different game. I'm having a little trouble wrapping my head around it, in a good way. Thanks."
+    },
+    {
+      "type": "dividend",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 195,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 196,
+      "train": "4+-1",
+      "price": 300,
+      "variant": "4+"
+    },
+    {
+      "id": 197,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 198,
+      "type": "redo",
+      "entity": "GMO",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 199,
+      "hex": "B4",
+      "tile": "8-4",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 200,
+      "hex": "C3",
+      "tile": "7-0",
+      "rotation": 3
+    },
+    {
+      "type": "place_token",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 201,
+      "city": "14-0-0",
+      "slot": 1
+    },
+    {
+      "type": "buy_train",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 202,
+      "train": "4+-2",
+      "price": 300,
+      "variant": "4+"
+    },
+    {
+      "type": "buy_train",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 203,
+      "train": "4+-3",
+      "price": 300,
+      "variant": "4+"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 204
+    },
+    {
+      "type": "lay_tile",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 205,
+      "hex": "E3",
+      "tile": "9-2",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 206,
+      "hex": "E5",
+      "tile": "5-1",
+      "rotation": 0
+    },
+    {
+      "type": "place_token",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 207,
+      "city": "5-1-0",
+      "slot": 0
+    },
+    {
+      "type": "buy_train",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 208,
+      "train": "5-0",
+      "price": 500,
+      "variant": "5"
+    },
+    {
+      "type": "buy_train",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 209,
+      "train": "3+-0",
+      "price": 239
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 210,
+      "message": "Another kind of weird thing is that brown tiles are not available until a 6Train goes, even though 5Trains are permanent...."
+    },
+    {
+      "type": "pass",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 211
+    },
+    {
+      "type": "lay_tile",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 212,
+      "hex": "D10",
+      "tile": "23-0",
+      "rotation": 2
+    },
+    {
+      "type": "run_routes",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 213,
+      "routes": [
+        {
+          "train": "3+-3",
+          "connections": [
+            [
+              "E11",
+              "E9"
+            ],
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 214,
+      "message": "Do you feel that 2Ts are pretty terrible in this game? The get 2 fewer runs than a 3T purchased late in OR1.1, and set you up for early permanent trains, which it feels like are things you don't really want. "
+    },
+    {
+      "type": "dividend",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 215,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 216,
+      "train": "5-1",
+      "price": 500,
+      "variant": "5"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 217,
+      "message": "Could be the rebate helps offset that"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 218,
+      "message": "GMO seems like an early powerhouse, or is it better balanced than I realize?"
+    },
+    {
+      "type": "buy_train",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 219,
+      "train": "4+-2",
+      "price": 135
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 220,
+      "message": "Permanent trains don't get to skip dits, so I'm having to tunnel around all these things for a late game run"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 221,
+      "message": "Ah"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 222,
+      "message": "It can be difficult for the GMO to get decent runs with a 5T or 6T"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 223,
+      "hex": "B6",
+      "tile": "8-5",
+      "rotation": 5
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 224,
+      "message": "It can run two 2Ts and a 3T between NO and Tallahassee for a ton early"
+    },
+    {
+      "type": "run_routes",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 225,
+      "routes": [
+        {
+          "train": "3+-2",
+          "connections": [
+            [
+              "E11",
+              "E9"
+            ],
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ]
+          ]
+        },
+        {
+          "train": "4+-0",
+          "connections": [
+            [
+              "B12",
+              "B10",
+              "C9"
+            ],
+            [
+              "C9",
+              "C7"
+            ],
+            [
+              "C7",
+              "C5"
+            ],
+            [
+              "C5",
+              "C3",
+              "B4",
+              "A3",
+              "A1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": 226,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 227,
+      "type": "undo",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 228,
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 229,
+      "message": "don't forget you can pitch in cash for your train"
+    },
+    {
+      "id": 230,
+      "type": "undo",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "dividend",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 231,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 232
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 233,
+      "hex": "G5",
+      "tile": "9-3",
+      "rotation": 2
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 234,
+      "message": "Yes, but I didn't have enough cash"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 235,
+      "message": "that is a problem, then"
+    },
+    {
+      "type": "run_routes",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 236,
+      "routes": [
+        {
+          "train": "3+-1",
+          "connections": [
+            [
+              "I1"
+            ],
+            [
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "H8",
+              "H6"
+            ],
+            [
+              "H10",
+              "H8"
+            ]
+          ]
+        },
+        {
+          "train": "4+-1",
+          "connections": [
+            [
+              "E1",
+              "E3",
+              "E5"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 237,
+      "message": "The timing is very important. Sometimes you don't spend all your money in a SR so you will have enough to contribute in OR x.1"
+    },
+    {
+      "type": "dividend",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 238,
+      "kind": "withhold"
+    },
+    {
+      "type": "pass",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 239
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 240,
+      "message": "Something to remember to watch"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 241,
+      "hex": "B4",
+      "tile": "25-1",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 242
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 243,
+      "routes": [
+        {
+          "train": "4+-3",
+          "connections": [
+            [
+              "E11",
+              "E9"
+            ],
+            [
+              "C7",
+              "D8",
+              "E9"
+            ],
+            [
+              "C7",
+              "C5"
+            ],
+            [
+              "C5",
+              "C3",
+              "B4",
+              "A3",
+              "A1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 244,
+      "kind": "payout"
+    },
+    {
+      "id": 245,
+      "type": "buy_train",
+      "price": 1,
+      "train": "4+-2",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 246,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "buy_train",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 247,
+      "train": "4+-2",
+      "price": 292
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 248
+    },
+    {
+      "type": "lay_tile",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 249,
+      "hex": "F4",
+      "tile": "8-6",
+      "rotation": 3
+    },
+    {
+      "type": "place_token",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 250,
+      "city": "15-0-0",
+      "slot": 1
+    },
+    {
+      "type": "run_routes",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 251,
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "E1",
+              "E3",
+              "E5"
+            ],
+            [
+              "H6",
+              "G5",
+              "F4",
+              "E5"
+            ]
+          ]
+        },
+        {
+          "train": "3+-0",
+          "connections": [
+            [
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "H8",
+              "H6"
+            ],
+            [
+              "H10",
+              "H8"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 252,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 253
+    },
+    {
+      "type": "lay_tile",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 254,
+      "hex": "D8",
+      "tile": "23-1",
+      "rotation": 5
+    },
+    {
+      "type": "run_routes",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 255,
+      "routes": [
+        {
+          "train": "3+-3",
+          "connections": [
+            [
+              "E11",
+              "D10",
+              "C9"
+            ],
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ]
+          ]
+        },
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "B12",
+              "B10",
+              "C9"
+            ],
+            [
+              "C9",
+              "D8",
+              "E9"
+            ],
+            [
+              "E11",
+              "E9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 256,
+      "kind": "payout"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 257,
+      "message": "Can't quite make it this time for the extra train, but I will try anyway."
+    },
+    {
+      "type": "buy_train",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 258,
+      "train": "6-0",
+      "price": 550,
+      "variant": "6"
+    },
+    {
+      "type": "buy_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 259,
+      "shares": [
+        "IC_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 260
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 261,
+      "shares": [
+        "L&N_8"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 262
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 263
+    },
+    {
+      "id": 264,
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player"
+    },
+    {
+      "id": 265,
+      "type": "undo",
+      "entity": "Mark Derrick",
+      "entity_type": "player"
+    },
+    {
+      "type": "sell_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 266,
+      "shares": [
+        "Fr_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 267
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 268,
+      "message": "sorry"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 269,
+      "message": "np"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 270,
+      "message": "that has a permanent train in it! lol"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 271,
+      "message": "Yeah, but I could see you switching it over. I am possibly over concerned about getting dumped on, but there it is."
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 272,
+      "message": "I think there just aren't enough shares to buy in this game for dumping to be a thing, but I'm sure it could be in the right scenario. "
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 273,
+      "message": "I suspect that is a \"meta\" question more than an overall strategy question"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 274,
+      "message": "My regular group, I would be much less concerned"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 275,
+      "message": "this might be one of those games where a dump mutually hurts both players involved"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 276,
+      "message": "I think I will let you have the IC, though you are right. You don't usually dump companies because there aren't enough shares to buy. I am too short on cash so I will try it. I always try different things so it may work out for you..."
+    },
+    {
+      "id": 277,
+      "type": "sell_shares",
+      "entity": "Mark Derrick",
+      "shares": [
+        "IC_2",
+        "IC_3",
+        "IC_4",
+        "IC_0"
+      ],
+      "percent": 40,
+      "entity_type": "player"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 278,
+      "message": "Never mind the losses by BK in 18Ch and the like, I actually came in 3rd on a 46 game because of dumping"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 279,
+      "message": "Joy :D"
+    },
+    {
+      "id": 280,
+      "type": "undo",
+      "entity": "Mark Derrick",
+      "entity_type": "player"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 281,
+      "message": "It just isn't going to work, shouldn't have contributed for the extra train back there."
+    },
+    {
+      "type": "sell_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 282,
+      "shares": [
+        "IC_2",
+        "IC_3"
+      ],
+      "percent": 20
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 283,
+      "shares": [
+        "WRA_8"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 284
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 285,
+      "message": "although you can take it if you want it"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 286,
+      "message": "No. I hadn't considered a dump in this SR, but I guess it would be silly to worry about it now."
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 287,
+      "message": "Getting a company with two 4+ trains is not a bad thing. Withhold once and contribute for a permanent train and you are fine"
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 288
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 289,
+      "shares": [
+        "L&N_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 290
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 291
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 292,
+      "message": "Another reason to hold where I am, but not worry about it, I think"
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 293
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 294
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 295,
+      "message": "I don't know why you were all scared of buying GMO shares"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 296,
+      "hex": "C7",
+      "tile": "63-0",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 297,
+      "routes": [
+        {
+          "train": "4+-0",
+          "connections": [
+            [
+              "B12",
+              "B10",
+              "C9"
+            ],
+            [
+              "C9",
+              "C7"
+            ],
+            [
+              "C5",
+              "C7"
+            ],
+            [
+              "C5",
+              "C3",
+              "B4",
+              "A3",
+              "A1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 298,
+      "kind": "withhold"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 299,
+      "message": "Or you can pay out twice, collect the salvage for the 2 4+ trains and then either buy over or emergency Money raise after the next SR"
+    },
+    {
+      "type": "buy_train",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 300,
+      "train": "2D-0",
+      "price": 750,
+      "variant": "4D"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 301,
+      "hex": "E5",
+      "tile": "15-2",
+      "rotation": 5
+    },
+    {
+      "type": "place_token",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 302,
+      "city": "15-2-0",
+      "slot": 1
+    },
+    {
+      "type": "run_routes",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 303,
+      "routes": [
+        {
+          "train": "4+-1",
+          "connections": [
+            [
+              "I1"
+            ],
+            [
+              "E1",
+              "F2",
+              "G1",
+              "H2",
+              "I1"
+            ],
+            [
+              "E1",
+              "E3",
+              "E5"
+            ],
+            [
+              "H6",
+              "G5",
+              "F4",
+              "E5"
+            ],
+            [
+              "H8",
+              "H6"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 304,
+      "kind": "payout"
+    },
+    {
+      "id": 305,
+      "type": "buy_train",
+      "price": 750,
+      "train": "2D-1",
+      "entity": "GMO",
+      "variant": "4D",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 306,
+      "type": "undo",
+      "entity": "L&N",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "buy_train",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 307,
+      "train": "2D-1",
+      "price": 750,
+      "variant": "4D"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 308,
+      "message": "Oh, there's a typo in the log\\"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 309,
+      "hex": "C9",
+      "tile": "63-1",
+      "rotation": 0
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 310,
+      "message": "^^ It says I pitched in cash for a 2D, and then that I bought a 4D"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 311,
+      "message": "Said it for me, too"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 312,
+      "message": "looks like you have a 4D"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 313,
+      "message": "Yeah, but I got confused when I looked at the log"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 314,
+      "message": "\"TIE53 pays $261 and an additional $50 fee to assist buying a 2D train\""
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 315,
+      "message": "You shouldn't have had to contribute for a 2D as I am pretty sure GMO had more than $500 during its turn"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 316,
+      "message": "right. I wanted the 4D"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 317,
+      "message": "the dialog was just wrong. It gave me the train I wanted"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 318,
+      "message": "I see"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 319,
+      "message": "Same for me. The one line in the log is wrong, but I did get the right train."
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 320,
+      "message": "In the physical game, the 2D/4D trains will be on different sides and the purchaser chooses when they buy the train"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 321,
+      "message": "yeah, it's probably just a variable/concatenation issue. It should be easy for them to fix"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 322,
+      "message": "I was just thinking that. For the \"assisted buy\", it probably doesn't distinguish which side of the card you chose."
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 323,
+      "message": "Does it matter?"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 324,
+      "message": "It matters to prevent further confusion for people who think they bought a 2D by accident!"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 325,
+      "message": "Just a dialog problem I guess, hadn't noticed it. Of course in the physical game, the 2D/4D trains are on different sides, just like in 18Dixie though the prices have been changed..."
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 326,
+      "message": "I suppose. Probably easier to change the label for that line from \"2D\" to \"2D/4D\" than to make it show the right train every time."
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 327,
+      "message": "Mark, are you still running, or are we out of sync?"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 328,
+      "message": "man I've really screwed this up with the L&N. Gonna be pitiful income this OR at least"
+    },
+    {
+      "type": "run_routes",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 329,
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "B12",
+              "B10",
+              "C9"
+            ],
+            [
+              "E9",
+              "D8",
+              "C9"
+            ],
+            [
+              "E11",
+              "E9"
+            ]
+          ]
+        },
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "C7",
+              "C9"
+            ],
+            [
+              "E11",
+              "D10",
+              "C9"
+            ],
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 330,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 331
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 332,
+      "message": "$320 is pitiful?"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 333,
+      "hex": "E5",
+      "tile": "63-2",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 334,
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "H8",
+              "H6"
+            ],
+            [
+              "H6",
+              "G5",
+              "F4",
+              "E5"
+            ],
+            [
+              "E1",
+              "E3",
+              "E5"
+            ],
+            [
+              "E1",
+              "F2",
+              "G1",
+              "H2",
+              "I1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 335,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 336
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 337,
+      "message": "For a 5 and a 6, maybe. It looks like it ran as two 4Ts"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 338,
+      "message": "Thought it would only be $280. You can sometimes get some scary income with multiple trains, like what GMO is going to run for next OR..."
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 339,
+      "hex": "C9",
+      "tile": "446-0",
+      "rotation": 0
+    },
+    {
+      "type": "place_token",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 340,
+      "city": "446-0-0",
+      "slot": 2
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 341,
+      "message": "I think I'm only running by 4+ as a 2T, though"
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 342,
+      "routes": [
+        {
+          "train": "4+-3",
+          "connections": [
+            [
+              "C5",
+              "C3",
+              "B4",
+              "A3",
+              "A1"
+            ],
+            [
+              "C5",
+              "C7"
+            ],
+            [
+              "C7",
+              "C9"
+            ],
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        },
+        {
+          "train": "4+-2",
+          "connections": [
+            [
+              "E9",
+              "D8",
+              "C9"
+            ],
+            [
+              "E11",
+              "E9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 343,
+      "kind": "withhold"
+    },
+    {
+      "type": "buy_train",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 344,
+      "train": "2D-2",
+      "price": 500,
+      "variant": "2D"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 345,
+      "hex": "E11",
+      "tile": "63-3",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 346,
+      "routes": [
+        {
+          "train": "4+-0",
+          "connections": [
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ],
+            [
+              "E9",
+              "E11"
+            ],
+            [
+              "E9",
+              "D10",
+              "C9"
+            ]
+          ]
+        },
+        {
+          "train": "2D-0",
+          "connections": [
+            [
+              "A1",
+              "A3",
+              "B4",
+              "B6",
+              "C7"
+            ],
+            [
+              "C7",
+              "C9"
+            ],
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": 347,
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 348,
+      "type": "undo",
+      "entity": "WRA",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "dividend",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 349,
+      "kind": "withhold"
+    },
+    {
+      "type": "pass",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 350
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 351,
+      "hex": "H6",
+      "tile": "X31b-0",
+      "rotation": 1
+    },
+    {
+      "type": "run_routes",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 352,
+      "routes": [
+        {
+          "train": "4+-1",
+          "connections": [
+            [
+              "H10",
+              "H8"
+            ],
+            [
+              "H8",
+              "H6"
+            ],
+            [
+              "H4",
+              "H6"
+            ]
+          ]
+        },
+        {
+          "train": "2D-1",
+          "connections": [
+            [
+              "E5",
+              "F4",
+              "G5",
+              "H6"
+            ],
+            [
+              "E1",
+              "E3",
+              "E5"
+            ],
+            [
+              "E1",
+              "F2",
+              "G1",
+              "H2",
+              "I1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 353,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 354
+    },
+    {
+      "type": "lay_tile",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 355,
+      "hex": "E9",
+      "tile": "63-1",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 356,
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "B12",
+              "B10",
+              "C9"
+            ],
+            [
+              "C9",
+              "D8",
+              "E9"
+            ],
+            [
+              "E11",
+              "E9"
+            ]
+          ]
+        },
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "C7",
+              "C9"
+            ],
+            [
+              "C9",
+              "D10",
+              "E11"
+            ],
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 357,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 358
+    },
+    {
+      "type": "lay_tile",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 359,
+      "hex": "G7",
+      "tile": "9-4",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 360,
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "H8",
+              "H6"
+            ],
+            [
+              "E5",
+              "F4",
+              "G5",
+              "H6"
+            ],
+            [
+              "E1",
+              "E3",
+              "E5"
+            ],
+            [
+              "E1",
+              "F2",
+              "G1",
+              "H2",
+              "I1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 361,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 362
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 363,
+      "message": "I'll need to check something when we are through, there may be a problem with the tile mix."
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 364,
+      "message": "I have the rules up, what do you think is missing?"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 365,
+      "hex": "F10",
+      "tile": "7-1",
+      "rotation": 2
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 366,
+      "message": "The dot town tiles don't seem right. I have a super secret pre-production prototype Scott sent me."
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 367,
+      "message": "the rules say 3 of each yellow and 2 of each green"
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 368,
+      "routes": [
+        {
+          "train": "4+-3",
+          "connections": [
+            [
+              "E11",
+              "E9"
+            ],
+            [
+              "C7",
+              "D8",
+              "E9"
+            ],
+            [
+              "C5",
+              "C7"
+            ],
+            [
+              "C5",
+              "C3",
+              "B4",
+              "A3",
+              "A1"
+            ]
+          ]
+        },
+        {
+          "train": "4+-2",
+          "connections": [
+            [
+              "E11",
+              "F10",
+              "E9"
+            ],
+            [
+              "C9",
+              "D10",
+              "E9"
+            ],
+            [
+              "C7",
+              "C9"
+            ]
+          ]
+        },
+        {
+          "train": "2D-2",
+          "connections": [
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": 369,
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 370,
+      "type": "undo",
+      "entity": "TIE53",
+      "entity_type": "player"
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 371,
+      "kind": "withhold"
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 372,
+      "shares": [
+        "WRA_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 373
+    },
+    {
+      "type": "buy_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 374,
+      "shares": [
+        "IC_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 375
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 376,
+      "message": "yep, that's right. Tried to keep the tile mix a little tight to limit it to about 90 tiles total.  It was supposed to help keep the cost down."
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 377,
+      "shares": [
+        "IC_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 378
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 379,
+      "shares": [
+        "IC_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 380
+    },
+    {
+      "type": "buy_shares",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 381,
+      "shares": [
+        "L&N_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 382
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 383,
+      "shares": [
+        "GMO_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 384
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 385,
+      "shares": [
+        "IC_7"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 386
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 387
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 388,
+      "shares": [
+        "GMO_8"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 389
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 390,
+      "shares": [
+        "IC_8"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 391
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 392
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 393,
+      "shares": [
+        "Fr_7"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 394
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 395,
+      "shares": [
+        "L&N_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 396
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 397
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 398
+    },
+    {
+      "type": "buy_shares",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 399,
+      "shares": [
+        "Fr_8"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 400
+    },
+    {
+      "type": "pass",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 401
+    },
+    {
+      "type": "pass",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 402
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 403,
+      "message": "While there are obviously some nasty things that can be done, in many ways, I think this is the kinder, gentler 18xx I also want to play sometimes."
+    },
+    {
+      "type": "pass",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 404
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 405,
+      "hex": "F8",
+      "tile": "9-5",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 406,
+      "routes": [
+        {
+          "train": "2D-1",
+          "connections": [
+            [
+              "E5",
+              "F4",
+              "G5",
+              "H6"
+            ],
+            [
+              "E1",
+              "E3",
+              "E5"
+            ],
+            [
+              "E1",
+              "F2",
+              "G1",
+              "H2",
+              "I1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 407,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 408
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 409,
+      "message": "And I love the play time"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 410,
+      "message": "I think you have to kind of look ahead and try to see who is going to be the best company just like in most 18xx games. I knew I couldn't afford to contribute a few ORs ago but did it anyway...."
+    },
+    {
+      "type": "pass",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 411
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 412,
+      "message": "Yeah, I started planning for my 4D on OR1.2"
+    },
+    {
+      "type": "run_routes",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 413,
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "B12",
+              "B10",
+              "C9"
+            ],
+            [
+              "C9",
+              "D8",
+              "E9"
+            ],
+            [
+              "E11",
+              "E9"
+            ],
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ]
+          ]
+        },
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "E9",
+              "F8",
+              "G7",
+              "H6"
+            ],
+            [
+              "C9",
+              "D10",
+              "E9"
+            ],
+            [
+              "C7",
+              "C9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 414,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 415
+    },
+    {
+      "type": "pass",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 416
+    },
+    {
+      "type": "run_routes",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 417,
+      "routes": [
+        {
+          "train": "2D-0",
+          "connections": [
+            [
+              "A1",
+              "A3",
+              "B4",
+              "B6",
+              "C7"
+            ],
+            [
+              "C7",
+              "C9"
+            ],
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 418,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 419,
+      "train": "2D-3",
+      "price": 750,
+      "variant": "4D"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 420,
+      "hex": "E7",
+      "tile": "9-6",
+      "rotation": 1
+    },
+    {
+      "type": "run_routes",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 421,
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "C9",
+              "D8",
+              "E9"
+            ],
+            [
+              "E9",
+              "E7",
+              "E5"
+            ],
+            [
+              "E1",
+              "E3",
+              "E5"
+            ],
+            [
+              "E1",
+              "F2",
+              "G1",
+              "H2",
+              "I1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 422,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 423
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 424
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 425,
+      "routes": [
+        {
+          "train": "2D-2",
+          "connections": [
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 426,
+      "kind": "payout"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 427,
+      "message": "Akado is fond of saying that having the best corp and $10 gets you lunch, but this one, it seems like the best corp is a useful primary goal."
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 428,
+      "message": "D'oh! out of 2D/4D trains!"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 429,
+      "message": "when you can own 70% of your company, it's even better"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 430,
+      "message": "haha oops.  5d?"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 431,
+      "message": "doesn't feel right to contribute with it split 4-3-3"
+    },
+    {
+      "type": "buy_train",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 432,
+      "train": "6-1",
+      "price": 550,
+      "variant": "6"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 433
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 434,
+      "message": "you can run a 6T pretty well"
+    },
+    {
+      "type": "pass",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 435
+    },
+    {
+      "type": "run_routes",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 436,
+      "routes": [
+        {
+          "train": "2D-1",
+          "connections": [
+            [
+              "E5",
+              "F4",
+              "G5",
+              "H6"
+            ],
+            [
+              "E1",
+              "E3",
+              "E5"
+            ],
+            [
+              "E1",
+              "F2",
+              "G1",
+              "H2",
+              "I1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 437,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GMO",
+      "entity_type": "corporation",
+      "id": 438
+    },
+    {
+      "type": "pass",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 439
+    },
+    {
+      "type": "run_routes",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 440,
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "B12",
+              "B10",
+              "C9"
+            ],
+            [
+              "C9",
+              "D8",
+              "E9"
+            ],
+            [
+              "E11",
+              "E9"
+            ],
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ]
+          ]
+        },
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "H4",
+              "H6"
+            ],
+            [
+              "E9",
+              "F8",
+              "G7",
+              "H6"
+            ],
+            [
+              "C9",
+              "D10",
+              "E9"
+            ],
+            [
+              "C7",
+              "C9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 441,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 442
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 443,
+      "message": "yeah it has a decent 6 run"
+    },
+    {
+      "type": "pass",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 444
+    },
+    {
+      "type": "run_routes",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 445,
+      "routes": [
+        {
+          "train": "2D-0",
+          "connections": [
+            [
+              "A1",
+              "A3",
+              "B4",
+              "B6",
+              "C7"
+            ],
+            [
+              "C7",
+              "C9"
+            ],
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        },
+        {
+          "train": "2D-3",
+          "connections": [
+            [
+              "E15",
+              "E13",
+              "D12",
+              "E11"
+            ],
+            [
+              "C9",
+              "D10",
+              "E11"
+            ],
+            [
+              "C9",
+              "D8",
+              "E9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "WRA",
+      "entity_type": "corporation",
+      "id": 446,
+      "kind": "payout"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 447,
+      "message": "I feel like being able to pitch in cash for your trains also encourages players to get all their tokens down"
+    },
+    {
+      "type": "pass",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 448
+    },
+    {
+      "type": "run_routes",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 449,
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "C9",
+              "D8",
+              "E9"
+            ],
+            [
+              "E9",
+              "E7",
+              "E5"
+            ],
+            [
+              "E1",
+              "E3",
+              "E5"
+            ],
+            [
+              "E1",
+              "F2",
+              "G1",
+              "H2",
+              "I1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 450,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "Fr",
+      "entity_type": "corporation",
+      "id": 451
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 452,
+      "message": "It probably would have been better for L&N to buy over the 2D for all of its money and let the IC back up then buy the 5D. L&N would have run once for even more"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 453
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 454,
+      "routes": [
+        {
+          "train": "2D-2",
+          "connections": [
+            [
+              "B12",
+              "B10",
+              "C9"
+            ]
+          ]
+        },
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "E5",
+              "F4",
+              "G5",
+              "H6"
+            ],
+            [
+              "E9",
+              "F8",
+              "G7",
+              "H6"
+            ],
+            [
+              "C9",
+              "D10",
+              "E9"
+            ],
+            [
+              "C7",
+              "C9"
+            ],
+            [
+              "A1",
+              "A3",
+              "B4",
+              "B6",
+              "C7"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 455,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 456
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 457,
+      "message": "gg all thanks for playing"
+    },
+    {
+      "type": "message",
+      "entity": "MontyBrewster71",
+      "entity_type": "player",
+      "id": 458,
+      "message": "GG all. Thanks for letting me get an intro to this very cool 18xx title."
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 459,
+      "message": "congrats TIE53"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 460,
+      "message": "It's good to try this again against different humans with the last few tweaks"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 461,
+      "message": "It should play online pretty fast once folks get used to it"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 462,
+      "message": "Yeah, before today I had only played it once, with Scott, and that was when it was in super early development"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 463,
+      "message": "The trains are the really tricky part. Tried to make something that wouldn't be so intimidating length-wise for new players but still felt like a whole game."
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 464,
+      "message": "It was amazing how different it plays compared to version one that still comes with 18Dixie"
+    },
+    {
+      "type": "message",
+      "entity": "TIE53",
+      "entity_type": "player",
+      "id": 465,
+      "message": "Yeah.  I'm sure I can get a lot of my eurogaming friends to play this who like heavy games but don't like \"long\" games"
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 466,
+      "message": "It is pretty different in some ways than a typical 18xx game but it should work in showing the basic concepts like routes, tile laying etc."
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 467,
+      "message": "I do worry that those who have played version 1 will be confused with the changes but maybe there aren't that many folks who bought the earlier edition."
+    },
+    {
+      "type": "message",
+      "entity": "Mark Derrick",
+      "entity_type": "player",
+      "id": 468,
+      "message": "Anyway, congrats and we'll talk to you later..."
+    }
+  ],
+  "loaded": true,
+  "created_at": 1600307520,
+  "updated_at": 1600313558
+}
