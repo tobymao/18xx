@@ -11,6 +11,7 @@ module Engine
           price = action.price
           train = action.train
           player = entity.player
+          name = action.variant
 
           president_assist, fee_amount = @game.president_assisted_buy(entity, train, price)
 
@@ -19,7 +20,7 @@ module Engine
             @game.bank.spend(president_assist, entity)
             assist = @game.format_currency(president_assist).to_s
             fee = @game.format_currency(fee_amount).to_s
-            @log << "#{player.name} pays #{assist} and an additional #{fee} fee to assist buying a #{train.name} train"
+            @log << "#{player.name} pays #{assist} and an additional #{fee} fee to assist buying a #{name} train"
           end
 
           emergency_buy_with_loan = false
