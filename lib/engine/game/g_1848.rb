@@ -14,6 +14,11 @@ module Engine
       #GAME_PUBLISHER = Publisher::INFO[:oo_games]
       #GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1848'
 
+      def init_round
+        Round::Draft.new(self, [Step::G1848::DutchAuction])
+      end
+      
+
     end
   end
 end
