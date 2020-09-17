@@ -80,10 +80,13 @@ module Engine
       def routes_revenue(routes)
         total_revenue = super
 
-        abilities = routes.first&.corporation&.abilities(:civil_war)
+        corporation = routes.first&.corporation
 
-        return total_revenue if !abilities || abilities.empty?
+        abilities = corporation&.abilities(:civil_war)
 
+        return total_revenue if !abilities || abilities.empty? || routes.size < corporation&.trains&.size
+
+        # The train with the lowest revenue loses the income due to the war effort
         total_revenue - routes.map(&:revenue).min
       end
 
