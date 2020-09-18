@@ -205,6 +205,7 @@ module Engine
             {
                "type":"tile_lay",
                "free":true,
+               "count": 1,
                "owner_type":"corporation",
                "hexes":[
                   "F12"

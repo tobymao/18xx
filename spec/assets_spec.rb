@@ -202,7 +202,7 @@ describe 'Assets' do
          'must declare bankruptcy.',
         'Declare Bankruptcy']],
       ['18_al', 4714, nil, 'endgame', '18AL: Operating Round 7.2 (of 3) - Game Over - Company hit max stock value'],
-      ['18_ga', 8643, nil, 'endgame', '18GA: Operating Round 8.1 (of 3) - Game Over - Bank Broken'],
+      ['18_ga', 9222, nil, 'endgame', '18GA: Operating Round 9.1 (of 3) - Game Over - Bank Broken'],
       ['18_tn', 7818, nil, 'endgame', '18TN: Operating Round 8.2 (of 3) - Game Over - Bank Broken'],
       ['18_ms', 9882, nil, 'endgame', '18MS: Operating Round 5.2 (of 2) - Game Over - Last OR in game'],
     ].freeze
