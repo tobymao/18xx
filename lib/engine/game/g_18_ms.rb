@@ -280,7 +280,7 @@ module Engine
 
         @log << "-- Event: #{rusted_trains.map(&:name).uniq} trains rust " \
           "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
-        @log << "Corporations salvages #{format_currency(salvage)} from each rusted train"
+        @log << "Corporations salvage #{format_currency(salvage)} from each rusted train"
       end
     end
   end
