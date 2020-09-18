@@ -84,7 +84,7 @@ module Engine
 
         abilities = corporation&.abilities(:civil_war)
 
-        return total_revenue if !abilities || abilities.empty? || routes.size < corporation&.trains&.size
+        return total_revenue if !abilities || abilities.empty? || routes.size < corporation.trains.size
 
         # The train with the lowest revenue loses the income due to the war effort
         total_revenue - routes.map(&:revenue).min
