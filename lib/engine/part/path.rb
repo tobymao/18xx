@@ -5,18 +5,43 @@ require_relative 'base'
 module Engine
   module Part
     class Path < Base
-      attr_reader :a, :b, :branches, :city, :edges, :junction, :lanes, :lane_index,
+      attr_reader :a, :ab_lanes, :b, :branches, :city, :edges, :exit_lanes, :junction,
                   :nodes, :offboard, :stops, :terminal, :town
-      def initialize(a, b, terminal: nil, lanes: nil, lane_index: 0)
+
+      def self.decode_lane_spec(x_lane)
+        if x_lane
+          [x_lane.to_i, ((x_lane.to_f - x_lane.to_i) * 10).to_i]
+        else
+          [1, 0]
+        end
+      end
+
+      def self.make_lanes(a, b, terminal: nil, lanes: nil, a_lane: nil, b_lane: nil)
+        if lanes
+          lanes.times.map do |index|
+            a_lanes = [lanes, index]
+            b_lanes = if a.edge? && b.edge?
+                        [lanes, lanes - index - 1]
+                      else
+                        a_lanes
+                      end
+            Path.new(a, b, terminal, [a_lanes, b_lanes])
+          end
+        else
+          Path.new(a, b, terminal, [decode_lane_spec(a_lane), decode_lane_spec(b_lane)])
+        end
+      end
+
+      def initialize(a, b, terminal = nil, ab_lanes = [[1, 0], [1, 0]])
         @a = a
         @b = b
+        @terminal = terminal
+        @ab_lanes = ab_lanes
         @edges = []
         @branches = []
         @stops = []
         @nodes = []
-        @terminal = !!terminal
-        @lanes = lanes || 1
-        @lane_index = lane_index
+        @exit_lanes = {}
 
         separate_parts
       end
@@ -55,10 +80,17 @@ module Engine
 
           neighbor.paths[np_edge].each do |np|
             next if on && !on[np]
+            next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
 
             np.walk(skip: np_edge, visited: visited, on: on) { |p, v| yield p, v }
           end
         end
+      end
+
+      # return true if facing exits on adjacent tiles match up taking lanes into account
+      # TBD: support titles where lanes of different sizes can connect
+      def lane_match?(lanes0, lanes1)
+        lanes0 && lanes1 && lanes1[0] == lanes0[0] && lanes1[1] == (lanes0[0] - lanes0[1] - 1)
       end
 
       def path?
@@ -73,8 +105,16 @@ module Engine
         @_terminal ||= !!@terminal
       end
 
-      def parallel?
-        @_parallel ||= @lanes > 1
+      def single?
+        @_single ||= @ab_lanes.first[0] == 1 && @ab_lanes.last[0] == 1
+      end
+
+      def lanes
+        @ab_lanes.first[0]
+      end
+
+      def lane_index
+        @ab_lanes.first[1]
       end
 
       def exits
@@ -82,8 +122,7 @@ module Engine
       end
 
       def rotate(ticks)
-        path = Path.new(@a.rotate(ticks), @b.rotate(ticks),
-                        terminal: @terminal, lanes: @lanes, lane_index: @lane_index)
+        path = Path.new(@a.rotate(ticks), @b.rotate(ticks), @terminal, @ab_lanes)
         path.index = index
         path.tile = @tile
         path
@@ -91,10 +130,10 @@ module Engine
 
       def inspect
         name = self.class.name.split('::').last
-        if parallel?
-          "<#{name}: hex: #{hex&.name}, exit: #{exits}, lane_index: #{@lane_index}>"
-        else
+        if single?
           "<#{name}: hex: #{hex&.name}, exit: #{exits}>"
+        else
+          "<#{name}: hex: #{hex&.name}, exit: #{exits}, lane_index: #{lane_index}>"
         end
       end
 
@@ -105,6 +144,7 @@ module Engine
           case
           when part.edge?
             @edges << part
+            @exit_lanes[part.num] = @ab_lanes[part == @a ? 0 : 1]
           when part.offboard?
             @offboard = part
             @stops << part
