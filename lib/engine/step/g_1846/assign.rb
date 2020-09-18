@@ -81,7 +81,10 @@ module Engine
 
         def process_assign(action)
           super
-          @round.start_operating unless blocking_for_steamboat?
+
+          @round.start_operating if (action.entity == @game.steamboat) &&
+                                    @game.steamboat.owned_by_player? &&
+                                    !blocking_for_steamboat?
         end
 
         def process_pass(action)
