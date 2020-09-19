@@ -135,16 +135,15 @@ module View
           position: 'relative',
           display: 'inline-block',
           padding: "#{PAD}px",
-          width: "#{WIDTH_TOTAL - 2 * PAD}px",
-          height: "#{HEIGHT_TOTAL - 2 * PAD}px",
+          width: "#{WIDTH_TOTAL - 2 * PAD - 2 * BORDER}px",
+          height: "#{HEIGHT_TOTAL - 2 * PAD - 2 * BORDER}px",
+          border: "solid #{BORDER}px rgba(0,0,0,0)",
           margin: '0',
           verticalAlign: 'top',
         }
 
         # For cells with prices
         @box_style_2d = @space_style_2d.merge(
-          width: "#{WIDTH_TOTAL - 2 * PAD - 2 * BORDER}px",
-          height: "#{HEIGHT_TOTAL - 2 * PAD - 2 * BORDER}px",
           border: "solid #{BORDER}px rgba(0,0,0,0.2)",
           color: color_for(:font2),
         )
