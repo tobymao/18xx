@@ -42,7 +42,8 @@ module View
         end_game = if @confirm_endgame
                      confirm = lambda do
                        store(:confirm_endgame, false)
-                       process_action(Engine::Action::EndGame.new(@game.current_entity))
+                       player = @game.players.find { |p| p.name == @user&.dig('name') }
+                       process_action(Engine::Action::EndGame.new(player || @game.current_entity))
                        # Go to main page
                        store(:app_route, @app_route.split('#').first)
                      end
