@@ -8,6 +8,13 @@ require 'json'
 module Engine
   TEST_CASES = {
     GAMES_BY_TITLE['1846'] => {
+      3099 => {
+        'Blondie' => 7123,
+        'Emilybry26' => 6407,
+        'MrDiskord' => 4073,
+        'mfmise' => 6550,
+        'sirstevie3' => 4907,
+      },
       # bankruptcy sending a corp into receivership, unable to buy a train on
       # the turn of the bankruptcy, and then buying a train on its next turn
       # thanks to company income; also includes emergency share issuing
