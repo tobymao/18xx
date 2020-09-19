@@ -27,7 +27,21 @@ module View
       def render_body
         children = upcoming_trains
         children.concat(discarded_trains) if @depot.discarded.any?
-        children.concat(phases, game_info)
+        children.concat(phases)
+        children.concat(timeline) if timeline
+        children.concat(game_info)
+      end
+
+      def timeline
+        return nil if @game.class::TIMELINE.empty?
+
+        children = [h(:h3, 'Timeline')]
+
+        @game.class::TIMELINE.each do |line|
+          children << h(:p, line)
+        end
+
+        children
       end
 
       def game_info

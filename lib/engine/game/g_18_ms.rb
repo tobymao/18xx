@@ -19,8 +19,8 @@ module Engine
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MS'
 
-      # Game ends after 5 * 2 ORs
-      GAME_END_CHECK = { final_or_set: 5 }.freeze
+      # Game will end after 10 ORs - checked in end_now? below
+      GAME_END_CHECK = {}.freeze
 
       BANKRUPTCY_ALLOWED = false
 
@@ -38,6 +38,14 @@ module Engine
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'remove_tokens' => ['Remove Tokens', 'New Orleans route bonus removed']
       ).freeze
+
+      TIMELINE = [
+        'At the start of OR 2, phase 3 starts.',
+        'After OR 4, all 2+ trains are rusted. Trains salvaged for $20 each.',
+        'After OR 6, all 3+ trains are rusted. Trains salvaged for $30 each.',
+        'After OR 8, all 4+ trains are rusted. Trains salvaged for $60 each.',
+        'Game ends after OR 10!',
+      ].freeze
 
       HEXES_FOR_GRAY_TILE = %w[C9 E11].freeze
       COMPANY_1_AND_2 = %w[AGS BS].freeze
@@ -71,21 +79,25 @@ module Engine
         @free_train = train_by_id('2+-4')
         @free_train.buyable = false
         neutral.buy_train(@free_train, :free)
+
+        @or = 0
       end
 
       def new_operating_round(round_num = 1)
+        @or += 1
         # For OR 1, set company buy price to face value only
         @companies.each do |company|
           company.min_price = company.value
           company.max_price = company.value
-        end if @turn == 1 && round_num == 1
+        end if @or == 1
 
-        # When OR1.2 is to start setup company prices and switch to green phase
-        if @turn == 1 && round_num == 2
+        # When OR2 is to start setup company prices and switch to green phase
+        if @or == 2
           setup_company_price_50_to_150_percent
           @phase.next!
         end
 
+        # Need to take new loan if in debt after SR
         if round_num == 1
           @players.each do |p|
             next unless p.cash.negative?
@@ -96,7 +108,25 @@ module Engine
             @log << "#{p.name} has to borrow another #{format_currency(interest)} as being in debt at end of SR"
           end
         end
+
         super
+      end
+
+      def round_description(name)
+        case name
+        when 'Stock'
+          super
+        when 'Draft'
+          name
+        else # 'Operating'
+          message = ''
+          message += ' - Change to Phase 3 after OR 1' if @or == 1
+          message += ' - 2+ trains rust after OR 4' if @or <= 4
+          message += ' - 3+ trains rust after OR 6' if @or > 4 && @or <= 6
+          message += ' - 4+ trains rust after OR 8' if @or > 6 && @or <= 8
+          message += ' - Game end after OR 10' if @or > 8
+          "#{name} Round #{@or} (of 10)#{message}"
+        end
       end
 
       def operating_round(round_num)
@@ -136,6 +166,11 @@ module Engine
         when 4 then rust('3+', 30)
         when 5 then rust('4+', 60)
         end
+      end
+
+      # Game will end directly after the end of OR 10
+      def end_now?(_after)
+        @or == 10
       end
 
       def purchasable_companies(entity = nil)
