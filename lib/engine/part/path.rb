@@ -5,8 +5,8 @@ require_relative 'base'
 module Engine
   module Part
     class Path < Base
-      attr_reader :a, :ab_lanes, :b, :branches, :city, :edges, :exit_lanes, :junction,
-                  :nodes, :offboard, :stops, :terminal, :town
+      attr_reader :a, :b, :branches, :city, :edges, :exit_lanes, :junction,
+                  :lanes, :nodes, :offboard, :stops, :terminal, :town
 
       def self.decode_lane_spec(x_lane)
         if x_lane
@@ -32,11 +32,11 @@ module Engine
         end
       end
 
-      def initialize(a, b, terminal = nil, ab_lanes = [[1, 0], [1, 0]])
+      def initialize(a, b, terminal = nil, lanes = [[1, 0], [1, 0]])
         @a = a
         @b = b
         @terminal = terminal
-        @ab_lanes = ab_lanes
+        @lanes = lanes
         @edges = []
         @branches = []
         @stops = []
@@ -106,15 +106,7 @@ module Engine
       end
 
       def single?
-        @_single ||= @ab_lanes.first[0] == 1 && @ab_lanes.last[0] == 1
-      end
-
-      def lanes
-        @ab_lanes.first[0]
-      end
-
-      def lane_index
-        @ab_lanes.first[1]
+        @_single ||= @lanes.first[0] == 1 && @lanes.last[0] == 1
       end
 
       def exits
@@ -122,7 +114,7 @@ module Engine
       end
 
       def rotate(ticks)
-        path = Path.new(@a.rotate(ticks), @b.rotate(ticks), @terminal, @ab_lanes)
+        path = Path.new(@a.rotate(ticks), @b.rotate(ticks), @terminal, @lanes)
         path.index = index
         path.tile = @tile
         path
@@ -133,7 +125,7 @@ module Engine
         if single?
           "<#{name}: hex: #{hex&.name}, exit: #{exits}>"
         else
-          "<#{name}: hex: #{hex&.name}, exit: #{exits}, lane_index: #{lane_index}>"
+          "<#{name}: hex: #{hex&.name}, exit: #{exits}, lanes: #{@lanes.first} #{@lanes.last}>"
         end
       end
 
@@ -144,7 +136,7 @@ module Engine
           case
           when part.edge?
             @edges << part
-            @exit_lanes[part.num] = @ab_lanes[part == @a ? 0 : 1]
+            @exit_lanes[part.num] = @lanes[part == @a ? 0 : 1]
           when part.offboard?
             @offboard = part
             @stops << part

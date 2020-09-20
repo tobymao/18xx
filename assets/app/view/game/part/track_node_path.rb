@@ -255,7 +255,7 @@ module View
             @end_edge = @path.edges.last.num
             @end_x = edge_x_pos(@end_edge, 87)
             @end_y = edge_y_pos(@end_edge, 87)
-            lanes = @path.ab_lanes
+            lanes = @path.lanes
           elsif @num_exits == 1
             @begin_edge = @path.exits[0]
             @begin_x = edge_x_pos(@begin_edge, 87)
@@ -279,11 +279,8 @@ module View
                                  ]
                                end
             end
-            lanes = if @path.a.edge?
-                      @path.ab_lanes
-                    else
-                      [@path.ab_lanes.last, @path.ab_lanes.first]
-                    end
+            lanes = @path.lanes
+            lanes.reverse! if @path.b.edge?
           else
             # city/town - city/town
             @ct_edge0 = @tile.preferred_city_town_edges[@stop0] if @stop0
@@ -308,11 +305,8 @@ module View
                                    calculate_stop_y(@ct_edge1, @tile),
                                  ]
                                end
-              lanes = if @path.a == @stop0
-                        @path.ab_lanes
-                      else
-                        [@path.ab_lanes.last, @path.ab_lanes.first]
-                      end
+              lanes = @path.lanes
+              lanes.reverse! if @path.b == @stop0
             else
               @begin_edge = @ct_edge1
               @begin_x, @begin_y = if @stop1.rect?
@@ -332,11 +326,8 @@ module View
                                    calculate_stop_y(@ct_edge0, @tile),
                                  ]
                                end
-              lanes = if @path.a == @stop1
-                        @path.ab_lanes
-                      else
-                        [@path.ab_lanes.last, @path.ab_lanes.first]
-                      end
+              lanes = @path.lanes
+              lanes.reverse! if @path.b == @stop1
             end
           end
 
@@ -356,9 +347,11 @@ module View
           begin_shift_edge = @begin_edge || @end_edge
           end_shift_edge = @end_edge || @begin_edge
 
-          if lanes.first[0] > 1
-            begin_shift = (lanes.first[1] * 2 - lanes.first[0] + 1) *
-                          (@width + PARALLEL_SPACING[lanes.first[0] - 2]) / 2.0
+          begin_lane, end_lane = lanes
+
+          if begin_lane[0] > 1
+            begin_shift = (begin_lane[1] * 2 - begin_lane[0] + 1) *
+                          (@width + PARALLEL_SPACING[begin_lane[0] - 2]) / 2.0
             begin_delta_x = (begin_shift * Math.cos(begin_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
             begin_delta_y = (begin_shift * Math.sin(begin_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
 
@@ -366,10 +359,10 @@ module View
             @begin_y += begin_delta_y
           end
 
-          return unless lanes.last[0] > 1
+          return unless end_lane[0] > 1
 
-          end_shift = (lanes.last[1] * 2 - lanes.last[0] + 1) *
-                      (@width + PARALLEL_SPACING[lanes.last[0] - 2]) / 2.0
+          end_shift = (end_lane[1] * 2 - end_lane[0] + 1) *
+                      (@width + PARALLEL_SPACING[end_lane[0] - 2]) / 2.0
           end_delta_x = (end_shift * Math.cos(end_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
           end_delta_y = (end_shift * Math.sin(end_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
 
