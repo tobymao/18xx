@@ -551,6 +551,20 @@ module Engine
         value
       end
 
+      def issuable_shares(entity)
+        step = @round.step_for(entity, 'sell_shares')
+        return unless step
+
+        step.issuable_shares(entity)
+      end
+
+      def redeemable_shares(entity)
+        step = @round.step_for(entity, 'buy_shares')
+        return unless step
+
+        step.redeemable_shares(entity)
+      end
+
       def sellable_bundles(player, corporation)
         bundles = player.bundles_for_corporation(corporation)
         bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }

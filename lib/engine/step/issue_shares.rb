@@ -6,12 +6,16 @@ module Engine
   module Step
     class IssueShares < Base
       ACTIONS = %w[buy_shares sell_shares pass].freeze
+      ACTIONS_NO_PASS = %w[buy_shares sell_shares].freeze
 
       def actions(entity)
         return [] unless entity.corporation?
         return [] if redeemable_shares(entity).empty? && issuable_shares(entity).empty?
-
-        entity == current_entity ? ACTIONS : []
+        return [] if entity != current_entity
+        return ACTIONS_NO_PASS
+       puts "actions"
+       nil.function()
+        blocking? ? ACTIONS : ACTIONS_NO_PASS
       end
 
       def description

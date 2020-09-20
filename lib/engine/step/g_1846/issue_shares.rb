@@ -8,6 +8,10 @@ module Engine
     module G1846
       class IssueShares < IssueShares
         include ReceivershipSkip
+
+        def blocks?
+          false
+        end
       end
     end
   end
