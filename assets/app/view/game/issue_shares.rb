@@ -21,7 +21,7 @@ module View
           children << render_shares('Redeem', @game.redeemable_shares(@entity), Engine::Action::BuyShares)
         end
 
-        h(:div, children.compact)
+        h('div.margined', children.compact)
       end
 
       def render_shares(description, shares, action)
@@ -37,7 +37,7 @@ module View
 
         return nil if shares.empty?
 
-        h('div.margined', [
+        h(:div, [
           h('div.inline-block.margined', description),
           h('div.inline-block', shares),
         ])
