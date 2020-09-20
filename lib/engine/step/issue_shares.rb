@@ -12,9 +12,7 @@ module Engine
         return [] unless entity.corporation?
         return [] if redeemable_shares(entity).empty? && issuable_shares(entity).empty?
         return [] if entity != current_entity
-        return ACTIONS_NO_PASS
-       puts "actions"
-       nil.function()
+
         blocking? ? ACTIONS : ACTIONS_NO_PASS
       end
 
