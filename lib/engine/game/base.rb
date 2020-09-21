@@ -789,6 +789,10 @@ module Engine
           liquidity(player, emergency: true)
       end
 
+      def buying_power(entity)
+        entity.cash
+      end
+
       private
 
       def init_bank

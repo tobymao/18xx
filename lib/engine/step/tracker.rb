@@ -14,7 +14,7 @@ module Engine
         action = get_tile_lay(entity)
         return false unless action
 
-        entity.tokens.any? && (entity.cash >= action[:cost]) && (action[:lay] || action[:upgrade])
+        entity.tokens.any? && (@game.buying_power(entity) >= action[:cost]) && (action[:lay] || action[:upgrade])
       end
 
       def get_tile_lay(entity)
