@@ -99,7 +99,7 @@ module Engine
             corporation.tokens << new_token
 
             token.swap!(new_token)
-            token.city&.hex&.id
+            new_token.city&.hex&.id
           end
           receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
 

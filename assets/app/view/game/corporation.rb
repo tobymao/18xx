@@ -17,11 +17,14 @@ module View
       needs :selected_corporation, default: nil, store: true
       needs :game, store: true
       needs :display, default: 'inline-block'
+      needs :selectable, default: true
 
       def render
         select_corporation = lambda do
-          selected_corporation = selected? ? nil : @corporation
-          store(:selected_corporation, selected_corporation)
+          if @selectable
+            selected_corporation = selected? ? nil : @corporation
+            store(:selected_corporation, selected_corporation)
+          end
 
           if can_assign_corporation?
             company = @selected_company

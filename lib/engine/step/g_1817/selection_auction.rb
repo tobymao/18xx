@@ -100,10 +100,6 @@ module Engine
           false
         end
 
-        def committed_cash(_player, _show_hidden = false)
-          0
-        end
-
         def max_bid(player, _company)
           player.cash
         end
@@ -124,7 +120,7 @@ module Engine
           [0, company.value - price].max
         end
 
-        def win_bid(winner)
+        def win_bid(winner, _company)
           player = winner.entity
           company = winner.company
           price = winner.price

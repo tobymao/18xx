@@ -207,6 +207,7 @@ module Engine
               or_round_finished
               @log << "-- Merger and Conversion Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
               Round::G1817::Merger.new(self, [
+                Step::DiscardTrain,
                 Step::G1817::PostConversion,
                 Step::G1817::Conversion,
               ])
@@ -219,6 +220,7 @@ module Engine
           when Round::G1817::Merger
             @log << "-- Acquisition Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
             Round::G1817::Acquisition.new(self, [
+              Step::DiscardTrain,
               Step::G1817::Acquire,
             ])
           when Round::G1817::Acquisition

@@ -2,17 +2,40 @@
 
 require_relative '../base'
 require_relative '../../token'
+require_relative 'passable_auction'
 
 module Engine
   module Step
     module G1817
       class Acquire < Base
-        def actions(_entity)
-          []
+        include PassableAuction
+
+        def actions(entity)
+          return %w[bid pass] if @auctioning
+
+          actions = []
+          actions << 'merge' if @winner&.entity == entity
+
+          actions
         end
 
         def description
           'Acquire Corporations'
+        end
+
+        def active_entities
+          if @auctioning
+            winning_bid = highest_bid(@auctioning)
+            if winning_bid
+              [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]]
+            else
+              # Player to the left of the president of the corporation
+              players = @game.players.rotate((@game.players.index(@auctioning.owner) + 1) % @game.players.size)
+              [players.find { |p| @active_bidders.include?(p) }]
+            end
+          elsif @winner
+            [@winner.entity]
+          end
         end
 
         def process_take_loan(action)
@@ -22,146 +45,164 @@ module Engine
         end
 
         def process_pass(action)
-          corporation = action.entity
-
-          liquidate!(corporation) if needs_money?(corporation)
-          purchase_tokens(corporation) if @tokens_needed
-
-          super
+          pass_auction(action.entity)
         end
 
-        def process_convert(action)
-          corporation = action.entity
-          before = corporation.total_shares
-          @game.convert(corporation)
-          after = corporation.total_shares
-          @log << "#{corporation.name} converts from #{before} to #{after} shares"
+        attr_reader :auctioning
 
-          tokens = corporation.tokens.size
-
-          @tokens_needed =
-            if after == 5
-              tokens < 8 ? 1 : 0
-            elsif after == 10
-              [[8 - tokens, 0].max, 2].min
-            else
-              0
+        def post_win_bid(winner, company)
+          if winner
+            m = mergeable(winner.corporation)
+            process_acquire(m.first) if m.one?
+          else
+            case @mode
+            when :acquisition
+              @game.log << "All players pass on #{company.name}, not acquired"
+            when :liquidate
+              @game.log << "All players pass on #{company.name}, bank acquires for $0"
+              # @todo: bank acquires liquidations
+            when :offered
+              @game.log << "#{company.owner.name} declines to put #{company.name} up for sale"
             end
+            @round.offering.delete(company)
+            setup_auction
+          end
+        end
 
-          liquidate!(corporation) if needs_money?(corporation) && !@game.can_take_loan?(corporation)
-          purchase_tokens(corporation) unless @game.can_take_loan?(corporation)
-          @round.converted = corporation
+        def win_bid(winner, _company)
+          return unless winner
+
+          @game.log << "#{winner.entity.name} wins the auction of #{winner.corporation.name}"\
+                  " for #{@game.format_currency(winner.price)}"
+          @winner = winner
         end
 
         def process_merge(action)
-          corporation = action.entity
-          target = action.corporation
+          process_acquire(action.corporation)
+        end
 
-          if !target || !mergeable(corporation).include?(target)
-            @game.game_error("Choose a corporation to merge with #{corporation.name}")
+        def process_acquire(buyer)
+          # @todo: this needs a lot of rework.
+          acquired_corp = @winner.corporation
+
+          if !buyer || !mergeable(acquired_corp).include?(buyer)
+            @game.game_error("Choose a corporation to acquire #{acquired_corp.name}")
+          end
+
+          if buyer.owner != @winner.entity
+            @game.game_error("Target corporation must be owned by #{@winner.entity.name}")
           end
 
           receiving = []
 
-          if target.cash.positive?
-            receiving << @game.format_currency(target.cash)
-            target.spend(target.cash, corporation)
+          # @todo: this needs to be able to force loan
+          buyer.spend(@winner.price, @game.bank)
+          # @todo: slightly different rules for liquidation
+          if acquired_corp.cash.positive?
+            receiving << @game.format_currency(acquired_corp.cash)
+            acquired_corp.spend(acquired_corp.cash, buyer)
           end
 
-          companies = target.transfer(:companies, corporation).map(&:name)
+          companies = acquired_corp.transfer(:companies, buyer).map(&:name)
           receiving << "companies (#{companies.join(', ')})" if companies.any?
 
-          loans = target.transfer(:loans, corporation).size
+          # @todo: what if loans cannot be held?
+          loans = acquired_corp.transfer(:loans, buyer).size
           receiving << "loans (#{loans})" if loans.positive?
+          # @todo: loans affect stock price
 
-          trains = target.transfer(:trains, corporation).map(&:name)
+          trains = acquired_corp.transfer(:trains, buyer).map(&:name)
           receiving << "trains (#{trains})" if trains.any?
 
-          tokens = target.tokens.map do |token|
-            new_token = Engine::Token.new(corporation)
-            corporation.tokens << new_token
+          tokens = acquired_corp.tokens.map do |token|
+            new_token = Engine::Token.new(buyer)
+            buyer.tokens << new_token
 
             token.swap!(new_token)
-            token.city&.hex&.id
+            new_token.city&.hex&.id
           end
           receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
 
-          share_price = @game.find_share_price(corporation.share_price.price + target.share_price.price)
-          price = share_price.price
-          @game.stock_market.move(corporation, *share_price.coordinates)
+          @game.log << "#{buyer.name} acquires #{acquired_corp.name} "\
+            "receiving #{receiving.join(', ')}"
 
-          @log << "#{corporation.name} merges with #{target.name} "\
-            "at share price #{@game.format_currency(price)} receiving #{receiving.join(', ')}"
+          # @todo: liqudation needs the president to pay for outstanding Loans
+          # @todo: pay off stock holders
 
-          @game.convert(corporation)
-
-          owner = corporation.owner
-          target_owner = target.owner
-
-          if owner != target_owner
-            owner.spend(price, corporation)
-            share = corporation.shares[0]
-            @log << "#{owner.name} buys a #{share.percent}% share for #{@game.format_currency(price)} "\
-              "and receives the president's share"
-            @game.share_pool.buy_shares(target_owner, share.to_bundle, exchange: :free)
-          end
-
-          @game.reset_corporation(target)
-          @round.entities.delete(target)
-          @round.converted = corporation
+          @game.reset_corporation(acquired_corp)
+          @round.offering.delete(acquired_corp)
+          @winner = nil
+          setup_auction
         end
 
-        def log_pass(entity)
-          super unless entity.share_price.liquidation?
-        end
-
-        def liquidate!(corporation)
-          @game.liquidate!(corporation)
-          @log << "#{corporation.name} cannot purchase required tokens and liquidates"
-          @tokens_needed = nil
-        end
-
-        def purchase_tokens(corporation)
-          return unless token_cost.positive?
-          return if needs_money?(corporation)
-
-          corporation.spend(token_cost, @game.bank)
-          @tokens_needed.times { corporation.tokens << Engine::Token.new(corporation, price: 0) }
-          @log << "#{corporation.name} pays #{@game.format_currency(token_cost)}"\
-            " for #{@tokens_needed} token#{@tokens_needed > 1 ? 's' : ''}"
-          @tokens_needed = nil
-          pass!
+        def can_acquire?(corporation, buyer)
+          buyer.floated? &&
+          buyer.share_price.normal_movement? &&
+          buyer != corporation
         end
 
         def mergeable(corporation)
-          return [] if !corporation.floated? || !corporation.share_price.normal_movement?
+          return [] unless @winner
 
-          @game.corporations.select do |target|
-            target.floated? &&
-              target.share_price.normal_movement? &&
-              target != corporation &&
-              target.total_shares == corporation.total_shares
+          @game.corporations.select do |buyer|
+            buyer.owner == @winner.entity && buyer.cash >= @winner.price && can_acquire?(corporation, buyer)
           end
+        end
+
+        def min_bid(corporation)
+          (highest_bid(corporation)&.price || 0) + 10
+        end
+
+        def max_bid(player, corporation)
+          # @todo: Only 10 more if it's owned by them
+          # Otherwise max of company treasury
+          companies = player.presidencies.select { |c| can_acquire?(corporation, c) }
+
+          companies.map(&:cash).max || 0
+        end
+
+        def process_bid(action)
+          entity = action.entity
+          corporation = action.corporation
+          price = action.price
+
+          add_bid(action)
+          @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
+          resolve_bids
+        end
+
+        def auctioning_corporation
+          @auctioning || @winner.corporation
         end
 
         private
 
+        def setup_auction
+          super
+          if @round.offering.none?
+            pass!
+            return
+          end
+
+          company = @round.offering.first
+
+          # @todo: This should be liquidate, acquire or offer depending on the circumstances.
+          @mode = :acquisition
+
+          case @mode
+          when :acquisition
+            @game.log << "#{company.name} offered for acquisition"
+          when :liquidate
+            @game.log << "#{company.name} is being liquidated, bank offers $0"
+          when :offered
+            # @todo: this needs to set first player to owner
+            @game.log << "#{company.name} offered for sale"
+          end
+          auction_entity(@round.offering.first)
+        end
+
         def setup
-          @tokens_needed = nil
-        end
-
-        def round_state
-          {
-            converted: nil,
-          }
-        end
-
-        def needs_money?(corporation)
-          @tokens_needed && token_cost > corporation.cash
-        end
-
-        def token_cost
-          (@tokens_needed || 0) * 50
+          setup_auction
         end
       end
     end

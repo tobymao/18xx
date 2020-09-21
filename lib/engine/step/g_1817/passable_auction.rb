@@ -27,6 +27,11 @@ module Engine
           super
           @auctioning = nil
           @active_bidders = []
+          @auction_triggerer = nil
+        end
+
+        def committed_cash(_player, _show_hidden = false)
+          0
         end
 
         protected
@@ -37,14 +42,18 @@ module Engine
           yield company, bids if bids.any?
         end
 
-        def selection_bid(bid)
-          add_bid(bid)
-          @auctioning = bid.company || bid.corporation
-          @auction_triggerer = bid.entity
+        def auction_entity(entity)
+          @auctioning = entity
           @active_bidders = entities.select do |player|
             player == @auction_triggerer || max_bid(player, @auctioning) >= min_bid(@auctioning)
           end
           resolve_bids
+        end
+
+        def selection_bid(bid)
+          add_bid(bid)
+          @auction_triggerer = bid.entity
+          auction_entity(bid.company || bid.corporation)
         end
 
         def add_bid(bid)
@@ -60,14 +69,33 @@ module Engine
           passing.each { |player| pass_auction(player) }
         end
 
-        def resolve_bids
-          return unless @active_bidders.one?
+        def win_bid(winner, company)
+          # Don't modify @auctioning here do it in post_win_bid
+        end
 
-          winner = @bids[@auctioning].first
-          win_bid(winner)
+        def post_win_bid(winner, company)
+          # Anything modifying @auctioning should be done here rather than win_bid
+        end
+
+        def resolve_bids
+          return unless @auctioning
+
+          company = @auctioning
+
+          if @active_bidders.none?
+            win_bid(nil, company)
+          else
+            return unless @active_bidders.one?
+            return unless @bids[@auctioning].any?
+
+            winner = @bids[@auctioning].first
+            win_bid(winner, company)
+          end
+
           @bids.clear
           @active_bidders.clear
           @auctioning = nil
+          post_win_bid(winner, company)
         end
       end
     end
