@@ -150,7 +150,8 @@ module View
 
         grid = @game.stock_market.one_d? ? grid_1d : grid_2d
 
-        children = [h(Bank, game: @game)]
+        children = []
+        children << h(Bank, game: @game) if @game.class::GAME_END_CHECK.include?(:bank)
         children.concat(grid)
 
         if @explain_colors
