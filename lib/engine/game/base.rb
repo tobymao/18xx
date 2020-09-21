@@ -56,8 +56,6 @@ module Engine
       #  current_round - ends at the end of the current round
       #  current_or - ends at the next end of an OR
       #  full_or - ends at the next end of a complete OR set
-      # Also, you can use final_or_set: <number> to trigger game
-      # end (:full_or) when that OR is reached.
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
       BANKRUPTCY_ALLOWED = true
@@ -157,6 +155,9 @@ module Engine
 
       STATUS_TEXT = { 'can_buy_companies' =>
                       ['Can Buy Companies', 'All corporations can buy companies from players'] }.freeze
+
+      # Add elements (paragraphs of text) here to display it on Info page.
+      TIMELINE = [].freeze
 
       IPO_NAME = 'IPO'
 
@@ -1001,9 +1002,9 @@ module Engine
         @hexes.select { |h| h.tile.cities.any? || h.tile.exits.any? }.each(&:connect!)
       end
 
-      def total_rounds
+      def total_rounds(name)
         # Return the total number of rounds for those with more than one.
-        @operating_rounds if @round.is_a?(Round::Operating)
+        @operating_rounds if name == 'Operating'
       end
 
       def next_round!
@@ -1042,8 +1043,7 @@ module Engine
           end
         end
 
-        return :final_or_set, :full_or if @round.is_a?(Round::Operating) &&
-          self.class::GAME_END_CHECK[:final_or_set]&.to_i == turn
+        nil
       end
 
       def end_now?(after)
@@ -1083,7 +1083,6 @@ module Engine
           bank: 'Bank Broken',
           bankrupt: 'Bankruptcy',
           stock_market: 'Company hit max stock value',
-          final_or_set: 'Last OR in game',
         }
         "#{reason_map[reason]}#{after_text}"
       end
@@ -1122,7 +1121,7 @@ module Engine
       end
 
       def new_stock_round
-        @log << "-- Stock Round #{@turn} --"
+        @log << "-- #{round_description('Stock')} --"
         stock_round
       end
 
@@ -1136,7 +1135,7 @@ module Engine
       end
 
       def new_operating_round(round_num = 1)
-        @log << "-- Operating Round #{@turn}.#{round_num} (of #{@operating_rounds}) --"
+        @log << "-- #{round_description('Operating')} --"
         operating_round(round_num)
       end
 
@@ -1197,6 +1196,12 @@ module Engine
 
       def president_assisted_buy(_corporation, _train, _price)
         [0, 0]
+      end
+
+      def round_description(name)
+        description = "#{name} Round #{@turn}"
+        description += ".#{@round.round_num} (of #{total_rounds(name)})" if total_rounds(name)
+        description
       end
     end
   end
