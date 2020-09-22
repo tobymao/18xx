@@ -14,10 +14,35 @@ module Engine
       #GAME_PUBLISHER = Publisher::INFO[:oo_games]
       #GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1848'
 
+      # Two tiles can be laid, only one upgrade
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
+
+      #<TODO> Check this
+      #HOME_TOKEN_TIMING = :operating_round
+      
+      #<TODO> Need to define cert_limit (see g_1846 for reference?)
+      
       def init_round
         Round::Auction.new(self, [Step::G1848::DutchAuction])
       end
 
+      #<TODO> removed (Step::G1848::SpecialTrack, from after DiscardTrain)
+      #probably need to add this back in
+      def operating_round(round_num)
+        Round::Operating.new(self, [
+          Step::Bankrupt,
+          Step::Exchange,
+          Step::DiscardTrain,
+          Step::BuyCompany,
+          Step::Track,
+          Step::Token,
+          Step::Route,
+          Step::Dividend,
+          Step::BuyTrain,
+          [Step::BuyCompany, blocks: true],
+        ], round_num: round_num)
+      end
+      
     end
   end
 end

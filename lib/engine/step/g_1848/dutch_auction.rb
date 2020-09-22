@@ -20,11 +20,16 @@ module Engine
         end
         
         def setup
+          setup_auction
           @companies = @game.companies.sort_by(&:min_bid)
           @cheapest = @companies.first
           @bidders = Hash.new { |h, k| h[k] = [] }
         end
 
+        def committed_cash(_player, _show_hidden = false)
+          0
+        end
+        
         def pass_description
           'Pass (Buy)'
         end
@@ -41,8 +46,9 @@ module Engine
 
         def actions(entity)
           return [] if @companies.empty?
+          return [] unless entity.player?
 
-          actions = player.companies.empty? ? ACTIONS : ACTIONS_WITH_PASS
+          actions = entity.player.companies.empty? ? ACTIONS : ACTIONS_WITH_PASS
           
           entity == current_entity ? actions : []
         end
