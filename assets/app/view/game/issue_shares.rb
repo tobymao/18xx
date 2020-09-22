@@ -10,18 +10,18 @@ module View
       def render
         @step = @game.round.active_step
         @entity = @game.current_entity
-
+        @current_actions = @game.round.actions_for(@entity)
         children = []
 
-        if @step.current_actions.include?('sell_shares')
-          children << render_shares('Issue', @step.issuable_shares(@entity), Engine::Action::SellShares)
+        if @current_actions.include?('sell_shares')
+          children << render_shares('Issue', @game.issuable_shares(@entity), Engine::Action::SellShares)
         end
 
-        if @step.current_actions.include?('buy_shares')
-          children << render_shares('Redeem', @step.redeemable_shares(@entity), Engine::Action::BuyShares)
+        if @current_actions.include?('buy_shares')
+          children << render_shares('Redeem', @game.redeemable_shares(@entity), Engine::Action::BuyShares)
         end
 
-        h(:div, children.compact)
+        h('div.margined', children.compact)
       end
 
       def render_shares(description, shares, action)
@@ -37,7 +37,7 @@ module View
 
         return nil if shares.empty?
 
-        h('div.margined', [
+        h(:div, [
           h('div.inline-block.margined', description),
           h('div.inline-block', shares),
         ])

@@ -112,6 +112,12 @@ module Engine
         actions.uniq
       end
 
+      def step_for(entity, action)
+        return unless entity
+
+        @steps.find { |step| step.active? && step.actions(entity).include?(action) }
+      end
+
       def active_step(entity = nil)
         return @steps.find { |step| step.active? && step.actions(entity).any? } if entity
 
