@@ -11,10 +11,11 @@ module Engine
         
         attr_reader :companies
 
-        ACTIONS = %w[bid buy pass].freeze
-        ACTIONS_WITH_PASS = %w[bid pass].freeze #????
+        ACTIONS = %w[bid lower].freeze
+        ACTIONS_WITH_PASS = %w[bid lower pass].freeze
 
         def description
+          puts "got to description"
           'Buy Companies'
         end
         
@@ -38,6 +39,14 @@ module Engine
 
         def auctioning; end
 
+        def actions(entity)
+          return [] if @companies.empty?
+
+          actions = player.companies.empty? ? ACTIONS : ACTIONS_WITH_PASS
+          
+          entity == current_entity ? actions : []
+        end
+        
         #def bids #<FIXME> What is this?
         #  {}
         #end
