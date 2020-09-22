@@ -14,7 +14,7 @@ module Engine
         def setup
           @companies = @game.companies.sort_by { @game.rand }
           @choices = Hash.new { |h, k| h[k] = [] }
-          @draw_size = entities.size + 2
+          @draw_size = @game.class::DRAFT_HAND_SIZE || entities.size + 2
         end
 
         def pass_description
@@ -31,6 +31,17 @@ module Engine
 
         def may_choose?(_company)
           true
+        end
+
+        def may_pass?
+          case @game.class::DRAFT_MAY_PASS
+          when :last_pick
+            only_one_company?
+          when :after_first_pick
+            @choices.values.any?
+          else
+            @game.class::DRAFT_MAY_PASS
+          end
         end
 
         def auctioning; end
@@ -52,11 +63,16 @@ module Engine
         end
 
         def visible?
-          only_one_company?
+          case @game.class::DRAFT_HAND_VISIBLE
+          when :last_pick
+            only_one_company?
+          else
+            @game.class::DRAFT_HAND_VISIBLE
+          end
         end
 
         def players_visible?
-          false
+          @game.class::DRAFT_PLAYERS_VISIBLE
         end
 
         def name
@@ -74,13 +90,21 @@ module Engine
         def actions(entity)
           return [] if finished?
 
-          actions = only_one_company? ? ACTIONS_WITH_PASS : ACTIONS
+          actions = may_pass? ? ACTIONS_WITH_PASS : ACTIONS
 
           entity == current_entity ? actions : []
         end
 
         def process_pass(action)
-          @game.game_error('Cannot pass') unless only_one_company?
+          @game.game_error('Cannot pass') unless may_pass?
+
+          unless only_one_company?
+            @log << "#{action.entity.name} passes"
+            action.entity.pass!
+            all_passed! if entities.all?(&:passed?)
+            @round.next_entity_index!
+            return
+          end
 
           company = @companies[0]
           old_value = company.min_bid
@@ -92,9 +116,9 @@ module Engine
           @round.next_entity_index!
           case company.id
           when 'Big 4'
-            return if new_value >= 60
+            return if new_value > 60
           when 'MS'
-            return if new_value >= 80
+            return if new_value > 80
           else
             return if new_value.positive?
           end
@@ -107,14 +131,17 @@ module Engine
 
         def process_bid(action)
           company = action.company
+
+          @game.game_error("Cannot choose company not in hand: #{company.name}") unless available.include?(company)
+
           @choices[action.entity] << company
           company.owner = action.entity
           discarded = available.sort_by { @game.rand }
           discarded.delete(company)
 
           @companies -= available
-          @log << "#{action.entity.name} chooses a company"
           @companies.concat(discarded)
+          @log << "#{action.entity.name} chooses #{visible? ? company.name : 'a company'}"
           @round.next_entity_index!
           action_finalized
         end
@@ -165,6 +192,14 @@ module Engine
           return 0 unless show_hidden
 
           choices[player].sum(&:min_bid)
+        end
+
+        def all_passed!
+          @game.payout_companies
+          @game.or_set_finished
+          @game.payout_companies
+          @game.or_set_finished
+          entities.each(&:unpass!)
         end
       end
     end

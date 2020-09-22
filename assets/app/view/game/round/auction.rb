@@ -101,7 +101,7 @@ module View
             },
           }
 
-          @step.available.map do |company|
+          @step.available.sort.map do |company|
             children = [h(Company, company: company, bids: @step.bids[company])]
             children << render_input(company) if @selected_company == company
             h(:div, props, children)

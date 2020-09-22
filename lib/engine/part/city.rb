@@ -79,8 +79,8 @@ module Engine
         end
       end
 
-      def place_token(corporation, token, free: false)
-        unless tokenable?(corporation, free: free, tokens: token)
+      def place_token(corporation, token, free: false, check_tokenable: true)
+        if check_tokenable && !tokenable?(corporation, free: free, tokens: token)
           raise GameError, "#{corporation.name} cannot lay token on #{id}"
         end
 

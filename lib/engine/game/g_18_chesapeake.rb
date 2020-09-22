@@ -70,7 +70,7 @@ module Engine
           corporation: cornelius.abilities(:share).share.corporation.name,
         ))
 
-        return unless players.size == 2
+        return unless two_player?
 
         cv_corporation = cornelius.abilities(:share).share.corporation
 
@@ -115,7 +115,7 @@ module Engine
       def float_corporation(corporation)
         super
 
-        return unless players.size == 2
+        return unless two_player?
 
         @log << "#{corporation.name}'s remaining shares are transferred to the Market"
         bundle = ShareBundle.new(corporation.shares_of(corporation))

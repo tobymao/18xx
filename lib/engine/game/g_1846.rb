@@ -36,6 +36,11 @@ module Engine
       HOME_TOKEN_TIMING = :float
       MUST_BUY_TRAIN = :always
 
+      DRAFT_HAND_SIZE = nil
+      DRAFT_HAND_VISIBLE = :last_pick # true, false, or :last_pick
+      DRAFT_PLAYERS_VISIBLE = false
+      DRAFT_MAY_PASS = :last_pick # true, false, :last_pick, or :after_first_pick
+
       ORANGE_GROUP = [
         'Lake Shore Line',
         'Michigan Central',
@@ -49,6 +54,17 @@ module Engine
       ].freeze
 
       GREEN_GROUP = %w[C&O ERIE PRR].freeze
+      NORTH_GROUP = %w[ERIE GT NYC PRR].freeze
+      SOUTH_GROUP = %w[B&O C&O IC].freeze
+
+      REMOVED_CORP_SECOND_TOKEN = {
+        'D14' => ['GT'],
+        'D20' => ['ERIE'],
+        'E11' => ['PRR'],
+        'E17' => ['NYC'],
+        'G7' => ['IC'],
+        'H12' => ['B&O', 'C&O'],
+      }.freeze
 
       TILE_COST = 20
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove private company tokens']).freeze
@@ -63,15 +79,21 @@ module Engine
 
       IPO_NAME = 'Treasury'
 
+      def corporation_opts
+        two_player? ? { max_ownership_percent: 70 } : {}
+      end
+
       def init_companies(players)
-        super + @players.size.times.map do |i|
+        num_passes = two_player? ? 0 : players.size
+
+        super + num_passes.times.map do |i|
           name = "Pass (#{i + 1})"
 
           Company.new(
             sym: name,
             name: name,
             value: 0,
-            desc: "Choose this card if you don't want to purchase any of the offered companies this round",
+            desc: "Choose this card if you don't want to purchase any of the offered companies this turn.",
           )
         end
       end
@@ -79,6 +101,8 @@ module Engine
       def cert_limit
         num_corps = @corporations.size
         case @players.size
+        when 2
+          num_corps == 5 ? 19 : 16
         when 3
           num_corps == 5 ? 14 : 11
         when 4
@@ -129,10 +153,13 @@ module Engine
           company.close!
           @round.active_step.companies.delete(company)
         end
-        remove_from_group!(GREEN_GROUP, @corporations) do |corporation|
-          place_home_token(corporation)
-          corporation.abilities(:reservation) do |ability|
-            corporation.remove_ability(ability)
+
+        (two_player? ? [NORTH_GROUP, SOUTH_GROUP] : [GREEN_GROUP]).each do |group|
+          remove_from_group!(group, @corporations) do |corporation|
+            place_home_token(corporation)
+            corporation.abilities(:reservation) do |ability|
+              corporation.remove_ability(ability)
+            end
           end
         end
 
@@ -153,7 +180,8 @@ module Engine
       end
 
       def remove_from_group!(group, entities)
-        removals = group.sort_by { rand }.take([5 - @players.size, 2].min)
+        num_removals = [2, two_player? ? 1 : 5 - @players.size].min
+        removals = group.sort_by { rand }.take(num_removals)
         # This looks verbose, but it works around the fact that we can't modify code which includes rand() w/o breaking existing games
         return if removals.empty?
 
@@ -161,6 +189,7 @@ module Engine
         entities.reject! do |entity|
           if removals.include?(entity.name)
             yield entity if block_given?
+            @removals << entity
             true
           else
             false
@@ -173,11 +202,13 @@ module Engine
 
         case train[:name]
         when '2'
-          num_players + 4
+          two_player? ? 7 : num_players + 4
         when '4'
-          num_players + 1
+          two_player? ? 5 : num_players + 1
         when '5'
-          num_players
+          two_player? ? 3 : num_players
+        when '6'
+          two_player? ? 4 : 9
         end
       end
 
@@ -271,6 +302,8 @@ module Engine
             @bank.spend(bonus, illinois_central)
             @log << "#{illinois_central.name} receives a #{format_currency(bonus)} subsidy"
           end
+        when Action::LayTile
+          check_removed_corp_second_token(action.hex, action.tile) if two_player?
         end
 
         check_special_tile_lay(action)
@@ -446,8 +479,9 @@ module Engine
 
       def emergency_issuable_bundles(corp)
         return [] if @round.emergency_issued
+        return [] unless (train = @depot.min_depot_train)
 
-        min_train_price, max_train_price = @depot.min_depot_train.variants.map { |_, v| v[:price] }.minmax
+        min_train_price, max_train_price = train.variants.map { |_, v| v[:price] }.minmax
         return [] if corp.cash >= max_train_price
 
         bundles = corp.bundles_for_corporation(corp)
@@ -486,6 +520,25 @@ module Engine
         return [biggest_bundle] if biggest_bundle
 
         []
+      end
+
+      def check_removed_corp_second_token(hex, tile)
+        return unless tile.color.to_sym == :green
+        return unless (corp_ids = self.class::REMOVED_CORP_SECOND_TOKEN[hex.id])
+        return unless (corp = @removals.find { |c| corp_ids.include?(c.id) })
+
+        token = corp.find_token_by_type
+        @log << "#{corp.name} places a token on #{hex.name}"
+        tile.cities.first.place_token(corp, token, check_tokenable: false)
+      end
+
+      def game_end_check_values
+        @game_end_check_values ||=
+          begin
+            values = super.dup # get copy of GAME_END_CHECK that is not frozen
+            values[:final_train] = :one_more_full_or_set if two_player?
+            values
+          end
       end
     end
   end

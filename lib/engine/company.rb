@@ -27,6 +27,10 @@ module Engine
       init_abilities(abilities)
     end
 
+    def <=>(other)
+      [min_bid, name] <=> [other.min_bid, other.name]
+    end
+
     def id
       @sym
     end

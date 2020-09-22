@@ -53,7 +53,9 @@ module Engine
     end
 
     def max_depot_price
-      depot_trains.max_by(&:price).variants.map { |_, v| v[:price] }.max
+      return 0 unless (train = depot_trains.max_by(&:price))
+
+      train.variants.map { |_, v| v[:price] }.max
     end
 
     def unshift_train(train)
@@ -106,6 +108,10 @@ module Engine
 
     def name
       'The Depot'
+    end
+
+    def empty?
+      depot_trains.empty?
     end
   end
 end
