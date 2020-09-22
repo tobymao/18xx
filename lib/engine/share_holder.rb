@@ -22,6 +22,10 @@ module Engine
       shares_by_corporation[corporation].sum(&:percent)
     end
 
+    def presidencies
+      @shares_by_corporation.select { |_c, shares| shares.any?(&:president) }.keys
+    end
+
     def num_shares_of(corporation)
       percent_of(corporation) / corporation.share_percent
     end

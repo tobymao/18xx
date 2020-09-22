@@ -132,7 +132,7 @@ module Engine
           pass!
         end
 
-        def win_bid(winner)
+        def win_bid(winner, _company)
           @winning_bid = winner
           par_corporation unless available_subsidiaries(winner.entity).any?
         end

@@ -17,7 +17,7 @@ module Engine
 
       def pass_description
         if auctioning
-          "Pass (on #{auctioning.sym})"
+          "Pass (on #{auctioning.id})"
         else
           'Pass'
         end
@@ -57,7 +57,7 @@ module Engine
       end
 
       def min_bid(_company)
-        # Minimum increase in bid that can be done onid that an entity can bid
+        # Minimum a bid that an entity can bid
         raise NotImplementedError
       end
 
