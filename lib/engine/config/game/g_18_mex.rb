@@ -131,7 +131,7 @@ module Engine
       "485P":{
          "count":1,
          "color":"brown",
-         "code":"town=revenue:10;path=a:2,b:_0;path=a:5,b:_0;path=a:2,b:4;label=P"
+         "code":"town=revenue:10;path=a:2,b:_0,a_lane:2.1;path=a:5,b:_0;path=a:2,b:4,a_lane:2.0;label=P"
       },
       "486MC":{
          "count":1,
@@ -141,7 +141,7 @@ module Engine
       "486P":{
          "count":1,
          "color":"brown",
-         "code":"town=revenue:10;path=a:2,b:_0;path=a:5,b:_0;path=a:2,b:4;label=P"
+         "code":"town=revenue:10;path=a:2,b:_0,a_lane:2.1;path=a:5,b:_0;path=a:2,b:4,a_lane:2.0;label=P"
       },
       "619":1
    },

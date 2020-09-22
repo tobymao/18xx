@@ -255,6 +255,7 @@ module View
             @end_edge = @path.edges.last.num
             @end_x = edge_x_pos(@end_edge, 87)
             @end_y = edge_y_pos(@end_edge, 87)
+            lanes = @path.lanes
           elsif @num_exits == 1
             @begin_edge = @path.exits[0]
             @begin_x = edge_x_pos(@begin_edge, 87)
@@ -278,6 +279,8 @@ module View
                                  ]
                                end
             end
+            lanes = @path.lanes
+            lanes.reverse! if @path.b.edge?
           else
             # city/town - city/town
             @ct_edge0 = @tile.preferred_city_town_edges[@stop0] if @stop0
@@ -302,6 +305,8 @@ module View
                                    calculate_stop_y(@ct_edge1, @tile),
                                  ]
                                end
+              lanes = @path.lanes
+              lanes.reverse! if @path.b == @stop0
             else
               @begin_edge = @ct_edge1
               @begin_x, @begin_y = if @stop1.rect?
@@ -321,6 +326,8 @@ module View
                                    calculate_stop_y(@ct_edge0, @tile),
                                  ]
                                end
+              lanes = @path.lanes
+              lanes.reverse! if @path.b == @stop1
             end
           end
 
@@ -335,16 +342,32 @@ module View
             @end_y
           ) if @need_arc
 
-          return if !@path.parallel? || !@begin_edge
+          return if @path.single? || !@begin_edge && !@end_edge
 
-          shift = (@path.lane_index * 2 - @path.lanes + 1) * (@width + PARALLEL_SPACING[@path.lanes - 2]) / 2.0
-          delta_x = (shift * Math.cos(@begin_edge * 60.0 * Math::PI / 180.0)).round(2)
-          delta_y = (shift * Math.sin(@begin_edge * 60.0 * Math::PI / 180.0)).round(2)
+          begin_shift_edge = @begin_edge || @end_edge
+          end_shift_edge = @end_edge || @begin_edge
 
-          @begin_x += delta_x
-          @begin_y += delta_y
-          @end_x += delta_x
-          @end_y += delta_y
+          begin_lane, end_lane = lanes
+
+          if begin_lane[0] > 1
+            begin_shift = (begin_lane[1] * 2 - begin_lane[0] + 1) *
+                          (@width + PARALLEL_SPACING[begin_lane[0] - 2]) / 2.0
+            begin_delta_x = (begin_shift * Math.cos(begin_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
+            begin_delta_y = (begin_shift * Math.sin(begin_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
+
+            @begin_x += begin_delta_x
+            @begin_y += begin_delta_y
+          end
+
+          return unless end_lane[0] > 1
+
+          end_shift = (end_lane[1] * 2 - end_lane[0] + 1) *
+                      (@width + PARALLEL_SPACING[end_lane[0] - 2]) / 2.0
+          end_delta_x = (end_shift * Math.cos(end_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
+          end_delta_y = (end_shift * Math.sin(end_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
+
+          @end_x += end_delta_x
+          @end_y += end_delta_y
         end
 
         def preferred_render_locations
