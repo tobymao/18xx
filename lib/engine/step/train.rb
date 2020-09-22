@@ -10,11 +10,11 @@ module Engine
       def can_buy_train?(entity = nil)
         entity ||= current_entity
         can_buy_normal = room?(entity) &&
-          entity.cash >= @depot.min_price(entity)
+          @game.buying_power(entity) >= @depot.min_price(entity)
 
         can_buy_normal || @depot
           .discountable_trains_for(entity)
-          .any? { |_, _, price| entity.cash >= price }
+          .any? { |_, _, price| @game.buying_power(entity) >= price }
       end
 
       def room?(entity)

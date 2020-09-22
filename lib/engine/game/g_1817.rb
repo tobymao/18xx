@@ -116,6 +116,12 @@ module Engine
           @loans.any?
       end
 
+      def buying_power(entity)
+        return entity.cash unless entity.corporation?
+
+        entity.cash + ((maximum_loans(entity) - entity.loans.size) * @loan_value)
+      end
+
       def liquidate!(corporation)
         @stock_market.move(corporation, 0, 0, force: true)
       end
