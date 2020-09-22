@@ -10,14 +10,13 @@ require 'view/game/players'
 require 'view/game/sell_shares'
 require 'view/game/stock_market'
 require 'view/game/undo_and_pass'
-require 'view/game/round/bidder'
+require 'view/game/bid'
 
 module View
   module Game
     module Round
       class Stock < Snabberb::Component
         include Actionable
-        include Bidder
         needs :selected_corporation, default: nil, store: true
         needs :last_player, default: nil, store: true
 
@@ -78,7 +77,7 @@ module View
 
         def render_pre_ipo
           return h(Par, corporation: @selected_corporation) if @current_actions.include?('par')
-          return render_bid(@current_entity, @selected_corporation) if @current_actions.include?('bid')
+          return h(Bid, entity: @current_entity, corporation: @selected_corporation) if @current_actions.include?('bid')
 
           nil
         end

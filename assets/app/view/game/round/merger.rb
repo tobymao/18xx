@@ -3,14 +3,13 @@
 require 'view/game/actionable'
 require 'view/game/corporation'
 require 'view/game/sell_shares'
-require 'view/game/round/bidder'
+require 'view/game/bid'
 
 module View
   module Game
     module Round
       class Merger < Snabberb::Component
         include Actionable
-        include Bidder
         needs :selected_corporation, default: nil, store: true
 
         def render
@@ -43,7 +42,7 @@ module View
 
             inner = []
             inner << h(Corporation, corporation: auctioning_corporation, selectable: false)
-            inner << render_bid(entity, auctioning_corporation) if actions.include?('bid')
+            inner << h(Bid, entity: entity, corporation: auctioning_corporation) if actions.include?('bid')
             children << h(:div, props, inner)
           elsif merge_entity
             children << h(:div, [h(Corporation, corporation: merge_entity, selectable: false)])
