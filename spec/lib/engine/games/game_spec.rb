@@ -125,11 +125,10 @@ module Engine
       },
     },
     GAMES_BY_TITLE['18GA'] => {
-      8643 => {
-        'willbeplaying' => 4074,
-        'Jac' => 3883,
-        'Arbalor' => 3822,
-        'Akado' => 3244,
+      9222 => {
+        'SunnyD' => 5923,
+        'LJHall' => 5382,
+        'Helen ' => 3978,
       },
     },
     GAMES_BY_TITLE['18MS'] => {

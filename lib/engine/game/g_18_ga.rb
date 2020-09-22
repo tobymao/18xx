@@ -26,6 +26,10 @@ module Engine
       STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
       STANDARD_GREEN_CITY_TILES = %w[14 15].freeze
 
+      def p2_company
+        @p2_company ||= company_by_id('MRC')
+      end
+
       include CompanyPrice50To150Percent
 
       def setup
@@ -62,11 +66,11 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
-          Step::SpecialToken,
+          Step::G18GA::SpecialToken,
           Step::G18GA::BuyCompany,
           Step::HomeToken,
-          Step::SpecialTrack,
-          Step::Track,
+          Step::G18GA::SpecialTrack,
+          Step::G18GA::Track,
           Step::G18GA::Token,
           Step::Route,
           Step::Dividend,
