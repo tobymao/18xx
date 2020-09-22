@@ -15,8 +15,8 @@ module Engine
           # Things that are offered up for acquisition, sale etc
           @offering =  @game
                       .corporations
-                      .select { |c| c.floated? && c.share_price.normal_movement? }
-                      .sort
+                      .select(&:floated?)
+                      .sort.reverse
           @game.players.select { |p| p.presidencies.any? }
         end
 

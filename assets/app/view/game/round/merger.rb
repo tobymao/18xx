@@ -29,6 +29,8 @@ module View
 
           children << render_convert(entity) if actions.include?('convert')
           children << render_loan(entity) if actions.include?('take_loan')
+          children << render_offer(entity, auctioning_corporation) if actions.include?('assign')
+
           children << render_merge(entity, auctioning_corporation) if actions.include?('merge') && @selected_corporation
           merge_entity = auctioning_corporation || entity
 
@@ -62,6 +64,14 @@ module View
             :button,
             { on: { click: -> { process_action(Engine::Action::Convert.new(corporation)) } } },
             'Convert',
+          )
+        end
+
+        def render_offer(entity, corporation)
+          h(
+            :button,
+            { on: { click: -> { process_action(Engine::Action::Assign.new(entity, target: corporation)) } } },
+            'Offer for Sale',
           )
         end
 
