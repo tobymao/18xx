@@ -44,7 +44,7 @@ module Engine
     end
 
     def select(node, other)
-      other_paths = @routes.flat_map(&:paths)
+      other_paths = @routes.reject { |r| r == self }.flat_map(&:paths)
       nodes = [node, other]
 
       node.hex.all_connections.select do |c|
