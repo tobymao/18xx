@@ -77,6 +77,12 @@ module Engine
         ], round_num: round_num)
       end
 
+      def stock_round
+        Round::Stock.new(self, [
+          Step::BuySellParShares,
+        ])
+      end
+
       def routes_revenue(routes)
         total_revenue = super
 
