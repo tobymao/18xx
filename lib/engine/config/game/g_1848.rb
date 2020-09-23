@@ -199,46 +199,52 @@ module Engine
   ],
   "companies": [
     {
-      "sym": "PX",
+      "sym": "P1",
       "name": "Melbourne & Hobson's Bay Railway Company",
       "value": 40,
+      "discount": 10,
       "revenue": 5,
-      "desc": "No special abilities."
+      "desc": "No special abilities.  Can be bought by a Public Company for between 1-40£."
     },
     {
       "sym": "P2",
       "name": "Sydney Railway Company",
       "value": 80,
+      "discount": 10,
       "revenue": 10,
-      "desc": "If the company is owned by a Public Company or its Director, that company can, on one occasion, develop a cost-incurring desert hex for 40£ less than it would otherwise cost"
+      "desc": "If the company is owned by a Public Company or its Director, that company can, on one occasion, develop a cost-incurring desert hex for 40£ less than it would otherwise cost.  Can be bought by a Public Company for between 1-80£."
     },
     {
       "sym": "P3",
       "name": "Tasmanian Railways",
       "value": 140,
+      "discount": 30,
       "revenue": 15,
-      "desc": "The Tasmania tile can be placed by a Public Company on one of the dark blue hexes. This is in addition to the company's normal build that turn."
+      "desc": "The Tasmania tile can be placed by a Public Company on one of the dark blue hexes. This is in addition to the company's normal build that turn.  Can be bought by a Public Company for between 1-140£."
     },
     {
       "sym": "P4",
       "name": "The Ghan",
       "value": 220,
+      "discount": 50,
       "revenue": 20,
-      "desc": "The owner has a one-time discount of £100 on the purchase of a 2E train, 'The Ghan'"
+      "desc": "The owner has a one-time discount of £100 on the purchase of a 2E train, 'The Ghan'.  Can be bought by a Public Company for between 1-220£."
     },
     {
       "sym": "P5",
       "name": "Trans-Australian Railway",
       "value": 0,
+      "discount": -170,
       "revenue": 25,
-      "desc": "The owner receives in addition a 10% share in the QR."
+      "desc": "The owner receives in addition a 10% share in the QR.  Cannot be bought by a Public Company."
     },
     {
       "sym": "P6",
       "name": "North Australian Railway",
       "value": 0,
+      "discount": -230,
       "revenue": 30,
-      "desc": "The owner receives in addition the Director's Share share in the CAR, which must start at a par value of 100£."
+      "desc": "The owner receives in addition the Director's Share share in the CAR, which must start at a par value of 100£.  Cannot be bought by a Public Company."
     }
   ],
   "corporations": [

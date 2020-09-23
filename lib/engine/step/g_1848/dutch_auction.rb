@@ -15,7 +15,6 @@ module Engine
         ACTIONS_WITH_PASS = %w[bid lower pass].freeze
 
         def description
-          puts "got to description"
           'Buy Companies'
         end
         
@@ -23,7 +22,8 @@ module Engine
           setup_auction
           @companies = @game.companies.sort_by(&:min_bid)
           @cheapest = @companies.first
-          @bidders = Hash.new { |h, k| h[k] = [] }
+          #@choices = Hash.new { |h, k| h[k] = [] } <FIXME> delete?
+          #@bidders = Hash.new { |h, k| h[k] = [] } <FIXME> delete?
         end
 
         def committed_cash(_player, _show_hidden = false)
@@ -33,6 +33,27 @@ module Engine
         def pass_description
           'Pass (Buy)'
         end
+
+        def min_bid(company)
+          puts "company = #{company}"
+          return unless company
+          puts "company.value = #{company.value}"
+          puts "company.discount = #{company.discount}"
+          return company.value-company.discount if may_purchase?(company)
+        end
+
+        def process_bid(action)
+          company = action.company
+          price = company.min_bid
+          buy_company(current_entity, company, price)
+          @round.next_entity_index! #not sure about this
+        end
+
+        def process_lower(action)
+          company = action.company
+          company.discount -= 5;
+          @round.next_entity_index! #not sure about this
+        end        
 
         def available
           @companies
@@ -70,11 +91,11 @@ module Engine
             end
           end
         end
-        
-        #def bids #<FIXME> What is this?
-        #  {}
-        #end
 
+        def bids
+          {}
+        end
+                
       end
     end
   end
