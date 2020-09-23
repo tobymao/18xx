@@ -13,7 +13,7 @@ module Engine
         def select_entities
           @game
             .corporations
-            .select { |c| c.floated? && c.share_price.normal_movement? }
+            .select { |c| c.floated? && c.share_price.normal_movement? && !c.share_price.acquisition? }
             .sort
         end
 

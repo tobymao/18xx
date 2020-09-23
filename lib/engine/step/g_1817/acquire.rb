@@ -10,7 +10,10 @@ module Engine
       class Acquire < Base
         include PassableAuction
 
+        attr_reader :auctioning
+
         def actions(entity)
+          return %w[assign pass] if @offer
           return %w[bid pass] if @auctioning
 
           actions = []
@@ -24,7 +27,9 @@ module Engine
         end
 
         def active_entities
-          if @auctioning
+          if @offer
+            [@offer.owner]
+          elsif @auctioning
             winning_bid = highest_bid(@auctioning)
             if winning_bid
               [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]]
@@ -45,31 +50,36 @@ module Engine
         end
 
         def process_pass(action)
-          pass_auction(action.entity)
+          if @offer
+            @game.log << "#{@offer.owner.name} declines to put #{@offer.name} up for sale"
+            @round.offering.delete(@offer)
+            @offer = nil
+            setup_auction
+          else
+            pass_auction(action.entity)
+          end
         end
 
-        attr_reader :auctioning
-
-        def post_win_bid(winner, company)
+        def post_win_bid(winner, corporation)
           if winner
             m = mergeable(winner.corporation)
             process_acquire(m.first) if m.one?
           else
             case @mode
             when :acquisition
-              @game.log << "All players pass on #{company.name}, not acquired"
+              @game.log << "All players pass on #{corporation.name}, not acquired"
             when :liquidate
-              @game.log << "All players pass on #{company.name}, bank acquires for $0"
+              @game.log << "All players pass on #{corporation.name}, bank acquires for $0"
               # @todo: bank acquires liquidations
             when :offered
-              @game.log << "#{company.owner.name} declines to put #{company.name} up for sale"
+              @game.log << "All players pass on #{corporation.name}, not sold"
             end
-            @round.offering.delete(company)
+            @round.offering.delete(corporation)
             setup_auction
           end
         end
 
-        def win_bid(winner, _company)
+        def win_bid(winner, _corporation)
           return unless winner
 
           @game.log << "#{winner.entity.name} wins the auction of #{winner.corporation.name}"\
@@ -149,13 +159,28 @@ module Engine
           end
         end
 
+        def starting_bid(corporation)
+          if corporation.share_price.liquidation?
+            0
+          elsif corporation.share_price.acquisition?
+            10
+          else
+            corporation.total_shares * corporation.share_price.price
+          end
+        end
+
         def min_bid(corporation)
-          (highest_bid(corporation)&.price || 0) + 10
+          if (bid = highest_bid(corporation)&.price)
+            bid + 10
+          else
+            starting_bid(corporation)
+          end
         end
 
         def max_bid(player, corporation)
           # @todo: Only 10 more if it's owned by them
-          # Otherwise max of company treasury
+          # Otherwise max of corporation treasury
+          # @todo: some modes can use the treasury from a corporation
           companies = player.presidencies.select { |c| can_acquire?(corporation, c) }
 
           companies.map(&:cash).max || 0
@@ -171,8 +196,18 @@ module Engine
           resolve_bids
         end
 
+        def process_assign(action)
+          corporation = action.target
+          @game.game_error("Can only assign if offering for sale #{corporation.name}") unless @mode == :offered
+          @game.game_error("Can only offer up #{@offer.name}") unless corporation == @offer
+
+          @game.log << "#{corporation.name} is offered at auction"
+          @offer = nil
+          auction_entity(corporation)
+        end
+
         def auctioning_corporation
-          @auctioning || @winner.corporation
+          @offer || @auctioning || @winner.corporation
         end
 
         private
@@ -184,21 +219,38 @@ module Engine
             return
           end
 
-          company = @round.offering.first
+          corporation = @round.offering.first
 
-          # @todo: This should be liquidate, acquire or offer depending on the circumstances.
-          @mode = :acquisition
+          @mode =
+            if corporation.share_price.liquidation?
+              @game.log << "#{corporation.name} is being liquidated, bank offers $0"
+              auction_entity(corporation)
+              :liquidate
+            elsif corporation.share_price.acquisition?
+              @game.log << "#{corporation.name} offered for acquisition"
+              auction_entity(corporation)
+              :acquisition
+            else
+              # This needs the owner to either offer(assign) or pass up putting the corp for sale.
 
-          case @mode
-          when :acquisition
-            @game.log << "#{company.name} offered for acquisition"
-          when :liquidate
-            @game.log << "#{company.name} is being liquidated, bank offers $0"
-          when :offered
-            # @todo: this needs to set first player to owner
-            @game.log << "#{company.name} offered for sale"
-          end
-          auction_entity(@round.offering.first)
+              # Check to see if any players can actually buy it
+              bidders = entities.select do |player|
+                max_bid(player, corporation) >= min_bid(corporation)
+              end
+
+              if bidders.any?
+                @game.log << "#{corporation.name} may be offered for sale for "\
+                  "#{@game.format_currency(starting_bid(corporation))}"
+                @offer = corporation
+                :offered
+              else
+                @game.log << "#{corporation.name} cannot be bought at "\
+                  "#{@game.format_currency(starting_bid(corporation))}, skipping"
+                @round.offering.delete(corporation)
+                setup_auction
+                @mode
+              end
+            end
         end
 
         def setup
