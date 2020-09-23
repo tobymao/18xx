@@ -52,6 +52,8 @@ module Engine
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
+      IPO_NAME = 'Treasury'
+
       attr_reader :loan_value
 
       def bankruptcy_limit_reached?
