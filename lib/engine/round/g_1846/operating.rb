@@ -43,11 +43,6 @@ module Engine
             end
           end
 
-          unless steps.find { |step| step.class == Step::G1846::Dividend }.active?
-            issue_shares_step = steps.find { |step| step.class == Step::G1846::IssueShares }
-            issue_shares_step.pass!
-          end
-
           super
         end
 

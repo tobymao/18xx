@@ -9,6 +9,12 @@ module Engine
       class IssueShares < IssueShares
         include ReceivershipSkip
 
+        def actions(entity)
+          return [] unless @round.steps.find { |step| step.class == Step::G1846::Dividend }.active?
+
+          super
+        end
+
         def blocks?
           false
         end
