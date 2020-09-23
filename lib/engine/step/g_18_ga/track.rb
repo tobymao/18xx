@@ -23,11 +23,8 @@ module Engine
         private
 
         def remaining_tile_lay?(entity)
-          return true if can_lay_tile?(entity)
-          return false unless @game.p2_company.owner == entity
-
-          ability = @game.p2_company.abilities(:tile_lay)
-          ability&.count&.positive?
+          can_lay_tile?(entity) ||
+          (@game.p2_company.owner == entity && @game.p2_company.abilities(:tile_lay)&.count&.positive?)
         end
       end
     end
