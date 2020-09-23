@@ -58,6 +58,10 @@ module Engine
         @p2_company ||= company_by_id('BS')
       end
 
+      def chattanooga_hex
+        @chattanooga_hex ||= @hexes.find { |h| h.name == 'B12' }
+      end
+
       include CompanyPrice50To150Percent
 
       def setup
