@@ -210,6 +210,34 @@ module Engine
         revenue
       end
 
+      def revenue_str(route)
+        stops = route.stops
+        stop_hexes = stops.map(&:hex)
+        str = route.hexes.map do |h|
+          stop_hexes.include?(h) ? h&.name : "(#{h&.name})"
+        end.join('-')
+
+        east = stops.find { |stop| stop.groups.include?('E') }
+        west = stops.find { |stop| stop.tile.label&.to_s == 'W' }
+
+        meat = meat_packing.id
+
+        str += ' + Meat-Packing' if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
+
+        steam = steamboat.id
+
+        str += ' + Port' if route.corporation.assigned?(steam) && (stops.map(&:hex).find { |hex| hex.assigned?(steam) })
+
+        str += ' + E/W' if east && west
+
+        if route.train.owner.companies.include?(mail_contract)
+          longest = route.routes.max_by { |r| [r.visited_stops.size, r.train.id] }
+          str += ' + Mail Contract' if route == longest
+        end
+
+        str
+      end
+
       def meat_packing
         @meat_packing ||= company_by_id('MPC')
       end
