@@ -1469,6 +1469,12 @@
       "id": 173
     },
     {
+      "type": "pass",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 173.1
+    },
+    {
       "type": "run_routes",
       "entity": "L&N",
       "entity_type": "corporation",

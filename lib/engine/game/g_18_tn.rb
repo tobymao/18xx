@@ -65,10 +65,10 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
-          Step::SpecialTrack,
+          Step::G18TN::SpecialTrack,
           Step::G18TN::BuyCompany,
           Step::HomeToken,
-          Step::Track,
+          Step::G18TN::Track,
           Step::Token,
           Step::Route,
           Step::G18TN::Dividend,
