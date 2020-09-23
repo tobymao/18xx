@@ -146,6 +146,12 @@ module Engine
         ], round_num: round_num)
       end
 
+      def stock_round
+        Round::Stock.new(self, [
+          Step::BuySellParShares,
+        ])
+      end
+
       def init_round
         Round::Draft.new(self, [Step::G18MS::SimpleDraft])
       end
