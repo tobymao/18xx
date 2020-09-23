@@ -34,11 +34,11 @@ Optional URL params for above routes:
 
 ![Anatomy of a Tile](/public/images/tile_anatomy_pointy.png?raw=true "Anatomy of a Pointy Tile")
 
-### Illustrations of Paths
+### Illustrations of Lanes
 
-![Illustration of Paths](/public/images/lane_widths.png?raw=true "Examples of lane widths")
+![Illustration of Lanes 1](/public/images/lane_widths.png?raw=true "Examples of lane widths")
 
-![Illustration of Paths](/public/images/lanes_small.png?raw=true "Examples of lane connections")
+![Illustration of Lanes 2](/public/images/lanes_small.png?raw=true "Examples of lane connections")
 
 ### Tile language
 
