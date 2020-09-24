@@ -116,7 +116,7 @@ module Engine
         super
       end
 
-      def round_description(name)
+      def round_description(name, _round_num = nil)
         case name
         when 'Stock'
           super

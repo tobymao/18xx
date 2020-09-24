@@ -1157,7 +1157,7 @@ module Engine
       end
 
       def new_operating_round(round_num = 1)
-        @log << "-- #{round_description('Operating')} --"
+        @log << "-- #{round_description('Operating', round_num)} --"
         operating_round(round_num)
       end
 
@@ -1220,9 +1220,10 @@ module Engine
         [0, 0]
       end
 
-      def round_description(name)
+      def round_description(name, round_number = nil)
+        round_number ||= @round.round_num
         description = "#{name} Round #{@turn}"
-        description += ".#{@round.round_num} (of #{total_rounds(name)})" if total_rounds(name)
+        description += ".#{round_number} (of #{total_rounds(name)})" if total_rounds(name)
         description
       end
     end
