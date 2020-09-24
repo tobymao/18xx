@@ -1776,10 +1776,16 @@
       "slot": 0
     },
     {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 205
+    },
+    {
       "type": "run_routes",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 205,
+      "id": 206,
       "routes": [
         {
           "train": "4-0",
@@ -1812,14 +1818,8 @@
       "type": "dividend",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 206,
+      "id": 207,
       "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "GT",
-      "entity_type": "corporation",
-      "id": 207
     },
     {
       "type": "pass",
@@ -1828,10 +1828,16 @@
       "id": 208
     },
     {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 209
+    },
+    {
       "type": "lay_tile",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 209,
+      "id": 210,
       "hex": "F6",
       "tile": "8-4",
       "rotation": 0
@@ -1840,16 +1846,10 @@
       "type": "lay_tile",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 210,
+      "id": 211,
       "hex": "E5",
       "tile": "8-5",
       "rotation": 3
-    },
-    {
-      "type": "pass",
-      "entity": "IC",
-      "entity_type": "corporation",
-      "id": 211
     },
     {
       "type": "run_routes",
@@ -8562,7 +8562,7 @@
       "kind": "payout"
     }
   ],
-  "id": "3099",
+  "id": "hs_tjflxkfu_3099",
   "players": [
     {
       "name": "mfmise",
