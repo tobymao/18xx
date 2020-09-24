@@ -10,7 +10,10 @@ module Engine
         include ReceivershipSkip
 
         def actions(entity)
-          return [] unless @round.steps.find { |step| step.class == Step::G1846::Dividend }.active?
+          unless @round.steps.find { |step| step.class == Step::G1846::Dividend }.active?
+            pass!
+            return []
+          end
 
           super
         end
