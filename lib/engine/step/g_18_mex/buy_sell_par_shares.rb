@@ -6,22 +6,16 @@ module Engine
   module Step
     module G18MEX
       class BuySellParShares < BuySellParShares
-        def process_buy_shares(action)
-          ensure_ndm_not_traded_to_early(action)
-          super
+        def can_buy?(entity, bundle)
+          return unless super
+
+          bundle.corporation.name != 'NdM' || @game.phase.status.include?('ndm_available')
         end
 
-        def process_sell_shares(action)
-          ensure_ndm_not_traded_to_early(action)
-          super
-        end
+        def can_sell?(entity, bundle)
+          return unless super
 
-        private
-
-        def ensure_ndm_not_traded_to_early(action)
-          return if action.bundle.corporation.name != 'NdM' || @game.phase.status.include?('ndm_available')
-
-          @game.game_error('Cannot yet buy or sell NdM from stock market')
+          bundle.corporation.name != 'NdM' || @game.phase.status.include?('ndm_available')
         end
       end
     end
