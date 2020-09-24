@@ -65,16 +65,22 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
-          Step::SpecialTrack,
+          Step::G18TN::SpecialTrack,
           Step::G18TN::BuyCompany,
           Step::HomeToken,
-          Step::Track,
+          Step::G18TN::Track,
           Step::Token,
           Step::Route,
           Step::G18TN::Dividend,
           Step::SingleDepotTrainBuy,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
+      end
+
+      def stock_round
+        Round::Stock.new(self, [
+          Step::BuySellParShares,
+        ])
       end
 
       def routes_revenue(routes)
