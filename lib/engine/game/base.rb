@@ -552,18 +552,12 @@ module Engine
         value
       end
 
-      def issuable_shares(entity)
-        step = @round.step_for(entity, 'sell_shares')
-        return unless step
-
-        step.issuable_shares(entity)
+      def issuable_shares(_entity)
+        []
       end
 
-      def redeemable_shares(entity)
-        step = @round.step_for(entity, 'buy_shares')
-        return unless step
-
-        step.redeemable_shares(entity)
+      def redeemable_shares(_entity)
+        []
       end
 
       def sellable_bundles(player, corporation)
@@ -804,7 +798,7 @@ module Engine
       end
 
       def buying_power(entity)
-        entity.cash
+        entity.cash + (issuable_shares(entity).map(&:share_price).max || 0)
       end
 
       private

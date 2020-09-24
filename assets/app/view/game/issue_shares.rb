@@ -14,11 +14,15 @@ module View
         children = []
 
         if @current_actions.include?('sell_shares')
-          children << render_shares('Issue', @game.issuable_shares(@entity), Engine::Action::SellShares)
+          if (step = @game.round.step_for(@entity, 'sell_shares'))
+            children << render_shares('Issue', step.issuable_shares(@entity), Engine::Action::SellShares)
+          end
         end
 
         if @current_actions.include?('buy_shares')
-          children << render_shares('Redeem', @game.redeemable_shares(@entity), Engine::Action::BuyShares)
+          if (step = @game.round.step_for(@entity, 'buy_shares'))
+            children << render_shares('Redeem', step.redeemable_shares(@entity), Engine::Action::BuyShares)
+          end
         end
 
         h('div.margined', children.compact)

@@ -170,9 +170,9 @@ describe 'Assets' do
        ['1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track',
         # Minor charter stuff
         'Michigan Southern', 'Trains', '2', 'Cash', 'C15', '$60']],
-      ['1846', 3099, 185, 'assign',
+      ['1846', 3099, 186, 'assign',
        ['1846: Operating Round 2.1 (of 2) - Assign Steamboat Company',
-        'Blondie may assign Steamboat Company to a new corporation or minor.',
+        'Blondie may assign Steamboat Company to a new hex and/or corporation or minor.',
         'Add $20 per port symbol to all routes run to the assigned location '\
         'by the owning/assigned corporation/minor.']],
       ['1846', 3099, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
