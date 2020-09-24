@@ -28,6 +28,10 @@ module Engine
         'ndm_available' => ['NdM available', 'NdM shares available during stock round'],
       ).freeze
 
+      def p2_company
+        @p2_company ||= company_by_id('KCMO')
+      end
+
       include CompanyPrice50To150Percent
       include Revenue4D
 
@@ -53,8 +57,8 @@ module Engine
           Step::DiscardTrain,
           Step::BuyCompany,
           Step::HomeToken,
-          Step::SpecialTrack,
-          Step::Track,
+          Step::G18MEX::SpecialTrack,
+          Step::G18MEX::Track,
           Step::Token,
           Step::Route,
           Step::G18MEX::Dividend,
