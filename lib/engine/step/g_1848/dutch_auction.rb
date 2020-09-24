@@ -11,8 +11,8 @@ module Engine
         
         attr_reader :companies
 
-        ACTIONS = %w[bid lower].freeze
-        ACTIONS_WITH_PASS = %w[bid lower pass].freeze
+        ACTIONS = %w[bid reduce].freeze
+        ACTIONS_WITH_PASS = %w[bid reduce pass].freeze
 
         def description
           'Buy Companies'
@@ -49,9 +49,9 @@ module Engine
           @round.next_entity_index! #not sure about this
         end
 
-        def process_lower(action)
+        def process_reduce(action)
           company = action.company
-          company.discount -= 5;
+          company.discount += 5;
           @round.next_entity_index! #not sure about this
         end        
 
@@ -60,6 +60,11 @@ module Engine
         end
 
         def may_purchase?(_company)
+          true
+        end
+
+        def may_reduce?(company)
+          #<FIXME> should return true only if current price is > minimum price (different per company, should probably be put in the config/game/g_1848 file)
           true
         end
 

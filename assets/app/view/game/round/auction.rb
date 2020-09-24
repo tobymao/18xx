@@ -107,7 +107,7 @@ module View
             h(:div, props, children)
           end
         end
-
+        
         def render_input(company)
           buy = lambda do
             hide!
@@ -161,6 +161,10 @@ module View
               ]
             end
 
+          if @step.may_reduce?(company)
+            company_actions << h(:button, { on: { click: -> { process_action(Engine::Action::Reduce.new(@current_entity, company: company)) } } }, 'Reduce Price' )
+          end
+                    
           h(:div, { style: { textAlign: 'center', margin: '1rem' } }, company_actions)
         end
 
