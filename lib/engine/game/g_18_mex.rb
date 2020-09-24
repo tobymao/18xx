@@ -121,6 +121,12 @@ module Engine
 
         upgrades
       end
+
+      def tile_lays(entity)
+        return super if entity.minor?
+
+        [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+      end
     end
   end
 end
