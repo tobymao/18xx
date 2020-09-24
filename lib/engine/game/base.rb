@@ -625,6 +625,10 @@ module Engine
         stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
       end
 
+      def revenue_str(route)
+        route.hexes.map(&:name).join('-')
+      end
+
       def routes_revenue(routes)
         routes.sum(&:revenue)
       end
