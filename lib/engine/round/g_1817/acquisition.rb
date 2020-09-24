@@ -7,6 +7,8 @@ module Engine
     module G1817
       class Acquisition < Round::Merger
         attr_accessor :offering
+        attr_accessor :cash_crisis_player
+
         def name
           'Acquisition Round'
         end

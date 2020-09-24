@@ -191,7 +191,6 @@ module Engine
           Step::Route,
           Step::G1817::Dividend,
           Step::G1817::BuyTrain,
-          # @todo: check for liquidation
         ], round_num: round_num)
       end
 
@@ -228,6 +227,8 @@ module Engine
           when Round::G1817::Merger
             @log << "-- Acquisition Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
             Round::G1817::Acquisition.new(self, [
+              Step::Bankrupt, # @todo: needs customization
+              Step::G1817::CashCrisis,
               Step::DiscardTrain,
               Step::G1817::Acquire,
             ])

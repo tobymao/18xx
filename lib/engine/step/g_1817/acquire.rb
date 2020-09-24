@@ -10,7 +10,7 @@ module Engine
       class Acquire < Base
         include PassableAuction
 
-        attr_reader :auctioning
+        attr_reader :auctioning, :last_president
 
         def actions(entity)
           return %w[assign pass] if @offer
@@ -173,8 +173,9 @@ module Engine
           if acquired_corp.share_price.liquidation?
             president = acquired_corp.owner
             debt = [0, (@liquidation_loans.size * @game.loan_value) - @liquidation_cash].max
-            @game.log << "#{president.name} settles #{acquired_corp.name} debts for #{@game.format_currency(debt)}"
+
             if debt.positive?
+              @game.log << "#{president.name} settles #{acquired_corp.name} debts for #{@game.format_currency(debt)}"
               president.spend(debt, @game.bank, check_cash: false)
               @game.loans.concat(@liquidation_loans)
               @liquidation_loans = []
@@ -191,7 +192,6 @@ module Engine
           # Step 9
           if shareholder_cash.positive?
             # @todo: how are shorts done?
-            shareholder_cash = 99
             per_share = (shareholder_cash / acquired_corp.total_shares).to_i
             payouts = {}
             @game.players.each do |player|
@@ -214,6 +214,7 @@ module Engine
 
         def finalize_acquisition(acquired_corp)
           # Step 10
+          @round.cash_crisis_player = acquired_corp.owner
           @game.reset_corporation(acquired_corp)
           return unless @winner
 
@@ -325,7 +326,8 @@ module Engine
               corporation.spend(corporation.cash, @game.bank)
               corporation.loans.clear
 
-              @game.log << "#{corporation.name} is being liquidated, bank offers $0"
+              @game.log << "#{corporation.name} is being liquidated, bank offers $0, corporation had"\
+              " #{@game.format_currency(@liquidation_cash)} and #{@liquidation_loans.size} loans"
               auction_entity(corporation)
               :liquidate
             elsif corporation.share_price.acquisition?

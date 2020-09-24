@@ -21,6 +21,8 @@ module View
           children = []
 
           if (%w[buy_shares sell_shares] & actions).any?
+            return h(CashCrisis) if entity.player?
+
             corporation = @round.converted
             children << h(BuySellShares, corporation: corporation)
             children << h(Corporation, corporation: corporation)

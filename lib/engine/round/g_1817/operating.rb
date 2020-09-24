@@ -7,7 +7,7 @@ module Engine
   module Round
     module G1817
       class Operating < Operating
-        attr_accessor :last_player
+        attr_accessor :cash_crisis_player
         attr_reader :paid_loans
 
         def setup
@@ -21,7 +21,7 @@ module Engine
         def after_process(action)
           # Keep track of last_player for Cash Crisis
           entity = action.entity
-          @last_player = entity.player
+          @cash_crisis_player = entity.player
           pay_interest!(entity)
 
           if !active_step && entity.operator? && entity.trains.empty?
