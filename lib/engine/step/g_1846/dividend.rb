@@ -32,10 +32,10 @@ module Engine
         def skip!
           super
 
+          @round.steps.find { |s| s.class == Step::G1846::IssueShares }.pass!
+
           return unless current_entity.receivership?
-
           return if current_entity.trains.any?
-
           return if current_entity.share_price.price.zero?
 
           @log << "#{current_entity.name} is in receivership and does not own a train."
