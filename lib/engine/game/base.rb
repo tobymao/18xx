@@ -339,9 +339,7 @@ module Engine
         @log << '----'
         @log << 'Your game was unable to be upgraded to the latest version of 18xx.games.'
         @log << "It is pinned to version #{pin}, if any bugs are raised please include this version number."
-        if self.class::DEV_STAGE == :beta
-          @log << 'Please note, pinned games may be deleted after 7 days,'
-        end
+        @log << 'Please note, pinned games may be deleted after 7 days.' if self.class::DEV_STAGE == :beta
         @log << '----'
       end
 
