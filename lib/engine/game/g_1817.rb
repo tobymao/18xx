@@ -52,6 +52,8 @@ module Engine
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
+      IPO_NAME = 'Treasury'
+
       attr_reader :loan_value
 
       def bankruptcy_limit_reached?
@@ -189,7 +191,6 @@ module Engine
           Step::Route,
           Step::G1817::Dividend,
           Step::G1817::BuyTrain,
-          # @todo: check for liquidation
         ], round_num: round_num)
       end
 
@@ -226,6 +227,8 @@ module Engine
           when Round::G1817::Merger
             @log << "-- Acquisition Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
             Round::G1817::Acquisition.new(self, [
+              Step::Bankrupt, # @todo: needs customization
+              Step::G1817::CashCrisis,
               Step::DiscardTrain,
               Step::G1817::Acquire,
             ])

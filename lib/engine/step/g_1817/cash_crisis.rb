@@ -24,10 +24,10 @@ module Engine
         end
 
         def active_entities
-          return [] unless @round.last_player
+          return [] unless @round.cash_crisis_player
 
           # Rotate players to order starting with the current player
-          players = @game.players.rotate(@game.players.index(@round.last_player))
+          players = @game.players.rotate(@game.players.index(@round.cash_crisis_player))
           players.select { |p| p.cash.negative? }
         end
 
