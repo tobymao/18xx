@@ -28,6 +28,10 @@ module Engine
         'ndm_available' => ['NdM available', 'NdM shares available during stock round'],
       ).freeze
 
+      def p2_company
+        @p2_company ||= company_by_id('KCMO')
+      end
+
       include CompanyPrice50To150Percent
       include Revenue4D
 
@@ -53,8 +57,8 @@ module Engine
           Step::DiscardTrain,
           Step::BuyCompany,
           Step::HomeToken,
-          Step::SpecialTrack,
-          Step::Track,
+          Step::G18MEX::SpecialTrack,
+          Step::G18MEX::Track,
           Step::Token,
           Step::Route,
           Step::G18MEX::Dividend,
@@ -116,6 +120,12 @@ module Engine
         upgrades |= [@gray_tile] if @gray_tile && tile.name == '480'
 
         upgrades
+      end
+
+      def tile_lays(entity)
+        return super if entity.minor?
+
+        [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
       end
     end
   end
