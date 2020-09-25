@@ -1,3 +1,4 @@
+# coding: utf-8
 # frozen_string_literal: true
 
 require_relative '../base'
@@ -35,10 +36,7 @@ module Engine
         end
 
         def min_bid(company)
-          puts "company = #{company}"
           return unless company
-          puts "company.value = #{company.value}"
-          puts "company.discount = #{company.discount}"
           return company.value-company.discount if may_purchase?(company)
         end
 
@@ -52,6 +50,8 @@ module Engine
         def process_reduce(action)
           company = action.company
           company.discount += 5;
+          price = company.min_bid          
+        @log << "#{current_entity.name} reduces #{company.name} by £5 to #{@game.format_currency(price)}"
           @round.next_entity_index! #not sure about this
         end        
 
@@ -64,8 +64,23 @@ module Engine
         end
 
         def may_reduce?(company)
-          #<FIXME> should return true only if current price is > minimum price (different per company, should probably be put in the config/game/g_1848 file)
-          true
+          #Each private can be discounted a maximum of 6 times
+          #puts "#{company.name}"
+          if company.name == "Melbourne & Hobson's Bay Railway Company" && company.min_bid > 0
+            return true
+          elsif company.name == "Sydney Railway Company" && company.min_bid > 40
+            return true     
+          elsif company.name == "Tasmanian Railways" && company.min_bid > 80
+            return true
+          elsif company.name == "The Ghan" && company.min_bid > 140
+            return true
+          elsif company.name == "Trans-Australian Railway" && company.min_bid > 140
+            return true
+          elsif company.name == "North Australian Railway" && company.min_bid > 200
+            return true
+          else
+            return false
+          end
         end
 
         def auctioning; end
