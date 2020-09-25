@@ -419,6 +419,31 @@ module Engine
         super
       end
 
+      def issuable_shares(entity)
+        return [] unless entity.corporation?
+        return [] unless round.steps.find { |step| step.class == Step::G1846::IssueShares }.active?
+
+        num_shares = entity.num_player_shares - entity.num_market_shares
+        bundles = entity.bundles_for_corporation(entity)
+        share_price = stock_market.find_share_price(entity, :left).price
+
+        bundles
+          .each { |bundle| bundle.share_price = share_price }
+          .reject { |bundle| bundle.num_shares > num_shares }
+      end
+
+      def redeemable_shares(entity)
+        return [] unless entity.corporation?
+        return [] unless round.steps.find { |step| step.class == Step::G1846::IssueShares }.active?
+
+        share_price = stock_market.find_share_price(entity, :right).price
+
+        share_pool
+          .bundles_for_corporation(entity)
+          .each { |bundle| bundle.share_price = share_price }
+          .reject { |bundle| entity.cash < bundle.price }
+      end
+
       def emergency_issuable_bundles(corp)
         return [] if @round.emergency_issued
 

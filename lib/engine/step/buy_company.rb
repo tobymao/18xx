@@ -22,7 +22,7 @@ module Engine
         entity == current_entity &&
           @game.phase.status.include?('can_buy_companies') &&
           companies.any? &&
-          companies.map(&:min_price).min <= entity.cash
+          companies.map(&:min_price).min <= @game.buying_power(entity)
       end
 
       def blocks?
