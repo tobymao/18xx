@@ -288,13 +288,13 @@ module Engine
           @log << "#{self.class.title} is currently considered 'alpha',"\
             ' the rules implementation is likely to not be complete.'
           @log << 'As the implementation improves, games that are not compatible'\
-            ' with the latest version will be deleted.'
+            ' with the latest version may be deleted without notice.'
           @log << 'We suggest that any alpha quality game is concluded within 7 days.'
         when :beta
           @log << "#{self.class.title} is currently considered 'beta',"\
             ' the rules implementation may allow illegal moves.'
           @log << 'As the implementation improves, games that are not compatible'\
-            ' with the latest version will be given 7 days to be completed before being deleted.'
+            ' with the latest version may be deleted after 7 days.'
           @log << 'Because of this we suggest not playing games that may take months to complete.'
         end
 
@@ -340,8 +340,7 @@ module Engine
         @log << 'Your game was unable to be upgraded to the latest version of 18xx.games.'
         @log << "It is pinned to version #{pin}, if any bugs are raised please include this version number."
         if self.class::DEV_STAGE == :beta
-          @log << 'Please note, you have 7 days since the upgrade to complete your game,'\
-            ' after which time it will be deleted.'
+          @log << 'Please note, pinned games may be deleted after 7 days,'
         end
         @log << '----'
       end
