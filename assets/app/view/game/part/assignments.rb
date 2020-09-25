@@ -13,17 +13,14 @@ module View
         DELTA_X = (ICON_RADIUS * 2) + 2
 
         def preferred_render_locations
-          if layout == :pointy
-            delta_y = -35
-            delta_x = -60.25
-            [{
-               region_weights: { LEFT_CORNER => 1 },
-               x: delta_x + (DELTA_X / 2) * (@assignments.size - 1),
-               y: delta_y,
-             }]
-
-          elsif layout == :flat
+          if layout == :pointy && @assignments.one?
+            POINTY_SMALL_ITEM_LOCATIONS
+          elsif layout == :pointy
+            POINTY_WIDE_ITEM_LOCATIONS
+          elsif layout == :flat && @assignments.one?
             SMALL_ITEM_LOCATIONS
+          else
+            WIDE_ITEM_LOCATIONS
           end
         end
 
