@@ -18,6 +18,8 @@ module View
           @step = @round.active_step
           actions = @round.actions_for(entity)
           auctioning_corporation = @step.auctioning_corporation if @step.respond_to?(:auctioning_corporation)
+          corporation_to_merge_into = @step.merge_target if @step.respond_to?(:merge_target)
+          @selected_corporation = @step.mergeable(entity).first if @step.mergeable(entity).one?
           children = []
 
           if (%w[buy_shares sell_shares] & actions).any?
@@ -34,7 +36,7 @@ module View
           children << render_offer(entity, auctioning_corporation) if actions.include?('assign')
 
           children << render_merge(entity, auctioning_corporation) if actions.include?('merge') && @selected_corporation
-          merge_entity = auctioning_corporation || entity
+          merge_entity = auctioning_corporation || corporation_to_merge_into || entity
 
           if auctioning_corporation && !actions.include?('merge')
             props = {
@@ -45,7 +47,7 @@ module View
             }
 
             inner = []
-            inner << h(Corporation, corporation: auctioning_corporation, selectable: false)
+            inner << h(Corporation, corporation: auctioning_corporation || corporation_to_merge_into, selectable: false)
             inner << h(Bid, entity: entity, corporation: auctioning_corporation) if actions.include?('bid')
             children << h(:div, props, inner)
           elsif merge_entity
@@ -54,7 +56,7 @@ module View
 
           if merge_entity.corporation? && @step.respond_to?(:mergeable)
             @step.mergeable(merge_entity).each do |target|
-              children << h(Corporation, corporation: target)
+              children << h(Corporation, corporation: target, selected_corporation: @selected_corporation)
             end
           end
 

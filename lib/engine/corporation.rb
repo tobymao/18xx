@@ -95,6 +95,10 @@ module Engine
       num_shares_of(self)
     end
 
+    def reserved_shares
+      shares_by_corporation[self].reject(&:buyable)
+    end
+
     def num_player_shares
       player_share_holders.values.sum / total_shares
     end

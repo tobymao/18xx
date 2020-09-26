@@ -16,6 +16,8 @@ module Engine
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MEX'
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
+      IPO_RESERVED_NAME = 'Trade-in shares'
+
       STANDARD_GREEN_CITY_TILES = %w[14 15 619].freeze
       CURVED_YELLOW_CITY = %w[5 6].freeze
 
@@ -48,8 +50,8 @@ module Engine
         @minor_b_reserved_share ||= ndm.shares[8]
       end
 
-      def ndm_merge_reserved_share
-        @ndm_merge_reserved_share ||= ndm.shares.last
+      def ndm_merge_share
+        @ndm_merge_share ||= ndm.shares.last
       end
 
       def udy
@@ -72,6 +74,15 @@ module Engine
         @minor_c ||= minor_by_id('C')
       end
 
+      # Set to 1 if no-one accepts NdM merge
+      def cert_limit_adjust
+        @cert_limit_adjust ||= 0
+      end
+
+      def cert_limit
+        super + cert_limit_adjust
+      end
+
       include CompanyPrice50To150Percent
       include Revenue4D
 
@@ -87,6 +98,15 @@ module Engine
           hex.tile.cities[0].place_token(minor, minor.next_token)
           minor.float!
         end
+
+        # TODO: Can neutral be removed? Move shares to market instead
+        # before deleting them.
+        @neutral = Corporation.new(
+          sym: 'N',
+          name: 'Neutral',
+          tokens: [],
+        )
+        @neutral.owner = @bank
 
         @brown_g_tile ||= @tiles.find { |t| t.name == '480' }
         @gray_tile ||= @tiles.find { |t| t.name == '455' }
@@ -104,21 +124,26 @@ module Engine
 
         # The last NdM 10% share is used for trade-in during NdM merge.
         # Before the NdM merge event it cannot be bought.
-        ndm_merge_reserved_share.buyable = false
+        ndm_merge_share.buyable = false
+
+        # Remember the price for the last token; exchange tokens have the same.
+        @ndm_exchange_token_price = ndm.tokens.last.price
       end
 
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
+          Step::G18MEX::Assign,
           Step::DiscardTrain,
           Step::BuyCompany,
           Step::HomeToken,
+          Step::G18MEX::Merge,
           Step::G18MEX::SpecialTrack,
           Step::G18MEX::Track,
           Step::Token,
           Step::Route,
           Step::G18MEX::Dividend,
-          Step::SingleDepotTrainBuy,
+          Step::G18MEX::SingleDepotTrainBuy,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
@@ -192,8 +217,147 @@ module Engine
       end
 
       def event_ndm_merger!
-        ndm_merge_reserved_share.buyable = true
-        @log << 'Now NdM should offer to merge other corporation. Not implemented yet!'
+        @log << "-- Event: #{ndm.name} merger --"
+        unless ndm.floated?
+          @log << "No merge occur as #{ndm.name} has not floated!"
+          return merge_major
+        end
+
+        @mergable_candidates = mergable_corporations
+        @log << "Merge candidates: #{@mergable_candidates.map(&:name)}" if @mergable_candidates.any?
+        possible_auto_merge
+      end
+
+      def decline_merge(major)
+        @log << "#{major.name} declines"
+        @mergable_candidates.delete(major)
+        possible_auto_merge
+      end
+
+      # Called to perform the merge. If called without any major, this means
+      # that there is noone that can or want to merge, which is handled here
+      # as well.
+      def merge_major(major = nil)
+        @mergable_candidates = []
+
+        # Make reserved share available
+        ndm_merge_share.buyable = true
+
+        unless major
+          # Rule 5i: no merge? increase cert limit, and remove extra tokens from NdM
+          @log << "-- #{ndm.name} does not merge - certificate limit increases by one --"
+          @cert_limit_adjust += 1
+          return
+        end
+
+        @log << "-- #{major.name} merges into #{ndm.name} --"
+
+        # Rule 5e: Any other shares are sold off for half market price
+        refund = major.ipoed ? (major.share_price.price / 2.0).ceil : 0
+        @players.each do |p|
+          refund_count = 0
+          p.shares_of(major).dup.each do |s|
+            next unless s
+
+            share_pool.move_share(s, @neutral)
+            if s.president
+              # Rule 5d: Give owner of presidency share (if any) the reserved share
+              # Might trigger presidency change in NdM
+              share_pool.buy_shares(major.shares[0].player, ndm_merge_share, exchange: :free, exchange_price: 0)
+            else
+              bank.spend(refund, p) if refund.positive?
+              refund_count += 1
+            end
+          end
+          if refund_count.positive?
+            @log << "#{p.name} receives #{format_currency(refund * refund_count)} in share compensation"
+          end
+        end
+
+        # Rule 5f: Handle tokens. NdM gets two exchange tokens If company merge has put out its home token,
+        # this will be swapped (for free) with the first exchange token. If company has tokened more,
+        # NdM president get to choose which one to keep, and this is swapped (for free) with the second
+        # exchange token, and the remaining tokens for the merged corporation is removed from the board.
+        # Any remaining exchange tokens will be added to the charter, and have a cost of $80.
+
+        (1..2).each do |_|
+          ndm.tokens << Engine::Token.new(ndm)
+          ndm.tokens.last.price = @ndm_exchange_token_price
+        end
+        exchange_tokens = [ndm.tokens[-2], ndm.tokens.last]
+
+        home_token = major.tokens.first
+        if major.floated? && home_token.city
+          ndm_replacement = exchange_tokens.first
+          home_token.city.remove_reservation!(major)
+          if ndm.tokens.find { |t| t.city == home_token.city }
+            @log << "#{major.name}'s home token is removed as #{ndm.name} already has a token there"
+            home_token.remove!
+          else
+            home_token.city.reservations { |r| @log << "Reservation #{r}" }
+            @log << "#{major.name}'s home token in #{home_token.city.hex.name} is replaced with an #{ndm.name} token"
+            home_token.swap!(ndm_replacement)
+            exchange_tokens.delete(ndm_replacement)
+          end
+        end
+        major.tokens.select(&:city).dup.each do |t|
+          if ndm.tokens.find { |n| n.city == t.city }
+            @log << "#{major.name}'s token in #{t.city.name} is removed as #{ndm.name} already has a token there"
+            t.remove!
+          end
+        end
+        remaining_tokens = major.tokens.select(&:city).dup
+        if remaining_tokens.size <= exchange_tokens.size
+          remaining_tokens.each do |t|
+            @log << "#{major.name}'s token in #{t.city.hex.name} is replaced with an #{ndm.name} token"
+            t.swap!(exchange_tokens.first)
+            exchange_tokens.delete(exchange_tokens.first)
+          end
+        else
+          @merged_cities_to_select = remaining_tokens
+        end
+
+        # Rule 5g: transfer money and trains
+        treasury = format_currency(major.cash).to_s
+        major.spend(major.cash, ndm) if major.cash.positive?
+        @log << "#{ndm.name} receives the treasury of #{treasury}" if major.cash.positive?
+        if major.trains.any?
+          trains_transfered = major.transfer(:trains, ndm).map(&:name)
+          @log << "#{ndm.name} receives the trains: #{trains_transfered}"
+        end
+
+        corporations.delete(major)
+        @round.entities.delete(major)
+      end
+
+      def buy_first_5_train(player)
+        @ndm_merge_trigger ||= player
+      end
+
+      def merge_decider
+        candidate = @mergable_candidates.first
+        candidate.floated? ? candidate : ndm
+      end
+
+      def mergable_candidates
+        @mergable_candidates ||= []
+      end
+
+      def merged_cities_to_select
+        @merged_cities_to_select ||= []
+      end
+
+      def select_ndm_city(target)
+        @merged_cities_to_select.each do |t|
+          if t.city.hex == target
+            @log << "#{t.corporation.name}'s token in #{t.city.hex.name} is replaced with an #{ndm.name} token"
+            t.swap!(ndm.tokens.last)
+          else
+            @log << "#{t.corporation.name}'s token is removed in #{t.city.hex.name}"
+            t.remove!
+          end
+        end
+        @merged_cities_to_select = []
       end
 
       def upgrades_to?(from, to, special = false)
@@ -273,6 +437,35 @@ module Engine
         end
 
         @minors.delete(minor)
+      end
+
+      def mergable_corporations
+        corporations = @corporations
+          .reject { |c| c.player == ndm.player }
+          .reject { |c| %w[PAC TM].include? c.name }
+        player_corps, other_corps = corporations.partition(&:owned_by_player?)
+
+        # Sort eligible corporations so that they are in player order
+        # starting with the player to the left of the one that bought the 5 train
+        index_for_trigger = @players.index(@ndm_merge_trigger)
+        order = Hash[@players.each_with_index.map { |p, i| i <= index_for_trigger ? [p, i + 10] : [p, i] }]
+        player_corps.sort_by! { |c| [order[c.player], @round.entities.index(c)] }
+
+        # If any non-floated corporation has not yet been ipoed
+        # then only non-ipoed corporations must be chosen
+        other_corps.reject!(&:ipoed) if other_corps.any? { |c| !c.ipoed }
+
+        # The players get the first choice, otherwise a non-floated corporation must be chosen
+        player_corps.concat(other_corps)
+      end
+
+      def possible_auto_merge
+        # Decline merge if no candidates left
+        return merge_major if @mergable_candidates.empty?
+
+        # Auto merge single if it is non-floated
+        candidate = @mergable_candidates.first
+        merge_major(candidate) if @mergable_candidates.one? && !candidate.floated?
       end
     end
   end
