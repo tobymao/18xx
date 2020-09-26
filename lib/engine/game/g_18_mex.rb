@@ -32,6 +32,42 @@ module Engine
         @p2_company ||= company_by_id('KCMO')
       end
 
+      def ndm
+        @ndm_corporation ||= corporation_by_id('NdM')
+      end
+
+      def minor_a_reserved_share
+        @minor_a_reserved_share ||= ndm.shares[7]
+      end
+
+      def minor_b_reserved_share
+        @minor_b_reserved_share ||= ndm.shares[8]
+      end
+
+      def ndm_merge_reserved_share
+        @ndm_merge_reserved_share ||= ndm.shares.last
+      end
+
+      def udy
+        @udy_corporation ||= corporation_by_id('UdY')
+      end
+
+      def minor_c_reserved_share
+        @minor_c_reserved_share ||= udy.shares.last
+      end
+
+      def minor_a
+        @minor_a ||= minor_by_id('A')
+      end
+
+      def minor_b
+        @minor_b ||= minor_by_id('B')
+      end
+
+      def minor_c
+        @minor_c ||= minor_by_id('C')
+      end
+
       include CompanyPrice50To150Percent
       include Revenue4D
 
@@ -49,6 +85,11 @@ module Engine
 
         @brown_g_tile ||= @tiles.find { |t| t.name == '480' }
         @gray_tile ||= @tiles.find { |t| t.name == '455' }
+
+        minor_a_reserved_share.buyable = false
+        minor_b_reserved_share.buyable = false
+        minor_c_reserved_share.buyable = false
+        ndm_merge_reserved_share.buyable = false
       end
 
       def operating_round(round_num)
@@ -87,10 +128,13 @@ module Engine
       end
 
       def event_minors_closed!
-        @log << 'Now minors should close. Not implemented yet!'
+        merge_minor(minor_a, ndm, minor_a_reserved_share)
+        merge_minor(minor_b, ndm, minor_b_reserved_share)
+        merge_minor(minor_c, udy, minor_c_reserved_share)
       end
 
       def event_ndm_merger!
+        ndm_merge_reserved_share.buyable = true
         @log << 'Now NdM should offer to merge other corporation. Not implemented yet!'
       end
 
@@ -126,6 +170,36 @@ module Engine
         return super if entity.minor?
 
         [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+      end
+
+      private
+
+      def merge_minor(minor, major, share)
+        treasury = format_currency(minor.cash).to_s
+        @log << "-- Minor #{minor.name} merges into #{major.name} who receives the treasury of #{treasury} --"
+
+        share.buyable = true
+        share_pool.buy_shares(minor.player, share, exchange: :free, exchange_price: 0)
+
+        hexes.each do |hex|
+          hex.tile.cities.each do |city|
+            if city.tokened_by?(minor)
+              city.tokens.map! { |token| token&.corporation == minor ? nil : token }
+              city.reservations.delete(minor)
+            end
+          end
+        end
+
+        minor.spend(minor.cash, major)
+        hexes.each do |hex|
+          hex.tile.cities.each do |city|
+            if city.tokened_by?(minor)
+              city.tokens.map! { |token| token&.corporation == minor ? nil : token }
+            end
+          end
+        end
+
+        @minors.delete(minor)
       end
     end
   end
