@@ -35,6 +35,8 @@ module Engine
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
+
+      MUST_BID_INCREMENT_MULTIPLE = true
       SEED_MONEY = 200
       MUST_BUY_TRAIN = :never
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying

@@ -26,6 +26,7 @@ module Engine
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Chesapeake'
 
+      MUST_BID_INCREMENT_MULTIPLE = true
       SELL_BUY_ORDER = :sell_buy
 
       def init_share_pool

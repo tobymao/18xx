@@ -88,6 +88,8 @@ module Engine
 
       MIN_BID_INCREMENT = 5
 
+      MUST_BID_INCREMENT_MULTIPLE = false
+
       CAPITALIZATION = :full
 
       MUST_SELL_IN_BLOCKS = false
