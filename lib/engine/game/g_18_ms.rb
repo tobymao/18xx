@@ -11,7 +11,7 @@ module Engine
 
       load_from_json(Config::Game::G18MS::JSON)
 
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
 
       GAME_LOCATION = 'Mississippi, USA'
       GAME_RULES_URL = 'https://boardgamegeek.com/thread/2461999/article/35755723#35755723'
