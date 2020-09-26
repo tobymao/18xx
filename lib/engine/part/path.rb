@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative '../track_resource'
 
 module Engine
   module Part
@@ -127,6 +128,11 @@ module Engine
         else
           "<#{name}: hex: #{hex&.name}, exit: #{exits}, lanes: #{@lanes.first} #{@lanes.last}>"
         end
+      end
+
+      def track_resources_used
+        # TBD: include lane when appropriate
+        [@a, @b].select(&:edge?).map { |p| TrackResource.new(hex, p.num) }
       end
 
       private

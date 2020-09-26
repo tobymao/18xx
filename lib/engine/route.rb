@@ -152,8 +152,8 @@ module Engine
     end
 
     def check_overlap!
-      @routes.flat_map(&:paths).group_by(&:itself).each do |k, v|
-        @game.game_error("Route cannot use same path twice #{k.inspect}") if v.size > 1
+      @routes.flat_map { |r| r&.paths&.flat_map(&:track_resources_used) }.group_by(&:itself).each do |k, v|
+        @game.game_error("Route cannot reuse track on #{k.name}") if v.size > 1
       end
     end
 
