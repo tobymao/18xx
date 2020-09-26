@@ -131,8 +131,7 @@ module Engine
       end
 
       def track_resources_used
-        # TBD: include lane when appropriate
-        [@a, @b].select(&:edge?).map { |p| TrackResource.new(hex, p.num) }
+        [@a, @b].select(&:edge?).map { |p| TrackResource.new(hex, p.num, @lanes[p == @a ? 0 : 1][1]) }
       end
 
       private
