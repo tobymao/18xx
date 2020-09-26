@@ -35,8 +35,18 @@ module View
             !action.free? &&
             participant &&
             !@game.active_players.map(&:name).include?(@user['name']) &&
-            !Lib::Storage[@game.id]&.dig('master_mode')
+            !Lib::Storage[@game.id]&.dig('master_mode') &&
+            !out_of_turn_allowed?(action)
           return store(:flash_opts, 'Not your turn. Turn on master mode in the tools tab to act for others.')
+        end
+
+        if !hotseat &&
+          !action.free? &&
+          participant &&
+          @game.active_players.map(&:name).include?(@user['name']) &&
+          !Lib::Storage[@game.id]&.dig('master_mode') &&
+          action_on_other_owner_property?(action)
+          return store(:flash_opts, 'Not your company. Turn on master mode in the tools tab to act for owner.')
         end
 
         game = @game.process_action(action)
@@ -85,6 +95,24 @@ module View
       def clear_ui_state
         store(:selected_company, nil, skip: true)
         store(:tile_selector, nil, skip: true)
+      end
+
+      private
+
+      def out_of_turn_allowed?(action)
+        entity = action.entity
+        entity.company? && entity.owner.name == @user['name']
+      end
+
+      def action_on_other_owner_property?(action)
+        entity = action.entity
+        return false unless entity.company?
+
+        if entity.owner.player?
+          entity.owner.name != @user['name']
+        else
+          entity.owner != @game.active_step.current_entity
+        end
       end
     end
   end
