@@ -7,7 +7,7 @@ module Engine
   class Share
     include Ownable
 
-    attr_accessor :percent
+    attr_accessor :percent, :buyable
     attr_reader :corporation, :president
 
     def initialize(corporation, owner: nil, president: false, percent: 10, index: 0)
@@ -16,6 +16,7 @@ module Engine
       @percent = percent
       @owner = owner || corporation
       @index = index
+      @buyable = true
     end
 
     def id
