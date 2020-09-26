@@ -45,6 +45,15 @@ module Engine
         ], round_num: round_num)
       end
 
+      def stock_round
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::Exchange,
+          Step::G1889::SpecialTrack,
+          Step::BuySellParShares,
+        ])
+      end
+
       def active_players
         return super if @finished
 
