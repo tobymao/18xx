@@ -801,7 +801,7 @@ module Engine
       end
 
       def buying_power(entity)
-        entity.cash + (issuable_shares(entity).map(&:share_price).max || 0)
+        entity.cash + (issuable_shares(entity).map(&:price).max || 0)
       end
 
       private
