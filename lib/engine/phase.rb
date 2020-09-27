@@ -126,8 +126,8 @@ module Engine
     private
 
     def train_limit_increase(entity)
-      ability = entity.abilities(:train_limit)
-      ability.any? ? ability.first.increase : 0
+      entity.abilities(:train_limit) { |ability| return ability.increase }
+      0
     end
   end
 end
