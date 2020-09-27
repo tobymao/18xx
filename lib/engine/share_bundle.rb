@@ -56,6 +56,10 @@ module Engine
       self
     end
 
+    def buyable
+      @shares.all?(&:buyable)
+    end
+
     def ==(other)
       [shares, percent, share_price] == [other.shares, other.percent, other.share_price]
     end
