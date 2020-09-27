@@ -18,6 +18,8 @@ module View
         needs :dash, default: '0'
 
         CROSSOVER_GAP = 3
+        STRAIGHT_CROSSOVER = '1 55 63 56'
+        GENTLE_CROSSOVER = '1 55 47 56'
 
         PARALLEL_SPACING = [8, 6, 4].freeze
 
@@ -262,9 +264,9 @@ module View
             lanes = @path.lanes
 
             if @tile.crossover? && @path.straight?
-              @crossover_dash = '1 55 63 56'
+              @crossover_dash = STRAIGHT_CROSSOVER
             elsif @tile.crossover? && @path.gentle_curve?
-              @crossover_dash = '1 55 47 56'
+              @crossover_dash = GENTLE_CROSSOVER
             end
 
           elsif @num_exits == 1
@@ -293,11 +295,12 @@ module View
             lanes = @path.lanes
             lanes.reverse! if @path.b.edge?
 
-            if @tile.crossover? && @path.straight?(@ct_edge0)
-              @crossover_dash = '1 55 63 56'
-            elsif @tile.crossover? && @path.gentle_curve?(@ct_edge0)
-              @crossover_dash = '1 55 47 56'
+            if @tile.crossover? && @path.straight?
+              @crossover_dash = STRAIGHT_CROSSOVER
+            elsif @tile.crossover? && @path.gentle_curve?
+              @crossover_dash = GENTLE_CROSSOVER
             end
+
           else
             # city/town - city/town
             @ct_edge0 = @tile.preferred_city_town_edges[@stop0] if @stop0
@@ -428,17 +431,15 @@ module View
             'stroke-dasharray': @dash,
           ) if @terminal
 
-          children = []
-          children.append(h(:path, props))
+          children = [h(:path, props)]
           if @crossover_dash
-            intersect_props = props.dup
-            intersect_props[:attrs].merge!(
+            props[:attrs].merge!(
               stroke: setting_for(@tile.color),
               'stroke-width': @width + CROSSOVER_GAP * 2,
               'stroke-dasharray': @crossover_dash,
               'stroke-dashoffset': 1,
             )
-            children.prepend(h(:path, intersect_props))
+            children.prepend(h(:path, props))
           end
           children
         end

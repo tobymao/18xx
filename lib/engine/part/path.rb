@@ -104,9 +104,7 @@ module Engine
       end
 
       def terminal?
-        return @_terminal if defined?(@_terminal)
-
-        @_terminal = !!@terminal
+        !!@terminal
       end
 
       def single?
@@ -119,32 +117,23 @@ module Engine
         @exits ||= @edges.map(&:num)
       end
 
-      def straight?(ct = nil)
+      def straight?
         return @_straight if defined?(@_straight)
 
-        @_straight = if @a.edge? && @b.edge?
-                       (@a.num - @b.num).abs == 3
-                     elsif @a.edge? && ct
-                       (@a.num - ct).abs == 3
-                     elsif @b.edge? && ct
-                       (@b.num - ct).abs == 3
-                     else
-                       false
-                     end
+        ct_edge = @tile.preferred_city_town_edges[@nodes.first] if @nodes.one?
+        a_num = @a.edge? ? @a.num : ct_edge
+        b_num = @b.edge? ? @b.num : ct_edge
+
+        @_straight = a_num && b_num && (a_num - b_num).abs == 3
       end
 
-      def gentle_curve?(ct = nil)
+      def gentle_curve?
         return @_gentle_curve if defined?(@_gentle_curve)
 
-        @_gentle_curve = if @a.edge? && @b.edge?
-                           (((d = (@a.num - @b.num).abs) == 2) || d == 4)
-                         elsif @a.edge? && ct
-                           (((d = (@a.num - ct).abs) == 2) || d == 4 || d == 2.5 || d == 3.5)
-                         elsif @b.edge? && ct
-                           (((d = (@b.num - ct).abs) == 2) || d == 4 || d == 2.5 || d == 3.5)
-                         else
-                           false
-                         end
+        ct_edge = @tile.preferred_city_town_edges[@nodes.first] if @nodes.one?
+        a_num = @a.edge? ? @a.num : ct_edge
+        b_num = @b.edge? ? @b.num : ct_edge
+        @_gentle_curve = a_num && b_num && (((d = (a_num - b_num).abs) == 2) || d == 4 || d == 2.5 || d == 3.5)
       end
 
       def rotate(ticks)
