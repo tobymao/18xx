@@ -908,6 +908,8 @@ module Engine
         self.class::HEXES.map do |color, hexes|
           hexes.map do |coords, tile_string|
             coords.map.with_index do |coord, index|
+              next Hex.new(coord, layout: layout, axes: axes, empty_placeholder: true) if color == :empty
+
               tile =
                 begin
                   Tile.for(tile_string, preprinted: true, index: index)

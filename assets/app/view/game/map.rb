@@ -132,7 +132,7 @@ module View
           [(@cols.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP,
            (@rows.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP]
         else
-          [(@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP,
+          [((@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) + 1,
            (@rows.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP]
         end
       end

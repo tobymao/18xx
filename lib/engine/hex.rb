@@ -64,7 +64,8 @@ module Engine
     # Coordinates are of the form A1..Z99
     # x and y map to the double coordinate system
     # layout is :pointy or :flat
-    def initialize(coordinates, layout: nil, axes: nil, tile: Tile.for('blank'), location_name: nil)
+    def initialize(coordinates, layout: nil, axes: nil, tile: Tile.for('blank'),
+                   location_name: nil, empty_placeholder: false)
       @coordinates = coordinates
       @layout = layout
       @x, @y = self.class.init_x_y(@coordinates, axes)
@@ -75,6 +76,7 @@ module Engine
       @original_tile = @tile = tile
       @tile.hex = self
       @activations = []
+      @empty_placeholder = empty_placeholder
     end
 
     def id
@@ -217,6 +219,10 @@ module Engine
 
     def inspect
       "<#{self.class.name}: #{name}, tile: #{@tile.name}>"
+    end
+
+    def empty_placeholder?
+      @empty_placeholder
     end
   end
 end
