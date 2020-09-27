@@ -311,7 +311,8 @@ module Engine
           "type": "share",
           "share": "random_share",
           "corporations": [
-            "CNR",
+            "CNoR",
+
             "CPR",
             "GT",
             "HBR",
@@ -361,9 +362,9 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "CNR",
+      "sym": "CNoR",
       "name": "Canadian Northern",
-      "logo": "1882/CNR",
+      "logo": "1882/CNoR",
       "tokens": [
         0,
         40,
