@@ -514,7 +514,7 @@ module Engine
         '988' => 'city=revenue:50,slots:3;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
         '989' => 'city=revenue:70,slots:3;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
         '990' => 'city=revenue:100,slots:3;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow;label=B',
-        '1167' => 'city=revenue:70;city=revenue:70;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;path=a:4,b:_0;path=a:5,b:_1',
+        '1167' => 'city=revenue:70,loc:0;city=revenue:70,loc:3;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;path=a:4,b:_0;path=a:5,b:_1',
         '1168' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
       }.freeze
 

@@ -360,6 +360,43 @@ module Engine
       ct_edges
     end
 
+    # this is invariant over rotations
+    def crossover?
+      return @_crossover if defined?(@_crossover)
+
+      @_crossover = compute_crossover
+    end
+
+    def compute_crossover
+      edge_paths = Hash.new { |h, k| h[k] = [] }
+      @paths.each do |p|
+        edge_paths[p.a.num].append(p) if p.a.edge?
+        edge_paths[p.b.num].append(p) if p.b.edge?
+        next unless p.nodes.size == 1
+
+        ct_edge = preferred_city_town_edges[p.nodes.first]
+        p.straight?(ct_edge)
+        p.gentle_curve?(ct_edge)
+      end
+
+      @paths.each do |p|
+        next if p.nodes.size > 2
+
+        ct_edge = preferred_city_town_edges[p.nodes.first] if p.node?
+        a_num = p.a.edge? ? p.a.num : ct_edge
+        b_num = p.b.edge? ? p.b.num : ct_edge
+        if p.straight?
+          return true if edge_paths[(a_num + 1) % 6].any?(&:straight?)
+          return true if edge_paths[(a_num - 1) % 6].any?(&:straight?)
+        elsif p.gentle_curve?
+          low = [a_num, b_num].min
+          middle = (a_num - b_num).abs == 2 ? (low + 1) % 6 : (low - 1) % 6
+          return true if edge_paths[middle].any? { |ep| ep.straight? || ep.gentle_curve? }
+        end
+      end
+      false
+    end
+
     def revenue_to_render
       @revenue_to_render ||= @stops.map(&:revenue_to_render)
     end

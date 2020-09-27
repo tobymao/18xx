@@ -98,19 +98,53 @@ module Engine
       end
 
       def node?
-        @_node ||= @nodes.any?
+        return @_node if defined?(@_node)
+
+        @_node = @nodes.any?
       end
 
       def terminal?
-        @_terminal ||= !!@terminal
+        return @_terminal if defined?(@_terminal)
+
+        @_terminal = !!@terminal
       end
 
       def single?
-        @_single ||= @lanes.first[0] == 1 && @lanes.last[0] == 1
+        return @_single if defined?(@_single)
+
+        @_single = @lanes.first[0] == 1 && @lanes.last[0] == 1
       end
 
       def exits
         @exits ||= @edges.map(&:num)
+      end
+
+      def straight?(ct = nil)
+        return @_straight if defined?(@_straight)
+
+        @_straight = if @a.edge? && @b.edge?
+                       (@a.num - @b.num).abs == 3
+                     elsif @a.edge? && ct
+                       (@a.num - ct).abs == 3
+                     elsif @b.edge? && ct
+                       (@b.num - ct).abs == 3
+                     else
+                       false
+                     end
+      end
+
+      def gentle_curve?(ct = nil)
+        return @_gentle_curve if defined?(@_gentle_curve)
+
+        @_gentle_curve = if @a.edge? && @b.edge?
+                           (((d = (@a.num - @b.num).abs) == 2) || d == 4)
+                         elsif @a.edge? && ct
+                           (((d = (@a.num - ct).abs) == 2) || d == 4 || d == 2.5 || d == 3.5)
+                         elsif @b.edge? && ct
+                           (((d = (@b.num - ct).abs) == 2) || d == 4 || d == 2.5 || d == 3.5)
+                         else
+                           false
+                         end
       end
 
       def rotate(ticks)
