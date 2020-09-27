@@ -16,6 +16,7 @@ module Engine
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
       STANDARD_GREEN_CITY_TILES = %w[14 15 619].freeze
+      CURVED_YELLOW_CITY = %w[5 6].freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'minors_closed' => ['Minors closed', 'Minors closed, NdM available'],
@@ -85,6 +86,7 @@ module Engine
 
         @brown_g_tile ||= @tiles.find { |t| t.name == '480' }
         @gray_tile ||= @tiles.find { |t| t.name == '455' }
+        @green_l_tile ||= @tiles.find { |t| t.name == '475' }
 
         minor_a_reserved_share.buyable = false
         minor_b_reserved_share.buyable = false
@@ -145,6 +147,7 @@ module Engine
         # Guadalajara (O8) can only be upgraded to #480 in brown, and #455 in gray
         return to.name == '480' if from.color == :green && from.hex.name == 'O8'
         return to.name == '455' if from.color == :brown && from.hex.name == 'O8'
+        return to.name == '475' if from.color == :yellow && from.hex.name == 'I4'
 
         super
       end
@@ -160,8 +163,11 @@ module Engine
         # Tile manifest for standard green cities should show G tile as an option
         upgrades |= [@brown_g_tile] if @brown_g_tile && STANDARD_GREEN_CITY_TILES.include?(tile.name)
 
-        # Tile manifest for Guadalajara brown (the G tile) should gray tile as an option
+        # Tile manifest for Guadalajara brown (the G tile) should show gray tile as an option
         upgrades |= [@gray_tile] if @gray_tile && tile.name == '480'
+
+        # Tile manifest for standard yellow cities with curve should show Los Mochos green tile as an option
+        upgrades |= [@green_l_tile] if @green_l_tile && CURVED_YELLOW_CITY.include?(tile.name)
 
         upgrades
       end
