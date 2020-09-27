@@ -191,13 +191,7 @@ module View
                 width: '3rem',
                 padding: '0 0 0 0.2rem',
               },
-              attrs: {
-                type: 'number',
-                min: 1,
-                max: @corporation.cash,
-                value: 1,
-                size: @corporation.cash.to_s.size,
-              },
+              attrs: price_range(group[0]),
             )
 
             buy_train = lambda do
@@ -241,6 +235,27 @@ module View
                              'Hide trains from other players')
         end
         trains_to_buy
+      end
+
+      def price_range(train)
+        step = @game.round.active_step
+        if step.face_value?(train.owner) || step.face_value?(@corporation)
+          {
+            type: 'number',
+            min: train.price,
+            max: train.price,
+            value: train.price,
+            size: 1,
+          }
+        else
+          {
+            type: 'number',
+            min: 1,
+            max: @corporation.cash,
+            value: 1,
+            size: @corporation.cash.to_s.size,
+          }
+        end
       end
 
       def remaining_trains

@@ -160,6 +160,13 @@ normal tile lay actions.
   controlling corporation's station tokens are reachable; if not a game
   error is triggered. Default false.
 
+## train_buy
+
+Modify train buy in some way.
+
+- `face_value`: If true, any inter corporation train buy must be at
+  face value. Default false.
+
 ## train_limit
 
 Modify train limit in some way.
