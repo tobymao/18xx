@@ -126,7 +126,7 @@ module Engine
             income = ability.income * terrain.find_all { |t| t == ability.terrain }.size
             @game.bank.spend(income, company.owner)
             @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
-              " for #{ability.terrain} tile with #{company.name}"
+              " for the #{ability.terrain} tile built by #{company.name}"
           end
         end
       end
