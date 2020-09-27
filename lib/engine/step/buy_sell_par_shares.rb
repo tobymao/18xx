@@ -78,6 +78,7 @@ module Engine
       # Some 18xx games can only buy one share per turn.
       def can_buy?(entity, bundle)
         return unless bundle
+        return unless bundle.buyable
 
         corporation = bundle.corporation
         entity.cash >= bundle.price && can_gain?(entity, bundle) &&

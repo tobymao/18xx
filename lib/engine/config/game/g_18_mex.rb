@@ -418,6 +418,7 @@ module Engine
          "sym":"NdM",
          "name":"National Railways of Mexico",
          "logo":"18_mex/NdM",
+         "shares":[20, 10, 10, 10, 10, 10, 10, 5, 5, 10],
          "tokens":[
             0,
             40,
