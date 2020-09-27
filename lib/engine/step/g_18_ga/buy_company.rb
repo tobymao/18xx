@@ -12,7 +12,7 @@ module Engine
           return unless action.company.sym == 'OSR'
 
           owner = action.company.owner
-          return if owner.player? || owner.trains.size == @game.phase.train_limit || @game.phase.available?('4')
+          return if owner.player? || owner.trains.size == @game.phase.train_limit(owner) || @game.phase.available?('4')
 
           @game.add_free_two_train(owner)
         end

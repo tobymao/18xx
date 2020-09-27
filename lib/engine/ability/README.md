@@ -160,6 +160,13 @@ normal tile lay actions.
   controlling corporation's station tokens are reachable; if not a game
   error is triggered. Default false.
 
+## train_limit
+
+Modify train limit in some way.
+
+- `increase`: If positive, this will increase the train limit with this
+  amount in all faces. Default 0.
+
 ## token
 
 Modified station token placement

@@ -426,6 +426,13 @@ module Engine
             0,
             0
          ],
+         "abilities": [
+            {
+               "type": "train_limit",
+               "description": "+1 train limit",
+               "increase": 1
+            }
+         ],
          "coordinates":"O10",
          "color":"green"
       },

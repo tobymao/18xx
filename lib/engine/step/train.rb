@@ -18,7 +18,7 @@ module Engine
       end
 
       def room?(entity)
-        entity.trains.reject(&:obsolete).size < @game.phase.train_limit
+        entity.trains.reject(&:obsolete).size < @game.phase.train_limit(entity)
       end
 
       def must_buy_train?(entity)
