@@ -371,7 +371,7 @@ module View
 
           if begin_lane[0] > 1
             begin_shift = (begin_lane[1] * 2 - begin_lane[0] + 1) *
-                          (@width + PARALLEL_SPACING[begin_lane[0] - 2]) / 2.0
+                          (@width.to_i + PARALLEL_SPACING[begin_lane[0] - 2]) / 2.0
             begin_delta_x = (begin_shift * Math.cos(begin_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
             begin_delta_y = (begin_shift * Math.sin(begin_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
 
@@ -382,7 +382,7 @@ module View
           return unless end_lane[0] > 1
 
           end_shift = (end_lane[1] * 2 - end_lane[0] + 1) *
-                      (@width + PARALLEL_SPACING[end_lane[0] - 2]) / 2.0
+                      (@width.to_i + PARALLEL_SPACING[end_lane[0] - 2]) / 2.0
           end_delta_x = (end_shift * Math.cos(end_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
           end_delta_y = (end_shift * Math.sin(end_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
 
