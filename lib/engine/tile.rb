@@ -369,12 +369,11 @@ module Engine
 
     def compute_crossover
       edge_paths = Hash.new { |h, k| h[k] = [] }
+
       paths.each do |p|
         edge_paths[p.a.num] << p if p.a.edge?
         edge_paths[p.b.num] << p if p.b.edge?
-      end
 
-      paths.each do |p|
         next if p.nodes.size > 1
 
         ct_edge = preferred_city_town_edges[p.nodes.first] if p.nodes.one?
@@ -390,6 +389,7 @@ module Engine
           return true if edge_paths[middle].any? { |ep| ep.straight? || ep.gentle_curve? }
         end
       end
+
       false
     end
 
