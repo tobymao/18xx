@@ -34,8 +34,9 @@ module View
             left << h(BuyTrains)
           elsif @current_actions.include?('sell_shares') && entity.player?
             left << h(CashCrisis)
+          elsif @current_actions.include?('buy_shares') || @current_actions.include?('sell_shares')
+            left << h(IssueShares)
           end
-          left << h(IssueShares) if @current_actions.include?('buy_shares')
           left << h(Loans, corporation: entity) if (%w[take_loan payoff_loan] & @current_actions).any?
 
           if entity.player?
