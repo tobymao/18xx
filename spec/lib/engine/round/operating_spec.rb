@@ -831,6 +831,169 @@ module Engine
         end
       end
 
+      describe 'issue_shares action' do
+        let(:tile) { game.hex_by_id('G19').tile }
+        let(:city) { tile.cities.first }
+
+        before :each do
+          corporation.cash = 0
+        end
+
+        it 'is an available until buy train step' do
+          corporation.buy_train(game.trains.first, :free)
+          city.place_token(corporation, corporation.tokens.first, free: true)
+          next_round!
+
+          expect(subject.actions_for(corporation)).to include('sell_shares')
+          expect(game.issuable_shares(corporation).size).to eq(2)
+
+          # Pass on tile lay and place token step
+          subject.process_action(Action::Pass.new(corporation))
+
+          expect(subject.actions_for(corporation)).to include('sell_shares')
+
+          # Run route sstep
+          action = game.action_from_h('type' => 'run_routes',
+                                      'entity' => 'B&O',
+                                      'entity_type' => 'corporation',
+                                      'routes' => [{ 'train' => '2-0', 'connections' => [%w[H20 G19]] }])
+          subject.process_action(action)
+
+          expect(subject.actions_for(corporation)).to include('sell_shares')
+
+          # Dividend step
+          subject.process_action(Action::Dividend.new(corporation, kind: 'payout'))
+
+          corporation.cash += 80
+          expect(subject.actions_for(corporation)).not_to include('sell_shares')
+
+          # Pass on buy train step
+          subject.process_action(Action::Pass.new(corporation))
+
+          expect(subject.actions_for(corporation)).not_to include('sell_shares')
+        end
+
+        it 'provides the correct amount of cash' do
+          step = subject.step_for(corporation, 'sell_shares')
+          expect(step.issuable_shares(corporation)[0].price).to eq(137)
+          expect(step.issuable_shares(corporation)[1].price).to eq(274)
+
+          action = Action::SellShares.new(corporation, shares: corporation.shares[1], share_price: 135, percent: 10)
+          subject.process_action(action)
+
+          expect(corporation.cash).to eq(135)
+          expect(game.share_pool.num_shares_of(corporation)).to eq(1)
+          expect(corporation.num_shares_of(corporation)).to eq(7)
+        end
+
+        it 'is no longer available after issuing' do
+          action = Action::SellShares.new(corporation, shares: corporation.shares.first, share_price: 135, percent: 10)
+          subject.process_action(action)
+
+          expect(subject.actions_for(corporation)).not_to include('sell_shares')
+        end
+
+        it 'causes the track and token step to block when cash is 0' do
+          expect(subject.actions_for(corporation)).to include('lay_tile')
+          expect(subject.actions_for(corporation)).to include('place_token')
+        end
+
+        it 'is not available if no shares to issue' do
+          bundle = ShareBundle.new(corporation.shares.first(4))
+          game.share_pool.transfer_shares(bundle, game.players[0])
+
+          bundle = ShareBundle.new(corporation.shares)
+          game.share_pool.transfer_shares(bundle, game.players[1])
+
+          expect(subject.actions_for(corporation)).not_to include('sell_shares')
+        end
+
+        it 'is not available if no additional shares can be in the bank pool' do
+          bundle = ShareBundle.new(corporation.shares.first(2))
+          game.share_pool.transfer_shares(bundle, game.share_pool)
+
+          expect(subject.actions_for(corporation)).not_to include('sell_shares')
+        end
+      end
+
+      describe 'redeem_shares action' do
+        let(:tile) { game.hex_by_id('G19').tile }
+        let(:city) { tile.cities.first }
+
+        before :each do
+          corporation.cash = 330
+          bundle = ShareBundle.new(corporation.shares.first(2))
+          game.share_pool.transfer_shares(bundle, game.share_pool)
+        end
+
+        it 'is an available until buy train step' do
+          corporation.buy_train(game.trains.first, :free)
+          city.place_token(corporation, corporation.tokens.first, free: true)
+          next_round!
+
+          expect(subject.actions_for(corporation)).to include('buy_shares')
+          expect(game.redeemable_shares(corporation).size).to eq(2)
+
+          # Pass on tile lay and place token step
+          subject.process_action(Action::Pass.new(corporation))
+
+          expect(subject.actions_for(corporation)).to include('buy_shares')
+
+          # Run route sstep
+          action = game.action_from_h('type' => 'run_routes',
+                                      'entity' => 'B&O',
+                                      'entity_type' => 'corporation',
+                                      'routes' => [{ 'train' => '2-0', 'connections' => [%w[H20 G19]] }])
+          subject.process_action(action)
+
+          expect(subject.actions_for(corporation)).to include('buy_shares')
+
+          # Dividend step
+          subject.process_action(Action::Dividend.new(corporation, kind: 'payout'))
+
+          corporation.cash += 80
+          expect(subject.actions_for(corporation)).not_to include('buy_shares')
+
+          # Pass on buy train step
+          subject.process_action(Action::Pass.new(corporation))
+
+          expect(subject.actions_for(corporation)).not_to include('buy_shares')
+        end
+
+        it 'costs the correct amount of cash' do
+          step = subject.step_for(corporation, 'buy_shares')
+          expect(step.redeemable_shares(corporation).map(&:price)).to include(165, 330)
+
+          action = Action::BuyShares.new(corporation,
+                                         shares: game.share_pool.shares_of(corporation).first,
+                                         share_price: 165,
+                                         percent: 10)
+          subject.process_action(action)
+
+          expect(corporation.cash).to eq(165)
+          expect(game.share_pool.num_shares_of(corporation)).to eq(1)
+          expect(corporation.num_shares_of(corporation)).to eq(7)
+        end
+
+        it 'is no longer available after redeeming' do
+          action = Action::BuyShares.new(corporation,
+                                         shares: game.share_pool.shares_of(corporation).first,
+                                         share_price: 165,
+                                         percent: 10)
+          subject.process_action(action)
+
+          expect(subject.actions_for(corporation)).not_to include('buy_shares')
+        end
+
+        it 'is not available if no shares to redeem' do
+          bundle = ShareBundle.new(game.share_pool.shares_of(corporation))
+          game.share_pool.transfer_shares(bundle, corporation)
+
+          expect(subject.actions_for(corporation)).not_to include('buy_shares')
+          expect(game.redeemable_shares(corporation).size).to eq(0)
+        end
+      end
+
       describe 'buy_train' do
         before :each do
           goto_train_step!
