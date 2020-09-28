@@ -152,14 +152,19 @@ module Engine
     end
 
     def check_overlap!
-      track_resources = @routes.flat_map do |route|
-        route.paths.flat_map do |path|
-          [path.a, path.b].select(&:edge?).map do |part|
-            [path.hex, part.num, path.lanes[part == path.a ? 0 : 1][1]]
-          end
+      tracks = []
+
+      @routes.each do |route|
+        route.paths.each do |path|
+          a = path.a
+          b = path.b
+
+          tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
+          tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
         end
       end
-      track_resources.group_by(&:itself).each do |k, v|
+
+      tracks.group_by(&:itself).each do |k, v|
         @game.game_error("Route cannot reuse track on #{k[0].id}") if v.size > 1
       end
     end
