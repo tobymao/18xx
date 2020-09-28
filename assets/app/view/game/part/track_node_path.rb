@@ -435,7 +435,7 @@ module View
           if @crossover_dash
             props[:attrs].merge!(
               stroke: setting_for(@tile.color),
-              'stroke-width': @width + CROSSOVER_GAP * 2,
+              'stroke-width': @width.to_i + CROSSOVER_GAP * 2,
               'stroke-dasharray': @crossover_dash,
               'stroke-dashoffset': 1,
             )
