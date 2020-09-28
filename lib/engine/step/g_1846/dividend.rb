@@ -43,7 +43,7 @@ module Engine
         def pass!
           super
 
-          @round.steps.find { |s| s.class == Step::G1846::IssueShares }.dividend_step_passes
+          @round.steps.find { |s| s.is_a?(Step::G1846::IssueShares) }.dividend_step_passes
         end
       end
     end
