@@ -4,7 +4,7 @@ require_relative 'action/buy_train'
 
 module Engine
   class Phase
-    attr_reader :name, :operating_rounds, :train_limit, :tiles, :phases, :status
+    attr_reader :name, :operating_rounds, :tiles, :phases, :status
 
     def initialize(phases, game)
       @index = 0
@@ -29,6 +29,10 @@ module Engine
 
     def current
       @phases[@index]
+    end
+
+    def train_limit(entity)
+      @train_limit + train_limit_increase(entity)
     end
 
     def available?(phase_name)
@@ -117,6 +121,13 @@ module Engine
     def next!
       @index += 1
       setup_phase!
+    end
+
+    private
+
+    def train_limit_increase(entity)
+      entity.abilities(:train_limit) { |ability| return ability.increase }
+      0
     end
   end
 end
