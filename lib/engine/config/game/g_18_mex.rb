@@ -47,7 +47,7 @@ module Engine
       "M10":"Querétaro",
       "M12":"Tampico",
       "O8":"Guadalajara",
-      "O10":"Mexico City & Toluca",
+      "O10":"Mexico City",
       "P7":"Puerto Vallarta",
       "P11":"Puebla",
       "P13":"Veracruz",
