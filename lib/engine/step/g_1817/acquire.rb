@@ -15,6 +15,8 @@ module Engine
         def actions(entity)
           return %w[assign pass] if @offer
           return %w[bid pass] if @auctioning
+          return %w[take_loan pass] if can_take_loan?(entity)
+          return %w[payoff_loan pass] if can_payoff?(entity)
 
           actions = []
           actions << 'merge' if @winner&.entity == entity
@@ -24,6 +26,27 @@ module Engine
 
         def description
           'Acquire Corporations'
+        end
+
+        def pass_description
+          if @offer
+            'Pass (Offer for Sale)'
+          elsif @auctioning
+            'Pass (Bid)'
+          elsif @buyer && can_take_loan?(@buyer)
+            'Pass (Take Loan)'
+          elsif @buyer
+            'Pass (Repay Loan)'
+          end
+        end
+
+        def can_take_loan?(entity)
+          puts "take loans #{@passed_take_loans}"
+          entity == @buyer && @game.can_take_loan?(entity) && !@passed_take_loans
+        end
+
+        def can_payoff?(entity)
+          entity == @buyer && @unpaid_loans.positive? && @buyer.cash >= @game.loan_value && !@passed_payoff_loans
         end
 
         def active_entities
@@ -38,6 +61,8 @@ module Engine
               players = @game.players.rotate((@game.players.index(@auctioning.owner) + 1) % @game.players.size)
               [players.find { |p| @active_bidders.include?(p) }]
             end
+          elsif @buyer
+            [@buyer]
           elsif @winner
             [@winner.entity]
           end
@@ -46,7 +71,21 @@ module Engine
         def process_take_loan(action)
           corporation = action.entity
           @game.take_loan(corporation, action.loan)
-          purchase_tokens(corporation) unless @game.can_take_loan?(corporation)
+          acquire_post_loan unless can_take_loan?(corporation)
+        end
+
+        def process_payoff_loan(action)
+          entity = action.entity
+          loan = action.loan
+          amount = loan.amount
+          @log << "#{entity.name} pays off a loan for #{@game.format_currency(amount)}"
+          entity.spend(amount, @game.bank)
+
+          entity.loans.delete(loan)
+          @game.loans << loan
+          # The unpaid loans don't affect share price unless they're not paid off.
+          @unpaid_loans -= 1
+          acquire_post_loan unless can_payoff?(entity)
         end
 
         def process_pass(action)
@@ -55,6 +94,14 @@ module Engine
             @round.offering.delete(@offer)
             @offer = nil
             setup_auction
+          elsif @buyer && can_take_loan?(@buyer)
+            @passed_take_loans = true
+            @game.log << "#{@buyer.name} passes taking additional loans"
+            acquire_post_loan
+          elsif @buyer
+            @passed_payoff_loans = true
+            @game.log << "#{@buyer.name} passes paying off additional loans"
+            acquire_post_loan
           else
             pass_auction(action.entity)
           end
@@ -109,6 +156,7 @@ module Engine
         end
 
         def process_acquire(buyer)
+          @buyer = buyer
           acquired_corp = @winner.corporation
 
           if !buyer || !mergeable(acquired_corp).include?(buyer)
@@ -126,27 +174,20 @@ module Engine
             compensation = treasury_share_compensation(acquired_corp)
             @game.bank.spend(compensation, acquired_corp) if compensation.positive?
           end
-          # Step 6b, @todo convert station markers
 
-          # Step 7a, acquire stuff
-
-          # @todo: this needs to be able to force loan
-          @liquidation_cash += @winner.price if acquired_corp.share_price.liquidation?
-
+          # Step 6a, acquire assets
           if acquired_corp.cash.positive?
             receiving << @game.format_currency(acquired_corp.cash)
             acquired_corp.spend(acquired_corp.cash, buyer)
           end
-          buyer.spend(@winner.price, @game.bank)
-          shareholder_cash = @winner.price
-
+          @liquidation_cash += @winner.price if acquired_corp.share_price.liquidation?
+          @shareholder_cash = @winner.price
           companies = acquired_corp.transfer(:companies, buyer).map(&:name)
           receiving << "companies (#{companies.join(', ')})" if companies.any?
 
-          # @todo: what if loans cannot be held?
-          loans = acquired_corp.transfer(:loans, buyer).size
-          receiving << "loans (#{loans})" if loans.positive?
-          # @todo: unpaid loans affect stock price
+          @unpaid_loans = acquired_corp.transfer(:loans, buyer).size
+          receiving << "loans (#{@unpaid_loans})" if @unpaid_loans.positive?
+          # share price modification is delayed until after the player has passed paying off loans
 
           trains = acquired_corp.transfer(:trains, buyer).map(&:name)
           receiving << "trains (#{trains})" if trains.any?
@@ -159,16 +200,65 @@ module Engine
             new_token.city&.hex&.id
           end
           receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
-
           @game.log << "#{buyer.name} acquires #{acquired_corp.name} "\
             "receiving #{receiving.join(', ')}"
 
-          # @todo Step 7b, sort loans out
+          # Step 6b, @todo convert station markers
 
-          settle_president(acquired_corp, shareholder_cash)
+          # Step 7, take mandatory loans and pay for the bid
+          # Take mandatory loans automatically, then allow the player to take the optional loans if they can do.
+          @game.take_loan(buyer, @game.loans.first) while buyer.cash < @winner.price
+          buyer.spend(@winner.price, @game.bank)
+
+          # Step 7a, allow the player to take more loans if they desire.
+          @passed_take_loans = false
+          @passed_payoff_loans = false
+          acquire_post_loan
         end
 
-        def settle_president(acquired_corp, shareholder_cash)
+        def acquire_post_loan
+          # Wait until the player passes on taking loans or paying off.
+          return if can_take_loan?(@buyer)
+
+          # Automatically pay of loans a player must repay to get under the loan limit
+          acquired_corp = @winner.corporation
+          while @buyer.loans.size > @game.maximum_loans(@buyer)
+            # Note, these don't affect share price as they are the acquired corps loans.
+            loan = @buyer.loans.last
+            amount = loan.amount
+            @log << "#{@buyer.name} pays off #{acquired_corp.name} loan for #{@game.format_currency(amount)}"
+            @buyer.spend(amount, @game.bank)
+
+            @buyer.loans.delete(loan)
+            @game.loans << loan
+            @unpaid_loans -= 1
+          end
+
+          # Player now chooses to pay off remaining loans
+          if can_payoff?(@buyer)
+            @log << "#{acquired_corp.name} has #{@unpaid_loans} outstanding loan, " \
+            "if unpaid will reduce #{@buyer.name} share price"
+            return
+          end
+
+          # Step 7b, unpaid loans affect stock price and may mean a corporation falls into acquisition.
+          if @unpaid_loans.positive?
+            price = @buyer.share_price.price
+            @unpaid_loans.times do
+              @game.stock_market.move_left(@buyer)
+            end
+            @game.log_share_price(@buyer, price)
+            if @buyer.share_price.acquisition? && @round.offering.include?(@buyer)
+              # Can no longer be offered this round
+              @log << "#{@buyer.name} falls into acquisition and will not be offered for sale this round"
+              @round.offering.delete(@buyer)
+            end
+          end
+          
+          settle_president(@winner.corporation)
+        end
+
+        def settle_president(acquired_corp)
           # Step 8
           if acquired_corp.share_price.liquidation?
             president = acquired_corp.owner
@@ -179,20 +269,20 @@ module Engine
               president.spend(debt, @game.bank, check_cash: false)
               @game.loans.concat(@liquidation_loans)
               @liquidation_loans = []
-              shareholder_cash = 0
+              @shareholder_cash = 0
             else
-              shareholder_cash = @liquidation_cash
+              @shareholder_cash = @liquidation_cash
             end
           end
 
-          settle_shareholders(acquired_corp, shareholder_cash)
+          settle_shareholders(acquired_corp)
         end
 
-        def settle_shareholders(acquired_corp, shareholder_cash)
+        def settle_shareholders(acquired_corp)
           # Step 9
-          if shareholder_cash.positive?
+          if @shareholder_cash.positive?
             # @todo: how are shorts done?
-            per_share = (shareholder_cash / acquired_corp.total_shares).to_i
+            per_share = (@shareholder_cash / acquired_corp.total_shares).to_i
             payouts = {}
             @game.players.each do |player|
               amount = player.num_shares_of(acquired_corp) * per_share
@@ -206,7 +296,7 @@ module Engine
                           .sort_by { |_r, c| -c }
                           .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
 
-            @log << "#{acquired_corp.name} settles with shareholders #{@game.format_currency(shareholder_cash)} = "\
+            @log << "#{acquired_corp.name} settles with shareholders #{@game.format_currency(@shareholder_cash)} = "\
                             "#{@game.format_currency(per_share)} (#{receivers})"
           end
           finalize_acquisition(acquired_corp)
@@ -216,11 +306,13 @@ module Engine
           # Step 10
           @round.cash_crisis_player = acquired_corp.owner
           @game.reset_corporation(acquired_corp)
+          @shareholder_cash = 0
           return unless @winner
 
           # If not aquired by the bank
           @round.offering.delete(acquired_corp)
           @winner = nil
+          @buyer = nil
           setup_auction
         end
 
@@ -263,7 +355,13 @@ module Engine
         end
 
         def max_bid_for_corporation(corporation, acquired_corp)
-          corporation.cash + acquired_corp.cash + treasury_share_compensation(acquired_corp)
+          # Notionally pay off all the acquired corps loans, and then they can be taken again
+          loan_payoff = acquired_corp.loans.size * @game.loan_value
+
+          @game.buying_power(corporation) +
+          acquired_corp.cash +
+          treasury_share_compensation(acquired_corp) -
+          loan_payoff
         end
 
         def max_bid(player, corporation)
@@ -271,7 +369,7 @@ module Engine
 
           bid = corps.map { |c| max_bid_for_corporation(c, corporation) }.max || 0
           if corporation.owner == player
-            # If the company is owned then the bid can only be increased by 10
+            # If the corporation is owned then the bid can only be increased by 10
             [bid, min_bid(corporation)].min
           else
             bid

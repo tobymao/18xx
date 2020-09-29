@@ -30,7 +30,7 @@ module View
           end
 
           children << render_convert(entity) if actions.include?('convert')
-          children << render_loan(entity) if actions.include?('take_loan')
+          children << h(Loans, corporation: entity) if (%w[take_loan payoff_loan] & actions).any?
           children << render_offer(entity, auctioning_corporation) if actions.include?('assign')
 
           children << render_merge(entity, auctioning_corporation) if actions.include?('merge') && @selected_corporation
