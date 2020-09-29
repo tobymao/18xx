@@ -82,7 +82,12 @@ module Engine
 
         def buyable_trains(entity)
           trains = super
-          @last_share_issued_price ? trains.select(&:from_depot?) : trains
+
+          trains.select!(&:from_depot?) if @last_share_issued_price
+
+          trains.reject! { |t| t.owner.trains.one? } if @game.two_player? && @depot.empty?
+
+          trains
         end
 
         def buyable_train_variants(train, entity)

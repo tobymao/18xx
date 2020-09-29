@@ -36,6 +36,22 @@ module Engine
         'Player 3' => 0,
       },
     },
+    GAMES_BY_TITLE['1846 2p Variant'] => {
+      # * both players passing triggers 2 ORs in draft
+      # * on last company, passing discounts it by $10
+      # * owning 70%
+      # * issuing fix in commit a6df06d
+      # * game end on bankruptcy
+      'hs_rbefffgr_1600814502' => {
+        'Player 1' => 0,
+        'Player 2' => 973,
+      },
+      # game end after last train is purchased
+      'hs_giwlrwdn_1600825203' => {
+        'Player 1' => 5252,
+        'Player 2' => 5593,
+      },
+    },
     GAMES_BY_TITLE['18Chesapeake'] => {
       3055 => {
         'CullenF' => 4960,
@@ -149,11 +165,11 @@ module Engine
   }.freeze
 
   TEST_CASES.each do |game, results|
-    describe game do
+    describe game.title do
       results.each do |game_id, result|
         context game_id do
           it 'matches result exactly' do
-            game_path = game.title.gsub(/(.)([A-Z])/, '\1_\2').downcase
+            game_path = game.title.gsub(/ /, '_').gsub(/([^_])([A-Z])/, '\1_\2').downcase
             data = JSON.parse(File.read("spec/fixtures/#{game_path}/#{game_id}.json"))
             players = data['players'].map { |p| p['name'] }
             expect(game.new(players, id: game_id, actions: data['actions']).result).to eq(result)

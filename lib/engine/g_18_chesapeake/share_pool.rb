@@ -8,7 +8,7 @@ module Engine
     class SharePool < SharePool
       def buy_shares(entity, shares, exchange: nil, exchange_price: nil)
         return super unless shares
-        return super unless @game.players.size == 2
+        return super unless @game.two_player?
 
         bundle = shares.to_bundle
         corporation = bundle.corporation

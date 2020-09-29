@@ -79,7 +79,7 @@ module Engine
 
         def setup
           setup_auction
-          @companies = @game.companies.sort_by(&:min_bid)
+          @companies = @game.companies.dup
           @seed_money = @game.class::SEED_MONEY
         end
 

@@ -25,6 +25,7 @@ module Engine
     "5": 11
   },
   "startingCash": {
+    "2": 600,
     "3": 400,
     "4": 400,
     "5": 400
@@ -672,7 +673,6 @@ module Engine
           "price": 900
         }
       ],
-      "num": 9,
       "events": [
         {"type": "remove_tokens"}
       ]
@@ -840,7 +840,6 @@ module Engine
     },
     "blue": {
       "": [
-        "C19",
         "D16"
       ]
     }

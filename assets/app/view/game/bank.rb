@@ -42,7 +42,7 @@ module View
         }
 
         trs = []
-        if @game.class::GAME_END_CHECK.include?(:bank)
+        if @game.game_end_check_values.include?(:bank)
           trs << h(:tr, [
             h(:td, 'Cash'),
             h('td.right', @game.format_currency(@game.bank.cash)),

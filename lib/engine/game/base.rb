@@ -50,12 +50,14 @@ module Engine
       #   after: When game should end if check triggered
       # Leave out a reason if game does not support that.
       # Allowed reasons:
-      #  bankrupt, stock_market, bank
+      #  bankrupt, stock_market, bank, final_train
       # Allowed after:
       #  immediate - ends in current turn
       #  current_round - ends at the end of the current round
       #  current_or - ends at the next end of an OR
       #  full_or - ends at the next end of a complete OR set
+      #  one_more_full_or_set - finish the current OR set, then
+      #                         end after the next complete OR set
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
       BANKRUPTCY_ALLOWED = true
@@ -273,6 +275,7 @@ module Engine
       def initialize(names, id: 0, actions: [], pin: nil, strict: false)
         @id = id
         @turn = 1
+        @final_turn = nil
         @loading = false
         @strict = strict
         @finished = false
@@ -310,6 +313,7 @@ module Engine
         @tiles = init_tiles
         @all_tiles = init_tiles
         @cert_limit = init_cert_limit
+        @removals = []
 
         @depot = init_train_handler
         init_starting_cash(@players, @bank)
@@ -804,6 +808,10 @@ module Engine
         entity.cash + (issuable_shares(entity).map(&:price).max || 0)
       end
 
+      def two_player?
+        @two_player ||= @players.size == 2
+      end
+
       private
 
       def init_bank
@@ -869,6 +877,10 @@ module Engine
         0
       end
 
+      def corporation_opts
+        {}
+      end
+
       def init_corporations(stock_market)
         min_price = stock_market.par_prices.map(&:price).min
 
@@ -876,7 +888,7 @@ module Engine
           Corporation.new(
             min_price: min_price,
             capitalization: self.class::CAPITALIZATION,
-            **corporation,
+            **corporation.merge(corporation_opts),
           )
         end
       end
@@ -1045,16 +1057,24 @@ module Engine
           end
       end
 
+      def game_end_check_values
+        self.class::GAME_END_CHECK
+      end
+
       def game_end_check
         triggers = {
           bankrupt: bankruptcy_limit_reached?,
           bank: @bank.broken?,
           stock_market: @stock_market.max_reached?,
+          final_train: @depot.empty?,
         }.select { |_, t| t }
 
-        %i[immediate current_round current_or full_or].each do |after|
+        %i[immediate current_round current_or full_or one_more_full_or_set].each do |after|
           triggers.keys.each do |reason|
-            return reason, after if self.class::GAME_END_CHECK[reason] == after
+            if game_end_check_values[reason] == after
+              (@turn == (@final_turn ||= @turn + 1)) if after == :one_more_full_or_set
+              return [reason, after]
+            end
           end
         end
 
@@ -1068,7 +1088,11 @@ module Engine
         return false unless @round.is_a?(Round::Operating)
         return true if after == :current_or
 
-        @round.round_num == @operating_rounds
+        final_or_in_set = @round.round_num == @operating_rounds
+
+        return (@turn == @final_turn) if final_or_in_set && (after == :one_more_full_or_set)
+
+        final_or_in_set
       end
 
       def game_ending_description
@@ -1091,6 +1115,8 @@ module Engine
                          " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
                        when :full_or
                          " : Game Ends at conclusion of OR #{turn}.#{operating_rounds}"
+                       when :one_more_full_or_set
+                         " : Game Ends at conclusion of OR #{@final_turn}.#{operating_rounds}"
                        end
         end
 
@@ -1098,6 +1124,7 @@ module Engine
           bank: 'Bank Broken',
           bankrupt: 'Bankruptcy',
           stock_market: 'Company hit max stock value',
+          final_train: 'Final train was purchased',
         }
         "#{reason_map[reason]}#{after_text}"
       end
