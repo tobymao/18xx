@@ -373,16 +373,18 @@ module Engine
       edge_paths = Hash.new { |h, k| h[k] = [] }
 
       paths.each do |p|
-        edge_paths[p.a.num] << p if p.a.edge?
-        edge_paths[p.b.num] << p if p.b.edge?
+        next if p.nodes.size > 1
+        next if p.a_num == p.b_num
+
+        edge_paths[p.a_num] << p
+        edge_paths[p.b_num] << p
       end
 
       paths.each do |p|
         next if p.nodes.size > 1
 
-        ct_edge = preferred_city_town_edges[p.nodes.first] if p.nodes.one?
-        a_num = p.a.edge? ? p.a.num : ct_edge
-        b_num = p.b.edge? ? p.b.num : ct_edge
+        a_num = p.a_num
+        b_num = p.b_num
 
         if p.straight?
           return true if edge_paths[(a_num + 1) % 6].any?(&:straight?)
