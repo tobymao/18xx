@@ -368,7 +368,7 @@ module Engine
     end
 
     def compute_crossover
-      return unless @paths.size > 1
+      return false unless @paths.size > 1
 
       edge_paths = Hash.new { |h, k| h[k] = [] }
 
