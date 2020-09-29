@@ -429,6 +429,11 @@ module Engine
          ],
          "abilities": [
             {
+               "type": "train_buy",
+               "description": "Inter train buy/sell at face value",
+               "face_value": true
+            },
+            {
                "type": "train_limit",
                "description": "+1 train limit",
                "increase": 1

@@ -37,6 +37,7 @@ module Engine
 
         # Check if the train is actually buyable in the current situation
         @game.game_error('Not a buyable train') unless buyable_train_variants(train, entity).include?(train.variant)
+        @game.game_error('Must pay face value') if must_pay_face_value?(train, entity, price)
 
         remaining = price - entity.cash
         if remaining.positive? && must_buy_train?(entity)
@@ -145,6 +146,17 @@ module Engine
         return false unless corporation.cash < @game.depot.min_depot_price
 
         !must_issue_before_ebuy?(corporation)
+      end
+
+      def must_pay_face_value?(train, entity, price)
+        return if train.from_depot? || (!face_value?(entity) && !face_value?(train.owner))
+
+        train.price != price
+      end
+
+      def face_value?(entity)
+        entity.abilities(:train_buy) { |ability| return ability.face_value }
+        false
       end
     end
   end
