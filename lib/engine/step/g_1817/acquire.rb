@@ -254,7 +254,7 @@ module Engine
               @round.offering.delete(@buyer)
             end
           end
-          
+
           settle_president(@winner.corporation)
         end
 
