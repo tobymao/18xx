@@ -8,7 +8,7 @@ module Engine
     include Assignable
 
     attr_accessor :x, :y
-    attr_reader :connections, :coordinates, :layout, :neighbors, :tile, :location_name, :original_tile
+    attr_reader :connections, :coordinates, :empty, :layout, :neighbors, :tile, :location_name, :original_tile
 
     DIRECTIONS = {
       flat: {
@@ -64,7 +64,8 @@ module Engine
     # Coordinates are of the form A1..Z99
     # x and y map to the double coordinate system
     # layout is :pointy or :flat
-    def initialize(coordinates, layout: nil, axes: nil, tile: Tile.for('blank'), location_name: nil)
+    def initialize(coordinates, layout: nil, axes: nil, tile: Tile.for('blank'),
+                   location_name: nil, empty: false)
       @coordinates = coordinates
       @layout = layout
       @x, @y = self.class.init_x_y(@coordinates, axes)
@@ -75,6 +76,7 @@ module Engine
       @original_tile = @tile = tile
       @tile.hex = self
       @activations = []
+      @empty = empty
     end
 
     def id

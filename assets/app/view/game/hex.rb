@@ -33,6 +33,8 @@ module View
       needs :unavailable, default: nil
 
       def render
+        return nil if @hex.empty
+
         @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
         @tile =
           if @selected && @actions.include?('lay_tile') && @tile_selector&.tile

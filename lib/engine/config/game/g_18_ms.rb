@@ -429,6 +429,9 @@ module Engine
       }
    ],
    "hexes":{
+      "empty": {
+        "": ["B14"]
+      },
       "white":{
          "":[
             "B4",
