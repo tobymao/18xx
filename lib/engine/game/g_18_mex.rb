@@ -95,7 +95,7 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::Operating.new(self, [
+        Round::G18MEX::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
           Step::BuyCompany,
