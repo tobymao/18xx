@@ -368,12 +368,16 @@ module Engine
     end
 
     def compute_crossover
+      return false unless @paths.size > 1
+
       edge_paths = Hash.new { |h, k| h[k] = [] }
 
       paths.each do |p|
         edge_paths[p.a.num] << p if p.a.edge?
         edge_paths[p.b.num] << p if p.b.edge?
+      end
 
+      paths.each do |p|
         next if p.nodes.size > 1
 
         ct_edge = preferred_city_town_edges[p.nodes.first] if p.nodes.one?
