@@ -30,7 +30,7 @@ module View
           end
 
           children << render_convert(entity) if actions.include?('convert')
-          children << render_loan(entity) if actions.include?('take_loan')
+          children << h(Loans, corporation: entity) if (%w[take_loan payoff_loan] & actions).any?
           children << render_offer(entity, auctioning_corporation) if actions.include?('assign')
 
           children << render_merge(entity, auctioning_corporation) if actions.include?('merge') && @selected_corporation
@@ -86,17 +86,6 @@ module View
           end
 
           h(:button, { on: { click: merge } }, auctioning_corporation ? 'Acquire' : 'Merge')
-        end
-
-        def render_loan(corporation)
-          take_loan = lambda do
-            process_action(Engine::Action::TakeLoan.new(
-              corporation,
-              loan: @game.loans[0],
-            ))
-          end
-
-          h(:button, { on: { click: take_loan } }, 'Take Loan')
         end
       end
     end
