@@ -81,10 +81,10 @@ module View
         row = @game.stock_market.market.first.map do |price|
           tokens = price.corporations.map do |corporation|
             props = {
-              attrs: { data: corporation.logo, width: "#{TOKEN_SIZE}px" },
+              attrs: { src: corporation.logo, width: "#{TOKEN_SIZE}px" },
               style: { marginTop: "#{VERTICAL_TOKEN_PAD}px" },
             }
-            h(:object, props)
+            h(:img, props)
           end
 
           h(:div, { style: cell_style(box_style, price) }, [
@@ -106,14 +106,14 @@ module View
 
               tokens = corporations.map.with_index do |corporation, index|
                 props = {
-                  attrs: { data: corporation.logo, width: "#{TOKEN_SIZE}px" },
+                  attrs: { src: corporation.logo, width: "#{TOKEN_SIZE}px" },
                   style: {
                     position: 'absolute',
                     left: num > 1 ? "#{LEFT_TOKEN_POS + ((num - index - 1) * spacing)}px" : "#{MID_TOKEN_POS}px",
                     zIndex: num - index,
                   },
                 }
-                h(:object, props)
+                h(:img, props)
               end
 
               h(:div, { style: cell_style(@box_style_2d, price) }, [
