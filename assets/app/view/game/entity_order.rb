@@ -11,7 +11,10 @@ module View
       include Lib::Settings
 
       def render
-        items = @round.entities.map.with_index do |entity, index|
+        entities = @round.entities.dup
+        entities.unshift(@round.current_entity) if @round.current_entity && !entities.include?(@round.current_entity)
+
+        items = entities.map.with_index do |entity, index|
           entity_props = {
             key: "entity_#{index}",
             style: {
