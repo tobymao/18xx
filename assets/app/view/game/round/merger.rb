@@ -87,17 +87,6 @@ module View
 
           h(:button, { on: { click: merge } }, auctioning_corporation ? 'Acquire' : 'Merge')
         end
-
-        def render_loan(corporation)
-          take_loan = lambda do
-            process_action(Engine::Action::TakeLoan.new(
-              corporation,
-              loan: @game.loans[0],
-            ))
-          end
-
-          h(:button, { on: { click: take_loan } }, 'Take Loan')
-        end
       end
     end
   end

@@ -41,7 +41,6 @@ module Engine
         end
 
         def can_take_loan?(entity)
-          puts "take loans #{@passed_take_loans}"
           entity == @buyer && @game.can_take_loan?(entity) && !@passed_take_loans
         end
 
