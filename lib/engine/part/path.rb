@@ -50,32 +50,34 @@ module Engine
       end
 
       def <=(other)
-        other_list = []
-        other.jwalk { |t| other_list << t }
-        this_list = []
-        jwalk { |t| this_list << t }
-        this_list.all? { |tt| other_list.any? { |ot| tt <= ot } }
+        other_ends = other.ends
+        ends.all? { |t| other_ends.any? { |o| t <= o } }
       end
 
       def match?(other)
         (@a <= other.a && @b <= other.b) ||
-        (@a <= other.b && @b <= other.a)
+          (@a <= other.b && @b <= other.a)
       end
 
-      # yields all edges and non-junction nodes connected to this path on this tile, following junctions
-      # assumes only one junction per tile
-      def jwalk(jskip: nil)
-        yield @a unless @a.junction?
-        yield @b unless @b.junction?
+      def ends
+        @ends ||= calculate_ends
+      end
 
+      def calculate_ends
+        e = []
+        e << @a unless @a.junction?
+        e << @b unless @b.junction?
         [@a, @b].each do |j|
           next unless j.junction?
-          next if j == jskip
 
           j.paths.each do |jp|
-            jp.jwalk(jskip: j) { |p| yield p }
+            next if jp == self
+
+            e << jp.a unless jp.a.junction?
+            e << jp.b unless jp.b.junction?
           end
         end
+        e
       end
 
       def select(paths)
