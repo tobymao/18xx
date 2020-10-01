@@ -153,7 +153,6 @@ module Engine
       @offboards = []
       @original_borders = []
       @borders = []
-      @branches = nil
       @nodes = nil
       @stops = nil
       @edges = nil
@@ -186,6 +185,7 @@ module Engine
         @rotation
       @rotation = new_rotation
       @nodes.each(&:clear!)
+      @junction&.clear!
       @_paths = nil
       @_exits = nil
       @preferred_city_town_edges = nil
@@ -467,7 +467,6 @@ module Engine
       end
 
       @nodes = @paths.flat_map(&:nodes).uniq
-      @branches = @paths.flat_map(&:branches).uniq
       @stops = @paths.flat_map(&:stops).uniq
       @edges = @paths.flat_map(&:edges).uniq
     end

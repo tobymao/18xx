@@ -110,9 +110,29 @@ module Engine
       hexes.include?(hex)
     end
 
+    # this code relies on two things:
+    # 1. Path::walk is depth-first - whenever a new connection is started due to branching, we will never
+    #    see paths for ealier connections
+    # 2. @paths are in order (i.e. the head of one connects to the tail of the next)
     def branch!(path)
       branched_paths = path.select(@paths)
-      return self if @paths.size == branched_paths.size
+
+      ends = Hash.new(0)
+      @paths.each do |p|
+        ends[p.a] += 1 if p.a.junction?
+        ends[p.b] += 1 if p.b.junction?
+      end
+
+      return self if ends[path.a] < 2 && ends[path.b] < 2 && @paths.size == branched_paths.size
+
+      # if junction, only keep prior paths
+      if ends[path.a] == 2 || ends[path.b] == 2
+        branched_paths = []
+        @paths.each do |p|
+          branched_paths << p
+          break if path.a == p.a || path.a == p.b || path.b == p.a || path.b == p.b
+        end
+      end
 
       branch = self.class.new(branched_paths)
 

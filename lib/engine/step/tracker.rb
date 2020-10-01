@@ -172,7 +172,7 @@ module Engine
         new_tile.paths.each do |np|
           next unless @game.graph.connected_paths(entity)[np]
 
-          op = old_paths.find { |path| path <= np }
+          op = old_paths.find { |path| path.match?(np) }
           used_new_track = true unless op
           old_revenues = op&.nodes && op.nodes.map(&:max_revenue).sort
           new_revenues = np&.nodes && np.nodes.map(&:max_revenue).sort

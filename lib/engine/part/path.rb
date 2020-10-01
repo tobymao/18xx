@@ -5,7 +5,7 @@ require_relative 'base'
 module Engine
   module Part
     class Path < Base
-      attr_reader :a, :b, :branches, :city, :edges, :exit_lanes, :junction,
+      attr_reader :a, :b, :city, :edges, :exit_lanes, :junction,
                   :lanes, :nodes, :offboard, :stops, :terminal, :town
 
       def self.decode_lane_spec(x_lane)
@@ -38,7 +38,6 @@ module Engine
         @terminal = terminal
         @lanes = lanes
         @edges = []
-        @branches = []
         @stops = []
         @nodes = []
         @exit_lanes = {}
@@ -51,8 +50,32 @@ module Engine
       end
 
       def <=(other)
+        other_list = []
+        other.jwalk { |t| other_list << t }
+        this_list = []
+        jwalk { |t| this_list << t }
+        this_list.all? { |tt| other_list.any? { |ot| tt <= ot } }
+      end
+
+      def match?(other)
         (@a <= other.a && @b <= other.b) ||
-          (@a <= other.b && @b <= other.a)
+        (@a <= other.b && @b <= other.a)
+      end
+
+      # yields all edges and non-junction nodes connected to this path on this tile, following junctions
+      # assumes only one junction per tile
+      def jwalk(jskip: nil)
+        yield @a unless @a.junction?
+        yield @b unless @b.junction?
+
+        [@a, @b].each do |j|
+          next unless j.junction?
+          next if j == jskip
+
+          j.paths.each do |jp|
+            jp.jwalk(jskip: j) { |p| yield p }
+          end
+        end
       end
 
       def select(paths)
@@ -65,12 +88,23 @@ module Engine
         on.keys.select { |p| on[p] == 1 }
       end
 
-      def walk(skip: nil, visited: nil, on: nil)
+      def walk(skip: nil, jskip: nil, visited: nil, on: nil)
         return if visited&.[](self)
 
         visited = visited&.dup || {}
         visited[self] = true
         yield self, visited
+
+        [@a, @b].each do |j|
+          next unless j.junction?
+          next if j == jskip
+
+          j.paths.each do |jp|
+            next if on && !on[jp]
+
+            jp.walk(jskip: j, visited: visited, on: on) { |p, v| yield p, v }
+          end
+        end
 
         exits.each do |edge|
           next if edge == skip
@@ -175,16 +209,12 @@ module Engine
             @nodes << part
           when part.city?
             @city = part
-            @branches << part
             @stops << part
             @nodes << part
           when part.junction?
             @junction = part
-            @branches << part
-            @nodes << part
           when part.town?
             @town = part
-            @branches << part
             @stops << part
             @nodes << part
           end
