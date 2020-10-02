@@ -3,12 +3,14 @@
 require_relative '../base'
 require_relative '../../token'
 require_relative 'passable_auction'
+require_relative 'token_merger'
 
 module Engine
   module Step
     module G1817
       class Acquire < Base
         include PassableAuction
+        include TokenMerger
 
         attr_reader :auctioning, :last_president
 
@@ -191,18 +193,16 @@ module Engine
           trains = acquired_corp.transfer(:trains, buyer).map(&:name)
           receiving << "trains (#{trains})" if trains.any?
 
-          tokens = acquired_corp.tokens.map do |token|
-            new_token = Engine::Token.new(buyer)
-            buyer.tokens << new_token
-            # @todo: does this invalidate graph?
-            token.swap!(new_token)
-            new_token.city&.hex&.id
+          remove_duplicate_tokens(buyer, acquired_corp)
+          if tokens_above_limits?(buyer, acquired_corp)
+            @game.log << "#{buyer.name} will be above token limit and must decide which tokens to keep"
+            @round.corporations_removing_tokens = [buyer, acquired_corp]
+          else
+            tokens = move_tokens_to_surviving(buyer, acquired_corp)
+            receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
           end
-          receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
           @game.log << "#{buyer.name} acquires #{acquired_corp.name} "\
             "receiving #{receiving.join(', ')}"
-
-          # Step 6b, @todo convert station markers
 
           # Step 7, take mandatory loans and pay for the bid
           # Take mandatory loans automatically, then allow the player to take the optional loans if they can do.

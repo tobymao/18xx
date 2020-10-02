@@ -56,6 +56,8 @@ module Engine
 
       IPO_NAME = 'Treasury'
 
+      LIMIT_TOKENS = 8
+
       attr_reader :loan_value
 
       def bankruptcy_limit_reached?
@@ -216,6 +218,7 @@ module Engine
               or_round_finished
               @log << "-- Merger and Conversion Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
               Round::G1817::Merger.new(self, [
+                Step::G1817::ReduceTokens,
                 Step::DiscardTrain,
                 Step::G1817::PostConversion,
                 Step::G1817::Conversion,
@@ -229,6 +232,7 @@ module Engine
           when Round::G1817::Merger
             @log << "-- Acquisition Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
             Round::G1817::Acquisition.new(self, [
+              Step::G1817::ReduceTokens,
               Step::Bankrupt, # @todo: needs customization
               Step::G1817::CashCrisis,
               Step::DiscardTrain,
