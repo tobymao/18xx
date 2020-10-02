@@ -188,6 +188,22 @@ module Engine
         path
       end
 
+      def a_id
+        @a_id ||= if a.edge?
+                    hex.id + '-' + a.num.to_s + '-' + @lanes.first[1].to_s
+                  else
+                    a
+                  end
+      end
+
+      def b_id
+        @b_id ||= if b.edge?
+                    hex.id + '-' + b.num.to_s + '-' + @lanes.last[1].to_s
+                  else
+                    b
+                  end
+      end
+
       def inspect
         name = self.class.name.split('::').last
         if single?

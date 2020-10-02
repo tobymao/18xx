@@ -20,7 +20,6 @@ module Engine
           connection = connection.branch!(path)
           next if connection.paths.include?(path)
           next if (connection.nodes & path.nodes).any?
-          next if connection.paths.any? { |p| p.hex == hex && (p.exits & path.exits).any? }
 
           connections[connection] = true
           connection.add_path(path)
@@ -115,23 +114,24 @@ module Engine
     #    see paths for ealier connections
     # 2. @paths are in order (i.e. the head of one connects to the tail of the next)
     def branch!(path)
-      branched_paths = path.select(@paths)
-
       ends = Hash.new(0)
       @paths.each do |p|
-        ends[p.a] += 1 if p.a.junction?
-        ends[p.b] += 1 if p.b.junction?
+        ends[p.a_id] += 1 if p.a.junction? || p.a.edge?
+        ends[p.b_id] += 1 if p.b.junction? || p.b.edge?
       end
 
-      return self if ends[path.a] < 2 && ends[path.b] < 2 && @paths.size == branched_paths.size
+      return self unless ends[path.a_id] > 1 || ends[path.b_id] > 1 ||
+                         (ends[path.a_id].positive? && path.a.edge?) ||
+                         (ends[path.b_id].positive? && path.b.edge?)
 
-      # if junction, only keep prior paths
-      if ends[path.a] == 2 || ends[path.b] == 2
-        branched_paths = []
-        @paths.each do |p|
-          branched_paths << p
-          break if path.a == p.a || path.a == p.b || path.b == p.a || path.b == p.b
-        end
+      # only keep paths leading to edge/junction
+      branched_paths = []
+      @paths.each do |p|
+        break if path.a.edge? && (path.a_id == p.a_id || path.a_id == p.b_id)
+        break if path.b.edge? && (path.b_id == p.a_id || path.b_id == p.b_id)
+
+        branched_paths << p
+        break if ([path.a_id, path.b_id] & [p.a_id, p.b_id]).any?
       end
 
       branch = self.class.new(branched_paths)
