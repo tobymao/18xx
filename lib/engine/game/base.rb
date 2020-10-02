@@ -643,9 +643,18 @@ module Engine
       end
 
       def payout_companies
-        @companies.select(&:owner).each do |company|
-          next unless (revenue = company.revenue).positive?
+        companies = @companies.select(&:owner).select { |c| c.revenue.positive? }
 
+        companies.sort_by! do |company|
+          [
+            company.owned_by_player? ? [0, @players.index(company.owner)] : [1, company.owner],
+            company.revenue,
+            company.name,
+          ]
+        end
+
+        companies.each do |company|
+          revenue = company.revenue
           owner = company.owner
           @bank.spend(revenue, owner)
           @log << "#{owner.name} collects #{format_currency(revenue)} from #{company.name}"
@@ -1244,9 +1253,15 @@ module Engine
 
       def round_description(name, round_number = nil)
         round_number ||= @round.round_num
-        description = "#{name} Round #{@turn}"
-        description += ".#{round_number} (of #{total_rounds(name)})" if total_rounds(name)
-        description
+        description = "#{name} Round "
+
+        total = total_rounds(name)
+
+        description += @turn.to_s unless @turn.zero?
+        description += '.' if total && !@turn.zero?
+        description += "#{round_number} (of #{total})" if total
+
+        description.strip
       end
     end
   end

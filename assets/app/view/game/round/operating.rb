@@ -41,7 +41,7 @@ module View
 
           if entity.player?
             left << h(Player, player: entity, game: @game)
-          elsif entity.corporation? || entity.minor?
+          elsif (entity.corporation? || entity.minor?) && entity.floated?
             left << h(Corporation, corporation: entity)
           elsif (company = entity).company?
             left << h(Company, company: company)

@@ -30,7 +30,7 @@ module Engine
           else
             corporations.sort!
           end
-          @game.minors + corporations
+          @game.minors.select(&:floated?) + corporations
         end
 
         def after_process(action)

@@ -14,7 +14,7 @@ module Engine
         def setup
           @companies = @game.companies.sort_by { @game.rand }
           @choices = Hash.new { |h, k| h[k] = [] }
-          @draw_size = @game.class::DRAFT_HAND_SIZE || entities.size + 2
+          @draw_size = entities.size + 2
         end
 
         def pass_description
@@ -31,17 +31,6 @@ module Engine
 
         def may_choose?(_company)
           true
-        end
-
-        def may_pass?
-          case @game.class::DRAFT_MAY_PASS
-          when :last_pick
-            only_one_company?
-          when :after_first_pick
-            @choices.values.any?
-          else
-            @game.class::DRAFT_MAY_PASS
-          end
         end
 
         def auctioning; end
@@ -63,16 +52,11 @@ module Engine
         end
 
         def visible?
-          case @game.class::DRAFT_HAND_VISIBLE
-          when :last_pick
-            only_one_company?
-          else
-            @game.class::DRAFT_HAND_VISIBLE
-          end
+          only_one_company?
         end
 
         def players_visible?
-          @game.class::DRAFT_PLAYERS_VISIBLE
+          false
         end
 
         def name
@@ -90,60 +74,52 @@ module Engine
         def actions(entity)
           return [] if finished?
 
-          actions = may_pass? ? ACTIONS_WITH_PASS : ACTIONS
+          actions = only_one_company? ? ACTIONS_WITH_PASS : ACTIONS
 
           entity == current_entity ? actions : []
         end
 
-        def process_pass(action)
-          @game.game_error('Cannot pass') unless may_pass?
-
-          unless only_one_company?
-            @log << "#{action.entity.name} passes"
-            action.entity.pass!
-            all_passed! if entities.all?(&:passed?)
-            @round.next_entity_index!
-            return
-          end
+        def process_pass(_action)
+          @game.game_error('Cannot pass') unless only_one_company?
 
           company = @companies[0]
-          old_value = company.min_bid
+          old_price = company.min_bid
           company.discount += 10
-          new_value = company.min_bid
-          @log << "#{company.name} price decreases from #{@game.format_currency(old_value)} "\
-            "to #{@game.format_currency(new_value)}"
+          new_price = company.min_bid
+          @log << "#{company.name} price decreases from #{@game.format_currency(old_price)} "\
+            "to #{@game.format_currency(new_price)}"
 
           @round.next_entity_index!
-          case company.id
-          when 'Big 4'
-            return if new_value > 60
-          when 'MS'
-            return if new_value > 80
-          else
-            return if new_value.positive?
-          end
 
-          @companies.clear
-          @choices[action.entity] << company
-          @log << "#{action.entity.name} chooses #{company.name}"
+          return unless new_price == company.min_auction_price
+
+          choose_company(current_entity, company)
           action_finalized
         end
 
         def process_bid(action)
-          company = action.company
-
-          @game.game_error("Cannot choose company not in hand: #{company.name}") unless available.include?(company)
-
-          @choices[action.entity] << company
-          company.owner = action.entity
-          discarded = available.sort_by { @game.rand }
-          discarded.delete(company)
-
-          @companies -= available
-          @companies.concat(discarded)
-          @log << "#{action.entity.name} chooses #{visible? ? company.name : 'a company'}"
+          choose_company(action.entity, action.company)
           @round.next_entity_index!
           action_finalized
+        end
+
+        def choose_company(player, company)
+          available_companies = available
+
+          raise @game.game_error "Cannot choose #{company.name}" unless available_companies.include?(company)
+
+          @choices[player] << company
+
+          if only_one_company?
+            @log << "#{player.name} chooses #{company.name}"
+            @companies.clear
+          else
+            @log << "#{player.name} chooses a company"
+            @companies -= available_companies
+            discarded = available_companies.sort_by { @game.rand }
+            discarded.delete(company)
+            @companies.concat(discarded)
+          end
         end
 
         def action_finalized
@@ -171,35 +147,17 @@ module Engine
         end
 
         def float_minor(company)
-          player = company.player
-          michigan_southern = @game.michigan_southern
-          big4 = @game.big4
+          return unless (minor = @game.minors.find { |m| m.id == company.id })
 
-          minor =
-            case company.name
-            when michigan_southern.full_name
-              michigan_southern.owner = player
-              michigan_southern
-            when big4.full_name
-              big4.owner = player
-              big4
-            end
-
-          @game.bank.spend(company.value, minor) if minor
+          minor.owner = company.player
+          @game.bank.spend(company.value, minor)
+          minor.float!
         end
 
         def committed_cash(player, show_hidden = false)
           return 0 unless show_hidden
 
           choices[player].sum(&:min_bid)
-        end
-
-        def all_passed!
-          @game.payout_companies
-          @game.or_set_finished
-          @game.payout_companies
-          @game.or_set_finished
-          entities.each(&:unpass!)
         end
       end
     end

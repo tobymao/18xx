@@ -37,19 +37,16 @@ module Engine
       },
     },
     GAMES_BY_TITLE['1846 2p Variant'] => {
+      # This fixture tests all of the following behaviors, and should be
+      # replaced accordingly if it is ever removed;
       # * both players passing triggers 2 ORs in draft
       # * on last company, passing discounts it by $10
       # * owning 70%
       # * issuing fix in commit a6df06d
-      # * game end on bankruptcy
-      'hs_rbefffgr_1600814502' => {
-        'Player 1' => 0,
-        'Player 2' => 973,
-      },
-      # game end after last train is purchased
-      'hs_giwlrwdn_1600825203' => {
-        'Player 1' => 5252,
-        'Player 2' => 5593,
+      # * game end after last train is purchased
+      'hs_pzdxtics_1601680033' => {
+        'A' => 4312,
+        'B' => 2264,
       },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
