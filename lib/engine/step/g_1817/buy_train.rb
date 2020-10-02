@@ -11,7 +11,10 @@ module Engine
           :liquidation if entity.trains.empty?
         end
 
-        # @todo: this needs to remove trains from companies in liquidation.
+        def buyable_trains(entity)
+          # Cannot buy trains from corps in liquidation.
+          super.reject { |t| t.owner != @game.depot && t.owner.share_price.liquidation? }
+        end
       end
     end
   end
