@@ -12,6 +12,11 @@ module Engine
       def select_entities
         @game.players.reverse
       end
+
+      def setup
+        @steps.each(&:unpass!)
+        @steps.each(&:setup)
+      end
     end
   end
 end

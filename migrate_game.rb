@@ -301,7 +301,7 @@ def migrate_db_actions(data)
   rescue Exception => e
     puts 'Something went wrong', e
     puts "Pinning #{data.id}"
-    pin = '056298f6'
+    pin = '17af77be'
     data.settings['pin']=pin
     data.save
   end

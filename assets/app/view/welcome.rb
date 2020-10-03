@@ -17,7 +17,7 @@ module View
       message = <<~MESSAGE
         <p>1846 is now in production! You can now issue shares until you pay dividends.</p>
         <p>18MS is now in beta!</p>
-        <p>1846 2p Variant is now in alpha! The rules are available on <a href='https://boardgamegeek.com/thread/1616729/draft-2-player-1846-rules-game-designer'>BGG</a>. Note that in the new game dropdown, "1846 2p Variant" is listed separately from "1846".</p>
+        <p>1846 2p Variant is now in beta!</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
         If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other

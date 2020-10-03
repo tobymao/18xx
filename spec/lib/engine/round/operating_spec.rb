@@ -634,9 +634,14 @@ module Engine
         game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
         corporation.ipoed = true
         corporation.cash = 80
-
         bundle = ShareBundle.new(corporation.shares.first)
         game.share_pool.transfer_shares(bundle, game.players.first)
+
+        game.stock_market.set_par(corporation_1, game.stock_market.par_prices[0])
+        corporation_1.ipoed = true
+        corporation_1.cash = 80
+        bundle = ShareBundle.new(corporation_1.shares.first)
+        game.share_pool.transfer_shares(bundle, game.players[1])
 
         ms.owner = game.players[1]
         big4.owner = game.players[2]
@@ -646,6 +651,8 @@ module Engine
         let(:company) { game.company_by_id('SC') }
         before :each do
           company.owner = game.players.first
+
+          allow(ms).to receive(:floated?) { true }
         end
 
         it 'handles full lifecycle of assigning to hexes and corporations' do
@@ -852,7 +859,7 @@ module Engine
 
           expect(subject.actions_for(corporation)).to include('sell_shares')
 
-          # Run route sstep
+          # Run route step
           action = game.action_from_h('type' => 'run_routes',
                                       'entity' => 'B&O',
                                       'entity_type' => 'corporation',
@@ -862,9 +869,9 @@ module Engine
           expect(subject.actions_for(corporation)).to include('sell_shares')
 
           # Dividend step
+          corporation.cash += 80
           subject.process_action(Action::Dividend.new(corporation, kind: 'payout'))
 
-          corporation.cash += 80
           expect(subject.actions_for(corporation)).not_to include('sell_shares')
 
           # Pass on buy train step

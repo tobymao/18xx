@@ -23,6 +23,7 @@ module Engine
     def initialize(sym:, name:, **opts)
       @name = sym
       @full_name = name
+      @floated = false
       init_operator(opts)
       init_abilities(opts[:abilities])
     end
@@ -43,6 +44,18 @@ module Engine
 
     def total_shares
       1
+    end
+
+    def floated?
+      @floated
+    end
+
+    def float!
+      @floated = true
+    end
+
+    def inspect
+      "<#{self.class.name}: #{id}>"
     end
   end
 end

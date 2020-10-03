@@ -5,7 +5,7 @@ require_relative 'g_1846'
 module Engine
   module Game
     class G1846TwoPlayerVariant < G1846
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
 
       GAME_RULES_URL = {
         '1846 Rules' => 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf',
@@ -13,10 +13,6 @@ module Engine
       }.freeze
 
       CERT_LIMIT = { 2 => 19 }.freeze
-      DRAFT_HAND_SIZE = 8 # all companies available at once in draft
-      DRAFT_HAND_VISIBLE = true
-      DRAFT_PLAYERS_VISIBLE = true
-      DRAFT_MAY_PASS = :after_first_pick
 
       def self.title
         '1846 2p Variant'

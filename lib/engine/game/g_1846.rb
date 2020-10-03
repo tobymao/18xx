@@ -36,11 +36,6 @@ module Engine
       HOME_TOKEN_TIMING = :float
       MUST_BUY_TRAIN = :always
 
-      DRAFT_HAND_SIZE = nil
-      DRAFT_HAND_VISIBLE = :last_pick # true, false, or :last_pick
-      DRAFT_PLAYERS_VISIBLE = false
-      DRAFT_MAY_PASS = :last_pick # true, false, :last_pick, or :after_first_pick
-
       ORANGE_GROUP = [
         'Lake Shore Line',
         'Michigan Central',
@@ -137,6 +132,8 @@ module Engine
       end
 
       def setup
+        @turn = two_player? ? 0 : 1
+
         # When creating a game the game will not have enough to start
         return unless @players.size.between?(*Engine.player_range(self.class))
 
@@ -160,6 +157,11 @@ module Engine
             corporation.abilities(:reservation) do |ability|
               corporation.remove_ability(ability)
             end
+
+            if two_player?
+              hex = self.class::REMOVED_CORP_SECOND_TOKEN.find { |_h, corps| corps.include?(corporation.name) }.first
+              @log << "#{corporation.name} will place a second token on #{hex} when a green tile is laid there"
+            end
           end
         end
 
@@ -167,6 +169,7 @@ module Engine
           company.min_price = 1
           company.max_price = company.value
         end
+        @draft_finished = false
 
         @minors.each do |minor|
           train = @depot.upcoming[0]
@@ -364,7 +367,13 @@ module Engine
       end
 
       def init_round
-        Round::Draft.new(self, [Step::G1846::DraftDistribution])
+        draft_step = two_player? ? Step::G1846::Draft2pDistribution : Step::G1846::DraftDistribution
+        Round::Draft.new(self, [draft_step])
+      end
+
+      def new_draft_round
+        @log << "-- #{round_description('Draft')} --"
+        init_round
       end
 
       def priority_deal_player
@@ -478,6 +487,7 @@ module Engine
       end
 
       def emergency_issuable_bundles(corp)
+        return [] if corp.trains.any?
         return [] if @round.emergency_issued
         return [] unless (train = @depot.min_depot_train)
 
@@ -530,6 +540,34 @@ module Engine
         token = corp.find_token_by_type
         @log << "#{corp.name} places a token on #{hex.name}"
         tile.cities.first.place_token(corp, token, check_tokenable: false)
+      end
+
+      def next_round!
+        return super if !two_player? || @draft_finished
+
+        @round =
+          case @round
+          when Round::Draft
+            if (@draft_finished = companies.all?(&:owned_by_player?))
+              @turn = 1
+              new_stock_round
+            else
+              @operating_rounds = @phase.operating_rounds
+              new_operating_round
+            end
+          when Round::Operating
+            or_round_finished
+            if @round.round_num < @operating_rounds
+              new_operating_round(@round.round_num + 1)
+            else
+              or_set_finished
+              new_draft_round
+            end
+          else
+            raise GameError "unexpected current round type #{@round.class.name}, don't know how to pick next round"
+          end
+
+        @round
       end
 
       def game_end_check_values

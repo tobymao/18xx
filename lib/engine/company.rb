@@ -11,7 +11,7 @@ module Engine
     include Ownable
 
     attr_accessor :desc, :max_price, :min_price, :revenue, :discount
-    attr_reader :name, :sym, :value
+    attr_reader :name, :sym, :value, :min_auction_price
 
     def initialize(sym:, name:, value:, revenue: 0, desc: '', abilities: [], **opts)
       @sym = sym
@@ -20,6 +20,7 @@ module Engine
       @desc = desc
       @revenue = revenue
       @discount = opts[:discount] || 0
+      @min_auction_price = -@discount
       @closed = false
       @min_price = @value / 2
       @max_price = @value * 2
