@@ -36,11 +36,6 @@ module Engine
       HOME_TOKEN_TIMING = :float
       MUST_BUY_TRAIN = :always
 
-      DRAFT_HAND_SIZE = nil
-      DRAFT_HAND_VISIBLE = :last_pick # true, false, or :last_pick
-      DRAFT_PLAYERS_VISIBLE = false
-      DRAFT_MAY_PASS = :last_pick # true, false, :last_pick, or :after_first_pick
-
       ORANGE_GROUP = [
         'Lake Shore Line',
         'Michigan Central',

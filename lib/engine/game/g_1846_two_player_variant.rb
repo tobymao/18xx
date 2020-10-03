@@ -13,10 +13,6 @@ module Engine
       }.freeze
 
       CERT_LIMIT = { 2 => 19 }.freeze
-      DRAFT_HAND_SIZE = 8 # all companies available at once in draft
-      DRAFT_HAND_VISIBLE = true
-      DRAFT_PLAYERS_VISIBLE = true
-      DRAFT_MAY_PASS = :after_first_pick
 
       def self.title
         '1846 2p Variant'
