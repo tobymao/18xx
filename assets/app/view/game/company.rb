@@ -142,7 +142,7 @@ module View
         hidden_props = {
           style: {
             display: 'none',
-            gridColumnEnd: "span #{@company.owner&.player? ? '3' : '2'}",
+            gridColumnEnd: "span #{@company.owner.player? ? '3' : '2'}",
             marginBottom: '0.5rem',
             padding: '0.1rem 0.2rem',
             fontSize: '80%',
@@ -152,7 +152,7 @@ module View
         @hidden_divs[company.sym] = h('div#hidden', hidden_props, company.desc)
 
         [h('div.nowrap', name_props, company.name),
-         @company.owner&.player? ? h('div.right', @game.format_currency(company.value)) : '',
+         @company.owner.player? ? h('div.right', @game.format_currency(company.value)) : '',
          h('div.padded_number', @game.format_currency(company.revenue)),
          @hidden_divs[company.sym]]
       end

@@ -120,6 +120,8 @@ module Engine
             discarded.delete(company)
             @companies.concat(discarded)
           end
+
+          company.owner = player
         end
 
         def action_finalized
