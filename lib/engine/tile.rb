@@ -469,6 +469,8 @@ module Engine
       @nodes = @paths.flat_map(&:nodes).uniq
       @stops = @paths.flat_map(&:stops).uniq
       @edges = @paths.flat_map(&:edges).uniq
+
+      @edges.each { |e| e.tile = self }
     end
   end
 end

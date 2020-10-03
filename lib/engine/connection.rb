@@ -117,8 +117,8 @@ module Engine
       branched_paths = []
       @paths.each do |p|
         # we've seen this edge before
-        break if path.a.edge? && (path.a_id == p.a_id || path.a_id == p.b_id)
-        break if path.b.edge? && (path.b_id == p.a_id || path.b_id == p.b_id)
+        break if path.a.edge? && (path.a.id == p.a.id || path.a.id == p.b.id)
+        break if path.b.edge? && (path.b.id == p.a.id || path.b.id == p.b.id)
 
         branched_paths << p
 

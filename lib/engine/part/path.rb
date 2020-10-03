@@ -64,20 +64,15 @@ module Engine
       end
 
       def calculate_ends
-        e = []
-        e << @a unless @a.junction?
-        e << @b unless @b.junction?
-        [@a, @b].each do |j|
-          next unless j.junction?
+        [@a, @b].flat_map do |j|
+          next [j] unless j.junction?
 
-          j.paths.each do |jp|
-            next if jp == self
+          j.paths.map do |p|
+            next if p == self
 
-            e << jp.a unless jp.a.junction?
-            e << jp.b unless jp.b.junction?
+            [p.a, p.b].select(&:junction?)
           end
         end
-        e
       end
 
       def select(paths)
@@ -97,14 +92,11 @@ module Engine
         visited[self] = true
         yield self, visited
 
-        [@a, @b].each do |j|
-          next unless j.junction?
-          next if j == jskip
-
-          j.paths.each do |jp|
+        if @junction && @junction != jskip
+          @junction.paths.each do |jp|
             next if on && !on[jp]
 
-            jp.walk(jskip: j, visited: visited, on: on) { |p, v| yield p, v }
+            jp.walk(jskip: @junction, visited: visited, on: on) { |p, v| yield p, v }
           end
         end
 
@@ -188,22 +180,6 @@ module Engine
         path
       end
 
-      def a_id
-        @a_id ||= if a.edge?
-                    hex.id + '-' + a.num.to_s + '-' + @lanes.first[1].to_s
-                  else
-                    a
-                  end
-      end
-
-      def b_id
-        @b_id ||= if b.edge?
-                    hex.id + '-' + b.num.to_s + '-' + @lanes.last[1].to_s
-                  else
-                    b
-                  end
-      end
-
       def inspect
         name = self.class.name.split('::').last
         if single?
@@ -236,6 +212,7 @@ module Engine
             @stops << part
             @nodes << part
           end
+          part.lanes = @lanes[part == @a ? 0 : 1]
         end
       end
     end
