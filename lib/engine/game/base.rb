@@ -643,7 +643,7 @@ module Engine
       end
 
       def payout_companies
-        companies = @companies.select(&:owner).select { |c| c.revenue.positive? }
+        companies = @companies.select { |c| c.owner && c.revenue.positive? }
 
         companies.sort_by! do |company|
           [
