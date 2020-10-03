@@ -5,6 +5,8 @@ require_relative 'node'
 module Engine
   module Part
     class Junction < Base
+      attr_accessor :lanes
+
       def junction?
         true
       end

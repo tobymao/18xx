@@ -5,10 +5,10 @@ require_relative 'base'
 module Engine
   module Part
     class Edge < Base
-      attr_accessor :num
+      attr_accessor :lanes, :num
 
       def id
-        @id ||= "#{hex.id}-#{@num}-#{@lanes[1]}"
+        @_id ||= "#{hex.id}-#{@num}-#{@lanes[1]}"
       end
 
       def initialize(num)

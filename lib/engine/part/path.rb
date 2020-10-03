@@ -54,11 +54,6 @@ module Engine
         ends.all? { |t| other_ends.any? { |o| t <= o } }
       end
 
-      def match?(other)
-        (@a <= other.a && @b <= other.b) ||
-          (@a <= other.b && @b <= other.a)
-      end
-
       def ends
         @ends ||= calculate_ends
       end
@@ -70,7 +65,7 @@ module Engine
           j.paths.map do |p|
             next if p == self
 
-            [p.a, p.b].select(&:junction?)
+            [p.a, p.b].reject(&:junction?)
           end
         end
       end
