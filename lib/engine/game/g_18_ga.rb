@@ -30,6 +30,14 @@ module Engine
         @p2_company ||= company_by_id('MRC')
       end
 
+      def p3_company
+        @p3_company ||= company_by_id('W&SR')
+      end
+
+      def waycross_hex
+        @waycross_hex ||= @hexes.find { |h| h.name == 'I9' }
+      end
+
       include CompanyPrice50To150Percent
 
       def setup
@@ -60,6 +68,13 @@ module Engine
         @free_2_train = train_by_id('2-5')
         @free_2_train.buyable = false
         neutral.buy_train(@free_2_train, :free)
+      end
+
+      # Only buy and sell par shares is possible action during SR
+      def stock_round
+        Round::Stock.new(self, [
+          Step::BuySellParShares,
+        ])
       end
 
       def operating_round(round_num)
