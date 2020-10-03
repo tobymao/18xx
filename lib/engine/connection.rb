@@ -114,25 +114,20 @@ module Engine
     #    see paths for ealier connections
     # 2. @paths are in order (i.e. the head of one connects to the tail of the next)
     def branch!(path)
-      ends = Hash.new(0)
-      @paths.each do |p|
-        ends[p.a_id] += 1 if p.a.junction? || p.a.edge?
-        ends[p.b_id] += 1 if p.b.junction? || p.b.edge?
-      end
-
-      return self unless ends[path.a_id] > 1 || ends[path.b_id] > 1 ||
-                         (ends[path.a_id].positive? && path.a.edge?) ||
-                         (ends[path.b_id].positive? && path.b.edge?)
-
-      # only keep paths leading to edge/junction
       branched_paths = []
       @paths.each do |p|
+        # we've seen this edge before
         break if path.a.edge? && (path.a_id == p.a_id || path.a_id == p.b_id)
         break if path.b.edge? && (path.b_id == p.a_id || path.b_id == p.b_id)
 
         branched_paths << p
-        break if ([path.a_id, path.b_id] & [p.a_id, p.b_id]).any?
+
+        # we've seen this junction before
+        break if path.a.junction? && (path.a == p.a || path.a == p.b)
+        break if path.b.junction? && (path.b == p.a || path.b == p.b)
       end
+
+      return self if branched_paths.size == @paths.size
 
       branch = self.class.new(branched_paths)
 
