@@ -70,6 +70,13 @@ module Engine
         neutral.buy_train(@free_2_train, :free)
       end
 
+      # Only buy and sell par shares is possible action during SR
+      def stock_round
+        Round::Stock.new(self, [
+          Step::BuySellParShares,
+        ])
+      end
+
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
