@@ -351,8 +351,8 @@ module Engine
       "sym": "B&OR",
       "abilities": [
         {
-          "type": "share",
-          "share": "B&O_1"
+          "type": "shares",
+          "shares": "B&O_1"
         }
       ]
     },
@@ -364,8 +364,8 @@ module Engine
       "sym": "CV",
       "abilities": [
         {
-          "type": "share",
-          "share": "random_president"
+          "type": "shares",
+          "shares": "random_president"
         },
         {
           "type": "no_buy"

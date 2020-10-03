@@ -4,12 +4,12 @@ require_relative 'base'
 
 module Engine
   module Ability
-    class Share < Base
-      attr_accessor :share
+    class Shares < Base
+      attr_accessor :shares
       attr_reader :corporations
 
-      def setup(share:, corporations: nil)
-        @share = share
+      def setup(shares:, corporations: nil)
+        @shares = Array(shares)
         @corporations = corporations
       end
     end

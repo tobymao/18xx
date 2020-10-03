@@ -270,8 +270,8 @@ module Engine
                ]
             },
             {
-             "type": "share",
-             "share": "CoG_1"
+             "type": "shares",
+             "shares": "CoG_1"
             }
          ]
       }

@@ -331,8 +331,8 @@ module Engine
          "desc":"Comes with a 10% share of the Chihuahua Pacific Railway (CHI).",
          "abilities":[
             {
-               "type":"share",
-               "share":"CHI_1"
+               "type":"shares",
+               "shares":"CHI_1"
             },
             {
                "type":"blocks_hexes",
@@ -352,8 +352,8 @@ module Engine
          "desc":"Comes with President's Certificate of NdM. Owner must immediately set NdM's par price. Closes when NdM buys a train. May not be sold to a company.",
          "abilities":[
             {
-               "type":"share",
-               "share":"NdM_0"
+               "type":"shares",
+               "shares":"NdM_0"
             },
             {
                "type":"close",

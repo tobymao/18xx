@@ -67,12 +67,12 @@ module Engine
         cornelius.add_ability(Ability::Close.new(
           type: :close,
           when: :train,
-          corporation: cornelius.abilities(:share).share.corporation.name,
+          corporation: cornelius.abilities(:shares).shares.first.corporation.name,
         ))
 
         return unless two_player?
 
-        cv_corporation = cornelius.abilities(:share).share.corporation
+        cv_corporation = cornelius.abilities(:shares).shares.first.corporation
 
         @corporations.each do |corporation|
           next if corporation == cv_corporation
