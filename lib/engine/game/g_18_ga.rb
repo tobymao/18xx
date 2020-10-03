@@ -30,6 +30,14 @@ module Engine
         @p2_company ||= company_by_id('MRC')
       end
 
+      def p3_company
+        @p3_company ||= company_by_id('W&SR')
+      end
+
+      def waycross_hex
+        @waycross_hex ||= @hexes.find { |h| h.name == 'I9' }
+      end
+
       include CompanyPrice50To150Percent
 
       def setup

@@ -45,7 +45,7 @@ module Engine
       end
 
       def ability(entity)
-        return unless entity.company?
+        return unless entity&.company?
 
         entity.abilities(:token)
       end
