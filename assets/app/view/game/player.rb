@@ -65,7 +65,7 @@ module View
       end
 
       def render_info
-        num_certs = @player.num_certs
+        num_certs = @game.num_certs(@player)
         cert_limit = @game.cert_limit
 
         td_cert_props = {

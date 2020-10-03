@@ -34,7 +34,7 @@ module View
 
           children = []
           if @step.respond_to?(:must_sell?) && @step.must_sell?(@current_entity)
-            children << if @current_entity.num_certs > @game.cert_limit
+            children << if @game.num_certs(@current_entity) > @game.cert_limit
                           h('div.margined', 'Must sell stock: above certificate limit')
                         else
                           h('div.margined', 'Must sell stock: above 60% limit in corporation(s)')

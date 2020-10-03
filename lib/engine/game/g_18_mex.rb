@@ -89,9 +89,18 @@ module Engine
         @gray_tile ||= @tiles.find { |t| t.name == '455' }
         @green_l_tile ||= @tiles.find { |t| t.name == '475' }
 
+        # The NdM 5% shares are trade-ins, that cannot be bought beforehand
+        # And they are not counted towards the cert limit. (Paragraph 3.3b)
         minor_a_reserved_share.buyable = false
+        minor_a_reserved_share.counts_for_limit = false
         minor_b_reserved_share.buyable = false
+        minor_b_reserved_share.counts_for_limit = false
+
+        # The last UdY 10% share is a trade-in for Minor C. Non-buyable before minor merge.
         minor_c_reserved_share.buyable = false
+
+        # The last NdM 10% share is used for trade-in during NdM merge.
+        # Before the NdM merge event it cannot be bought.
         ndm_merge_reserved_share.buyable = false
       end
 
@@ -124,6 +133,39 @@ module Engine
           minor.owner = matching_company.owner
         end if @turn == 1
         super
+      end
+
+      # If selling 5% NdM share it should not affect share price
+      def sell_shares_and_change_price(bundle)
+        return super if bundle.corporation != ndm || bundle.percent > 5
+
+        @share_pool.sell_shares(bundle)
+      end
+
+      # 5% NdM is not counted for cert limit
+      def countable_shares(shares)
+        shares.select { |s| s.percent > 5 }
+      end
+
+      # In case of selling NdM, split 5% share in separate bundle and regular
+      # shares in other. This means that each 5% need to be sold separately,
+      # one at a time. (Even in the extremly rare case of selling 2 5% this
+      # is done in two separate sell to simplify implementation.) Now the extra
+      # sell actions does not matter as the stock price are not affect by sell
+      # of any 5% shares.
+      def bundles_for_corporation(player, corporation)
+        return super unless ndm == corporation
+
+        # Hansle bundles with half shares and non-half shares separately.
+        regular_shares, half_shares = player.shares_of(ndm).partition { |s| s.percent > 5 }
+
+        # Need only one bundle with half shares. Player will have to sell twice if s/he want to sell both.
+        # This is to simplify other implementation - only handle sell bundles with one half share.
+        half_shares = [half_shares.first] if half_shares.any?
+
+        regular_bundles = player.bundles_for_corporation(ndm, shares: regular_shares)
+        half_bundles = player.bundles_for_corporation(ndm, shares: half_shares)
+        regular_bundles.concat(half_bundles)
       end
 
       def revenue_for(route, stops)

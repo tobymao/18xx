@@ -87,7 +87,7 @@ module Engine
       end
 
       def must_sell?(entity)
-        entity.num_certs > @game.cert_limit ||
+        @game.num_certs(entity) > @game.cert_limit ||
           !@game.corporations.all? { |corp| corp.holding_ok?(entity) }
       end
 

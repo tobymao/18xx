@@ -314,8 +314,13 @@ module View
         props = { style: { color: 'red' } }
         h(:tr, zebra_props(true), [
           h('th.left', "Certs/#{cert_limit}"),
-          *@game.players.map { |p| h('td.padded_number', p.num_certs > cert_limit ? props : '', p.num_certs) },
+          *@game.players.map { |player| render_player_cert_count(player, cert_limit, props) },
         ])
+      end
+
+      def render_player_cert_count(player, cert_limit, props)
+        num_certs = @game.num_certs(player)
+        h('td.padded_number', num_certs > cert_limit ? props : '', num_certs)
       end
 
       def zebra_props(alt_bg = false)

@@ -15,11 +15,10 @@ module Engine
     attr_accessor :bankrupt
     attr_reader :name, :companies
 
-    def initialize(name, count_companies: true)
+    def initialize(name)
       @name = name
       @cash = 0
       @companies = []
-      @count_companies = count_companies
     end
 
     def value
@@ -44,11 +43,6 @@ module Engine
 
     def player?
       true
-    end
-
-    def num_certs
-      num_companies = @count_companies ? companies.size : 0
-      num_companies + shares.count { |s| s.corporation.counts_for_limit }
     end
 
     def to_s
