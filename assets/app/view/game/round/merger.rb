@@ -52,11 +52,13 @@ module View
             children << h(:div, [h(Corporation, corporation: merge_entity, selectable: false)])
           end
 
-          if merge_entity.corporation?
+          if merge_entity.corporation? && @step.respond_to?(:mergeable)
             @step.mergeable(merge_entity).each do |target|
               children << h(Corporation, corporation: target)
             end
           end
+
+          children << h(Map, game: @game) if actions.include?('remove_token')
 
           h(:div, children)
         end

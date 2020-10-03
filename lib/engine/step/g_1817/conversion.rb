@@ -2,11 +2,14 @@
 
 require_relative '../base'
 require_relative '../../token'
+require_relative 'token_merger'
 
 module Engine
   module Step
     module G1817
       class Conversion < Base
+        include TokenMerger
+
         def actions(entity)
           return [] if !entity.corporation? || entity != current_entity
 
@@ -94,14 +97,14 @@ module Engine
           trains = target.transfer(:trains, corporation).map(&:name)
           receiving << "trains (#{trains})" if trains.any?
 
-          tokens = target.tokens.map do |token|
-            new_token = Engine::Token.new(corporation)
-            corporation.tokens << new_token
-
-            token.swap!(new_token)
-            new_token.city&.hex&.id
+          remove_duplicate_tokens(corporation, target)
+          if tokens_above_limits?(corporation, target)
+            @game.log << "#{corporation.name} will be above token limit and must decide which tokens to keep"
+            @round.corporations_removing_tokens = [corporation, target]
+          else
+            tokens = move_tokens_to_surviving(corporation, target)
+            receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
           end
-          receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
 
           share_price = @game.find_share_price(corporation.share_price.price + target.share_price.price)
           price = share_price.price
