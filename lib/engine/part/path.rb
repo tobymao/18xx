@@ -5,7 +5,7 @@ require_relative 'base'
 module Engine
   module Part
     class Path < Base
-      attr_reader :a, :b, :branches, :city, :edges, :exit_lanes, :junction,
+      attr_reader :a, :b, :city, :edges, :exit_lanes, :junction,
                   :lanes, :nodes, :offboard, :stops, :terminal, :town
 
       def self.decode_lane_spec(x_lane)
@@ -38,7 +38,6 @@ module Engine
         @terminal = terminal
         @lanes = lanes
         @edges = []
-        @branches = []
         @stops = []
         @nodes = []
         @exit_lanes = {}
@@ -51,8 +50,22 @@ module Engine
       end
 
       def <=(other)
-        (@a <= other.a && @b <= other.b) ||
-          (@a <= other.b && @b <= other.a)
+        other_ends = other.ends
+        ends.all? { |t| other_ends.any? { |o| t <= o } }
+      end
+
+      def ends
+        @ends ||= calculate_ends.flatten
+      end
+
+      def calculate_ends
+        [@a, @b].map do |j|
+          next j unless j.junction?
+
+          j.paths.reject { |p| p == self }.map do |p|
+            [p.a, p.b].reject(&:junction?)
+          end
+        end
       end
 
       def select(paths)
@@ -65,12 +78,20 @@ module Engine
         on.keys.select { |p| on[p] == 1 }
       end
 
-      def walk(skip: nil, visited: nil, on: nil)
+      def walk(skip: nil, jskip: nil, visited: nil, on: nil)
         return if visited&.[](self)
 
         visited = visited&.dup || {}
         visited[self] = true
         yield self, visited
+
+        if @junction && @junction != jskip
+          @junction.paths.each do |jp|
+            next if on && !on[jp]
+
+            jp.walk(jskip: @junction, visited: visited, on: on) { |p, v| yield p, v }
+          end
+        end
 
         exits.each do |edge|
           next if edge == skip
@@ -175,19 +196,16 @@ module Engine
             @nodes << part
           when part.city?
             @city = part
-            @branches << part
             @stops << part
             @nodes << part
           when part.junction?
             @junction = part
-            @branches << part
-            @nodes << part
           when part.town?
             @town = part
-            @branches << part
             @stops << part
             @nodes << part
           end
+          part.lanes = @lanes[part == @a ? 0 : 1]
         end
       end
     end

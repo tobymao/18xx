@@ -5,7 +5,11 @@ require_relative 'base'
 module Engine
   module Part
     class Edge < Base
-      attr_accessor :num
+      attr_accessor :lanes, :num
+
+      def id
+        @_id ||= "#{hex.id}-#{@num}-#{@lanes[1]}"
+      end
 
       def initialize(num)
         @num = num.to_i
@@ -23,6 +27,7 @@ module Engine
         edge = Edge.new((@num + ticks) % 6)
         edge.index = index
         edge.tile = @tile
+        edge.lanes = @lanes
         edge
       end
     end

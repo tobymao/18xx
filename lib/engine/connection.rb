@@ -20,7 +20,6 @@ module Engine
           connection = connection.branch!(path)
           next if connection.paths.include?(path)
           next if (connection.nodes & path.nodes).any?
-          next if connection.paths.any? { |p| p.hex == hex && (p.exits & path.exits).any? }
 
           connections[connection] = true
           connection.add_path(path)
@@ -110,9 +109,25 @@ module Engine
       hexes.include?(hex)
     end
 
+    # this code relies on two things:
+    # 1. Path::walk is depth-first - whenever a new connection is started due to branching, we will never
+    #    see paths for ealier connections
+    # 2. @paths are in order (i.e. the head of one connects to the tail of the next)
     def branch!(path)
-      branched_paths = path.select(@paths)
-      return self if @paths.size == branched_paths.size
+      branched_paths = []
+      @paths.each do |p|
+        # we've seen this edge before
+        break if path.a.edge? && (path.a.id == p.a.id || path.a.id == p.b.id)
+        break if path.b.edge? && (path.b.id == p.a.id || path.b.id == p.b.id)
+
+        branched_paths << p
+
+        # we've seen this junction before
+        break if path.a.junction? && (path.a == p.a || path.a == p.b)
+        break if path.b.junction? && (path.b == p.a || path.b == p.b)
+      end
+
+      return self if branched_paths.size == @paths.size
 
       branch = self.class.new(branched_paths)
 
