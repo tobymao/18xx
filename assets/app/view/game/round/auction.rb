@@ -56,12 +56,16 @@ module View
         end
 
         def render_company_pending_par
-          corporation = @step.company_pending_par.abilities(:share).share.corporation
+          children = []
 
-          [
-            h(Corporation, corporation: corporation),
-            h(Par, corporation: corporation),
-          ]
+          @step.company_pending_par.abilities(:shares).shares.each do |share|
+            next unless share.president
+
+            children << h(Corporation, corporation: share.corporation)
+            children << h(Par, corporation: share.corporation)
+          end
+
+          children
         end
 
         def render_show_button

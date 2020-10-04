@@ -995,26 +995,31 @@ module Engine
 
       def init_company_abilities
         @companies.each do |company|
-          next unless (ability = company.abilities(:share))
+          next unless (ability = company.abilities(:shares))
 
-          case (share = ability.share)
-          when 'random_president'
-            corporation = @corporations[rand % @corporations.size]
-            share = corporation.shares[0]
-            ability.share = share
-            company.desc = "Purchasing player takes a president's share (20%) of #{corporation.name} \
-            and immediately sets its par value. #{company.desc}"
-            @log << "#{company.name} comes with the president's share of #{corporation.name}"
-          when 'random_share'
-            corporations = ability.corporations&.map { |id| corporation_by_id(id) } || @corporations
-            corporation = corporations[rand % corporations.size]
-            share = corporation.shares.find { |s| !s.president }
-            ability.share = share
-            company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
-            @log << "#{company.name} comes with a #{share.percent}% share of #{corporation.name}"
-          else
-            ability.share = share_by_id(share)
+          real_shares = []
+          ability.shares.each do |share|
+            case share
+            when 'random_president'
+              corporation = @corporations[rand % @corporations.size]
+              share = corporation.shares[0]
+              real_shares << share
+              company.desc = "Purchasing player takes a president's share (20%) of #{corporation.name} \
+              and immediately sets its par value. #{company.desc}"
+              @log << "#{company.name} comes with the president's share of #{corporation.name}"
+            when 'random_share'
+              corporations = ability.corporations&.map { |id| corporation_by_id(id) } || @corporations
+              corporation = corporations[rand % corporations.size]
+              share = corporation.shares.find { |s| !s.president }
+              real_shares << share
+              company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
+              @log << "#{company.name} comes with a #{share.percent}% share of #{corporation.name}"
+            else
+              real_shares << share_by_id(share)
+            end
           end
+
+          ability.shares = real_shares
         end
       end
 

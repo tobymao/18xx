@@ -308,8 +308,8 @@ module Engine
       "sym": "TB",
       "abilities": [
         {
-          "type": "share",
-          "share": "random_share",
+          "type": "shares",
+          "shares": "random_share",
           "corporations": [
             "CNR",
             "CPR",
@@ -340,8 +340,8 @@ module Engine
       "sym": "CP",
       "abilities": [
         {
-          "type": "share",
-          "share": "CPR_0"
+          "type": "shares",
+          "shares": "CPR_0"
         },
         {
           "type": "no_buy"

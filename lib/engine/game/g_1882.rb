@@ -121,7 +121,7 @@ module Engine
         cp.add_ability(Ability::Close.new(
           type: :close,
           when: :train,
-          corporation: cp.abilities(:share).share.corporation.name,
+          corporation: cp.abilities(:shares).shares.first.corporation.name,
         ))
       end
 
