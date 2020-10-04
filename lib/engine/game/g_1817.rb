@@ -49,7 +49,7 @@ module Engine
         'mine' => '/icons/1817/mine_token.svg',
       }.freeze
       # @todo: this needs purchase of the 8 train
-      GAME_END_CHECK = { bankrupt: :immediate }.freeze
+      GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
 
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
@@ -57,6 +57,10 @@ module Engine
       IPO_NAME = 'Treasury'
 
       LIMIT_TOKENS = 8
+
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
+                                                                  'Game Ends 3 ORs after purchase/export'\
+                                                                  ' of first 8 train']).freeze
 
       attr_reader :loan_value
 
@@ -210,25 +214,18 @@ module Engine
         @round =
           case @round
           when Round::Stock
-            @operating_rounds = @phase.operating_rounds
+            @operating_rounds = @final_operating_rounds || @phase.operating_rounds
             reorder_players
             new_operating_round
           when Round::Operating
-            if @round.round_num < @operating_rounds
-              or_round_finished
-              @log << "-- Merger and Conversion Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
-              Round::G1817::Merger.new(self, [
-                Step::G1817::ReduceTokens,
-                Step::DiscardTrain,
-                Step::G1817::PostConversion,
-                Step::G1817::Conversion,
-              ])
-            else
-              @turn += 1
-              or_round_finished
-              or_set_finished
-              new_stock_round
-            end
+            or_round_finished
+            @log << "-- Merger and Conversion Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
+            Round::G1817::Merger.new(self, [
+              Step::G1817::ReduceTokens,
+              Step::DiscardTrain,
+              Step::G1817::PostConversion,
+              Step::G1817::Conversion,
+            ], round_num: @round.round_num)
           when Round::G1817::Merger
             @log << "-- Acquisition Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
             Round::G1817::Acquisition.new(self, [
@@ -237,9 +234,15 @@ module Engine
               Step::G1817::CashCrisis,
               Step::DiscardTrain,
               Step::G1817::Acquire,
-            ])
+            ], round_num: @round.round_num)
           when Round::G1817::Acquisition
-            new_operating_round(@round.round_num + 1)
+            if @round.round_num < @operating_rounds
+              new_operating_round(@round.round_num + 1)
+            else
+              @turn += 1
+              or_set_finished
+              new_stock_round
+            end
           when init_round.class
             reorder_players
             new_stock_round
@@ -249,6 +252,26 @@ module Engine
       def init_loans
         @loan_value = 100
         70.times.map { |id| Loan.new(id, @loan_value) }
+      end
+
+      def round_end
+        Round::G1817::Acquisition
+      end
+
+      def custom_end_game_reached?
+        @final_operating_rounds
+      end
+
+      def final_operating_rounds
+        @final_operating_rounds || super
+      end
+
+      def event_signal_end_game!
+        # If we're in round 1, we have another set of ORs with 2 ORs
+        # If we're in round 2, we have another set of ORs with 3 ORs
+        @final_operating_rounds = @round.round_num == 2 ? 3 : 2
+
+        @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
       end
     end
   end

@@ -9,6 +9,10 @@ module Engine
         attr_accessor :offering
         attr_accessor :cash_crisis_player
 
+        def self.short_name
+          'AR'
+        end
+
         def name
           'Acquisition Round'
         end
