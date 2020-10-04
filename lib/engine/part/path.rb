@@ -55,15 +55,13 @@ module Engine
       end
 
       def ends
-        @ends ||= calculate_ends.flatten
-      end
+        @ends ||= [@a, @b].flat_map do |part|
+          next part unless part.junction?
 
-      def calculate_ends
-        [@a, @b].map do |j|
-          next j unless j.junction?
+          part.paths.flat_map do |path|
+            next [] if path == self
 
-          j.paths.reject { |p| p == self }.map do |p|
-            [p.a, p.b].reject(&:junction?)
+            [path.a, path.b].reject(&:junction?)
           end
         end
       end
