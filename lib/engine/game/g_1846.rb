@@ -159,8 +159,14 @@ module Engine
             end
 
             if two_player?
-              hex = self.class::REMOVED_CORP_SECOND_TOKEN.find { |_h, corps| corps.include?(corporation.name) }.first
-              @log << "#{corporation.name} will place a second token on #{hex} when a green tile is laid there"
+              if corporation.id == 'ERIE'
+                token = corporation.find_token_by_type
+                hex_by_id('D20').tile.cities.first.place_token(corporation, token, check_tokenable: false)
+                @log << 'ERIE places a token on D20'
+              else
+                hex = self.class::REMOVED_CORP_SECOND_TOKEN.find { |_h, corps| corps.include?(corporation.name) }.first
+                @log << "#{corporation.name} will place a second token on #{hex} when a green tile is laid there"
+              end
             end
           end
         end
@@ -536,6 +542,7 @@ module Engine
         return unless tile.color.to_sym == :green
         return unless (corp_ids = self.class::REMOVED_CORP_SECOND_TOKEN[hex.id])
         return unless (corp = @removals.find { |c| corp_ids.include?(c.id) })
+        return if corp.id == 'ERIE' # their second token is placed during setup
 
         token = corp.find_token_by_type
         @log << "#{corp.name} places a token on #{hex.name}"
