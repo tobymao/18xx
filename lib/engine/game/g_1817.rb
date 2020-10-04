@@ -40,7 +40,7 @@ module Engine
       SEED_MONEY = 200
       MUST_BUY_TRAIN = :never
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
-      POOL_SHARE_DROP = :one
+      POOL_SHARE_DROP = :each
       SELL_MOVEMENT = :none
       ALL_COMPANIES_ASSIGNABLE = true
 
@@ -168,7 +168,7 @@ module Engine
 
       def stock_round
         @interest_fixed = nil
-        Round::Stock.new(self, [
+        Round::G1817::Stock.new(self, [
           Step::DiscardTrain,
           Step::HomeToken,
           Step::G1817::BuySellParShares,
