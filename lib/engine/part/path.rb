@@ -106,6 +106,37 @@ module Engine
         end
       end
 
+      def cwalk(skip: nil, jskip: nil, visited: nil, chain: [])
+        return if visited&.[](self)
+
+        chained = chain + [self]
+        visited = visited&.dup || {}
+        visited[self] = true
+
+        yield chained if chain.empty? ? @nodes.size == 2 : @nodes.any?
+
+        if @junction && @junction != jskip
+          @junction.paths.each do |jp|
+            next if on && !on[jp]
+
+            jp.cwalk(jskip: @junction, visited: visited, chain: chained) { |c| yield c }
+          end
+        end
+
+        exits.each do |edge|
+          next if edge == skip
+          next unless (neighbor = hex.neighbors[edge])
+
+          np_edge = hex.invert(edge)
+
+          neighbor.paths[np_edge].each do |np|
+            next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
+
+            np.cwalk(skip: np_edge, visited: visited, chain: chained) { |c| yield c }
+          end
+        end
+      end
+
       # return true if facing exits on adjacent tiles match up taking lanes into account
       # TBD: support titles where lanes of different sizes can connect
       def lane_match?(lanes0, lanes1)
