@@ -1085,12 +1085,17 @@ module Engine
         self.class::GAME_END_CHECK
       end
 
+      def custom_end_game_reached?
+        false
+      end
+
       def game_end_check
         triggers = {
           bankrupt: bankruptcy_limit_reached?,
           bank: @bank.broken?,
           stock_market: @stock_market.max_reached?,
           final_train: @depot.empty?,
+          custom: custom_end_game_reached?,
         }.select { |_, t| t }
 
         %i[immediate current_round current_or full_or one_more_full_or_set].each do |after|
@@ -1109,7 +1114,7 @@ module Engine
         return false unless after
         return true if after == :immediate
         return true if after == :current_round
-        return false unless @round.is_a?(Round::Operating)
+        return false unless @round.is_a?(round_end)
         return true if after == :current_or
 
         final_or_in_set = @round.round_num == @operating_rounds
@@ -1117,6 +1122,14 @@ module Engine
         return (@turn == @final_turn) if final_or_in_set && (after == :one_more_full_or_set)
 
         final_or_in_set
+      end
+
+      def round_end
+        Round::Operating
+      end
+
+      def final_operating_rounds
+        operating_rounds
       end
 
       def game_ending_description
@@ -1138,9 +1151,10 @@ module Engine
                        when :current_or
                          " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
                        when :full_or
-                         " : Game Ends at conclusion of OR #{turn}.#{operating_rounds}"
+                         " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
                        when :one_more_full_or_set
-                         " : Game Ends at conclusion of OR #{@final_turn}.#{operating_rounds}"
+                         " : Game Ends at conclusion of #{round_end.short_name}"\
+                         " #{@final_turn}.#{final_operating_rounds}"
                        end
         end
 

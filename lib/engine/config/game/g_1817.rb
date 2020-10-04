@@ -692,7 +692,10 @@ module Engine
       "name": "8",
       "distance": 8,
       "price": 1100,
-      "num": 16
+      "num": 16,
+      "events": [
+        {"type": "signal_end_game"}
+      ]
     }
   ],
   "hexes": {

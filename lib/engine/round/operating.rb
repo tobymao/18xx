@@ -5,6 +5,10 @@ require_relative 'base'
 module Engine
   module Round
     class Operating < Base
+      def self.short_name
+        'OR'
+      end
+
       def name
         'Operating Round'
       end
