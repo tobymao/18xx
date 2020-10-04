@@ -7,7 +7,7 @@ module Engine
   class Share
     include Ownable
 
-    attr_accessor :percent, :buyable
+    attr_accessor :percent, :buyable, :counts_for_limit
     attr_reader :corporation, :president
 
     def initialize(corporation, owner: nil, president: false, percent: 10, index: 0)
@@ -16,7 +16,12 @@ module Engine
       @percent = percent
       @owner = owner || corporation
       @index = index
+
+      # buyable: set to false if the share is reserved (e.g. trade-in)
       @buyable = true
+
+      # counts_for_limit: set to false if share is disregarded for cert limit
+      @counts_for_limit = true
     end
 
     def id

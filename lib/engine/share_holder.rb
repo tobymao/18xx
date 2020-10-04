@@ -30,10 +30,10 @@ module Engine
       percent_of(corporation) / corporation.share_percent
     end
 
-    def bundles_for_corporation(corporation)
+    def bundles_for_corporation(corporation, shares: shares_of(corporation))
       return [] unless corporation.ipoed
 
-      shares = shares_of(corporation).sort_by(&:price)
+      shares = shares.sort_by(&:price)
 
       bundles = shares.flat_map.with_index do |share, index|
         bundle = shares.take(index + 1)

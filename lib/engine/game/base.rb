@@ -564,8 +564,16 @@ module Engine
       end
 
       def sellable_bundles(player, corporation)
-        bundles = player.bundles_for_corporation(corporation)
+        bundles = bundles_for_corporation(player, corporation)
         bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
+      end
+
+      def bundles_for_corporation(player, corporation)
+        player.bundles_for_corporation(corporation)
+      end
+
+      def num_certs(entity)
+        entity.companies.size + entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
       end
 
       def sellable_turn?

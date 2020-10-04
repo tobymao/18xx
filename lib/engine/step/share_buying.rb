@@ -23,7 +23,7 @@ module Engine
         corporation = bundle.corporation
 
         corporation.holding_ok?(entity, bundle.percent) &&
-          (!corporation.counts_for_limit || exchange || entity.num_certs < @game.cert_limit)
+          (!corporation.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit)
       end
     end
   end
