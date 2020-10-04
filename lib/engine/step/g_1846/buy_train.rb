@@ -54,6 +54,15 @@ module Engine
           true
         end
 
+        def sellable_bundle?(bundle)
+          # don't let President close the corporation that needs to buy a train
+          # https://boardgamegeek.com/thread/2094996/article/30495803#30495803
+          return false if (bundle.corporation == current_entity) &&
+                          (bundle.corporation.share_price.price == 10)
+
+          super
+        end
+
         def process_issue_shares(action)
           corporation = action.entity
           bundle = action.bundle
