@@ -615,7 +615,7 @@ module Engine
          ],
          "price":300,
          "num":3,
-         "rusted_on":"6'"
+         "obsolete_on":"6'"
       },
       {
          "name":"5",
