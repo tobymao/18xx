@@ -76,18 +76,25 @@ module Engine
         on.keys.select { |p| on[p] == 1 }
       end
 
-      def walk(skip: nil, jskip: nil, visited: nil, on: nil)
+      # on and chain are mutually exclusive
+      def walk(skip: nil, jskip: nil, visited: nil, on: nil, chain: nil)
         return if visited&.[](self)
 
         visited = visited&.dup || {}
         visited[self] = true
-        yield self, visited
+        if chain
+          chained = chain + [self]
+          yield chained if chain.empty? ? @nodes.size == 2 : @nodes.any?
+        else
+          yield self, visited
+        end
 
         if @junction && @junction != jskip
           @junction.paths.each do |jp|
             next if on && !on[jp]
 
-            jp.walk(jskip: @junction, visited: visited, on: on) { |p, v| yield p, v }
+            jp.walk(jskip: @junction, visited: visited, on: on) { |p, v| yield p, v } unless chain
+            jp.walk(jskip: @junction, visited: visited, chain: chained) { |c| yield c } if chain
           end
         end
 
@@ -101,38 +108,8 @@ module Engine
             next if on && !on[np]
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
 
-            np.walk(skip: np_edge, visited: visited, on: on) { |p, v| yield p, v }
-          end
-        end
-      end
-
-      def cwalk(skip: nil, jskip: nil, visited: nil, chain: [])
-        return if visited&.[](self)
-
-        chained = chain + [self]
-        visited = visited&.dup || {}
-        visited[self] = true
-
-        yield chained if chain.empty? ? @nodes.size == 2 : @nodes.any?
-
-        if @junction && @junction != jskip
-          @junction.paths.each do |jp|
-            next if on && !on[jp]
-
-            jp.cwalk(jskip: @junction, visited: visited, chain: chained) { |c| yield c }
-          end
-        end
-
-        exits.each do |edge|
-          next if edge == skip
-          next unless (neighbor = hex.neighbors[edge])
-
-          np_edge = hex.invert(edge)
-
-          neighbor.paths[np_edge].each do |np|
-            next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
-
-            np.cwalk(skip: np_edge, visited: visited, chain: chained) { |c| yield c }
+            np.walk(skip: np_edge, visited: visited, on: on) { |p, v| yield p, v } unless chain
+            np.walk(skip: np_edge, visited: visited, chain: chained) { |c| yield c } if chain
           end
         end
       end

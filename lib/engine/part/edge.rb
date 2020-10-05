@@ -7,7 +7,7 @@ module Engine
     class Edge < Base
       attr_accessor :lanes, :num
 
-      def ident
+      def id
         @ident ||= "#{hex.id}_#{@num}_#{@lanes[1]}"
       end
 

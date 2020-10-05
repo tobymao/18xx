@@ -166,6 +166,10 @@ module Engine
       @tile.location_name = nil
 
       @tile = tile
+
+      # remove connections
+      @connections = Hash.new { |h, k| h[k] = [] }
+
       clear_cache
       connect!
     end

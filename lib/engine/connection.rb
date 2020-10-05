@@ -14,7 +14,7 @@ module Engine
       end
 
       node_paths.uniq.each do |node_path|
-        node_path.cwalk do |cpaths|
+        node_path.walk(chain: []) do |cpaths|
           next unless valid_connection?(cpaths)
 
           connection = Connection.new(cpaths)
@@ -59,13 +59,13 @@ module Engine
         path_hist[cp] += 1
 
         # invalid if edge or node appears more than once, or junction appears more than twice (loops)
-        return false if !cp.a.junction? && end_hist[cp.a.ident].positive?
-        return false if !cp.b.junction? && end_hist[cp.b.ident].positive?
-        return false if end_hist[cp.a.ident] > 1
-        return false if end_hist[cp.b.ident] > 1
+        return false if !cp.a.junction? && end_hist[cp.a.id].positive?
+        return false if !cp.b.junction? && end_hist[cp.b.id].positive?
+        return false if end_hist[cp.a.id] > 1
+        return false if end_hist[cp.b.id] > 1
 
-        end_hist[cp.a.ident] += 1
-        end_hist[cp.b.ident] += 1
+        end_hist[cp.a.id] += 1
+        end_hist[cp.b.id] += 1
       end
       true
     end

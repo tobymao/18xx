@@ -7,10 +7,6 @@ module Engine
     class Junction < Base
       attr_accessor :lanes
 
-      def ident
-        self
-      end
-
       def junction?
         true
       end

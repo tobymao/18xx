@@ -5,10 +5,6 @@ module Engine
     class Node < Base
       attr_accessor :lanes
 
-      def ident
-        self
-      end
-
       def clear!
         @paths = nil
         @exits = nil
