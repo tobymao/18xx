@@ -14,19 +14,19 @@ module Engine
       end
 
       node_paths.uniq.each do |node_path|
-        node_path.walk(chain: []) do |cpaths|
-          next unless valid_connection?(cpaths)
+        node_path.walk(chain: []) do |chain|
+          next unless valid_connection?(chain)
 
-          connection = Connection.new(cpaths)
+          connection = Connection.new(chain)
           connections[connection] = true
 
-          cpaths.each do |cp|
-            hex = cp.hex
-            if cp.exits.empty?
+          chain.each do |path|
+            hex = path.hex
+            if path.exits.empty?
               hex_connections = hex.connections[:internal]
               hex_connections << connection
             else
-              cp.exits.each do |edge|
+              path.exits.each do |edge|
                 hex_connections = hex.connections[edge]
                 hex_connections << connection
               end
@@ -49,24 +49,28 @@ module Engine
       end
     end
 
-    def self.valid_connection?(cpaths)
-      path_hist = Hash.new(0)
+    def self.valid_connection?(chain)
+      path_hist = {}
       end_hist = Hash.new(0)
-      cpaths.each do |cp|
-        # invalid if path appears twice
-        return false if path_hist[cp].positive?
 
-        path_hist[cp] += 1
+      chain.each do |path|
+        # invalid if path appears twice
+        return false if path_hist[path]
+
+        path_hist[path] = true
+        a = path.a
+        b = path.b
 
         # invalid if edge or node appears more than once, or junction appears more than twice (loops)
-        return false if !cp.a.junction? && end_hist[cp.a.id].positive?
-        return false if !cp.b.junction? && end_hist[cp.b.id].positive?
-        return false if end_hist[cp.a.id] > 1
-        return false if end_hist[cp.b.id] > 1
+        return false if !a.junction? && end_hist[a.id].positive?
+        return false if !b.junction? && end_hist[b.id].positive?
+        return false if end_hist[a.id] > 1
+        return false if end_hist[b.id] > 1
 
-        end_hist[cp.a.id] += 1
-        end_hist[cp.b.id] += 1
+        end_hist[a.id] += 1
+        end_hist[b.id] += 1
       end
+
       true
     end
 

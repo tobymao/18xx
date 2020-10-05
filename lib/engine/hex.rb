@@ -167,10 +167,9 @@ module Engine
 
       @tile = tile
 
-      # remove connections
-      @connections = Hash.new { |h, k| h[k] = [] }
+      @connections.clear
+      @paths = nil
 
-      clear_cache
       connect!
     end
 
@@ -185,10 +184,6 @@ module Engine
 
     def connect!
       Connection.connect!(self)
-    end
-
-    def clear_cache
-      @paths = nil
     end
 
     def paths

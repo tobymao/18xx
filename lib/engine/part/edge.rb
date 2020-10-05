@@ -8,7 +8,7 @@ module Engine
       attr_accessor :lanes, :num
 
       def id
-        @ident ||= "#{hex.id}_#{@num}_#{@lanes[1]}"
+        @id ||= "#{hex.id}_#{@num}_#{@lanes[1]}"
       end
 
       def initialize(num)

@@ -82,6 +82,7 @@ module Engine
 
         visited = visited&.dup || {}
         visited[self] = true
+
         if chain
           chained = chain + [self]
           yield chained if chain.empty? ? @nodes.size == 2 : @nodes.any?
@@ -93,8 +94,11 @@ module Engine
           @junction.paths.each do |jp|
             next if on && !on[jp]
 
-            jp.walk(jskip: @junction, visited: visited, on: on) { |p, v| yield p, v } unless chain
-            jp.walk(jskip: @junction, visited: visited, chain: chained) { |c| yield c } if chain
+            if chain
+              jp.walk(jskip: @junction, visited: visited, chain: chained) { |c| yield c }
+            else
+              jp.walk(jskip: @junction, visited: visited, on: on) { |p, v| yield p, v }
+            end
           end
         end
 
@@ -108,8 +112,11 @@ module Engine
             next if on && !on[np]
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
 
-            np.walk(skip: np_edge, visited: visited, on: on) { |p, v| yield p, v } unless chain
-            np.walk(skip: np_edge, visited: visited, chain: chained) { |c| yield c } if chain
+            if chain
+              np.walk(skip: np_edge, visited: visited, chain: chained) { |c| yield c }
+            else
+              np.walk(skip: np_edge, visited: visited, on: on) { |p, v| yield p, v }
+            end
           end
         end
       end
