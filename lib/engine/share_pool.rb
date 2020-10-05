@@ -113,7 +113,7 @@ module Engine
       corporation.share_holders[owner] -= percent
       corporation.share_holders[to_entity] += percent
 
-      spender.spend(price, receiver) if spender && receiver
+      spender.spend(price, receiver) if spender && receiver && price.positive?
       bundle.shares.each { |s| move_share(s, to_entity) }
 
       # check if we need to change presidency

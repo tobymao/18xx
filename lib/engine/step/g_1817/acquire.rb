@@ -59,7 +59,14 @@ module Engine
               [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]]
             else
               # Player to the left of the president of the corporation
-              players = @game.players.rotate((@game.players.index(@auctioning.owner) + 1) % @game.players.size)
+              owner =
+                if @auctioning.owner == @game.share_pool
+                  @game.owner_when_liquidated[@auctioning]
+                else
+                  @auctioning.owner
+                end
+
+              players = @game.players.rotate((@game.players.index(owner) + 1) % @game.players.size)
               [players.find { |p| @active_bidders.include?(p) }]
             end
           elsif @buyer
@@ -117,7 +124,7 @@ module Engine
             when :acquisition
               @game.log << "All players pass on #{corporation.name}, not acquired"
             when :liquidate
-              process_bank_acquire(corporation)
+              process_bank_liquidate(corporation)
             when :offered
               @game.log << "All players pass on #{corporation.name}, not sold"
             end
@@ -138,7 +145,7 @@ module Engine
           process_acquire(action.corporation)
         end
 
-        def process_bank_acquire(acquired_corp)
+        def process_bank_liquidate(acquired_corp)
           tokens = acquired_corp.tokens.map do |token|
             id = token.city&.hex&.id
             token.remove!
@@ -146,10 +153,10 @@ module Engine
             id
           end
 
-          @game.log << "Bank acquires #{acquired_corp.name} for $0,"\
+          @game.log << "Bank liquidates #{acquired_corp.name} for $0,"\
           " removing tokens (#{tokens.size}: hexes #{tokens.compact})"
 
-          settle_president(acquired_corp, 0)
+          settle_president(acquired_corp)
         end
 
         def treasury_share_compensation(corp)
@@ -264,8 +271,10 @@ module Engine
             debt = [0, (@liquidation_loans.size * @game.loan_value) - @liquidation_cash].max
 
             if debt.positive?
-              @game.log << "#{president.name} settles #{acquired_corp.name} debts for #{@game.format_currency(debt)}"
-              president.spend(debt, @game.bank, check_cash: false)
+              unless president == @game.share_pool
+                @game.log << "#{president.name} settles #{acquired_corp.name} debts for #{@game.format_currency(debt)}"
+                president.spend(debt, @game.bank, check_cash: false)
+              end
               @game.loans.concat(@liquidation_loans)
               @liquidation_loans = []
               @shareholder_cash = 0
@@ -291,33 +300,36 @@ module Engine
               @game.bank.spend(amount, player)
             end
 
-            receivers = payouts
-                          .sort_by { |_r, c| -c }
-                          .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
+            if payouts.any?
+              receivers = payouts
+                            .sort_by { |_r, c| -c }
+                            .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
 
-            @log << "#{acquired_corp.name} settles with shareholders #{@game.format_currency(@shareholder_cash)} = "\
-                            "#{@game.format_currency(per_share)} (#{receivers})"
+              @log << "#{acquired_corp.name} settles with shareholders #{@game.format_currency(@shareholder_cash)} = "\
+                              "#{@game.format_currency(per_share)} (#{receivers})"
+            end
           end
           finalize_acquisition(acquired_corp)
         end
 
         def finalize_acquisition(acquired_corp)
           # Step 10
-          @round.cash_crisis_player = acquired_corp.owner
+          @round.cash_crisis_player = acquired_corp.owner unless acquired_corp.owner == @game.share_pool
           @game.reset_corporation(acquired_corp)
           @shareholder_cash = 0
+          @buyer = nil
           return unless @winner
 
           # If not aquired by the bank
           @round.offering.delete(acquired_corp)
           @winner = nil
-          @buyer = nil
           setup_auction
         end
 
         def can_acquire?(corporation, buyer)
           buyer.floated? &&
-          buyer.share_price.normal_movement? &&
+          !buyer.share_price.liquidation? &&
+          !buyer.share_price.acquisition? &&
           buyer != corporation
         end
 
@@ -414,44 +426,44 @@ module Engine
           @liquidation_cash = 0
           @liquidation_loans = []
 
-          @mode =
-            if corporation.share_price.liquidation?
+          if corporation.share_price.liquidation?
 
-              @liquidation_cash = corporation.cash
-              @liquidation_loans = corporation.loans.dup
+            @liquidation_cash = corporation.cash
+            @liquidation_loans = corporation.loans.dup
 
-              corporation.spend(corporation.cash, @game.bank)
-              corporation.loans.clear
+            corporation.spend(corporation.cash, @game.bank) if corporation.cash.positive?
+            corporation.loans.clear
 
-              @game.log << "#{corporation.name} is being liquidated, bank offers $0, corporation had"\
-              " #{@game.format_currency(@liquidation_cash)} and #{@liquidation_loans.size} loans"
-              auction_entity(corporation)
-              :liquidate
-            elsif corporation.share_price.acquisition?
-              @game.log << "#{corporation.name} offered for acquisition"
-              auction_entity(corporation)
-              :acquisition
-            else
-              # This needs the owner to either offer(assign) or pass up putting the corp for sale.
+            @game.log << "#{corporation.name} is being liquidated, bank offers $0, corporation had"\
+            " #{@game.format_currency(@liquidation_cash)} and #{@liquidation_loans.size} loans"
+            @mode = :liquidate
+            auction_entity(corporation)
+            :liquidate
+          elsif corporation.share_price.acquisition?
+            @game.log << "#{corporation.name} offered for acquisition"
+            @mode = :acquisition
+            auction_entity(corporation)
 
-              # Check to see if any players can actually buy it
-              bidders = entities.select do |player|
-                max_bid(player, corporation) >= min_bid(corporation)
-              end
+          else
+            # This needs the owner to either offer(assign) or pass up putting the corp for sale.
 
-              if bidders.any?
-                @game.log << "#{corporation.name} may be offered for sale for "\
-                  "#{@game.format_currency(starting_bid(corporation))}"
-                @offer = corporation
-                :offered
-              else
-                @game.log << "#{corporation.name} cannot be bought at "\
-                  "#{@game.format_currency(starting_bid(corporation))}, skipping"
-                @round.offering.delete(corporation)
-                setup_auction
-                @mode
-              end
+            # Check to see if any players can actually buy it
+            bidders = entities.select do |player|
+              max_bid(player, corporation) >= min_bid(corporation)
             end
+
+            if bidders.any?
+              @game.log << "#{corporation.name} may be offered for sale for "\
+                "#{@game.format_currency(starting_bid(corporation))}"
+              @offer = corporation
+              :offered
+            else
+              @game.log << "#{corporation.name} cannot be bought at "\
+                "#{@game.format_currency(starting_bid(corporation))}, skipping"
+              @round.offering.delete(corporation)
+              setup_auction
+            end
+          end
         end
 
         def setup

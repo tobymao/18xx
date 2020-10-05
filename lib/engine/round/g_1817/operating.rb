@@ -20,7 +20,7 @@ module Engine
 
         def after_process(action)
           # Keep track of last_player for Cash Crisis
-          entity = action.entity
+          entity = @entities[@entity_index]
           @cash_crisis_player = entity.player
           pay_interest!(entity)
 
@@ -32,7 +32,18 @@ module Engine
           super
         end
 
+        def start_operating
+          entity = @entities[@entity_index]
+          if entity.share_price.liquidation?
+            # Skip entities that have gone into liquidation due to bankrupcy.
+            next_entity!
+          else
+            super
+          end
+        end
+
         def pay_interest!(entity)
+          @cash_crisis_due_to_interest = nil
           return if @paid_loans[entity]
           return unless @steps.any? { |step| step.passed? && step.is_a?(Step::BuyTrain) }
 
@@ -57,7 +68,6 @@ module Engine
 
           owner = entity.owner
           @game.liquidate!(entity)
-
           transferred = ''
 
           if entity.cash.positive?
@@ -68,6 +78,7 @@ module Engine
           @log << "#{entity.name} cannot afford #{owed_fmt} interest and goes into liquidation#{transferred}"
 
           owner.spend(owed, bank, check_cash: false)
+          @cash_crisis_due_to_interest = entity
           @log << "#{owner.name} pays #{owed_fmt} interest for #{entity.loans.size} loans"
         end
       end
