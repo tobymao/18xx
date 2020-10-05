@@ -14,23 +14,22 @@ module Engine
       end
 
       node_paths.uniq.each do |node_path|
-        connection = Connection.new
-        node_path.walk do |path|
-          hex = path.hex
-          connection = connection.branch!(path)
-          next if connection.paths.include?(path)
-          next if (connection.nodes & path.nodes).any?
+        node_path.walk(chain: []) do |cpaths|
+          next unless valid_connection?(cpaths)
 
+          connection = Connection.new(cpaths)
           connections[connection] = true
-          connection.add_path(path)
 
-          if path.exits.empty?
-            hex_connections = hex.connections[:internal]
-            hex_connections << connection unless hex_connections.include?(connection)
-          else
-            path.exits.each do |edge|
-              hex_connections = hex.connections[edge]
-              hex_connections << connection unless hex_connections.include?(connection)
+          cpaths.each do |cp|
+            hex = cp.hex
+            if cp.exits.empty?
+              hex_connections = hex.connections[:internal]
+              hex_connections << connection
+            else
+              cp.exits.each do |edge|
+                hex_connections = hex.connections[edge]
+                hex_connections << connection
+              end
             end
           end
         end
@@ -48,6 +47,27 @@ module Engine
           end
         end
       end
+    end
+
+    def self.valid_connection?(cpaths)
+      path_hist = Hash.new(0)
+      end_hist = Hash.new(0)
+      cpaths.each do |cp|
+        # invalid if path appears twice
+        return false if path_hist[cp].positive?
+
+        path_hist[cp] += 1
+
+        # invalid if edge or node appears more than once, or junction appears more than twice (loops)
+        return false if !cp.a.junction? && end_hist[cp.a.id].positive?
+        return false if !cp.b.junction? && end_hist[cp.b.id].positive?
+        return false if end_hist[cp.a.id] > 1
+        return false if end_hist[cp.b.id] > 1
+
+        end_hist[cp.a.id] += 1
+        end_hist[cp.b.id] += 1
+      end
+      true
     end
 
     def initialize(paths = [])
@@ -81,12 +101,6 @@ module Engine
         end
     end
 
-    def add_path(path)
-      @paths << path
-      clear_cache
-      raise 'Connection cannot have more than two nodes' if nodes.size > 2
-    end
-
     def clear_cache
       @nodes = nil
       @hexes = nil
@@ -107,37 +121,6 @@ module Engine
 
     def include?(hex)
       hexes.include?(hex)
-    end
-
-    # this code relies on two things:
-    # 1. Path::walk is depth-first - whenever a new connection is started due to branching, we will never
-    #    see paths for ealier connections
-    # 2. @paths are in order (i.e. the head of one connects to the tail of the next)
-    def branch!(path)
-      branched_paths = []
-      @paths.each do |p|
-        # we've seen this edge before
-        break if path.a.edge? && (path.a.id == p.a.id || path.a.id == p.b.id)
-        break if path.b.edge? && (path.b.id == p.a.id || path.b.id == p.b.id)
-
-        branched_paths << p
-
-        # we've seen this junction before
-        break if path.a.junction? && (path.a == p.a || path.a == p.b)
-        break if path.b.junction? && (path.b == p.a || path.b == p.b)
-      end
-
-      return self if branched_paths.size == @paths.size
-
-      branch = self.class.new(branched_paths)
-
-      branched_paths.each do |p|
-        p.exits.each do |edge|
-          p.hex.connections[edge] << branch
-        end
-      end
-
-      branch
     end
 
     def inspect
