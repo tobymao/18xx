@@ -25,6 +25,8 @@ module Engine
       ).freeze
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'can_buy_companies_from_other_players' => ['Interplayer Company Buy', 'Companies can be bought between players']
+      ).merge(
         Step::SingleDepotTrainBuy::STATUS_TEXT
       ).merge(
         'ndm_available' => ['NdM available', 'NdM shares available during stock round'],
