@@ -569,7 +569,7 @@ module Engine
          "rusts_on":"6"
       },
       {
-         "name":"3½",
+         "name":"3'",
          "distance":[
             {
                "nodes":[
@@ -615,7 +615,7 @@ module Engine
          ],
          "price":300,
          "num":3,
-         "rusts_on":"6½"
+         "obsolete_on":"6'"
       },
       {
          "name":"5",
@@ -666,7 +666,7 @@ module Engine
          "num":1
       },
       {
-         "name":"6½",
+         "name":"6'",
          "distance":[
             {
                "nodes":[
@@ -887,7 +887,7 @@ module Engine
       },
       {
          "name":"3½",
-         "on":"3½",
+         "on":"3'",
          "train_limit":3,
          "tiles":[
             "yellow",
@@ -944,7 +944,7 @@ module Engine
       },
       {
          "name":"6½",
-         "on":"6½",
+         "on":"6'",
          "train_limit":2,
          "tiles":[
             "yellow",

@@ -105,7 +105,7 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::G18MEX::Operating.new(self, [
+        Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
           Step::BuyCompany,
@@ -168,6 +168,13 @@ module Engine
         regular_bundles.concat(half_bundles)
       end
 
+      def place_home_token(entity)
+        super
+        return if entity.minor?
+
+        entity.trains.empty? ? handle_no_mail(entity) : handle_mail(entity)
+      end
+
       def revenue_for(route, stops)
         adjust_revenue_for_4d_train(route, stops, super)
       end
@@ -222,6 +229,17 @@ module Engine
       end
 
       private
+
+      def handle_no_mail(entity)
+        @log << "#{entity.name} receives no mail income as it has no trains"
+      end
+
+      def handle_mail(entity)
+        hex = hex_by_id(entity.coordinates)
+        income = hex.tile.city_towns.first.route_revenue(@phase, entity.trains.first)
+        @bank.spend(income, entity)
+        @log << "#{entity.name} receives #{format_currency(income)} in mail"
+      end
 
       def merge_minor(minor, major, share)
         treasury = format_currency(minor.cash).to_s
