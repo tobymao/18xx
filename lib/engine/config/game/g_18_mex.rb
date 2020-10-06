@@ -274,7 +274,7 @@ module Engine
          "name":"Interoceanic Railroad",
          "value":50,
          "revenue":0,
-         "desc":"Minor company A. Begins in Tampico (M12). Once closed owner receives a 5% share in NdM.",
+         "desc":"Owner takes control of minor company A. Begins in Tampico (M12). This private cannot be sold. When Phase 3½ begins, the minor company closes, but its owner receives a 5% share in NdM.",
          "abilities": [
             {
               "type": "no_buy",
@@ -292,7 +292,7 @@ module Engine
          "name":"Sonora-Baja California Railway",
          "value":50,
          "revenue":0,
-         "desc":"Minor company B. Begins in Mazatlán (K6). Once closed owner receives a 5% share in NdM.",
+         "desc":"Owner takes control of minor company B. Begins in Mazatlán (K6). This private cannot be sold. When Phase 3½ begins, the minor company closes, but its owner receives a 5% share in NdM.",
          "abilities": [
             {
               "type": "no_buy",
@@ -310,7 +310,7 @@ module Engine
          "name":"Southeastern Railway",
          "value":50,
          "revenue":0,
-         "desc":"Minor company C. Begins in Oaxaca (S12). Once closed owner receives a 10% share in UdY.",
+         "desc":"Owner takes control of minor company C. Begins in Oaxaca (S12). This private cannot be sold. When Phase 3½ begins, the minor company closes, but its owner receives a 10% share in UdY.",
          "abilities": [
             {
               "type": "no_buy",
