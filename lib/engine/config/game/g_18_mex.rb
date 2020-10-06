@@ -867,6 +867,7 @@ module Engine
             "yellow"
          ],
          "status":[
+            "can_buy_companies_from_other_players",
             "limited_train_buy"
          ],
          "operating_rounds": 1
@@ -881,6 +882,7 @@ module Engine
          ],
          "status":[
             "can_buy_companies",
+            "can_buy_companies_from_other_players",
             "limited_train_buy"
          ],
          "operating_rounds": 2
@@ -895,6 +897,7 @@ module Engine
          ],
          "status":[
             "can_buy_companies",
+            "can_buy_companies_from_other_players",
             "limited_train_buy",
             "ndm_available"
          ],
@@ -910,6 +913,7 @@ module Engine
          ],
          "status":[
             "can_buy_companies",
+            "can_buy_companies_from_other_players",
             "ndm_available"
          ],
          "operating_rounds": 2
