@@ -8,10 +8,14 @@ module View
     class Dividend < Snabberb::Component
       include Actionable
 
+      needs :routes, store: true, default: []
+
       def render
         @step = @game.active_step
 
         options = @step.dividend_options(@step.current_entity)
+
+        store(:routes, @step.routes, skip: true)
 
         payout_options = @step.dividend_types.map do |type|
           option = options[type]
@@ -29,6 +33,7 @@ module View
 
           click = lambda do
             process_action(Engine::Action::Dividend.new(@step.current_entity, kind: type))
+            cleanup
           end
           button = h('td.no_padding', [h(:button, { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
           direction =
@@ -52,6 +57,10 @@ module View
             margin: '0.5rem 0 0 0',
             textAlign: 'left',
           },
+          key: 'dividend',
+          hook: {
+            destroy: -> { cleanup },
+          },
         }
         share_props = { style: { width: '2.7rem' } }
 
@@ -66,6 +75,10 @@ module View
           ]),
           h(:tbody, payout_options),
         ])
+      end
+
+      def cleanup
+        store(:routes, [], skip: true)
       end
     end
   end
