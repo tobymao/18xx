@@ -23,7 +23,7 @@ module Engine
         "5": 620
     },
     "capitalization": "full",
-    "layout": "flat",
+    "layout": "pointy",
     "mustSellInBlocks": false,
     "locationNames": {
         "A3": "Copper County",
@@ -157,7 +157,7 @@ module Engine
             "312",
             "357",
             "412",
-            "500"
+            "500e"
         ],
         [
             "112",
@@ -401,7 +401,7 @@ module Engine
             "value": 20,
             "revenue": 5,
             "desc": "Blocks Sarnia (D10) while owned by a player. When this company is sold to a corporation, revenue increases to $10.",
-            "sym": "SCT",
+            "sym": "StCT",
             "abilities": [
                 {
                     "type": "blocks_hexes",
@@ -433,6 +433,10 @@ module Engine
                 },
                 {
                     "type": "tile_lay",
+                    "owner_type": "corporation",
+                    "hexes": [
+                        "B24"
+                    ],
                     "hexes": [
                         "B24"
                     ],
@@ -441,7 +445,7 @@ module Engine
                         "4",
                         "58"
                     ],
-                    "owner_type": "corporation",
+                    "free": true,
                     "count": 1
                 }
             ]
@@ -461,9 +465,10 @@ module Engine
                     ]
                 },
                 {
-                    "type": "tile_lay",
+                    "type": "teleport",
+                    "owner_type":"corporation",
                     "hexes": [
-                        "F20"
+                      "F20"
                     ],
                     "tiles": [
                         "14",
@@ -473,7 +478,8 @@ module Engine
                         "206"
                     ],
                     "when": "track",
-                    "owner": "corporation",
+                    "price": 0,
+                    "teleport_price": 120,
                     "count": 1
                 }
             ]
@@ -482,9 +488,14 @@ module Engine
             "name": "Cobourg & Peterborough Railway",
             "value": 80,
             "revenue": 0,
-            "desc": "I do a lot",
+            "desc": "Not yet implemented",
             "sym": "C&P",
             "abilities": [
+                {
+                    "type": "revenue_change",
+                    "revenue": 15,
+                    "when": "sold"
+                }
             ]
         },
         {
@@ -499,6 +510,14 @@ module Engine
                     "owner_type": "player",
                     "hexes": [
                         "D22"
+                    ]
+                },
+                {
+                    "type": "exchange",
+                    "corporation": "any",
+                    "from": [
+                        "ipo",
+                        "market"
                     ]
                 }
             ]
@@ -515,6 +534,28 @@ module Engine
                     "owner_type": "player",
                     "hexes": [
                         "E7"
+                    ]
+                },
+                {
+                    "type": "tile_lay",
+                    "owner_type": "corporation",
+                    "cost": 20,
+                    "hexes": [
+                        "E7"
+                    ],
+                    "tiles": [
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "6", 
+                        "7",
+                        "8",
+                        "55",
+                        "56",
+                        "57",
+                        "58",
+                        "69"
                     ]
                 }
             ]
@@ -534,8 +575,8 @@ module Engine
                     ]
                 },
                 {
-                    "type": "share",
-                    "share": "PRR_1"
+                    "type": "shares",
+                    "shares": "PRR_1"
                 }
             ]
         },
@@ -547,12 +588,11 @@ module Engine
             "sym": "CPR",
             "abilities": [
                 {
-                    "type": "share",
-                    "share": "CPR_0"
-                },
-                {
-                    "type": "share",
-                    "share": "CPR_1"
+                    "type": "shares",
+                    "shares": [
+                        "CPR_0",
+                        "CPR_1"
+                    ]
                 },
                 {
                     "type": "no_buy"
@@ -567,12 +607,11 @@ module Engine
             "sym": "GT",
             "abilities": [
                 {
-                    "type": "share",
-                    "share": "GT_0"
-                },
-                {
-                    "type": "share",
-                    "share": "GT_1"
+                    "type": "shares",
+                    "shares": [
+                        "GT_0",
+                        "GT_1"
+                    ]
                 },
                 {
                     "type": "no_buy"
@@ -587,12 +626,11 @@ module Engine
             "sym": "IC",
             "abilities": [
                 {
-                    "type": "share",
-                    "share": "IC_0"
-                },
-                {
-                    "type": "share",
-                    "share": "IC_1"
+                    "type": "shares",
+                    "shares": [
+                        "IC_0",
+                        "IC_1"
+                    ]
                 },
                 {
                     "type": "no_buy"
@@ -607,12 +645,11 @@ module Engine
             "sym": "MC",
             "abilities": [
                 {
-                    "type": "share",
-                    "share": "MC_0"
-                },
-                {
-                    "type": "share",
-                    "share": "MC_1"
+                    "type": "shares",
+                    "shares": [
+                        "MC_0",
+                        "MC_1"
+                    ]
                 },
                 {
                     "type": "no_buy"
@@ -627,12 +664,11 @@ module Engine
             "sym": "MP",
             "abilities": [
                 {
-                    "type": "share",
-                    "share": "MP_0"
-                },
-                {
-                    "type": "share",
-                    "share": "MP_1"
+                    "type": "shares",
+                    "shares": [
+                        "MP_0",
+                        "MP_1"
+                    ]
                 },
                 {
                     "type": "no_buy"
@@ -647,12 +683,11 @@ module Engine
             "sym": "NKP",
             "abilities": [
                 {
-                    "type": "share",
-                    "share": "NKP_0"
-                },
-                {
-                    "type": "share",
-                    "share": "NKP_1"
+                    "type": "shares",
+                    "shares": [
+                        "NKP_0",
+                        "NKP_1"
+                    ]
                 },
                 {
                     "type": "no_buy"
@@ -667,12 +702,11 @@ module Engine
             "sym": "NW",
             "abilities": [
                 {
-                    "type": "share",
-                    "share": "NW_0"
-                },
-                {
-                    "type": "share",
-                    "share": "NW_1"
+                    "type": "shares",
+                    "shares": [
+                        "NW_0",
+                        "NW_1"
+                    ]
                 },
                 {
                     "type": "no_buy"
@@ -687,12 +721,11 @@ module Engine
             "sym": "OS&H",
             "abilities": [
                 {
-                    "type": "share",
-                    "share": "OSH_0"
-                },
-                {
-                    "type": "share",
-                    "share": "OSH_1"
+                    "type": "shares",
+                    "shares": [
+                        "OSH_0",
+                        "OSH_1"
+                    ]
                 },
                 {
                     "type": "no_buy"
@@ -728,7 +761,7 @@ module Engine
         },
         {
             "sym": "C&O",
-            "name": "Chesapeake & Ohio",
+            "name": "Chesapeake & Ohio Railroad",
             "logo": "1828/CO",
             "tokens": [
                 0,
@@ -740,7 +773,7 @@ module Engine
         },
         {
             "sym": "CPR",
-            "name": "Canadian Pacific Railway",
+            "name": "Canadian Pacific Railroad",
             "logo": "1828/CPR",
             "tokens": [
                 0,
@@ -790,7 +823,7 @@ module Engine
         },
         {
             "sym": "MC",
-            "name": "Michigan Central Railroad",
+            "name": "Michigan Central",
             "logo": "1828/MC",
             "tokens": [
                 0,
@@ -816,7 +849,7 @@ module Engine
         },
         {
             "sym": "NYC",
-            "name": "New York Central",
+            "name": "New York Central Railroad",
             "logo": "1828/NYC",
             "tokens": [
                 0,
@@ -840,7 +873,7 @@ module Engine
         },
         {
             "sym": "NYH",
-            "name": "New York, New Haven & Hartford",
+            "name": "New York, New Haven & Hartford Railway",
             "logo": "1828/NYH",
             "tokens": [
                 0,
@@ -996,6 +1029,7 @@ module Engine
                 "C27",
                 "D12",
                 "D20",
+                "D22",
                 "E5",
                 "E17",
                 "E19",
@@ -1085,7 +1119,9 @@ module Engine
                 "D10",
                 "F14",
                 "H14",
-                "I11",
+                "I11"
+            ],
+            "town=revenue:0;upgrade=cost:120,terrain:mountain": [
                 "K13"
             ],
             "town=revenue:0;town=revenue:0": [
@@ -1142,7 +1178,7 @@ module Engine
             "city=revenue:30;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
                 "D4"
             ],
-            "city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0": [
+            "city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0": [
                 "D18"
             ],
             "city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0": [
@@ -1161,7 +1197,7 @@ module Engine
                 "F28",
                 "I23"
             ],
-            "city=revenue:yellow_20|brown_30;path=a:1,b:_0;path=a:1,b:4;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0": [
+            "city=revenue:yellow_20|brown_30;path=a:1,b:4;path=a:2,b:_0;path=a:3,b:_0": [
                 "H16"
             ],
             "city=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0": [
