@@ -176,7 +176,7 @@ module Engine
           used_new_track = true unless op
           old_revenues = op&.nodes && op.nodes.map(&:max_revenue).sort
           new_revenues = np&.nodes && np.nodes.map(&:max_revenue).sort
-          changed_city = old_revenues != new_revenues
+          changed_city = true unless old_revenues == new_revenues
         end
 
         case @game.class::TRACK_RESTRICTION
