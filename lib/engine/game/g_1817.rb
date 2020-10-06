@@ -62,7 +62,7 @@ module Engine
                                                                   'Game Ends 3 ORs after purchase/export'\
                                                                   ' of first 8 train']).freeze
 
-      attr_reader :loan_value
+      attr_reader :loan_value, :owner_when_liquidated
 
       def bankruptcy_limit_reached?
         @players.reject(&:bankrupt).one?
@@ -133,6 +133,7 @@ module Engine
       end
 
       def liquidate!(corporation)
+        @owner_when_liquidated[corporation] = corporation.owner
         @stock_market.move(corporation, 0, 0, force: true)
       end
 
@@ -157,6 +158,14 @@ module Engine
         revenue
       end
 
+      def can_go_bankrupt?(player, corporation)
+        total_emr_buying_power(player, corporation).negative?
+      end
+
+      def total_emr_buying_power(player, _corporation)
+        liquidity(player, emergency: true)
+      end
+
       private
 
       def new_auction_round
@@ -178,6 +187,7 @@ module Engine
       def operating_round(round_num)
         @interest_fixed = nil
         @interest_fixed = interest_rate
+        @owner_when_liquidated = {}
         # Revaluate if private companies are owned by corps with trains
         @companies.each do |company|
           next unless company.owner
@@ -188,7 +198,7 @@ module Engine
         end
 
         Round::G1817::Operating.new(self, [
-          Step::Bankrupt, # @todo: needs customization
+          Step::G1817::Bankrupt,
           Step::G1817::CashCrisis,
           Step::G1817::Loan,
           Step::G1817::SpecialTrack,
@@ -230,7 +240,7 @@ module Engine
             @log << "-- Acquisition Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
             Round::G1817::Acquisition.new(self, [
               Step::G1817::ReduceTokens,
-              Step::Bankrupt, # @todo: needs customization
+              Step::G1817::Bankrupt,
               Step::G1817::CashCrisis,
               Step::DiscardTrain,
               Step::G1817::Acquire,
