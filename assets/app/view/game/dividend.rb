@@ -57,6 +57,7 @@ module View
             margin: '0.5rem 0 0 0',
             textAlign: 'left',
           },
+          key: 'dividend',
           hook: {
             destroy: -> { cleanup },
           },
