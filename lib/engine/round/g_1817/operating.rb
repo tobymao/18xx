@@ -12,6 +12,7 @@ module Engine
 
         def setup
           @paid_loans = {}
+          after_setup
         end
 
         def select_entities
