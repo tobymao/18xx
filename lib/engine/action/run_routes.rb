@@ -11,6 +11,8 @@ module Engine
       def initialize(entity, routes:)
         @entity = entity
         @routes = routes
+
+        @routes.each(&:lock_revenue)
       end
 
       def self.h_to_args(h, game)

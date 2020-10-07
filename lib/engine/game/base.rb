@@ -634,12 +634,8 @@ module Engine
         route.hexes.map(&:name).join('-')
       end
 
-      def routes_revenue(routes, update: nil)
-        if update
-          routes.sum(&:revenue)
-        else
-          routes.sum(&:cached_revenue)
-        end
+      def routes_revenue(routes)
+        routes.sum(&:revenue)
       end
 
       def get(type, id)

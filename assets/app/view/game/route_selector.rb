@@ -188,7 +188,7 @@ module View
         }
 
         revenue = begin
-                    @game.format_currency(@game.routes_revenue(active_routes, update: true))
+                    @game.format_currency(@game.routes_revenue(active_routes))
                   rescue Engine::GameError
                     '(Invalid Route)'
                   end

@@ -218,11 +218,13 @@ module Engine
       end
     end
 
-    def cached_revenue
-      @cached_revenue ||= revenue
+    def lock_revenue
+      @revenue = revenue
+      @revenue_locked = true
     end
 
     def revenue
+      return @revenue if @revenue_locked
       return @override[:revenue] if @override
 
       visited = visited_stops
@@ -240,7 +242,7 @@ module Engine
         @game.game_error("Cannot use group #{key} more than once") unless group.one?
       end
 
-      @cached_revenue = @game.revenue_for(self, stops)
+      @game.revenue_for(self, stops)
     end
 
     def corporation
