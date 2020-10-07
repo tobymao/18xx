@@ -218,13 +218,12 @@ module Engine
       end
     end
 
-    def lock_revenue
+    def lock!
       @revenue = revenue
-      @revenue_locked = true
     end
 
     def revenue
-      return @revenue if @revenue_locked
+      return @revenue if @revenue
       return @override[:revenue] if @override
 
       visited = visited_stops

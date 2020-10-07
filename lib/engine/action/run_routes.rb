@@ -12,7 +12,7 @@ module Engine
         @entity = entity
         @routes = routes
 
-        @routes.each(&:lock_revenue)
+        @routes.each(&:lock!)
       end
 
       def self.h_to_args(h, game)
