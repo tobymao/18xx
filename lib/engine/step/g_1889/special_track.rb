@@ -16,6 +16,13 @@ module Engine
           blocking_for_sold_company? || super
         end
 
+        def process_lay_tile(action)
+          return super unless action.entity == @company
+
+          lay_tile(action, spender: @round.company_seller)
+          ability(action.entity).use!
+        end
+
         def process_pass(action)
           @game.game_error("Not #{action.entity.name}'s turn: #{action.to_h}") unless action.entity == @company
 
