@@ -85,6 +85,7 @@ module Engine
           minor.buy_train(train)
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token)
+          minor.float!
         end
 
         @brown_g_tile ||= @tiles.find { |t| t.name == '480' }
