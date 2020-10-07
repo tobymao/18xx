@@ -20,8 +20,8 @@ module Engine
       CURVED_YELLOW_CITY = %w[5 6].freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-        'minors_closed' => ['Minors closed', 'Minors closed, NdM available'],
-        'ndm_merger' => ['NdM merger', 'NdM merger']
+        'minors_closed' => ['Minors closed', 'Minors closed, NdM becomes available for buy & sell during stock round'],
+        'ndm_merger' => ['NdM merger', 'Potential NdM merger if NdM has floated']
       ).freeze
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -29,7 +29,7 @@ module Engine
       ).merge(
         Step::SingleDepotTrainBuy::STATUS_TEXT
       ).merge(
-        'ndm_available' => ['NdM available', 'NdM shares available during stock round'],
+        'ndm_unavailable' => ['NdM unavailable', 'NdM shares unavailable during stock round'],
       ).freeze
 
       def p2_company
@@ -85,6 +85,7 @@ module Engine
           minor.buy_train(train)
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token)
+          minor.float!
         end
 
         @brown_g_tile ||= @tiles.find { |t| t.name == '480' }
@@ -185,6 +186,9 @@ module Engine
         merge_minor(minor_a, ndm, minor_a_reserved_share)
         merge_minor(minor_b, ndm, minor_b_reserved_share)
         merge_minor(minor_c, udy, minor_c_reserved_share)
+        ndm.abilities(:no_buy) do |ability|
+          ndm.remove_ability(ability)
+        end
       end
 
       def event_ndm_merger!

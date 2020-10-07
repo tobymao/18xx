@@ -437,6 +437,10 @@ module Engine
                "type": "train_limit",
                "description": "+1 train limit",
                "increase": 1
+            },
+            {
+               "type": "no_buy",
+               "description": "Unavailable in SR before phase 3½"
             }
          ],
          "coordinates":"O10",
@@ -868,7 +872,8 @@ module Engine
          ],
          "status":[
             "can_buy_companies_from_other_players",
-            "limited_train_buy"
+            "limited_train_buy",
+            "ndm_unavailable"
          ],
          "operating_rounds": 1
       },
@@ -883,7 +888,8 @@ module Engine
          "status":[
             "can_buy_companies",
             "can_buy_companies_from_other_players",
-            "limited_train_buy"
+            "limited_train_buy",
+            "ndm_unavailable"
          ],
          "operating_rounds": 2
       },
@@ -898,8 +904,7 @@ module Engine
          "status":[
             "can_buy_companies",
             "can_buy_companies_from_other_players",
-            "limited_train_buy",
-            "ndm_available"
+            "limited_train_buy"
          ],
          "operating_rounds": 2
       },
@@ -913,8 +918,7 @@ module Engine
          ],
          "status":[
             "can_buy_companies",
-            "can_buy_companies_from_other_players",
-            "ndm_available"
+            "can_buy_companies_from_other_players"
          ],
          "operating_rounds": 2
       },
@@ -927,9 +931,6 @@ module Engine
             "green",
             "brown"
          ],
-         "status":[
-            "ndm_available"
-         ],
          "operating_rounds": 3
       },
       {
@@ -940,9 +941,6 @@ module Engine
             "yellow",
             "green",
             "brown"
-         ],
-         "status":[
-            "ndm_available"
          ],
          "operating_rounds": 3
       },
@@ -955,9 +953,6 @@ module Engine
             "green",
             "brown"
          ],
-         "status":[
-            "ndm_available"
-         ],
          "operating_rounds": 3
       },
       {
@@ -969,9 +964,6 @@ module Engine
             "green",
             "brown",
             "gray"
-         ],
-         "status":[
-            "ndm_available"
          ],
          "operating_rounds": 3
       }
