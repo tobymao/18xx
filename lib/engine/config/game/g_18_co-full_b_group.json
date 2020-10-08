@@ -1,0 +1,48 @@
+{
+    "sym": "DPRT",
+    "name": "Denver Pacific Railway and Telegraph Company",
+    "value": 100,
+    "revenue": 15,
+    "group": "B",
+    "desc": "The owner immediately receives one share of the Denver Pacific Railroad, if available. Denver Pacific Railroad receives money equal to the par value when the President’s Certificate is purchased. Closes on purchase of “5” train.",
+    "abilities": [{
+        "type": "shares",
+        "shares": "DPAC_1"
+    }]
+},
+{
+    "sym": "CCR",
+    "name": "Colorado Central Railroad",
+    "value": 100,
+    "revenue": 15,
+    "group": "B",
+    "desc": "The owner immediately receives one share of the Colorado and Southern Railroad, if available. Colorado and Southern Railroad receives money equal to the par value when the President’s Certificate is purchased. Closes on purchase of “5” train.",
+    "abilities": [{
+        "type": "shares",
+        "shares": "CS_1"
+    }]
+},
+{
+    "sym": "UPED",
+    "name": "Union Pacific Eastern Division",
+    "value": 100,
+    "revenue": 15,
+    "group": "B",
+    "desc": "The owner immediately receives one share of the Kansas Pacific Railway, if available. Kansas Pacific Railway receives money equal to the par value when the President’s Certificate is purchased. Closes on purchase of “5” train.",
+    "abilities": [{
+        "type": "shares",
+        "shares": "KPAC_1"
+    }]
+},
+{
+    "sym": "ASL",
+    "name": "The owner immediately receives one share of the Colorado Midland Railway, if available. Colorado Midland Railway receives money equal to the par value when the President’s Certificate is purchased. Closes on purchase of “5” train.",
+    "value": 100,
+    "revenue": 15,
+    "group": "B",
+    "desc": "The owner immediately receives one share of the Colorado Midland Railway, if available. Colorado Midland Railway receives money equal to the par value when the President’s Certificate is purchased. Closes on purchase of “5” train.",
+    "abilities": [{
+        "type": "shares",
+        "shares": "CM_1"
+    }]
+},
