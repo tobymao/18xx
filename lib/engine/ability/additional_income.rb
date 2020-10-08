@@ -7,7 +7,7 @@ module Engine
     class AdditionalIncome < Base
       attr_reader :marker, :amount
 
-      def setup()
+      def setup
         @marker = marker
         @amount = amount
       end

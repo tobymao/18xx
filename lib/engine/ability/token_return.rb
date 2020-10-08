@@ -5,8 +5,8 @@ require_relative 'base'
 module Engine
   module Ability
     class TokenReturn < Base
-      def setup()
-        
+      def setup
+        # TODO: Implement
       end
     end
   end

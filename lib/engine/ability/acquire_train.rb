@@ -7,7 +7,7 @@ module Engine
     class AquireTrain < Base
       attr_reader :train
 
-      def setup()
+      def setup
         @train = train
       end
     end
