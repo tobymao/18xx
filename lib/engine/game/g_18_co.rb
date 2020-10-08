@@ -23,7 +23,7 @@ module Engine
       load_from_json(Config::Game::G18CO::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
-      DEV_STAGE = :beta
+      # DEV_STAGE = :beta
 
       GAME_LOCATION = 'Colorado, USA'
       GAME_RULES_URL = 'https://drive.google.com/open?id=0B3lRHMrbLMG_eEp4elBZZ0toYnM'
