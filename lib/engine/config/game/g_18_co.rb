@@ -950,7 +950,7 @@ module Engine
                         "G11",
                         "J10"
                     ],
-                    "town=revenue:0;border=edge:0,type:mountain,cost:40;border=edge:2,type:mountain;": [
+                    "town=revenue:0;border=edge:2,type:mountain;": [
                         "B10"
                     ],
                     "upgrade=cost:40,terrain:mountain;border=edge:4,type:mountain;": [
