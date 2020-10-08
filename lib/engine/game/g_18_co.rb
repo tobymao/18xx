@@ -63,6 +63,7 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
+          Step::HomeToken,
           Step::BuyCompany,
           Step::G18CO::Track,
           Step::Token,
@@ -122,6 +123,16 @@ module Engine
 
       def route_bonus(route, type)
         # TODO: East / SLC Bonus
+      end
+
+      def event_remove_mines!
+        @log << '-- Event: Mines close --'
+
+        @log << '(TODO) Mines removed from board'
+
+        @companies.each do |company|
+            @log << '(TODO) Mines removed from  #{company.name}'
+        end
       end
     end
   end
