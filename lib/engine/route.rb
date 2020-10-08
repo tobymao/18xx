@@ -218,7 +218,12 @@ module Engine
       end
     end
 
+    def lock!
+      @revenue = revenue
+    end
+
     def revenue
+      return @revenue if @revenue
       return @override[:revenue] if @override
 
       visited = visited_stops
