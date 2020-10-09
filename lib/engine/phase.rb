@@ -4,7 +4,7 @@ require_relative 'action/buy_train'
 
 module Engine
   class Phase
-    attr_reader :name, :operating_rounds, :tiles, :phases, :status
+    attr_reader :name, :operating_rounds, :tiles, :phases, :status, :corporation_sizes
 
     def initialize(phases, game)
       @index = 0
@@ -50,6 +50,7 @@ module Engine
       @tiles = Array(phase[:tiles])
       @events = phase[:events] || []
       @status = phase[:status] || []
+      @corporation_sizes = phase[:corporation_sizes]
       @next_on = @phases[@index + 1]&.dig(:on)
 
       @log << "-- Phase #{@name} " \

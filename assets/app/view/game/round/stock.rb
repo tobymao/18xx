@@ -64,6 +64,7 @@ module View
             children.concat(render_subsidiaries)
             children << h(Corporation, corporation: corporation)
             children << render_input if @selected_corporation == corporation
+            children << h(Choose) if @current_actions.include?('choose')
             h(:div, props, children)
           end.compact
         end
