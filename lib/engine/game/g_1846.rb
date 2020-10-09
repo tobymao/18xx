@@ -123,14 +123,6 @@ module Engine
         end
       end
 
-      def michigan_southern
-        @michigan_southern ||= minor_by_id('MS')
-      end
-
-      def big4
-        @big4 ||= minor_by_id('BIG4')
-      end
-
       def setup
         @turn = two_player? ? 0 : 1
 
@@ -284,6 +276,10 @@ module Engine
 
       def steamboat
         @steamboat ||= company_by_id('SC')
+      end
+
+      def block_for_steamboat?
+        steamboat.owned_by_player?
       end
 
       def michigan_central

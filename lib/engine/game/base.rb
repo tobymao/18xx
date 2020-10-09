@@ -204,8 +204,10 @@ module Engine
         const_set(:COLORS, colors)
       end
 
-      def self.load_from_json(json)
-        data = JSON.parse(json)
+      def self.load_from_json(*jsons)
+        data = Array(jsons).reverse.reduce({}) do |memo, json|
+          memo.merge!(JSON.parse(json))
+        end
 
         # Make sure player objects have numeric keys
         data['bankCash'].transform_keys!(&:to_i) if data['bankCash'].is_a?(Hash)
@@ -252,7 +254,7 @@ module Engine
         hex_ids = data['hexes'].values.map(&:keys).flatten
 
         dup_hexes = hex_ids.group_by(&:itself).select { |_, v| v.size > 1 } .keys
-        game_error("Found multiple definitions in #{self} for hexes #{dup_hexes}") if dup_hexes.any?
+        raise GameError, "Found multiple definitions in #{self} for hexes #{dup_hexes}" if dup_hexes.any?
 
         const_set(:CURRENCY_FORMAT_STR, data['currencyFormatStr'])
         const_set(:BANK_CASH, data['bankCash'])

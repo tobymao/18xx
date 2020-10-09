@@ -15,6 +15,10 @@ module Engine
         name: 'GMT Games',
         url: 'https://www.gmtgames.com/',
       },
+      traxx: {
+        name: 'TraXX',
+        url: 'https://traxx-denver.com/games/',
+      },
     }.freeze
   end
 end

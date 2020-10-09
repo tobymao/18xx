@@ -20,7 +20,7 @@ module View
 
     def render
       match = @route.match(ROUTE_FORMAT)
-      dest = match[1]
+      dest = match[1].gsub('%20', ' ')
       hexes_or_tiles = match[2]
 
       layout = (Lib::Params['l'] || 'flat').to_sym
