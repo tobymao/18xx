@@ -14,10 +14,14 @@ module Engine
           return ['take_loan'] if @game.can_take_loan?(entity) && entity.owned_by?(current_entity)
           return [] if !entity.player? || @current_actions.any? { |a| a.is_a?(Action::TakeLoan) }
 
-          if available_subsidiaries(entity).any?
-            actions = %w[assign]
-            actions << 'pass' if entity.cash >= @winning_bid.price
-            return actions
+          if @winning_bid
+            return %w[choose] unless @corporation_size
+
+            if available_subsidiaries(entity).any?
+              actions = %w[assign]
+              actions << 'pass' if entity.cash >= @winning_bid.price
+              return actions
+            end
           end
 
           return %w[bid pass] if @auctioning
@@ -38,6 +42,18 @@ module Engine
           return @winning_bid.corporation if @winning_bid
 
           @auctioning
+        end
+
+        def can_sell?(entity, bundle)
+          super && !bundle.corporation.share_price.acquisition?
+        end
+
+        def choice_name
+          'Number of Shares'
+        end
+
+        def choices
+          @game.phase.corporation_sizes
         end
 
         def pass_description
@@ -85,6 +101,14 @@ module Engine
           resolve_bids
         end
 
+        def process_choose(action)
+          size = action.choice
+          entity = action.entity
+          @game.game_error('Corporation size is invalid') unless choices.include?(size)
+          @corporation_size = size
+          par_corporation if available_subsidiaries(entity).empty?
+        end
+
         def process_assign(action)
           entity = action.entity
           company = action.target
@@ -124,7 +148,8 @@ module Engine
           end
 
           entity.spend(price, corporation)
-          @log << "#{corporation.name} starts with #{@game.format_currency(price)}"
+          @game.size_corporation(corporation, @corporation_size) unless @corporation_size == 2
+          @log << "#{corporation.name} starts with #{@game.format_currency(price)} and #{@corporation_size} shares"
 
           @auctioning = nil
           @winning_bid = nil
@@ -134,7 +159,10 @@ module Engine
 
         def win_bid(winner, _company)
           @winning_bid = winner
-          par_corporation unless available_subsidiaries(winner.entity).any?
+          @corporation_size = nil
+          @corporation_size = @game.phase.corporation_sizes.first if @game.phase.corporation_sizes.one?
+
+          par_corporation if @corporation_size && available_subsidiaries(winner.entity).none?
         end
 
         def available_subsidiaries(entity)

@@ -857,7 +857,8 @@ module Engine
       "tiles": [
         "yellow"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "corporation_sizes": [2]
     },
     {
       "name": "2+",
@@ -866,7 +867,8 @@ module Engine
       "tiles": [
         "yellow"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "corporation_sizes": [2]
     },
     {
       "name": "3",
@@ -876,7 +878,8 @@ module Engine
         "yellow",
         "green"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "corporation_sizes": [2, 5]
     },
     {
       "name": "4",
@@ -886,7 +889,8 @@ module Engine
         "yellow",
         "green"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "corporation_sizes": [5]
     },
     {
       "name": "5",
@@ -897,7 +901,8 @@ module Engine
         "green",
         "brown"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "corporation_sizes": [5, 10]
     },
     {
       "name": "6",
@@ -908,7 +913,8 @@ module Engine
         "green",
         "brown"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "corporation_sizes": [10]
     },
     {
       "name": "7",
@@ -920,7 +926,8 @@ module Engine
         "brown",
         "gray"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "corporation_sizes": [10]
     },
     {
       "name": "8",
@@ -932,7 +939,8 @@ module Engine
         "brown",
         "gray"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "corporation_sizes": [10]
     }
   ]
 }
