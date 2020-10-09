@@ -4,7 +4,6 @@ require_relative '../config/game/g_18_co'
 require_relative 'base'
 require_relative 'company_price_50_to_150_percent'
 require_relative 'revenue_4d'
-require_relative 'revenue_5d'
 
 module Engine
   module Game
@@ -69,7 +68,6 @@ module Engine
         Step::Token,
         Step::Route,
         Step::Dividend,
-        Step::G18CO::MineIncome,
         Step::BuyTrain,
         [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
@@ -80,6 +78,14 @@ module Engine
         Step::DiscardTrain,
         Step::BuySellParShares,
         ])
+      end
+
+      def adjust_revenue_for_5d_train(route, stops, revenue)
+        return revenue unless route.train.name == '5D'
+
+        2 * revenue - stops
+          .select { |stop| stop.hex.tile.towns.any? }
+          .sum { |stop| stop.route_revenue(route.phase, route.train) }
       end
 
       def revenue_for(route, stops)
@@ -95,14 +101,6 @@ module Engine
         total_revenue
       end
 
-      def get_location_name(hex_name)
-        @hexes.find { |h| h.name == hex_name }.location_name
-      end
-
-      def upgrades_to?(from, to, special = false)
-        super
-      end
-
       def all_potential_upgrades(tile, tile_manifest: false)
         upgrades = super
 
@@ -113,12 +111,6 @@ module Engine
         upgrades
       end
 
-      private
-
-      def route_bonus(route, type)
-        # TODO: East / SLC Bonus
-      end
-
       def event_remove_mines!
         @log << '-- Event: Mines close --'
 
@@ -127,6 +119,12 @@ module Engine
         @companies.each do |company|
           @log << "Mines removed from  #{company.name} (TODO)"
         end
+      end
+
+      private
+
+      def route_bonus(route, type)
+        # TODO: East / SLC Bonus
       end
     end
   end
