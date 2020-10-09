@@ -93,7 +93,7 @@ module Engine
 
           # skip over paths that have a junction we've already seen
           @paths.each do |path|
-            sorted << path unless junction_map[path.a] || junction_map[path.b]
+            sorted << path if !junction_map[path.a] && !junction_map[path.b]
             junction_map[path.a] = true if path.a.junction?
             junction_map[path.b] = true if path.b.junction?
           end
