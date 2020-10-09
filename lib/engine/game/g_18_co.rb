@@ -44,7 +44,6 @@ module Engine
 
       include CompanyPrice50To150Percent
       include Revenue4D
-      include Revenue5D
 
       def dsng
         @dsng ||= corporation_by_id('DSNG')
