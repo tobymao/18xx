@@ -174,11 +174,18 @@ module Engine
     end
 
     def lay_downgrade(tile)
+      hexes = @connections.values.flatten.flat_map(&:hexes)
+
       lay(tile)
-      neighbors.each do |_edge, neighbor|
-        neighbor.connections.clear
-        neighbor.connect!
+
+      hexes.each do |hex|
+        hex.connections.each do |_, connections|
+          connections.select! do |connection|
+            connection.paths.all?(&:hex)
+          end
+        end
       end
+
       tile.restore_borders
     end
 
