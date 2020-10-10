@@ -251,7 +251,7 @@ module View
           h(Game::Round::Stock, game: @game)
         end
       when Engine::Round::Operating
-        if (%w[merge] & current_actions).any?
+        if current_actions.include?('merge')
           h(Game::Round::Merger, game: @game)
         else
           h(Game::Round::Operating, game: @game)
