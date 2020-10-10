@@ -164,6 +164,7 @@ module Engine
       TIMELINE = [].freeze
 
       IPO_NAME = 'IPO'
+      IPO_RESERVED_NAME = 'IPO Reserved'
 
       ALL_COMPANIES_ASSIGNABLE = false
 

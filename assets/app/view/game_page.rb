@@ -251,7 +251,11 @@ module View
           h(Game::Round::Stock, game: @game)
         end
       when Engine::Round::Operating
-        h(Game::Round::Operating, game: @game)
+        if current_actions.include?('merge')
+          h(Game::Round::Merger, game: @game)
+        else
+          h(Game::Round::Operating, game: @game)
+        end
       when Engine::Round::Draft
         h(Game::Round::Auction, game: @game, user: @user, before_process_pass: @before_process_pass)
       when Engine::Round::Auction

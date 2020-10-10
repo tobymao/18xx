@@ -50,6 +50,7 @@ module View
 
         unless @corporation.minor?
           children << render_shares
+          children << render_reserved if @corporation.reserved_shares.any?
           children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
         end
 
@@ -335,6 +336,18 @@ module View
         ])
       end
 
+      def render_reserved
+        bold = { style: { fontWeight: 'bold' } }
+        h('table.center', [
+          h(:tbody, [
+            h('tr.reserved', [
+              h('td.left', bold, "#{@game.class::IPO_RESERVED_NAME}:"),
+              h('td.right', @corporation.reserved_shares.map { |s| "#{s.percent}%" }.join(', ')),
+            ]),
+          ]),
+        ])
+      end
+
       def render_revenue_history
         last_run = @corporation.operating_history[@corporation.operating_history.keys.max].revenue
         h(:div, { style: { display: 'inline' } }, [
@@ -347,8 +360,9 @@ module View
         return [] unless @game.round.current_entity&.operator?
 
         round = @game.round
-        if (n = @game.round.entities.find_index(@corporation))
-          span_class = '.bold' if n >= round.entities.find_index(round.current_entity)
+        if (n = @game.round.entities.index(@corporation))
+          m = round.entities.index(round.current_entity)
+          span_class = '.bold' if n && m && n >= m
           [h(:div, { style: { display: 'inline' } }, [
             'Order: ',
             h("span#{span_class}", n + 1),
