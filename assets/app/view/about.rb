@@ -46,6 +46,7 @@ module View
         <a href='https://github.com/talbatross'>talbatross</a>
         <a href='https://github.com/scottredracecar'>scottredracecar</a>
         <a href='https://github.com/perwestling'>perwestling</a>
+        <a href='https://github.com/roseundy'>roseundy</a>
 
         <p>This website will always be open-source and free to play. If you'd like support this project, you can become a patron on
         <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>
