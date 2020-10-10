@@ -7,15 +7,17 @@ module Engine
     module G18MEX
       class BuySellParShares < BuySellParShares
         def can_buy?(entity, bundle)
-          return unless super
-
-          bundle.corporation.name != 'NdM' || @game.phase.status.include?('ndm_available')
+          super && !attempt_ndm_action_on_unavailable?(bundle)
         end
 
         def can_sell?(entity, bundle)
-          return unless super
+          super && !attempt_ndm_action_on_unavailable?(bundle)
+        end
 
-          bundle.corporation.name != 'NdM' || @game.phase.status.include?('ndm_available')
+        private
+
+        def attempt_ndm_action_on_unavailable?(bundle)
+          bundle.corporation.name == 'NdM' && @game.phase.status.include?('ndm_unavailable')
         end
       end
     end
