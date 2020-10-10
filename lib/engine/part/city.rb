@@ -34,7 +34,7 @@ module Engine
       end
 
       def find_reservation(corporation)
-        @reservations.find_index { |r| [r, r.owner].include?(corporation) }
+        @reservations.find_index { |r| r && [r, r.owner].include?(corporation) }
       end
 
       def reserved_by?(corporation)

@@ -11,7 +11,7 @@ module Engine
         attr_accessor :emergency_issued
 
         def after_setup
-          super unless @game.steamboat.owned_by_player?
+          super unless @game.block_for_steamboat?
         end
 
         def start_operating
