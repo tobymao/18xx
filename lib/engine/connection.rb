@@ -89,16 +89,13 @@ module Engine
       @id ||=
         begin
           sorted = []
-          path_map = {}
-          node_path = nil
+          junction_map = {}
 
+          # skip over paths that have a junction we've already seen
           @paths.each do |path|
-            node_path = path if path.node?
-            path_map[path] = true
-          end
-
-          node_path.walk(on: path_map) do |path|
-            sorted << path
+            sorted << path if !junction_map[path.a] && !junction_map[path.b]
+            junction_map[path.a] = true if path.a.junction?
+            junction_map[path.b] = true if path.b.junction?
           end
 
           sorted.map { |path| path.hex.id }
