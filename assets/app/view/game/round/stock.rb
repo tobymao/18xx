@@ -70,10 +70,15 @@ module View
         end
 
         def render_input
-          h('div.margined_bottom', { style: { width: '20rem' } }, [
+          inputs = [
             @selected_corporation.ipoed ? h(BuySellShares, corporation: @selected_corporation) : render_pre_ipo,
             render_loan,
-          ].compact)
+            render_buy_tokens,
+          ]
+          if @step.actions(@selected_corporation).include?('buy_shares')
+            inputs << h(IssueShares, entity: @selected_corporation)
+          end
+          h('div.margined_bottom', { style: { width: '20rem' } }, inputs.compact)
         end
 
         def render_pre_ipo
@@ -102,6 +107,18 @@ module View
           end
 
           h(:button, { on: { click: take_loan } }, 'Take Loan')
+        end
+
+        def render_buy_tokens
+          return unless @step.actions(@selected_corporation).include?('buy_tokens')
+
+          buy_tokens = lambda do
+            process_action(Engine::Action::BuyTokens.new(
+              @selected_corporation
+            ))
+          end
+
+          h(:button, { on: { click: buy_tokens } }, 'Buy Tokens')
         end
       end
     end

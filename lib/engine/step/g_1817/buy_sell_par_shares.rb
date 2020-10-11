@@ -9,10 +9,18 @@ module Engine
     module G1817
       class BuySellParShares < BuySellParShares
         include PassableAuction
+        TOKEN_COST = 50
 
         def actions(entity)
-          return ['take_loan'] if @game.can_take_loan?(entity) && entity.owned_by?(current_entity)
-          return [] if !entity.player? || @current_actions.any? { |a| a.is_a?(Action::TakeLoan) }
+          return corporate_actions(entity) if !entity.player? && entity.owned_by?(current_entity)
+
+          return [] unless entity.player?
+
+          if @corporate_action
+            return ['pass'] if any_corporate_actions?(entity)
+
+            return []
+          end
 
           if @winning_bid
             return %w[choose] unless @corporation_size
@@ -29,6 +37,31 @@ module Engine
           actions = super
           actions |= %w[bid pass] unless bought?
           actions
+        end
+
+        def redeemable_shares(entity)
+          # Done via Buy Shares
+          @game.redeemable_shares(entity)
+        end
+
+        def corporate_actions(entity)
+          actions = []
+          if @current_actions.none?
+            actions << 'take_loan' if @game.can_take_loan?(entity) && !@corporate_action.is_a?(Action::BuyShares)
+            if @game.redeemable_shares(entity).any? && !@corporate_action.is_a?(Action::TakeLoan)
+              actions << 'buy_shares'
+            end
+          end
+          actions << 'buy_tokens' if can_buy_tokens?(entity)
+          actions
+        end
+
+        def any_corporate_actions?(entity)
+          @game.corporations.any? { |corp| corp.owner == entity && corporate_actions(corp).any? }
+        end
+
+        def can_buy_tokens?(entity)
+          entity.corporation? && !entity.operated? && @game.tokens_needed(entity).positive?
         end
 
         def active_entities
@@ -69,7 +102,11 @@ module Engine
 
         def pass!
           return par_corporation if @winning_bid
-          return super unless @auctioning
+
+          unless @auctioning
+            @current_actions << @corporate_action
+            return super
+          end
 
           pass_auction(current_entity)
           resolve_bids
@@ -101,6 +138,28 @@ module Engine
           resolve_bids
         end
 
+        def process_buy_shares(action)
+          if action.entity.player?
+            super
+          else
+            buy_shares(action.entity, action.bundle)
+            @corporate_action = action
+          end
+        end
+
+        def process_buy_tokens(action)
+          # Buying tokens is not an 'action' and so can be done with player actions
+          entity = action.entity
+          @game.game_error('Cannot buy tokens') unless can_buy_tokens?(entity)
+          tokens = @game.tokens_needed(entity)
+          token_cost = tokens * TOKEN_COST
+          entity.spend(token_cost, @game.bank)
+          @log << "#{entity.name} buys #{tokens} tokens for #{@game.format_currency(token_cost)}"
+          tokens.times.each do |_i|
+            entity.tokens << Engine::Token.new(entity)
+          end
+        end
+
         def process_choose(action)
           size = action.choice
           entity = action.entity
@@ -121,7 +180,7 @@ module Engine
         end
 
         def process_take_loan(action)
-          @current_actions << action
+          @corporate_action = action
           @game.take_loan(action.entity, action.loan)
         end
 
@@ -150,6 +209,13 @@ module Engine
           entity.spend(price, corporation)
           @game.size_corporation(corporation, @corporation_size) unless @corporation_size == 2
           @log << "#{corporation.name} starts with #{@game.format_currency(price)} and #{@corporation_size} shares"
+
+          tokens = @game.tokens_needed(corporation)
+          if tokens.positive?
+            token_cost = tokens * TOKEN_COST
+            @log << "#{corporation.name} must buy #{tokens} tokens for #{@game.format_currency(token_cost)}"\
+            ' before end of stock round'
+          end
 
           @auctioning = nil
           @winning_bid = nil
@@ -202,6 +268,7 @@ module Engine
           setup_auction
           super
           @subsidiaries = []
+          @corporate_action = nil
         end
       end
     end
