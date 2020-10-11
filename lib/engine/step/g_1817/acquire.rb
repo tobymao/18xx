@@ -93,6 +93,7 @@ module Engine
           @game.loans << loan
           # The unpaid loans don't affect share price unless they're not paid off.
           @unpaid_loans -= 1
+          @passed_take_loans = true
           acquire_post_loan unless can_payoff?(entity)
         end
 
@@ -456,7 +457,7 @@ module Engine
               @game.log << "#{corporation.name} may be offered for sale for "\
                 "#{@game.format_currency(starting_bid(corporation))}"
               @offer = corporation
-              :offered
+              @mode = :offered
             else
               @game.log << "#{corporation.name} cannot be bought at "\
                 "#{@game.format_currency(starting_bid(corporation))}, skipping"

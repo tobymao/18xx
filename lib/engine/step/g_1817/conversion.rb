@@ -69,7 +69,7 @@ module Engine
             end
 
           liquidate!(corporation) if needs_money?(corporation) && !@game.can_take_loan?(corporation)
-          purchase_tokens(corporation) unless @game.can_take_loan?(corporation)
+          purchase_tokens(corporation)
           @round.converted = corporation
         end
 
