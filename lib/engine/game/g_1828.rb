@@ -61,6 +61,30 @@ module Engine
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
+
+      def setup
+        remove_extra_private_companies
+        remove_extra_trains
+      end
+
+      def remove_extra_private_companies
+        to_remove = companies.find_all { |company| company.value == 249 }
+                             .shuffle
+                             .pop(6 - @players.size)
+        to_remove.each do |company|
+          company.close!
+          @round.active_step.companies.delete(company)
+          @log << "Removing #{company.name}"
+        end
+      end
+
+      def remove_extra_trains
+        return unless @players.size < 4
+
+        train = @depot.trains.find {|train| train.name == "4"}
+        @depot.remove_train(train)
+        @log << "Removing #{train.name} train"
+      end
     end
   end
 end
