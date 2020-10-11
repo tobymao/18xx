@@ -30,7 +30,6 @@ module Engine
 
       GAME_LOCATION = 'North East, USA'
       GAME_RULES_URL = 'https://kanga.nu/~claw/1828/1828-Rules.pdf'
-      GAME_DESIGNER = 'J C Lawrence'
       GAME_PUBLISHER = nil
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1828'
 
