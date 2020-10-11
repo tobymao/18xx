@@ -43,6 +43,7 @@ module Engine
       POOL_SHARE_DROP = :each
       SELL_MOVEMENT = :none
       ALL_COMPANIES_ASSIGNABLE = true
+      SELL_AFTER = :operate
 
       ASSIGNMENT_TOKENS = {
         'bridge' => '/icons/1817/bridge_token.svg',
@@ -84,6 +85,21 @@ module Engine
         hexes.select do |hex|
           hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
         end
+      end
+
+      def redeemable_shares(entity)
+        return [] unless entity.corporation?
+        return [] unless round.steps.find { |step| step.class == Step::G1817::BuySellParShares }.active?
+
+        share_pool
+          .bundles_for_corporation(entity)
+          .reject { |bundle| entity.cash < bundle.price }
+      end
+
+      def tokens_needed(corporation)
+        tokens_needed = { 2 => 1, 5 => 2, 10 => 4 }[corporation.total_shares] - corporation.tokens.size
+        tokens_needed += 1 if corporation.companies.any? { |c| c.id == 'TS' }
+        tokens_needed
       end
 
       def size_corporation(corporation, size)
@@ -196,6 +212,7 @@ module Engine
 
       def stock_round
         @interest_fixed = nil
+        @owner_when_liquidated = {}
         Round::G1817::Stock.new(self, [
           Step::DiscardTrain,
           Step::HomeToken,
@@ -206,7 +223,8 @@ module Engine
       def operating_round(round_num)
         @interest_fixed = nil
         @interest_fixed = interest_rate
-        @owner_when_liquidated = {}
+        # Don't clear when coming from a SR
+        @owner_when_liquidated = {} unless round_num == 1
         # Revaluate if private companies are owned by corps with trains
         @companies.each do |company|
           next unless company.owner

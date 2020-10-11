@@ -7,9 +7,10 @@ module View
     class IssueShares < Snabberb::Component
       include Actionable
 
+      needs :entity, default: nil
       def render
         @step = @game.round.active_step
-        @entity = @game.current_entity
+        @entity ||= @game.current_entity
         @current_actions = @game.round.actions_for(@entity)
         children = []
 
