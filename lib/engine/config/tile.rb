@@ -459,6 +459,7 @@ module Engine
         '985' => 'city=revenue:60,slots:2;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
         '986' => 'city=revenue:80,slots:2;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow;label=B',
         '987' => 'city=revenue:90,slots:2;path=a:0,b:_0;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0;label=HQG',
+        '997' => 'city=revenue:60,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=Boston',
         '1064' => 'city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:2;path=a:3,b:_1;path=a:_1,b:4',
         '1065' => 'city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:4;path=a:2,b:_1;path=a:_1,b:3',
         '1066' => 'city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:2',

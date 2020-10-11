@@ -54,6 +54,7 @@ module View
             ])
         end
         children << h(:p, "Designed by #{@game.class::GAME_DESIGNER}") if @game.class::GAME_DESIGNER
+        children << h(:p, "Implemented by #{@game.class::GAME_IMPLEMENTER}") if @game.class::GAME_IMPLEMENTER
         if @game.class::GAME_RULES_URL.is_a?(Hash)
           @game.class::GAME_RULES_URL.each do |desc, url|
             children << h(:p, [h(:a, { attrs: { href: url } }, desc)])

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.3.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve">
+<style type="text/css">
+	.st0{clip-path:url(#SVGID_2_);}
+	.st1{fill:#FDD700;}
+	.st2{fill:#52B848;}
+	.st3{fill:#FFFFFF;}
+	.st4{fill:none;stroke:#010101;stroke-width:0.5;stroke-miterlimit:10;}
+	.st5{fill:#010101;}
+	.st6{font-family:'Times-Bold';}
+	.st7{font-size:9px;}
+</style>
+<g>
+	<defs>
+		<path id="SVGID_1_" d="M36,18c0-9.9-8.1-18-18-18S0,8.1,0,18s8.1,18,18,18S36,27.9,36,18"/>
+	</defs>
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+	</clipPath>
+	<g class="st0">
+		<rect x="-4" y="-4" class="st1" width="44" height="22"/>
+		<rect x="-4" y="18" class="st2" width="44" height="22"/>
+		<rect x="-4" y="14" class="st3" width="44" height="8"/>
+		<rect x="-4" y="14" class="st4" width="44" height="8"/>
+		<text transform="matrix(1 0 0 1 13 21.1)" class="st5 st6 st7">IC</text>
+		<path class="st4" d="M36,18c0-9.9-8.1-18-18-18S0,8.1,0,18s8.1,18,18,18S36,27.9,36,18"/>
+	</g>
+</g>
+</svg>
