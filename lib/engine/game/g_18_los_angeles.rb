@@ -25,26 +25,56 @@ module Engine
         'LAS' => '/icons/1846/sc_token.svg',
       }.freeze
 
-      GROUP_ONE = [
+      ORANGE_GROUP = [
         'Beverly Hills Carriage',
         'South Bay Line',
       ].freeze
 
-      GROUP_TWO = [
+      BLUE_GROUP = [
         'Chino Hills Excavation',
         'Los Angeles Citrus',
         'Los Angeles Steamship',
       ].freeze
 
-      CORPORATIONS_GROUP = [
-        'Los Angeles Railway',
-        'Santa Fe Railroad',
-        'Southern Pacific Railroad',
-      ].freeze
+      GREEN_GROUP = %w[LA SF SP].freeze
 
       def self.title
         '18 Los Angeles'
       end
+
+      def num_removals(group)
+        return 0 if @players.size == 5
+        return 1 if @players.size == 4
+
+        case group
+        when ORANGE_GROUP, BLUE_GROUP
+          1
+        when GREEN_GROUP
+          2
+        end
+      end
+
+      def corporation_removal_groups
+        [GREEN_GROUP]
+      end
+
+      def place_second_token(corporation)
+        hex = case corporation.id
+              when 'LA'
+                'B9'
+              when 'SF'
+                'C8'
+              when 'SP'
+                'C6'
+              end
+        return unless hex
+
+        token = corporation.find_token_by_type
+        hex_by_id(hex).tile.cities.first.place_token(corporation, token, check_tokenable: false)
+        @log << "#{corporation.id} places a token on #{hex}"
+      end
+
+      def check_removed_corp_second_token(_hex, _tile); end
 
       # meat packing == citrus
       def meat_packing
