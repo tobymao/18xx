@@ -38,6 +38,12 @@ module Engine
 
       GREEN_GROUP = %w[LA SF SP].freeze
 
+      LSL_HEXES = %w[E4 E6].freeze
+      LSL_ICON = 'lsl'
+
+      MEAT_HEXES = %w[C14 F7].freeze
+      STEAMBOAT_HEXES = %w[B1 C2 F7 F9].freeze
+
       def self.title
         '18 Los Angeles'
       end
@@ -83,6 +89,10 @@ module Engine
 
       def steamboat
         @steamboat ||= company_by_id('LAS')
+      end
+
+      def lake_shore_line
+        @lake_shore_line ||= company_by_id('SBL')
       end
 
       def block_for_steamboat?

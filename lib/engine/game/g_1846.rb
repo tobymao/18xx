@@ -61,6 +61,12 @@ module Engine
         'H12' => ['B&O', 'C&O'],
       }.freeze
 
+      LSL_HEXES = %w[D14 E17].freeze
+      LSL_ICON = 'lsl'
+
+      MEAT_HEXES = %w[D6 I1].freeze
+      STEAMBOAT_HEXES = %w[B8 C5 D14 I1 G19].freeze
+
       TILE_COST = 20
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove private company tokens']).freeze
 
@@ -130,9 +136,9 @@ module Engine
         return unless @players.size.between?(*Engine.player_range(self.class))
 
         remove_from_group!(self.class::ORANGE_GROUP, @companies) do |company|
-          if company.id == 'LSL'
-            %w[D14 E17].each do |hex|
-              hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'lsl' }
+          if company == lake_shore_line
+            self.class::LSL_HEXES.each do |hex|
+              hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LSL_ICON }
             end
           end
           company.close!
@@ -304,6 +310,10 @@ module Engine
         @mail_contract ||= company_by_id('MAIL')
       end
 
+      def lake_shore_line
+        @lake_shore_line ||= company_by_id('LSL')
+      end
+
       def illinois_central
         @illinois_central ||= corporation_by_id('IC')
       end
@@ -428,8 +438,8 @@ module Engine
 
         @minors.dup.each { |minor| close_corporation(minor) }
 
-        %w[D14 E17].each do |hex|
-          hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'lsl' }
+        self.class::LSL_HEXES.each do |hex|
+          hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LSL_ICON }
         end
       end
 
@@ -450,7 +460,7 @@ module Engine
           end
         end
 
-        %w[B8 C5 D6 D14 G19 I1].each do |hex|
+        (self.class::MEAT_HEXES + self.class::STEAMBOAT_HEXES).uniq.each do |hex|
           hex_by_id(hex).tile.icons.reject! do |icon|
             %w[meat port].include?(icon.name)
           end
