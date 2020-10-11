@@ -3,10 +3,10 @@
 # rubocop:disable Lint/RedundantCopDisableDirective, Layout/LineLength, Layout/HeredocIndentation
 
 module Engine
-    module Config
-        module Game
-            module G1828
-                JSON = <<-'DATA'
+  module Config
+    module Game
+      module G1828
+        JSON = <<-'DATA'
 {
     "filename": "1828",
     "modulename": "1828",
@@ -478,8 +478,6 @@ module Engine
                         "206"
                     ],
                     "when": "track",
-                    "price": 0,
-                    "teleport_price": 120,
                     "count": 1
                 }
             ]
@@ -539,7 +537,6 @@ module Engine
                 {
                     "type": "tile_lay",
                     "owner_type": "corporation",
-                    "cost": 20,
                     "hexes": [
                         "E7"
                     ],
@@ -548,7 +545,7 @@ module Engine
                         "2",
                         "3",
                         "4",
-                        "6", 
+                        "6",
                         "7",
                         "8",
                         "55",
@@ -1276,7 +1273,7 @@ module Engine
                 "green",
                 "brown"
             ],
-            "operating_rounds": 3 
+            "operating_rounds": 3
         },
         {
             "name": "Red",
@@ -1298,7 +1295,7 @@ module Engine
                 "green",
                 "brown"
             ],
-            "operating_rounds": 3 
+            "operating_rounds": 3
         },
         {
             "name": "Purple",
@@ -1309,7 +1306,7 @@ module Engine
                 "green",
                 "brown"
             ],
-            "operating_rounds": 4 
+            "operating_rounds": 4
         }
     ]
 }
