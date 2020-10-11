@@ -42,7 +42,6 @@ module Engine
         "F10": "Cleveland",
         "F14": "Erie",
         "A13": "Canada",
-        "A14": "Canada",
         "A23": "Montreal",
         "B20": "Ottawa",
         "B24": "Burlington",
@@ -903,7 +902,7 @@ module Engine
                 100,
                 100
             ],
-            "coordinates": "A14",
+            "coordinates": "A15",
             "color": "cinnabarGreen"
         },
         {
@@ -1214,7 +1213,7 @@ module Engine
             "offboard=revenue:yellow_30|brown_50,groups:Canada;path=a:4,b:5": [
                 "A13"
             ],
-            "city=revenue:yellow_30|brown_50,groups:Canada;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0": [
+            "city=revenue:yellow_30|brown_50,groups:Canada;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1": [
                 "A15"
             ],
             "offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:1,b:_0": [
