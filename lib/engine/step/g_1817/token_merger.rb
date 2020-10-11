@@ -41,10 +41,10 @@ module Engine
           tokens = other.tokens.map do |token|
             new_token = Engine::Token.new(surviving)
             if token.city
-              unused << new_token
-            else
               used << new_token
               token.swap!(new_token)
+            else
+              unused << new_token
             end
             new_token.city&.hex&.id
           end
@@ -52,9 +52,10 @@ module Engine
           @game.game_error('Used token above limit') if used.size > @game.class::LIMIT_TOKENS
 
           surviving.tokens.clear
-          surviving.tokens.concat(used + unused)
-          # Dump tokens above limit
-          surviving.tokens.slice!(0, @game.class::LIMIT_TOKENS)
+          surviving_tokens = used + unused
+
+          # Dump unused tokens above limit
+          surviving.tokens.concat(surviving_tokens.slice(0, @game.class::LIMIT_TOKENS))
 
           # Owner may no longer have a valid route.
           @game.graph.clear_graph_for(surviving)
