@@ -29,12 +29,16 @@ module Engine
       DEV_STAGE = :prealpha
 
       GAME_LOCATION = 'North East, USA'
-      GAME_RULES_URL = 'https://kanga.nu/~claw/1828/1828-Rules.pdf'
-      GAME_PUBLISHER = nil
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1828'
+      GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/1828.Games#rules'
+      GAME_IMPLEMENTER = 'Chris Rericha based on 1828 by J C Lawrence'
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1828.Games'
 
       MUST_BID_INCREMENT_MULTIPLE = true
       SELL_BUY_ORDER = :sell_buy_sell
+
+      def self.title
+        '1828.Games'
+      end
 
       def stock_round
         Round::Stock.new(self, [
