@@ -42,6 +42,7 @@ module Engine
       GAME_RULES_URL = nil
       GAME_DESIGNER = nil
       GAME_PUBLISHER = nil
+      GAME_IMPLEMENTER = nil
       GAME_INFO_URL = nil
 
       # Game end check is described as a dictionary
