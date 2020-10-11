@@ -38,13 +38,15 @@ module Engine
     end
 
     def next_connection(node, connection, other)
-      connections = select(node, other)
+      connections = select(node, other, connection)
       index = connections.find_index(connection) || connections.size
       connections[index + 1]
     end
 
-    def select(node, other)
+    def select(node, other, keep = nil)
       other_paths = @routes.reject { |r| r == self }.flat_map(&:paths)
+      other_paths.concat(@connections.reject { |c| c[:connection] == keep }
+                          .flat_map { |c| c[:connection].paths })
       nodes = [node, other]
 
       node.hex.all_connections.select do |c|
