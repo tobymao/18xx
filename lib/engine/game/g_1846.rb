@@ -188,9 +188,7 @@ module Engine
       end
 
       def num_removals(_group)
-        return 1 if two_player?
-
-        5 - @players.size
+        two_player? ? 1 : 5 - @players.size
       end
 
       def corporation_removal_groups
