@@ -217,7 +217,7 @@ module Engine
         @stock_market
           .market[0]
           .reverse
-          .find { |sp| sp.price < price }
+          .find { |sp| sp.price <= price }
       end
 
       def revenue_for(route, stops)
