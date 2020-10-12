@@ -818,7 +818,7 @@ module Engine
           true
         end
 
-        corporation.companies.each(&:close!)
+        corporation.companies.dup.each(&:close!)
 
         corporation.share_price.corporations.delete(corporation)
         corporation = init_corporations(@stock_market).find { |c| c.id == corporation.id }
