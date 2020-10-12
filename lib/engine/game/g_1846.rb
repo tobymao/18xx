@@ -85,9 +85,7 @@ module Engine
       end
 
       def init_companies(players)
-        num_passes = two_player? ? 0 : players.size
-
-        super + num_passes.times.map do |i|
+        super + num_pass_companies(players).times.map do |i|
           name = "Pass (#{i + 1})"
 
           Company.new(
@@ -97,6 +95,10 @@ module Engine
             desc: "Choose this card if you don't want to purchase any of the offered companies this turn.",
           )
         end
+      end
+
+      def num_pass_companies(players)
+        two_player? ? 0 : players.size
       end
 
       def cert_limit
