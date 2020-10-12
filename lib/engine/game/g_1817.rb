@@ -44,6 +44,7 @@ module Engine
       SELL_MOVEMENT = :none
       ALL_COMPANIES_ASSIGNABLE = true
       SELL_AFTER = :operate
+      DEV_STAGE = :alpha
 
       ASSIGNMENT_TOKENS = {
         'bridge' => '/icons/1817/bridge_token.svg',
@@ -120,25 +121,66 @@ module Engine
         end
       end
 
+      def bundles_for_corporation(share_holder, corporation, shares: nil)
+        super(
+          share_holder,
+          corporation,
+          shares: shares || share_holder.shares_of(corporation).select { |share| share.percent.positive? },
+        )
+      end
+
       def convert(corporation)
         shares = @_shares.values.select { |share| share.corporation == corporation }
+
+        corporation.share_holders.clear
 
         case corporation.total_shares
         when 2
           shares[0].percent = 40
-          shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 1) }
+          new_shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 1) }
         when 5
           shares.each { |share| share.percent = 10 }
           shares[0].percent = 20
-          shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 4) }
+          new_shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 4) }
         else
           game_error('Cannot convert 10 share corporation')
         end
 
-        shares.each do |share|
+        shares.each { |share| corporation.share_holders[share.owner] += share.percent }
+
+        new_shares.each do |share|
+          owner = share.owner
+          corporation.share_holders[owner] += share.percent if owner
           corporation.shares_by_corporation[corporation] << share
           @_shares[share.id] = share
         end
+      end
+
+      def short(entity, corporation)
+        price = corporation.share_price.price
+        percent = corporation.share_percent
+
+        index = corporation.share_holders.values.map(&:abs).sum / 10
+        share = Share.new(corporation, percent: percent, index: index)
+        short = Share.new(corporation, percent: -percent)
+        short.buyable = false
+        short.counts_for_limit = false
+
+        @log << "#{entity.name} shorts a #{percent}% " \
+          "share of #{corporation.name} for #{format_currency(price)}"
+
+        @bank.spend(price, entity)
+        corporation.share_holders[@share_pool] += percent
+        corporation.share_holders[entity] -= percent
+        entity.shares_by_corporation[corporation] << short
+        @share_pool.shares_by_corporation[corporation] << share
+      end
+
+      def unshort(entity, bundle)
+        share = bundle.shares[0]
+        shares = entity.shares_of(bundle.corporation)
+        shares.delete(share)
+        shares.delete(shares.find { |s| s.percent == -bundle.percent })
       end
 
       def take_loan(entity, loan)

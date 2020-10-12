@@ -248,7 +248,7 @@ module View
       end
 
       def share_number_str(number)
-        number.positive? ? number.to_s : ''
+        number.zero? ? '' : number.to_s
       end
 
       def render_shares
@@ -269,7 +269,7 @@ module View
         }
 
         player_rows = player_info
-          .select { |_, _, num_shares, did_sell| num_shares.positive? || did_sell }
+          .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
           .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
           .map do |player, president, num_shares, did_sell, at_limit|
             flags = (president ? '*' : '') + (at_limit ? 'L' : '')

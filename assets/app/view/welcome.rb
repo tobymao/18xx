@@ -15,6 +15,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>1817 is in super early alpha! Please only play hotseat games with the intent to find and report bugs, there are many.</p>
         <p>18MS is now in production!</p>
         <p>1846 2p Variant is now in beta!</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on

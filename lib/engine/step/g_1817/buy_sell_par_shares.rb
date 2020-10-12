@@ -92,6 +92,7 @@ module Engine
             corporation.operated? &&
             entity.num_shares_of(corporation) <= 0 &&
             !corporation.share_price.acquisition? &&
+            !@players_sold[entity].values.include?(:short) &&
             @game.phase.name != '8'
         end
 
@@ -130,8 +131,12 @@ module Engine
           entity = action.entity
           corporation = action.corporation
           @game.game_error("Cannot short #{corporation.name}") unless can_short?(entity, corporation)
-          price = corporation.share_price.price
-          @log << "#{entity.name} shorts #{corporation.name} and receives #{@game.format_currency(price)}"
+
+          @players_sold[entity][corporation] = :short
+          @game.short(entity, corporation)
+
+          @round.last_to_act = entity
+          @current_actions << action
         end
 
         def process_bid(action)
@@ -161,10 +166,18 @@ module Engine
         end
 
         def process_buy_shares(action)
-          if action.entity.player?
+          entity = action.entity
+          bundle = action.bundle
+          corporation = bundle.corporation
+
+          if entity.player?
+            unshort = entity.percent_of(corporation).negative?
+
             super
+
+            @game.unshort(entity, bundle) if unshort
           else
-            buy_shares(action.entity, action.bundle)
+            buy_shares(entity, bundle)
             @corporate_action = action
           end
         end
