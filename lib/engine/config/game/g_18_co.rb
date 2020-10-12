@@ -393,8 +393,7 @@ module Engine
 			"abilities": [
 				{
 					"type": "tile_discount",
-					"discount": 20,
-					"terrain": "mountain"
+					"discount": 20
 				}
 			]
 		},
