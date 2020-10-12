@@ -413,6 +413,10 @@ module Engine
           @offer || @auctioning || @winner.corporation
         end
 
+        def setup
+          setup_auction
+        end
+
         private
 
         def setup_auction
@@ -465,10 +469,6 @@ module Engine
               setup_auction
             end
           end
-        end
-
-        def setup
-          setup_auction
         end
       end
     end

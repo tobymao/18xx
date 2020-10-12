@@ -164,17 +164,17 @@ module Engine
           end
         end
 
-        private
-
-        def setup
-          @tokens_needed = nil
-        end
-
         def round_state
           {
             converted: nil,
           }
         end
+
+        def setup
+          @tokens_needed = nil
+        end
+
+        private
 
         def needs_money?(corporation)
           @tokens_needed && token_cost > corporation.cash
