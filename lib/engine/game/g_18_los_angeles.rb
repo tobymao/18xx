@@ -61,6 +61,26 @@ module Engine
 
       # unlike in 1846, none of the private companies get 2 tile lays
       def check_special_tile_lay(_action); end
+
+      def east_west_bonus(stops)
+        bonus = { revenue: 0 }
+
+        east = stops.find { |stop| stop.tile.label&.to_s =~ /E/ }
+        west = stops.find { |stop| stop.tile.label&.to_s =~ /W/ }
+        north = stops.find { |stop| stop.tile.label&.to_s =~ /N/ }
+        south = stops.find { |stop| stop.tile.label&.to_s =~ /S/ }
+        if east && west
+          bonus[:revenue] += east.tile.icons.sum { |icon| icon.name.to_i }
+          bonus[:revenue] += west.tile.icons.sum { |icon| icon.name.to_i }
+          bonus[:description] = 'E/W'
+        elsif north && south
+          bonus[:revenue] += north.tile.icons.sum { |icon| icon.name.to_i }
+          bonus[:revenue] += south.tile.icons.sum { |icon| icon.name.to_i }
+          bonus[:description] = 'N/S'
+        end
+
+        bonus
+      end
     end
   end
 end

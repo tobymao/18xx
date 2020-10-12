@@ -216,23 +216,15 @@ module Engine
       def revenue_for(route, stops)
         revenue = super
 
-        east = stops.find { |stop| stop.groups.include?('E') }
-        west = stops.find { |stop| stop.tile.label&.to_s == 'W' }
-
         meat = meat_packing.id
-
         revenue += 30 if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
 
         steam = steamboat.id
-
         if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
           revenue += 20 * port.tile.icons.select { |icon| icon.name == 'port' }.size
         end
 
-        if east && west
-          revenue += east.tile.icons.sum { |icon| icon.name.to_i }
-          revenue += west.tile.icons.sum { |icon| icon.name.to_i }
-        end
+        revenue += east_west_bonus(stops)[:revenue]
 
         if route.train.owner.companies.include?(mail_contract)
           longest = route.routes.max_by { |r| [r.visited_stops.size, r.train.id] }
@@ -242,6 +234,21 @@ module Engine
         revenue
       end
 
+      def east_west_bonus(stops)
+        bonus = { revenue: 0 }
+
+        east = stops.find { |stop| stop.groups.include?('E') }
+        west = stops.find { |stop| stop.tile.label&.to_s == 'W' }
+
+        if east && west
+          bonus[:revenue] += east.tile.icons.sum { |icon| icon.name.to_i }
+          bonus[:revenue] += west.tile.icons.sum { |icon| icon.name.to_i }
+          bonus[:description] = 'E/W'
+        end
+
+        bonus
+      end
+
       def revenue_str(route)
         stops = route.stops
         stop_hexes = stops.map(&:hex)
@@ -249,18 +256,14 @@ module Engine
           stop_hexes.include?(h) ? h&.name : "(#{h&.name})"
         end.join('-')
 
-        east = stops.find { |stop| stop.groups.include?('E') }
-        west = stops.find { |stop| stop.tile.label&.to_s == 'W' }
-
         meat = meat_packing.id
-
         str += ' + Meat-Packing' if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
 
         steam = steamboat.id
-
         str += ' + Port' if route.corporation.assigned?(steam) && (stops.map(&:hex).find { |hex| hex.assigned?(steam) })
 
-        str += ' + E/W' if east && west
+        bonus = east_west_bonus(stops)[:description]
+        str += " + #{bonus}" if bonus
 
         if route.train.owner.companies.include?(mail_contract)
           longest = route.routes.max_by { |r| [r.visited_stops.size, r.train.id] }
