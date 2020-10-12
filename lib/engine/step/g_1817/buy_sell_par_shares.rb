@@ -35,6 +35,7 @@ module Engine
           return %w[bid pass] if @auctioning
 
           actions = super
+          actions << 'short' if can_short_any?(entity)
           actions |= %w[bid pass] unless bought?
           actions
         end
@@ -81,6 +82,19 @@ module Engine
           super && !bundle.corporation.share_price.acquisition?
         end
 
+        def can_short_any?(entity)
+          @game.corporations.any? { |c| can_short?(entity, c) }
+        end
+
+        def can_short?(entity, corporation)
+          # check total shorts
+          corporation.total_shares > 2 &&
+            corporation.operated? &&
+            entity.num_shares_of(corporation) <= 0 &&
+            !corporation.share_price.acquisition? &&
+            @game.phase.name != '8'
+        end
+
         def choice_name
           'Number of Shares'
         end
@@ -110,6 +124,14 @@ module Engine
 
           pass_auction(current_entity)
           resolve_bids
+        end
+
+        def process_short(action)
+          entity = action.entity
+          corporation = action.corporation
+          @game.game_error("Cannot short #{corporation.name}") unless can_short?(entity, corporation)
+          price = corporation.share_price.price
+          @log << "#{entity.name} shorts #{corporation.name} and receives #{@game.format_currency(price)}"
         end
 
         def process_bid(action)

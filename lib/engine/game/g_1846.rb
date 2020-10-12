@@ -491,7 +491,7 @@ module Engine
         return [] unless round.steps.find { |step| step.class == Step::G1846::IssueShares }.active?
 
         num_shares = entity.num_player_shares - entity.num_market_shares
-        bundles = entity.bundles_for_corporation(entity)
+        bundles = bundles_for_corporation(entity, entity)
         share_price = stock_market.find_share_price(entity, :left).price
 
         bundles
@@ -505,8 +505,7 @@ module Engine
 
         share_price = stock_market.find_share_price(entity, :right).price
 
-        share_pool
-          .bundles_for_corporation(entity)
+        bundles_for_corporation(share_pool, entity)
           .each { |bundle| bundle.share_price = share_price }
           .reject { |bundle| entity.cash < bundle.price }
       end
@@ -519,7 +518,7 @@ module Engine
         min_train_price, max_train_price = train.variants.map { |_, v| v[:price] }.minmax
         return [] if corp.cash >= max_train_price
 
-        bundles = corp.bundles_for_corporation(corp)
+        bundles = bundles_for_corporation(corp, corp)
 
         num_issuable_shares = corp.num_player_shares - corp.num_market_shares
         bundles.reject! { |bundle| bundle.num_shares > num_issuable_shares }

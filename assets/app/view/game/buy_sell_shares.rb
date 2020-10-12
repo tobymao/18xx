@@ -38,6 +38,18 @@ module View
           end
         end
 
+        if step.current_actions.include?('short')
+          short = lambda do
+            process_action(Engine::Action::Short.new(current_entity, corporation: @corporation))
+          end
+
+          children << h(
+            :button,
+            { on: { click: short } },
+            'Short Share',
+          )
+        end
+
         # Allow privates to be exchanged for shares
         @game.companies.each do |company|
           company.abilities(:exchange) do |ability|

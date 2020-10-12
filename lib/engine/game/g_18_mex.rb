@@ -191,8 +191,8 @@ module Engine
         # This is to simplify other implementation - only handle sell bundles with one half share.
         half_shares = [half_shares.first] if half_shares.any?
 
-        regular_bundles = player.bundles_for_corporation(ndm, shares: regular_shares)
-        half_bundles = player.bundles_for_corporation(ndm, shares: half_shares)
+        regular_bundles = super(player, ndm, shares: regular_shares)
+        half_bundles = super(player, ndm, shares: half_shares)
         regular_bundles.concat(half_bundles)
       end
 

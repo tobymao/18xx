@@ -171,7 +171,7 @@ module Engine
           corporation.cash = 1
           player.cash = 1
 
-          bundle = player.bundles_for_corporation(corporation2).first
+          bundle = game.bundles_for_corporation(player, corporation2).first
           subject.process_action(Action::SellShares.new(
             player,
             shares: bundle.shares,
@@ -462,7 +462,7 @@ module Engine
           corporation.cash = 1
           player.cash = 1
 
-          bundle = player.bundles_for_corporation(corporation2).first
+          bundle = game.bundles_for_corporation(player, corporation2).first
           subject.process_action(Action::SellShares.new(
             player,
             shares: bundle.shares,
@@ -482,7 +482,7 @@ module Engine
           corporation.cash = 1
           player.cash = 1
 
-          bundle = player.bundles_for_corporation(corporation2)[3]
+          bundle = game.bundles_for_corporation(player, corporation2)[3]
 
           subject.process_action(Action::SellShares.new(
             player,
@@ -1133,7 +1133,7 @@ module Engine
               bundle = ShareBundle.new(corporation.shares[0])
               game.share_pool.transfer_shares(bundle, player)
 
-              bundle = player.dumpable_bundles(corporation).first
+              bundle = game.bundles_for_corporation(player, corporation).first
               subject.process_action(Action::SellShares.new(
                                        player,
                                        shares: bundle.shares,

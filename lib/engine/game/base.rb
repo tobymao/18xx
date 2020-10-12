@@ -550,8 +550,8 @@ module Engine
               next unless corporation.operated? || corporation.president?(player)
             end
 
-            max_bundle = player.dumpable_bundles(corporation)
-              .select { |bundle| @share_pool&.fit_in_bank?(bundle) }
+            max_bundle = bundles_for_corporation(player, corporation)
+              .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
               .max_by(&:price)
             value += max_bundle&.price || 0
           end
@@ -572,8 +572,27 @@ module Engine
         bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
       end
 
-      def bundles_for_corporation(player, corporation)
-        player.bundles_for_corporation(corporation)
+      def bundles_for_corporation(share_holder, corporation, shares: nil)
+        return [] unless corporation.ipoed
+
+        shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
+
+        bundles = shares.flat_map.with_index do |share, index|
+          bundle = shares.take(index + 1)
+          percent = bundle.sum(&:percent)
+          bundles = [Engine::ShareBundle.new(bundle, percent)]
+          if share.president
+            normal_percent = corporation.share_percent
+            difference = corporation.presidents_percent - normal_percent
+            num_partial_bundles = difference / normal_percent
+            (1..num_partial_bundles).each do |n|
+              bundles.insert(0, Engine::ShareBundle.new(bundle, percent - (normal_percent * n)))
+            end
+          end
+          bundles
+        end
+
+        bundles
       end
 
       def num_certs(entity)
