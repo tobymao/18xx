@@ -89,7 +89,7 @@ module Engine
 
       def init_round_finished
         @minors.reject(&:owned_by_player?).each { |m| close_corporation(m) }
-        @companies.reject(&:owned_by_player?).each { |c| c.close! }
+        @companies.reject(&:owned_by_player?).each(&:close!)
         @draft_finished = true
       end
 
