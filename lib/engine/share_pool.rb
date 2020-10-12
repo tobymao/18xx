@@ -148,9 +148,7 @@ module Engine
 
       num_shares = presidents_share.percent / corporation.share_percent
 
-      president
-        .shares_of(corporation)
-        .take(num_shares).each { |s| move_share(s, swap_to) }
+      possible_reorder(president.shares_of(corporation)).take(num_shares).each { |s| move_share(s, swap_to) }
       move_share(presidents_share, president)
 
       return unless bundle.partial?
@@ -158,6 +156,10 @@ module Engine
       difference = bundle.shares.sum(&:percent) - bundle.percent
       num_shares = difference / corporation.share_percent
       num_shares.times { move_share(shares_of(corporation).first, owner) }
+    end
+
+    def possible_reorder(shares)
+      shares
     end
 
     private
