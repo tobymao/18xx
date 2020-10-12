@@ -50,9 +50,7 @@ module Engine
       nodes = [node, other]
 
       node.hex.all_connections.select do |c|
-        (c.nodes & nodes).size == 2 &&
-          !@connections.include?(c) &&
-          (c.paths & other_paths).empty?
+        (c.nodes & nodes).size == 2 && (c.paths & other_paths).empty?
       end
     end
 
