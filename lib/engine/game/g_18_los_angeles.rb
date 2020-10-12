@@ -3,6 +3,7 @@
 require_relative 'g_1846'
 require_relative '../config/game/g_1846'
 require_relative '../config/game/g_18_los_angeles'
+require_relative '../step/g_18_los_angeles/draft_distribution'
 
 module Engine
   module Game
@@ -81,6 +82,20 @@ module Engine
       end
 
       def check_removed_corp_second_token(_hex, _tile); end
+
+      def init_round
+        Round::Draft.new(self, [Step::G18LosAngeles::DraftDistribution])
+      end
+
+      def init_round_finished
+        @minors.reject(&:owned_by_player?).each { |m| close_corporation(m) }
+        @companies.reject(&:owned_by_player?).each(&:close!)
+        @draft_finished = true
+      end
+
+      def num_pass_companies(_players)
+        0
+      end
 
       # meat packing == citrus
       def meat_packing

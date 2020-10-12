@@ -692,6 +692,8 @@ module Engine
         end
       end
 
+      def init_round_finished; end
+
       def or_round_finished; end
 
       def or_set_finished; end
@@ -1101,6 +1103,7 @@ module Engine
               new_stock_round
             end
           when init_round.class
+            init_round_finished
             reorder_players
             new_stock_round
           end
