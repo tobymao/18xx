@@ -524,7 +524,7 @@ module Engine
       "city=revenue:0;border=edge:1,type:water,cost:40": [
         "D11"
       ],
-      "city=revenue:0;icon=image:18_los_angeles/sbl": [
+      "city=revenue:0;icon=image:18_los_angeles/sbl,sticky:1": [
         "E4",
         "E6"
       ],
@@ -580,7 +580,7 @@ module Engine
       "offboard=revenue:yellow_20|brown_50,groups:E|NE|SE;label=E;icon=image:1846/30;path=a:1,b:_0": [
         "B15"
       ],
-      "offboard=revenue:yellow_30|brown_70,groups:E|NE|SE;label=E;icon=image:1846/30;icon=image:18_los_angeles/citrus;path=a:1,b:_0;path=a:2,b:_0": [
+      "offboard=revenue:yellow_30|brown_70,groups:E|NE|SE;label=E;icon=image:1846/30;icon=image:18_los_angeles/meat;path=a:1,b:_0;path=a:2,b:_0": [
         "C14"
       ],
       "offboard=revenue:yellow_20|brown_40,groups:E|NE|SE;label=E;icon=image:1846/30;path=a:0,b:_0;path=a:1,b:_0": [
@@ -592,7 +592,7 @@ module Engine
       "offboard=revenue:yellow_20|brown_50,groups:SE;label=S/E;border=edge:2,type:mountain,cost:20;path=a:1,b:_0;path=a:2,b:_0;icon=image:1846/20": [
         "F15"
       ],
-      "offboard=revenue:yellow_20|brown_40,groups:S|SE|SW;label=S;path=a:3,b:_0;icon=image:1846/50;icon=image:18_los_angeles/citrus;icon=image:port": [
+      "offboard=revenue:yellow_20|brown_40,groups:S|SE|SW;label=S;path=a:3,b:_0;icon=image:1846/50;icon=image:18_los_angeles/meat;icon=image:port": [
         "F7"
       ]
     },

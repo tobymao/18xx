@@ -61,6 +61,12 @@ module Engine
         'H12' => ['B&O', 'C&O'],
       }.freeze
 
+      LSL_HEXES = %w[D14 E17].freeze
+      LSL_ICON = 'lsl'
+
+      MEAT_HEXES = %w[D6 I1].freeze
+      STEAMBOAT_HEXES = %w[B8 C5 D14 I1 G19].freeze
+
       TILE_COST = 20
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove private company tokens']).freeze
 
@@ -129,36 +135,26 @@ module Engine
         # When creating a game the game will not have enough to start
         return unless @players.size.between?(*Engine.player_range(self.class))
 
-        remove_from_group!(ORANGE_GROUP, @companies) do |company|
-          if company.id == 'LSL'
-            %w[D14 E17].each do |hex|
-              hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'lsl' }
+        remove_from_group!(self.class::ORANGE_GROUP, @companies) do |company|
+          if company == lake_shore_line
+            self.class::LSL_HEXES.each do |hex|
+              hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LSL_ICON }
             end
           end
           company.close!
           @round.active_step.companies.delete(company)
         end
-        remove_from_group!(BLUE_GROUP, @companies) do |company|
+        remove_from_group!(self.class::BLUE_GROUP, @companies) do |company|
           company.close!
           @round.active_step.companies.delete(company)
         end
 
-        (two_player? ? [NORTH_GROUP, SOUTH_GROUP] : [GREEN_GROUP]).each do |group|
+        corporation_removal_groups.each do |group|
           remove_from_group!(group, @corporations) do |corporation|
             place_home_token(corporation)
+            place_second_token(corporation)
             corporation.abilities(:reservation) do |ability|
               corporation.remove_ability(ability)
-            end
-
-            if two_player?
-              if corporation.id == 'ERIE'
-                token = corporation.find_token_by_type
-                hex_by_id('D20').tile.cities.first.place_token(corporation, token, check_tokenable: false)
-                @log << 'ERIE places a token on D20'
-              else
-                hex = self.class::REMOVED_CORP_SECOND_TOKEN.find { |_h, corps| corps.include?(corporation.name) }.first
-                @log << "#{corporation.name} will place a second token on #{hex} when a green tile is laid there"
-              end
             end
           end
         end
@@ -181,8 +177,7 @@ module Engine
       end
 
       def remove_from_group!(group, entities)
-        num_removals = [2, two_player? ? 1 : 5 - @players.size].min
-        removals = group.sort_by { rand }.take(num_removals)
+        removals = group.sort_by { rand }.take(num_removals(group))
         # This looks verbose, but it works around the fact that we can't modify code which includes rand() w/o breaking existing games
         return if removals.empty?
 
@@ -195,6 +190,27 @@ module Engine
           else
             false
           end
+        end
+      end
+
+      def num_removals(_group)
+        two_player? ? 1 : 5 - @players.size
+      end
+
+      def corporation_removal_groups
+        two_player? ? [NORTH_GROUP, SOUTH_GROUP] : [GREEN_GROUP]
+      end
+
+      def place_second_token(corporation)
+        return unless two_player?
+
+        if corporation.id == 'ERIE'
+          token = corporation.find_token_by_type
+          hex_by_id('D20').tile.cities.first.place_token(corporation, token, check_tokenable: false)
+          @log << 'ERIE places a token on D20'
+        else
+          hex = self.class::REMOVED_CORP_SECOND_TOKEN.find { |_h, corps| corps.include?(corporation.name) }.first
+          @log << "#{corporation.name} will place a second token on #{hex} when a green tile is laid there"
         end
       end
 
@@ -292,6 +308,10 @@ module Engine
 
       def mail_contract
         @mail_contract ||= company_by_id('MAIL')
+      end
+
+      def lake_shore_line
+        @lake_shore_line ||= company_by_id('LSL')
       end
 
       def illinois_central
@@ -418,8 +438,8 @@ module Engine
 
         @minors.dup.each { |minor| close_corporation(minor) }
 
-        %w[D14 E17].each do |hex|
-          hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'lsl' }
+        self.class::LSL_HEXES.each do |hex|
+          hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LSL_ICON }
         end
       end
 
@@ -440,7 +460,7 @@ module Engine
           end
         end
 
-        %w[B8 C5 D6 D14 G19 I1].each do |hex|
+        (self.class::MEAT_HEXES + self.class::STEAMBOAT_HEXES).uniq.each do |hex|
           hex_by_id(hex).tile.icons.reject! do |icon|
             %w[meat port].include?(icon.name)
           end
