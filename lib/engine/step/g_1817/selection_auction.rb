@@ -20,6 +20,17 @@ module Engine
           @companies
         end
 
+        def active_entities
+          if @auctioning
+            winning_bid = highest_bid(@auctioning)
+            if winning_bid
+              return [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]]
+            end
+          end
+
+          super
+        end
+
         def process_pass(action)
           entity = action.entity
 
@@ -30,9 +41,9 @@ module Engine
             @log << "#{entity.name} passes bidding"
             entity.pass!
             return all_passed! if entities.all?(&:passed?)
-          end
 
-          next_entity!
+            next_entity!
+          end
         end
 
         def entity_in_auction!(entity)
@@ -49,11 +60,7 @@ module Engine
         def next_entity!
           @round.next_entity_index!
           entity = entities[entity_index]
-          if auctioning
-            next_entity! unless entity_in_auction!(entity)
-          elsif entity&.passed?
-            next_entity!
-          end
+          next_entity! if entity&.passed?
         end
 
         def process_bid(action)
@@ -63,8 +70,8 @@ module Engine
             add_bid(action)
           else
             selection_bid(action)
+            next_entity!
           end
-          next_entity!
         end
 
         def actions(entity)
@@ -155,6 +162,7 @@ module Engine
           super
           entities.each(&:unpass!)
           @round.goto_entity!(@auction_triggerer)
+          next_entity!
         end
       end
     end
