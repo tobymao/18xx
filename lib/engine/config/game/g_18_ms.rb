@@ -163,7 +163,7 @@ module Engine
          "name":"Alabama Great Southern Railroad",
          "value":30,
          "revenue":15,
-         "desc":"The owning Major Company may lay an extra yellow tile for free. This extra tile must extend existing track and could be used to extend from a yellow or green tile played as a company’s  normal tile lay. This ability can only be used once, and using it does not close the company.",
+         "desc":"The owning Major Company may lay an extra yellow tile for free. This extra tile must extend existing track and could be used to extend from a yellow or green tile played as a company’s  normal tile lay. This ability can only be used once, and using it does not close the company. Alabama Great Southern Railroad can be bought for exactly face value during OR 1 by an operating Major Company that is controlled by the owner of the private.",
          "sym":"AGS",
          "abilities": [
            {
@@ -185,7 +185,7 @@ module Engine
          "name":"Birmingham Southern Railroad",
          "value":40,
          "revenue":10,
-         "desc":"The owning Major Company may lay one or two extra yellow tiles for free. This extra tile lay must extend existing track and could be used to extend from a yellow or green tile played as a company’s normal tile lay. This ability can only be used once during a single operating round, and using it does not close the company.",
+         "desc":"The owning Major Company may lay one or two extra yellow tiles for free. This extra tile lay must extend existing track and could be used to extend from a yellow or green tile played as a company’s normal tile lay. This ability can only be used once during a single operating round, and using it does not close the company. Birmingham Southern Railroad can be bought for exactly face value during OR 1 by an operating Major Company that is controlled by the owner of the private.",
          "sym":"BS",
          "abilities": [
            {
