@@ -27,7 +27,7 @@ module Engine
       GAME_LOCATION = 'Colorado, USA'
       GAME_RULES_URL = 'https://drive.google.com/open?id=0B3lRHMrbLMG_eEp4elBZZ0toYnM'
       GAME_DESIGNER = 'R. Ryan Driskel'
-      GAME_INFO_URL = 'https://boardgamegeek.com/thread/1526930/18co-rock-stock-playtesting-files-available'
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18CO:-Rock-&-Stock'
 
       SELL_BUY_ORDER = :sell_buy
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
