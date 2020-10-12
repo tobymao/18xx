@@ -661,6 +661,28 @@ module Engine
         routes.sum(&:revenue)
       end
 
+      def compute_other_paths(routes, route)
+        routes.reject { |r| r == route }.flat_map(&:paths)
+      end
+
+      def check_overlap(routes)
+        tracks = []
+
+        routes.each do |route|
+          route.paths.each do |path|
+            a = path.a
+            b = path.b
+
+            tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
+            tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
+          end
+        end
+
+        tracks.group_by(&:itself).each do |k, v|
+          @game.game_error("Route cannot reuse track on #{k[0].id}") if v.size > 1
+        end
+      end
+
       def get(type, id)
         send("#{type}_by_id", id)
       end
