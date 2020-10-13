@@ -3,6 +3,7 @@
 require_relative 'g_1846'
 require_relative '../config/game/g_1846'
 require_relative '../config/game/g_18_los_angeles'
+require_relative '../step/g_18_los_angeles/draft_distribution'
 
 module Engine
   module Game
@@ -25,25 +26,75 @@ module Engine
         'LAS' => '/icons/1846/sc_token.svg',
       }.freeze
 
-      GROUP_ONE = [
+      ORANGE_GROUP = [
         'Beverly Hills Carriage',
         'South Bay Line',
       ].freeze
 
-      GROUP_TWO = [
+      BLUE_GROUP = [
         'Chino Hills Excavation',
         'Los Angeles Citrus',
         'Los Angeles Steamship',
       ].freeze
 
-      CORPORATIONS_GROUP = [
-        'Los Angeles Railway',
-        'Santa Fe Railroad',
-        'Southern Pacific Railroad',
-      ].freeze
+      GREEN_GROUP = %w[LA SF SP].freeze
+
+      LSL_HEXES = %w[E4 E6].freeze
+      LSL_ICON = 'lsl'
+
+      MEAT_HEXES = %w[C14 F7].freeze
+      STEAMBOAT_HEXES = %w[B1 C2 F7 F9].freeze
 
       def self.title
         '18 Los Angeles'
+      end
+
+      def num_removals(group)
+        return 0 if @players.size == 5
+        return 1 if @players.size == 4
+
+        case group
+        when ORANGE_GROUP, BLUE_GROUP
+          1
+        when GREEN_GROUP
+          2
+        end
+      end
+
+      def corporation_removal_groups
+        [GREEN_GROUP]
+      end
+
+      def place_second_token(corporation)
+        hex = case corporation.id
+              when 'LA'
+                'B9'
+              when 'SF'
+                'C8'
+              when 'SP'
+                'C6'
+              end
+        return unless hex
+
+        token = corporation.find_token_by_type
+        hex_by_id(hex).tile.cities.first.place_token(corporation, token, check_tokenable: false)
+        @log << "#{corporation.id} places a token on #{hex}"
+      end
+
+      def check_removed_corp_second_token(_hex, _tile); end
+
+      def init_round
+        Round::Draft.new(self, [Step::G18LosAngeles::DraftDistribution])
+      end
+
+      def init_round_finished
+        @minors.reject(&:owned_by_player?).each { |m| close_corporation(m) }
+        @companies.reject(&:owned_by_player?).each(&:close!)
+        @draft_finished = true
+      end
+
+      def num_pass_companies(_players)
+        0
       end
 
       # meat packing == citrus
@@ -55,12 +106,68 @@ module Engine
         @steamboat ||= company_by_id('LAS')
       end
 
+      def lake_shore_line
+        @lake_shore_line ||= company_by_id('SBL')
+      end
+
       def block_for_steamboat?
         false
       end
 
       # unlike in 1846, none of the private companies get 2 tile lays
       def check_special_tile_lay(_action); end
+
+      def east_west_bonus(stops)
+        bonus = { revenue: 0 }
+
+        east = stops.find { |stop| stop.tile.label&.to_s =~ /E/ }
+        west = stops.find { |stop| stop.tile.label&.to_s =~ /W/ }
+        north = stops.find { |stop| stop.tile.label&.to_s =~ /N/ }
+        south = stops.find { |stop| stop.tile.label&.to_s =~ /S/ }
+        if east && west
+          bonus[:revenue] += east.tile.icons.sum { |icon| icon.name.to_i }
+          bonus[:revenue] += west.tile.icons.sum { |icon| icon.name.to_i }
+          bonus[:description] = 'E/W'
+        elsif north && south
+          bonus[:revenue] += north.tile.icons.sum { |icon| icon.name.to_i }
+          bonus[:revenue] += south.tile.icons.sum { |icon| icon.name.to_i }
+          bonus[:description] = 'N/S'
+        end
+
+        bonus
+      end
+
+      def compute_other_paths(routes, route)
+        routes
+          .reject { |r| r == route }
+          .select { |r| train_type(route.train) == train_type(r.train) }
+          .flat_map(&:paths)
+      end
+
+      def train_type(train)
+        train.name.include?('/') ? :freight : :passenger
+      end
+
+      def check_overlap(routes)
+        tracks_by_type = Hash.new { |h, k| h[k] = [] }
+
+        routes.each do |route|
+          route.paths.each do |path|
+            a = path.a
+            b = path.b
+
+            tracks = tracks_by_type[train_type(route.train)]
+            tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
+            tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
+          end
+        end
+
+        tracks_by_type.each do |_type, tracks|
+          tracks.group_by(&:itself).each do |k, v|
+            @game.game_error("Route cannot reuse track on #{k[0].id}") if v.size > 1
+          end
+        end
+      end
     end
   end
 end

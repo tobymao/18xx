@@ -38,19 +38,19 @@ module Engine
     end
 
     def next_connection(node, connection, other)
-      connections = select(node, other)
+      connections = select(node, other, connection)
       index = connections.find_index(connection) || connections.size
       connections[index + 1]
     end
 
-    def select(node, other)
-      other_paths = @routes.reject { |r| r == self }.flat_map(&:paths)
+    def select(node, other, keep = nil)
+      other_paths = @game.compute_other_paths(@routes, self)
+      other_paths.concat(@connections.reject { |c| c[:connection] == keep }
+                          .flat_map { |c| c[:connection].paths })
       nodes = [node, other]
 
       node.hex.all_connections.select do |c|
-        (c.nodes & nodes).size == 2 &&
-          !@connections.include?(c) &&
-          (c.paths & other_paths).empty?
+        (c.nodes & nodes).size == 2 && (c.paths & other_paths).empty?
       end
     end
 
@@ -152,21 +152,7 @@ module Engine
     end
 
     def check_overlap!
-      tracks = []
-
-      @routes.each do |route|
-        route.paths.each do |path|
-          a = path.a
-          b = path.b
-
-          tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
-          tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
-        end
-      end
-
-      tracks.group_by(&:itself).each do |k, v|
-        @game.game_error("Route cannot reuse track on #{k[0].id}") if v.size > 1
-      end
+      @game.check_overlap(@routes)
     end
 
     def check_connected!(token)
@@ -277,7 +263,7 @@ module Engine
         hexes[0].all_connections.select { |c| c.complete? && c.matches?(hex_ids) }
       end
 
-      other_paths = @routes.reject { |r| r == self }.flat_map(&:paths)
+      other_paths = @game.compute_other_paths(@routes, self)
 
       if possibilities.one?
         connection = possibilities[0].find do |conn|

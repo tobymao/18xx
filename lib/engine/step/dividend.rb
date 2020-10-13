@@ -135,7 +135,7 @@ module Engine
 
         receiver ||= holder
         payouts[receiver] = amount
-        @game.bank.spend(amount, receiver)
+        @game.bank.spend(amount, receiver, check_positive: false)
       end
 
       def change_share_price(entity, payout)

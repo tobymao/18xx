@@ -100,11 +100,11 @@ module Engine
     end
 
     def num_player_shares
-      player_share_holders.values.sum / total_shares
+      player_share_holders.values.sum / share_percent
     end
 
     def num_market_shares
-      share_holders.select { |s_h, _| s_h.share_pool? }.values.sum / total_shares
+      share_holders.select { |s_h, _| s_h.share_pool? }.values.sum / share_percent
     end
 
     def share_holders

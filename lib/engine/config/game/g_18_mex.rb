@@ -252,7 +252,7 @@ module Engine
          "name":"Kansas City, Mexico, & Orient Railroad",
          "value":40,
          "revenue":10,
-         "desc":"Owning company may place the non-upgradable Copper Canyan tile in E6 for $60 (instead of the normal $120) unless that hex is already built. The tile lay does not have to be connected to an existing station token of the owning corporation. The lay does not count toward the normal lay limit but must be done during tile lay.",
+         "desc":"Owning corporation may place the non-upgradable Copper Canyan tile in E6 for $60 (instead of the normal $120) unless that hex is already built. The tile lay does not have to be connected to an existing station token of the owning corporation. The lay does not count toward the normal lay limit but must be done during tile lay.",
          "abilities": [
             {
               "type": "tile_lay",
@@ -274,7 +274,7 @@ module Engine
          "name":"Interoceanic Railroad",
          "value":50,
          "revenue":0,
-         "desc":"Owner takes control of minor company A. Begins in Tampico (M12). This private cannot be sold. When Phase 3½ begins, the minor company closes, but its owner receives a 5% share in NdM.",
+         "desc":"Owner takes control of minor corporation A. Begins in Tampico (M12). This private cannot be sold. When Phase 3½ begins, the minor corporation closes, but its owner receives a 5% share in NdM.",
          "abilities": [
             {
               "type": "no_buy",
@@ -292,7 +292,7 @@ module Engine
          "name":"Sonora-Baja California Railway",
          "value":50,
          "revenue":0,
-         "desc":"Owner takes control of minor company B. Begins in Mazatlán (K6). This private cannot be sold. When Phase 3½ begins, the minor company closes, but its owner receives a 5% share in NdM.",
+         "desc":"Owner takes control of minor corporation B. Begins in Mazatlán (K6). This private cannot be sold. When Phase 3½ begins, the minor corporation closes, but its owner receives a 5% share in NdM.",
          "abilities": [
             {
               "type": "no_buy",
@@ -310,7 +310,7 @@ module Engine
          "name":"Southeastern Railway",
          "value":50,
          "revenue":0,
-         "desc":"Owner takes control of minor company C. Begins in Oaxaca (S12). This private cannot be sold. When Phase 3½ begins, the minor company closes, but its owner receives a 10% share in UdY.",
+         "desc":"Owner takes control of minor corporation C. Begins in Oaxaca (S12). This private cannot be sold. When Phase 3½ begins, the minor corporation closes, but its owner receives a 10% share in UdY.",
          "abilities": [
             {
               "type": "no_buy",
@@ -349,7 +349,7 @@ module Engine
          "name":"Mexican National Railroad",
          "value":140,
          "revenue":20,
-         "desc":"Comes with President's Certificate of NdM. Owner must immediately set NdM's par price. Closes when NdM buys a train. May not be sold to a company.",
+         "desc":"Comes with President's Certificate of NdM. Owner must immediately set NdM's par price. Closes when NdM buys a train. May not be sold to a corporation.",
          "abilities":[
             {
                "type":"shares",

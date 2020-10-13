@@ -11,10 +11,10 @@ module Engine
 
       load_from_json(Config::Game::G18MS::JSON)
 
-      DEV_STAGE = :beta
+      DEV_STAGE = :production
 
       GAME_LOCATION = 'Mississippi, USA'
-      GAME_RULES_URL = 'https://boardgamegeek.com/thread/2461999/article/35755723#35755723'
+      GAME_RULES_URL = 'https://boardgamegeek.com/filepage/209791'
       GAME_DESIGNER = 'Mark Derrick'
       GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MS'

@@ -535,6 +535,8 @@ module Engine
 
         value = player.cash
         if emergency
+          return liquidity(player) unless @round
+
           value += player.shares_by_corporation.sum do |corporation, shares|
             next 0 if shares.empty?
 
@@ -550,8 +552,8 @@ module Engine
               next unless corporation.operated? || corporation.president?(player)
             end
 
-            max_bundle = player.dumpable_bundles(corporation)
-              .select { |bundle| @share_pool&.fit_in_bank?(bundle) }
+            max_bundle = bundles_for_corporation(player, corporation)
+              .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
               .max_by(&:price)
             value += max_bundle&.price || 0
           end
@@ -569,11 +571,30 @@ module Engine
 
       def sellable_bundles(player, corporation)
         bundles = bundles_for_corporation(player, corporation)
-        bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
+        bundles.select { |bundle| @round.active_step&.can_sell?(player, bundle) }
       end
 
-      def bundles_for_corporation(player, corporation)
-        player.bundles_for_corporation(corporation)
+      def bundles_for_corporation(share_holder, corporation, shares: nil)
+        return [] unless corporation.ipoed
+
+        shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
+
+        bundles = shares.flat_map.with_index do |share, index|
+          bundle = shares.take(index + 1)
+          percent = bundle.sum(&:percent)
+          bundles = [Engine::ShareBundle.new(bundle, percent)]
+          if share.president
+            normal_percent = corporation.share_percent
+            difference = corporation.presidents_percent - normal_percent
+            num_partial_bundles = difference / normal_percent
+            (1..num_partial_bundles).each do |n|
+              bundles.insert(0, Engine::ShareBundle.new(bundle, percent - (normal_percent * n)))
+            end
+          end
+          bundles
+        end
+
+        bundles
       end
 
       def num_certs(entity)
@@ -642,6 +663,28 @@ module Engine
         routes.sum(&:revenue)
       end
 
+      def compute_other_paths(routes, route)
+        routes.reject { |r| r == route }.flat_map(&:paths)
+      end
+
+      def check_overlap(routes)
+        tracks = []
+
+        routes.each do |route|
+          route.paths.each do |path|
+            a = path.a
+            b = path.b
+
+            tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
+            tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
+          end
+        end
+
+        tracks.group_by(&:itself).each do |k, v|
+          @game.game_error("Route cannot reuse track on #{k[0].id}") if v.size > 1
+        end
+      end
+
       def get(type, id)
         send("#{type}_by_id", id)
       end
@@ -672,6 +715,8 @@ module Engine
           @log << "#{owner.name} collects #{format_currency(revenue)} from #{company.name}"
         end
       end
+
+      def init_round_finished; end
 
       def or_round_finished; end
 
@@ -797,6 +842,8 @@ module Engine
           true
         end
 
+        corporation.companies.dup.each(&:close!)
+
         corporation.share_price.corporations.delete(corporation)
         corporation = init_corporations(@stock_market).find { |c| c.id == corporation.id }
 
@@ -831,6 +878,21 @@ module Engine
 
       def two_player?
         @two_player ||= @players.size == 2
+      end
+
+      def add_extra_tile(tile)
+        game_error('Add extra tile only works if unlimited') unless tile.unlimited
+
+        # Find the highest tile that exists of this type in the tile list and duplicate it.
+        # The highest one in the list should be the highest index anywhere.
+        tiles = @tiles.select { |t| t.name == tile.name }
+        new_tile = tiles.max { |a, b| a.id <=> b.id }.dup
+        @tiles << new_tile
+
+        @_tiles[new_tile.id] = new_tile
+        extra_cities = new_tile.cities
+        @cities.concat(extra_cities)
+        extra_cities.each { |c| @_cities[c.id] = c }
       end
 
       private
@@ -970,17 +1032,18 @@ module Engine
 
       def init_tiles
         self.class::TILES.flat_map do |name, val|
-          if val.is_a?(Integer)
-            count = val
+          if val.is_a?(Integer) || val == 'unlimited'
+            count = val == 'unlimited' ? 1 : val
             count.times.map do |i|
               Tile.for(
                 name,
                 index: i,
-                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS
+                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
+                unlimited: val == 'unlimited'
               )
             end
           else
-            count = val['count']
+            count = val['count'] == 'unlimited' ? 1 : val['count']
             color = val['color']
             code = val['code']
             count.times.map do |i|
@@ -989,7 +1052,8 @@ module Engine
                 color,
                 code,
                 index: i,
-                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS
+                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
+                unlimited: val['count'] == 'unlimited'
               )
             end
           end
@@ -1080,6 +1144,7 @@ module Engine
               new_stock_round
             end
           when init_round.class
+            init_round_finished
             reorder_players
             new_stock_round
           end

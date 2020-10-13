@@ -10,6 +10,8 @@ module Engine
       class BuySellParShares < BuySellParShares
         include PassableAuction
         TOKEN_COST = 50
+        MIN_BID = 100
+        MAX_BID = 400
 
         def actions(entity)
           return corporate_actions(entity) if !entity.player? && entity.owned_by?(current_entity)
@@ -27,7 +29,7 @@ module Engine
 
             if available_subsidiaries(entity).any?
               actions = %w[assign]
-              actions << 'pass' if entity.cash >= @winning_bid.price
+              actions << 'pass' if cash_with_subsidiaries(entity) >= @winning_bid.price
               return actions
             end
           end
@@ -35,8 +37,16 @@ module Engine
           return %w[bid pass] if @auctioning
 
           actions = super
-          actions |= %w[bid pass] unless bought?
+          unless bought?
+            actions << 'short' if can_short_any?(entity)
+            actions << 'bid' if max_bid(entity) >= MIN_BID
+          end
+          actions << 'pass' if (actions.any? || any_corporate_actions?(entity)) && !actions.include?('pass')
           actions
+        end
+
+        def cash_with_subsidiaries(entity)
+          entity.cash + @subsidiaries.sum(&:value)
         end
 
         def redeemable_shares(entity)
@@ -81,6 +91,20 @@ module Engine
           super && !bundle.corporation.share_price.acquisition?
         end
 
+        def can_short_any?(entity)
+          @game.corporations.any? { |c| can_short?(entity, c) }
+        end
+
+        def can_short?(entity, corporation)
+          # check total shorts
+          corporation.total_shares > 2 &&
+            corporation.operated? &&
+            entity.num_shares_of(corporation) <= 0 &&
+            !corporation.share_price.acquisition? &&
+            !@players_sold[entity].values.include?(:short) &&
+            @game.phase.name != '8'
+        end
+
         def choice_name
           'Number of Shares'
         end
@@ -112,6 +136,18 @@ module Engine
           resolve_bids
         end
 
+        def process_short(action)
+          entity = action.entity
+          corporation = action.corporation
+          @game.game_error("Cannot short #{corporation.name}") unless can_short?(entity, corporation)
+
+          @players_sold[entity][corporation] = :short
+          @game.short(entity, corporation)
+
+          @round.last_to_act = entity
+          @current_actions << action
+        end
+
         def process_bid(action)
           if auctioning
             add_bid(action)
@@ -139,10 +175,18 @@ module Engine
         end
 
         def process_buy_shares(action)
-          if action.entity.player?
+          entity = action.entity
+          bundle = action.bundle
+          corporation = bundle.corporation
+
+          if entity.player?
+            unshort = entity.percent_of(corporation).negative?
+
             super
+
+            @game.unshort(entity, bundle) if unshort
           else
-            buy_shares(action.entity, action.bundle)
+            buy_shares(entity, bundle)
             @corporate_action = action
           end
         end
@@ -191,9 +235,15 @@ module Engine
           par_price = price / 2
 
           share_price = @game.find_share_price(par_price)
+
+          # Temporarily give the entity cash to buy the corporation PAR shares
+          @game.bank.spend(share_price.price * 2, entity)
+
           action = Action::Par.new(@winning_bid.entity, corporation: @winning_bid.corporation, share_price: share_price)
           process_par(action)
-          corporation.spend(corporation.cash, entity)
+
+          # Clear the corporation of cash
+          corporation.spend(corporation.cash, @game.bank)
 
           @subsidiaries.each do |company|
             company.owner = corporation
@@ -206,7 +256,8 @@ module Engine
             end
           end
 
-          entity.spend(price, corporation)
+          # Move the bid price into the corp
+          entity.spend(price, corporation) if price.positive?
           @game.size_corporation(corporation, @corporation_size) unless @corporation_size == 2
           @log << "#{corporation.name} starts with #{@game.format_currency(price)} and #{@corporation_size} shares"
 
@@ -238,7 +289,7 @@ module Engine
           total = @subsidiaries.sum(&:value)
 
           (entity.companies - @subsidiaries).select do |company|
-            @winning_bid.price > company.value + total
+            @winning_bid.price >= company.value + total
           end
         end
 
@@ -247,17 +298,13 @@ module Engine
         end
 
         def min_bid(corporation)
-          return 100 unless @auctioning
+          return MIN_BID unless @auctioning
 
           highest_bid(corporation).price + min_increment
         end
 
-        def max_bid(player, _corporation)
-          [400, bidding_power(player)].min
-        end
-
-        def bidding_power(player)
-          player.cash + player.companies.sum(&:value)
+        def max_bid(player, _corporation = nil)
+          [MAX_BID, @game.bidding_power(player)].min
         end
 
         def can_ipo_any?(_entity)

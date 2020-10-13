@@ -173,7 +173,7 @@ module Engine
 
       def can_sell_any?(entity)
         @game.corporations.any? do |corporation|
-          bundles = entity.bundles_for_corporation(corporation)
+          bundles = @game.bundles_for_corporation(entity, corporation)
           bundles.any? { |bundle| can_sell?(entity, bundle) }
         end
       end
