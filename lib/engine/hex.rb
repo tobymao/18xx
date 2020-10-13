@@ -7,7 +7,7 @@ module Engine
   class Hex
     include Assignable
 
-    attr_accessor :x, :y
+    attr_accessor :x, :y, :ignore_for_axes
     attr_reader :connections, :coordinates, :empty, :layout, :neighbors, :tile, :location_name, :original_tile
 
     DIRECTIONS = {
@@ -30,8 +30,9 @@ module Engine
     }.freeze
 
     LETTERS = ('A'..'Z').to_a
+    NEGATIVE_LETTERS = [0] + ('a'..'z').to_a
 
-    COORD_LETTER = /([A-Z]+)/.freeze
+    COORD_LETTER = /([A-Za-z]+)/.freeze
     COORD_NUMBER = /([0-9]+)/.freeze
 
     def self.invert(dir)
@@ -46,14 +47,14 @@ module Engine
 
       x =
         if axes_config[:x] == :letter
-          LETTERS.index(letter)
+          LETTERS.index(letter) || -NEGATIVE_LETTERS.index(letter)
         else
           number - 1
         end
 
       y =
         if axes_config[:y] == :letter
-          LETTERS.index(letter)
+          LETTERS.index(letter) || -NEGATIVE_LETTERS.index(letter)
         else
           number - 1
         end
@@ -77,6 +78,7 @@ module Engine
       @tile.hex = self
       @activations = []
       @empty = empty
+      @ignore_for_axes = false
     end
 
     def id

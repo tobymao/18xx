@@ -559,6 +559,12 @@ module Engine
       ],
       "path=a:2,b:3": [
         "F5"
+      ],
+      "offboard=revenue:0,visit_cost:100;path=a:0,b:_0": [
+        "a9"
+      ],
+      "offboard=revenue:0,visit_cost:100;path=a:2,b:_0": [
+        "G14"
       ]
     },
     "red": {

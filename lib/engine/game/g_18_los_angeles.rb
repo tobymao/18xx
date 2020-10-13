@@ -49,6 +49,16 @@ module Engine
         '18 Los Angeles'
       end
 
+      def init_hexes(_companies, _corporations)
+        hexes = super
+
+        hexes.each do |hex|
+          hex.ignore_for_axes = true if %w[a9 G14].include?(hex.id)
+        end
+
+        hexes
+      end
+
       def num_removals(group)
         return 0 if @players.size == 5
         return 1 if @players.size == 4
