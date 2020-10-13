@@ -81,8 +81,8 @@ module Engine
 
       def remove_extra_private_companies
         to_remove = companies.find_all { |company| company.value == 250 }
-                             .shuffle
-                             .pop(7 - @players.size)
+                             .sort_by { rand }
+                             .take(7 - @players.size)
         to_remove.each do |company|
           company.close!
           @round.active_step.companies.delete(company)
