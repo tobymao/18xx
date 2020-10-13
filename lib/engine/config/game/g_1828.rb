@@ -1117,7 +1117,7 @@ module Engine
                 "H14",
                 "I11"
             ],
-            "town=revenue:0;upgrade=cost:120,terrain:mountain": [
+            "town=revenue:0;upgrade=cost:120,terrain:mountain;icon=image:1828/coal": [
                 "K13"
             ],
             "town=revenue:0;town=revenue:0": [
@@ -1196,7 +1196,7 @@ module Engine
             "city=revenue:yellow_20|brown_30;path=a:1,b:4;path=a:2,b:_0;path=a:3,b:_0": [
                 "H16"
             ],
-            "city=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0": [
+            "city=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;icon=image:1828/coal;icon=image:1828/coal": [
                 "K11"
             ],
             "city=revenue:yellow_30|brown_40;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0": [
