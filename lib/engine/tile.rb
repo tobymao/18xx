@@ -17,7 +17,7 @@ module Engine
     attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :reservations
     attr_reader :blocks_lay, :borders, :cities, :color, :edges, :junction, :label, :nodes,
                 :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers,
-                :city_towns
+                :city_towns, :unlimited
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -57,7 +57,7 @@ module Engine
     end
 
     def self.from_code(name, color, code, **opts)
-      Tile.new(name, color: color, parts: decode(code), **opts)
+      Tile.new(name, code: code, color: color, parts: decode(code), **opts)
     end
 
     def self.part(type, params, cache)
@@ -133,6 +133,7 @@ module Engine
 
     # rotation 0-5
     def initialize(name,
+                   code:,
                    color:,
                    parts:,
                    rotation: 0,
@@ -141,6 +142,7 @@ module Engine
                    location_name: nil,
                    **opts)
       @name = name
+      @code = code
       @color = color.to_sym
       @parts = parts&.flatten
       @rotation = rotation
@@ -166,8 +168,23 @@ module Engine
       @index = index
       @blocks_lay = nil
       @reservation_blocks = opts[:reservation_blocks] || false
+      @unlimited = opts[:unlimited] || false
 
       separate_parts
+    end
+
+    def dup
+      # This assumes you pass in the highest index of that tile
+      Tile.new(@name,
+               code: @code,
+               color: @color,
+               parts: Tile.decode(@code),
+               rotation: @rotation,
+               preprinted: @preprinted,
+               index: @index + 1,
+               location_name: @location_name,
+               reservation_blocks: @reservation_blocks,
+               unlimited: @unlimited)
     end
 
     def id
