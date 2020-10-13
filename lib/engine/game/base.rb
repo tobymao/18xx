@@ -890,6 +890,9 @@ module Engine
         @tiles << new_tile
 
         @_tiles[new_tile.id] = new_tile
+        extra_cities = new_tile.cities
+        @cities.concat(extra_cities)
+        extra_cities.each { |c| @_cities[c.id] = c }
       end
 
       private
