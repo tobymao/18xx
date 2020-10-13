@@ -856,6 +856,18 @@ module Engine
         @two_player ||= @players.size == 2
       end
 
+      def add_extra_tile(tile)
+        game_error('Add extra tile only works if unlimited') unless tile.unlimited
+
+        # Find the highest tile that exists of this type in the tile list and duplicate it.
+        # The highest one in the list should be the highest index anywhere.
+        tiles = @tiles.select { |t| t.name == tile.name }
+        new_tile = tiles.max { |a, b| a.id <=> b.id }.dup
+        @tiles << new_tile
+
+        @_tiles[new_tile.id] = new_tile
+      end
+
       private
 
       def init_bank
@@ -993,17 +1005,18 @@ module Engine
 
       def init_tiles
         self.class::TILES.flat_map do |name, val|
-          if val.is_a?(Integer)
-            count = val
+          if val.is_a?(Integer) || val == 'unlimited'
+            count = val == 'unlimited' ? 1 : val
             count.times.map do |i|
               Tile.for(
                 name,
                 index: i,
-                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS
+                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
+                unlimited: val == 'unlimited'
               )
             end
           else
-            count = val['count']
+            count = val['count'] == 'unlimited' ? 1 : val['count']
             color = val['color']
             code = val['code']
             count.times.map do |i|
@@ -1012,7 +1025,8 @@ module Engine
                 color,
                 code,
                 index: i,
-                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS
+                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
+                unlimited: val['count'] == 'unlimited'
               )
             end
           end

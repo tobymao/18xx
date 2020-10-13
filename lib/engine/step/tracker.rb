@@ -61,6 +61,8 @@ module Engine
           @game.game_error("#{old_tile.name} is not legally rotated for #{tile.name}")
         end
 
+        @game.add_extra_tile(tile) if tile.unlimited
+
         @game.tiles.delete(tile)
         @game.tiles << old_tile unless old_tile.preprinted
 
