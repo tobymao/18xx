@@ -652,19 +652,7 @@ module Engine
       end
 
       def revenue_for(route, stops)
-        stops.sum { |stop| revenue_for_stop(route, stop) }
-      end
-
-      def revenue_for_stop(route, stop)
-        distance = route.train.distance
-        multiplier = 1
-        row = distance.index do |h|
-          h['nodes'].include?(stop.type)
-        end
-        if (!distance[row]['multiplier'].nil?)
-          multiplier = distance[row]['multiplier']
-        end
-        stop.route_revenue(route.phase, route.train) * multiplier
+        stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
       end
 
       def revenue_str(route)
