@@ -10,7 +10,7 @@ module Engine
         include PassableAuction
         ACTIONS = %w[bid pass].freeze
 
-        attr_reader :companies
+        attr_reader :companies, :seed_money
 
         def description
           'Bid on Companies'

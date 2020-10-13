@@ -104,10 +104,17 @@ module View
             h(:td, 'Liquidity'),
             h('td.right', @game.format_currency(@game.liquidity(@player))),
           ]),
-          h(:tr, [
-            h(:td, 'Certs'),
-            h('td.right', td_cert_props, "#{num_certs}/#{cert_limit}"),
-          ]),
+])
+
+        if @game.respond_to?(:bidding_power)
+          trs << h(:tr, [
+            h(:td, 'Bid Power'),
+            h('td.right', @game.format_currency(@game.bidding_power(@player))),
+          ])
+        end
+        trs << h(:tr, [
+          h(:td, 'Certs'),
+          h('td.right', td_cert_props, "#{num_certs}/#{cert_limit}"),
         ])
 
         if @player == @game.priority_deal_player

@@ -82,6 +82,15 @@ module Engine
         entity.total_shares
       end
 
+      def bidding_power(player)
+        player.cash + player.companies.sum(&:value)
+      end
+
+      def num_certs(entity)
+        # Privates don't count towards limit
+        entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
+      end
+
       def home_token_locations(corporation)
         hexes.select do |hex|
           hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }

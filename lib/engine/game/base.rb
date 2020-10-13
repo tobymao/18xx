@@ -535,6 +535,8 @@ module Engine
 
         value = player.cash
         if emergency
+          return liquidity(player) unless @round
+
           value += player.shares_by_corporation.sum do |corporation, shares|
             next 0 if shares.empty?
 
@@ -569,7 +571,7 @@ module Engine
 
       def sellable_bundles(player, corporation)
         bundles = bundles_for_corporation(player, corporation)
-        bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
+        bundles.select { |bundle| @round.active_step&.can_sell?(player, bundle) }
       end
 
       def bundles_for_corporation(share_holder, corporation, shares: nil)
