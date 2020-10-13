@@ -304,11 +304,7 @@ module Engine
         end
 
         def max_bid(player, _corporation = nil)
-          [MAX_BID, bidding_power(player)].min
-        end
-
-        def bidding_power(player)
-          player.cash + player.companies.sum(&:value)
+          [MAX_BID, @game.bidding_power(player)].min
         end
 
         def can_ipo_any?(_entity)

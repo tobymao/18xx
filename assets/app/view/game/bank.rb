@@ -62,6 +62,14 @@ module View
             h('td.right', @game.format_currency(@game.loan_value)),
           ])
         end
+        if @game.round.active_step.respond_to?(:seed_money)
+          trs << h(:tr, [
+            h(:td, 'Seed Money'),
+            h('td.right', @game.format_currency(@game.round.active_step.seed_money)),
+          ])
+        end
+
+        return unless trs.any?
 
         h('div.bank.card', [
           h('div.title.nowrap', title_props, [h(:em, 'The Bank')]),
