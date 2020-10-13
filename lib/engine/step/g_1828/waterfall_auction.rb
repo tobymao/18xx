@@ -34,9 +34,15 @@ module Engine
         end
 
         def resolve_bids_for_company(company)
+<<<<<<< HEAD
           return super if @process_round_end_auction || rest_of_row_has_bids?(company)
 
           false
+=======
+          return false unless @process_round_end_auction || rest_of_row_has_bids?(company)
+
+          super
+>>>>>>> Implement 1828 auctions.
         end
 
         def all_passed!
@@ -50,6 +56,15 @@ module Engine
           @bids[new_bid.company]&.reject! { |bid| new_bid.entity != bid.entity } if new_bid.company.value == 250
         end
 
+<<<<<<< HEAD
+=======
+        def may_purchase?(company)
+          return false unless @companies.first.value == company.value && @bids[company].empty?
+
+          rest_of_row_has_bids?(company)
+        end
+
+>>>>>>> Implement 1828 auctions.
         private
 
         def round_end_auction_complete
@@ -66,10 +81,15 @@ module Engine
         end
 
         def rest_of_row_has_bids?(company)
+<<<<<<< HEAD
           @companies.each do |c|
             next if c.value != company.value || c == company
 
             return false if @bids[c].empty?
+=======
+          @companies.find_all { |c| c.value == company.value }.each do |c|
+            return false if @bids[c].empty? && c != company
+>>>>>>> Implement 1828 auctions.
           end
 
           true
