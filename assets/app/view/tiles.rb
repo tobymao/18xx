@@ -39,7 +39,7 @@ module View
         text += name
         text += "-#{rotation}" unless rotations == [0]
         if tile.unlimited
-          text += ' x ∞'
+          text += ' × ∞'
         elsif num
           text += " × #{num}"
         end
