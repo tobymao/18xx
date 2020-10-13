@@ -12,6 +12,7 @@ require 'view/home'
 require 'view/flash'
 require 'view/game_page'
 require 'view/map_page'
+require 'view/market_page'
 require 'view/navigation'
 require 'view/tiles_page'
 require 'view/user'
@@ -73,6 +74,8 @@ class App < Snabberb::Component
         h(View::TilesPage, route: @app_route)
       when /map/
         h(View::MapPage, route: @app_route)
+      when /market/
+        h(View::MarketPage, route: @app_route)
       else
         h(View::Home, user: @user)
       end
