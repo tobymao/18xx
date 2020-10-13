@@ -34,10 +34,22 @@ module Engine
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1828.Games'
 
       MUST_BID_INCREMENT_MULTIPLE = true
+      MIN_BID_INCREMENT = 5
+
+      # TODO: add end game for full OR set in purple phase
+      GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_round }.freeze
+
       SELL_BUY_ORDER = :sell_buy_sell
 
       def self.title
         '1828.Games'
+      end
+
+      def new_auction_round
+        Round::Auction.new(self, [
+          Step::CompanyPendingPar,
+          Step::G1828::WaterfallAuction,
+        ])
       end
 
       def stock_round
@@ -68,9 +80,9 @@ module Engine
       end
 
       def remove_extra_private_companies
-        to_remove = companies.find_all { |company| company.value == 249 }
+        to_remove = companies.find_all { |company| company.value == 250 }
                              .shuffle
-                             .pop(6 - @players.size)
+                             .pop(7 - @players.size)
         to_remove.each do |company|
           company.close!
           @round.active_step.companies.delete(company)

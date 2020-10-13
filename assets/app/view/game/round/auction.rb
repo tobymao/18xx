@@ -58,7 +58,7 @@ module View
         def render_company_pending_par
           children = []
 
-          @step.company_pending_par.abilities(:shares).shares.each do |share|
+          @step.companies_pending_par.first.abilities(:shares).shares.each do |share|
             next unless share.president
 
             children << h(Corporation, corporation: share.corporation)
@@ -105,7 +105,7 @@ module View
             },
           }
 
-          @step.available.sort.map do |company|
+          @step.available.map do |company|
             children = [h(Company, company: company, bids: @step.bids[company])]
             children << render_input(company) if @selected_company == company
             h(:div, props, children)
