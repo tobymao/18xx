@@ -1193,7 +1193,7 @@ module Engine
                 "F28",
                 "I23"
             ],
-            "city=revenue:yellow_20|brown_30;path=a:1,b:4;path=a:2,b:_0;path=a:3,b:_0": [
+            "city=revenue:yellow_20|brown_30,loc:2.5;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:1,b:4": [
                 "H16"
             ],
             "city=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;icon=image:1828/coal;icon=image:1828/coal": [
