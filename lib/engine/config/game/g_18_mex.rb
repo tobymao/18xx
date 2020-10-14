@@ -698,7 +698,8 @@ module Engine
                   "offboard"
                ],
                "pay":4,
-               "visit":4
+               "visit":4,
+               "multiplier":2
             },
             {
                "nodes":[
