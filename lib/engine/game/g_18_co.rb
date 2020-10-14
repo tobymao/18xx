@@ -3,7 +3,6 @@
 require_relative '../config/game/g_18_co'
 require_relative 'base'
 require_relative 'company_price_50_to_150_percent'
-require_relative 'revenue_4d'
 
 module Engine
   module Game
@@ -43,7 +42,6 @@ module Engine
         ).freeze
 
       include CompanyPrice50To150Percent
-      include Revenue4D
 
       def dsng
         @dsng ||= corporation_by_id('DSNG')
@@ -77,21 +75,6 @@ module Engine
         Step::DiscardTrain,
         Step::BuySellParShares,
         ])
-      end
-
-      def adjust_revenue_for_5d_train(route, stops, revenue)
-        return revenue unless route.train.name == '5D'
-
-        2 * revenue - stops
-          .select { |stop| stop.hex.tile.towns.any? }
-          .sum { |stop| stop.route_revenue(route.phase, route.train) }
-      end
-
-      def revenue_for(route, stops)
-        revenue = adjust_revenue_for_4d_train(route, stops, super)
-        revenue = adjust_revenue_for_5d_train(route, stops, revenue)
-
-        revenue
       end
 
       def routes_revenue(routes)
