@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(0.190415,-7.85568e-18,-9.4469e-18,0.190415,-37.1244,-37.1244)">
+        <g id="CM">
+            <circle id="City" cx="300" cy="300" r="90.192" style="fill:white;"/>
+            <clipPath id="_clip1">
+                <circle id="City1" serif:id="City" cx="300" cy="300" r="90.192"/>
+            </clipPath>
+            <g clip-path="url(#_clip1)">
+                <g transform="matrix(0.541518,2.23407e-17,2.68659e-17,0.541518,137.545,133.257)">
+                    <circle cx="300" cy="300" r="234.43" style="fill:rgb(252,249,202);"/>
+                </g>
+                <g id="Logo" transform="matrix(0.314626,1.29801e-17,1.56093e-17,0.314626,223.325,211.282)">
+                    <g id="Circles" transform="matrix(1,0,0,1,-56.297,-19.369)">
+                        <g transform="matrix(1,0,0,1,0,38.6773)">
+                            <circle cx="300" cy="300" r="234.43"/>
+                        </g>
+                        <g transform="matrix(0.967392,0,0,0.967392,9.78247,48.4598)">
+                            <circle cx="300" cy="300" r="234.43" style="fill:rgb(0,174,237);"/>
+                        </g>
+                        <g transform="matrix(0.705924,0,0,0.705924,88.2227,126.9)">
+                            <circle cx="300" cy="300" r="234.43"/>
+                        </g>
+                        <g transform="matrix(0.676569,0,0,0.676569,97.0293,135.707)">
+                            <circle cx="300" cy="300" r="234.43" style="fill:rgb(255,240,4);"/>
+                        </g>
+                    </g>
+                    <g id="Traingles" transform="matrix(1,0,0,1,-56.043,-16.369)">
+                        <path id="Traingle" d="M299.746,103.302L501.112,451.135L98.38,451.135L299.746,103.302Z"/>
+                        <g id="Traingle1" serif:id="Traingle" transform="matrix(0.436251,0,0,0.436251,168.981,191.423)">
+                            <path d="M299.746,103.302L501.112,451.135L98.38,451.135L299.746,103.302Z" style="fill:rgb(2,116,64);"/>
+                        </g>
+                    </g>
+                    <g transform="matrix(0.841142,0,0,0.841142,-10.7326,-8.77566)">
+                        <path d="M302.488,22.585L309.576,49.573L333.671,35.501L319.6,59.596L346.588,66.684L319.6,73.772L333.671,97.867L309.576,83.796L302.488,110.784L295.4,83.796L271.305,97.867L285.377,73.772L258.389,66.684L285.377,59.596L271.305,35.501L295.4,49.573L302.488,22.585Z"/>
+                    </g>
+                </g>
+            </g>
+            <path id="City2" serif:id="City" d="M300,197.282C243.308,197.282 197.282,243.308 197.282,300C197.282,356.692 243.308,402.718 300,402.718C356.692,402.718 402.718,356.692 402.718,300C402.718,243.308 356.692,197.282 300,197.282ZM300,209.808C349.778,209.808 390.192,250.222 390.192,300C390.192,349.778 349.778,390.192 300,390.192C250.222,390.192 209.808,349.778 209.808,300C209.808,250.222 250.222,209.808 300,209.808Z" style="fill:rgb(0,174,237);"/>
+        </g>
+    </g>
+</svg>
