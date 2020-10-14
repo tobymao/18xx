@@ -72,7 +72,11 @@ module View
                    end
       end
 
-      buttons << render_button('Start', -> { start_game(@gdata) }) if owner? && new? && players.size > 1
+      game = Engine::GAMES_BY_TITLE[@gdata['title']]
+      min_p, _max_p = Engine.player_range(game)
+
+      can_start = owner? && new? && players.size >= min_p
+      buttons << render_button('Start', -> { start_game(@gdata) }) if can_start
 
       div_props = {
         style: {
