@@ -6,6 +6,18 @@ module Engine
   module Step
     module G1828
       class WaterfallAuction < WaterfallAuction
+        def may_purchase?(company)
+          return false unless @companies.first.value == company.value && @bids[company].empty?
+
+          rest_of_row_has_bids?(company)
+        end
+
+        def can_auction?(company)
+          return true if @process_round_end_auction && @bids[company].count > 1
+
+          super
+        end
+
         protected
 
         def resolve_bids
@@ -36,12 +48,6 @@ module Engine
           super
 
           @bids[new_bid.company]&.reject! { |bid| new_bid.entity != bid.entity } if new_bid.company.value == 250
-        end
-
-        def may_purchase?(company)
-          return false unless @companies.first.value == company.value && @bids[company].empty?
-
-          rest_of_row_has_bids?(company)
         end
 
         private
