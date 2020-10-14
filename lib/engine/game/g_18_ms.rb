@@ -157,7 +157,7 @@ module Engine
       end
 
       def init_round
-        Round::Draft.new(self, [Step::G18MS::SimpleDraft])
+        Round::Draft.new(self, [Step::G18MS::SimpleDraft], reverse_order: true)
       end
 
       def priority_deal_player

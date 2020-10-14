@@ -41,7 +41,7 @@ module Engine
     "D7": "Compton",
     "D9": "Norwalk",
     "D11": "La Habra",
-    "D13": "Yarba Linda",
+    "D13": "Yorba Linda",
     "D15": "Palm Springs",
     "E4": "Redondo Beach",
     "E6": "Torrance",
@@ -52,7 +52,7 @@ module Engine
     "F7": "Port of Long Beach",
     "F9": "Westminster",
     "F11": "Garden Grove",
-    "F13": "Santa Anna",
+    "F13": "Santa Ana",
     "F15": "Irvine"
   },
   "tiles": {
@@ -109,6 +109,7 @@ module Engine
     {
       "name": "Gardena Tramway",
       "value": 140,
+      "treasury": 60,
       "revenue": 0,
       "desc": "Starts with $60 Treasury and a 2T; Operates first in each OR; Lays or upgrades 1 tile; Splits revenue 50/50 with owner.",
       "sym": "GT"
@@ -116,6 +117,7 @@ module Engine
     {
       "name": "Orange County Railroad",
       "value": 100,
+      "treasury": 40,
       "revenue": 0,
       "desc": "Starts with $40 Treasury and a 2T; Operates second in each OR; Lays or upgrades 1 tile; Splits revenue 50/50 with owner.",
       "sym": "OCR"
@@ -353,8 +355,16 @@ module Engine
       ],
       "abilities": [
         {
+          "type": "token",
+          "description": "Reserved $40/$60 Culver City token",
+          "hexes": [
+            "C4"
+          ],
+          "price": 40,
+          "teleport_price": 60
+        },
+        {
           "type": "reservation",
-          "description": "Reserved token in Culver City (C4)",
           "hex": "C4",
           "remove": "IV"
         }
@@ -377,8 +387,16 @@ module Engine
       ],
       "abilities": [
         {
+          "type": "token",
+          "description": "Reserved $40 Alhambra token",
+          "hexes": [
+            "B9"
+          ],
+          "count": 1,
+          "price": 40
+        },
+        {
           "type": "reservation",
-          "description": "Reserved token in Alhambra (B9)",
           "hex": "B9",
           "remove": "IV"
         }
@@ -434,8 +452,16 @@ module Engine
       ],
       "abilities": [
         {
+          "type": "token",
+          "description": "Reserved $40 Montebello token",
+          "hexes": [
+            "C8"
+          ],
+          "count": 1,
+          "price": 40
+        },
+        {
           "type": "reservation",
-          "description": "Reserved token in Montebello (C8)",
           "hex": "C8",
           "remove": "IV"
         }
@@ -458,6 +484,16 @@ module Engine
         80
       ],
       "abilities": [
+        {
+          "type": "token",
+          "description": "Reserved $40/$100 Los Angeles token",
+          "hexes": [
+            "C6"
+          ],
+          "price": 40,
+          "count": 1,
+          "teleport_price": 100
+        },
         {
           "type": "reservation",
           "slot": 1,
@@ -518,17 +554,19 @@ module Engine
       "city=revenue:0;upgrade=cost:40,terrain:mountain": [
         "C12"
       ],
-      "city=revenue:0;border=edge:4,type:water,cost:40": [
+      "city=revenue:0;border=edge:4,type:water,cost:40;stub=edge:0": [
         "D9"
       ],
       "city=revenue:0;border=edge:1,type:water,cost:40": [
         "D11"
       ],
       "city=revenue:0;icon=image:18_los_angeles/sbl,sticky:1": [
-        "E4",
+        "E4"
+      ],
+      "city=revenue:0;icon=image:18_los_angeles/sbl,sticky:1;stub=edge:4": [
         "E6"
       ],
-      "city=revenue:0;border=edge:0,type:water,cost:40": [
+      "city=revenue:0;border=edge:0,type:water,cost:40;stub=edge:1": [
         "E10"
       ],
       "city=revenue:0;label=Z": [
@@ -540,8 +578,10 @@ module Engine
       "city=revenue:0": [
         "A6",
         "C4",
-        "D7",
         "F11"
+      ],
+      "city=revenue:0;stub=edge:5": [
+        "D7"
       ]
     },
     "gray": {
@@ -559,6 +599,12 @@ module Engine
       ],
       "path=a:2,b:3": [
         "F5"
+      ],
+      "offboard=revenue:0,visit_cost:100;path=a:0,b:_0": [
+        "a9"
+      ],
+      "offboard=revenue:0,visit_cost:100;path=a:2,b:_0": [
+        "G14"
       ]
     },
     "red": {
@@ -606,7 +652,7 @@ module Engine
       "city=revenue:40,slots:2;path=a:0,b:_0;path=a:4,b:_0;label=Z;border=edge:0,type:water,cost:40": [
         "C6"
       ],
-      "city=revenue:10,groups:LongBeach;city=revenue:10,groups:LongBeach;city=revenue:10,groups:LongBeach;city=revenue:10,groups:LongBeach;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_3;label=LB": [
+      "city=revenue:10,groups:LongBeach;city=revenue:10,groups:LongBeach;city=revenue:10,groups:LongBeach;city=revenue:10,groups:LongBeach;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_3;stub=edge:0;label=LB": [
         "E8"
       ],
       "city=revenue:20,slots:2;path=a:1,b:_0;path=a:3,b:_0": [

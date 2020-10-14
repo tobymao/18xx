@@ -23,8 +23,8 @@ module View
 
       def render
         @hexes = @game.hexes.dup
-        @cols = @hexes.map(&:x).uniq.sort.map(&:next)
-        @rows = @hexes.map(&:y).uniq.sort.map(&:next)
+        @cols = @hexes.reject(&:ignore_for_axes).map(&:x).uniq.sort.map(&:next)
+        @rows = @hexes.reject(&:ignore_for_axes).map(&:y).uniq.sort.map(&:next)
         @layout = @game.layout
 
         step = @game.round.active_step(@selected_company)

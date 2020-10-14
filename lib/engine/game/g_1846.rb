@@ -395,7 +395,7 @@ module Engine
 
       def init_round
         draft_step = two_player? ? Step::G1846::Draft2pDistribution : Step::G1846::DraftDistribution
-        Round::Draft.new(self, [draft_step])
+        Round::Draft.new(self, [draft_step], reverse_order: true)
       end
 
       def new_draft_round

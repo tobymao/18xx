@@ -3,6 +3,7 @@
 require 'lib/settings'
 require 'view/game/part/track_node_path'
 require 'view/game/part/track_offboard'
+require 'view/game/part/track_stub'
 
 module View
   module Game
@@ -27,8 +28,7 @@ module View
           # Array<Array<Path>>
           @routes_paths = @routes.map { |route| route.paths_for(@tile.paths) }
 
-          sorted = @tile
-            .paths
+          sorted = (@tile.paths + @tile.stubs)
             .map { |path| [path, index_for(path)] }
             .sort_by { |_, index| index || -1 }
 
@@ -39,7 +39,9 @@ module View
               dash: value_for_index(index, :dash),
             }
 
-            if path.offboard
+            if path.stub?
+              h(TrackStub, stub: path, region_use: @region_use, **props)
+            elsif path.offboard
               h(TrackOffboard, offboard: path.offboard, path: path, region_use: @region_use, **props)
             else
               h(TrackNodePath, tile: @tile, path: path, region_use: @region_use, **props)

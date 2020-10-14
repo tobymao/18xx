@@ -49,6 +49,16 @@ module Engine
         '18 Los Angeles'
       end
 
+      def init_hexes(_companies, _corporations)
+        hexes = super
+
+        hexes.each do |hex|
+          hex.ignore_for_axes = true if %w[a9 G14].include?(hex.id)
+        end
+
+        hexes
+      end
+
       def num_removals(group)
         return 0 if @players.size == 5
         return 1 if @players.size == 4
@@ -84,17 +94,44 @@ module Engine
       def check_removed_corp_second_token(_hex, _tile); end
 
       def init_round
-        Round::Draft.new(self, [Step::G18LosAngeles::DraftDistribution])
+        Round::Draft.new(self,
+                         [Step::G18LosAngeles::DraftDistribution],
+                         snake_order: true)
       end
 
       def init_round_finished
         @minors.reject(&:owned_by_player?).each { |m| close_corporation(m) }
-        @companies.reject(&:owned_by_player?).each(&:close!)
+        @companies.reject(&:owned_by_player?).sort_by(&:name).each do |company|
+          company.close!
+          @log << "#{company.name} is removed" unless company.value >= 100
+        end
         @draft_finished = true
       end
 
       def num_pass_companies(_players)
         0
+      end
+
+      def priority_deal_player
+        players = @players.reject(&:bankrupt)
+        case @round
+        when Round::Draft, Round::Operating
+          players.min_by { |p| [p.cash, players.index(p)] }
+        when Round::Stock
+          players.first
+        end
+      end
+
+      def reorder_players
+        current_order = @players.dup
+        @players.sort_by! { |p| [p.cash, current_order.index(p)] }
+        @log << "Priority order: #{@players.reject(&:bankrupt).map(&:name).join(', ')}"
+      end
+
+      def new_stock_round
+        @log << "-- #{round_description('Stock')} --"
+        reorder_players
+        stock_round
       end
 
       # meat packing == citrus
@@ -114,8 +151,16 @@ module Engine
         false
       end
 
+      def tile_lays(entity)
+        entity.minor? ? [{ lay: true, upgrade: true }] : super
+      end
+
       # unlike in 1846, none of the private companies get 2 tile lays
       def check_special_tile_lay(_action); end
+
+      def legal_tile_rotation?(_entity, hex, tile)
+        tile.exits.include?(hex.tile.stubs.first)
+      end
 
       def east_west_bonus(stops)
         bonus = { revenue: 0 }
@@ -167,6 +212,28 @@ module Engine
             @game.game_error("Route cannot reuse track on #{k[0].id}") if v.size > 1
           end
         end
+      end
+
+      def next_round!
+        @round =
+          case @round
+          when Round::Stock
+            @operating_rounds = @phase.operating_rounds
+            new_operating_round
+          when Round::Operating
+            if @round.round_num < @operating_rounds
+              or_round_finished
+              new_operating_round(@round.round_num + 1)
+            else
+              @turn += 1
+              or_round_finished
+              or_set_finished
+              new_stock_round
+            end
+          when init_round.class
+            init_round_finished
+            new_stock_round
+          end
       end
     end
   end
