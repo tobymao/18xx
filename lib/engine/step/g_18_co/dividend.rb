@@ -13,6 +13,19 @@ module Engine
 
           { share_direction: %i[right up], share_times: [1, 1] }
         end
+
+        def change_share_price(entity, payout)
+          tfm = @game.mines_total(entity)
+
+          # Only pay mines if a train produce revenue regardless of withhold or pay
+          if tfm.positive? && (payout[:corporation].positive? || payout[:per_share].positive?)
+            @game.bank.spend(tfm, entity)
+
+            @log << "#{entity.name} collects #{@game.format_currency(tfm)} from mines"
+          end
+
+          super
+        end
       end
     end
   end

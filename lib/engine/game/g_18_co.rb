@@ -66,6 +66,8 @@ module Engine
 
       EAST_HEXES = %w[A26 J26 E27 G27].freeze
 
+      BASE_MINE_VALUE = 10
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_mines' => ['Mines Close', 'Mine tokens removed from board and corporations']
         ).freeze
@@ -76,9 +78,26 @@ module Engine
         @dsng ||= corporation_by_id('DSNG')
       end
 
+      def imc
+        @imc ||= company_by_id('IMC')
+      end
+
       def setup
         setup_company_price_50_to_150_percent
+        setup_companies
+        setup_corporations
+      end
 
+      def setup_companies
+        imc.add_ability(Engine::Ability::Base.new(
+            type: :mine_multiplier,
+            description: 'Mine values are doubled',
+            count_per_or: 2
+          ))
+      end
+
+      def setup_corporations
+        # The DSNG comes with a 2P train
         train = @depot.upcoming[0]
         train.buyable = false
         dsng.buy_train(train, :free)
@@ -90,6 +109,35 @@ module Engine
           self.class::CERT_LIMIT_COLORS,
           multiple_buy_colors: self.class::MULTIPLE_BUY_COLORS
         )
+      end
+
+      def mines_count(entity)
+        entity.abilities(:mine_income).sum(&:count_per_or)
+      end
+
+      def mine_multiplier(entity)
+        entity.abilities(:mine_multiplier).map(&:count_per_or).reject(&:zero?).reduce(1, :*)
+      end
+
+      def mines_total(entity)
+        BASE_MINE_VALUE * mines_count(entity) * mine_multiplier(entity)
+      end
+
+      def mines_remove(entity)
+        entity.abilities(:mine_income) do |ability|
+          entity.remove_ability(ability)
+        end
+      end
+
+      def mine_add(entity)
+        mine_count = mines_count(entity) + 1
+        mines_remove(entity)
+        entity.add_ability(Engine::Ability::Base.new(
+              type: :mine_income,
+              description: "Corporation owns #{mine_count} mines",
+              count_per_or: mine_count,
+              remove: '6'
+            ))
       end
 
       def operating_round(round_num)
@@ -181,10 +229,12 @@ module Engine
       def event_remove_mines!
         @log << '-- Event: Mines close --'
 
-        @log << 'Mines removed from board (TODO)'
+        hexes.each do |hex|
+          hex.tile.icons.reject! { |icon| icon.name == 'mine' }
+        end
 
-        @companies.each do |company|
-          @log << "Mines removed from  #{company.name} (TODO)"
+        @corporations.each do |corporation|
+          mines_remove(corporation)
         end
       end
 
