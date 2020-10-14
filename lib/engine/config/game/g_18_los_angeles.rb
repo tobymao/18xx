@@ -52,7 +52,7 @@ module Engine
     "F7": "Port of Long Beach",
     "F9": "Westminster",
     "F11": "Garden Grove",
-    "F13": "Santa Anna",
+    "F13": "Santa Ana",
     "F15": "Irvine"
   },
   "tiles": {
