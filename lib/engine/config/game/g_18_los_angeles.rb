@@ -109,6 +109,7 @@ module Engine
     {
       "name": "Gardena Tramway",
       "value": 140,
+      "treasury": 60,
       "revenue": 0,
       "desc": "Starts with $60 Treasury and a 2T; Operates first in each OR; Lays or upgrades 1 tile; Splits revenue 50/50 with owner.",
       "sym": "GT"
@@ -116,6 +117,7 @@ module Engine
     {
       "name": "Orange County Railroad",
       "value": 100,
+      "treasury": 40,
       "revenue": 0,
       "desc": "Starts with $40 Treasury and a 2T; Operates second in each OR; Lays or upgrades 1 tile; Splits revenue 50/50 with owner.",
       "sym": "OCR"

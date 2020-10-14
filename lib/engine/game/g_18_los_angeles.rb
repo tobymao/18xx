@@ -151,6 +151,10 @@ module Engine
         false
       end
 
+      def tile_lays(entity)
+        entity.minor? ? [{ lay: true, upgrade: true }] : super
+      end
+
       # unlike in 1846, none of the private companies get 2 tile lays
       def check_special_tile_lay(_action); end
 

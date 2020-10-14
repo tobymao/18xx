@@ -152,7 +152,7 @@ module Engine
           return unless (minor = @game.minors.find { |m| m.id == company.id })
 
           minor.owner = company.player
-          @game.bank.spend(company.value, minor)
+          @game.bank.spend(company.treasury, minor)
           minor.float!
         end
 
