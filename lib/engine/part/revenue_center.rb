@@ -61,7 +61,7 @@ module Engine
 
       def revenue_multiplier(train)
         distance = train.distance
-        base_multiplier = train.multiplier.nil? ? 1 : train.multiplier
+        base_multiplier = train.multiplier || 1
 
         return base_multiplier if distance.is_a?(Numeric)
 
