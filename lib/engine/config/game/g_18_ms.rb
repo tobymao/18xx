@@ -408,6 +408,7 @@ module Engine
       {
          "name":"2D",
          "distance":2,
+         "multiplier":2,
          "price":500,
          "num":4,
          "available_on":"6",
@@ -415,6 +416,7 @@ module Engine
             {
                "name":"4D",
                "price":750,
+               "multiplier":2,
                "available_on":"6",
                "distance":4
             }
@@ -422,6 +424,7 @@ module Engine
       },
       {
          "name":"5D",
+         "multiplier":2,
          "distance":5,
          "price":850,
          "num":1,
