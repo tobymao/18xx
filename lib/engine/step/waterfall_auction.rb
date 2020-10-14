@@ -127,11 +127,11 @@ module Engine
       def active_auction
         company = @auctioning
         bids = @bids[company]
-        yield company, bids if bids.count > 1
+        yield company, bids if bids.size > 1
       end
 
       def can_auction?(company)
-        company == @companies.first && @bids[company].count > 1
+        company == @companies.first && @bids[company].size > 1
       end
 
       def all_passed!

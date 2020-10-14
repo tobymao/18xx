@@ -7,13 +7,13 @@ module Engine
     module G1828
       class WaterfallAuction < WaterfallAuction
         def may_purchase?(company)
-          return false unless @companies.first.value == company.value && @bids[company].empty?
+          return false if @companies.first.value != company.value || @bids[company].any?
 
           rest_of_row_has_bids?(company)
         end
 
         def can_auction?(company)
-          return true if @process_round_end_auction && @bids[company].count > 1
+          return true if @process_round_end_auction && @bids[company].size > 1
 
           super
         end
@@ -34,9 +34,9 @@ module Engine
         end
 
         def resolve_bids_for_company(company)
-          return false unless @process_round_end_auction || rest_of_row_has_bids?(company)
+          return super if @process_round_end_auction || rest_of_row_has_bids?(company)
 
-          super
+          false
         end
 
         def all_passed!
@@ -66,8 +66,10 @@ module Engine
         end
 
         def rest_of_row_has_bids?(company)
-          @companies.find_all { |c| c.value == company.value }.each do |c|
-            return false if @bids[c].empty? && c != company
+          @companies.each do |c|
+            next if c.value != company.value || c == company
+
+            return false if @bids[c].empty?
           end
 
           true
