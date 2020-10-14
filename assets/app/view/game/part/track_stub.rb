@@ -5,9 +5,8 @@ require 'view/game/part/base'
 module View
   module Game
     module Part
-      class TrackOffboard < Base
-        needs :path
-        needs :offboard
+      class TrackStub < Base
+        needs :stub
         needs :color, default: 'black'
         needs :width, default: 8
         needs :dash, default: '0'
@@ -21,14 +20,14 @@ module View
           5 => [17],
         }.freeze
 
-        def edge
-          @edge ||= @path.exits[0]
+        def load_from_tile
+          @edge = @stub.edge
         end
 
         def preferred_render_locations
           [
             {
-              region_weights: REGIONS[edge],
+              region_weights: REGIONS[@edge],
               x: 0,
               y: 0,
             },
@@ -36,19 +35,17 @@ module View
         end
 
         def render_part
-          rotate = 60 * edge
-
-          d_width = @width.to_i / 2
+          rotate = 60 * @edge
 
           props = {
             attrs: {
               transform: "rotate(#{rotate})",
-              d: "M #{d_width} 75 L #{d_width} 87 L -#{d_width} 87 L -#{d_width} 75 L 0 48 Z",
+              d: 'M 0 87 L 0 65',
               fill: @color,
-              stroke: 'none',
+              stroke: @color,
               'stroke-linecap': 'butt',
               'stroke-linejoin': 'miter',
-              'stroke-width': @width.to_i * 0.75,
+              'stroke-width': @width,
               'stroke-dasharray': @dash,
             },
           }

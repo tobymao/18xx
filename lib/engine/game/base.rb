@@ -820,6 +820,10 @@ module Engine
         true
       end
 
+      def legal_tile_rotation?(_entity, _hex, _tile)
+        true
+      end
+
       def game_error(msg)
         raise GameError.new(msg, current_action_id)
       end

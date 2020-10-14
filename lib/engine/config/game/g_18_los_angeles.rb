@@ -552,17 +552,19 @@ module Engine
       "city=revenue:0;upgrade=cost:40,terrain:mountain": [
         "C12"
       ],
-      "city=revenue:0;border=edge:4,type:water,cost:40": [
+      "city=revenue:0;border=edge:4,type:water,cost:40;stub=edge:0": [
         "D9"
       ],
       "city=revenue:0;border=edge:1,type:water,cost:40": [
         "D11"
       ],
       "city=revenue:0;icon=image:18_los_angeles/sbl,sticky:1": [
-        "E4",
+        "E4"
+      ],
+      "city=revenue:0;icon=image:18_los_angeles/sbl,sticky:1;stub=edge:4": [
         "E6"
       ],
-      "city=revenue:0;border=edge:0,type:water,cost:40": [
+      "city=revenue:0;border=edge:0,type:water,cost:40;stub=edge:1": [
         "E10"
       ],
       "city=revenue:0;label=Z": [
@@ -574,8 +576,10 @@ module Engine
       "city=revenue:0": [
         "A6",
         "C4",
-        "D7",
         "F11"
+      ],
+      "city=revenue:0;stub=edge:5": [
+        "D7"
       ]
     },
     "gray": {
@@ -646,7 +650,7 @@ module Engine
       "city=revenue:40,slots:2;path=a:0,b:_0;path=a:4,b:_0;label=Z;border=edge:0,type:water,cost:40": [
         "C6"
       ],
-      "city=revenue:10,groups:LongBeach;city=revenue:10,groups:LongBeach;city=revenue:10,groups:LongBeach;city=revenue:10,groups:LongBeach;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_3;label=LB": [
+      "city=revenue:10,groups:LongBeach;city=revenue:10,groups:LongBeach;city=revenue:10,groups:LongBeach;city=revenue:10,groups:LongBeach;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_3;stub=edge:0;label=LB": [
         "E8"
       ],
       "city=revenue:20,slots:2;path=a:1,b:_0;path=a:3,b:_0": [
