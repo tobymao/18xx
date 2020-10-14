@@ -11,12 +11,13 @@ module Engine
     include Ownable
 
     attr_accessor :desc, :max_price, :min_price, :revenue, :discount
-    attr_reader :name, :sym, :value, :min_auction_price
+    attr_reader :name, :sym, :value, :min_auction_price, :treasury
 
     def initialize(sym:, name:, value:, revenue: 0, desc: '', abilities: [], **opts)
       @sym = sym
       @name = name
       @value = value
+      @treasury = opts[:treasury] || @value
       @desc = desc
       @revenue = revenue
       @discount = opts[:discount] || 0
