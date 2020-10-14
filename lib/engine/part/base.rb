@@ -93,7 +93,7 @@ module Engine
         false
       end
 
-      def path_stub?
+      def stub?
         false
       end
 

@@ -4,14 +4,14 @@ require_relative 'base'
 
 module Engine
   module Part
-    class PathStub < Base
+    class Stub < Base
       attr_reader :edge
 
       def initialize(edge)
         @edge = edge
       end
 
-      def path_stub?
+      def stub?
         true
       end
     end

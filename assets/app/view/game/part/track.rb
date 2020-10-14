@@ -28,7 +28,7 @@ module View
           # Array<Array<Path>>
           @routes_paths = @routes.map { |route| route.paths_for(@tile.paths) }
 
-          sorted = (@tile.paths + @tile.path_stubs)
+          sorted = (@tile.paths + @tile.stubs)
             .map { |path| [path, index_for(path)] }
             .sort_by { |_, index| index || -1 }
 
@@ -39,8 +39,8 @@ module View
               dash: value_for_index(index, :dash),
             }
 
-            if path.path_stub?
-              h(TrackStub, path_stub: path, region_use: @region_use, **props)
+            if path.stub?
+              h(TrackStub, stub: path, region_use: @region_use, **props)
             elsif path.offboard
               h(TrackOffboard, offboard: path.offboard, path: path, region_use: @region_use, **props)
             else

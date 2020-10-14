@@ -48,7 +48,7 @@ module View
         children = []
 
         render_revenue = should_render_revenue?
-        children << render_tile_part(Part::Track, routes: @routes) if (@tile.paths + @tile.path_stubs).any?
+        children << render_tile_part(Part::Track, routes: @routes) if @tile.paths.any? || @tile.stubs.any?
         children << render_tile_part(Part::Cities, show_revenue: !render_revenue) if @tile.cities.any?
         children << render_tile_part(Part::Towns, routes: @routes) if @tile.towns.any?
 

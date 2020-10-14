@@ -6,7 +6,7 @@ module View
   module Game
     module Part
       class TrackStub < Base
-        needs :path_stub
+        needs :stub
         needs :color, default: 'black'
         needs :width, default: 8
         needs :dash, default: '0'
@@ -21,7 +21,7 @@ module View
         }.freeze
 
         def load_from_tile
-          @edge = @path_stub.edge
+          @edge = @stub.edge
         end
 
         def preferred_render_locations
