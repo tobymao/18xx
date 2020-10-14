@@ -38,10 +38,12 @@ module View
         def render_part
           rotate = 60 * edge
 
+          d_width = @width.to_i / 2
+
           props = {
             attrs: {
               transform: "rotate(#{rotate})",
-              d: 'M6 75 L 6 85 L -6 85 L -6 75 L 0 48 Z',
+              d: "M #{d_width} 75 L #{d_width} 87 L -#{d_width} 87 L -#{d_width} 75 L 0 48 Z",
               fill: @color,
               stroke: 'none',
               'stroke-linecap': 'butt',

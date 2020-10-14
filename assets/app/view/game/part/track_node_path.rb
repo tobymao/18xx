@@ -419,10 +419,12 @@ module View
             "0 0 #{@arc_parameters[:sweep]} #{@end_x} #{@end_y}",
           ) if @need_arc
 
+          d_width = @width.to_i / 2
+
           # terminal tapered track only supported for centered city/town
           props[:attrs].merge!(
             transform: "rotate(#{rotation})",
-            d: 'M6 60 L 6 85 L -6 85 L -6 60 L 0 25 Z',
+            d: "M #{d_width} 60 L #{d_width} 87 L -#{d_width} 87 L -#{d_width} 60 L 0 25 Z",
             fill: @color,
             stroke: 'none',
             'stroke-linecap': 'butt',
