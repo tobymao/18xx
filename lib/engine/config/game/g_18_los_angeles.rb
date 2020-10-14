@@ -353,8 +353,16 @@ module Engine
       ],
       "abilities": [
         {
+          "type": "token",
+          "description": "Reserved $40/$60 Culver City token",
+          "hexes": [
+            "C4"
+          ],
+          "price": 40,
+          "teleport_price": 60
+        },
+        {
           "type": "reservation",
-          "description": "Reserved token in Culver City (C4)",
           "hex": "C4",
           "remove": "IV"
         }
@@ -377,8 +385,16 @@ module Engine
       ],
       "abilities": [
         {
+          "type": "token",
+          "description": "Reserved $40 Alhambra token",
+          "hexes": [
+            "B9"
+          ],
+          "count": 1,
+          "price": 40
+        },
+        {
           "type": "reservation",
-          "description": "Reserved token in Alhambra (B9)",
           "hex": "B9",
           "remove": "IV"
         }
@@ -434,8 +450,16 @@ module Engine
       ],
       "abilities": [
         {
+          "type": "token",
+          "description": "Reserved $40 Montebello token",
+          "hexes": [
+            "C8"
+          ],
+          "count": 1,
+          "price": 40
+        },
+        {
           "type": "reservation",
-          "description": "Reserved token in Montebello (C8)",
           "hex": "C8",
           "remove": "IV"
         }
@@ -458,6 +482,16 @@ module Engine
         80
       ],
       "abilities": [
+        {
+          "type": "token",
+          "description": "Reserved $40/$100 Los Angeles token",
+          "hexes": [
+            "C6"
+          ],
+          "price": 40,
+          "count": 1,
+          "teleport_price": 100
+        },
         {
           "type": "reservation",
           "slot": 1,
