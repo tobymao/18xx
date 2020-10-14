@@ -188,7 +188,7 @@ module View
       children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'
 
       if new?
-        seats = "#{@min_p}" + (@min_p == @gdata['max_players'] ? "" : " - #{@gdata['max_players']}")
+        seats = @min_p.to_s + (@min_p == @gdata['max_players'] ? '' : " - #{@gdata['max_players']}")
         children << h('div.inline', [h(:strong, 'Seats: '), seats])
         children << h('div.inline', { style: { float: 'right' } }, [
           h(:strong, 'Created: '),
