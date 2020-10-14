@@ -15,6 +15,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>18 Los Angeles by Tony Fryer is now in alpha! It is based on 1846, and plays 2-5 players. Learn more on the <a href='https://traxx-denver.com/games/'>TraXX</a> website.</p>
         <p>1817 is in super early alpha! Please only play hotseat games with the intent to find and report bugs, there are many.</p>
         <p>18MS is now in production!</p>
         <p>1846 2p Variant is now in beta!</p>
@@ -27,7 +28,8 @@ module View
         <a href='https://all-aboardgames.com'>All-Aboard Games</a>,
         <a href='https://www.grandtrunkgames.com'>Grand Trunk Games</a>,
         <a href='https://goldenspikegames.com'>Golden Spike Games</a>,
-        and <a href='https://www.gmtgames.com/'>GMT Games</a>.
+        <a href='https://www.gmtgames.com/'>GMT Games</a>.
+        and <a href='https://traxx-denver.com/games/'>TraXX</a>.
         </p>
 
         <p>You can support this project on <a href='https://www.patreon.com/18xxgames'>Patreon</a>.

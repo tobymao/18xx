@@ -10,7 +10,7 @@ module Engine
     class G18LosAngeles < G1846
       load_from_json(Config::Game::G18LosAngeles::JSON, Config::Game::G1846::JSON)
 
-      DEV_STAGE = :prealpha
+      DEV_STAGE = :alpha
 
       GAME_LOCATION = nil
       GAME_RULES_URL = {
@@ -159,7 +159,7 @@ module Engine
       def check_special_tile_lay(_action); end
 
       def legal_tile_rotation?(_entity, hex, tile)
-        tile.exits.include?(hex.tile.stubs.first)
+        hex.tile.stubs.empty? || tile.exits.include?(hex.tile.stubs.first.edge)
       end
 
       def east_west_bonus(stops)
