@@ -17,7 +17,7 @@ module Engine
     attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :reservations
     attr_reader :blocks_lay, :borders, :cities, :color, :edges, :junction, :label, :nodes,
                 :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers,
-                :city_towns, :unlimited
+                :city_towns, :unlimited, :path_stubs
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -128,6 +128,8 @@ module Engine
         junction
       when 'icon'
         Part::Icon.new(params['image'], params['name'], params['sticky'], params['blocks_lay'])
+      when 'path_stub'
+        Part::PathStub.new(params['edge'].to_i)
       end
     end
 
@@ -148,6 +150,7 @@ module Engine
       @rotation = rotation
       @cities = []
       @paths = []
+      @path_stubs = []
       @towns = []
       @city_towns = []
       @all_stop = []
@@ -471,6 +474,8 @@ module Engine
           @junction = part
         elsif part.icon?
           @icons << part
+        elsif part.path_stub?
+          @path_stubs << part
         else
           raise "Part #{part} not separated."
         end

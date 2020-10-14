@@ -117,6 +117,10 @@ module Engine
       # unlike in 1846, none of the private companies get 2 tile lays
       def check_special_tile_lay(_action); end
 
+      def legal_tile_rotation?(_entity, hex, tile)
+        hex.tile.path_stubs.map(&:edge).all? { |e| tile.exits.include?(e) }
+      end
+
       def east_west_bonus(stops)
         bonus = { revenue: 0 }
 

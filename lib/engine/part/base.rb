@@ -93,6 +93,10 @@ module Engine
         false
       end
 
+      def path_stub?
+        false
+      end
+
       def visit_cost
         0
       end
