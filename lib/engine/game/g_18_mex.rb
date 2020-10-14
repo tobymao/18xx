@@ -3,7 +3,6 @@
 require_relative '../config/game/g_18_mex'
 require_relative 'base'
 require_relative 'company_price_50_to_150_percent'
-require_relative 'revenue_4d'
 module Engine
   module Game
     class G18MEX < Base
@@ -84,7 +83,6 @@ module Engine
       end
 
       include CompanyPrice50To150Percent
-      include Revenue4D
 
       def setup
         setup_company_price_50_to_150_percent
@@ -201,10 +199,6 @@ module Engine
         return if entity.minor?
 
         entity.trains.empty? ? handle_no_mail(entity) : handle_mail(entity)
-      end
-
-      def revenue_for(route, stops)
-        adjust_revenue_for_4d_train(route, stops, super)
       end
 
       def event_minors_closed!
