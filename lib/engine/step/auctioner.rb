@@ -69,7 +69,7 @@ module Engine
       protected
 
       def auctioning
-        active_bids { |company, _| company }
+        active_auction { |company, _| company }
       end
 
       def highest_bid(company)

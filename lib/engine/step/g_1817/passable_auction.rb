@@ -36,7 +36,7 @@ module Engine
 
         protected
 
-        def active_bids
+        def active_auction
           company = @auctioning
           bids = @bids[company]
           yield company, bids if bids.any?

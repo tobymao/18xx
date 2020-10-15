@@ -7,7 +7,7 @@ module Engine
     module G1846
       class Draft2pDistribution < DraftDistribution
         def setup
-          @companies = @game.companies.reject(&:owned_by_player?)
+          @companies = @game.companies.reject(&:owned_by_player?).sort
           entities.each(&:unpass!)
         end
 
