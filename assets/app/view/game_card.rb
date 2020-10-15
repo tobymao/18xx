@@ -73,9 +73,9 @@ module View
       end
 
       game = Engine::GAMES_BY_TITLE[@gdata['title']]
-      min_p, _max_p = Engine.player_range(game)
+      @min_p, _max_p = Engine.player_range(game)
 
-      can_start = owner? && new? && players.size >= min_p
+      can_start = owner? && new? && players.size >= @min_p
       buttons << render_button('Start', -> { start_game(@gdata) }) if can_start
 
       div_props = {
@@ -188,7 +188,8 @@ module View
       children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'
 
       if new?
-        children << h('div.inline', [h(:strong, 'Max Players: '), @gdata['max_players']])
+        seats = @min_p.to_s + (@min_p == @gdata['max_players'] ? '' : " - #{@gdata['max_players']}")
+        children << h('div.inline', [h(:strong, 'Seats: '), seats])
         children << h('div.inline', { style: { float: 'right' } }, [
           h(:strong, 'Created: '),
           render_time_or_date('created_at'),
