@@ -36,12 +36,14 @@ module View
             cleanup
           end
           button = h('td.no_padding', [h(:button, { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
-          direction =
-            if option[:share_direction]
-              "#{option[:share_times]} #{option[:share_direction]}"
-            else
-              'None'
+          direction = ''
+          if option[:share_direction]
+            Array(option[:share_direction]).each_with_index do |dir, i|
+              direction += "#{option[:share_times][i]} #{dir} "
             end
+          else
+            direction = 'None'
+          end
 
           props = { style: { paddingRight: '1rem' } }
           h(:tr, [

@@ -142,12 +142,23 @@ module Engine
         return unless payout[:share_direction]
 
         prev = entity.share_price.price
-        payout[:share_times].times do
-          case payout[:share_direction]
-          when :left
-            @game.stock_market.move_left(entity)
-          when :right
-            @game.stock_market.move_right(entity)
+
+        share_times = Array(payout[:share_times])
+
+        share_times.each_with_index do |share_time, share_time_index|
+          share_time.times do
+            direction = Array(payout[:share_direction])[share_time_index]
+
+            case direction
+            when :left
+              @game.stock_market.move_left(entity)
+            when :right
+              @game.stock_market.move_right(entity)
+            when :up
+              @game.stock_market.move_up(entity)
+            when :down
+              @game.stock_market.move_down(entity)
+            end
           end
         end
         @game.log_share_price(entity, prev)

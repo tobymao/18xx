@@ -66,7 +66,7 @@ module Engine
         Step::G18CO::Track,
         Step::Token,
         Step::Route,
-        Step::Dividend,
+        Step::G18CO::Dividend,
         Step::BuyTrain,
         [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
