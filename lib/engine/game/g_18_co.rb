@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_18_co'
+require_relative '../g_18_co/stock_market'
 require_relative 'base'
 require_relative 'company_price_50_to_150_percent'
 require_relative 'revenue_4d'
@@ -55,6 +56,14 @@ module Engine
         train = @depot.upcoming[0]
         train.buyable = false
         dsng.buy_train(train, :free)
+      end
+
+      def init_stock_market
+        Engine::G18CO::StockMarket.new(
+          self.class::MARKET,
+          self.class::CERT_LIMIT_COLORS,
+          multiple_buy_colors: self.class::MULTIPLE_BUY_COLORS
+        )
       end
 
       def operating_round(round_num)
