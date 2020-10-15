@@ -55,8 +55,6 @@ module Engine
       def actions(entity)
         return [] if @companies.empty?
 
-        resolve_bids
-
         correct = false
 
         active_auction do |_company, bids|
