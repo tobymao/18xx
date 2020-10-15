@@ -143,11 +143,9 @@ module Engine
 
         prev = entity.share_price.price
 
-        share_times = Array(payout[:share_times])
-
-        share_times.each_with_index do |share_time, share_time_index|
-          share_time.times do
-            direction = Array(payout[:share_direction])[share_time_index]
+        Array(payout[:share_times]).each_with_index do |share_times, share_times_index|
+          share_times.times do
+            direction = Array(payout[:share_direction])[share_times_index]
 
             case direction
             when :left
