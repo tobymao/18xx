@@ -2,7 +2,7 @@
 
 # File original exported from 18xx-maker/export-rb
 # https://github.com/18xx-maker/export-rb
-# rubocop:disable Layout/LineLength, Style/AsciiComments
+# rubocop:disable Layout/LineLength
 
 module Engine
   module Config
@@ -494,4 +494,4 @@ module Engine
   end
 end
 
-# rubocop:enable Layout/LineLength, Style/AsciiComments
+# rubocop:enable Layout/LineLength
