@@ -49,6 +49,19 @@ module Engine
         'B' => 2264,
       },
     },
+    GAMES_BY_TITLE['18 Los Angeles'] => {
+      'hs_dewszizq_1602697779' => {
+        'Player 2' => 5131,
+        'Player 1' => 3565,
+      },
+      'hs_srwgrtvq_1602711223' => {
+        'Player 2' => 8287,
+        'Player 3' => 7960,
+        'Player 1' => 7749,
+        'Player 5' => 6739,
+        'Player 4' => 4647,
+      },
+    },
     GAMES_BY_TITLE['18Chesapeake'] => {
       3055 => {
         'CullenF' => 4960,
