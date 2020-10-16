@@ -72,19 +72,17 @@ module View
         val = range.value.to_i
         range.value = (min..max).include?(val) ? val : max
         store(:num_players, range.value.to_i, skip: true)
-
-        if Native(@inputs[:optional_rules_selected])
-          Native(@inputs[:optional_rules_selected]).elm.value = ''
-          @optional_rules_selected = nil
-        end
-        store(:optional_rules_available, @optional_rules_per_title[title])
+        update_optional_rules_store
       end
 
       enforce_range = lambda do
         elm = Native(@inputs[:max_players]).elm
         if elm.value.to_i.positive?
           elm.value = elm.max.to_i unless (elm.min.to_i..elm.max.to_i).include?(elm.value.to_i)
-          store(:num_players, elm.value.to_i) if @mode == :hotseat
+          if @mode == :hotseat
+            store(:num_players, elm.value.to_i)
+            update_optional_rules_store
+          end
         end
       end
 
@@ -153,6 +151,7 @@ module View
         elm = Native(@inputs[:max_players]).elm
         elm.value = [elm.value.to_i, elm.min.to_i].max
         store(:num_players, elm.value.to_i)
+        update_optional_rules_store
       end
 
       [render_input(
@@ -196,6 +195,15 @@ module View
         max_players: params[:max_players],
         **game_data,
       )
+    end
+
+    def update_optional_rules_store
+      title = Native(@inputs[:title]).elm.value
+      if Native(@inputs[:optional_rules_selected])
+        Native(@inputs[:optional_rules_selected]).elm.value = ''
+        @optional_rules_selected = nil
+      end
+      store(:optional_rules_available, @optional_rules_per_title[title])
     end
   end
 end
