@@ -450,7 +450,7 @@ module Engine
           return clone(@actions)
         end
 
-        @log << "- Action(#{action.type}) via Master Mode by #{action.master_user} -" if !action.master_user.nil?
+        @log << "• Action(#{action.type}) via Master Mode by #{action.master_user}:" if !action.master_user.nil?
 
         @round.process_action(action)
 
