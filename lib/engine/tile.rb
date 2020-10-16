@@ -103,6 +103,16 @@ module Engine
                               loc: params['loc'])
         cache << town
         town
+      when 'halt'
+        halt = Part::Halt.new(params['symbol'],
+                              groups: params['groups'],
+                              hide: params['hide'],
+                              visit_cost: params['visit_cost'],
+                              route: params['route'],
+                              format: params['format'],
+                              loc: params['loc'])
+        cache << halt
+        halt
       when 'offboard'
         offboard = Part::Offboard.new(params['revenue'],
                                       groups: params['groups'],

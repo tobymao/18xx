@@ -94,6 +94,12 @@ module View
           P_LEFT_CORNER[:flat],
           P_RIGHT_CORNER[:flat],
           P_BOTTOM_LEFT_CORNER[:flat],
+          # bottom right corner
+          {
+            region_weights: { BOTTOM_RIGHT_CORNER => 1.0, [21] => 0.5 },
+            x: 30,
+            y: 65,
+          },
           # edge 1
           {
             region_weights: { [12, 13] => 1.0, [14] => 0.5 },
