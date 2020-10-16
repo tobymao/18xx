@@ -3,7 +3,6 @@
 require_relative '../config/game/g_18_al'
 require_relative 'base'
 require_relative 'company_price_50_to_150_percent'
-require_relative 'revenue_4d'
 
 module Engine
   module Game
@@ -38,7 +37,6 @@ module Engine
         'SNAR' => '/icons/18_al/snar_token.svg',
       }.freeze
       include CompanyPrice50To150Percent
-      include Revenue4D
 
       def route_bonuses
         ROUTE_BONUSES
@@ -86,7 +84,7 @@ module Engine
       end
 
       def revenue_for(route, stops)
-        revenue = adjust_revenue_for_4d_train(route, stops, super)
+        revenue = super
 
         route.corporation.abilities(:hexes_bonus) do |ability|
           revenue += stops.sum { |stop| ability.hexes.include?(stop.hex.id) ? ability.amount : 0 }

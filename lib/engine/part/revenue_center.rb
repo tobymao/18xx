@@ -50,9 +50,25 @@ module Engine
       end
 
       def route_revenue(phase, train)
-        return @revenue[:diesel] if train.name.upcase == 'D' && @revenue[:diesel]
+        revenue_multiplier(train) * route_base_revenue(phase, train)
+      end
 
-        phase.tiles.reverse.each { |color| return @revenue[color] if @revenue[color] }
+      def route_base_revenue(phase, train)
+        return (@revenue[:diesel]) if train.name.upcase == 'D' && @revenue[:diesel]
+
+        phase.tiles.reverse.each { |color| return (@revenue[color]) if @revenue[color] }
+      end
+
+      def revenue_multiplier(train)
+        distance = train.distance
+        base_multiplier = train.multiplier || 1
+
+        return base_multiplier if distance.is_a?(Numeric)
+
+        row = distance.index do |h|
+          h['nodes'].include?(type)
+        end
+        distance[row].fetch('multiplier', base_multiplier)
       end
 
       def uniq_revenues
