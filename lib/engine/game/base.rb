@@ -443,14 +443,13 @@ module Engine
 
       def process_action(action)
         action = action_from_h(action) if action.is_a?(Hash)
-
         action.id = current_action_id
         if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
           @actions << action
           return clone(@actions)
         end
 
-        @log << "• Action(#{action.type}) via Master Mode by #{action.master_user}:" if !action.master_user.nil?
+        @log << "• Action(#{action.type}) via Master Mode by #{action.master_user}:" unless action.master_user.nil?
 
         @round.process_action(action)
 
