@@ -19,6 +19,10 @@ module Engine
         name: 'TraXX',
         url: 'https://traxx-denver.com/games/',
       },
+      zman_games: {
+        name: 'Z-MAN Games',
+        url: 'https://zmangames.com/',
+      },
     }.freeze
   end
 end
