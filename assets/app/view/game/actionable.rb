@@ -39,6 +39,12 @@ module View
           return store(:flash_opts, 'Not your turn. Turn on master mode in the tools tab to act for others.')
         end
 
+        if !hotseat &&
+          Lib::Storage[@game.id]&.dig('master_mode') &&
+          !@game.active_players.map(&:name).include?(@user['name'])
+          action.master_user = @user['name']
+        end
+
         game = @game.process_action(action)
         @game_data[:actions] << action.to_h
         store(:game_data, @game_data, skip: true)

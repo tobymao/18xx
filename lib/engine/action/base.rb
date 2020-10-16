@@ -8,7 +8,7 @@ module Engine
       include Helper::Type
 
       attr_reader :entity
-      attr_accessor :id
+      attr_accessor :id, :master_user
 
       def self.from_h(h, game)
         entity = game.get(h['entity_type'], h['entity'])
@@ -37,6 +37,7 @@ module Engine
           'entity' => entity.id,
           'entity_type' => type_s(entity),
           'id' => @id,
+          'master_user' => master_user,
           **args_to_h,
         }.reject { |_, v| v.nil? }
       end

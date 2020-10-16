@@ -449,6 +449,8 @@ module Engine
           return clone(@actions)
         end
 
+        @log << "- Action via Master Mode by #{action.master_user} -" if !action.master_user.nil?
+
         @round.process_action(action)
 
         unless action.is_a?(Action::Message)
