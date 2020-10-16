@@ -21,6 +21,14 @@ module Engine
       GAME_PUBLISHER = Publisher::INFO[:traxx]
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18LosAngeles'
 
+      OPTIONAL_RULES = [
+        {
+          sym: :la_title,
+          short_name: 'LA Title',
+          desc: 'add a private company which can lay an Open City token (3+ players only)',
+        },
+      ].freeze
+
       ASSIGNMENT_TOKENS = {
         'LAC' => '/icons/18_los_angeles/lac_token.svg',
         'LAS' => '/icons/1846/sc_token.svg',
@@ -51,6 +59,12 @@ module Engine
 
       def setup_turn
         1
+      end
+
+      def init_companies(_players)
+        companies = super
+        companies.reject! { |c| c.sym == 'LAT' } unless @optional_rules&.include?(:la_title)
+        companies
       end
 
       def init_hexes(_companies, _corporations)
