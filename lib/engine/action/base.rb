@@ -12,7 +12,9 @@ module Engine
 
       def self.from_h(h, game)
         entity = game.get(h['entity_type'], h['entity'])
-        new(entity, **h_to_args(h, game))
+        obj = new(entity, **h_to_args(h, game))
+        obj.master_user = h['master_user'] if !h['master_user'].nil?
+        obj
       end
 
       def self.h_to_args(_h, _game)
@@ -37,7 +39,7 @@ module Engine
           'entity' => entity.id,
           'entity_type' => type_s(entity),
           'id' => @id,
-          'master_user' => master_user,
+          'master_user' => @master_user,
           **args_to_h,
         }.reject { |_, v| v.nil? }
       end

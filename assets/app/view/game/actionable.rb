@@ -34,15 +34,12 @@ module View
         if !hotseat &&
             !action.free? &&
             participant &&
-            !@game.active_players.map(&:name).include?(@user['name']) &&
-            !Lib::Storage[@game.id]&.dig('master_mode')
-          return store(:flash_opts, 'Not your turn. Turn on master mode in the tools tab to act for others.')
-        end
-
-        if !hotseat &&
-          Lib::Storage[@game.id]&.dig('master_mode') &&
-          !@game.active_players.map(&:name).include?(@user['name'])
-          action.master_user = @user['name']
+            !@game.active_players.map(&:name).include?(@user['name'])
+            if !Lib::Storage[@game.id]&.dig('master_mode')
+              return store(:flash_opts, 'Not your turn. Turn on master mode in the tools tab to act for others.')
+            else
+              action.master_user = @user['name']
+            end
         end
 
         game = @game.process_action(action)
