@@ -103,7 +103,13 @@ class Game < Base
 
   def to_h(include_actions: false, player: nil)
     actions_h = include_actions ? actions.map(&:to_h) : []
-    settings_h = include_actions ? settings.to_h : {}
+
+    settings_h =
+      if include_actions
+        settings.to_h
+      else
+        { optional_rules_selected: settings['optional_rules_selected'] || [] }
+      end
 
     # Move user settings and hide from other players
     user_settings_h = settings_h.dig('players', player)

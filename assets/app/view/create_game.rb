@@ -74,18 +74,18 @@ module View
         range.value = (min..max).include?(val) ? val : max
         store(:num_players, range.value.to_i, skip: true)
 
-        if Native(@inputs[:optional_rules_selected])
-          Native(@inputs[:optional_rules_selected]).elm.value = ''
-          @optional_rules_selected = nil
-        end
-        store(:optional_rules_available, @optional_rules_per_title[title])
+        @optional_rules_selected = []
+        update_optional_rules_store
       end
 
       enforce_range = lambda do
         elm = Native(@inputs[:max_players]).elm
         if elm.value.to_i.positive?
           elm.value = elm.max.to_i unless (elm.min.to_i..elm.max.to_i).include?(elm.value.to_i)
-          store(:num_players, elm.value.to_i) if @mode == :hotseat
+          if @mode == :hotseat
+            store(:num_players, elm.value.to_i)
+            update_optional_rules_store
+          end
         end
       end
 
@@ -111,34 +111,37 @@ module View
       h(:div, inputs)
     end
 
+    def toggle_optional_rule(sym)
+      lambda do
+        if (@optional_rules_selected ||= []).include?(sym)
+          @optional_rules_selected.delete(sym)
+        else
+          @optional_rules_selected << sym
+        end
+      end
+    end
+
     def render_optional
       return unless @optional_rules_available
 
-      save_selection = lambda do
-        @optional_rules_selected = Native(@inputs[:optional_rules_selected]).elm.selectedOptions
-        # TODO: get values from HTML-Collection
-        # https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/selectedOptions
-      end
-
       optional_rules = []
       @optional_rules_available.each do |o_r|
-        optional_rules << h(:option, { attrs: { value: o_r[:sym] } }, o_r[:desc])
+        label_text = "#{o_r[:short_name]}: #{o_r[:desc]}"
+        optional_rules << h(:li, [render_input(
+          label_text,
+          type: 'checkbox',
+          id: o_r[:sym],
+          attrs: { value: o_r[:sym] },
+          on: { input: toggle_optional_rule(o_r[:sym]) },
+          input_style: { float: 'left', margin: '5px' },
+        )])
       end
       store(:optional_rules_available, nil, skip: true) # wipe to prevent rendering on next game creation
 
-      inputs = [
-        render_input(
-          'Optional rules',
-          id: :optional_rules_selected,
-          el: 'select',
-          attrs: {
-            multiple: true,
-          },
-          on: { input: save_selection },
-          children: optional_rules,
-        ),
-      ]
-      h(:div, inputs)
+      h(:div, [
+          h(:p, 'Optional Rules:'),
+          h(:ul, { style: { 'list-style': 'none' } }, optional_rules),
+        ])
     end
 
     def mode_selector
@@ -154,6 +157,7 @@ module View
         elm = Native(@inputs[:max_players]).elm
         elm.value = [elm.value.to_i, elm.min.to_i].max
         store(:num_players, elm.value.to_i)
+        update_optional_rules_store
       end
 
       [render_input(
@@ -166,16 +170,17 @@ module View
     end
 
     def submit
-      return create_game(params) if @mode != :hotseat
+      game_params = params
+      return create_game(game_params) if @mode != :hotseat
 
-      players = params
+      players = game_params
         .select { |k, _| k.start_with?('player_') }
         .values
         .map { |name| name.gsub(/\s+/, ' ').strip }
 
       return store(:flash_opts, 'Cannot have duplicate player names') if players.uniq.size != players.size
 
-      game_data = params['game_data']
+      game_data = game_params['game_data']
 
       if game_data.empty?
         game_data = {}
@@ -187,16 +192,36 @@ module View
         end
       end
       game_data[:settings] ||= {}
-      game_data[:settings][:optional_rules_selected] = params[:optional_rules_selected]
+      game_data[:settings][:optional_rules_selected] = game_params[:optional_rules_selected]
 
       create_hotseat(
         id: Time.now.to_i,
         players: players.map { |name| { name: name } },
-        title: params[:title],
-        description: params[:description],
-        max_players: params[:max_players],
+        title: game_params[:title],
+        description: game_params[:description],
+        max_players: game_params[:max_players],
         **game_data,
       )
+    end
+
+    def params
+      params = super
+
+      game = Engine::GAMES_BY_TITLE[params['title']]
+      game_optional_rules = game::OPTIONAL_RULES.map { |o_r| o_r[:sym] }
+
+      optional_rules_selected = []
+      game_optional_rules.each do |rule|
+        optional_rules_selected << rule if params.delete(rule)
+      end
+      params[:optional_rules_selected] = optional_rules_selected
+
+      params
+    end
+
+    def update_optional_rules_store
+      title = Native(@inputs[:title]).elm.value
+      store(:optional_rules_available, @optional_rules_per_title[title])
     end
   end
 end
