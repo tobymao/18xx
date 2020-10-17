@@ -132,7 +132,7 @@ module Engine
       end
 
       def setup
-        @turn = two_player? ? 0 : 1
+        @turn = setup_turn
 
         # When creating a game the game will not have enough to start
         return unless @players.size.between?(*Engine.player_range(self.class))
@@ -176,6 +176,10 @@ module Engine
         end
 
         @last_action = nil
+      end
+
+      def setup_turn
+        two_player? ? 0 : 1
       end
 
       def remove_from_group!(group, entities)

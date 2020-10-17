@@ -49,6 +49,10 @@ module Engine
         '18 Los Angeles'
       end
 
+      def setup_turn
+        1
+      end
+
       def init_hexes(_companies, _corporations)
         hexes = super
 
