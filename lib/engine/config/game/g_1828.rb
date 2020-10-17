@@ -944,14 +944,20 @@ module Engine
             "distance": 3,
             "price": 160,
             "rusts_on": "6",
-            "num": 9
+            "num": 9,
+            "events":[
+                {"type": "green_par"}
+            ]
         },
         {
             "name": "5",
             "distance": 5,
             "price": 250,
             "rusts_on": "8E",
-            "num": 4
+            "num": 4,
+            "events":[
+                {"type": "blue_par"}
+            ]
         },
         {
             "name": "3+D",
@@ -974,7 +980,10 @@ module Engine
             ],
             "price": 350,
             "rusts_on": "D",
-            "num": 6
+            "num": 6,
+            "events":[
+                {"type": "brown_par"}
+            ]
         },
         {
             "name": "6",
