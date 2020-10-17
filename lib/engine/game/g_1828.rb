@@ -2,6 +2,7 @@
 
 require_relative '../config/game/g_1828'
 require_relative 'base'
+require_relative '../g_1828/stock_market'
 
 module Engine
   module Game
@@ -41,6 +42,16 @@ module Engine
 
       SELL_BUY_ORDER = :sell_buy_sell
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'green_par' => ['Green phase pars',
+                        '$86 and $94 par prices are now available'],
+        'blue_par' => ['Blue phase pars',
+                       '$105 par price is now available'],
+        'brown_par' => ['Brown phase pars',
+                        '$120 par price is now available']
+      ).freeze
+
+
       def self.title
         '1828.Games'
       end
@@ -79,6 +90,34 @@ module Engine
         remove_extra_trains
       end
 
+      def init_stock_market
+        sm = Engine::G1828::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_COLORS,
+                                            multiple_buy_colors: self.class::MULTIPLE_BUY_COLORS)
+        sm.enable_par_price(67)
+        sm.enable_par_price(71)
+        sm.enable_par_price(79)
+
+        sm
+      end
+      
+      def event_green_par!
+        @log << "-- Event: #{EVENTS_TEXT['green_par'].last} --"
+        stock_market.enable_par_price(86)
+        stock_market.enable_par_price(94)
+      end
+      
+      def event_blue_par!
+        @log << "-- Event: #{EVENTS_TEXT['blue_par'].last} --"
+        stock_market.enable_par_price(105)
+      end
+
+      def event_brown_par!
+        @log << "-- Event: #{EVENTS_TEXT['brown_par'].last} --"
+        stock_market.enable_par_price(120)
+      end
+
+      private
+
       def remove_extra_private_companies
         to_remove = companies.find_all { |company| company.value == 250 }
                              .sort_by { rand }
@@ -93,7 +132,7 @@ module Engine
       def remove_extra_trains
         return unless @players.size < 5
 
-        to_remove = @depot.trains.find { |train| train.name == '5' }
+        to_remove = @depot.trains.reverse.find { |train| train.name == '5' }
         @depot.remove_train(to_remove)
         @log << "Removing #{to_remove.name} train"
       end
