@@ -17,6 +17,16 @@ module Engine
         @par_prices << par
         @disabled_par_prices.delete(par)
       end
+
+      def move_up(corporation)
+        return move_right(corporation) if top_row?(corporation)
+
+        super
+      end
+
+      def top_row?(corporation)
+        corporation.share_price.coordinates.first.zero?
+      end
     end
   end
 end
