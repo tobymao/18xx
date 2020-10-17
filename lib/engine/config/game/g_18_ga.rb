@@ -655,8 +655,7 @@ module Engine
          "tiles":[
             "yellow",
             "green",
-            "brown",
-            "gray"
+            "brown"
          ],
          "operating_rounds":3
       }
