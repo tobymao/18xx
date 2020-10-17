@@ -50,10 +50,6 @@ module Engine
       },
     },
     GAMES_BY_TITLE['18 Los Angeles'] => {
-      'hs_dewszizq_1602697779' => {
-        'Player 2' => 5131,
-        'Player 1' => 3565,
-      },
       'hs_srwgrtvq_1602711223' => {
         'Player 2' => 8287,
         'Player 3' => 7960,
