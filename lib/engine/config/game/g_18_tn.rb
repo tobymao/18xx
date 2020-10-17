@@ -490,7 +490,6 @@ module Engine
             "H7"
          ],
          "upgrade=cost:60,terrain:mountain":[
-            "E16",
             "B15",
             "C14",
             "C18",
@@ -504,14 +503,21 @@ module Engine
             "I16",
             "J13"
          ],
+         "upgrade=cost:60,terrain:mountain;icon=image:18_tn/owr":[
+            "E16"
+         ],
          "upgrade=cost:120,terrain:mountain":[
-            "F19",
-            "H17",
             "F21",
             "G18",
             "G20"
          ],
-         "city=revenue:0;upgrade=cost:60,terrain:water":[
+         "upgrade=cost:120,terrain:mountain;icon=image:18_tn/etwcr":[
+            "F19"
+         ],
+         "upgrade=cost:120,terrain:mountain;icon=image:18_tn/tcc":[
+            "H17"
+         ],
+         "city=revenue:0;upgrade=cost:60,terrain:water;icon=image:18_tn/mcr":[
             "H3"
          ],
          "town=revenue:0;upgrade=cost:40,terrain:water":[
