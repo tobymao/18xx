@@ -122,25 +122,17 @@ module View
 
           angle += 180 if reverse_side
 
-          if @town.halt?
-            h(:g, { key: "#{@town.id}-r", attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
-             h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
-               h(:g, { attrs: { transform: "translate(#{displacement} 0) #{rotation_for_layout}" } }, [
-                 h('text.tile__text', { attrs: { transform: "scale(1.5), rotate(#{-angle})" } }, @town.symbol),
-               ]),
-             ]),
-            ])
-          else
-            h(:g, { key: "#{@town.id}-r", attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
-             h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
-               h(:g, { attrs: { transform: "translate(#{displacement} 0) #{rotation_for_layout}" } }, [
-                 h(SingleRevenue,
-                   revenue: revenue,
-                   transform: "rotate(#{-angle})"),
-               ]),
-             ]),
-            ])
-          end
+          h(:g, { key: "#{@town.id}-r", attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
+            h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
+              h(:g, { attrs: { transform: "translate(#{displacement} 0) #{rotation_for_layout}" } }, [
+              if @town.halt?
+                h('text.tile__text', { attrs: { transform: "scale(1.5), rotate(#{-angle})" } }, @town.symbol)
+              else
+                h(SingleRevenue, revenue: revenue, transform: "rotate(#{-angle})")
+              end,
+              ]),
+            ]),
+          ])
         end
       end
     end

@@ -89,23 +89,20 @@ module View
           displacement = @edge ? REVENUE_EDGE_DISPLACEMENT : REVENUE_DISPLACEMENT
 
           increment_weight_for_regions(REVENUE_REGIONS[layout])
-          if @town.halt?
-            h(:g, { key: "#{@town.id}-r", attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
-              h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
-                h(:g, { attrs: { transform: "translate(#{displacement} 0) #{rotation_for_layout}" } }, [
-                  h('text.tile__text', { attrs: { transform: "scale(1.5), rotate(#{-angle})" } }, @town.symbol),
-                ]),
+
+          h(:g, { key: "#{@town.id}-r", attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
+            h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
+              h(:g, { attrs: { transform: "translate(#{displacement} 0) rotate(#{-angle})" } }, [
+                if @town.halt?
+                  h('text.tile__text',
+                    { attrs: { transform: "scale(1.5), rotate(#{rotation_for_layout})" } },
+                    @town.symbol)
+                else
+                  h(Part::SingleRevenue, revenue: revenue, transform: rotation_for_layout)
+                end,
               ]),
-            ])
-          else
-            h(:g, { key: "#{@town.id}-r", attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
-              h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
-                h(:g, { attrs: { transform: "translate(#{displacement} 0) rotate(#{-angle})" } }, [
-                  h(Part::SingleRevenue, revenue: revenue, transform: rotation_for_layout),
-                ]),
-              ]),
-            ])
-          end
+            ]),
+          ])
         end
 
         def render_part
