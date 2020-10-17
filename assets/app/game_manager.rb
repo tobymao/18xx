@@ -140,6 +140,10 @@ module GameManager
     "/game/#{game['id']}#{path}"
   end
 
+  def invite_url(game)
+    "/?invite=#{game['id']}"
+  end
+
   protected
 
   def hs_url(game, game_data)

@@ -67,7 +67,7 @@ class Api < Roda
   use Rack::Deflater unless PRODUCTION
 
   STANDARD_ROUTES = %w[
-    / about hotseat login map new_game profile signup tiles tutorial forgot reset
+    / about hotseat login map new_game invite profile signup tiles tutorial forgot reset
   ].freeze
 
   Dir['./routes/*'].sort.each { |file| require file }
@@ -113,7 +113,8 @@ class Api < Roda
   end
 
   def render_with_games
-    render(pin: request.params['pin'], games: Game.home_games(user, **request.params).map(&:to_h))
+    invite = request.params['invite'].to_i if request.params['invite']
+    render(pin: request.params['pin'], games: Game.home_games(user, **request.params).map(&:to_h), invite: invite)
   end
 
   def render(**needs)

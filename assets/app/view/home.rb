@@ -13,6 +13,7 @@ module View
     include Lib::Settings
 
     needs :user
+    needs :invite, default: nil
     needs :refreshing, default: nil, store: true
 
     def render
@@ -28,6 +29,8 @@ module View
       your_games.reject! { |game| game['status'] == 'finished' }
 
       grouped = other_games.group_by { |game| game['status'] }
+
+      invited = other_games.select { |game| game['id'] == @invite }
 
       # Ready, then active, then unstarted, then completed
       your_games.sort_by! do |game|
@@ -45,6 +48,14 @@ module View
         .map { |k| Lib::Storage[k] }
         .sort_by { |gd| gd[:id] }
         .reverse
+
+      if @invite
+        if @user
+          render_row(children, 'You were invited to join this game:', invited, :nil)
+        else
+          children << h(:h2, 'You need to log in before joining a game')
+        end
+      end
 
       render_row(children, 'Your Games', your_games, :personal) if @user
       render_row(children, 'Hotseat Games', hotseat, :hotseat) if hotseat.any?

@@ -55,9 +55,22 @@ class Game < Base
     ) personal_games
   SQL
 
+  INVITE_QUERY = <<~SQL
+    SELECT invite_games.*
+    FROM (
+      SELECT *
+      FROM games
+      WHERE id = :invite
+      ORDER BY created_at DESC
+      LIMIT #{QUERY_LIMIT}
+    ) invite_games
+  SQL
+
   # rubocop:disable Style/FormatString
   LOGGED_IN_QUERY = <<~SQL
     #{USER_QUERY}
+    UNION
+    #{INVITE_QUERY}
     UNION
     #{USER_STATUS_QUERY % { status: 'new' }}
     UNION
@@ -80,6 +93,7 @@ class Game < Base
       new_offset: opts['new'],
       active_offset: opts['active'],
       finished_offset: opts['finished'],
+      invite: opts['invite'] || -1,
     }.transform_values { |v| v&.to_i || 0 }
 
     opts[:user_id] = user.id if user

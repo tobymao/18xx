@@ -1,3 +1,4 @@
+# coding: utf-8
 # frozen_string_literal: true
 
 require 'lib/color'
@@ -16,6 +17,7 @@ module View
     needs :gdata # can't conflict with game_data
     needs :confirm_delete, store: true, default: false
     needs :confirm_kick, store: true, default: nil
+    needs :flash_opts, default: {}, store: true
 
     def render
       h('div.game.card', [
@@ -50,6 +52,9 @@ module View
         case @gdata['status']
         when 'new'
           if owner?
+            msg = 'You can copy this link to invite other players'
+            flash = -> { store(:flash_opts, { message: msg, color: 'lightgreen' }, skip: false) }
+            buttons << render_link(invite_url(@gdata), flash, 'Invite')
           elsif user_in_game?(@user, @gdata)
             buttons << render_button('Leave', -> { leave_game(@gdata) })
           elsif players.size < @gdata['max_players']

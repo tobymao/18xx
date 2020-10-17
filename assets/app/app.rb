@@ -22,6 +22,7 @@ class App < Snabberb::Component
   include UserManager
   needs :disable_user_errors, default: false
   needs :pin, default: nil
+  needs :invite, default: nil
 
   def render
     props = {
@@ -73,7 +74,7 @@ class App < Snabberb::Component
       when /map/
         h(View::MapPage, route: @app_route)
       else
-        h(View::Home, user: @user)
+        h(View::Home, user: @user, invite: @invite)
       end
 
     page = h(View::About, needs_consent: true) if needs_consent
