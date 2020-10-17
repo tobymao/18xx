@@ -101,18 +101,18 @@ module Engine
       end
       
       def event_green_par!
-        @log << "-- Event: #{EVENTS_TEXT['green_par'].last} --"
+        @log << "-- Event: #{EVENTS_TEXT['green_par'][1]} --"
         stock_market.enable_par_price(86)
         stock_market.enable_par_price(94)
       end
       
       def event_blue_par!
-        @log << "-- Event: #{EVENTS_TEXT['blue_par'].last} --"
+        @log << "-- Event: #{EVENTS_TEXT['blue_par'][1]} --"
         stock_market.enable_par_price(105)
       end
 
       def event_brown_par!
-        @log << "-- Event: #{EVENTS_TEXT['brown_par'].last} --"
+        @log << "-- Event: #{EVENTS_TEXT['brown_par'][1]} --"
         stock_market.enable_par_price(120)
       end
 
