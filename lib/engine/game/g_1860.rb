@@ -31,14 +31,16 @@ module Engine
           Step::Bankrupt,
           Step::Exchange,
           Step::DiscardTrain,
-          Step::BuyCompany,
           Step::Track,
           Step::Token,
           Step::Route,
           Step::Dividend,
           Step::BuyTrain,
-          [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
+      end
+
+      def init_stock_market
+        StockMarket.new(self.class::MARKET, [], zigzag: true)
       end
 
       def active_players

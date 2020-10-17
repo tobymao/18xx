@@ -20,6 +20,7 @@ module View
         yellow: '#ffff99',
         black: '#000000',
         gray: '#888888',
+        green: '#aaffaa',
       }.freeze
 
       # All markets
@@ -43,6 +44,29 @@ module View
       RIGHT_TOKEN_POS = RIGHT_MARGIN - TOKEN_SIZE # left edge of rightmost token
       MID_TOKEN_POS = (LEFT_TOKEN_POS + RIGHT_TOKEN_POS) / 2
 
+      TOKEN_STYLE_1D = {
+        textAlign: 'center',
+        lineHeight: '0',
+      }.freeze
+
+      PRICE_STYLE_1D = {
+        fontSize: '100%',
+        textAlign: 'center',
+      }.freeze
+
+      def box_style_1d
+        {
+          position: 'relative',
+          display: 'inline-block',
+          padding: "#{PAD}px",
+          margin: '0',
+          verticalAlign: 'top',
+          width: "#{WIDTH_TOTAL - 2 * PAD - 2 * BORDER}px",
+          border: "solid #{BORDER}px rgba(0,0,0,0.2)",
+          color: color_for(:font2),
+        }
+      end
+
       def cell_style(box_style, price)
         style = box_style.merge(backgroundColor: price.color ? COLOR_MAP[price.color] : color_for(:bg2))
         if price.color == :black
@@ -53,26 +77,7 @@ module View
       end
 
       def grid_1d
-        box_style = {
-          position: 'relative',
-          display: 'inline-block',
-          padding: "#{PAD}px",
-          margin: '0',
-          verticalAlign: 'top',
-          width: "#{WIDTH_TOTAL - 2 * PAD - 2 * BORDER}px",
-          border: "solid #{BORDER}px rgba(0,0,0,0.2)",
-          color: color_for(:font2),
-        }
-
-        tokens_style = {
-          textAlign: 'center',
-          lineHeight: '0',
-        }
-
-        price_style = {
-          fontSize: '100%',
-          textAlign: 'center',
-        }
+        box_style = box_style_1d
 
         max_num_corps = @game.stock_market.market.first.map { |p| p.corporations.size }.push(MIN_NUM_TOKENS).max
         box_height = max_num_corps * (TOKEN_SIZE + VERTICAL_TOKEN_PAD) + VERTICAL_TOKEN_PAD + PRICE_HEIGHT + 2 * PAD
@@ -88,12 +93,52 @@ module View
           end
 
           h(:div, { style: cell_style(box_style, price) }, [
-            h(:div, { style: price_style }, price.price),
-            h(:div, { style: tokens_style }, tokens),
+            h(:div, { style: PRICE_STYLE_1D }, price.price),
+            h(:div, { style: TOKEN_STYLE_1D }, tokens),
           ])
         end
 
         [h(:div, { style: { width: 'max-content' } }, row)]
+      end
+
+      def grid_zigzag
+        box_style = box_style_1d
+
+        half_box_style = box_style_1d
+        half_box_style[:width] = "#{WIDTH_TOTAL / 2 - 2 * PAD - 2 * BORDER}px"
+
+        max_num_corps = @game.stock_market.market.first.map { |p| p.corporations.size }.push(MIN_NUM_TOKENS).max
+        box_height = max_num_corps * (TOKEN_SIZE + VERTICAL_TOKEN_PAD) + VERTICAL_TOKEN_PAD + PRICE_HEIGHT + 2 * PAD
+        box_style[:height] = "#{box_height - 2 * PAD - 2 * BORDER}px"
+        half_box_style[:height] = "#{box_height - 2 * PAD - 2 * BORDER}px"
+
+        row0 = []
+        row1 = [h(:div, style: cell_style(half_box_style, @game.stock_market.market.first.first))]
+
+        @game.stock_market.market.first.each_with_index do |price, idx|
+          tokens = price.corporations.map do |corporation|
+            props = {
+              attrs: { src: corporation.logo, width: "#{TOKEN_SIZE}px" },
+              style: { marginTop: "#{VERTICAL_TOKEN_PAD}px" },
+            }
+            h(:img, props)
+          end
+
+          element = h(:div, { style: cell_style(box_style, price) }, [
+                      h(:div, { style: PRICE_STYLE_1D }, price.price),
+                      h(:div, { style: TOKEN_STYLE_1D }, tokens),
+                    ])
+          if idx.even?
+            row0 << element
+          else
+            row1 << element
+          end
+        end
+
+        row1 << h(:div, style: cell_style(half_box_style, @game.stock_market.market.first.last))
+
+        [h(:div, { style: { width: 'max-content' } }, row0),
+         h(:div, { style: { width: 'max-content' } }, row1)]
       end
 
       def grid_2d
@@ -148,7 +193,15 @@ module View
           color: color_for(:font2),
         )
 
-        grid = @game.stock_market.one_d? ? grid_1d : grid_2d
+        grid = if @game.stock_market.one_d?
+                 if @game.stock_market.zigzag?
+                   grid_zigzag
+                 else
+                   grid_1d
+                 end
+               else
+                 grid_2d
+               end
 
         children = []
         children << h(Bank, game: @game) if @game.game_end_check_values.include?(:bank)
@@ -164,6 +217,8 @@ module View
             [:endgame, 'End game trigger'],
             [:liquidation, 'Liquidation'],
             [:acquisition, 'Acquisition'],
+            [:repar, 'Par value after bankruptcy'],
+            [:ignore_one_sale, 'Ignore first share sold when moving price'],
           ]
 
           types_in_market = @game.stock_market.market.flatten.compact.map { |p| [p.type, p.color] }.to_h
