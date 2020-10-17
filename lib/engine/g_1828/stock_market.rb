@@ -12,10 +12,10 @@ module Engine
       end
 
       def enable_par_price(price)
-        if par = @disabled_par_prices.find {|p| p.price == price}
-          @par_prices << par
-          @disabled_par_prices.delete(par)
-        end
+        return unless (par = @disabled_par_prices.find { |p| p.price == price })
+
+        @par_prices << par
+        @disabled_par_prices.delete(par)
       end
     end
   end

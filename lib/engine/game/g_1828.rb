@@ -51,7 +51,6 @@ module Engine
                         '$120 par price is now available']
       ).freeze
 
-
       def self.title
         '1828.Games'
       end
@@ -99,13 +98,13 @@ module Engine
 
         sm
       end
-      
+
       def event_green_par!
         @log << "-- Event: #{EVENTS_TEXT['green_par'][1]} --"
         stock_market.enable_par_price(86)
         stock_market.enable_par_price(94)
       end
-      
+
       def event_blue_par!
         @log << "-- Event: #{EVENTS_TEXT['blue_par'][1]} --"
         stock_market.enable_par_price(105)
