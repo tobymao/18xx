@@ -143,10 +143,8 @@ module Engine
 
         prev = entity.share_price.price
 
-        Array(payout[:share_times]).each_with_index do |share_times, share_times_index|
+        Array(payout[:share_times]).zip(Array(payout[:share_direction])).each do |share_times, direction|
           share_times.times do
-            direction = Array(payout[:share_direction])[share_times_index]
-
             case direction
             when :left
               @game.stock_market.move_left(entity)
