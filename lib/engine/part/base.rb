@@ -73,6 +73,10 @@ module Engine
         false
       end
 
+      def halt?
+        false
+      end
+
       def upgrade?
         false
       end

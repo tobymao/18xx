@@ -32,6 +32,15 @@ module View
           6 => 13,
         }.freeze
 
+        RESERVATION_VERT_SCALING = {
+          1 => 1,
+          2 => 1,
+          3 => 1,
+          4 => 1.4,
+          5 => 2.0,
+          6 => 2.0,
+        }.freeze
+
         def render_part
           children = []
           children << h(:circle, attrs: { r: @radius, fill: 'white' })
@@ -54,6 +63,7 @@ module View
           attrs = {
             fill: 'black',
             'font-size': "#{RESERVATION_FONT_SIZE[text.size]}px",
+            transform: "scale(1.0,#{RESERVATION_VERT_SCALING[text.size]})",
             'dominant-baseline': 'central',
           }
 

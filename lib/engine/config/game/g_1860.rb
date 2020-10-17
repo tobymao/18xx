@@ -87,27 +87,27 @@ module Engine
     "741": {
       "count": 5,
       "color": "yellow",
-      "code": "town=revenue:0;path=a:0,b:_0;path=a:1,b:_0;label=£"
+      "code": "halt=symbol:£;path=a:0,b:_0;path=a:1,b:_0"
     },
     "742": {
       "count": 10,
       "color": "yellow",
-      "code": "town=revenue:0;path=a:0,b:_0;path=a:2,b:_0;label=£"
+      "code": "halt=symbol:£;path=a:0,b:_0;path=a:2,b:_0"
     },
     "743": {
       "count": 7,
       "color": "yellow",
-      "code": "town=revenue:0;path=a:0,b:_0;path=a:3,b:_0;label=£"
+      "code": "halt=symbol:£;path=a:0,b:_0;path=a:3,b:_0"
     },
     "744": {
       "count": 2,
       "color": "yellow",
-      "code": "town=revenue:0,loc:0;town=revenue:0,loc:3;path=a:0,b:_0;path=a:3,b:_1;path=a:_0,b:_1;label=£"
+      "code": "halt=symbol:£,loc:0;halt=symbol:£,loc:3;path=a:0,b:_0;path=a:3,b:_1;path=a:_0,b:_1"
     },
     "745": {
       "count": 2,
       "color": "yellow",
-      "code": "town=revenue:0,loc:0;town=revenue:0,loc:2;path=a:0,b:_0;path=a:2,b:_1;path=a:_0,b:_1;label=£"
+      "code": "halt=symbol:£,loc:0;halt=symbol:£,loc:2;path=a:0,b:_0;path=a:2,b:_1;path=a:_0,b:_1"
     },
     "746": {
       "count": 2,
@@ -132,32 +132,32 @@ module Engine
     "750": {
       "count": 3,
       "color": "green",
-      "code": "town=revenue:0;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=£"
+      "code": "halt=symbol:£;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0"
     },
     "751": {
       "count": 3,
       "color": "green",
-      "code": "town=revenue:0;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;label=£"
+      "code": "halt=symbol:£;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0"
     },
     "752": {
       "count": 3,
       "color": "green",
-      "code": "town=revenue:0;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;label=£"
+      "code": "halt=symbol:£;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0"
     },
     "753": {
       "count": 3,
       "color": "green",
-      "code": "town=revenue:0;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=£"
+      "code": "halt=symbol:£;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0"
     },
     "754": {
       "count": 2,
       "color": "green",
-      "code": "town=revenue:0,loc:0;town=revenue:10,loc:center;path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:_0,b:_1;label=£"
+      "code": "halt=symbol:£,loc:0;town=revenue:10,loc:center;path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:_0,b:_1"
     },
     "755": {
       "count": 2,
       "color": "green",
-      "code": "town=revenue:0,loc:0;town=revenue:10,loc:center;path=a:0,b:_0;path=a:4,b:_1;path=a:3,b:_1;path=a:_0,b:_1;label=£"
+      "code": "halt=symbol:£,loc:0;town=revenue:10,loc:center;path=a:0,b:_0;path=a:4,b:_1;path=a:3,b:_1;path=a:_0,b:_1"
     },
     "756": {
       "count": 2,
@@ -182,12 +182,12 @@ module Engine
     "760": {
       "count": 1,
       "color": "green",
-      "code": "city=revenue:40,loc:center;city=revenue:40,loc:0.5;path=a:1,b:_1;path=a:2,b:_0;label=V"
+      "code": "city=revenue:40,loc:4;city=revenue:40,loc:0.5;path=a:1,b:_1;path=a:2,b:_0;label=V"
     },
     "761": {
       "count": 1,
       "color": "green",
-      "code": "city=revenue:20;town=revenue:0;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_1;path=a:_0,b:_1;label=M"
+      "code": "city=revenue:20,loc:center;halt=symbol:£,loc:3;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_1;path=a:_0,b:_1;label=M"
     },
     "762": {
       "count": 2,
@@ -292,22 +292,22 @@ module Engine
     "782": {
       "count": 1,
       "color": "brown",
-      "code": "town=revenue:20,loc:center;town=revenue:0,loc:0;path=a:0,b:_1;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:_1;label=£"
+      "code": "town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_1;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:_1"
     },
     "783": {
       "count": 1,
       "color": "brown",
-      "code": "town=revenue:20,loc:center;town=revenue:0,loc:0;path=a:0,b:_1;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;path=a:_0,b:_1;label=£"
+      "code": "town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_1;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;path=a:_0,b:_1"
     },
     "784": {
       "count": 1,
       "color": "brown",
-      "code": "town=revenue:20,loc:center;town=revenue:0,loc:0;path=a:0,b:_1;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:_1;label=£"
+      "code": "town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_1;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:_1"
     },
     "785": {
       "count": 1,
       "color": "brown",
-      "code": "town=revenue:20,loc:center;town=revenue:0,loc:0;path=a:0,b:_1;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:_0,b:_1;label=£"
+      "code": "town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_1;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:_0,b:_1"
     },
     "786": {
       "count": 1,
@@ -317,48 +317,48 @@ module Engine
     "787": {
       "count": 1,
       "color": "yellow",
-      "code": "city=revenue:20,loc:3;town=revenue:10,loc:center;town=revenue:0,loc:0;path=a:0,b:_2;path=a:_2,b:_1;path=a:_0,b:_1;label=C"
+      "code": "city=revenue:20,loc:3;town=revenue:10,loc:center;halt=symbol:£,loc:0;path=a:0,b:_2;path=a:_2,b:_1;path=a:_0,b:_1;label=C"
     },
     "788": {
       "count": 1,
       "color": "green",
-      "code": "city=revenue:30,loc:3;town=revenue:10,loc:center;town=revenue:0,loc:0;path=a:0,b:_2;path=a:1,b:_2;path=a:_2,b:_1;path=a:_0,b:_1;label=C"
+      "code": "city=revenue:30,loc:3;town=revenue:10,loc:center;halt=symbol:£,loc:0;path=a:0,b:_2;path=a:1,b:_2;path=a:_2,b:_1;path=a:_0,b:_1;label=C"
     },
     "789": {
       "count": 1,
       "color": "brown",
-      "code": "city=revenue:60,loc:3;town=revenue:20,loc:center;town=revenue:0,loc:0;path=a:0,b:_2;path=a:1,b:_2;path=a:_2,b:_1;path=a:_0,b:_1;label=C"
+      "code": "city=revenue:60,loc:3;town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_2;path=a:1,b:_2;path=a:_2,b:_1;path=a:_0,b:_1;label=C"
     }
   },
   "market": [
     [
-      "0",
-      "7b",
-      "14b",
-      "20b",
-      "26b",
-      "31b",
-      "36b",
-      "40o",
-      "44o",
-      "47o",
-      "50o",
-      "52o",
-      "54y",
-      "56o",
-      "58y",
-      "60o",
-      "62y",
-      "65o",
-      "68y",
-      "71o",
-      "74y",
-      "78o",
-      "82y",
-      "86o",
-      "90y",
-      "95o",
-      "100y",
+      "0c",
+      "7",
+      "14",
+      "20",
+      "26",
+      "31",
+      "36",
+      "40",
+      "44",
+      "47",
+      "50",
+      "52",
+      "54p",
+      "56",
+      "58p",
+      "60",
+      "62p",
+      "65",
+      "68p",
+      "71",
+      "74p",
+      "78",
+      "82p",
+      "86",
+      "90p",
+      "95",
+      "100p",
       "105",
       "110",
       "116",
@@ -367,26 +367,26 @@ module Engine
       "134",
       "142",
       "150",
-      "158b",
-      "166b",
-      "174b",
-      "182b",
-      "191b",
-      "200b",
-      "210b",
-      "220b",
-      "230b",
-      "240b",
-      "250b",
-      "260b",
-      "270b",
-      "280b",
-      "290b",
-      "300b",
-      "310b",
-      "320b",
-      "330b",
-      "340"
+      "158",
+      "166",
+      "174",
+      "182",
+      "191",
+      "200",
+      "210",
+      "220",
+      "230",
+      "240",
+      "250",
+      "260",
+      "270",
+      "280",
+      "290",
+      "300",
+      "310",
+      "320",
+      "330",
+      "340e"
     ]
   ],
   "companies": [
@@ -698,7 +698,7 @@ module Engine
       "city=revenue:30;path=a:2,b:_0;path=a:3,b:_0;label=N": [
         "G5"
       ],
-      "city=revenue:10;town=revenue:10;path=a:5,b:_0;label=M": [
+      "city=revenue:10;town=revenue:0;path=a:5,b:_0;label=M": [
         "G7"
       ],
       "city=revenue:30;path=a:2,b:_0;label=V;border=edge:3,type:impassable": [

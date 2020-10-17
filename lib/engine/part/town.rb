@@ -13,7 +13,7 @@ module Engine
       # it has any paths and either it's not in the center or it is in the center
       # and has less than two exits and less than three paths
       def rect?
-        paths.any? && (@tile.preferred_city_town_edges[self] || (exits.size < 2 && paths.size < 3))
+        paths.any? && paths.size < 3
       end
     end
   end
