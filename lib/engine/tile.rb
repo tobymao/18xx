@@ -100,7 +100,8 @@ module Engine
                               visit_cost: params['visit_cost'],
                               route: params['route'],
                               format: params['format'],
-                              loc: params['loc'])
+                              loc: params['loc'],
+                              to_city: params['to_city'])
         cache << town
         town
       when 'halt'
