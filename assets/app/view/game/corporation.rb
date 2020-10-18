@@ -143,6 +143,8 @@ module View
         holdings =
           if !@corporation.corporation? || @corporation.floated?
             h(:div, holdings_props, [render_trains, render_cash])
+          elsif @corporation.cash.positive?
+            h(:div, holdings_props, [render_to_float, render_cash])
           else
             h(:div, holdings_props, "#{@corporation.percent_to_float}% to float")
           end
@@ -156,6 +158,10 @@ module View
 
       def render_cash
         render_header_segment(@game.format_currency(@corporation.cash), 'Cash')
+      end
+
+      def render_to_float
+        render_header_segment("#{@corporation.percent_to_float}%", 'to float')
       end
 
       def render_trains
