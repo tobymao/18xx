@@ -448,6 +448,11 @@ module Engine
           end
         end
 
+        # Delete train so it wont appear in rust message
+        train = minor.trains.first
+        minor.remove_train(train)
+        trains.delete(train)
+
         @minors.delete(minor)
       end
 
