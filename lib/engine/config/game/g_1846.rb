@@ -426,7 +426,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
-          "description": "Reserved $40/$60 Ft. Wayne token",
+          "description": "Reserved $40/$60 Ft. Wayne (E11) token",
           "hexes": [
             "E11"
           ],
@@ -472,7 +472,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
-          "description": "Reserved $40/$100 Cincinnati token",
+          "description": "Reserved $40/$100 Cincinnati (H12) token",
           "hexes": [
             "H12"
           ],
@@ -520,7 +520,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
-          "description": "Reserved $40 Erie token",
+          "description": "Reserved $40 Erie (D20) token",
           "hexes": [
             "D20"
           ],
@@ -584,7 +584,7 @@ module Engine
         },
         {
           "type": "token",
-          "description": "Reserved $40 Centralia token",
+          "description": "Reserved $40 Centralia (I5) token",
           "hexes": [
             "I5"
           ],

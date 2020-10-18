@@ -356,7 +356,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
-          "description": "Reserved $40/$60 Culver City token",
+          "description": "Reserved $40/$60 Culver City (C4) token",
           "hexes": [
             "C4"
           ],
@@ -388,7 +388,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
-          "description": "Reserved $40 Alhambra token",
+          "description": "Reserved $40 Alhambra (B9) token",
           "hexes": [
             "B9"
           ],
@@ -453,7 +453,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
-          "description": "Reserved $40 Montebello token",
+          "description": "Reserved $40 Montebello (C8) token",
           "hexes": [
             "C8"
           ],
@@ -486,7 +486,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
-          "description": "Reserved $40/$100 Los Angeles token",
+          "description": "Reserved $40/$100 Los Angeles (C6) token",
           "hexes": [
             "C6"
           ],
