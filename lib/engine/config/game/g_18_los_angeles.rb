@@ -258,7 +258,7 @@ module Engine
       "name": "Puente Trolley",
       "value": 40,
       "revenue": 15,
-      "desc": "The owning corporation may lay an extra $0 cost yellow tile in Puente (C10), even if they are not connected to Puente..",
+      "desc": "The owning corporation may lay an extra $0 cost yellow tile in Puente (C10), even if they are not connected to Puente.",
       "sym": "PT",
       "abilities": [
         {
