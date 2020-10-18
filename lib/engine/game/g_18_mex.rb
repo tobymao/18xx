@@ -275,10 +275,14 @@ module Engine
           end
         end
 
-        # Rule 5f: Handle tokens. NdM gets two exchange tokens If company merge has put out its home token,
-        # this will be swapped (for free) with the first exchange token. If company has tokened more,
-        # NdM president get to choose which one to keep, and this is swapped (for free) with the second
-        # exchange token, and the remaining tokens for the merged corporation is removed from the board.
+        # Rule 5f: Handle tokens. NdM gets two exchange tokens. The first exchange token will be used
+        # to replace the home token, even if merged company isn't floated. This placement is free.
+        # Note! If NdM already have a token in that hex, the home token is just removed.
+        #
+        # If company has tokened more, NdM president get to choose which one to keep, and this is swapped
+        # (for free) with the second exchange token, and the remaining tokens for the merged corporation
+        # is removed from the board.
+        #
         # Any remaining exchange tokens will be added to the charter, and have a cost of $80.
 
         (1..2).each do |_|
@@ -288,8 +292,7 @@ module Engine
         exchange_tokens = [ndm.tokens[-2], ndm.tokens.last]
 
         home_token = major.tokens.first
-        if major.floated? && home_token.city
-          ndm_replacement = exchange_tokens.first
+        if home_token.city
           home_token.city.remove_reservation!(major)
           if ndm.tokens.find { |t| t.city == home_token.city }
             @log << "#{major.name}'s home token is removed as #{ndm.name} already has a token there"
@@ -297,7 +300,22 @@ module Engine
           else
             home_token.city.reservations { |r| @log << "Reservation #{r}" }
             @log << "#{major.name}'s home token in #{home_token.city.hex.name} is replaced with an #{ndm.name} token"
+            ndm_replacement = exchange_tokens.first
             home_token.swap!(ndm_replacement)
+            exchange_tokens.delete(ndm_replacement)
+          end
+        else
+          hex = hex_by_id(major.coordinates)
+          tile = hex.tile
+          cities = tile.cities
+          city = cities.find { |c| c.reserved_by?(major) } || cities.first
+          city.remove_reservation!(major)
+          if ndm.tokens.find { |t| t.city == city }
+            @log << "#{ndm.name} does not place token in #{city.hex.name} as it already has a token there"
+          else
+            @log << "#{ndm.name} places an exchange token in #{major.name}'s home location in #{city.hex.name}"
+            ndm_replacement = exchange_tokens.first
+            city.place_token(ndm, ndm_replacement)
             exchange_tokens.delete(ndm_replacement)
           end
         end
@@ -469,6 +487,7 @@ module Engine
         merge_major(candidate) if @mergable_candidates.one? && !candidate.floated?
       end
 
+      # Remove share from merged major by moving them to the neutral
       def remove_share(major, share)
         share.owner.shares_by_corporation[major].delete(share)
         @neutral.shares_by_corporation[major] << share
