@@ -157,7 +157,7 @@ module Engine
       "value": 60,
       "discount": -80,
       "revenue": 0,
-      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). Splits revenue evenly with owner. Buyer pays an extra $80 (\"debt\").",
+      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). In ORs, this is the first minor to operate. Splits revenue evenly with owner. Buyer pays an extra $80 (\"debt\").",
       "sym": "MS"
     },
     {
@@ -165,14 +165,14 @@ module Engine
       "value": 40,
       "discount": -60,
       "revenue": 0,
-      "desc": "Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). Splits revenue evenly with owner. Buyer pays an extra $60 (\"debt\").",
+      "desc": "Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). In ORs, this is the second minor to operate. Splits revenue evenly with owner. Buyer pays an extra $60 (\"debt\").",
       "sym": "BIG4"
     },
     {
       "name": "Chicago and Western Indiana",
       "value": 60,
       "revenue": 10,
-      "desc": "Reserves a token slot in Chicago (D6), when purchased the owning corporation may place an extra token at no cost.",
+      "desc": "Reserves a token slot in Chicago (D6), in the city next to E7. The owning corporation may place an extra token there at no cost, with no connection needed. Once this company is purchased by a corporation, the slot that was reserved may be used by other corporations.",
       "sym": "C&WI",
       "abilities": [
         {
@@ -325,7 +325,7 @@ module Engine
       "name": "Michigan Central",
       "value": 40,
       "revenue": 15,
-      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's reserved hexes (B10, B12).",
+      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's reserved hexes (B10, B12). The owning corporation does not need to be connected to those hexes. If two tiles are laid, they must connect to each other.",
       "sym": "MC",
       "abilities": [
         {
@@ -359,7 +359,7 @@ module Engine
       "name": "Ohio & Indiana",
       "value": 40,
       "revenue": 15,
-      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I's reserved hexes (F14, F16).",
+      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I's reserved hexes (F14, F16). The owning corporation does not need to be connected to those hexes. If two tiles are laid, they must connect to each other.",
       "sym": "O&I",
       "abilities": [
         {

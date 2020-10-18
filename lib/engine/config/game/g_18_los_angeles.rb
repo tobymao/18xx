@@ -111,7 +111,7 @@ module Engine
       "value": 140,
       "treasury": 60,
       "revenue": 0,
-      "desc": "Starts with $60 Treasury and a 2T; Operates first in each OR; Lays or upgrades 1 tile; Splits revenue 50/50 with owner.",
+      "desc": "Starts with $60 in treasury, a 2 train, and a token in Gardena (D5). In ORs, this is the first minor to operate. May only lay or upgrade 1 tile per OR. Splits revenue evenly with owner. May be sold to a corporation for up to $140.",
       "sym": "GT"
     },
     {
@@ -119,14 +119,14 @@ module Engine
       "value": 100,
       "treasury": 40,
       "revenue": 0,
-      "desc": "Starts with $40 Treasury and a 2T; Operates second in each OR; Lays or upgrades 1 tile; Splits revenue 50/50 with owner.",
+      "desc": "Starts with $40 in treasury, a 2 train, and a token in Cypress (E10). In ORs, this is the second minor to operate. May only lay or upgrade 1 tile per OR. Splits revenue evenly with owner. May be sold to a corporation for up to $100.",
       "sym": "OCR"
     },
     {
       "name": "Pacific Maritime",
       "value": 60,
       "revenue": 10,
-      "desc": "Reserves location in Long Beach for an extra token at $0.",
+      "desc": "Reserves a token slot in Long Beach (E8), in the city next to Norwalk (D9). The owning corporation may place an extra token there at no cost, with no connection needed. Once this company is purchased by a corporation, the slot that was reserved may be used by other corporations.",
       "sym": "PMC",
       "abilities": [
         {
@@ -153,7 +153,7 @@ module Engine
       "name": "United States Mail Contract",
       "value": 80,
       "revenue": 0,
-      "desc": "Adds $10 per location visited to the revenue of one train.",
+      "desc": "Adds $10 per location visited by any one train of the owning corporation. Never closes once purchased by a corporation.",
       "sym": "MAIL",
       "abilities": [
         {
@@ -167,7 +167,7 @@ module Engine
       "name": "Chino Hills Excavation",
       "value": 60,
       "revenue": 20,
-      "desc": "All hill and tunnel tile laying costs are reduce by $20.",
+      "desc": "Reduces, for the owning corporation, the cost of laying all hill tiles and tunnel/pass hexsides by $20.",
       "sym": "CHE",
       "abilities": [
         {
@@ -258,7 +258,7 @@ module Engine
       "name": "Puente Trolley",
       "value": 40,
       "revenue": 15,
-      "desc": "Extra $0 yellow tile lay in Puente (C10).",
+      "desc": "The owning corporation may lay an extra $0 cost yellow tile in Puente (C10), even if they are not connected to Puente..",
       "sym": "PT",
       "abilities": [
         {
@@ -290,7 +290,7 @@ module Engine
       "name": "Beverly Hills Carriage",
       "value": 40,
       "revenue": 15,
-      "desc": "Extra $0 yellow tile lay in Beverly Hills (B3)",
+      "desc": "The owning corporation may lay an extra $0 cost yellow tile in Beverly Hills (B3), even if they are not connected to Beverly Hills. Any terrain costs are ignored.",
       "sym": "BHC",
       "abilities": [
         {
