@@ -298,11 +298,7 @@ module Engine
             @log << "#{major.name}'s home token is removed as #{ndm.name} already has a token there"
             home_token.remove!
           else
-            home_token.city.reservations { |r| @log << "Reservation #{r}" }
-            @log << "#{major.name}'s home token in #{home_token.city.hex.name} is replaced with an #{ndm.name} token"
-            ndm_replacement = exchange_tokens.first
-            home_token.swap!(ndm_replacement)
-            exchange_tokens.delete(ndm_replacement)
+            replace_token(major, home_token, exchange_tokens)
           end
         else
           hex = hex_by_id(major.coordinates)
@@ -325,13 +321,10 @@ module Engine
             t.remove!
           end
         end
-        remaining_tokens = major.tokens.select(&:city).dup
+        remaining_tokens = major.tokens.select(&:city).reject { |t| t == home_token }.dup
         if remaining_tokens.size <= exchange_tokens.size
-          remaining_tokens.each do |t|
-            @log << "#{major.name}'s token in #{t.city.hex.name} is replaced with an #{ndm.name} token"
-            t.swap!(exchange_tokens.first)
-            exchange_tokens.delete(exchange_tokens.first)
-          end
+          remaining_tokens.each { |t| replace_token(major, t, exchange_tokens) }
+          @merged_cities_to_select = []
         else
           @merged_cities_to_select = remaining_tokens
         end
@@ -492,6 +485,15 @@ module Engine
         share.owner.shares_by_corporation[major].delete(share)
         @neutral.shares_by_corporation[major] << share
         share.owner = @neutral
+      end
+
+      def replace_token(major, major_token, exchange_tokens)
+        city = major_token.city
+        @log << "#{major.name}'s token in #{city.hex.name} is replaced with an #{ndm.name} token"
+        ndm_replacement = exchange_tokens.first
+        major_token.remove!
+        city.place_token(ndm, ndm_replacement, check_tokenable: false)
+        exchange_tokens.delete(ndm_replacement)
       end
     end
   end
