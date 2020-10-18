@@ -3,6 +3,7 @@
 require 'game_manager'
 require 'user_manager'
 require 'lib/settings'
+require 'lib/notification'
 require 'view/game_row'
 require 'view/logo'
 require 'view/form'
@@ -39,6 +40,7 @@ module View
         when :profile
           ['Profile Settings', [
             render_notifications(setting_for(:notifications)),
+            render_desktop_notifications(setting_for(:desktop_notifications)),
             h('div#settings__colors', [
               render_logo_color(setting_for(:red_logo)),
               h(:div, [
@@ -119,6 +121,18 @@ module View
           id: :notifications,
           type: :checkbox,
           attrs: { checked: checked },
+        ),
+      ])
+    end
+
+    def render_desktop_notifications(checked = false)
+      h('div#settings__desktop_notifications', [
+        render_input(
+          'Allow Desktop Turn and Message Notifications while in game',
+          id: :desktop_notifications,
+          type: :checkbox,
+          attrs: { checked: checked },
+          on: { change: -> { Lib::Notification.ask_permission } },
         ),
       ])
     end

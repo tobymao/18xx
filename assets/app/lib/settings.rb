@@ -20,6 +20,7 @@ module Lib
 
     SETTINGS = {
       notifications: true,
+      desktop_notifications: false,
       red_logo: false,
       bg: DARK ? '#000000' : '#ffffff',
       bg2: DARK ? '#dcdcdc' : '#d3d3d3',
