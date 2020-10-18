@@ -65,7 +65,7 @@ module Engine
       end
 
       def stock_round
-        Round::Stock.new(self, [
+        Round::G1828::Stock.new(self, [
           Step::DiscardTrain,
           Step::G1828::BuySellParShares,
         ])
