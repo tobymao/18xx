@@ -754,7 +754,9 @@ module Engine
             "H5",
             "I6",
             "N9",
-            "P9",
+            "P9"
+         ],
+         "upgrade=cost:120,terrain:mountain;icon=image:18_al/coal":[
             "F5"
          ],
          "upgrade=cost:120,terrain:mountain;border=edge:4,type:impassable":[
