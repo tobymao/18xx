@@ -15,10 +15,9 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>18MEX is now in alpha!</p>
         <p>18 Los Angeles by Tony Fryer is now in alpha! It is based on 1846, and plays 2-5 players. Learn more on the <a href='https://traxx-denver.com/games/'>TraXX</a> website.</p>
         <p>1817 is in super early alpha! Please only play hotseat games with the intent to find and report bugs, there are many.</p>
-        <p>18MS is now in production!</p>
-        <p>1846 2p Variant is now in beta!</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
         If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other
@@ -60,7 +59,7 @@ module View
     def render_introduction
       message = <<~MESSAGE
         <p>18xx.games is a website where you can play async or real-time 18xx games (based on the system originally devised by the brilliant Francis Tresham)!
-        <p>Right now, 1836Jr30, 1846, 1882, 1889, 18AL, 18Chesapeake, 18GA, 18MS, and 18TN are implemented.
+        <p>Right now, 1817, 1836Jr30, 1846, 1882, 1889, 18AL, 18Chesapeake, 18GA, 18 Los Angeles, 18MEX, 18MS, and 18TN are implemented.</br>
         If you are new to 18xx games then 1889, 18Chesapeake, or 18MS are good games to begin with.</p>
 
         <p>You can play locally with hot seat mode without an account. If you want to play multiplayer, you'll need to create an account.</p>
