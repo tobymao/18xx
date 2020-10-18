@@ -92,6 +92,9 @@ module Engine
         terrain = old_tile.terrain
         cost =
           if free
+            # call for the side effect of deleting a completed border cost
+            border_cost(tile, entity)
+
             extra_cost
           else
             border, border_types = border_cost(tile, entity)
