@@ -260,11 +260,11 @@ module Engine
           p.shares_of(major).dup.each do |s|
             next unless s
 
-            share_pool.move_share(s, @neutral)
+            remove_share(major, s)
             if s.president
               # Rule 5d: Give owner of presidency share (if any) the reserved share
               # Might trigger presidency change in NdM
-              share_pool.buy_shares(major.shares[0].player, ndm_merge_share, exchange: :free, exchange_price: 0)
+              @share_pool.buy_shares(major.shares[0].player, ndm_merge_share, exchange: :free, exchange_price: 0)
             else
               bank.spend(refund, p) if refund.positive?
               refund_count += 1
@@ -417,7 +417,7 @@ module Engine
         @log << "-- Minor #{minor.name} merges into #{major.name} who receives the treasury of #{treasury} --"
 
         share.buyable = true
-        share_pool.buy_shares(minor.player, share, exchange: :free, exchange_price: 0)
+        @share_pool.buy_shares(minor.player, share, exchange: :free, exchange_price: 0)
 
         hexes.each do |hex|
           hex.tile.cities.each do |city|
@@ -467,6 +467,12 @@ module Engine
         # Auto merge single if it is non-floated
         candidate = @mergable_candidates.first
         merge_major(candidate) if @mergable_candidates.one? && !candidate.floated?
+      end
+
+      def remove_share(major, share)
+        share.owner.shares_by_corporation[major].delete(share)
+        @neutral.shares_by_corporation[major] << share
+        share.owner = @neutral
       end
     end
   end
