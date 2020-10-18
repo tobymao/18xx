@@ -29,9 +29,10 @@ module Engine
       end
 
       def process_lay_tile(action)
+        tile_ability = ability(action.entity)
         lay_tile(action, spender: action.entity.owner)
-        check_connect(action)
-        ability(action.entity).use!
+        check_connect(action, tile_ability)
+        tile_ability.use!
       end
 
       def available_hex(entity, hex)
@@ -59,9 +60,8 @@ module Engine
         ability || entity.abilities(:tile_lay, 'track')
       end
 
-      def check_connect(action)
+      def check_connect(action, tile_ability)
         company = action.entity
-        tile_ability = ability(company)
         hex_ids = tile_ability.hexes
         return if !tile_ability&.connect || hex_ids.size < 2
 
