@@ -35,16 +35,23 @@ def run_game(game, actions = nil)
   data
 end
 
-def validate_all()
+def validate_all(title = nil)
   $count = 0
   $total = 0
   $total_time = 0
   page = []
   data = {}
-  DB[:games].order(:id).where(Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished]).select(:id).paged_each(rows_per_fetch: 100) do |game|
+
+  where_args = {Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished]}
+  where_args[:title] = title if title
+
+
+  DB[:games].order(:id).where(**where_args).select(:id).paged_each(rows_per_fetch: 100) do |game|
     page << game
     if page.size >= 100
-      games = Game.eager(:user, :players, :actions).where(id: page.map { |p| p[:id] }).all
+      where_args2 = {id: page.map { |p| p[:id] }}
+      where_args2[:title] = title if title
+      games = Game.eager(:user, :players, :actions).where(**where_args2).all
       _ = games.each do |game|
         data[game.id]=run_game(game)
       end
@@ -52,7 +59,10 @@ def validate_all()
     end
   end
 
-  games = Game.eager(:user, :players, :actions).where(id: page.map { |p| p[:id] }).all
+  where_args3 = {id: page.map { |p| p[:id] }}
+  where_args3[:title] = title if title
+
+  games = Game.eager(:user, :players, :actions).where(**where_args3).all
   _ = games.each do |game|
     data[game.id]=run_game(game)
   end
@@ -91,4 +101,16 @@ def revalidate_broken(filename)
   end.compact.to_h
   data['updated_summary']={'failed':$count, 'total':$total, 'total_time':$total_time, 'avg_time':$total_time / $total}
   File.write("revalidate.json", JSON.pretty_generate(data))
+end
+
+def pin_games(pin_version, game_ids)
+  game_ids.each do |id|
+    data = Game[id]
+    if (pin = data.settings['pin'])
+      puts "Game #{id} already pinned to #{pin}"
+    else
+      data.settings['pin'] = pin_version
+    end
+    data.save
+  end
 end
