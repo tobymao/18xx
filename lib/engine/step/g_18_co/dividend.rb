@@ -7,8 +7,11 @@ module Engine
     module G18CO
       class Dividend < Dividend
         def share_price_change(entity, revenue = 0)
-          @log << 'TODO: implement multi-jump'
-          super
+          return { share_direction: :left, share_times: 1 } unless revenue.positive?
+
+          return { share_direction: :right, share_times: 1 } unless revenue >= entity.share_price.price * 2
+
+          { share_direction: %i[right up], share_times: [1, 1] }
         end
       end
     end

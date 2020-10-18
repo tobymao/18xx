@@ -38,7 +38,7 @@ module View
           button = h('td.no_padding', [h(:button, { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
           direction =
             if option[:share_direction]
-              "#{option[:share_times]} #{option[:share_direction]}"
+              Array(option[:share_direction]).map.with_index { |dir, i| "#{option[:share_times][i]} #{dir}" }.join(', ')
             else
               'None'
             end
