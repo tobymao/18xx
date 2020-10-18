@@ -11,7 +11,7 @@ module Engine
         end
 
         def num_shares_bought(corporation)
-          @current_actions.size { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation == corporation }
+          @current_actions.count { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation == corporation }
         end
       end
     end
