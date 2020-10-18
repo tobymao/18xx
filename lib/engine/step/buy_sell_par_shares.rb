@@ -83,7 +83,7 @@ module Engine
         corporation = bundle.corporation
         entity.cash >= bundle.price && can_gain?(entity, bundle) &&
           !@players_sold[entity][corporation] &&
-          (can_buy_multiple?(corporation) || !bought?)
+          (can_buy_multiple?(entity, corporation) || !bought?)
       end
 
       def must_sell?(entity)
@@ -165,7 +165,7 @@ module Engine
         end
       end
 
-      def can_buy_multiple?(corporation)
+      def can_buy_multiple?(_entity, corporation)
         corporation.buy_multiple? &&
          @current_actions.none? { |x| x.is_a?(Action::Par) } &&
          @current_actions.none? { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation != corporation }

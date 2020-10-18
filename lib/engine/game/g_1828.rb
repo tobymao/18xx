@@ -34,6 +34,8 @@ module Engine
       GAME_IMPLEMENTER = 'Chris Rericha based on 1828 by J C Lawrence'
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1828.Games'
 
+      MULTIPLE_BUY_COLORS = %i[orange].freeze
+
       MUST_BID_INCREMENT_MULTIPLE = true
       MIN_BID_INCREMENT = 5
 
@@ -63,9 +65,9 @@ module Engine
       end
 
       def stock_round
-        Round::Stock.new(self, [
+        Round::G1828::Stock.new(self, [
           Step::DiscardTrain,
-          Step::BuySellParShares,
+          Step::G1828::BuySellParShares,
         ])
       end
 
