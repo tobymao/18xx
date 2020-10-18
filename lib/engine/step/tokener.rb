@@ -36,7 +36,7 @@ module Engine
 
         @game.game_error('Token is already used') if token.used
 
-        token, ability = adjust_token_price_ability!(entity, token, hex)
+        token, ability = adjust_token_price_ability!(entity, token, hex, city)
         entity.remove_ability(ability) if ability
         free = !token.price.positive?
         city.place_token(entity, token, free: free)
@@ -71,7 +71,7 @@ module Engine
         prices.compact.min
       end
 
-      def adjust_token_price_ability!(entity, token, hex)
+      def adjust_token_price_ability!(entity, token, hex, city)
         if (teleport = @round.teleported?(entity))
           token.price = 0
           return [token, teleport]
@@ -79,6 +79,7 @@ module Engine
 
         entity.abilities(:token) do |ability, _|
           next if ability.hexes.any? && !ability.hexes.include?(hex.id)
+          next if ability.city && ability.city != city.index
 
           # check if this is correct or should be a corporation
           token = Engine::Token.new(entity) if ability.extra
