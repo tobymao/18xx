@@ -248,7 +248,12 @@ module View
       end
 
       def share_number_str(number)
-        number.zero? ? '' : number.to_s
+        return '' if number.zero?
+
+        result = number.to_s
+        return result unless @corporation.fraction_shares
+
+        result.index('.') ? result : "#{result}.0"
       end
 
       def render_shares
@@ -275,18 +280,27 @@ module View
             flags = (president ? '*' : '') + (at_limit ? 'L' : '')
             h('tr.player', [
               h("td.left.name.nowrap.#{president ? 'president' : ''}", player.name),
-              h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{num_shares}"),
+              h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{share_number_str(num_shares)}"),
               did_sell ? h('td.italic', 'Sold') : '',
             ])
           end
 
+        num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
         pool_rows = [
           h('tr.ipo', [
             h('td.left', @game.class::IPO_NAME),
-            h('td.right', shares_props, share_number_str(@corporation.num_ipo_shares)),
+            h('td.right', shares_props, num_ipo_shares),
             h('td.padded_number', share_price_str(@corporation.par_price)),
           ]),
         ]
+
+        if @corporation.reserved_shares.any?
+          pool_rows <<
+            h('tr.ipo_reserved', [
+              h('td.left', @game.class::IPO_RESERVED_NAME),
+              h('td.right', shares_props, share_number_str(@corporation.num_ipo_reserved_shares)),
+            ])
+        end
 
         market_tr_props = {
           style: {
@@ -341,7 +355,7 @@ module View
         h('table.center', [
           h(:tbody, [
             h('tr.reserved', [
-              h('td.left', bold, "#{@game.class::IPO_RESERVED_NAME}:"),
+              h('td.left', bold, "#{@game.class::IPO_RESERVED_NAME} shares:"),
               h('td.right', @corporation.reserved_shares.map { |s| "#{s.percent}%" }.join(', ')),
             ]),
           ]),

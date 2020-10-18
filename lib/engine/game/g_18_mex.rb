@@ -16,7 +16,7 @@ module Engine
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MEX'
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
-      IPO_RESERVED_NAME = 'Trade-in shares'
+      IPO_RESERVED_NAME = 'Trade-in'
 
       STANDARD_GREEN_CITY_TILES = %w[14 15 619].freeze
       CURVED_YELLOW_CITY = %w[5 6].freeze

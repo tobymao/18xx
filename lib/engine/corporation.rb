@@ -23,7 +23,7 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :share_price, :par_via_exchange
-    attr_reader :capitalization, :companies, :min_price, :name, :full_name
+    attr_reader :capitalization, :companies, :min_price, :name, :full_name, :fraction_shares
     attr_writer :par_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
@@ -37,6 +37,7 @@ module Engine
       end
 
       shares.each { |share| shares_by_corporation[self] << share }
+      @fraction_shares = shares.find { |s| (s.percent % 10).positive? }
       @presidents_share = shares.first
       @second_share = shares[1]
 
@@ -97,6 +98,10 @@ module Engine
 
     def reserved_shares
       shares_by_corporation[self].reject(&:buyable)
+    end
+
+    def num_ipo_reserved_shares
+      reserved_shares.sum(&:percent) / share_percent
     end
 
     def num_player_shares
