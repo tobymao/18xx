@@ -260,11 +260,11 @@ module Engine
           p.shares_of(major).dup.each do |s|
             next unless s
 
-            share_pool.move_share(s, @neutral)
+            remove_share(major, s)
             if s.president
               # Rule 5d: Give owner of presidency share (if any) the reserved share
               # Might trigger presidency change in NdM
-              share_pool.buy_shares(major.shares[0].player, ndm_merge_share, exchange: :free, exchange_price: 0)
+              @share_pool.buy_shares(major.shares[0].player, ndm_merge_share, exchange: :free, exchange_price: 0)
             else
               bank.spend(refund, p) if refund.positive?
               refund_count += 1
@@ -275,10 +275,14 @@ module Engine
           end
         end
 
-        # Rule 5f: Handle tokens. NdM gets two exchange tokens If company merge has put out its home token,
-        # this will be swapped (for free) with the first exchange token. If company has tokened more,
-        # NdM president get to choose which one to keep, and this is swapped (for free) with the second
-        # exchange token, and the remaining tokens for the merged corporation is removed from the board.
+        # Rule 5f: Handle tokens. NdM gets two exchange tokens. The first exchange token will be used
+        # to replace the home token, even if merged company isn't floated. This placement is free.
+        # Note! If NdM already have a token in that hex, the home token is just removed.
+        #
+        # If company has tokened more, NdM president get to choose which one to keep, and this is swapped
+        # (for free) with the second exchange token, and the remaining tokens for the merged corporation
+        # is removed from the board.
+        #
         # Any remaining exchange tokens will be added to the charter, and have a cost of $80.
 
         (1..2).each do |_|
@@ -288,16 +292,26 @@ module Engine
         exchange_tokens = [ndm.tokens[-2], ndm.tokens.last]
 
         home_token = major.tokens.first
-        if major.floated? && home_token.city
-          ndm_replacement = exchange_tokens.first
+        if home_token.city
           home_token.city.remove_reservation!(major)
           if ndm.tokens.find { |t| t.city == home_token.city }
             @log << "#{major.name}'s home token is removed as #{ndm.name} already has a token there"
             home_token.remove!
           else
-            home_token.city.reservations { |r| @log << "Reservation #{r}" }
-            @log << "#{major.name}'s home token in #{home_token.city.hex.name} is replaced with an #{ndm.name} token"
-            home_token.swap!(ndm_replacement)
+            replace_token(major, home_token, exchange_tokens)
+          end
+        else
+          hex = hex_by_id(major.coordinates)
+          tile = hex.tile
+          cities = tile.cities
+          city = cities.find { |c| c.reserved_by?(major) } || cities.first
+          city.remove_reservation!(major)
+          if ndm.tokens.find { |t| t.city == city }
+            @log << "#{ndm.name} does not place token in #{city.hex.name} as it already has a token there"
+          else
+            @log << "#{ndm.name} places an exchange token in #{major.name}'s home location in #{city.hex.name}"
+            ndm_replacement = exchange_tokens.first
+            city.place_token(ndm, ndm_replacement)
             exchange_tokens.delete(ndm_replacement)
           end
         end
@@ -307,13 +321,10 @@ module Engine
             t.remove!
           end
         end
-        remaining_tokens = major.tokens.select(&:city).dup
+        remaining_tokens = major.tokens.select(&:city).reject { |t| t == home_token }.dup
         if remaining_tokens.size <= exchange_tokens.size
-          remaining_tokens.each do |t|
-            @log << "#{major.name}'s token in #{t.city.hex.name} is replaced with an #{ndm.name} token"
-            t.swap!(exchange_tokens.first)
-            exchange_tokens.delete(exchange_tokens.first)
-          end
+          remaining_tokens.each { |t| replace_token(major, t, exchange_tokens) }
+          @merged_cities_to_select = []
         else
           @merged_cities_to_select = remaining_tokens
         end
@@ -417,7 +428,7 @@ module Engine
         @log << "-- Minor #{minor.name} merges into #{major.name} who receives the treasury of #{treasury} --"
 
         share.buyable = true
-        share_pool.buy_shares(minor.player, share, exchange: :free, exchange_price: 0)
+        @share_pool.buy_shares(minor.player, share, exchange: :free, exchange_price: 0)
 
         hexes.each do |hex|
           hex.tile.cities.each do |city|
@@ -467,6 +478,22 @@ module Engine
         # Auto merge single if it is non-floated
         candidate = @mergable_candidates.first
         merge_major(candidate) if @mergable_candidates.one? && !candidate.floated?
+      end
+
+      # Remove share from merged major by moving them to the neutral
+      def remove_share(major, share)
+        share.owner.shares_by_corporation[major].delete(share)
+        @neutral.shares_by_corporation[major] << share
+        share.owner = @neutral
+      end
+
+      def replace_token(major, major_token, exchange_tokens)
+        city = major_token.city
+        @log << "#{major.name}'s token in #{city.hex.name} is replaced with an #{ndm.name} token"
+        ndm_replacement = exchange_tokens.first
+        major_token.remove!
+        city.place_token(ndm, ndm_replacement, check_tokenable: false)
+        exchange_tokens.delete(ndm_replacement)
       end
     end
   end
