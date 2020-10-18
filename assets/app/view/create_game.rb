@@ -42,7 +42,8 @@ module View
       description = []
       description += [h(:a, { attrs: { href: '/signup' } }, 'Signup'), ' or ',
                       h(:a, { attrs: { href: '/login' } }, 'login'), ' to play multiplayer.'] unless @user
-      description << h(:div, 'If you are new to 18xx games then 1889 or 18Chesapeake are good games to begin with.')
+      description << h(:div,
+                       'If you are new to 18xx games then 1889, 18Chesapeake, or 18MS are good games to begin with.')
       render_form('Create New Game', inputs, description)
     end
 
