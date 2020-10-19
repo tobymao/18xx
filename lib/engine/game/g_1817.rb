@@ -124,6 +124,8 @@ module Engine
           shares = 8.times.map { |i| Share.new(corporation, percent: 10, index: i + 1) }
         end
 
+        corporation.max_ownership_percent = 60 unless size == 2
+
         shares.each do |share|
           corporation.shares_by_corporation[corporation] << share
           @_shares[share.id] = share
@@ -155,6 +157,7 @@ module Engine
           game_error('Cannot convert 10 share corporation')
         end
 
+        corporation.max_ownership_percent = 60
         shares.each { |share| corporation.share_holders[share.owner] += share.percent }
 
         new_shares.each do |share|
