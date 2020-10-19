@@ -654,6 +654,7 @@ module Engine
       "name": "2+",
       "distance": 2,
       "price": 100,
+      "obsolete_on": "4",
       "num": 4
     },
     {

@@ -17,18 +17,30 @@ module Engine
             .sort
         end
 
+        def setup
+          super
+          skip_steps
+          next_entity! if finished?
+        end
+
         def after_process(action)
           return if action.free?
           return if active_step
 
           @converted = nil
           @game.players.each(&:unpass!)
-          next_entity_index!
+          next_entity!
+        end
 
+        def next_entity!
+          next_entity_index! if @entities.any?
           return if @entity_index.zero?
 
           @steps.each(&:unpass!)
           @steps.each(&:setup)
+
+          skip_steps
+          next_entity! if finished?
         end
 
         def entities
