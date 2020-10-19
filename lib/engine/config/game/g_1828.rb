@@ -88,9 +88,9 @@ module Engine
         "2": 1,
         "3": 3,
         "4": 4,
-        "6": 16,
-        "7": 4,
+        "7": 6,
         "8": 16,
+        "9": 16,
         "14": 6,
         "15": 4,
         "16": 1,
@@ -714,7 +714,7 @@ module Engine
             "value": 250,
             "revenue": 40,
             "desc": "When purchased during the private auction comes with the 20% director's certificate and a 10% share certificate of the matching corporation. The buying player must immediately set the par price for the matching corporation to any yellow par price. Cannot be purchased by a corporation. Closes when the matching corporation acquires a train.",
-            "sym": "OS&H",
+            "sym": "OSH",
             "abilities": [
                 {
                     "type": "shares",
@@ -894,7 +894,7 @@ module Engine
             "color": "lightCoral"
         },
         {
-            "sym": "OS&H",
+            "sym": "OSH",
             "name": "Ontario, Simcoe & Huron",
             "logo": "1828/OSH",
             "tokens": [
@@ -1065,13 +1065,13 @@ module Engine
                 "J12",
                 "K17"
             ],
-            "border=edge:0,type:water": [
+            "border=edge:0,type:impassable": [
                 "C17"
             ],
-            "border=edge:2,type:water;border=edge:3,type:water": [
+            "border=edge:2,type:impassable;border=edge:3,type:impassable": [
                 "D16"
             ],
-            "border=edge:2,type:water": [
+            "border=edge:2,type:impassable": [
                 "F12"
             ],
             "upgrade=cost:80,terrain:water": [
@@ -1083,10 +1083,10 @@ module Engine
                 "I21",
                 "J2"
             ],
-            "border=edge:5,type:water;upgrade=cost:80,terrain:water": [
+            "border=edge:5,type:impassable;upgrade=cost:80,terrain:water": [
                 "E11"
             ],
-            "border=edge:2,type:water;upgrade=cost:120,terrain:mountain": [
+            "border=edge:2,type:impassable;upgrade=cost:120,terrain:mountain": [
                 "C21"
             ],
             "upgrade=cost:120,terrain:mountain": [
@@ -1108,7 +1108,7 @@ module Engine
                 "I3",
                 "J18"
             ],
-            "city=revenue:0;border=edge:5,type:water": [
+            "city=revenue:0;border=edge:5,type:impassable": [
                 "B20"
             ],
             "city=revenue:0": [
@@ -1141,7 +1141,7 @@ module Engine
             ]
         },
         "yellow": {
-            "city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;upgrade=cost:80,terrain:water;border=edge:5,type:water": [
+            "city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;upgrade=cost:80,terrain:water;border=edge:5,type:impassable": [
                 "C15"
             ],
             "city=revenue:0;city=revenue:0;label=OO;upgrade=cost:80,terrain:water": [
