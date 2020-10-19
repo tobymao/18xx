@@ -36,14 +36,14 @@ module Engine
         end
 
         def can_buy_any?(entity)
-          can_buy?(entity, corporation.shares[0]) ||
-            can_buy?(entity, @game.share_pool.shares_by_corporation[corporation][0])
+          can_buy?(entity, corporation.shares[0])
         end
 
         def can_buy?(entity, bundle)
           return unless bundle
 
           corporation == bundle.corporation &&
+            bundle.owner != @game.bank &&
             entity.cash >= bundle.price &&
             can_gain?(entity, bundle)
         end

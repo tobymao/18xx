@@ -12,6 +12,7 @@ module Engine
 
         def setup
           @paid_loans = {}
+          @game.payout_companies
           after_setup
         end
 

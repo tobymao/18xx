@@ -127,7 +127,12 @@ module Engine
           end
 
           @game.reset_corporation(target)
+
           @round.entities.delete(target)
+
+          # Deleting the entity changes turn order, restore it.
+          @round.goto_entity!(corporation) unless @round.entities.empty?
+
           @round.converted = corporation
         end
 
