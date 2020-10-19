@@ -19,7 +19,7 @@ module View
           actions = @round.actions_for(entity)
           auctioning_corporation = @step.auctioning_corporation if @step.respond_to?(:auctioning_corporation)
           corporation_to_merge_into = @step.merge_target if @step.respond_to?(:merge_target)
-          if @step.respond_to?(&:mergeable) && @step.mergeable(entity).one?
+          if @step.respond_to?(:mergeable) && @step.mergeable(entity).one?
             @selected_corporation = @step.mergeable(entity)[0]
           end
           children = []
