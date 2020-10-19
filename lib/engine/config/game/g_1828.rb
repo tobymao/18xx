@@ -877,6 +877,7 @@ module Engine
                 100
             ],
             "coordinates": "G23",
+            "city": 1,
             "color": "tan"
         },
         {
@@ -1020,7 +1021,10 @@ module Engine
             "name": "D",
             "distance": 999,
             "price": 900,
-            "num": 20
+            "num": 20,
+            "events":[
+                {"type": "remove_corporations"}
+            ]
         }
     ],
     "hexes": {

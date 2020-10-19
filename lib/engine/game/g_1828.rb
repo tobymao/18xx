@@ -50,7 +50,9 @@ module Engine
         'blue_par' => ['Blue phase pars',
                        '$105 par price is now available'],
         'brown_par' => ['Brown phase pars',
-                        '$120 par price is now available']
+                        '$120 par price is now available'],
+        'remove_corporations' => ['Non-parred corporations removed',
+                                  'All non-parred corporations are removed. Blocking tokens placed in home stations']
       ).freeze
 
       def self.title
@@ -117,6 +119,16 @@ module Engine
         stock_market.enable_par_price(120)
       end
 
+      def event_remove_corporations!
+        @log << "-- Event: #{EVENTS_TEXT['remove_corporations'][1]}. --"
+        @corporations.reject(&:ipoed).each do |corporation|
+          place_home_token(corporation)
+          place_second_home_token(corporation) if corporation.name == 'ERIE'
+          @log << "Removing #{corporation.name}"
+          @corporations.delete(corporation)
+        end
+      end
+
       private
 
       def remove_extra_private_companies
@@ -136,6 +148,13 @@ module Engine
         to_remove = @depot.trains.reverse.find { |train| train.name == '5' }
         @depot.remove_train(to_remove)
         @log << "Removing #{to_remove.name} train"
+      end
+
+      def place_second_home_token(corporation)
+        token = corporation.find_token_by_type
+        hex = hex_by_id(corporation.coordinates)
+        @log << "#{corporation.name} places a second token on #{hex.name}"
+        hex.tile.cities[1].place_token(corporation, token, check_tokenable: false)
       end
     end
   end
