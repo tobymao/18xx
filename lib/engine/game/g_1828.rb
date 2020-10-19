@@ -39,8 +39,9 @@ module Engine
       MUST_BID_INCREMENT_MULTIPLE = true
       MIN_BID_INCREMENT = 5
 
-      # TODO: add end game for full OR set in purple phase
-      GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_round }.freeze
+      HOME_TOKEN_TIMING = :operate
+
+      GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_round, custom: :one_more_full_or_set }.freeze
 
       SELL_BUY_ORDER = :sell_buy_sell
 
@@ -127,6 +128,10 @@ module Engine
           @log << "Removing #{corporation.name}"
           @corporations.delete(corporation)
         end
+      end
+
+      def custom_end_game_reached?
+        @phase.current[:name] == 'Purple'
       end
 
       private

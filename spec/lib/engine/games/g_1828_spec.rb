@@ -17,11 +17,11 @@ module Engine
       game.round.setup
     end
 
-    def move_to_or!
-      # Move the game into an OR
-
-      next_round! until game.round.is_a?(Round::Operating)
-
+    def next_or!
+      loop do
+        next_round!
+        break if game.round.is_a?(Round::Operating)
+      end
       game.round
     end
 
@@ -51,12 +51,24 @@ module Engine
         erie = game.corporations.find { |c| c.name == 'ERIE' }
         erie_home_tile = game.hex_by_id(erie.coordinates).tile
 
-        move_to_or!
+        next_or!
         phase.buying_train!(corporation, game.trains.find { |t| t.name == 'D' })
         expect(game.corporations.size).to be(1)
         expect(game.corporations.first).to eq(corporation)
         expect(erie_home_tile.cities[0].tokened_by?(erie)).to be_truthy
         expect(erie_home_tile.cities[1].tokened_by?(erie)).to be_truthy
+      end
+
+      it 'should trigger end game at purple phase' do
+        player_1.cash = 10_000
+        stock_market.set_par(corporation, stock_market.par_prices.first)
+        5.times { game.share_pool.buy_shares(player_1, corporation.shares.first) }
+
+        next_or!
+        %w[3 5 3+D 6 8E D].each do |train_name|
+          phase.buying_train!(corporation, game.trains.find { |t| t.name == train_name })
+        end
+        expect(game.custom_end_game_reached?).to be_truthy
       end
     end
   end
