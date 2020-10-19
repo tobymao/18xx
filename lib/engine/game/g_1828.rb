@@ -51,7 +51,7 @@ module Engine
                        '$105 par price is now available'],
         'brown_par' => ['Brown phase pars',
                         '$120 par price is now available'],
-        'remove_corporations' => ['Unparred corporations removed',
+        'remove_corporations' => ['Non-parred corporations removed',
                                   'All non-parred corporations are removed. Blocking tokens placed in home stations']
       ).freeze
 
