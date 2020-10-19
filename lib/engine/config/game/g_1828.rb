@@ -969,14 +969,16 @@ module Engine
                         "offboard"
                     ],
                     "pay": 3,
-                    "visit": 3
+                    "visit": 3,
+                    "multiplier": 2
                 },
                 {
                     "nodes": [
                         "town"
                     ],
                     "pay": 99,
-                    "visit": 99
+                    "visit": 99,
+                    "multiplier": 2
                 }
             ],
             "price": 350,
@@ -1274,7 +1276,10 @@ module Engine
                 "yellow",
                 "green"
             ],
-            "operating_rounds": 2
+            "operating_rounds": 2,
+            "status": [
+                "can_buy_companies"
+            ]
         },
         {
             "name": "Brown",
@@ -1285,7 +1290,10 @@ module Engine
                 "green",
                 "brown"
             ],
-            "operating_rounds": 3
+            "operating_rounds": 3,
+            "status": [
+                "can_buy_companies"
+            ]
         },
         {
             "name": "Red",
