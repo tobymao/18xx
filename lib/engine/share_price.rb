@@ -27,6 +27,10 @@ module Engine
           %i[red liquidation]
         when /a/
           %i[gray acquisition]
+        when /r/
+          %i[gray repar]
+        when /i/
+          %i[green ignore_one_sale]
         end
 
       SharePrice.new([row, column],

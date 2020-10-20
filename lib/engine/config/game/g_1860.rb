@@ -333,31 +333,31 @@ module Engine
   "market": [
     [
       "0c",
-      "7",
-      "14",
-      "20",
-      "26",
-      "31",
-      "36",
-      "40",
-      "44",
-      "47",
-      "50",
-      "52",
+      "7i",
+      "14i",
+      "20i",
+      "26i",
+      "31i",
+      "36i",
+      "40r",
+      "44r",
+      "47r",
+      "50r",
+      "52r",
       "54p",
-      "56",
+      "56r",
       "58p",
-      "60",
+      "60r",
       "62p",
-      "65",
+      "65r",
       "68p",
-      "71",
+      "71r",
       "74p",
-      "78",
+      "78r",
       "82p",
-      "86",
+      "86r",
       "90p",
-      "95",
+      "95r",
       "100p",
       "105",
       "110",
@@ -367,25 +367,25 @@ module Engine
       "134",
       "142",
       "150",
-      "158",
-      "166",
-      "174",
-      "182",
-      "191",
-      "200",
-      "210",
-      "220",
-      "230",
-      "240",
-      "250",
-      "260",
-      "270",
-      "280",
-      "290",
-      "300",
-      "310",
-      "320",
-      "330",
+      "158i",
+      "166i",
+      "174i",
+      "182i",
+      "191i",
+      "200i",
+      "210i",
+      "220i",
+      "230i",
+      "240i",
+      "250i",
+      "260i",
+      "270i",
+      "280i",
+      "290i",
+      "300i",
+      "310i",
+      "320i",
+      "330i",
       "340e"
     ]
   ],
@@ -469,6 +469,14 @@ module Engine
         100,
         100
       ],
+      "par_range": [
+        74,
+        100
+      ],
+      "repar_range": [
+        40,
+        100
+      ],
       "coordinates": "F2",
       "color": "lightBlue",
       "text_color": "black"
@@ -483,6 +491,14 @@ module Engine
         100,
         100
       ],
+      "par_range": [
+        74,
+        100
+      ],
+      "repar_range": [
+        40,
+        100
+      ],
       "coordinates": "I3",
       "color": "red"
     },
@@ -494,6 +510,14 @@ module Engine
         0,
         40,
         100
+      ],
+      "par_range": [
+        62,
+        82
+      ],
+      "repar_range": [
+        40,
+        82
       ],
       "coordinates": "G7",
       "color": "black"
@@ -507,6 +531,14 @@ module Engine
         40,
         100
       ],
+      "par_range": [
+        62,
+        82
+      ],
+      "repar_range": [
+        40,
+        82
+      ],
       "coordinates": "B4",
       "color": "green"
     },
@@ -517,6 +549,14 @@ module Engine
       "tokens": [
         0,
         40
+      ],
+      "par_range": [
+        58,
+        68
+      ],
+      "repar_range": [
+        40,
+        68
       ],
       "coordinates": "G9",
       "color": "yellow",
@@ -530,6 +570,14 @@ module Engine
         0,
         40
       ],
+      "par_range": [
+        58,
+        68
+      ],
+      "repar_range": [
+        40,
+        68
+      ],
       "coordinates": "L6",
       "color": "pink"
     },
@@ -541,6 +589,14 @@ module Engine
         0,
         40
       ],
+      "par_range": [
+        54,
+        62
+      ],
+      "repar_range": [
+        40,
+        62
+      ],
       "coordinates": "F12",
       "color": "violet"
     },
@@ -551,6 +607,14 @@ module Engine
       "tokens": [
         0,
         40
+      ],
+      "par_range": [
+        54,
+        62
+      ],
+      "repar_range": [
+        40,
+        62
       ],
       "coordinates": "E9",
       "color": "brightGreen"
