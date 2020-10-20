@@ -12,7 +12,7 @@ module Engine
 
         available_actions << 'buy_shares' unless redeemable_shares(entity).empty?
         available_actions << 'sell_shares' unless issuable_shares(entity).empty?
-        available_actions << 'pass' if blocking? && !available_actions.empty?
+        available_actions << 'pass' if blocks? && !available_actions.empty?
 
         available_actions
       end
