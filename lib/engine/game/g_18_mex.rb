@@ -20,6 +20,8 @@ module Engine
 
       IPO_RESERVED_NAME = 'Trade-in'
 
+      TRACK_RESTRICTION = :city_permissive
+
       STANDARD_GREEN_CITY_TILES = %w[14 15 619].freeze
       CURVED_YELLOW_CITY = %w[5 6].freeze
 
