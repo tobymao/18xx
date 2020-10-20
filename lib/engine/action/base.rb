@@ -13,7 +13,7 @@ module Engine
       def self.from_h(h, game)
         entity = game.get(h['entity_type'], h['entity'])
         obj = new(entity, **h_to_args(h, game))
-        obj.user = h['user'] unless h['user'] == entity.owner.name
+        obj.user = h['user'] unless h['user'] == entity.player
         obj
       end
 
