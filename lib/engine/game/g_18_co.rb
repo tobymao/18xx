@@ -103,6 +103,19 @@ module Engine
         end
       end
 
+      def sell_shares_and_change_price(bundle)
+        corporation = bundle.corporation
+        price = corporation.share_price.price
+        was_president = corporation.president?(bundle.owner)
+        @share_pool.sell_shares(bundle)
+
+        return if !was_president && bundle.num_shares == 1
+
+        bundle.num_shares.times { @stock_market.move_down(corporation) }
+
+        log_share_price(corporation, price) if self.class::SELL_MOVEMENT != :none
+      end
+
       private
 
       def route_bonus(route, type)
