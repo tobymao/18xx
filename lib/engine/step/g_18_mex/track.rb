@@ -4,7 +4,7 @@ require_relative '../track'
 
 module Engine
   module Step
-    module G18MEX
+    module G18Mex
       class Track < Track
         ACTIONS = %w[lay_tile pass].freeze
         MEXICO_CITY_MAIN_HEX = 'O10'

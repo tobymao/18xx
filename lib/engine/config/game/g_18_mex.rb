@@ -7,11 +7,11 @@
 module Engine
   module Config
     module Game
-      module G18MEX
+      module G18Mex
         JSON = <<-'DATA'
 {
    "filename":"18_mex",
-   "modulename":"18MEX",
+   "modulename":"18Mex",
    "currencyFormatStr":"$%d",
    "bankCash":9000,
    "certLimit":{

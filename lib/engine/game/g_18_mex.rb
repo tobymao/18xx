@@ -6,8 +6,8 @@ require_relative 'base'
 require_relative 'company_price_50_to_150_percent'
 module Engine
   module Game
-    class G18MEX < Base
-      load_from_json(Config::Game::G18MEX::JSON)
+    class G18Mex < Base
+      load_from_json(Config::Game::G18Mex::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
       DEV_STAGE = :alpha
@@ -132,23 +132,23 @@ module Engine
       end
 
       def init_share_pool
-        Engine::G18MEX::SharePool.new(self)
+        Engine::G18Mex::SharePool.new(self)
       end
 
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
-          Step::G18MEX::Assign,
+          Step::G18Mex::Assign,
           Step::DiscardTrain,
           Step::BuyCompany,
           Step::HomeToken,
-          Step::G18MEX::Merge,
-          Step::G18MEX::SpecialTrack,
-          Step::G18MEX::Track,
+          Step::G18Mex::Merge,
+          Step::G18Mex::SpecialTrack,
+          Step::G18Mex::Track,
           Step::Token,
           Step::Route,
-          Step::G18MEX::Dividend,
-          Step::G18MEX::SingleDepotTrainBuy,
+          Step::G18Mex::Dividend,
+          Step::G18Mex::SingleDepotTrainBuy,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
@@ -156,7 +156,7 @@ module Engine
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
-          Step::G18MEX::BuySellParShares,
+          Step::G18Mex::BuySellParShares,
         ])
       end
 

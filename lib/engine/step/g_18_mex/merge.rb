@@ -5,7 +5,7 @@ require_relative '../base'
 
 module Engine
   module Step
-    module G18MEX
+    module G18Mex
       class Merge < Base
         ACTIONS = %w[merge pass].freeze
 
