@@ -40,7 +40,7 @@ module View
             return store(:flash_opts, 'Not your turn. Turn on master mode in the tools tab to act for others.')
           end
 
-          action.master_user = @user['name']
+          action.user = @user['name']
         end
 
         game = @game.process_action(action)
