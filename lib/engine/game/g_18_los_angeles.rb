@@ -14,7 +14,7 @@ module Engine
 
       GAME_LOCATION = nil
       GAME_RULES_URL = {
-        '18 Los Angeles Rules' => 'https://drive.google.com/file/d/1G_fLbak96VWQ0Vfvg7-Qh2gXgv7r0BQi/view?usp=sharing',
+        '18 Los Angeles Rules' => 'https://drive.google.com/file/d/1I1G0ly8EpQyJ9hPCqItb2pZPERunKhwh/view',
         '1846 Rules' => 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf',
       }.freeze
       GAME_DESIGNER = 'Anthony Fryer'
