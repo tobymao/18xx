@@ -98,6 +98,7 @@ module Engine
         def can_short?(entity, corporation)
           # check total shorts
           corporation.total_shares > 2 &&
+            @game.shorts(corporation).length < @game.class::MAX_SHORTS &&
             corporation.operated? &&
             entity.num_shares_of(corporation) <= 0 &&
             !corporation.share_price.acquisition? &&

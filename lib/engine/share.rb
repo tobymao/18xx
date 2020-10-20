@@ -8,7 +8,7 @@ module Engine
     include Ownable
 
     attr_accessor :percent, :buyable, :counts_for_limit
-    attr_reader :corporation, :president
+    attr_reader :corporation, :president, :index
 
     def initialize(corporation, owner: nil, president: false, percent: 10, index: 0)
       @corporation = corporation

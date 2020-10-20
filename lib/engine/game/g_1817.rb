@@ -60,6 +60,8 @@ module Engine
 
       LIMIT_TOKENS = 8
 
+      MAX_SHORTS = 10
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
                                                                   'Game Ends 3 ORs after purchase/export'\
                                                                   ' of first 8 train']).freeze
@@ -168,13 +170,21 @@ module Engine
         end
       end
 
+      def shorts(corporation)
+        @_shares.values.select { |share| share.corporation == corporation && share.percent.negative? }
+      end
+
       def short(entity, corporation)
         price = corporation.share_price.price
         percent = corporation.share_percent
 
-        index = corporation.share_holders.values.map(&:abs).sum / 10
-        share = Share.new(corporation, percent: percent, index: index)
-        short = Share.new(corporation, percent: -percent)
+        shares = @_shares.values.select { |share| share.corporation == corporation }
+
+        # Highest share (9 is all the potential 'normal' share certificates)
+        highest_share = [shares.max(&:index).index, 9].max
+
+        share = Share.new(corporation, owner: @share_pool, percent: percent, index: highest_share + 1)
+        short = Share.new(corporation, percent: -percent, index: highest_share + 2)
         short.buyable = false
         short.counts_for_limit = false
 
@@ -186,13 +196,19 @@ module Engine
         corporation.share_holders[entity] -= percent
         entity.shares_by_corporation[corporation] << short
         @share_pool.shares_by_corporation[corporation] << share
+        @_shares[share.id] = share
+        @_shares[short.id] = short
       end
 
       def unshort(entity, bundle)
         share = bundle.shares[0]
         shares = entity.shares_of(bundle.corporation)
+        @_shares.delete(share.id)
         shares.delete(share)
-        shares.delete(shares.find { |s| s.percent == -bundle.percent })
+
+        short = shares.find { |s| s.percent == -bundle.percent }
+        @_shares.delete(short.id)
+        shares.delete(short)
       end
 
       def take_loan(entity, loan)
