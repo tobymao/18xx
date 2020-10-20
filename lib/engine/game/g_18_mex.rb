@@ -418,7 +418,7 @@ module Engine
 
       def handle_mail(entity)
         hex = hex_by_id(entity.coordinates)
-        income = hex.tile.city_towns.first.route_revenue(@phase, entity.trains.first)
+        income = hex.tile.city_towns.first.route_base_revenue(@phase, entity.trains.first)
         @bank.spend(income, entity)
         @log << "#{entity.name} receives #{format_currency(income)} in mail"
       end
