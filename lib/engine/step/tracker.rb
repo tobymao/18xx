@@ -187,6 +187,8 @@ module Engine
         case @game.class::TRACK_RESTRICTION
         when :permissive
           true
+        when :city_permissive
+          @game.game_error('Must be city tile or use new track') if new_tile.cities.none? && !used_new_track
         when :restrictive
           @game.game_error('Must use new track') unless used_new_track
         when :semi_restrictive
