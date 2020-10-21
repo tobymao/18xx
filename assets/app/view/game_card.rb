@@ -22,6 +22,8 @@ module View
         render_header,
         render_body,
       ])
+    rescue StandardError
+      h(:div, "Error rendering game card... clear your local storage: #{@gdata}")
     end
 
     def new?
