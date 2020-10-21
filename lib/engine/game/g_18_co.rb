@@ -41,6 +41,27 @@ module Engine
       # First 3 are Denver, Second 3 are CO Springs
       TILES_FIXED_ROTATION = %w[co1 co2 co3 co5 co6 co7].freeze
 
+      PAR_FLOAT_GROUPS = {
+        20 => %w[X],
+        40 => %w[C B A],
+        50 => %w[B A],
+        60 => %w[A],
+      }.freeze
+
+      PAR_PRICE_GROUPS = {
+        'X' => [75],
+        'C' => [40, 50, 60, 75],
+        'B' => [80, 90, 100, 110],
+        'A' => [120, 135, 145, 160],
+      }.freeze
+
+      PAR_GROUP_FLOATS = {
+        'X' => 20,
+        'C' => 40,
+        'B' => 50,
+        'A' => 60,
+      }.freeze
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_mines' => ['Mines Close', 'Mine tokens removed from board and corporations']
         ).freeze
@@ -85,7 +106,14 @@ module Engine
       def stock_round
         Round::Stock.new(self, [
         Step::DiscardTrain,
-        Step::BuySellParShares,
+        Step::G18CO::BuySellParShares,
+        ])
+      end
+
+      def new_auction_round
+        Round::Auction.new(self, [
+          Step::G18CO::CompanyPendingPar,
+          Step::WaterfallAuction,
         ])
       end
 
@@ -132,6 +160,29 @@ module Engine
         return false if TILES_FIXED_ROTATION.include?(tile.name) && tile.rotation != 0
 
         super
+      end
+
+      # Reduce the list of par prices available to just those corresponding to the corporation group
+      def par_prices(corporation)
+        par_nodes = @stock_market.par_prices
+        available_par_groups = PAR_FLOAT_GROUPS[corporation.float_percent]
+        available_par_prices = PAR_PRICE_GROUPS.values_at(*available_par_groups).flatten
+        par_nodes.select { |par_node| available_par_prices.include?(par_node.price) }
+      end
+
+      # Higher valued par groups require more shares to float. The float percent is adjusted upon parring.
+      def par_change_float_percent(corporation)
+        PAR_PRICE_GROUPS.each do |key, prices|
+          next unless PAR_FLOAT_GROUPS[corporation.float_percent].include?(key)
+          next unless prices.include?(corporation.par_price.price)
+
+          if corporation.float_percent != PAR_GROUP_FLOATS[key]
+            corporation.float_percent = PAR_GROUP_FLOATS[key]
+            @log << "#{corporation.name} now requires #{corporation.float_percent}% to float"
+          end
+
+          break
+        end
       end
 
       private
