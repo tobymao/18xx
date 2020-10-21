@@ -4,7 +4,7 @@ require_relative '../special_track'
 
 module Engine
   module Step
-    module G18MEX
+    module G18Mex
       class SpecialTrack < SpecialTrack
         COPPER_CANYON = '470'
 

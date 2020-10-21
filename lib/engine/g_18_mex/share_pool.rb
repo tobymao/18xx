@@ -3,7 +3,7 @@
 require_relative '../share_pool'
 
 module Engine
-  module G18MEX
+  module G18Mex
     class SharePool < SharePool
       # Put any 5% shares last so that they are only exchanged if they need to make
       # up the 20% needed.

@@ -4,7 +4,7 @@ require_relative '../assign'
 
 module Engine
   module Step
-    module G18MEX
+    module G18Mex
       class Assign < Assign
         ACTIONS = %w[assign].freeze
 
