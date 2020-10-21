@@ -379,7 +379,7 @@ module Engine
       end
 
       def current_entity
-        @round.active_step.current_entity
+        @round.active_step&.current_entity || actions[-1].entity
       end
 
       def active_players
