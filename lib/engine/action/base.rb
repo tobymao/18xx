@@ -8,11 +8,13 @@ module Engine
       include Helper::Type
 
       attr_reader :entity
-      attr_accessor :id
+      attr_accessor :id, :user
 
       def self.from_h(h, game)
         entity = game.get(h['entity_type'], h['entity'])
-        new(entity, **h_to_args(h, game))
+        obj = new(entity, **h_to_args(h, game))
+        obj.user = h['user'] unless h['user'] == entity.player
+        obj
       end
 
       def self.h_to_args(_h, _game)
@@ -37,6 +39,7 @@ module Engine
           'entity' => entity.id,
           'entity_type' => type_s(entity),
           'id' => @id,
+          'user' => @user,
           **args_to_h,
         }.reject { |_, v| v.nil? }
       end
