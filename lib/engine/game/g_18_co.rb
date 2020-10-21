@@ -37,6 +37,9 @@ module Engine
 
       IPO_NAME = 'Treasury'
 
+      # First 3 are Denver, Second 3 are CO Springs
+      TILES_FIXED_ROTATION = %w[co1 co2 co3 co5 co6 co7].freeze
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_mines' => ['Mines Close', 'Mine tokens removed from board and corporations']
         ).freeze
@@ -114,6 +117,12 @@ module Engine
         bundle.num_shares.times { @stock_market.move_down(corporation) }
 
         log_share_price(corporation, price) if self.class::SELL_MOVEMENT != :none
+      end
+
+      def legal_tile_rotation?(_entity, _hex, tile)
+        return false if TILES_FIXED_ROTATION.include?(tile.name) && tile.rotation != 0
+
+        super
       end
 
       private
