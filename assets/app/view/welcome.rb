@@ -24,10 +24,10 @@ module View
         resources in our <a href='https://github.com/tobymao/18xx/wiki'>Wiki!</a>
         </p>
 
-        <a href='https://all-aboardgames.com'>All-Aboard Games</a>,
+        Support our publishers: <a href='https://all-aboardgames.com'>All-Aboard Games</a>,
         <a href='https://www.grandtrunkgames.com'>Grand Trunk Games</a>,
         <a href='https://goldenspikegames.com'>Golden Spike Games</a>,
-        <a href='https://www.gmtgames.com/'>GMT Games</a>.
+        <a href='https://www.gmtgames.com/'>GMT Games</a>,
         and <a href='https://traxx-denver.com/games/'>TraXX</a>.
         </p>
 
