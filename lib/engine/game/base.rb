@@ -166,7 +166,7 @@ module Engine
 
       IPO_NAME = 'IPO'
       IPO_RESERVED_NAME = 'IPO Reserved'
-
+      MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
 
       CACHABLE = [

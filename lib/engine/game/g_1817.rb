@@ -66,6 +66,7 @@ module Engine
                                                                   'Game Ends 3 ORs after purchase/export'\
                                                                   ' of first 8 train']).freeze
 
+      MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
       attr_reader :loan_value, :owner_when_liquidated
 
       def bankruptcy_limit_reached?
@@ -181,7 +182,7 @@ module Engine
         shares = @_shares.values.select { |share| share.corporation == corporation }
 
         # Highest share (9 is all the potential 'normal' share certificates)
-        highest_share = [shares.max(&:index).index, 9].max
+        highest_share = [shares.map(&:index).max, 9].max
 
         share = Share.new(corporation, owner: @share_pool, percent: percent, index: highest_share + 1)
         short = Share.new(corporation, percent: -percent, index: highest_share + 2)
