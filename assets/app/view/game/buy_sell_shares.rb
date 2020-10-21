@@ -38,7 +38,7 @@ module View
           end
         end
 
-        if step.current_actions.include?('short')
+        if step.current_actions.include?('short') && step.can_short?(current_entity, @corporation)
           short = lambda do
             process_action(Engine::Action::Short.new(current_entity, corporation: @corporation))
           end
