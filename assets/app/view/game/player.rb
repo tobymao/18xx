@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require 'lib/settings'
+require 'lib/text'
 require 'view/game/companies'
 
 module View
   module Game
     class Player < Snabberb::Component
       include Lib::Settings
+      include Lib::Text
 
       needs :player
       needs :game
@@ -117,21 +119,36 @@ module View
           h('td.right', td_cert_props, "#{num_certs}/#{cert_limit}"),
         ])
 
-        if @player == @game.priority_deal_player
-          props = {
-            attrs: { colspan: '2' },
-            style: {
-              background: 'salmon',
-              color: 'black',
-              borderRadius: '3px',
-            },
-          }
-          trs << h(:tr, [
-            h('td.center.italic', props, 'Priority Deal'),
-          ])
-        end
+        priority_props = {
+          attrs: { colspan: '2' },
+          style: {
+            background: 'salmon',
+            color: 'black',
+            borderRadius: '3px',
+          },
+        }
+
+        trs << render_priority_deal(priority_props) if @game.class::NEXT_SR_PLAYER_ORDER == :after_last_to_act &&
+                                                       @player == @game.priority_deal_player
+        trs << render_next_sr_position(priority_props) if @game.class::NEXT_SR_PLAYER_ORDER == :first_to_pass &&
+                                                          @game.next_sr_position(@player)
 
         h(:table, trs)
+      end
+
+      def render_priority_deal(priority_props)
+        h(:tr, [
+          h('td.center.italic', priority_props, 'Priority Deal'),
+        ])
+      end
+
+      def render_next_sr_position(priority_props)
+        position = @game.next_sr_position(@player) + 1
+
+        h(:tr, [
+          h(:td, 'Next SR'),
+          h('td.right', position == 1 ? priority_props : nil, ordinal(position)),
+        ])
       end
 
       def render_shares
