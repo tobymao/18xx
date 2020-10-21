@@ -34,7 +34,7 @@ module Engine
       end
 
       def to_h
-        {
+        @_h ||= {
           'type' => type,
           'entity' => entity.id,
           'entity_type' => type_s(entity),
