@@ -119,6 +119,10 @@ module Engine
       # none, one, each
       POOL_SHARE_DROP = :none
 
+      # :after_last_to_act -- player after the last to act goes first. Order remains the same.
+      # :first_to_pass -- players ordered by when they first started passing.
+      NEXT_SR_PLAYER_ORDER = :after_last_to_act
+
       # do tile reservations completely block other companies?
       TILE_RESERVATION_BLOCKS_OTHERS = false
 
@@ -1261,11 +1265,20 @@ module Engine
         end
       end
 
-      def reorder_players
-        player = @players.reject(&:bankrupt)[@round.entity_index]
+      def next_sr_position(entity)
+        player_order = @round.current_entity&.player? ? @round.pass_order : @players
+        player_order.reject(&:bankrupt).index(entity)
+      end
 
-        @players.rotate!(@players.index(player))
-        @log << "#{player.name} has priority deal"
+      def reorder_players
+        case self.class::NEXT_SR_PLAYER_ORDER
+        when :after_last_to_act
+          player = @players.reject(&:bankrupt)[@round.entity_index]
+          @players.rotate!(@players.index(player))
+        when :first_to_pass
+          @players = @round.pass_order if @round.pass_order.any?
+        end
+        @log << "#{@players.first.name} has priority deal"
       end
 
       def new_auction_round

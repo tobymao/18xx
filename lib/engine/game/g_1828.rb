@@ -45,6 +45,8 @@ module Engine
 
       SELL_BUY_ORDER = :sell_buy_sell
 
+      NEXT_SR_PLAYER_ORDER = :first_to_pass
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'green_par' => ['Green phase pars',
                         '$86 and $94 par prices are now available'],
@@ -102,6 +104,10 @@ module Engine
         sm.enable_par_price(79)
 
         sm
+      end
+
+      def init_round_finished
+        @players.rotate!(@round.entity_index)
       end
 
       def event_green_par!
