@@ -106,24 +106,34 @@ module Engine
             receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
           end
 
-          share_price = @game.find_share_price(corporation.share_price.price + target.share_price.price)
+          initial_size = corporation.total_shares
+          new_price =
+            if initial_size == 2
+              corporation.share_price.price + target.share_price.price
+            else
+              (corporation.share_price.price + target.share_price.price) / 2
+            end
+          share_price = @game.find_share_price(new_price)
           price = share_price.price
           @game.stock_market.move(corporation, *share_price.coordinates)
 
           @log << "#{corporation.name} merges with #{target.name} "\
             "at share price #{@game.format_currency(price)} receiving #{receiving.join(', ')}"
 
-          @game.convert(corporation)
-
           owner = corporation.owner
           target_owner = target.owner
 
-          if owner != target_owner
-            owner.spend(price, corporation)
-            share = corporation.shares[0]
-            @log << "#{owner.name} buys a #{share.percent}% share for #{@game.format_currency(price)} "\
-              "and receives the president's share"
-            @game.share_pool.buy_shares(target_owner, share.to_bundle, exchange: :free)
+          if initial_size == 2
+            @game.convert(corporation)
+            if owner != target_owner
+              owner.spend(price, corporation)
+              share = corporation.shares[0]
+              @log << "#{owner.name} buys a #{share.percent}% share for #{@game.format_currency(price)} "\
+                "and receives the president's share"
+              @game.share_pool.buy_shares(target_owner, share.to_bundle, exchange: :free)
+            end
+          else
+            @game.migrate_shares(corporation, target)
           end
 
           @game.reset_corporation(target)
@@ -165,8 +175,17 @@ module Engine
             target.floated? &&
               target.share_price.normal_movement? &&
               target != corporation &&
-              target.total_shares == corporation.total_shares
+              target.total_shares != 10 &&
+              target.total_shares == corporation.total_shares &&
+            # on 5 share merges ensure one player will have at least enough shares to take the presidency
+            (target.total_shares != 5 || merged_max_share_holder(corporation, target) > 40)
           end
+        end
+
+        def merged_max_share_holder(corporation, target)
+          corporation.player_share_holders
+          .merge(target.player_share_holders) { |_key, corp, other| (corp + other) }
+          .values.max
         end
 
         def round_state
