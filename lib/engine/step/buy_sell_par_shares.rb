@@ -162,7 +162,7 @@ module Engine
           @round.pass_order.delete(current_entity)
           current_entity.unpass!
         else
-          @round.pass_order << current_entity unless @round.pass_order.include?(current_entity)
+          @round.pass_order |= [current_entity]
           current_entity.pass!
         end
       end
