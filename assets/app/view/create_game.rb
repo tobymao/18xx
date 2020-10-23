@@ -11,7 +11,7 @@ module View
     needs :num_players, default: 3, store: true
     needs :flash_opts, default: {}, store: true
     needs :user, default: nil, store: true
-    needs :optional_rules_available, default: nil, store: true
+    needs :optional_rules, default: nil, store: true
 
     def render_content
       inputs = [
@@ -106,7 +106,7 @@ module View
           on: { input: enforce_range },
         ),
       ]
-      inputs << render_optional if @optional_rules_available
+      inputs << render_optional if @optional_rules
 
       h(:div, inputs)
     end
@@ -122,12 +122,11 @@ module View
     end
 
     def render_optional
-      return unless @optional_rules_available
+      return unless @optional_rules
 
-      optional_rules = []
-      @optional_rules_available.each do |o_r|
+      children = @optional_rules.map do |o_r|
         label_text = "#{o_r[:short_name]}: #{o_r[:desc]}"
-        optional_rules << h(:li, [render_input(
+        h(:li, [render_input(
           label_text,
           type: 'checkbox',
           id: o_r[:sym],
@@ -136,11 +135,11 @@ module View
           input_style: { float: 'left', margin: '5px' },
         )])
       end
-      store(:optional_rules_available, nil, skip: true) # wipe to prevent rendering on next game creation
+      store(:optional_rules, nil, skip: true) # wipe to prevent rendering on next game creation
 
       h(:div, [
           h(:p, 'Optional Rules:'),
-          h(:ul, { style: { 'list-style': 'none' } }, optional_rules),
+          h(:ul, { style: { 'list-style': 'none' } }, children),
         ])
     end
 
@@ -221,7 +220,7 @@ module View
 
     def update_optional_rules_store
       title = Native(@inputs[:title]).elm.value
-      store(:optional_rules_available, @optional_rules_per_title[title])
+      store(:optional_rules, @optional_rules_per_title[title])
     end
   end
 end
