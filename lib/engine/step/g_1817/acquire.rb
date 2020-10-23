@@ -290,7 +290,6 @@ module Engine
         def settle_shareholders(acquired_corp)
           # Step 9
           if @shareholder_cash.positive?
-            # @todo: how are shorts done?
             per_share = (@shareholder_cash / acquired_corp.total_shares).to_i
             payouts = {}
             @game.players.each do |player|
@@ -298,7 +297,7 @@ module Engine
               next if amount.zero?
 
               payouts[player] = amount
-              @game.bank.spend(amount, player)
+              @game.bank.spend(amount, player, check_positive: false)
             end
 
             if payouts.any?

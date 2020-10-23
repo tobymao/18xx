@@ -52,5 +52,14 @@ module Engine
     def inspect
       "<Share: #{@corporation.id} #{@percent}%>"
     end
+
+    def transfer(new_entity)
+      owner.shares_by_corporation[corporation].delete(self)
+      corporation.share_holders[owner] -= percent
+
+      @owner = new_entity
+      corporation.share_holders[new_entity] += percent
+      new_entity.shares_by_corporation[corporation] << self
+    end
   end
 end

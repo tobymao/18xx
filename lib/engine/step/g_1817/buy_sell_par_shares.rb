@@ -98,7 +98,7 @@ module Engine
         def can_short?(entity, corporation)
           # check total shorts
           corporation.total_shares > 2 &&
-            @game.shorts(corporation).length < @game.class::MAX_SHORTS &&
+            @game.shorts(corporation).length < corporation.total_shares &&
             corporation.operated? &&
             entity.num_shares_of(corporation) <= 0 &&
             !corporation.share_price.acquisition? &&
@@ -185,7 +185,7 @@ module Engine
 
             super
 
-            @game.unshort(entity, bundle) if unshort
+            @game.unshort(entity, bundle.shares[0]) if unshort
           else
             buy_shares(entity, bundle)
             @corporate_action = action

@@ -60,8 +60,6 @@ module Engine
 
       LIMIT_TOKENS = 8
 
-      MAX_SHORTS = 10
-
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
                                                                   'Game Ends 3 ORs after purchase/export'\
                                                                   ' of first 8 train']).freeze
@@ -130,8 +128,7 @@ module Engine
         corporation.max_ownership_percent = 60 unless size == 2
 
         shares.each do |share|
-          corporation.shares_by_corporation[corporation] << share
-          @_shares[share.id] = share
+          add_new_share(share)
         end
       end
 
@@ -153,7 +150,7 @@ module Engine
           shares[0].percent = 40
           new_shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 1) }
         when 5
-          shares.each { |share| share.percent = 10 }
+          shares.each { |share| share.percent = share.percent.positive? ? 10 : -10 }
           shares[0].percent = 20
           new_shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 4) }
         else
@@ -164,15 +161,103 @@ module Engine
         shares.each { |share| corporation.share_holders[share.owner] += share.percent }
 
         new_shares.each do |share|
-          owner = share.owner
-          corporation.share_holders[owner] += share.percent if owner
-          corporation.shares_by_corporation[corporation] << share
-          @_shares[share.id] = share
+          add_new_share(share)
         end
+        new_shares
       end
 
       def shorts(corporation)
         @_shares.values.select { |share| share.corporation == corporation && share.percent.negative? }
+      end
+
+      def migrate_shares(corporation, other)
+        # Migrate shares from a 5 & 5 corporation merger
+        new_shares = convert(corporation)
+        percentage = 10
+
+        shares = @_shares.values.select { |share| share.corporation == other }
+        surviving_shares = @_shares.values.select { |share| share.corporation == corporation }
+        # Highest share (9 is all the potential 'normal' share certificates)
+        highest_share = [surviving_shares.map(&:index).max, 9].max
+
+        shares.each do |share|
+          entity = share.owner
+          entity = corporation if entity == other
+          # convert each 20% in the old company into 10% in the new company
+          (share.percent / 20).abs.times do
+            if share.percent.positive?
+              if new_shares.any?
+                # Use the 'normal' shares where possible until they run out.
+                new_share = new_shares.shift
+                new_share.transfer(entity)
+              else
+                highest_share += 1
+                new_share = Share.new(corporation, owner: entity, percent: percentage, index: highest_share)
+                add_new_share(new_share)
+              end
+            else
+              highest_share += 1
+              short = Share.new(corporation, owner: entity, percent: -percentage, index: highest_share)
+              short.buyable = false
+              short.counts_for_limit = false
+              add_new_share(short)
+            end
+          end
+        end
+
+        max_shares = corporation.player_share_holders.values.max
+
+        # Check cross-short merge problem
+        game_error('At least one player must have more than 20% to allow a merge') if max_shares < 20
+
+        # Find the new president, tie break is the surviving corporation president
+        # This is done before the cancelling to ensure the new president can cancel any shorts
+        majority_share_holders = corporation
+          .player_share_holders
+          .select { |_, p| p == max_shares }
+          .keys
+
+        previous_president = corporation.owner
+
+        if majority_share_holders.none? { |player| player == previous_president }
+          president = majority_share_holders
+            .select { |p| p.percent_of(corporation) >= corporation.presidents_percent }
+            .min_by { |p| @share_pool.distance(previous_president, p) }
+
+          president_share = previous_president.shares_of(corporation).find(&:president)
+          corporation.owner = president
+          @log << "#{president.name} becomes the president of #{corporation.name}"
+          @share_pool.change_president(president_share, previous_president, president)
+        end
+
+        # Consolidate shorts with their share pair (including share pool shares)
+        @_shares
+          .values
+          .select { |share| share.corporation == corporation }
+          .group_by(&:owner)
+          .each do |owner, _shares_|
+          shares = owner.shares_of(corporation)
+          while shares.any? { |s| s.percent.negative? } && shares.any? { |s| s.percent == percentage }
+            share = shares.find { |s| s.percent == percentage }
+            unshort(owner, share)
+          end
+        end
+      end
+
+      def add_new_share(share)
+        owner = share.owner
+        corporation = share.corporation
+        corporation.share_holders[owner] += share.percent if owner
+        owner.shares_by_corporation[corporation] << share
+        @_shares[share.id] = share
+      end
+
+      def remove_share(share)
+        owner = share.owner
+        corporation = share.corporation
+        corporation.share_holders[owner] -= share.percent if owner
+        owner.shares_by_corporation[corporation].delete(share)
+        @_shares.delete(share.id)
       end
 
       def short(entity, corporation)
@@ -185,7 +270,7 @@ module Engine
         highest_share = [shares.map(&:index).max, 9].max
 
         share = Share.new(corporation, owner: @share_pool, percent: percent, index: highest_share + 1)
-        short = Share.new(corporation, percent: -percent, index: highest_share + 2)
+        short = Share.new(corporation, owner: entity, percent: -percent, index: highest_share + 2)
         short.buyable = false
         short.counts_for_limit = false
 
@@ -193,23 +278,19 @@ module Engine
           "share of #{corporation.name} for #{format_currency(price)}"
 
         @bank.spend(price, entity)
-        corporation.share_holders[@share_pool] += percent
-        corporation.share_holders[entity] -= percent
-        entity.shares_by_corporation[corporation] << short
-        @share_pool.shares_by_corporation[corporation] << share
-        @_shares[share.id] = share
-        @_shares[short.id] = short
+        add_new_share(short)
+        add_new_share(share)
       end
 
-      def unshort(entity, bundle)
-        share = bundle.shares[0]
-        shares = entity.shares_of(bundle.corporation)
-        @_shares.delete(share.id)
-        shares.delete(share)
+      def unshort(entity, share)
+        # Share is the positive share bought to cancel the short.
+        # The share should be owned by the entity
 
-        short = shares.find { |s| s.percent == -bundle.percent }
-        @_shares.delete(short.id)
-        shares.delete(short)
+        shares = entity.shares_of(share.corporation)
+        remove_share(share)
+
+        short = shares.find { |s| s.percent == -share.percent }
+        remove_share(short)
       end
 
       def take_loan(entity, loan)
