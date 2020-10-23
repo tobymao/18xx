@@ -48,7 +48,7 @@ module Engine
           sym: :unlimited_4d,
           short_name: 'Unlimited 4D',
           desc: '7c: Unlimited number of 4D',
-},
+        },
         {
           sym: :hard_rust_t4,
           short_name: 'Hard rust',
