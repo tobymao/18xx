@@ -164,7 +164,7 @@ module View
         end
       end
       game_data[:settings] ||= {}
-      game_data[:settings][:optional_rules_selected] = game_params[:optional_rules_selected]
+      game_data[:settings][:optional_rules_selected] = game_params[:optional_rules_selected] || []
 
       create_hotseat(
         id: Time.now.to_i,

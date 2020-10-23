@@ -302,7 +302,7 @@ module Engine
         @final_turn = nil
         @loading = false
         @strict = strict
-        @optional_rules = optional_rules
+        @optional_rules = optional_rules || []
         @finished = false
         @log = []
         @actions = []

@@ -57,7 +57,7 @@ module View
         id: game_id,
         actions: cursor ? actions.take(cursor) : actions,
         pin: @pin,
-        optional_rules: @game_data.dig('settings', 'optional_rules_selected'),
+        optional_rules: @game_data.dig('settings', 'optional_rules_selected') || [],
       )
       store(:game, @game, skip: true)
     end
