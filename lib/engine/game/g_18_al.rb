@@ -34,10 +34,26 @@ module Engine
       STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
 
       OPTIONAL_RULES = [
-        { sym: :double_yellow_first_or, short_name: 'Extra yellow', desc: '7a: Allow corporation to lay 2 yellows its first OR' },
-        { sym: :LN_home_city_moved, short_name: 'Move L&N home', desc: '7b: Move L&N home city to Decatur - Nashville becomes off board hex' },
-        { sym: :unlimited_4d, short_name: 'Unlimited 4D', desc: '7c: Unlimited number of 4D' },
-        { sym: :hard_rust_t4, short_name: 'Hard rust', desc: '7d: Hard rust for 4 trains' },
+        {
+          sym: :double_yellow_first_or,
+          short_name: 'Extra yellow',
+          desc: '7a: Allow corporation to lay 2 yellows its first OR',
+        },
+        {
+          sym: :LN_home_city_moved,
+          short_name: 'Move L&N home',
+          desc: '7b: Move L&N home city to Decatur - Nashville becomes off board hex',
+        },
+        {
+          sym: :unlimited_4d,
+          short_name: 'Unlimited 4D',
+          desc: '7c: Unlimited number of 4D',
+},
+        {
+          sym: :hard_rust_t4,
+          short_name: 'Hard rust',
+          desc: '7d: Hard rust for 4 trains',
+        },
       ].freeze
 
       ASSIGNMENT_TOKENS = {
@@ -54,18 +70,6 @@ module Engine
 
         setup_company_price_50_to_150_percent
 
-        begin
-          @log << 'Optional rule used in this game:'
-          OPTIONAL_RULES.each do |o_r|
-            next unless @optional_rules&.include?(o_r[:sym])
-
-            @log << " * #{o_r[:short_name]} (#{o_r[:desc]})"
-          end
-          move_ln_corporation if @optional_rules&.include?(:LN_home_city_moved)
-          add_extra_4d if @optional_rules&.include?(:unlimited_4d)
-          change_4t_to_hardrust if @optional_rules&.include?(:hard_rust_t4)
-        end if @optional_rules
-
         @corporations.each do |corporation|
           corporation.abilities(:assign_hexes) do |ability|
             ability.description = "Historical objective: #{get_location_name(ability.hexes.first)}"
@@ -73,6 +77,12 @@ module Engine
         end
 
         @green_m_tile ||= @tiles.find { |t| t.name == '443a' }
+      end
+
+      def setup_optional_rules
+        move_ln_corporation if @optional_rules.include?(:LN_home_city_moved)
+        add_extra_4d if @optional_rules.include?(:unlimited_4d)
+        change_4t_to_hardrust if @optional_rules.include?(:hard_rust_t4)
       end
 
       def south_and_north_alabama_railroad
@@ -198,7 +208,7 @@ module Engine
       end
 
       def tile_lays(entity)
-        return super if !@optional_rules&.include?(:double_yellow_first_or) ||
+        return super if !@optional_rules.include?(:double_yellow_first_or) ||
           !@recently_floated&.include?(entity)
 
         [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]

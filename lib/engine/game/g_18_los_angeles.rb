@@ -25,7 +25,7 @@ module Engine
         {
           sym: :la_title,
           short_name: 'LA Title',
-          desc: 'add a private company which can lay an Open City token (3+ players only)',
+          desc: 'add a private company which can lay an Open City token; 3+ players only',
         },
       ].freeze
 
@@ -61,10 +61,8 @@ module Engine
         1
       end
 
-      def init_companies(_players)
-        companies = super
-        companies.reject! { |c| c.sym == 'LAT' } unless @optional_rules&.include?(:la_title)
-        companies
+      def setup_optional_rules
+        @companies.reject! { |c| c.sym == 'LAT' } unless @optional_rules.include?(:la_title)
       end
 
       def init_hexes(_companies, _corporations)

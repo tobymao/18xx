@@ -193,6 +193,19 @@ module Engine
 
       def setup; end
 
+      def setup_optional_rules; end
+
+      def log_optional_rules
+        return if @optional_rules.empty?
+
+        @log << 'Optional rules used in this game:'
+        self.class::OPTIONAL_RULES.each do |o_r|
+          next unless @optional_rules.include?(o_r[:sym])
+
+          @log << " * #{o_r[:short_name]} (#{o_r[:desc]})"
+        end
+      end
+
       def self.title
         name.split('::').last.slice(1..-1)
       end
@@ -344,6 +357,8 @@ module Engine
 
         init_company_abilities
 
+        setup_optional_rules
+        log_optional_rules
         setup
 
         initialize_actions(actions)
