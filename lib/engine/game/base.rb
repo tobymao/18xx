@@ -197,6 +197,14 @@ module Engine
 
       def setup; end
 
+      def init_optional_rules(optional_rules)
+        optional_rules ||= []
+        self.class::OPTIONAL_RULES.each do |rule|
+          optional_rules.delete(rule[:sym]) if rule[:players] && !rule[:players].include?(@players.size)
+        end
+        optional_rules
+      end
+
       def setup_optional_rules; end
 
       def log_optional_rules
@@ -302,12 +310,12 @@ module Engine
         @final_turn = nil
         @loading = false
         @strict = strict
-        @optional_rules = optional_rules || []
         @finished = false
         @log = []
         @actions = []
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
+        @optional_rules = init_optional_rules(optional_rules)
 
         @seed = @id.to_s.scan(/\d+/).first.to_i % RAND_M
 

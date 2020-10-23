@@ -62,11 +62,10 @@ module Engine
         1
       end
 
-      def setup_optional_rules
-        OPTIONAL_RULES.each do |rule|
-          @optional_rules.delete(rule[:sym]) if rule[:players] && !rule[:players].include?(players.size)
-        end
-        @companies.reject! { |c| c.sym == 'LAT' } unless @optional_rules.include?(:la_title)
+      def init_companies(_players)
+        companies = super
+        companies.reject! { |c| c.sym == 'LAT' } unless @optional_rules.include?(:la_title)
+        companies
       end
 
       def init_hexes(_companies, _corporations)
