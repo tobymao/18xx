@@ -485,6 +485,12 @@ module Engine
         self
       end
 
+      def sorted_corporations
+        # Corporations sorted by some potential game rules
+        ipoed, others = corporations.partition(&:ipoed)
+        ipoed.sort + others
+      end
+
       def current_action_id
         @actions.size + 1
       end
