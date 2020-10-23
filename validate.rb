@@ -103,6 +103,13 @@ def revalidate_broken(filename)
   File.write("revalidate.json", JSON.pretty_generate(data))
 end
 
+def validate_json(filename)
+  data = JSON.parse(File.read(filename))
+  players = data['players'].map { |p| p['name'] }
+  engine = Engine::GAMES_BY_TITLE[data['title']]
+  engine.new(players, id: data['id'], actions: data['actions'])
+end
+
 def pin_games(pin_version, game_ids)
   game_ids.each do |id|
     data = Game[id]
