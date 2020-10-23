@@ -11,7 +11,7 @@ module Engine
         include HalfPay
 
         def half_pay_withhold_amount(entity, revenue)
-          entity.total_shares == 2 ? revenue / 2 : super
+          entity.total_shares == 2 ? revenue / 2.0 : super
         end
 
         def share_price_change(entity, revenue = 0)
