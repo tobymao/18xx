@@ -95,7 +95,8 @@ module Engine
       end
 
       def dividends_for_entity(entity, holder, per_share)
-        holder.num_shares_of(entity) * per_share
+        # 1817 2 share half pay uses floats
+        (holder.num_shares_of(entity) * per_share).to_i
       end
 
       def corporation_dividends(entity, per_share)
