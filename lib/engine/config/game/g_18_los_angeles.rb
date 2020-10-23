@@ -322,7 +322,7 @@ module Engine
       "name": "Los Angeles Title",
       "value": 40,
       "revenue": 10,
-      "desc": "The owning corporation may place an Open City token in any unreserved slot except for Long Beach (E8). The owning corporation need not be connected to the city where the token is placed",
+      "desc": "The owning corporation may place an Open City token in any unreserved slot except for Long Beach (E8). The owning corporation need not be connected to the city where the token is placed.",
       "sym": "LAT",
       "min_players": 3,
       "abilities": [
