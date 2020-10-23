@@ -11,7 +11,7 @@ module Engine
   module Round
     class Base
       attr_reader :entities, :entity_index, :round_num, :steps
-      attr_accessor :last_to_act
+      attr_accessor :last_to_act, :pass_order
 
       DEFAULT_STEPS = [
         Step::EndGame,
@@ -25,6 +25,7 @@ module Engine
         @round_num = opts[:round_num] || 1
         @entities = select_entities
         @last_to_act = nil
+        @pass_order = []
 
         @steps = (DEFAULT_STEPS + steps).map do |step, step_opts|
           step_opts ||= {}
