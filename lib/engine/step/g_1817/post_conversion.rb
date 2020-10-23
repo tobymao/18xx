@@ -71,7 +71,8 @@ module Engine
         def active_entities
           return [] unless corporation
 
-          [@game.players.rotate(@game.players.index(corporation.owner)).find(&:active?)].compact
+          [@game.players.rotate(@game.players.index(corporation.owner))
+          .select { |p| p.active? && can_buy_any?(p) }.first].compact
         end
       end
     end
