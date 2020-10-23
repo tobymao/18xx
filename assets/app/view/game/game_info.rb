@@ -62,14 +62,14 @@ module View
         else
           children << h(:p, [h(:a, { attrs: { href: @game.class::GAME_RULES_URL } }, 'Rules')])
         end
-        begin
+        if @game.optional_rules.any?
           children << h(:h3, 'Optional Rules Used')
           @game.class::OPTIONAL_RULES.each do |o_r|
-            next unless o_r[:sym] == @game.optional_rules
+            next unless @game.optional_rules.include?(o_r[:sym])
 
-            children << h(:p, o_r[:desc].to_s)
+            children << h(:p, " * #{o_r[:short_name]}: #{o_r[:desc]}")
           end
-        end if @game.optional_rules
+        end
 
         if @game.class::GAME_INFO_URL
           children << h(:p, [h(:a, { attrs: { href: @game.class::GAME_INFO_URL } }, 'More info')])
