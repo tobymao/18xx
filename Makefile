@@ -1,5 +1,10 @@
 .DEFAULT_GOAL := dev_up
 
+clean:
+	sudo rm -rfv build/ public/assets/app.js public/assets/deps.js public/assets/engine.js public/assets/main.js public/assets/main.js.gz public/assets/opal.js
+
+cleandeps:
+	sudo rm -rfv public/assets/deps.js
 
 # ensure ./db/data exists and is not owned by root
 data_dir:
