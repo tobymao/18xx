@@ -26,6 +26,7 @@ module Engine
           sym: :la_title,
           short_name: 'LA Title',
           desc: 'add a private company which can lay an Open City token; 3+ players only',
+          players: [3, 4, 5],
         },
       ].freeze
 
@@ -62,6 +63,9 @@ module Engine
       end
 
       def setup_optional_rules
+        OPTIONAL_RULES.each do |rule|
+          @optional_rules.delete(rule[:sym]) if rule[:players] && !rule[:players].include?(players.size)
+        end
         @companies.reject! { |c| c.sym == 'LAT' } unless @optional_rules.include?(:la_title)
       end
 
