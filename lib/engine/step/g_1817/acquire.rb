@@ -334,6 +334,7 @@ module Engine
         end
 
         def mergeable(corporation)
+          return [] if corporation.player?
           return [] unless @winner
 
           @game.corporations.select do |buyer|
