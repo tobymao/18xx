@@ -741,7 +741,30 @@ module Engine
                 100
             ],
             "coordinates": "E27",
-            "color": "hanBlue"
+            "color": "hanBlue",
+            "abilities": [
+                {
+                    "type": "tile_lay",
+                    "description": "Additional yellow tile lay for $40",
+                    "when": "track",
+                    "count_per_or": 1,
+                    "cost": 40,
+                    "tiles": [
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "7",
+                        "8",
+                        "9",
+                        "55",
+                        "56",
+                        "57",
+                        "58",
+                        "69"
+                    ]
+                }
+            ]
         },
         {
             "sym": "B&O",

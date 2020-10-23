@@ -10,9 +10,9 @@ module Engine
       include Ownable
 
       attr_accessor :count_this_or, :description
-      attr_reader :type, :owner_type, :remove, :when, :count, :count_per_or
+      attr_reader :type, :owner_type, :remove, :when, :count, :count_per_or, :cost_per_or
 
-      def initialize(type:, description: nil, owner_type: nil, count: nil, remove: nil, count_per_or: nil, **opts)
+      def initialize(type:, description: nil, owner_type: nil, count: nil, remove: nil, count_per_or: nil, cost_per_or: nil, **opts)
         @type = type&.to_sym
         @description = description&.to_s
         @owner_type = owner_type&.to_sym
@@ -20,6 +20,7 @@ module Engine
         @count = count
         @count_per_or = count_per_or
         @count_this_or = 0
+        @cost_per_or = cost_per_or
         @used = false
         @remove = remove&.to_s
 
