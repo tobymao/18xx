@@ -96,6 +96,7 @@ module Engine
     def tile=(new_tile)
       @original_tile = @tile = new_tile
       new_tile.hex = self
+      new_tile.location_name = location_name
     end
 
     def lay(tile)

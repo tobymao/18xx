@@ -228,12 +228,9 @@ module Engine
         old_tile = previous_hex.tile
         tile_string = 'offboard=revenue:yellow_40|brown_50;path=a:0,b:_0;path=a:1,b:_0'
         previous_hex.tile = Tile.from_code(old_tile.name, old_tile.color, tile_string)
-        previous_hex.tile.location_name = 'Nashville'
-
-        new_hex = hex_by_id('C4')
-        new_hex.tile.add_reservation!(ln, 0, 0)
 
         ln.coordinates = 'C4'
+        hex_by_id(ln.coordinates).tile.add_reservation!(ln, 0, 0)
       end
 
       def add_extra_4d
