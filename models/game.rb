@@ -105,6 +105,8 @@ class Game < Base
     actions_h = include_actions ? actions.map(&:to_h) : []
     settings_h = settings.to_h
 
+    settings_h.delete('seed') unless include_actions
+
     # Move user settings and hide from other players
     user_settings_h = settings_h.dig('players', player)
     settings_h.delete('players')
