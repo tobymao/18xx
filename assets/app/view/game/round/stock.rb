@@ -57,7 +57,7 @@ module View
             },
           }
 
-          @game.corporations.map do |corporation|
+          @game.sorted_corporations.map do |corporation|
             next if @auctioning_corporation && @auctioning_corporation != corporation
 
             children = []
