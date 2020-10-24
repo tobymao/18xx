@@ -74,7 +74,7 @@ module View
             return [center, l_up40, l_down40, l_bottom, l_top]
           end
 
-          []
+          @tile.parts.reject { |p| p.path? || p.border? }.any? ? [l_down40] : [l_center]
         end
 
         def load_from_tile
