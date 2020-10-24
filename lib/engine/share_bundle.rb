@@ -44,7 +44,7 @@ module Engine
     end
 
     def price
-      (price_per_share.to_f * num_shares(ceil: false)).ceil
+      (price_per_share * num_shares(ceil: false)).ceil
     end
 
     def can_dump?(entity)

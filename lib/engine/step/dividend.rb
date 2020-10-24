@@ -96,7 +96,7 @@ module Engine
 
       def dividends_for_entity(entity, holder, per_share)
         # 1817 2 share half pay uses floats, for 18MEX num_shares can be a float for NdM
-        (holder.num_shares_of_float(entity) * per_share).ceil
+        (holder.num_shares_of(entity, ceil: false) * per_share).ceil
       end
 
       def corporation_dividends(entity, per_share)
