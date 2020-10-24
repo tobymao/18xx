@@ -28,14 +28,17 @@ module View
           # Array<Array<Path>>
           @routes_paths = @routes.map { |route| route.paths_for(@tile.paths) }
 
-          sorted = (@tile.paths + @tile.stubs)
-            .map { |path| [path, index_for(path)] }
+          paths_and_stubs = @tile.paths + @tile.stubs
+          path_indexes = paths_and_stubs.map { |p| [p, indexes_for(p)] }.to_h
+
+          sorted = paths_and_stubs
+            .map { |path| path_indexes[path].map { |i| [path, i] } }.flatten(1)
             .sort_by { |_, index| index || -1 }
 
           sorted.map do |path, index|
             props = {
               color: value_for_index(index, :color),
-              width: value_for_index(index, :width),
+              width: width_for_index(path, index, path_indexes),
               dash: value_for_index(index, :dash),
             }
 
@@ -51,14 +54,28 @@ module View
 
         private
 
-        def index_for(path)
-          @routes_paths.index do |route_paths|
-            route_paths.any? { |p| path == p }
-          end
+        def indexes_for(path)
+          indexes = @routes_paths
+            .map.with_index
+            .select { |route_paths, _index| route_paths.any? { |p| path == p } }
+            .flat_map { |_, index| index }
+
+          indexes.empty? ? [nil] : indexes
         end
 
         def value_for_index(index, prop)
           index ? route_prop(index, prop) : TRACK[prop]
+        end
+
+        def width_for_index(path, index, path_indexes)
+          multiplier =
+            if !index || path_indexes[path].one?
+              1
+            else
+              [1, 3 * path_indexes[path].reverse.index(index)].max
+            end
+
+          value_for_index(index, :width) * multiplier
         end
       end
     end
