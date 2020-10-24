@@ -54,12 +54,6 @@ module Engine
         @green_m_tile ||= @tiles.find { |t| t.name == '443a' }
       end
 
-      def setup_optional_rules
-        move_ln_corporation if @optional_rules.include?(:LN_home_city_moved)
-        add_extra_4d if @optional_rules.include?(:unlimited_4d)
-        change_4t_to_hardrust if @optional_rules.include?(:hard_rust_t4)
-      end
-
       def south_and_north_alabama_railroad
         @south_and_north_alabama_railroad ||= company_by_id('SNAR')
       end
