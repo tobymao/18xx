@@ -256,9 +256,9 @@ module View
           h('td.padded_number', { style: { borderLeft: border_style } }, corporation.num_shares_of(corporation)),
           h('td.padded_number', { style: { borderRight: border_style } },
             "#{corporation.receivership? ? '*' : ''}#{@game.share_pool.num_shares_of(corporation)}"),
-          h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
+          h('td.padded_number', par_price?(corporation) ? @game.format_currency(corporation.par_price.price) : ''),
           h('td.padded_number', market_props,
-            corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
+            share_price?(corporation) ? @game.format_currency(corporation.share_price.price) : ''),
           h('td.padded_number', @game.format_currency(corporation.cash)),
           h('td.left', order_props, operating_order_text),
           h(:td, corporation.trains.map(&:name).join(', ')),
@@ -268,6 +268,14 @@ module View
           h(:th, name_props, corporation.name),
           *render_history(corporation),
         ])
+      end
+
+      def par_price?(corporation)
+        corporation.par_price && !corporation.closed?
+      end
+
+      def share_price?(corporation)
+        corporation.share_price && !corporation.closed?
       end
 
       def render_companies(entity)

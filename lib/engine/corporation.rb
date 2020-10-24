@@ -48,6 +48,7 @@ module Engine
 
       @cash = 0
       @capitalization = opts[:capitalization] || :full
+      @closed = false
       @float_percent = opts[:float_percent] || 60
       @max_ownership_percent = opts[:max_ownership_percent] || 60
       @min_price = opts[:min_price]
@@ -212,6 +213,16 @@ module Engine
       transferred = ownables.dup
       ownables.clear
       transferred
+    end
+
+    def closed?
+      @closed
+    end
+
+    def close!(bank)
+      @closed = true
+      @floated = false
+      @owner = bank
     end
   end
 end

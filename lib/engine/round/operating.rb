@@ -49,6 +49,8 @@ module Engine
         return if @entity_index == @entities.size - 1
 
         next_entity_index!
+        return next_entity! if @entities[@entity_index].closed?
+
         @steps.each(&:unpass!)
         @steps.each(&:setup)
         start_operating

@@ -145,7 +145,7 @@ module View
         @game.stock_market.market.flat_map do |row_prices|
           row = row_prices.map do |price|
             if price
-              corporations = price.corporations
+              corporations = price.corporations.reject(&:closed?)
               num = corporations.size
               spacing = num > 1 ? (RIGHT_TOKEN_POS - LEFT_TOKEN_POS) / (num - 1) : 0
 
