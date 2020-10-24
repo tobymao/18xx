@@ -157,11 +157,7 @@ module Engine
     end
 
     def all_abilities
-      all = @companies.flat_map(&:all_abilities)
-      @abilities.each do |ability|
-        abilities(ability.type) { |a| all << a }
-      end
-      all
+      @companies.map(&:all_abilities).flatten
     end
 
     def remove_ability(ability)
