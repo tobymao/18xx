@@ -157,7 +157,7 @@ module Engine
     end
 
     def all_abilities
-      @companies.map(&:all_abilities).flatten
+      @companies.map(&:all_abilities).append(@abilities).flatten
     end
 
     def remove_ability(ability)
