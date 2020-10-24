@@ -59,6 +59,14 @@ module Engine
       true
     end
 
+    def border?
+      false
+    end
+
+    def path?
+      false
+    end
+
     def find_token_by_type(token_type)
       raise GameError, "#{name} does not have a token" unless abilities(:token)
 
