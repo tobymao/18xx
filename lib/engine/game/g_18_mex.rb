@@ -319,7 +319,7 @@ module Engine
         end
         major.tokens.select(&:city).dup.each do |t|
           if ndm.tokens.find { |n| n.city == t.city }
-            @log << "#{major.name}'s token in #{t.city.name} is removed as #{ndm.name} already has a token there"
+            @log << "#{major.name}'s token in #{t.city.hex.name} is removed as #{ndm.name} already has a token there"
             t.remove!
           end
         end
