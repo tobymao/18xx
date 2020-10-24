@@ -49,10 +49,12 @@ module Engine
       GREEN_GROUP = %w[LA SF SP].freeze
 
       LSL_HEXES = %w[E4 E6].freeze
-      LSL_ICON = 'lsl'
+      LSL_ICON = 'sbl'
 
       MEAT_HEXES = %w[C14 F7].freeze
       STEAMBOAT_HEXES = %w[B1 C2 F7 F9].freeze
+
+      MEAT_REVENUE_DESC = 'Citrus'
 
       def self.title
         '18 Los Angeles'
@@ -153,7 +155,6 @@ module Engine
         stock_round
       end
 
-      # meat packing == citrus
       def meat_packing
         @meat_packing ||= company_by_id('LAC')
       end
