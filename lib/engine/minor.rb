@@ -3,10 +3,10 @@
 require_relative 'assignable'
 require_relative 'abilities'
 require_relative 'entity'
-require_relative 'passer'
-require_relative 'spender'
 require_relative 'operator'
 require_relative 'ownable'
+require_relative 'passer'
+require_relative 'spender'
 
 module Engine
   class Minor
@@ -63,10 +63,10 @@ module Engine
       @closed
     end
 
-    def close!(bank)
+    def close!
       @closed = true
       @floated = false
-      @owner = bank
+      @owner = nil
     end
   end
 end

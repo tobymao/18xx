@@ -117,6 +117,10 @@ module Engine
       share_price.corporations << corporation
     end
 
+    def close(corporation)
+      corporation.share_price.corporations.delete(corporation)
+    end
+
     private
 
     def share_price(row, column)

@@ -22,8 +22,10 @@ module View
           players = players.rotate(i)
         end
 
-        entity_candidates = (@game.corporations + @game.minors).reject(&:closed?)
-        player_owned, bank_owned = entity_candidates.sort_by(&:name).partition(&:owner)
+        player_owned, bank_owned = (@game.corporations + @game.minors)
+          .reject(&:closed?)
+          .sort_by(&:name)
+          .partition(&:owner)
         player_owned = player_owned.group_by(&:owner)
 
         children = players.map do |p|

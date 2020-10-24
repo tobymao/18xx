@@ -331,7 +331,7 @@ module Engine
           @log << "#{ndm.name} receives the trains: #{trains_transfered}"
         end
 
-        close_major(major)
+        major.close!(self)
       end
 
       def buy_first_5_train(player)
@@ -446,7 +446,7 @@ module Engine
         trains.delete(train)
 
         @minors.delete(minor)
-        minor.close!(@bank)
+        minor.close!
       end
 
       def mergable_corporations
@@ -485,11 +485,6 @@ module Engine
         major_token.remove!
         city.place_token(ndm, ndm_replacement, check_tokenable: false)
         exchange_tokens.delete(ndm_replacement)
-      end
-
-      def close_major(major)
-        major.ipoed = false
-        major.close!(@bank)
       end
     end
   end

@@ -22,9 +22,9 @@ module Engine
     include ShareHolder
     include Spender
 
-    attr_accessor :ipoed, :share_price, :par_via_exchange, :max_ownership_percent, :float_percent
+    attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent
     attr_reader :capitalization, :companies, :min_price, :name, :full_name, :fraction_shares
-    attr_writer :par_price
+    attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
 
@@ -85,7 +85,15 @@ module Engine
       !@ipoed
     end
 
+    def share_price
+      return if closed?
+
+      @share_price
+    end
+
     def par_price
+      return if closed?
+
       @always_market_price ? @share_price : @par_price
     end
 
@@ -219,10 +227,12 @@ module Engine
       @closed
     end
 
-    def close!(bank)
+    def close!(game)
+      game.stock_market.close(self)
       @closed = true
       @floated = false
-      @owner = bank
+      @ipoed = false
+      @owner = nil
     end
   end
 end
