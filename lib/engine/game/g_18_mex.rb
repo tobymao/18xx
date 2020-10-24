@@ -407,7 +407,7 @@ module Engine
       end
 
       def tile_lays(entity)
-        return super if entity.minor?
+        return [{ lay: true, upgrade: false }] if entity.minor?
 
         [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
       end
