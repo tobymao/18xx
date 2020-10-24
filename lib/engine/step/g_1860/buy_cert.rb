@@ -30,9 +30,7 @@ module Engine
         end
 
         def auctioning
-          if @in_auction
-            :turn
-          end
+          :turn if @in_auction
         end
 
         def bids
@@ -62,11 +60,9 @@ module Engine
         def actions(entity)
           return [] if finished?
           return [] unless entity == current_entity
-          if !@in_auction
-            return ALL_ACTIONS
-          elsif min_player_bid + cheapest_price <= entity.cash
-            return AUCTION_ACTIONS
-          end
+          return ALL_ACTIONS unless @in_auction
+          return AUCTION_ACTIONS if min_player_bid + cheapest_price <= entity.cash
+
           PASS_ACTION
         end
 
@@ -106,7 +102,7 @@ module Engine
             buy_company(player, action.company, price)
           else
             if price > max_player_bid(player)
-             @game.game_error("Cannot afford bid. Maximum possible bid is #{max_player_bid(player)}")
+              @game.game_error("Cannot afford bid. Maximum possible bid is #{max_player_bid(player)}")
             end
 
             @log << "#{player.name} bids #{@game.format_currency(price)}"
@@ -158,7 +154,7 @@ module Engine
         end
 
         def committed_cash(player, _show_hidden = false)
-          if @bids[player] && !@bids[player].negative? 
+          if @bids[player] && !@bids[player].negative?
             @bids[player] + cheapest_price
           else
             0
@@ -180,7 +176,7 @@ module Engine
         end
 
         def cheapest_thing
-          @companies.min_by { |c| c.company? ? c.value : @game.par_prices(c).map(&:price).min * 2}
+          @companies.min_by { |c| c.company? ? c.value : @game.par_prices(c).map(&:price).min * 2 }
         end
 
         def cheapest_price

@@ -76,17 +76,16 @@ module Engine
 
         if players_by_cash[0].cash > players_by_cash[1].cash
           player = players_by_cash[0]
-          reason = "most cash"
+          reason = 'most cash'
         else
           # tie-breaker: lowest total face value in private companies
           player = @players.select { |p| p.companies.any? }.min_by { |p| p.companies.sum(&:value) }
-          reason = "least value of private companies"
+          reason = 'least value of private companies'
         end
 
         @players.rotate!(@players.index(player))
         @log << "#{player.name} has priority deal (#{reason})"
       end
-
 
       def next_round!
         @round =
