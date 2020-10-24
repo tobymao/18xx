@@ -29,7 +29,11 @@ module Engine
     end
 
     def num_shares
-      @percent / corporation.share_percent
+      num_shares_float.ceil
+    end
+
+    def num_shares_float
+      1.0 * @percent / corporation.share_percent
     end
 
     def price_per_share
@@ -38,7 +42,7 @@ module Engine
     end
 
     def price
-      price_per_share * num_shares
+      (price_per_share * num_shares_float).ceil
     end
 
     def to_s

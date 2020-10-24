@@ -27,7 +27,11 @@ module Engine
     end
 
     def num_shares_of(corporation)
-      percent_of(corporation) / corporation.share_percent
+      num_shares_of_float(corporation).ceil
+    end
+
+    def num_shares_of_float(corporation)
+      1.0 * percent_of(corporation) / corporation.share_percent
     end
   end
 end
