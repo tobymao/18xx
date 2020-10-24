@@ -62,6 +62,7 @@ module View
           end
 
           owner = " (#{entity.owner.name.truncate})" if !entity.player? && entity.owner
+          owner = ' (CLOSED)' if entity.closed?
           children << h(:span, "#{entity.name}#{owner}")
 
           h(:li, entity_props, children)

@@ -102,15 +102,6 @@ module Engine
           minor.float!
         end
 
-        # TODO: Can neutral be removed? Move shares to market instead
-        # before deleting them.
-        @neutral = Corporation.new(
-          sym: 'N',
-          name: 'Neutral',
-          tokens: [],
-        )
-        @neutral.owner = @bank
-
         @brown_g_tile ||= @tiles.find { |t| t.name == '480' }
         @gray_tile ||= @tiles.find { |t| t.name == '455' }
         @green_l_tile ||= @tiles.find { |t| t.name == '475' }
@@ -262,7 +253,6 @@ module Engine
           p.shares_of(major).dup.each do |s|
             next unless s
 
-            remove_share(major, s)
             if s.president
               # Rule 5d: Give owner of presidency share (if any) the reserved share
               # Might trigger presidency change in NdM
@@ -271,6 +261,7 @@ module Engine
               bank.spend(refund, p) if refund.positive?
               refund_count += 1
             end
+            s.transfer(major)
           end
           if refund_count.positive?
             @log << "#{p.name} receives #{format_currency(refund * refund_count)} in share compensation"
@@ -340,8 +331,7 @@ module Engine
           @log << "#{ndm.name} receives the trains: #{trains_transfered}"
         end
 
-        corporations.delete(major)
-        @round.entities.delete(major)
+        major.close!
       end
 
       def buy_first_5_train(player)
@@ -456,6 +446,7 @@ module Engine
         trains.delete(train)
 
         @minors.delete(minor)
+        minor.close!
       end
 
       def mergable_corporations
@@ -485,13 +476,6 @@ module Engine
         # Auto merge single if it is non-floated
         candidate = @mergable_candidates.first
         merge_major(candidate) if @mergable_candidates.one? && !candidate.floated?
-      end
-
-      # Remove share from merged major by moving them to the neutral
-      def remove_share(major, share)
-        share.owner.shares_by_corporation[major].delete(share)
-        @neutral.shares_by_corporation[major] << share
-        share.owner = @neutral
       end
 
       def replace_token(major, major_token, exchange_tokens)
