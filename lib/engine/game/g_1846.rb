@@ -67,6 +67,8 @@ module Engine
       MEAT_HEXES = %w[D6 I1].freeze
       STEAMBOAT_HEXES = %w[B8 C5 D14 I1 G19].freeze
 
+      MEAT_REVENUE_DESC = 'Meat-Packing'
+
       TILE_COST = 20
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove private company tokens']).freeze
 
@@ -279,7 +281,7 @@ module Engine
         end.join('-')
 
         meat = meat_packing.id
-        str += ' + Meat-Packing' if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
+        str += " + #{self.class::MEAT_REVENUE_DESC}" if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
 
         steam = steamboat.id
         str += ' + Port' if route.corporation.assigned?(steam) && (stops.map(&:hex).find { |hex| hex.assigned?(steam) })
