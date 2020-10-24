@@ -14,12 +14,9 @@ module Engine
       @share_price = nil
     end
 
-    def num_shares
-      num_shares_float.ceil
-    end
-
-    def num_shares_float
-      1.0 * @percent / corporation.share_percent
+    def num_shares(ceil: true)
+      num = @percent.to_f / corporation.share_percent
+      ceil ? num.ceil : num
     end
 
     def partial?
@@ -47,7 +44,7 @@ module Engine
     end
 
     def price
-      (price_per_share * num_shares_float).ceil
+      (price_per_share.to_f * num_shares(ceil: false)).ceil
     end
 
     def can_dump?(entity)
