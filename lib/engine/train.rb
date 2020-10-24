@@ -7,9 +7,10 @@ module Engine
   class Train
     include Ownable
 
-    attr_accessor :obsolete, :operated, :events, :obsolete_on, :rusts_on
-    attr_reader :available_on, :name, :distance, :discount, :multiplier, :rusted, :sym, :variant, :variants
-    attr_writer :buyable, :index
+    attr_accessor :obsolete, :operated, :events
+    attr_reader :available_on, :name, :distance, :discount, :multiplier, :obsolete_on,
+                :rusts_on, :rusted, :sym, :variant, :variants
+    attr_writer :buyable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
       @sym = name

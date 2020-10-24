@@ -93,11 +93,6 @@ module Engine
       @coordinates
     end
 
-    def tile=(new_tile)
-      @original_tile = @tile = new_tile
-      new_tile.hex = self
-    end
-
     def lay(tile)
       # key: city on @tile (AKA old_city)
       # values: city on tile (AKA new_city)
