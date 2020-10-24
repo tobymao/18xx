@@ -16,6 +16,7 @@ module View
     needs :gdata # can't conflict with game_data
     needs :confirm_delete, store: true, default: false
     needs :confirm_kick, store: true, default: nil
+    needs :flash_opts, default: {}, store: true
 
     def render
       h('div.game.card', [
@@ -183,8 +184,14 @@ module View
         elm
       end
 
+      if owner?
+        msg = 'You can copy this link to invite other players'
+        flash = -> { store(:flash_opts, { message: msg, color: 'lightgreen' }, skip: false) }
+        invite_button = render_link(url(@gdata), flash, 'Invite')
+      end
+
       children = [
-        h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s]),
+        h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s, invite_button]),
         h(:div, [h(:strong, 'Description: '), @gdata['description']]),
       ]
       children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'

@@ -157,5 +157,6 @@ module GameManager
     @games.reject! { |g| g['id'] == game['id'] } if game['deleted']
     @games.map! { |g| g['id'] == game['id'] ? game : g }
     store(:games, @games.sort_by { |g| g['id'] }.reverse)
+    store(:game, game, skip: true) if @game && @game['id'] == game['id']
   end
 end
