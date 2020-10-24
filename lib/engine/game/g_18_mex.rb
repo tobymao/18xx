@@ -331,7 +331,7 @@ module Engine
           @log << "#{ndm.name} receives the trains: #{trains_transfered}"
         end
 
-        major.close!(self)
+        major.close!
       end
 
       def buy_first_5_train(player)

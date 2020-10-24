@@ -227,8 +227,8 @@ module Engine
       @closed
     end
 
-    def close!(game)
-      game.stock_market.close(self)
+    def close!
+      share_price&.corporations&.delete(self)
       @closed = true
       @floated = false
       @ipoed = false
