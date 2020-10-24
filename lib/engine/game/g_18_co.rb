@@ -62,6 +62,8 @@ module Engine
         'A' => 60,
       }.freeze
 
+      EAST_HEXES = %w[A26 J26 E27 G27].freeze
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_mines' => ['Mines Close', 'Mine tokens removed from board and corporations']
         ).freeze
@@ -117,10 +119,35 @@ module Engine
         ])
       end
 
-      def routes_revenue(routes)
-        total_revenue = super
-        # TODO: East/SLC Bonus
-        total_revenue
+      def revenue_for(route, stops)
+        revenue = super
+
+        revenue += east_west_bonus(stops)[:revenue]
+
+        revenue
+      end
+
+      def east_west_bonus(stops)
+        bonus = { revenue: 0 }
+
+        east = stops.find { |stop| EAST_HEXES.include?(stop.hex.name) }
+        west = stops.find { |stop| stop.hex.name == 'E1' }
+
+        if east && west
+          bonus[:revenue] = 100
+          bonus[:description] = 'E/W'
+        end
+
+        bonus
+      end
+
+      def revenue_str(route)
+        str = super
+
+        bonus = east_west_bonus(route.stops)[:description]
+        str += " + #{bonus}" if bonus
+
+        str
       end
 
       def all_potential_upgrades(tile, tile_manifest: false)
@@ -183,12 +210,6 @@ module Engine
 
           break
         end
-      end
-
-      private
-
-      def route_bonus(route, type)
-        # TODO: East / SLC Bonus
       end
     end
   end
