@@ -62,7 +62,7 @@ module Engine
     end
 
     def remove_ability_when(time)
-      @abilities.each do |ability|
+      @abilities.dup.each do |ability|
         remove_ability(ability) if ability.remove == time.to_s
       end
     end
