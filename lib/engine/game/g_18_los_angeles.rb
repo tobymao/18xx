@@ -45,6 +45,8 @@ module Engine
       MEAT_HEXES = %w[C14 F7].freeze
       STEAMBOAT_HEXES = %w[B1 C2 F7 F9].freeze
 
+      MEAT_REVENUE_DESC = 'Citrus'
+
       def self.title
         '18 Los Angeles'
       end
