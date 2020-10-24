@@ -71,6 +71,47 @@ module Engine
         ])
       end
 
+      def init_round_reorder_players
+        players_by_cash = @players.sort_by(&:cash).reverse
+
+        if players_by_cash[0].cash > players_by_cash[1].cash
+          player = players_by_cash[0]
+          reason = "most cash"
+        else
+          # tie-breaker: lowest total face value in private companies
+          player = @players.select { |p| p.companies.any? }.min_by { |p| p.companies.sum(&:value) }
+          reason = "least value of private companies"
+        end
+
+        @players.rotate!(@players.index(player))
+        @log << "#{player.name} has priority deal (#{reason})"
+      end
+
+
+      def next_round!
+        @round =
+          case @round
+          when Round::Stock
+            @operating_rounds = @phase.operating_rounds
+            reorder_players
+            new_operating_round
+          when Round::Operating
+            if @round.round_num < @operating_rounds
+              or_round_finished
+              new_operating_round(@round.round_num + 1)
+            else
+              @turn += 1
+              or_round_finished
+              or_set_finished
+              new_stock_round
+            end
+          when init_round.class
+            init_round_finished
+            init_round_reorder_players
+            new_stock_round
+          end
+      end
+
       def active_players
         return super if @finished
 
