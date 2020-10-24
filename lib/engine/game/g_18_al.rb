@@ -224,14 +224,10 @@ module Engine
 
       def move_ln_corporation
         ln = corporation_by_id('L&N')
-        previous_hex = hex_by_id('A4')
+        previous_hex = @hexes.find { |h| h.name == 'A4' }
         old_tile = previous_hex.tile
         tile_string = 'offboard=revenue:yellow_40|brown_50;path=a:0,b:_0;path=a:1,b:_0'
         previous_hex.tile = Tile.from_code(old_tile.name, old_tile.color, tile_string)
-        previous_hex.tile.location_name = 'Nashville'
-
-        new_hex = hex_by_id('C4')
-        new_hex.tile.add_reservation!(ln, 0, 0)
 
         ln.coordinates = 'C4'
       end
