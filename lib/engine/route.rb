@@ -170,7 +170,7 @@ module Engine
 
       ordered_paths = @connections.flat_map do |c|
         cpaths = c[:connection].paths
-        cpaths[0].nodes.any?(c[:left]) ? cpaths : cpaths.reverse
+        cpaths[0].nodes.include?(c[:left]) ? cpaths : cpaths.reverse
       end
 
       @game.game_error('Route cannot pass through terminal') if ordered_paths[1..-2].any?(&:terminal?)
