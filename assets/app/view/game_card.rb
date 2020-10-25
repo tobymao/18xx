@@ -204,17 +204,12 @@ module View
         id_line << render_link(url(@gdata), flash, 'Invite')
       end
 
-      children = [
-        h(:div, id_line),
-        h(:div, [h(:strong, 'Description: '), @gdata['description']]),
-      ]
-  
+      children = [h(:div, id_line)]
       children << h(:div, [h(:i, 'Private game')]) if @gdata.dig('settings', 'unlisted')
       children << h(:div, [h(:strong, 'Description: '), @gdata['description']])
 
       optional = render_optional_rules
       children << optional if optional
-  
       children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'
 
       if new?
