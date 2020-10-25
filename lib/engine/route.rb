@@ -166,16 +166,11 @@ module Engine
     end
 
     def check_terminals!
-      return unless paths.size > 2
+      return if paths.size < 3
 
-      ordered_paths = []
-      @connections.each do |c|
+      ordered_paths = @connections.flat_map do |c|
         cpaths = c[:connection].paths
-        if cpaths.first.nodes.any?(c[:left])
-          ordered_paths.concat(cpaths)
-        else
-          ordered_paths.concat(cpaths.reverse)
-        end
+        cpaths[0].nodes.any?(c[:left]) ? cpaths : cpaths.reverse
       end
 
       @game.game_error('Route cannot pass through terminal') if ordered_paths[1..-2].any?(&:terminal?)
