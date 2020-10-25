@@ -32,7 +32,7 @@ module View
           path_indexes = paths_and_stubs.map { |p| [p, indexes_for(p)] }.to_h
 
           sorted = paths_and_stubs
-            .map { |path| path_indexes[path].map { |i| [path, i] } }.flatten(1)
+            .flat_map { |path| path_indexes[path].map { |i| [path, i] } }
             .sort_by { |_, index| index || -1 }
 
           sorted.map do |path, index|
@@ -75,7 +75,7 @@ module View
               [1, 3 * path_indexes[path].reverse.index(index)].max
             end
 
-          value_for_index(index, :width) * multiplier
+          value_for_index(index, :width).to_f * multiplier.to_i
         end
       end
     end
