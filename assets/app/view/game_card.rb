@@ -196,7 +196,6 @@ module View
         elm
       end
 
-
       children = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
       children << h(:div, [h(:i, 'Private game')]) if @gdata['settings'] && @gdata['settings']['unlisted']
       children << h(:div, [h(:strong, 'Description: '), @gdata['description']])
