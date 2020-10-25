@@ -166,9 +166,19 @@ module Engine
     end
 
     def check_terminals!
-      if paths.size > 2
-        @game.game_error('Route cannot pass through terminal') if path[1..-2].any? { |p| p.terminal? }
+      return unless paths.size > 2
+
+      ordered_paths = []
+      @connections.each do |c|
+        cpaths = c[:connection].paths
+        if cpaths.first.nodes.any?(c[:left])
+          ordered_paths.concat(cpaths)
+        else
+          ordered_paths.concat(cpaths.reverse)
+        end
       end
+
+      @game.game_error('Route cannot pass through terminal') if ordered_paths[1..-2].any?(&:terminal?)
     end
 
     def distance
