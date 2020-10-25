@@ -230,7 +230,6 @@ module Engine
     def close!
       share_price&.corporations&.delete(self)
       @closed = true
-      @floated = false
       @ipoed = false
       @owner = nil
     end
