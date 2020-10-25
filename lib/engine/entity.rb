@@ -29,5 +29,9 @@ module Engine
     def share_pool?
       false
     end
+
+    def closed?
+      false
+    end
   end
 end

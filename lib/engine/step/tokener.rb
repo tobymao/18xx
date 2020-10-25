@@ -82,7 +82,18 @@ module Engine
           next if ability.city && ability.city != city.index
 
           # check if this is correct or should be a corporation
-          token = Engine::Token.new(entity) if ability.extra
+          if ability.extra
+            token = Engine::Token.new(entity)
+          elsif ability.neutral
+            neutral_corp = Corporation.new(
+              sym: 'N',
+              name: 'Neutral',
+              logo: 'open_city',
+              tokens: [0],
+            )
+            token = Engine::Token.new(neutral_corp, type: :neutral)
+          end
+
           token.price = ability.teleport_price if ability.teleport_price
           token.price = ability.price(token) if @game.graph.reachable_hexes(entity)[hex]
           return [token, ability]

@@ -146,6 +146,19 @@ module View
       h(:span, { attrs: { title: ts.strftime('%F %T') } }, time_or_date)
     end
 
+    def render_optional_rules
+      selected_rules = @gdata['settings']['optional_rules_selected'] || []
+      return if selected_rules.empty?
+
+      rendered_rules = Engine::GAMES_BY_TITLE[@gdata['title']]::OPTIONAL_RULES
+        .select { |r| selected_rules.include?(r[:sym]) }
+        .map { |r| r[:short_name] }
+        .sort
+        .join('; ')
+
+      h(:div, [h(:strong, 'Optional Rules: '), rendered_rules])
+    end
+
     def render_body
       props = {
         style: {
@@ -195,6 +208,13 @@ module View
         h(:div, id_line),
         h(:div, [h(:strong, 'Description: '), @gdata['description']]),
       ]
+  
+      children << h(:div, [h(:i, 'Private game')]) if @gdata.dig('settings', 'unlisted')
+      children << h(:div, [h(:strong, 'Description: '), @gdata['description']])
+
+      optional = render_optional_rules
+      children << optional if optional
+  
       children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'
 
       if new?

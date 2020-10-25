@@ -17,13 +17,15 @@ module View
             gap: '3rem 1.2rem',
           },
         }
-
         players = @game.players
         if (i = players.map(&:name).rindex(@user&.dig(:name)))
           players = players.rotate(i)
         end
 
-        player_owned, bank_owned = (@game.corporations + @game.minors).sort_by(&:name).partition(&:owner)
+        player_owned, bank_owned = (@game.corporations + @game.minors)
+          .reject(&:closed?)
+          .sort_by(&:name)
+          .partition(&:owner)
         player_owned = player_owned.group_by(&:owner)
 
         children = players.map do |p|

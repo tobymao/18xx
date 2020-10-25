@@ -26,8 +26,9 @@ module Engine
       @shares_by_corporation.select { |_c, shares| shares.any?(&:president) }.keys
     end
 
-    def num_shares_of(corporation)
-      percent_of(corporation) / corporation.share_percent
+    def num_shares_of(corporation, ceil: true)
+      num = percent_of(corporation).to_f / corporation.share_percent
+      ceil ? num.ceil : num
     end
   end
 end

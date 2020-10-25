@@ -422,6 +422,7 @@ module Engine
               Step::G1817::ReduceTokens,
               Step::DiscardTrain,
               Step::G1817::PostConversion,
+              Step::G1817::PostConversionLoans,
               Step::G1817::Conversion,
             ], round_num: @round.round_num)
           when Round::G1817::Merger
