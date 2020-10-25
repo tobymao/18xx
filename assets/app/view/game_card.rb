@@ -16,6 +16,7 @@ module View
     needs :gdata # can't conflict with game_data
     needs :confirm_delete, store: true, default: false
     needs :confirm_kick, store: true, default: nil
+    needs :flash_opts, default: {}, store: true
 
     def render
       h('div.game.card', [
@@ -196,8 +197,21 @@ module View
         elm
       end
 
-      children = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
-      children << h(:div, [h(:i, 'Private game')]) if @gdata['settings'] && @gdata['settings']['unlisted']
+      id_line = [h(:strong, 'Id: '), @gdata['id'].to_s]
+      if new? && owner?
+        msg = 'Copied invite link to clipboard; you can share this link with '\
+              'other players to invite them to the game'
+
+        invite_url = url(@gdata)
+        flash = lambda do
+          `navigator.clipboard.writeText((window.location + invite_url).replace('//game', '/game'))`
+          store(:flash_opts, { message: msg, color: 'lightgreen' }, skip: false)
+        end
+        id_line << render_link(invite_url, flash, 'Copy Invite Link')
+      end
+
+      children = [h(:div, id_line)]
+      children << h(:div, [h(:i, 'Private game')]) if @gdata.dig('settings', 'unlisted')
       children << h(:div, [h(:strong, 'Description: '), @gdata['description']])
 
       optional = render_optional_rules
