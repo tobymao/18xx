@@ -7,7 +7,7 @@ module Engine
   class Train
     include Ownable
 
-    attr_accessor :obsolete, :operated, :events,  :obsolete_on, :rusts_on
+    attr_accessor :obsolete, :operated, :events, :obsolete_on, :rusts_on
     attr_reader :available_on, :name, :distance, :discount, :multiplier, :rusted, :sym,
                 :variant, :variants
     attr_writer :buyable
