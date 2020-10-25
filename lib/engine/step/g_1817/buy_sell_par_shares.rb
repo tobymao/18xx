@@ -56,6 +56,17 @@ module Engine
           @game.redeemable_shares(entity)
         end
 
+        def can_buy?(entity, bundle)
+          return unless bundle
+          return unless bundle.buyable
+
+          if entity.corporation?
+            entity.cash >= bundle.price && redeemable_shares(entity).include?(bundle)
+          else
+            super
+          end
+        end
+
         def corporate_actions(entity)
           return [] if @corporation_action && @corporation_action.entity != entity
 
