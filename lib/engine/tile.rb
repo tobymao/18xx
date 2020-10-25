@@ -239,10 +239,16 @@ module Engine
     end
 
     def paths_are_subset_of?(other_paths)
-      ALL_EDGES.any? do |ticks|
-        @paths.all? do |path|
-          path = path.rotate(ticks)
-          other_paths.any? { |other| path <= other }
+      if @junction
+        # Upgrading from a Lawson tile is a special case
+        other_exits = other_paths.flat_map(&:exits).uniq
+        ALL_EDGES.any? { |ticks| (exits - other_exits.map { |e| (e + ticks) % 6 }).empty? }
+      else
+        ALL_EDGES.any? do |ticks|
+          @paths.all? do |path|
+            path = path.rotate(ticks)
+            other_paths.any? { |other| path <= other }
+          end
         end
       end
     end
