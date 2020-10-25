@@ -178,7 +178,7 @@ class Api
             user: user,
             description: r['description'],
             max_players: r['max_players'],
-            settings: { seed: Random.new_seed },
+            settings: { seed: Random.new_seed, unlisted: r['unlisted'] },
             title: title,
             round: Engine::GAMES_BY_TITLE[title].new([]).round&.name,
           }
