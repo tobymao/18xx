@@ -18,7 +18,7 @@ module View
         children << h(View::User, type: :login)
       end
 
-      h('div#invitepage', {}, children)
+      h('div', children)
     end
   end
 end
