@@ -179,7 +179,7 @@ class Api
             description: r['description'],
             max_players: r['max_players'],
             settings: {
-              seed: Random.new_seed,
+              seed: Random.new_seed % 2**31,
               unlisted: r['unlisted'],
               optional_rules_selected: r['optional_rules_selected'],
             },
