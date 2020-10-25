@@ -29,6 +29,8 @@ module View
 
       grouped = other_games.group_by { |game| game['status'] }
 
+      grouped['new']&.reject! { |game| game.dig('settings', 'unlisted') }
+
       # Ready, then active, then unstarted, then completed
       your_games.sort_by! do |game|
         [

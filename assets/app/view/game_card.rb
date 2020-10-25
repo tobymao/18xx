@@ -196,14 +196,13 @@ module View
         elm
       end
 
-      children = [
-        h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s]),
-        h(:div, [h(:strong, 'Description: '), @gdata['description']]),
-      ]
+
+      children = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
+      children << h(:div, [h(:i, 'Private game')]) if @gdata['settings'] && @gdata['settings']['unlisted']
+      children << h(:div, [h(:strong, 'Description: '), @gdata['description']])
 
       optional = render_optional_rules
       children << optional if optional
-
       children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'
 
       if new?

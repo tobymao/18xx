@@ -20,7 +20,9 @@ module View
         render_inputs,
       ]
 
-      if @mode == :hotseat
+      if @mode == :multi
+        inputs << render_input('Private game', id: 'unlisted', type: :checkbox)
+      elsif @mode == :hotseat
         @num_players.times do |index|
           num = index + 1
           inputs << render_input("Player #{num}", id: "player_#{num}", attrs: { value: "Player #{num}" })
