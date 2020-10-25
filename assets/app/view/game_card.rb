@@ -184,14 +184,16 @@ module View
         elm
       end
 
+
+      id_line = [h(:strong, 'Id: ')]
       if owner?
         msg = 'You can copy this link to invite other players'
         flash = -> { store(:flash_opts, { message: msg, color: 'lightgreen' }, skip: false) }
-        invite_button = render_link(url(@gdata), flash, 'Invite')
+        id_line << render_link(url(@gdata), flash, 'Invite')
       end
 
       children = [
-        h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s, invite_button]),
+        h(:div, id_line),
         h(:div, [h(:strong, 'Description: '), @gdata['description']]),
       ]
       children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'
