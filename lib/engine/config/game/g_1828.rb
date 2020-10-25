@@ -420,7 +420,7 @@ module Engine
             "name": "Champlain & St. Lawrence Railroad",
             "value": 40,
             "revenue": 10,
-            "desc": "Blocks Burlington (B24) while owned by a player. Once sold to a corporation, the owning corporation may place a yellow track tile in B24 for free at any time in its operations. This does not count as part of the owning corporation's track lay. The track tile at Burlington (B24) does not need to connect to or be part of one of the owning corporation's routes. This power may be used at any time during the owning corporation's operation.",
+            "desc": "Blocks Burlington (B24) while owned by a player. Owning corporation may place a free track tile at B24 at any time in its operations.",
             "sym": "C&StL",
             "abilities": [
                 {
@@ -432,10 +432,8 @@ module Engine
                 },
                 {
                     "type": "tile_lay",
+                    "description": "Place a free track tile at B24  at any time during the corporation's operations.",
                     "owner_type": "corporation",
-                    "hexes": [
-                        "B24"
-                    ],
                     "hexes": [
                         "B24"
                     ],
@@ -453,7 +451,7 @@ module Engine
             "name": "Delaware & Hudson Railroad",
             "value": 80,
             "revenue": 15,
-            "desc": "Blocks Scranton (F20) while owned by a player. Once sold to a corporation, the owning corporation may pay a fee of $120 to the bank, place or upgrade a track tile in Scranton (F20) and optionally also place a station marker in Scranton (F20) without additional cost. This counts as a yellow track tile lay or upgrade respectively for the corporation's normal track build. If a station marker was placed in Scranton, it counts as the corporatin's station market placement for the Operating Round. The track tile at Scranton (F20) does not need to connect to or be part of one of the owning share company's routes. The power may be used in the track building and station placement steps of the owning corporation's operations.",
+            "desc": "Blocks Scranton (F20) while owned by a player. Owning corporation may place a track tile (or upgrade) in Scranton (F20) along with an (optional) station marker for $120.",
             "sym": "D&H",
             "abilities": [
                 {
@@ -465,7 +463,9 @@ module Engine
                 },
                 {
                     "type": "teleport",
-                    "owner_type":"corporation",
+                    "owner_type": "corporation",
+                    "when": "track",
+                    "count": 1,
                     "hexes": [
                       "F20"
                     ],
@@ -475,22 +475,20 @@ module Engine
                         "57",
                         "205",
                         "206"
-                    ],
-                    "when": "track",
-                    "count": 1
+                    ]
                 }
             ]
         },
         {
             "name": "Cobourg & Peterborough Railway",
             "value": 80,
-            "revenue": 0,
-            "desc": "Not yet implemented",
+            "revenue": 15,
+            "desc": "Blocks Peterborough (C15) while owned by a player. Revenue $0 after auction completes. Owning player may place or upgrade track tiles on a route connected to Peterborough (C15). Half-pays the revenue of a 2-train route from that track tile.",
             "sym": "C&P",
             "abilities": [
                 {
                     "type": "revenue_change",
-                    "revenue": 15,
+                    "revenue": 0,
                     "when": "sold"
                 }
             ]
@@ -499,7 +497,7 @@ module Engine
             "name": "Mohawk & Hudson Railroad",
             "value": 120,
             "revenue": 20,
-            "desc": "Blocks D22 while owned by a player. As the owning player's Stock Round action in yellow phase or later, or at any time during an Operating Round, may be exchanged for any 10% share certificate from the IPO or bank pool, or for 10% (half) of a director's certificate (the purchaser must pay for the other 10% and par the corporation in the normal manner), if one is available. The Mohawk & Hudson Railroad is then closed and removed from the game.",
+            "desc": "Blocks D22 while owned by a player. Owning player may exchange for a share of any company from the market or IPO.",
             "sym": "M&H",
             "abilities": [
                 {
@@ -512,6 +510,7 @@ module Engine
                 {
                     "type": "exchange",
                     "corporation": "any",
+                    "owner_type": "player",
                     "from": [
                         "ipo",
                         "market"
@@ -523,7 +522,7 @@ module Engine
             "name": "Erie & Kalamazoo Railroad",
             "value": 120,
             "revenue": 20,
-            "desc": "Blocks Adrian & Ann Arbor (E7) while owned by a player. The owning corporation may (once per game) place an additional yellow track tile for $20 paid to the bank as part of its normal track-build. The owning corporation cannot upgrade a track tile in the Operating Round.",
+            "desc": "Blocks Adrian & Ann Arbor (E7) while owned by a player. A yellow track tile is placed at E7 when purchased by a company. Owning company may (once) place an additional yellow track tile at $20 as part of its normal track build.",
             "sym": "E&K",
             "abilities": [
                 {
@@ -536,6 +535,22 @@ module Engine
                 {
                     "type": "tile_lay",
                     "owner_type": "corporation",
+                    "when": "sold",
+                    "hexes": [
+                        "E7"
+                    ],
+                    "tiles": [
+                        "1",
+                        "2",
+                        "55",
+                        "56",
+                        "69"
+                    ]
+                },
+                {
+                    "type": "tile_lay",
+                    "owner_type": "corporation",
+                    "when": "track",
                     "hexes": [
                         "E7"
                     ],
@@ -560,7 +575,7 @@ module Engine
             "name": "Camden & Amboy Railroad",
             "value": 160,
             "revenue": 25,
-            "desc": "Blocks Philadelphia & Trenton (H22) while owned by a player. Comes with a 10% certificate of the Pennsylvania Railroad (PRR).",
+            "desc": "Blocks Philadelphia & Trenton (H22) while owned by a player. Purchaser receives 10% of Pennsylvania Railroad (PRR).",
             "sym": "C&A",
             "abilities": [
                 {
@@ -577,10 +592,10 @@ module Engine
             ]
         },
         {
-            "name": "Canadian Pacific",
+            "name": "Canadian Pacific Railroad",
             "value": 250,
             "revenue": 40,
-            "desc": "When purchased during the private auction comes with the 20% director's certificate and a 10% share certificate of the matching corporation. The buying player must immediately set the par price for the matching corporation to any yellow par price. Cannot be purchased by a corporation. Closes when the matching corporation acquires a train.",
+            "desc": "Purchaser receives 30% of Canadian Pacific Railroad (CPR) and sets par price. May not be sold to a corporation. Closes when CPR acquires a train.",
             "sym": "CPR",
             "abilities": [
                 {
@@ -592,6 +607,11 @@ module Engine
                 },
                 {
                     "type": "no_buy"
+                },
+                {
+                    "type": "close",
+                    "when": "train",
+                    "corporation": "CPR"
                 }
             ]
         },
@@ -599,7 +619,7 @@ module Engine
             "name": "Grand Trunk",
             "value": 250,
             "revenue": 40,
-            "desc": "When purchased during the private auction comes with the 20% director's certificate and a 10% share certificate of the matching corporation. The buying player must immediately set the par price for the matching corporation to any yellow par price. Cannot be purchased by a corporation. Closes when the matching corporation acquires a train.",
+            "desc": "Purchaser receives 30% of Grand Trunk (GT) and sets par price. May not be sold to a corporation. Closes when GT acquires a train.",
             "sym": "GT",
             "abilities": [
                 {
@@ -611,6 +631,11 @@ module Engine
                 },
                 {
                     "type": "no_buy"
+                },
+                {
+                    "type": "close",
+                    "when": "train",
+                    "corporation": "GT"
                 }
             ]
         },
@@ -618,7 +643,7 @@ module Engine
             "name": "Illinois Central",
             "value": 250,
             "revenue": 40,
-            "desc": "When purchased during the private auction comes with the 20% director's certificate and a 10% share certificate of the matching corporation. The buying player must immediately set the par price for the matching corporation to any yellow par price. Cannot be purchased by a corporation. Closes when the matching corporation acquires a train.",
+            "desc": "Purchaser receives 30% of Illinois Central (IC) and sets par price. May not be sold to a corporation. Closes when IC acquires a train.",
             "sym": "IC",
             "abilities": [
                 {
@@ -630,14 +655,19 @@ module Engine
                 },
                 {
                     "type": "no_buy"
+                },
+                {
+                    "type": "close",
+                    "when": "train",
+                    "corporation": "IC"
                 }
             ]
         },
         {
-            "name": "Michigan Central",
+            "name": "Michigan Central Railroad",
             "value": 250,
             "revenue": 40,
-            "desc": "When purchased during the private auction comes with the 20% director's certificate and a 10% share certificate of the matching corporation. The buying player must immediately set the par price for the matching corporation to any yellow par price. Cannot be purchased by a corporation. Closes when the matching corporation acquires a train.",
+            "desc": "Purchaser receives 30% of Michigan Central Railroad (MC) and sets par price. May not be sold to a corporation. Closes when MC acquires a train.",
             "sym": "MC",
             "abilities": [
                 {
@@ -649,6 +679,11 @@ module Engine
                 },
                 {
                     "type": "no_buy"
+                },
+                {
+                    "type": "close",
+                    "when": "train",
+                    "corporation": "MC"
                 }
             ]
         },
@@ -656,7 +691,7 @@ module Engine
             "name": "Missouri Pacific Railroad",
             "value": 250,
             "revenue": 40,
-            "desc": "When purchased during the private auction comes with the 20% director's certificate and a 10% share certificate of the matching corporation. The buying player must immediately set the par price for the matching corporation to any yellow par price. Cannot be purchased by a corporation. Closes when the matching corporation acquires a train.",
+            "desc": "Purchaser receives 30% of Missouri Pacific Railroad (MP) and sets par price. May not be sold to a corporation. Closes when MP acquires a train.",
             "sym": "MP",
             "abilities": [
                 {
@@ -668,6 +703,11 @@ module Engine
                 },
                 {
                     "type": "no_buy"
+                },
+                {
+                    "type": "close",
+                    "when": "train",
+                    "corporation": "MP"
                 }
             ]
         },
@@ -675,7 +715,7 @@ module Engine
             "name": "New York, Chicago & St. Louis Railroad",
             "value": 250,
             "revenue": 40,
-            "desc": "When purchased during the private auction comes with the 20% director's certificate and a 10% share certificate of the matching corporation. The buying player must immediately set the par price for the matching corporation to any yellow par price. Cannot be purchased by a corporation. Closes when the matching corporation acquires a train.",
+            "desc": "Purchaser receives 30% of New York, Chicago & St. Louis Railroad (NKP) and sets par price. May not be sold to a corporation. Closes when NKP acquires a train.",
             "sym": "NKP",
             "abilities": [
                 {
@@ -687,14 +727,19 @@ module Engine
                 },
                 {
                     "type": "no_buy"
+                },
+                {
+                    "type": "close",
+                    "when": "train",
+                    "corporation": "NKP"
                 }
             ]
         },
         {
-            "name": "Norfolk & Western",
+            "name": "Norfolk & Western Railway",
             "value": 250,
             "revenue": 40,
-            "desc": "When purchased during the private auction comes with the 20% director's certificate and a 10% share certificate of the matching corporation. The buying player must immediately set the par price for the matching corporation to any yellow par price. Cannot be purchased by a corporation. Closes when the matching corporation acquires a train.",
+            "desc": "Purchaser receives 30% of Norfolk & Western Railway (NW) and sets par price. May not be sold to a corporation. Closes when NW acquires a train.",
             "sym": "NW",
             "abilities": [
                 {
@@ -706,6 +751,11 @@ module Engine
                 },
                 {
                     "type": "no_buy"
+                },
+                {
+                    "type": "close",
+                    "when": "train",
+                    "corporation": "NW"
                 }
             ]
         },
@@ -713,18 +763,23 @@ module Engine
             "name": "Ontario, Simcoe & Huron",
             "value": 250,
             "revenue": 40,
-            "desc": "When purchased during the private auction comes with the 20% director's certificate and a 10% share certificate of the matching corporation. The buying player must immediately set the par price for the matching corporation to any yellow par price. Cannot be purchased by a corporation. Closes when the matching corporation acquires a train.",
-            "sym": "OSH",
+            "desc": "Purchaser receives 30% of Ontario, Simcoe & Huron (OS&H) and sets par price. May not be sold to a corporation. Closes when OS&H acquires a train.",
+            "sym": "OS&H",
             "abilities": [
                 {
                     "type": "shares",
                     "shares": [
-                        "OSH_0",
-                        "OSH_1"
+                        "OS&H_0",
+                        "OS&H_1"
                     ]
                 },
                 {
                     "type": "no_buy"
+                },
+                {
+                    "type": "close",
+                    "when": "train",
+                    "corporation": "OS&H"
                 }
             ]
         }
@@ -894,7 +949,7 @@ module Engine
             "color": "lightCoral"
         },
         {
-            "sym": "OSH",
+            "sym": "OS&H",
             "name": "Ontario, Simcoe & Huron",
             "logo": "1828/OSH",
             "tokens": [
