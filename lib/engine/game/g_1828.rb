@@ -72,6 +72,8 @@ module Engine
       def stock_round
         Round::G1828::Stock.new(self, [
           Step::DiscardTrain,
+          Step::Exchange,
+          Step::SpecialTrack,
           Step::G1828::BuySellParShares,
         ])
       end
@@ -79,6 +81,7 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
+          Step::Exchange,
           Step::DiscardTrain,
           Step::SpecialTrack,
           Step::BuyCompany,
@@ -104,6 +107,10 @@ module Engine
         sm.enable_par_price(79)
 
         sm
+      end
+
+      def corporation_opts
+        { hold_above_max_ownership_percent_ok: true }
       end
 
       def init_round_finished
