@@ -327,6 +327,8 @@ module Engine
           [stops, @game.revenue_for(self, stops)]
         end.compact.max_by(&:last)
 
+        revenue ||= 0
+
         # We assume that no stop collection with m < n stops could be
         # better than a stop collection with n stops, so if we found
         # anything usable with this number of stops we return it
