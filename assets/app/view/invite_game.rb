@@ -18,8 +18,6 @@ module View
         children << h(View::User, type: :login)
       end
 
-      children << h(:a, { attrs: { href: '/' } }, 'Return home')
-
       h('div#invitepage', {}, children)
     end
   end
