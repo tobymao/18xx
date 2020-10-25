@@ -165,6 +165,12 @@ module Engine
       # rubocop:enable Style/GuardClause, Style/IfUnlessModifier
     end
 
+    def check_terminals!
+      if paths.size > 2
+        @game.game_error('Route cannot pass through terminal') if path[1..-2].any? { |p| p.terminal? }
+      end
+    end
+
     def distance
       visited_stops.sum(&:visit_cost)
     end
@@ -221,6 +227,7 @@ module Engine
       check_distance!(visited)
       check_cycles!
       check_overlap!
+      check_terminals!
       check_connected!(token)
 
       visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
