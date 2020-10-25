@@ -263,6 +263,10 @@ module Engine
             end
             s.transfer(major)
           end
+          # Transfer bank pool shares to IPO
+          @share_pool.shares_of(major).dup.each do |s|
+            s.transfer(major)
+          end
           if refund_count.positive?
             @log << "#{p.name} receives #{format_currency(refund * refund_count)} in share compensation"
           end
