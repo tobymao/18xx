@@ -38,6 +38,15 @@ module Engine
         'ndm_unavailable' => ['NdM unavailable', 'NdM shares unavailable during stock round'],
       ).freeze
 
+      OPTIONAL_RULES = [
+        { sym: :triple_yellow_first_or,
+          short_name: 'Extra yellow',
+          desc: '8a: Allow corporation to lay 3 yellows its first OR' },
+        { sym: :hard_rust_t4,
+          short_name: 'Hard rust',
+          desc: '8d: Hard rust for 4 trains' },
+      ].freeze
+
       def p2_company
         @p2_company ||= company_by_id('KCMO')
       end
@@ -122,6 +131,9 @@ module Engine
 
         # Remember the price for the last token; exchange tokens have the same.
         @ndm_exchange_token_price = ndm.tokens.last.price
+
+        @recently_floated = []
+        change_4t_to_hardrust if @optional_rules&.include?(:hard_rust_t4)
       end
 
       def init_share_pool
@@ -146,6 +158,10 @@ module Engine
         ], round_num: round_num)
       end
 
+      def or_round_finished
+        @recently_floated = []
+      end
+
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
@@ -158,6 +174,12 @@ module Engine
           matching_company = @companies.find { |company| company.sym == minor.name }
           minor.owner = matching_company.owner
         end if @turn == 1
+        super
+      end
+
+      def float_corporation(corporation)
+        @recently_floated << corporation
+
         super
       end
 
@@ -403,7 +425,11 @@ module Engine
       def tile_lays(entity)
         return [{ lay: true, upgrade: false }] if entity.minor?
 
-        [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+        lays = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+        if @optional_rules&.include?(:triple_yellow_first_or) && @recently_floated&.include?(entity)
+          lays << { lay: :not_if_upgraded, upgrade: false }
+        end
+        lays
       end
 
       private
@@ -489,6 +515,15 @@ module Engine
         major_token.remove!
         city.place_token(ndm, ndm_replacement, check_tokenable: false)
         exchange_tokens.delete(ndm_replacement)
+      end
+
+      def change_4t_to_hardrust
+        @depot.trains
+          .select { |t| t.name == '4' }
+          .each do |t|
+            t.rusts_on = t.obsolete_on
+            t.obsolete_on = nil
+          end
       end
     end
   end
