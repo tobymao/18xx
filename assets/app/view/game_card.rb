@@ -184,7 +184,6 @@ module View
         elm
       end
 
-
       id_line = [h(:strong, 'Id: ')]
       if owner?
         msg = 'You can copy this link to invite other players'
