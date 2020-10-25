@@ -7,7 +7,7 @@ module Engine
     class TileLay < Base
       attr_reader :hexes, :tiles, :free, :discount, :special, :connect, :blocks, :reachable
 
-      def setup(hexes:, tiles:, free: false, discount: nil, special: nil,
+      def setup(tiles:, hexes: nil, free: false, discount: nil, special: nil,
                 connect: nil, blocks: nil, reachable: nil)
         @hexes = hexes
         @tiles = tiles
