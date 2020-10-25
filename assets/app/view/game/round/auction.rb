@@ -190,7 +190,6 @@ module View
               @current_entity,
               price: price,
             ))
-            store(:selected_company, nil, skip: true)
           end
           h(:div,
             [

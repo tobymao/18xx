@@ -7,7 +7,7 @@ module Engine
   module Step
     module G1860
       class BuyCert < Base
-        attr_reader :companies, :in_auction
+        attr_reader :companies
 
         ALL_ACTIONS = %w[bid pass par].freeze
         AUCTION_ACTIONS = %w[bid pass].freeze
@@ -30,7 +30,7 @@ module Engine
         end
 
         def auctioning
-          :turn if @in_auction
+          :turn if in_auction?
         end
 
         def bids
@@ -50,7 +50,7 @@ module Engine
         end
 
         def description
-          @in_auction ? 'Bid on turn to buy' : 'You must buy a company or start a corporation'
+          in_auction? ? 'Bid on turn to buy' : 'You must buy a company or start a corporation'
         end
 
         def finished?
@@ -60,7 +60,7 @@ module Engine
         def actions(entity)
           return [] if finished?
           return [] unless entity == current_entity
-          return ALL_ACTIONS unless @in_auction
+          return ALL_ACTIONS unless in_auction?
           return AUCTION_ACTIONS if min_player_bid + cheapest_price <= entity.cash
 
           PASS_ACTION
@@ -98,7 +98,7 @@ module Engine
           player = action.entity
           price = action.price
 
-          if !@in_auction
+          if !in_auction?
             buy_company(player, action.company, price)
           else
             if price > max_player_bid(player)
@@ -108,6 +108,7 @@ module Engine
             @log << "#{player.name} bids #{@game.format_currency(price)}"
 
             @bids[player] = price
+            resolve_auction
           end
         end
 
@@ -122,7 +123,7 @@ module Engine
         end
 
         def active_entities
-          return [@bids.min_by { |_k, v| v }.first] if @in_auction
+          return [@bids.min_by { |_k, v| v }.first] if in_auction?
 
           super
         end
@@ -163,16 +164,20 @@ module Engine
 
         private
 
+        def in_auction?
+          @bids.any?
+        end
+
         def highest_player_bid
-          @in_auction && any_bids? ? @bids.max_by { |_k, v| v }.last : 0
+          any_bids? ? @bids.max_by { |_k, v| v }.last : 0
         end
 
         def highest_bid
-          @in_auction ? @bids.max_by { |_k, v| v }.last : 0
+          in_auction? ? @bids.max_by { |_k, v| v }.last : 0
         end
 
         def any_bids?
-          @in_auction && @bids.max_by { |_k, v| v }.last.positive?
+          in_auction? && @bids.max_by { |_k, v| v }.last.positive?
         end
 
         def cheapest_thing
@@ -193,7 +198,6 @@ module Engine
           entities.each_index do |idx|
             @bids[entities[idx]] = -size + (idx - start_idx) % size
           end
-          @in_auction = true
         end
 
         def resolve_auction
@@ -210,15 +214,14 @@ module Engine
             price = 0
           end
           @log << "#{player.name} wins auction for #{@game.format_currency(price)}"
-          @in_auction = false
           @bids.clear
           @round.goto_entity!(player)
         end
 
         def can_afford?(entity, company)
           # guaranteed to be able to afford the cheapest company or corporation
-          return true if !@in_auction && company == cheapest_thing
-          return true if !@in_auction && company.corporation? && cheapest_thing.corporation?
+          return true if !in_auction? && company == cheapest_thing
+          return true if !in_auction? && company.corporation? && cheapest_thing.corporation?
 
           cost = company.company? ? company.value : @game.par_prices(company).map(&:price).min * 2
           entity.cash >= cost
