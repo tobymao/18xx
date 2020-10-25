@@ -8,7 +8,6 @@ module View
     include GameManager
 
     needs :user
-    needs :refreshing, default: nil, store: true
 
     def render
       children = [h(:h2, {}, 'This game has not started yet')]
