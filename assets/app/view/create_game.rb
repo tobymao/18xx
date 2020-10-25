@@ -30,7 +30,7 @@ module View
           id: :game_data,
           el: :textarea,
           attrs: {
-            placeholder: 'Paste JSON Game Data. Will override settings',
+            placeholder: 'Paste JSON Game Data',
             rows: 35,
             cols: 50,
           },
