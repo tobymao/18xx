@@ -50,17 +50,19 @@ module Engine
         end
 
         def redeemable_shares(entity)
+          return [] if @corporate_action && entity != @corporate_action.entity
+
           # Done via Buy Shares
           @game.redeemable_shares(entity)
         end
 
         def corporate_actions(entity)
+          return [] if @corporation_action && @corporation_action.entity != entity
+
           actions = []
           if @current_actions.none?
             actions << 'take_loan' if @game.can_take_loan?(entity) && !@corporate_action.is_a?(Action::BuyShares)
-            if @game.redeemable_shares(entity).any? && !@corporate_action.is_a?(Action::TakeLoan)
-              actions << 'buy_shares'
-            end
+            actions << 'buy_shares' if @game.redeemable_shares(entity).any?
           end
           actions << 'buy_tokens' if can_buy_tokens?(entity)
           actions
@@ -225,6 +227,9 @@ module Engine
         end
 
         def process_take_loan(action)
+          if @corporate_action && action.entity != @corporate_action.entity
+            @game.game_error('Cannot act as multiple corporations')
+          end
           @corporate_action = action
           @game.take_loan(action.entity, action.loan)
         end

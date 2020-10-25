@@ -52,7 +52,7 @@ module View
         }.freeze
 
         def preferred_render_locations
-          if @tile.parts.one?
+          if @tile.parts.reject(&:border?).one?
             [
               P_CENTER,
             ]

@@ -33,6 +33,7 @@ module Engine
       "B3":"Nogales / Tuscon",
       "D3":"Hermosillo",
       "E6":"Chihuahua",
+      "F5":"Copper Canyon",
       "D11":"San Antonio",
       "G10":"Nuevo Laredo",
       "I4":"Los Mochis",

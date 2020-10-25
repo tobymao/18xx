@@ -23,6 +23,10 @@ module Engine
       def process_place_token(action)
         entity = action.entity
 
+        hex = action.city.hex
+        city_string = hex.tile.cities.size > 1 ? " city #{action.city.index}" : ''
+        @game.game_error("Cannot place token on #{hex.name}#{city_string}") unless available_hex(entity, hex)
+
         place_token(
           entity.owner,
           action.city,

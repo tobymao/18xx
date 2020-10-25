@@ -11,6 +11,7 @@ module View
     needs :num_players, default: 3, store: true
     needs :flash_opts, default: {}, store: true
     needs :user, default: nil, store: true
+    needs :optional_rules, default: nil, store: true
 
     def render_content
       inputs = [
@@ -53,7 +54,7 @@ module View
       @min_p = {}
       @max_p = {}
 
-      games = (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).sort.map do |game|
+      game_options = visible_games.map do |game|
         @min_p[game.title], @max_p[game.title] = Engine.player_range(game)
 
         title = game.title
@@ -64,29 +65,16 @@ module View
         h(:option, { attrs: attrs }, title)
       end
 
-      limit_range = lambda do
-        range = Native(@inputs[:max_players]).elm
-        title = Native(@inputs[:title]).elm.value
-        min = range.min = @min_p[title]
-        max = range.max = @max_p[title]
-        val = range.value.to_i
-        range.value = (min..max).include?(val) ? val : max
-        store(:num_players, range.value.to_i)
-      end
-
-      enforce_range = lambda do
-        elm = Native(@inputs[:max_players]).elm
-        if elm.value.to_i.positive?
-          elm.value = elm.max.to_i unless (elm.min.to_i..elm.max.to_i).include?(elm.value.to_i)
-          store(:num_players, elm.value.to_i) if @mode == :hotseat
-        end
+      title_change = lambda do
+        @optional_rules_selected = []
+        update_inputs
       end
 
       inputs = [
-        render_input('Game Title', id: :title, el: 'select', on: { input: limit_range }, children: games),
+        render_input('Game Title', id: :title, el: 'select', on: { input: title_change }, children: game_options),
         render_input('Description', placeholder: 'Add a title', id: :description),
         render_input(
-          @mode != :hotseat ? 'Max Players' : 'Players',
+          @mode == :hotseat ? 'Players' : 'Max Players',
           id: :max_players,
           type: :number,
           attrs: {
@@ -96,10 +84,41 @@ module View
             required: true,
           },
           input_style: { width: '2.5rem' },
-          on: { input: enforce_range },
+          on: { input: -> { update_inputs } },
         ),
       ]
+      inputs << render_optional if (@optional_rules ||= selected_game::OPTIONAL_RULES).any?
+
       h(:div, inputs)
+    end
+
+    def toggle_optional_rule(sym)
+      lambda do
+        if (@optional_rules_selected ||= []).include?(sym)
+          @optional_rules_selected.delete(sym)
+        else
+          @optional_rules_selected << sym
+        end
+      end
+    end
+
+    def render_optional
+      children = @optional_rules.map do |o_r|
+        label_text = "#{o_r[:short_name]}: #{o_r[:desc]}"
+        h(:li, [render_input(
+          label_text,
+          type: 'checkbox',
+          id: o_r[:sym],
+          attrs: { value: o_r[:sym] },
+          on: { input: toggle_optional_rule(o_r[:sym]) },
+          input_style: { float: 'left', margin: '5px' },
+        )])
+      end
+
+      h(:div, [
+          h(:p, 'Optional Rules:'),
+          h(:ul, { style: { 'list-style': 'none' } }, children),
+        ])
     end
 
     def mode_selector
@@ -112,9 +131,7 @@ module View
     def mode_input(mode, text)
       click_handler = lambda do
         store(:mode, mode, skip: true)
-        elm = Native(@inputs[:max_players]).elm
-        elm.value = [elm.value.to_i, elm.min.to_i].max
-        store(:num_players, elm.value.to_i)
+        update_inputs
       end
 
       [render_input(
@@ -127,16 +144,17 @@ module View
     end
 
     def submit
-      return create_game(params) if @mode != :hotseat
+      game_params = params
+      return create_game(game_params) unless @mode == :hotseat
 
-      players = params
+      players = game_params
         .select { |k, _| k.start_with?('player_') }
         .values
         .map { |name| name.gsub(/\s+/, ' ').strip }
 
       return store(:flash_opts, 'Cannot have duplicate player names') if players.uniq.size != players.size
 
-      game_data = params['game_data']
+      game_data = game_params['game_data']
 
       if game_data.empty?
         game_data = {}
@@ -147,15 +165,49 @@ module View
           return store(:flash_opts, e.message)
         end
       end
+      game_data[:settings] ||= {}
+      game_data[:settings][:optional_rules_selected] = game_params[:optional_rules_selected] || []
 
       create_hotseat(
         id: Time.now.to_i,
         players: players.map { |name| { name: name } },
-        title: params[:title],
-        description: params[:description],
-        max_players: params[:max_players],
+        title: game_params[:title],
+        description: game_params[:description],
+        max_players: game_params[:max_players],
         **game_data,
       )
+    end
+
+    def params
+      params = super
+
+      game = Engine::GAMES_BY_TITLE[params['title']]
+      game_optional_rules = game::OPTIONAL_RULES.map { |o_r| o_r[:sym] }
+      params[:optional_rules_selected] = game_optional_rules.select { |rule| params.delete(rule) }
+
+      params
+    end
+
+    def visible_games
+      (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).sort
+    end
+
+    def selected_game
+      title = Native(@inputs[:title]).elm&.value || visible_games.first.title
+      Engine::GAMES_BY_TITLE[title]
+    end
+
+    def update_inputs
+      title = selected_game.title
+
+      range = Native(@inputs[:max_players]).elm
+      min = range.min = @min_p[title]
+      max = range.max = @max_p[title]
+      val = range.value.to_i
+      range.value = (min..max).include?(val) ? val : max
+      store(:num_players, range.value.to_i)
+
+      store(:optional_rules, selected_game::OPTIONAL_RULES)
     end
   end
 end

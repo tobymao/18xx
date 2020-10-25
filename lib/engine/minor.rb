@@ -3,10 +3,10 @@
 require_relative 'assignable'
 require_relative 'abilities'
 require_relative 'entity'
+require_relative 'operator'
 require_relative 'ownable'
 require_relative 'passer'
 require_relative 'spender'
-require_relative 'operator'
 
 module Engine
   class Minor
@@ -24,6 +24,7 @@ module Engine
       @name = sym
       @full_name = name
       @floated = false
+      @closed = false
       init_operator(opts)
       init_abilities(opts[:abilities])
     end
@@ -56,6 +57,16 @@ module Engine
 
     def inspect
       "<#{self.class.name}: #{id}>"
+    end
+
+    def closed?
+      @closed
+    end
+
+    def close!
+      @closed = true
+      @floated = false
+      @owner = nil
     end
   end
 end
