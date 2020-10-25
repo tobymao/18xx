@@ -199,9 +199,15 @@ module View
 
       id_line = [h(:strong, 'Id: '), @gdata['id'].to_s]
       if new? && owner?
-        msg = 'You can copy this link to invite other players'
-        flash = -> { store(:flash_opts, { message: msg, color: 'lightgreen' }, skip: false) }
-        id_line << render_link(url(@gdata), flash, 'Invite')
+        msg = 'Copied invite link to clipboard; you can share this link with '\
+              'other players to invite them to the game'
+
+        invite_url = url(@gdata)
+        flash = lambda do
+          `navigator.clipboard.writeText((window.location + invite_url).replace('//game', '/game'))`
+          store(:flash_opts, { message: msg, color: 'lightgreen' }, skip: false)
+        end
+        id_line << render_link(invite_url, flash, 'Copy Invite Link')
       end
 
       children = [h(:div, id_line)]
