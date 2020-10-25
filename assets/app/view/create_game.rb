@@ -24,6 +24,7 @@ module View
           num = index + 1
           inputs << render_input("Player #{num}", id: "player_#{num}", attrs: { value: "Player #{num}" })
         end
+      elsif @mode == :json
         inputs << render_input(
           '',
           id: :game_data,
@@ -97,13 +98,18 @@ module View
           on: { input: enforce_range },
         ),
       ]
-      h(:div, inputs)
+
+      div_props = {}
+      div_props[:style] = { display: 'none' } if @mode == :json
+
+      h(:div, div_props, inputs)
     end
 
     def mode_selector
       h(:div, { style: { margin: '1rem 0' } }, [
         *mode_input(:multi, 'Multiplayer'),
         *mode_input(:hotseat, 'Hotseat'),
+        *mode_input(:json, 'Import game (hotseat)'),
       ])
     end
 
@@ -125,7 +131,7 @@ module View
     end
 
     def submit
-      return create_game(params) if @mode != :hotseat
+      return create_game(params) if @mode == :multi
 
       players = params
         .select { |k, _| k.start_with?('player_') }
@@ -136,14 +142,14 @@ module View
 
       game_data = params['game_data']
 
-      if game_data.empty?
-        game_data = {}
-      else
+      if @mode == :json
         begin
           game_data = JSON.parse(game_data)
         rescue JSON::ParserError => e
           return store(:flash_opts, e.message)
         end
+      else
+        game_data = {}
       end
 
       create_hotseat(
