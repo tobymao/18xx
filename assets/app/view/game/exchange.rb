@@ -19,23 +19,26 @@ module View
           store(:selected_company, nil, skip: true)
         end
 
-        h(:button,
-          { on: { click: exchange } },
-          "Exchange #{@selected_company.sym} for a #{share_origin} share of #{share.corporation.name}")
+        h('button.small', { on: { click: exchange } }, "#{share.corporation.name} #{share_origin} share")
       end
 
       def render
         return h(:span) unless (ability = @selected_company&.abilities(:exchange))
 
-        corporation = @game.corporation_by_id(ability.corporation)
         children = []
-        ipo_share = corporation.shares.find { |s| !s.president }
-        children << render_exchange(ipo_share, @game.class::IPO_NAME) if ability.from.include?(:ipo)
+        corporations = ability.corporation == :any ? @game.corporations : [@game.corporation_by_id(ability.corporation)]
+        corporations.each do |corporation|
+          ipo_share = corporation.shares.find { |s| !s.president }
+          children << render_exchange(ipo_share, @game.class::IPO_NAME) if ability.from.include?(:ipo)
 
-        pool_share = @game.share_pool.shares_by_corporation[corporation]&.first
-        children << render_exchange(pool_share, 'Market') if ability.from.include?(:market)
+          pool_share = @game.share_pool.shares_by_corporation[corporation]&.first
+          children << render_exchange(pool_share, 'Market') if ability.from.include?(:market)
+        end
 
-        h(:span, children.compact)
+        h(:div, [
+          h('div.inline-block.margined', "Exchange #{@selected_company.name} for:"),
+          h('div.inline-block', children.compact),
+        ])
       end
     end
   end
