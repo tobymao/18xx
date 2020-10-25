@@ -197,8 +197,8 @@ module View
         elm
       end
 
-      id_line = [h(:strong, 'Id: ')]
-      if owner?
+      id_line = [h(:strong, 'Id: '), @gdata['id'].to_s]
+      if new? && owner?
         msg = 'You can copy this link to invite other players'
         flash = -> { store(:flash_opts, { message: msg, color: 'lightgreen' }, skip: false) }
         id_line << render_link(url(@gdata), flash, 'Invite')
