@@ -11,7 +11,7 @@ module View
     needs :refreshing, default: nil, store: true
 
     def render
-      children = [h(:h2, {}, 'Ths game has not started yet')]
+      children = [h(:h2, {}, 'This game has not started yet')]
       if !@user
         children << h(:h3, {}, 'You need to login before joining a game:')
         children << h(View::User, type: :login)
