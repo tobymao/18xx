@@ -938,6 +938,19 @@ module Engine
         extra_cities.each { |c| @_cities[c.id] = c }
       end
 
+      def after_par(corporation)
+        return unless corporation.capitalization == :incremental
+
+        all_companies_with_ability(:shares) do |company, ability|
+          next unless corporation.name == ability.shares.first.corporation.name
+
+          amount = ability.shares.sum { |share| corporation.par_price.price * share.num_shares }
+          @bank.spend(amount, corporation)
+          @log << "#{corporation.name} receives #{format_currency(amount)}
+                   from #{company.name}"
+        end
+      end
+
       private
 
       def init_bank

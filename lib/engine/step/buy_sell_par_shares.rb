@@ -152,6 +152,7 @@ module Engine
         @game.stock_market.set_par(corporation, share_price)
         share = corporation.shares.first
         buy_shares(entity, share.to_bundle)
+        @game.after_par(corporation)
         @round.last_to_act = entity
         @current_actions << action
       end
