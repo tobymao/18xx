@@ -27,12 +27,13 @@ module View
           num = index + 1
           inputs << render_input("Player #{num}", id: "player_#{num}", attrs: { value: "Player #{num}" })
         end
+      elsif @mode == :json
         inputs << render_input(
           '',
           id: :game_data,
           el: :textarea,
           attrs: {
-            placeholder: 'Paste JSON Game Data. Will override settings',
+            placeholder: 'Paste JSON Game Data',
             rows: 35,
             cols: 50,
           },
@@ -89,7 +90,10 @@ module View
       ]
       inputs << render_optional if (@optional_rules ||= selected_game::OPTIONAL_RULES).any?
 
-      h(:div, inputs)
+      div_props = {}
+      div_props[:style] = { display: 'none' } if @mode == :json
+
+      h(:div, div_props, inputs)
     end
 
     def toggle_optional_rule(sym)
@@ -125,6 +129,7 @@ module View
       h(:div, { style: { margin: '1rem 0' } }, [
         *mode_input(:multi, 'Multiplayer'),
         *mode_input(:hotseat, 'Hotseat'),
+        *mode_input(:json, 'Import game (hotseat)'),
       ])
     end
 
@@ -145,7 +150,7 @@ module View
 
     def submit
       game_params = params
-      return create_game(game_params) unless @mode == :hotseat
+      return create_game(params) if @mode == :multi
 
       players = game_params
         .select { |k, _| k.start_with?('player_') }
@@ -156,14 +161,14 @@ module View
 
       game_data = game_params['game_data']
 
-      if game_data.empty?
-        game_data = {}
-      else
+      if @mode == :json
         begin
           game_data = JSON.parse(game_data)
         rescue JSON::ParserError => e
           return store(:flash_opts, e.message)
         end
+      else
+        game_data = {}
       end
       game_data[:settings] ||= {}
       game_data[:settings][:optional_rules_selected] = game_params[:optional_rules_selected] || []
