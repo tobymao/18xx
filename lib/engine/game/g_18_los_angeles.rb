@@ -4,6 +4,7 @@ require_relative 'g_1846'
 require_relative '../config/game/g_1846'
 require_relative '../config/game/g_18_los_angeles'
 require_relative '../step/g_18_los_angeles/draft_distribution'
+require_relative '../step/g_18_los_angeles/route'
 
 module Engine
   module Game
@@ -127,6 +128,23 @@ module Engine
           @log << "#{company.name} is removed" unless company.value >= 100
         end
         @draft_finished = true
+      end
+
+      def operating_round(round_num)
+        Round::G1846::Operating.new(self, [
+          Step::G1846::Bankrupt,
+          Step::DiscardTrain,
+          Step::G1846::Assign,
+          Step::SpecialToken,
+          Step::SpecialTrack,
+          Step::G1846::BuyCompany,
+          Step::G1846::IssueShares,
+          Step::G1846::TrackAndToken,
+          Step::G18LosAngeles::Route,
+          Step::G1846::Dividend,
+          Step::G1846::BuyTrain,
+          [Step::G1846::BuyCompany, blocks: true],
+        ], round_num: round_num)
       end
 
       def num_pass_companies(_players)
