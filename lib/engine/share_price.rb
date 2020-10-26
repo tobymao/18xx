@@ -31,6 +31,8 @@ module Engine
           %i[gray repar]
         when /i/
           %i[green ignore_one_sale]
+        when /s/
+          %i[white safe_par]
         end
 
       SharePrice.new([row, column],

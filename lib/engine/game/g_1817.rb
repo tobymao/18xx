@@ -50,7 +50,7 @@ module Engine
         'bridge' => '/icons/1817/bridge_token.svg',
         'mine' => '/icons/1817/mine_token.svg',
       }.freeze
-      # @todo: this needs purchase of the 8 train
+
       GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
 
       # Two lays with one being an upgrade, second tile costs 20
@@ -64,6 +64,8 @@ module Engine
                                                                   'Game Ends 3 ORs after purchase/export'\
                                                                   ' of first 8 train']).freeze
 
+      MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'Minimum Price for a 2($55), 5($70) and 10($120) share'\
+      ' corporation taking maximum loans to ensure it avoids acquisition').freeze
       MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
       attr_reader :loan_value, :owner_when_liquidated
 

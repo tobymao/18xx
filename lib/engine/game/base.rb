@@ -168,6 +168,17 @@ module Engine
       STATUS_TEXT = { 'can_buy_companies' =>
                       ['Can Buy Companies', 'All corporations can buy companies from players'] }.freeze
 
+      MARKET_TEXT = { par: 'Par value',
+                      no_cert_limit: 'Corporation shares do not count towards cert limit',
+                      unlimited: 'Corporation shares can be held above 60%',
+                      multiple_buy: 'Can buy more than one share in the corporation per turn',
+                      close: 'Corporation closes',
+                      endgame: 'End game trigger',
+                      liquidation: 'Liquidation',
+                      acquisition: 'Acquisition',
+                      repar: 'Par value after bankruptcy',
+                      ignore_one_sale: 'Ignore first share sold when moving price' }.freeze
+
       # Add elements (paragraphs of text) here to display it on Info page.
       TIMELINE = [].freeze
 
