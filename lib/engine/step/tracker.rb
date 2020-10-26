@@ -126,7 +126,7 @@ module Engine
         return unless terrain.any?
 
         @game.all_companies_with_ability(:tile_income) do |company, ability|
-          if terrain.include?(ability.terrain) && (!ability.owner_only || company.owner == action.entity)
+          if terrain.include?(ability.terrain) && (!ability.owner_only || company.owner == entity)
             # If multiple borders are connected bonus counts each individually
             income = ability.income * terrain.find_all { |t| t == ability.terrain }.size
             @game.bank.spend(income, company.owner)
