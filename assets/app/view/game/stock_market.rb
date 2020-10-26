@@ -76,6 +76,16 @@ module View
         style
       end
 
+      def grid_1d_price(price)
+        if price.acquisition?
+          h(:div, { style: PRICE_STYLE_1D }, "(#{price.price})")
+        elsif price.type == :safe_par
+          h(:div, { style: PRICE_STYLE_1D.merge(textDecoration: 'underline') }, price.price)
+        else
+          h(:div, { style: PRICE_STYLE_1D }, price.price)
+        end
+      end
+
       def grid_1d
         box_style = box_style_1d
 
@@ -93,7 +103,7 @@ module View
           end
 
           h(:div, { style: cell_style(box_style, price) }, [
-            h(:div, { style: PRICE_STYLE_1D }, price.price),
+            grid_1d_price(price),
             h(:div, { style: TOKEN_STYLE_1D }, tokens),
           ])
         end
@@ -208,18 +218,7 @@ module View
         children.concat(grid)
 
         if @explain_colors
-          type_text = [
-            [:par, 'Par value'],
-            [:no_cert_limit, 'Corporation shares do not count towards cert limit'],
-            [:unlimited, 'Corporation shares can be held above 60%'],
-            [:multiple_buy, 'Can buy more than one share in the corporation per turn'],
-            [:close, 'Corporation closes'],
-            [:endgame, 'End game trigger'],
-            [:liquidation, 'Liquidation'],
-            [:acquisition, 'Acquisition'],
-            [:repar, 'Par value after bankruptcy'],
-            [:ignore_one_sale, 'Ignore first share sold when moving price'],
-          ]
+          type_text = @game.class::MARKET_TEXT
 
           types_in_market = @game.stock_market.market.flatten.compact.map { |p| [p.type, p.color] }.to_h
 
