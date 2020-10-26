@@ -80,9 +80,11 @@ class Api
 
                 game.save
               else
+                players = users.map { |u| [u.id, u.name] }.to_h
                 engine = Engine::GAMES_BY_TITLE[game.title].new(
-                  users.map(&:name),
+                  players,
                   id: game.id,
+                  settings: game.settings,
                   actions: actions_h(game),
                 )
 
@@ -145,7 +147,8 @@ class Api
 
           # POST '/api/game/<game_id>/start
           r.is 'start' do
-            engine = Engine::GAMES_BY_TITLE[game.title].new(users.map(&:name), id: game.id)
+            players = users.map { |u| [u.id, u.name] }.to_h
+            engine = Engine::GAMES_BY_TITLE[game.title].new(players, id: game.id)
             unless game.players.size.between?(*Engine.player_range(engine.class))
               halt(400, 'Player count not supported')
             end
