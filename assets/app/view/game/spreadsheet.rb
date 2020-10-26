@@ -251,11 +251,11 @@ module View
               sold_props[:style][:backgroundColor] = '#9e0000'
               sold_props[:style][:color] = 'white'
             end
-            h('td.padded_number', sold_props, "#{corporation.president?(p) ? '*' : ''}#{p.num_shares_of(corporation)}")
+            h('td.padded_number', sold_props, "#{corporation.president?(p) ? '*' : ''}#{num_shares_of(p, corporation)}")
           end,
-          h('td.padded_number', { style: { borderLeft: border_style } }, corporation.num_shares_of(corporation)),
+          h('td.padded_number', { style: { borderLeft: border_style } }, num_shares_of(corporation, corporation).to_s),
           h('td.padded_number', { style: { borderRight: border_style } },
-            "#{corporation.receivership? ? '*' : ''}#{@game.share_pool.num_shares_of(corporation)}"),
+            "#{corporation.receivership? ? '*' : ''}#{num_shares_of(@game.share_pool, corporation)}"),
           h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
           h('td.padded_number', market_props,
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
@@ -305,7 +305,7 @@ module View
       def render_player_shares
         h(:tr, zebra_props(true), [
           h('th.left', 'Shares'),
-          *@game.players.map { |p| h('td.padded_number', @game.corporations.sum { |c| p.num_shares_of(c) }) },
+          *@game.players.map { |p| h('td.padded_number', @game.corporations.sum { |c| num_shares_of(p, c) }) },
         ])
       end
 
@@ -331,6 +331,12 @@ module View
             color: color_for(:font2),
           },
         }
+      end
+
+      private
+
+      def num_shares_of(entity, corporation)
+        entity.num_shares_of(corporation, ceil: false)
       end
     end
   end
