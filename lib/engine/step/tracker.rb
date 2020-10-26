@@ -66,7 +66,6 @@ module Engine
         @game.tiles.delete(tile)
         @game.tiles << old_tile unless old_tile.preprinted
 
-        @game.game_error('Tile is already used') if tile.hex
         hex.lay(tile)
 
         @game.graph.clear
