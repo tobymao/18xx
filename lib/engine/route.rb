@@ -165,6 +165,17 @@ module Engine
       # rubocop:enable Style/GuardClause, Style/IfUnlessModifier
     end
 
+    def check_terminals!
+      return if paths.size < 3
+
+      ordered_paths = @connections.flat_map do |c|
+        cpaths = c[:connection].paths
+        cpaths[0].nodes.include?(c[:left]) ? cpaths : cpaths.reverse
+      end
+
+      @game.game_error('Route cannot pass through terminal') if ordered_paths[1..-2].any?(&:terminal?)
+    end
+
     def distance
       visited_stops.sum(&:visit_cost)
     end
@@ -221,6 +232,7 @@ module Engine
       check_distance!(visited)
       check_cycles!
       check_overlap!
+      check_terminals!
       check_connected!(token)
 
       visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
@@ -326,6 +338,8 @@ module Engine
 
           [stops, @game.revenue_for(self, stops)]
         end.compact.max_by(&:last)
+
+        revenue ||= 0
 
         # We assume that no stop collection with m < n stops could be
         # better than a stop collection with n stops, so if we found

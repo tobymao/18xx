@@ -16,6 +16,7 @@ module View
     needs :gdata # can't conflict with game_data
     needs :confirm_delete, store: true, default: false
     needs :confirm_kick, store: true, default: nil
+    needs :flash_opts, default: {}, store: true
 
     def render
       h('div.game.card', [
@@ -145,6 +146,19 @@ module View
       h(:span, { attrs: { title: ts.strftime('%F %T') } }, time_or_date)
     end
 
+    def render_optional_rules
+      selected_rules = @gdata.dig('settings', 'optional_rules_selected') || []
+      return if selected_rules.empty?
+
+      rendered_rules = Engine::GAMES_BY_TITLE[@gdata['title']]::OPTIONAL_RULES
+        .select { |r| selected_rules.include?(r[:sym]) }
+        .map { |r| r[:short_name] }
+        .sort
+        .join('; ')
+
+      h(:div, [h(:strong, 'Optional Rules: '), rendered_rules])
+    end
+
     def render_body
       props = {
         style: {
@@ -183,10 +197,25 @@ module View
         elm
       end
 
-      children = [
-        h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s]),
-        h(:div, [h(:strong, 'Description: '), @gdata['description']]),
-      ]
+      id_line = [h(:strong, 'Id: '), @gdata['id'].to_s]
+      if new? && owner?
+        msg = 'Copied invite link to clipboard; you can share this link with '\
+              'other players to invite them to the game'
+
+        invite_url = url(@gdata)
+        flash = lambda do
+          `navigator.clipboard.writeText((window.location + invite_url).replace('//game', '/game'))`
+          store(:flash_opts, { message: msg, color: 'lightgreen' }, skip: false)
+        end
+        id_line << render_link(invite_url, flash, 'Copy Invite Link')
+      end
+
+      children = [h(:div, id_line)]
+      children << h(:div, [h(:i, 'Private game')]) if @gdata.dig('settings', 'unlisted')
+      children << h(:div, [h(:strong, 'Description: '), @gdata['description']])
+
+      optional = render_optional_rules
+      children << optional if optional
       children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'
 
       if new?

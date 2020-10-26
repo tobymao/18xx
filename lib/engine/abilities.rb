@@ -62,13 +62,13 @@ module Engine
     end
 
     def remove_ability_when(time)
-      all_abilities.each do |ability|
+      @abilities.dup.each do |ability|
         remove_ability(ability) if ability.remove == time.to_s
       end
     end
 
     def all_abilities
-      @abilities.map { |a| abilities(a.type) }.compact
+      @abilities
     end
 
     def reset_ability_count_this_or!

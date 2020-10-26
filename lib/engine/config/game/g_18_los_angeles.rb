@@ -25,6 +25,7 @@ module Engine
     "A12": "Victorville",
     "A14": "San Bernardino",
     "B1": "Oxnard",
+    "B3": "Beverly Hills",
     "B5": "Hollywood",
     "B7": "South Pasadena",
     "B9": "Alhambra",
@@ -35,8 +36,10 @@ module Engine
     "C4": "Culver City",
     "C6": "Los Angeles",
     "C8": "Montebello",
+    "C10": "Puente",
     "C12": "Walnut",
     "C14": "Riverside",
+    "D3": "El Segundo",
     "D5": "Gardena",
     "D7": "Compton",
     "D9": "Norwalk",
@@ -48,7 +51,9 @@ module Engine
     "E8": "Long Beach",
     "E10": "Cypress",
     "E12": "Anaheim",
+    "E14": "Alta Vista",
     "E16": "Corona",
+    "F5": "San Pedro",
     "F7": "Port of Long Beach",
     "F9": "Westminster",
     "F11": "Garden Grove",
@@ -315,6 +320,29 @@ module Engine
            "when":"track",
            "blocks": false,
            "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Los Angeles Title",
+      "value": 40,
+      "revenue": 10,
+      "desc": "The owning corporation may place an Open City token in any unreserved slot except for Long Beach (E8). The owning corporation need not be connected to the city where the token is placed.",
+      "sym": "LAT",
+      "min_players": 3,
+      "abilities": [
+        {
+          "type": "token",
+          "owner_type":"corporation",
+          "price": 0,
+          "teleport_price": 0,
+          "count": 1,
+          "neutral": true,
+          "hexes": [
+            "A4", "A6", "A8", "B5", "B7", "B9", "B11", "B13", "C4", "C6", "C8",
+            "C12", "D5", "D7", "D9", "D11", "D13", "E4", "E6", "E10", "E12",
+            "F7", "F9", "F11", "F13"
+          ]
         }
       ]
     }

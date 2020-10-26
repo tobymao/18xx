@@ -55,6 +55,8 @@ module Engine
       end
 
       def current_actions
+        return [] if current_entity&.closed?
+
         current_entity ? actions(current_entity) : []
       end
 

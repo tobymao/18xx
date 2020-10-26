@@ -105,7 +105,6 @@ class Api < Roda
 
     r.on 'game', Integer do |id|
       halt(404, 'Game not found') unless (game = Game[id])
-      halt(400, 'Game has not started yet') if game.status == 'new'
 
       pin = game.settings['pin']
       render(pin: pin, game_data: pin ? game.to_h(include_actions: true) : game.to_h)

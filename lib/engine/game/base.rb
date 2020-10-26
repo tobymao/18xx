@@ -33,7 +33,8 @@ module Engine
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
-                  :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles
+                  :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
+                  :optional_rules
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -60,6 +61,8 @@ module Engine
       #  one_more_full_or_set - finish the current OR set, then
       #                         end after the next complete OR set
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
+
+      OPTIONAL_RULES = [].freeze
 
       BANKRUPTCY_ALLOWED = true
 
@@ -194,6 +197,27 @@ module Engine
 
       def setup; end
 
+      def init_optional_rules(optional_rules)
+        optional_rules ||= []
+        self.class::OPTIONAL_RULES.each do |rule|
+          optional_rules.delete(rule[:sym]) if rule[:players] && !rule[:players].include?(@players.size)
+        end
+        optional_rules
+      end
+
+      def setup_optional_rules; end
+
+      def log_optional_rules
+        return if @optional_rules.empty?
+
+        @log << 'Optional rules used in this game:'
+        self.class::OPTIONAL_RULES.each do |o_r|
+          next unless @optional_rules.include?(o_r[:sym])
+
+          @log << " * #{o_r[:short_name]}: (#{o_r[:desc]})"
+        end
+      end
+
       def self.title
         name.split('::').last.slice(1..-1)
       end
@@ -280,7 +304,7 @@ module Engine
         const_set(:LAYOUT, data['layout'].to_sym)
       end
 
-      def initialize(names, id: 0, actions: [], pin: nil, strict: false)
+      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [])
         @id = id
         @turn = 1
         @final_turn = nil
@@ -291,6 +315,7 @@ module Engine
         @actions = []
         @names = names.freeze
         @players = @names.map { |name| Player.new(name) }
+        @optional_rules = init_optional_rules(optional_rules)
 
         @seed = @id.to_s.scan(/\d+/).first.to_i % RAND_M
 
@@ -344,6 +369,8 @@ module Engine
 
         init_company_abilities
 
+        setup_optional_rules
+        log_optional_rules
         setup
 
         initialize_actions(actions)
@@ -485,6 +512,12 @@ module Engine
         self
       end
 
+      def sorted_corporations
+        # Corporations sorted by some potential game rules
+        ipoed, others = corporations.partition(&:ipoed)
+        ipoed.sort + others
+      end
+
       def current_action_id
         @actions.size + 1
       end
@@ -496,7 +529,7 @@ module Engine
       end
 
       def clone(actions)
-        self.class.new(@names, id: @id, pin: @pin, actions: actions)
+        self.class.new(@names, id: @id, pin: @pin, actions: actions, optional_rules: @optional_rules)
       end
 
       def trains
@@ -895,14 +928,27 @@ module Engine
 
         # Find the highest tile that exists of this type in the tile list and duplicate it.
         # The highest one in the list should be the highest index anywhere.
-        tiles = @tiles.select { |t| t.name == tile.name }
-        new_tile = tiles.max { |a, b| a.id <=> b.id }.dup
+        tiles = @_tiles.values.select { |t| t.name == tile.name }
+        new_tile = tiles.max { |a, b| a.index <=> b.index }.dup
         @tiles << new_tile
 
         @_tiles[new_tile.id] = new_tile
         extra_cities = new_tile.cities
         @cities.concat(extra_cities)
         extra_cities.each { |c| @_cities[c.id] = c }
+      end
+
+      def after_par(corporation)
+        return unless corporation.capitalization == :incremental
+
+        all_companies_with_ability(:shares) do |company, ability|
+          next unless corporation.name == ability.shares.first.corporation.name
+
+          amount = ability.shares.sum { |share| corporation.par_price.price * share.num_shares }
+          @bank.spend(amount, corporation)
+          @log << "#{corporation.name} receives #{format_currency(amount)}
+                   from #{company.name}"
+        end
       end
 
       private

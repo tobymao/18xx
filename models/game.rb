@@ -103,7 +103,7 @@ class Game < Base
 
   def to_h(include_actions: false, player: nil)
     actions_h = include_actions ? actions.map(&:to_h) : []
-    settings_h = include_actions ? settings.to_h : {}
+    settings_h = settings.to_h
 
     # Move user settings and hide from other players
     user_settings_h = settings_h.dig('players', player)
