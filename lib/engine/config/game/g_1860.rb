@@ -470,15 +470,6 @@ module Engine
         100,
         100
       ],
-      "layer": 1,
-      "par_range": [
-        74,
-        100
-      ],
-      "repar_range": [
-        40,
-        100
-      ],
       "coordinates": "F2",
       "color": "deepskyblue",
       "text_color": "black"
@@ -494,15 +485,6 @@ module Engine
         100,
         100
       ],
-      "layer": 1,
-      "par_range": [
-        74,
-        100
-      ],
-      "repar_range": [
-        40,
-        100
-      ],
       "coordinates": "I3",
       "color": "red"
     },
@@ -515,15 +497,6 @@ module Engine
         0,
         40,
         100
-      ],
-      "layer": 2,
-      "par_range": [
-        62,
-        82
-      ],
-      "repar_range": [
-        40,
-        82
       ],
       "coordinates": "G7",
       "color": "black"
@@ -538,15 +511,6 @@ module Engine
         40,
         100
       ],
-      "layer": 2,
-      "par_range": [
-        62,
-        82
-      ],
-      "repar_range": [
-        40,
-        82
-      ],
       "coordinates": "B4",
       "color": "green"
     },
@@ -558,15 +522,6 @@ module Engine
       "tokens": [
         0,
         40
-      ],
-      "layer": 3,
-      "par_range": [
-        58,
-        68
-      ],
-      "repar_range": [
-        40,
-        68
       ],
       "coordinates": "G9",
       "color": "yellow",
@@ -581,15 +536,6 @@ module Engine
         0,
         40
       ],
-      "layer": 3,
-      "par_range": [
-        58,
-        68
-      ],
-      "repar_range": [
-        40,
-        68
-      ],
       "coordinates": "L6",
       "color": "darkmagenta"
     },
@@ -602,15 +548,6 @@ module Engine
         0,
         40
       ],
-      "layer": 4,
-      "par_range": [
-        54,
-        62
-      ],
-      "repar_range": [
-        40,
-        62
-      ],
       "coordinates": "F12",
       "color": "darkblue"
     },
@@ -622,15 +559,6 @@ module Engine
       "tokens": [
         0,
         40
-      ],
-      "layer": 4,
-      "par_range": [
-        54,
-        62
-      ],
-      "repar_range": [
-        40,
-        62
       ],
       "coordinates": "E9",
       "color": "yellowgreen",

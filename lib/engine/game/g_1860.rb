@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1860'
-require_relative '../g_1860/corporation'
 require_relative 'base'
 
 module Engine
@@ -27,6 +26,38 @@ module Engine
       EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
       HOME_TOKEN_TIMING = :operating_round
 
+      PAR_RANGE = {
+        1 => [74, 100],
+        2 => [62, 82],
+        3 => [58, 68],
+        4 => [54, 62],
+      }.freeze
+
+      REPAR_RANGE = {
+        1 => [40, 100],
+        2 => [40, 82],
+        3 => [40, 68],
+        4 => [40, 62],
+      }.freeze
+
+      LAYER_BY_NAME = {
+        'C&N' => 1,
+        'IOW' => 1,
+        'IWNJ' => 2,
+        'FYN' => 2,
+        'NGStL' => 3,
+        'BHI&R' => 3,
+        'S&C' => 4,
+        'VYSC' => 4,
+      }.freeze
+
+      def setup
+        @bankrupt_corps = []
+        @receivership_corps = []
+        @insolvent_corps = []
+        @closed_corps = []
+      end
+
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
@@ -50,18 +81,6 @@ module Engine
 
       def init_stock_market
         StockMarket.new(self.class::MARKET, [], zigzag: true)
-      end
-
-      def init_corporations(stock_market)
-        min_price = stock_market.par_prices.map(&:price).min
-
-        self.class::CORPORATIONS.map do |corporation|
-          Engine::G1860::Corporation.new(
-            min_price: min_price,
-            capitalization: self.class::CAPITALIZATION,
-            **corporation.merge(corporation_opts),
-          )
-        end
       end
 
       def new_auction_round
@@ -93,9 +112,25 @@ module Engine
         current_entity == company_by_id('ER') ? [@round.company_seller] : super
       end
 
+      def corp_bankrupt?(corp)
+        @bankrupt_corps.include?(corp)
+      end
+
+      def corp_hi_par(corp)
+        (corp_bankrupt?(corp) ? REPAR_RANGE[corp_layer(corp)] : PAR_RANGE[corp_layer(corp)]).last
+      end
+
+      def corp_lo_par(corp)
+        (corp_bankrupt?(corp) ? REPAR_RANGE[corp_layer(corp)] : PAR_RANGE[corp_layer(corp)]).first
+      end
+
+      def corp_layer(corp)
+        LAYER_BY_NAME[corp.name]
+      end
+
       def par_prices(corp)
-        par_prices = corp.bankrupt? ? repar_prices : stock_market.par_prices
-        par_prices.select { |p| p.price <= corp.hi_par && p.price >= corp.lo_par }
+        par_prices = corp_bankrupt?(corp) ? repar_prices : stock_market.par_prices
+        par_prices.select { |p| p.price <= corp_hi_par(corp) && p.price >= corp_lo_par(corp) }
       end
 
       def repar_prices

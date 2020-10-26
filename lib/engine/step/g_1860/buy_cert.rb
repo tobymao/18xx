@@ -16,7 +16,7 @@ module Engine
 
         def setup
           @companies = @game.companies.select { |c| c.all_abilities.any? }.sort +
-                       @game.corporations.select { |c| c.layer == 1 }
+            @game.corporations.select { |c| @game.corp_layer(c) == 1 }
           @bids = {}
           setup_auction
         end
