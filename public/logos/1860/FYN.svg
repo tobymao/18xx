@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+xmlns:dc="http://purl.org/dc/elements/1.1/"
+xmlns:cc="http://creativecommons.org/ns#"
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:svg="http://www.w3.org/2000/svg"
+xmlns="http://www.w3.org/2000/svg"
+xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+id="Layer_1"
+data-name="Layer 1"
+viewBox="0 0 36 36"
+version="1.1"
+sodipodi:docname="FYN.svg"
+inkscape:version="0.92.3 (2405546, 2018-03-11)">
+<metadata
+id="metadata1593">
+<rdf:RDF>
+<cc:Work
+rdf:about="">
+<dc:format>image/svg+xml</dc:format>
+<dc:type
+rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+<dc:title></dc:title>
+</cc:Work>
+</rdf:RDF>
+</metadata>
+<defs
+id="defs1582">
+<style
+id="style1580">.cls-1{fill:#37383a;}.cls-2{fill:#fff;}</style>
+</defs>
+<circle
+class="cls-1"
+cx="17.91"
+cy="17.94"
+r="17.5"
+id="circle1584"
+style="fill:#008000;fill-opacity:1" />
+<g
+aria-label="FYN"
+transform="scale(0.88245337,1.1332044)"
+style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:16.2840004px;line-height:1.25;font-family:'Century Schoolbook L';-inkscape-font-specification:'Century Schoolbook L, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.22132349"
+id="text914">
+<path
+d="m 13.107135,10.320249 h -9.68898 v 0.765348 h 0.2931121 c 1.319004,0 1.46556,0.08142 1.46556,0.765348 v 0.472236 7.751184 0.472236 c 0,0.683928 -0.146556,0.765348 -1.46556,0.765348 H 3.418155 v 0.765348 h 5.5854122 v -0.765348 h -0.537372 c -1.3190041,0 -1.4655601,-0.08142 -1.4655601,-0.765348 v -0.472236 -3.696468 h 0.32568 c 1.0096081,0 1.4004241,0.0977 1.7423881,0.439668 0.4071,0.423384 0.56994,0.944472 0.602508,1.905228 H 10.436559 V 13.381641 H 9.6712112 c -0.08142,1.595832 -0.73278,2.230908 -2.2797601,2.230908 h -0.390816 v -3.712752 c 0,-0.700212 0.146556,-0.8142 1.0258921,-0.8142 h 0.749064 c 2.6868598,0 3.3870718,0.618792 3.8430238,3.403356 h 0.716496 z"
+style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:16.2840004px;font-family:'Century Schoolbook L';-inkscape-font-specification:'Century Schoolbook L, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:1.22132349"
+id="path974" />
+<path
+d="m 20.157598,16.263909 -2.735712,-4.412964 c -0.130272,-0.195408 -0.179124,-0.341964 -0.179124,-0.455952 0,-0.211692 0.195408,-0.309396 0.635076,-0.309396 h 0.960756 V 10.320249 H 13.61143 v 0.765348 h 0.358248 c 0.700212,0 0.944472,0.146556 1.319004,0.749064 l 3.517344,5.569128 v 2.670576 0.472236 c 0,0.683928 -0.146556,0.765348 -1.46556,0.765348 h -0.423384 v 0.765348 h 5.585412 V 21.311949 H 22.07911 c -1.319004,0 -1.449276,-0.06514 -1.449276,-0.765348 v -0.472236 -2.865984 l 2.426316,-4.380396 c 0.358248,-0.635076 0.56994,-0.944472 0.8142,-1.188732 0.374532,-0.341964 0.89562,-0.553656 1.432992,-0.553656 h 0.130272 v -0.765348 h -4.624656 v 0.765348 h 0.374532 c 0.89562,0 1.270152,0.211692 1.270152,0.73278 0,0.24426 -0.0977,0.521088 -0.276828,0.846768 z"
+style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:16.2840004px;font-family:'Century Schoolbook L';-inkscape-font-specification:'Century Schoolbook L, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:1.22132349"
+id="path976" />
+<path
+d="m 28.93671,10.320249 h -3.354504 v 0.765348 h 0.4071 c 0.830484,0 1.205016,0.130272 1.498128,0.537372 v 6.9207 c 0,2.230908 -0.32568,2.703144 -1.888944,2.76828 v 0.765348 h 4.64094 v -0.765348 c -1.54698,-0.06514 -1.87266,-0.537372 -1.87266,-2.76828 v -6.041364 l 7.262664,9.802968 h 0.683928 v -8.451396 c 0,-2.230908 0.32568,-2.703144 1.888944,-2.76828 v -0.765348 h -4.64094 v 0.765348 c 1.54698,0.06514 1.87266,0.537372 1.87266,2.76828 v 5.113176 z"
+style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:16.2840004px;font-family:'Century Schoolbook L';-inkscape-font-specification:'Century Schoolbook L, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:1.22132349"
+id="path978" />
+</g>
+</svg>

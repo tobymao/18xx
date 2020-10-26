@@ -463,40 +463,26 @@ module Engine
       "sym": "C&N",
       "name": "Cowes & Newport",
       "logo": "1860/CN",
+      "float_percent": 50,
       "tokens": [
         0,
         40,
         100,
         100
       ],
-      "par_range": [
-        74,
-        100
-      ],
-      "repar_range": [
-        40,
-        100
-      ],
       "coordinates": "F2",
-      "color": "lightBlue",
+      "color": "deepskyblue",
       "text_color": "black"
     },
     {
       "sym": "IOW",
       "name": "Isle of Wight",
       "logo": "1860/IOW",
+      "float_percent": 50,
       "tokens": [
         0,
         40,
         100,
-        100
-      ],
-      "par_range": [
-        74,
-        100
-      ],
-      "repar_range": [
-        40,
         100
       ],
       "coordinates": "I3",
@@ -506,18 +492,11 @@ module Engine
       "sym": "IWNJ",
       "name": "Isle of Wight, Newport Juntion",
       "logo": "1860/IWNJ",
+      "float_percent": 50,
       "tokens": [
         0,
         40,
         100
-      ],
-      "par_range": [
-        62,
-        82
-      ],
-      "repar_range": [
-        40,
-        82
       ],
       "coordinates": "G7",
       "color": "black"
@@ -526,18 +505,11 @@ module Engine
       "sym": "FYN",
       "name": "Freshwater, Yarmouth & Newport",
       "logo": "1860/FYN",
+      "float_percent": 50,
       "tokens": [
         0,
         40,
         100
-      ],
-      "par_range": [
-        62,
-        82
-      ],
-      "repar_range": [
-        40,
-        82
       ],
       "coordinates": "B4",
       "color": "green"
@@ -546,17 +518,10 @@ module Engine
       "sym": "NGStL",
       "name": "Newport, Godshill & St. Lawrence",
       "logo": "1860/NGStL",
+      "float_percent": 50,
       "tokens": [
         0,
         40
-      ],
-      "par_range": [
-        58,
-        68
-      ],
-      "repar_range": [
-        40,
-        68
       ],
       "coordinates": "G9",
       "color": "yellow",
@@ -566,58 +531,38 @@ module Engine
       "sym": "BHI&R",
       "name": "Brading Harbour Improvement & Railway",
       "logo": "1860/BHIR",
+      "float_percent": 50,
       "tokens": [
         0,
         40
       ],
-      "par_range": [
-        58,
-        68
-      ],
-      "repar_range": [
-        40,
-        68
-      ],
       "coordinates": "L6",
-      "color": "pink"
+      "color": "darkmagenta"
     },
     {
       "sym": "S&C",
       "name": "Shanklin & Chale",
       "logo": "1860/SC",
+      "float_percent": 50,
       "tokens": [
         0,
         40
       ],
-      "par_range": [
-        54,
-        62
-      ],
-      "repar_range": [
-        40,
-        62
-      ],
       "coordinates": "F12",
-      "color": "violet"
+      "color": "darkblue"
     },
     {
       "sym": "VYSC",
       "name": "Ventor, Yarmouth & South Coast",
       "logo": "1860/VYSC",
+      "float_percent": 50,
       "tokens": [
         0,
         40
       ],
-      "par_range": [
-        54,
-        62
-      ],
-      "repar_range": [
-        40,
-        62
-      ],
       "coordinates": "E9",
-      "color": "brightGreen"
+      "color": "yellowgreen",
+      "text_color": "black"
     }
   ],
   "trains": [
