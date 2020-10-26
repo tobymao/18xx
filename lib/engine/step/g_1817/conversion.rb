@@ -42,7 +42,18 @@ module Engine
               0
             end
 
+          @round.converts << corporation
           @round.converted = corporation
+        end
+
+        def new_share_price(corporation, target)
+          new_price =
+            if corporation.total_shares == 2
+              corporation.share_price.price + target.share_price.price
+            else
+              (corporation.share_price.price + target.share_price.price) / 2
+            end
+          @game.find_share_price(new_price)
         end
 
         def process_merge(action)
@@ -79,13 +90,7 @@ module Engine
           end
 
           initial_size = corporation.total_shares
-          new_price =
-            if initial_size == 2
-              corporation.share_price.price + target.share_price.price
-            else
-              (corporation.share_price.price + target.share_price.price) / 2
-            end
-          share_price = @game.find_share_price(new_price)
+          share_price = new_share_price(corporation, target)
           price = share_price.price
           @game.stock_market.move(corporation, *share_price.coordinates)
 
@@ -116,6 +121,7 @@ module Engine
           @round.goto_entity!(corporation) unless @round.entities.empty?
 
           @round.converted = corporation
+          @round.converts << corporation
         end
 
         def log_pass(entity)
@@ -127,12 +133,14 @@ module Engine
 
           @game.corporations.select do |target|
             target.floated? &&
+            !@round.converts.include?(target) &&
               target.share_price.normal_movement? &&
               target != corporation &&
               target.total_shares != 10 &&
               target.total_shares == corporation.total_shares &&
             # on 5 share merges ensure one player will have at least enough shares to take the presidency
-            (target.total_shares != 5 || merged_max_share_holder(corporation, target) > 40)
+            (target.total_shares != 5 || merged_max_share_holder(corporation, target) > 40) &&
+            owner_can_afford_extra_share(corporation, target)
           end
         end
 
@@ -142,10 +150,17 @@ module Engine
           .values.max
         end
 
+        def owner_can_afford_extra_share(corporation, target)
+          target.total_shares != 2 ||
+          corporation.owner == target.owner ||
+          (corporation.owner.cash >= new_share_price(corporation, target).price)
+        end
+
         def round_state
           {
             converted: nil,
             tokens_needed: nil,
+            converts: [],
           }
         end
       end
