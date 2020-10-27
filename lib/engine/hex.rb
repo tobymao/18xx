@@ -112,11 +112,13 @@ module Engine
           @tile.cities.map.with_index do |old_city, index|
             new_city = tile.cities.find do |city|
               # we want old_edges to be subset of new_edges
-              (old_city.exits - city.exits).empty?
+              # without the any? check, first city will always match
+              old_city.exits.any? && (old_city.exits - city.exits).empty?
             end
 
             # When downgrading from yellow to no-exit tiles, assume it's the same index
-            new_city ||= tile.cities[index]
+            # Also, when upgrading a no-exit city, assume it's the same index if possible
+            new_city ||= (tile.cities[index] || tile.cities[0])
             [old_city, new_city]
           end.to_h
         end
