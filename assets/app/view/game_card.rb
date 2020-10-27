@@ -1,3 +1,4 @@
+# coding: utf-8
 # frozen_string_literal: true
 
 require 'lib/color'
@@ -211,8 +212,8 @@ module View
       end
 
       children = [h(:div, id_line)]
-      children << h(:div, [h(:i, 'Private game')]) if @gdata.dig('settings', 'unlisted')
-      children << h(:div, [h(:strong, 'Description: '), @gdata['description']])
+      children << h(:div, [h(:i, 'Private game')]) if @gdata['status'] == 'new' && @gdata.dig('settings', 'unlisted')
+      children << h(:div, [h(:strong, 'Description: '), @gdata['description']]) unless @gdata['description'].empty?
 
       optional = render_optional_rules
       children << optional if optional
