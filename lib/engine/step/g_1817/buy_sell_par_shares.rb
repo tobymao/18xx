@@ -129,9 +129,14 @@ module Engine
 
         def pass_description
           return 'Pass (Subsidiaries)' if available_subsidiaries.any?
-          return super unless @auctioning
 
-          'Pass (Bid)'
+          if @auctioning
+            'Pass (Bid)'
+          elsif @game.corporations.any? { |corp| corp.owner == current_entity && @round.tokens_needed?(corp) }
+            'Pass (May liquidate corporation)'
+          else
+            super
+          end
         end
 
         def log_pass(entity)
