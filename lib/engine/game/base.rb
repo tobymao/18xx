@@ -324,15 +324,8 @@ module Engine
         @finished = false
         @log = []
         @actions = []
-        @names = if names.is_a?(Hash)
-                   names.freeze
-                 else
-                   names.map { |n| [n, n] }.to_h
-                 end
-
-        # This intentionally ignores player id for now until the database is migrated.
-        @players = @names.map { |_playerid, name| Player.new(name, name) }
-
+        @names = names.freeze
+        @players = @names.map { |name| Player.new(name) }
         @optional_rules = init_optional_rules(optional_rules)
 
         @seed = @id.to_s.scan(/\d+/).first.to_i % RAND_M
