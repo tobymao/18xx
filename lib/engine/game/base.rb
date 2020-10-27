@@ -209,7 +209,7 @@ module Engine
       def setup; end
 
       def init_optional_rules(optional_rules)
-        optional_rules ||= []
+        optional_rules = (optional_rules || []).map(&:to_sym)
         self.class::OPTIONAL_RULES.each do |rule|
           optional_rules.delete(rule[:sym]) if rule[:players] && !rule[:players].include?(@players.size)
         end
