@@ -23,6 +23,9 @@ module Engine
                       .corporations
                       .select(&:floated?)
                       .sort.reverse
+                      .select do |corp|
+                        !corp.share_price.acquisition? || @game.stock_prices_start_merger[corp].acquisition?
+                      end
           @game.players.select { |p| p.presidencies.any? }
         end
 
