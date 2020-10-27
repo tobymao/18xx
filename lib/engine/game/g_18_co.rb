@@ -151,11 +151,13 @@ module Engine
         Step::DiscardTrain,
         Step::HomeToken,
         Step::BuyCompany,
+        Step::G18CO::RedeemShares,
         Step::G18CO::Track,
         Step::Token,
         Step::Route,
         Step::G18CO::Dividend,
         Step::BuyTrain,
+        Step::G18CO::IssueShares,
         [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
@@ -256,9 +258,11 @@ module Engine
         corporation = bundle.corporation
         price = corporation.share_price.price
         was_president = corporation.president?(bundle.owner)
+        was_issued = bundle.owner == bundle.corporation
+
         @share_pool.sell_shares(bundle)
 
-        return if !was_president && bundle.num_shares == 1
+        return if !(was_president || was_issued) && bundle.num_shares == 1
 
         bundle.num_shares.times { @stock_market.move_down(corporation) }
 
@@ -292,6 +296,21 @@ module Engine
 
           break
         end
+      end
+
+      def issuable_shares(entity)
+        return [] unless entity.corporation?
+        return [] unless entity.num_ipo_shares
+
+        bundles_for_corporation(entity, entity)
+          .reject { |bundle| bundle.num_shares > 1 }
+      end
+
+      def redeemable_shares(entity)
+        return [] unless entity.corporation?
+
+        bundles_for_corporation(share_pool, entity)
+          .reject { |bundle| entity.cash < bundle.price }
       end
     end
   end
