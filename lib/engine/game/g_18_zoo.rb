@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_18_zoo'
-require_relative '../g_18_zoo/corporation'
 require_relative '../g_18_zoo/company'
 require_relative 'base'
 
@@ -44,15 +43,6 @@ module Engine
                             end
             company
           end.compact
-        end
-
-        def init_corporations(stock_market)
-          min_price = stock_market.par_prices.map(&:price).min
-
-          self.class::CORPORATIONS.map do |corporation|
-            Engine::G18ZOO::Corporation.new(min_price: min_price, capitalization: self.class::CAPITALIZATION,
-                                            **corporation.merge(corporation_opts))
-          end
         end
 
         def priority_deal_player
