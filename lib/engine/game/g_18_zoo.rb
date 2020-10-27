@@ -18,42 +18,40 @@ module Engine
         HOME_TOKEN_TIMING = :float
 
         SELL_BUY_ORDER = :sell_buy
-        GAME_END_CHECK = {bankrupt: :immediate, bank: :full_or}.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
         # Two lays or one upgrade
-        TILE_LAYS = [{lay: true, upgrade: true}, {lay: :not_if_upgraded, upgrade: false}].freeze
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
         def init_round
           Round::Draft.new(self, [Step::G18ZOO::SimpleDraft], reverse_order: true)
         end
 
-        def init_companies(players)
-          self.class::COMPANIES.map do |company|
+        def init_companies(_players)
+          @companies = self.class::COMPANIES.map do |company|
             Engine::G18ZOO::Company.new(**company)
-          end.sort_by { rand }.map.with_index do |company, index|
+          end
+          @companies = @companies.sort_by { rand }
+          @companies.map.with_index do |company, index|
             company.phase = if index < 4
-                              0
+                              'ISR'
                             elsif index < 8
-                              1
+                              'MONDAY'
                             elsif index < 12
-                              2
+                              'TUESDAY'
                             elsif index < 16
-                              3
+                              'WEDNESDAY'
                             end
             company
           end.compact
-          # TODO assing them in the correct way for 5 players
         end
 
         def init_corporations(stock_market)
           min_price = stock_market.par_prices.map(&:price).min
 
           self.class::CORPORATIONS.map do |corporation|
-            Engine::G18ZOO::Corporation.new(
-                min_price: min_price,
-                capitalization: self.class::CAPITALIZATION,
-                **corporation.merge(corporation_opts),
-            )
+            Engine::G18ZOO::Corporation.new(min_price: min_price, capitalization: self.class::CAPITALIZATION,
+                                            **corporation.merge(corporation_opts))
           end
         end
 
@@ -69,45 +67,6 @@ module Engine
               Step::BuySellParShares,
           ])
         end
-
-        def round_description(name, _round_num = nil)
-          case name
-          when 'Stock'
-            super
-          when 'Draft'
-            name
-          else # 'Operating'
-          message = ''
-          message += ' - Change to Phase 3 after OR 1' if @or == 1
-          message += ' - 2+ trains rust after OR 4' if @or <= 4
-          message += ' - 3+ trains rust after OR 6' if @or > 4 && @or <= 6
-          message += ' - 4+ trains rust after OR 8' if @or > 6 && @or <= 8
-          message += ' - Game end after OR 10' if @or > 8
-          "#{name} Round #{@or} (of 10)#{message}"
-          end
-        end
-
-        # def next_round!
-        #   @round =
-        #       case @round
-        #       when Round::Draft
-        #         @turn = 1
-        #         new_stock_round
-        #       when Roung::Stock
-        #         new_operating_round(@round.round_num)
-        #       when Round::Operating
-        #         or_round_finished
-        #         if @round.round_num < @operating_rounds
-        #           new_operating_round(@round.round_num + 1)
-        #         else
-        #           or_set_finished
-        #           new_draft_round
-        #         end
-        #       else
-        #         raise GameError "unexpected current round type #{@round.class.name}, don't know how to pick next round"
-        #       end
-        #   @round
-        # end
 
         def game_end_check
           triggers = {
@@ -125,7 +84,6 @@ module Engine
 
           nil
         end
-
       end
     end
 

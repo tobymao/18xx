@@ -11,7 +11,7 @@ module Engine
         ACTIONS_WITH_PASS = %w[bid pass].freeze
 
         def setup
-          @companies = @game.companies.select { |company| company.phase == 0 }.sort
+          @companies = @game.companies.select { |company| company.phase == 'ISR' }.sort
           @finished = false
         end
 
@@ -83,7 +83,7 @@ module Engine
 
         def action_finalized
           @round.next_entity_index!
-          @finished = true if @round.entity_index == 0
+          @finished = true if @round.entity_index.zero?
 
           return unless finished?
 
