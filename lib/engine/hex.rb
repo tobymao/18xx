@@ -136,8 +136,9 @@ module Engine
       # when upgrading, preserve tokens on previous tile (must be handled after
       # reservations are completely done due to OO weirdness)
       city_map.each do |old_city, new_city|
-        old_city.tokens.each do |token|
-          new_city.exchange_token(token) if token
+        old_city.tokens.each.with_index do |token, index|
+          cheater = (index >= old_city.normal_slots) && index
+          new_city.exchange_token(token, cheater: cheater) if token
         end
         old_city.remove_tokens!
       end

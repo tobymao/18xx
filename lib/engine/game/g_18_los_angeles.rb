@@ -5,13 +5,14 @@ require_relative '../config/game/g_1846'
 require_relative '../config/game/g_18_los_angeles'
 require_relative '../step/g_18_los_angeles/draft_distribution'
 require_relative '../step/g_18_los_angeles/route'
+require_relative '../step/g_18_los_angeles/special_token'
 
 module Engine
   module Game
     class G18LosAngeles < G1846
       load_from_json(Config::Game::G18LosAngeles::JSON, Config::Game::G1846::JSON)
 
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
 
       GAME_LOCATION = nil
       GAME_RULES_URL = {
@@ -23,6 +24,13 @@ module Engine
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18LosAngeles'
 
       OPTIONAL_RULES = [
+        {
+          sym: :dch,
+          short_name: 'Dewey, Cheatham, and Howe',
+          desc: 'add a private company which allows the owning corporation to '\
+                'place a token in a city that has no open slots (3+ players only)',
+          players: [3, 4, 5],
+        },
         {
           sym: :la_title,
           short_name: 'LA Title',
@@ -49,6 +57,12 @@ module Engine
 
       GREEN_GROUP = %w[LA SF SP].freeze
 
+      REMOVED_CORP_SECOND_TOKEN = {
+        'LA' => 'B9',
+        'SF' => 'C8',
+        'SP' => 'C6',
+      }.freeze
+
       LSL_HEXES = %w[E4 E6].freeze
       LSL_ICON = 'sbl'
 
@@ -67,6 +81,7 @@ module Engine
 
       def init_companies(_players)
         companies = super
+        companies.reject! { |c| c.sym == 'DC&H' } unless @optional_rules.include?(:dch)
         companies.reject! { |c| c.sym == 'LAT' } unless @optional_rules.include?(:la_title)
         companies
       end
@@ -97,23 +112,9 @@ module Engine
         [GREEN_GROUP]
       end
 
-      def place_second_token(corporation)
-        hex = case corporation.id
-              when 'LA'
-                'B9'
-              when 'SF'
-                'C8'
-              when 'SP'
-                'C6'
-              end
-        return unless hex
-
-        token = corporation.find_token_by_type
-        hex_by_id(hex).tile.cities.first.place_token(corporation, token, check_tokenable: false)
-        @log << "#{corporation.id} places a token on #{hex}"
+      def place_second_token(corporation, **_kwargs)
+        super(corporation, two_player_only: false, cheater: false)
       end
-
-      def check_removed_corp_second_token(_hex, _tile); end
 
       def init_round
         Round::Draft.new(self,
@@ -135,7 +136,7 @@ module Engine
           Step::G1846::Bankrupt,
           Step::DiscardTrain,
           Step::G1846::Assign,
-          Step::SpecialToken,
+          Step::G18LosAngeles::SpecialToken,
           Step::SpecialTrack,
           Step::G1846::BuyCompany,
           Step::G1846::IssueShares,
@@ -183,6 +184,10 @@ module Engine
 
       def lake_shore_line
         @lake_shore_line ||= company_by_id('SBL')
+      end
+
+      def dch
+        @dch ||= company_by_id('DC&H')
       end
 
       def block_for_steamboat?

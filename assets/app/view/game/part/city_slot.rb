@@ -82,7 +82,8 @@ module View
           entity = @selected_company || step.current_entity
           actions = step.actions(entity)
           return if (%w[remove_token place_token] & actions).empty?
-          return if @token && !step.can_replace_token?(entity, @token)
+          return if @token && !step.can_replace_token?(entity, @token) &&
+                    !(cheater = entity.abilities(:token)&.cheater)
 
           event.JS.stopPropagation
 
@@ -102,7 +103,7 @@ module View
               action = Engine::Action::PlaceToken.new(
                 @selected_company || @game.current_entity,
                 city: @city,
-                slot: @slot_index,
+                slot: cheater || @slot_index,
                 token_type: next_tokens[0].type
               )
               store(:selected_company, nil, skip: true)
