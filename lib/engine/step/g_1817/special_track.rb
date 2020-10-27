@@ -17,7 +17,8 @@ module Engine
             tile_lay = step.get_tile_lay(owner)
             tile = action.tile
             @game.game_error('Cannot lay an yellow now') if tile.color == :yellow && !tile_lay[:lay]
-            lay_tile(action, extra_cost: tile_lay[:cost], entity: owner, spender: owner)
+            # Subtract 15 from the cost cancelling the terrain cost
+            lay_tile(action, extra_cost: tile_lay[:cost] - 15, entity: owner, spender: owner)
             tile.hex.assign!('mine')
             @game.log << "#{owner.name} adds mine to #{tile.hex.name}"
             ability(action.entity).use!
