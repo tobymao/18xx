@@ -15,6 +15,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>You can now create private games. After you create the game, use the "copy invite link" button to<br>
+        get a URL to send to your opponents.</p>
         <p>1817 is now more stable and in alpha! Feel free to play multiplayer games.</p>
         <p>18MEX is now in alpha!</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
