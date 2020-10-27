@@ -19,6 +19,7 @@ module Engine
             @game.game_error('Cannot lay an yellow now') if tile.color == :yellow && !tile_lay[:lay]
             lay_tile(action, extra_cost: tile_lay[:cost], entity: owner, spender: owner)
             tile.hex.assign!('mine')
+            @game.log << "#{owner.name} adds mine to #{tile.hex.name}"
             ability(action.entity).use!
           end
           step.laid_track = step.laid_track + 1
