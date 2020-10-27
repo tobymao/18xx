@@ -12,7 +12,7 @@ module Engine
     class G18LosAngeles < G1846
       load_from_json(Config::Game::G18LosAngeles::JSON, Config::Game::G1846::JSON)
 
-      DEV_STAGE = :beta
+      DEV_STAGE = :alpha
 
       GAME_LOCATION = nil
       GAME_RULES_URL = {
