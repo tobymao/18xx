@@ -107,6 +107,7 @@ module Engine
       SELL_AFTER = :first
 
       # down_share -- down one row per share
+      # down_per_10 -- down one row per 10% sold
       # down_block -- down one row per block
       # left_block_pres -- left one column per block if president
       # left_block -- one row per block
@@ -652,6 +653,19 @@ module Engine
         case self.class::SELL_MOVEMENT
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
+        when :down_per_10
+          case entity.total_shares
+          when 5
+            (2 * bundle.num_shares).times { @stock_market.move_down(corporation) }
+          when 10
+            bundle.num_shares.times { @stock_market.move_down(corporation) }
+          when 20
+            (bundle.num_shares.to_i / 2).times { @stock_market.move_down(corporation)}
+          else
+            # Supporting arbitrary share counts (such as 37) without relying on floating point
+            # math behaving nicely all the time is non-trivial and not really neccessary. At least for now.
+            raise NotImplementedError
+          end
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
         when :none
