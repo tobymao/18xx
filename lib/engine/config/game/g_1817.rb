@@ -512,8 +512,8 @@ module Engine
     {
       "float_percent": 20,
       "sym": "NYOW",
-      "name": "New York, Ontaria and Western Railway",
-      "logo": "1817/NYOW",
+      "name": "New York, Ontario and Western Railway",
+      "logo": "1817/W",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -526,7 +526,7 @@ module Engine
       "float_percent": 20,
       "sym": "NYSW",
       "name": "New York, Susquehanna and Western Railway",
-      "logo": "1817/NYSW",
+      "logo": "1817/S",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -639,7 +639,7 @@ module Engine
         0
       ],
       "always_market_price": true,
-      "color": "lavender"
+      "color": "gray"
     }
   ],
   "trains": [
