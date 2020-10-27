@@ -17,7 +17,6 @@ module View
       message = <<~MESSAGE
         <p>1817 is now more stable and in alpha! Feel free to play multiplayer games.</p>
         <p>18MEX is now in alpha!</p>
-        <p>18 Los Angeles by Tony Fryer is now in alpha! It is based on 1846, and plays 2-5 players. Learn more on the <a href='https://traxx-denver.com/games/'>TraXX</a> website.</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
         If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other
