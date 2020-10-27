@@ -21,6 +21,7 @@ module View
         black: '#000000',
         gray: '#888888',
         green: '#aaffaa',
+        white: '#ffffff',
       }.freeze
 
       # All markets
