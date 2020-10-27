@@ -415,6 +415,7 @@ module Engine
         0
       ],
       "always_market_price": true,
+      "text_color": "black",
       "color": "orange"
     },
     {
@@ -467,6 +468,7 @@ module Engine
         0
       ],
       "always_market_price": true,
+      "text_color": "black",
       "color": "green"
     },
     {
@@ -493,6 +495,7 @@ module Engine
         0
       ],
       "always_market_price": true,
+      "text_color": "black",
       "color": "lightBlue"
     },
     {
@@ -573,6 +576,7 @@ module Engine
         0
       ],
       "always_market_price": true,
+      "text_color": "black",
       "color": "lightBrown"
     },
     {
@@ -599,8 +603,7 @@ module Engine
         0
       ],
       "always_market_price": true,
-      "color": "natural",
-      "text_color": "black"
+      "color": "natural"
     },
     {
       "float_percent": 20,
