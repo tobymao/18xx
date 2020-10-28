@@ -67,7 +67,7 @@ module Engine
       MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'Minimum Price for a 2($55), 5($70) and 10($120) share'\
       ' corporation taking maximum loans to ensure it avoids acquisition').freeze
       MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
-      attr_reader :loan_value, :owner_when_liquidated
+      attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
       def bankruptcy_limit_reached?
         @players.reject(&:bankrupt).one?
@@ -419,6 +419,8 @@ module Engine
             new_operating_round
           when Round::Operating
             or_round_finished
+            # Store the share price of each corp to determine if they can be acted upon in the AR
+            @stock_prices_start_merger = @corporations.map { |corp| [corp, corp.share_price] }.to_h
             @log << "-- Merger and Conversion Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
             Round::G1817::Merger.new(self, [
               Step::G1817::ReduceTokens,
