@@ -84,6 +84,7 @@ class Api
                   users.map(&:name),
                   id: game.id,
                   actions: actions_h(game),
+                  optional_rules: game.settings['optional_rules_selected']&.map(&:to_sym),
                 )
 
                 action_id = r.params['id']
@@ -145,7 +146,11 @@ class Api
 
           # POST '/api/game/<game_id>/start
           r.is 'start' do
-            engine = Engine::GAMES_BY_TITLE[game.title].new(users.map(&:name), id: game.id)
+            engine = Engine::GAMES_BY_TITLE[game.title].new(
+              users.map(&:name),
+              id: game.id,
+              optional_rules: game.settings['optional_rules_selected']&.map(&:to_sym),
+            )
             unless game.players.size.between?(*Engine.player_range(engine.class))
               halt(400, 'Player count not supported')
             end

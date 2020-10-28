@@ -159,19 +159,19 @@ module View
 
       return store(:flash_opts, 'Cannot have duplicate player names') if players.uniq.size != players.size
 
-      game_data = game_params['game_data']
-
       if @mode == :json
         begin
-          game_data = JSON.parse(game_data)
+          game_data = JSON.parse(game_params['game_data'])
         rescue JSON::ParserError => e
           return store(:flash_opts, e.message)
         end
       else
-        game_data = {}
+        game_data = {
+          settings: {
+            optional_rules_selected: game_params[:optional_rules_selected] || [],
+          },
+        }
       end
-      game_data[:settings] ||= {}
-      game_data[:settings][:optional_rules_selected] = game_params[:optional_rules_selected] || []
 
       create_hotseat(
         id: Time.now.to_i,
@@ -212,7 +212,10 @@ module View
       range.value = (min..max).include?(val) ? val : max
       store(:num_players, range.value.to_i)
 
-      store(:optional_rules, selected_game::OPTIONAL_RULES)
+      visible_rules = selected_game::OPTIONAL_RULES.reject do |rule|
+        rule[:players] && !rule[:players].include?(@num_players)
+      end
+      store(:optional_rules, visible_rules)
     end
   end
 end
