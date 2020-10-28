@@ -41,10 +41,10 @@ module Engine
       OPTIONAL_RULES = [
         { sym: :triple_yellow_first_or,
           short_name: 'Extra yellow',
-          desc: '8a: Allow corporation to lay 3 yellows its first OR' },
+          desc: 'Allow corporations to lay 3 yellow tiles their first OR' },
         { sym: :hard_rust_t4,
           short_name: 'Hard rust',
-          desc: '8d: Hard rust for 4 trains' },
+          desc: "4 trains rust when 6' train is bought" },
       ].freeze
 
       def p2_company
@@ -521,8 +521,7 @@ module Engine
         @depot.trains
           .select { |t| t.name == '4' }
           .each do |t|
-            t.rusts_on = t.obsolete_on
-            t.obsolete_on = nil
+            t.update_end_of_life(t.obsolete_on, nil)
           end
       end
     end

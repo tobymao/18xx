@@ -7,9 +7,9 @@ module Engine
   class Train
     include Ownable
 
-    attr_accessor :obsolete, :operated, :events, :obsolete_on, :rusts_on
+    attr_accessor :obsolete, :operated, :events
     attr_reader :available_on, :name, :distance, :discount, :multiplier, :rusted, :sym,
-                :variant, :variants
+                :variant, :variants, :obsolete_on, :rusts_on
     attr_writer :buyable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
@@ -53,6 +53,14 @@ module Engine
 
       @variant = @variants[new_variant]
       @variant.each { |k, v| instance_variable_set("@#{k}", v) }
+    end
+
+    def update_end_of_life(rusts_on, obsolete_on)
+      @rusts_on = rusts_on
+      @obsolete_on = obsolete_on
+      @variants = @variants.map do |name, variant|
+        [name, variant.merge(rusts_on: rusts_on, obsolete_on: obsolete_on)]
+      end.to_h
     end
 
     def names_to_prices
