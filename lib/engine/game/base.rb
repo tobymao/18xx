@@ -654,7 +654,7 @@ module Engine
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
         when :down_per_10
-          (10 * bundle.num_shares / entity.total_shares).to_i.times { @stock_market.move_down(corporation) }
+          (bundle.percent / 10).to_i.times { @stock_market.move_down(corporation) }
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
         when :none
