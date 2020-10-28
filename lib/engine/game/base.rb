@@ -660,9 +660,9 @@ module Engine
           when 10
             bundle.num_shares.times { @stock_market.move_down(corporation) }
           when 20
-            (bundle.num_shares.to_i / 2).times { @stock_market.move_down(corporation)}
+            (bundle.num_shares.to_i / 2).times { @stock_market.move_down(corporation) }
           else
-            # Supporting arbitrary share counts (such as 37) without relying on floating point
+            # Supporting arbitrary share counts (such as 7) without relying on floating point
             # math behaving nicely all the time is non-trivial and not really neccessary. At least for now.
             raise NotImplementedError
           end
