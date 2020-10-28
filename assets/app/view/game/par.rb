@@ -33,7 +33,7 @@ module View
             },
             on: { click: par },
           }
-          purchasable_shares = entity.cash.div(share_price.price)
+          purchasable_shares = (entity.cash / share_price.price).to_i
           text = "#{@game.format_currency(share_price.price)} (#{purchasable_shares})"
           h('button.small.par_price', props, text)
         end
