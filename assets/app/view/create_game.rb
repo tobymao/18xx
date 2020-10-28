@@ -168,8 +168,8 @@ module View
       else
         game_data = {
           settings: {
-            optional_rules_selected: game_params[:optional_rules_selected] || []
-          }
+            optional_rules_selected: game_params[:optional_rules_selected] || [],
+          },
         }
       end
 
