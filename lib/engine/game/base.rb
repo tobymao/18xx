@@ -654,18 +654,7 @@ module Engine
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
         when :down_per_10
-          case entity.total_shares
-          when 5
-            (2 * bundle.num_shares).times { @stock_market.move_down(corporation) }
-          when 10
-            bundle.num_shares.times { @stock_market.move_down(corporation) }
-          when 20
-            (bundle.num_shares.to_i / 2).times { @stock_market.move_down(corporation) }
-          else
-            # Supporting arbitrary share counts (such as 7) without relying on floating point
-            # math behaving nicely all the time is non-trivial and not really neccessary. At least for now.
-            raise NotImplementedError
-          end
+          (10 * bundle.num_shares / entity.total_shares).to_i.times { @stock_market.move_down(corporation) }
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
         when :none
