@@ -206,11 +206,13 @@ module View
       title = selected_game.title
 
       range = Native(@inputs[:max_players]).elm
-      min = range.min = @min_p[title]
-      max = range.max = @max_p[title]
-      val = range.value.to_i
-      range.value = (min..max).include?(val) ? val : max
-      store(:num_players, range.value.to_i)
+      unless range.value == ''
+        min = range.min = @min_p[title]
+        max = range.max = @max_p[title]
+        val = range.value.to_i
+        range.value = (min..max).include?(val) ? val : max
+        store(:num_players, range.value.to_i)
+      end
 
       visible_rules = selected_game::OPTIONAL_RULES.reject do |rule|
         rule[:players] && !rule[:players].include?(@num_players)
