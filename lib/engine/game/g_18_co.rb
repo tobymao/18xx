@@ -84,16 +84,7 @@ module Engine
 
       def setup
         setup_company_price_50_to_150_percent
-        setup_companies
         setup_corporations
-      end
-
-      def setup_companies
-        imc.add_ability(Engine::Ability::Base.new(
-            type: :mine_multiplier,
-            description: 'Mine values are doubled',
-            count_per_or: 2
-          ))
       end
 
       def setup_corporations
@@ -116,11 +107,15 @@ module Engine
       end
 
       def mine_multiplier(entity)
-        entity.abilities(:mine_multiplier).map(&:count_per_or).reject(&:zero?).reduce(1, :*)
+        imc.owner == entity ? 2 : 1
+      end
+
+      def mine_value(entity)
+        BASE_MINE_VALUE * mine_multiplier(entity)
       end
 
       def mines_total(entity)
-        BASE_MINE_VALUE * mines_count(entity) * mine_multiplier(entity)
+        mine_value(entity) * mines_count(entity)
       end
 
       def mines_remove(entity)
@@ -130,12 +125,22 @@ module Engine
       end
 
       def mine_add(entity)
-        mine_count = mines_count(entity) + 1
+        mine_create(entity, mines_count(entity) + 1)
+      end
+
+      def mine_update_text(entity)
+        mine_create(entity, mines_count(entity))
+      end
+
+      def mine_create(entity, count)
         mines_remove(entity)
+        total = count * mine_value(entity)
         entity.add_ability(Engine::Ability::Base.new(
               type: :mine_income,
-              description: "Corporation owns #{mine_count} mines",
-              count_per_or: mine_count,
+              description: "#{count} mine#{count > 1 ? 's' : ''} x
+                            #{format_currency(mine_value(entity))} =
+                            #{format_currency(total)} to Treasury",
+              count_per_or: count,
               remove: '6'
             ))
       end
@@ -167,6 +172,15 @@ module Engine
           Step::G18CO::CompanyPendingPar,
           Step::WaterfallAuction,
         ])
+      end
+
+      def action_processed(action)
+        super
+
+        case action
+        when Action::BuyCompany
+          mine_update_text(action.entity) if action.company == imc && action.entity.corporation?
+        end
       end
 
       def revenue_for(route, stops)

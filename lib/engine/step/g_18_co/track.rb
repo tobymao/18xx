@@ -23,9 +23,7 @@ module Engine
             # Add mine to corporation data
             @game.mine_add(action.entity)
 
-            @log << "#{action.entity.name} collects a mine token from
-              #{action.hex.name} for a total of
-              #{@game.format_currency(@game.mines_total(action.entity))} from mines"
+            @log << "#{action.entity.name} collects a mine token from #{action.hex.name}"
           end
 
           pass! unless can_lay_tile?(action.entity)
