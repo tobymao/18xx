@@ -347,6 +347,24 @@ table.center {
   }
 }
 
+#chatlog > div {
+  margin-bottom: 0.2rem;
+  padding-left: 0.5rem;
+  text-indent: -0.5rem;
+}
+
+#homepage #chatlog .chatline span {
+  margin: 0 0.2rem;
+}
+
+#homepage #chatlog .chatline .username {
+  font-weight: bold;
+}
+
+#homepage #chatlog .chatline .timestamp {
+  font-size: smaller;
+}
+
 div.game.card em {
   font-style: normal;
   text-decoration: underline;

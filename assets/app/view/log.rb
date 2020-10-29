@@ -56,6 +56,17 @@ module View
             line_props[:style][:marginTop] = '0.5em' if index.positive?
           end
           h(:div, line_props, line)
+
+        elsif line.is_a?(Hash) # Homepage chat
+          timestamp = Time.at(line[:created_at])
+          time = timestamp.strftime(timestamp + 86_400 < Time.now ? '%F %T' : '%T')
+
+          h('div.chatline', line_props, [
+            h('span.username', line[:user][:name]),
+            h('span.timestamp', time),
+            h('span.message', line[:message]),
+          ])
+
         elsif line.is_a?(Engine::Action::Message)
           h(:div, { style: { fontWeight: 'bold' } }, "#{line.entity.name}: #{line.message}")
         end
