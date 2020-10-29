@@ -58,9 +58,7 @@ module Engine
     def update_end_of_life(rusts_on, obsolete_on)
       @rusts_on = rusts_on
       @obsolete_on = obsolete_on
-      @variants = @variants.map do |name, variant|
-        [name, variant.merge(rusts_on: rusts_on, obsolete_on: obsolete_on)]
-      end.to_h
+      @variants.each { |_, v| v.merge!(rusts_on: rusts_on, obsolete_on: obsolete_on) }
     end
 
     def names_to_prices
