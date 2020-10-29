@@ -107,6 +107,7 @@ module Engine
       SELL_AFTER = :first
 
       # down_share -- down one row per share
+      # down_per_10 -- down one row per 10% sold
       # down_block -- down one row per block
       # left_block_pres -- left one column per block if president
       # left_block -- one row per block
@@ -663,6 +664,8 @@ module Engine
         case self.class::SELL_MOVEMENT
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
+        when :down_per_10
+          (bundle.percent / 10).to_i.times { @stock_market.move_down(corporation) }
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
         when :none
