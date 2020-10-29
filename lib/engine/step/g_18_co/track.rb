@@ -15,8 +15,16 @@ module Engine
             action.hex.tile.icons.reject! { |icon| icon.name == 'upgrade' }
           end
 
-          # TODO: Implement Mine Collection
-          @log << 'TODO: implement mine token collection'
+          # Mine Token Collection
+          if action.hex.tile.icons.map(&:name).include?('mine')
+            # Remove mine symbol from hex
+            action.hex.tile.icons.reject! { |icon| icon.name == 'mine' }
+
+            # Add mine to corporation data
+            @game.mine_add(action.entity)
+
+            @log << "#{action.entity.name} collects a mine token from #{action.hex.name}"
+          end
 
           pass! unless can_lay_tile?(action.entity)
         end

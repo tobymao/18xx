@@ -66,6 +66,8 @@ module Engine
 
       EAST_HEXES = %w[A26 J26 E27 G27].freeze
 
+      BASE_MINE_VALUE = 10
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_mines' => ['Mines Close', 'Mine tokens removed from board and corporations']
         ).freeze
@@ -76,9 +78,17 @@ module Engine
         @dsng ||= corporation_by_id('DSNG')
       end
 
+      def imc
+        @imc ||= company_by_id('IMC')
+      end
+
       def setup
         setup_company_price_50_to_150_percent
+        setup_corporations
+      end
 
+      def setup_corporations
+        # The DSNG comes with a 2P train
         train = @depot.upcoming[0]
         train.buyable = false
         dsng.buy_train(train, :free)
@@ -90,6 +100,49 @@ module Engine
           self.class::CERT_LIMIT_COLORS,
           multiple_buy_colors: self.class::MULTIPLE_BUY_COLORS
         )
+      end
+
+      def mines_count(entity)
+        entity.abilities(:mine_income).sum(&:count_per_or)
+      end
+
+      def mine_multiplier(entity)
+        imc.owner == entity ? 2 : 1
+      end
+
+      def mine_value(entity)
+        BASE_MINE_VALUE * mine_multiplier(entity)
+      end
+
+      def mines_total(entity)
+        mine_value(entity) * mines_count(entity)
+      end
+
+      def mines_remove(entity)
+        entity.abilities(:mine_income) do |ability|
+          entity.remove_ability(ability)
+        end
+      end
+
+      def mine_add(entity)
+        mine_create(entity, mines_count(entity) + 1)
+      end
+
+      def mine_update_text(entity)
+        mine_create(entity, mines_count(entity))
+      end
+
+      def mine_create(entity, count)
+        mines_remove(entity)
+        total = count * mine_value(entity)
+        entity.add_ability(Engine::Ability::Base.new(
+              type: :mine_income,
+              description: "#{count} mine#{count > 1 ? 's' : ''} x
+                            #{format_currency(mine_value(entity))} =
+                            #{format_currency(total)} to Treasury",
+              count_per_or: count,
+              remove: '6'
+            ))
       end
 
       def operating_round(round_num)
@@ -119,6 +172,15 @@ module Engine
           Step::G18CO::CompanyPendingPar,
           Step::WaterfallAuction,
         ])
+      end
+
+      def action_processed(action)
+        super
+
+        case action
+        when Action::BuyCompany
+          mine_update_text(action.entity) if action.company == imc && action.entity.corporation?
+        end
       end
 
       def revenue_for(route, stops)
@@ -181,10 +243,12 @@ module Engine
       def event_remove_mines!
         @log << '-- Event: Mines close --'
 
-        @log << 'Mines removed from board (TODO)'
+        hexes.each do |hex|
+          hex.tile.icons.reject! { |icon| icon.name == 'mine' }
+        end
 
-        @companies.each do |company|
-          @log << "Mines removed from  #{company.name} (TODO)"
+        @corporations.each do |corporation|
+          mines_remove(corporation)
         end
       end
 

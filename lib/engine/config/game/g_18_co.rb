@@ -326,7 +326,11 @@ module Engine
 			"revenue": 5,
 			"desc": "Money gained from mine tokens is doubled for the owning Corporation. If owned by a Corporation, closes on purchase of “6” train, otherwise closes on purchase of “5” train.",
 			"abilities": [
-
+				{
+					"type": "close",
+					"owner_type": "corporation",
+					"when": "6"
+				}
 			]
 		},
 		{
