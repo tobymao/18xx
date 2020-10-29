@@ -520,9 +520,13 @@ module Engine
       def change_4t_to_hardrust
         @depot.trains
           .select { |t| t.name == '4' }
-          .each do |t|
-            t.update_end_of_life(t.obsolete_on, nil)
-          end
+          .each { |t| change_to_hardrust(t) }
+      end
+
+      def change_to_hardrust(t)
+        t.rusts_on = t.obsolete_on
+        t.obsolete_on = nil
+        t.variants.each { |_, v| v.merge!(rusts_on: rusts_on, obsolete_on: obsolete_on) }
       end
     end
   end
