@@ -50,6 +50,7 @@ module Engine
       @capitalization = opts[:capitalization] || :full
       @closed = false
       @float_percent = opts[:float_percent] || 60
+      @floated = false
       @max_ownership_percent = opts[:max_ownership_percent] || 60
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
@@ -141,11 +142,11 @@ module Engine
     end
 
     def floated?
-      percent_of(self) <= 100 - @float_percent
+      @floated ||= percent_of(self) <= 100 - @float_percent
     end
 
     def percent_to_float
-      percent_of(self) - (100 - @float_percent)
+      @floated ? 0 : percent_of(self) - (100 - @float_percent)
     end
 
     def corporation?
@@ -228,6 +229,7 @@ module Engine
       share_price&.corporations&.delete(self)
       @closed = true
       @ipoed = false
+      @floated = false
       @owner = nil
     end
   end
