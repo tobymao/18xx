@@ -6,7 +6,7 @@ module Engine
       module LayTileWithChattanoogaCheck
         ACTION_HEX_OF_INTEREST = 'B10'
 
-        def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
+        def lay_tile(action, extra_cost: 0, entity: nil, spender: nil, tile_ability: nil)
           super
 
           entity ||= action.entity

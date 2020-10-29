@@ -432,7 +432,7 @@ module Engine
                 },
                 {
                     "type": "tile_lay",
-                    "description": "Place a free track tile at B24  at any time during the corporation's operations.",
+                    "description": "Place a free track tile at B24 at any time during the corporation's operations.",
                     "owner_type": "corporation",
                     "hexes": [
                         "B24"
@@ -465,7 +465,6 @@ module Engine
                     "type": "teleport",
                     "owner_type": "corporation",
                     "when": "track",
-                    "count": 1,
                     "hexes": [
                       "F20"
                     ],
@@ -536,6 +535,7 @@ module Engine
                     "type": "tile_lay",
                     "owner_type": "corporation",
                     "when": "sold",
+                    "count": 1,
                     "hexes": [
                         "E7"
                     ],
@@ -551,8 +551,11 @@ module Engine
                     "type": "tile_lay",
                     "owner_type": "corporation",
                     "when": "track",
+                    "cost": 20,
+                    "count": 1,
+                    "special": false,
+                    "reachable": true,
                     "hexes": [
-                        "E7"
                     ],
                     "tiles": [
                         "1",
@@ -562,6 +565,7 @@ module Engine
                         "6",
                         "7",
                         "8",
+                        "9",
                         "55",
                         "56",
                         "57",
@@ -784,6 +788,18 @@ module Engine
             ]
         }
     ],
+    "minors": [
+        {
+            "sym": "C&P",
+            "name": "Cobourg & Peterborough Railway",
+            "logo": "1828/CP",
+            "tokens": [
+                0
+            ],
+            "coordinates": "C15",
+            "color": "gray50"
+        }
+    ],
     "corporations": [
         {
             "sym": "B&M",
@@ -796,7 +812,13 @@ module Engine
                 100
             ],
             "coordinates": "E27",
-            "color": "hanBlue"
+            "color": "hanBlue",
+            "abilities": [
+                {
+                    "type": "description",
+                    "description": "Place an additional yellow tile for $40"
+                }
+            ]
         },
         {
             "sym": "B&O",
@@ -933,7 +955,13 @@ module Engine
             ],
             "coordinates": "G23",
             "city": 1,
-            "color": "tan"
+            "color": "tan",
+            "abilities": [
+                {
+                    "type": "description",
+                    "description": "Place an additional yellow tile for $40"
+                }
+            ]
         },
         {
             "sym": "NW",
@@ -993,7 +1021,7 @@ module Engine
             "distance": 2,
             "price": 80,
             "rusts_on": "5",
-            "num": 6
+            "num": 7
         },
         {
             "name": "3",

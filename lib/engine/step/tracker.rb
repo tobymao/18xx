@@ -38,7 +38,7 @@ module Engine
         @laid_track += 1
       end
 
-      def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
+      def lay_tile(action, extra_cost: 0, entity: nil, spender: nil, tile_ability: nil)
         entity ||= action.entity
         spender ||= entity
         tile = action.tile
@@ -73,7 +73,7 @@ module Engine
         free = false
         discount = 0
 
-        entity.abilities(:tile_lay) do |ability|
+        entity.abilities(:tile_lay, tile_ability ? tile_ability.when : nil) do |ability|
           next if ability.hexes.any? && (!ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name))
 
           @game.game_error("Track laid must be connected to one of #{spender.id}'s stations") if ability.reachable &&
@@ -83,6 +83,7 @@ module Engine
 
           free = ability.free
           discount = ability.discount
+          extra_cost += ability.cost
         end
 
         entity.abilities(:teleport) do |ability, _|

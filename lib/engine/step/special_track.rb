@@ -30,13 +30,14 @@ module Engine
 
       def process_lay_tile(action)
         tile_ability = ability(action.entity)
-        lay_tile(action, spender: action.entity.owner)
+        lay_tile(action, spender: action.entity.owner, tile_ability: tile_ability)
         check_connect(action, tile_ability)
         tile_ability.use!
       end
 
       def available_hex(entity, hex)
         return if ability(entity)&.hexes&.any? && !ability(entity)&.hexes&.include?(hex.id)
+        return if ability(entity)&.reachable && !@game.graph.connected_hexes(entity.owner)[hex]
 
         @game.hex_by_id(hex.id).neighbors.keys
       end
