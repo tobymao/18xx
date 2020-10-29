@@ -40,6 +40,8 @@ module Engine
 
       # First 3 are Denver, Second 3 are CO Springs
       TILES_FIXED_ROTATION = %w[co1 co2 co3 co5 co6 co7].freeze
+      GREEN_TOWN_TILES = %w[co8 co9 co10].freeze
+      BROWN_CITY_TILES = %w[co4 63].freeze
 
       PAR_FLOAT_GROUPS = {
         20 => %w[X],
@@ -150,12 +152,28 @@ module Engine
         str
       end
 
+      def upgrades_to?(from, to, special = false)
+        # Green towns can't be upgraded to brown cities unless the hex has the upgrade icon
+        if GREEN_TOWN_TILES.include?(from.hex.tile.name)
+          return BROWN_CITY_TILES.include?(to.name) if from.hex.tile.icons.any? { |icon| icon.name == 'upgrade' }
+
+          return false
+        end
+
+        super
+      end
+
       def all_potential_upgrades(tile, tile_manifest: false)
         upgrades = super
 
         return upgrades unless tile_manifest
 
-        # TODO: co8 / co9 / co10 => 63 / co4
+        if GREEN_TOWN_TILES.include?(tile.name)
+          brown_cityco4 = @tiles.find { |t| t.name == 'co4' }
+          brown_city63 = @tiles.find { |t| t.name == '63' }
+          upgrades |= [brown_cityco4] if brown_cityco4
+          upgrades |= [brown_city63] if brown_city63
+        end
 
         upgrades
       end
