@@ -18,6 +18,7 @@ module View
       class Stock < Snabberb::Component
         include Actionable
         needs :selected_corporation, default: nil, store: true
+        needs :selected_company, default: nil, store: true
         needs :last_player, default: nil, store: true
 
         def render
@@ -42,6 +43,7 @@ module View
           end
 
           children.concat(render_corporations)
+          children.concat(render_companies)
           children << h(Players, game: @game)
           children << h(BuyCompanyFromOtherPlayer, game: @game) if @step.purchasable_companies(@current_entity).any?
           children << h(StockMarket, game: @game)
@@ -62,7 +64,7 @@ module View
 
             children = []
             children.concat(render_subsidiaries)
-            children << h(Corporation, corporation: corporation)
+            children << h(Corporation, corporation: corporation, selectable: @game.can_select?(corporation))
             children << render_input if @selected_corporation == corporation
             children << h(Choose) if @current_actions.include?('choose')
             h(:div, props, children)
@@ -119,6 +121,41 @@ module View
           end
 
           h(:button, { on: { click: buy_tokens } }, 'Buy Tokens')
+        end
+
+        # For Companies in Bank
+        def render_companies
+          props = {
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'top',
+            },
+          }
+
+          @game.companies_in_bank.map do |company|
+            children = []
+            children << h(Company, company: company)
+            children << h('div.margined_bottom', { style: { width: '20rem' } },
+                          render_buy_input(company)) if @selected_company == company
+            h(:div, props, children)
+          end.compact
+        end
+
+        def render_buy_input(company)
+          return [] unless @current_actions.include?('buy_company')
+
+          buy = lambda do
+            process_action(Engine::Action::BuyCompany.new(
+              @current_entity,
+              company: company,
+              price: company.value,
+            ))
+            store(:selected_company, nil, skip: true)
+          end
+
+          [h(:button,
+             { on: { click: buy } },
+             "Buy #{@selected_company.sym} from Bank for #{@game.format_currency(company.value)}")]
         end
       end
     end

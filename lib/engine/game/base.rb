@@ -1442,6 +1442,14 @@ module Engine
 
         description.strip
       end
+
+      def can_select?(_entity)
+        true
+      end
+
+      def companies_in_bank
+        []
+      end
     end
   end
 end

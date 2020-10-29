@@ -104,6 +104,8 @@ module Engine
             corporation.operated?
           when :p_any_operate
             corporation.operated? || corporation.president?(entity)
+          when :any_time
+            true
           else
             raise NotImplementedError
           end

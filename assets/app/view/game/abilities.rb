@@ -74,6 +74,7 @@ module View
 
         views = []
         views << h(Exchange) if actions.include?('buy_shares')
+        views << h(SellCompany) if actions.include?('sell_company')
         views << h(Map, game: @game) if !@game.round.is_a?(Engine::Round::Operating) &&
           (actions & %w[lay_tile place_token]).any?
 
