@@ -258,7 +258,7 @@ module Engine
           "tiles": [
             "7","8", "9"
           ],
-          "free": true,
+          "free": false,
           "when": "track",
           "owner_type": "corporation",
           "count": 1
@@ -291,7 +291,7 @@ module Engine
           "tiles": [
             "7","8", "9"
           ],
-          "free": true,
+          "free": false,
           "when": "track",
           "owner_type": "corporation",
           "count": 2
@@ -324,7 +324,7 @@ module Engine
           "tiles": [
             "7","8", "9"
           ],
-          "free": true,
+          "free": false,
           "when": "track",
           "owner_type": "corporation",
           "count": 3
@@ -734,7 +734,7 @@ module Engine
         "F19",
         "I16"
       ],
-      "city=revenue:0;upgrade=cost:20": [
+      "city=revenue:0;upgrade=cost:20,terrain:lake": [
         "D7"
       ],
       "city=revenue:0;upgrade=cost:15,terrain:mountain": [
@@ -769,7 +769,7 @@ module Engine
         "G10",
         "H7"
       ],
-      "upgrade=cost:20": [
+      "upgrade=cost:20,terrain:lake": [
         "B9",
         "B27",
         "D25",
@@ -835,13 +835,13 @@ module Engine
       ]
     },
     "yellow": {
-      "city=revenue:30;path=a:4,b:_0;path=a:0,b:_0;label=B;upgrade=cost:20,terrain:water": [
+      "city=revenue:30;path=a:4,b:_0;path=a:0,b:_0;label=B;upgrade=cost:20,terrain:lake": [
         "C8"
       ],
       "city=revenue:30;path=a:3,b:_0;path=a:5,b:_0;label=B": [
         "C26"
       ],
-      "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_1;label=NY;upgrade=cost:20,terrain:water": [
+      "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_1;label=NY;upgrade=cost:20,terrain:lake": [
         "E22"
       ],
       "city=revenue:30;path=a:4,b:_0;path=a:0,b:_0;label=B": [
