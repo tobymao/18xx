@@ -32,7 +32,7 @@ class Api
             game.to_h
           end
 
-          not_authorized! unless users.any? { |u| u.id == user.id }
+          not_authorized! unless users.any? { |u| u.id == user.id || game.user_id == user.id }
 
           r.is 'leave' do
             halt(400, 'Cannot leave because game has started') unless game.status == 'new'
