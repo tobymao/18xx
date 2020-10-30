@@ -35,7 +35,7 @@ def run_game(game, actions = nil)
   data
 end
 
-def validate_all(title = nil)
+def validate_all(*titles)
   $count = 0
   $total = 0
   $total_time = 0
@@ -43,14 +43,13 @@ def validate_all(title = nil)
   data = {}
 
   where_args = {Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished]}
-  where_args[:title] = title if title
-
+  where_args[:title] = titles if titles.any?
 
   DB[:games].order(:id).where(**where_args).select(:id).paged_each(rows_per_fetch: 100) do |game|
     page << game
     if page.size >= 100
       where_args2 = {id: page.map { |p| p[:id] }}
-      where_args2[:title] = title if title
+      where_args2[:title] = titles if titles.any?
       games = Game.eager(:user, :players, :actions).where(**where_args2).all
       _ = games.each do |game|
         data[game.id]=run_game(game)
@@ -60,7 +59,7 @@ def validate_all(title = nil)
   end
 
   where_args3 = {id: page.map { |p| p[:id] }}
-  where_args3[:title] = title if title
+  where_args3[:title] = titles if titles.any?
 
   games = Game.eager(:user, :players, :actions).where(**where_args3).all
   _ = games.each do |game|
