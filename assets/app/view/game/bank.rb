@@ -53,6 +53,12 @@ module View
             h(:td, 'Interest per Loan'),
             h('td.right', @game.format_currency(rate)),
           ])
+          if @game.respond_to?(:future_interest_rate)
+            trs << h(:tr, [
+              h(:td, 'Future Interest per Loan'),
+              h('td.right', @game.format_currency(@game.future_interest_rate)),
+            ])
+          end
           trs << h(:tr, [
             h(:td, 'Loans'),
             h('td.right', "#{@game.loans_taken}/#{@game.total_loans}"),

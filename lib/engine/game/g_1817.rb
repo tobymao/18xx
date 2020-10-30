@@ -63,9 +63,12 @@ module Engine
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
                                                                   'Game Ends 3 ORs after purchase/export'\
                                                                   ' of first 8 train']).freeze
-
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'no_new_shorts' => ['Cannot gain new shorts', 'Short selling is not permitted, existing shorts remain'],
+      ).freeze
       MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'Minimum Price for a 2($55), 5($70) and 10($120) share'\
       ' corporation taking maximum loans to ensure it avoids acquisition').freeze
+
       MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
@@ -73,8 +76,12 @@ module Engine
         @players.reject(&:bankrupt).one?
       end
 
+      def future_interest_rate
+        [[5, ((loans_taken + 4) / 5).to_i * 5].max, 70].min
+      end
+
       def interest_rate
-        @interest_fixed || [[5, ((loans_taken + 4) / 5).to_i * 5].max, 70].min
+        @interest_fixed || future_interest_rate
       end
 
       def interest_owed(entity)
