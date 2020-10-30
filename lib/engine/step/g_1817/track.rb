@@ -15,7 +15,7 @@ module Engine
           @hex = nil
         end
 
-        def lay_tile(action, extra_cost: 0, entity: nil, tile_ability: nil)
+        def lay_tile(action, extra_cost: 0, entity: nil)
           @game.game_error('Cannot lay and upgrade the same tile in the same turn') if action.hex == @hex
           @game.game_error('Cannot upgrade mines') if action.hex.assigned?('mine')
           super
