@@ -153,6 +153,13 @@ module Engine
         'Helen ' => 3978,
       },
     },
+    GAMES_BY_TITLE['18MS'] => {
+      14_375 => {
+        'A Steaming Kyle' => 3685,
+        'kjlevs89' => 3259,
+        'PJBarns' => 2301,
+      },
+    },
     GAMES_BY_TITLE['18TN'] => {
       7818 => {
         'starchitect' => 5615,
