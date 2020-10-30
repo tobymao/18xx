@@ -74,7 +74,13 @@ module View
           ])
         elsif line.is_a?(Engine::Action::Message)
           sender = line.entity.name || line.user
-          h(:div, { style: { fontWeight: 'bold' } }, "#{sender}: #{line.message}")
+          time = Time.at(line.created_at)
+          timestamp = time.strftime(time + 86_400 < Time.now ? '%F %T' : '%T')
+          h('div.logline', line_props, [
+            h('span.timestamp', timestamp_props, timestamp),
+            h('span.username', username_props, sender),
+            h('span.message', message_props, line.message),
+          ])
         end
       end
 
