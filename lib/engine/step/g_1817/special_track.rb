@@ -29,7 +29,8 @@ module Engine
         def available_hex(entity, hex)
           return super if entity.company? && entity.id == 'PSM'
 
-          return if ability(entity)&.hexes&.any? && !ability(entity)&.hexes&.include?(hex.id)
+          hexes = ability(entity)&.hexes
+          return if hexes&.any? && !hexes&.include?(hex.id)
 
           # When actually laying track entity will be the corp.
           owner = entity.corporation? ? entity : entity.owner
