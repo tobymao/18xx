@@ -68,6 +68,12 @@ Describe when the company closes, using the `when` attribute.
 - `corporation'`: If `when` is set to `"train"`, this value is the name
 of the corporation whose train purchase closes this company.
 
+## description
+
+Provide a description for an ability that is implemented outside of the ability framework.
+
+- `description`: Description of the ability.
+
 ## exchange
 
 Exchange this company for a share of a corporation.
