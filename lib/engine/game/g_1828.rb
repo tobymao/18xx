@@ -146,7 +146,7 @@ module Engine
       def event_close_companies!
         super
 
-        @minors.dup.each { |minor| remove_minor(minor) }
+        @minors.dup.each { |minor| remove_minor!(minor) }
       end
 
       def event_remove_corporations!
@@ -163,7 +163,7 @@ module Engine
         @phase.current[:name] == 'Purple'
       end
 
-      def remove_minor(minor)
+      def remove_minor!(minor)
         @round.force_next_entity! if @round.current_entity == minor
         minor.spend(minor.cash, @bank) if minor.cash.positive?
         @minors.delete(minor)
