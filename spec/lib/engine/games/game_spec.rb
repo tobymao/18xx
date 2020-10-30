@@ -153,13 +153,6 @@ module Engine
         'Helen ' => 3978,
       },
     },
-    GAMES_BY_TITLE['18MS'] => {
-      9882 => {
-        'TIE53' => 4407,
-        'Mark Derrick' => 3783,
-        'MontyBrewster71' => 3357,
-      },
-    },
     GAMES_BY_TITLE['18TN'] => {
       7818 => {
         'starchitect' => 5615,
