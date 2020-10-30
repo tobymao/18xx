@@ -8,8 +8,9 @@ module Engine
       attr_reader :message
 
       def initialize(entity, message:)
-        @entity = entity
+        super(entity)
         @message = message
+        # @created_at = Time.now # Needed when sending a message
       end
 
       def self.h_to_args(h, _)

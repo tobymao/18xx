@@ -8,12 +8,13 @@ module Engine
       include Helper::Type
 
       attr_reader :entity
-      attr_accessor :id, :user
+      attr_accessor :id, :user, :created_at
 
       def self.from_h(h, game)
         entity = game.get(h['entity_type'], h['entity']) || Player.new(nil, h['entity'])
         obj = new(entity, **h_to_args(h, game))
         obj.user = h['user'] if entity.player && h['user'] != entity.player&.id
+        obj.created_at = h['created_at']
         obj
       end
 
@@ -27,6 +28,8 @@ module Engine
 
       def initialize(entity)
         @entity = entity
+        # Overwritten by from_h unless this action is directly created
+        @created_at = Time.now
       end
 
       def [](field)
@@ -40,6 +43,7 @@ module Engine
           'entity_type' => type_s(entity),
           'id' => @id,
           'user' => @user,
+          'created_at' => @created_at,
           **args_to_h,
         }.reject { |_, v| v.nil? }
       end

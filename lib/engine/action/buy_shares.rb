@@ -8,7 +8,7 @@ module Engine
       attr_reader :entity, :bundle, :swap
 
       def initialize(entity, shares:, share_price: nil, percent: nil, swap: nil)
-        @entity = entity
+        super(entity)
         @bundle = ShareBundle.new(Array(shares), percent)
         @bundle.share_price = share_price
         @swap = swap

@@ -9,7 +9,7 @@ module Engine
       attr_reader :routes
 
       def initialize(entity, routes:)
-        @entity = entity
+        super(entity)
         @routes = routes
 
         @routes.each(&:lock!)

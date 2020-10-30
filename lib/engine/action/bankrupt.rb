@@ -6,7 +6,7 @@ module Engine
   module Action
     class Bankrupt < Base
       def initialize(entity)
-        @entity = entity
+        super(entity)
       end
     end
   end
