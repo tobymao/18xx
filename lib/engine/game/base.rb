@@ -226,7 +226,7 @@ module Engine
         self.class::OPTIONAL_RULES.each do |o_r|
           next unless @optional_rules.include?(o_r[:sym])
 
-          @log << " * #{o_r[:short_name]}: (#{o_r[:desc]})"
+          @log << " * #{o_r[:short_name]}: #{o_r[:desc]}"
         end
       end
 
