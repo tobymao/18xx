@@ -471,7 +471,17 @@ module Engine
       "value": 200,
       "revenue": 25,
       "desc": "Not available until the first 6+3 train has been purchased. Closes all other private companies.",
-      "sym": "FFC"
+      "sym": "FFC",
+      "abilities": [
+        {
+          "type": "close_others",
+          "when": "bought"
+        },
+        {
+          "type": "sell_to_bank",
+          "cost": 30
+        }
+      ]
     }
   ],
   "corporations": [
@@ -622,7 +632,10 @@ module Engine
       "name": "6+3",
       "distance": 6,
       "price": 500,
-      "num": 2
+      "num": 2,
+      "events": [
+        {"type": "fishbourne_to_bank"}
+      ]
     },
     {
       "name": "7+4",
@@ -750,6 +763,7 @@ module Engine
     },
     {
       "name": "3",
+      "on": "3+2",
       "train_limit": 4,
       "tiles": [
         "yellow",
@@ -759,6 +773,7 @@ module Engine
     },
     {
       "name": "4",
+      "on": "4+2",
       "train_limit": 3,
       "tiles": [
         "yellow",
@@ -768,6 +783,7 @@ module Engine
     },
     {
       "name": "5",
+      "on": "5+3",
       "train_limit": 3,
       "tiles": [
         "yellow",
@@ -778,6 +794,7 @@ module Engine
     },
     {
       "name": "6",
+      "on": "6+3",
       "train_limit": 2,
       "tiles": [
         "yellow",
@@ -788,6 +805,7 @@ module Engine
     },
     {
       "name": "7",
+      "on": "7+4",
       "train_limit": 2,
       "tiles": [
         "yellow",
@@ -798,6 +816,7 @@ module Engine
     },
     {
       "name": "8",
+      "on": "8+4",
       "train_limit": 2,
       "tiles": [
         "yellow",
@@ -808,6 +827,7 @@ module Engine
     },
     {
       "name": "9",
+      "on": "9+5",
       "train_limit": 2,
       "tiles": [
         "yellow",

@@ -28,6 +28,10 @@ module Engine
       SELL_AFTER = :any_time
       SELL_BUY_ORDER = :sell_buy
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'fishbourne_to_bank' => ['Fishbourne', 'Fishbourne Ferry Company available for purchase']
+      ).freeze
+
       PAR_RANGE = {
         1 => [74, 100],
         2 => [62, 82],
@@ -115,10 +119,10 @@ module Engine
         @players.rotate!(@players.index(player))
       end
 
-      def active_players
-        return super if @finished
-
-        current_entity == company_by_id('ER') ? [@round.company_seller] : super
+      def event_fishbourne_to_bank!
+        ffc = @companies.find { |c| c.sym == 'FFC' }
+        ffc.owner = @bank
+        @log << "#{ffc.name} is now available for purchase from the Bank"
       end
 
       def corp_bankrupt?(corp)
@@ -208,6 +212,15 @@ module Engine
         num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
         num_shares.times { @stock_market.move_left(corporation) }
         log_share_price(corporation, price)
+      end
+
+      def close_other_companies!(company)
+        any = @companies.reject { |c| c == company }.reject(&:closed?)
+        return unless any
+
+        @corporations.each { |corp| corp.shares.each { |share| share.buyable = true } }
+        @companies.reject { |c| c == company }.each(&:close!)
+        @log << '-- Event: starting private companies close --' if any
       end
     end
   end

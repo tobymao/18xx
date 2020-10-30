@@ -67,6 +67,8 @@ module Engine
           player.spend(price, owner)
           @current_actions << action
           @log << "#{player.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
+
+          @game.close_other_companies!(company) if company.abilities(:close_others)
         end
       end
     end
