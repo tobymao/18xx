@@ -526,7 +526,7 @@ module Engine
       def change_to_hardrust(t)
         t.rusts_on = t.obsolete_on
         t.obsolete_on = nil
-        t.variants.each { |_, v| v.merge!(rusts_on: rusts_on, obsolete_on: obsolete_on) }
+        t.variants.each { |_, v| v.merge!(rusts_on: t.rusts_on, obsolete_on: t.obsolete_on) }
       end
     end
   end
