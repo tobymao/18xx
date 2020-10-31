@@ -468,6 +468,12 @@ module Engine
             60,
             80
          ],
+         "abilities": [
+            {
+               "type": "base",
+               "description": "Cannot be merged into NdM"
+            }
+         ],
          "coordinates":"B3",
          "color":"yellow",
          "text_color":"black"
@@ -480,6 +486,12 @@ module Engine
          "tokens":[
             0,
             40
+         ],
+         "abilities": [
+            {
+               "type": "base",
+               "description": "Cannot be merged into NdM"
+            }
          ],
          "coordinates":"I12",
          "color":"orange"

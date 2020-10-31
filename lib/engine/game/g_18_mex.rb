@@ -67,6 +67,14 @@ module Engine
         @ndm_merge_share ||= ndm.shares.last
       end
 
+      def pac
+        @pac_corporation ||= corporation_by_id('PAC')
+      end
+
+      def tm
+        @tm_corporation ||= corporation_by_id('TM')
+      end
+
       def udy
         @udy_corporation ||= corporation_by_id('UdY')
       end
@@ -227,13 +235,13 @@ module Engine
         merge_minor(minor_a, ndm, minor_a_reserved_share)
         merge_minor(minor_b, ndm, minor_b_reserved_share)
         merge_minor(minor_c, udy, minor_c_reserved_share)
-        ndm.abilities(:no_buy) do |ability|
-          ndm.remove_ability(ability)
-        end
+        remove_ability(ndm, :no_buy)
       end
 
       def event_ndm_merger!
         @log << "-- Event: #{ndm.name} merger --"
+        remove_ability(pac, :base)
+        remove_ability(tm, :base)
         unless ndm.floated?
           @log << "No merge occur as #{ndm.name} has not floated!"
           return merge_major
@@ -527,6 +535,12 @@ module Engine
         t.rusts_on = t.obsolete_on
         t.obsolete_on = nil
         t.variants.each { |_, v| v.merge!(rusts_on: t.rusts_on, obsolete_on: t.obsolete_on) }
+      end
+
+      def remove_ability(corporation, ability_name)
+        corporation.abilities(ability_name) do |ability|
+          corporation.remove_ability(ability)
+        end
       end
     end
   end
