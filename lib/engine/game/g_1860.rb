@@ -163,7 +163,6 @@ module Engine
       end
 
       def sorted_corporations
-        # Corporations sorted by some potential game rules
         @corporations.sort_by { |c| corp_layer(c) }
       end
 
@@ -202,7 +201,7 @@ module Engine
       def sell_shares_and_change_price(bundle)
         corporation = bundle.corporation
         price = corporation.share_price.price
-        # bundle.share_price = (bundle.price_per_share / 2).to_i if corporation.trains.empty?
+
         @share_pool.sell_shares(bundle)
         num_shares = bundle.num_shares
         num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
