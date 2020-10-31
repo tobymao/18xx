@@ -6,9 +6,8 @@ module Engine
   module Operator
     include Entity
 
-    attr_accessor :rusted_self
-    attr_reader :color, :coordinates, :city, :loans, :logo,
-                :operating_history, :text_color, :tokens, :trains
+    attr_accessor :rusted_self, :coordinates
+    attr_reader :color, :city, :loans, :logo, :operating_history, :text_color, :tokens, :trains
 
     def init_operator(opts)
       @cash = 0
