@@ -28,8 +28,10 @@ module View
             return h(CashCrisis) if @step.respond_to?(:needed_cash)
 
             corporation = @round.converted
-            children << h(BuySellShares, corporation: corporation)
+
             children << h(Corporation, corporation: corporation)
+            children << h(BuySellShares, corporation: corporation)
+            children << h(Player, game: @game, player: entity) if entity.player?
             return h(:div, children)
           end
 

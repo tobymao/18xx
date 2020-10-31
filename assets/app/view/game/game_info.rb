@@ -81,6 +81,9 @@ module View
       def phases
         current_phase = @game.phase.current
         phases_events = []
+
+        corporation_sizes = true if @game.phase.phases.any? { |c| c[:corporation_sizes] }
+
         rows = @game.phase.phases.map do |phase|
           row_events = []
 
@@ -98,12 +101,16 @@ module View
             },
           }
 
+          extra = []
+          extra << h(:td, phase[:corporation_sizes].join(', ')) if corporation_sizes
+
           h(:tr, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
             h(:td, phase[:on]),
             h(:td, phase[:operating_rounds]),
             h(:td, phase[:train_limit]),
             h(:td, phase_props, phase_color.capitalize),
+            *extra,
             h(:td, row_events.map(&:first).join(', ')),
           ])
         end
@@ -124,6 +131,9 @@ module View
           ])]
         end
 
+        extra = []
+        extra << h(:th, 'New Corporation Size') if corporation_sizes
+
         [
           h(:h3, 'Game Phases'),
           h(:div, { style: { overflowX: 'auto' } }, [
@@ -135,6 +145,7 @@ module View
                   h(:th, { attrs: { title: 'Number of Operating Rounds' } }, 'ORs'),
                   h(:th, 'Train Limit'),
                   h(:th, 'Tiles'),
+                  *extra,
                   h(:th, 'Status'),
                 ]),
               ]),
