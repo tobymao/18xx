@@ -349,9 +349,11 @@ module Engine
         end
 
         # Rule 5g: transfer money and trains
-        treasury = format_currency(major.cash).to_s
-        major.spend(major.cash, ndm) if major.cash.positive?
-        @log << "#{ndm.name} receives the treasury of #{treasury}" if major.cash.positive?
+        if major.cash.positive?
+          treasury = format_currency(major.cash)
+          @log << "#{ndm.name} receives the #{major.name} treasury of #{treasury}"
+          major.spend(major.cash, ndm)
+        end
         if major.trains.any?
           trains_transfered = major.transfer(:trains, ndm).map(&:name)
           @log << "#{ndm.name} receives the trains: #{trains_transfered}"
@@ -446,8 +448,8 @@ module Engine
       end
 
       def merge_minor(minor, major, share)
-        treasury = format_currency(minor.cash).to_s
-        @log << "-- Minor #{minor.name} merges into #{major.name} who receives the treasury of #{treasury} --"
+        transfer = minor.cash.positive? ? " who receives the treasurey of #{format_currency(minor.cash)}" : ''
+        @log << "-- Minor #{minor.name} merges into #{major.name}#{transfer} --"
 
         share.buyable = true
         @share_pool.buy_shares(minor.player, share, exchange: :free, exchange_price: 0)
@@ -483,20 +485,20 @@ module Engine
         corporations = @corporations
           .reject { |c| c.player == ndm.player }
           .reject { |c| %w[PAC TM].include? c.name }
-        player_corps, other_corps = corporations.partition(&:owned_by_player?)
+        floated_player_corps, other_corps = corporations.partition { |c| c.owned_by_player? && c.floated? }
 
         # Sort eligible corporations so that they are in player order
         # starting with the player to the left of the one that bought the 5 train
         index_for_trigger = @players.index(@ndm_merge_trigger)
         order = Hash[@players.each_with_index.map { |p, i| i <= index_for_trigger ? [p, i + 10] : [p, i] }]
-        player_corps.sort_by! { |c| [order[c.player], @round.entities.index(c)] }
+        floated_player_corps.sort_by! { |c| [order[c.player], @round.entities.index(c)] }
 
         # If any non-floated corporation has not yet been ipoed
         # then only non-ipoed corporations must be chosen
         other_corps.reject!(&:ipoed) if other_corps.any? { |c| !c.ipoed }
 
         # The players get the first choice, otherwise a non-floated corporation must be chosen
-        player_corps.concat(other_corps)
+        floated_player_corps.concat(other_corps)
       end
 
       def possible_auto_merge
