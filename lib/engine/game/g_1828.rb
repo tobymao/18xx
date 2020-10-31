@@ -72,6 +72,8 @@ module Engine
       def stock_round
         Round::G1828::Stock.new(self, [
           Step::DiscardTrain,
+          Step::Exchange,
+          Step::SpecialTrack,
           Step::G1828::BuySellParShares,
         ])
       end
@@ -79,19 +81,21 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
+          Step::Exchange,
           Step::DiscardTrain,
           Step::SpecialTrack,
-          Step::BuyCompany,
+          Step::G1828::BuyCompany,
           Step::Track,
           Step::Token,
           Step::Route,
-          Step::Dividend,
+          Step::G1828::Dividend,
           Step::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
 
       def setup
+        setup_minors
         remove_extra_private_companies
         remove_extra_trains
       end
@@ -104,6 +108,19 @@ module Engine
         sm.enable_par_price(79)
 
         sm
+      end
+
+      EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false, cost: 40 }].freeze
+      EXTRA_TILE_LAY_CORPS = %w[B&M NYH].freeze
+
+      def tile_lays(entity)
+        return self.class::EXTRA_TILE_LAYS if EXTRA_TILE_LAY_CORPS.find(entity.id)
+
+        super
+      end
+
+      def corporation_opts
+        { can_hold_above_max: true }
       end
 
       def init_round_finished
@@ -126,6 +143,12 @@ module Engine
         stock_market.enable_par_price(120)
       end
 
+      def event_close_companies!
+        super
+
+        @minors.dup.each { |minor| remove_minor!(minor) }
+      end
+
       def event_remove_corporations!
         @log << "-- Event: #{EVENTS_TEXT['remove_corporations'][1]}. --"
         @corporations.reject(&:ipoed).each do |corporation|
@@ -140,7 +163,23 @@ module Engine
         @phase.current[:name] == 'Purple'
       end
 
+      def remove_minor!(minor)
+        @round.force_next_entity! if @round.current_entity == minor
+        minor.spend(minor.cash, @bank) if minor.cash.positive?
+        @minors.delete(minor)
+      end
+
       private
+
+      def setup_minors
+        @minors.each do |minor|
+          train = @depot.upcoming[0]
+          train.buyable = false
+          minor.buy_train(train, :free)
+          hex = hex_by_id(minor.coordinates)
+          hex.tile.cities[0].place_token(minor, minor.next_token, free: true)
+        end
+      end
 
       def remove_extra_private_companies
         to_remove = companies.find_all { |company| company.value == 250 }
