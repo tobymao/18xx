@@ -111,6 +111,8 @@ module Engine
           end
         end
 
+        other_trains.reject! { |t| entity.cash < t.price && must_buy_at_face_value?(t, entity) }
+
         depot_trains + other_trains
       end
 
@@ -149,12 +151,18 @@ module Engine
       end
 
       def must_pay_face_value?(train, entity, price)
-        return if train.from_depot? || (!face_value?(entity) && !face_value?(train.owner))
+        return if train.from_depot? || !must_buy_at_face_value?(train, entity)
 
         train.price != price
       end
 
-      def face_value?(entity)
+      def must_buy_at_face_value?(train, entity)
+        face_value_ability?(entity) || face_value_ability?(train.owner)
+      end
+
+      private
+
+      def face_value_ability?(entity)
         entity.abilities(:train_buy) { |ability| return ability.face_value }
         false
       end
