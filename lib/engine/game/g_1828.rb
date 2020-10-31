@@ -120,7 +120,7 @@ module Engine
       end
 
       def corporation_opts
-        { hold_above_max_ownership_percent_ok: true }
+        { can_hold_above_max: true }
       end
 
       def init_round_finished

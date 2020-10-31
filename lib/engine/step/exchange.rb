@@ -42,7 +42,8 @@ module Engine
         owner = entity.owner
         return can_gain?(owner, bundle, exchange: true) if bundle
 
-        corporations = ability.corporation == :any ? @game.corporations : [@game.corporation_by_id(ability.corporation)]
+        corporations =
+          ability.corporation == 'any' ? @game.corporations : [@game.corporation_by_id(ability.corporation)]
 
         shares = []
         corporations.each do |corporation|
