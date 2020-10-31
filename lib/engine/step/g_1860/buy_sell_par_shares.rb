@@ -49,10 +49,6 @@ module Engine
           @game.sell_shares_and_change_price(shares)
         end
 
-        def bought?
-          @current_actions.any? { |x| self.class::PURCHASE_ACTIONS.include?(x.class) }
-        end
-
         def process_buy_company(action)
           player = action.entity
           company = action.company
