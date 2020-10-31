@@ -13,19 +13,31 @@ module Lib
       }
     end
 
-    def self.notify(message)
+    def self.notify(message, send_focused)
       %x{
-        if ("Notification" in window) {
-          if (Notification.permission === "granted") {
-            new Notification(#{message});
+        let is_hidden = document.hidden;
+        let in_focus = document.hasFocus();
+
+        let send_notification = (msg) => {
+          if ("Notification" in window) {
+            if (Notification.permission === "granted") {
+              new Notification(msg);
+            }
+            else if (Notification.permission !== "denied") {
+              Notification.requestPermission().then(function (permission) {
+                if (permission === "granted") {
+                  new Notification(msg);
+                }
+              });
+            }
           }
-          else if (Notification.permission !== "denied") {
-            Notification.requestPermission().then(function (permission) {
-              if (permission === "granted") {
-                new Notification(#{message});
-              }
-            });
-          }
+        }
+        // Dont send the notification unless the window is active and 
+        // user has the notification setting on
+        if (!#{send_focused} && !is_hidden && !in_focus) {
+
+        } else {
+          send_notification(#{message})
         }
       }
     end

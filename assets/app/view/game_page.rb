@@ -110,6 +110,14 @@ module View
           game_data['actions'] << data
           store(:game_data, game_data, skip: true)
           store(:game, game.process_action(data))
+
+          begin
+            if @game_data["acting"].include? @user['id']
+              Lib::Notification.notify("18xx - Game #{@game.id.to_s} Your turn", setting_for(:desktop_notifications))
+          end
+          rescue => e
+            puts e
+          end
         elsif n_id > o_id
           store['connection'].get(game_path) do |new_data|
             store(:game_data, new_data, skip: true)
