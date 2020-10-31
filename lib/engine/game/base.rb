@@ -180,9 +180,6 @@ module Engine
                       repar: 'Par value after bankruptcy',
                       ignore_one_sale: 'Ignore first share sold when moving price' }.freeze
 
-      # Add elements (paragraphs of text) here to display it on Info page.
-      TIMELINE = [].freeze
-
       IPO_NAME = 'IPO'
       IPO_RESERVED_NAME = 'IPO Reserved'
       MARKET_SHARE_LIMIT = 50 # percent
@@ -1437,6 +1434,11 @@ module Engine
         description += "#{round_number} (of #{total})" if total
 
         description.strip
+      end
+
+      # Override this, and add elements (paragraphs of text) here to display it on Info page.
+      def timeline
+        []
       end
     end
   end

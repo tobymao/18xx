@@ -34,11 +34,11 @@ module View
       end
 
       def timeline
-        return nil if @game.class::TIMELINE.empty?
+        return nil if @game.timeline.empty?
 
         children = [h(:h3, 'Timeline')]
 
-        @game.class::TIMELINE.each do |line|
+        @game.timeline.each do |line|
           children << h(:p, line)
         end
 
