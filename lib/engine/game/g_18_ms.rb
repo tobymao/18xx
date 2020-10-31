@@ -19,7 +19,7 @@ module Engine
       GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MS'
 
-      # Game will end after 10 ORs - checked in end_now? below
+      # Game will end after 10 ORs (or 11 in case of optional rule) - checked in end_now? below
       GAME_END_CHECK = {}.freeze
 
       BANKRUPTCY_ALLOWED = false
@@ -39,12 +39,13 @@ module Engine
         'remove_tokens' => ['Remove Tokens', 'New Orleans route bonus removed']
       ).freeze
 
-      TIMELINE = [
-        'At the start of OR 2, phase 3 starts.',
-        'After OR 4, all 2+ trains are rusted. Trains salvaged for $20 each.',
-        'After OR 6, all 3+ trains are rusted. Trains salvaged for $30 each.',
-        'After OR 8, all 4+ trains are rusted. Trains salvaged for $60 each.',
-        'Game ends after OR 10!',
+      OPTIONAL_RULES = [
+        { sym: :or_11,
+          short_name: '11 ORs',
+          desc: 'There is an extra, final, OR, directly after OR 10' },
+        { sym: :allow_buy_rusting,
+          short_name: 'Allow buy rusting',
+          desc: 'A corporation is allowed to buy trains that are to be rusted, even if they have already run this OR' },
       ].freeze
 
       HEXES_FOR_GRAY_TILE = %w[C9 E11].freeze
@@ -85,6 +86,19 @@ module Engine
         neutral.buy_train(@free_train, :free)
 
         @or = 0
+        @last_or = @optional_rules&.include?(:or_11) ? 11 : 10
+        @three_or_round = false
+      end
+
+      def timeline
+        @timeline ||= [
+          'At the start of OR 2, phase 3 starts.',
+          'After OR 4, all 2+ trains are rusted. Trains salvaged for $20 each.',
+          'After OR 6, all 3+ trains are rusted. Trains salvaged for $30 each.',
+          'After OR 8, all 4+ trains are rusted. Trains salvaged for $60 each.',
+          "Game ends after OR #{@last_or}!",
+        ].freeze
+        @timeline
       end
 
       def new_operating_round(round_num = 1)
@@ -113,6 +127,12 @@ module Engine
           end
         end
 
+        # In case of 11 ORs, the last set will be 3 ORs
+        if @or == 9 && @optional_rules&.include?(:or_11)
+          @operating_rounds = 3
+          @three_or_round = true
+        end
+
         super
       end
 
@@ -128,8 +148,8 @@ module Engine
           message += ' - 2+ trains rust after OR 4' if @or <= 4
           message += ' - 3+ trains rust after OR 6' if @or > 4 && @or <= 6
           message += ' - 4+ trains rust after OR 8' if @or > 6 && @or <= 8
-          message += ' - Game end after OR 10' if @or > 8
-          "#{name} Round #{@or} (of 10)#{message}"
+          message += " - Game end after OR #{@last_or}" if @or > 8
+          "#{name} Round #{@or} (of #{@last_or})#{message}"
         end
       end
 
@@ -168,6 +188,9 @@ module Engine
 
       def or_round_finished
         @recently_floated = []
+
+        # In case we get phase change during the last OR set we ensure we have 3 ORs
+        @operating_rounds = 3 if @three_or_round
       end
 
       def or_set_finished
@@ -184,7 +207,7 @@ module Engine
 
       # Game will end directly after the end of OR 10
       def end_now?(_after)
-        @or == 10
+        @or == @last_or
       end
 
       def purchasable_companies(entity = nil)
@@ -221,7 +244,7 @@ module Engine
 
           # Trains that are going to be salvaged at the end of this OR
           # cannot be sold when they have been run
-          t.buyable = false
+          t.buyable = false unless @optional_rules&.include?(:allow_buy_rusting)
         end if @round.round_num == 2
 
         super
