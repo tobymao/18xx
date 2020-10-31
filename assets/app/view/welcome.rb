@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'lib/publisher'
+
 module View
   class Welcome < Snabberb::Component
     needs :app_route, default: nil, store: true
@@ -26,12 +28,7 @@ module View
         resources in our <a href='https://github.com/tobymao/18xx/wiki'>Wiki!</a>
         </p>
 
-        Support our publishers: <a href='https://all-aboardgames.com'>All-Aboard Games</a>,
-        <a href='https://www.grandtrunkgames.com'>Grand Trunk Games</a>,
-        <a href='https://goldenspikegames.com'>Golden Spike Games</a>,
-        <a href='https://www.gmtgames.com/'>GMT Games</a>,
-        and <a href='https://traxx-denver.com/games/'>TraXX</a>.
-        </p>
+        <p>Support our publishers: #{Lib::Publisher.link_list.join}.</p>
 
         <p>You can support this project on <a href='https://www.patreon.com/18xxgames'>Patreon</a>.
         </p>

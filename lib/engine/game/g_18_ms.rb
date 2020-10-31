@@ -16,7 +16,7 @@ module Engine
       GAME_LOCATION = 'Mississippi, USA'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/209791'
       GAME_DESIGNER = 'Mark Derrick'
-      GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
+      GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MS'
 
       # Game will end after 10 ORs - checked in end_now? below

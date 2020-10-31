@@ -20,7 +20,7 @@ module Engine
         '1846 Rules' => 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf',
       }.freeze
       GAME_DESIGNER = 'Anthony Fryer'
-      GAME_PUBLISHER = Publisher::INFO[:traxx]
+      GAME_PUBLISHER = %i[traxx sea_horse].freeze
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18LosAngeles'
 
       OPTIONAL_RULES = [

@@ -33,7 +33,7 @@ module Engine
       GAME_LOCATION = 'NYSE, USA'
       GAME_RULES_URL = 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view'
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
-      GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
+      GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
 
       MUST_BID_INCREMENT_MULTIPLE = true
