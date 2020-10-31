@@ -138,7 +138,7 @@ module View
             children << h('div.margined_bottom', { style: { width: '20rem' } },
                           render_buy_input(company)) if @selected_company == company
             h(:div, props, children)
-          end.compact
+          end
         end
 
         def render_buy_input(company)
