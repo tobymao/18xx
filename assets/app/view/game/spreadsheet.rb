@@ -58,7 +58,7 @@ module View
       end
 
       def render_history_titles(corporations)
-        or_history(corporations).map { |turn, round| h(:th, "#{turn}.#{round}") }
+        or_history(corporations).map { |turn, round| h(:th, @game.or_description_short(turn, round)) }
       end
 
       def render_history(corporation)
