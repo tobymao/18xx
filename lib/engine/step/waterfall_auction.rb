@@ -165,6 +165,27 @@ module Engine
         end
       end
 
+      private
+
+      def accept_bid(bid)
+        price = bid.price
+        company = bid.company
+        player = bid.entity
+        buy_company(player, company, price)
+        @bids.delete(company)
+      end
+
+      def add_bid(bid)
+        super
+        company = bid.company
+        price = bid.price
+        entity = bid.entity
+
+        @bidders[company] |= [entity]
+
+        @log << "#{entity.name} bids #{@game.format_currency(price)} for #{bid.company.name}"
+      end
+
       def buy_company(player, company, price)
         company.owner = player
         player.companies << company
@@ -191,27 +212,6 @@ module Engine
             end
           end
         end
-      end
-
-      private
-
-      def accept_bid(bid)
-        price = bid.price
-        company = bid.company
-        player = bid.entity
-        buy_company(player, company, price)
-        @bids.delete(company)
-      end
-
-      def add_bid(bid)
-        super
-        company = bid.company
-        price = bid.price
-        entity = bid.entity
-
-        @bidders[company] |= [entity]
-
-        @log << "#{entity.name} bids #{@game.format_currency(price)} for #{bid.company.name}"
       end
     end
   end

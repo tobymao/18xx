@@ -11,7 +11,7 @@ module Engine
       ACTIONS = %w[lay_tile].freeze
 
       def actions(entity)
-        return [] unless tile_lay_abilities(entity)
+        return [] unless ability(entity)
 
         ACTIONS
       end
@@ -25,26 +25,24 @@ module Engine
       end
 
       def blocks?
-        tile_lay_abilities(@company)&.blocks
+        ability(@company)&.blocks
       end
 
       def process_lay_tile(action)
-        ability = tile_lay_abilities(action.entity)
+        tile_ability = ability(action.entity)
         lay_tile(action, spender: action.entity.owner)
-        check_connect(action, ability)
-        ability.use!
+        check_connect(action, tile_ability)
+        tile_ability.use!
       end
 
       def available_hex(entity, hex)
-        return unless (ability = tile_lay_abilities(entity))
-        return if ability.hexes&.any? && !ability.hexes&.include?(hex.id)
-        return if ability.reachable && !@game.graph.connected_hexes(entity.owner)[hex]
+        return if ability(entity)&.hexes&.any? && !ability(entity)&.hexes&.include?(hex.id)
 
         @game.hex_by_id(hex.id).neighbors.keys
       end
 
       def potential_tiles(entity, hex)
-        return [] unless (tile_ability = tile_lay_abilities(entity))
+        return [] unless (tile_ability = ability(entity))
 
         tiles = tile_ability.tiles.map { |name| @game.tiles.find { |t| t.name == name } }
         tiles = @game.tiles.uniq(&:name) if tile_ability.tiles.empty?
@@ -54,12 +52,12 @@ module Engine
           .select { |t| @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, tile_ability.special) }
       end
 
-      def tile_lay_abilities(entity, &block)
+      def ability(entity)
         return unless entity&.company?
 
-        ability = entity.abilities(:tile_lay, 'sold', &block) if @round.respond_to?(:just_sold_company) &&
+        ability = entity.abilities(:tile_lay, 'sold') if @round.respond_to?(:just_sold_company) &&
           entity == @round.just_sold_company
-        ability || entity.abilities(:tile_lay, 'track', &block)
+        ability || entity.abilities(:tile_lay, 'track')
       end
 
       def check_connect(action, tile_ability)

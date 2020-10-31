@@ -68,17 +68,11 @@ Describe when the company closes, using the `when` attribute.
 - `corporation'`: If `when` is set to `"train"`, this value is the name
 of the corporation whose train purchase closes this company.
 
-## description
-
-Provide a description for an ability that is implemented outside of the ability framework.
-
-- `description`: Description of the ability.
-
 ## exchange
 
 Exchange this company for a share of a corporation.
 
-- `corporation`: The corporation whose share may be exchanged. Use `"any"` to allow for all corporations.
+- `corporation`: The corporation whose share may be exchanged.
 - `from`: Where the share may be take from, either `"ipo"`,
   `"market"`, or an array containing both.
 
@@ -153,7 +147,6 @@ normal tile lay actions.
 
 - `hexes`: Array of hex coordinates where tiles may be laid.
 - `tiles`: Array of tile numbers which may be laid.
-- `cost`: Cost to use the ability.
 - `free`: If true, the tiles are laid with 0 cost. Default false.
 - `discount`: Discount the cost of laying the tile by the given
   amount. Default 0.
