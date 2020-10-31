@@ -1438,6 +1438,10 @@ module Engine
 
         description.strip
       end
+
+      def or_description_short(turn, round)
+        "#{turn}.#{round}"
+      end
     end
   end
 end

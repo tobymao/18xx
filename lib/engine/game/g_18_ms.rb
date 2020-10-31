@@ -178,6 +178,10 @@ module Engine
         end
       end
 
+      def or_description_short(turn, round)
+        ((turn - 1) * 2 + round).to_s
+      end
+
       # Game will end directly after the end of OR 10
       def end_now?(_after)
         @or == 10
