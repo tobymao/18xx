@@ -6,7 +6,7 @@ module Engine
   module Step
     module G18TN
       class SpecialTrack < SpecialTrack
-        def ability(entity)
+        def tile_lay_abilities(entity, &block)
           ability = super
 
           ability if ability &&

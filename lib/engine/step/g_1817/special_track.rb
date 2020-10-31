@@ -21,7 +21,7 @@ module Engine
             lay_tile(action, extra_cost: tile_lay[:cost] - 15, entity: owner, spender: owner)
             tile.hex.assign!('mine')
             @game.log << "#{owner.name} adds mine to #{tile.hex.name}"
-            ability(action.entity).use!
+            tile_lay_abilities(action.entity).use!
           end
           step.laid_track = step.laid_track + 1
         end
