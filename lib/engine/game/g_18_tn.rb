@@ -15,6 +15,7 @@ module Engine
       GAME_LOCATION = 'Tennessee, USA'
       GAME_RULES_URL = 'http://dl.deepthoughtgames.com/18TN-Rules.pdf'
       GAME_DESIGNER = 'Mark Derrick'
+      GAME_PUBLISHER = :golden_spike
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18TN'
 

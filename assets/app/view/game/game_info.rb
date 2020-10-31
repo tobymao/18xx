@@ -2,6 +2,7 @@
 
 require 'lib/color'
 require 'lib/settings'
+require 'lib/publisher'
 require 'lib/text'
 
 module View
@@ -50,7 +51,7 @@ module View
         if (publisher = @game.class::GAME_PUBLISHER)
           children << h(:p, [
               'Published by ',
-              h(:a, { attrs: { href: publisher[:url] } }, publisher[:name]),
+              *Lib::Publisher.link_list(component: self, publishers: Array(publisher)),
             ])
         end
         children << h(:p, "Designed by #{@game.class::GAME_DESIGNER}") if @game.class::GAME_DESIGNER
