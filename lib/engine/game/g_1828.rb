@@ -86,7 +86,7 @@ module Engine
           Step::SpecialTrack,
           Step::G1828::BuyCompany,
           Step::Track,
-          Step::Token,
+          Step::G1828::Token,
           Step::Route,
           Step::G1828::Dividend,
           Step::BuyTrain,
