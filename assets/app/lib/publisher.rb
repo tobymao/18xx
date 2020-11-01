@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
-require_tree 'engine'
-
 module Lib
   module Publisher
     def self.link_list(component: nil, publishers: [])
       # show publishers for all playable games on the welcome page
       publishers = Engine::VISIBLE_GAMES.flat_map { |g| g::GAME_PUBLISHER }.compact.uniq.sort if publishers.empty?
 
-      publishers.map! do |p|
+      publishers = publishers.map do |p|
         publisher = Engine::Publisher::INFO[p]
 
         if component
