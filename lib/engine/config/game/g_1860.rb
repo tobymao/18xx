@@ -394,7 +394,7 @@ module Engine
       "name": "Brading Harbour Company",
       "value": 30,
       "revenue": 5,
-      "desc": "Can be exchanged for a share in the BHI&R pubilc company.",
+      "desc": "Can be exchanged for a share in the BHI&R pubilc company",
       "sym": "BHC",
       "abilities": [
         {

@@ -525,6 +525,7 @@ module Engine
 				0,
 				40
 			],
+			"city": 2,
 			"coordinates": "E15",
 			"color": "purple"
 		},
@@ -539,6 +540,7 @@ module Engine
 				0,
 				40
 			],
+			"city": 1,
 			"coordinates": "E15",
 			"color": "green"
 		},
@@ -557,6 +559,7 @@ module Engine
 				100,
 				100
 			],
+			"city": 0,
 			"coordinates": "E15",
 			"color": "yellow",
 			"text_color": "black"
