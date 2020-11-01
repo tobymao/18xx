@@ -104,7 +104,7 @@ module Engine
       "471":1,
       "472":1,
       "473":1,
-      "474":1,
+      "474":2,
       "475":1,
       "476":1,
       "477":1,
@@ -144,7 +144,7 @@ module Engine
          "color":"brown",
          "code":"town=revenue:10;path=a:2,b:_0,a_lane:2.1;path=a:5,b:_0;path=a:2,b:4,a_lane:2.0;label=P"
       },
-      "619":1
+      "619":2
    },
    "market":[
       [
@@ -468,6 +468,12 @@ module Engine
             60,
             80
          ],
+         "abilities": [
+            {
+               "type": "base",
+               "description": "Cannot be merged into NdM"
+            }
+         ],
          "coordinates":"B3",
          "color":"yellow",
          "text_color":"black"
@@ -480,6 +486,12 @@ module Engine
          "tokens":[
             0,
             40
+         ],
+         "abilities": [
+            {
+               "type": "base",
+               "description": "Cannot be merged into NdM"
+            }
          ],
          "coordinates":"I12",
          "color":"orange"

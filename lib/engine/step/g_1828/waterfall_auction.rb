@@ -50,6 +50,15 @@ module Engine
           @bids[new_bid.company]&.reject! { |bid| new_bid.entity != bid.entity } if new_bid.company.value == 250
         end
 
+        def buy_company(player, company, price)
+          super
+
+          return unless (minor = @game.minor_by_id(company.id))
+
+          minor.owner = player
+          minor.float!
+        end
+
         private
 
         def round_end_auction_complete

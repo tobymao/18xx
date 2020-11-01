@@ -11,7 +11,7 @@ class Turn < Snabberb::Component
 
   def render
     @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
-      @game_data['players'].map { |p| [p['id'], p['name']] }.to_h,
+      @game_data['players'].map { |p| p['name'] },
       id: @game_data['id'],
       actions: @game_data['actions'],
     )

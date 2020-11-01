@@ -135,6 +135,7 @@ module Engine
             target.floated? &&
             !@round.converts.include?(target) &&
               target.share_price.normal_movement? &&
+              !target.share_price.acquisition? &&
               target != corporation &&
               target.total_shares != 10 &&
               target.total_shares == corporation.total_shares &&

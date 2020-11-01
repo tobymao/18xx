@@ -107,6 +107,7 @@ module Engine
       SELL_AFTER = :first
 
       # down_share -- down one row per share
+      # down_per_10 -- down one row per 10% sold
       # down_block -- down one row per block
       # left_block_pres -- left one column per block if president
       # left_block -- one row per block
@@ -179,9 +180,6 @@ module Engine
                       repar: 'Par value after bankruptcy',
                       ignore_one_sale: 'Ignore first share sold when moving price' }.freeze
 
-      # Add elements (paragraphs of text) here to display it on Info page.
-      TIMELINE = [].freeze
-
       IPO_NAME = 'IPO'
       IPO_RESERVED_NAME = 'IPO Reserved'
       MARKET_SHARE_LIMIT = 50 # percent
@@ -209,7 +207,7 @@ module Engine
       def setup; end
 
       def init_optional_rules(optional_rules)
-        optional_rules ||= []
+        optional_rules = (optional_rules || []).map(&:to_sym)
         self.class::OPTIONAL_RULES.each do |rule|
           optional_rules.delete(rule[:sym]) if rule[:players] && !rule[:players].include?(@players.size)
         end
@@ -225,7 +223,7 @@ module Engine
         self.class::OPTIONAL_RULES.each do |o_r|
           next unless @optional_rules.include?(o_r[:sym])
 
-          @log << " * #{o_r[:short_name]}: (#{o_r[:desc]})"
+          @log << " * #{o_r[:short_name]}: #{o_r[:desc]}"
         end
       end
 
@@ -324,15 +322,8 @@ module Engine
         @finished = false
         @log = []
         @actions = []
-        @names = if names.is_a?(Hash)
-                   names.freeze
-                 else
-                   names.map { |n| [n, n] }.to_h
-                 end
-
-        # This intentionally ignores player id for now until the database is migrated.
-        @players = @names.map { |_playerid, name| Player.new(name, name) }
-
+        @names = names.freeze
+        @players = @names.map { |name| Player.new(name) }
         @optional_rules = init_optional_rules(optional_rules)
 
         @seed = @id.to_s.scan(/\d+/).first.to_i % RAND_M
@@ -344,13 +335,13 @@ module Engine
           @log << "#{self.class.title} is currently considered 'alpha',"\
             ' the rules implementation is likely to not be complete.'
           @log << 'As the implementation improves, games that are not compatible'\
-            ' with the latest version may be deleted without notice.'
+            ' with the latest version will be deleted without notice.'
           @log << 'We suggest that any alpha quality game is concluded within 7 days.'
         when :beta
           @log << "#{self.class.title} is currently considered 'beta',"\
             ' the rules implementation may allow illegal moves.'
           @log << 'As the implementation improves, games that are not compatible'\
-            ' with the latest version may be deleted after 7 days.'
+            ' with the latest version will be pinned but may be deleted after 7 days.'
           @log << 'Because of this we suggest not playing games that may take months to complete.'
         end
 
@@ -670,6 +661,8 @@ module Engine
         case self.class::SELL_MOVEMENT
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
+        when :down_per_10
+          (bundle.percent / 10).to_i.times { @stock_market.move_down(corporation) }
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
         when :none
@@ -1448,6 +1441,15 @@ module Engine
       end
 
       def companies_in_bank
+        []
+      end
+
+      def or_description_short(turn, round)
+        "#{turn}.#{round}"
+      end
+      
+      # Override this, and add elements (paragraphs of text) here to display it on Info page.
+      def timeline
         []
       end
     end

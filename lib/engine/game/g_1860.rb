@@ -19,7 +19,7 @@ module Engine
       GAME_LOCATION = 'Isle of Wight'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/79633/second-edition-rules'
       GAME_DESIGNER = 'Mike Hutton'
-      GAME_PUBLISHER = Publisher::INFO[:zman_games]
+      GAME_PUBLISHER = :zman_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1860'
 
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying

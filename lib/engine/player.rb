@@ -13,10 +13,9 @@ module Engine
     include Spender
 
     attr_accessor :bankrupt
-    attr_reader :name, :companies, :id
+    attr_reader :name, :companies
 
-    def initialize(id, name)
-      @id = id
+    def initialize(name)
       @name = name
       @cash = 0
       @companies = []
@@ -24,6 +23,10 @@ module Engine
 
     def value
       @cash + shares.select { |s| s.corporation.ipoed }.sum(&:price) + @companies.sum(&:value)
+    end
+
+    def id
+      @name
     end
 
     def owner

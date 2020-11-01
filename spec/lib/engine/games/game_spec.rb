@@ -154,10 +154,10 @@ module Engine
       },
     },
     GAMES_BY_TITLE['18MS'] => {
-      9882 => {
-        'TIE53' => 4407,
-        'Mark Derrick' => 3783,
-        'MontyBrewster71' => 3357,
+      14_375 => {
+        'A Steaming Kyle' => 3685,
+        'kjlevs89' => 3259,
+        'PJBarns' => 2301,
       },
     },
     GAMES_BY_TITLE['18TN'] => {

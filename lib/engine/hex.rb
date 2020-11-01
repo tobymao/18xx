@@ -7,8 +7,8 @@ module Engine
   class Hex
     include Assignable
 
-    attr_accessor :x, :y, :ignore_for_axes
-    attr_reader :connections, :coordinates, :empty, :layout, :neighbors, :tile, :location_name, :original_tile
+    attr_accessor :x, :y, :ignore_for_axes, :location_name
+    attr_reader :connections, :coordinates, :empty, :layout, :neighbors, :tile, :original_tile
 
     DIRECTIONS = {
       flat: {
@@ -93,6 +93,11 @@ module Engine
       @coordinates
     end
 
+    def tile=(new_tile)
+      @original_tile = @tile = new_tile
+      new_tile.hex = self
+    end
+
     def lay(tile)
       # key: city on @tile (AKA old_city)
       # values: city on tile (AKA new_city)
@@ -136,8 +141,9 @@ module Engine
       # when upgrading, preserve tokens on previous tile (must be handled after
       # reservations are completely done due to OO weirdness)
       city_map.each do |old_city, new_city|
-        old_city.tokens.each do |token|
-          new_city.exchange_token(token) if token
+        old_city.tokens.each.with_index do |token, index|
+          cheater = (index >= old_city.normal_slots) && index
+          new_city.exchange_token(token, cheater: cheater) if token
         end
         old_city.remove_tokens!
       end

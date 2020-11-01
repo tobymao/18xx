@@ -31,6 +31,7 @@ class Game < Base
         ON g.id = ug.id
       WHERE g.status = '%<status>s'
         AND ug.id IS NULL
+        AND NOT (g.status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
       ORDER BY g.created_at DESC
       LIMIT #{QUERY_LIMIT}
       OFFSET :%<status>s_offset * #{QUERY_LIMIT - 1}

@@ -23,7 +23,7 @@ module Engine
       GAME_LOCATION = 'Midwest, USA'
       GAME_RULES_URL = 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf'
       GAME_DESIGNER = 'Thomas Lehmann'
-      GAME_PUBLISHER = Publisher::INFO[:gmt_games]
+      GAME_PUBLISHER = %i[gmt_games golden_spike].freeze
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1846'
 
       POOL_SHARE_DROP = :one
@@ -53,12 +53,13 @@ module Engine
       SOUTH_GROUP = %w[B&O C&O IC].freeze
 
       REMOVED_CORP_SECOND_TOKEN = {
-        'D14' => ['GT'],
-        'D20' => ['ERIE'],
-        'E11' => ['PRR'],
-        'E17' => ['NYC'],
-        'G7' => ['IC'],
-        'H12' => ['B&O', 'C&O'],
+        'B&O' => 'H12',
+        'C&O' => 'H12',
+        'ERIE' => 'D20',
+        'GT' => 'D14',
+        'IC' => 'G7',
+        'NYC' => 'E17',
+        'PRR' => 'E11',
       }.freeze
 
       LSL_HEXES = %w[D14 E17].freeze
@@ -156,10 +157,10 @@ module Engine
         corporation_removal_groups.each do |group|
           remove_from_group!(group, @corporations) do |corporation|
             place_home_token(corporation)
-            place_second_token(corporation)
             corporation.abilities(:reservation) do |ability|
               corporation.remove_ability(ability)
             end
+            place_second_token(corporation)
           end
         end
 
@@ -209,17 +210,13 @@ module Engine
         two_player? ? [NORTH_GROUP, SOUTH_GROUP] : [GREEN_GROUP]
       end
 
-      def place_second_token(corporation)
-        return unless two_player?
+      def place_second_token(corporation, two_player_only: true, cheater: 1)
+        return if two_player_only && !two_player?
 
-        if corporation.id == 'ERIE'
-          token = corporation.find_token_by_type
-          hex_by_id('D20').tile.cities.first.place_token(corporation, token, check_tokenable: false)
-          @log << 'ERIE places a token on D20'
-        else
-          hex = self.class::REMOVED_CORP_SECOND_TOKEN.find { |_h, corps| corps.include?(corporation.name) }.first
-          @log << "#{corporation.name} will place a second token on #{hex} when a green tile is laid there"
-        end
+        hex_id = self.class::REMOVED_CORP_SECOND_TOKEN[corporation.id]
+        token = corporation.find_token_by_type
+        hex_by_id(hex_id).tile.cities.first.place_token(corporation, token, check_tokenable: false, cheater: cheater)
+        @log << "#{corporation.id} places a token on #{hex_id}"
       end
 
       def num_trains(train)
@@ -338,8 +335,6 @@ module Engine
             @bank.spend(bonus, illinois_central)
             @log << "#{illinois_central.name} receives a #{format_currency(bonus)} subsidy"
           end
-        when Action::LayTile
-          check_removed_corp_second_token(action.hex, action.tile) if two_player?
         end
 
         check_special_tile_lay(action)
@@ -562,17 +557,6 @@ module Engine
         return [biggest_bundle] if biggest_bundle
 
         []
-      end
-
-      def check_removed_corp_second_token(hex, tile)
-        return unless tile.color.to_sym == :green
-        return unless (corp_ids = self.class::REMOVED_CORP_SECOND_TOKEN[hex.id])
-        return unless (corp = @removals.find { |c| corp_ids.include?(c.id) })
-        return if corp.id == 'ERIE' # their second token is placed during setup
-
-        token = corp.find_token_by_type
-        @log << "#{corp.name} places a token on #{hex.name}"
-        tile.cities.first.place_token(corp, token, check_tokenable: false)
       end
 
       def next_round!

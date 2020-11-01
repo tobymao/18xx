@@ -15,6 +15,7 @@ module Engine
       GAME_LOCATION = 'Mexico'
       GAME_RULES_URL = 'https://secure.deepthoughtgames.com/games/18MEX/rules.pdf'
       GAME_DESIGNER = 'Mark Derrick'
+      GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MEX'
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
@@ -41,10 +42,10 @@ module Engine
       OPTIONAL_RULES = [
         { sym: :triple_yellow_first_or,
           short_name: 'Extra yellow',
-          desc: '8a: Allow corporation to lay 3 yellows its first OR' },
+          desc: 'Allow corporations to lay 3 yellow tiles their first OR' },
         { sym: :hard_rust_t4,
           short_name: 'Hard rust',
-          desc: '8d: Hard rust for 4 trains' },
+          desc: "4 trains rust when 6' train is bought" },
       ].freeze
 
       def p2_company
@@ -65,6 +66,14 @@ module Engine
 
       def ndm_merge_share
         @ndm_merge_share ||= ndm.shares.last
+      end
+
+      def pac
+        @pac_corporation ||= corporation_by_id('PAC')
+      end
+
+      def tm
+        @tm_corporation ||= corporation_by_id('TM')
       end
 
       def udy
@@ -227,13 +236,13 @@ module Engine
         merge_minor(minor_a, ndm, minor_a_reserved_share)
         merge_minor(minor_b, ndm, minor_b_reserved_share)
         merge_minor(minor_c, udy, minor_c_reserved_share)
-        ndm.abilities(:no_buy) do |ability|
-          ndm.remove_ability(ability)
-        end
+        remove_ability(ndm, :no_buy)
       end
 
       def event_ndm_merger!
         @log << "-- Event: #{ndm.name} merger --"
+        remove_ability(pac, :base)
+        remove_ability(tm, :base)
         unless ndm.floated?
           @log << "No merge occur as #{ndm.name} has not floated!"
           return merge_major
@@ -349,9 +358,11 @@ module Engine
         end
 
         # Rule 5g: transfer money and trains
-        treasury = format_currency(major.cash).to_s
-        major.spend(major.cash, ndm) if major.cash.positive?
-        @log << "#{ndm.name} receives the treasury of #{treasury}" if major.cash.positive?
+        if major.cash.positive?
+          treasury = format_currency(major.cash)
+          @log << "#{ndm.name} receives the #{major.name} treasury of #{treasury}"
+          major.spend(major.cash, ndm)
+        end
         if major.trains.any?
           trains_transfered = major.transfer(:trains, ndm).map(&:name)
           @log << "#{ndm.name} receives the trains: #{trains_transfered}"
@@ -446,8 +457,8 @@ module Engine
       end
 
       def merge_minor(minor, major, share)
-        treasury = format_currency(minor.cash).to_s
-        @log << "-- Minor #{minor.name} merges into #{major.name} who receives the treasury of #{treasury} --"
+        transfer = minor.cash.positive? ? " who receives the treasurey of #{format_currency(minor.cash)}" : ''
+        @log << "-- Minor #{minor.name} merges into #{major.name}#{transfer} --"
 
         share.buyable = true
         @share_pool.buy_shares(minor.player, share, exchange: :free, exchange_price: 0)
@@ -483,20 +494,20 @@ module Engine
         corporations = @corporations
           .reject { |c| c.player == ndm.player }
           .reject { |c| %w[PAC TM].include? c.name }
-        player_corps, other_corps = corporations.partition(&:owned_by_player?)
+        floated_player_corps, other_corps = corporations.partition { |c| c.owned_by_player? && c.floated? }
 
         # Sort eligible corporations so that they are in player order
         # starting with the player to the left of the one that bought the 5 train
         index_for_trigger = @players.index(@ndm_merge_trigger)
         order = Hash[@players.each_with_index.map { |p, i| i <= index_for_trigger ? [p, i + 10] : [p, i] }]
-        player_corps.sort_by! { |c| [order[c.player], @round.entities.index(c)] }
+        floated_player_corps.sort_by! { |c| [order[c.player], @round.entities.index(c)] }
 
         # If any non-floated corporation has not yet been ipoed
         # then only non-ipoed corporations must be chosen
         other_corps.reject!(&:ipoed) if other_corps.any? { |c| !c.ipoed }
 
         # The players get the first choice, otherwise a non-floated corporation must be chosen
-        player_corps.concat(other_corps)
+        floated_player_corps.concat(other_corps)
       end
 
       def possible_auto_merge
@@ -520,10 +531,19 @@ module Engine
       def change_4t_to_hardrust
         @depot.trains
           .select { |t| t.name == '4' }
-          .each do |t|
-            t.rusts_on = t.obsolete_on
-            t.obsolete_on = nil
-          end
+          .each { |t| change_to_hardrust(t) }
+      end
+
+      def change_to_hardrust(t)
+        t.rusts_on = t.obsolete_on
+        t.obsolete_on = nil
+        t.variants.each { |_, v| v.merge!(rusts_on: t.rusts_on, obsolete_on: t.obsolete_on) }
+      end
+
+      def remove_ability(corporation, ability_name)
+        corporation.abilities(ability_name) do |ability|
+          corporation.remove_ability(ability)
+        end
       end
     end
   end

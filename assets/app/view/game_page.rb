@@ -52,10 +52,8 @@ module View
       return if game_id == @game&.id &&
         ((!cursor && @game.actions.size == @num_actions) || (cursor == @game.actions.size))
 
-      # Hotseat doesn't have player ids, use names instead.
-      players = @game_data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h
       @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
-        players,
+        @game_data['players'].map { |p| p['name'] },
         id: game_id,
         actions: cursor ? actions.take(cursor) : actions,
         pin: @pin,
