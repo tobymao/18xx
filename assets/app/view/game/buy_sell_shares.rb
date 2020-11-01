@@ -16,7 +16,7 @@ module View
         current_entity = step.current_entity
 
         ipo_share = @corporation.shares[0]
-        pool_share = @game.share_pool.shares_by_corporation[@corporation][0]
+        pool_shares = @game.share_pool.shares_by_corporation[@corporation].group_by(&:percent).values.collect(&:first)
 
         children = []
 
@@ -29,13 +29,14 @@ module View
             )
           end
 
-          if step.can_buy?(current_entity, pool_share)
-            children << h(
-              :button,
-              { on: { click: -> { buy_share(current_entity, pool_share) } } },
-              'Buy Market Share',
-            )
-          end
+          # Put up one buy button for each buyable percentage share type in market.
+          # In case there are more than one type of percentages in market (e.g. 18MEX), show percentage type on button.
+          pool_shares
+            .select { |share| step.can_buy?(current_entity, share) }
+            .each do |share|
+              text = pool_shares.size > 1 ? "Buy #{share.percent}% Market Share" : 'Buy Market Share'
+              children << h(:button, { on: { click: -> { buy_share(current_entity, share) } } }, text)
+            end
         end
 
         if step.current_actions.include?('short') && step.can_short?(current_entity, @corporation)
@@ -63,9 +64,14 @@ module View
                             "#{prefix} an #{@game.class::IPO_NAME} share")
             end
 
-            if ability.from.include?(:market) && step.can_gain?(company.owner, pool_share, exchange: true)
-              children << h(:button, { on: { click: -> { buy_share(company, pool_share) } } },
-                            "#{prefix} a Market share")
+            next unless ability.from.include?(:market)
+
+            # Put up one exchange button for each exchangable percentage share type in market.
+            pool_shares
+              .select { |share| step.can_gain?(company.owner, share, exchange: true) }
+              .each do |share|
+              text = pool_shares.size > 1 ? "#{prefix} a #{share.percent}% Market Share" : "#{prefix} a Market Share"
+              children << h(:button, { on: { click: -> { buy_share(company, share) } } }, text)
             end
           end
         end
