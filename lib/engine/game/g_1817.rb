@@ -122,17 +122,21 @@ module Engine
       end
 
       def size_corporation(corporation, size)
-        shares = @_shares.values.select { |share| share.corporation == corporation }
+        original_shares = @_shares.values.select { |share| share.corporation == corporation }
         game_error('Can only convert 2 share corporation') unless corporation.total_shares == 2
+
+        corporation.share_holders.clear
 
         case size
         when 5
-          shares[0].percent = 40
+          original_shares[0].percent = 40
           shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 1) }
         when 10
-          shares[0].percent = 20
+          original_shares[0].percent = 20
           shares = 8.times.map { |i| Share.new(corporation, percent: 10, index: i + 1) }
         end
+
+        original_shares.each { |share| corporation.share_holders[share.owner] += share.percent }
 
         corporation.max_ownership_percent = 60 unless size == 2
 
