@@ -1447,7 +1447,7 @@ module Engine
       def or_description_short(turn, round)
         "#{turn}.#{round}"
       end
-      
+
       # Override this, and add elements (paragraphs of text) here to display it on Info page.
       def timeline
         []

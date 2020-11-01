@@ -43,7 +43,8 @@ module View
           end
 
           children.concat(render_corporations)
-          children.concat(render_companies)
+          children.concat(render_player_companies) if @current_actions.include?('sell_company')
+          children.concat(render_bank_companies)
           children << h(Players, game: @game)
           children << h(BuyCompanyFromOtherPlayer, game: @game) if @step.purchasable_companies(@current_entity).any?
           children << h(StockMarket, game: @game)
@@ -123,8 +124,40 @@ module View
           h(:button, { on: { click: buy_tokens } }, 'Buy Tokens')
         end
 
-        # For Companies in Bank
-        def render_companies
+        def render_player_companies
+          props = {
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'top',
+            },
+          }
+
+          @step.sellable_companies(@current_entity).map do |company|
+            children = []
+            children << h(Company, company: company)
+            children << h('div.margined_bottom', { style: { width: '20rem' } },
+                          render_sell_input(company)) if @selected_company == company
+            h(:div, props, children)
+          end
+        end
+
+        def render_sell_input(company)
+          price = @step.sell_price(company)
+          buy = lambda do
+            process_action(Engine::Action::SellCompany.new(
+              @current_entity,
+              company: company,
+              price: price
+            ))
+            store(:selected_company, nil, skip: true)
+          end
+
+          [h(:button,
+             { on: { click: buy } },
+             "Sell #{@selected_company.sym} to Bank for #{@game.format_currency(price)}")]
+        end
+
+        def render_bank_companies
           props = {
             style: {
               display: 'inline-block',
@@ -143,6 +176,7 @@ module View
 
         def render_buy_input(company)
           return [] unless @current_actions.include?('buy_company')
+          return [] unless @step.can_buy_company?(@current_entity, company)
 
           buy = lambda do
             process_action(Engine::Action::BuyCompany.new(

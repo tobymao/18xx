@@ -21,13 +21,30 @@ module Engine
           actions << 'par' if can_ipo_any?(entity)
           actions << 'buy_company' if can_buy_any_companies?(entity)
           actions << 'sell_shares' if can_sell_any?(entity)
+          actions << 'sell_company' if can_sell_any_companies?(entity)
 
           actions << 'pass' if actions.any?
           actions
         end
 
+        def description
+          'Sell then Buy Certificates'
+        end
+
+        def pass_description
+          if @current_actions.empty?
+            'Pass (Certificates)'
+          else
+            'Done (Certificates)'
+          end
+        end
+
         def purchasable_companies(_entity)
           []
+        end
+
+        def can_buy_company?(player, company)
+          !did_sell?(company, player)
         end
 
         def can_buy_any_companies?(entity)
@@ -35,7 +52,7 @@ module Engine
             !entity.cash.positive? ||
             @game.num_certs(entity) >= @game.cert_limit
 
-          @game.companies_in_bank.any?
+          @game.companies_in_bank.reject { |c| did_sell?(c, entity) }.any?
         end
 
         def get_par_prices(_entity, corp)
@@ -63,6 +80,48 @@ module Engine
           player.spend(price, owner)
           @current_actions << action
           @log << "#{player.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
+        end
+
+        def process_sell_company(action)
+          company = action.company
+          player = action.entity
+          @game.game_error("Cannot sell #{company.id}") unless can_sell_company?(company)
+
+          sell_company(player, company, action.price)
+          @round.last_to_act = player
+        end
+
+        def sell_price(entity)
+          return 0 unless can_sell_company?(entity)
+
+          entity.value - 30
+        end
+
+        def can_sell_any_companies?(entity)
+          !bought? && sellable_companies(entity).any?
+        end
+
+        def sellable_companies(entity)
+          return [] unless @game.turn > 1
+          return [] unless entity.player?
+
+          entity.companies
+        end
+
+        def can_sell_company?(entity)
+          return false unless entity.company?
+          return false if entity.owner == @game.bank
+          return false unless @game.turn > 1
+
+          true
+        end
+
+        def sell_company(player, company, price)
+          company.owner = @game.bank
+          player.companies.delete(company)
+          @game.bank.spend(price, player) if price.positive?
+          @log << "#{player.name} sells #{company.name} to bank for #{@game.format_currency(price)}"
+          @players_sold[player][company] = :now
         end
       end
     end

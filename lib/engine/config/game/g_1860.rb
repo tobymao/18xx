@@ -394,7 +394,7 @@ module Engine
       "name": "Brading Harbour Company",
       "value": 30,
       "revenue": 5,
-      "desc": "Can be exchanged for a share in the BHI&R pubilc company or sold to bank",
+      "desc": "Can be exchanged for a share in the BHI&R pubilc company",
       "sym": "BHC",
       "abilities": [
         {
@@ -402,10 +402,6 @@ module Engine
           "corporation": "BHI&R",
           "owner_type": "player",
           "from": "ipo"
-        },
-        {
-          "type": "sell_to_bank",
-          "cost": 30
         }
       ]
     },
@@ -421,10 +417,6 @@ module Engine
           "corporation": "FYN",
           "owner_type": "player",
           "from": "ipo"
-        },
-        {
-          "type": "sell_to_bank",
-          "cost": 30
         }
       ]
     },
@@ -440,10 +432,6 @@ module Engine
           "corporation": "C&N",
           "owner_type": "player",
           "from": "ipo"
-        },
-        {
-          "type": "sell_to_bank",
-          "cost": 30
         }
       ]
     },
@@ -459,10 +447,6 @@ module Engine
           "corporation": "IOW",
           "owner_type": "player",
           "from": "ipo"
-        },
-        {
-          "type": "sell_to_bank",
-          "cost": 30
         }
       ]
     },
