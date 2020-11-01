@@ -231,7 +231,7 @@ module Engine
       def bundles_for_corporation(player, corporation)
         return super unless ndm == corporation
 
-        # Hansle bundles with half shares and non-half shares separately.
+        # Handle bundles with half shares and non-half shares separately.
         regular_shares, half_shares = player.shares_of(ndm).partition { |s| s.percent > 5 }
 
         # Need only one bundle with half shares. Player will have to sell twice if s/he want to sell both.
@@ -491,7 +491,7 @@ module Engine
       end
 
       def merge_and_close_minor(minor, major, share)
-        transfer = minor.cash.positive? ? " who receives the treasurey of #{format_currency(minor.cash)}" : ''
+        transfer = minor.cash.positive? ? " who receives the treasury of #{format_currency(minor.cash)}" : ''
         @log << "-- Minor #{minor.name} merges into #{major.name}#{transfer} --"
 
         share.buyable = true
