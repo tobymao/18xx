@@ -189,10 +189,20 @@ module Engine
           end
         end
 
+        def available_company_options(entity)
+          values = entity.companies.map(&:value)
+          (0..values.size).flat_map { |size| values.combination(size).to_a.map(&:sum) }
+        end
+
         def add_bid(action)
           entity = action.entity
           corporation = action.corporation
           price = action.price
+
+          options = available_company_options(entity)
+          if options.none? { |option| price >= option && price <= option + entity.cash }
+            @game.game_error("Invalid bid, valid bids are #{options} + cash #{entity.cash}")
+          end
 
           if @auctioning
             @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
