@@ -27,6 +27,7 @@ module Engine
       CURVED_YELLOW_CITY = %w[5 6].freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'companies_buyable' => ['Companies become buyable', 'All companies may now be bought in by corporation'],
         'minors_closed' => ['Minors closed', 'Minors closed, NdM becomes available for buy & sell during stock round'],
         'ndm_merger' => ['NdM merger', 'Potential NdM merger if NdM has floated']
       ).freeze
@@ -43,6 +44,12 @@ module Engine
         { sym: :triple_yellow_first_or,
           short_name: 'Extra yellow',
           desc: 'Allow corporations to lay 3 yellow tiles their first OR' },
+        { sym: :early_buy_of_kcmo,
+          short_name: 'Early buy of KCM&O private',
+          desc: 'KCM&O private may be bought in for up to face value' },
+        { sym: :delay_minor_close,
+          short_name: 'Delay minor close',
+          desc: "Minor closes at the start of the SR following buy of first 3'" },
         { sym: :hard_rust_t4,
           short_name: 'Hard rust',
           desc: "4 trains rust when 6' train is bought" },
@@ -113,6 +120,7 @@ module Engine
         @minors.each do |minor|
           train = @depot.upcoming[0]
           train.buyable = false
+          update_end_of_life(train, nil, nil) if @optional_rules&.include?(:delay_minor_close)
           minor.cash = 100
           minor.buy_train(train)
           hex = hex_by_id(minor.coordinates)
@@ -141,8 +149,15 @@ module Engine
         # Remember the price for the last token; exchange tokens have the same.
         @ndm_exchange_token_price = ndm.tokens.last.price
 
+        # Rest is needed for optional rules
+
         @recently_floated = []
         change_4t_to_hardrust if @optional_rules&.include?(:hard_rust_t4)
+        @minor_close = false
+        return unless @optional_rules&.include?(:early_buy_of_kcmo)
+
+        p2_company.min_price = 1
+        p2_company.max_price = p2_company.value
       end
 
       def init_share_pool
@@ -154,7 +169,7 @@ module Engine
           Step::Bankrupt,
           Step::G18Mex::Assign,
           Step::DiscardTrain,
-          Step::BuyCompany,
+          Step::G18Mex::BuyCompany,
           Step::HomeToken,
           Step::G18Mex::Merge,
           Step::G18Mex::SpecialTrack,
@@ -179,6 +194,9 @@ module Engine
       end
 
       def new_stock_round
+        # Trigger possible delayed close of minors
+        event_minors_closed! if @minor_close
+
         @minors.each do |minor|
           matching_company = @companies.find { |company| company.sym == minor.name }
           minor.owner = matching_company.owner
@@ -232,10 +250,26 @@ module Engine
         entity.trains.empty? ? handle_no_mail(entity) : handle_mail(entity)
       end
 
+      def event_companies_buyable!
+        setup_company_price_50_to_150_percent
+      end
+
+      def purchasable_companies(_entity)
+        return super if @phase.current[:name] != '2' || !@optional_rules&.include?(:early_buy_of_kcmo)
+        return [] unless p2_company.owner.player?
+
+        [p2_company]
+      end
+
       def event_minors_closed!
-        merge_minor(minor_a, ndm, minor_a_reserved_share)
-        merge_minor(minor_b, ndm, minor_b_reserved_share)
-        merge_minor(minor_c, udy, minor_c_reserved_share)
+        if !@minor_close && @optional_rules&.include?(:delay_minor_close)
+          @log << 'Close of minors delayed to next stock round'
+          @minor_close = true
+          return
+        end
+        merge_and_close_minor(minor_a, ndm, minor_a_reserved_share)
+        merge_and_close_minor(minor_b, ndm, minor_b_reserved_share)
+        merge_and_close_minor(minor_c, udy, minor_c_reserved_share)
         remove_ability(ndm, :no_buy)
       end
 
@@ -456,7 +490,7 @@ module Engine
         @log << "#{entity.name} receives #{format_currency(income)} in mail"
       end
 
-      def merge_minor(minor, major, share)
+      def merge_and_close_minor(minor, major, share)
         transfer = minor.cash.positive? ? " who receives the treasurey of #{format_currency(minor.cash)}" : ''
         @log << "-- Minor #{minor.name} merges into #{major.name}#{transfer} --"
 
@@ -531,13 +565,13 @@ module Engine
       def change_4t_to_hardrust
         @depot.trains
           .select { |t| t.name == '4' }
-          .each { |t| change_to_hardrust(t) }
+          .each { |t| update_end_of_life(t, t.obsolete_on, nil) }
       end
 
-      def change_to_hardrust(t)
-        t.rusts_on = t.obsolete_on
-        t.obsolete_on = nil
-        t.variants.each { |_, v| v.merge!(rusts_on: t.rusts_on, obsolete_on: t.obsolete_on) }
+      def update_end_of_life(t, rusts_on, obsolete_on)
+        t.rusts_on = rusts_on
+        t.obsolete_on = obsolete_on
+        t.variants.each { |_, v| v.merge!(rusts_on: rusts_on, obsolete_on: obsolete_on) }
       end
 
       def remove_ability(corporation, ability_name)

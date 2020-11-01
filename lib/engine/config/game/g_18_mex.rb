@@ -280,11 +280,6 @@ module Engine
             {
               "type": "no_buy",
               "owner_type": "player"
-            },
-            {
-               "type": "close",
-               "when": "3½",
-               "owner_type": "player"
             }
          ]
       },
@@ -298,11 +293,6 @@ module Engine
             {
               "type": "no_buy",
               "owner_type": "player"
-            },
-            {
-               "type": "close",
-               "when": "3½",
-               "owner_type": "player"
             }
          ]
       },
@@ -316,11 +306,6 @@ module Engine
             {
               "type": "no_buy",
               "owner_type": "player"
-            },
-            {
-               "type": "close",
-               "when": "3½",
-               "owner_type": "player"
             }
          ]
       },
@@ -581,7 +566,10 @@ module Engine
          ],
          "price":180,
          "num":4,
-         "rusts_on":"6"
+         "rusts_on":"6",
+         "events":[
+            {"type": "companies_buyable"}
+         ]
       },
       {
          "name":"3'",
