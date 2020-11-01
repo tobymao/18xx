@@ -25,6 +25,8 @@ module Engine
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
       EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
       HOME_TOKEN_TIMING = :operating_round
+      SELL_AFTER = :any_time
+      SELL_BUY_ORDER = :sell_buy
 
       PAR_RANGE = {
         1 => [74, 100],
@@ -56,20 +58,28 @@ module Engine
         @receivership_corps = []
         @insolvent_corps = []
         @closed_corps = []
+
+        reserve_share('BHI&R')
+        reserve_share('FYN')
+        reserve_share('C&N')
+        reserve_share('IOW')
+      end
+
+      def reserve_share(name)
+        @corporations.find { |c| c.name == name }.shares.last.buyable = false
       end
 
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
-          Step::Exchange,
-          Step::BuySellParShares,
+          Step::G1860::Exchange,
+          Step::G1860::BuySellParShares,
         ])
       end
 
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
-          Step::Exchange,
           Step::DiscardTrain,
           Step::Track,
           Step::Token,
@@ -85,7 +95,6 @@ module Engine
 
       def new_auction_round
         Round::Auction.new(self, [
-          # Step::CompanyPendingPar,
           Step::G1860::BuyCert,
         ])
       end
@@ -135,6 +144,65 @@ module Engine
 
       def repar_prices
         @repar_prices ||= stock_market.market.first.select { |p| p.type == :repar || p.type == :par }
+      end
+
+      def can_ipo?(corp)
+        corp_layer(corp) <= current_layer
+      end
+
+      def current_layer
+        layers = LAYER_BY_NAME.select do |name, _layer|
+          corp = @corporations.find { |c| c.name == name }
+          corp.num_ipo_shares.zero? || corp.operated?
+        end.values
+        if layers.empty?
+          1
+        else
+          layers.max + 1
+        end
+      end
+
+      def sorted_corporations
+        @corporations.sort_by { |c| corp_layer(c) }
+      end
+
+      def corporation_available?(entity)
+        entity.corporation? && can_ipo?(entity)
+      end
+
+      def bundles_for_corporation(share_holder, corporation, shares: nil)
+        return [] unless corporation.ipoed
+
+        shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
+
+        bundles = shares.flat_map.with_index do |share, index|
+          bundle = shares.take(index + 1)
+          percent = bundle.sum(&:percent)
+          bundles = [Engine::ShareBundle.new(bundle, percent)]
+          if share.president
+            normal_percent = corporation.share_percent
+            difference = corporation.presidents_percent - normal_percent
+            num_partial_bundles = difference / normal_percent
+            (1..num_partial_bundles).each do |n|
+              bundles.insert(0, Engine::ShareBundle.new(bundle, percent - (normal_percent * n)))
+            end
+          end
+          bundles.each { |b| b.share_price = (b.price_per_share / 2).to_i if corporation.trains.empty? }
+          bundles
+        end
+
+        bundles
+      end
+
+      def sell_shares_and_change_price(bundle)
+        corporation = bundle.corporation
+        price = corporation.share_price.price
+
+        @share_pool.sell_shares(bundle)
+        num_shares = bundle.num_shares
+        num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
+        num_shares.times { @stock_market.move_left(corporation) }
+        log_share_price(corporation, price)
       end
     end
   end
