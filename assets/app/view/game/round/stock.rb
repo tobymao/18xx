@@ -65,8 +65,10 @@ module View
 
             children = []
             children.concat(render_subsidiaries)
-            children << h(Corporation, corporation: corporation, selectable: @game.can_select?(corporation))
-            children << render_input if @selected_corporation == corporation
+            children << h(Corporation, corporation: corporation)
+            if @selected_corporation == corporation && @game.corporation_available?(corporation)
+              children << render_input
+            end
             children << h(Choose) if @current_actions.include?('choose')
             h(:div, props, children)
           end.compact
@@ -165,7 +167,7 @@ module View
             },
           }
 
-          @game.companies_in_bank.map do |company|
+          @game.companies.select { |c| c.owner == @game.bank }.map do |company|
             children = []
             children << h(Company, company: company)
             children << h('div.margined_bottom', { style: { width: '20rem' } },

@@ -104,6 +104,7 @@ module Engine
       # first           -- after first stock round
       # operate         -- after operation
       # p_any_operate   -- pres any time, share holders after operation
+      # any_time        -- at any time
       SELL_AFTER = :first
 
       # down_share -- down one row per share
@@ -1436,12 +1437,8 @@ module Engine
         description.strip
       end
 
-      def can_select?(_entity)
+      def corporation_available?(_entity)
         true
-      end
-
-      def companies_in_bank
-        []
       end
 
       def or_description_short(turn, round)

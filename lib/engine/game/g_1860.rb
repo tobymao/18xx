@@ -166,12 +166,8 @@ module Engine
         @corporations.sort_by { |c| corp_layer(c) }
       end
 
-      def can_select?(entity)
+      def corporation_available?(entity)
         entity.corporation? && can_ipo?(entity)
-      end
-
-      def companies_in_bank
-        @companies.select { |c| c.owner == @bank }
       end
 
       def bundles_for_corporation(share_holder, corporation, shares: nil)

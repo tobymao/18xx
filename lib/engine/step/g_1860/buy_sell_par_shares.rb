@@ -52,7 +52,7 @@ module Engine
             !entity.cash.positive? ||
             @game.num_certs(entity) >= @game.cert_limit
 
-          @game.companies_in_bank.reject { |c| did_sell?(c, entity) }.any?
+          @game.companies.select { |c| c.owner == @game.bank }.reject { |c| did_sell?(c, entity) }.any?
         end
 
         def get_par_prices(_entity, corp)
