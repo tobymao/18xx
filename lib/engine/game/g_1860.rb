@@ -19,7 +19,7 @@ module Engine
       GAME_LOCATION = 'Isle of Wight'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/79633/second-edition-rules'
       GAME_DESIGNER = 'Mike Hutton'
-      GAME_PUBLISHER = Publisher::INFO[:zman_games]
+      GAME_PUBLISHER = :zman_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1860'
 
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
@@ -76,7 +76,7 @@ module Engine
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
-          Step::G1860::ExchangeSell,
+          Step::G1860::Exchange,
           Step::G1860::BuySellParShares,
         ])
       end
@@ -170,12 +170,8 @@ module Engine
         @corporations.sort_by { |c| corp_layer(c) }
       end
 
-      def can_select?(entity)
+      def corporation_available?(entity)
         entity.corporation? && can_ipo?(entity)
-      end
-
-      def companies_in_bank
-        @companies.select { |c| c.owner == @bank }
       end
 
       def bundles_for_corporation(share_holder, corporation, shares: nil)

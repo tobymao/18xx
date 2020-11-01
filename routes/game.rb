@@ -32,7 +32,7 @@ class Api
             game.to_h
           end
 
-          not_authorized! unless users.any? { |u| u.id == user.id }
+          not_authorized! unless users.any? { |u| u.id == user.id || game.user_id == user.id }
 
           r.is 'leave' do
             halt(400, 'Cannot leave because game has started') unless game.status == 'new'
@@ -80,12 +80,11 @@ class Api
 
                 game.save
               else
-                players = users.map { |u| [u.id, u.name] }.to_h
                 engine = Engine::GAMES_BY_TITLE[game.title].new(
-                  players,
+                  users.map(&:name),
                   id: game.id,
-                  settings: game.settings,
                   actions: actions_h(game),
+                  optional_rules: game.settings['optional_rules_selected']&.map(&:to_sym),
                 )
 
                 action_id = r.params['id']
@@ -147,8 +146,11 @@ class Api
 
           # POST '/api/game/<game_id>/start
           r.is 'start' do
-            players = users.map { |u| [u.id, u.name] }.to_h
-            engine = Engine::GAMES_BY_TITLE[game.title].new(players, id: game.id)
+            engine = Engine::GAMES_BY_TITLE[game.title].new(
+              users.map(&:name),
+              id: game.id,
+              optional_rules: game.settings['optional_rules_selected']&.map(&:to_sym),
+            )
             unless game.players.size.between?(*Engine.player_range(engine.class))
               halt(400, 'Player count not supported')
             end

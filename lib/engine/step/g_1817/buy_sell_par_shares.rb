@@ -45,6 +45,14 @@ module Engine
           actions
         end
 
+        def can_sell_order?
+          !bought? && !shorted?
+        end
+
+        def shorted?
+          @current_actions.any? { |x| x.class == Action::Short }
+        end
+
         def cash_with_subsidiaries(entity)
           entity.cash + @subsidiaries.sum(&:value)
         end
@@ -63,7 +71,7 @@ module Engine
           if entity.corporation?
             entity.cash >= bundle.price && redeemable_shares(entity).include?(bundle)
           else
-            super
+            super && !bundle.corporation.share_price.acquisition?
           end
         end
 
@@ -129,13 +137,24 @@ module Engine
 
         def pass_description
           return 'Pass (Subsidiaries)' if available_subsidiaries.any?
-          return super unless @auctioning
 
-          'Pass (Bid)'
+          if @auctioning
+            'Pass (Bid)'
+          elsif @game.corporations.any? { |corp| corp.owner == current_entity && @round.tokens_needed?(corp) }
+            'Pass (May liquidate corporation)'
+          else
+            super
+          end
         end
 
         def log_pass(entity)
-          return super unless @auctioning
+          return if @auctioning
+
+          if @corporate_action
+            @log << "#{entity.name} finishes acting for #{@corporate_action.entity.name}"
+          else
+            super
+          end
         end
 
         def pass!

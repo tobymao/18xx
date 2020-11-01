@@ -20,7 +20,7 @@ module Engine
           return super unless action.entity == @company
 
           lay_tile(action, spender: @round.company_seller)
-          ability(action.entity).use!
+          tile_lay_abilities(action.entity).use!
         end
 
         def process_pass(action)

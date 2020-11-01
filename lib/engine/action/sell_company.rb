@@ -5,21 +5,24 @@ require_relative 'base'
 module Engine
   module Action
     class SellCompany < Base
-      attr_reader :entity, :price
+      attr_reader :entity, :company, :price
 
-      def initialize(entity, price:)
+      def initialize(entity, company:, price:)
         @entity = entity
+        @company = company
         @price = price
       end
 
-      def self.h_to_args(h, _game)
+      def self.h_to_args(h, game)
         {
+          company: game.company_by_id(h['company']),
           price: h['price'],
         }
       end
 
       def args_to_h
         {
+          'company' => @company.id,
           'price' => @price,
         }
       end

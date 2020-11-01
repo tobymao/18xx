@@ -7,33 +7,33 @@ require_relative 'base'
 module Engine
   module Game
     class G1817 < Base
-      register_colors(black: '#0a0a0a',
-                      blue: '#0a70b3',
-                      brightGreen: '#7bb137',
-                      brown: '#881a1e',
-                      gold: '#e09001',
-                      gray: '#9a9a9d',
-                      green: '#008f4f',
-                      lavender: '#baa4cb',
-                      lightBlue: '#37b2e2',
-                      lightBrown: '#b58168',
-                      lime: '#bdbd00',
-                      navy: '#004d95',
-                      natural: '#fbf4de',
-                      orange: '#eb6f0e',
-                      pink: '#ec767c',
-                      red: '#dd0030',
-                      turquoise: '#235758',
-                      violet: '#4d2674',
-                      white: '#ffffff',
-                      yellow: '#fcea18')
+      register_colors(black: '#16190e',
+                      blue: '#165633',
+                      brightGreen: '#0a884b',
+                      brown: '#984573',
+                      gold: '#904098',
+                      gray: '#984d2d',
+                      green: '#bedb86',
+                      lavender: '#e96f2c',
+                      lightBlue: '#bedef3',
+                      lightBrown: '#bec8cc',
+                      lime: '#00afad',
+                      navy: '#003d84',
+                      natural: '#e31f21',
+                      orange: '#f2a847',
+                      pink: '#ee3e80',
+                      red: '#ef4223',
+                      turquoise: '#0095da',
+                      violet: '#e48329',
+                      white: '#fff36b',
+                      yellow: '#ffdea8')
 
       load_from_json(Config::Game::G1817::JSON)
 
       GAME_LOCATION = 'NYSE, USA'
       GAME_RULES_URL = 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view'
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
-      GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
+      GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
 
       MUST_BID_INCREMENT_MULTIPLE = true
@@ -63,18 +63,25 @@ module Engine
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
                                                                   'Game Ends 3 ORs after purchase/export'\
                                                                   ' of first 8 train']).freeze
-
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'no_new_shorts' => ['Cannot gain new shorts', 'Short selling is not permitted, existing shorts remain'],
+      ).freeze
       MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'Minimum Price for a 2($55), 5($70) and 10($120) share'\
       ' corporation taking maximum loans to ensure it avoids acquisition').freeze
+
       MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
-      attr_reader :loan_value, :owner_when_liquidated
+      attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
       def bankruptcy_limit_reached?
         @players.reject(&:bankrupt).one?
       end
 
+      def future_interest_rate
+        [[5, ((loans_taken + 4) / 5).to_i * 5].max, 70].min
+      end
+
       def interest_rate
-        @interest_fixed || [[5, ((loans_taken + 4) / 5).to_i * 5].max, 70].min
+        @interest_fixed || future_interest_rate
       end
 
       def interest_owed(entity)
@@ -419,6 +426,8 @@ module Engine
             new_operating_round
           when Round::Operating
             or_round_finished
+            # Store the share price of each corp to determine if they can be acted upon in the AR
+            @stock_prices_start_merger = @corporations.map { |corp| [corp, corp.share_price] }.to_h
             @log << "-- Merger and Conversion Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
             Round::G1817::Merger.new(self, [
               Step::G1817::ReduceTokens,

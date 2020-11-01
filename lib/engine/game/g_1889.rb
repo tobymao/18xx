@@ -22,7 +22,7 @@ module Engine
       GAME_LOCATION = 'Shikoku, Japan'
       GAME_RULES_URL = 'http://dl.deepthoughtgames.com/1889-Rules.pdf'
       GAME_DESIGNER = 'Yasutaka Ikeda (池田 康隆)'
-      GAME_PUBLISHER = Publisher::INFO[:grand_trunk_games]
+      GAME_PUBLISHER = :grand_trunk_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1889'
 
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying

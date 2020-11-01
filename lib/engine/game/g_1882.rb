@@ -23,7 +23,7 @@ module Engine
       GAME_LOCATION = 'Assiniboia, Canada'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/206629/1882-rules'
       GAME_DESIGNER = 'Marc Voyer'
-      GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
+      GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1882'
 
       MUST_BID_INCREMENT_MULTIPLE = true

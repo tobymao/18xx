@@ -11,7 +11,7 @@ module Engine
       GAME_LOCATION = 'Southern New England, USA'
       GAME_RULES_URL = 'https://docs.google.com/document/d/1hgh1_-RMgEnQI1XlodT_6UpPU5ZnEZtMT6Yg5TOuXOw'
       GAME_DESIGNER = 'Scott Petersen'
-      GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
+      GAME_PUBLISHER = :all_aboard_games
 
       SELL_BUY_ORDER = :sell_buy
 

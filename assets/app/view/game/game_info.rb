@@ -2,6 +2,7 @@
 
 require 'lib/color'
 require 'lib/settings'
+require 'lib/publisher'
 require 'lib/text'
 
 module View
@@ -33,11 +34,11 @@ module View
       end
 
       def timeline
-        return nil if @game.class::TIMELINE.empty?
+        return nil if @game.timeline.empty?
 
         children = [h(:h3, 'Timeline')]
 
-        @game.class::TIMELINE.each do |line|
+        @game.timeline.each do |line|
           children << h(:p, line)
         end
 
@@ -50,7 +51,7 @@ module View
         if (publisher = @game.class::GAME_PUBLISHER)
           children << h(:p, [
               'Published by ',
-              h(:a, { attrs: { href: publisher[:url] } }, publisher[:name]),
+              *Lib::Publisher.link_list(component: self, publishers: Array(publisher)),
             ])
         end
         children << h(:p, "Designed by #{@game.class::GAME_DESIGNER}") if @game.class::GAME_DESIGNER
@@ -81,6 +82,9 @@ module View
       def phases
         current_phase = @game.phase.current
         phases_events = []
+
+        corporation_sizes = true if @game.phase.phases.any? { |c| c[:corporation_sizes] }
+
         rows = @game.phase.phases.map do |phase|
           row_events = []
 
@@ -98,12 +102,16 @@ module View
             },
           }
 
+          extra = []
+          extra << h(:td, phase[:corporation_sizes].join(', ')) if corporation_sizes
+
           h(:tr, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
             h(:td, phase[:on]),
             h(:td, phase[:operating_rounds]),
             h(:td, phase[:train_limit]),
             h(:td, phase_props, phase_color.capitalize),
+            *extra,
             h(:td, row_events.map(&:first).join(', ')),
           ])
         end
@@ -124,6 +132,9 @@ module View
           ])]
         end
 
+        extra = []
+        extra << h(:th, 'New Corporation Size') if corporation_sizes
+
         [
           h(:h3, 'Game Phases'),
           h(:div, { style: { overflowX: 'auto' } }, [
@@ -135,6 +146,7 @@ module View
                   h(:th, { attrs: { title: 'Number of Operating Rounds' } }, 'ORs'),
                   h(:th, 'Train Limit'),
                   h(:th, 'Tiles'),
+                  *extra,
                   h(:th, 'Status'),
                 ]),
               ]),
