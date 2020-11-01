@@ -394,7 +394,7 @@ module Engine
       "name": "Brading Harbour Company",
       "value": 30,
       "revenue": 5,
-      "desc": "Can be exchanged for a share in the BHI&R pubilc company",
+      "desc": "Can be exchanged for a share in the BHI&R pubilc company.",
       "sym": "BHC",
       "abilities": [
         {
@@ -455,17 +455,7 @@ module Engine
       "value": 200,
       "revenue": 25,
       "desc": "Not available until the first 6+3 train has been purchased. Closes all other private companies.",
-      "sym": "FFC",
-      "abilities": [
-        {
-          "type": "close_others",
-          "when": "bought"
-        },
-        {
-          "type": "sell_to_bank",
-          "cost": 30
-        }
-      ]
+      "sym": "FFC"
     }
   ],
   "corporations": [

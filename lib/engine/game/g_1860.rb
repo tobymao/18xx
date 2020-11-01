@@ -62,6 +62,7 @@ module Engine
         @receivership_corps = []
         @insolvent_corps = []
         @closed_corps = []
+        @highest_layer = 1
 
         reserve_share('BHI&R')
         reserve_share('FYN')
@@ -119,6 +120,10 @@ module Engine
         @players.rotate!(@players.index(player))
       end
 
+      def or_set_finished
+        check_new_layer
+      end
+
       def event_fishbourne_to_bank!
         ffc = @companies.find { |c| c.sym == 'FFC' }
         ffc.owner = @bank
@@ -154,16 +159,18 @@ module Engine
         corp_layer(corp) <= current_layer
       end
 
+      def check_new_layer
+        layer = current_layer
+        @log << "-- Layer #{layer} corporations now available --" if layer > @highest_layer
+        @highest_layer = layer
+      end
+
       def current_layer
         layers = LAYER_BY_NAME.select do |name, _layer|
           corp = @corporations.find { |c| c.name == name }
           corp.num_ipo_shares.zero? || corp.operated?
         end.values
-        if layers.empty?
-          1
-        else
-          layers.max + 1
-        end
+        layers.empty? ? 1 : layers.max + 1
       end
 
       def sorted_corporations
@@ -215,7 +222,7 @@ module Engine
 
         @corporations.each { |corp| corp.shares.each { |share| share.buyable = true } }
         @companies.reject { |c| c == company }.each(&:close!)
-        @log << '-- Event: starting private companies close --' if any
+        @log << '-- Event: starting private companies close --'
       end
     end
   end

@@ -66,6 +66,12 @@ module Engine
           @game.sell_shares_and_change_price(shares)
         end
 
+        def process_buy_shares(action)
+          super
+
+          @game.check_new_layer
+        end
+
         def process_buy_company(action)
           player = action.entity
           company = action.company
@@ -81,7 +87,7 @@ module Engine
           @current_actions << action
           @log << "#{player.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
 
-          @game.close_other_companies!(company) if company.abilities(:close_others)
+          @game.close_other_companies!(company) if company.sym == 'FFC'
         end
 
         def process_sell_company(action)
