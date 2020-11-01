@@ -16,7 +16,7 @@ module View
         current_entity = step.current_entity
 
         ipo_share = @corporation.shares[0]
-        pool_shares = @game.share_pool.shares_by_corporation[@corporation].group_by(&:percent).values.collect(&:first)
+        pool_shares = @game.share_pool.shares_by_corporation[@corporation].group_by(&:percent).values.map(&:first)
 
         children = []
 
