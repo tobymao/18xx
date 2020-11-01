@@ -29,7 +29,7 @@ module Engine
         def available_hex(entity, hex)
           return super if entity.company? && entity.id == 'PSM'
 
-          hexes = ability(entity)&.hexes
+          hexes = tile_lay_abilities(entity)&.hexes
           return if hexes&.any? && !hexes&.include?(hex.id)
 
           # When actually laying track entity will be the corp.
