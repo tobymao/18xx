@@ -176,13 +176,8 @@ module Engine
         end
 
         def available_company_options(entity)
-          value = entity.companies.map(&:value)
-          # Rather naive way of doing this, but the number of potential values is small
-          options = [0]
-          value.each do |v|
-            options += options.map { |o| o + v }
-          end
-          options.uniq
+          values = entity.companies.map(&:value)
+          (0..values.size).flat_map { |size| values.combination(size).to_a.map(&:sum) }
         end
 
         def add_bid(action)
