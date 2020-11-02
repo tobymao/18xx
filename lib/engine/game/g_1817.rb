@@ -348,6 +348,8 @@ module Engine
 
         revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
 
+        game_error('Route visits same hex twice') if route.hexes.size != route.hexes.uniq.size
+
         mine = 'mine'
         if route.hexes.first.assigned?(mine) || route.hexes.last.assigned?(mine)
           game_error('Route cannot start or end with a mine')

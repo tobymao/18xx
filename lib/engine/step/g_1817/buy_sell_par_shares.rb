@@ -19,6 +19,7 @@ module Engine
           return [] unless entity.player?
 
           if @corporate_action
+            return [] unless entity.owner == current_entity
             return ['pass'] if any_corporate_actions?(entity)
 
             return []
@@ -34,6 +35,7 @@ module Engine
             end
           end
 
+          return [] unless entity == current_entity
           return %w[bid pass] if @auctioning
 
           actions = super
