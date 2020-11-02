@@ -350,7 +350,8 @@ module Engine
           elsif corporation.share_price.acquisition?
             10
           else
-            corporation.total_shares * corporation.share_price.price
+            # Needs rounding to 10
+            ((corporation.total_shares * corporation.share_price.price).to_f / 10).round * 10
           end
         end
 
@@ -394,6 +395,7 @@ module Engine
           price = action.price
 
           add_bid(action)
+          @game.game_error("Bid #{price} is not a multple of 10") unless (price % 10).zero?
           @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
           resolve_bids
         end
