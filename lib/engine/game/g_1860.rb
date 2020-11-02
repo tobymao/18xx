@@ -217,8 +217,7 @@ module Engine
       end
 
       def close_other_companies!(company)
-        any = @companies.reject { |c| c == company }.reject(&:closed?)
-        return unless any
+        return unless @companies.reject { |c| c == company }.reject(&:closed?)
 
         @corporations.each { |corp| corp.shares.each { |share| share.buyable = true } }
         @companies.reject { |c| c == company }.each(&:close!)
