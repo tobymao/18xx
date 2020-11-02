@@ -16,7 +16,15 @@ module View
     end
 
     def render_notification
+      if Time.now <= Time.new(2020, 11, 5, 12, 0, 0)
+        tournament_announcement = <<~MESSAGE
+          <p>A group of players is organizing an <em>unofficial</em> async 4p 1846 <a href="https://18xx.daniel.sousa.me/tournament">tournament</a>.<br />
+          <a href="https://18xx.daniel.sousa.me/tournament/sign-up">Registration</a> is open until Nov 4th (AoE).</p>
+        MESSAGE
+      end
+
       message = <<~MESSAGE
+        #{tournament_announcement}
         <p>18 Los Angeles is now in beta!</p>
         <p>You can now create private games. After you create the game, use the "copy invite link" button to
         get a URL to send to your opponents.</p>
