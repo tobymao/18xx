@@ -11,8 +11,15 @@ module Engine
         ACTIONS_WITH_PASS = %w[bid pass].freeze
 
         def setup
-          @companies = @game.companies.select { |company| company.phase == 'ISR' }.sort
+          @draw_size = 4 + (@game.players.size == 5 ? 2 : 0)
+          @companies = @game.companies.sort_by { @game.rand }.first(@draw_size).sort
           @finished = false
+        end
+
+        def actions(entity)
+          return [] if finished?
+
+          entity == current_entity ? ACTIONS_WITH_PASS : []
         end
 
         def available
@@ -45,14 +52,16 @@ module Engine
           'Draft Powers'
         end
 
+        def pass_description
+          'Pass (Buy)'
+        end
+
         def finished?
           @finished
         end
 
-        def actions(entity)
-          return [] if finished?
-
-          entity == current_entity ? ACTIONS_WITH_PASS : []
+        def min_bid(company)
+          company&.value
         end
 
         def process_bid(action)
@@ -77,19 +86,17 @@ module Engine
           action_finalized
         end
 
+        def committed_cash(_player, _show_hidden = false)
+          0
+        end
+
+        private
+
         def action_finalized
           @round.next_entity_index!
           @finished = true if @round.entity_index.zero?
 
           @round.reset_entity_index! if finished?
-        end
-
-        def committed_cash(_player, _show_hidden = false)
-          0
-        end
-
-        def min_bid(company)
-          company&.value
         end
       end
     end
