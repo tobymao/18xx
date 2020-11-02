@@ -16,6 +16,7 @@ module View
     end
 
     def render_notification
+      tournament_announcement = ''
       if Time.now <= Time.new(2020, 11, 5, 12, 0, 0)
         tournament_announcement = <<~MESSAGE
           <p>A group of players is organizing an <em>unofficial</em> async 4p 1846 <a href="https://18xx.daniel.sousa.me/tournament">tournament</a>.<br />
