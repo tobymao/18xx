@@ -30,7 +30,7 @@ module Engine
 
             if available_subsidiaries(entity).any?
               actions = %w[assign]
-              actions << 'pass' if entity.cash.positive?
+              actions << 'pass' unless entity.cash.negative?
               return actions
             end
           end
@@ -135,13 +135,13 @@ module Engine
         end
 
         def description
-          return 'Choose Subsidiaries' if available_subsidiaries.any?
+          return 'Choose Subsidiaries' if available_subsidiaries(current_entity).any?
 
           super
         end
 
         def pass_description
-          return 'Pass (Subsidiaries)' if available_subsidiaries.any?
+          return 'Pass (Subsidiaries)' if available_subsidiaries(current_entity).any?
 
           if @auctioning
             'Pass (Bid)'
