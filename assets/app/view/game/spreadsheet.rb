@@ -229,7 +229,8 @@ module View
         market_props = { style: { borderRight: border_style } }
         if !corporation.floated?
           tr_props[:style][:opacity] = '0.6'
-        elsif !corporation.counts_for_limit && (color = StockMarket::COLOR_MAP[corporation.share_price.color])
+        elsif !corporation.counts_for_limit &&
+          (color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[corporation.share_price.type]])
           market_props[:style][:backgroundColor] = color
           market_props[:style][:color] = contrast_on(color)
         end

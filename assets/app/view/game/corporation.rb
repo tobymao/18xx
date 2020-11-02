@@ -315,7 +315,8 @@ module View
         }
 
         if player_rows.any?
-          if !@corporation.counts_for_limit && (color = StockMarket::COLOR_MAP[@corporation.share_price.color])
+          if !@corporation.counts_for_limit &&
+            (color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[@corporation.share_price.type]])
             market_tr_props[:style][:backgroundColor] = color
             market_tr_props[:style][:color] = contrast_on(color)
           end

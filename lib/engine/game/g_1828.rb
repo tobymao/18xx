@@ -34,7 +34,7 @@ module Engine
       GAME_IMPLEMENTER = 'Chris Rericha based on 1828 by J C Lawrence'
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1828.Games'
 
-      MULTIPLE_BUY_COLORS = %i[orange].freeze
+      MULTIPLE_BUY_TYPES = %i[unlimited].freeze
 
       MUST_BID_INCREMENT_MULTIPLE = true
       MIN_BID_INCREMENT = 5
@@ -101,8 +101,8 @@ module Engine
       end
 
       def init_stock_market
-        sm = Engine::G1828::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_COLORS,
-                                            multiple_buy_colors: self.class::MULTIPLE_BUY_COLORS)
+        sm = Engine::G1828::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+                                            multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         sm.enable_par_price(67)
         sm.enable_par_price(71)
         sm.enable_par_price(79)
