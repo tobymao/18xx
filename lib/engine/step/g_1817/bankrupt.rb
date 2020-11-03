@@ -30,7 +30,6 @@ module Engine
 
             @game.sell_shares_and_change_price(bundle)
           end
-          # @todo: shorts
 
           # finally, the president sells all their shares, regardless of 50% and
           # presidency restrictions
@@ -60,6 +59,7 @@ module Engine
           @game.bank.spend(-player.cash, player) if player.cash.negative?
 
           @game.declare_bankrupt(player)
+          @game.close_market_shorts
         end
       end
     end

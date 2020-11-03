@@ -89,6 +89,8 @@ module Engine
       }.freeze
 
       CERT_LIMIT_TYPES = %i[multiple_buy unlimited no_cert_limit].freeze
+      # Does the cert limit decrease when a player becomes bankrupt?
+      CERT_LIMIT_CHANGE_ON_BANKRUPTCY = false
 
       MULTIPLE_BUY_TYPES = %i[multiple_buy].freeze
 
@@ -855,6 +857,11 @@ module Engine
         end
 
         player.bankrupt = true
+        return unless self.class::CERT_LIMIT_CHANGE_ON_BANKRUPTCY
+
+        remaining_players = @players.reject(&:bankrupt).length
+        # Assume that games without cert limits at lower player counts retain previous counts (1817 and 2 players)
+        @cert_limit = self.class::CERT_LIMIT[remaining_players] || @cert_limit
       end
 
       def tile_lays(_entity)
