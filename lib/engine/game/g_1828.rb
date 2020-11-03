@@ -58,6 +58,11 @@ module Engine
                                   'All non-parred corporations are removed. Blocking tokens placed in home stations']
       ).freeze
 
+      VA_COALFIELDS_HEX = 'K11'
+      VA_TUNNEL_HEX = 'K13'
+      COAL_MARKER_ICON = 'coal'
+      COAL_MARKER_COST = 120
+
       def self.title
         '1828.Games'
       end
@@ -83,11 +88,11 @@ module Engine
           Step::Bankrupt,
           Step::Exchange,
           Step::DiscardTrain,
-          Step::SpecialTrack,
+          Step::G1828::SpecialTrack,
           Step::G1828::BuyCompany,
-          Step::Track,
+          Step::G1828::Track,
           Step::G1828::Token,
-          Step::Route,
+          Step::G1828::Route,
           Step::G1828::Dividend,
           Step::BuyTrain,
           [Step::BuyCompany, blocks: true],
@@ -96,8 +101,13 @@ module Engine
 
       def setup
         setup_minors
+
+        @log << "-- Setting game up for #{@players.size} players --"
         remove_extra_private_companies
         remove_extra_trains
+
+        @coal_marker_ability =
+          Engine::Ability::Description.new(type: 'description', description: 'Virginia Coalfields coal marker')
       end
 
       def init_stock_market
@@ -114,7 +124,7 @@ module Engine
       EXTRA_TILE_LAY_CORPS = %w[B&M NYH].freeze
 
       def tile_lays(entity)
-        return self.class::EXTRA_TILE_LAYS if EXTRA_TILE_LAY_CORPS.find(entity.id)
+        return self.class::EXTRA_TILE_LAYS if EXTRA_TILE_LAY_CORPS.any?(entity.id)
 
         super
       end
@@ -167,6 +177,63 @@ module Engine
         @round.force_next_entity! if @round.current_entity == minor
         minor.spend(minor.cash, @bank) if minor.cash.positive?
         @minors.delete(minor)
+      end
+
+      def upgrades_to?(from, to, special = false)
+        # Virginia tunnel can only be upgraded to #4 tile
+        return false if from.hex.id == VA_TUNNEL_HEX && to.name != '4'
+
+        super
+      end
+
+      def coal_marker_available?
+        hex_by_id(VA_COALFIELDS_HEX).tile.icons.any? { |icon| icon.name == COAL_MARKER_ICON }
+      end
+
+      def coal_marker?(entity)
+        return false unless entity.corporation?
+
+        entity.all_abilities.any? { |ability| ability.description == @coal_marker_ability.description }
+      end
+
+      def connected_to_coalfields?(entity)
+        graph.connected_hexes(entity).include?(hex_by_id(VA_COALFIELDS_HEX))
+      end
+
+      def can_buy_coal_marker?(entity)
+        return false unless entity.corporation?
+
+        connected_to_coalfields?(entity) &&
+          coal_marker_available? &&
+          !coal_marker?(entity) &&
+          buying_power(entity) >= COAL_MARKER_COST
+      end
+
+      def buy_coal_marker(entity)
+        return unless can_buy_coal_marker?(entity)
+
+        entity.spend(COAL_MARKER_COST, @bank)
+        entity.add_ability(@coal_marker_ability.dup)
+        @log << "#{entity.name} buys a coal marker for $#{COAL_MARKER_COST}"
+
+        tile_icons = hex_by_id(VA_COALFIELDS_HEX).tile.icons
+        tile_icons.delete_at(tile_icons.find_index { |icon| icon.name == COAL_MARKER_ICON })
+      end
+
+      def acquire_va_tunnel_coal_marker(entity)
+        entity = entity.owner if entity.company?
+
+        @log << "#{entity.name} acquires Virginia Tunnel coal marker"
+        if coal_marker?(entity)
+          @log << "#{entity.name} already owns a coal marker, placing coal marker on Virginia Coalfields"
+          add_coal_marker_to_va_coalfields
+        else
+          entity.add_ability(@coal_marker_ability.dup)
+        end
+      end
+
+      def add_coal_marker_to_va_coalfields
+        hex_by_id(VA_COALFIELDS_HEX).tile.icons << Engine::Part::Icon.new('1828/coal', 'coal')
       end
 
       private
