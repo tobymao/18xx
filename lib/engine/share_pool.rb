@@ -30,7 +30,10 @@ module Engine
 
     def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
-      @game.game_error('Cannot buy share from player') if shares.owner.player?
+
+      if !@game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && shares.owner.player?
+        @game.game_error('Cannot buy share from player')
+      end
 
       corporation = bundle.corporation
       ipoed = corporation.ipoed
@@ -48,7 +51,13 @@ module Engine
       share_str = "a #{bundle.percent}% share of #{corporation.name}"
       incremental = corporation.capitalization == :incremental
 
-      from = bundle.owner.corporation? ? "the #{@game.ipo_name(corporation)}" : 'the market'
+      from = 'the market'
+      if bundle.owner.corporation?
+        from = "the #{@game.ipo_name(corporation)}"
+      elsif bundle.owner.player?
+        from = bundle.owner.name
+      end
+
       if exchange
         price = exchange_price || 0
         case exchange
