@@ -219,7 +219,7 @@ module Engine
 
       it 'director can buy two shares from ipo in orange' do
         market.move(corp_0, 12, 0, force: true)
-        expect(corp_0.share_price.color).to eq(:orange)
+        expect(corp_0.share_price.type).to eq(:unlimited)
 
         market_share = corp_0.shares.first
         game.share_pool.transfer_shares(market_share.to_bundle, game.bank, price: :free)
@@ -237,7 +237,7 @@ module Engine
 
       it 'cannot buy stocks from second company after buying one orange' do
         market.move(corp_0, 12, 0, force: true)
-        expect(corp_0.share_price.color).to eq(:orange)
+        expect(corp_0.share_price.type).to eq(:unlimited)
 
         subject.process_action(Engine::Action::BuyShares.new(player_0, shares: corp_0.shares.first))
         expect(subject.current_entity).to be(player_0)
@@ -246,7 +246,7 @@ module Engine
 
       it 'corporation share price goes up if in orange at end of stock round' do
         market.move(corp_0, 12, 0, force: true)
-        expect(corp_0.share_price.color).to eq(:orange)
+        expect(corp_0.share_price.type).to eq(:unlimited)
 
         r, c = corp_0.share_price.coordinates
         subject.finish_round
@@ -269,7 +269,7 @@ module Engine
 
       it 'corporation share price goes up 3 times if in orange, 80% owned by director, and sold out' do
         market.move(corp_0, 12, 0, force: true)
-        expect(corp_0.share_price.color).to eq(:orange)
+        expect(corp_0.share_price.type).to eq(:unlimited)
 
         2.times { game.share_pool.buy_shares(player_0, corp_0.shares.first) }
         expect(player_0.num_shares_of(corp_0)).to be(8)

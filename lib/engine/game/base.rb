@@ -88,9 +88,23 @@ module Engine
         6 => 11,
       }.freeze
 
-      CERT_LIMIT_COLORS = %i[brown orange yellow].freeze
+      CERT_LIMIT_TYPES = %i[multiple_buy unlimited no_cert_limit].freeze
 
-      MULTIPLE_BUY_COLORS = %i[brown].freeze
+      MULTIPLE_BUY_TYPES = %i[multiple_buy].freeze
+
+      STOCKMARKET_COLORS = {
+        par: :red,
+        endgame: :blue,
+        close: :black,
+        multiple_buy: :brown,
+        unlimited: :orange,
+        no_cert_limit: :yellow,
+        liquidation: :red,
+        acquisition: :yellow,
+        repar: :gray,
+        ignore_one_sale: :green,
+        safe_par: :white,
+      }.freeze
 
       MIN_BID_INCREMENT = 5
 
@@ -986,8 +1000,8 @@ module Engine
       end
 
       def init_stock_market
-        StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_COLORS,
-                        multiple_buy_colors: self.class::MULTIPLE_BUY_COLORS)
+        StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+                        multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
       end
 
       def init_companies(players)

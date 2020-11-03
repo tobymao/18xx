@@ -69,8 +69,9 @@ module View
       end
 
       def cell_style(box_style, price)
-        style = box_style.merge(backgroundColor: price.color ? COLOR_MAP[price.color] : color_for(:bg2))
-        if price.color == :black
+        color = @game.class::STOCKMARKET_COLORS[price.type]
+        style = box_style.merge(backgroundColor: color ? COLOR_MAP[color] : color_for(:bg2))
+        if color == :black
           style[:color] = 'gainsboro'
           style[:borderColor] = color_for(:font)
         end
@@ -220,8 +221,9 @@ module View
 
         if @explain_colors
           type_text = @game.class::MARKET_TEXT
+          colors = @game.class::STOCKMARKET_COLORS
 
-          types_in_market = @game.stock_market.market.flatten.compact.map { |p| [p.type, p.color] }.to_h
+          types_in_market = @game.stock_market.market.flatten.compact.map { |p| [p.type, colors[p.type]] }.to_h
 
           type_text.each do |type, text|
             next unless types_in_market.include?(type)

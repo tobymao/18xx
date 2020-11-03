@@ -68,7 +68,7 @@ module Engine
       ).freeze
       MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'Minimum Price for a 2($55), 5($70) and 10($120) share'\
       ' corporation taking maximum loans to ensure it avoids acquisition').freeze
-
+      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :gray).freeze
       MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 

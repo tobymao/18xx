@@ -2,60 +2,57 @@
 
 module Engine
   class SharePrice
-    attr_reader :coordinates, :price, :color, :corporations, :can_par, :type
+    attr_reader :coordinates, :price, :corporations, :can_par, :type
 
-    def self.from_code(code, row, column, unlimited_colors, multiple_buy_colors: [])
+    def self.from_code(code, row, column, unlimited_types, multiple_buy_types: [])
       return nil if !code || code == ''
 
       price = code.scan(/\d/).join('').to_i
 
-      color, type =
+      type =
         case code
         when /p/
-          %i[red par]
+          :par
         when /e/
-          %i[blue endgame]
+          :endgame
         when /c/
-          %i[black close]
+          :close
         when /b/
-          %i[brown multiple_buy]
+          :multiple_buy
         when /o/
-          %i[orange unlimited]
+          :unlimited
         when /y/
-          %i[yellow no_cert_limit]
+          :no_cert_limit
         when /l/
-          %i[red liquidation]
+          :liquidation
         when /a/
-          %i[gray acquisition]
+          :acquisition
         when /r/
-          %i[gray repar]
+          :repar
         when /i/
-          %i[green ignore_one_sale]
+          :ignore_one_sale
         when /s/
-          %i[white safe_par]
+          :safe_par
         end
 
       SharePrice.new([row, column],
                      price: price,
-                     color: color,
                      type: type,
-                     unlimited_colors: unlimited_colors,
-                     multiple_buy_colors: multiple_buy_colors)
+                     unlimited_types: unlimited_types,
+                     multiple_buy_types: multiple_buy_types)
     end
 
     def initialize(coordinates,
                    price:,
-                   color: nil,
                    type: nil,
-                   unlimited_colors: [],
-                   multiple_buy_colors: [])
+                   unlimited_types: [],
+                   multiple_buy_types: [])
       @coordinates = coordinates
       @price = price
-      @color = color
       @type = type
       @corporations = []
-      @unlimited_colors = unlimited_colors
-      @multiple_buy_colors = multiple_buy_colors
+      @can_buy_multiple = multiple_buy_types.include?(type)
+      @limited = !unlimited_types.include?(type)
     end
 
     def id
@@ -63,11 +60,11 @@ module Engine
     end
 
     def counts_for_limit
-      !@unlimited_colors.include?(@color)
+      @limited
     end
 
     def buy_multiple?
-      @multiple_buy_colors.include?(@color)
+      @can_buy_multiple
     end
 
     def to_s
