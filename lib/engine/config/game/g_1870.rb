@@ -305,7 +305,7 @@ module Engine
         {
           "type":"tile_discount",
           "discount": 40,
-          "terrain": "mississippi",
+          "terrain": "river",
           "owner_type": "corporation"
         }
       ]
@@ -727,10 +727,10 @@ module Engine
         "I10",
         "E20"
       ],
-      "upgrade=cost:40,terrain:mississippi": [
+      "upgrade=cost:40,terrain:river": [
         "B17"
       ],
-      "upgrade=cost:60,terrain:mississippi": [
+      "upgrade=cost:60,terrain:river": [
         "D17",
         "E18",
         "F19",
@@ -738,27 +738,27 @@ module Engine
         "I16",
         "J15"
       ],
-      "upgrade=cost:80,terrain:mississippi": [
+      "upgrade=cost:80,terrain:river": [
         "L13",
         "N15"
       ],
-      "upgrade=cost:100,terrain:mississippi": [
+      "upgrade=cost:100,terrain:river": [
         "O16",
         "O18"
       ],
-      "city=revenue:0;upgrade=cost:40,terrain:mississippi": [
+      "city=revenue:0;upgrade=cost:40,terrain:river": [
         "C18"
       ],
-      "city=revenue:0;upgrade=cost:40,terrain:mississippi;icon=image:port": [
+      "city=revenue:0;upgrade=cost:40,terrain:river;icon=image:port": [
         "M14"
       ],
-      "city=revenue:0;upgrade=cost:60,terrain:mississippi;icon=image:port": [
+      "city=revenue:0;upgrade=cost:60,terrain:river;icon=image:port": [
         "H17"
       ],
-      "town=revenue:0;upgrade=cost:80,terrain:mississippi": [
+      "town=revenue:0;upgrade=cost:80,terrain:river": [
         "K14"
       ],
-      "town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:mississippi": [
+      "town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:river": [
         "A16"
       ],
       "upgrade=cost:60,terrain:lake": [
