@@ -17,7 +17,7 @@ module Engine
     end
 
     def name
-      'Sharepool'
+      'Market'
     end
 
     def player
@@ -70,7 +70,7 @@ module Engine
         transfer_shares(
           bundle,
           entity,
-          spender: entity,
+          spender: entity == self ? @bank : entity,
           receiver: incremental && bundle.owner.corporation? ? bundle.owner : @bank,
           price: price
         )

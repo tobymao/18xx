@@ -3,12 +3,14 @@
 require_relative '../buy_sell_par_shares'
 require_relative '../../action/take_loan'
 require_relative 'passable_auction'
+require_relative 'share_buying_with_shorts'
 
 module Engine
   module Step
     module G1817
       class BuySellParShares < BuySellParShares
         include PassableAuction
+        include ShareBuyingWithShorts
         TOKEN_COST = 50
         MIN_BID = 100
         MAX_BID = 400

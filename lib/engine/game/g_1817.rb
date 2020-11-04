@@ -53,6 +53,8 @@ module Engine
 
       GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
 
+      CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
+
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
@@ -181,6 +183,43 @@ module Engine
 
       def shorts(corporation)
         @_shares.values.select { |share| share.corporation == corporation && share.percent.negative? }
+      end
+
+      def entity_shorts(entity, corporation)
+        entity.shares_of(corporation).select { |share| share.percent.negative? }
+      end
+
+      def close_market_shorts
+        @corporations.each do |corporation|
+          # Try closing shorts
+          count = 0
+          while entity_shorts(@share_pool, corporation).any? &&
+            (market_shares = @share_pool.shares_of(corporation).select { |share| share.percent.positive? }).any?
+            unshort(@share_pool, market_shares.first)
+            count += 1
+          end
+          @log << "Market closes #{count} shorts for #{corporation.name}" if count.positive?
+        end
+      end
+
+      def close_bank_shorts
+        # Close out shorts in stock market with the bank buying shares from the treasury
+        @corporations.each do |corporation|
+          count = 0
+          while entity_shorts(@share_pool, corporation).any? &&
+            corporation.shares.any?
+
+            # Market buys the share
+            share = corporation.shares.first
+            @share_pool.buy_shares(@share_pool, share)
+
+            # Then closes the share
+            unshort(@share_pool, share)
+            count += 1
+
+          end
+          @log << "Market closes #{count} shorts for #{corporation.name}" if count.positive?
+        end
       end
 
       def migrate_shares(corporation, other)
@@ -377,6 +416,7 @@ module Engine
       end
 
       def stock_round
+        close_bank_shorts
         @interest_fixed = nil
         @owner_when_liquidated = {}
         Round::G1817::Stock.new(self, [
