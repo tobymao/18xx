@@ -32,6 +32,7 @@ module Engine
 
           buy_shares(company.owner, bundle, exchange: company)
           company.close!
+          @game.check_new_layer
         end
 
         def can_buy?(entity, bundle)

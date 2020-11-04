@@ -28,6 +28,10 @@ module Engine
       SELL_AFTER = :any_time
       SELL_BUY_ORDER = :sell_buy
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'fishbourne_to_bank' => ['Fishbourne', 'Fishbourne Ferry Company available for purchase']
+      ).freeze
+
       PAR_RANGE = {
         1 => [74, 100],
         2 => [62, 82],
@@ -58,6 +62,7 @@ module Engine
         @receivership_corps = []
         @insolvent_corps = []
         @closed_corps = []
+        @highest_layer = 1
 
         reserve_share('BHI&R')
         reserve_share('FYN')
@@ -115,10 +120,14 @@ module Engine
         @players.rotate!(@players.index(player))
       end
 
-      def active_players
-        return super if @finished
+      def or_set_finished
+        check_new_layer
+      end
 
-        current_entity == company_by_id('ER') ? [@round.company_seller] : super
+      def event_fishbourne_to_bank!
+        ffc = @companies.find { |c| c.sym == 'FFC' }
+        ffc.owner = @bank
+        @log << "#{ffc.name} is now available for purchase from the Bank"
       end
 
       def corp_bankrupt?(corp)
@@ -150,16 +159,18 @@ module Engine
         corp_layer(corp) <= current_layer
       end
 
+      def check_new_layer
+        layer = current_layer
+        @log << "-- Layer #{layer} corporations now available --" if layer > @highest_layer
+        @highest_layer = layer
+      end
+
       def current_layer
         layers = LAYER_BY_NAME.select do |name, _layer|
           corp = @corporations.find { |c| c.name == name }
           corp.num_ipo_shares.zero? || corp.operated?
         end.values
-        if layers.empty?
-          1
-        else
-          layers.max + 1
-        end
+        layers.empty? ? 1 : layers.max + 1
       end
 
       def sorted_corporations
@@ -203,6 +214,14 @@ module Engine
         num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
         num_shares.times { @stock_market.move_left(corporation) }
         log_share_price(corporation, price)
+      end
+
+      def close_other_companies!(company)
+        return unless @companies.reject { |c| c == company }.reject(&:closed?)
+
+        @corporations.each { |corp| corp.shares.each { |share| share.buyable = true } }
+        @companies.reject { |c| c == company }.each(&:close!)
+        @log << '-- Event: starting private companies close --'
       end
     end
   end
