@@ -24,13 +24,15 @@ module Engine
 
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
       EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
-      HOME_TOKEN_TIMING = :operating_round
+      HOME_TOKEN_TIMING = :float
       SELL_AFTER = :any_time
       SELL_BUY_ORDER = :sell_buy
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'fishbourne_to_bank' => ['Fishbourne', 'Fishbourne Ferry Company available for purchase']
       ).freeze
+
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded_or_city, upgrade: false }].freeze
 
       PAR_RANGE = {
         1 => [74, 100],
@@ -77,6 +79,7 @@ module Engine
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
+          Step::G1860::HomeTrack,
           Step::G1860::Exchange,
           Step::G1860::BuySellParShares,
         ])
@@ -86,7 +89,7 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
-          Step::Track,
+          Step::G1860::Track,
           Step::Token,
           Step::Route,
           Step::Dividend,
@@ -122,6 +125,24 @@ module Engine
 
       def or_set_finished
         check_new_layer
+      end
+
+      def place_home_track(corporation)
+        hex = hex_by_id(corporation.coordinates)
+        tile = hex&.tile
+
+        # skip if a tile is already in home location
+        return unless tile.color == :white
+
+        @log << "#{corporation.name} must choose tile for home location"
+
+        @round.pending_tracks << {
+          entity: corporation,
+          hexes: [hex],
+        }
+
+        @round.clear_cache!
+        return
       end
 
       def event_fishbourne_to_bank!
