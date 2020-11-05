@@ -73,13 +73,20 @@ module Engine
 
           @game.add_extra_tile(tile) if tile.unlimited
 
+          old_revenues = if old_tile.color == :white
+                           []
+                         else
+                           old_tile.nodes.select { |n| reachable_node?(entity, n) }.map(&:max_revenue).sort
+                         end
+
           @game.tiles.delete(tile)
           @game.tiles << old_tile unless old_tile.preprinted
 
           hex.lay(tile)
 
           @game.graph.clear
-          check_track_restrictions!(entity, old_tile, tile)
+          @game.clear_distances
+          check_track_restrictions!(entity, old_tile, tile, old_revenues)
           free = false
           discount = 0
 
@@ -178,18 +185,29 @@ module Engine
           [total_cost, types]
         end
 
-        def check_track_restrictions!(entity, old_tile, new_tile)
+        def check_track_restrictions!(entity, old_tile, new_tile, old_revenues)
           return if @game.loading || !entity.operator?
 
-          old_paths = old_tile.paths
           changed_city = false
+          if old_tile.color != :white
+            # add requirement that paths/nodes be reachable with train
+            @game.game_error('Tile must be reachable with train') unless reachable_hex?(entity, new_tile.hex)
+            new_revenues = new_tile.nodes.select { |n| reachable_node?(entity, n) }.map(&:max_revenue).sort
+            changed_city = old_revenues != new_revenues
+          end
+
+          old_paths = old_tile.paths
           used_new_track = old_paths.empty?
 
           new_tile.paths.each do |np|
             next unless @game.graph.connected_paths(entity)[np]
+            next if old_tile.color != :white && !reachable_path?(entity, np)
 
             op = old_paths.find { |path| np <= path }
             used_new_track = true unless op
+
+            next unless old_tile.color == :white
+
             old_revenues = op&.nodes && op.nodes.map(&:max_revenue).sort
             new_revenues = np&.nodes && np.nodes.map(&:max_revenue).sort
             changed_city = true unless old_revenues == new_revenues

@@ -65,6 +65,9 @@ module Engine
         @insolvent_corps = []
         @closed_corps = []
         @highest_layer = 1
+        @node_distances = {}
+        @path_distances = {}
+        @hex_distances = {}
 
         reserve_share('BHI&R')
         reserve_share('FYN')
@@ -142,7 +145,7 @@ module Engine
         }
 
         @round.clear_cache!
-        return
+        nil
       end
 
       def event_fishbourne_to_bank!
@@ -243,6 +246,119 @@ module Engine
         @corporations.each { |corp| corp.shares.each { |share| share.buyable = true } }
         @companies.reject { |c| c == company }.each(&:close!)
         @log << '-- Event: starting private companies close --'
+      end
+
+      def biggest_train(corporation)
+        corporation.trains.max_by(&:distance) || 0
+      end
+
+      def get_token_cities(corporation)
+        tokens = []
+        hexes.each do |hex|
+          hex.tile.cities.each do |city|
+            next unless city.tokened_by?(corporation)
+
+            tokens << city
+          end
+        end
+        tokens
+      end
+
+      def node_distance_walk(node, distance, node_distances: {}, corporation: nil, path_distances: {})
+        return if node_distances&.[](node) && node_distances[node] <= distance
+
+        node_distances[node] = distance
+        this_distance = node.city? ? distance + 1 : distance
+
+        node.paths.each do |node_path|
+          path_distance_walk(node_path, this_distance, path_distances: path_distances) do |path|
+            yield path, this_distance
+            path.nodes.each do |next_node|
+              next if next_node == node
+              next if corporation && next_node.blocks?(corporation)
+              next if path.terminal?
+
+              node_distance_walk(
+                next_node,
+                this_distance,
+                node_distances: node_distances,
+                corporation: corporation,
+                path_distances: path_distances,
+              ) { |p, d| yield p, d }
+            end
+          end
+        end
+      end
+
+      def lane_match?(lanes0, lanes1)
+        lanes0 && lanes1 && lanes1[0] == lanes0[0] && lanes1[1] == (lanes0[0] - lanes0[1] - 1)
+      end
+
+      def path_distance_walk(path, distance, skip: nil, jskip: nil, path_distances: {})
+        return if path_distances&.[](path) && path_distances[path] <= distance
+
+        path_distances[path] = distance
+
+        yield path
+
+        if path.junction && path.junction != jskip
+          path.junction.paths.each do |jp|
+            path_distance_walk(jp, distance, jskip: @junction, path_distances: path_distances) { |p| yield p }
+          end
+        end
+
+        path.exits.each do |edge|
+          next if edge == skip
+          next unless (neighbor = path.hex.neighbors[edge])
+
+          np_edge = path.hex.invert(edge)
+
+          neighbor.paths[np_edge].each do |np|
+            next unless lane_match?(path.exit_lanes[edge], np.exit_lanes[np_edge])
+
+            path_distance_walk(np, distance, skip: np_edge, path_distances: path_distances) { |p| yield p }
+          end
+        end
+      end
+
+      def clear_distances
+        @node_distances.clear
+        @path_distances.clear
+        @hex_distances.clear
+      end
+
+      def node_distances(corporation)
+        compute_distance_graph(corporation) unless @node_distances[corporation]
+        @node_distances[corporation]
+      end
+
+      def path_distances(corporation)
+        compute_distance_graph(corporation) unless @path_distances[corporation]
+        @path_distances[corporation]
+      end
+
+      def hex_distances(corporation)
+        compute_distance_graph(corporation) unless @hex_distances[corporation]
+        @hex_distances[corporation]
+      end
+
+      def compute_distance_graph(corporation)
+        tokens = get_token_cities(corporation)
+        n_distances = {}
+        p_distances = {}
+        h_distances = {}
+
+        tokens.each do |node|
+          node_distance_walk(node, 0, node_distances: n_distances,
+                                      corporation: corporation, path_distances: p_distances) do |path, dist|
+            hex = path.hex
+            h_distances[hex] = dist if !h_distances[hex] || h_distances[hex] > dist
+          end
+        end
+
+        @node_distances[corporation] = n_distances
+        @path_distances[corporation] = p_distances
+        @hex_distances[corporation] = h_distances
       end
     end
   end

@@ -47,6 +47,14 @@ module Engine
           @round.pending_tracks.shift
         end
 
+        def reachable_node?(_entity, _node)
+          true
+        end
+
+        def reachable_hex?(_entity, _hex)
+          true
+        end
+
         def available_hex(_entity, hex)
           pending_track[:hexes].include?(hex)
         end
@@ -54,8 +62,6 @@ module Engine
         def hex_neighbors(entity, hex)
           @game.graph.connected_hexes(entity)[hex]
         end
-
-
       end
     end
   end
