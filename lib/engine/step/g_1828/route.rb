@@ -7,8 +7,6 @@ module Engine
     module G1828
       class Route < Route
         def process_run_routes(action)
-          @game.buy_coal_marker(action.entity) if @game.can_buy_coal_marker?(action.entity)
-
           if route_includes_coalfields?(action.routes) && !@game.coal_marker?(action.entity)
             @game.game_error('Cannot run to Virginia Coalfields without a Coal Marker')
           else

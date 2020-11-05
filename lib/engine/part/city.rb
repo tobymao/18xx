@@ -6,7 +6,7 @@ require_relative 'revenue_center'
 module Engine
   module Part
     class City < RevenueCenter
-      attr_accessor :reservations
+      attr_accessor :reservations, :blocking_check
       attr_reader :tokens
 
       def initialize(revenue, **opts)
@@ -14,6 +14,7 @@ module Engine
         @slots = (opts[:slots] || 1).to_i
         @tokens = Array.new(@slots)
         @reservations = []
+        @blocking_check = lambda { |_corporation| false }
       end
 
       def slots
@@ -30,6 +31,7 @@ module Engine
 
       def blocks?(corporation)
         return false unless corporation
+        return true if blocking_check.call(corporation)
         return false if tokened_by?(corporation)
         return false if @tokens.include?(nil)
         return false if @tokens.any? { |t| t&.type == :neutral }

@@ -108,6 +108,7 @@ module Engine
 
         @coal_marker_ability =
           Engine::Ability::Description.new(type: 'description', description: 'Virginia Coalfields coal marker')
+        block_va_coalfields
       end
 
       def init_stock_market
@@ -234,6 +235,10 @@ module Engine
 
       def add_coal_marker_to_va_coalfields
         hex_by_id(VA_COALFIELDS_HEX).tile.icons << Engine::Part::Icon.new('1828/coal', 'coal')
+      end
+
+      def block_va_coalfields
+        hex_by_id(VA_COALFIELDS_HEX).tile.cities.first.blocking_check = lambda {|corp| !coal_marker?(corp)}
       end
 
       private
