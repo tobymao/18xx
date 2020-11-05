@@ -12,6 +12,12 @@ module Engine
         super('0', **opts)
       end
 
+      def <=(other)
+        return true if other.town?
+
+        super
+      end
+
       def halt?
         true
       end

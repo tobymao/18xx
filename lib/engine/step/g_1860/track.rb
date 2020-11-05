@@ -29,6 +29,14 @@ module Engine
           pass! unless can_lay_tile?(action.entity)
         end
 
+        def reachable_path?(entity, path)
+          max_distance = @game.biggest_train(entity).distance
+          return false if max_distance.zero?
+
+          path_distances = @game.path_distances(entity)
+          path_distances[path] <= max_distance
+        end
+
         def reachable_node?(entity, node)
           max_distance = @game.biggest_train(entity).distance
           return false if max_distance.zero?

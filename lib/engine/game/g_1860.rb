@@ -59,6 +59,14 @@ module Engine
         'VYSC' => 4,
       }.freeze
 
+      NO_ROTATION_TILES = %w[
+        758
+        761
+        763
+        773
+        775
+      ].freeze
+
       def setup
         @bankrupt_corps = []
         @receivership_corps = []
@@ -359,6 +367,12 @@ module Engine
         @node_distances[corporation] = n_distances
         @path_distances[corporation] = p_distances
         @hex_distances[corporation] = h_distances
+      end
+
+      def legal_tile_rotation?(_entity, _hex, tile)
+        return true unless NO_ROTATION_TILES.include?(tile.name)
+
+        tile.rotation.zero?
       end
     end
   end
