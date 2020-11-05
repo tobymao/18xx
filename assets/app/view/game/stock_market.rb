@@ -80,7 +80,7 @@ module View
 
       def grid_1d_price(price)
         if price.acquisition?
-          h(:div, { style: PRICE_STYLE_1D }, "(#{price.price})")
+          h(:div, { style: PRICE_STYLE_1D }, 'Acq.')
         elsif price.type == :safe_par
           h(:div, { style: PRICE_STYLE_1D.merge(textDecoration: 'underline') }, price.price)
         else
@@ -89,11 +89,9 @@ module View
       end
 
       def grid_1d
-        box_style = box_style_1d
-
         max_num_corps = @game.stock_market.market.first.map { |p| p.corporations.size }.push(MIN_NUM_TOKENS).max
         box_height = max_num_corps * (TOKEN_SIZE + VERTICAL_TOKEN_PAD) + VERTICAL_TOKEN_PAD + PRICE_HEIGHT + 2 * PAD
-        box_style[:height] = "#{box_height - 2 * PAD - 2 * BORDER}px"
+        height = "#{box_height - 2 * PAD - 2 * BORDER}px"
 
         row = @game.stock_market.market.first.map do |price|
           tokens = price.corporations.map do |corporation|
@@ -103,6 +101,10 @@ module View
             }
             h(:img, props)
           end
+
+          box_style = box_style_1d
+          box_style[:height] = height
+          box_style = box_style.merge('margin-right': '10px') unless price.normal_movement?
 
           h(:div, { style: cell_style(box_style, price) }, [
             grid_1d_price(price),

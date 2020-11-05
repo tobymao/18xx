@@ -67,7 +67,9 @@ module Engine
         'no_new_shorts' => ['Cannot gain new shorts', 'Short selling is not permitted, existing shorts remain'],
       ).freeze
       MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'Minimum Price for a 2($55), 5($70) and 10($120) share'\
-      ' corporation taking maximum loans to ensure it avoids acquisition').freeze
+      ' corporation taking maximum loans to ensure it avoids acquisition',
+                                            acquisition: 'Acquisition (Pay $40 dividend to move right, $80'\
+                                            ' to double jump)').freeze
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :gray).freeze
       MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
@@ -367,6 +369,12 @@ module Engine
         liquidity(player, emergency: true)
       end
 
+      def total_rounds(name)
+        # Return the total number of rounds for those with more than one.
+        # Merger exists twice since it's logged as the long form, but shown on the UI in the short form
+        @operating_rounds if ['Operating', 'Merger', 'Merger and Conversion', 'Acquisition'].include?(name)
+      end
+
       private
 
       def new_auction_round
@@ -434,7 +442,7 @@ module Engine
             or_round_finished
             # Store the share price of each corp to determine if they can be acted upon in the AR
             @stock_prices_start_merger = @corporations.map { |corp| [corp, corp.share_price] }.to_h
-            @log << "-- Merger and Conversion Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
+            @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
             Round::G1817::Merger.new(self, [
               Step::G1817::ReduceTokens,
               Step::DiscardTrain,
@@ -443,7 +451,7 @@ module Engine
               Step::G1817::Conversion,
             ], round_num: @round.round_num)
           when Round::G1817::Merger
-            @log << "-- Acquisition Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
+            @log << "-- #{round_description('Acquisition', @round.round_num)} --"
             Round::G1817::Acquisition.new(self, [
               Step::G1817::ReduceTokens,
               Step::G1817::Bankrupt,

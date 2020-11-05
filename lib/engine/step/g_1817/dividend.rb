@@ -16,6 +16,8 @@ module Engine
 
         def share_price_change(entity, revenue = 0)
           price = entity.share_price.price
+          price = 40 if entity.share_price.acquisition?
+
           return { share_direction: :left, share_times: 1 } unless revenue.positive?
 
           times = 0

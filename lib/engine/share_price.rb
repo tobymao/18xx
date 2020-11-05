@@ -87,6 +87,11 @@ module Engine
       @type == :acquisition
     end
 
+    def highlight?
+      # Should it be highlighted in corporation/spreadsheet UI
+      @type && !%i[par safe_par].include?(@type)
+    end
+
     def normal_movement?
       # Can be moved into normally, rather than something custom such as not owning a train.
       @type != :liquidation
