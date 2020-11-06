@@ -238,7 +238,7 @@ module Engine
       end
 
       def block_va_coalfields
-        hex_by_id(VA_COALFIELDS_HEX).tile.cities.first.blocking_check = lambda {|corp| !coal_marker?(corp)}
+        hex_by_id(VA_COALFIELDS_HEX).tile.cities.first.block_if = ->(corporation) { !coal_marker?(corporation) }
       end
 
       private
