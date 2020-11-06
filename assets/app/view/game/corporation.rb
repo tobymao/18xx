@@ -315,7 +315,7 @@ module View
         }
 
         if player_rows.any?
-          if @corporation.share_price.highlight? &&
+          if @corporation.share_price&.highlight? &&
             (color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[@corporation.share_price.type]])
             market_tr_props[:style][:backgroundColor] = color
             market_tr_props[:style][:color] = contrast_on(color)
