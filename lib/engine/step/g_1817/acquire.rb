@@ -433,7 +433,13 @@ module Engine
           @liquidation_cash = 0
           @liquidation_loans = []
 
-          if corporation.share_price.liquidation?
+          if corporation.share_price.type != @game.stock_prices_start_merger[corporation].type
+            type = corporation.share_price.liquidation? ? 'liquidation' : 'acquisition'
+            @game.log << "#{corporation.name} moved into #{type} during M&A and so is skipped"
+
+            @round.offering.delete(corporation)
+            setup_auction
+          elsif corporation.share_price.liquidation?
 
             @liquidation_cash = corporation.cash
             @liquidation_loans = corporation.loans.dup

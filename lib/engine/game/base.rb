@@ -193,7 +193,6 @@ module Engine
                       close: 'Corporation closes',
                       endgame: 'End game trigger',
                       liquidation: 'Liquidation',
-                      acquisition: 'Acquisition',
                       repar: 'Par value after bankruptcy',
                       ignore_one_sale: 'Ignore first share sold when moving price' }.freeze
 
