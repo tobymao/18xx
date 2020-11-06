@@ -257,7 +257,7 @@ module Engine
       end
 
       def biggest_train(corporation)
-        corporation.trains.max_by(&:distance) || 0
+        corporation.trains.map(&:distance).max || 0
       end
 
       def get_token_cities(corporation)

@@ -30,7 +30,7 @@ module Engine
         end
 
         def reachable_path?(entity, path)
-          max_distance = @game.biggest_train(entity).distance
+          max_distance = @game.biggest_train(entity)
           return false if max_distance.zero?
 
           path_distances = @game.path_distances(entity)
@@ -38,7 +38,7 @@ module Engine
         end
 
         def reachable_node?(entity, node)
-          max_distance = @game.biggest_train(entity).distance
+          max_distance = @game.biggest_train(entity)
           return false if max_distance.zero?
 
           node_distances = @game.node_distances(entity)
@@ -52,7 +52,7 @@ module Engine
         end
 
         def reachable_hex?(entity, hex)
-          max_distance = @game.biggest_train(entity).distance
+          max_distance = @game.biggest_train(entity)
           return false if max_distance.zero?
 
           node_distances = @game.node_distances(entity)
@@ -91,7 +91,7 @@ module Engine
           return true if reachable_hex?(entity, hex)
 
           # upgrades subject to train size
-          max_distance = @game.biggest_train(entity).distance
+          max_distance = @game.biggest_train(entity)
           return false if max_distance.zero?
 
           path_distances = @game.path_distances(entity)
