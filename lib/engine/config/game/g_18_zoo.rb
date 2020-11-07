@@ -61,7 +61,22 @@ module Engine
     "46": 1,
     "611": 3,
     "582": 3,
-    "455": 3
+    "455": 3,
+    "W7": {
+      "count": 0,
+      "color": "yellow",
+      "code": "town=revenue:10;path=a:0,b:_0;path=a:_0,b:1;upgrade=cost:0,terrain:water"
+    },
+    "W8": {
+      "count": 0,
+      "color": "blue",
+      "code": "town=revenue:10;path=a:0,b:_0;path=a:_0,b:2;upgrade=cost:0,terrain:water"
+    },
+    "W9": {
+      "count": 0,
+      "color": "blue",
+      "code": "town=revenue:10;path=a:0,b:_0;path=a:_0,b:3;upgrade=cost:0,terrain:water"
+    }
   },
   "market": [
     [
@@ -117,124 +132,139 @@ module Engine
   ],
   "companies": [
     {
-      "sym": "1",
-      "name": "VACANZA",
+      "sym": "HOLIDAY",
+      "name": "HOLIDAY",
       "value": 3,
-      "desc": "Un buon viaggio che solo i ricchi possono permettersi: durante un SR, aumenta la reputazione di una famiglia a piacere di un tick a destra, e scarta il potere."
+      "desc": "Choose a family, its reputation mark goes one tick to the right."
     },
     {
-      "sym": "2",
-      "name": "RE MIDA",
+      "sym": "MIDAS",
+      "name": "MIDAS",
       "value": 2,
-      "desc": "Dopo che tutti hanno passato in un SR (fine SR), prima di assegnare l’ordine di turno, tutti credono che tu sia il più ricco, guadagni il segnalino di turno 1, e scarti il potere."
+      "desc": "When turn order is appointed, seize the Priority (Squirrel 1)."
     },
     {
-      "sym": "3",
-      "name": "TROPPA RESPONSABILITA’",
+      "sym": "TOO MUCH RESPONSIBILITY",
+      "name": "TOO MUCH RESPONSIBILITY",
       "value": 1,
-      "desc": "Più poteri più responsabilità, preferisci un regalino – ricevi subito (una volta) 3$N. Scarta il potere dopo l’utilizzo."
+      "desc": "Get 3$W."
     },
     {
-      "sym": "4",
-      "name": "PENTOLA DEGLI GNOMI",
+      "sym": "LEPRECHAUN POT OF GOLD",
+      "name": "LEPRECHAUN POT OF GOLD",
       "value": 2,
-      "desc": "Guadagni immediatamente 2$N; inoltre guadagni 2$N ad ogni inizio di SR 2$N – PREZZEMOLO NELLE ORECCHIE: ci senti male, e pensi di aver sentito tutti passare; dopo aver giocato il proprio turno nell’SR (VENDITA e/o ACQUISTO), scarta il potere e fai immediatamente un altro turno."
+      "desc": "Earn 2$W now, and at the start of each SR."
     },
     {
-      "sym": "5",
-      "name": "PREZZEMOLO NELLE ORECCHIE",
+      "sym": "IT’S ALL GREEK TO ME",
+      "name": "IT’S ALL GREEK TO ME",
       "value": 2,
-      "desc": "Ci senti male, e pensi di aver sentito tutti passare; dopo aver giocato il proprio turno nell’SR (VENDITA e/o ACQUISTO), scarta il potere e fai immediatamente un altro turno."
+      "desc": "After your action in a SR, do another one."
     },
     {
-      "sym": "6",
+      "sym": "WHATSUP",
       "name": "WHATSUP",
       "value": 3,
-      "desc": "Conosco uno che corre bene; se una famiglia che controlli ha in tesoreria $N sufficienti ad acquistare il primo scoiattolo disponibile, scarta il potere e la famiglia lo acquista (durante l’SR). La reputazione della famiglia avanza di un tick (anche se lo scoiattolo è il primo di una nuova fase, e la nuova fase scatta). Lo scoiattolo acquistato è disattivato (piazzarlo sottosopra): durante la successiva CORSA non corre, ma ritorna utilizzabile alla fine del turno operativo – anche disattivato può essere acquistato."
+      "desc": "During SR, a family can buy the first available squirrel, deactivated. Reputation moves one tick."
     },
     {
-      "sym": "7",
-      "name": "CONIGLI",
+      "sym": "RABBITS",
+      "name": "RABBITS",
       "value": 3,
-      "desc": "I due token si possono utilizzare per 2 sostituzioni aggiuntive (al primo utilizzo scarta un coniglio, al secondo utilizzo scarta coniglio e potere); la sostituzione con i conigli permette di usare una traccia anche se non ancora disponibile (es. sostituzione di una traccia verde con una traccia marrone prima della fase MARRONE); permette di sostituire tracce con i token MM, M, O (e il token rimane sulla nuova tessera). È VIETATO l’upgrade delle tracce speciali posizionate con le TALPE."
+      "desc": "Two bonus upgrades, even illegal or before the phase."
     },
     {
-      "sym": "8",
-      "name": "TALPE",
+      "sym": "MOLES",
+      "name": "MOLES",
       "value": 3,
-      "desc": "La famiglia ha a disposizione 4 tracce speciali (#80,81,82,83) che può utilizzare per sostituire delle tracce semplici (#7,8,9) raggiungibili (rispettando i normali vincoli di piazzamento). E’ permesso sostituire anche tracce semplici con i token MM, M, O. Il potere va scartato dopo aver utilizzato tutte e 4 le tracce. Le tracce speciali (#80,81,82,83) non potranno mai essere sostituite."
+      "desc": "4 special tiles, that can upgrade any plain tiles, even illegal."
     },
     {
-      "sym": "9",
-      "name": "VECCHIE MAPPE",
-      "value": 2,
-      "desc": "Ritrovi un progetto dei precedenti animali, costruisci (una volta sola) due tracce gialle in aggiunta alle normali tracce posizionate nel turno, e scarta il potere."
-    },
-    {
-      "sym": "10",
-      "name": "BUCA",
-      "value": 2,
-      "desc": "Scarta il potere, e contrassegna due Zone R qualsiasi della mappa, che diventano connesse per tutte le famiglie. Le due Zone R sono quindi da considerare come fossero una sola zona R unica. Gli scoiattoli possono passare attraverso la Zona R unica nelle corse come se fosse una stazione libera, con il vincolo che ogni scoiattolo può utilizzarla solo una volta, e non può uscire ed entrare dalla stessa. Scoiattoli multipli possono passare dalla zona R unica solo se fuoriescono da uscite differenti."
-    },
-    {
-      "sym": "11",
-      "name": "DIETA",
-      "value": 2,
-      "desc": "I tuoi scoiattoli sono magri magri, e lo spazio necessario a riposarsi è ridotto, puoi usare questo potere per mettere un deposito in aggiunta agli spazi consentiti. Posiziona il deposito di lato per ricordare che è sempre in aggiunta al massimo numero di depositi possibili sulla traccia – scarta il potere. Non permette di posizionare un deposito aggiuntivo a quello permesso per turno (uno solo)."
-    },
-    {
-      "sym": "12",
-      "name": "ORO CHE LUCCICA",
+      "sym": "ANCIENT MAPS",
+      "name": "ANCIENT MAPS",
       "value": 1,
-      "desc": "Ogni volta che si costruisce sulle M invece di pagare -1$N, la famiglia guadagna +2$N; nel caso di MM, invece di pagare -2$N, guadagna +1$N."
+      "desc": "Build two additional yellow tiles.",
+      "abilities": [
+        {
+          "type": "tile_lay",
+          "owner_type": "corporation",
+          "count": 2,
+          "free": true,
+          "special": false,
+          "reachable": true,
+          "hexes": [
+          ],
+          "tiles": [
+          ],
+          "when":"track"
+        }
+      ]
     },
     {
-      "sym": "13",
-      "name": "QUELLA E’ MIA!",
+      "sym": "HOLE",
+      "name": "HOLE",
       "value": 2,
-      "desc": "Prenota un posto libero di una traccia stazione (ovunque in mappa, anche se non raggiungibile), che rimane aperta per la corsa di tutte le famiglie. La famiglia che ha prenotato la stazione può piazzare un proprio deposito dove riservato, solo se arriva lì con un percorso (corsa infinita); solo in questo caso il potere si esaurisce e si scarta. Se la famiglia che ha riservato il posto, ha terminato i propri depositi, il posto rimane comunque riservato (aperto per tutte le corse). VIETATO prenotare l’unico spazio RISERVATO per la HOME di una famiglia non ancora operativa."
+      "desc": "Mark two R areas anywhere on the map, so they are connected."
     },
     {
-      "sym": "14",
-      "name": "LAVORI IN CORSO",
-      "value": 2,
-      "desc": "Gli scavi durano un po’ più del previsto: posiziona il token dei lavori in corso in un posto libero di una traccia stazione – HOME o Y – ovunque in mappa, (anche se non raggiungibile), e scarta il potere. Quella stazione non potrà mai essere occupata con un deposito (es. in figura, la traccia risulta “impassabile”; con la sostituzione in traccia verde sarà possibile aprire di nuovo il percorso). VIETATO bloccare l’unico spazio RISERVATO della HOME di una famiglia non ancora operativa."
-    },
-    {
-      "sym": "15",
-      "name": "GRANO",
-      "value": 2,
-      "desc": "Scarta il potere e seleziona una traccia con un proprio deposito (es le giraffe hanno un deposito sulla tessera #14), posizionaci sopra il GRANO; ogni corsa della famiglia con questo potere, quando passa o termina nel deposito con il GRANO, raccoglierà +30 Noci (nell’esempio 30+30 = 60)."
-    },
-    {
-      "sym": "16",
-      "name": "DUE BORRACCE",
-      "value": 2,
-      "desc": "La famiglia può scegliere di non raccogliere le O in tesoreria, ma di raddoppiare il loro valore (contare +20 invece che +10) per tutte le O percorse con tutti i suoi scoiattoli durante la corsa. La famiglia prenderà 0$N indipendentemente da quante O percorre (al primo utilizzo scarta una Borraccia, al secondo utilizzo scarta Borraccia e potere). VIETATO l’utilizzo combinato con la STRIZZATA."
-    },
-    {
-      "sym": "17",
-      "name": "UNA STRIZZATA",
+      "sym": "ON DIET",
+      "name": "ON DIET",
       "value": 3,
-      "desc": "Gli scoiattoli si bagnano i vestiti, e strizzandoli si trova altra acqua. La famiglia prende ulteriori 3$N se almeno uno scoiattolo percorre una O. VIETATO l’utilizzo combinato con la BORRACCIA."
+      "desc": "Put a depot in addition to the allowed spaces."
     },
     {
-      "sym": "18",
-      "name": "BENDA",
+      "sym": "SPARKLING GOLD",
+      "name": "SPARKLING GOLD",
+      "value": 1,
+      "desc": "Get 2$W / 1$W when you build on a M / MM tile."
+    },
+    {
+      "sym": "THAT’S MINE!",
+      "name": "THAT’S MINE!",
       "value": 2,
-      "desc": "Uno scoiattolo non ci vede, e continua a correre anche se pensionato, ma inciampa sempre e fa una corsa con solo un deposito (corre come se fosse un 1S). Lo scoiattolo con la BENDA non può essere venduto. Finché lo scoiattolo ha la benda, la famiglia mantiene il potere attivo; in ogni momento può decidere di rimuovere la benda e cestinare lo scoiattolo – scartando il potere. La famiglia non può acquistare scoiattoli, a meno di cestinare la BENDA. Il potere si può assegnare in qualsiasi momento (anche se non è il turno operativo della famiglia – ad es. quando un’altra famiglia acquista uno scoiattolo che cambia la FASE), ma in questo caso il giocatore che offre la BENDA non riceverà alcun compenso. È possibile assegnare la BENDA al 4S o 3S LUNGO."
+      "desc": "Book anywhere an open place for a station tile."
     },
     {
-      "sym": "19",
-      "name": "ALI",
+      "sym": "WORK IN PROGRESS",
+      "name": "WORK IN PROGRESS",
       "value": 2,
-      "desc": "Solo durante la corsa, uno scoiattolo a piacere può saltare una traccia impassabile (tutte le tracce stazioni occupate da depositi di altre famiglie), senza però conteggiare il valore della provvista della stazione. Non può essere utilizzato per saltare una traccia stazione con un proprio deposito, o con uno spazio libero. Una stazione con un solo spazio, bloccato da LAVORI IN CORSO, non può essere saltata."
+      "desc": "Block anywhere a free place of a station tile."
     },
     {
-      "sym": "20",
-      "name": "BASTA UN POCO DI ZUCCHERO",
+      "sym": "CORN",
+      "name": "CORN",
+      "value": 2,
+      "desc": "Chooses a tile with its own depot; the station worths +30."
+    },
+    {
+      "sym": "TWO BARRELS",
+      "name": "TWO BARRELS",
+      "value": 2,
+      "desc": "Use twice, to double the value of all O tiles – don’t collect the O in treasury."
+    },
+    {
+      "sym": "A SQUEEZE",
+      "name": "A SQUEEZE",
+      "value": 2,
+      "desc": "Take an additional 3$W if at least one squirrel runs an O."
+    },
+    {
+      "sym": "BANDAGE",
+      "name": "BANDAGE",
+      "value": 1,
+      "desc": "Mark a squirrel – it runs as a 1S. It cannot be sold; but can be dismissed (otherwise family cannot purchase new squirrel)."
+    },
+    {
+      "sym": "WINGS",
+      "name": "WINGS",
+      "value": 2,
+      "desc": "During the run, a squirrel at will can skip a tokened-out station."
+    },
+    {
+      "sym": "A SPOONFUL OF SUGAR",
+      "name": "A SPOONFUL OF SUGAR",
       "value": 3,
-      "desc": "Uno scoiattolo a piacere corre una fermata in più (es. un 2S corre come un 3S, un 3S corre come un 4S...) – non è applicabile agli scoiattoli 4J o 2J. VIETATO utilizzo con lo scoiattolo con la BENDA."
+      "desc": "A squirrel at will runs one more station - not applicable to 4J or 2J."
     }
   ],
   "corporations": [],
@@ -289,7 +319,7 @@ module Engine
         "yellow"
       ],
       "status": [
-        "can_buy_companies"
+        "can_buy_companies", "can_buy_companies_from_other_players"
       ],
       "operating_rounds": 2
     },
@@ -302,7 +332,7 @@ module Engine
         "green"
       ],
       "status": [
-        "can_buy_companies"
+        "can_buy_companies", "can_buy_companies_from_other_players"
       ],
       "operating_rounds": 2
     },
@@ -382,7 +412,7 @@ module Engine
 {
   "corporations": [
     {
-      "sym": "GIRAFFES",
+      "sym": "GI",
       "float_percent": 40,
       "name": "GIRAFFES",
       "logo": "18_zoo/giraffe",
@@ -399,10 +429,11 @@ module Engine
         2
       ],
       "coordinates": "J9",
-      "color": "#fff793"
+      "color": "#fff793",
+      "text_color": "black"
     },
     {
-      "sym": "POLAR BEARS",
+      "sym": "PB",
       "float_percent": 40,
       "name": "POLAR BEARS",
       "logo": "18_zoo/polar-bear",
@@ -421,10 +452,11 @@ module Engine
         4
       ],
       "coordinates": "M10",
-      "color": "#efebeb"
+      "color": "#efebeb",
+      "text_color": "black"
     },
     {
-      "sym": "PENGUINS",
+      "sym": "PE",
       "float_percent": 40,
       "name": "PENGUINS",
       "logo": "18_zoo/penguin",
@@ -446,7 +478,7 @@ module Engine
       "color": "#55b7b7"
     },
     {
-      "sym": "LIONS",
+      "sym": "LI",
       "float_percent": 40,
       "name": "LIONS",
       "logo": "18_zoo/lion",
@@ -467,7 +499,7 @@ module Engine
       "color": "#df251a"
     },
     {
-      "sym": "TIGERS",
+      "sym": "TI",
       "float_percent": 40,
       "name": "TIGERS",
       "logo": "18_zoo/tiger",
@@ -518,74 +550,73 @@ module Engine
         "J5",
         "L13"
       ],
-      "path=a:0,b:5": [
-        "A10"
-      ],
-      "path=a:3,b:5": [
-        "A12"
+      "path=a:0,b:1": [
+        "M8"
       ],
       "path=a:0,b:3": [
         "F9"
       ],
-      "offboard=revenue:0,hide:1;path=a:0,b:_0;path=a:4,b:_0": [
-        "D7"
+      "path=a:0,b:4": [
+        "H3"
       ],
-      "offboard=revenue:0,hide:1;path=a:3,b:_0": [
-        "F21"
+      "path=a:0,b:5": [
+        "A10"
       ],
-      "path=a:1,b:4,track:narrow;path=a:3,b:5": [
-        "G16"
+      "path=a:1,b:3": [
+        "K6"
       ],
       "path=a:2,b:3": [
         "G20"
       ],
-      "junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0": [
-        "H3"
-      ],
-      "offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:0": [
-        "H13"
-      ],
-      "path=a:4,b:0": [
-        "J7"
-      ],
       "path=a:2,b:4": [
         "J19"
       ],
-      "path=a:1,b:3;path=a:3,b:5": [
-        "K6"
+      "path=a:3,b:5": [
+        "A12"
       ],
-      "path=a:4,b:0;path=a:4,b:1": [
+      "path=a:1,b:4;path=a:3,b:5": [
+        "G16"
+      ],
+      "path=a:0,b:4;path=a:1,b:4": [
         "L15"
       ],
-      "path=a:2,b:5": [
-        "L7"
+      "path=a:0,b:4;path=a:4,b:5": [
+        "J7"
       ],
-      "path=a:0,b:2": [
-        "M8"
-      ],
-      "offboard=revenue:0,hide:1;path=a:5,b:_0": [
-        "L9"
+      "offboard=revenue:0,hide:1;path=a:0,b:_0": [
+        "D7"
       ],
       "offboard=revenue:0,hide:1;path=a:1,b:_0": [
-        "K8",
         "L3",
         "N9"
       ],
       "offboard=revenue:0,hide:1;path=a:2,b:_0": [
         "I6",
         "K10"
+      ],
+      "offboard=revenue:0,hide:1;path=a:3,b:_0": [
+        "F21"
+      ],
+      "offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4": [
+        "L9"
+      ],
+      "offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5": [
+        "K8"
+      ],
+      "offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4": [
+        "H13"
       ]
     },
     "red": {
-      "offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R": [
-        "B17"
-      ],
       "offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R": [
         "L5",
         "M18"
       ],
       "offboard=revenue:yellow_30|brown_60;path=a:4,b:_0;label=R": [
         "E8"
+      ],
+      "offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R": [
+        "B17"
       ],
       "offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R": [
         "H19"
@@ -642,6 +673,12 @@ module Engine
         "M12",
         "M14"
       ],
+      "upgrade=cost:1,terrain:mountain": [
+        "C12",
+        "H15",
+        "I14",
+        "D17"
+      ],
       "upgrade=cost:2,terrain:mountain": [
         "D11",
         "E10",
@@ -650,12 +687,6 @@ module Engine
         "J3",
         "K18",
         "M16"
-      ],
-      "upgrade=cost:1,terrain:mountain": [
-        "C12",
-        "H15",
-        "I14",
-        "D17"
       ],
       "label=Y;city=revenue:yellow_30|green_40|brown_50,slots:1;offboard=revenue:yellow_20|brown_40,hide:1": [
         "D9",
@@ -704,20 +735,347 @@ module Engine
 
         JSON_MAP_D = <<-'DATA'
 {
-  "certLimit": {
-    "2": 12,
-    "3": 9,
-    "4": 7,
-    "5": 6
+  "corporations": [
+    {
+      "sym": "CR",
+      "float_percent": 40,
+      "name": "CROCODILES",
+      "logo": "18_zoo/crocodile",
+      "shares": [
+        40,
+        20,
+        20,
+        20
+      ],
+      "max_ownership_percent": 120,
+      "always_market_price": true,
+      "tokens": [
+        0
+      ],
+      "coordinates": "G3",
+      "color": "#fff793",
+      "text_color": "black"
+    },
+    {
+      "sym": "GI",
+      "float_percent": 40,
+      "name": "GIRAFFES",
+      "logo": "18_zoo/giraffe",
+      "shares": [
+        40,
+        20,
+        20,
+        20
+      ],
+      "max_ownership_percent": 120,
+      "always_market_price": true,
+      "tokens": [
+        0,
+        2
+      ],
+      "coordinates": "J10",
+      "color": "#fff793",
+      "text_color": "black"
+    },
+    {
+      "sym": "PB",
+      "float_percent": 40,
+      "name": "POLAR BEARS",
+      "logo": "18_zoo/polar-bear",
+      "shares": [
+        40,
+        20,
+        20,
+        20
+      ],
+      "max_ownership_percent": 120,
+      "always_market_price": true,
+      "tokens": [
+        0,
+        2,
+        4,
+        4
+      ],
+      "coordinates": "M11",
+      "color": "#efebeb",
+      "text_color": "black"
+    },
+    {
+      "sym": "PE",
+      "float_percent": 40,
+      "name": "PENGUINS",
+      "logo": "18_zoo/penguin",
+      "shares": [
+        40,
+        20,
+        20,
+        20
+      ],
+      "max_ownership_percent": 120,
+      "always_market_price": true,
+      "tokens": [
+        0,
+        2,
+        4,
+        4
+      ],
+      "coordinates": "J18",
+      "color": "#55b7b7"
+    },
+    {
+      "sym": "LI",
+      "float_percent": 40,
+      "name": "LIONS",
+      "logo": "18_zoo/lion",
+      "shares": [
+        40,
+        20,
+        20,
+        20
+      ],
+      "max_ownership_percent": 120,
+      "always_market_price": true,
+      "tokens": [
+        0,
+        2,
+        4
+      ],
+      "coordinates": "D16",
+      "color": "#df251a"
+    },
+    {
+      "sym": "TI",
+      "float_percent": 40,
+      "name": "TIGERS",
+      "logo": "18_zoo/tiger",
+      "shares": [
+        40,
+        20,
+        20,
+        20
+      ],
+      "max_ownership_percent": 120,
+      "always_market_price": true,
+      "tokens": [
+        0,
+        2
+      ],
+      "coordinates": "G15",
+      "color": "#ffa023"
+    },
+    {
+      "sym": "BB",
+      "float_percent": 40,
+      "name": "BROWN BEAR",
+      "logo": "18_zoo/brown-bear",
+      "shares": [
+        40,
+        20,
+        20,
+        20
+      ],
+      "max_ownership_percent": 120,
+      "always_market_price": true,
+      "tokens": [
+        0
+      ],
+      "coordinates": "H6",
+      "color": "#ffa023"
+    }
+  ],
+  "locationNames": {
+    "B12": "O",
+    "B14": "O",
+    "E19": "O",
+    "F2": "O",
+    "G1": "O",
+    "G11": "O",
+    "H10": "O",
+    "H12": "O",
+    "I3": "O",
+    "K15": "O",
+    "M13": "O",
+    "M15": "O",
+    "C13": "M",
+    "D18": "M",
+    "H16": "M",
+    "I15": "M",
+    "J6": "M",
+    "D12": "MM",
+    "E11": "MM",
+    "F18": "MM",
+    "G19": "MM",
+    "J4": "MM",
+    "K7": "MM",
+    "K19": "MM",
+    "M17": "MM"
   },
-  "startingCash": {
-    "2": 48,
-    "3": 32,
-    "4": 27,
-    "5": 22
-  },
-  "corporations":[],
-  "hexes":{}
+  "hexes": {
+    "gray": {
+      "": [
+        "B10",
+        "C9",
+        "L14"
+      ],
+      "path=a:0,b:1": [
+        "F4",
+        "H0",
+        "M9"
+      ],
+      "path=a:0,b:3": [
+        "F10"
+      ],
+      "path=a:0,b:5": [
+        "A11","F0"
+      ],
+      "path=a:2,b:3": [
+        "G21"
+      ],
+      "path=a:2,b:4": [
+        "J20"
+      ],
+      "path=a:3,b:5": [
+        "A13"
+      ],
+      "path=a:4,b:5": [
+        "E5"
+      ],
+      "path=a:0,b:4;path=a:1,b:4": [
+        "L16"
+      ],
+      "path=a:1,b:4;path=a:3,b:5": [
+        "G17"
+      ],
+      "path=a:0,b:4;path=a:4,b:5": [
+        "J8"
+      ],
+      "offboard=revenue:0,hide:1;path=a:0,b:_0;path=a:4,b:_0": [
+        "D8"
+      ],
+      "junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0": [
+        "H4"
+      ],
+      "offboard=revenue:0,hide:1;path=a:1,b:_0": [
+        "L4", "N10"
+      ],
+      "offboard=revenue:0,hide:1;path=a:2,b:_0": [
+        "K11"
+      ],
+      "offboard=revenue:0,hide:1;path=a:3,b:_0": [
+        "F22"
+      ],
+      "offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5": [
+        "K9"
+      ],
+      "offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4": [
+        "L10"
+      ],
+      "offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4": [
+        "H14"
+      ]
+    },
+    "red": {
+      "offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R": [
+        "L6"
+      ],
+      "offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R": [
+        "M19"
+      ],
+      "offboard=revenue:yellow_30|brown_60;path=a:4,b:_0;label=R": [
+        "E9"
+      ],
+      "offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R": [
+        "B18"
+      ],
+      "offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R": [
+        "H20"
+      ]
+    },
+    "white": {
+      "": [
+        "B16",
+        "C11",
+        "C15",
+        "C17",
+        "D14",
+        "E7",
+        "E13",
+        "E15",
+        "E17",
+        "F8",
+        "F12",
+        "F14",
+        "F16",
+        "G5",
+        "G7",
+        "G9",
+        "G13",
+        "H2",
+        "H8",
+        "H18",
+        "I5",
+        "I7",
+        "I9",
+        "I11",
+        "I13",
+        "I17",
+        "I19",
+        "J12",
+        "J14",
+        "K13",
+        "K17",
+        "L12",
+        "L18"
+      ],
+      "city=revenue:0,slots:1": [
+        "D16",
+        "G3",
+        "G15",
+        "H6",
+        "J10",
+        "J18",
+        "M11"
+      ],
+      "upgrade=cost:0,terrain:water": [
+        "B12",
+        "B14",
+        "E19",
+        "F2",
+        "G1",
+        "G11",
+        "H10",
+        "H12",
+        "I3",
+        "K15",
+        "M13",
+        "M15"
+      ],
+      "upgrade=cost:1,terrain:mountain": [
+        "C13",
+        "D18",
+        "H16",
+        "I15",
+        "J6"
+      ],
+      "upgrade=cost:2,terrain:mountain": [
+        "D12",
+        "E11",
+        "F18",
+        "G19",
+        "J4",
+        "K7",
+        "K19",
+        "M17"
+      ],
+      "label=Y;city=revenue:yellow_30|green_40|brown_50,slots:1;offboard=revenue:yellow_20|brown_40,hide:1": [
+        "D10",
+        "F6",
+        "F20",
+        "J16",
+        "K5"
+      ]
+    }
+  }
 }
         DATA
 

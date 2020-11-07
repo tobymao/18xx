@@ -17,7 +17,7 @@ module Engine
           {sym: :map_a, short_name: 'Map A', desc: '5 families'},
           # {sym: :map_b, short_name: 'Map B', desc: '5 families'}, TODO: unblock after the map creation
           # {sym: :map_c, short_name: 'Map C', desc: '5 families'}, TODO: unblock after the map creation
-          # {sym: :map_d, short_name: 'Map D', desc: '5 families'}, TODO: unblock after the map creation
+          {sym: :map_d, short_name: 'Map D', desc: '7 families'},
           # {sym: :map_e, short_name: 'Map E', desc: '5 families'}, TODO: unblock after the map creation
           # {sym: :map_f, short_name: 'Map F', desc: '5 families'}, TODO: unblock after the map creation
           {sym: :power_visible, short_name: 'Poteri scoperti', desc: 'Poteri scoperti'},
@@ -31,6 +31,8 @@ module Engine
 
       # Two lays or one upgrade
       TILE_LAYS = [{lay: true, upgrade: true}, {lay: :not_if_upgraded, upgrade: false}].freeze
+
+      MARKET_PLAYER = Player.new("Market")
 
       def init_optional_rules(optional_rules)
         optional_rules = super
@@ -47,6 +49,7 @@ module Engine
                     when :map_b then
                     when :map_c then
                     when :map_d then
+                      Engine::Game::G18ZOO::MapD.new(@names)
                     when :map_e then
                     when :map_f then
                     end
@@ -100,6 +103,13 @@ module Engine
         Round::Draft.new(self, [Step::G18ZOO::SimpleDraft], reverse_order: true)
       end
 
+      # Move all the companies to the "Bank player"
+      def init_round_finished
+        @companies.select { |company| !company.owner }.each do |company|
+          company.owner = MARKET_PLAYER
+        end
+      end
+
       # Only buy and sell par shares is possible action during SR
       def stock_round
         Round::Stock.new(self, [
@@ -115,7 +125,7 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(self, [
-            Step::Track,
+            Step::G18ZOO::Track,
         # Step::Token, TODO: add and test
         # Step::Route, TODO: add and test
         # Step::Dividend, TODO: add and test
@@ -126,6 +136,22 @@ module Engine
       # Game will end at the end of the ORs in the third turn
       def custom_end_game_reached?
         @turn == 3
+      end
+
+      def purchasable_companies(entity = nil)
+        @companies.select do |company|
+          company.owner&.player? && company.owner.name == 'Market' && !company.abilities(:no_buy)
+        end
+      end
+
+      def event_green_par!
+        @log << "-- Event: #{EVENTS_TEXT['green_par'][1]} --"
+        stock_market.enable_par_price(9)
+      end
+
+      def event_brown_par!
+        @log << "-- Event: #{EVENTS_TEXT['brown_par'][1]} --"
+        stock_market.enable_par_price(12)
       end
 
       def round_description(name, _round_num)
@@ -156,30 +182,6 @@ module Engine
         @players.sort_by! { |p| [-p.cash, current_order.index(p)] }
         @log << "Priority order: #{@players.reject(&:bankrupt).map(&:name).join(', ')}"
       end
-
-      # def upgrades_to?(from, to, _special = false)
-      #   # Only allow tile gray tile (446) in Montgomery (E11) or Birmingham (C9)
-      #   return to.name == '446' if from.color == :brown && HEXES_FOR_GRAY_TILE.include?(from.hex.name)
-      #
-      #   # Only allow tile Mobile City brown tile in Mobile City hex (H6)
-      #   return to.name == 'X31b' if from.color == :green && from.hex.name == 'H6'
-      #
-      #   super
-      # end
-      #
-      # def all_potential_upgrades(tile, tile_manifest: false)
-      #   upgrades = super
-      #
-      #   return upgrades unless tile_manifest
-      #
-      #   # Tile manifest for tile 15 should show brown Mobile City as a potential upgrade
-      #   upgrades |= [@mobile_city_brown] if @mobile_city_brown && tile.name == '15'
-      #
-      #   # Tile manifest for tile 63 should show 446 as a potential upgrade
-      #   upgrades |= [@gray_tile] if @gray_tile && tile.name == '63'
-      #
-      #   upgrades
-      # end
 
       def game_end_check
         triggers = {
