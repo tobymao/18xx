@@ -6,13 +6,10 @@ module Engine
   module Step
     module G18ZOO
       class SimpleDraft < Base
-        attr_reader :companies
-
         ACTIONS_WITH_PASS = %w[bid pass].freeze
 
         def setup
-          @draw_size = 4 + (@game.players.size == 5 ? 2 : 0)
-          @companies = @game.companies.sort_by { @game.rand }.first(@draw_size).sort
+          @companies = @game.companies_for_isr.sort
           @finished = false
         end
 

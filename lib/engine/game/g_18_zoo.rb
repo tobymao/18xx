@@ -34,6 +34,8 @@ module Engine
 
       MARKET_PLAYER = Player.new("Market")
 
+      attr_reader :companies_for_isr
+
       def init_optional_rules(optional_rules)
         optional_rules = super
 
@@ -140,15 +142,34 @@ module Engine
         @players.each { |player| player.companies.select { |c| c.name.start_with?('ZOOTicket') }.map { |c| create_zooticket(c, new_value) } }
       end
 
+      def init_companies(_players)
+        super.sort_by { @game.rand }
+      end
+
+      def draw_size
+        @players.size == 5 ? 6 : 4
+      end
+
       def init_round
+        @companies_for_isr = @companies.first(draw_size)
+        @companies_for_monday = @companies.drop(draw_size + 4).first(4)
+        @companies_for_tuesday = @companies.drop(draw_size + 8).first(4)
+        @companies_for_wednesday = @companies.drop(draw_size + 12).first(4)
+        #TODO: Move Monday companies to Player / Minor to be able to see in Entities
+        # @companies_for_monday.each do |company|
+        #   company.owner = Bank
+        #   Bank.companies << company
+        # end
+
         Round::Draft.new(self, [Step::G18ZOO::SimpleDraft], reverse_order: true)
       end
 
-      # Move all the companies to the "Bank player"
+      # TODO: Move all the remaining companies from isr to Player / Minor to be able to see in Entities
       def init_round_finished
-        @companies.select { |company| !company.owner }.each do |company|
-          company.owner = MARKET_PLAYER
-        end
+        # @companies_for_isr.select { |company| !company.owner }.each do |company|
+        #   company.owner = Bank
+        #   Bank.companies << company
+        # end
       end
 
       # Only buy and sell par shares is possible action during SR
@@ -161,6 +182,18 @@ module Engine
       def new_operating_round(round_num)
         @operating_rounds = 3 if @turn == 3 # Last round has 3 ORs
         update_zootickets_value(@turn, round_num)
+
+        #TODO: Move Tuesday companies to Player / Minor to be able to see in Entities
+        # @companies_for_tuesday.select { |company| !company.owner }.each do |company|
+        #   company.owner = Bank
+        #   Bank.companies << company
+        # end if @turn == 1
+
+        #TODO: Move Wednesday companies to Player / Minor to be able to see in Entities
+        # @companies_for_wednesday.select { |company| !company.owner }.each do |company|
+        #   company.owner = Bank
+        #   Bank.companies << company
+        # end if @turn == 2
 
         super
       end
