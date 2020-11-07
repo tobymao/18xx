@@ -394,7 +394,7 @@ module Engine
       "name": "Brading Harbour Company",
       "value": 30,
       "revenue": 5,
-      "desc": "Can be exchanged for a share in the BHI&R pubilc company.",
+      "desc": "Can be exchanged for a share in the BHI&R pubilc company",
       "sym": "BHC",
       "abilities": [
         {
@@ -464,6 +464,7 @@ module Engine
       "name": "Cowes & Newport",
       "logo": "1860/CN",
       "float_percent": 50,
+      "max_ownership_percent": 100,
       "tokens": [
         0,
         40,
@@ -479,6 +480,7 @@ module Engine
       "name": "Isle of Wight",
       "logo": "1860/IOW",
       "float_percent": 50,
+      "max_ownership_percent": 100,
       "tokens": [
         0,
         40,
@@ -493,6 +495,7 @@ module Engine
       "name": "Isle of Wight, Newport Juntion",
       "logo": "1860/IWNJ",
       "float_percent": 50,
+      "max_ownership_percent": 100,
       "tokens": [
         0,
         40,
@@ -506,6 +509,7 @@ module Engine
       "name": "Freshwater, Yarmouth & Newport",
       "logo": "1860/FYN",
       "float_percent": 50,
+      "max_ownership_percent": 100,
       "tokens": [
         0,
         40,
@@ -519,6 +523,7 @@ module Engine
       "name": "Newport, Godshill & St. Lawrence",
       "logo": "1860/NGStL",
       "float_percent": 50,
+      "max_ownership_percent": 100,
       "tokens": [
         0,
         40
@@ -532,6 +537,7 @@ module Engine
       "name": "Brading Harbour Improvement & Railway",
       "logo": "1860/BHIR",
       "float_percent": 50,
+      "max_ownership_percent": 100,
       "tokens": [
         0,
         40
@@ -544,6 +550,7 @@ module Engine
       "name": "Shanklin & Chale",
       "logo": "1860/SC",
       "float_percent": 50,
+      "max_ownership_percent": 100,
       "tokens": [
         0,
         40
@@ -556,6 +563,7 @@ module Engine
       "name": "Ventor, Yarmouth & South Coast",
       "logo": "1860/VYSC",
       "float_percent": 50,
+      "max_ownership_percent": 100,
       "tokens": [
         0,
         40
@@ -598,7 +606,10 @@ module Engine
       "name": "6+3",
       "distance": 6,
       "price": 500,
-      "num": 2
+      "num": 2,
+      "events": [
+        {"type": "fishbourne_to_bank"}
+      ]
     },
     {
       "name": "7+4",
@@ -721,68 +732,83 @@ module Engine
       "train_limit": 4,
       "tiles": [
         "yellow"
-      ]
+      ],
+      "operating_rounds": 1
     },
     {
       "name": "3",
+      "on": "3+2",
       "train_limit": 4,
       "tiles": [
         "yellow",
         "green"
-      ]
+      ],
+      "operating_rounds": 2
     },
     {
       "name": "4",
+      "on": "4+2",
       "train_limit": 3,
       "tiles": [
         "yellow",
         "green"
-      ]
+      ],
+      "operating_rounds": 2
     },
     {
       "name": "5",
+      "on": "5+3",
       "train_limit": 3,
       "tiles": [
         "yellow",
         "green",
         "brown"
-      ]
+      ],
+      "operating_rounds": 3
     },
     {
       "name": "6",
+      "on": "6+3",
       "train_limit": 2,
       "tiles": [
         "yellow",
         "green",
         "brown"
-      ]
+      ],
+      "operating_rounds": 3
     },
     {
       "name": "7",
+      "on": "7+4",
       "train_limit": 2,
       "tiles": [
         "yellow",
         "green",
         "brown"
-      ]
+      ],
+      "operating_rounds": 3
     },
     {
       "name": "8",
+      "on": "8+4",
       "train_limit": 2,
       "tiles": [
         "yellow",
         "green",
         "brown"
-      ]
+      ],
+      "operating_rounds": 3
     },
     {
       "name": "9",
+      "on": "9+5",
       "train_limit": 2,
       "tiles": [
         "yellow",
         "green",
         "brown"
-      ]
+      ],
+      "operating_rounds": 3
     }
   ]
 }

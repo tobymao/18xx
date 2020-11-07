@@ -50,7 +50,9 @@ module Engine
       @capitalization = opts[:capitalization] || :full
       @closed = false
       @float_percent = opts[:float_percent] || 60
+      @floated = false
       @max_ownership_percent = opts[:max_ownership_percent] || 60
+      @can_hold_above_max = opts[:can_hold_above_max] || false
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
@@ -141,11 +143,11 @@ module Engine
     end
 
     def floated?
-      percent_of(self) <= 100 - @float_percent
+      @floated ||= percent_of(self) <= 100 - @float_percent
     end
 
     def percent_to_float
-      percent_of(self) - (100 - @float_percent)
+      @floated ? 0 : percent_of(self) - (100 - @float_percent)
     end
 
     def corporation?
@@ -162,8 +164,10 @@ module Engine
 
     # Is it legal to hold percent shares in this corporation?
     def holding_ok?(share_holder, extra_percent = 0)
+      return true if @can_hold_above_max
+
       percent = share_holder.percent_of(self) + extra_percent
-      %i[orange brown].include?(@share_price&.color) || percent <= @max_ownership_percent
+      %i[multiple_buy unlimited].include?(@share_price&.type) || percent <= @max_ownership_percent
     end
 
     def all_abilities
@@ -228,6 +232,7 @@ module Engine
       share_price&.corporations&.delete(self)
       @closed = true
       @ipoed = false
+      @floated = false
       @owner = nil
     end
   end

@@ -239,7 +239,7 @@ module View
 
       def price_range(train)
         step = @game.round.active_step
-        if step.face_value?(train.owner) || step.face_value?(@corporation)
+        if step.must_buy_at_face_value?(train, @corporation)
           {
             type: 'number',
             min: train.price,

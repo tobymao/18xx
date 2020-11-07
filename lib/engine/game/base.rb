@@ -88,9 +88,25 @@ module Engine
         6 => 11,
       }.freeze
 
-      CERT_LIMIT_COLORS = %i[brown orange yellow].freeze
+      CERT_LIMIT_TYPES = %i[multiple_buy unlimited no_cert_limit].freeze
+      # Does the cert limit decrease when a player becomes bankrupt?
+      CERT_LIMIT_CHANGE_ON_BANKRUPTCY = false
 
-      MULTIPLE_BUY_COLORS = %i[brown].freeze
+      MULTIPLE_BUY_TYPES = %i[multiple_buy].freeze
+
+      STOCKMARKET_COLORS = {
+        par: :red,
+        endgame: :blue,
+        close: :black,
+        multiple_buy: :brown,
+        unlimited: :orange,
+        no_cert_limit: :yellow,
+        liquidation: :red,
+        acquisition: :yellow,
+        repar: :gray,
+        ignore_one_sale: :green,
+        safe_par: :white,
+      }.freeze
 
       MIN_BID_INCREMENT = 5
 
@@ -104,9 +120,11 @@ module Engine
       # first           -- after first stock round
       # operate         -- after operation
       # p_any_operate   -- pres any time, share holders after operation
+      # any_time        -- at any time
       SELL_AFTER = :first
 
       # down_share -- down one row per share
+      # down_per_10 -- down one row per 10% sold
       # down_block -- down one row per block
       # left_block_pres -- left one column per block if president
       # left_block -- one row per block
@@ -175,12 +193,8 @@ module Engine
                       close: 'Corporation closes',
                       endgame: 'End game trigger',
                       liquidation: 'Liquidation',
-                      acquisition: 'Acquisition',
                       repar: 'Par value after bankruptcy',
                       ignore_one_sale: 'Ignore first share sold when moving price' }.freeze
-
-      # Add elements (paragraphs of text) here to display it on Info page.
-      TIMELINE = [].freeze
 
       IPO_NAME = 'IPO'
       IPO_RESERVED_NAME = 'IPO Reserved'
@@ -209,7 +223,7 @@ module Engine
       def setup; end
 
       def init_optional_rules(optional_rules)
-        optional_rules ||= []
+        optional_rules = (optional_rules || []).map(&:to_sym)
         self.class::OPTIONAL_RULES.each do |rule|
           optional_rules.delete(rule[:sym]) if rule[:players] && !rule[:players].include?(@players.size)
         end
@@ -225,7 +239,7 @@ module Engine
         self.class::OPTIONAL_RULES.each do |o_r|
           next unless @optional_rules.include?(o_r[:sym])
 
-          @log << " * #{o_r[:short_name]}: (#{o_r[:desc]})"
+          @log << " * #{o_r[:short_name]}: #{o_r[:desc]}"
         end
       end
 
@@ -663,6 +677,8 @@ module Engine
         case self.class::SELL_MOVEMENT
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
+        when :down_per_10
+          (bundle.percent / 10).to_i.times { @stock_market.move_down(corporation) }
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
         when :none
@@ -840,6 +856,11 @@ module Engine
         end
 
         player.bankrupt = true
+        return unless self.class::CERT_LIMIT_CHANGE_ON_BANKRUPTCY
+
+        remaining_players = @players.reject(&:bankrupt).length
+        # Assume that games without cert limits at lower player counts retain previous counts (1817 and 2 players)
+        @cert_limit = self.class::CERT_LIMIT[remaining_players] || @cert_limit
       end
 
       def tile_lays(_entity)
@@ -985,8 +1006,8 @@ module Engine
       end
 
       def init_stock_market
-        StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_COLORS,
-                        multiple_buy_colors: self.class::MULTIPLE_BUY_COLORS)
+        StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+                        multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
       end
 
       def init_companies(players)
@@ -1434,6 +1455,19 @@ module Engine
         description += "#{round_number} (of #{total})" if total
 
         description.strip
+      end
+
+      def corporation_available?(_entity)
+        true
+      end
+
+      def or_description_short(turn, round)
+        "#{turn}.#{round}"
+      end
+
+      # Override this, and add elements (paragraphs of text) here to display it on Info page.
+      def timeline
+        []
       end
     end
   end

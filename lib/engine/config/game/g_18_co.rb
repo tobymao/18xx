@@ -111,24 +111,24 @@ module Engine
 		"28": 2,
 		"29": 2,
 		"co8": {
-			"count": 1,
+			"count": 5,
 			"color": "green",
-			"code": "town=revenue:20;junction;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0"
+			"code": "town=revenue:20,to_city:1;junction;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0"
 		},
 		"co9": {
-			"count": 1,
+			"count": 5,
 			"color": "green",
-			"code": "town=revenue:20;junction;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0"
+			"code": "town=revenue:20,to_city:1;junction;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0"
 		},
 		"co10": {
-			"count": 1,
+			"count": 2,
 			"color": "green",
-			"code": "town=revenue:20;junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0"
+			"code": "town=revenue:20,to_city:1;junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0"
 		},
 		"co2": {
 			"count": 1,
 			"color": "green",
-			"code": "city=revenue:50,slots:3;city=revenue:50,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:2,b:_1;path=a:3,b:_1;label=D;"
+			"code": "city=revenue:50,slots:3;city=revenue:50,hide:1;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;label=D;"
 		},
 		"co6": {
 			"count": 1,
@@ -297,25 +297,25 @@ module Engine
 			"40"
 		],
 		[
-			"10b",
+			"10a",
 			"15",
 			"20",
 			"25",
 			"30"
 		],
 		[
-			"10b",
-			"10b",
+			"10a",
+			"10a",
 			"15",
 			"20",
 			"20"
 		],
 		[
-			"10b",
-			"10b",
-			"10b",
-			"15b",
-			"15b"
+			"10a",
+			"10a",
+			"10a",
+			"15a",
+			"15a"
 		]
 	],
 	"companies": [
@@ -326,7 +326,11 @@ module Engine
 			"revenue": 5,
 			"desc": "Money gained from mine tokens is doubled for the owning Corporation. If owned by a Corporation, closes on purchase of “6” train, otherwise closes on purchase of “5” train.",
 			"abilities": [
-
+				{
+					"type": "close",
+					"owner_type": "corporation",
+					"when": "6"
+				}
 			]
 		},
 		{
@@ -521,6 +525,7 @@ module Engine
 				0,
 				40
 			],
+			"city": 2,
 			"coordinates": "E15",
 			"color": "purple"
 		},
@@ -535,6 +540,7 @@ module Engine
 				0,
 				40
 			],
+			"city": 1,
 			"coordinates": "E15",
 			"color": "green"
 		},
@@ -553,6 +559,7 @@ module Engine
 				100,
 				100
 			],
+			"city": 0,
 			"coordinates": "E15",
 			"color": "yellow",
 			"text_color": "black"

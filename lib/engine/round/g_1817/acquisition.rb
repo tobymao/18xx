@@ -19,10 +19,10 @@ module Engine
 
         def select_entities
           # Things that are offered up for acquisition, sale etc
-          @offering =  @game
-                      .corporations
-                      .select(&:floated?)
-                      .sort.reverse
+          @offering = @game
+                        .corporations
+                        .select(&:floated?)
+                        .sort.reverse
           @game.players.select { |p| p.presidencies.any? }
         end
 

@@ -33,7 +33,7 @@ module Engine
       GAME_LOCATION = 'NYSE, USA'
       GAME_RULES_URL = 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view'
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
-      GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
+      GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
 
       MUST_BID_INCREMENT_MULTIPLE = true
@@ -53,6 +53,8 @@ module Engine
 
       GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
 
+      CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
+
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
@@ -63,18 +65,27 @@ module Engine
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
                                                                   'Game Ends 3 ORs after purchase/export'\
                                                                   ' of first 8 train']).freeze
-
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'no_new_shorts' => ['Cannot gain new shorts', 'Short selling is not permitted, existing shorts remain'],
+      ).freeze
       MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'Minimum Price for a 2($55), 5($70) and 10($120) share'\
-      ' corporation taking maximum loans to ensure it avoids acquisition').freeze
+      ' corporation taking maximum loans to ensure it avoids acquisition',
+                                            acquisition: 'Acquisition (Pay $40 dividend to move right, $80'\
+                                            ' to double jump)').freeze
+      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :gray).freeze
       MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
-      attr_reader :loan_value, :owner_when_liquidated
+      attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
       def bankruptcy_limit_reached?
         @players.reject(&:bankrupt).one?
       end
 
+      def future_interest_rate
+        [[5, ((loans_taken + 4) / 5).to_i * 5].max, 70].min
+      end
+
       def interest_rate
-        @interest_fixed || [[5, ((loans_taken + 4) / 5).to_i * 5].max, 70].min
+        @interest_fixed || future_interest_rate
       end
 
       def interest_owed(entity)
@@ -115,17 +126,21 @@ module Engine
       end
 
       def size_corporation(corporation, size)
-        shares = @_shares.values.select { |share| share.corporation == corporation }
+        original_shares = @_shares.values.select { |share| share.corporation == corporation }
         game_error('Can only convert 2 share corporation') unless corporation.total_shares == 2
+
+        corporation.share_holders.clear
 
         case size
         when 5
-          shares[0].percent = 40
+          original_shares[0].percent = 40
           shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 1) }
         when 10
-          shares[0].percent = 20
+          original_shares[0].percent = 20
           shares = 8.times.map { |i| Share.new(corporation, percent: 10, index: i + 1) }
         end
+
+        original_shares.each { |share| corporation.share_holders[share.owner] += share.percent }
 
         corporation.max_ownership_percent = 60 unless size == 2
 
@@ -170,6 +185,43 @@ module Engine
 
       def shorts(corporation)
         @_shares.values.select { |share| share.corporation == corporation && share.percent.negative? }
+      end
+
+      def entity_shorts(entity, corporation)
+        entity.shares_of(corporation).select { |share| share.percent.negative? }
+      end
+
+      def close_market_shorts
+        @corporations.each do |corporation|
+          # Try closing shorts
+          count = 0
+          while entity_shorts(@share_pool, corporation).any? &&
+            (market_shares = @share_pool.shares_of(corporation).select { |share| share.percent.positive? }).any?
+            unshort(@share_pool, market_shares.first)
+            count += 1
+          end
+          @log << "Market closes #{count} shorts for #{corporation.name}" if count.positive?
+        end
+      end
+
+      def close_bank_shorts
+        # Close out shorts in stock market with the bank buying shares from the treasury
+        @corporations.each do |corporation|
+          count = 0
+          while entity_shorts(@share_pool, corporation).any? &&
+            corporation.shares.any?
+
+            # Market buys the share
+            share = corporation.shares.first
+            @share_pool.buy_shares(@share_pool, share)
+
+            # Then closes the share
+            unshort(@share_pool, share)
+            count += 1
+
+          end
+          @log << "Market closes #{count} shorts for #{corporation.name}" if count.positive?
+        end
       end
 
       def migrate_shares(corporation, other)
@@ -337,6 +389,8 @@ module Engine
 
         revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
 
+        game_error('Route visits same hex twice') if route.hexes.size != route.hexes.uniq.size
+
         mine = 'mine'
         if route.hexes.first.assigned?(mine) || route.hexes.last.assigned?(mine)
           game_error('Route cannot start or end with a mine')
@@ -354,6 +408,12 @@ module Engine
         liquidity(player, emergency: true)
       end
 
+      def total_rounds(name)
+        # Return the total number of rounds for those with more than one.
+        # Merger exists twice since it's logged as the long form, but shown on the UI in the short form
+        @operating_rounds if ['Operating', 'Merger', 'Merger and Conversion', 'Acquisition'].include?(name)
+      end
+
       private
 
       def new_auction_round
@@ -364,6 +424,7 @@ module Engine
       end
 
       def stock_round
+        close_bank_shorts
         @interest_fixed = nil
         @owner_when_liquidated = {}
         Round::G1817::Stock.new(self, [
@@ -419,7 +480,9 @@ module Engine
             new_operating_round
           when Round::Operating
             or_round_finished
-            @log << "-- Merger and Conversion Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
+            # Store the share price of each corp to determine if they can be acted upon in the AR
+            @stock_prices_start_merger = @corporations.map { |corp| [corp, corp.share_price] }.to_h
+            @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
             Round::G1817::Merger.new(self, [
               Step::G1817::ReduceTokens,
               Step::DiscardTrain,
@@ -428,7 +491,7 @@ module Engine
               Step::G1817::Conversion,
             ], round_num: @round.round_num)
           when Round::G1817::Merger
-            @log << "-- Acquisition Round #{@turn}.#{@round.round_num} (of #{@operating_rounds}) --"
+            @log << "-- #{round_description('Acquisition', @round.round_num)} --"
             Round::G1817::Acquisition.new(self, [
               Step::G1817::ReduceTokens,
               Step::G1817::Bankrupt,

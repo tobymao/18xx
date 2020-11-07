@@ -2,12 +2,14 @@
 
 require_relative '../base'
 require_relative '../share_buying'
+require_relative 'share_buying_with_shorts'
 
 module Engine
   module Step
     module G1817
       class PostConversion < Base
         include ShareBuying
+        include ShareBuyingWithShorts
 
         def actions(entity)
           return [] if !entity.player? || !@round.converted

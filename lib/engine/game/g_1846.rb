@@ -23,7 +23,7 @@ module Engine
       GAME_LOCATION = 'Midwest, USA'
       GAME_RULES_URL = 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf'
       GAME_DESIGNER = 'Thomas Lehmann'
-      GAME_PUBLISHER = Publisher::INFO[:gmt_games]
+      GAME_PUBLISHER = %i[gmt_games golden_spike].freeze
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1846'
 
       POOL_SHARE_DROP = :one

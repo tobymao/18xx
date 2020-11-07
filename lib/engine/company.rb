@@ -47,7 +47,7 @@ module Engine
       all_abilities.dup.each { |a| remove_ability(a) }
       return unless owner
 
-      owner.companies.delete(self)
+      owner.companies.delete(self) if owner.respond_to?(:companies)
       @owner = nil
     end
 

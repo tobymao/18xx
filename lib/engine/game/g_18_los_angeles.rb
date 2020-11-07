@@ -12,7 +12,7 @@ module Engine
     class G18LosAngeles < G1846
       load_from_json(Config::Game::G18LosAngeles::JSON, Config::Game::G1846::JSON)
 
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
 
       GAME_LOCATION = nil
       GAME_RULES_URL = {
@@ -20,7 +20,7 @@ module Engine
         '1846 Rules' => 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf',
       }.freeze
       GAME_DESIGNER = 'Anthony Fryer'
-      GAME_PUBLISHER = Publisher::INFO[:traxx]
+      GAME_PUBLISHER = %i[traxx sea_horse].freeze
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18LosAngeles'
 
       OPTIONAL_RULES = [
@@ -28,7 +28,7 @@ module Engine
           sym: :dch,
           short_name: 'Dewey, Cheatham, and Howe',
           desc: 'add a private company which allows the owning corporation to '\
-                'place a token in a city that has no open slots (3+ players only)',
+                'place a token in a city that has no open slots; 3+ players only',
           players: [3, 4, 5],
         },
         {

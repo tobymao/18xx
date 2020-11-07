@@ -350,7 +350,8 @@ module Engine
           elsif corporation.share_price.acquisition?
             10
           else
-            corporation.total_shares * corporation.share_price.price
+            # Needs rounding to 10
+            ((corporation.total_shares * corporation.share_price.price).to_f / 10).round * 10
           end
         end
 
@@ -394,6 +395,7 @@ module Engine
           price = action.price
 
           add_bid(action)
+          @game.game_error("Bid #{price} is not a multple of 10") unless (price % 10).zero?
           @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
           resolve_bids
         end
@@ -431,7 +433,13 @@ module Engine
           @liquidation_cash = 0
           @liquidation_loans = []
 
-          if corporation.share_price.liquidation?
+          if corporation.share_price.type != @game.stock_prices_start_merger[corporation].type
+            type = corporation.share_price.liquidation? ? 'liquidation' : 'acquisition'
+            @game.log << "#{corporation.name} moved into #{type} during M&A and so is skipped"
+
+            @round.offering.delete(corporation)
+            setup_auction
+          elsif corporation.share_price.liquidation?
 
             @liquidation_cash = corporation.cash
             @liquidation_loans = corporation.loans.dup

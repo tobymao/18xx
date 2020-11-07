@@ -5,6 +5,20 @@ require_relative 'revenue_center'
 module Engine
   module Part
     class Town < RevenueCenter
+      attr_reader :to_city
+
+      def initialize(revenue, **opts)
+        super
+
+        @to_city = opts[:to_city]
+      end
+
+      def <=(other)
+        return true if to_city && other.city?
+
+        super
+      end
+
       def town?
         true
       end

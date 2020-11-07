@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_tree 'engine'
 require 'view/game/map'
 
 module View

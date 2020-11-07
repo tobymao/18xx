@@ -58,7 +58,7 @@ module View
       end
 
       def render_history_titles(corporations)
-        or_history(corporations).map { |turn, round| h(:th, "#{turn}.#{round}") }
+        or_history(corporations).map { |turn, round| h(:th, @game.or_description_short(turn, round)) }
       end
 
       def render_history(corporation)
@@ -131,7 +131,7 @@ module View
             end,
             h(:th, @game.class::IPO_NAME),
             h(:th, 'Market'),
-            h(:th, @game.class::IPO_NAME),
+            h(:th, render_sort_link(@game.class::IPO_NAME, :par_price)),
             h(:th, render_sort_link('Market', :share_price)),
             h(:th, render_sort_link('Cash', :cash)),
             h(:th, render_sort_link('Order', :order)),
@@ -195,14 +195,16 @@ module View
 
         result.sort_by! do |operating_order, corporation|
           case @spreadsheet_sort_by
-          when :order
-            operating_order
           when :cash
             corporation.cash
-          when :share_price
-            corporation.share_price&.price || 0
           when :id
             corporation.id
+          when :order
+            operating_order
+          when :par_price
+            corporation.par_price&.price || 0
+          when :share_price
+            corporation.share_price&.price || 0
           else
             @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
           end
@@ -227,7 +229,8 @@ module View
         market_props = { style: { borderRight: border_style } }
         if !corporation.floated?
           tr_props[:style][:opacity] = '0.6'
-        elsif !corporation.counts_for_limit && (color = StockMarket::COLOR_MAP[corporation.share_price.color])
+        elsif corporation.share_price&.highlight? &&
+          (color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[corporation.share_price.type]])
           market_props[:style][:backgroundColor] = color
           market_props[:style][:color] = contrast_on(color)
         end

@@ -15,7 +15,7 @@ module Engine
         MIN_BID_RAISE = 5
 
         def setup
-          @companies = @game.companies.select { |c| c.all_abilities.any? }.sort +
+          @companies = @game.companies.select { |c| c.abilities(:exchange) }.sort +
             @game.corporations.select { |c| @game.corp_layer(c) == 1 }
           @bids = {}
           setup_auction
