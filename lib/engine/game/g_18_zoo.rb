@@ -77,7 +77,7 @@ module Engine
       def setup
         #Assign ZOOTickets to each player
         numTicketZoo = @players.size == 5 ? 2 : 3
-        @players.each do |player, index|
+        @players.each_with_index do |player, index|
           tickets = (1..numTicketZoo).map { |i| Company.new(
               sym: "T#{i}-P#{index}",
               name: "ZOOTicket #{i}",
@@ -99,6 +99,47 @@ module Engine
         entity.companies.count { |c| !c.name.start_with?('ZOOTicket') } + entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
       end
 
+      def create_zooticket(ticket, value)
+        new_ticket = Company.new(
+            sym: ticket.sym,
+            name: ticket.name,
+            value: value,
+            desc: ticket.desc
+        )
+        new_ticket.owner = ticket.owner
+        new_ticket.owner.companies << new_ticket
+        ticket.close!
+        new_ticket
+      end
+
+      def update_zootickets_value(turn, round_num = 1)
+        new_value = case "#{turn}-#{round_num}"
+                    when "1-0"
+                      4 #"Monday Stock"
+                    when "1-1"
+                      5 #"Monday OR 1"
+                    when "1-2"
+                      6 #"Monday OR 2"
+                    when "2-0"
+                      7 #"Tuesday Stock"
+                    when "2-1"
+                      8 #"Tuesday OR 1"
+                    when "2-2"
+                      9 #"Tuesday OR 2"
+                    when "3-0"
+                      10 #"Wednesday Stock"
+                    when "3-1"
+                      12 #"Wednesday OR 1"
+                    when "3-2"
+                      15 #"Wednesday OR 2"
+                    when "3-3"
+                      18 #"Wednesday OR 3"
+                    when "4-0"
+                      20 #"End of game"
+                    end
+        @players.each { |player| player.companies.select { |c| c.name.start_with?('ZOOTicket') }.map { |c| create_zooticket(c, new_value) } }
+      end
+
       def init_round
         Round::Draft.new(self, [Step::G18ZOO::SimpleDraft], reverse_order: true)
       end
@@ -117,8 +158,9 @@ module Engine
         ])
       end
 
-      def new_operating_round
+      def new_operating_round(round_num)
         @operating_rounds = 3 if @turn == 3 # Last round has 3 ORs
+        update_zootickets_value(@turn, round_num)
 
         super
       end
@@ -131,6 +173,10 @@ module Engine
         # Step::Dividend, TODO: add and test
         # Step::BuyTrain TODO: add and test
         ], round_num: round_num)
+      end
+
+      def or_set_finished
+        update_zootickets_value(@turn, 0)
       end
 
       # Game will end at the end of the ORs in the third turn
@@ -200,6 +246,15 @@ module Engine
 
         nil
       end
+
+      def end_game!
+        return if @finished
+
+        update_zootickets_value(4, 0)
+
+        super
+      end
+
 
       private
 

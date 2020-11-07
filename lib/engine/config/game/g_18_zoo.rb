@@ -475,7 +475,8 @@ module Engine
         4
       ],
       "coordinates": "J17",
-      "color": "#55b7b7"
+      "color": "#55b7b7",
+      "text_color": "black"
     },
     {
       "sym": "LI",
@@ -516,7 +517,8 @@ module Engine
         2
       ],
       "coordinates": "G14",
-      "color": "#ffa023"
+      "color": "#ffa023",
+      "text_color": "black"
     }
   ],
   "locationNames": {
@@ -750,11 +752,13 @@ module Engine
       "max_ownership_percent": 120,
       "always_market_price": true,
       "tokens": [
-        0
+        0,
+        2,
+        4,
+        4
       ],
       "coordinates": "G3",
-      "color": "#fff793",
-      "text_color": "black"
+      "color": "#00af14"
     },
     {
       "sym": "GI",
@@ -820,7 +824,8 @@ module Engine
         4
       ],
       "coordinates": "J18",
-      "color": "#55b7b7"
+      "color": "#55b7b7",
+      "text_color": "black"
     },
     {
       "sym": "LI",
@@ -861,7 +866,8 @@ module Engine
         2
       ],
       "coordinates": "G15",
-      "color": "#ffa023"
+      "color": "#ffa023",
+      "text_color": "black"
     },
     {
       "sym": "BB",
@@ -877,10 +883,13 @@ module Engine
       "max_ownership_percent": 120,
       "always_market_price": true,
       "tokens": [
-        0
+        0,
+        2,
+        4
       ],
       "coordinates": "H6",
-      "color": "#ffa023"
+      "color": "#858585",
+      "text_color": "black"
     }
   ],
   "locationNames": {
