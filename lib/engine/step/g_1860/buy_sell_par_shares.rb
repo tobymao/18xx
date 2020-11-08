@@ -70,7 +70,7 @@ module Engine
           super
 
           corporation = action.bundle.corporation
-          @game.place_home_track(corporation) if corporation.floated?
+          place_home_track(corporation) if corporation.floated?
           @game.check_new_layer
         end
 
@@ -132,6 +132,23 @@ module Engine
           @game.bank.spend(price, player) if price.positive?
           @log << "#{player.name} sells #{company.name} to bank for #{@game.format_currency(price)}"
           @players_sold[player][company] = :now
+        end
+
+        def place_home_track(corporation)
+          hex = @game.hex_by_id(corporation.coordinates)
+          tile = hex.tile
+
+          # skip if a tile is already in home location
+          return unless tile.color == :white
+
+          @log << "#{corporation.name} must choose tile for home location"
+
+          @round.pending_tracks << {
+            entity: corporation,
+            hexes: [hex],
+          }
+
+          @round.clear_cache!
         end
       end
     end

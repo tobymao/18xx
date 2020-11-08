@@ -138,24 +138,6 @@ module Engine
         check_new_layer
       end
 
-      def place_home_track(corporation)
-        hex = hex_by_id(corporation.coordinates)
-        tile = hex&.tile
-
-        # skip if a tile is already in home location
-        return unless tile.color == :white
-
-        @log << "#{corporation.name} must choose tile for home location"
-
-        @round.pending_tracks << {
-          entity: corporation,
-          hexes: [hex],
-        }
-
-        @round.clear_cache!
-        nil
-      end
-
       def event_fishbourne_to_bank!
         ffc = @companies.find { |c| c.sym == 'FFC' }
         ffc.owner = @bank
@@ -273,14 +255,14 @@ module Engine
       end
 
       def node_distance_walk(node, distance, node_distances: {}, corporation: nil, path_distances: {})
-        return if node_distances&.[](node) && node_distances[node] <= distance
+        return if (node_distances[node] || 999) <= distance
 
         node_distances[node] = distance
-        this_distance = node.city? ? distance + 1 : distance
+        distance += 1 if node.city?
 
         node.paths.each do |node_path|
-          path_distance_walk(node_path, this_distance, path_distances: path_distances) do |path|
-            yield path, this_distance
+          path_distance_walk(node_path, distance, path_distances: path_distances) do |path|
+            yield path, distance
             path.nodes.each do |next_node|
               next if next_node == node
               next if corporation && next_node.blocks?(corporation)
@@ -288,7 +270,7 @@ module Engine
 
               node_distance_walk(
                 next_node,
-                this_distance,
+                distance,
                 node_distances: node_distances,
                 corporation: corporation,
                 path_distances: path_distances,
@@ -303,7 +285,7 @@ module Engine
       end
 
       def path_distance_walk(path, distance, skip: nil, jskip: nil, path_distances: {})
-        return if path_distances&.[](path) && path_distances[path] <= distance
+        return if (path_distances[path] || 999) <= distance
 
         path_distances[path] = distance
 

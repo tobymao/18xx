@@ -29,16 +29,14 @@ module Engine
           pass! unless can_lay_tile?(action.entity)
         end
 
-        def reachable_path?(entity, path)
-          max_distance = @game.biggest_train(entity)
+        def reachable_path?(entity, path, max_distance)
           return false if max_distance.zero?
 
           path_distances = @game.path_distances(entity)
           path_distances[path] <= max_distance
         end
 
-        def reachable_node?(entity, node)
-          max_distance = @game.biggest_train(entity)
+        def reachable_node?(entity, node, max_distance)
           return false if max_distance.zero?
 
           node_distances = @game.node_distances(entity)
@@ -51,10 +49,7 @@ module Engine
           end
         end
 
-        def reachable_hex?(entity, hex)
-          max_distance = @game.biggest_train(entity)
-          return false if max_distance.zero?
-
+        def reachable_hex?(entity, hex, max_distance)
           node_distances = @game.node_distances(entity)
           path_distances = @game.path_distances(entity)
           return false unless hex.tile.paths.any? { |p| path_distances[p] }
@@ -88,11 +83,11 @@ module Engine
           # laying yellow always OK
           return true if hex.tile.color == :white
 
-          return true if reachable_hex?(entity, hex)
-
           # upgrades subject to train size
           max_distance = @game.biggest_train(entity)
           return false if max_distance.zero?
+
+          return true if reachable_hex?(entity, hex, max_distance)
 
           path_distances = @game.path_distances(entity)
           return false if hex.tile.paths.any? { |p| path_distances[p] }

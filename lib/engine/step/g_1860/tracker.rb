@@ -1,22 +1,17 @@
 # frozen_string_literal: true
 
-require_relative '../base'
+require_relative '../tracker'
 
 module Engine
   module Step
     module G1860
       module Tracker
+        include Step::Tracker
+
         def setup
           @upgraded = false
           @laid_track = 0
           @laid_city = false
-        end
-
-        def can_lay_tile?(entity)
-          action = get_tile_lay(entity)
-          return false unless action
-
-          entity.tokens.any? && (@game.buying_power(entity) >= action[:cost]) && (action[:lay] || action[:upgrade])
         end
 
         def get_tile_lay(entity)
@@ -40,10 +35,6 @@ module Engine
           @upgraded = true if action.tile.color != :yellow
           @laid_city = true if action.tile.cities.any?
           @laid_track += 1
-        end
-
-        def tile_lay_abilities(entity, &block)
-          entity.abilities(:tile_lay, &block)
         end
 
         def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
@@ -73,10 +64,12 @@ module Engine
 
           @game.add_extra_tile(tile) if tile.unlimited
 
+          max_distance = @game.biggest_train(entity)
           old_revenues = if old_tile.color == :white
                            []
                          else
-                           old_tile.nodes.select { |n| reachable_node?(entity, n) }.map(&:max_revenue).sort
+                           old_tile.nodes.select { |n| reachable_node?(entity, n, max_distance) }
+                             .map(&:max_revenue).sort
                          end
 
           @game.tiles.delete(tile)
@@ -86,7 +79,7 @@ module Engine
 
           @game.graph.clear
           @game.clear_distances
-          check_track_restrictions!(entity, old_tile, tile, old_revenues)
+          check_track_restrictions!(entity, old_tile, tile, old_revenues, max_distance)
           free = false
           discount = 0
 
@@ -154,45 +147,17 @@ module Engine
           end
         end
 
-        def border_cost(tile, entity)
-          hex = tile.hex
-          types = []
-
-          total_cost = tile.borders.dup.sum do |border|
-            next 0 unless (cost = border.cost)
-
-            edge = border.edge
-            neighbor = hex.neighbors[edge]
-            next 0 if !hex.targeting?(neighbor) || !neighbor.targeting?(hex)
-
-            types << border.type
-            tile.borders.delete(border)
-            neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
-
-            ability = entity.all_abilities.find do |a|
-              (a.type == :tile_discount) && (border.type == a.terrain)
-            end
-            discount = ability&.discount || 0
-
-            if discount.positive?
-              @log << "#{entity.name} receives a discount of "\
-                "#{@game.format_currency(discount)} from "\
-                "#{ability.owner.name}"
-            end
-
-            cost - discount
-          end
-          [total_cost, types]
-        end
-
-        def check_track_restrictions!(entity, old_tile, new_tile, old_revenues)
+        def check_track_restrictions!(entity, old_tile, new_tile, old_revenues, max_distance)
           return if @game.loading || !entity.operator?
 
           changed_city = false
           if old_tile.color != :white
             # add requirement that paths/nodes be reachable with train
-            @game.game_error('Tile must be reachable with train') unless reachable_hex?(entity, new_tile.hex)
-            new_revenues = new_tile.nodes.select { |n| reachable_node?(entity, n) }.map(&:max_revenue).sort
+            unless reachable_hex?(entity, new_tile.hex, max_distance)
+              @game.game_error('Tile must be reachable with train')
+            end
+            new_revenues = new_tile.nodes.select { |n| reachable_node?(entity, n, max_distance) }
+                             .map(&:max_revenue).sort
             changed_city = old_revenues != new_revenues
           end
 
@@ -201,7 +166,7 @@ module Engine
 
           new_tile.paths.each do |np|
             next unless @game.graph.connected_paths(entity)[np]
-            next if old_tile.color != :white && !reachable_path?(entity, np)
+            next if old_tile.color != :white && !reachable_path?(entity, np, max_distance)
 
             op = old_paths.find { |path| np <= path }
             used_new_track = true unless op
@@ -227,26 +192,6 @@ module Engine
           end
         end
 
-        def potential_tiles(_entity, hex)
-          colors = @game.phase.tiles
-          @game.tiles
-            .select { |tile| colors.include?(tile.color) }
-            .uniq(&:name)
-            .select { |t| @game.upgrades_to?(hex.tile, t) }
-            .reject(&:blocks_lay)
-        end
-
-        def upgradeable_tiles(entity, hex)
-          potential_tiles(entity, hex).map do |tile|
-            tile.rotate!(0) # reset tile to no rotation since calculations are absolute
-            tile.legal_rotations = legal_tile_rotations(entity, hex, tile)
-            next if tile.legal_rotations.empty?
-
-            tile.rotate! # rotate it to the first legal rotation
-            tile
-          end.compact
-        end
-
         def legal_tile_rotation?(entity, hex, tile)
           return false unless @game.legal_tile_rotation?(entity, hex, tile)
 
@@ -265,13 +210,6 @@ module Engine
             # Make sure this isn't more than the number of new cities added.
             # 1836jr30 D6 -> 54 adds more cities
             extra_cities >= new_ctedges.count { |newct| old_ctedges.all? { |oldct| (newct & oldct).none? } }
-        end
-
-        def legal_tile_rotations(entity, hex, tile)
-          Engine::Tile::ALL_EDGES.select do |rotation|
-            tile.rotate!(rotation)
-            legal_tile_rotation?(entity, hex, tile)
-          end
         end
       end
     end
