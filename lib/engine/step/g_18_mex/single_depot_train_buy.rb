@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../single_depot_train_buy'
+require_relative 'swap_buy_sell'
 
 module Engine
   module Step
@@ -11,6 +12,8 @@ module Engine
 
           super
         end
+
+        include SwapBuySell
       end
     end
   end
