@@ -26,7 +26,7 @@ module Engine
         def mergeable(_corporation)
           return [] unless merge_ongoing?
 
-          [@game.mergable_candidates.first]
+          [@game.mergeable_candidates.first]
         end
 
         def active?
@@ -50,13 +50,13 @@ module Engine
         end
 
         def process_pass(_action)
-          @game.decline_merge(@game.mergable_candidates.first)
+          @game.decline_merge(@game.mergeable_candidates.first)
         end
 
         private
 
         def merge_ongoing?
-          @game.mergable_candidates.any?
+          @game.mergeable_candidates.any?
         end
       end
     end

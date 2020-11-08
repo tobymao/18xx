@@ -294,14 +294,14 @@ module Engine
           return merge_major
         end
 
-        @mergable_candidates = mergable_corporations
-        @log << "Merge candidates: #{@mergable_candidates.map(&:name)}" if @mergable_candidates.any?
+        @mergeable_candidates = mergeable_corporations
+        @log << "Merge candidates: #{present_mergeable_candidates(@mergeable_candidates)}" if @mergeable_candidates.any?
         possible_auto_merge
       end
 
       def decline_merge(major)
         @log << "#{major.name} declines"
-        @mergable_candidates.delete(major)
+        @mergeable_candidates.delete(major)
         possible_auto_merge
       end
 
@@ -309,7 +309,7 @@ module Engine
       # that there is noone that can or want to merge, which is handled here
       # as well.
       def merge_major(major = nil)
-        @mergable_candidates = []
+        @mergeable_candidates = []
 
         # Make reserved share available
         ndm_merge_share.buyable = true
@@ -422,12 +422,12 @@ module Engine
       end
 
       def merge_decider
-        candidate = @mergable_candidates.first
+        candidate = @mergeable_candidates.first
         candidate.floated? ? candidate : ndm
       end
 
-      def mergable_candidates
-        @mergable_candidates ||= []
+      def mergeable_candidates
+        @mergeable_candidates ||= []
       end
 
       def merged_cities_to_select
@@ -537,7 +537,7 @@ module Engine
         company.close!
       end
 
-      def mergable_corporations
+      def mergeable_corporations
         corporations = @corporations
           .reject { |c| c.player == ndm.player }
           .reject { |c| %w[PAC TM].include? c.name }
@@ -559,11 +559,11 @@ module Engine
 
       def possible_auto_merge
         # Decline merge if no candidates left
-        return merge_major if @mergable_candidates.empty?
+        return merge_major if @mergeable_candidates.empty?
 
         # Auto merge single if it is non-floated
-        candidate = @mergable_candidates.first
-        merge_major(candidate) if @mergable_candidates.one? && !candidate.floated?
+        candidate = @mergeable_candidates.first
+        merge_major(candidate) if @mergeable_candidates.one? && !candidate.floated?
       end
 
       def replace_token(major, major_token, exchange_tokens)
@@ -591,6 +591,23 @@ module Engine
         corporation.abilities(ability_name) do |ability|
           corporation.remove_ability(ability)
         end
+      end
+
+      def present_mergeable_candidates(mergeable_candidates)
+        last = mergeable_candidates.last
+        mergeable_candidates.map do |c|
+          controller_name = if c.floated?
+                              # Floated means president gets to merge/decline
+                              c.player.name
+                            elsif c == last
+                              # Non-floated and last will be automatically chosen
+                              'automatic'
+                            else
+                              # If several non-floated candidates NdM gets to choose
+                              ndm.player.name
+                            end
+          "#{c.name} (#{controller_name})"
+        end.join(', ')
       end
     end
   end
