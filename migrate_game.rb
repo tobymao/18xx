@@ -248,6 +248,7 @@ def migrate_db_actions_in_mem(data)
         data.ordered_players.map(&:name),
         id: data.id,
         actions: [],
+        optional_rules: data.settings['optional_rules']&.map(&:to_sym),
       )
     end
     puts repairs
@@ -269,6 +270,7 @@ def migrate_db_actions(data)
         data.ordered_players.map(&:name),
         id: data.id,
         actions: [],
+        optional_rules: data.settings['optional_rules']&.map(&:to_sym),
       )
     end
     if actions
@@ -286,6 +288,7 @@ def migrate_db_actions(data)
             data.ordered_players.map(&:name),
             id: data.id,
             actions: [],
+            optional_rules: data.settings['optional_rules']&.map(&:to_sym),
           )
           actions.each do |action|
             game.process_action(action)
@@ -305,7 +308,7 @@ def migrate_db_actions(data)
   rescue Exception => e
     puts 'Something went wrong', e
     puts "Pinning #{data.id}"
-    pin = '17af77be'
+    pin = 'c91f8643'
     data.settings['pin']=pin
     data.save
   end
