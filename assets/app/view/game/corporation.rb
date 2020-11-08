@@ -60,8 +60,8 @@ module View
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
 
         extras = []
-        extras += render_loans if @corporation.loans.any?
-        extras += render_buying_power if @game.total_loans.positive?
+        extras << render_loans if @corporation.loans.any?
+        extras << render_buying_power if @game.total_loans.positive?
         if extras.any?
           props = { style: { borderCollapse: 'collapse' } }
           children << h('table.center', props, [h(:tbody, extras)])
