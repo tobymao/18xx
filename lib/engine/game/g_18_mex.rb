@@ -55,6 +55,10 @@ module Engine
           desc: "4 trains rust when 6' train is bought" },
       ].freeze
 
+      def self.title
+        '18MEX'
+      end
+
       def p2_company
         @p2_company ||= company_by_id('KCMO')
       end
