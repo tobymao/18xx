@@ -58,7 +58,14 @@ module View
           ability.owner.corporation? && ability.description
         end
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
-        children << render_loans if @corporation.loans.any?
+
+        extras = []
+        extras << render_loans if @corporation.loans.any?
+        extras << render_buying_power if @game.total_loans.positive?
+        if extras.any?
+          props = { style: { borderCollapse: 'collapse' } }
+          children << h('table.center', props, [h(:tbody, extras)])
+        end
 
         if @corporation.owner
           props = {
@@ -386,22 +393,32 @@ module View
       end
 
       def render_loans
-        props = { style: { borderCollapse: 'collapse' } }
-        h('table.center', props, [
-          h(:thead, [
-            h(:tr, [
-              h(:th, 'Loans'),
-              h(:th, 'Interest Due'),
-            ]),
+        interest_props = { style: {} }
+        if @game.interest_owed(@corporation) > @corporation.cash
+          color = StockMarket::COLOR_MAP[:red]
+          interest_props[:style][:backgroundColor] = color
+          interest_props[:style][:color] = contrast_on(color)
+        end
+
+        [
+          h('tr.ipo', [
+            h('td.right', 'Loans'),
+            h('td.padded_number', "#{@corporation.loans.size}/"\
+            "#{@game.maximum_loans(@corporation)}"),
           ]),
-          h(:tbody, [
-            h('tr.ipo', [
-              h('td.right', "#{@corporation.loans.size}/"\
-              "#{@game.maximum_loans(@corporation)}"),
-              h('td.padded_number', @game.format_currency(@game.interest_owed(@corporation)).to_s),
-            ]),
+
+          h('tr.ipo', interest_props, [
+            h('td.right', 'Interest Due'),
+            h('td.padded_number', @game.format_currency(@game.interest_owed(@corporation)).to_s),
           ]),
-        ])
+        ]
+      end
+
+      def render_buying_power
+        [h('tr.ipo', [
+          h('td.right', 'Buying Power'),
+          h('td.padded_number', @game.format_currency(@game.buying_power(@corporation)).to_s),
+        ])]
       end
 
       def render_abilities(abilities)

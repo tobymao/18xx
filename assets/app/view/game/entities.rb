@@ -38,7 +38,7 @@ module View
         end
 
         children << h(:div, [
-          h(Bank, game: @game, layout: :card),
+          h(Bank, game: @game),
           *@game.corporations.select(&:receivership?).map { |c| h(Corporation, corporation: c) },
           *bank_owned.map { |c| h(Corporation, corporation: c) },
         ].compact)
