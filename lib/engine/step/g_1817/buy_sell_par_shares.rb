@@ -71,7 +71,7 @@ module Engine
           if entity.corporation?
             entity.cash >= bundle.price && redeemable_shares(entity).include?(bundle)
           else
-            super && !bundle.corporation.share_price.acquisition?
+            super
           end
         end
 

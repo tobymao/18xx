@@ -36,6 +36,10 @@ def repair(game, original_actions, actions, broken_action)
     # Move token is now place token.
     broken_action['type'] = 'place_token'
     return [broken_action]
+  elsif game.active_step.is_a?(Engine::Step::G1817::Acquire)
+    pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+    actions.insert(action_idx, pass)
+    return
   elsif game.active_step.is_a?(Engine::Step::G1889::SpecialTrack)
     # laying track for Ehime Railway didn't always block, now it needs an
     # explicit pass

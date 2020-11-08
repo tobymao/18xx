@@ -121,6 +121,7 @@ module Engine
           @round.goto_entity!(corporation) unless @round.entities.empty?
 
           @round.converted = corporation
+          @round.converted_price = corporation.share_price
           @round.converts << corporation
         end
 
@@ -160,6 +161,7 @@ module Engine
         def round_state
           {
             converted: nil,
+            converted_price: nil,
             tokens_needed: nil,
             converts: [],
           }
