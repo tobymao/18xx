@@ -72,6 +72,8 @@ module Engine
 
         def active_entities
           return [] unless corporation
+          # Ensure players can't buy after taking loans
+          return [] unless corporation.share_price == @round.converted_price
 
           [@game.players.rotate(@game.players.index(corporation.owner))
           .select { |p| p.active? && can_buy_any?(p) }.first].compact

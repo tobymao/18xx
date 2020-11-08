@@ -168,6 +168,14 @@ module Engine
         'MontyBrewster71' => 4354,
       },
     },
+    GAMES_BY_TITLE['1817'] => {
+      # Temporary until a fuller game is finished
+      13_707 => {
+        'sandholm' => 1458,
+        'tdh' => 989,
+        'tdh_test' => 420,
+      },
+    },
   }.freeze
 
   TEST_CASES.each do |game, results|
