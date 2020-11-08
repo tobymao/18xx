@@ -218,7 +218,14 @@ module View
                end
 
         children = []
-        children << h(Bank, game: @game) if @game.game_end_check_values.include?(:bank)
+
+        props = {
+          style: {
+            marginBottom: '1rem',
+          },
+        }
+
+        children << h(:div, props, [h(Bank, game: @game)])
         children.concat(grid)
 
         if @explain_colors
