@@ -5,7 +5,7 @@ require_relative 'g_1846'
 module Engine
   module Game
     class G1846TwoPlayerVariant < G1846
-      DEV_STAGE = :beta
+      DEV_STAGE = :production
 
       GAME_RULES_URL = {
         '1846 Rules' => 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf',
