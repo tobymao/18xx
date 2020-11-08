@@ -75,8 +75,8 @@ module Engine
         @ndm_merge_share ||= ndm.shares.last
       end
 
-      def pac
-        @pac_corporation ||= corporation_by_id('PAC')
+      def fcp
+        @fcp_corporation ||= corporation_by_id('FCP')
       end
 
       def tm
@@ -275,7 +275,7 @@ module Engine
 
       def event_ndm_merger!
         @log << "-- Event: #{ndm.name} merger --"
-        remove_ability(pac, :base)
+        remove_ability(fcp, :base)
         remove_ability(tm, :base)
         unless ndm.floated?
           @log << "No merge occur as #{ndm.name} has not floated!"
@@ -527,7 +527,7 @@ module Engine
       def mergable_corporations
         corporations = @corporations
           .reject { |c| c.player == ndm.player }
-          .reject { |c| %w[PAC TM].include? c.name }
+          .reject { |c| %w[FCP TM].include? c.name }
         floated_player_corps, other_corps = corporations.partition { |c| c.owned_by_player? && c.floated? }
 
         # Sort eligible corporations so that they are in player order
