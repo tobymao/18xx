@@ -59,6 +59,18 @@ module Engine
         @p2_company ||= company_by_id('KCMO')
       end
 
+      def a_company
+        @a_company ||= company_by_id('A')
+      end
+
+      def b_company
+        @b_company ||= company_by_id('B')
+      end
+
+      def c_company
+        @c_company ||= company_by_id('C')
+      end
+
       def ndm
         @ndm_corporation ||= corporation_by_id('NdM')
       end
@@ -267,9 +279,9 @@ module Engine
           @minor_close = true
           return
         end
-        merge_and_close_minor(minor_a, ndm, minor_a_reserved_share)
-        merge_and_close_minor(minor_b, ndm, minor_b_reserved_share)
-        merge_and_close_minor(minor_c, udy, minor_c_reserved_share)
+        merge_and_close_minor(a_company, minor_a, ndm, minor_a_reserved_share)
+        merge_and_close_minor(b_company, minor_b, ndm, minor_b_reserved_share)
+        merge_and_close_minor(c_company, minor_c, udy, minor_c_reserved_share)
         remove_ability(ndm, :no_buy)
       end
 
@@ -490,7 +502,7 @@ module Engine
         @log << "#{entity.name} receives #{format_currency(income)} in mail"
       end
 
-      def merge_and_close_minor(minor, major, share)
+      def merge_and_close_minor(company, minor, major, share)
         transfer = minor.cash.positive? ? " who receives the treasury of #{format_currency(minor.cash)}" : ''
         @log << "-- Minor #{minor.name} merges into #{major.name}#{transfer} --"
 
@@ -522,6 +534,7 @@ module Engine
 
         @minors.delete(minor)
         minor.close!
+        company.close!
       end
 
       def mergable_corporations
