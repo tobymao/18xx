@@ -38,6 +38,18 @@ module Engine
       end
 
       def process_buy_train(action)
+        if action.train.owned_by_corporation?
+          min, max = spend_minmax(action.entity, action.train)
+          unless (min..max).include?(action.price)
+            @game.game_error("#{action.entity.name} may not spend "\
+                             "#{@game.format_currency(action.price)} on "\
+                             "#{action.train.owner.name}'s #{action.train.name} "\
+                             'train; may only spend between '\
+                             "#{@game.format_currency(min)} and "\
+                             "#{@game.format_currency(max)}.")
+          end
+        end
+
         buy_train_action(action)
         pass! unless can_buy_train?(action.entity)
       end
