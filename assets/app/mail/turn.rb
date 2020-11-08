@@ -14,7 +14,7 @@ class Turn < Snabberb::Component
       @game_data['players'].map { |p| p['name'] },
       id: @game_data['id'],
       actions: @game_data['actions'],
-      optional_rules: @game_data.dig('settings', 'optional_rules_selected') || [],
+      optional_rules: @game_data.dig('settings', 'optional_rules') || [],
     )
 
     store(:game, @game, skip: true)
