@@ -90,6 +90,7 @@ module Engine
           Step::DiscardTrain,
           Step::G1828::SpecialTrack,
           Step::G1828::BuyCompany,
+          Step::G1828::BuySpecial,
           Step::G1828::Track,
           Step::G1828::Token,
           Step::G1828::Route,
