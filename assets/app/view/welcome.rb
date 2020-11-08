@@ -17,7 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>18 Los Angeles is now in beta!</p>
+        <p>1846 2p Variant and 18 Los Angeles are now in production!</p>
         <p>You can now create private games. After you create the game, use the "copy invite link" button to
         get a URL to send to your opponents.</p>
         <p>1817 is now more stable and in alpha! Feel free to play multiplayer games.</p>
