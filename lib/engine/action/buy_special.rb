@@ -12,15 +12,15 @@ module Engine
         @item = item
       end
 
-      def self.h_to_args(h, game)
+      def self.h_to_args(h, _game)
         {
-          item: h['item']
+          item: h['item'],
         }
       end
 
       def args_to_h
         {
-          'item' => @item
+          'item' => @item,
         }
       end
     end

@@ -7,7 +7,7 @@ module View
     class BuySpecial < Snabberb::Component
       include Actionable
       needs :entity, default: nil
-      
+
       def render
         @entity ||= @game.current_entity
         @step = @game.round.step_for(@entity, 'buy_special')

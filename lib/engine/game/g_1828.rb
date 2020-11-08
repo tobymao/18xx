@@ -220,7 +220,7 @@ module Engine
 
         tile_icons = hex_by_id(VA_COALFIELDS_HEX).tile.icons
         tile_icons.delete_at(tile_icons.find_index { |icon| icon.name == COAL_MARKER_ICON })
-        
+
         graph.clear
       end
 

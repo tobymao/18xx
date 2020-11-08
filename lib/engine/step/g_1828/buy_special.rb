@@ -15,7 +15,7 @@ module Engine
         end
 
         def items
-          [{ :description => 'Coal Marker', :cost => 120}]
+          [{ description: 'Coal Marker', cost: 120 }]
         end
 
         def process_buy_special(action)

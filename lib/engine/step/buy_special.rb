@@ -14,7 +14,7 @@ module Engine
         []
       end
 
-      def can_buy_special?(entity)
+      def can_buy_special?(_entity)
         false
       end
 
@@ -25,7 +25,7 @@ module Engine
       def description
         'Buy Special'
       end
-      
+
       def short_description; end
 
       def items
