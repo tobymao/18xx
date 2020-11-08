@@ -6,7 +6,7 @@ module Engine
   class StockMarket
     attr_reader :market, :par_prices
 
-    def initialize(market, unlimited_colors, multiple_buy_colors: [], zigzag: nil)
+    def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil)
       @par_prices = []
       @zigzag = zigzag
       @market = market.map.with_index do |row, r_index|
@@ -14,8 +14,8 @@ module Engine
           price = SharePrice.from_code(code,
                                        r_index,
                                        c_index,
-                                       unlimited_colors,
-                                       multiple_buy_colors: multiple_buy_colors)
+                                       unlimited_types,
+                                       multiple_buy_types: multiple_buy_types)
           @par_prices << price if price&.can_par?
           price
         end

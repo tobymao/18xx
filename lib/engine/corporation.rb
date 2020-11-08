@@ -167,7 +167,7 @@ module Engine
       return true if @can_hold_above_max
 
       percent = share_holder.percent_of(self) + extra_percent
-      %i[orange brown].include?(@share_price&.color) || percent <= @max_ownership_percent
+      %i[multiple_buy unlimited].include?(@share_price&.type) || percent <= @max_ownership_percent
     end
 
     def all_abilities

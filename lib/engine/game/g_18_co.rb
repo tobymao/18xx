@@ -97,8 +97,8 @@ module Engine
       def init_stock_market
         Engine::G18CO::StockMarket.new(
           self.class::MARKET,
-          self.class::CERT_LIMIT_COLORS,
-          multiple_buy_colors: self.class::MULTIPLE_BUY_COLORS
+          self.class::CERT_LIMIT_TYPES,
+          multiple_buy_types: self.class::MULTIPLE_BUY_TYPES
         )
       end
 

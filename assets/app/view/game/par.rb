@@ -33,8 +33,11 @@ module View
             },
             on: { click: par },
           }
-          purchasable_shares = (entity.cash / share_price.price).to_i
-          text = "#{@game.format_currency(share_price.price)} (#{purchasable_shares})"
+          purchasable_shares = [(entity.cash / share_price.price).to_i,
+                                @corporation.max_ownership_percent / @corporation.total_shares].min
+          at_limit = purchasable_shares * @corporation.total_shares >= @corporation.max_ownership_percent
+          flags = at_limit ? ' L' : ''
+          text = "#{@game.format_currency(share_price.price)} (#{purchasable_shares}#{flags})"
           h('button.small.par_price', props, text)
         end
 

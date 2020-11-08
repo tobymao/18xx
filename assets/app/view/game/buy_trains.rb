@@ -248,11 +248,12 @@ module View
             size: 1,
           }
         else
+          min, max = step.spend_minmax(@corporation, train)
           {
             type: 'number',
-            min: 1,
-            max: @corporation.cash,
-            value: 1,
+            min: min,
+            max: max,
+            value: min,
             size: @corporation.cash.to_s.size,
           }
         end

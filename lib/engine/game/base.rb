@@ -88,9 +88,25 @@ module Engine
         6 => 11,
       }.freeze
 
-      CERT_LIMIT_COLORS = %i[brown orange yellow].freeze
+      CERT_LIMIT_TYPES = %i[multiple_buy unlimited no_cert_limit].freeze
+      # Does the cert limit decrease when a player becomes bankrupt?
+      CERT_LIMIT_CHANGE_ON_BANKRUPTCY = false
 
-      MULTIPLE_BUY_COLORS = %i[brown].freeze
+      MULTIPLE_BUY_TYPES = %i[multiple_buy].freeze
+
+      STOCKMARKET_COLORS = {
+        par: :red,
+        endgame: :blue,
+        close: :black,
+        multiple_buy: :brown,
+        unlimited: :orange,
+        no_cert_limit: :yellow,
+        liquidation: :red,
+        acquisition: :yellow,
+        repar: :gray,
+        ignore_one_sale: :green,
+        safe_par: :white,
+      }.freeze
 
       MIN_BID_INCREMENT = 5
 
@@ -177,7 +193,6 @@ module Engine
                       close: 'Corporation closes',
                       endgame: 'End game trigger',
                       liquidation: 'Liquidation',
-                      acquisition: 'Acquisition',
                       repar: 'Par value after bankruptcy',
                       ignore_one_sale: 'Ignore first share sold when moving price' }.freeze
 
@@ -841,6 +856,11 @@ module Engine
         end
 
         player.bankrupt = true
+        return unless self.class::CERT_LIMIT_CHANGE_ON_BANKRUPTCY
+
+        remaining_players = @players.reject(&:bankrupt).length
+        # Assume that games without cert limits at lower player counts retain previous counts (1817 and 2 players)
+        @cert_limit = self.class::CERT_LIMIT[remaining_players] || @cert_limit
       end
 
       def tile_lays(_entity)
@@ -986,8 +1006,8 @@ module Engine
       end
 
       def init_stock_market
-        StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_COLORS,
-                        multiple_buy_colors: self.class::MULTIPLE_BUY_COLORS)
+        StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+                        multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
       end
 
       def init_companies(players)

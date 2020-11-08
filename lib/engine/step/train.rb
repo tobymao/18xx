@@ -103,13 +103,14 @@ module Engine
 
           if @last_share_sold_price
             if @game.class::EBUY_OTHER_VALUE
-              must_spend = (entity.cash + entity.owner.cash) - @last_share_sold_price + 1
-              other_trains.reject! { |t| t.price < must_spend }
+              other_trains.reject! { |t| t.price < spend_minmax(entity, t).first }
             else
               other_trains = []
             end
           end
         end
+
+        other_trains = [] if entity.cash.zero? && !@game.class::EBUY_OTHER_VALUE
 
         other_trains.reject! { |t| entity.cash < t.price && must_buy_at_face_value?(t, entity) }
 
@@ -158,6 +159,20 @@ module Engine
 
       def must_buy_at_face_value?(train, entity)
         face_value_ability?(entity) || face_value_ability?(train.owner)
+      end
+
+      def spend_minmax(entity, train)
+        if @game.class::EBUY_OTHER_VALUE && (entity.cash < train.price)
+          min = if @last_share_sold_price
+                  (entity.cash + entity.owner.cash) - @last_share_sold_price + 1
+                else
+                  1
+                end
+          max = [train.price, entity.cash + entity.owner.cash].min
+          [min, max]
+        else
+          [1, entity.cash]
+        end
       end
 
       private

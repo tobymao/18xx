@@ -69,8 +69,9 @@ module View
       end
 
       def cell_style(box_style, price)
-        style = box_style.merge(backgroundColor: price.color ? COLOR_MAP[price.color] : color_for(:bg2))
-        if price.color == :black
+        color = @game.class::STOCKMARKET_COLORS[price.type]
+        style = box_style.merge(backgroundColor: color ? COLOR_MAP[color] : color_for(:bg2))
+        if color == :black
           style[:color] = 'gainsboro'
           style[:borderColor] = color_for(:font)
         end
@@ -79,7 +80,7 @@ module View
 
       def grid_1d_price(price)
         if price.acquisition?
-          h(:div, { style: PRICE_STYLE_1D }, "(#{price.price})")
+          h(:div, { style: PRICE_STYLE_1D }, 'Acq.')
         elsif price.type == :safe_par
           h(:div, { style: PRICE_STYLE_1D.merge(textDecoration: 'underline') }, price.price)
         else
@@ -88,11 +89,9 @@ module View
       end
 
       def grid_1d
-        box_style = box_style_1d
-
         max_num_corps = @game.stock_market.market.first.map { |p| p.corporations.size }.push(MIN_NUM_TOKENS).max
         box_height = max_num_corps * (TOKEN_SIZE + VERTICAL_TOKEN_PAD) + VERTICAL_TOKEN_PAD + PRICE_HEIGHT + 2 * PAD
-        box_style[:height] = "#{box_height - 2 * PAD - 2 * BORDER}px"
+        height = "#{box_height - 2 * PAD - 2 * BORDER}px"
 
         row = @game.stock_market.market.first.map do |price|
           tokens = price.corporations.map do |corporation|
@@ -102,6 +101,10 @@ module View
             }
             h(:img, props)
           end
+
+          box_style = box_style_1d
+          box_style[:height] = height
+          box_style = box_style.merge('margin-right': '10px') unless price.normal_movement?
 
           h(:div, { style: cell_style(box_style, price) }, [
             grid_1d_price(price),
@@ -220,8 +223,9 @@ module View
 
         if @explain_colors
           type_text = @game.class::MARKET_TEXT
+          colors = @game.class::STOCKMARKET_COLORS
 
-          types_in_market = @game.stock_market.market.flatten.compact.map { |p| [p.type, p.color] }.to_h
+          types_in_market = @game.stock_market.market.flatten.compact.map { |p| [p.type, colors[p.type]] }.to_h
 
           type_text.each do |type, text|
             next unless types_in_market.include?(type)
