@@ -33,6 +33,15 @@ module Engine
           super
         end
 
+        def can_lay_tile?(entity)
+          return super unless entity.minor?
+
+          home_hex = @game.hex_by_id(entity.coordinates)
+          return @game.tile_cost(home_hex.tile, entity) <= entity.cash if home_hex.tile.color == :white
+
+          super
+        end
+
         private
 
         def remaining_tile_lay?(entity)
