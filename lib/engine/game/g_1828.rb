@@ -108,7 +108,7 @@ module Engine
         remove_extra_trains
 
         @coal_marker_ability =
-          Engine::Ability::Description.new(type: 'description', description: 'Virginia Coalfields coal marker')
+          Engine::Ability::Description.new(type: 'description', description: 'Coal Marker')
         block_va_coalfields
       end
 
@@ -220,12 +220,14 @@ module Engine
 
         tile_icons = hex_by_id(VA_COALFIELDS_HEX).tile.icons
         tile_icons.delete_at(tile_icons.find_index { |icon| icon.name == COAL_MARKER_ICON })
+        
+        graph.clear
       end
 
       def acquire_va_tunnel_coal_marker(entity)
         entity = entity.owner if entity.company?
 
-        @log << "#{entity.name} acquires Virginia Tunnel coal marker"
+        @log << "#{entity.name} acquires a coal marker"
         if coal_marker?(entity)
           @log << "#{entity.name} already owns a coal marker, placing coal marker on Virginia Coalfields"
           add_coal_marker_to_va_coalfields
