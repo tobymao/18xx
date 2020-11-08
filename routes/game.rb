@@ -84,7 +84,7 @@ class Api
                   users.map(&:name),
                   id: game.id,
                   actions: actions_h(game),
-                  optional_rules: game.settings['optional_rules_selected']&.map(&:to_sym),
+                  optional_rules: game.settings['optional_rules']&.map(&:to_sym),
                 )
 
                 action_id = r.params['id']
@@ -149,7 +149,7 @@ class Api
             engine = Engine::GAMES_BY_TITLE[game.title].new(
               users.map(&:name),
               id: game.id,
-              optional_rules: game.settings['optional_rules_selected']&.map(&:to_sym),
+              optional_rules: game.settings['optional_rules']&.map(&:to_sym),
             )
             unless game.players.size.between?(*Engine.player_range(engine.class))
               halt(400, 'Player count not supported')
@@ -186,7 +186,7 @@ class Api
             settings: {
               seed: Random.new_seed % 2**31,
               unlisted: r['unlisted'],
-              optional_rules_selected: r['optional_rules_selected'],
+              optional_rules: r['optional_rules'],
             },
             title: title,
             round: Engine::GAMES_BY_TITLE[title].new([]).round&.name,

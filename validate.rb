@@ -19,7 +19,7 @@ def run_game(game, actions = nil)
   begin
     $total += 1
     time = Time.now
-    engine = Engine::GAMES_BY_TITLE[game.title].new(game.ordered_players.map(&:name), id: game.id, actions: actions, optional_rules: game.settings['optional_rules_selected'] || [])
+    engine = Engine::GAMES_BY_TITLE[game.title].new(game.ordered_players.map(&:name), id: game.id, actions: actions, optional_rules: game.settings['optional_rules'] || [])
     time = Time.now - time
     $total_time += time
     data['finished']=true
@@ -106,7 +106,7 @@ def validate_json(filename)
   data = JSON.parse(File.read(filename))
   players = data['players'].map { |p| p['name'] }
   engine = Engine::GAMES_BY_TITLE[data['title']]
-  engine.new(players, id: data['id'], actions: data['actions'], optional_rules: data.dig('settings', 'optional_rules_selected') || [])
+  engine.new(players, id: data['id'], actions: data['actions'], optional_rules: data.dig('settings', 'optional_rules') || [])
 end
 
 def pin_games(pin_version, game_ids)

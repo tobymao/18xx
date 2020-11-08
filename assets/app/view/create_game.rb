@@ -11,7 +11,7 @@ module View
     needs :num_players, default: 3, store: true
     needs :flash_opts, default: {}, store: true
     needs :user, default: nil, store: true
-    needs :optional_rules, default: nil, store: true
+    needs :visible_optional_rules, default: nil, store: true
 
     def render_content
       inputs = [
@@ -67,7 +67,7 @@ module View
       end
 
       title_change = lambda do
-        @optional_rules_selected = []
+        @optional_rules = []
         update_inputs
       end
 
@@ -88,7 +88,7 @@ module View
           on: { input: -> { update_inputs } },
         ),
       ]
-      inputs << render_optional if (@optional_rules ||= selected_game::OPTIONAL_RULES).any?
+      inputs << render_optional if (@visible_optional_rules ||= selected_game::OPTIONAL_RULES).any?
 
       div_props = {}
       div_props[:style] = { display: 'none' } if @mode == :json
@@ -98,16 +98,16 @@ module View
 
     def toggle_optional_rule(sym)
       lambda do
-        if (@optional_rules_selected ||= []).include?(sym)
-          @optional_rules_selected.delete(sym)
+        if (@optional_rules ||= []).include?(sym)
+          @optional_rules.delete(sym)
         else
-          @optional_rules_selected << sym
+          @optional_rules << sym
         end
       end
     end
 
     def render_optional
-      children = @optional_rules.map do |o_r|
+      children = @visible_optional_rules.map do |o_r|
         label_text = "#{o_r[:short_name]}: #{o_r[:desc]}"
         h(:li, [render_input(
           label_text,
@@ -168,7 +168,7 @@ module View
       else
         game_data = {
           settings: {
-            optional_rules_selected: game_params[:optional_rules_selected] || [],
+            optional_rules: game_params[:optional_rules] || [],
           },
         }
       end
@@ -187,8 +187,9 @@ module View
       params = super
 
       game = Engine::GAMES_BY_TITLE[params['title']]
-      game_optional_rules = game::OPTIONAL_RULES.map { |o_r| o_r[:sym] }
-      params[:optional_rules_selected] = game_optional_rules.select { |rule| params.delete(rule) }
+      params[:optional_rules] = game::OPTIONAL_RULES
+                                  .map { |o_r| o_r[:sym] }
+                                  .select { |rule| params.delete(rule) }
 
       params
     end
@@ -217,7 +218,7 @@ module View
       visible_rules = selected_game::OPTIONAL_RULES.reject do |rule|
         rule[:players] && !rule[:players].include?(@num_players)
       end
-      store(:optional_rules, visible_rules)
+      store(:visible_optional_rules, visible_rules)
     end
   end
 end

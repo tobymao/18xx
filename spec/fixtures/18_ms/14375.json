@@ -24,7 +24,7 @@
   "settings": {
     "seed": 1002827552,
     "unlisted": true,
-    "optional_rules_selected": []
+    "optional_rules": []
   },
   "user_settings": null,
   "status": "finished",

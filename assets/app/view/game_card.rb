@@ -147,7 +147,7 @@ module View
     end
 
     def render_optional_rules
-      selected_rules = @gdata.dig('settings', 'optional_rules_selected') || []
+      selected_rules = @gdata.dig('settings', 'optional_rules') || []
       return if selected_rules.empty?
 
       rendered_rules = Engine::GAMES_BY_TITLE[@gdata['title']]::OPTIONAL_RULES
