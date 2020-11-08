@@ -21,7 +21,7 @@ module View
         <p>You can now create private games. After you create the game, use the "copy invite link" button to
         get a URL to send to your opponents.</p>
         <p>1817 is now more stable and in alpha! Feel free to play multiplayer games.</p>
-        <p>18MEX is now in alpha!</p>
+        <p>18MEX is temporarily removed from new games creation due to game-breaking changes to be done.</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
         If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other
