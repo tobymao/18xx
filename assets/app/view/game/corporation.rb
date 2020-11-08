@@ -300,14 +300,6 @@ module View
           ]),
         ]
 
-        if @corporation.reserved_shares.any?
-          pool_rows <<
-            h('tr.ipo_reserved', [
-              h('td.left', @game.class::IPO_RESERVED_NAME),
-              h('td.right', shares_props, share_number_str(@corporation.num_ipo_reserved_shares)),
-            ])
-        end
-
         market_tr_props = {
           style: {
             borderBottom: player_rows.any? ? '1px solid currentColor' : '0',
