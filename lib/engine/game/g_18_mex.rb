@@ -283,7 +283,7 @@ module Engine
         end
 
         @mergable_candidates = mergable_corporations
-        @log << "Merge candidates: #{@mergable_candidates.map(&:name)}" if @mergable_candidates.any?
+        @log << "Merge candidates: #{present_mergable_candidates(@mergable_candidates)}" if @mergable_candidates.any?
         possible_auto_merge
       end
 
@@ -578,6 +578,23 @@ module Engine
         corporation.abilities(ability_name) do |ability|
           corporation.remove_ability(ability)
         end
+      end
+
+      def present_mergable_candidates(mergable_candidates)
+        last = mergable_candidates.last
+        mergable_candidates.map do |c|
+          controller_name = if c.floated?
+                              # Floated means president gets to merge/decline
+                              c.player.name
+                            elsif c == last
+                              # Non-floated and last will be automatically chosen
+                              'automatic'
+                            else
+                              # If several non-floated candidates NdM gets to choose
+                              ndm.player.name
+                            end
+          "#{c.name} (#{controller_name})"
+        end.join(', ')
       end
     end
   end
