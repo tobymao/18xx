@@ -374,6 +374,10 @@ module Engine
           @loans.any?
       end
 
+      def float_str(_entity)
+        '2 shares to start'
+      end
+
       def buying_power(entity)
         return entity.cash unless entity.corporation?
 
