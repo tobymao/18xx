@@ -175,6 +175,13 @@ module Engine
         'tdh' => 989,
         'tdh_test' => 420,
       },
+      # This game is in progress, and will be updated
+      15_528 => {
+          'PedroS' => 3392,
+          'FCR' => 3249,
+          'daniel.sousa.me' => 2389,
+          'Zebsagaz' => 1410,
+      },
     },
   }.freeze
 
