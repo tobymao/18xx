@@ -241,7 +241,13 @@ module Engine
       end
 
       def block_va_coalfields
-        hex_by_id(VA_COALFIELDS_HEX).tile.cities.first.block_if = ->(corporation) { !coal_marker?(corporation) }
+        coalfields = hex_by_id(VA_COALFIELDS_HEX).tile.cities.first
+
+        coalfields.instance_variable_set(:@game, self)
+
+        def coalfields.blocks?(corporation)
+          !@game.coal_marker?(corporation)
+        end
       end
 
       private
