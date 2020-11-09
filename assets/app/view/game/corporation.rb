@@ -60,7 +60,7 @@ module View
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
 
         extras = []
-        extras << render_loans if @corporation.loans.any?
+        extras.concat(render_loans) if @corporation.loans.any?
         extras << render_buying_power if @game.total_loans.positive?
         if extras.any?
           props = { style: { borderCollapse: 'collapse' } }
@@ -406,7 +406,6 @@ module View
             h('td.padded_number', "#{@corporation.loans.size}/"\
             "#{@game.maximum_loans(@corporation)}"),
           ]),
-
           h('tr.ipo', interest_props, [
             h('td.right', 'Interest Due'),
             h('td.padded_number', @game.format_currency(@game.interest_owed(@corporation)).to_s),
@@ -415,10 +414,10 @@ module View
       end
 
       def render_buying_power
-        [h('tr.ipo', [
+        h('tr.ipo', [
           h('td.right', 'Buying Power'),
           h('td.padded_number', @game.format_currency(@game.buying_power(@corporation)).to_s),
-        ])]
+        ])
       end
 
       def render_abilities(abilities)
