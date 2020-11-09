@@ -270,7 +270,7 @@ module Engine
         setup_company_price_50_to_150_percent
       end
 
-      def purchasable_companies(_entity)
+      def purchasable_companies(entity = nil)
         return super if @phase.current[:name] != '2' || !@optional_rules&.include?(:early_buy_of_kcmo)
         return [] unless p2_company.owner.player?
 
