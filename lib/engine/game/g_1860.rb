@@ -24,13 +24,15 @@ module Engine
 
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
       EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
-      HOME_TOKEN_TIMING = :operating_round
+      HOME_TOKEN_TIMING = :float
       SELL_AFTER = :any_time
       SELL_BUY_ORDER = :sell_buy
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'fishbourne_to_bank' => ['Fishbourne', 'Fishbourne Ferry Company available for purchase']
       ).freeze
+
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded_or_city, upgrade: false }].freeze
 
       PAR_RANGE = {
         1 => [74, 100],
@@ -57,12 +59,23 @@ module Engine
         'VYSC' => 4,
       }.freeze
 
+      NO_ROTATION_TILES = %w[
+        758
+        761
+        763
+        773
+        775
+      ].freeze
+
       def setup
         @bankrupt_corps = []
         @receivership_corps = []
         @insolvent_corps = []
         @closed_corps = []
         @highest_layer = 1
+        @node_distances = {}
+        @path_distances = {}
+        @hex_distances = {}
 
         reserve_share('BHI&R')
         reserve_share('FYN')
@@ -77,6 +90,7 @@ module Engine
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
+          Step::G1860::HomeTrack,
           Step::G1860::Exchange,
           Step::G1860::BuySellParShares,
         ])
@@ -86,7 +100,7 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
-          Step::Track,
+          Step::G1860::Track,
           Step::Token,
           Step::Route,
           Step::Dividend,
@@ -222,6 +236,125 @@ module Engine
         @corporations.each { |corp| corp.shares.each { |share| share.buyable = true } }
         @companies.reject { |c| c == company }.each(&:close!)
         @log << '-- Event: starting private companies close --'
+      end
+
+      def biggest_train(corporation)
+        corporation.trains.map(&:distance).max || 0
+      end
+
+      def get_token_cities(corporation)
+        tokens = []
+        hexes.each do |hex|
+          hex.tile.cities.each do |city|
+            next unless city.tokened_by?(corporation)
+
+            tokens << city
+          end
+        end
+        tokens
+      end
+
+      def node_distance_walk(node, distance, node_distances: {}, corporation: nil, path_distances: {})
+        return if (node_distances[node] || 999) <= distance
+
+        node_distances[node] = distance
+        distance += 1 if node.city?
+
+        node.paths.each do |node_path|
+          path_distance_walk(node_path, distance, path_distances: path_distances) do |path|
+            yield path, distance
+            path.nodes.each do |next_node|
+              next if next_node == node
+              next if corporation && next_node.blocks?(corporation)
+              next if path.terminal?
+
+              node_distance_walk(
+                next_node,
+                distance,
+                node_distances: node_distances,
+                corporation: corporation,
+                path_distances: path_distances,
+              ) { |p, d| yield p, d }
+            end
+          end
+        end
+      end
+
+      def lane_match?(lanes0, lanes1)
+        lanes0 && lanes1 && lanes1[0] == lanes0[0] && lanes1[1] == (lanes0[0] - lanes0[1] - 1)
+      end
+
+      def path_distance_walk(path, distance, skip: nil, jskip: nil, path_distances: {})
+        return if (path_distances[path] || 999) <= distance
+
+        path_distances[path] = distance
+
+        yield path
+
+        if path.junction && path.junction != jskip
+          path.junction.paths.each do |jp|
+            path_distance_walk(jp, distance, jskip: @junction, path_distances: path_distances) { |p| yield p }
+          end
+        end
+
+        path.exits.each do |edge|
+          next if edge == skip
+          next unless (neighbor = path.hex.neighbors[edge])
+
+          np_edge = path.hex.invert(edge)
+
+          neighbor.paths[np_edge].each do |np|
+            next unless lane_match?(path.exit_lanes[edge], np.exit_lanes[np_edge])
+
+            path_distance_walk(np, distance, skip: np_edge, path_distances: path_distances) { |p| yield p }
+          end
+        end
+      end
+
+      def clear_distances
+        @node_distances.clear
+        @path_distances.clear
+        @hex_distances.clear
+      end
+
+      def node_distances(corporation)
+        compute_distance_graph(corporation) unless @node_distances[corporation]
+        @node_distances[corporation]
+      end
+
+      def path_distances(corporation)
+        compute_distance_graph(corporation) unless @path_distances[corporation]
+        @path_distances[corporation]
+      end
+
+      def hex_distances(corporation)
+        compute_distance_graph(corporation) unless @hex_distances[corporation]
+        @hex_distances[corporation]
+      end
+
+      def compute_distance_graph(corporation)
+        tokens = get_token_cities(corporation)
+        n_distances = {}
+        p_distances = {}
+        h_distances = {}
+
+        tokens.each do |node|
+          node_distance_walk(node, 0, node_distances: n_distances,
+                                      corporation: corporation, path_distances: p_distances) do |path, dist|
+            hex = path.hex
+            h_distances[hex] = dist if !h_distances[hex] || h_distances[hex] > dist
+          end
+        end
+
+        @node_distances[corporation] = n_distances
+        @path_distances[corporation] = p_distances
+        @hex_distances[corporation] = h_distances
+      end
+
+      def legal_tile_rotation?(_entity, _hex, tile)
+        return true unless NO_ROTATION_TILES.include?(tile.name)
+
+        tile.rotation.zero?
       end
     end
   end
