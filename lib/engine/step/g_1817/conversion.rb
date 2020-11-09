@@ -43,6 +43,7 @@ module Engine
             end
 
           @round.converts << corporation
+          @round.converted_price = corporation.share_price
           @round.converted = corporation
         end
 
