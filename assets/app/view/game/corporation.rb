@@ -61,7 +61,9 @@ module View
 
         extras = []
         extras.concat(render_loans) if @corporation.loans.any?
-        extras << render_buying_power if @game.total_loans.positive?
+        if @corporation.corporation? && @corporation.floated? && @game.total_loans.positive?
+          extras << render_buying_power
+        end
         if extras.any?
           props = { style: { borderCollapse: 'collapse' } }
           children << h('table.center', props, [h(:tbody, extras)])
@@ -153,7 +155,7 @@ module View
           elsif @corporation.cash.positive?
             h(:div, holdings_props, [render_to_float, render_cash])
           else
-            h(:div, holdings_props, "#{@corporation.percent_to_float}% to float")
+            h(:div, holdings_props, @game.float_str(@corporation))
           end
 
         h('div.corp__holdings', holdings_row_props, [

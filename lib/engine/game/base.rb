@@ -725,6 +725,10 @@ module Engine
         route.hexes.map(&:name).join('-')
       end
 
+      def float_str(entity)
+        "#{entity.percent_to_float}% to float"
+      end
+
       def routes_revenue(routes)
         routes.sum(&:revenue)
       end
