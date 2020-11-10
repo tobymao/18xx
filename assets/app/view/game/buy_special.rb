@@ -18,7 +18,7 @@ module View
       def render_items(items)
         rendered_items = items.map do |item|
           render_button(item) do
-            process_action(Engine::Action::BuySpecial.new(@entity, item: item[:description]))
+            process_action(Engine::Action::BuySpecial.new(@entity, item: item))
           end
         end
 
@@ -26,7 +26,7 @@ module View
       end
 
       def render_button(item, &block)
-        h(:button, { on: { click: block } }, "Buy #{item[:description]} (#{@game.format_currency(item[:cost])})")
+        h(:button, { on: { click: block } }, "Buy #{item.description} (#{@game.format_currency(item.cost)})")
       end
     end
   end

@@ -14,12 +14,16 @@ module Engine
           'Coal Marker'
         end
 
-        def items
-          [{ description: 'Coal Marker', cost: 120 }]
+        def process_buy_special(action)
+          item = action.item
+          @game.game_error("Cannot buy unknown item: #{item.description}") if item != @items.first
+
+          @game.buy_coal_marker(action.entity)
         end
 
-        def process_buy_special(action)
-          @game.buy_coal_marker(action.entity)
+        def setup
+          super
+          @items << Item.new(description: 'Coal Marker', cost: 120)
         end
       end
     end

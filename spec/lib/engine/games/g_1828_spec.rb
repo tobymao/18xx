@@ -101,7 +101,8 @@ module Engine
         expect(game.graph.connected_hexes(ic).include?(game.hex_by_id('K13'))).to be_falsey
         expect(game.round.actions_for(ic)).to include('buy_special')
 
-        game.round.process_action(Engine::Action::BuySpecial.new(ic, item: 'Coal Marker'))
+        item = game.round.step_for(ic, 'buy_special').items.first
+        game.round.process_action(Engine::Action::BuySpecial.new(ic, item: item))
         expect(game.coal_marker?(ic)).to be_truthy
         expect(va_tile.icons.count { |icon| icon.name == 'coal' }).to eq(1)
         expect(game.graph.connected_hexes(ic).include?(game.hex_by_id('J12'))).to be_truthy
