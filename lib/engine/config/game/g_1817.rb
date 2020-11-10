@@ -189,7 +189,8 @@ module Engine
             "G6",
             "H9"
           ],
-          "owner_type": "corporation"
+          "owner_type": "corporation",
+          "show_count": true
         }
       ]
     },
@@ -214,6 +215,7 @@ module Engine
             "H9"
           ],
           "count": 2,
+          "show_count": true,
           "owner_type": "corporation"
         }
       ]
@@ -261,7 +263,8 @@ module Engine
           "free": false,
           "when": "track",
           "owner_type": "corporation",
-          "count": 1
+          "count": 1,
+          "show_count": true
         }
       ]
     },
@@ -294,7 +297,8 @@ module Engine
           "free": false,
           "when": "track",
           "owner_type": "corporation",
-          "count": 2
+          "count": 2,
+          "show_count": true
         }
       ]
     },
@@ -327,7 +331,8 @@ module Engine
           "free": false,
           "when": "track",
           "owner_type": "corporation",
-          "count": 3
+          "count": 3,
+          "show_count": true
         }
       ]
     },

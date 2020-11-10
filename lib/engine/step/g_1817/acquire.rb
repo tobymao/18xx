@@ -403,9 +403,9 @@ module Engine
           corporation = action.corporation
           price = action.price
 
-          add_bid(action)
           @game.game_error("Bid #{price} is not a multple of 10") unless (price % 10).zero?
           @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
+          add_bid(action)
           resolve_bids
         end
 

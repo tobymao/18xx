@@ -151,7 +151,11 @@ module View
 
         @hidden_divs[company.sym] = h('div#hidden', hidden_props, company.desc)
 
-        [h('div.nowrap', name_props, company.name),
+        extra = []
+        if (uses = company.ability_uses)
+          extra << " (#{uses[0]}/#{uses[1]})"
+        end
+        [h('div.nowrap', name_props, company.name + extra.join(',')),
          @company.owner.player? ? h('div.right', @game.format_currency(company.value)) : '',
          h('div.padded_number', @game.format_currency(company.revenue)),
          @hidden_divs[company.sym]]
