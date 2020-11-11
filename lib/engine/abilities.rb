@@ -74,5 +74,12 @@ module Engine
     def reset_ability_count_this_or!
       @abilities.each { |a| a.count_this_or = 0 }
     end
+
+    def ability_uses
+      # This assumes that only one ability per company has multiple uses
+      @abilities.map do |a|
+        [a.count, a.start_count] if a.start_count
+      end.compact.first
+    end
   end
 end

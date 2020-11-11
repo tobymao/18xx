@@ -8,22 +8,8 @@ module View
       include Lib::Settings
 
       needs :game
-      needs :layout, default: nil
 
       def render
-        if @layout == :card
-          render_card
-        else
-          props = {
-            style: {
-              marginBottom: '1rem',
-            },
-          }
-          h(:div, props, "Bank Cash: #{@game.format_currency(@game.bank.cash)}")
-        end
-      end
-
-      def render_card
         title_props = {
           style: {
             padding: '0.4rem',
@@ -63,6 +49,14 @@ module View
             h(:td, 'Loans'),
             h('td.right', "#{@game.loans_taken}/#{@game.total_loans}"),
           ])
+          if @game.respond_to?(:interest_change)
+            @game.interest_change.each do |text, price_change|
+              trs << h(:tr, [
+                h(:td, text),
+                h('td.right', @game.format_currency(price_change)),
+              ])
+            end
+          end
           trs << h(:tr, [
             h(:td, 'Loan Value'),
             h('td.right', @game.format_currency(@game.loan_value)),

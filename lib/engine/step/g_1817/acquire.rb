@@ -269,16 +269,25 @@ module Engine
           # Step 8
           if acquired_corp.share_price.liquidation?
             president = acquired_corp.owner
-            debt = [0, (@liquidation_loans.size * @game.loan_value) - @liquidation_cash].max
+
+            loan_value = @liquidation_loans.size * @game.loan_value
+            debt = [0, loan_value - @liquidation_cash].max
+            @game.loans.concat(@liquidation_loans)
+            @liquidation_loans = []
 
             if debt.positive?
               unless president == @game.share_pool
                 @game.log << "#{president.name} settles #{acquired_corp.name} debts for #{@game.format_currency(debt)}"
                 president.spend(debt, @game.bank, check_cash: false)
               end
-              @game.loans.concat(@liquidation_loans)
-              @liquidation_loans = []
+
               @shareholder_cash = 0
+            elsif loan_value.positive?
+              unless president == @game.share_pool
+                @game.log << "#{@buyer.name} settles #{acquired_corp.name} loans for "\
+                "#{@game.format_currency(loan_value)}"
+              end
+              @shareholder_cash = @liquidation_cash - loan_value
             else
               @shareholder_cash = @liquidation_cash
             end
@@ -394,9 +403,9 @@ module Engine
           corporation = action.corporation
           price = action.price
 
-          add_bid(action)
           @game.game_error("Bid #{price} is not a multple of 10") unless (price % 10).zero?
           @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
+          add_bid(action)
           resolve_bids
         end
 
@@ -433,7 +442,9 @@ module Engine
           @liquidation_cash = 0
           @liquidation_loans = []
 
-          if corporation.share_price.type != @game.stock_prices_start_merger[corporation].type
+          if %i[acquisition liquidation].include?(corporation.share_price.type) &&
+            corporation.share_price.type != @game.stock_prices_start_merger[corporation].type
+
             type = corporation.share_price.liquidation? ? 'liquidation' : 'acquisition'
             @game.log << "#{corporation.name} moved into #{type} during M&A and so is skipped"
 

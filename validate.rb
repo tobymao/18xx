@@ -19,7 +19,7 @@ def run_game(game, actions = nil)
   begin
     $total += 1
     time = Time.now
-    engine = Engine::GAMES_BY_TITLE[game.title].new(game.ordered_players.map(&:name), id: game.id, actions: actions)
+    engine = Engine::GAMES_BY_TITLE[game.title].new(game.ordered_players.map(&:name), id: game.id, actions: actions, optional_rules: game.settings['optional_rules'] || [])
     time = Time.now - time
     $total_time += time
     data['finished']=true
@@ -35,7 +35,7 @@ def run_game(game, actions = nil)
   data
 end
 
-def validate_all(title = nil)
+def validate_all(*titles)
   $count = 0
   $total = 0
   $total_time = 0
@@ -43,14 +43,13 @@ def validate_all(title = nil)
   data = {}
 
   where_args = {Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished]}
-  where_args[:title] = title if title
-
+  where_args[:title] = titles if titles.any?
 
   DB[:games].order(:id).where(**where_args).select(:id).paged_each(rows_per_fetch: 100) do |game|
     page << game
     if page.size >= 100
       where_args2 = {id: page.map { |p| p[:id] }}
-      where_args2[:title] = title if title
+      where_args2[:title] = titles if titles.any?
       games = Game.eager(:user, :players, :actions).where(**where_args2).all
       _ = games.each do |game|
         data[game.id]=run_game(game)
@@ -60,7 +59,7 @@ def validate_all(title = nil)
   end
 
   where_args3 = {id: page.map { |p| p[:id] }}
-  where_args3[:title] = title if title
+  where_args3[:title] = titles if titles.any?
 
   games = Game.eager(:user, :players, :actions).where(**where_args3).all
   _ = games.each do |game|
@@ -107,7 +106,7 @@ def validate_json(filename)
   data = JSON.parse(File.read(filename))
   players = data['players'].map { |p| p['name'] }
   engine = Engine::GAMES_BY_TITLE[data['title']]
-  engine.new(players, id: data['id'], actions: data['actions'])
+  engine.new(players, id: data['id'], actions: data['actions'], optional_rules: data.dig('settings', 'optional_rules') || [])
 end
 
 def pin_games(pin_version, game_ids)

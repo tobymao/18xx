@@ -22,6 +22,9 @@ These attributes may be set for all ability types
 - `count_per_or`: The number of times the ability may be used in each OR; the
   property `count_this_or` is reset to 0 at the start of each OR and increments
   each time the ability is used
+- `show_count`: If the count used/count started should be shown to the user; this
+  this assumes that the ability can be partially used and also that the entity only has
+  one ability with show_count = true
 
 ## additional_token
 

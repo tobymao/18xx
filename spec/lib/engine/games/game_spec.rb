@@ -168,6 +168,21 @@ module Engine
         'MontyBrewster71' => 4354,
       },
     },
+    GAMES_BY_TITLE['1817'] => {
+      # Temporary until a fuller game is finished
+      13_707 => {
+        'sandholm' => 1458,
+        'tdh' => 989,
+        'tdh_test' => 420,
+      },
+      # This game is in progress, and will be updated
+      15_528 => {
+          'PedroS' => 3392,
+          'FCR' => 3249,
+          'daniel.sousa.me' => 2389,
+          'Zebsagaz' => 1410,
+      },
+    },
   }.freeze
 
   TEST_CASES.each do |game, results|

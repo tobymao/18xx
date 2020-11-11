@@ -81,11 +81,10 @@ module Engine
 
     def sell_shares(bundle)
       entity = bundle.owner
-      num_shares = bundle.num_shares
 
       verb = entity.corporation? ? 'issues' : 'sells'
 
-      @log << "#{entity.name} #{verb} #{num_shares} share#{num_shares > 1 ? 's' : ''} " \
+      @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
         "#{bundle.corporation.name} and receives #{@game.format_currency(bundle.price)}"
 
       transfer_shares(bundle, self, spender: @bank, receiver: entity)
@@ -184,6 +183,13 @@ module Engine
       share.owner.shares_by_corporation[corporation].delete(share)
       to_entity.shares_by_corporation[corporation] << share
       share.owner = to_entity
+    end
+
+    def num_presentation(bundle)
+      num_shares = bundle.num_shares
+      return "a #{bundle.percent}% share of" if num_shares == 1
+
+      "#{num_shares} share#{num_shares > 1 ? 's' : ''}"
     end
   end
 end

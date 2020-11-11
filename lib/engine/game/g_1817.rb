@@ -92,6 +92,14 @@ module Engine
         (interest_rate * entity.loans.size * @loan_value) / 100
       end
 
+      def interest_change
+        rate = future_interest_rate
+        summary = []
+        summary << ["Interest if #{(loans_taken % 5)} more loans repaid", rate - 5] unless rate == 5
+        summary << ["Interest if #{5 - ((loans_taken + 4) % 5)} more loans taken", rate + 5] unless rate == 70
+        summary
+      end
+
       def maximum_loans(entity)
         entity.total_shares
       end
@@ -364,6 +372,10 @@ module Engine
         entity.corporation? &&
           entity.loans.size < maximum_loans(entity) &&
           @loans.any?
+      end
+
+      def float_str(_entity)
+        '2 shares to start'
       end
 
       def buying_power(entity)

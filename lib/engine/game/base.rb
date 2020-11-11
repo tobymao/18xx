@@ -725,6 +725,10 @@ module Engine
         route.hexes.map(&:name).join('-')
       end
 
+      def float_str(entity)
+        "#{entity.percent_to_float}% to float"
+      end
+
       def routes_revenue(routes)
         routes.sum(&:revenue)
       end
@@ -743,11 +747,20 @@ module Engine
 
             tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
             tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
+
+            # check track between edges and towns not in center
+            # (essentially, that town needs to act like an edge for this purpose)
+            if b.edge? && a.town? && (nedge = a.tile.preferred_city_town_edges[a]) && nedge != b.num
+              tracks << [path.hex, a, path.lanes[0][1]]
+            end
+            if a.edge? && b.town? && (nedge = b.tile.preferred_city_town_edges[b]) && nedge != a.num
+              tracks << [path.hex, b, path.lanes[1][1]]
+            end
           end
         end
 
         tracks.group_by(&:itself).each do |k, v|
-          @game.game_error("Route cannot reuse track on #{k[0].id}") if v.size > 1
+          game_error("Route cannot reuse track on #{k[0].id}") if v.size > 1
         end
       end
 

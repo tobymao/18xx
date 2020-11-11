@@ -14,6 +14,13 @@ module Engine
           super && !attempt_ndm_action_on_unavailable?(bundle)
         end
 
+        def can_gain?(entity, bundle)
+          # NdM 5% shares does not affect cert limit
+          return true if bundle&.percent == 5
+
+          super
+        end
+
         private
 
         def attempt_ndm_action_on_unavailable?(bundle)

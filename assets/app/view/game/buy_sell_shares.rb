@@ -30,12 +30,14 @@ module View
           end
 
           # Put up one buy button for each buyable percentage share type in market.
-          # In case there are more than one type of percentages in market (e.g. 18MEX), show percentage type on button.
+          # In case there are more than one type of percentages in market or if shares are not 10%
+          # (e.g. 18MEX), show percentage type on button.
           pool_shares
             .select { |share| step.can_buy?(current_entity, share) }
             .each do |share|
-              text = pool_shares.size > 1 ? "Buy #{share.percent}% Market Share" : 'Buy Market Share'
-              children << h(:button, { on: { click: -> { buy_share(current_entity, share) } } }, text)
+              text = pool_shares.size > 1 || share.percent != 10 ? "#{share.percent}% " : ''
+              children << h(:button, { on: { click: -> { buy_share(current_entity, share) } } },
+                            "Buy #{text}Market Share")
             end
         end
 

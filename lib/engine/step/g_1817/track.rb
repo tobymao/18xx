@@ -29,6 +29,17 @@ module Engine
 
           psm.remove_ability(ability)
         end
+
+        def potential_tiles(_entity, hex)
+          return super if hex.tile.color != :green || hex.tile.cities.none?
+
+          tiles = super
+
+          # When upgrading normal cities to brown, players must use tiles with as many exits as will fit.
+          # Find maximum number of exits
+          max_edges = tiles.map { |t| t.edges.length }.max
+          tiles.select { |t| t.edges.length == max_edges }
+        end
       end
     end
   end
