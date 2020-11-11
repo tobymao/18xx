@@ -77,12 +77,11 @@ module Engine
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
       def init_cert_limit
-        if @players.size > 7
-          @log << '1817 has not been tested thoroughly with more than seven players.'
-        end
+        @log << '1817 has not been tested thoroughly with more than seven players.' if @players.size > 7
 
         super
       end
+
       def bankruptcy_limit_reached?
         @players.reject(&:bankrupt).one?
       end
