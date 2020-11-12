@@ -100,8 +100,8 @@ module Engine
           s = loans == 1 ? '' : 's'
           summary << ["Interest if #{loans} more loan#{s} repaid", rate - 5]
         end
-        if loans_taken == 0
-          summary << ["Interest if 6 more loans taken", 10]
+        if loans_taken.zero?
+          summary << ['Interest if 6 more loans taken', 10]
         elsif rate != 70
           loans = 5 - ((loans_taken + 4) % 5)
           s = loans == 1 ? '' : 's'
