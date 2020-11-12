@@ -1,14 +1,3 @@
-#{
-#  id: '1856',
-#  slug: '1856',
-#  file: '1856.json',
-#  title: '1856',
-#  subtitle: 'Railroading in Upper Canada from 1856',
-#  designer: 'Bill Dixon',
-#  publisher: 'mayfair',
-#  minPlayers: 3,
-#maxPlayers: 6
-#}
 # frozen_string_literal: true
 
 # File original exported from 18xx-maker/export-rb
