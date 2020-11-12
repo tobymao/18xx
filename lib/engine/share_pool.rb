@@ -24,6 +24,10 @@ module Engine
       nil
     end
 
+    def owner
+      nil
+    end
+
     def buy_shares(entity, shares, exchange: nil, exchange_price: nil)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
       @game.game_error('Cannot buy share from player') if shares.owner.player?
