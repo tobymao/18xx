@@ -95,8 +95,18 @@ module Engine
       def interest_change
         rate = future_interest_rate
         summary = []
-        summary << ["Interest if #{(loans_taken % 5)} more loans repaid", rate - 5] unless rate == 5
-        summary << ["Interest if #{5 - ((loans_taken + 4) % 5)} more loans taken", rate + 5] unless rate == 70
+        unless rate == 5
+          loans = (loans_taken % 5)
+          s = loans == 1 ? '' : 's'
+          summary << ["Interest if #{loans} more loan#{s} repaid", rate - 5]
+        end
+        if loans_taken == 0
+          summary << ["Interest if 6 more loans taken", 10]
+        elsif rate != 70
+          loans = 5 - ((loans_taken + 4) % 5)
+          s = loans == 1 ? '' : 's'
+          summary << ["Interest if #{loans} more loan#{s} taken", rate + 5]
+        end
         summary
       end
 
