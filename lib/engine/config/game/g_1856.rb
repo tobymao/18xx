@@ -379,7 +379,7 @@ module Engine
     },
     {
       "sym": "GW",
-      "logo": "1856/GW#",
+      "logo": "1856/GW",
       "name": "Great Western Railway",
       "tokens": [
         0,
