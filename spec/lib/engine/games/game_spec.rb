@@ -183,6 +183,15 @@ module Engine
           'Zebsagaz' => 1410,
       },
     },
+    GAMES_BY_TITLE['18MEX'] => {
+      13_315 => {
+        'Jen Freeman' => 4156,
+        'Cogust' => 3872,
+        'Swedish-Per (GMT+2)' => 3499,
+        'LenaC' => 3440,
+        'shingoi' => 3388,
+      },
+    },
   }.freeze
 
   TEST_CASES.each do |game, results|
@@ -190,7 +199,7 @@ module Engine
       results.each do |game_id, result|
         context game_id do
           it 'matches result exactly' do
-            game_path = game.title.gsub(/ /, '_').gsub(/([^_])([A-Z])/, '\1_\2').downcase
+            game_path = game.title.gsub(/ /, '_').gsub(/([0-9])([A-Z])/, '\1_\2').downcase
             data = JSON.parse(File.read("spec/fixtures/#{game_path}/#{game_id}.json"))
             players = data['players'].map { |p| p['name'] }
             expect(game.new(players, id: game_id, actions: data['actions']).result).to eq(result)
