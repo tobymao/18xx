@@ -136,6 +136,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
+          "when": "owning_corp_or_turn",
           "owner_type":"corporation",
           "hexes": [
             "E8"
@@ -192,6 +193,7 @@ module Engine
       "abilities": [
         {
           "type": "assign_hexes",
+          "when": "owning_corp_or_turn",
           "hexes": [
             "C14",
             "F7"
@@ -216,6 +218,7 @@ module Engine
       "abilities": [
         {
           "type": "assign_hexes",
+          "when": "owning_corp_or_turn",
           "hexes": [
             "B1",
             "C2",
@@ -242,6 +245,7 @@ module Engine
       "abilities": [
         {
            "type":"tile_lay",
+           "when": "owning_corp_or_turn",
            "owner_type":"corporation",
            "free":true,
            "hexes":[
@@ -254,7 +258,6 @@ module Engine
               "619"
             ],
            "special": false,
-           "when":"track",
            "count": 1
         }
       ]
@@ -275,6 +278,7 @@ module Engine
         },
         {
            "type":"tile_lay",
+           "when": "owning_corp_or_turn",
            "owner_type":"corporation",
            "free":true,
            "hexes":[
@@ -285,7 +289,6 @@ module Engine
               "8",
               "9"
             ],
-           "when":"track",
            "blocks":false,
            "count": 1
         }
@@ -307,6 +310,7 @@ module Engine
         },
         {
            "type":"tile_lay",
+           "when": "owning_corp_or_turn",
            "owner_type":"corporation",
            "free":true,
            "hexes":[
@@ -317,7 +321,6 @@ module Engine
               "8",
               "9"
             ],
-           "when":"track",
            "blocks": false,
            "count": 1
         }
@@ -333,6 +336,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
+          "when": "owning_corp_or_turn",
           "owner_type":"corporation",
           "count": 1,
           "from_owner": true,
@@ -356,6 +360,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
+          "when": "owning_corp_or_turn",
           "owner_type":"corporation",
           "price": 0,
           "teleport_price": 0,

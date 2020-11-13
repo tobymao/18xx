@@ -291,6 +291,7 @@ module Engine
         },
         {
           "type": "tile_lay",
+          "when": "track",
           "owner_type": "corporation",
           "count": 1,
           "hexes": [
