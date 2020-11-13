@@ -82,6 +82,11 @@ module Engine
         super
       end
 
+      def init_stock_market
+        @owner_when_liquidated = {}
+        super
+      end
+
       def bankruptcy_limit_reached?
         @players.reject(&:bankrupt).one?
       end
@@ -454,7 +459,7 @@ module Engine
       def stock_round
         close_bank_shorts
         @interest_fixed = nil
-        @owner_when_liquidated = {}
+
         Round::G1817::Stock.new(self, [
           Step::DiscardTrain,
           Step::HomeToken,
@@ -465,8 +470,6 @@ module Engine
       def operating_round(round_num)
         @interest_fixed = nil
         @interest_fixed = interest_rate
-        # Don't clear when coming from a SR
-        @owner_when_liquidated = {} unless round_num == 1
         # Revaluate if private companies are owned by corps with trains
         @companies.each do |company|
           next unless company.owner
