@@ -107,7 +107,7 @@ module Engine
         rate = future_interest_rate
         summary = []
         unless rate == 5
-          loans = (loans_taken % 5)
+          loans = ((loans_taken - 1) % 5) + 1
           s = loans == 1 ? '' : 's'
           summary << ["Interest if #{loans} more loan#{s} repaid", rate - 5]
         end

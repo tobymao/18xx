@@ -209,7 +209,12 @@ module Engine
 
           options = available_company_options(entity).map(&:sum)
           if options.none? { |option| price >= option && price <= option + entity.cash }
-            @game.game_error("Invalid bid, valid bids are #{options} + cash #{entity.cash}")
+            valid_options = options
+            .select { |o| o + entity.cash >= min_bid(corporation) }
+            .map { |o| @game.format_currency(o) }
+            .join(', ')
+            @game.game_error("Invalid bid, bids using privates include #{valid_options}"\
+            " and can be supplemented with cash between $0 and #{@game.format_currency(entity.cash)}")
           end
 
           if @auctioning
