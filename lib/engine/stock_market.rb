@@ -79,7 +79,11 @@ module Engine
     end
 
     def find_share_price(corporation, directions)
-      r, c = corporation.share_price.coordinates
+      find_relative_share_price(corporation.share_price, directions)
+    end
+
+    def find_relative_share_price(share, directions)
+      r, c = share.coordinates
 
       prices = [share_price(r, c)]
 

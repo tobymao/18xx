@@ -99,8 +99,12 @@ module Engine
         @interest_fixed || future_interest_rate
       end
 
+      def interest_owed_for_loans(loans)
+        (interest_rate * loans * @loan_value) / 100
+      end
+
       def interest_owed(entity)
-        (interest_rate * entity.loans.size * @loan_value) / 100
+        interest_owed_for_loans(entity.loans.size)
       end
 
       def interest_change
@@ -119,6 +123,14 @@ module Engine
           summary << ["Interest if #{loans} more loan#{s} taken", rate + 5]
         end
         summary
+      end
+
+      def can_pay_interest?(entity, extra_cash = 0)
+        # Can they cover it using cash?
+        return true if entity.cash + extra_cash > interest_owed(entity)
+
+        # Can they cover it using buying_power minus the full interest
+        (buying_power(entity) + extra_cash) > interest_owed_for_loans(maximum_loans(entity))
       end
 
       def maximum_loans(entity)

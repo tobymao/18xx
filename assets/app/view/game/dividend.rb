@@ -13,7 +13,8 @@ module View
       def render
         @step = @game.active_step
 
-        options = @step.dividend_options(@step.current_entity)
+        entity = @step.current_entity
+        options = @step.dividend_options(entity)
 
         store(:routes, @step.routes, skip: true)
 
@@ -31,23 +32,39 @@ module View
               type
             end
 
+          corp_income = option[:corporation] + option[:divs_to_corporation]
+
+          new_share = entity.share_price
+
+          direction =
+            if option[:share_direction]
+              moves = Array(option[:share_times]).zip(Array(option[:share_direction]))
+
+              moves.map do |times, dir|
+                new_share = @game.stock_market.find_relative_share_price(new_share, dir)
+
+                "#{times} #{dir}"
+              end.join(', ')
+            else
+              'None'
+            end
+
+          if entity.loans.any? && !@game.can_pay_interest?(entity, corp_income)
+            text += ' (Liquidate)'
+          elsif new_share.acquisition?
+            text += ' (Acquisition)'
+          end
+
           click = lambda do
             process_action(Engine::Action::Dividend.new(@step.current_entity, kind: type))
             cleanup
           end
           button = h('td.no_padding', [h(:button, { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
-          direction =
-            if option[:share_direction]
-              moves = Array(option[:share_times]).zip(Array(option[:share_direction]))
-              moves.map { |times, dir| "#{times} #{dir}" }.join(', ')
-            else
-              'None'
-            end
 
           props = { style: { paddingRight: '1rem' } }
           h(:tr, [
             button,
-            h('td.right', props, [@game.format_currency(option[:corporation] + option[:divs_to_corporation])]),
+            h('td.right', props, [@game.format_currency(corp_income)]),
             h('td.right', props, [@game.format_currency(option[:per_share])]),
             h(:td, [direction]),
           ])

@@ -396,8 +396,8 @@ module View
 
       def render_loans
         interest_props = { style: {} }
-        if @game.interest_owed(@corporation) > @corporation.cash
-          color = StockMarket::COLOR_MAP[:red]
+        unless @game.can_pay_interest?(@corporation)
+          color = StockMarket::COLOR_MAP[:yellow]
           interest_props[:style][:backgroundColor] = color
           interest_props[:style][:color] = contrast_on(color)
         end

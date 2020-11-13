@@ -25,7 +25,7 @@ module View
 
         h('div#spreadsheet', { style: {
           overflow: 'auto',
-        } }, children)
+        } }, children.compact)
       end
 
       def render_table
