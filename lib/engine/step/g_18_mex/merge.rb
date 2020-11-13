@@ -33,6 +33,14 @@ module Engine
           [@game.mergeable_candidates.first]
         end
 
+        def override_entities
+          @game.mergeable_candidates
+        end
+
+        def show_other_players
+          true
+        end
+
         def active?
           merge_ongoing?
         end

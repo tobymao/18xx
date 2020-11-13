@@ -90,6 +90,10 @@ module Engine
           acquire_post_loan unless can_take_loan?(corporation)
         end
 
+        def show_other_players
+          false
+        end
+
         def process_payoff_loan(action)
           entity = action.entity
           loan = action.loan

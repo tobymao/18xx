@@ -134,6 +134,10 @@ module Engine
           "Corporations that can merge with #{corporation.name}"
         end
 
+        def show_other_players
+          false
+        end
+
         def mergeable(corporation)
           return [] if !corporation.floated? || !corporation.share_price.normal_movement?
 
