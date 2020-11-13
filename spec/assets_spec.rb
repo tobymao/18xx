@@ -212,6 +212,21 @@ describe 'Assets' do
       ['18_ga', 9222, nil, 'endgame', '18GA: Operating Round 9.1 (of 3) - Game Over - Bank Broken'],
       ['18_tn', 7818, nil, 'endgame', '18TN: Operating Round 8.2 (of 3) - Game Over - Bank Broken'],
       ['18_ms', 14_375, nil, 'endgame', '18MS: Operating Round 10 (of 10) - Game end after OR 10 - Game Over'],
+      ['18_mex', 13_315, 278, 'merge',
+       ['Merge',
+        'Decline',
+        'Corporations that can merge with NdM']],
+      ['1817', 15_528, 196, 'merge',
+       ['Convert',
+        'Merge',
+        'Grand Trunk Western Railroad',
+        'Corporations that can merge with A&amp;S']],
+      ['1817', 15_528, 205, 'offer', ['Offer for Sale', 'Warren &amp; Trumbull Railroad']],
+      ['1817', 15_528, 383, 'merge_with_other_players',
+       ['Convert',
+        'Merge',
+        'Pittsburgh, Shawmut and Northern Railroad',
+        'Corporations that can merge with J']],
     ].freeze
 
     def render_game(jsonfile, no_actions, string)

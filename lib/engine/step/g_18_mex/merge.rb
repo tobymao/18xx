@@ -23,6 +23,10 @@ module Engine
           @game.ndm
         end
 
+        def mergeable_type(corporation)
+          "Corporations that can merge with #{corporation.name}"
+        end
+
         def mergeable(_corporation)
           return [] unless merge_ongoing?
 

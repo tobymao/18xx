@@ -350,15 +350,23 @@ module Engine
           buyer != corporation
         end
 
-        def mergeable(corporation)
-          return [] if corporation.player?
-          return [] unless @winner
+        def mergeable_type(corporation)
+          "#{@winner ? '' : 'Potential '}Corporations that can acquire #{corporation.name}"
+        end
 
-          @game.corporations.select do |buyer|
-            buyer.owner == @winner.entity &&
-            max_bid_for_corporation(buyer, corporation) >= @winner.price &&
+        def mergeable_by_entity(entity, corporation, bid)
+          entity.presidencies.select do |buyer|
+            max_bid_for_corporation(buyer, corporation) >= bid &&
             can_acquire?(corporation, buyer)
           end
+        end
+
+        def mergeable(corporation)
+          return [] if corporation.player?
+          return [] if @offer
+          return mergeable_by_entity(current_entity, corporation, min_bid(corporation)) unless @winner
+
+          mergeable_by_entity(@winner.entity, corporation, @winner.price)
         end
 
         def starting_bid(corporation)
