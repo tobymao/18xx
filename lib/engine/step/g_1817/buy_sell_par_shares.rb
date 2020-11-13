@@ -110,7 +110,7 @@ module Engine
         end
 
         def can_sell?(entity, bundle)
-          super && !bundle.corporation.share_price.acquisition?
+          super && !(bundle.corporation.share_price.acquisition? || bundle.corporation.share_price.liquidation?)
         end
 
         def can_short_any?(entity)
@@ -123,7 +123,7 @@ module Engine
             @game.shorts(corporation).length < corporation.total_shares &&
             corporation.operated? &&
             entity.num_shares_of(corporation) <= 0 &&
-            !corporation.share_price.acquisition? &&
+            !(corporation.share_price.acquisition? || corporation.share_price.liquidation?) &&
             !@players_sold[entity].values.include?(:short) &&
             @game.phase.name != '8'
         end

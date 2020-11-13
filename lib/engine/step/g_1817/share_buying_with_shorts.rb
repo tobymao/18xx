@@ -16,7 +16,7 @@ module Engine
           @game.entity_shorts(entity, corporation).any? ||
           corporation.holding_ok?(entity, bundle.percent) &&
             (!corporation.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit) &&
-           !bundle.corporation.share_price.acquisition?
+           !(bundle.corporation.share_price.acquisition? || bundle.corporation.share_price.liquidation?)
         end
       end
     end
