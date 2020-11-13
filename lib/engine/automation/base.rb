@@ -59,7 +59,7 @@ module Engine
 
         begin
           precondition(game)
-          _run(game)
+          process(game)
         rescue GameError => e
           @disabled = e.to_s
         end

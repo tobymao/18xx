@@ -22,10 +22,10 @@ module View
 
       def render_content
         message = <<~MESSAGE
-          <p>Auto allows you to preprogram your moves ahead of time.</p>
-          <p>As soon as your action is unable to be completed it will be deactivated, and you will need to do your turn.</p>
-          <p>These will be done a few minutes after the previous player has acted.</p>
-          <p>This is presently in development, and so only some actions are available in the stock round.</p>
+          <p>Programmed actions allows you to preprogram your moves ahead of time. on asyncronous games this can.</p>
+          <p>On asynchronous games this can shorten a game considerably.</p>
+          <p>Please note, these are not to be considered secret from other players.</p>
+          <p>This is presently under development, more actions will be available soon.</p>
         MESSAGE
 
         h(:div, '')

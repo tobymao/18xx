@@ -30,6 +30,7 @@ module Engine
       end
 
       def self.available(game)
+        # @todo: This needs to disable on games like 1817
         (game.turn == 1) && game.corporations.any? { |e| !e.floated? && e.ipoed }
       end
 
@@ -44,7 +45,7 @@ module Engine
         raise GameError, 'Not IPOed' unless entity.ipoed
       end
 
-      def _run(game)
+      def process(game)
         ipo_share = entity.shares.first
         action = Engine::Action::BuyShares.new(game.current_entity, shares: ipo_share)
         game.process_action(action)
