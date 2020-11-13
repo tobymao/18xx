@@ -2165,12 +2165,6 @@
       "rotation": 2
     },
     {
-      "type": "pass",
-      "entity": "ACL",
-      "entity_type": "corporation",
-      "id": 260
-    },
-    {
       "type": "run_routes",
       "entity": "ACL",
       "entity_type": "corporation",

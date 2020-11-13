@@ -268,6 +268,12 @@
       "original_id": 31
     },
     {
+        "id": 0,
+        "entity_type": "corporation",
+        "entity": "NYC",
+        "type": "pass"
+    },
+    {
       "type": "run_routes",
       "entity": "NYC",
       "entity_type": "corporation",
@@ -681,6 +687,12 @@
       "train": "2-2",
       "price": 19,
       "original_id": 81
+    },
+    {
+        "id": 0,
+        "entity_type": "corporation",
+        "entity": "NYC",
+        "type": "pass"
     },
     {
       "type": "pass",
@@ -1282,6 +1294,12 @@
       "original_id": 148
     },
     {
+        "id": 0,
+        "entity_type": "corporation",
+        "entity": "NYC",
+        "type": "pass"
+    },
+    {
       "type": "sell_shares",
       "entity": "Player 2",
       "entity_type": "player",
@@ -1500,6 +1518,12 @@
       "original_id": 168
     },
     {
+        "id": 0,
+        "entity_type": "corporation",
+        "entity": "GT",
+        "type": "pass"
+    },
+    {
       "type": "run_routes",
       "entity": "NYC",
       "entity_type": "corporation",
@@ -1525,6 +1549,12 @@
       "id": 162,
       "kind": "half",
       "original_id": 170
+    },
+    {
+        "id": 0,
+        "entity_type": "corporation",
+        "entity": "NYC",
+        "type": "pass"
     },
     {
       "type": "lay_tile",
@@ -1659,10 +1689,16 @@
     },
     {
       "type": "pass",
-      "entity": "NYC",
+      "entity": "GT",
       "entity_type": "corporation",
       "id": 172,
       "original_id": 182
+    },
+    {
+        "id": 0,
+        "entity_type": "corporation",
+        "entity": "NYC",
+        "type": "pass"
     },
     {
       "type": "run_routes",
@@ -1699,6 +1735,12 @@
       "id": 174,
       "kind": "payout",
       "original_id": 184
+    },
+    {
+        "id": 0,
+        "entity_type": "corporation",
+        "entity": "NYC",
+        "type": "pass"
     },
     {
       "type": "sell_shares",
@@ -2032,6 +2074,12 @@
       "original_id": 220
     },
     {
+        "id": 0,
+        "entity_type": "corporation",
+        "entity": "GT",
+        "type": "pass"
+    },
+    {
       "type": "pass",
       "entity": "NYC",
       "entity_type": "corporation",
@@ -2086,6 +2134,12 @@
       "entity_type": "corporation",
       "id": 212,
       "original_id": 227
+    },
+    {
+        "id": 0,
+        "entity_type": "corporation",
+        "entity": "NYC",
+        "type": "pass"
     },
     {
       "type": "pass",
@@ -2339,6 +2393,12 @@
       "original_id": 251
     },
     {
+        "id": 0,
+        "entity_type": "corporation",
+        "entity": "GT",
+        "type": "pass"
+    },
+    {
       "type": "pass",
       "entity": "NYC",
       "entity_type": "corporation",
@@ -2378,6 +2438,12 @@
       "entity_type": "corporation",
       "id": 236,
       "original_id": 256
+    },
+    {
+        "id": 0,
+        "entity_type": "corporation",
+        "entity": "NYC",
+        "type": "pass"
     },
     {
       "type": "pass",
@@ -2785,6 +2851,12 @@
       "entity_type": "corporation",
       "id": 275,
       "original_id": 300
+    },
+    {
+        "id": 0,
+        "entity_type": "corporation",
+        "entity": "NYC",
+        "type": "pass"
     },
     {
       "type": "pass",
