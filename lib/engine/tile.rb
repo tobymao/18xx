@@ -90,7 +90,8 @@ module Engine
                               visit_cost: params['visit_cost'],
                               route: params['route'],
                               format: params['format'],
-                              loc: params['loc'])
+                              loc: params['loc'],
+                              node_id: cache.size)
         cache << city
         city
       when 'town'
@@ -101,7 +102,8 @@ module Engine
                               route: params['route'],
                               format: params['format'],
                               loc: params['loc'],
-                              to_city: params['to_city'])
+                              to_city: params['to_city'],
+                              node_id: cache.size)
         cache << town
         town
       when 'halt'
@@ -111,7 +113,8 @@ module Engine
                               visit_cost: params['visit_cost'],
                               route: params['route'],
                               format: params['format'],
-                              loc: params['loc'])
+                              loc: params['loc'],
+                              node_id: cache.size)
         cache << halt
         halt
       when 'offboard'
@@ -120,16 +123,15 @@ module Engine
                                       hide: params['hide'],
                                       visit_cost: params['visit_cost'],
                                       route: params['route'],
-                                      format: params['format'])
+                                      format: params['format'],
+                                      node_id: cache.size)
         cache << offboard
         offboard
       when 'label'
         label = Part::Label.new(params)
-        cache << label
         label
       when 'upgrade'
         upgrade = Part::Upgrade.new(params['cost'], params['terrain']&.split('|'))
-        cache << upgrade
         upgrade
       when 'border'
         Part::Border.new(params['edge'], params['type'], params['cost'])
@@ -237,6 +239,12 @@ module Engine
 
     def terrain
       @upgrades.flat_map(&:terrains).uniq
+    end
+
+    # if tile has more than one intra-tile paths, those paths
+    # cannot be identified with just a hex name
+    def ambiguous_connection?
+      @ambiguous_connection ||= @paths.select { |p| p.nodes.size > 1 }.size > 1
     end
 
     def paths_are_subset_of?(other_paths)

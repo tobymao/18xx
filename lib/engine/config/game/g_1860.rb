@@ -197,7 +197,7 @@ module Engine
     "763": {
       "count": 1,
       "color": "green",
-      "code": "city=revenue:50,loc:center;city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_1;label=N"
+      "code": "city=revenue:50,loc:2.5;city=revenue:30,loc:5.5;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_1;label=N"
     },
     "764": {
       "count": 2,
@@ -247,7 +247,7 @@ module Engine
     "773": {
       "count": 1,
       "color": "brown",
-      "code": "city=revenue:60,slots:2,loc:1.5;city=revenue:20,loc:4.5;path=a:0,b:_0;path=a:2,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_1;path=a:4,b:_1;path=a:_0,b:_1;label=N"
+      "code": "city=revenue:60,slots:2,loc:2.5;city=revenue:20,loc:5.5;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_1;path=a:5,b:_1;path=a:_0,b:_1;label=N"
     },
     "774": {
       "count": 1,
@@ -576,35 +576,35 @@ module Engine
   "trains": [
     {
       "name": "2+1",
-      "distance": 2,
+      "distance": [2, 1],
       "price": 250,
       "rusts_on": "4+2",
       "num": 5
     },
     {
       "name": "3+2",
-      "distance": 3,
+      "distance": [3, 2],
       "price": 300,
       "rusts_on": "6+3",
       "num": 4
     },
     {
       "name": "4+2",
-      "distance": 4,
+      "distance": [4, 2],
       "price": 350,
       "rusts_on": "7+4",
       "num": 3
     },
     {
       "name": "5+3",
-      "distance": 5,
+      "distance": [5, 3],
       "price": 400,
       "rusts_on": "8+4",
       "num": 2
     },
     {
       "name": "6+3",
-      "distance": 6,
+      "distance": [6, 3],
       "price": 500,
       "num": 2,
       "events": [
@@ -613,19 +613,19 @@ module Engine
     },
     {
       "name": "7+4",
-      "distance": 7,
+      "distance": [7, 4],
       "price": 600,
       "num": 1
     },
     {
       "name": "8+4",
-      "distance": 8,
+      "distance": [8, 4],
       "price": 700,
       "num": 1
     },
     {
       "name": "9+5",
-      "distance": 9,
+      "distance": [9, 5],
       "price": 800,
       "num": 6
     }

@@ -16,6 +16,7 @@ module Engine
         @hide = opts[:hide]
         @visit_cost = (opts[:visit_cost] || 1).to_i
         @loc = opts[:loc]
+        @node_id = opts[:node_id] || 0
 
         @route = (opts[:route] || :mandatory).to_sym
       end

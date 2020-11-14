@@ -91,7 +91,14 @@ module Engine
             junction_map[path.b] = true if path.b.junction?
           end
 
-          uniq_paths.map! { |path| path.hex.id }
+          uniq_paths.map! do |path|
+            if path.tile.ambiguous_connection? && path.nodes.size > 1
+              node_ids = path.nodes.map(&:node_id).sort
+              "#{path.hex.id} #{node_ids.first}.#{node_ids.last}"
+            else
+              path.hex.id
+            end
+          end
         end
     end
 

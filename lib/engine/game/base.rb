@@ -740,6 +740,10 @@ module Engine
         "#{entity.percent_to_float}% to float"
       end
 
+      def route_distance(route)
+        route.visited_stops.sum(&:visit_cost)
+      end
+
       def routes_revenue(routes)
         routes.sum(&:revenue)
       end
@@ -773,6 +777,105 @@ module Engine
         tracks.group_by(&:itself).each do |k, v|
           game_error("Route cannot reuse track on #{k[0].id}") if v.size > 1
         end
+      end
+
+      def check_connected(route, token)
+        paths_ = route.paths.uniq
+
+        # rubocop:disable Style/GuardClause, Style/IfUnlessModifier
+        if token.select(paths_, corporation: route.corporation).size != paths_.size
+          game_error('Route is not connected')
+        end
+        # rubocop:enable Style/GuardClause, Style/IfUnlessModifier
+      end
+
+      def check_distance(route, visits)
+        distance = route.train.distance
+        if distance.is_a?(Numeric)
+          route_distance = visits.sum(&:visit_cost)
+          game_error("#{route_distance} is too many stops for #{distance} train") if distance < route_distance
+
+          return
+        end
+
+        type_info = Hash.new { |h, k| h[k] = [] }
+
+        distance.each do |h|
+          pay = h['pay']
+          visit = h['visit'] || pay
+          info = { pay: pay, visit: visit }
+          h['nodes'].each { |type| type_info[type] << info }
+        end
+
+        grouped = visits.group_by(&:type)
+
+        grouped.each do |type, group|
+          num = group.sum(&:visit_cost)
+
+          type_info[type].sort_by(&:size).each do |info|
+            next unless info[:visit].positive?
+
+            info[:visit] -= num
+            num = info[:visit] * -1
+            break unless num.positive?
+          end
+
+          game_error('Route has too many stops') if num.positive?
+        end
+      end
+
+      def check_other(_route); end
+
+      def compute_stops(route)
+        visits = route.visited_stops
+        distance = route.train.distance
+        return visits if distance.is_a?(Numeric)
+        return [] if visits.empty?
+
+        # distance is an array of hashes defining how many locations of
+        # each type can be hit. A 2+2 train (4 locations, at most 2 of
+        # which can be cities) looks like this:
+        #   [ { nodes: [ 'town' ],                     pay: 2},
+        #     { nodes: [ 'city', 'town', 'offboard' ], pay: 2} ]
+        # Stops use the first available slot, so for each stop in this case
+        # we'll try to put it in a town slot if possible and then
+        # in a city/town/offboard slot.
+        distance = distance.sort_by { |types, _| types.size }
+
+        max_num_stops = [distance.sum { |h| h['pay'] }, visits.size].min
+
+        max_num_stops.downto(1) do |num_stops|
+          # to_i to work around Opal bug
+          stops, revenue = visits.combination(num_stops.to_i).map do |stops|
+            # Make sure this set of stops is legal
+            # 1) At least one stop must have a token
+            next if stops.none? { |stop| stop.tokened_by?(route.corporation) }
+
+            # 2) We can't ask for more revenue centers of a type than are allowed
+            types_used = Array.new(distance.size, 0) # how many slots of each row are filled
+
+            next unless stops.all? do |stop|
+              row = distance.index.with_index do |h, i|
+                h['nodes'].include?(stop.type) && types_used[i] < h['pay']
+              end
+
+              types_used[row] += 1 if row
+              row
+            end
+
+            [stops, revenue_for(route, stops)]
+          end.compact.max_by(&:last)
+
+          revenue ||= 0
+
+          # We assume that no stop collection with m < n stops could be
+          # better than a stop collection with n stops, so if we found
+          # anything usable with this number of stops we return it
+          # immediately.
+          return stops if revenue.positive?
+        end
+
+        []
       end
 
       def get(type, id)
