@@ -1,0 +1,5087 @@
+{
+  "id": 12666,
+  "description": "hoola & ward",
+  "user": {
+    "id": 199,
+    "name": "gragatrim"
+  },
+  "players": [
+    {
+      "id": 199,
+      "name": "gragatrim"
+    },
+    {
+      "id": 4943,
+      "name": "hoolaking"
+    },
+    {
+      "id": 4942,
+      "name": "the_seaward"
+    }
+  ],
+  "max_players": 3,
+  "title": "1846",
+  "settings": {
+    "seed": 1.9230622691016696e+38
+  },
+  "user_settings": null,
+  "status": "finished",
+  "turn": 6,
+  "round": "Operating Round",
+  "acting": [
+    199,
+    4943,
+    4942
+  ],
+  "result": {
+    "gragatrim": 6180,
+    "hoolaking": 1803,
+    "the_seaward": 4950
+  },
+  "actions": [
+    {
+      "type": "bid",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 1,
+      "company": "MS",
+      "price": 60
+    },
+    {
+      "type": "message",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 2,
+      "message": "it was very unclear this was an in order draft"
+    },
+    {
+      "type": "bid",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 3,
+      "company": "MPC",
+      "price": 60
+    },
+    {
+      "type": "bid",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 4,
+      "company": "MC",
+      "price": 40
+    },
+    {
+      "type": "bid",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 5,
+      "company": "BIG4",
+      "price": 40
+    },
+    {
+      "type": "bid",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 6,
+      "company": "C&WI",
+      "price": 60
+    },
+    {
+      "type": "bid",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 7,
+      "company": "MAIL",
+      "price": 80
+    },
+    {
+      "type": "par",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 8,
+      "corporation": "GT",
+      "share_price": "50,0,5"
+    },
+    {
+      "type": "par",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 9,
+      "corporation": "IC",
+      "share_price": "50,0,5"
+    },
+    {
+      "type": "par",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 10,
+      "corporation": "B&O",
+      "share_price": "80,0,8"
+    },
+    {
+      "type": "buy_shares",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 11,
+      "shares": [
+        "GT_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 12,
+      "shares": [
+        "IC_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 13,
+      "shares": [
+        "GT_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 14,
+      "shares": [
+        "IC_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 15,
+      "shares": [
+        "GT_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 16,
+      "shares": [
+        "IC_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 17
+    },
+    {
+      "type": "pass",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 18
+    },
+    {
+      "id": 19,
+      "hex": "C13",
+      "tile": "8-0",
+      "type": "lay_tile",
+      "entity": "MS",
+      "rotation": 2,
+      "entity_type": "minor"
+    },
+    {
+      "id": 20,
+      "type": "undo",
+      "entity": "MS",
+      "entity_type": "minor"
+    },
+    {
+      "id": 21,
+      "hex": "C13",
+      "tile": "8-0",
+      "type": "lay_tile",
+      "entity": "MS",
+      "rotation": 2,
+      "entity_type": "minor"
+    },
+    {
+      "id": 22,
+      "type": "undo",
+      "entity": "MS",
+      "entity_type": "minor"
+    },
+    {
+      "id": 23,
+      "hex": "C13",
+      "tile": "8-0",
+      "type": "lay_tile",
+      "entity": "MS",
+      "rotation": 2,
+      "entity_type": "minor"
+    },
+    {
+      "id": 24,
+      "type": "undo",
+      "entity": "MS",
+      "entity_type": "minor"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MS",
+      "entity_type": "minor",
+      "id": 25,
+      "hex": "C13",
+      "tile": "9-0",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MS",
+      "entity_type": "minor",
+      "id": 26,
+      "hex": "C11",
+      "tile": "8-0",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BIG4",
+      "entity_type": "minor",
+      "id": 27,
+      "hex": "G9",
+      "tile": "5-0",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BIG4",
+      "entity_type": "minor",
+      "id": 28,
+      "hex": "G7",
+      "tile": "5-1",
+      "rotation": 3
+    },
+    {
+      "type": "run_routes",
+      "entity": "BIG4",
+      "entity_type": "minor",
+      "id": 29,
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "G7",
+              "G9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 30,
+      "hex": "B16",
+      "tile": "6-0",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 31
+    },
+    {
+      "type": "buy_train",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 32,
+      "train": "2-2",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "buy_train",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 33,
+      "train": "2-3",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 34
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 35,
+      "hex": "J4",
+      "tile": "9-1",
+      "rotation": 0
+    },
+    {
+      "type": "place_token",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 36,
+      "city": "I5-0-0",
+      "slot": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 37,
+      "hex": "H6",
+      "tile": "7-0",
+      "rotation": 0
+    },
+    {
+      "type": "buy_train",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 38,
+      "train": "2-4",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 39
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 40
+    },
+    {
+      "id": 41,
+      "city": "H12-0-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "B&O",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 42,
+      "type": "undo",
+      "entity": "B&O",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "place_token",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 43,
+      "city": "H12-0-0",
+      "slot": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 44,
+      "hex": "H12",
+      "tile": "293-0",
+      "rotation": 0
+    },
+    {
+      "type": "sell_shares",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 45,
+      "shares": [
+        "B&O_1",
+        "B&O_2"
+      ],
+      "percent": 20,
+      "share_price": 70
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 46,
+      "hex": "I11",
+      "tile": "9-2",
+      "rotation": 0
+    },
+    {
+      "type": "buy_train",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 47,
+      "train": "2-5",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 48
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 49
+    },
+    {
+      "type": "pass",
+      "entity": "MS",
+      "entity_type": "minor",
+      "id": 50
+    },
+    {
+      "type": "run_routes",
+      "entity": "MS",
+      "entity_type": "minor",
+      "id": 51,
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "B16",
+              "C15"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BIG4",
+      "entity_type": "minor",
+      "id": 52,
+      "hex": "H8",
+      "tile": "8-1",
+      "rotation": 3
+    },
+    {
+      "type": "run_routes",
+      "entity": "BIG4",
+      "entity_type": "minor",
+      "id": 53,
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "G7",
+              "G9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 54
+    },
+    {
+      "type": "run_routes",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 55,
+      "routes": [
+        {
+          "train": "2-5",
+          "connections": [
+            [
+              "J10",
+              "I11",
+              "H12"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 56,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 57
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 58
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 59
+    },
+    {
+      "type": "run_routes",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 60,
+      "routes": [
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "B16",
+              "B18"
+            ]
+          ]
+        },
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "B16",
+              "C15"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 61,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 62
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 63
+    },
+    {
+      "id": 64,
+      "hex": "H4",
+      "tile": "8-2",
+      "type": "lay_tile",
+      "entity": "IC",
+      "rotation": 2,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 65,
+      "hex": "G3",
+      "tile": "6-1",
+      "type": "lay_tile",
+      "entity": "IC",
+      "rotation": 3,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 66,
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 67,
+      "type": "run_routes",
+      "entity": "IC",
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "G3",
+              "H4",
+              "H6",
+              "I5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 68,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 69,
+      "type": "buy_train",
+      "price": 80,
+      "train": "2-6",
+      "entity": "IC",
+      "variant": "2",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 70,
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 71,
+      "type": "buy_company",
+      "price": 60,
+      "entity": "IC",
+      "company": "MPC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 72,
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 73,
+      "type": "undo",
+      "entity": "the_seaward",
+      "entity_type": "player"
+    },
+    {
+      "id": 74,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 75,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 76,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 77,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 78,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 79,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 80,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 81,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 82,
+      "hex": "H4",
+      "tile": "7-1",
+      "rotation": 3
+    },
+    {
+      "id": 83,
+      "hex": "G5",
+      "tile": "9-3",
+      "type": "lay_tile",
+      "entity": "IC",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 84,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 85,
+      "hex": "I3",
+      "tile": "9-3",
+      "rotation": 1
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 86,
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "I1",
+              "I3",
+              "I5"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 87,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 88,
+      "train": "2-6",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 89
+    },
+    {
+      "type": "buy_company",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 90,
+      "company": "MPC",
+      "price": 60
+    },
+    {
+      "id": 91,
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 92,
+      "type": "undo",
+      "entity": "the_seaward",
+      "entity_type": "player"
+    },
+    {
+      "type": "assign",
+      "entity": "MPC",
+      "entity_type": "company",
+      "id": 93,
+      "target": "I1",
+      "target_type": "hex"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 94
+    },
+    {
+      "type": "buy_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 95,
+      "shares": [
+        "B&O_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 96,
+      "shares": [
+        "GT_4"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "par",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 97,
+      "corporation": "NYC",
+      "share_price": "50,0,5"
+    },
+    {
+      "type": "pass",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 98
+    },
+    {
+      "type": "pass",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 99
+    },
+    {
+      "type": "pass",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 100
+    },
+    {
+      "type": "pass",
+      "entity": "MS",
+      "entity_type": "minor",
+      "id": 101
+    },
+    {
+      "type": "run_routes",
+      "entity": "MS",
+      "entity_type": "minor",
+      "id": 102,
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "B16",
+              "C15"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BIG4",
+      "entity_type": "minor",
+      "id": 103,
+      "hex": "I9",
+      "tile": "9-4",
+      "rotation": 2
+    },
+    {
+      "type": "run_routes",
+      "entity": "BIG4",
+      "entity_type": "minor",
+      "id": 104,
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "G9",
+              "H8",
+              "I9",
+              "J10"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 105,
+      "hex": "G13",
+      "tile": "6-1",
+      "rotation": 4
+    },
+    {
+      "type": "buy_shares",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 106,
+      "shares": [
+        "B&O_1"
+      ],
+      "percent": 10,
+      "share_price": 80
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 107
+    },
+    {
+      "type": "run_routes",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 108,
+      "routes": [
+        {
+          "train": "2-5",
+          "connections": [
+            [
+              "J10",
+              "I11",
+              "H12"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 109,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 110
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 111
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 112
+    },
+    {
+      "type": "run_routes",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 113,
+      "routes": [
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "B16",
+              "B18"
+            ]
+          ]
+        },
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "B16",
+              "C15"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 114,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 115,
+      "train": "4-0",
+      "price": 160,
+      "variant": "3/5"
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 116
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 117
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 118,
+      "hex": "G5",
+      "tile": "9-5",
+      "rotation": 0
+    },
+    {
+      "id": 119,
+      "hex": "F6",
+      "tile": "9-6",
+      "type": "lay_tile",
+      "entity": "IC",
+      "rotation": 0,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 120,
+      "type": "run_routes",
+      "entity": "IC",
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "K3",
+              "J4",
+              "I5"
+            ]
+          ]
+        },
+        {
+          "train": "2-6",
+          "connections": [
+            [
+              "I1",
+              "I3",
+              "I5"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation"
+    },
+    {
+      "id": 121,
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 122,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 123,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 124,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 125,
+      "hex": "F6",
+      "tile": "8-2",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 126,
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "I1",
+              "I3",
+              "I5"
+            ]
+          ]
+        },
+        {
+          "train": "2-6",
+          "connections": [
+            [
+              "K3",
+              "J4",
+              "I5"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 127,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 128
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 129
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 130,
+      "hex": "E19",
+      "tile": "7-2",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 131,
+      "hex": "D18",
+      "tile": "8-3",
+      "rotation": 4
+    },
+    {
+      "type": "buy_train",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 132,
+      "train": "2-4",
+      "price": 1
+    },
+    {
+      "id": 133,
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 134,
+      "type": "undo",
+      "entity": "NYC",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "buy_train",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 135,
+      "train": "2-6",
+      "price": 15
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 136
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 137
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MS",
+      "entity_type": "minor",
+      "id": 138,
+      "hex": "B16",
+      "tile": "619-0",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "MS",
+      "entity_type": "minor",
+      "id": 139
+    },
+    {
+      "type": "run_routes",
+      "entity": "MS",
+      "entity_type": "minor",
+      "id": 140,
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "B16",
+              "C15"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "BIG4",
+      "entity_type": "minor",
+      "id": 141
+    },
+    {
+      "type": "run_routes",
+      "entity": "BIG4",
+      "entity_type": "minor",
+      "id": 142,
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "G9",
+              "H8",
+              "I9",
+              "J10"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 143,
+      "hex": "H12",
+      "tile": "294-0",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 144
+    },
+    {
+      "type": "run_routes",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 145,
+      "routes": [
+        {
+          "train": "2-5",
+          "connections": [
+            [
+              "H12",
+              "I11",
+              "J10"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 146,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 147
+    },
+    {
+      "type": "buy_company",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 148,
+      "company": "BIG4",
+      "price": 40
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 149
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 150,
+      "hex": "B14",
+      "tile": "9-6",
+      "rotation": 1
+    },
+    {
+      "type": "buy_company",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 151,
+      "company": "MC",
+      "price": 9
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MC",
+      "entity_type": "company",
+      "id": 152,
+      "hex": "B12",
+      "tile": "9-7",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 153,
+      "hex": "B10",
+      "tile": "9-8",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 154
+    },
+    {
+      "type": "run_routes",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 155,
+      "routes": [
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "B16",
+              "B18"
+            ]
+          ]
+        },
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "B16",
+              "C15"
+            ]
+          ]
+        },
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "B8",
+              "B10",
+              "B12",
+              "B14",
+              "B16"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 156,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 157
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 158
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 159,
+      "hex": "E5",
+      "tile": "8-4",
+      "rotation": 3
+    },
+    {
+      "id": 160,
+      "city": "D6-0-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 161,
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 162,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 163,
+      "type": "undo",
+      "entity": "IC",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 164
+    },
+    {
+      "type": "sell_shares",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 165,
+      "shares": [
+        "IC_4"
+      ],
+      "percent": 10,
+      "share_price": 40
+    },
+    {
+      "type": "buy_train",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 166,
+      "train": "4-1",
+      "price": 160,
+      "variant": "3/5"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 167
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 168
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 169,
+      "hex": "E17",
+      "tile": "292-0",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 170
+    },
+    {
+      "type": "run_routes",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 171,
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "D20",
+              "E19",
+              "E21"
+            ]
+          ]
+        },
+        {
+          "train": "2-6",
+          "connections": [
+            [
+              "E17",
+              "D18",
+              "D20"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 172,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 173
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 174
+    },
+    {
+      "type": "par",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 175,
+      "corporation": "ERIE",
+      "share_price": "40,0,4"
+    },
+    {
+      "type": "buy_shares",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 176,
+      "shares": [
+        "B&O_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 177,
+      "shares": [
+        "GT_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 178,
+      "shares": [
+        "ERIE_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 179,
+      "shares": [
+        "B&O_4"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 180,
+      "shares": [
+        "IC_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 181,
+      "shares": [
+        "B&O_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 182,
+      "shares": [
+        "B&O_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 183
+    },
+    {
+      "type": "pass",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 184
+    },
+    {
+      "type": "pass",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 185
+    },
+    {
+      "type": "pass",
+      "entity": "MS",
+      "entity_type": "minor",
+      "id": 186
+    },
+    {
+      "type": "run_routes",
+      "entity": "MS",
+      "entity_type": "minor",
+      "id": 187,
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "B16",
+              "C15"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": 188,
+      "city": "5-1-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "B&O",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 189,
+      "type": "undo",
+      "entity": "B&O",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 190,
+      "hex": "G7",
+      "tile": "14-0",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 191,
+      "hex": "F8",
+      "tile": "8-5",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 192
+    },
+    {
+      "type": "run_routes",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 193,
+      "routes": [
+        {
+          "train": "2-5",
+          "connections": [
+            [
+              "H12",
+              "I11",
+              "J10"
+            ]
+          ]
+        },
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "G9",
+              "H8",
+              "I9",
+              "J10"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 194,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 195
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 196
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 197,
+      "hex": "C15",
+      "tile": "294-1",
+      "rotation": 0
+    },
+    {
+      "type": "place_token",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 198,
+      "city": "294-1-0",
+      "slot": 1
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 199
+    },
+    {
+      "type": "run_routes",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 200,
+      "routes": [
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "C15",
+              "C17"
+            ]
+          ]
+        },
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "C15",
+              "B16"
+            ]
+          ]
+        },
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "B8",
+              "B10",
+              "B12",
+              "B14",
+              "B16"
+            ],
+            [
+              "B16",
+              "B18"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 201,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 202
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 203
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 204,
+      "hex": "E15",
+      "tile": "8-6",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 205,
+      "hex": "D14",
+      "tile": "6-2",
+      "rotation": 3
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 206
+    },
+    {
+      "type": "run_routes",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 207,
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "E17",
+              "D18",
+              "D20"
+            ]
+          ]
+        },
+        {
+          "train": "2-6",
+          "connections": [
+            [
+              "D20",
+              "E19",
+              "E21"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 208,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 209
+    },
+    {
+      "type": "buy_company",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 210,
+      "company": "C&WI",
+      "price": 50
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 211
+    },
+    {
+      "type": "pass",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 212
+    },
+    {
+      "type": "buy_train",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 213,
+      "train": "2-1",
+      "price": 1
+    },
+    {
+      "type": "pass",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 214
+    },
+    {
+      "type": "buy_company",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 215,
+      "company": "MS",
+      "price": 60
+    },
+    {
+      "type": "pass",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 216
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 217,
+      "hex": "H6",
+      "tile": "27-0",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 218,
+      "hex": "E7",
+      "tile": "7-3",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 219
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 220,
+      "routes": [
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "I1",
+              "I3",
+              "I5"
+            ],
+            [
+              "K3",
+              "J4",
+              "I5"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 221,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 222
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 223
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 224,
+      "hex": "C11",
+      "tile": "25-0",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 225
+    },
+    {
+      "type": "run_routes",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 226,
+      "routes": [
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "D14",
+              "C15"
+            ]
+          ]
+        },
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "C15",
+              "C17"
+            ]
+          ]
+        },
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "C15",
+              "B16"
+            ],
+            [
+              "B8",
+              "B10",
+              "B12",
+              "B14",
+              "B16"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 227,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 228
+    },
+    {
+      "type": "buy_company",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 229,
+      "company": "MAIL",
+      "price": 80
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 230,
+      "hex": "G5",
+      "tile": "23-0",
+      "rotation": 0
+    },
+    {
+      "id": 231,
+      "hex": "G15",
+      "tile": "57-0",
+      "type": "lay_tile",
+      "entity": "B&O",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 232,
+      "type": "undo",
+      "entity": "B&O",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 233
+    },
+    {
+      "type": "run_routes",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 234,
+      "routes": [
+        {
+          "train": "2-5",
+          "connections": [
+            [
+              "H12",
+              "I11",
+              "J10"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 235,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 236,
+      "train": "4-2",
+      "price": 180,
+      "variant": "4"
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 237
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 238,
+      "hex": "E17",
+      "tile": "296-0",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 239,
+      "hex": "F16",
+      "tile": "8-7",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 240
+    },
+    {
+      "type": "run_routes",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 241,
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "E17",
+              "D18",
+              "D20"
+            ]
+          ]
+        },
+        {
+          "train": "2-6",
+          "connections": [
+            [
+              "D20",
+              "C21"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 242,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 243
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 244,
+      "hex": "E9",
+      "tile": "9-9",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 245,
+      "hex": "E11",
+      "tile": "6-3",
+      "rotation": 5
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 246
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 247,
+      "routes": [
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "E11",
+              "E9",
+              "E7",
+              "F8",
+              "G7"
+            ],
+            [
+              "I5",
+              "H6",
+              "G7"
+            ],
+            [
+              "I1",
+              "I3",
+              "I5"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 248,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 249
+    },
+    {
+      "type": "lay_tile",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 250,
+      "hex": "B10",
+      "tile": "23-1",
+      "rotation": 1
+    },
+    {
+      "id": 251,
+      "city": "296-0-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "ERIE",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 252,
+      "type": "undo",
+      "entity": "ERIE",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "place_token",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 253,
+      "city": "296-0-0",
+      "slot": 0
+    },
+    {
+      "type": "pass",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 254
+    },
+    {
+      "type": "run_routes",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 255,
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "B8",
+              "B10",
+              "C11",
+              "C13",
+              "C15"
+            ]
+          ]
+        },
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "C15",
+              "C17"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 256,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 257,
+      "train": "4-3",
+      "price": 180,
+      "variant": "4"
+    },
+    {
+      "type": "pass",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 258
+    },
+    {
+      "type": "buy_shares",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 259,
+      "shares": [
+        "NYC_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 260,
+      "shares": [
+        "B&O_7"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 261,
+      "shares": [
+        "ERIE_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 262,
+      "shares": [
+        "NYC_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 263,
+      "shares": [
+        "ERIE_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 264,
+      "shares": [
+        "ERIE_4"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 265,
+      "shares": [
+        "NYC_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 266,
+      "shares": [
+        "ERIE_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 267,
+      "shares": [
+        "ERIE_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 268
+    },
+    {
+      "type": "buy_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 269,
+      "shares": [
+        "ERIE_7"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 270,
+      "shares": [
+        "ERIE_8"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 271
+    },
+    {
+      "type": "pass",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 272
+    },
+    {
+      "type": "buy_shares",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 273,
+      "shares": [
+        "B&O_8"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 274
+    },
+    {
+      "type": "pass",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 275
+    },
+    {
+      "type": "buy_shares",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 276,
+      "shares": [
+        "B&O_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 277
+    },
+    {
+      "type": "pass",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 278
+    },
+    {
+      "type": "pass",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 279
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 280,
+      "hex": "D10",
+      "tile": "8-8",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 281,
+      "hex": "D8",
+      "tile": "8-9",
+      "rotation": 2
+    },
+    {
+      "type": "sell_shares",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 282,
+      "shares": [
+        "GT_6"
+      ],
+      "percent": 10,
+      "share_price": 124
+    },
+    {
+      "type": "place_token",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 283,
+      "city": "D6-0-1",
+      "slot": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 284,
+      "routes": [
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "D14",
+              "C15"
+            ]
+          ]
+        },
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "C15",
+              "B16"
+            ]
+          ]
+        },
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "C15",
+              "C13",
+              "C11",
+              "B10",
+              "B8"
+            ],
+            [
+              "C15",
+              "C17"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 285,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 286
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 287,
+      "hex": "H4",
+      "tile": "30-0",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 288,
+      "hex": "H2",
+      "tile": "8-10",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 289
+    },
+    {
+      "type": "run_routes",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 290,
+      "routes": [
+        {
+          "train": "2-5",
+          "connections": [
+            [
+              "H12",
+              "I11",
+              "J10"
+            ]
+          ]
+        },
+        {
+          "train": "4-2",
+          "connections": [
+            [
+              "G7",
+              "G5",
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "G7",
+              "G9"
+            ],
+            [
+              "G9",
+              "H8",
+              "I9",
+              "J10"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 291,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 292,
+      "train": "5-0",
+      "price": 450,
+      "variant": "4/6"
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 293
+    },
+    {
+      "type": "place_token",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 294,
+      "city": "296-0-0",
+      "slot": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 295,
+      "hex": "F14",
+      "tile": "8-11",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 296,
+      "hex": "G13",
+      "tile": "619-1",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 297,
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "G13",
+              "F14",
+              "F16",
+              "E17"
+            ]
+          ]
+        },
+        {
+          "train": "2-6",
+          "connections": [
+            [
+              "E17",
+              "E15",
+              "D14"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 298,
+      "kind": "payout"
+    },
+    {
+      "type": "sell_shares",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 299,
+      "shares": [
+        "NYC_4",
+        "NYC_5",
+        "NYC_6",
+        "NYC_7",
+        "NYC_8"
+      ],
+      "percent": 50,
+      "share_price": 30
+    },
+    {
+      "type": "buy_train",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 300,
+      "train": "5-1",
+      "price": 450,
+      "variant": "4/6"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 301,
+      "hex": "E17",
+      "tile": "297-0",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 302,
+      "hex": "F18",
+      "tile": "9-10",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 303
+    },
+    {
+      "type": "run_routes",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 304,
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "C15",
+              "B16"
+            ]
+          ]
+        },
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "C15",
+              "C17"
+            ]
+          ]
+        },
+        {
+          "train": "4-3",
+          "connections": [
+            [
+              "H12",
+              "I11",
+              "J10"
+            ],
+            [
+              "G13",
+              "H12"
+            ],
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 305,
+      "kind": "half"
+    },
+    {
+      "type": "buy_train",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 306,
+      "train": "5-2",
+      "price": 450,
+      "variant": "4/6"
+    },
+    {
+      "type": "pass",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 307
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 308,
+      "hex": "F12",
+      "tile": "9-11",
+      "rotation": 2
+    },
+    {
+      "type": "place_token",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 309,
+      "city": "6-3-0",
+      "slot": 0
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 310
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 311,
+      "routes": [
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "E11",
+              "F12",
+              "G13"
+            ],
+            [
+              "E11",
+              "E9",
+              "E7",
+              "F8",
+              "G7"
+            ],
+            [
+              "G7",
+              "G5",
+              "H4",
+              "H2",
+              "I1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 312,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 313
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 314,
+      "hex": "D6",
+      "tile": "298-0",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 315
+    },
+    {
+      "type": "run_routes",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 316,
+      "routes": [
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "D14",
+              "C15"
+            ]
+          ]
+        },
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "C15",
+              "B16"
+            ]
+          ]
+        },
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "C15",
+              "C17"
+            ],
+            [
+              "D6",
+              "C7",
+              "D8",
+              "D10",
+              "C11",
+              "C13",
+              "C15"
+            ],
+            [
+              "D6",
+              "C5"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 317,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 318
+    },
+    {
+      "id": 319,
+      "hex": "G19",
+      "tile": "14-1",
+      "type": "lay_tile",
+      "entity": "B&O",
+      "rotation": 1,
+      "entity_type": "corporation"
+    },
+    {
+      "id": 320,
+      "type": "undo",
+      "entity": "B&O",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "place_token",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 321,
+      "city": "297-0-0",
+      "slot": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 322,
+      "hex": "G9",
+      "tile": "619-2",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 323,
+      "hex": "H10",
+      "tile": "8-12",
+      "rotation": 2
+    },
+    {
+      "type": "run_routes",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 324,
+      "routes": [
+        {
+          "train": "2-5",
+          "connections": [
+            [
+              "G9",
+              "H10",
+              "H12"
+            ]
+          ]
+        },
+        {
+          "train": "4-2",
+          "connections": [
+            [
+              "G7",
+              "G5",
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "G9",
+              "G7"
+            ],
+            [
+              "G9",
+              "H8",
+              "I9",
+              "J10"
+            ]
+          ]
+        },
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "H12",
+              "I11",
+              "J10"
+            ],
+            [
+              "G13",
+              "H12"
+            ],
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "E17",
+              "E15",
+              "D14"
+            ],
+            [
+              "D14",
+              "C15"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 325,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 326
+    },
+    {
+      "id": 327,
+      "city": "D20-0-0",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "ERIE",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 328,
+      "type": "undo",
+      "entity": "ERIE",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 329,
+      "hex": "D20",
+      "tile": "14-1",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 330
+    },
+    {
+      "type": "run_routes",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 331,
+      "routes": [
+        {
+          "train": "4-3",
+          "connections": [
+            [
+              "C15",
+              "C17"
+            ],
+            [
+              "D14",
+              "C15"
+            ],
+            [
+              "E17",
+              "E15",
+              "D14"
+            ]
+          ]
+        },
+        {
+          "train": "5-2",
+          "connections": [
+            [
+              "H12",
+              "I11",
+              "J10"
+            ],
+            [
+              "G13",
+              "H12"
+            ],
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "D20",
+              "D18",
+              "E17"
+            ],
+            [
+              "D20",
+              "D22"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 332,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 333
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 334
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 335,
+      "routes": [
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "E11",
+              "F12",
+              "G13"
+            ],
+            [
+              "E11",
+              "E9",
+              "E7",
+              "F8",
+              "G7"
+            ],
+            [
+              "G7",
+              "G5",
+              "H4",
+              "H2",
+              "I1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 336,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 337
+    },
+    {
+      "type": "run_routes",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 338,
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "H12",
+              "I11",
+              "J10"
+            ],
+            [
+              "G13",
+              "H12"
+            ],
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "D20",
+              "D18",
+              "E17"
+            ],
+            [
+              "D20",
+              "D22"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 339,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 340
+    },
+    {
+      "type": "buy_shares",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 341,
+      "shares": [
+        "NYC_4"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 342,
+      "shares": [
+        "IC_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 343
+    },
+    {
+      "type": "buy_shares",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 344,
+      "shares": [
+        "GT_7"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 345,
+      "shares": [
+        "GT_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 346
+    },
+    {
+      "type": "pass",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 347
+    },
+    {
+      "type": "pass",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 348
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 349,
+      "hex": "D6",
+      "tile": "299-0",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 350
+    },
+    {
+      "type": "run_routes",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 351,
+      "routes": [
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "C15",
+              "C17"
+            ],
+            [
+              "D6",
+              "C7",
+              "D8",
+              "D10",
+              "C11",
+              "C13",
+              "C15"
+            ],
+            [
+              "D6",
+              "C5"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 352,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 353
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 354,
+      "hex": "G19",
+      "tile": "14-2",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 355
+    },
+    {
+      "type": "run_routes",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 356,
+      "routes": [
+        {
+          "train": "4-2",
+          "connections": [
+            [
+              "G7",
+              "G5",
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "G9",
+              "G7"
+            ],
+            [
+              "G9",
+              "H8",
+              "I9",
+              "J10"
+            ]
+          ]
+        },
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "H12",
+              "I11",
+              "J10"
+            ],
+            [
+              "G13",
+              "H12"
+            ],
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "G19",
+              "F18",
+              "E17"
+            ],
+            [
+              "G19",
+              "G21"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 357,
+      "kind": "withhold"
+    },
+    {
+      "type": "buy_train",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 358,
+      "train": "4-3",
+      "price": 600
+    },
+    {
+      "type": "lay_tile",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 359,
+      "hex": "D8",
+      "tile": "23-2",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 360
+    },
+    {
+      "type": "run_routes",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 361,
+      "routes": [
+        {
+          "train": "5-2",
+          "connections": [
+            [
+              "C15",
+              "C13",
+              "C11",
+              "D10",
+              "D8",
+              "C7",
+              "D6"
+            ],
+            [
+              "D14",
+              "C15"
+            ],
+            [
+              "E17",
+              "E15",
+              "D14"
+            ],
+            [
+              "G19",
+              "F18",
+              "E17"
+            ],
+            [
+              "G19",
+              "G21"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 362,
+      "kind": "half"
+    },
+    {
+      "type": "buy_train",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 363,
+      "train": "6-0",
+      "price": 900,
+      "variant": "7/8"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 364,
+      "hex": "E7",
+      "tile": "26-0",
+      "rotation": 5
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 365
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 366,
+      "routes": [
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "E11",
+              "F12",
+              "G13"
+            ],
+            [
+              "G7",
+              "F8",
+              "E7",
+              "E9",
+              "E11"
+            ],
+            [
+              "G7",
+              "G5",
+              "H4",
+              "H2",
+              "I1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 367,
+      "kind": "withhold"
+    },
+    {
+      "type": "sell_shares",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 368,
+      "shares": [
+        "IC_7",
+        "IC_8"
+      ],
+      "percent": 20,
+      "share_price": 20
+    },
+    {
+      "type": "sell_shares",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 369,
+      "shares": [
+        "GT_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_train",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 370,
+      "train": "6-1",
+      "price": 800,
+      "variant": "6"
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 371
+    },
+    {
+      "type": "run_routes",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 372,
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "H12",
+              "I11",
+              "J10"
+            ],
+            [
+              "G13",
+              "H12"
+            ],
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "D20",
+              "D18",
+              "E17"
+            ],
+            [
+              "D20",
+              "D22"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 373,
+      "kind": "withhold"
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 374
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 375,
+      "hex": "D6",
+      "tile": "300-0",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 376
+    },
+    {
+      "type": "run_routes",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 377,
+      "routes": [
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "C15",
+              "C17"
+            ],
+            [
+              "D6",
+              "C7",
+              "D8",
+              "D10",
+              "C11",
+              "C13",
+              "C15"
+            ],
+            [
+              "D6",
+              "C5"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 378,
+      "kind": "payout"
+    },
+    {
+      "type": "sell_shares",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 379,
+      "shares": [
+        "GT_8"
+      ],
+      "percent": 10,
+      "share_price": 180
+    },
+    {
+      "type": "buy_train",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 380,
+      "train": "6-2",
+      "price": 900,
+      "variant": "7/8"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 381,
+      "hex": "C15",
+      "tile": "297-1",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 382
+    },
+    {
+      "type": "run_routes",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 383,
+      "routes": [
+        {
+          "train": "4-2",
+          "connections": [
+            [
+              "G7",
+              "G5",
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "G9",
+              "G7"
+            ],
+            [
+              "G9",
+              "H8",
+              "I9",
+              "J10"
+            ]
+          ]
+        },
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "H12",
+              "I11",
+              "J10"
+            ],
+            [
+              "G13",
+              "H12"
+            ],
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "G19",
+              "F18",
+              "E17"
+            ],
+            [
+              "G19",
+              "G21"
+            ]
+          ]
+        },
+        {
+          "train": "4-3",
+          "connections": [
+            [
+              "C15",
+              "C13",
+              "C11",
+              "D10",
+              "D8",
+              "D6"
+            ],
+            [
+              "C15",
+              "D14"
+            ],
+            [
+              "E17",
+              "E15",
+              "D14"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 384,
+      "kind": "withhold"
+    },
+    {
+      "type": "buy_train",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 385,
+      "train": "5-2",
+      "price": 616
+    },
+    {
+      "type": "lay_tile",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 386,
+      "hex": "E9",
+      "tile": "23-3",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 387,
+      "hex": "F10",
+      "tile": "8-13",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 388
+    },
+    {
+      "type": "run_routes",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 389,
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "D6",
+              "C5"
+            ],
+            [
+              "C15",
+              "C13",
+              "C11",
+              "D10",
+              "D8",
+              "D6"
+            ],
+            [
+              "C15",
+              "D14"
+            ],
+            [
+              "E17",
+              "E15",
+              "D14"
+            ],
+            [
+              "G19",
+              "F18",
+              "E17"
+            ],
+            [
+              "G19",
+              "G21"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 390,
+      "kind": "withhold"
+    },
+    {
+      "type": "buy_train",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 391,
+      "train": "6-3",
+      "price": 900,
+      "variant": "7/8"
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 392
+    },
+    {
+      "type": "run_routes",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 393,
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "C15",
+              "C13",
+              "C11",
+              "D10",
+              "D8",
+              "D6"
+            ],
+            [
+              "C15",
+              "D14"
+            ],
+            [
+              "E17",
+              "E15",
+              "D14"
+            ],
+            [
+              "D20",
+              "D18",
+              "E17"
+            ],
+            [
+              "D20",
+              "D22"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 394,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 395
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 396,
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "G7",
+              "G5",
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "G7",
+              "F8",
+              "E7",
+              "E9",
+              "E11"
+            ],
+            [
+              "E11",
+              "F12",
+              "G13"
+            ],
+            [
+              "G13",
+              "H12"
+            ],
+            [
+              "H12",
+              "I11",
+              "J10"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 397,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 398
+    },
+    {
+      "type": "pass",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 399
+    },
+    {
+      "type": "pass",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 400
+    },
+    {
+      "type": "buy_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 401,
+      "shares": [
+        "GT_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 402
+    },
+    {
+      "type": "pass",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 403
+    },
+    {
+      "type": "buy_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 404,
+      "shares": [
+        "IC_4"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 405
+    },
+    {
+      "type": "buy_shares",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 406,
+      "shares": [
+        "GT_8"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 407,
+      "shares": [
+        "IC_7"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 408
+    },
+    {
+      "type": "pass",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 409
+    },
+    {
+      "type": "sell_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 410,
+      "shares": [
+        "GT_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 411,
+      "shares": [
+        "IC_8"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": "gragatrim",
+      "entity_type": "player",
+      "id": 412
+    },
+    {
+      "type": "pass",
+      "entity": "hoolaking",
+      "entity_type": "player",
+      "id": 413
+    },
+    {
+      "type": "pass",
+      "entity": "the_seaward",
+      "entity_type": "player",
+      "id": 414
+    },
+    {
+      "id": 415,
+      "type": "undo",
+      "entity": "GT",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 416,
+      "type": "redo",
+      "entity": "the_seaward",
+      "entity_type": "player"
+    },
+    {
+      "type": "run_routes",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 417,
+      "routes": [
+        {
+          "train": "6-2",
+          "connections": [
+            [
+              "B16",
+              "B18"
+            ],
+            [
+              "C15",
+              "B16"
+            ],
+            [
+              "C15",
+              "C13",
+              "C11",
+              "D10",
+              "D8",
+              "C7",
+              "D6"
+            ],
+            [
+              "D6",
+              "C5"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 418,
+      "kind": "payout"
+    },
+    {
+      "type": "place_token",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 419,
+      "city": "297-1-0",
+      "slot": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 420,
+      "hex": "E17",
+      "tile": "290-0",
+      "rotation": 3
+    },
+    {
+      "type": "run_routes",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 421,
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "C15",
+              "C13",
+              "C11",
+              "D10",
+              "D8",
+              "D6"
+            ],
+            [
+              "C15",
+              "D14"
+            ],
+            [
+              "E17",
+              "E15",
+              "D14"
+            ],
+            [
+              "E17",
+              "F18",
+              "G19"
+            ],
+            [
+              "G19",
+              "G21"
+            ]
+          ]
+        },
+        {
+          "train": "5-2",
+          "connections": [
+            [
+              "G7",
+              "F8",
+              "E7",
+              "D6"
+            ],
+            [
+              "G9",
+              "G7"
+            ],
+            [
+              "G9",
+              "H10",
+              "H12"
+            ],
+            [
+              "G13",
+              "H12"
+            ],
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 422,
+      "kind": "payout"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 423,
+      "hex": "H12",
+      "tile": "297-0",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 424
+    },
+    {
+      "type": "run_routes",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 425,
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "D6",
+              "C5"
+            ],
+            [
+              "C15",
+              "C13",
+              "C11",
+              "D10",
+              "D8",
+              "D6"
+            ],
+            [
+              "C15",
+              "D14"
+            ],
+            [
+              "E17",
+              "E15",
+              "D14"
+            ],
+            [
+              "E17",
+              "D18",
+              "D20"
+            ],
+            [
+              "D20",
+              "D22"
+            ]
+          ]
+        },
+        {
+          "train": "6-3",
+          "connections": [
+            [
+              "G7",
+              "G5",
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "G9",
+              "G7"
+            ],
+            [
+              "H12",
+              "H10",
+              "G9"
+            ],
+            [
+              "H12",
+              "G13"
+            ],
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "E17",
+              "F18",
+              "G19"
+            ],
+            [
+              "G19",
+              "G21"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 426,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 427
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 428,
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "G7",
+              "G5",
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "G7",
+              "F8",
+              "E7",
+              "E9",
+              "E11"
+            ],
+            [
+              "E11",
+              "F12",
+              "G13"
+            ],
+            [
+              "H12",
+              "G13"
+            ],
+            [
+              "H12",
+              "I11",
+              "J10"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 429,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 430
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 431
+    },
+    {
+      "type": "run_routes",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 432,
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "H12",
+              "I11",
+              "J10"
+            ],
+            [
+              "H12",
+              "G13"
+            ],
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "E17",
+              "D18",
+              "D20"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": 433,
+      "kind": "half",
+      "type": "dividend",
+      "entity": "NYC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 434,
+      "type": "undo",
+      "entity": "NYC",
+      "entity_type": "corporation"
+    },
+    {
+      "id": 435,
+      "type": "buy_shares",
+      "entity": "NYC",
+      "shares": [
+        "NYC_5",
+        "NYC_6",
+        "NYC_7",
+        "NYC_8"
+      ],
+      "percent": 40,
+      "entity_type": "corporation",
+      "share_price": 60
+    },
+    {
+      "id": 436,
+      "type": "undo",
+      "entity": "NYC",
+      "entity_type": "corporation"
+    },
+    {
+      "type": "dividend",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 437,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 438
+    },
+    {
+      "type": "run_routes",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 439,
+      "routes": [
+        {
+          "train": "6-2",
+          "connections": [
+            [
+              "B16",
+              "B18"
+            ],
+            [
+              "C15",
+              "B16"
+            ],
+            [
+              "C15",
+              "C13",
+              "C11",
+              "D10",
+              "D8",
+              "C7",
+              "D6"
+            ],
+            [
+              "D6",
+              "C5"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GT",
+      "entity_type": "corporation",
+      "id": 440,
+      "kind": "payout"
+    },
+    {
+      "type": "run_routes",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 441,
+      "routes": [
+        {
+          "train": "5-0",
+          "connections": [
+            [
+              "D6",
+              "C5"
+            ],
+            [
+              "C15",
+              "C13",
+              "C11",
+              "D10",
+              "D8",
+              "D6"
+            ],
+            [
+              "C15",
+              "C17"
+            ]
+          ]
+        },
+        {
+          "train": "5-2",
+          "connections": [
+            [
+              "G19",
+              "G21"
+            ],
+            [
+              "E17",
+              "F18",
+              "G19"
+            ],
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "H12",
+              "G13"
+            ],
+            [
+              "H12",
+              "I11",
+              "J10"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 442,
+      "kind": "payout"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 443,
+      "hex": "E7",
+      "tile": "42-0",
+      "rotation": 5
+    },
+    {
+      "type": "pass",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 444
+    },
+    {
+      "type": "run_routes",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 445,
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "D6",
+              "C5"
+            ],
+            [
+              "C15",
+              "C13",
+              "C11",
+              "D10",
+              "D8",
+              "D6"
+            ],
+            [
+              "C15",
+              "D14"
+            ],
+            [
+              "E17",
+              "E15",
+              "D14"
+            ],
+            [
+              "E17",
+              "D18",
+              "D20"
+            ],
+            [
+              "D20",
+              "D22"
+            ]
+          ]
+        },
+        {
+          "train": "6-3",
+          "connections": [
+            [
+              "G7",
+              "G5",
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "G9",
+              "G7"
+            ],
+            [
+              "H12",
+              "H10",
+              "G9"
+            ],
+            [
+              "H12",
+              "G13"
+            ],
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "E17",
+              "F18",
+              "G19"
+            ],
+            [
+              "G19",
+              "G21"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "ERIE",
+      "entity_type": "corporation",
+      "id": 446,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 447
+    },
+    {
+      "type": "run_routes",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 448,
+      "routes": [
+        {
+          "train": "6-1",
+          "connections": [
+            [
+              "G7",
+              "G5",
+              "H4",
+              "H2",
+              "I1"
+            ],
+            [
+              "G7",
+              "F8",
+              "E7",
+              "E9",
+              "E11"
+            ],
+            [
+              "E11",
+              "F12",
+              "G13"
+            ],
+            [
+              "H12",
+              "G13"
+            ],
+            [
+              "H12",
+              "I11",
+              "J10"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 449,
+      "kind": "half"
+    },
+    {
+      "type": "pass",
+      "entity": "IC",
+      "entity_type": "corporation",
+      "id": 450
+    },
+    {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 451
+    },
+    {
+      "type": "run_routes",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 452,
+      "routes": [
+        {
+          "train": "5-1",
+          "connections": [
+            [
+              "H12",
+              "I11",
+              "J10"
+            ],
+            [
+              "H12",
+              "G13"
+            ],
+            [
+              "E17",
+              "F16",
+              "F14",
+              "G13"
+            ],
+            [
+              "E17",
+              "D18",
+              "D20"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 453,
+      "kind": "withhold"
+    },
+    {
+      "type": "buy_train",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 454,
+      "train": "6-4",
+      "price": 800,
+      "variant": "6"
+    }
+  ],
+  "loaded": true,
+  "created_at": 1602772670,
+  "updated_at": 1603204117
+}
