@@ -495,13 +495,17 @@ module Engine
 
       private
 
-      def handle_no_mail(entity)
-        @log << "#{entity.name} receives no mail income as it has no trains"
+      def handle_no_mail(entity, trainless: true)
+        reason = trainless ? 'it has no trains' : 'home location has no value'
+        @log << "#{entity.name} receives no mail income as #{reason}"
       end
 
       def handle_mail(entity)
         hex = hex_by_id(entity.coordinates)
         income = hex.tile.city_towns.first.route_base_revenue(@phase, entity.trains.first)
+        # Income is zero in case home location has no revenue center
+        return handle_no_mail(entity, trainless: false) unless income.positive?
+
         @bank.spend(income, entity)
         @log << "#{entity.name} receives #{format_currency(income)} in mail"
       end
