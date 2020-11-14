@@ -266,6 +266,10 @@ module Engine
         entity.trains.empty? ? handle_no_mail(entity) : handle_mail(entity)
       end
 
+      def all_corporations
+        @minors + @corporations
+      end
+
       def event_companies_buyable!
         setup_company_price_50_to_150_percent
       end
@@ -540,7 +544,6 @@ module Engine
         minor.remove_train(train)
         trains.delete(train)
 
-        @minors.delete(minor)
         minor.close!
         company.close!
       end
