@@ -24,7 +24,9 @@ module View
 
           if @step.respond_to?(:mergeable)
             mergeable_entities = @step.mergeable(merge_entity)
-            player_corps = mergeable_entities.select { |target| target.owner == merge_entity.owner }
+            player_corps = mergeable_entities.select do |target|
+              target.owner == merge_entity.owner || @step.show_other_players
+            end
             @selected_corporation = player_corps.first if player_corps.one?
           end
 
@@ -80,7 +82,7 @@ module View
             hidden_corps = false
             mergeable_entities.each do |target|
               corp = @selected_corporation if corps_actionable
-              if @show_other_players || target.owner == merge_entity.owner
+              if @step.show_other_players || @show_other_players || target.owner == merge_entity.owner
                 children << h(Corporation, corporation: target, selected_corporation: corp)
               else
                 hidden_corps = true
