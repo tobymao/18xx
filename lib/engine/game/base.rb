@@ -537,6 +537,10 @@ module Engine
         self
       end
 
+      def all_corporations
+        corporations
+      end
+
       def sorted_corporations
         # Corporations sorted by some potential game rules
         ipoed, others = corporations.partition(&:ipoed)

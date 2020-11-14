@@ -63,6 +63,16 @@ module Engine
       @closed
     end
 
+    def share_price; end
+
+    def par_price; end
+
+    def president?(player)
+      return false unless player
+
+      owner == player
+    end
+
     def close!
       @closed = true
       @floated = false
