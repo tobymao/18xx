@@ -507,6 +507,8 @@ module Engine
 
         @log << "• Action(#{action.type}) via Master Mode by #{action.user}:" if action.user
 
+        preprocess_action(action)
+
         @round.process_action(action)
 
         unless action.is_a?(Action::Message)
@@ -536,6 +538,8 @@ module Engine
 
         self
       end
+
+      def preprocess_action(_action); end
 
       def all_corporations
         corporations
