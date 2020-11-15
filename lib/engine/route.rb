@@ -272,7 +272,7 @@ module Engine
     def restore_connections(connection_hexes)
       possibilities = connection_hexes.map do |hexes|
         hex_ids = hexes.map(&:id)
-        hexes[0].all_connections.select { |c| c.complete? && c.matches?(hex_ids) }
+        hexes[0].all_connections.select { |c| c.matches?(hex_ids) }
       end
 
       other_paths = @game.compute_other_paths(@routes, self)
