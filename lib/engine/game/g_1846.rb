@@ -104,36 +104,6 @@ module Engine
         two_player? ? 0 : players.size
       end
 
-      def cert_limit
-        num_corps = @corporations.size
-        case @players.size
-        when 2
-          num_corps == 5 ? 19 : 16
-        when 3
-          num_corps == 5 ? 14 : 11
-        when 4
-          case num_corps
-          when 6
-            12
-          when 5
-            10
-          else
-            8
-          end
-        when 5
-          case num_corps
-          when 7
-            11
-          when 6
-            10
-          when 5
-            8
-          else
-            6
-          end
-        end
-      end
-
       def setup
         @turn = setup_turn
 
