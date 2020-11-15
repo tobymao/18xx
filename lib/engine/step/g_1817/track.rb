@@ -30,7 +30,7 @@ module Engine
           psm.remove_ability(ability)
         end
 
-        def potential_tiles(_entity, hex)
+        def upgradeable_tiles(_entity, hex)
           return super if hex.tile.color != :green || hex.tile.cities.none?
 
           tiles = super
