@@ -875,9 +875,8 @@ module Engine
         player.bankrupt = true
         return unless self.class::CERT_LIMIT_CHANGE_ON_BANKRUPTCY
 
-        remaining_players = @players.reject(&:bankrupt).length
         # Assume that games without cert limits at lower player counts retain previous counts (1817 and 2 players)
-        @cert_limit = self.class::CERT_LIMIT[remaining_players] || @cert_limit
+        @cert_limit = init_cert_limit
       end
 
       def tile_lays(_entity)
@@ -1011,7 +1010,10 @@ module Engine
 
       def init_cert_limit
         cert_limit = self.class::CERT_LIMIT
-        cert_limit.is_a?(Hash) ? cert_limit[players.size] : cert_limit
+        cert_limit = cert_limit[players.reject(&:bankrupt).length] if cert_limit.is_a?(Hash)
+        cert_limit = cert_limit.reject { |k, _| k.to_i < @corporations.size }
+                       .min_by(&:first)&.last || cert_limit.first.last if cert_limit.is_a?(Hash)
+        cert_limit || @cert_limit
       end
 
       def init_phase
