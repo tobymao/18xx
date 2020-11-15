@@ -37,8 +37,8 @@ module Engine
         end
       end
 
-      hex_edges.keys.each do |hex, edge|
-        connections = hex.connections[edge]
+      hex_edges.keys.each do |hex_, edge|
+        connections = hex_.connections[edge]
         connections.select!(&:valid?)
         connections.uniq!(&:hash)
       end
