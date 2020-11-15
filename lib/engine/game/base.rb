@@ -345,7 +345,7 @@ module Engine
                  end
 
         # This intentionally ignores player id for now until the database is migrated.
-        @players = @names.map { |_playerid, name| Player.new(name, name) }
+        @players = @names.map { |playerid, name| Player.new(playerid, name) }
 
         @optional_rules = init_optional_rules(optional_rules)
 

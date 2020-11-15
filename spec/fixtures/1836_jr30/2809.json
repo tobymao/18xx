@@ -39,28 +39,28 @@
     {
       "id": 1,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "When games refuse to start, start your owns. xD Never played 36jr, so we'll see how this goes.",
       "entity_type": "player"
     },
     {
       "id": 2,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "Haha",
       "entity_type": "player"
     },
     {
       "id": 3,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "remember the train limit",
       "entity_type": "player"
     },
     {
       "id": 4,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "you cant buy two of the same type in one turn",
       "entity_type": "player"
     },
@@ -68,7 +68,7 @@
       "id": 5,
       "type": "bid",
       "price": 225,
-      "entity": "willbeplaying",
+      "entity": 949,
       "company": "CFLV",
       "entity_type": "player"
     },
@@ -76,28 +76,28 @@
       "id": 6,
       "type": "bid",
       "price": 20,
-      "entity": "Navor",
+      "entity": 2225,
       "company": "ACC",
       "entity_type": "player"
     },
     {
       "id": 7,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "did the company float at 5 or 6",
       "entity_type": "player"
     },
     {
       "id": 8,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "335 or 402?",
       "entity_type": "player"
     },
     {
       "id": 9,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "If it's 30 variant, then I assume it's 6 to float.",
       "entity_type": "player"
     },
@@ -105,7 +105,7 @@
       "id": 10,
       "type": "bid",
       "price": 165,
-      "entity": "Azureth",
+      "entity": 175,
       "company": "CFL",
       "entity_type": "player"
     },
@@ -113,49 +113,49 @@
       "id": 11,
       "type": "bid",
       "price": 40,
-      "entity": "willbeplaying",
+      "entity": 949,
       "company": "E-SF",
       "entity_type": "player"
     },
     {
       "id": 12,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "ye",
       "entity_type": "player"
     },
     {
       "id": 13,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 14,
       "type": "bid",
       "price": 70,
-      "entity": "Azureth",
+      "entity": 175,
       "company": "CdH",
       "entity_type": "player"
     },
     {
       "id": 15,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 16,
       "type": "bid",
       "price": 110,
-      "entity": "Navor",
+      "entity": 2225,
       "company": "GCB",
       "entity_type": "player"
     },
     {
       "id": 17,
       "type": "par",
-      "entity": "willbeplaying",
+      "entity": 949,
       "corporation": "Nord",
       "entity_type": "player",
       "share_price": "82,2,6"
@@ -163,14 +163,14 @@
     {
       "id": 18,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "I have no idea how the auction went regarding the \"normal\" meta, but I think I got the GCL share for pretty cheap.",
       "entity_type": "player"
     },
     {
       "id": 19,
       "type": "par",
-      "entity": "Azureth",
+      "entity": 175,
       "corporation": "GCL",
       "entity_type": "player",
       "share_price": "71,4,6"
@@ -178,7 +178,7 @@
     {
       "id": 20,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "Nord_1"
       ],
@@ -187,7 +187,7 @@
     {
       "id": 21,
       "type": "par",
-      "entity": "Navor",
+      "entity": 2225,
       "corporation": "HSM",
       "entity_type": "player",
       "share_price": "76,3,6"
@@ -195,7 +195,7 @@
     {
       "id": 22,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "GCL_2"
       ],
@@ -204,14 +204,14 @@
     {
       "id": 23,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "You can keep byuing GCL on my turns to float it, just to speed it up a little.",
       "entity_type": "player"
     },
     {
       "id": 24,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "Nord_2"
       ],
@@ -220,7 +220,7 @@
     {
       "id": 25,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "HSM_1"
       ],
@@ -229,7 +229,7 @@
     {
       "id": 26,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "GCL_3"
       ],
@@ -238,7 +238,7 @@
     {
       "id": 27,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "Nord_3"
       ],
@@ -247,7 +247,7 @@
     {
       "id": 28,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "HSM_2"
       ],
@@ -256,7 +256,7 @@
     {
       "id": 29,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "GCL_4"
       ],
@@ -265,7 +265,7 @@
     {
       "id": 30,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "Nord_4"
       ],
@@ -274,7 +274,7 @@
     {
       "id": 31,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "HSM_3"
       ],
@@ -283,7 +283,7 @@
     {
       "id": 32,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "HSM_4"
       ],
@@ -292,7 +292,7 @@
     {
       "id": 33,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "bought and floated everyones companies",
       "entity_type": "player"
     },
@@ -316,14 +316,14 @@
     {
       "id": 36,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "remember - only one train buy per turn of the same type",
       "entity_type": "player"
     },
     {
       "id": 37,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "you cant buy 2 + 2 trains, but can buy 2 and a 3. Or a 3 and a 4",
       "entity_type": "player"
     },
@@ -382,26 +382,26 @@
     {
       "id": 45,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "my company is shit, I won't be running next turn either. xD",
       "entity_type": "player"
     },
     {
       "id": 46,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 47,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 48,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
@@ -575,7 +575,7 @@
     {
       "id": 73,
       "type": "sell_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "GCL_1"
       ],
@@ -585,7 +585,7 @@
     {
       "id": 74,
       "type": "par",
-      "entity": "Azureth",
+      "entity": 175,
       "corporation": "B",
       "entity_type": "player",
       "share_price": "100,0,6"
@@ -593,13 +593,13 @@
     {
       "id": 75,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 76,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "HSM_5"
       ],
@@ -608,13 +608,13 @@
     {
       "id": 77,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 78,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "Nord_5"
       ],
@@ -623,13 +623,13 @@
     {
       "id": 79,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 80,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "B_1"
       ],
@@ -638,46 +638,46 @@
     {
       "id": 81,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 82,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Anyone doing something? Or can I float the B?",
       "entity_type": "player"
     },
     {
       "id": 83,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 84,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "I'm passing",
       "entity_type": "player"
     },
     {
       "id": 85,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 86,
       "type": "message",
-      "entity": "Navor",
+      "entity": 2225,
       "message": "Autopass plz",
       "entity_type": "player"
     },
     {
       "id": 87,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "B_2"
       ],
@@ -686,25 +686,25 @@
     {
       "id": 88,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 89,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 90,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 91,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "B_3"
       ],
@@ -713,25 +713,25 @@
     {
       "id": 92,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 93,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 94,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 95,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "B_4"
       ],
@@ -740,25 +740,25 @@
     {
       "id": 96,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 97,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 98,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 99,
       "type": "sell_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "B_1"
       ],
@@ -768,7 +768,7 @@
     {
       "id": 100,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "HSM_6"
       ],
@@ -777,39 +777,39 @@
     {
       "id": 101,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 102,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 103,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 104,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "all happy?",
       "entity_type": "player"
     },
     {
       "id": 105,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "ye",
       "entity_type": "player"
     },
     {
       "id": 106,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
@@ -1277,14 +1277,14 @@
     {
       "id": 166,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "I don't think I like the look of this. xD Oh well, first game is often a mess, esp if others have played it.",
       "entity_type": "player"
     },
     {
       "id": 167,
       "type": "sell_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "HSM_5"
       ],
@@ -1294,7 +1294,7 @@
     {
       "id": 168,
       "type": "sell_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "Nord_1"
       ],
@@ -1304,7 +1304,7 @@
     {
       "id": 169,
       "type": "par",
-      "entity": "willbeplaying",
+      "entity": 949,
       "corporation": "NFL",
       "entity_type": "player",
       "share_price": "82,2,6"
@@ -1312,48 +1312,48 @@
     {
       "id": 170,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 171,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "I havent played a complete game - the earlier ones have been deleted by toby :D",
       "entity_type": "player"
     },
     {
       "id": 172,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "since they were very early alphas",
       "entity_type": "player"
     },
     {
       "id": 173,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "or are still going on",
       "entity_type": "player"
     },
     {
       "id": 174,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "NFL for me on my turns thanks",
       "entity_type": "player"
     },
     {
       "id": 175,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "I saw the double trainpurchase was blocked by game. So that's fixed.",
       "entity_type": "player"
     },
     {
       "id": 176,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "GCL_1"
       ],
@@ -1362,20 +1362,20 @@
     {
       "id": 177,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 178,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "damnit, now I need few more Franks. :P",
       "entity_type": "player"
     },
     {
       "id": 179,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "HSM_7"
       ],
@@ -1384,7 +1384,7 @@
     {
       "id": 180,
       "type": "sell_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "HSM_6"
       ],
@@ -1394,13 +1394,13 @@
     {
       "id": 181,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 182,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "NFL_1"
       ],
@@ -1409,13 +1409,13 @@
     {
       "id": 183,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 186,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "B_1"
       ],
@@ -1424,13 +1424,13 @@
     {
       "id": 187,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 188,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "Nord_6"
       ],
@@ -1439,13 +1439,13 @@
     {
       "id": 189,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 190,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "NFL_2"
       ],
@@ -1454,13 +1454,13 @@
     {
       "id": 191,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 192,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "Nord_7"
       ],
@@ -1469,13 +1469,13 @@
     {
       "id": 193,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 194,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "GCL_5"
       ],
@@ -1484,13 +1484,13 @@
     {
       "id": 195,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 196,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "NFL_3"
       ],
@@ -1499,32 +1499,32 @@
     {
       "id": 197,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 198,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 199,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "permapass",
       "entity_type": "player"
     },
     {
       "id": 200,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 201,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "NFL_4"
       ],
@@ -1533,25 +1533,25 @@
     {
       "id": 202,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 203,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 204,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 205,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
@@ -1712,7 +1712,7 @@
     {
       "id": 224,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "so tough choosing what to do with the trains",
       "entity_type": "player"
     },
@@ -2108,7 +2108,7 @@
     {
       "id": 255,
       "type": "sell_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "GCL_1"
       ],
@@ -2118,7 +2118,7 @@
     {
       "id": 256,
       "type": "par",
-      "entity": "Navor",
+      "entity": 2225,
       "corporation": "NBDS",
       "entity_type": "player",
       "share_price": "100,0,6"
@@ -2126,13 +2126,13 @@
     {
       "id": 257,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 258,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "Nord_8"
       ],
@@ -2141,13 +2141,13 @@
     {
       "id": 259,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 260,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "B_6"
       ],
@@ -2156,13 +2156,13 @@
     {
       "id": 261,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 262,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "B_7"
       ],
@@ -2171,13 +2171,13 @@
     {
       "id": 263,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 266,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "B_8"
       ],
@@ -2186,13 +2186,13 @@
     {
       "id": 267,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 268,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "GCL_1"
       ],
@@ -2201,13 +2201,13 @@
     {
       "id": 269,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 270,
       "type": "sell_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "Nord_5",
         "Nord_7"
@@ -2218,7 +2218,7 @@
     {
       "id": 271,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "NBDS_1"
       ],
@@ -2227,13 +2227,13 @@
     {
       "id": 272,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 273,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "NFL_5"
       ],
@@ -2242,20 +2242,20 @@
     {
       "id": 274,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 275,
       "type": "message",
-      "entity": "Navor",
+      "entity": 2225,
       "message": "Autobuy NBDS plz",
       "entity_type": "player"
     },
     {
       "id": 276,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "HSM_8"
       ],
@@ -2264,13 +2264,13 @@
     {
       "id": 277,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 278,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "NBDS_2"
       ],
@@ -2279,25 +2279,25 @@
     {
       "id": 279,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 280,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 281,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 282,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "NBDS_3"
       ],
@@ -2306,25 +2306,25 @@
     {
       "id": 283,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 284,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 285,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 286,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "NBDS_4"
       ],
@@ -2333,25 +2333,25 @@
     {
       "id": 287,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 288,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 289,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 290,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
@@ -2412,7 +2412,7 @@
     {
       "id": 294,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Just a heads up. Heading to bed soon here so need to pause our semi-live game. :D",
       "entity_type": "player"
     },
@@ -2543,14 +2543,14 @@
     {
       "id": 310,
       "type": "message",
-      "entity": "Navor",
+      "entity": 2225,
       "message": "so difficult game...",
       "entity_type": "player"
     },
     {
       "id": 312,
       "type": "sell_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "B_5",
         "B_1",
@@ -2562,7 +2562,7 @@
     {
       "id": 313,
       "type": "sell_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "HSM_1",
         "HSM_2",
@@ -2582,35 +2582,35 @@
     {
       "id": 315,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "The dynamics are just so different. Though I feel the private that gives a free cert is almost similar to -30s Camden&Amboy where you really shouldn't let it go too cheap. ",
       "entity_type": "player"
     },
     {
       "id": 316,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "I was afraid that my early second company would just end up eating some 3s and 4s and run out of money, but I was able to withhold for the trains while keeping up with the value of others. Also dipping the GCL to yellow was a lucky strike. :P So few trains to go around.",
       "entity_type": "player"
     },
     {
       "id": 317,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Also there was the option to buy the train from NBDS to pool the company money some, though that would've robbed you from one train run. Hard to know which one was better.",
       "entity_type": "player"
     },
     {
       "id": 318,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Also from my very small experience, Antwerp looks like an important token spot.",
       "entity_type": "player"
     },
     {
       "id": 319,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "I was expecting Navor to go for the NBDS one SR earlier, which would've eaten my 3s, though this way I was able to rush out a D. I kinda feel it may have been a snowball from the beginning.",
       "entity_type": "player"
     },
@@ -2711,7 +2711,7 @@
     {
       "id": 335,
       "type": "sell_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "B_6"
       ],
@@ -2721,7 +2721,7 @@
     {
       "id": 336,
       "type": "sell_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "GCL_1"
       ],
@@ -2731,7 +2731,7 @@
     {
       "id": 341,
       "type": "sell_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "NFL_1",
         "NFL_2",
@@ -2751,14 +2751,14 @@
     {
       "id": 343,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "Ufff",
       "entity_type": "player"
     },
     {
       "id": 344,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "But no bankrupcies. I guess that's an achievement too for a first game. xD",
       "entity_type": "player"
     },
@@ -3116,35 +3116,35 @@
     {
       "id": 389,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "oh wow Azureth really blocked the south",
       "entity_type": "player"
     },
     {
       "id": 390,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "well the second green is not my doing",
       "entity_type": "player"
     },
     {
       "id": 391,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "south of Utrech",
       "entity_type": "player"
     },
     {
       "id": 392,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "I was kinda hoping for an overpass to Gronigen, but this works for me too.",
       "entity_type": "player"
     },
     {
       "id": 393,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "The one thing I've learned in 18xx is that no preliminary plan survives the first auction round. xD",
       "entity_type": "player"
     },
@@ -3332,63 +3332,63 @@
     {
       "id": 406,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "70 run with a Diesel. -.-",
       "entity_type": "player"
     },
     {
       "id": 407,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "uuf",
       "entity_type": "player"
     },
     {
       "id": 408,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "I didn't see the Utrech token was that important. Maybe you should've started building towards Amsterdam earlier?",
       "entity_type": "player"
     },
     {
       "id": 409,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "it wont be much better with Nord either",
       "entity_type": "player"
     },
     {
       "id": 410,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "yeah",
       "entity_type": "player"
     },
     {
       "id": 411,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "oh ya, my turn. xD",
       "entity_type": "player"
     },
     {
       "id": 412,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "first time getting this far in this game",
       "entity_type": "player"
     },
     {
       "id": 413,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "the map is very unfamiliar",
       "entity_type": "player"
     },
     {
       "id": 414,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "yeah",
       "entity_type": "player"
     },
@@ -3454,7 +3454,7 @@
     {
       "id": 420,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "NBDS_5"
       ],
@@ -3463,27 +3463,27 @@
     {
       "id": 421,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 422,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "HMS is a weird company. Only 2 tokens, so you kinda want to token out of Amsterdam so you don't get blocked. Like that. Perhaps the OO could be placed taht HMS can actually get out that way too, thougt it too is susceptible to tokens.",
       "entity_type": "player"
     },
     {
       "id": 423,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "And I'm not sure how I did it, but I'm slightly proud of my GCL. Massive earner and still in yellow.",
       "entity_type": "player"
     },
     {
       "id": 424,
       "type": "sell_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "Nord_2",
         "Nord_3"
@@ -3494,7 +3494,7 @@
     {
       "id": 425,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "B_5"
       ],
@@ -3503,13 +3503,13 @@
     {
       "id": 426,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 427,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "B_1"
       ],
@@ -3518,13 +3518,13 @@
     {
       "id": 428,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 429,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "Nord_1"
       ],
@@ -3533,34 +3533,34 @@
     {
       "id": 430,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 431,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "I mean, I'm not gonna start holding back the punches now. xD I guess I'll take a free presidency cert. Though I do apologize. ",
       "entity_type": "player"
     },
     {
       "id": 432,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Would you be up for a rematch? I think we'd have a much more balanced experience?",
       "entity_type": "player"
     },
     {
       "id": 433,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "Sure. Really fast play. :)",
       "entity_type": "player"
     },
     {
       "id": 434,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "B_7"
       ],
@@ -3569,20 +3569,20 @@
     {
       "id": 435,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 436,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Yeah, almost too fast. I'm supposed to be doing work at times. :P ",
       "entity_type": "player"
     },
     {
       "id": 437,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "B_6"
       ],
@@ -3591,27 +3591,27 @@
     {
       "id": 438,
       "type": "message",
-      "entity": "Navor",
+      "entity": 2225,
       "message": "I agree. Very fast game so I didn't realize a situation.I want rematch kk ",
       "entity_type": "player"
     },
     {
       "id": 439,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Tomorrow might be slightly slower, since I'm supposed to have a 1870 live game. Curious to see how that map is.",
       "entity_type": "player"
     },
     {
       "id": 440,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 441,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "Nord_5"
       ],
@@ -3620,13 +3620,13 @@
     {
       "id": 442,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 443,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "HSM_5"
       ],
@@ -3635,13 +3635,13 @@
     {
       "id": 444,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 445,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "GCL_1"
       ],
@@ -3650,13 +3650,13 @@
     {
       "id": 446,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 447,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "Nord_7"
       ],
@@ -3665,13 +3665,13 @@
     {
       "id": 448,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 449,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "GCL_6"
       ],
@@ -3680,13 +3680,13 @@
     {
       "id": 450,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 451,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "NFL_1"
       ],
@@ -3695,13 +3695,13 @@
     {
       "id": 452,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 453,
       "type": "buy_shares",
-      "entity": "Azureth",
+      "entity": 175,
       "shares": [
         "Nord_2"
       ],
@@ -3710,13 +3710,13 @@
     {
       "id": 454,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 455,
       "type": "buy_shares",
-      "entity": "willbeplaying",
+      "entity": 949,
       "shares": [
         "GCL_7"
       ],
@@ -3725,13 +3725,13 @@
     {
       "id": 456,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 457,
       "type": "buy_shares",
-      "entity": "Navor",
+      "entity": 2225,
       "shares": [
         "NFL_2"
       ],
@@ -3740,25 +3740,25 @@
     {
       "id": 458,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
       "id": 459,
       "type": "pass",
-      "entity": "Azureth",
+      "entity": 175,
       "entity_type": "player"
     },
     {
       "id": 460,
       "type": "pass",
-      "entity": "willbeplaying",
+      "entity": 949,
       "entity_type": "player"
     },
     {
       "id": 461,
       "type": "pass",
-      "entity": "Navor",
+      "entity": 2225,
       "entity_type": "player"
     },
     {
@@ -3974,14 +3974,14 @@
     {
       "id": 484,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "that can't be correct",
       "entity_type": "player"
     },
     {
       "id": 485,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Paris is giving 60 franks",
       "entity_type": "player"
     },
@@ -4013,42 +4013,42 @@
     {
       "id": 487,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "lol :D",
       "entity_type": "player"
     },
     {
       "id": 488,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "it is",
       "entity_type": "player"
     },
     {
       "id": 489,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Apparently it works differently",
       "entity_type": "player"
     },
     {
       "id": 490,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Is 20/30 Franks PER token on the route.",
       "entity_type": "player"
     },
     {
       "id": 491,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Which means that the Harwich is actually a 120 Franks for my B, since it's same with ports.",
       "entity_type": "player"
     },
     {
       "id": 492,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "I though they looked bit lame.",
       "entity_type": "player"
     },
@@ -4068,14 +4068,14 @@
     {
       "id": 495,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "It's also NOT a valid route to run to Paris/port and one other, needs atleast two other revenue locations.",
       "entity_type": "player"
     },
     {
       "id": 496,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Quirks of the game",
       "entity_type": "player"
     },
@@ -4768,7 +4768,7 @@
     {
       "id": 553,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Soo, shall I create a rematch? Not feeling like continuing right away, perhaps like tomorrow morning or evening.",
       "entity_type": "player"
     },
@@ -4818,21 +4818,21 @@
     {
       "id": 558,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "ye sure",
       "entity_type": "player"
     },
     {
       "id": 559,
       "type": "message",
-      "entity": "willbeplaying",
+      "entity": 949,
       "message": "gg",
       "entity_type": "player"
     },
     {
       "id": 560,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "sorry for the massacre.",
       "entity_type": "player"
     },
@@ -4895,14 +4895,14 @@
     {
       "id": 566,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "It's up",
       "entity_type": "player"
     },
     {
       "id": 567,
       "type": "message",
-      "entity": "Azureth",
+      "entity": 175,
       "message": "Just to get it running, but I probably won't make moves till tomorrow.",
       "entity_type": "player"
     }

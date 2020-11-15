@@ -84,7 +84,6 @@ class Api
                 engine = Engine::GAMES_BY_TITLE[game.title].new(
                   players,
                   id: game.id,
-                  settings: game.settings,
                   actions: actions_h(game),
                   optional_rules: game.settings['optional_rules']&.map(&:to_sym),
                 )
