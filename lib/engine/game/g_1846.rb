@@ -134,6 +134,8 @@ module Engine
           end
         end
 
+        @cert_limit = init_cert_limit
+
         @companies.each do |company|
           company.min_price = 1
           company.max_price = company.value
