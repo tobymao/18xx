@@ -105,7 +105,7 @@ module Engine
         @log << '-- Event: Civil War! --'
         @corporations.sort_by(&:name).each do |c|
           unless c.floated?
-            @log << "#{c.name} does not revceive any Civil War token as it has not floated yet"
+            @log << "#{c.name} does not receive any Civil War token as it has not floated yet"
             next
           end
 
@@ -113,7 +113,7 @@ module Engine
             # No effect if corporation has no trains, current entity does not yet have
             # any trains as it is in the middle of a train purchase (which triggered the event)
             # but as it will have a train after the buy is completed it gets the token anyway.
-            @log << "#{c.name} does not revceive any Civil War token as it owns no trains" if c.floated?
+            @log << "#{c.name} does not receive any Civil War token as it owns no trains" if c.floated?
             next
           end
 
