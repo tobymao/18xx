@@ -184,15 +184,13 @@ module Engine
     end
 
     def lay_downgrade(tile)
-      hexes = @connections.values.flatten.flat_map(&:hexes)
+      hexes = all_connections.flat_map(&:hexes).uniq
 
       lay(tile)
 
       hexes.each do |hex|
         hex.connections.each do |_, connections|
-          connections.select! do |connection|
-            connection.paths.all?(&:hex)
-          end
+          connections.select!(&:valid?)
         end
       end
 

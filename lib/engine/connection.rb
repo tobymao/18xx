@@ -13,6 +13,8 @@ module Engine
         path.walk { |p| node_paths << p if p.node? }
       end
 
+      hex_edges = {}
+
       node_paths.uniq.each do |node_path|
         node_path.walk(chain: []) do |chain|
           next unless valid_connection?(chain)
@@ -23,29 +25,22 @@ module Engine
           chain.each do |path|
             hex = path.hex
             if path.exits.empty?
-              hex_connections = hex.connections[:internal]
-              hex_connections << connection
+              hex_edges[[hex, :internal]] = true
+              hex.connections[:internal] << connection
             else
               path.exits.each do |edge|
-                hex_connections = hex.connections[edge]
-                hex_connections << connection
+                hex_edges[[hex, edge]] = true
+                hex.connections[edge] << connection
               end
             end
           end
         end
       end
 
-      connections.keys.uniq { |c| c.paths.sort }.each do |new|
-        new_paths = new.paths
-
-        new_paths.each do |path|
-          path.exits.each do |edge|
-            path.hex.connections[edge].reject! do |old|
-              old_paths = old.paths
-              old != new && (!old_paths.all?(&:hex) || (old_paths - new_paths).empty?)
-            end
-          end
-        end
+      hex_edges.keys.each do |hex, edge|
+        connections = hex.connections[edge]
+        connections.select!(&:valid?)
+        connections.uniq!(&:hash)
       end
     end
 
@@ -88,18 +83,22 @@ module Engine
     def id
       @id ||=
         begin
-          sorted = []
+          uniq_paths = []
           junction_map = {}
 
           # skip over paths that have a junction we've already seen
           @paths.each do |path|
-            sorted << path if !junction_map[path.a] && !junction_map[path.b]
+            uniq_paths << path if !junction_map[path.a] && !junction_map[path.b]
             junction_map[path.a] = true if path.a.junction?
             junction_map[path.b] = true if path.b.junction?
           end
 
-          sorted.map { |path| path.hex.id }
+          uniq_paths.map! { |path| path.hex.id }
         end
+    end
+
+    def hash
+      @hash ||= @paths.map(&:id).sort!.hash
     end
 
     def clear_cache
@@ -118,6 +117,10 @@ module Engine
 
     def complete?
       nodes.size == 2
+    end
+
+    def valid?
+      @paths.all?(&:hex)
     end
 
     def include?(hex)
