@@ -103,27 +103,25 @@ module Engine
 
       def event_civil_war!
         @log << '-- Event: Civil War! --'
-        @corporations.sort_by(&:name).each do |c|
-          unless c.floated?
-            @log << "#{c.name} does not receive any Civil War token as it has not floated yet"
-            next
-          end
 
-          if c.trains.empty? && current_entity != c
-            # No effect if corporation has no trains, current entity does not yet have
-            # any trains as it is in the middle of a train purchase (which triggered the event)
-            # but as it will have a train after the buy is completed it gets the token anyway.
-            @log << "#{c.name} does not receive any Civil War token as it owns no trains" if c.floated?
-            next
-          end
+        # Corporations that are active and own trains does get a Civil War token.
+        # The current entity might not have any, but the 3' train it bought that
+        # triggered the Civil War will be part of the trains for it.
+        # There is a possibility that the trains will not have a valid route but
+        # that is handled in the route code.
+        corps = @corporations.select do |c|
+          (c == current_entity) || (c.floated? && c.trains.any?)
+        end
 
-          c.add_ability(Engine::Ability::Base.new(
+        corps.each do |corp|
+          corp.add_ability(Engine::Ability::Base.new(
             type: :civil_war,
             description: 'Civil War! (One time effect)',
             count: 1,
           ))
-          @log << "#{c.name} receives a Civil War token which affects its next OR"
         end
+
+        @log << "#{corps.map(&:name).sort.join(', ')} each receive a Civil War token which affects their next OR"
       end
 
       def lnr
