@@ -103,15 +103,26 @@ module Engine
 
       def event_civil_war!
         @log << '-- Event: Civil War! --'
-        @corporations.each do |c|
-          # No effect if corporation has no trains
-          next if c.trains.empty?
+        @corporations.sort_by(&:name).each do |c|
+          unless c.floated?
+            @log << "#{c.name} does not revceive any Civil War token as it has not floated yet"
+            next
+          end
+
+          if c.trains.empty? && current_entity != c
+            # No effect if corporation has no trains, current entity does not yet have
+            # any trains as it is in the middle of a train purchase (which triggered the event)
+            # but as it will have a train after the buy is completed it gets the token anyway.
+            @log << "#{c.name} does not revceive any Civil War token as it owns no trains" if c.floated?
+            next
+          end
 
           c.add_ability(Engine::Ability::Base.new(
             type: :civil_war,
             description: 'Civil War! (One time effect)',
             count: 1,
           ))
+          @log << "#{c.name} receives a Civil War token which affects its next OR"
         end
       end
 
