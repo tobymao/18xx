@@ -459,6 +459,15 @@ module Engine
         @operating_rounds if ['Operating', 'Merger', 'Merger and Conversion', 'Acquisition'].include?(name)
       end
 
+      def corporation_size(entity)
+        # For display purposes is a corporation small, medium or large
+        { 2 => :small, 5 => :medium, 10 => :large }[entity.total_shares]
+      end
+
+      def show_corporation_size?(_entity)
+        true
+      end
+
       private
 
       def new_auction_round

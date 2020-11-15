@@ -9,8 +9,10 @@ module View
       needs :round
       needs :entities
       needs :acting_entity, default: nil
+      needs :game, store: true
 
       include Lib::Settings
+      TOKEN_SIZES = { small: 1.2, medium: 1.4, large: 1.8 }.freeze
 
       def render
         items = @entities.map.with_index do |entity, index|
@@ -50,11 +52,12 @@ module View
 
           children = []
           if entity.corporation?
+            size = TOKEN_SIZES[@game.corporation_size(entity)]
             logo_props = {
               attrs: { src: entity.logo },
               style: {
-                padding: '0 0.4rem 0 0',
-                height: '1.2rem',
+                padding: "#{TOKEN_SIZES[:large] - size}rem 0.4rem 0 0",
+                height: "#{size}rem",
               },
             }
             children << h(:img, logo_props)
