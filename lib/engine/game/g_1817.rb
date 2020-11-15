@@ -74,6 +74,8 @@ module Engine
                                             ' to double jump)').freeze
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :gray).freeze
       MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
+      CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
+
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
       def init_cert_limit
@@ -461,7 +463,7 @@ module Engine
 
       def corporation_size(entity)
         # For display purposes is a corporation small, medium or large
-        { 2 => :small, 5 => :medium, 10 => :large }[entity.total_shares]
+        CORPORATION_SIZES[entity.total_shares]
       end
 
       def show_corporation_size?(_entity)
