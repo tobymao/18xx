@@ -74,7 +74,7 @@ module Engine
         company.remove_ability_when(:sold)
 
         @round.just_sold_company = company
-        @round.company_seller = owner
+        @round.company_sellers << owner
 
         entity.companies << company
         entity.spend(price, owner)
@@ -87,7 +87,7 @@ module Engine
       end
 
       def round_state
-        { just_sold_company: nil, company_seller: nil }
+        { just_sold_company: nil, company_sellers: [] }
       end
 
       def setup
