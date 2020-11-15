@@ -74,6 +74,8 @@ module Engine
                                             ' to double jump)').freeze
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :gray).freeze
       MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
+      CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
+
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
       def init_cert_limit
@@ -457,6 +459,15 @@ module Engine
         # Return the total number of rounds for those with more than one.
         # Merger exists twice since it's logged as the long form, but shown on the UI in the short form
         @operating_rounds if ['Operating', 'Merger', 'Merger and Conversion', 'Acquisition'].include?(name)
+      end
+
+      def corporation_size(entity)
+        # For display purposes is a corporation small, medium or large
+        CORPORATION_SIZES[entity.total_shares]
+      end
+
+      def show_corporation_size?(_entity)
+        true
       end
 
       private

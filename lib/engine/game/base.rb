@@ -1484,6 +1484,15 @@ module Engine
         "#{turn}.#{round}"
       end
 
+      def corporation_size(_entity)
+        # For display purposes is a corporation small, medium or large
+        :small
+      end
+
+      def show_corporation_size?(_entity)
+        false
+      end
+
       # Override this, and add elements (paragraphs of text) here to display it on Info page.
       def timeline
         []
