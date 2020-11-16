@@ -33,7 +33,8 @@ module Engine
         return if action.type == 'message'
 
         if active_step
-          return if @entities[@entity_index].owner&.player?
+          entity = @entities[@entity_index]
+          return if entity.owner&.player? || entity.receivership?
         end
 
         next_entity!
