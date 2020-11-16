@@ -49,8 +49,10 @@ class Game < Base
     FROM (
       SELECT g.*
       FROM games g
-      JOIN user_games ug
+      LEFT JOIN user_games ug
         ON g.id = ug.id
+      WHERE ug.id IS NOT NULL
+        OR g.user_id = :user_id
       ORDER BY g.id DESC
       LIMIT 1000
     ) personal_games

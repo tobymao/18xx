@@ -32,10 +32,9 @@ class Api
             game.to_h
           end
 
-          not_authorized! unless users.any? { |u| u.id == user.id || game.user_id == user.id }
-
           r.is 'leave' do
             halt(400, 'Cannot leave because game has started') unless game.status == 'new'
+            halt(400, 'You are not in the game') unless users.any? { |u| u.id == user.id }
             game.remove_player(user)
             game.to_h
           end
@@ -46,6 +45,9 @@ class Api
             game.save
             game.to_h
           end
+
+          not_authorized! unless users.any? { |u| u.id == user.id } || game.user_id == user.id
+
           # POST '/api/game/<game_id>/action'
           r.is 'action' do
             acting, action = nil

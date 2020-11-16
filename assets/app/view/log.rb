@@ -73,7 +73,8 @@ module View
             h('span.message', message_props, line[:message]),
           ])
         elsif line.is_a?(Engine::Action::Message)
-          h(:div, { style: { fontWeight: 'bold' } }, "#{line.entity.name}: #{line.message}")
+          sender = line.entity.name || line.user
+          h(:div, { style: { fontWeight: 'bold' } }, "#{sender}: #{line.message}")
         end
       end
 
