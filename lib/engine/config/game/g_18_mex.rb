@@ -444,9 +444,9 @@ module Engine
       },
       {
          "float_percent":50,
-         "sym":"PAC",
-         "name":"Pacific Railroad",
-         "logo":"18_mex/PAC",
+         "sym":"FCP",
+         "name":"Ferrocarril del Pacífico (Pacific Railroad)",
+         "logo":"18_mex/FCP",
          "tokens":[
             0,
             40,
