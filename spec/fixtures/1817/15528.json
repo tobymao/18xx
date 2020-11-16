@@ -3,21 +3,21 @@
   "actions": [
     {
       "type": "message",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 1,
       "message": ":D"
     },
     {
       "type": "message",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 2,
       "message": ":-D"
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 3,
       "company": "MAJC",
@@ -25,7 +25,7 @@
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 4,
       "company": "MAJC",
@@ -33,7 +33,7 @@
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 5,
       "company": "MAJC",
@@ -41,7 +41,7 @@
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 6,
       "company": "MAJC",
@@ -49,7 +49,7 @@
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 7,
       "company": "MAJC",
@@ -57,7 +57,7 @@
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 8,
       "company": "MAJC",
@@ -65,13 +65,13 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 9
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 10,
       "company": "MAJC",
@@ -79,7 +79,7 @@
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 11,
       "company": "MAJC",
@@ -87,19 +87,19 @@
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 12
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 13
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 14,
       "company": "ME",
@@ -107,7 +107,7 @@
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 15,
       "company": "ME",
@@ -115,25 +115,25 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 16
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 17
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 18
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 19,
       "company": "PSM",
@@ -141,7 +141,7 @@
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 20,
       "company": "PSM",
@@ -149,19 +149,19 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 21
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 22
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 23,
       "company": "PSM",
@@ -169,13 +169,13 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 24
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 25,
       "company": "UBC",
@@ -183,7 +183,7 @@
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 26,
       "company": "UBC",
@@ -191,25 +191,25 @@
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 27
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 28
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 29
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 30,
       "company": "MAJM",
@@ -217,7 +217,7 @@
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 31,
       "company": "MAJM",
@@ -225,7 +225,7 @@
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 32,
       "company": "MAJM",
@@ -233,7 +233,7 @@
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 33,
       "company": "MAJM",
@@ -241,7 +241,7 @@
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 34,
       "company": "MAJM",
@@ -249,7 +249,7 @@
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 35,
       "company": "MAJM",
@@ -257,13 +257,13 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 36
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 37,
       "company": "MAJM",
@@ -271,7 +271,7 @@
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 38,
       "company": "MAJM",
@@ -279,7 +279,7 @@
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 39,
       "company": "MAJM",
@@ -287,19 +287,19 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 40
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 41
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 42,
       "company": "TS",
@@ -307,7 +307,7 @@
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 43,
       "company": "TS",
@@ -315,7 +315,7 @@
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 44,
       "company": "TS",
@@ -323,7 +323,7 @@
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 45,
       "company": "TS",
@@ -331,19 +331,19 @@
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 46
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 47
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 48,
       "company": "TS",
@@ -351,13 +351,13 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 49
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 50,
       "company": "OBC",
@@ -365,7 +365,7 @@
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 51,
       "company": "OBC",
@@ -373,19 +373,19 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 52
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 53
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 54,
       "company": "OBC",
@@ -393,7 +393,7 @@
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 55,
       "company": "OBC",
@@ -401,13 +401,13 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 56
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 57,
       "company": "MINC",
@@ -415,19 +415,19 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 58
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 59
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 60,
       "company": "MINC",
@@ -435,13 +435,13 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 61
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 62,
       "company": "MAIL",
@@ -449,7 +449,7 @@
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 63,
       "company": "MAIL",
@@ -457,13 +457,13 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 64
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 65,
       "company": "MAIL",
@@ -471,7 +471,7 @@
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 66,
       "company": "MAIL",
@@ -479,19 +479,19 @@
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 67
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 68
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 69,
       "company": "MINM",
@@ -499,7 +499,7 @@
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 70,
       "company": "MINM",
@@ -507,7 +507,7 @@
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 71,
       "company": "MINM",
@@ -515,7 +515,7 @@
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 72,
       "company": "MINM",
@@ -523,7 +523,7 @@
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 73,
       "company": "MINM",
@@ -531,13 +531,13 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 74
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 75,
       "company": "MINM",
@@ -545,19 +545,19 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 76
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 77
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 78,
       "company": "CM",
@@ -565,7 +565,7 @@
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 79,
       "company": "CM",
@@ -573,7 +573,7 @@
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 80,
       "company": "CM",
@@ -581,19 +581,19 @@
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 81
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 82
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 83,
       "company": "CM",
@@ -601,13 +601,13 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 84
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 85,
       "corporation": "H",
@@ -623,25 +623,25 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 87
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 88
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 89
     },
     {
       "type": "assign",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 90,
       "target": "OBC",
@@ -649,7 +649,7 @@
     },
     {
       "type": "assign",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 91,
       "target": "CM",
@@ -657,13 +657,13 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 92
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 93,
       "corporation": "A&S",
@@ -679,7 +679,7 @@
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 95,
       "corporation": "A&S",
@@ -687,19 +687,19 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 96
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 97
     },
     {
       "type": "assign",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 98,
       "target": "MAJM",
@@ -707,7 +707,7 @@
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 99,
       "corporation": "Bess",
@@ -723,19 +723,19 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 101
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 102
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 103,
       "corporation": "Bess",
@@ -743,7 +743,7 @@
     },
     {
       "type": "assign",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 104,
       "target": "MAJC",
@@ -751,7 +751,7 @@
     },
     {
       "type": "assign",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 105,
       "target": "MAIL",
@@ -759,7 +759,7 @@
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 106,
       "corporation": "PSNR",
@@ -775,19 +775,19 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 108
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 109
     },
     {
       "type": "assign",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 110,
       "target": "ME",
@@ -795,7 +795,7 @@
     },
     {
       "type": "assign",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 111,
       "target": "MINC",
@@ -803,13 +803,13 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 112
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 113,
       "corporation": "Belt",
@@ -825,13 +825,13 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 115
     },
     {
       "type": "assign",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 116,
       "target": "TS",
@@ -839,7 +839,7 @@
     },
     {
       "type": "assign",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 117,
       "target": "MINM",
@@ -847,7 +847,7 @@
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 118,
       "corporation": "NYSW",
@@ -863,13 +863,13 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 120
     },
     {
       "type": "assign",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 121,
       "target": "UBC",
@@ -877,7 +877,7 @@
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 122,
       "corporation": "GT",
@@ -893,13 +893,13 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 124
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 125,
       "corporation": "ME",
@@ -915,7 +915,7 @@
     },
     {
       "type": "assign",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 127,
       "target": "PSM",
@@ -923,25 +923,25 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 128
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 129
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 130
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 131,
       "corporation": "WT",
@@ -957,19 +957,19 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 133
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 134
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 135
     },
@@ -982,31 +982,31 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 137
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 138
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 139
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 140
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 141
     },
@@ -1485,34 +1485,34 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 206,
       "user": "daniel.sousa.me"
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 207,
       "user": "daniel.sousa.me"
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 208,
       "user": "daniel.sousa.me"
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 209
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 210
     },
@@ -2045,7 +2045,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 266,
       "shares": [
@@ -2055,13 +2055,13 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 267
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 268
     },
@@ -2079,7 +2079,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 271,
       "shares": [
@@ -2089,19 +2089,19 @@
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 272
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 273
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 274
     },
@@ -2125,7 +2125,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 278,
       "shares": [
@@ -2135,13 +2135,13 @@
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 279
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 280
     },
@@ -2165,13 +2165,13 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 284
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 285
     },
@@ -2201,73 +2201,73 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 290
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 291
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 292
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 293
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 294
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 295
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 296
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 297
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 298
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 299
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 300
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 301,
       "shares": [
@@ -2277,7 +2277,7 @@
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 302,
       "corporation": "J",
@@ -2293,32 +2293,32 @@
     },
     {
       "type": "choose",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 304,
       "choice": 2
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 305
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 306
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 307
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 308
     },
@@ -2367,7 +2367,7 @@
     },
     {
       "type": "message",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 315,
       "message": "venho já (:"
@@ -3067,7 +3067,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 388,
       "shares": [
@@ -3077,13 +3077,13 @@
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 389
     },
     {
       "type": "buy_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 390,
       "shares": [
@@ -3093,7 +3093,7 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 391
     },
@@ -3117,7 +3117,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 395,
       "shares": [
@@ -3127,7 +3127,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 396,
       "shares": [
@@ -3137,13 +3137,13 @@
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 397
     },
     {
       "type": "buy_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 398,
       "shares": [
@@ -3183,55 +3183,55 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 404
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 405
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 406
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 407
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 408
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 409
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 410
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 411
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 412
     },
@@ -4045,25 +4045,25 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 491
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 492
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 493
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 494
     },
@@ -4101,13 +4101,13 @@
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 500
     },
     {
       "type": "buy_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 501,
       "shares": [
@@ -4117,13 +4117,13 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 502
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 503
     },
@@ -4141,55 +4141,55 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 506
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 507
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 508
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 509
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 510
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 511
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 512
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 513
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 514,
       "corporation": "NYOW",
@@ -4205,20 +4205,20 @@
     },
     {
       "type": "choose",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 516,
       "choice": 2
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 517
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 518,
       "shares": [
@@ -4228,7 +4228,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 519,
       "shares": [
@@ -4238,13 +4238,13 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 520
     },
     {
       "type": "buy_shares",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 521,
       "shares": [
@@ -4254,7 +4254,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 522,
       "shares": [
@@ -4264,7 +4264,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 523,
       "shares": [
@@ -4274,14 +4274,14 @@
     },
     {
       "type": "short",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 524,
       "corporation": "NYSW"
     },
     {
       "type": "buy_shares",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 525,
       "shares": [
@@ -4291,7 +4291,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 526,
       "shares": [
@@ -4301,7 +4301,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 527,
       "shares": [
@@ -4311,25 +4311,25 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 528
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 529
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 530
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 531,
       "shares": [
@@ -4339,25 +4339,25 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 532
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 533
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 534
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 535
     },
@@ -4921,7 +4921,7 @@
     },
     {
       "type": "message",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 588,
       "message": "ouch "
@@ -5109,7 +5109,7 @@
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 614,
       "corporation": "GT",
@@ -5117,7 +5117,7 @@
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 615,
       "corporation": "GT",
@@ -5125,7 +5125,7 @@
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 616,
       "corporation": "GT",
@@ -5133,7 +5133,7 @@
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 617,
       "corporation": "GT",
@@ -5141,7 +5141,7 @@
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 618,
       "corporation": "GT",
@@ -5149,7 +5149,7 @@
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 619,
       "corporation": "GT",
@@ -5157,13 +5157,13 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 620
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 621,
       "corporation": "GT",
@@ -5171,13 +5171,13 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 622
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 623
     },
@@ -5189,31 +5189,31 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 625
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 626
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 627
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 628
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 629
     },
@@ -5907,7 +5907,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 697,
       "shares": [
@@ -5917,7 +5917,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 698,
       "shares": [
@@ -5927,7 +5927,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 699,
       "shares": [
@@ -5937,19 +5937,19 @@
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 700
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 701
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 702
     },
@@ -5979,55 +5979,55 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 707
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 708
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 709
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 710
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 711
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 712
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 713
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 714
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 715,
       "corporation": "GT",
@@ -6043,7 +6043,7 @@
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 717,
       "corporation": "GT",
@@ -6057,7 +6057,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 719,
       "shares": [
@@ -6067,20 +6067,20 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 720
     },
     {
       "type": "message",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 721,
       "message": "acho que estava em modo 46 xD"
     },
     {
       "type": "sell_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 722,
       "shares": [
@@ -6090,7 +6090,7 @@
     },
     {
       "type": "bid",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 723,
       "corporation": "UR",
@@ -6106,7 +6106,7 @@
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 725,
       "corporation": "PLE",
@@ -6122,13 +6122,13 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 727
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 728
     },
@@ -6140,13 +6140,13 @@
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 730
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 731,
       "corporation": "A&A",
@@ -6162,19 +6162,19 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 733
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 734
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 735,
       "user": "PedroS"
@@ -6193,7 +6193,7 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 738
     },
@@ -7036,7 +7036,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 827,
       "shares": [
@@ -7046,7 +7046,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 828,
       "shares": [
@@ -7056,19 +7056,19 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 829
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 830
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 831
     },
@@ -7099,7 +7099,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 836,
       "shares": [
@@ -7109,7 +7109,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 837,
       "shares": [
@@ -7119,7 +7119,7 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 838
     },
@@ -7144,7 +7144,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 842,
       "shares": [
@@ -7154,7 +7154,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 843,
       "shares": [
@@ -7164,7 +7164,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 844,
       "shares": [
@@ -7174,7 +7174,7 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 845
     },
@@ -7192,7 +7192,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 848,
       "shares": [
@@ -7202,7 +7202,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 849,
       "shares": [
@@ -7212,7 +7212,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 850,
       "shares": [
@@ -7222,7 +7222,7 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 851
     },
@@ -7252,7 +7252,7 @@
     },
     {
       "type": "assign",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 856,
       "target": "ME",
@@ -7260,25 +7260,25 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 857
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 858
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 859
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 860,
       "corporation": "ME",
@@ -7320,61 +7320,61 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 866
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 867
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 868
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 869
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 870
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 871
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 872
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 873
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 874
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 875
     },
@@ -8232,7 +8232,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 954,
       "shares": [
@@ -8242,20 +8242,20 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 955,
       "user": "PedroS"
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 956
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 957
     },
@@ -8273,7 +8273,7 @@
     },
     {
       "type": "assign",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 960,
       "target": "H",
@@ -8281,19 +8281,19 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 961
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 962
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 963,
       "corporation": "H",
@@ -8308,7 +8308,7 @@
     },
     {
       "type": "assign",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 965,
       "target": "A&A",
@@ -8316,19 +8316,19 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 966
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 967
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 968,
       "corporation": "A&A",
@@ -8336,7 +8336,7 @@
     },
     {
       "type": "merge",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 969,
       "corporation": "PSNR"
@@ -8349,37 +8349,37 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 971
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 972
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 973
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 974
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 975
     },
     {
       "type": "assign",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 976,
       "target": "GT",
@@ -8387,13 +8387,13 @@
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 977
     },
     {
       "type": "assign",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 978,
       "target": "NYOW",
@@ -8401,25 +8401,25 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 979
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 980
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 981
     },
     {
       "type": "bid",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 982,
       "corporation": "WC",
@@ -8435,21 +8435,21 @@
     },
     {
       "type": "choose",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 984,
       "choice": 10
     },
     {
       "type": "message",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 985,
       "message": "vou ter de sair em breve, depois terminamos async? (:"
     },
     {
       "type": "sell_shares",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 986,
       "shares": [
@@ -8459,14 +8459,14 @@
     },
     {
       "type": "short",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 987,
       "corporation": "PSNR"
     },
     {
       "type": "bid",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 988,
       "corporation": "R",
@@ -8482,14 +8482,14 @@
     },
     {
       "type": "choose",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 990,
       "choice": 5
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 991,
       "shares": [
@@ -8499,7 +8499,7 @@
     },
     {
       "type": "bid",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 992,
       "corporation": "PLE",
@@ -8515,7 +8515,7 @@
     },
     {
       "type": "choose",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 994,
       "choice": 5
@@ -8528,14 +8528,14 @@
     },
     {
       "type": "short",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 996,
       "corporation": "NYSW"
     },
     {
       "type": "buy_shares",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 997,
       "shares": [
@@ -8545,14 +8545,14 @@
     },
     {
       "type": "short",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 998,
       "corporation": "PSNR"
     },
     {
       "type": "buy_shares",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 999,
       "shares": [
@@ -8568,7 +8568,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 1001,
       "shares": [
@@ -8584,7 +8584,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 1003,
       "shares": [
@@ -8594,14 +8594,14 @@
     },
     {
       "type": "short",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 1004,
       "corporation": "PSNR"
     },
     {
       "type": "buy_shares",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 1005,
       "shares": [
@@ -8611,13 +8611,13 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 1006
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 1007,
       "shares": [
@@ -8627,7 +8627,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 1008,
       "shares": [
@@ -8637,14 +8637,14 @@
     },
     {
       "type": "short",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 1009,
       "corporation": "PSNR"
     },
     {
       "type": "buy_shares",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 1010,
       "shares": [
@@ -8654,13 +8654,13 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 1011
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 1012,
       "shares": [
@@ -8670,20 +8670,20 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 1013
     },
     {
       "type": "short",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 1014,
       "corporation": "NYSW"
     },
     {
       "type": "buy_shares",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 1015,
       "shares": [
@@ -8693,20 +8693,20 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 1016
     },
     {
       "type": "short",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 1017,
       "corporation": "PSNR"
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 1018,
       "shares": [
@@ -8716,7 +8716,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 1019,
       "shares": [
@@ -8726,7 +8726,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 1020,
       "shares": [
@@ -8736,13 +8736,13 @@
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 1021
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 1022,
       "shares": [
@@ -8752,26 +8752,26 @@
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 1023
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 1024,
       "user": "PedroS"
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 1025
     },
     {
       "type": "sell_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 1026,
       "shares": [
@@ -8781,7 +8781,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 1027,
       "shares": [
@@ -8791,7 +8791,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 1028,
       "shares": [
@@ -8801,7 +8801,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 1029,
       "shares": [
@@ -8811,7 +8811,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 1030,
       "shares": [
@@ -8821,39 +8821,39 @@
     },
     {
       "type": "short",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 1031,
       "corporation": "NYSW"
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 1032
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 1033
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 1034
     },
     {
       "type": "short",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 1035,
       "corporation": "NYSW"
     },
     {
       "type": "buy_shares",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 1036,
       "shares": [
@@ -8863,7 +8863,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 1037,
       "shares": [
@@ -8873,25 +8873,25 @@
     },
     {
       "type": "pass",
-      "entity": "daniel.sousa.me",
+      "entity": 1594,
       "entity_type": "player",
       "id": 1038
     },
     {
       "type": "pass",
-      "entity": "Zebsagaz",
+      "entity": 3370,
       "entity_type": "player",
       "id": 1039
     },
     {
       "type": "pass",
-      "entity": "FCR",
+      "entity": 5159,
       "entity_type": "player",
       "id": 1040
     },
     {
       "type": "pass",
-      "entity": "PedroS",
+      "entity": 655,
       "entity_type": "player",
       "id": 1041
     },
@@ -9650,7 +9650,9 @@
   "settings": {
     "seed": 938615233,
     "unlisted": true,
-    "optional_rules": []
+    "optional_rules": [
+
+    ]
   },
   "user_settings": null,
   "turn": 5,
