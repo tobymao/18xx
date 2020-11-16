@@ -239,7 +239,9 @@ module Engine
           # Try closing shorts
           count = 0
           while entity_shorts(@share_pool, corporation).any? &&
-            (market_shares = @share_pool.shares_of(corporation).select { |share| share.percent.positive? }).any?
+            (market_shares = @share_pool.shares_of(corporation)
+             .select { |share| share.percent.positive? && !share.president }).any?
+
             unshort(@share_pool, market_shares.first)
             count += 1
           end
