@@ -15,7 +15,7 @@ module View
           h(Log, log: @game.log, negative_pad: true),
         ]
 
-        @player = @game.players.find { |p| p.name == (@user['name']) } if @user
+        @player = @game.player_by_id(@user['id']) if @user
 
         enter = lambda do |event|
           event = Native(event)
