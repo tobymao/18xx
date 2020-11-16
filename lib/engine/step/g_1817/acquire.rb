@@ -51,6 +51,14 @@ module Engine
         end
 
         def active_entities
+          # Double check that a cash crisis hasn't just been resolved, as the corp may now be in liquidation.
+          if auctioning_corporation && corporation_entered_acquisition_this_round?(auctioning_corporation)
+            @game.log << "#{auctioning_corporation.name} is no longer eligable to be auctioned"
+            @round.offering.delete(auctioning_corporation)
+            @offer = nil
+            setup_auction
+          end
+
           if @offer
             [@offer.owner]
           elsif @auctioning
@@ -80,6 +88,10 @@ module Engine
           corporation = action.entity
           @game.take_loan(corporation, action.loan)
           acquire_post_loan unless can_take_loan?(corporation)
+        end
+
+        def show_other_players
+          false
         end
 
         def process_payoff_loan(action)
@@ -342,15 +354,23 @@ module Engine
           buyer != corporation
         end
 
-        def mergeable(corporation)
-          return [] if corporation.player?
-          return [] unless @winner
+        def mergeable_type(corporation)
+          "#{@winner ? '' : 'Potential '}Corporations that can acquire #{corporation.name}"
+        end
 
-          @game.corporations.select do |buyer|
-            buyer.owner == @winner.entity &&
-            max_bid_for_corporation(buyer, corporation) >= @winner.price &&
+        def mergeable_by_entity(entity, corporation, bid)
+          entity.presidencies.select do |buyer|
+            max_bid_for_corporation(buyer, corporation) >= bid &&
             can_acquire?(corporation, buyer)
           end
+        end
+
+        def mergeable(corporation)
+          return [] if corporation.player?
+          return [] if @offer
+          return mergeable_by_entity(current_entity, corporation, min_bid(corporation)) unless @winner
+
+          mergeable_by_entity(@winner.entity, corporation, @winner.price)
         end
 
         def starting_bid(corporation)
@@ -430,6 +450,12 @@ module Engine
 
         private
 
+        def corporation_entered_acquisition_this_round?(corporation)
+          # Has the corporation entered acquisition and liquidation this round?
+          %i[acquisition liquidation].include?(corporation.share_price.type) &&
+          corporation.share_price.type != @game.stock_prices_start_merger[corporation].type
+        end
+
         def setup_auction
           super
           if @round.offering.none?
@@ -442,9 +468,7 @@ module Engine
           @liquidation_cash = 0
           @liquidation_loans = []
 
-          if %i[acquisition liquidation].include?(corporation.share_price.type) &&
-            corporation.share_price.type != @game.stock_prices_start_merger[corporation].type
-
+          if corporation_entered_acquisition_this_round?(corporation)
             type = corporation.share_price.liquidation? ? 'liquidation' : 'acquisition'
             @game.log << "#{corporation.name} moved into #{type} during M&A and so is skipped"
 

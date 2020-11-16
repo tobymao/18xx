@@ -11,84 +11,30 @@ module View
       include Lib::Settings
 
       def render
-        entities = @round.entities.dup
-        entities.unshift(@round.current_entity) if @round.current_entity && !entities.include?(@round.current_entity)
+        children = []
 
-        items = entities.map.with_index do |entity, index|
-          entity_props = {
-            key: "entity_#{index}",
-            style: {
-              float: 'left',
-              listStyle: 'none',
-              paddingRight: '1rem',
-            },
-          }
-
-          if @round.current_entity == entity
-            scroll_to = lambda do |vnode|
-              elm = Native(vnode)['elm']
-              elm['parentElement']['parentElement'].scrollLeft = elm['offsetLeft'] - 10
-            end
-
-            entity_props[:hook] = {
-              insert: scroll_to,
-              update: ->(_, vnode) { scroll_to.call(vnode) },
-            }
-          end
-
-          style = entity_props[:style]
-
-          if @round.can_act?(entity)
-            style[:textDecoration] = 'underline'
-            style[:fontSize] = '1.1rem'
-            style[:fontWeight] = 'bold'
-          end
-
-          if index.positive?
-            style[:borderLeft] = "#{setting_for(:font)} solid thin"
-            style[:paddingLeft] = '1rem'
-          end
-
-          children = []
-          if entity.corporation?
-            logo_props = {
-              attrs: { src: entity.logo },
-              style: {
-                padding: '0 0.4rem 0 0',
-                height: '1.2rem',
-              },
-            }
-            children << h(:img, logo_props)
-          end
-
-          owner = " (#{entity.owner.name.truncate})" if !entity.player? && entity.owner
-          owner = ' (CLOSED)' if entity.closed?
-          children << h(:span, "#{entity.name}#{owner}")
-
-          h(:li, entity_props, children)
+        if @round.respond_to?(:context_entities)
+          context_entities = @round.context_entities.dup
+          active_context_entity = @round.active_context_entity
+        elsif @round.active_step.respond_to?(:context_entities)
+          context_entities = @round.active_step.context_entities.dup
+          active_context_entity = @round.active_step.active_context_entity
+        end
+        if context_entities
+          children << h(EntityList, round: @round, entities: context_entities, acting_entity: active_context_entity)
         end
 
-        div_props = {
-          key: 'entity_order',
-          attrs: { title: 'Order' },
-          style: {
-            margin: '1rem 0',
-            overflow: 'auto',
-          },
-        }
+        entities =
+          if @round.active_step.respond_to?(:override_entities)
+            @round.active_step.override_entities
+          else
+            @round.entities
+          end.dup
 
-        ul_props = {
-          key: 'entity_order_container',
-          style: {
-            width: 'max-content',
-            margin: '0',
-            padding: '0',
-          },
-        }
+        entities.unshift(@round.current_entity) if @round.current_entity && !entities.include?(@round.current_entity)
 
-        h(:div, div_props, [
-          h(:ul, ul_props, items),
-        ])
+        children << h(EntityList, round: @round, entities: entities, acting_entity: @round.current_entity)
+        h(:div, children)
       end
     end
   end

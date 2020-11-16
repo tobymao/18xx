@@ -91,8 +91,8 @@ module Engine
         @ndm_merge_share ||= ndm.shares.last
       end
 
-      def pac
-        @pac_corporation ||= corporation_by_id('PAC')
+      def fcp
+        @fcp_corporation ||= corporation_by_id('FCP')
       end
 
       def tm
@@ -266,6 +266,10 @@ module Engine
         entity.trains.empty? ? handle_no_mail(entity) : handle_mail(entity)
       end
 
+      def all_corporations
+        @minors + @corporations
+      end
+
       def event_companies_buyable!
         setup_company_price_50_to_150_percent
       end
@@ -291,7 +295,7 @@ module Engine
 
       def event_ndm_merger!
         @log << "-- Event: #{ndm.name} merger --"
-        remove_ability(pac, :base)
+        remove_ability(fcp, :base)
         remove_ability(tm, :base)
         unless ndm.floated?
           @log << "No merge occur as #{ndm.name} has not floated!"
@@ -495,13 +499,17 @@ module Engine
 
       private
 
-      def handle_no_mail(entity)
-        @log << "#{entity.name} receives no mail income as it has no trains"
+      def handle_no_mail(entity, trainless: true)
+        reason = trainless ? 'it has no trains' : 'home location has no value'
+        @log << "#{entity.name} receives no mail income as #{reason}"
       end
 
       def handle_mail(entity)
         hex = hex_by_id(entity.coordinates)
         income = hex.tile.city_towns.first.route_base_revenue(@phase, entity.trains.first)
+        # Income is zero in case home location has no revenue center
+        return handle_no_mail(entity, trainless: false) unless income.positive?
+
         @bank.spend(income, entity)
         @log << "#{entity.name} receives #{format_currency(income)} in mail"
       end
@@ -536,7 +544,6 @@ module Engine
         minor.remove_train(train)
         trains.delete(train)
 
-        @minors.delete(minor)
         minor.close!
         company.close!
       end
@@ -544,7 +551,7 @@ module Engine
       def mergeable_corporations
         corporations = @corporations
           .reject { |c| c.player == ndm.player }
-          .reject { |c| %w[PAC TM].include? c.name }
+          .reject { |c| %w[FCP TM].include? c.name }
         floated_player_corps, other_corps = corporations.partition { |c| c.owned_by_player? && c.floated? }
 
         # Sort eligible corporations so that they are in player order

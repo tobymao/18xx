@@ -74,7 +74,20 @@ module Engine
                                             ' to double jump)').freeze
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :gray).freeze
       MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
+      CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
+
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
+
+      def init_cert_limit
+        @log << '1817 has not been tested thoroughly with more than seven players.' if @players.size > 7
+
+        super
+      end
+
+      def init_stock_market
+        @owner_when_liquidated = {}
+        super
+      end
 
       def bankruptcy_limit_reached?
         @players.reject(&:bankrupt).one?
@@ -88,16 +101,38 @@ module Engine
         @interest_fixed || future_interest_rate
       end
 
+      def interest_owed_for_loans(loans)
+        (interest_rate * loans * @loan_value) / 100
+      end
+
       def interest_owed(entity)
-        (interest_rate * entity.loans.size * @loan_value) / 100
+        interest_owed_for_loans(entity.loans.size)
       end
 
       def interest_change
         rate = future_interest_rate
         summary = []
-        summary << ["Interest if #{(loans_taken % 5)} more loans repaid", rate - 5] unless rate == 5
-        summary << ["Interest if #{5 - ((loans_taken + 4) % 5)} more loans taken", rate + 5] unless rate == 70
+        unless rate == 5
+          loans = ((loans_taken - 1) % 5) + 1
+          s = loans == 1 ? '' : 's'
+          summary << ["Interest if #{loans} more loan#{s} repaid", rate - 5]
+        end
+        if loans_taken.zero?
+          summary << ['Interest if 6 more loans taken', 10]
+        elsif rate != 70
+          loans = 5 - ((loans_taken + 4) % 5)
+          s = loans == 1 ? '' : 's'
+          summary << ["Interest if #{loans} more loan#{s} taken", rate + 5]
+        end
         summary
+      end
+
+      def can_pay_interest?(entity, extra_cash = 0)
+        # Can they cover it using cash?
+        return true if entity.cash + extra_cash > interest_owed(entity)
+
+        # Can they cover it using buying_power minus the full interest
+        (buying_power(entity) + extra_cash) > interest_owed_for_loans(maximum_loans(entity))
       end
 
       def maximum_loans(entity)
@@ -426,6 +461,15 @@ module Engine
         @operating_rounds if ['Operating', 'Merger', 'Merger and Conversion', 'Acquisition'].include?(name)
       end
 
+      def corporation_size(entity)
+        # For display purposes is a corporation small, medium or large
+        CORPORATION_SIZES[entity.total_shares]
+      end
+
+      def show_corporation_size?(_entity)
+        true
+      end
+
       private
 
       def new_auction_round
@@ -438,7 +482,7 @@ module Engine
       def stock_round
         close_bank_shorts
         @interest_fixed = nil
-        @owner_when_liquidated = {}
+
         Round::G1817::Stock.new(self, [
           Step::DiscardTrain,
           Step::HomeToken,
@@ -449,8 +493,6 @@ module Engine
       def operating_round(round_num)
         @interest_fixed = nil
         @interest_fixed = interest_rate
-        # Don't clear when coming from a SR
-        @owner_when_liquidated = {} unless round_num == 1
         # Revaluate if private companies are owned by corps with trains
         @companies.each do |company|
           next unless company.owner

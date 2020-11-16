@@ -130,6 +130,14 @@ module Engine
           super unless entity.share_price.liquidation?
         end
 
+        def mergeable_type(corporation)
+          "Corporations that can merge with #{corporation.name}"
+        end
+
+        def show_other_players
+          false
+        end
+
         def mergeable(corporation)
           return [] if !corporation.floated? || !corporation.share_price.normal_movement?
 

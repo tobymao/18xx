@@ -65,22 +65,6 @@ module Engine
       end
     end
 
-    context 'with ko and sr' do
-      subject { game.hex_by_id('J3') }
-
-      it 'can upgrade fork to 3 stops' do
-        game.hex_by_id('I2').lay(game.tile_by_id('12-0').rotate!(5))
-        subject.lay(game.tile_by_id('23-0').rotate!(5))
-        subject.lay(game.tile_by_id('47-0').rotate!(2))
-        expect(subject.connections.size).to eq(3)
-        expect(subject.connections[2].size).to eq(1)
-        expect(subject.connections[5].size).to eq(2)
-        connections3 = subject.connections[3]
-        expect(connections3.size).to eq(1)
-        expect(connections3[0].hexes.map(&:name)).to eq(%w[K4 J3 J1])
-      end
-    end
-
     context 'with awa' do
       subject { game.hex_by_id('K8') }
 
@@ -115,7 +99,7 @@ module Engine
           subject.tile.cities[0],
         ])
         expect(ritsurin_connection.hexes.map(&:name)).to eq(%w[J5 I6 I8 J7 K8])
-        expect(game.hex_by_id('J7').connections[5].size).to eq(2)
+        expect(game.hex_by_id('J7').all_connections).to be_empty
       end
 
       it 'connects deep' do

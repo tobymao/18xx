@@ -24,8 +24,6 @@ module Engine
 
       BANKRUPTCY_ALLOWED = false
 
-      HOME_TOKEN_TIMING = :operating_round
-
       EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false # Emergency buy can buy any available trains
       EBUY_PRES_SWAP = false # Do not allow presidental swap during emergency buy
       EBUY_SELL_MORE_THAN_NEEDED = true # Allow to sell extra to force buy a more expensive train

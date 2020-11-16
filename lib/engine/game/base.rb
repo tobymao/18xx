@@ -338,8 +338,15 @@ module Engine
         @finished = false
         @log = []
         @actions = []
-        @names = names.freeze
-        @players = @names.map { |name| Player.new(name) }
+        @names = if names.is_a?(Hash)
+                   names.freeze
+                 else
+                   names.map { |n| [n, n] }.to_h
+                 end
+
+        # This intentionally ignores player id for now until the database is migrated.
+        @players = @names.map { |_playerid, name| Player.new(name, name) }
+
         @optional_rules = init_optional_rules(optional_rules)
 
         @seed = @id.to_s.scan(/\d+/).first.to_i % RAND_M
@@ -535,6 +542,10 @@ module Engine
         end
 
         self
+      end
+
+      def all_corporations
+        corporations
       end
 
       def sorted_corporations
@@ -871,9 +882,8 @@ module Engine
         player.bankrupt = true
         return unless self.class::CERT_LIMIT_CHANGE_ON_BANKRUPTCY
 
-        remaining_players = @players.reject(&:bankrupt).length
         # Assume that games without cert limits at lower player counts retain previous counts (1817 and 2 players)
-        @cert_limit = self.class::CERT_LIMIT[remaining_players] || @cert_limit
+        @cert_limit = init_cert_limit
       end
 
       def tile_lays(_entity)
@@ -1007,7 +1017,10 @@ module Engine
 
       def init_cert_limit
         cert_limit = self.class::CERT_LIMIT
-        cert_limit.is_a?(Hash) ? cert_limit[players.size] : cert_limit
+        cert_limit = cert_limit[players.reject(&:bankrupt).length] if cert_limit.is_a?(Hash)
+        cert_limit = cert_limit.reject { |k, _| k.to_i < @corporations.size }
+                       .min_by(&:first)&.last || cert_limit.first.last if cert_limit.is_a?(Hash)
+        cert_limit || @cert_limit
       end
 
       def init_phase
@@ -1476,6 +1489,15 @@ module Engine
 
       def or_description_short(turn, round)
         "#{turn}.#{round}"
+      end
+
+      def corporation_size(_entity)
+        # For display purposes is a corporation small, medium or large
+        :small
+      end
+
+      def show_corporation_size?(_entity)
+        false
       end
 
       # Override this, and add elements (paragraphs of text) here to display it on Info page.

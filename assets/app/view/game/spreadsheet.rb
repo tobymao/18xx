@@ -25,7 +25,7 @@ module View
 
         h('div#spreadsheet', { style: {
           overflow: 'auto',
-        } }, children)
+        } }, children.compact)
       end
 
       def render_table
@@ -67,7 +67,7 @@ module View
           # This is a company that hasn't floated yet
           []
         else
-          or_history(@game.corporations).map do |x|
+          or_history(@game.all_corporations).map do |x|
             if hist[x]
               props = {
                 style: {
@@ -103,7 +103,7 @@ module View
           props
         end
 
-        or_history_titles = render_history_titles(@game.corporations)
+        or_history_titles = render_history_titles(@game.all_corporations)
 
         pd_props = {
           style: {
@@ -188,7 +188,7 @@ module View
       def sorted_corporations
         floated_corporations = @game.round.entities
 
-        result = @game.corporations.map do |c|
+        result = @game.all_corporations.map do |c|
           operating_order = (floated_corporations.find_index(c) || -1) + 1
           [operating_order, c]
         end
@@ -254,7 +254,9 @@ module View
               sold_props[:style][:backgroundColor] = '#9e0000'
               sold_props[:style][:color] = 'white'
             end
-            h('td.padded_number', sold_props, "#{corporation.president?(p) ? '*' : ''}#{num_shares_of(p, corporation)}")
+            share_holding = corporation.president?(p) ? '*' : ''
+            share_holding += num_shares_of(p, corporation).to_s unless corporation.minor?
+            h('td.padded_number', sold_props, share_holding)
           end,
           h('td.padded_number', { style: { borderLeft: border_style } }, num_shares_of(corporation, corporation).to_s),
           h('td.padded_number', { style: { borderRight: border_style } },
@@ -308,7 +310,9 @@ module View
       def render_player_shares
         h(:tr, zebra_props(true), [
           h('th.left', 'Shares'),
-          *@game.players.map { |p| h('td.padded_number', @game.corporations.sum { |c| num_shares_of(p, c) }) },
+          *@game.players.map do |p|
+            h('td.padded_number', @game.all_corporations.sum { |c| c.minor? ? 0 : num_shares_of(p, c) })
+          end,
         ])
       end
 
@@ -339,6 +343,8 @@ module View
       private
 
       def num_shares_of(entity, corporation)
+        return corporation.president?(entity) ? 1 : 0 if corporation.minor?
+
         entity.num_shares_of(corporation, ceil: false)
       end
     end

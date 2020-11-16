@@ -17,11 +17,6 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>1846 2p Variant and 18 Los Angeles are now in production!</p>
-        <p>You can now create private games. After you create the game, use the "copy invite link" button to
-        get a URL to send to your opponents.</p>
-        <p>1817 is now more stable and in alpha! Feel free to play multiplayer games.</p>
-        <p>18MEX is now in alpha!</p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
         If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other
@@ -29,9 +24,7 @@ module View
         </p>
 
         <p>Support our publishers: #{Lib::Publisher.link_list.join}.</p>
-
-        <p>You can support this project on <a href='https://www.patreon.com/18xxgames'>Patreon</a>.
-        </p>
+        <p>You can support this project on <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>
 
         <p>Consider joining the
         <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-8ksy028m-CSZC~G5QtiFv60_jdqqulQ'>18xx slack</a>.

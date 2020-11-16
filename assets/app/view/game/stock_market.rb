@@ -29,6 +29,7 @@ module View
       BORDER = 1
       WIDTH_TOTAL = 50                            # of entire box, including border
       TOKEN_SIZE = 25
+      TOKEN_SIZES = { small: 25, medium: 32, large: 40 }.freeze
 
       # 1D markets
       VERTICAL_TOKEN_PAD = 4                      # vertical space between tokens
@@ -96,7 +97,7 @@ module View
         row = @game.stock_market.market.first.map do |price|
           tokens = price.corporations.map do |corporation|
             props = {
-              attrs: { src: corporation.logo, width: "#{TOKEN_SIZE}px" },
+              attrs: { src: corporation.logo, width: "#{TOKEN_SIZES[@game.corporation_size(corporation)]}px" },
               style: { marginTop: "#{VERTICAL_TOKEN_PAD}px" },
             }
             h(:img, props)
@@ -132,7 +133,7 @@ module View
         @game.stock_market.market.first.each_with_index do |price, idx|
           tokens = price.corporations.map do |corporation|
             props = {
-              attrs: { src: corporation.logo, width: "#{TOKEN_SIZE}px" },
+              attrs: { src: corporation.logo, width: "#{TOKEN_SIZES[@game.corporation_size(corporation)]}px" },
               style: { marginTop: "#{VERTICAL_TOKEN_PAD}px" },
             }
             h(:img, props)

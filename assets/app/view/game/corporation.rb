@@ -64,6 +64,7 @@ module View
         if @corporation.corporation? && @corporation.floated? && @game.total_loans.positive?
           extras << render_buying_power
         end
+        extras << render_corporation_size if @game.show_corporation_size?
         if extras.any?
           props = { style: { borderCollapse: 'collapse' } }
           children << h('table.center', props, [h(:tbody, extras)])
@@ -396,8 +397,8 @@ module View
 
       def render_loans
         interest_props = { style: {} }
-        if @game.interest_owed(@corporation) > @corporation.cash
-          color = StockMarket::COLOR_MAP[:red]
+        unless @game.can_pay_interest?(@corporation)
+          color = StockMarket::COLOR_MAP[:yellow]
           interest_props[:style][:backgroundColor] = color
           interest_props[:style][:color] = contrast_on(color)
         end
@@ -419,6 +420,13 @@ module View
         h('tr.ipo', [
           h('td.right', 'Buying Power'),
           h('td.padded_number', @game.format_currency(@game.buying_power(@corporation)).to_s),
+        ])
+      end
+
+      def render_corporation_size
+        h('tr.ipo', [
+          h('td.right', 'Corporation Size'),
+          h('td.padded_number', @corporation.total_shares),
         ])
       end
 
