@@ -6,14 +6,12 @@ module Engine
 
     def self.connect!(hex)
       connections = {}
+      node_paths = []
+      hex_edges = {}
 
-      node_paths, paths = hex.tile.paths.partition(&:node?)
-
-      paths.each do |path|
+      hex.tile.paths.each do |path|
         path.walk { |p| node_paths << p if p.node? }
       end
-
-      hex_edges = {}
 
       node_paths.uniq.each do |node_path|
         node_path.walk(chain: []) do |chain|
@@ -22,7 +20,7 @@ module Engine
           connection = Connection.new(chain)
           connections[connection] = true
 
-          chain.each do |path|
+          [chain[0], chain[-1]].each do |path|
             hex = path.hex
             if path.exits.empty?
               hex_edges[[hex, :internal]] = true
@@ -115,12 +113,8 @@ module Engine
       @hexes ||= @paths.map(&:hex)
     end
 
-    def complete?
-      nodes.size == 2
-    end
-
     def valid?
-      @paths.all?(&:hex)
+      nodes.size == 2 && @paths.all?(&:hex)
     end
 
     def include?(hex)
