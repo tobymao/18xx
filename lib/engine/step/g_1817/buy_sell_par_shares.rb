@@ -243,6 +243,7 @@ module Engine
             @game.unshort(entity, bundle.shares[0]) if unshort
           else
             buy_shares(entity, bundle)
+            @round.last_to_act = action.entity.player
             @corporate_action = action
           end
         end
@@ -301,6 +302,7 @@ module Engine
             @game.game_error('Cannot act as multiple corporations')
           end
           @corporate_action = action
+          @round.last_to_act = action.entity.player
           @game.take_loan(action.entity, action.loan)
         end
 
