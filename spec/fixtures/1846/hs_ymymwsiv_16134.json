@@ -3,21 +3,21 @@
   "actions": [
     {
       "type": "message",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 1,
       "message": "Hello!"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 2,
       "message": "hi"
     },
     {
       "type": "bid",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 3,
       "company": "SC",
@@ -25,21 +25,21 @@
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 4,
       "message": "Good luck, have fun!"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 5,
       "message": "Hey"
     },
     {
       "type": "bid",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 6,
       "company": "LSL",
@@ -47,14 +47,14 @@
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 7,
       "message": "Apologize in advance if i fall asleep!"
     },
     {
       "type": "bid",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 8,
       "company": "C&WI",
@@ -62,14 +62,14 @@
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 9,
       "message": "I have that effect on people"
     },
     {
       "type": "bid",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 10,
       "company": "Pass (4)",
@@ -77,7 +77,7 @@
     },
     {
       "type": "bid",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 11,
       "company": "MS",
@@ -85,7 +85,7 @@
     },
     {
       "type": "bid",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 12,
       "company": "Pass (3)",
@@ -93,14 +93,14 @@
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 13,
       "message": "zzzzzzzzzzz"
     },
     {
       "type": "bid",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 14,
       "company": "Pass (1)",
@@ -108,7 +108,7 @@
     },
     {
       "type": "bid",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 15,
       "company": "Pass (2)",
@@ -116,7 +116,7 @@
     },
     {
       "type": "bid",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 16,
       "company": "MC",
@@ -124,7 +124,7 @@
     },
     {
       "type": "bid",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 17,
       "company": "TBC",
@@ -132,7 +132,7 @@
     },
     {
       "type": "bid",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 18,
       "company": "BIG4",
@@ -140,33 +140,33 @@
     },
     {
       "type": "pass",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 19
     },
     {
       "type": "pass",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 20
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 21,
       "message": "you're just asking me to pull a bruce."
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 22,
       "message": "Do it"
     },
     {
       "type": "bid",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 23,
       "company": "MAIL",
@@ -174,21 +174,21 @@
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 24,
       "message": "I've out Bruced your Bruce"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 25,
       "message": "and Mr Michigan makes an appearance"
     },
     {
       "type": "par",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 26,
       "corporation": "NYC",
@@ -196,7 +196,7 @@
     },
     {
       "type": "par",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 27,
       "corporation": "B&O",
@@ -204,7 +204,7 @@
     },
     {
       "type": "par",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 28,
       "corporation": "IC",
@@ -212,7 +212,7 @@
     },
     {
       "type": "par",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 29,
       "corporation": "GT",
@@ -220,7 +220,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 30,
       "shares": [
@@ -230,7 +230,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 31,
       "shares": [
@@ -240,7 +240,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 32,
       "shares": [
@@ -250,7 +250,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 33,
       "shares": [
@@ -260,7 +260,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 34,
       "shares": [
@@ -270,7 +270,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 35,
       "shares": [
@@ -280,19 +280,19 @@
     },
     {
       "type": "pass",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 36
     },
     {
       "type": "pass",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 37
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 38,
       "shares": [
@@ -302,25 +302,25 @@
     },
     {
       "type": "pass",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 39
     },
     {
       "type": "pass",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 40
     },
     {
       "type": "pass",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 41
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 42,
       "shares": [
@@ -330,25 +330,25 @@
     },
     {
       "type": "pass",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 43
     },
     {
       "type": "pass",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 44
     },
     {
       "type": "pass",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 45
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 46,
       "shares": [
@@ -358,25 +358,25 @@
     },
     {
       "type": "pass",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 47
     },
     {
       "type": "pass",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 48
     },
     {
       "type": "pass",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 49
     },
     {
       "type": "pass",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 50
     },
@@ -1428,7 +1428,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 164,
       "shares": [
@@ -1438,7 +1438,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 165,
       "shares": [
@@ -1448,7 +1448,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 166,
       "shares": [
@@ -1458,7 +1458,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 167,
       "shares": [
@@ -1468,7 +1468,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 168,
       "shares": [
@@ -1478,7 +1478,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 169,
       "shares": [
@@ -1488,7 +1488,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 170,
       "shares": [
@@ -1498,7 +1498,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 171,
       "shares": [
@@ -1508,7 +1508,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 172,
       "shares": [
@@ -1518,7 +1518,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 173,
       "shares": [
@@ -1529,7 +1529,7 @@
     {
       "id": 174,
       "type": "sell_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "shares": [
         "IC_5"
       ],
@@ -1539,45 +1539,45 @@
     {
       "id": 175,
       "type": "pass",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player"
     },
     {
       "id": 176,
       "type": "pass",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player"
     },
     {
       "id": 177,
       "type": "undo",
       "user": "Ariel",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player"
     },
     {
       "id": 178,
       "type": "undo",
       "user": "Ariel",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player"
     },
     {
       "id": 179,
       "type": "undo",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 180,
       "message": "Sorry wrong button"
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 181,
       "shares": [
@@ -1587,25 +1587,25 @@
     },
     {
       "type": "pass",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 182
     },
     {
       "type": "pass",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 183
     },
     {
       "type": "pass",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 184
     },
     {
       "type": "pass",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 185
     },
@@ -2374,7 +2374,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 243,
       "shares": [
@@ -2384,7 +2384,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 244,
       "shares": [
@@ -2394,7 +2394,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 245,
       "shares": [
@@ -2404,7 +2404,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 246,
       "shares": [
@@ -2414,7 +2414,7 @@
     },
     {
       "type": "par",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 247,
       "corporation": "PRR",
@@ -2422,7 +2422,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 248,
       "shares": [
@@ -2432,7 +2432,7 @@
     },
     {
       "type": "par",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 249,
       "corporation": "C&O",
@@ -2440,7 +2440,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 250,
       "shares": [
@@ -2450,7 +2450,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 251,
       "shares": [
@@ -2460,7 +2460,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 252,
       "shares": [
@@ -2470,7 +2470,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 253,
       "shares": [
@@ -2480,7 +2480,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 254,
       "shares": [
@@ -2490,7 +2490,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 255,
       "shares": [
@@ -2500,7 +2500,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 256,
       "shares": [
@@ -2510,13 +2510,13 @@
     },
     {
       "type": "pass",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 257
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 258,
       "shares": [
@@ -2526,7 +2526,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 259,
       "shares": [
@@ -2536,7 +2536,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 260,
       "shares": [
@@ -2546,7 +2546,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 261,
       "shares": [
@@ -2556,19 +2556,19 @@
     },
     {
       "type": "pass",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 262
     },
     {
       "type": "pass",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 263
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 264,
       "shares": [
@@ -2578,7 +2578,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 265,
       "shares": [
@@ -2588,25 +2588,25 @@
     },
     {
       "type": "pass",
-      "entity": "Patrick of the Isles",
+      "entity": 4542,
       "entity_type": "player",
       "id": 266
     },
     {
       "type": "pass",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 267
     },
     {
       "type": "pass",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 268
     },
     {
       "type": "pass",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 269
     },
@@ -2691,7 +2691,7 @@
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 279,
       "message": "Ed?"
@@ -2897,7 +2897,7 @@
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 299,
       "message": "Hard rust!"
@@ -2990,14 +2990,14 @@
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 304,
       "message": "yup i was thinking instead of buy the second train it would be better to buy a 2T up and i see i was right "
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 305,
       "message": "GT had quite a war chest, and not enough 2T's to make it worth waiting"
@@ -3017,21 +3017,21 @@
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 307,
       "message": "GTs 2T were not goingto run again I wasnt sure about what IC was going to do "
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 308,
       "message": "push trains =)"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 309,
       "message": "if i let everyone have their brown trains and safety, it didn't help me"
@@ -3044,7 +3044,7 @@
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 311,
       "message": "well 7/8 runs much better then a 4/6 now you get to try to figure out how to get a 2nd train "
@@ -3119,42 +3119,42 @@
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 321,
       "message": "Do we want to continue?"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 322,
       "message": "yes"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 323,
       "message": "I don't mind playing it out"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 324,
       "message": "Simply due to PD, I'll pick up B&O cheap"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 325,
       "message": "ok"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 326,
       "message": "I get C&O"
@@ -3497,28 +3497,28 @@
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 345,
       "message": "one sec"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 346,
       "message": "B&O needs to run its train?"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 347,
       "message": "B&o should run"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 348,
       "message": "i keep needing to reload in order to lay track"
@@ -3532,28 +3532,28 @@
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 350,
       "message": "the game is skipping B&O running"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 351,
       "message": "and yes, i had that several times earlier in the game"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 352,
       "message": "Does B&O actually have a train?"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 353,
       "message": "6T"
@@ -3592,56 +3592,56 @@
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 355,
       "message": "that's $340 in cash that I'm missing out on!"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 356,
       "message": "hm."
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 357,
       "message": "That's weird"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 358,
       "message": "$826 is transferred from Patrick of the Isles to B&O B&O buys a 6 train for $800 from The Depot"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 359,
       "message": "why does B&O not have $26 on it? "
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 360,
       "message": "that's another good point, maybe it gave it the $340 last round rather than this round?"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 361,
       "message": "weird"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 362,
       "message": "no, since that would still only be 366"
@@ -3756,7 +3756,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 370,
       "shares": [
@@ -3766,7 +3766,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 371,
       "shares": [
@@ -3776,21 +3776,21 @@
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 372,
       "message": "buy your C&O"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 373,
       "message": "Eh"
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 374,
       "shares": [
@@ -3800,7 +3800,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 375,
       "shares": [
@@ -3811,7 +3811,7 @@
     {
       "id": 375,
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "shares": [
         "B&O_0"
       ],
@@ -3820,7 +3820,7 @@
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 377,
       "message": "wait"
@@ -3829,54 +3829,54 @@
       "id": 377,
       "type": "undo",
       "user": "Akado",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 379,
       "message": "is anyone else seeing this?"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 380,
       "message": " click the B&O charter"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 381,
       "message": "[buy 10% market share] and [buy 20% market share] are the buttons"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 382,
       "message": "oh you can buy the presidents share"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 383,
       "message": "it just bought another 10% share, but that button shouldn't show up"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 384,
       "message": "Yeah don't get that button"
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 385,
       "shares": [
@@ -3886,7 +3886,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 386,
       "shares": [
@@ -3896,35 +3896,35 @@
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 387,
       "message": "one sec"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 388,
       "message": "nm, i'll clone it"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 389,
       "message": " A President certificate may not be directly bought from the Stock Market (as two shares)"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 390,
       "message": "i was looking up the rules, yeah clone this it may be a bug"
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 391,
       "shares": [
@@ -3934,14 +3934,14 @@
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 392,
       "message": "reporting it atm"
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 393,
       "shares": [
@@ -3951,7 +3951,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 394,
       "shares": [
@@ -3961,7 +3961,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 395,
       "shares": [
@@ -3971,7 +3971,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 396,
       "shares": [
@@ -3981,14 +3981,14 @@
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 397,
       "message": "nobody wants C&O ?"
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 398,
       "shares": [
@@ -3998,27 +3998,27 @@
     },
     {
       "type": "pass",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 399
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 400,
       "message": "No ic can kill it"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 401,
       "message": "At least for awhile"
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 402,
       "shares": [
@@ -4028,21 +4028,21 @@
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 403,
       "message": "I can also buy it and use all these wonderful tokens"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 404,
       "message": "Although that's bad"
     },
     {
       "type": "sell_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 405,
       "shares": [
@@ -4054,7 +4054,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 406,
       "shares": [
@@ -4064,13 +4064,13 @@
     },
     {
       "type": "pass",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 407
     },
     {
       "type": "sell_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 408,
       "shares": [
@@ -4080,7 +4080,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 409,
       "shares": [
@@ -4090,7 +4090,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 410,
       "shares": [
@@ -4100,13 +4100,13 @@
     },
     {
       "type": "pass",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 411
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 412,
       "shares": [
@@ -4116,7 +4116,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 413,
       "shares": [
@@ -4126,13 +4126,13 @@
     },
     {
       "type": "pass",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 414
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 415,
       "shares": [
@@ -4142,7 +4142,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 416,
       "shares": [
@@ -4153,7 +4153,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 417,
       "shares": [
@@ -4163,13 +4163,13 @@
     },
     {
       "type": "pass",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 418
     },
     {
       "type": "sell_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 419,
       "shares": [
@@ -4179,7 +4179,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 420,
       "shares": [
@@ -4189,14 +4189,14 @@
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 421,
       "message": "ok lets end this, cant win against 4 presidents shares "
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 422,
       "shares": [
@@ -4206,168 +4206,168 @@
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 423,
       "message": "Acceptabe"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 424,
       "message": "unlike my spelling"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 425,
       "message": "Why not finish?"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 426,
       "message": "waste of time"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 427,
       "message": "IC and B&O can push you two around with tokens and stuff, but giving me C&O as well is just making it worse"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 428,
       "message": "we got 2 ORs a SR and 2 more ORs at least"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 429,
       "message": "GT isn't bothered by anyones tokens"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 430,
       "message": "one train without mail isn't gonna win the game for you though"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 431,
       "message": "Ed can take BO"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 432,
       "message": "yeah but you are bothered by Akado have 3 more shares then you"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 433,
       "message": "he hasnt sold B&O he can protect it"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 434,
       "message": "He can't protect everything"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 435,
       "message": "He is at very limit"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 436,
       "message": "Cert"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 437,
       "message": "oh no he cant GT is full up in the marketplace"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 438,
       "message": "yep"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 439,
       "message": "Right"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 440,
       "message": "but i can then steal PRR/NYC"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 441,
       "message": "not the best tradeoff for me, but doable"
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 442,
       "message": "actually, I wonder if i can, might not have the cash for that"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 443,
       "message": "Anyway,  i think it's an interesting sr"
     },
     {
       "type": "message",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 444,
       "message": "Why not play it out"
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 445,
       "message": "cant take it without selling 2 Penn and 1 NYC in order to get up to 5 shares"
     },
     {
       "type": "sell_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 446,
       "shares": [
@@ -4378,7 +4378,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 447,
       "shares": [
@@ -4388,7 +4388,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 448,
       "shares": [
@@ -4398,7 +4398,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 449,
       "shares": [
@@ -4408,7 +4408,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 450,
       "shares": [
@@ -4418,7 +4418,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 451,
       "shares": [
@@ -4428,7 +4428,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 452,
       "shares": [
@@ -4438,7 +4438,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 453,
       "shares": [
@@ -4449,7 +4449,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 454,
       "shares": [
@@ -4459,7 +4459,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 455,
       "shares": [
@@ -4469,7 +4469,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 456,
       "shares": [
@@ -4479,7 +4479,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 457,
       "shares": [
@@ -4489,7 +4489,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 458,
       "shares": [
@@ -4499,14 +4499,14 @@
     },
     {
       "type": "message",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 459,
       "message": "akado?"
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 460,
       "shares": [
@@ -4516,20 +4516,20 @@
     },
     {
       "type": "message",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 461,
       "message": "yes, sorry, was trying to think which shares i wanted"
     },
     {
       "type": "pass",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 462
     },
     {
       "type": "sell_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 463,
       "shares": [
@@ -4539,7 +4539,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 464,
       "shares": [
@@ -4550,7 +4550,7 @@
     {
       "id": 464,
       "type": "sell_shares",
-      "entity": "Akado",
+      "entity": 529,
       "shares": [
         "C&O_4"
       ],
@@ -4560,12 +4560,12 @@
     {
       "id": 465,
       "type": "undo",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player"
     },
     {
       "type": "sell_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 467,
       "shares": [
@@ -4575,7 +4575,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 468,
       "shares": [
@@ -4585,19 +4585,19 @@
     },
     {
       "type": "pass",
-      "entity": "Ariel",
+      "entity": 330,
       "entity_type": "player",
       "id": 469
     },
     {
       "type": "pass",
-      "entity": "EdFactor",
+      "entity": 4440,
       "entity_type": "player",
       "id": 470
     },
     {
       "type": "pass",
-      "entity": "Akado",
+      "entity": 529,
       "entity_type": "player",
       "id": 471
     },
@@ -4860,7 +4860,9 @@
   "settings": {
     "seed": 85933359,
     "unlisted": false,
-    "optional_rules": []
+    "optional_rules": [
+
+    ]
   },
   "user_settings": null,
   "turn": 6,
