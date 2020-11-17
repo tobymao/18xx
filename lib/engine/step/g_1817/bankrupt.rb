@@ -36,10 +36,7 @@ module Engine
             next if shares.empty?
 
             bundle = ShareBundle.new(shares)
-            @log << "#{player.name} gives #{@game.share_pool.num_presentation(bundle)} " \
-            "#{bundle.corporation.name} to the market"
-
-            bundle.shares.each { |s| @game.share_pool.move_share(s, @game.share_pool) }
+            @game.sell_shares_and_change_price(bundle, allow_president_change: false)
 
             next unless corporation.owner == player
 

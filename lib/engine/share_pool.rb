@@ -83,7 +83,7 @@ module Engine
       @game.float_corporation(corporation) unless floated == corporation.floated?
     end
 
-    def sell_shares(bundle)
+    def sell_shares(bundle, allow_president_change: true)
       entity = bundle.owner
 
       verb = entity.corporation? ? 'issues' : 'sells'
@@ -91,7 +91,7 @@ module Engine
       @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
         "#{bundle.corporation.name} and receives #{@game.format_currency(bundle.price)}"
 
-      transfer_shares(bundle, self, spender: @bank, receiver: entity)
+      transfer_shares(bundle, self, spender: @bank, receiver: entity, allow_president_change: allow_president_change)
     end
 
     def share_pool?
@@ -106,7 +106,7 @@ module Engine
       percent_of(corporation) >= @game.class::MARKET_SHARE_LIMIT
     end
 
-    def transfer_shares(bundle, to_entity, spender: nil, receiver: nil, price: nil)
+    def transfer_shares(bundle, to_entity, spender: nil, receiver: nil, price: nil, allow_president_change: true)
       corporation = bundle.corporation
       owner = bundle.owner
       previous_president = bundle.president
@@ -118,6 +118,8 @@ module Engine
 
       spender.spend(price, receiver) if spender && receiver && price.positive?
       bundle.shares.each { |s| move_share(s, to_entity) }
+
+      return unless allow_president_change
 
       # check if we need to change presidency
       max_shares = corporation.player_share_holders.values.max
@@ -170,6 +172,8 @@ module Engine
     def possible_reorder(shares)
       shares
     end
+
+    private
 
     def distance(player_a, player_b)
       return 0 if !player_a || !player_b
