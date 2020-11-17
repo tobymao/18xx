@@ -266,8 +266,9 @@ def migrate_db_actions(data)
   engine = Engine::GAMES_BY_TITLE[data.title]
   begin
     actions, repairs = attempt_repair(original_actions) do
+      players = game.ordered_players.map { |u| [u.id, u.name] }.to_h
       engine.new(
-        data.ordered_players.map(&:name),
+        players,
         id: data.id,
         actions: [],
         optional_rules: data.settings['optional_rules']&.map(&:to_sym),
@@ -285,7 +286,7 @@ def migrate_db_actions(data)
         DB.transaction do
           Action.where(game: data).delete
           game = engine.new(
-            data.ordered_players.map(&:name),
+            game.ordered_players.map { |u| [u.id, u.name] }.to_h,
             id: data.id,
             actions: [],
             optional_rules: data.settings['optional_rules']&.map(&:to_sym),

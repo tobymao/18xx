@@ -171,8 +171,6 @@ module Engine
       shares
     end
 
-    private
-
     def distance(player_a, player_b)
       return 0 if !player_a || !player_b
 
