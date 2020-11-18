@@ -10,7 +10,6 @@ module Engine
                       orange: '#f48221',
                       brightGreen: '#76a042',
 
-
                       bbgPink: '#ffd9eb',
                       caRed: '#f72d2d',
                       cprPink: '#c474bc',
@@ -24,7 +23,6 @@ module Engine
                       wgbBlue: '#494d99',
                       wrBrown: '#664c3a',
 
-                      
                       red: '#d81e3e',
                       turquoise: '#00a993',
                       blue: '#0189d1',
@@ -34,12 +32,11 @@ module Engine
 
       DEV_STAGE = :prealpha
 
+      # These plain city hexes upgrade to L tiles in brown
+      LAKE_HEXES = %w[B19 C14 F17 O18 P9 N3 L13].freeze
 
-      #These plain city hexes upgrade to L tiles in brown
-      LAKE_HEXES = ['B19', 'C14', 'F17', 'O18', 'P9', 'N3', 'L13']
-
-      #These cities upgrade to the common BarrieLondon green tile, 
-      # but upgrade to specialized brown tiles
+      # These cities upgrade to the common BarrieLondon green tile,
+      #  but upgrade to specialized brown tiles
       BARRIE_HEX = 'M4'
       LONDON_HEX = 'F15'
 
