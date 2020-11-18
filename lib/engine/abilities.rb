@@ -80,7 +80,7 @@ module Engine
     private
 
     def right_type?(ability, type)
-      type ? ability.type == type : true
+      !type || (ability.type == type)
     end
 
     def right_owner?(ability, owner_type)
