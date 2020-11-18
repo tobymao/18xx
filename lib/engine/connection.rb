@@ -96,7 +96,7 @@ module Engine
               junction_map[path.b] = true if path.b.junction?
             end
 
-            uniq_paths.map!{ |path| path.hex.id }
+            uniq_paths.map! { |path| path.hex.id }
           end
         end
     end
