@@ -241,10 +241,10 @@ module Engine
       @upgrades.flat_map(&:terrains).uniq
     end
 
-    # if tile has more than one intra-tile paths, those paths
+    # if tile has more than one intra-tile paths, connections using those paths
     # cannot be identified with just a hex name
     def ambiguous_connection?
-      @ambiguous_connection ||= @paths.select { |p| p.nodes.size > 1 }.size > 1
+      @ambiguous_connection ||= @paths.count { |p| p.nodes.size > 1 } > 1
     end
 
     def paths_are_subset_of?(other_paths)
