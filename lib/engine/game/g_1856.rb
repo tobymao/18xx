@@ -9,14 +9,22 @@ module Engine
       register_colors(black: '#37383a',
                       orange: '#f48221',
                       brightGreen: '#76a042',
-                      tgbOrange: '#fa460f',
-                      gtGreen: '#78c292',
+
+
+                      bbgPink: '#ffd9eb',
+                      caRed: '#f72d2d',
+                      cprPink: '#c474bc',
+                      cvPurple: '#2d0047',
+                      cgrBlack: '#000',
                       lpsBlue: '#c3deeb',
-                      wgbBlue: '#21234a',
-                      cprPink: '#91498b',
-                      thbYellow: '#979e5d',
+                      gtGreen: '#78c292',
                       gwGray: '#6e6966',
+                      tgbOrange: '#c94d00',
+                      thbYellow: '#ebff45',
+                      wgbBlue: '#494d99',
                       wrBrown: '#664c3a',
+
+                      
                       red: '#d81e3e',
                       turquoise: '#00a993',
                       blue: '#0189d1',
