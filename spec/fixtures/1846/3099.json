@@ -3,7 +3,7 @@
   "actions": [
     {
       "type": "bid",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 1,
       "company": "LSL",
@@ -11,7 +11,7 @@
     },
     {
       "type": "bid",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 2,
       "company": "MS",
@@ -19,7 +19,7 @@
     },
     {
       "type": "bid",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 3,
       "company": "MC",
@@ -27,7 +27,7 @@
     },
     {
       "type": "bid",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 4,
       "company": "MAIL",
@@ -35,7 +35,7 @@
     },
     {
       "type": "bid",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 5,
       "company": "BIG4",
@@ -43,7 +43,7 @@
     },
     {
       "type": "bid",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 6,
       "company": "MPC",
@@ -51,7 +51,7 @@
     },
     {
       "type": "bid",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 7,
       "company": "Pass (5)",
@@ -59,7 +59,7 @@
     },
     {
       "type": "bid",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 8,
       "company": "O&I",
@@ -67,7 +67,7 @@
     },
     {
       "type": "bid",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 9,
       "company": "C&WI",
@@ -75,7 +75,7 @@
     },
     {
       "type": "bid",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 10,
       "company": "Pass (2)",
@@ -83,7 +83,7 @@
     },
     {
       "type": "bid",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 11,
       "company": "Pass (1)",
@@ -91,7 +91,7 @@
     },
     {
       "type": "bid",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 12,
       "company": "SC",
@@ -99,7 +99,7 @@
     },
     {
       "type": "bid",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 13,
       "company": "Pass (4)",
@@ -107,7 +107,7 @@
     },
     {
       "type": "bid",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 14,
       "company": "Pass (3)",
@@ -115,25 +115,25 @@
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 15
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 16
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 17
     },
     {
       "type": "bid",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 18,
       "company": "TBC",
@@ -141,7 +141,7 @@
     },
     {
       "type": "par",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 19,
       "corporation": "IC",
@@ -149,7 +149,7 @@
     },
     {
       "type": "par",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 20,
       "corporation": "PRR",
@@ -157,7 +157,7 @@
     },
     {
       "type": "par",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 21,
       "corporation": "B&O",
@@ -165,7 +165,7 @@
     },
     {
       "type": "par",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 22,
       "corporation": "GT",
@@ -173,7 +173,7 @@
     },
     {
       "type": "par",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 23,
       "corporation": "ERIE",
@@ -181,7 +181,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 24,
       "shares": [
@@ -191,7 +191,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 25,
       "shares": [
@@ -201,7 +201,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 26,
       "shares": [
@@ -211,7 +211,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 27,
       "shares": [
@@ -221,7 +221,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 28,
       "shares": [
@@ -231,7 +231,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 29,
       "shares": [
@@ -241,7 +241,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 30,
       "shares": [
@@ -251,7 +251,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 31,
       "shares": [
@@ -261,13 +261,13 @@
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 32
     },
     {
       "type": "buy_shares",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 33,
       "shares": [
@@ -277,7 +277,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 34,
       "shares": [
@@ -287,7 +287,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 35,
       "shares": [
@@ -297,7 +297,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 36,
       "shares": [
@@ -307,13 +307,13 @@
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 37
     },
     {
       "type": "buy_shares",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 38,
       "shares": [
@@ -323,7 +323,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 39,
       "shares": [
@@ -333,25 +333,25 @@
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 40
     },
     {
       "type": "pass",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 41
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 42
     },
     {
       "type": "buy_shares",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 43,
       "shares": [
@@ -361,31 +361,31 @@
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 44
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 45
     },
     {
       "type": "pass",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 46
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 47
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 48
     },
@@ -1498,7 +1498,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 174,
       "shares": [
@@ -1508,7 +1508,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 175,
       "shares": [
@@ -1518,7 +1518,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 176,
       "shares": [
@@ -1528,7 +1528,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 177,
       "shares": [
@@ -1538,7 +1538,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 178,
       "shares": [
@@ -1548,13 +1548,13 @@
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 179
     },
     {
       "type": "buy_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 180,
       "shares": [
@@ -1564,7 +1564,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 181,
       "shares": [
@@ -1574,31 +1574,31 @@
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 182
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 183
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 184
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 185
     },
     {
       "type": "pass",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 186
     },
@@ -2955,7 +2955,7 @@
     },
     {
       "type": "par",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 315,
       "corporation": "NYC",
@@ -2963,7 +2963,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 316,
       "shares": [
@@ -2973,7 +2973,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 317,
       "shares": [
@@ -2983,7 +2983,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 318,
       "shares": [
@@ -2993,7 +2993,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 319,
       "shares": [
@@ -3003,7 +3003,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 320,
       "shares": [
@@ -3013,7 +3013,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 321,
       "shares": [
@@ -3023,7 +3023,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 322,
       "shares": [
@@ -3033,7 +3033,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 323,
       "shares": [
@@ -3043,7 +3043,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 324,
       "shares": [
@@ -3053,7 +3053,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 325,
       "shares": [
@@ -3063,7 +3063,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 326,
       "shares": [
@@ -3073,7 +3073,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 327,
       "shares": [
@@ -3083,13 +3083,13 @@
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 328
     },
     {
       "type": "par",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 329,
       "corporation": "C&O",
@@ -3097,13 +3097,13 @@
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 330
     },
     {
       "type": "buy_shares",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 331,
       "shares": [
@@ -3113,7 +3113,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 332,
       "shares": [
@@ -3123,13 +3123,13 @@
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 333
     },
     {
       "type": "sell_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 334,
       "shares": [
@@ -3139,7 +3139,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 335,
       "shares": [
@@ -3149,31 +3149,31 @@
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 336
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 337
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 338
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 339
     },
     {
       "type": "sell_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 340,
       "shares": [
@@ -3183,7 +3183,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 341,
       "shares": [
@@ -3193,31 +3193,31 @@
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 342
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 343
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 344
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 345
     },
     {
       "type": "pass",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 346
     },
@@ -4543,7 +4543,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 461,
       "shares": [
@@ -4553,7 +4553,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 462,
       "shares": [
@@ -4563,7 +4563,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 463,
       "shares": [
@@ -4574,7 +4574,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 464,
       "shares": [
@@ -4584,7 +4584,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 465,
       "shares": [
@@ -4597,21 +4597,21 @@
       "shares": [
         "IC_6"
       ],
-      "entity": "sirstevie3",
+      "entity": 87,
       "type": "buy_shares",
       "id": 459,
       "original_id": 475
     },
     {
       "entity_type": "player",
-      "entity": "Blondie",
+      "entity": 1298,
       "type": "undo",
       "id": 460,
       "original_id": 476
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 468,
       "shares": [
@@ -4621,7 +4621,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 469,
       "shares": [
@@ -4631,13 +4631,13 @@
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 470
     },
     {
       "type": "buy_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 471,
       "shares": [
@@ -4647,7 +4647,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 472,
       "shares": [
@@ -4657,7 +4657,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 473,
       "shares": [
@@ -4667,13 +4667,13 @@
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 474
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 475
     },
@@ -4682,33 +4682,33 @@
       "shares": [
         "PRR_4"
       ],
-      "entity": "mfmise",
+      "entity": 82,
       "type": "buy_shares",
       "id": 469,
       "original_id": 485
     },
     {
       "entity_type": "player",
-      "entity": "MrDiskord",
+      "entity": 86,
       "type": "undo",
       "id": 470,
       "original_id": 486
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 478
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 479
     },
     {
       "type": "sell_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 480,
       "shares": [
@@ -4718,7 +4718,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 481,
       "shares": [
@@ -4728,7 +4728,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 482,
       "shares": [
@@ -4739,7 +4739,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 483,
       "shares": [
@@ -4749,13 +4749,13 @@
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 484
     },
     {
       "type": "buy_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 485,
       "shares": [
@@ -4765,7 +4765,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 486,
       "shares": [
@@ -4775,7 +4775,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 487,
       "shares": [
@@ -4785,31 +4785,31 @@
     },
     {
       "type": "pass",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 488
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 489
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 490
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 491
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 492
     },
@@ -5958,7 +5958,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 575,
       "shares": [
@@ -5977,7 +5977,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 577,
       "shares": [
@@ -5987,7 +5987,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 578,
       "shares": [
@@ -5997,7 +5997,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 579,
       "shares": [
@@ -6007,7 +6007,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 580,
       "shares": [
@@ -6017,7 +6017,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 581,
       "shares": [
@@ -6027,7 +6027,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 582,
       "shares": [
@@ -6037,13 +6037,13 @@
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 583
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 584
     },
@@ -6052,21 +6052,21 @@
       "shares": [
         "IC_8"
       ],
-      "entity": "sirstevie3",
+      "entity": 87,
       "type": "buy_shares",
       "id": 578,
       "original_id": 603
     },
     {
       "entity_type": "player",
-      "entity": "Blondie",
+      "entity": 1298,
       "type": "undo",
       "id": 579,
       "original_id": 604
     },
     {
       "type": "buy_shares",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 587,
       "shares": [
@@ -6076,7 +6076,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 588,
       "shares": [
@@ -6086,31 +6086,31 @@
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 589
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 590
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 591
     },
     {
       "type": "pass",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 592
     },
     {
       "type": "buy_shares",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 593,
       "shares": [
@@ -6120,13 +6120,13 @@
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 594
     },
     {
       "type": "sell_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 595,
       "shares": [
@@ -6136,7 +6136,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 596,
       "shares": [
@@ -6146,19 +6146,19 @@
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 597
     },
     {
       "type": "pass",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 598
     },
     {
       "type": "buy_shares",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 599,
       "shares": [
@@ -6168,31 +6168,31 @@
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 600
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 601
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 602
     },
     {
       "type": "pass",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 603
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 604
     },
@@ -7416,19 +7416,19 @@
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 668
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 669
     },
     {
       "type": "buy_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 670,
       "shares": [
@@ -7438,31 +7438,31 @@
     },
     {
       "type": "pass",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 671
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 672
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 673
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 674
     },
     {
       "type": "buy_shares",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 675,
       "shares": [
@@ -7472,31 +7472,31 @@
     },
     {
       "type": "pass",
-      "entity": "sirstevie3",
+      "entity": 87,
       "entity_type": "player",
       "id": 676
     },
     {
       "type": "pass",
-      "entity": "Blondie",
+      "entity": 1298,
       "entity_type": "player",
       "id": 677
     },
     {
       "type": "pass",
-      "entity": "Emilybry26",
+      "entity": 1398,
       "entity_type": "player",
       "id": 678
     },
     {
       "type": "pass",
-      "entity": "mfmise",
+      "entity": 82,
       "entity_type": "player",
       "id": 679
     },
     {
       "type": "pass",
-      "entity": "MrDiskord",
+      "entity": 86,
       "entity_type": "player",
       "id": 680
     },
@@ -8598,7 +8598,9 @@
     "Blondie": 7118,
     "mfmise": 6548
   },
-  "acting": [],
+  "acting": [
+
+  ],
   "round": "Operating Round",
   "turn": 6,
   "settings": {

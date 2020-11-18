@@ -31,22 +31,21 @@ module Engine
             @game.sell_shares_and_change_price(bundle)
           end
 
-          # finally, the president sells all their shares, regardless of 50% and
-          # presidency restrictions
+          # finally, move all presidencies into the market, do not change presidency
           player.shares_by_corporation.each do |corporation, shares|
-            next unless corporation.share_price # if a corporation has not parred
             next if shares.empty?
 
             bundle = ShareBundle.new(shares)
+            @log << "#{player.name} gives #{@game.share_pool.num_presentation(bundle)} " \
+            "#{bundle.corporation.name} to the market"
 
-            if corporation.owner == player
-              @log << "-- #{corporation.name} enters liquidation (it has no president) --"
-              @game.liquidate!(corporation)
-              corporation.owner = @game.share_pool
-            end
+            bundle.shares.each { |s| @game.share_pool.move_share(s, @game.share_pool) }
 
-            # Sell shares after liquidating
-            @game.sell_shares_and_change_price(bundle)
+            next unless corporation.owner == player
+
+            @log << "-- #{corporation.name} enters liquidation (it has no president) --"
+            @game.liquidate!(corporation)
+            corporation.owner = @game.share_pool
           end
 
           if @cash_crisis_due_to_interest

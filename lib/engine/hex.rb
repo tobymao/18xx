@@ -184,15 +184,17 @@ module Engine
     end
 
     def lay_downgrade(tile)
-      hexes = @connections.values.flatten.flat_map(&:hexes)
+      hexes = []
+
+      @tile.paths.each do |path|
+        path.walk { |p| hexes << p.hex if p.node? }
+      end
 
       lay(tile)
 
-      hexes.each do |hex|
+      hexes.uniq.each do |hex|
         hex.connections.each do |_, connections|
-          connections.select! do |connection|
-            connection.paths.all?(&:hex)
-          end
+          connections.select!(&:valid?)
         end
       end
 
@@ -217,7 +219,7 @@ module Engine
     end
 
     def all_connections
-      @connections.values.flatten.uniq
+      @connections.values.flatten.uniq.select(&:valid?)
     end
 
     def neighbor_direction(other)

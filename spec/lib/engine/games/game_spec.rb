@@ -27,6 +27,12 @@ module Engine
         'the_seaward' => 4950,
         'hoolaking' => 1803,
       },
+      'hs_ymymwsiv_16134' => {
+        'Akado' => 1868,
+        'Ariel' => 1966,
+        'EdFactor' => 1573,
+        'Patrick of the Isles' => 0,
+      },
       # bankruptcy sending a corp into receivership, unable to buy a train on
       # the turn of the bankruptcy, and then buying a train on its next turn
       # thanks to company income; also includes emergency share issuing
@@ -219,7 +225,7 @@ module Engine
           it 'matches result exactly' do
             game_path = game.title.gsub(/ /, '_').gsub(/([0-9])([A-Z])/, '\1_\2').downcase
             data = JSON.parse(File.read("spec/fixtures/#{game_path}/#{game_id}.json"))
-            players = data['players'].map { |p| p['name'] }
+            players = data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h
             expect(game.new(players, id: game_id, actions: data['actions']).result).to eq(result)
             rungame = game.new(players, id: game_id, actions: data['actions'], strict: true)
             expect(rungame.result).to eq(result)
