@@ -11,7 +11,7 @@ class Api
 
         # '/api/game/<game_id>/'
         r.is do
-          game_data = game.to_h(include_actions: true, player: user&.name)
+          game_data = game.to_h(include_actions: true, player: user&.id)
 
           game_data
         end
@@ -42,7 +42,7 @@ class Api
 
           # POST '/api/game/<game_id>/user_settings'
           r.is 'user_settings' do
-            game.update_player_settings(user.name, r.params)
+            game.update_player_settings(user.id, r.params)
             game.save
             game.to_h
           end

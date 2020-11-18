@@ -20,6 +20,12 @@ class User < Base
   ]).freeze
 
   def update_settings(params)
+    if params['name']
+      self.name = params['name']
+      raise 'Name cannot be empty' if name.empty?
+
+    end
+
     params.each do |key, value|
       settings[key] = value if SETTINGS.include?(key)
     end

@@ -38,6 +38,7 @@ module View
           ]]
         when :profile
           ['Profile Settings', [
+            render_username,
             render_notifications(setting_for(:notifications)),
             h('div#settings__colors', [
               render_logo_color(setting_for(:red_logo)),
@@ -110,6 +111,16 @@ module View
       end
 
       submit
+    end
+
+    def render_username
+      h('div#settings__username', [
+        render_input(
+          'User Name:',
+          id: :name,
+          attrs: { value: @user&.dig('name') || '' }
+        ),
+      ])
     end
 
     def render_notifications(checked = true)
