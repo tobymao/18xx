@@ -34,6 +34,15 @@ module Engine
 
       DEV_STAGE = :prealpha
 
+
+      #These plain city hexes upgrade to L tiles in brown
+      LAKE_HEXES = ['B19', 'C14', 'F17', 'O18', 'P9', 'N3', 'L13']
+
+      #These cities upgrade to the common BarrieLondon green tile, 
+      # but upgrade to specialized brown tiles
+      BARRIE_HEX = 'M4'
+      LONDON_HEX = 'F15'
+
       GAME_LOCATION = 'Ontario, Canada'
       GAME_RULES_URL = 'http://google.com'
       GAME_DESIGNER = 'Bill Dixon'
