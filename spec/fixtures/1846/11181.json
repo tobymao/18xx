@@ -2,28 +2,28 @@
   "id": 11181,
   "description": "fast/live open game (no multiple table players)",
   "user": {
-    "id": 1819,
+    "id": "George",
     "name": "George"
   },
   "players": [
     {
-      "id": 1819,
+      "id": "George",
       "name": "George"
     },
     {
-      "id": 4661,
+      "id": "Oedipussy Rex",
       "name": "Oedipussy Rex"
     },
     {
-      "id": 3329,
+      "id": "zhaoyi93",
       "name": "zhaoyi93"
     },
     {
-      "id": 488,
+      "id": "beardbru",
       "name": "beardbru"
     },
     {
-      "id": 723,
+      "id": "Fritz von Catan",
       "name": "Fritz von Catan"
     }
   ],
@@ -37,7 +37,7 @@
   "turn": 4,
   "round": "Operating Round",
   "acting": [
-    488
+    "beardbru"
   ],
   "result": {
     "George": 0,
@@ -4913,14 +4913,14 @@
       "type": "pass",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 441,
+      "id": 763,
       "original_id": 548
     },
     {
       "type": "message",
       "entity": "Oedipussy Rex",
       "entity_type": "player",
-      "id": 442,
+      "id": 764,
       "message": "Should have started with the lag.",
       "original_id": 549
     },
@@ -4928,7 +4928,7 @@
       "type": "message",
       "entity": "beardbru",
       "entity_type": "player",
-      "id": 443,
+      "id": 765,
       "message": "sorry guys i am done; do not listen to orders well",
       "original_id": 550
     },
@@ -4936,7 +4936,7 @@
       "type": "message",
       "entity": "Oedipussy Rex",
       "entity_type": "player",
-      "id": 444,
+      "id": 766,
       "message": "Still around, Bruce?",
       "original_id": 552
     },
@@ -4944,7 +4944,7 @@
       "type": "message",
       "entity": "Fritz von Catan",
       "entity_type": "player",
-      "id": 445,
+      "id": 767,
       "message": "what was that?",
       "original_id": 553
     },
@@ -4952,7 +4952,7 @@
       "type": "message",
       "entity": "Fritz von Catan",
       "entity_type": "player",
-      "id": 446,
+      "id": 768,
       "message": "Is that it?",
       "original_id": 554
     },
@@ -4960,7 +4960,7 @@
       "type": "message",
       "entity": "zhaoyi93",
       "entity_type": "player",
-      "id": 447,
+      "id": 769,
       "message": "We can pass for him",
       "original_id": 555
     },
@@ -4968,7 +4968,7 @@
       "type": "message",
       "entity": "zhaoyi93",
       "entity_type": "player",
-      "id": 448,
+      "id": 770,
       "message": "Or we just call",
       "original_id": 557
     },
@@ -4976,7 +4976,7 @@
       "type": "message",
       "entity": "zhaoyi93",
       "entity_type": "player",
-      "id": 449,
+      "id": 771,
       "message": "He’s not winning and enjoying",
       "original_id": 558
     },
@@ -4984,7 +4984,7 @@
       "type": "message",
       "entity": "Fritz von Catan",
       "entity_type": "player",
-      "id": 450,
+      "id": 772,
       "message": "Let's call it.",
       "original_id": 559
     },
@@ -4992,7 +4992,7 @@
       "type": "message",
       "entity": "Fritz von Catan",
       "entity_type": "player",
-      "id": 451,
+      "id": 773,
       "message": "You played a good game",
       "original_id": 560
     },
@@ -5000,7 +5000,7 @@
       "type": "message",
       "entity": "zhaoyi93",
       "entity_type": "player",
-      "id": 452,
+      "id": 774,
       "message": "Thx",
       "original_id": 561
     },
@@ -5008,7 +5008,7 @@
       "type": "message",
       "entity": "zhaoyi93",
       "entity_type": "player",
-      "id": 453,
+      "id": 775,
       "message": "Sorry about the lag",
       "original_id": 562
     },
@@ -5016,7 +5016,7 @@
       "type": "message",
       "entity": "zhaoyi93",
       "entity_type": "player",
-      "id": 454,
+      "id": 776,
       "message": "And thx for not chatting during my turn",
       "original_id": 563
     },
@@ -5024,7 +5024,7 @@
       "type": "message",
       "entity": "Fritz von Catan",
       "entity_type": "player",
-      "id": 455,
+      "id": 777,
       "message": "I had to refresh several times myself",
       "original_id": 564
     },
@@ -5032,7 +5032,7 @@
       "type": "message",
       "entity": "zhaoyi93",
       "entity_type": "player",
-      "id": 456,
+      "id": 778,
       "message": "Hopefully breadcrumbs can understand this ",
       "original_id": 565
     },
@@ -5040,7 +5040,7 @@
       "type": "end_game",
       "entity": "zhaoyi93",
       "entity_type": "player",
-      "id": 457,
+      "id": 779,
       "original_id": 566
     }
   ],

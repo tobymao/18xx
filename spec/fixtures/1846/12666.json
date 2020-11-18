@@ -2,20 +2,20 @@
   "id": 12666,
   "description": "hoola & ward",
   "user": {
-    "id": 199,
+    "id": "gragatrim",
     "name": "gragatrim"
   },
   "players": [
     {
-      "id": 199,
+      "id": "gragatrim",
       "name": "gragatrim"
     },
     {
-      "id": 4943,
+      "id": "hoolaking",
       "name": "hoolaking"
     },
     {
-      "id": 4942,
+      "id": "the_seaward",
       "name": "the_seaward"
     }
   ],
@@ -29,9 +29,9 @@
   "turn": 6,
   "round": "Operating Round",
   "acting": [
-    199,
-    4943,
-    4942
+    "gragatrim",
+    "hoolaking",
+    "the_seaward"
   ],
   "result": {
     "gragatrim": 6180,
