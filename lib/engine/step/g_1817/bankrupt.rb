@@ -53,6 +53,7 @@ module Engine
           end
           # Clear cash crisis
           @game.bank.spend(-player.cash, player) if player.cash.negative?
+          player.spend(player.cash, @game.bank) if player.cash.positive?
 
           @game.declare_bankrupt(player)
           @game.close_market_shorts
