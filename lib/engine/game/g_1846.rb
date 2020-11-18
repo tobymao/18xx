@@ -364,6 +364,8 @@ module Engine
         else
           @minors.delete(corporation)
         end
+
+        @cert_limit = init_cert_limit
       end
 
       def init_round
