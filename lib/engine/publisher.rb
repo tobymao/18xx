@@ -19,10 +19,6 @@ module Engine
         name: 'Grand Trunk Games',
         url: 'https://www.grandtrunkgames.com/',
       },
-      mayfair_games: {
-        name: 'Mayfair Games',
-        url: '',
-      },
       sea_horse: {
         name: 'Sea Horse Laser & Design',
         url: 'https://www.etsy.com/shop/SeahorseLaserDesign?section_id=24360565',

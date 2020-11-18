@@ -195,7 +195,7 @@ module Engine
       num_shares = bundle.num_shares
       return "a #{bundle.percent}% share of" if num_shares == 1
 
-      "#{num_shares} share#{num_shares > 1 ? 's' : ''}"
+      "#{num_shares} shares of"
     end
   end
 end

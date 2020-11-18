@@ -21,6 +21,8 @@ module View
         children = []
 
         if step.current_actions.include?('buy_shares')
+          price_protection = step.price_protection if step.respond_to?(:price_protection)
+
           if step.can_buy?(current_entity, ipo_share)
             children << h(
               :button,
@@ -41,6 +43,15 @@ module View
             children << h(:button, { on: { click: -> { buy_share(current_entity, share) } } },
                           "Buy #{text}Market Share")
           end
+
+          if price_protection
+            children << h(
+              :button,
+              { on: { click: -> { buy_share(current_entity, price_protection.shares) } } },
+              'Protect Shares',
+            )
+          end
+
         end
 
         if step.current_actions.include?('short') && step.can_short?(current_entity, @corporation)
