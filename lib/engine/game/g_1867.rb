@@ -102,7 +102,7 @@ module Engine
       def interest_owed(entity)
         interest_owed_for_loans(entity.loans.size)
       end
-      
+
       # @todo: unchanged from here
 
       def can_pay_interest?(entity, extra_cash = 0)
@@ -452,12 +452,15 @@ module Engine
 
       private
 
+      # @todo: unchanged to here
+
       def new_auction_round
-        log << "Seed Money for initial auction is #{format_currency(SEED_MONEY)}" unless @round
         Round::Auction.new(self, [
-          Step::G1817::SelectionAuction,
+          Step::G1867::SingleItemAuction,
         ])
       end
+
+      # @todo: unchanged from here
 
       def stock_round
         close_bank_shorts
