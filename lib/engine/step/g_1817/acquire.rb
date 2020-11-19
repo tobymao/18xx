@@ -81,6 +81,8 @@ module Engine
             [@buyer]
           elsif @winner
             [@winner.entity]
+          else
+            []
           end
         end
 
@@ -441,7 +443,7 @@ module Engine
         end
 
         def auctioning_corporation
-          @offer || @auctioning || @winner.corporation
+          @offer || @auctioning || @winner&.corporation
         end
 
         def setup
