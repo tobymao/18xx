@@ -15,7 +15,7 @@ module Engine
 
           # Rotate players to order starting with the current player
           players = @game.players.rotate(@game.players.index(@round.cash_crisis_player))
-          players.select { |p| p.cash.negative? }
+          [players.find { |p| p.cash.negative? }]
         end
 
         def process_bankrupt(action)
