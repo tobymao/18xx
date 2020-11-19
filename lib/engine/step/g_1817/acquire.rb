@@ -91,7 +91,7 @@ module Engine
         end
 
         def show_other_players
-          false
+          true
         end
 
         def process_payoff_loan(action)
