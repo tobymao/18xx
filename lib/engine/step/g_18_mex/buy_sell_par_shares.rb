@@ -15,10 +15,10 @@ module Engine
         end
 
         def can_gain?(entity, bundle)
-          # NdM 5% shares does not affect cert limit
-          return true if bundle&.percent == 5
+          return super if bundle.corporation != @game.ndm || bundle&.percent != 5
 
-          super
+          # NdM 5% shares does not affect cert limit
+          bundle.corporation.holding_ok?(entity, bundle.percent)
         end
 
         private

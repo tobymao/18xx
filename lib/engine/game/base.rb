@@ -619,8 +619,7 @@ module Engine
           value += player.shares_by_corporation.sum do |corporation, shares|
             next 0 if shares.empty?
 
-            last = sellable_bundles(player, corporation).last
-            last ? last.price : 0
+            value_for_sellable(player, corporation)
           end
         else
           player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, _|
@@ -631,13 +630,22 @@ module Engine
               next unless corporation.operated? || corporation.president?(player)
             end
 
-            max_bundle = bundles_for_corporation(player, corporation)
-              .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
-              .max_by(&:price)
-            value += max_bundle&.price || 0
+            value += value_for_dumpable(player, corporation)
           end
         end
         value
+      end
+
+      def value_for_sellable(player, corporation)
+        max_bundle = sellable_bundles(player, corporation).max_by(&:price)
+        max_bundle&.price || 0
+      end
+
+      def value_for_dumpable(player, corporation)
+        max_bundle = bundles_for_corporation(player, corporation)
+          .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
+          .max_by(&:price)
+        max_bundle&.price || 0
       end
 
       def issuable_shares(_entity)
@@ -654,6 +662,11 @@ module Engine
       end
 
       def bundles_for_corporation(share_holder, corporation, shares: nil)
+        all_bundles_for_corporation(share_holder, corporation, shares)
+      end
+
+      # Needed for 18MEX
+      def all_bundles_for_corporation(share_holder, corporation, shares)
         return [] unless corporation.ipoed
 
         shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
