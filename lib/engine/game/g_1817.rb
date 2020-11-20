@@ -44,7 +44,8 @@ module Engine
       SELL_MOVEMENT = :none
       ALL_COMPANIES_ASSIGNABLE = true
       SELL_AFTER = :operate
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
+      OBSOLETE_TRAINS_COUNT_FOR_LIMIT = true
 
       ASSIGNMENT_TOKENS = {
         'bridge' => '/icons/1817/bridge_token.svg',
