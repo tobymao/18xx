@@ -15,6 +15,18 @@ module Engine
         'mfmise' => 6550,
         'sirstevie3' => 4907,
       },
+      11_181 => {
+        'zhaoyi93' => 2659,
+        'Oedipussy Rex' => 2090,
+        'beardbru' => 1930,
+        'Fritz von Catan' => 1058,
+        'George' => 0,
+      },
+      12_666 => {
+        'gragatrim' => 6180,
+        'the_seaward' => 4950,
+        'hoolaking' => 1803,
+      },
       'hs_ymymwsiv_16134' => {
         'Akado' => 1868,
         'Ariel' => 1966,
@@ -157,6 +169,12 @@ module Engine
         'SunnyD' => 5923,
         'LJHall' => 5382,
         'Helen ' => 3978,
+      },
+      9487 => {
+        'Cogust' => 5032,
+        '1mmm' => 4500,
+        'piton' => 4049,
+        'ChrisShaffer' => 3673,
       },
     },
     GAMES_BY_TITLE['18MS'] => {

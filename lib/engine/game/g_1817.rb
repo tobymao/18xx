@@ -499,7 +499,7 @@ module Engine
         @companies.each do |company|
           next unless company.owner
 
-          company.abilities(:revenue_change, 'has_train') do |ability|
+          company.abilities(:revenue_change, time: 'has_train') do |ability|
             company.revenue = company.owner.trains.any? ? ability.revenue : 0
           end
         end

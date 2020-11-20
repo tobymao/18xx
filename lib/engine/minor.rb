@@ -29,7 +29,7 @@ module Engine
       init_abilities(opts[:abilities])
     end
 
-    def abilities(_type, _time = nil); end
+    def abilities(_type = nil, **opts); end
 
     def companies
       @companies ||= []

@@ -7,11 +7,16 @@ module Engine
     class BuyCompany < Base
       ACTIONS = %w[buy_company pass].freeze
       ACTIONS_NO_PASS = %w[buy_company].freeze
+      PASS = %w[pass].freeze
 
       def actions(entity)
         # 1846 and a few others minors can't buy companies
         return [] if entity.minor?
         return blocks? ? ACTIONS : ACTIONS_NO_PASS if can_buy_company?(entity)
+
+        return PASS if blocks? &&
+                       entity.corporation? &&
+                       entity.abilities(time: 'owning_corp_or_turn', owner_type: 'corporation', strict_time: true).any?
 
         []
       end

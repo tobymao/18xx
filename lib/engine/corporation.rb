@@ -180,16 +180,16 @@ module Engine
       @companies.each { |company| company.remove_ability(ability) }
     end
 
-    def abilities(type, time = nil)
+    def abilities(type = nil, **opts)
       abilities = []
 
-      if (ability = super(type, time, &nil))
+      if (ability = super(type, **opts, &nil))
         abilities << ability
         yield ability, self if block_given?
       end
 
       @companies.each do |company|
-        company.abilities(type, time) do |company_ability|
+        company.abilities(type, **opts) do |company_ability|
           abilities << company_ability
           yield company_ability, company if block_given?
         end

@@ -298,6 +298,10 @@ module Engine
         @illinois_central ||= corporation_by_id('IC')
       end
 
+      def preprocess_action(action)
+        check_special_tile_lay(action) unless psuedo_special_tile_lay?(action)
+      end
+
       def action_processed(action)
         case action
         when Action::Par
@@ -321,6 +325,11 @@ module Engine
       def special_tile_lay?(action)
         (action.is_a?(Action::LayTile) &&
          (action.entity == michigan_central || action.entity == ohio_indiana))
+      end
+
+      def psuedo_special_tile_lay?(action)
+        (action.is_a?(Action::LayTile) &&
+         (action.entity == michigan_central&.owner || action.entity == ohio_indiana&.owner))
       end
 
       def check_special_tile_lay(action)
