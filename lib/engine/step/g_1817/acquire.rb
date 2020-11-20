@@ -496,7 +496,7 @@ module Engine
 
           else
             # This needs the owner to either offer(assign) or pass up putting the corp for sale.
-
+            @mode = :offered
             # Check to see if any players can actually buy it
             bidders = entities.select do |player|
               max_bid(player, corporation) >= min_bid(corporation)
@@ -506,7 +506,6 @@ module Engine
               @game.log << "#{corporation.name} may be offered for sale for "\
                 "#{@game.format_currency(starting_bid(corporation))}"
               @offer = corporation
-              @mode = :offered
             else
               @game.log << "#{corporation.name} cannot be bought at "\
                 "#{@game.format_currency(starting_bid(corporation))}, skipping"
