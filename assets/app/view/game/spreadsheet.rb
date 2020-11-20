@@ -113,7 +113,7 @@ module View
         }
 
         extra = []
-        extra << h(:th, 'Loans') if @game.total_loans
+        extra << h(:th, 'Loans') if @game.total_loans&.nonzero?
         [
           h(:tr, [
             h(:th, ''),
@@ -244,7 +244,7 @@ module View
         end
 
         extra = []
-        extra << h(:td, "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}") if @game.total_loans
+        extra << h(:td, "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
 
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),

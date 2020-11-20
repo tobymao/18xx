@@ -201,10 +201,10 @@ module Engine
       },
       # This game is in progress, and will be updated
       15_528 => {
-          'PedroS' => 3392,
-          'FCR' => 3249,
-          'daniel.sousa.me' => 2389,
-          'Zebsagaz' => 1410,
+          'PedroS' => 5058,
+          'FCR' => 3349,
+          'daniel.sousa.me' => 5722,
+          'Zebsagaz' => 2421,
       },
     },
     GAMES_BY_TITLE['18MEX'] => {

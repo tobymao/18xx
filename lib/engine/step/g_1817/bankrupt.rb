@@ -15,7 +15,7 @@ module Engine
 
           # Rotate players to order starting with the current player
           players = @game.players.rotate(@game.players.index(@round.cash_crisis_player))
-          players.select { |p| p.cash.negative? }
+          [players.find { |p| p.cash.negative? }]
         end
 
         def process_bankrupt(action)
@@ -36,10 +36,7 @@ module Engine
             next if shares.empty?
 
             bundle = ShareBundle.new(shares)
-            @log << "#{player.name} gives #{@game.share_pool.num_presentation(bundle)} " \
-            "#{bundle.corporation.name} to the market"
-
-            bundle.shares.each { |s| @game.share_pool.move_share(s, @game.share_pool) }
+            @game.sell_shares_and_change_price(bundle, allow_president_change: false)
 
             next unless corporation.owner == player
 
@@ -56,6 +53,7 @@ module Engine
           end
           # Clear cash crisis
           @game.bank.spend(-player.cash, player) if player.cash.negative?
+          player.spend(player.cash, @game.bank) if player.cash.positive?
 
           @game.declare_bankrupt(player)
           @game.close_market_shorts

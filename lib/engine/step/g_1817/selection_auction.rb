@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../base'
-require_relative 'passable_auction'
+require_relative '../passable_auction'
 
 module Engine
   module Step
@@ -44,17 +44,6 @@ module Engine
 
             next_entity!
           end
-        end
-
-        def entity_in_auction!(entity)
-          return false unless @active_bidders.include?(entity)
-          # Can they afford the next bid?
-          return true unless min_bid(@auctioning) > max_bid(entity, @auctioning)
-
-          @active_bidders.delete(entity)
-          pass_auction(entity)
-          resolve_bids
-          false
         end
 
         def next_entity!

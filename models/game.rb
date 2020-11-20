@@ -107,7 +107,7 @@ class Game < Base
     settings_h = settings.to_h
 
     # Move user settings and hide from other players
-    user_settings_h = settings_h.dig('players', player)
+    user_settings_h = settings_h.dig('players', player.to_s)
     settings_h.delete('players')
 
     {

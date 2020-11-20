@@ -2,7 +2,7 @@
 
 require_relative '../buy_sell_par_shares'
 require_relative '../../action/take_loan'
-require_relative 'passable_auction'
+require_relative '../passable_auction'
 require_relative 'share_buying_with_shorts'
 
 module Engine

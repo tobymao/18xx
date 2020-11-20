@@ -2,7 +2,7 @@
 
 require_relative '../base'
 require_relative '../../token'
-require_relative 'passable_auction'
+require_relative '../passable_auction'
 require_relative 'token_merger'
 
 module Engine
@@ -81,6 +81,8 @@ module Engine
             [@buyer]
           elsif @winner
             [@winner.entity]
+          else
+            []
           end
         end
 
@@ -91,7 +93,7 @@ module Engine
         end
 
         def show_other_players
-          false
+          true
         end
 
         def process_payoff_loan(action)
@@ -441,7 +443,7 @@ module Engine
         end
 
         def auctioning_corporation
-          @offer || @auctioning || @winner.corporation
+          @offer || @auctioning || @winner&.corporation
         end
 
         def setup
