@@ -106,7 +106,7 @@ end
 
 def validate_json(filename)
   data = JSON.parse(File.read(filename))
-  players = data['players'].map { |p| [p['id'], p['name']] }.to_h
+  players = data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h
   engine = Engine::GAMES_BY_TITLE[data['title']]
   engine.new(players, id: data['id'], actions: data['actions'], optional_rules: data.dig('settings', 'optional_rules') || [])
 end
