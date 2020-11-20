@@ -73,6 +73,7 @@ module Engine
       STARTING_CASH = {}.freeze
 
       HEXES = {}.freeze
+      PREPRINT_COLOR_ON_BORDER = [].freeze
 
       LAYOUT = nil
 
@@ -1133,6 +1134,8 @@ module Engine
                 rescue Engine::GameError
                   Tile.from_code(coord, color, tile_string, preprinted: true, index: index)
                 end
+
+              tile.color_as_border = true if self.class::PREPRINT_COLOR_ON_BORDER.include?(coord)
 
               if (blocker = blockers[coord])
                 tile.add_blocker!(blocker)

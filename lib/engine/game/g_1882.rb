@@ -39,6 +39,8 @@ module Engine
       # Two lays or one upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false, cost: 20 }].freeze
 
+      PREPRINT_COLOR_ON_BORDER = %w[F12].freeze
+
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,

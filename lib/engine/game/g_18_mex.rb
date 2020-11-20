@@ -40,6 +40,8 @@ module Engine
         'ndm_unavailable' => ['NdM unavailable', 'NdM shares unavailable during stock round'],
       ).freeze
 
+      PREPRINT_COLOR_ON_BORDER = %w[R13].freeze
+
       OPTIONAL_RULES = [
         { sym: :triple_yellow_first_or,
           short_name: 'Extra yellow',

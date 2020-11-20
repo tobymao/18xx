@@ -53,6 +53,8 @@ module Engine
       }.freeze
       include CompanyPrice50To150Percent
 
+      PREPRINT_COLOR_ON_BORDER = %w[E6 K4].freeze
+
       def route_bonuses
         ROUTE_BONUSES
       end

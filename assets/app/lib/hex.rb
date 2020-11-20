@@ -21,5 +21,11 @@ module Lib
       red: '#ec232a',
       blue: '#35A7FF',
     }.freeze
+
+    def self.points(scale: 1.0)
+      "#{X_R * scale},#{Y_M * scale} #{X_M_R * scale},#{Y_B * scale} "\
+      "#{X_M_L * scale},#{Y_B * scale} #{X_L * scale},#{Y_M * scale} "\
+      "#{X_M_L * scale},#{Y_T * scale} #{X_M_R * scale},#{Y_T * scale}"
+    end
   end
 end
