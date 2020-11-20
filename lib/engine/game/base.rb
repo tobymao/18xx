@@ -200,6 +200,7 @@ module Engine
       IPO_RESERVED_NAME = 'IPO Reserved'
       MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
+      OBSOLETE_TRAINS_COUNT_FOR_LIMIT = false
 
       CACHABLE = [
         %i[players player],
