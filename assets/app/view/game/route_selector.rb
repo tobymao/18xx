@@ -42,6 +42,13 @@ module View
       def render
         trains = @game.round.current_entity.runnable_trains
 
+        train_help =
+          if (helps = @game.train_help(trains)).any?
+            h('ul',
+              { style: { 'padding-left': '20px' } },
+              helps.map { |help| h('li', [h('p.small_font', help)]) })
+          end
+
         if @routes.empty? && generate_last_routes!.any?
           description = 'Prior routes are autofilled.'
           @selected_route = @routes.first
@@ -138,6 +145,7 @@ module View
           h(:h3, { style: { margin: '0.5rem 0 0.2rem' } }, 'Select Routes'),
           h('div.small_font', description),
           h('div.small_font', 'Click revenue centers, again to cycle paths.'),
+          train_help,
           h(:table, table_props, [
             h(:thead, [
               h(:tr, [
@@ -150,7 +158,7 @@ module View
             h(:tbody, trains),
           ]),
           actions,
-        ])
+        ].compact)
       end
 
       def cleanup
