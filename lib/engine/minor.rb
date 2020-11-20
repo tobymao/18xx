@@ -67,6 +67,14 @@ module Engine
 
     def par_price; end
 
+    def num_shares_of(_corporation, _ceil = true)
+      0
+    end
+
+    def share_percent
+      100
+    end
+
     def president?(player)
       return false unless player
 
