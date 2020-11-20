@@ -4,7 +4,6 @@ require_relative 'g_1846'
 require_relative '../config/game/g_1846'
 require_relative '../config/game/g_18_los_angeles'
 require_relative '../step/g_18_los_angeles/draft_distribution'
-require_relative '../step/g_18_los_angeles/route'
 require_relative '../step/g_18_los_angeles/special_token'
 
 module Engine
@@ -141,7 +140,7 @@ module Engine
           Step::G1846::BuyCompany,
           Step::G1846::IssueShares,
           Step::G1846::TrackAndToken,
-          Step::G18LosAngeles::Route,
+          Step::Route,
           Step::G1846::Dividend,
           Step::G1846::BuyTrain,
           [Step::G1846::BuyCompany, blocks: true],
@@ -277,6 +276,25 @@ module Engine
             init_round_finished
             new_stock_round
           end
+      end
+
+      def train_help(runnable_trains)
+        trains = runnable_trains.group_by { |t| train_type(t) }
+
+        help = []
+
+        if trains.keys.size > 1
+          passenger_trains = trains[:passenger].map(&:name).uniq.sort.join(', ')
+          freight_trains = trains[:freight].map(&:name).uniq.sort.join(', ')
+          help << "The routes of N trains (#{passenger_trains}) may overlap "\
+                  "with the routes of N/M trains (#{freight_trains})."
+        end
+
+        super + help
+      end
+
+      def east_west_desc
+        'E/W or N/S'
       end
     end
   end

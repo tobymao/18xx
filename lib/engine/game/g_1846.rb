@@ -578,6 +578,30 @@ module Engine
             values
           end
       end
+
+      def east_west_desc
+        'E/W'
+      end
+
+      def train_help(runnable_trains)
+        help = []
+
+        nm_trains = runnable_trains.select { |t| t.name.include?('/') }
+
+        if nm_trains.any?
+          corporation = nm_trains.first.owner
+          trains = nm_trains.map(&:name).uniq.sort.join(', ')
+          help << "N/M trains (#{trains}) may visit M locations, but only "\
+                  'earn revenue from the best combination of N locations.'
+          help << "One of the N locations must include a #{corporation.name} "\
+                  'token.'
+          help << 'In order for an N/M train to earn bonuses for an '\
+                  "#{east_west_desc} route, both of the #{east_west_desc} "\
+                  'locations must be counted among the N locations.'
+        end
+
+        help
+      end
     end
   end
 end

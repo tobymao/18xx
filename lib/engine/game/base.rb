@@ -1009,6 +1009,10 @@ module Engine
         end
       end
 
+      def train_help(_runnable_trains)
+        []
+      end
+
       private
 
       def init_bank
