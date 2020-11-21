@@ -40,8 +40,7 @@ module Engine
       # @todo: unchanged from here
       MUST_BID_INCREMENT_MULTIPLE = true
       SEED_MONEY = 200
-      MUST_BUY_TRAIN = :never
-      EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
+      MUST_BUY_TRAIN = :always # mostly true, needs custom code
       POOL_SHARE_DROP = :each
       SELL_MOVEMENT = :none
       ALL_COMPANIES_ASSIGNABLE = true
@@ -53,7 +52,7 @@ module Engine
         'mine' => '/icons/1817/mine_token.svg',
       }.freeze
 
-      GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
+      GAME_END_CHECK = { bank: :current_or, custom: :one_more_full_or_set }.freeze
 
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
 
@@ -96,7 +95,7 @@ module Engine
       end
 
       def interest_owed_for_loans(loans)
-        (interest_rate * loans * @loan_value) / 100
+        interest_rate * loans
       end
 
       def interest_owed(entity)
@@ -113,17 +112,15 @@ module Engine
         (buying_power(entity) + extra_cash) > interest_owed_for_loans(maximum_loans(entity))
       end
 
+      # @todo: unchanged to here
       def maximum_loans(entity)
-        entity.total_shares
+        entity.minor? ? 2 : 5
       end
+
+      # @todo: unchanged from here
 
       def bidding_power(player)
         player.cash + player.companies.sum(&:value)
-      end
-
-      def num_certs(entity)
-        # Privates don't count towards limit
-        entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
       end
 
       def home_token_locations(corporation)
@@ -134,7 +131,6 @@ module Engine
 
       def redeemable_shares(entity)
         return [] unless entity.corporation?
-        return [] unless round.steps.find { |step| step.class == Step::G1817::BuySellParShares }.active?
 
         bundles_for_corporation(share_pool, entity)
           .reject { |bundle| entity.cash < bundle.price }
@@ -369,18 +365,24 @@ module Engine
         short = shares.find { |s| s.percent == -share.percent }
         remove_share(short)
       end
+      # @todo Unchanged to here
 
       def take_loan(entity, loan)
         game_error("Cannot take more than #{maximum_loans(entity)} loans") unless can_take_loan?(entity)
-        price = entity.share_price.price
         name = entity.name
-        name += " (#{entity.owner.name})" if @round.is_a?(Round::Stock)
-        @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
-        @bank.spend(loan.amount, entity)
-        @stock_market.move_left(entity)
-        log_share_price(entity, price)
+        amount = loan.amount - 5
+        @log << "#{name} takes a loan and receives #{format_currency(amount)}"
+        @bank.spend(amount, entity)
         entity.loans << loan
         @loans.delete(loan)
+      end
+
+      def repay_loan(entity, loan)
+        @log << "#{entity.name} pays off a loan for #{format_currency(amount)}"
+        entity.spend(amount, bank)
+
+        entity.loans.delete(loan)
+        @game.loans << loan
       end
 
       def can_take_loan?(entity)
@@ -389,21 +391,62 @@ module Engine
           @loans.any?
       end
 
-      def float_str(_entity)
-        '2 shares to start'
-      end
-
       def buying_power(entity)
         return entity.cash unless entity.corporation?
 
-        entity.cash + ((maximum_loans(entity) - entity.loans.size) * @loan_value)
+        # Loans are actually generate $5 less than when taken out.
+        entity.cash + ((maximum_loans(entity) - entity.loans.size) * @loan_value - 5)
       end
 
+      # @todo: remove this when 1867 loans repayment is working
       def liquidate!(corporation)
-        @owner_when_liquidated[corporation] = corporation.owner
-        @stock_market.move(corporation, 0, 0, force: true)
+        nationalize!(corporation)
       end
 
+      def nationalize!(corporation)
+        @log << "#{corporation.name} is nationalized"
+
+        repay_loan(corporation, corporation.loan.first) while corporation.cash > @loan_value && corporation.loans.any?
+
+        # Move once automatically
+        price = corporation.share_price.price
+        stock_market.move_left(corporation)
+
+        corporation.loans.each do
+          stock_market.move_left(corporation)
+          stock_market.move_left(corporation)
+        end
+        log_share_price(corporation, price)
+
+        # Payout players for shares
+        per_share = corporation.share_price.price
+        payouts = {}
+        @players.each do |player|
+          amount = player.num_shares_of(corporation) * per_share
+          next if amount.zero?
+
+          payouts[player] = amount
+          @bank.spend(amount, player)
+        end
+
+        if payouts.any?
+          receivers = payouts
+                        .sort_by { |_r, c| -c }
+                        .map { |receiver, cash| "#{format_currency(cash)} to #{receiver.name}" }.join(', ')
+
+          @log << "#{corporation.name} settles with shareholders #{format_currency(@shareholder_cash)} = "\
+                          "#{format_currency(per_share)} (#{receivers})"
+        end
+
+        # Close corp
+        if corporation.minor?
+          close_corporation(corporation)
+        else
+          reset_corporation(corporation)
+        end
+      end
+
+      # @todo Unchanged from here
       def find_share_price(price)
         @stock_market
           .market[0]
@@ -414,16 +457,9 @@ module Engine
       def revenue_for(route, stops)
         revenue = super
 
-        revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
-
         game_error('Route visits same hex twice') if route.hexes.size != route.hexes.uniq.size
 
-        mine = 'mine'
-        if route.hexes.first.assigned?(mine) || route.hexes.last.assigned?(mine)
-          game_error('Route cannot start or end with a mine')
-        end
-
-        revenue += 10 * route.all_hexes.count { |hex| hex.assigned?(mine) }
+        # @todo: route bonuses
         revenue
       end
 
@@ -473,33 +509,25 @@ module Engine
         ])
       end
 
+      # @todo: unchanged to here
       def operating_round(round_num)
-        @interest_fixed = nil
-        @interest_fixed = interest_rate
-        # Revaluate if private companies are owned by corps with trains
-        @companies.each do |company|
-          next unless company.owner
-
-          company.abilities(:revenue_change, 'has_train') do |ability|
-            company.revenue = company.owner.trains.any? ? ability.revenue : 0
-          end
-        end
-
         Round::G1817::Operating.new(self, [
-          Step::G1817::Bankrupt,
-          Step::G1817::CashCrisis,
-          Step::G1817::Loan,
-          Step::G1817::SpecialTrack,
-          Step::G1817::Assign,
+
+          Step::G1867::Loan,
           Step::DiscardTrain,
-          Step::G1817::Track,
+          Step::BuyCompany,
+          Step::G1867::RedeemShares,
+          Step::G1867::Track,
           Step::Token,
           Step::Route,
-          Step::G1817::Dividend,
-          Step::G1817::BuyTrain,
+          Step::G1867::Dividend,
+          # @todo: loans?
+          Step::G1867::BuyTrain,
+          [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
 
+      # @todo: unchanged from here
       def or_round_finished
         if @depot.upcoming.first.name == '2'
           depot.export_all!('2')
@@ -507,6 +535,7 @@ module Engine
           depot.export!
         end
       end
+      # @todo: unchanged to here
 
       def next_round!
         @round =
@@ -516,6 +545,7 @@ module Engine
             reorder_players
             new_operating_round
           when Round::Operating
+            # @todo: needs implementing
             or_round_finished
             # Store the share price of each corp to determine if they can be acted upon in the AR
             @stock_prices_start_merger = @corporations.map { |corp| [corp, corp.share_price] }.to_h
@@ -528,15 +558,6 @@ module Engine
               Step::G1817::Conversion,
             ], round_num: @round.round_num)
           when Round::G1817::Merger
-            @log << "-- #{round_description('Acquisition', @round.round_num)} --"
-            Round::G1817::Acquisition.new(self, [
-              Step::G1817::ReduceTokens,
-              Step::G1817::Bankrupt,
-              Step::G1817::CashCrisis,
-              Step::DiscardTrain,
-              Step::G1817::Acquire,
-            ], round_num: @round.round_num)
-          when Round::G1817::Acquisition
             if @round.round_num < @operating_rounds
               new_operating_round(@round.round_num + 1)
             else
@@ -550,18 +571,15 @@ module Engine
           end
       end
 
-      # @todo: unchanged to here
-
       def init_loans
         @loan_value = 50
         # @todo: this is wrong, but can be calculated
         70.times.map { |id| Loan.new(id, @loan_value) }
       end
 
-      # @todo: unchanged from here
-
       def round_end
-        Round::G1817::Acquisition
+        # @todo: needs fixing
+        Round::G1817::Merger
       end
 
       def custom_end_game_reached?
@@ -573,9 +591,8 @@ module Engine
       end
 
       def event_signal_end_game!
-        # If we're in round 1, we have another set of ORs with 2 ORs
-        # If we're in round 2, we have another set of ORs with 3 ORs
-        @final_operating_rounds = @round.round_num == 2 ? 3 : 2
+        # There's always 3 ORs after the 8 train is bought
+        @final_operating_rounds = 3
 
         @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
       end
