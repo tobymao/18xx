@@ -9,6 +9,16 @@ require_relative '../step/g_18_los_angeles/special_token'
 module Engine
   module Game
     class G18LosAngeles < G1846
+      register_colors(red: '#ff0000',
+                      pink: '#ff7fed',
+                      orange: '#ff6a00',
+                      green: '#00830e',
+                      blue: '#0026ff',
+                      black: '#727272',
+                      lightBlue: '#b8ffff',
+                      brown: '#644c00',
+                      purple: '#832e9a')
+
       load_from_json(Config::Game::G18LosAngeles::JSON, Config::Game::G1846::JSON)
 
       DEV_STAGE = :production
