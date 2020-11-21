@@ -32,7 +32,6 @@ module Engine
       HEX_WITH_P_LABEL = %w[F11 H3 H15].freeze
       STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
       GREEN_CITY_TILES = %w[14 15 619 TN1 TN2].freeze
-      PREPRINT_COLOR_ON_BORDER = %w[C12 D11 G6].freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'civil_war' => ['Civil War', 'Companies with trains lose revenue of one train its next OR']

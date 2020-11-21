@@ -70,8 +70,6 @@ module Engine
 
       MEAT_REVENUE_DESC = 'Citrus'
 
-      PREPRINT_COLOR_ON_BORDER = %w[A8 B11].freeze
-
       def self.title
         '18 Los Angeles'
       end

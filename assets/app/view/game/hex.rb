@@ -52,7 +52,7 @@ module View
 
         tile_color = @user&.dig(:settings, @tile&.color) || (Lib::Hex::COLOR[@tile&.color || 'white'])
 
-        if @tile&.preprinted && @tile&.color_as_border
+        if @tile&.color_as_border
           attrs = {
             stroke: tile_color,
             'stroke-width': BORDER_COLOR_STROKE_WIDTH,
