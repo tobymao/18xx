@@ -23,9 +23,14 @@ module View
         @game_data['user_settings'].merge!(settings)
       end
 
+      def participant?
+        return @participant if defined?(@participant)
+
+        @participant = (@game.players.map(&:id) + [@game_data['user']['id']]).include?(@user&.dig('id'))
+      end
+
       def process_action(action)
         hotseat = @game_data[:mode] == :hotseat
-        participant = @game.players.map(&:name).include?(@user&.dig('name'))
 
         if Lib::Params['action']
           return store(:flash_opts, 'You cannot make changes in history mode. Press >| to go current')
@@ -33,8 +38,8 @@ module View
 
         if !hotseat &&
           !action.free? &&
-          participant &&
-          !@game.active_players.map(&:name).include?(@user['name'])
+          participant? &&
+          !@game.active_players.map(&:id).include?(@user['id'])
 
           unless Lib::Storage[@game.id]&.dig('master_mode')
             return store(:flash_opts, 'Not your turn. Turn on master mode in the tools tab to act for others.')
@@ -57,13 +62,13 @@ module View
 
         if hotseat
           Lib::Storage[@game_data[:id]] = @game_data
-        elsif participant
+        elsif participant?
           json = action.to_h
           if @game_data&.dig('settings', 'pin')
             meta = {
               'game_result': @game_data[:result],
               'game_status': @game_data[:status],
-              'active_players': game.active_players.map(&:name),
+              'active_players': game.active_players.map(&:id),
               'turn': game.turn,
               'round': game.round.name,
             }

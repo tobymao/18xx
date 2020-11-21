@@ -58,15 +58,15 @@ class App < Snabberb::Component
       when /[^?](game|hotseat|tutorial)/
         render_game
       when /signup/
-        h(View::User, user: @user, type: :signup)
+        h(View::User, type: :signup)
       when /login/
-        h(View::User, user: @user, type: :login)
+        h(View::User, type: :login)
+      when /forgot/
+        h(View::Forgot)
+      when /reset/
+        h(View::Reset)
       when /profile/
         h(View::User, user: @user, type: :profile)
-      when /forgot/
-        h(View::Forgot, user: @user)
-      when /reset/
-        h(View::Reset, user: @user)
       when /about/
         h(View::About)
       when /tiles/
