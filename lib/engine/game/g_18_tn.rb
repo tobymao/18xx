@@ -23,8 +23,11 @@ module Engine
         'can_buy_companies_operation_round_one' =>
           ['Can Buy Companies OR 1', 'Corporations can buy companies for face value in OR 1'],
       ).merge(
-          Step::SingleDepotTrainBuy::STATUS_TEXT
-        ).freeze
+        'can_buy_companies_from_other_players' =>
+          ['Interplayer Company Buy', 'Companies can be bought between players']
+      ).merge(
+        Step::SingleDepotTrainBuy::STATUS_TEXT
+      ).freeze
 
       # Two lays or one upgrade
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
@@ -99,6 +102,21 @@ module Engine
 
       def init_share_pool
         Engine::G18TN::SharePool.new(self)
+      end
+
+      def purchasable_companies(entity = nil)
+        candidates = @companies.select do |company|
+          company.owner&.player? && company.owner != entity
+        end
+
+        if allowed_to_buy_during_operation_round_one?
+          candidates.reject! { |c| @round.company_sellers.include?(c.owner) }
+        end
+        candidates
+      end
+
+      def allowed_to_buy_during_operation_round_one?
+        @turn == 1 && @round.is_a?(Round::Operating) && @phase.status.include?('can_buy_companies_operation_round_one')
       end
 
       def event_civil_war!

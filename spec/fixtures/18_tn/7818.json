@@ -1,46 +1,5 @@
 {
-  "id": 7818,
-  "description": "Open. Live. Let's dynamite some mountains",
-  "user": {
-    "id": 797,
-    "name": "nigelsandwich"
-  },
-  "players": [
-    {
-      "id": 797,
-      "name": "nigelsandwich"
-    },
-    {
-      "id": 648,
-      "name": "starchitect"
-    },
-    {
-      "id": 523,
-      "name": "MontyBrewster71"
-    },
-    {
-      "id": 3759,
-      "name": "wynad"
-    }
-  ],
-  "max_players": 5,
-  "title": "18TN",
-  "settings": {
-    "seed": 2.6685427666960467e+37
-  },
-  "user_settings": null,
   "status": "finished",
-  "turn": 8,
-  "round": "Operating Round",
-  "acting": [
-
-  ],
-  "result": {
-    "wynad": 4355,
-    "starchitect": 5615,
-    "nigelsandwich": 5368,
-    "MontyBrewster71": 4354
-  },
   "actions": [
     {
       "type": "message",
@@ -286,6 +245,12 @@
       ]
     },
     {
+      "type": "pass",
+      "entity": 523,
+      "entity_type": "player",
+      "id": 31.2
+    },
+    {
       "type": "buy_shares",
       "entity": 3759,
       "entity_type": "player",
@@ -293,6 +258,12 @@
       "shares": [
         "GMO_2"
       ]
+    },
+    {
+      "type": "pass",
+      "entity": 797,
+      "entity_type": "player",
+      "id": 32.2
     },
     {
       "type": "buy_shares",
@@ -304,6 +275,12 @@
       ]
     },
     {
+      "type": "pass",
+      "entity": 523,
+      "entity_type": "player",
+      "id": 33.2
+    },
+    {
       "type": "buy_shares",
       "entity": 3759,
       "entity_type": "player",
@@ -313,6 +290,12 @@
       ]
     },
     {
+      "type": "pass",
+      "entity": 797,
+      "entity_type": "player",
+      "id": 34.2
+    },
+    {
       "type": "buy_shares",
       "entity": 648,
       "entity_type": "player",
@@ -320,6 +303,24 @@
       "shares": [
         "SR_4"
       ]
+    },
+    {
+      "type": "pass",
+      "entity": 523,
+      "entity_type": "player",
+      "id": 35.2
+    },
+    {
+      "type": "pass",
+      "entity": 3759,
+      "entity_type": "player",
+      "id": 35.4
+    },
+    {
+      "type": "pass",
+      "entity": 797,
+      "entity_type": "player",
+      "id": 35.6
     },
     {
       "type": "lay_tile",
@@ -6902,7 +6903,47 @@
       "message": "see, I am just beinga good teacher, you have learned what to expect!"
     }
   ],
+  "id": "7818",
+  "players": [
+    {
+      "id": 797,
+      "name": "nigelsandwich"
+    },
+    {
+      "id": 648,
+      "name": "starchitect"
+    },
+    {
+      "id": 523,
+      "name": "MontyBrewster71"
+    },
+    {
+      "id": 3759,
+      "name": "wynad"
+    }
+  ],
+  "title": "18TN",
+  "description": "Open. Live. Let's dynamite some mountains",
+  "max_players": 5,
+  "user": {
+    "id": 0,
+    "name": "You"
+  },
+  "settings": {
+    "seed": 2.6685427666960467e+37
+  },
+  "user_settings": null,
+  "turn": 8,
+  "round": "Operating Round",
+  "acting": [],
+  "result": {
+    "wynad": 4355,
+    "starchitect": 5615,
+    "nigelsandwich": 5368,
+    "MontyBrewster71": 4354
+  },
   "loaded": true,
   "created_at": 1598498326,
   "updated_at": 1598507133
 }
+
