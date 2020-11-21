@@ -171,6 +171,7 @@ module Engine
       HOME_TOKEN_TIMING = :operate
 
       DISCARDED_TRAINS = :discard # discarded or removed?
+      CLOSED_CORP_TRAINS = :removed # discarded or removed?
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
 
@@ -948,6 +949,45 @@ module Engine
         @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
       end
 
+      def close_corporation(corporation, quiet: false)
+        @log << "#{corporation.name} closes" unless quiet
+
+        hexes.each do |hex|
+          hex.tile.cities.each do |city|
+            if city.tokened_by?(corporation) || city.reserved_by?(corporation)
+              city.tokens.map! { |token| token&.corporation == corporation ? nil : token }
+              city.reservations.delete(corporation)
+            end
+          end
+        end
+
+        corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
+        if self.class::CLOSED_CORP_TRAINS == :discarded
+          corporation.trains.dup.each { |t| depot.reclaim_train(t) }
+        else
+          corporation.trains.each { |t| t.buyable = false }
+        end
+        if corporation.companies.any?
+          @log << "#{corporation.name}'s companies close: #{corporation.companies.map(&:sym).join(', ')}"
+          corporation.companies.dup.each(&:close!)
+        end
+        @round.force_next_entity! if @round.current_entity == corporation
+
+        if corporation.corporation?
+          corporation.share_holders.keys.each do |share_holder|
+            share_holder.shares_by_corporation.delete(corporation)
+          end
+
+          @share_pool.shares_by_corporation.delete(corporation)
+          corporation.share_price.corporations.delete(corporation)
+          @corporations.delete(corporation)
+        else
+          @minors.delete(corporation)
+        end
+
+        @cert_limit = init_cert_limit
+      end
+
       def reset_corporation(corporation)
         @_shares.reject! do |_, share|
           next if share.corporation != corporation
@@ -1371,7 +1411,11 @@ module Engine
         "#{reason_map[reason]}#{after_text}"
       end
 
-      def action_processed(_action); end
+      def action_processed(_action)
+        @corporations.dup.each do |corporation|
+          close_corporation(corporation) if corporation.share_price&.type == :close
+        end if stock_market.has_close_cell
+      end
 
       def priority_deal_player
         players = @players.reject(&:bankrupt)

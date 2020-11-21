@@ -124,7 +124,7 @@ module Engine
             corporation.operated? &&
             entity.num_shares_of(corporation) <= 0 &&
             !(corporation.share_price.acquisition? || corporation.share_price.liquidation?) &&
-            !@players_sold[entity].values.include?(:short) &&
+            !@round.players_sold[entity].values.include?(:short) &&
             @game.phase.name != '8'
         end
 
@@ -182,7 +182,7 @@ module Engine
           corporation = action.corporation
           @game.game_error("Cannot short #{corporation.name}") unless can_short?(entity, corporation)
 
-          @players_sold[entity][corporation] = :short
+          @round.players_sold[entity][corporation] = :short
           @game.short(entity, corporation)
 
           @round.last_to_act = entity
