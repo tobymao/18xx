@@ -480,7 +480,7 @@ module Engine
 
         # add in halts requested
         halts = visits.select(&:halt?)
-        num_halts = [halts.size, (route.num_halts || 0)].min
+        num_halts = [halts.size, (route.halts || 0)].min
         if num_halts.positive?
           stops.concat(halts.take(num_halts))
           th_allowance -= num_halts
@@ -495,12 +495,12 @@ module Engine
         end
 
         # if this is first time for this route, add as many halts as possible
-        if !route.num_halts && halts.any? && th_allowance.positive?
+        if !route.halts && halts.any? && th_allowance.positive?
           num_halts = [halts.size, th_allowance].min
           stops.concat(halts.take(num_halts))
         end
 
-        route.num_halts = num_halts if halts.any?
+        route.halts = num_halts if halts.any?
 
         game_error('Logic bug! too many stops selected for revenue') if stops.size > route.train.distance.sum
 

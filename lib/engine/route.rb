@@ -4,10 +4,10 @@ require_relative 'game_error'
 
 module Engine
   class Route
-    attr_accessor :num_halts
+    attr_accessor :halts
     attr_reader :last_node, :phase, :train, :routes
 
-    def initialize(game, phase, train, connection_hexes: [], routes: [], override: nil, num_halts: nil)
+    def initialize(game, phase, train, connection_hexes: [], routes: [], override: nil, halts: nil)
       @connections = []
       @phase = phase
       @train = train
@@ -17,7 +17,7 @@ module Engine
       @override = override
       @game = game
       @stops = nil
-      @num_halts = num_halts
+      @halts = halts
       restore_connections(connection_hexes) if connection_hexes
     end
 
@@ -25,14 +25,14 @@ module Engine
       @connections.clear
       @last_node = nil
       @stops = nil
-      @num_halts = nil
+      @halts = nil
     end
 
     def cycle_halts
-      return unless @num_halts
+      return unless @halts
 
-      @num_halts += 1
-      @num_halts = 0 if @num_halts > @game.max_halts(self)
+      @halts += 1
+      @halts = 0 if @halts > @game.max_halts(self)
       @stops = nil
     end
 

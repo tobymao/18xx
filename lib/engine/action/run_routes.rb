@@ -39,7 +39,7 @@ module Engine
             connection_hexes: connection_hexes,
             override: override,
             routes: routes,
-            num_halts: route['halts'],
+            halts: route['halts'],
           )
         end
 
@@ -50,7 +50,7 @@ module Engine
         routes = @routes.map do |route|
           h = { 'train' => route.train.id }
 
-          h['halts'] = route.num_halts if route.num_halts
+          h['halts'] = route.halts if route.halts
 
           if route.connections.any?
             h['connections'] = route.connection_hexes

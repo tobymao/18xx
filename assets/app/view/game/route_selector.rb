@@ -95,10 +95,10 @@ module View
             td_props = { style: { paddingRight: '0.8rem' } }
 
             children << h('td.right', td_props, route.distance)
-            if route.num_halts
+            if route.halts
               render_halts = true
-              subsidy = @game.format_currency(route.subsidy)
-              children << h('td.right', td_props, halt_actions(route, revenue, subsidy))
+              children << h('td.right', td_props, halt_actions(route, revenue,
+                                                               @game.format_currency(route.subsidy)))
             else
               children << h('td.right', td_props, revenue)
             end
@@ -170,8 +170,9 @@ module View
 
         [
           revenue,
-          h(:br),
-          h('button.small', { style: { margin: '0px', padding: '0.2rem' }, on: { click: change_halts } }, subsidy),
+          h(:div, [
+            h('button.small', { style: { margin: '0px', padding: '0.2rem' }, on: { click: change_halts } }, subsidy),
+          ]),
         ]
       end
 
