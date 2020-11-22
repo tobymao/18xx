@@ -4,6 +4,7 @@
 require_relative 'models'
 
 Dir['./models/**/*.rb'].sort.each { |file| require file }
+
 Sequel.extension :pg_json_ops
 require_relative 'lib/engine'
 
@@ -36,6 +37,10 @@ def repair(game, original_actions, actions, broken_action)
     # Move token is now place token.
     broken_action['type'] = 'place_token'
     return [broken_action]
+  elsif game.active_step.is_a?(Engine::Step::G1817::PostConversion)
+    pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+    actions.insert(action_idx, pass)
+    return
   elsif game.active_step.is_a?(Engine::Step::G1817::Acquire)
     pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
     actions.insert(action_idx, pass)
@@ -192,7 +197,7 @@ def attempt_repair(actions)
       begin
         game.process_action(action)
       rescue Exception => e
-        puts e.backtrace
+        #puts e.backtrace
         puts "Break at #{e} #{action}"
         ever_repaired = true
         inplace_actions = repair(game, actions, filtered_actions, action)
@@ -261,7 +266,9 @@ def migrate_db_actions_in_mem(data)
   return original_actions
 end
 
-def migrate_db_actions(data)
+def migrate_db_actions(data, pin, dry_run=false)
+  raise Exception, "pin is not valid" unless pin
+
   original_actions = data.actions.map(&:to_h)
   engine = Engine::GAMES_BY_TITLE[data.title]
   begin
@@ -274,7 +281,7 @@ def migrate_db_actions(data)
         optional_rules: data.settings['optional_rules']&.map(&:to_sym),
       )
     end
-    if actions
+    if actions && !dry_run
       if repairs
         repairs.each do |action|
           # Find the action index
@@ -308,10 +315,11 @@ def migrate_db_actions(data)
     return actions || original_actions
   rescue Exception => e
     puts 'Something went wrong', e
-    puts "Pinning #{data.id}"
-    pin = '5f8239fb'
-    data.settings['pin']=pin
-    data.save
+    if !dry_run
+      puts "Pinning #{data.id} to #{pin}"
+      data.settings['pin']=pin
+      data.save
+    end
   end
   return original_actions
 end
@@ -339,17 +347,17 @@ def migrate_db_to_json(id, filename)
   File.write(filename, JSON.pretty_generate(json))
 end
 
-def migrate_title(title)
+def migrate_title(title, pin, dry_run=False)
   DB[:games].order(:id).where(Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished], title: title).select(:id).paged_each(rows_per_fetch: 1) do |game|
     games = Game.eager(:user, :players, :actions).where(id: [game[:id]]).all
     games.each {|data|
-      migrate_db_actions(data)
+      migrate_db_actions(data, pin, dry_run)
     }
 
   end
 end
 
-def migrate_all(game_ids: nil)
+def migrate_all(pin, dry_run=False, game_ids: nil)
   where_args = {
     Sequel.pg_jsonb_op(:settings).has_key?('pin') => false,
     status: %w[active finished],
@@ -359,7 +367,7 @@ def migrate_all(game_ids: nil)
   DB[:games].order(:id).where(**where_args).select(:id).paged_each(rows_per_fetch: 1) do |game|
     games = Game.eager(:user, :players, :actions).where(id: [game[:id]]).all
     games.each {|data|
-      migrate_db_actions(data)
+      migrate_db_actions(data, pin, dry_run)
     }
 
   end

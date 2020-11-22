@@ -8072,37 +8072,44 @@
     },
     {
       "type": "pass",
+      "entity": 1594,
+      "entity_type": "player",
+      "original_id": null,
+      "id": 851
+    },
+    {
+      "type": "pass",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 851,
+      "id": 852,
       "original_id": 852
     },
     {
       "type": "pass",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 852,
+      "id": 853,
       "original_id": 853
     },
     {
       "type": "pass",
       "entity": "A&A",
       "entity_type": "corporation",
-      "id": 853,
+      "id": 854,
       "original_id": 854
     },
     {
       "type": "pass",
       "entity": "ME",
       "entity_type": "corporation",
-      "id": 854,
+      "id": 855,
       "original_id": 855
     },
     {
       "type": "assign",
       "entity": 655,
       "entity_type": "player",
-      "id": 855,
+      "id": 856,
       "target": "ME",
       "target_type": "corporation",
       "original_id": 856
@@ -8111,28 +8118,28 @@
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 856,
+      "id": 857,
       "original_id": 857
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 857,
+      "id": 858,
       "original_id": 858
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 858,
+      "id": 859,
       "original_id": 859
     },
     {
       "type": "bid",
       "entity": 655,
       "entity_type": "player",
-      "id": 859,
+      "id": 860,
       "corporation": "ME",
       "price": 250,
       "original_id": 860
@@ -8141,14 +8148,14 @@
       "type": "pass",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 860,
+      "id": 861,
       "original_id": 861
     },
     {
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 861,
+      "id": 862,
       "loan": 28,
       "original_id": 862
     },
@@ -8156,7 +8163,7 @@
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 862,
+      "id": 863,
       "loan": 32,
       "original_id": 863
     },
@@ -8164,7 +8171,7 @@
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 863,
+      "id": 864,
       "loan": 33,
       "original_id": 864
     },
@@ -8172,7 +8179,7 @@
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 864,
+      "id": 865,
       "loan": 34,
       "original_id": 865
     },
@@ -8180,77 +8187,77 @@
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 865,
+      "id": 866,
       "original_id": 866
     },
     {
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 866,
+      "id": 867,
       "original_id": 867
     },
     {
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 867,
+      "id": 868,
       "original_id": 868
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 868,
+      "id": 869,
       "original_id": 869
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 869,
+      "id": 870,
       "original_id": 870
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 870,
+      "id": 871,
       "original_id": 871
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 871,
+      "id": 872,
       "original_id": 872
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 872,
+      "id": 873,
       "original_id": 873
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 873,
+      "id": 874,
       "original_id": 874
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 874,
+      "id": 875,
       "original_id": 875
     },
     {
       "type": "lay_tile",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 875,
+      "id": 876,
       "hex": "D5",
       "tile": "9-10",
       "rotation": 0,
@@ -8260,7 +8267,7 @@
       "type": "lay_tile",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 876,
+      "id": 877,
       "hex": "F13",
       "tile": "593-0",
       "rotation": 1,
@@ -8270,7 +8277,7 @@
       "type": "place_token",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 877,
+      "id": 878,
       "city": "593-0-0",
       "slot": 2,
       "original_id": 878
@@ -8279,7 +8286,7 @@
       "type": "run_routes",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 878,
+      "id": 879,
       "routes": [
         {
           "train": "4-5",
@@ -8317,7 +8324,7 @@
       "type": "dividend",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 879,
+      "id": 880,
       "kind": "payout",
       "original_id": 880
     },
@@ -8325,7 +8332,7 @@
       "type": "take_loan",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 880,
+      "id": 881,
       "loan": 44,
       "original_id": 881
     },
@@ -8333,7 +8340,7 @@
       "type": "take_loan",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 881,
+      "id": 882,
       "loan": 45,
       "original_id": 882
     },
@@ -8341,7 +8348,7 @@
       "type": "buy_train",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 882,
+      "id": 883,
       "train": "5-1",
       "price": 600,
       "variant": "5",
@@ -8351,21 +8358,21 @@
       "type": "pass",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 883,
+      "id": 884,
       "original_id": 884
     },
     {
       "type": "pass",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 884,
+      "id": 885,
       "original_id": 885
     },
     {
       "type": "lay_tile",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 885,
+      "id": 886,
       "hex": "E22",
       "tile": "62-0",
       "rotation": 0,
@@ -8375,14 +8382,14 @@
       "type": "pass",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 886,
+      "id": 887,
       "original_id": 887
     },
     {
       "type": "run_routes",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 887,
+      "id": 888,
       "routes": [
         {
           "train": "3-9",
@@ -8409,7 +8416,7 @@
       "type": "dividend",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 888,
+      "id": 889,
       "kind": "payout",
       "original_id": 889
     },
@@ -8417,21 +8424,21 @@
       "type": "pass",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 889,
+      "id": 890,
       "original_id": 890
     },
     {
       "type": "pass",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 890,
+      "id": 891,
       "original_id": 891
     },
     {
       "type": "lay_tile",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 891,
+      "id": 892,
       "hex": "F17",
       "tile": "546-0",
       "rotation": 2,
@@ -8441,7 +8448,7 @@
       "type": "lay_tile",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 892,
+      "id": 893,
       "hex": "G10",
       "tile": "9-11",
       "rotation": 0,
@@ -8451,7 +8458,7 @@
       "type": "run_routes",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 893,
+      "id": 894,
       "routes": [
         {
           "train": "3-2",
@@ -8514,7 +8521,7 @@
       "type": "dividend",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 894,
+      "id": 895,
       "kind": "payout",
       "original_id": 895
     },
@@ -8522,7 +8529,7 @@
       "type": "payoff_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 895,
+      "id": 896,
       "loan": 36,
       "original_id": 896
     },
@@ -8530,14 +8537,14 @@
       "type": "pass",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 896,
+      "id": 897,
       "original_id": 897
     },
     {
       "type": "lay_tile",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 897,
+      "id": 898,
       "hex": "G18",
       "tile": "593-1",
       "rotation": 0,
@@ -8547,14 +8554,14 @@
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 898,
+      "id": 899,
       "original_id": 899
     },
     {
       "type": "run_routes",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 899,
+      "id": 900,
       "routes": [
         {
           "train": "3-4",
@@ -8581,7 +8588,7 @@
       "type": "dividend",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 900,
+      "id": 901,
       "kind": "payout",
       "original_id": 901
     },
@@ -8589,7 +8596,7 @@
       "type": "buy_train",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 901,
+      "id": 902,
       "train": "5-1",
       "price": 40,
       "original_id": 902
@@ -8598,21 +8605,21 @@
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 902,
+      "id": 903,
       "original_id": 903
     },
     {
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 903,
+      "id": 904,
       "original_id": 904
     },
     {
       "type": "lay_tile",
       "entity": "H",
       "entity_type": "corporation",
-      "id": 904,
+      "id": 905,
       "hex": "H9",
       "tile": "63-0",
       "rotation": 0,
@@ -8622,14 +8629,14 @@
       "type": "pass",
       "entity": "H",
       "entity_type": "corporation",
-      "id": 905,
+      "id": 906,
       "original_id": 906
     },
     {
       "type": "place_token",
       "entity": "H",
       "entity_type": "corporation",
-      "id": 906,
+      "id": 907,
       "city": "593-1-0",
       "slot": 2,
       "original_id": 907
@@ -8638,7 +8645,7 @@
       "type": "run_routes",
       "entity": "H",
       "entity_type": "corporation",
-      "id": 907,
+      "id": 908,
       "routes": [
         {
           "train": "3-11",
@@ -8664,7 +8671,7 @@
       "type": "dividend",
       "entity": "H",
       "entity_type": "corporation",
-      "id": 908,
+      "id": 909,
       "kind": "payout",
       "original_id": 909
     },
@@ -8672,14 +8679,14 @@
       "type": "pass",
       "entity": "H",
       "entity_type": "corporation",
-      "id": 909,
+      "id": 910,
       "original_id": 910
     },
     {
       "type": "take_loan",
       "entity": "H",
       "entity_type": "corporation",
-      "id": 910,
+      "id": 911,
       "loan": 46,
       "original_id": 911
     },
@@ -8687,7 +8694,7 @@
       "type": "take_loan",
       "entity": "H",
       "entity_type": "corporation",
-      "id": 911,
+      "id": 912,
       "loan": 47,
       "original_id": 912
     },
@@ -8695,7 +8702,7 @@
       "type": "take_loan",
       "entity": "H",
       "entity_type": "corporation",
-      "id": 912,
+      "id": 913,
       "loan": 48,
       "original_id": 913
     },
@@ -8703,7 +8710,7 @@
       "type": "take_loan",
       "entity": "H",
       "entity_type": "corporation",
-      "id": 913,
+      "id": 914,
       "loan": 49,
       "original_id": 914
     },
@@ -8711,7 +8718,7 @@
       "type": "take_loan",
       "entity": "H",
       "entity_type": "corporation",
-      "id": 914,
+      "id": 915,
       "loan": 50,
       "original_id": 915
     },
@@ -8719,7 +8726,7 @@
       "type": "take_loan",
       "entity": "H",
       "entity_type": "corporation",
-      "id": 915,
+      "id": 916,
       "loan": 51,
       "original_id": 916
     },
@@ -8727,7 +8734,7 @@
       "type": "take_loan",
       "entity": "H",
       "entity_type": "corporation",
-      "id": 916,
+      "id": 917,
       "loan": 52,
       "original_id": 917
     },
@@ -8735,7 +8742,7 @@
       "type": "lay_tile",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 917,
+      "id": 918,
       "hex": "C8",
       "tile": "593-2",
       "rotation": 0,
@@ -8745,14 +8752,14 @@
       "type": "pass",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 918,
+      "id": 919,
       "original_id": 919
     },
     {
       "type": "place_token",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 919,
+      "id": 920,
       "city": "593-2-0",
       "slot": 2,
       "original_id": 920
@@ -8761,7 +8768,7 @@
       "type": "run_routes",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 920,
+      "id": 921,
       "routes": [
         {
           "train": "3-7",
@@ -8807,7 +8814,7 @@
       "type": "dividend",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 921,
+      "id": 922,
       "kind": "withhold",
       "original_id": 922
     },
@@ -8815,7 +8822,7 @@
       "type": "buy_train",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 922,
+      "id": 923,
       "train": "5-2",
       "price": 600,
       "variant": "5",
@@ -8825,14 +8832,14 @@
       "type": "pass",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 923,
+      "id": 924,
       "original_id": 924
     },
     {
       "type": "lay_tile",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 924,
+      "id": 925,
       "hex": "B27",
       "tile": "9-12",
       "rotation": 0,
@@ -8842,14 +8849,14 @@
       "type": "pass",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 925,
+      "id": 926,
       "original_id": 926
     },
     {
       "type": "run_routes",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 926,
+      "id": 927,
       "routes": [
         {
           "train": "3-3",
@@ -8893,7 +8900,7 @@
       "type": "dividend",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 927,
+      "id": 928,
       "kind": "half",
       "original_id": 928
     },
@@ -8901,14 +8908,14 @@
       "type": "pass",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 928,
+      "id": 929,
       "original_id": 929
     },
     {
       "type": "payoff_loan",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 929,
+      "id": 930,
       "loan": 19,
       "original_id": 930
     },
@@ -8916,14 +8923,14 @@
       "type": "pass",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 930,
+      "id": 931,
       "original_id": 931
     },
     {
       "type": "lay_tile",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 931,
+      "id": 932,
       "hex": "F15",
       "tile": "8-11",
       "rotation": 5,
@@ -8933,14 +8940,14 @@
       "type": "pass",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 932,
+      "id": 933,
       "original_id": 933
     },
     {
       "type": "run_routes",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 933,
+      "id": 934,
       "routes": [
         {
           "train": "3-1",
@@ -8971,7 +8978,7 @@
       "type": "dividend",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 934,
+      "id": 935,
       "kind": "payout",
       "original_id": 935
     },
@@ -8979,21 +8986,21 @@
       "type": "pass",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 935,
+      "id": 936,
       "original_id": 936
     },
     {
       "type": "pass",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 936,
+      "id": 937,
       "original_id": 937
     },
     {
       "type": "lay_tile",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 937,
+      "id": 938,
       "hex": "D19",
       "tile": "63-1",
       "rotation": 0,
@@ -9003,14 +9010,14 @@
       "type": "pass",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 938,
+      "id": 939,
       "original_id": 939
     },
     {
       "type": "place_token",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 939,
+      "id": 940,
       "city": "62-0-0",
       "slot": 1,
       "original_id": 940
@@ -9019,7 +9026,7 @@
       "type": "run_routes",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 940,
+      "id": 941,
       "routes": [
         {
           "train": "4-2",
@@ -9066,7 +9073,7 @@
       "type": "dividend",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 941,
+      "id": 942,
       "kind": "half",
       "original_id": 942
     },
@@ -9074,7 +9081,7 @@
       "type": "buy_train",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 942,
+      "id": 943,
       "train": "5-3",
       "price": 600,
       "variant": "5",
@@ -9084,28 +9091,28 @@
       "type": "pass",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 943,
+      "id": 944,
       "original_id": 944
     },
     {
       "type": "pass",
       "entity": "A&A",
       "entity_type": "corporation",
-      "id": 944,
+      "id": 945,
       "original_id": 945
     },
     {
       "type": "pass",
       "entity": "A&A",
       "entity_type": "corporation",
-      "id": 945,
+      "id": 946,
       "original_id": 946
     },
     {
       "type": "run_routes",
       "entity": "A&A",
       "entity_type": "corporation",
-      "id": 946,
+      "id": 947,
       "routes": [
         {
           "train": "3-10",
@@ -9137,7 +9144,7 @@
       "type": "dividend",
       "entity": "A&A",
       "entity_type": "corporation",
-      "id": 947,
+      "id": 948,
       "kind": "payout",
       "original_id": 948
     },
@@ -9145,42 +9152,42 @@
       "type": "pass",
       "entity": "A&A",
       "entity_type": "corporation",
-      "id": 948,
+      "id": 949,
       "original_id": 949
     },
     {
       "type": "pass",
       "entity": "A&A",
       "entity_type": "corporation",
-      "id": 949,
+      "id": 950,
       "original_id": 950
     },
     {
       "type": "pass",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 950,
+      "id": 951,
       "original_id": 951
     },
     {
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 951,
+      "id": 952,
       "original_id": 952
     },
     {
       "type": "convert",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 952,
+      "id": 953,
       "original_id": 953
     },
     {
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 953,
+      "id": 954,
       "shares": [
         "PSNR_1"
       ],
@@ -9191,7 +9198,7 @@
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 954,
+      "id": 955,
       "user": "PedroS",
       "original_id": 955
     },
@@ -9199,35 +9206,35 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 955,
+      "id": 956,
       "original_id": 956
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 956,
+      "id": 957,
       "original_id": 957
     },
     {
       "type": "pass",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 957,
+      "id": 958,
       "original_id": 958
     },
     {
       "type": "pass",
       "entity": "A&A",
       "entity_type": "corporation",
-      "id": 958,
+      "id": 959,
       "original_id": 959
     },
     {
       "type": "assign",
       "entity": 1594,
       "entity_type": "player",
-      "id": 959,
+      "id": 960,
       "target": "H",
       "target_type": "corporation",
       "original_id": 960
@@ -9236,21 +9243,21 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 960,
+      "id": 961,
       "original_id": 961
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 961,
+      "id": 962,
       "original_id": 962
     },
     {
       "type": "bid",
       "entity": 1594,
       "entity_type": "player",
-      "id": 962,
+      "id": 963,
       "corporation": "H",
       "price": 600,
       "original_id": 963
@@ -9259,7 +9266,7 @@
       "type": "payoff_loan",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 963,
+      "id": 964,
       "loan": 44,
       "original_id": 964
     },
@@ -9267,7 +9274,7 @@
       "type": "assign",
       "entity": 655,
       "entity_type": "player",
-      "id": 964,
+      "id": 965,
       "target": "A&A",
       "target_type": "corporation",
       "original_id": 965
@@ -9276,21 +9283,21 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 965,
+      "id": 966,
       "original_id": 966
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 966,
+      "id": 967,
       "original_id": 967
     },
     {
       "type": "bid",
       "entity": 655,
       "entity_type": "player",
-      "id": 967,
+      "id": 968,
       "corporation": "A&A",
       "price": 450,
       "original_id": 968
@@ -9299,7 +9306,7 @@
       "type": "merge",
       "entity": 655,
       "entity_type": "player",
-      "id": 968,
+      "id": 969,
       "corporation": "PSNR",
       "original_id": 969
     },
@@ -9307,49 +9314,49 @@
       "type": "pass",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 969,
+      "id": 970,
       "original_id": 970
     },
     {
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 970,
+      "id": 971,
       "original_id": 971
     },
     {
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 971,
+      "id": 972,
       "original_id": 972
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 972,
+      "id": 973,
       "original_id": 973
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 973,
+      "id": 974,
       "original_id": 974
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 974,
+      "id": 975,
       "original_id": 975
     },
     {
       "type": "assign",
       "entity": 1594,
       "entity_type": "player",
-      "id": 975,
+      "id": 976,
       "target": "GT",
       "target_type": "corporation",
       "original_id": 976
@@ -9358,14 +9365,14 @@
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 976,
+      "id": 977,
       "original_id": 977
     },
     {
       "type": "assign",
       "entity": 1594,
       "entity_type": "player",
-      "id": 977,
+      "id": 978,
       "target": "NYOW",
       "target_type": "corporation",
       "original_id": 978
@@ -9374,28 +9381,28 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 978,
+      "id": 979,
       "original_id": 979
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 979,
+      "id": 980,
       "original_id": 980
     },
     {
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 980,
+      "id": 981,
       "original_id": 981
     },
     {
       "type": "bid",
       "entity": 1594,
       "entity_type": "player",
-      "id": 981,
+      "id": 982,
       "corporation": "WC",
       "price": 400,
       "original_id": 982
@@ -9404,7 +9411,7 @@
       "type": "place_token",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 982,
+      "id": 983,
       "city": "62-0-1",
       "slot": 1,
       "original_id": 983
@@ -9413,7 +9420,7 @@
       "type": "choose",
       "entity": 1594,
       "entity_type": "player",
-      "id": 983,
+      "id": 984,
       "choice": 10,
       "original_id": 984
     },
@@ -9421,7 +9428,7 @@
       "type": "message",
       "entity": 655,
       "entity_type": "player",
-      "id": 984,
+      "id": 985,
       "message": "vou ter de sair em breve, depois terminamos async? (:",
       "original_id": 985
     },
@@ -9429,7 +9436,7 @@
       "type": "sell_shares",
       "entity": 3370,
       "entity_type": "player",
-      "id": 985,
+      "id": 986,
       "shares": [
         "A&S_3"
       ],
@@ -9440,7 +9447,7 @@
       "type": "short",
       "entity": 3370,
       "entity_type": "player",
-      "id": 986,
+      "id": 987,
       "corporation": "PSNR",
       "original_id": 987
     },
@@ -9448,7 +9455,7 @@
       "type": "bid",
       "entity": 3370,
       "entity_type": "player",
-      "id": 987,
+      "id": 988,
       "corporation": "R",
       "price": 400,
       "original_id": 988
@@ -9457,7 +9464,7 @@
       "type": "place_token",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 988,
+      "id": 989,
       "city": "592-1-0",
       "slot": 1,
       "original_id": 989
@@ -9466,7 +9473,7 @@
       "type": "choose",
       "entity": 3370,
       "entity_type": "player",
-      "id": 989,
+      "id": 990,
       "choice": 5,
       "original_id": 990
     },
@@ -9474,7 +9481,7 @@
       "type": "buy_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 990,
+      "id": 991,
       "shares": [
         "GT_4"
       ],
@@ -9485,7 +9492,7 @@
       "type": "bid",
       "entity": 655,
       "entity_type": "player",
-      "id": 991,
+      "id": 992,
       "corporation": "PLE",
       "price": 400,
       "original_id": 992
@@ -9494,7 +9501,7 @@
       "type": "place_token",
       "entity": "PLE",
       "entity_type": "corporation",
-      "id": 992,
+      "id": 993,
       "city": "6-0-0",
       "slot": 0,
       "original_id": 993
@@ -9503,7 +9510,7 @@
       "type": "choose",
       "entity": 655,
       "entity_type": "player",
-      "id": 993,
+      "id": 994,
       "choice": 5,
       "original_id": 994
     },
@@ -9511,14 +9518,14 @@
       "type": "buy_tokens",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 994,
+      "id": 995,
       "original_id": 995
     },
     {
       "type": "short",
       "entity": 1594,
       "entity_type": "player",
-      "id": 995,
+      "id": 996,
       "corporation": "NYSW",
       "original_id": 996
     },
@@ -9526,7 +9533,7 @@
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 996,
+      "id": 997,
       "shares": [
         "WC_1"
       ],
@@ -9537,7 +9544,7 @@
       "type": "short",
       "entity": 3370,
       "entity_type": "player",
-      "id": 997,
+      "id": 998,
       "corporation": "PSNR",
       "original_id": 998
     },
@@ -9545,7 +9552,7 @@
       "type": "buy_shares",
       "entity": 3370,
       "entity_type": "player",
-      "id": 998,
+      "id": 999,
       "shares": [
         "R_1"
       ],
@@ -9556,14 +9563,14 @@
       "type": "buy_tokens",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 999,
+      "id": 1000,
       "original_id": 1000
     },
     {
       "type": "buy_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1000,
+      "id": 1001,
       "shares": [
         "GT_5"
       ],
@@ -9574,14 +9581,14 @@
       "type": "buy_tokens",
       "entity": "PLE",
       "entity_type": "corporation",
-      "id": 1001,
+      "id": 1002,
       "original_id": 1002
     },
     {
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1002,
+      "id": 1003,
       "shares": [
         "PLE_1"
       ],
@@ -9592,7 +9599,7 @@
       "type": "short",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1003,
+      "id": 1004,
       "corporation": "PSNR",
       "original_id": 1004
     },
@@ -9600,7 +9607,7 @@
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1004,
+      "id": 1005,
       "shares": [
         "WC_2"
       ],
@@ -9611,14 +9618,14 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1005,
+      "id": 1006,
       "original_id": 1006
     },
     {
       "type": "buy_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1006,
+      "id": 1007,
       "shares": [
         "GT_6"
       ],
@@ -9629,7 +9636,7 @@
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1007,
+      "id": 1008,
       "shares": [
         "A&S_3"
       ],
@@ -9640,7 +9647,7 @@
       "type": "short",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1008,
+      "id": 1009,
       "corporation": "PSNR",
       "original_id": 1009
     },
@@ -9648,7 +9655,7 @@
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1009,
+      "id": 1010,
       "shares": [
         "GT_7"
       ],
@@ -9659,14 +9666,14 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1010,
+      "id": 1011,
       "original_id": 1011
     },
     {
       "type": "buy_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1011,
+      "id": 1012,
       "shares": [
         "GT_8"
       ],
@@ -9677,14 +9684,14 @@
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 1012,
+      "id": 1013,
       "original_id": 1013
     },
     {
       "type": "short",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1013,
+      "id": 1014,
       "corporation": "NYSW",
       "original_id": 1014
     },
@@ -9692,7 +9699,7 @@
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1014,
+      "id": 1015,
       "shares": [
         "WC_3"
       ],
@@ -9703,14 +9710,14 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1015,
+      "id": 1016,
       "original_id": 1016
     },
     {
       "type": "short",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1016,
+      "id": 1017,
       "corporation": "PSNR",
       "original_id": 1017
     },
@@ -9718,7 +9725,7 @@
       "type": "buy_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1017,
+      "id": 1018,
       "shares": [
         "WT_6"
       ],
@@ -9729,7 +9736,7 @@
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1018,
+      "id": 1019,
       "shares": [
         "Bess_7"
       ],
@@ -9740,7 +9747,7 @@
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1019,
+      "id": 1020,
       "shares": [
         "WC_4"
       ],
@@ -9751,14 +9758,14 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1020,
+      "id": 1021,
       "original_id": 1021
     },
     {
       "type": "buy_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1021,
+      "id": 1022,
       "shares": [
         "Bess_8"
       ],
@@ -9769,14 +9776,14 @@
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 1022,
+      "id": 1023,
       "original_id": 1023
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1023,
+      "id": 1024,
       "user": "PedroS",
       "original_id": 1024
     },
@@ -9784,14 +9791,14 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1024,
+      "id": 1025,
       "original_id": 1025
     },
     {
       "type": "sell_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1025,
+      "id": 1026,
       "shares": [
         "NYSW_10"
       ],
@@ -9802,7 +9809,7 @@
       "type": "buy_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1026,
+      "id": 1027,
       "shares": [
         "WT_7"
       ],
@@ -9813,7 +9820,7 @@
       "type": "sell_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1027,
+      "id": 1028,
       "shares": [
         "NYSW_3"
       ],
@@ -9824,7 +9831,7 @@
       "type": "sell_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1028,
+      "id": 1029,
       "shares": [
         "Bess_2"
       ],
@@ -9835,7 +9842,7 @@
       "type": "sell_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1029,
+      "id": 1030,
       "shares": [
         "PSNR_1"
       ],
@@ -9846,7 +9853,7 @@
       "type": "short",
       "entity": 655,
       "entity_type": "player",
-      "id": 1030,
+      "id": 1031,
       "corporation": "NYSW",
       "original_id": 1031
     },
@@ -9854,28 +9861,28 @@
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 1031,
+      "id": 1032,
       "original_id": 1032
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1032,
+      "id": 1033,
       "original_id": 1033
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1033,
+      "id": 1034,
       "original_id": 1034
     },
     {
       "type": "short",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1034,
+      "id": 1035,
       "corporation": "NYSW",
       "original_id": 1035
     },
@@ -9883,7 +9890,7 @@
       "type": "buy_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1035,
+      "id": 1036,
       "shares": [
         "WT_8"
       ],
@@ -9894,7 +9901,7 @@
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1036,
+      "id": 1037,
       "shares": [
         "A&S_8"
       ],
@@ -9905,35 +9912,35 @@
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1037,
+      "id": 1038,
       "original_id": 1038
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1038,
+      "id": 1039,
       "original_id": 1039
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1039,
+      "id": 1040,
       "original_id": 1040
     },
     {
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 1040,
+      "id": 1041,
       "original_id": 1041
     },
     {
       "type": "lay_tile",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1041,
+      "id": 1042,
       "hex": "F19",
       "tile": "63-2",
       "rotation": 0,
@@ -9943,7 +9950,7 @@
       "type": "lay_tile",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1042,
+      "id": 1043,
       "hex": "G8",
       "tile": "9-13",
       "rotation": 2,
@@ -9953,7 +9960,7 @@
       "type": "run_routes",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1043,
+      "id": 1044,
       "routes": [
         {
           "train": "3-2",
@@ -10020,7 +10027,7 @@
       "type": "dividend",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1044,
+      "id": 1045,
       "kind": "payout",
       "original_id": 1045
     },
@@ -10028,21 +10035,21 @@
       "type": "pass",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1045,
+      "id": 1046,
       "original_id": 1046
     },
     {
       "type": "pass",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1046,
+      "id": 1047,
       "original_id": 1047
     },
     {
       "type": "buy_train",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1047,
+      "id": 1048,
       "train": "3-11",
       "price": 300,
       "original_id": 1048
@@ -10051,7 +10058,7 @@
       "type": "buy_train",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1048,
+      "id": 1049,
       "train": "6-0",
       "price": 750,
       "variant": "6",
@@ -10061,21 +10068,21 @@
       "type": "pass",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1049,
+      "id": 1050,
       "original_id": 1050
     },
     {
       "type": "pass",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1050,
+      "id": 1051,
       "original_id": 1051
     },
     {
       "type": "lay_tile",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1051,
+      "id": 1052,
       "hex": "C22",
       "tile": "63-3",
       "rotation": 0,
@@ -10085,14 +10092,14 @@
       "type": "pass",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1052,
+      "id": 1053,
       "original_id": 1053
     },
     {
       "type": "take_loan",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1053,
+      "id": 1054,
       "loan": 53,
       "original_id": 1054
     },
@@ -10100,7 +10107,7 @@
       "type": "take_loan",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1054,
+      "id": 1055,
       "loan": 54,
       "original_id": 1055
     },
@@ -10108,7 +10115,7 @@
       "type": "take_loan",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1055,
+      "id": 1056,
       "loan": 55,
       "original_id": 1056
     },
@@ -10116,7 +10123,7 @@
       "type": "buy_train",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1056,
+      "id": 1057,
       "train": "6-1",
       "price": 750,
       "variant": "6",
@@ -10126,7 +10133,7 @@
       "type": "buy_train",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1057,
+      "id": 1058,
       "train": "4-0",
       "price": 1,
       "original_id": 1058
@@ -10135,14 +10142,14 @@
       "type": "pass",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1058,
+      "id": 1059,
       "original_id": 1059
     },
     {
       "type": "lay_tile",
       "entity": "PLE",
       "entity_type": "corporation",
-      "id": 1059,
+      "id": 1060,
       "hex": "E16",
       "tile": "546-1",
       "rotation": 1,
@@ -10152,7 +10159,7 @@
       "type": "take_loan",
       "entity": "PLE",
       "entity_type": "corporation",
-      "id": 1060,
+      "id": 1061,
       "loan": 56,
       "original_id": 1061
     },
@@ -10160,7 +10167,7 @@
       "type": "take_loan",
       "entity": "PLE",
       "entity_type": "corporation",
-      "id": 1061,
+      "id": 1062,
       "loan": 57,
       "original_id": 1062
     },
@@ -10168,7 +10175,7 @@
       "type": "take_loan",
       "entity": "PLE",
       "entity_type": "corporation",
-      "id": 1062,
+      "id": 1063,
       "loan": 58,
       "original_id": 1063
     },
@@ -10176,14 +10183,14 @@
       "type": "pass",
       "entity": "PLE",
       "entity_type": "corporation",
-      "id": 1063,
+      "id": 1064,
       "original_id": 1064
     },
     {
       "type": "buy_train",
       "entity": "PLE",
       "entity_type": "corporation",
-      "id": 1064,
+      "id": 1065,
       "train": "6-2",
       "price": 750,
       "variant": "6",
@@ -10193,7 +10200,7 @@
       "type": "buy_train",
       "entity": "PLE",
       "entity_type": "corporation",
-      "id": 1065,
+      "id": 1066,
       "train": "4-2",
       "price": 1,
       "original_id": 1068
@@ -10202,14 +10209,14 @@
       "type": "pass",
       "entity": "PLE",
       "entity_type": "corporation",
-      "id": 1066,
+      "id": 1067,
       "original_id": 1069
     },
     {
       "type": "lay_tile",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1067,
+      "id": 1068,
       "hex": "H15",
       "tile": "546-2",
       "rotation": 3,
@@ -10219,28 +10226,28 @@
       "type": "pass",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1068,
+      "id": 1069,
       "original_id": 1087
     },
     {
       "type": "pass",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1069,
+      "id": 1070,
       "original_id": 1088
     },
     {
       "type": "pass",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1070,
+      "id": 1071,
       "original_id": 1089
     },
     {
       "type": "lay_tile",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1071,
+      "id": 1072,
       "hex": "H13",
       "tile": "544-0",
       "rotation": 0,
@@ -10250,14 +10257,14 @@
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1072,
+      "id": 1073,
       "original_id": 1091
     },
     {
       "type": "run_routes",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1073,
+      "id": 1074,
       "routes": [
         {
           "train": "5-1",
@@ -10304,7 +10311,7 @@
       "type": "dividend",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1074,
+      "id": 1075,
       "kind": "payout",
       "original_id": 1093
     },
@@ -10312,21 +10319,21 @@
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1075,
+      "id": 1076,
       "original_id": 1094
     },
     {
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1076,
+      "id": 1077,
       "original_id": 1095
     },
     {
       "type": "lay_tile",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1077,
+      "id": 1078,
       "hex": "E20",
       "tile": "546-3",
       "rotation": 4,
@@ -10336,14 +10343,14 @@
       "type": "pass",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1078,
+      "id": 1079,
       "original_id": 1097
     },
     {
       "type": "run_routes",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1079,
+      "id": 1080,
       "routes": [
         {
           "train": "5-3",
@@ -10381,7 +10388,7 @@
       "type": "dividend",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1080,
+      "id": 1081,
       "kind": "half",
       "original_id": 1099
     },
@@ -10389,7 +10396,7 @@
       "type": "buy_train",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1081,
+      "id": 1082,
       "train": "6-2",
       "price": 1,
       "original_id": 1100
@@ -10398,7 +10405,7 @@
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1082,
+      "id": 1083,
       "loan": 25,
       "original_id": 1101
     },
@@ -10406,7 +10413,7 @@
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1083,
+      "id": 1084,
       "loan": 41,
       "original_id": 1102
     },
@@ -10414,7 +10421,7 @@
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1084,
+      "id": 1085,
       "loan": 42,
       "original_id": 1103
     },
@@ -10422,7 +10429,7 @@
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1085,
+      "id": 1086,
       "loan": 43,
       "original_id": 1104
     },
@@ -10430,14 +10437,14 @@
       "type": "pass",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1086,
+      "id": 1087,
       "original_id": 1105
     },
     {
       "type": "lay_tile",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1087,
+      "id": 1088,
       "hex": "C26",
       "tile": "593-3",
       "rotation": 5,
@@ -10447,14 +10454,14 @@
       "type": "pass",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1088,
+      "id": 1089,
       "original_id": 1107
     },
     {
       "type": "place_token",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1089,
+      "id": 1090,
       "city": "593-3-0",
       "slot": 2,
       "original_id": 1108
@@ -10463,7 +10470,7 @@
       "type": "run_routes",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1090,
+      "id": 1091,
       "routes": [
         {
           "train": "5-2",
@@ -10497,7 +10504,7 @@
       "type": "dividend",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1091,
+      "id": 1092,
       "kind": "half",
       "original_id": 1120
     },
@@ -10505,7 +10512,7 @@
       "type": "buy_train",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1092,
+      "id": 1093,
       "train": "6-1",
       "price": 140,
       "original_id": 1121
@@ -10514,7 +10521,7 @@
       "type": "payoff_loan",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1093,
+      "id": 1094,
       "loan": 2,
       "original_id": 1122
     },
@@ -10522,14 +10529,14 @@
       "type": "pass",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1094,
+      "id": 1095,
       "original_id": 1123
     },
     {
       "type": "lay_tile",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1095,
+      "id": 1096,
       "hex": "F11",
       "tile": "81-3",
       "rotation": 0,
@@ -10539,14 +10546,14 @@
       "type": "pass",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1096,
+      "id": 1097,
       "original_id": 1125
     },
     {
       "type": "run_routes",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1097,
+      "id": 1098,
       "routes": [
         {
           "train": "4-5",
@@ -10585,7 +10592,7 @@
       "type": "dividend",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1098,
+      "id": 1099,
       "kind": "half",
       "original_id": 1135
     },
@@ -10593,14 +10600,14 @@
       "type": "pass",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1099,
+      "id": 1100,
       "original_id": 1136
     },
     {
       "type": "payoff_loan",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1100,
+      "id": 1101,
       "loan": 45,
       "original_id": 1137
     },
@@ -10608,7 +10615,7 @@
       "type": "payoff_loan",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1101,
+      "id": 1102,
       "loan": 21,
       "original_id": 1138
     },
@@ -10616,7 +10623,7 @@
       "type": "payoff_loan",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1102,
+      "id": 1103,
       "loan": 22,
       "original_id": 1139
     },
@@ -10624,7 +10631,7 @@
       "type": "payoff_loan",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1103,
+      "id": 1104,
       "loan": 29,
       "original_id": 1140
     },
@@ -10632,7 +10639,7 @@
       "type": "payoff_loan",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1104,
+      "id": 1105,
       "loan": 46,
       "original_id": 1141
     },
@@ -10640,7 +10647,7 @@
       "type": "payoff_loan",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1105,
+      "id": 1106,
       "loan": 47,
       "original_id": 1154
     },
@@ -10648,14 +10655,14 @@
       "type": "pass",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1106,
+      "id": 1107,
       "original_id": 1155
     },
     {
       "type": "lay_tile",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1107,
+      "id": 1108,
       "hex": "B27",
       "tile": "82-4",
       "rotation": 0,
@@ -10665,7 +10672,7 @@
       "type": "lay_tile",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1108,
+      "id": 1109,
       "hex": "B17",
       "tile": "57-1",
       "rotation": 1,
@@ -10675,7 +10682,7 @@
       "type": "place_token",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1109,
+      "id": 1110,
       "city": "57-1-0",
       "slot": 0,
       "original_id": 1164
@@ -10684,7 +10691,7 @@
       "type": "run_routes",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1110,
+      "id": 1111,
       "routes": [
         {
           "train": "4-7",
@@ -10713,7 +10720,7 @@
       "type": "dividend",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1111,
+      "id": 1112,
       "kind": "half",
       "original_id": 1166
     },
@@ -10721,7 +10728,7 @@
       "type": "buy_train",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1112,
+      "id": 1113,
       "train": "5-2",
       "price": 49,
       "original_id": 1167
@@ -10730,14 +10737,14 @@
       "type": "pass",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1113,
+      "id": 1114,
       "original_id": 1168
     },
     {
       "type": "take_loan",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 1114,
+      "id": 1115,
       "loan": 59,
       "original_id": 1169
     },
@@ -10745,7 +10752,7 @@
       "type": "lay_tile",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 1115,
+      "id": 1116,
       "hex": "E18",
       "tile": "8-12",
       "rotation": 1,
@@ -10755,7 +10762,7 @@
       "type": "lay_tile",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 1116,
+      "id": 1117,
       "hex": "D5",
       "tile": "82-2",
       "rotation": 0,
@@ -10765,7 +10772,7 @@
       "type": "buy_train",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 1117,
+      "id": 1118,
       "train": "4-2",
       "price": 20,
       "original_id": 1172
@@ -10774,42 +10781,42 @@
       "type": "pass",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 1118,
+      "id": 1119,
       "original_id": 1173
     },
     {
       "type": "pass",
       "entity": "PSNR",
       "entity_type": "corporation",
-      "id": 1119,
+      "id": 1120,
       "original_id": 1174
     },
     {
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1120,
+      "id": 1121,
       "original_id": 1175
     },
     {
       "type": "pass",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1121,
+      "id": 1122,
       "original_id": 1176
     },
     {
       "type": "pass",
       "entity": "PLE",
       "entity_type": "corporation",
-      "id": 1122,
+      "id": 1123,
       "original_id": 1177
     },
     {
       "type": "bid",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1123,
+      "id": 1124,
       "corporation": "NYOW",
       "price": 60,
       "original_id": 1178
@@ -10818,21 +10825,21 @@
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1124,
+      "id": 1125,
       "original_id": 1179
     },
     {
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 1125,
+      "id": 1126,
       "original_id": 1180
     },
     {
       "type": "bid",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1126,
+      "id": 1127,
       "corporation": "NYOW",
       "price": 70,
       "original_id": 1181
@@ -10841,7 +10848,7 @@
       "type": "bid",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1127,
+      "id": 1128,
       "corporation": "NYOW",
       "price": 80,
       "original_id": 1182
@@ -10850,7 +10857,7 @@
       "type": "bid",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1128,
+      "id": 1129,
       "corporation": "NYOW",
       "price": 90,
       "original_id": 1183
@@ -10859,7 +10866,7 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1129,
+      "id": 1130,
       "user": "daniel.sousa.me",
       "original_id": 1184
     },
@@ -10867,7 +10874,7 @@
       "type": "merge",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1130,
+      "id": 1131,
       "corporation": "GT",
       "original_id": 1191
     },
@@ -10875,14 +10882,14 @@
       "type": "pass",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1131,
+      "id": 1132,
       "original_id": 1192
     },
     {
       "type": "bid",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1132,
+      "id": 1133,
       "corporation": "PSNR",
       "price": 10,
       "original_id": 1193
@@ -10891,21 +10898,21 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1133,
+      "id": 1134,
       "original_id": 1194
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1134,
+      "id": 1135,
       "original_id": 1197
     },
     {
       "type": "bid",
       "entity": 655,
       "entity_type": "player",
-      "id": 1135,
+      "id": 1136,
       "corporation": "PSNR",
       "price": 20,
       "original_id": 1198
@@ -10914,14 +10921,14 @@
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1136,
+      "id": 1137,
       "original_id": 1199
     },
     {
       "type": "discard_train",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1137,
+      "id": 1138,
       "train": "4-2",
       "original_id": 1200
     },
@@ -10929,28 +10936,28 @@
       "type": "pass",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1138,
+      "id": 1139,
       "original_id": 1201
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1139,
+      "id": 1140,
       "original_id": 1202
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1140,
+      "id": 1141,
       "original_id": 1203
     },
     {
       "type": "assign",
       "entity": 655,
       "entity_type": "player",
-      "id": 1141,
+      "id": 1142,
       "target": "PLE",
       "target_type": "corporation",
       "original_id": 1204
@@ -10959,7 +10966,7 @@
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1142,
+      "id": 1143,
       "user": "PedroS",
       "original_id": 1205
     },
@@ -10967,7 +10974,7 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1143,
+      "id": 1144,
       "user": "PedroS",
       "original_id": 1206
     },
@@ -10975,7 +10982,7 @@
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1144,
+      "id": 1145,
       "user": "PedroS",
       "original_id": 1207
     },
@@ -10983,7 +10990,7 @@
       "type": "bid",
       "entity": 655,
       "entity_type": "player",
-      "id": 1145,
+      "id": 1146,
       "corporation": "PLE",
       "price": 680,
       "original_id": 1208
@@ -10992,28 +10999,28 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1146,
+      "id": 1147,
       "original_id": 1209
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1147,
+      "id": 1148,
       "original_id": 1210
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1148,
+      "id": 1149,
       "original_id": 1211
     },
     {
       "type": "lay_tile",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1149,
+      "id": 1150,
       "hex": "H17",
       "tile": "83-6",
       "rotation": 3,
@@ -11023,7 +11030,7 @@
       "type": "lay_tile",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1150,
+      "id": 1151,
       "hex": "F7",
       "tile": "9-1",
       "rotation": 2,
@@ -11033,7 +11040,7 @@
       "type": "take_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1151,
+      "id": 1152,
       "loan": 64,
       "original_id": 1214
     },
@@ -11041,7 +11048,7 @@
       "type": "take_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1152,
+      "id": 1153,
       "loan": 65,
       "original_id": 1215
     },
@@ -11049,7 +11056,7 @@
       "type": "take_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1153,
+      "id": 1154,
       "loan": 66,
       "original_id": 1216
     },
@@ -11057,7 +11064,7 @@
       "type": "run_routes",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1154,
+      "id": 1155,
       "routes": [
         {
           "train": "4-3",
@@ -11107,7 +11114,7 @@
       "type": "dividend",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1155,
+      "id": 1156,
       "kind": "payout",
       "original_id": 1218
     },
@@ -11115,7 +11122,7 @@
       "type": "payoff_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1156,
+      "id": 1157,
       "loan": 64,
       "original_id": 1219
     },
@@ -11123,7 +11130,7 @@
       "type": "payoff_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1157,
+      "id": 1158,
       "loan": 65,
       "original_id": 1220
     },
@@ -11131,7 +11138,7 @@
       "type": "payoff_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1158,
+      "id": 1159,
       "loan": 66,
       "original_id": 1221
     },
@@ -11139,21 +11146,21 @@
       "type": "pass",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1159,
+      "id": 1160,
       "original_id": 1222
     },
     {
       "type": "pass",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1160,
+      "id": 1161,
       "original_id": 1223
     },
     {
       "type": "run_routes",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1161,
+      "id": 1162,
       "routes": [
         {
           "train": "6-0",
@@ -11177,7 +11184,7 @@
       "type": "take_loan",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1162,
+      "id": 1163,
       "loan": 67,
       "original_id": 1227
     },
@@ -11185,7 +11192,7 @@
       "type": "take_loan",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1163,
+      "id": 1164,
       "loan": 68,
       "original_id": 1228
     },
@@ -11193,7 +11200,7 @@
       "type": "dividend",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1164,
+      "id": 1165,
       "kind": "payout",
       "original_id": 1229
     },
@@ -11201,14 +11208,14 @@
       "type": "pass",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1165,
+      "id": 1166,
       "original_id": 1230
     },
     {
       "type": "payoff_loan",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1166,
+      "id": 1167,
       "loan": 67,
       "original_id": 1231
     },
@@ -11216,7 +11223,7 @@
       "type": "payoff_loan",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1167,
+      "id": 1168,
       "loan": 68,
       "original_id": 1232
     },
@@ -11224,21 +11231,21 @@
       "type": "pass",
       "entity": "WC",
       "entity_type": "corporation",
-      "id": 1168,
+      "id": 1169,
       "original_id": 1233
     },
     {
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1169,
+      "id": 1170,
       "original_id": 1234
     },
     {
       "type": "run_routes",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1170,
+      "id": 1171,
       "routes": [
         {
           "train": "5-1",
@@ -11281,7 +11288,7 @@
       "type": "dividend",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1171,
+      "id": 1172,
       "kind": "payout",
       "original_id": 1238
     },
@@ -11289,28 +11296,28 @@
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1172,
+      "id": 1173,
       "original_id": 1239
     },
     {
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1173,
+      "id": 1174,
       "original_id": 1240
     },
     {
       "type": "pass",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1174,
+      "id": 1175,
       "original_id": 1241
     },
     {
       "type": "run_routes",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1175,
+      "id": 1176,
       "routes": [
         {
           "train": "4-5",
@@ -11349,7 +11356,7 @@
       "type": "dividend",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1176,
+      "id": 1177,
       "kind": "half",
       "original_id": 1243
     },
@@ -11357,7 +11364,7 @@
       "type": "buy_train",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1177,
+      "id": 1178,
       "train": "6-0",
       "price": 1,
       "original_id": 1244
@@ -11366,21 +11373,21 @@
       "type": "pass",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1178,
+      "id": 1179,
       "original_id": 1245
     },
     {
       "type": "pass",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1179,
+      "id": 1180,
       "original_id": 1246
     },
     {
       "type": "run_routes",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1180,
+      "id": 1181,
       "routes": [
         {
           "train": "4-0",
@@ -11404,7 +11411,7 @@
       "type": "dividend",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1181,
+      "id": 1182,
       "kind": "payout",
       "original_id": 1248
     },
@@ -11412,14 +11419,14 @@
       "type": "pass",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1182,
+      "id": 1183,
       "original_id": 1249
     },
     {
       "type": "payoff_loan",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1183,
+      "id": 1184,
       "loan": 53,
       "original_id": 1250
     },
@@ -11427,14 +11434,14 @@
       "type": "pass",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1184,
+      "id": 1185,
       "original_id": 1251
     },
     {
       "type": "lay_tile",
       "entity": "MAJC",
       "entity_type": "company",
-      "id": 1185,
+      "id": 1186,
       "hex": "B25",
       "tile": "7-1",
       "rotation": 4,
@@ -11444,7 +11451,7 @@
       "type": "lay_tile",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1186,
+      "id": 1187,
       "hex": "B15",
       "tile": "82-0",
       "rotation": 4,
@@ -11454,7 +11461,7 @@
       "type": "run_routes",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1187,
+      "id": 1188,
       "routes": [
         {
           "train": "6-1",
@@ -11500,7 +11507,7 @@
       "type": "dividend",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1188,
+      "id": 1189,
       "kind": "payout",
       "original_id": 1267
     },
@@ -11508,7 +11515,7 @@
       "type": "buy_train",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1189,
+      "id": 1190,
       "train": "4-0",
       "price": 1,
       "original_id": 1270
@@ -11517,14 +11524,14 @@
       "type": "pass",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1190,
+      "id": 1191,
       "original_id": 1271
     },
     {
       "type": "lay_tile",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1191,
+      "id": 1192,
       "hex": "D21",
       "tile": "81-0",
       "rotation": 1,
@@ -11534,14 +11541,14 @@
       "type": "pass",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1192,
+      "id": 1193,
       "original_id": 1273
     },
     {
       "type": "run_routes",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1193,
+      "id": 1194,
       "routes": [
         {
           "train": "4-7",
@@ -11597,7 +11604,7 @@
       "type": "dividend",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1194,
+      "id": 1195,
       "kind": "payout",
       "original_id": 1275
     },
@@ -11605,14 +11612,14 @@
       "type": "pass",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1195,
+      "id": 1196,
       "original_id": 1278
     },
     {
       "type": "lay_tile",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1196,
+      "id": 1197,
       "hex": "D3",
       "tile": "9-3",
       "rotation": 1,
@@ -11622,7 +11629,7 @@
       "type": "run_routes",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1197,
+      "id": 1198,
       "routes": [
         {
           "train": "5-3",
@@ -11703,7 +11710,7 @@
       "type": "dividend",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1198,
+      "id": 1199,
       "kind": "withhold",
       "original_id": 1289
     },
@@ -11711,7 +11718,7 @@
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1199,
+      "id": 1200,
       "loan": 37,
       "original_id": 1294
     },
@@ -11719,7 +11726,7 @@
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1200,
+      "id": 1201,
       "loan": 38,
       "original_id": 1295
     },
@@ -11727,7 +11734,7 @@
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1201,
+      "id": 1202,
       "loan": 59,
       "original_id": 1296
     },
@@ -11735,7 +11742,7 @@
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1202,
+      "id": 1203,
       "loan": 60,
       "original_id": 1297
     },
@@ -11743,84 +11750,84 @@
       "type": "pass",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1203,
+      "id": 1204,
       "original_id": 1298
     },
     {
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1204,
+      "id": 1205,
       "original_id": 1299
     },
     {
       "type": "convert",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1205,
+      "id": 1206,
       "original_id": 1300
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1206,
+      "id": 1207,
       "original_id": 1301
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1207,
+      "id": 1208,
       "original_id": 1302
     },
     {
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 1208,
+      "id": 1209,
       "original_id": 1303
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1209,
+      "id": 1210,
       "original_id": 1304
     },
     {
       "type": "pass",
       "entity": "R",
       "entity_type": "corporation",
-      "id": 1210,
+      "id": 1211,
       "original_id": 1305
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1211,
+      "id": 1212,
       "original_id": 1306
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1212,
+      "id": 1213,
       "original_id": 1307
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1213,
+      "id": 1214,
       "original_id": 1308
     },
     {
       "type": "sell_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1214,
+      "id": 1215,
       "shares": [
         "WC_1",
         "WC_2",
@@ -11834,7 +11841,7 @@
       "type": "bid",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1215,
+      "id": 1216,
       "corporation": "NYOW",
       "price": 400,
       "original_id": 1310
@@ -11843,7 +11850,7 @@
       "type": "place_token",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1216,
+      "id": 1217,
       "city": "593-1-0",
       "slot": 2,
       "original_id": 1311
@@ -11852,7 +11859,7 @@
       "type": "buy_shares",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1217,
+      "id": 1218,
       "shares": [
         "WC_5"
       ],
@@ -11863,7 +11870,7 @@
       "type": "bid",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1218,
+      "id": 1219,
       "corporation": "J",
       "price": 400,
       "original_id": 1321
@@ -11872,7 +11879,7 @@
       "type": "place_token",
       "entity": "J",
       "entity_type": "corporation",
-      "id": 1219,
+      "id": 1220,
       "city": "H3-1-0",
       "slot": 0,
       "original_id": 1322
@@ -11881,7 +11888,7 @@
       "type": "short",
       "entity": 655,
       "entity_type": "player",
-      "id": 1220,
+      "id": 1221,
       "corporation": "WC",
       "original_id": 1323
     },
@@ -11889,7 +11896,7 @@
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1221,
+      "id": 1222,
       "shares": [
         "Bess_2"
       ],
@@ -11900,7 +11907,7 @@
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1222,
+      "id": 1223,
       "shares": [
         "NYOW_1"
       ],
@@ -11911,14 +11918,14 @@
       "type": "buy_tokens",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1223,
+      "id": 1224,
       "original_id": 1326
     },
     {
       "type": "sell_shares",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1224,
+      "id": 1225,
       "shares": [
         "WC_5"
       ],
@@ -11929,7 +11936,7 @@
       "type": "short",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1225,
+      "id": 1226,
       "corporation": "WC",
       "original_id": 1328
     },
@@ -11937,7 +11944,7 @@
       "type": "bid",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1226,
+      "id": 1227,
       "corporation": "DL&W",
       "price": 400,
       "original_id": 1329
@@ -11946,7 +11953,7 @@
       "type": "place_token",
       "entity": "DL&W",
       "entity_type": "corporation",
-      "id": 1227,
+      "id": 1228,
       "city": "F3-4-0",
       "slot": 0,
       "original_id": 1330
@@ -11955,7 +11962,7 @@
       "type": "buy_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1228,
+      "id": 1229,
       "shares": [
         "NYSW_2"
       ],
@@ -11966,14 +11973,14 @@
       "type": "buy_tokens",
       "entity": "J",
       "entity_type": "corporation",
-      "id": 1229,
+      "id": 1230,
       "original_id": 1332
     },
     {
       "type": "short",
       "entity": 655,
       "entity_type": "player",
-      "id": 1230,
+      "id": 1231,
       "corporation": "WC",
       "original_id": 1333
     },
@@ -11981,7 +11988,7 @@
       "type": "bid",
       "entity": 655,
       "entity_type": "player",
-      "id": 1231,
+      "id": 1232,
       "corporation": "UR",
       "price": 400,
       "original_id": 1334
@@ -11990,7 +11997,7 @@
       "type": "place_token",
       "entity": "UR",
       "entity_type": "corporation",
-      "id": 1232,
+      "id": 1233,
       "city": "B5-0-0",
       "slot": 0,
       "original_id": 1335
@@ -11999,7 +12006,7 @@
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1233,
+      "id": 1234,
       "shares": [
         "NYSW_12"
       ],
@@ -12010,7 +12017,7 @@
       "type": "buy_shares",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1234,
+      "id": 1235,
       "shares": [
         "DL&W_1"
       ],
@@ -12021,14 +12028,14 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1235,
+      "id": 1236,
       "original_id": 1338
     },
     {
       "type": "short",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1236,
+      "id": 1237,
       "corporation": "WC",
       "original_id": 1339
     },
@@ -12036,7 +12043,7 @@
       "type": "buy_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1237,
+      "id": 1238,
       "shares": [
         "J_1"
       ],
@@ -12047,7 +12054,7 @@
       "type": "short",
       "entity": 655,
       "entity_type": "player",
-      "id": 1238,
+      "id": 1239,
       "corporation": "WC",
       "original_id": 1341
     },
@@ -12055,7 +12062,7 @@
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1239,
+      "id": 1240,
       "shares": [
         "UR_1"
       ],
@@ -12066,14 +12073,14 @@
       "type": "buy_tokens",
       "entity": "UR",
       "entity_type": "corporation",
-      "id": 1240,
+      "id": 1241,
       "original_id": 1343
     },
     {
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1241,
+      "id": 1242,
       "shares": [
         "NYSW_14"
       ],
@@ -12084,7 +12091,7 @@
       "type": "buy_shares",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1242,
+      "id": 1243,
       "shares": [
         "DL&W_2"
       ],
@@ -12095,14 +12102,14 @@
       "type": "buy_tokens",
       "entity": "DL&W",
       "entity_type": "corporation",
-      "id": 1243,
+      "id": 1244,
       "original_id": 1346
     },
     {
       "type": "buy_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1244,
+      "id": 1245,
       "shares": [
         "J_2"
       ],
@@ -12113,7 +12120,7 @@
       "type": "short",
       "entity": 655,
       "entity_type": "player",
-      "id": 1245,
+      "id": 1246,
       "corporation": "WC",
       "original_id": 1348
     },
@@ -12121,7 +12128,7 @@
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1246,
+      "id": 1247,
       "shares": [
         "NYSW_10"
       ],
@@ -12132,7 +12139,7 @@
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1247,
+      "id": 1248,
       "shares": [
         "NYSW_3"
       ],
@@ -12143,7 +12150,7 @@
       "type": "take_loan",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1248,
+      "id": 1249,
       "loan": 69,
       "original_id": 1351
     },
@@ -12151,7 +12158,7 @@
       "type": "buy_shares",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1249,
+      "id": 1250,
       "shares": [
         "NYSW_16",
         "NYSW_18"
@@ -12163,7 +12170,7 @@
       "type": "sell_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1250,
+      "id": 1251,
       "shares": [
         "Bess_8"
       ],
@@ -12174,7 +12181,7 @@
       "type": "buy_shares",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1251,
+      "id": 1252,
       "shares": [
         "J_3"
       ],
@@ -12185,7 +12192,7 @@
       "type": "short",
       "entity": 655,
       "entity_type": "player",
-      "id": 1252,
+      "id": 1253,
       "corporation": "WC",
       "original_id": 1357
     },
@@ -12193,7 +12200,7 @@
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1253,
+      "id": 1254,
       "shares": [
         "NYSW_7"
       ],
@@ -12204,7 +12211,7 @@
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1254,
+      "id": 1255,
       "shares": [
         "NYSW_8"
       ],
@@ -12215,7 +12222,7 @@
       "type": "short",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1255,
+      "id": 1256,
       "corporation": "WC",
       "original_id": 1366
     },
@@ -12223,7 +12230,7 @@
       "type": "buy_shares",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1256,
+      "id": 1257,
       "shares": [
         "DL&W_3"
       ],
@@ -12234,14 +12241,14 @@
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1257,
+      "id": 1258,
       "original_id": 1368
     },
     {
       "type": "short",
       "entity": 655,
       "entity_type": "player",
-      "id": 1258,
+      "id": 1259,
       "corporation": "WC",
       "original_id": 1369
     },
@@ -12249,7 +12256,7 @@
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1259,
+      "id": 1260,
       "shares": [
         "UR_2"
       ],
@@ -12260,7 +12267,7 @@
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1260,
+      "id": 1261,
       "shares": [
         "NYOW_2"
       ],
@@ -12271,7 +12278,7 @@
       "type": "take_loan",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1261,
+      "id": 1262,
       "loan": 6,
       "original_id": 1372
     },
@@ -12279,7 +12286,7 @@
       "type": "buy_shares",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1262,
+      "id": 1263,
       "shares": [
         "Bess_8"
       ],
@@ -12290,14 +12297,14 @@
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1263,
+      "id": 1264,
       "original_id": 1374
     },
     {
       "type": "short",
       "entity": 655,
       "entity_type": "player",
-      "id": 1264,
+      "id": 1265,
       "corporation": "WC",
       "original_id": 1375
     },
@@ -12305,7 +12312,7 @@
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1265,
+      "id": 1266,
       "shares": [
         "UR_3"
       ],
@@ -12316,7 +12323,7 @@
       "type": "short",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1266,
+      "id": 1267,
       "corporation": "A&S",
       "original_id": 1379
     },
@@ -12324,7 +12331,7 @@
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1267,
+      "id": 1268,
       "shares": [
         "NYOW_3"
       ],
@@ -12335,21 +12342,21 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1268,
+      "id": 1269,
       "original_id": 1381
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1269,
+      "id": 1270,
       "original_id": 1382
     },
     {
       "type": "sell_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1270,
+      "id": 1271,
       "shares": [
         "A&S_2"
       ],
@@ -12360,7 +12367,7 @@
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1271,
+      "id": 1272,
       "shares": [
         "UR_4"
       ],
@@ -12371,7 +12378,7 @@
       "type": "short",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1272,
+      "id": 1273,
       "corporation": "A&S",
       "original_id": 1385
     },
@@ -12379,7 +12386,7 @@
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1273,
+      "id": 1274,
       "shares": [
         "NYOW_4"
       ],
@@ -12390,14 +12397,14 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1274,
+      "id": 1275,
       "original_id": 1387
     },
     {
       "type": "take_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1275,
+      "id": 1276,
       "loan": 9,
       "original_id": 1388
     },
@@ -12405,7 +12412,7 @@
       "type": "take_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1276,
+      "id": 1277,
       "loan": 12,
       "original_id": 1389
     },
@@ -12413,7 +12420,7 @@
       "type": "take_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1277,
+      "id": 1278,
       "loan": 3,
       "original_id": 1390
     },
@@ -12421,7 +12428,7 @@
       "type": "take_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1278,
+      "id": 1279,
       "loan": 5,
       "original_id": 1391
     },
@@ -12429,7 +12436,7 @@
       "type": "buy_shares",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1279,
+      "id": 1280,
       "shares": [
         "A&S_10",
         "A&S_2",
@@ -12442,7 +12449,7 @@
       "type": "sell_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1280,
+      "id": 1281,
       "shares": [
         "A&S_7"
       ],
@@ -12453,7 +12460,7 @@
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1281,
+      "id": 1282,
       "shares": [
         "Bess_8"
       ],
@@ -12464,7 +12471,7 @@
       "type": "short",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1282,
+      "id": 1283,
       "corporation": "A&S",
       "original_id": 1395
     },
@@ -12472,7 +12479,7 @@
       "type": "buy_shares",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1283,
+      "id": 1284,
       "shares": [
         "NYSW_16"
       ],
@@ -12483,21 +12490,21 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1284,
+      "id": 1285,
       "original_id": 1397
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1285,
+      "id": 1286,
       "original_id": 1398
     },
     {
       "type": "sell_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1286,
+      "id": 1287,
       "shares": [
         "A&S_3"
       ],
@@ -12508,7 +12515,7 @@
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1287,
+      "id": 1288,
       "shares": [
         "NYSW_18"
       ],
@@ -12519,7 +12526,7 @@
       "type": "short",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1288,
+      "id": 1289,
       "corporation": "A&S",
       "original_id": 1401
     },
@@ -12527,14 +12534,14 @@
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1289,
+      "id": 1290,
       "original_id": 1402
     },
     {
       "type": "short",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1290,
+      "id": 1291,
       "corporation": "A&S",
       "original_id": 1403
     },
@@ -12542,21 +12549,21 @@
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1291,
+      "id": 1292,
       "original_id": 1404
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1292,
+      "id": 1293,
       "original_id": 1405
     },
     {
       "type": "sell_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1293,
+      "id": 1294,
       "shares": [
         "A&S_8"
       ],
@@ -12567,7 +12574,7 @@
       "type": "short",
       "entity": 655,
       "entity_type": "player",
-      "id": 1294,
+      "id": 1295,
       "corporation": "A&S",
       "original_id": 1407
     },
@@ -12575,14 +12582,14 @@
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 1295,
+      "id": 1296,
       "original_id": 1408
     },
     {
       "type": "short",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1296,
+      "id": 1297,
       "corporation": "A&S",
       "original_id": 1413
     },
@@ -12590,14 +12597,14 @@
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1297,
+      "id": 1298,
       "original_id": 1414
     },
     {
       "type": "sell_shares",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1298,
+      "id": 1299,
       "shares": [
         "Bess_1"
       ],
@@ -12608,7 +12615,7 @@
       "type": "buy_shares",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1299,
+      "id": 1300,
       "shares": [
         "DL&W_4"
       ],
@@ -12619,14 +12626,14 @@
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1300,
+      "id": 1301,
       "original_id": 1421
     },
     {
       "type": "short",
       "entity": 655,
       "entity_type": "player",
-      "id": 1301,
+      "id": 1302,
       "corporation": "A&S",
       "original_id": 1422
     },
@@ -12634,7 +12641,7 @@
       "type": "buy_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1302,
+      "id": 1303,
       "shares": [
         "Bess_1"
       ],
@@ -12645,28 +12652,28 @@
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1303,
+      "id": 1304,
       "original_id": 1424
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1304,
+      "id": 1305,
       "original_id": 1425
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1305,
+      "id": 1306,
       "original_id": 1426
     },
     {
       "type": "sell_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1306,
+      "id": 1307,
       "shares": [
         "Bess_7"
       ],
@@ -12677,7 +12684,7 @@
       "type": "short",
       "entity": 655,
       "entity_type": "player",
-      "id": 1307,
+      "id": 1308,
       "corporation": "A&S",
       "original_id": 1430
     },
@@ -12685,35 +12692,35 @@
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 1308,
+      "id": 1309,
       "original_id": 1431
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1309,
+      "id": 1310,
       "original_id": 1432
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1310,
+      "id": 1311,
       "original_id": 1433
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1311,
+      "id": 1312,
       "original_id": 1434
     },
     {
       "type": "sell_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1312,
+      "id": 1313,
       "shares": [
         "Bess_2",
         "Bess_8"
@@ -12725,7 +12732,7 @@
       "type": "sell_shares",
       "entity": 655,
       "entity_type": "player",
-      "id": 1313,
+      "id": 1314,
       "shares": [
         "NYSW_7"
       ],
@@ -12736,7 +12743,7 @@
       "type": "short",
       "entity": 655,
       "entity_type": "player",
-      "id": 1314,
+      "id": 1315,
       "corporation": "A&S",
       "original_id": 1437
     },
@@ -12744,35 +12751,35 @@
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 1315,
+      "id": 1316,
       "original_id": 1438
     },
     {
       "type": "pass",
       "entity": 1594,
       "entity_type": "player",
-      "id": 1316,
+      "id": 1317,
       "original_id": 1485
     },
     {
       "type": "pass",
       "entity": 3370,
       "entity_type": "player",
-      "id": 1317,
+      "id": 1318,
       "original_id": 1486
     },
     {
       "type": "pass",
       "entity": 5159,
       "entity_type": "player",
-      "id": 1318,
+      "id": 1319,
       "original_id": 1487
     },
     {
       "type": "message",
       "entity": 655,
       "entity_type": "player",
-      "id": 1319,
+      "id": 1320,
       "message": "OR! ;D",
       "original_id": 1488
     },
@@ -12780,14 +12787,14 @@
       "type": "pass",
       "entity": 655,
       "entity_type": "player",
-      "id": 1320,
+      "id": 1321,
       "original_id": 1489
     },
     {
       "type": "lay_tile",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1321,
+      "id": 1322,
       "hex": "B11",
       "tile": "83-4",
       "rotation": 1,
@@ -12797,14 +12804,14 @@
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1322,
+      "id": 1323,
       "original_id": 1495
     },
     {
       "type": "run_routes",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1323,
+      "id": 1324,
       "routes": [
         {
           "train": "5-1",
@@ -12851,7 +12858,7 @@
       "type": "dividend",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1324,
+      "id": 1325,
       "kind": "payout",
       "original_id": 1497
     },
@@ -12859,21 +12866,21 @@
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1325,
+      "id": 1326,
       "original_id": 1498
     },
     {
       "type": "pass",
       "entity": "Belt",
       "entity_type": "corporation",
-      "id": 1326,
+      "id": 1327,
       "original_id": 1499
     },
     {
       "type": "lay_tile",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1327,
+      "id": 1328,
       "hex": "C14",
       "tile": "14-2",
       "rotation": 2,
@@ -12883,14 +12890,14 @@
       "type": "pass",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1328,
+      "id": 1329,
       "original_id": 1501
     },
     {
       "type": "place_token",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1329,
+      "id": 1330,
       "city": "14-2-0",
       "slot": 1,
       "original_id": 1502
@@ -12899,7 +12906,7 @@
       "type": "take_loan",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1330,
+      "id": 1331,
       "loan": 4,
       "original_id": 1507
     },
@@ -12907,7 +12914,7 @@
       "type": "take_loan",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1331,
+      "id": 1332,
       "loan": 10,
       "original_id": 1508
     },
@@ -12915,7 +12922,7 @@
       "type": "take_loan",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1332,
+      "id": 1333,
       "loan": 0,
       "original_id": 1509
     },
@@ -12923,7 +12930,7 @@
       "type": "buy_train",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1333,
+      "id": 1334,
       "train": "4-5",
       "price": 335,
       "original_id": 1516
@@ -12932,7 +12939,7 @@
       "type": "buy_train",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1334,
+      "id": 1335,
       "train": "7-1",
       "price": 900,
       "variant": "7",
@@ -12942,21 +12949,21 @@
       "type": "pass",
       "entity": "NYOW",
       "entity_type": "corporation",
-      "id": 1335,
+      "id": 1336,
       "original_id": 1518
     },
     {
       "type": "pass",
       "entity": "J",
       "entity_type": "corporation",
-      "id": 1336,
+      "id": 1337,
       "original_id": 1519
     },
     {
       "type": "buy_train",
       "entity": "J",
       "entity_type": "corporation",
-      "id": 1337,
+      "id": 1338,
       "train": "4-3",
       "price": 850,
       "original_id": 1520
@@ -12965,21 +12972,21 @@
       "type": "pass",
       "entity": "J",
       "entity_type": "corporation",
-      "id": 1338,
+      "id": 1339,
       "original_id": 1521
     },
     {
       "type": "pass",
       "entity": "J",
       "entity_type": "corporation",
-      "id": 1339,
+      "id": 1340,
       "original_id": 1522
     },
     {
       "type": "lay_tile",
       "entity": "DL&W",
       "entity_type": "corporation",
-      "id": 1340,
+      "id": 1341,
       "hex": "F3",
       "tile": "6-3",
       "rotation": 1,
@@ -12989,7 +12996,7 @@
       "type": "lay_tile",
       "entity": "DL&W",
       "entity_type": "corporation",
-      "id": 1341,
+      "id": 1342,
       "hex": "E4",
       "tile": "544-1",
       "rotation": 0,
@@ -12999,7 +13006,7 @@
       "type": "buy_train",
       "entity": "DL&W",
       "entity_type": "corporation",
-      "id": 1342,
+      "id": 1343,
       "train": "7-2",
       "price": 900,
       "variant": "7",
@@ -13009,7 +13016,7 @@
       "type": "buy_train",
       "entity": "DL&W",
       "entity_type": "corporation",
-      "id": 1343,
+      "id": 1344,
       "train": "4-7",
       "price": 130,
       "original_id": 1530
@@ -13018,14 +13025,14 @@
       "type": "pass",
       "entity": "DL&W",
       "entity_type": "corporation",
-      "id": 1344,
+      "id": 1345,
       "original_id": 1531
     },
     {
       "type": "lay_tile",
       "entity": "UR",
       "entity_type": "corporation",
-      "id": 1345,
+      "id": 1346,
       "hex": "B5",
       "tile": "5-3",
       "rotation": 4,
@@ -13035,7 +13042,7 @@
       "type": "lay_tile",
       "entity": "UR",
       "entity_type": "corporation",
-      "id": 1346,
+      "id": 1347,
       "hex": "C6",
       "tile": "83-7",
       "rotation": 3,
@@ -13045,7 +13052,7 @@
       "type": "take_loan",
       "entity": "UR",
       "entity_type": "corporation",
-      "id": 1347,
+      "id": 1348,
       "loan": 11,
       "original_id": 1534
     },
@@ -13053,7 +13060,7 @@
       "type": "buy_train",
       "entity": "UR",
       "entity_type": "corporation",
-      "id": 1348,
+      "id": 1349,
       "train": "8-0",
       "price": 1100,
       "variant": "8",
@@ -13063,21 +13070,21 @@
       "type": "pass",
       "entity": "UR",
       "entity_type": "corporation",
-      "id": 1349,
+      "id": 1350,
       "original_id": 1536
     },
     {
       "type": "pass",
       "entity": "UR",
       "entity_type": "corporation",
-      "id": 1350,
+      "id": 1351,
       "original_id": 1537
     },
     {
       "type": "lay_tile",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1351,
+      "id": 1352,
       "hex": "E22",
       "tile": "X30-0",
       "rotation": 4,
@@ -13087,14 +13094,14 @@
       "type": "pass",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1352,
+      "id": 1353,
       "original_id": 1539
     },
     {
       "type": "run_routes",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1353,
+      "id": 1354,
       "routes": [
         {
           "train": "6-0",
@@ -13138,7 +13145,7 @@
       "type": "dividend",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1354,
+      "id": 1355,
       "kind": "payout",
       "original_id": 1543
     },
@@ -13146,14 +13153,14 @@
       "type": "pass",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1355,
+      "id": 1356,
       "original_id": 1544
     },
     {
       "type": "payoff_loan",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1356,
+      "id": 1357,
       "loan": 48,
       "original_id": 1545
     },
@@ -13161,7 +13168,7 @@
       "type": "payoff_loan",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1357,
+      "id": 1358,
       "loan": 49,
       "original_id": 1546
     },
@@ -13169,7 +13176,7 @@
       "type": "payoff_loan",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1358,
+      "id": 1359,
       "loan": 50,
       "original_id": 1547
     },
@@ -13177,14 +13184,14 @@
       "type": "pass",
       "entity": "GT",
       "entity_type": "corporation",
-      "id": 1359,
+      "id": 1360,
       "original_id": 1548
     },
     {
       "type": "lay_tile",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1360,
+      "id": 1361,
       "hex": "B7",
       "tile": "80-1",
       "rotation": 5,
@@ -13194,14 +13201,14 @@
       "type": "pass",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1361,
+      "id": 1362,
       "original_id": 1550
     },
     {
       "type": "run_routes",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1362,
+      "id": 1363,
       "routes": [
         {
           "train": "5-3",
@@ -13282,7 +13289,7 @@
       "type": "dividend",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1363,
+      "id": 1364,
       "kind": "half",
       "original_id": 1552
     },
@@ -13290,7 +13297,7 @@
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1364,
+      "id": 1365,
       "loan": 56,
       "original_id": 1553
     },
@@ -13298,7 +13305,7 @@
       "type": "payoff_loan",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1365,
+      "id": 1366,
       "loan": 57,
       "original_id": 1554
     },
@@ -13306,14 +13313,14 @@
       "type": "pass",
       "entity": "WT",
       "entity_type": "corporation",
-      "id": 1366,
+      "id": 1367,
       "original_id": 1555
     },
     {
       "type": "lay_tile",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1367,
+      "id": 1368,
       "hex": "C8",
       "tile": "597-0",
       "rotation": 0,
@@ -13323,14 +13330,14 @@
       "type": "pass",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1368,
+      "id": 1369,
       "original_id": 1557
     },
     {
       "type": "run_routes",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1369,
+      "id": 1370,
       "routes": [
         {
           "train": "6-1",
@@ -13376,7 +13383,7 @@
       "type": "dividend",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1370,
+      "id": 1371,
       "kind": "half",
       "original_id": 1559
     },
@@ -13384,14 +13391,14 @@
       "type": "pass",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1371,
+      "id": 1372,
       "original_id": 1560
     },
     {
       "type": "payoff_loan",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1372,
+      "id": 1373,
       "loan": 26,
       "original_id": 1561
     },
@@ -13399,7 +13406,7 @@
       "type": "payoff_loan",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1373,
+      "id": 1374,
       "loan": 30,
       "original_id": 1562
     },
@@ -13407,14 +13414,14 @@
       "type": "pass",
       "entity": "Bess",
       "entity_type": "corporation",
-      "id": 1374,
+      "id": 1375,
       "original_id": 1563
     },
     {
       "type": "lay_tile",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1375,
+      "id": 1376,
       "hex": "E6",
       "tile": "546-4",
       "rotation": 1,
@@ -13424,14 +13431,14 @@
       "type": "pass",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1376,
+      "id": 1377,
       "original_id": 1565
     },
     {
       "type": "take_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1377,
+      "id": 1378,
       "loan": 8,
       "original_id": 1566
     },
@@ -13439,7 +13446,7 @@
       "type": "take_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1378,
+      "id": 1379,
       "loan": 15,
       "original_id": 1567
     },
@@ -13447,7 +13454,7 @@
       "type": "take_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1379,
+      "id": 1380,
       "loan": 16,
       "original_id": 1568
     },
@@ -13455,7 +13462,7 @@
       "type": "take_loan",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1380,
+      "id": 1381,
       "loan": 17,
       "original_id": 1573
     },
@@ -13463,7 +13470,7 @@
       "type": "buy_train",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1381,
+      "id": 1382,
       "train": "8-1",
       "price": 1100,
       "variant": "8",
@@ -13473,21 +13480,21 @@
       "type": "pass",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1382,
+      "id": 1383,
       "original_id": 1575
     },
     {
       "type": "pass",
       "entity": "A&S",
       "entity_type": "corporation",
-      "id": 1383,
+      "id": 1384,
       "original_id": 1576
     },
     {
       "type": "end_game",
       "entity": "NYSW",
       "entity_type": "corporation",
-      "id": 1384,
+      "id": 1385,
       "original_id": 1577
     }
   ],

@@ -666,7 +666,7 @@ module Engine
       "distance": 2,
       "price": 100,
       "rusts_on": "4",
-      "num": 20
+      "num": 40
     },
     {
       "name": "2+",
@@ -711,7 +711,7 @@ module Engine
       "name": "8",
       "distance": 8,
       "price": 1100,
-      "num": 16,
+      "num": 40,
       "events": [
         {"type": "signal_end_game"}
       ]

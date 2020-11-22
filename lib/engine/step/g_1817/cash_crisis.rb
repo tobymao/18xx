@@ -51,6 +51,10 @@ module Engine
 
           @active_entity = nil
         end
+
+        def can_sell?(entity, bundle)
+          super && !(bundle.corporation.share_price.acquisition? || bundle.corporation.share_price.liquidation?)
+        end
       end
     end
   end
