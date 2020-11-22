@@ -146,8 +146,10 @@ module Engine
           minor.buy_train(train)
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token)
-          minor.float!
         end
+
+        # Needed for special handling of minors in case inital auction not completed
+        @stock_round_initiated = false
 
         @brown_g_tile ||= @tiles.find { |t| t.name == '480' }
         @gray_tile ||= @tiles.find { |t| t.name == '455' }
@@ -207,6 +209,13 @@ module Engine
         @recently_floated = []
       end
 
+      def new_auction_round
+        Round::Auction.new(self, [
+          Step::CompanyPendingPar,
+          Step::G18Mex::WaterfallAuction,
+        ])
+      end
+
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
@@ -215,13 +224,12 @@ module Engine
       end
 
       def new_stock_round
+        # Needed for special handling of minors in case inital auction not completed
+        @stock_round_initiated = true
+
         # Trigger possible delayed close of minors
         event_minors_closed! if @minor_close
 
-        @minors.each do |minor|
-          matching_company = @companies.find { |company| company.sym == minor.name }
-          minor.owner = matching_company.owner
-        end if @turn == 1
         super
       end
 
@@ -269,6 +277,24 @@ module Engine
           .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
           .max_by(&:price)
         max_bundle&.price || 0
+      end
+
+      def payout_companies
+        super
+
+        return if @stock_round_initiated
+
+        # This is when an initial auction has all passes but not all privates sold.
+        # Now any minors bought should run, but having an Operating Round would require
+        # a bigger redesign. Instead let us give an expected $30 revenue (50-50) for
+        # any floated/bought minors and be done with it...
+        default_revenue_minor = 15
+        revenue = format_currency(default_revenue_minor)
+        @minors.select(&:floated?).each do |minor|
+          bank.spend(default_revenue_minor, minor.owner)
+          bank.spend(default_revenue_minor, minor)
+          @log << "Minor #{minor.name} receives #{revenue}, as does its owner #{minor.owner.name}"
+        end
       end
 
       def place_home_token(entity)
