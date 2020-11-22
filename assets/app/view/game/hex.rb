@@ -16,7 +16,7 @@ module View
 
       SIZE = 100
 
-      BORDER_COLOR_STROKE_WIDTH = 25
+      BORDER_COLOR_STROKE_WIDTH = 13
       BORDER_COLOR_POINTS = Lib::Hex.points(scale: 1 - ((BORDER_COLOR_STROKE_WIDTH + 1) / 2) / Lib::Hex::Y_B).freeze
 
       LAYOUT = {
