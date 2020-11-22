@@ -44,11 +44,11 @@
     1395
   ],
   "result": {
-    "LenaC": 3440,
-    "Cogust": 3872,
-    "shingoi": 3388,
-    "Jen Freeman": 4156,
-    "Swedish-Per (GMT+2)": 3499
+    "LenaC": 3499,
+    "Cogust": 3862,
+    "shingoi": 3362,
+    "Jen Freeman": 4146,
+    "Swedish-Per (GMT+2)": 3255
   },
   "actions": [
     {
@@ -3667,17 +3667,6 @@
       "original_id": 405
     },
     {
-      "id": 339,
-      "type": "buy_shares",
-      "entity": 1048,
-      "shares": [
-        "TM_4"
-      ],
-      "percent": 10,
-      "entity_type": "player",
-      "original_id": 406
-    },
-    {
       "id": 340,
       "type": "pass",
       "entity": 1048,
@@ -5899,82 +5888,6 @@
       "original_id": 643
     },
     {
-      "id": 493,
-      "type": "pass",
-      "entity": "TM",
-      "entity_type": "corporation",
-      "original_id": 644
-    },
-    {
-      "id": 494,
-      "type": "run_routes",
-      "entity": "TM",
-      "routes": [
-        {
-          "train": "4D-3",
-          "connections": [
-            [
-              "I4",
-              "G4",
-              "F5"
-            ],
-            [
-              "J5",
-              "I4"
-            ],
-            [
-              "J5",
-              "K6"
-            ],
-            [
-              "K6",
-              "J7"
-            ],
-            [
-              "J7",
-              "K8"
-            ],
-            [
-              "L9",
-              "K8"
-            ],
-            [
-              "I12",
-              "J11",
-              "K10",
-              "L9"
-            ],
-            [
-              "I12",
-              "H11",
-              "F11",
-              "D11"
-            ]
-          ]
-        }
-      ],
-      "entity_type": "corporation",
-      "original_id": 645
-    },
-    {
-      "id": 495,
-      "kind": "withhold",
-      "type": "dividend",
-      "entity": "TM",
-      "entity_type": "corporation",
-      "original_id": 648
-    },
-    {
-      "id": 496,
-      "type": "buy_train",
-      "price": 700,
-      "train": "4D-5",
-      "entity": "TM",
-      "variant": "4D",
-      "entity_type": "corporation",
-      "original_id": 649
-    },
-    {
       "id": 497,
       "hex": "O8",
       "tile": "480-0",
@@ -6244,6 +6157,82 @@
       "entity": "UdY",
       "entity_type": "corporation",
       "original_id": 663
+    },
+    {
+      "id": 510.1,
+      "type": "pass",
+      "entity": "TM",
+      "entity_type": "corporation",
+      "original_id": 644
+    },
+    {
+      "id": 510.2,
+      "type": "run_routes",
+      "entity": "TM",
+      "routes": [
+        {
+          "train": "4D-3",
+          "connections": [
+            [
+              "I4",
+              "G4",
+              "F5"
+            ],
+            [
+              "J5",
+              "I4"
+            ],
+            [
+              "J5",
+              "K6"
+            ],
+            [
+              "K6",
+              "J7"
+            ],
+            [
+              "J7",
+              "K8"
+            ],
+            [
+              "L9",
+              "K8"
+            ],
+            [
+              "I12",
+              "J11",
+              "K10",
+              "L9"
+            ],
+            [
+              "I12",
+              "H11",
+              "F11",
+              "D11"
+            ]
+          ]
+        }
+      ],
+      "entity_type": "corporation",
+      "original_id": 645
+    },
+    {
+      "id": 510.3,
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "TM",
+      "entity_type": "corporation",
+      "original_id": 648
+    },
+    {
+      "id": 510.4,
+      "type": "buy_train",
+      "price": 700,
+      "train": "4D-5",
+      "entity": "TM",
+      "variant": "4D",
+      "entity_type": "corporation",
+      "original_id": 649
     },
     {
       "id": 511,
