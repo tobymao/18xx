@@ -52,7 +52,7 @@ module View
           children << h(
             Tile,
             tile: @tile,
-            show_coords: @show_coords,
+            show_coords: @show_coords && (@role == :map),
             show_location_names: @show_location_names,
           )
         end
