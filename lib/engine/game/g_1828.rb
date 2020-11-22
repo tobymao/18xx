@@ -268,7 +268,7 @@ module Engine
                              .take(7 - @players.size)
         to_remove.each do |company|
           company.close!
-          @round.active_step.companies.delete(company)
+          @round.steps.find { |step| step.is_a?(Step::G1828::WaterfallAuction) }.companies.delete(company)
           @log << "Removing #{company.name}"
         end
       end

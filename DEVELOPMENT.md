@@ -78,7 +78,7 @@ docker cp db.backup.gz $CONTAINER_ID:/home/db
 
 ```
 cd /home/db
-gzip -d db.backup.gz
+gzip -f -k -d db.backup.gz
 pg_restore -U root -d 18xx_development db.backup
 ```
 

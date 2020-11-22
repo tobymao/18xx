@@ -240,6 +240,7 @@ module Engine
       "abilities": [
         {
           "type": "tile_lay",
+          "when": "any",
           "hexes": [
             "B11",
             "G10",

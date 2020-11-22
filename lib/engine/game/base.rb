@@ -171,6 +171,7 @@ module Engine
       HOME_TOKEN_TIMING = :operate
 
       DISCARDED_TRAINS = :discard # discarded or removed?
+      CLOSED_CORP_TRAINS = :removed # discarded or removed?
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
 
@@ -200,6 +201,7 @@ module Engine
       IPO_RESERVED_NAME = 'IPO Reserved'
       MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
+      OBSOLETE_TRAINS_COUNT_FOR_LIMIT = false
 
       CACHABLE = [
         %i[players player],
@@ -344,8 +346,7 @@ module Engine
                    names.map { |n| [n, n] }.to_h
                  end
 
-        # This intentionally ignores player id for now until the database is migrated.
-        @players = @names.map { |_playerid, name| Player.new(name, name) }
+        @players = @names.map { |player_id, name| Player.new(player_id, name) }
 
         @optional_rules = init_optional_rules(optional_rules)
 
@@ -514,6 +515,8 @@ module Engine
 
         @log << "• Action(#{action.type}) via Master Mode by #{action.user}:" if action.user
 
+        preprocess_action(action)
+
         @round.process_action(action)
 
         unless action.is_a?(Action::Message)
@@ -543,6 +546,8 @@ module Engine
 
         self
       end
+
+      def preprocess_action(_action); end
 
       def all_corporations
         corporations
@@ -615,8 +620,7 @@ module Engine
           value += player.shares_by_corporation.sum do |corporation, shares|
             next 0 if shares.empty?
 
-            last = sellable_bundles(player, corporation).last
-            last ? last.price : 0
+            value_for_sellable(player, corporation)
           end
         else
           player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, _|
@@ -627,13 +631,22 @@ module Engine
               next unless corporation.operated? || corporation.president?(player)
             end
 
-            max_bundle = bundles_for_corporation(player, corporation)
-              .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
-              .max_by(&:price)
-            value += max_bundle&.price || 0
+            value += value_for_dumpable(player, corporation)
           end
         end
         value
+      end
+
+      def value_for_sellable(player, corporation)
+        max_bundle = sellable_bundles(player, corporation).max_by(&:price)
+        max_bundle&.price || 0
+      end
+
+      def value_for_dumpable(player, corporation)
+        max_bundle = bundles_for_corporation(player, corporation)
+          .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
+          .max_by(&:price)
+        max_bundle&.price || 0
       end
 
       def issuable_shares(_entity)
@@ -650,6 +663,11 @@ module Engine
       end
 
       def bundles_for_corporation(share_holder, corporation, shares: nil)
+        all_bundles_for_corporation(share_holder, corporation, shares)
+      end
+
+      # Needed for 18MEX
+      def all_bundles_for_corporation(share_holder, corporation, shares)
         return [] unless corporation.ipoed
 
         shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
@@ -680,11 +698,11 @@ module Engine
         self.class::SELL_AFTER == :first ? @turn > 1 : true
       end
 
-      def sell_shares_and_change_price(bundle)
+      def sell_shares_and_change_price(bundle, allow_president_change: true)
         corporation = bundle.corporation
         price = corporation.share_price.price
         was_president = corporation.president?(bundle.owner)
-        @share_pool.sell_shares(bundle)
+        @share_pool.sell_shares(bundle, allow_president_change: allow_president_change)
         case self.class::SELL_MOVEMENT
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
@@ -1034,6 +1052,45 @@ module Engine
         @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
       end
 
+      def close_corporation(corporation, quiet: false)
+        @log << "#{corporation.name} closes" unless quiet
+
+        hexes.each do |hex|
+          hex.tile.cities.each do |city|
+            if city.tokened_by?(corporation) || city.reserved_by?(corporation)
+              city.tokens.map! { |token| token&.corporation == corporation ? nil : token }
+              city.reservations.delete(corporation)
+            end
+          end
+        end
+
+        corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
+        if self.class::CLOSED_CORP_TRAINS == :discarded
+          corporation.trains.dup.each { |t| depot.reclaim_train(t) }
+        else
+          corporation.trains.each { |t| t.buyable = false }
+        end
+        if corporation.companies.any?
+          @log << "#{corporation.name}'s companies close: #{corporation.companies.map(&:sym).join(', ')}"
+          corporation.companies.dup.each(&:close!)
+        end
+        @round.force_next_entity! if @round.current_entity == corporation
+
+        if corporation.corporation?
+          corporation.share_holders.keys.each do |share_holder|
+            share_holder.shares_by_corporation.delete(corporation)
+          end
+
+          @share_pool.shares_by_corporation.delete(corporation)
+          corporation.share_price.corporations.delete(corporation)
+          @corporations.delete(corporation)
+        else
+          @minors.delete(corporation)
+        end
+
+        @cert_limit = init_cert_limit
+      end
+
       def reset_corporation(corporation)
         @_shares.reject! do |_, share|
           next if share.corporation != corporation
@@ -1107,6 +1164,10 @@ module Engine
           @log << "#{corporation.name} receives #{format_currency(amount)}
                    from #{company.name}"
         end
+      end
+
+      def train_help(_runnable_trains)
+        []
       end
 
       private
@@ -1453,7 +1514,11 @@ module Engine
         "#{reason_map[reason]}#{after_text}"
       end
 
-      def action_processed(_action); end
+      def action_processed(_action)
+        @corporations.dup.each do |corporation|
+          close_corporation(corporation) if corporation.share_price&.type == :close
+        end if stock_market.has_close_cell
+      end
 
       def priority_deal_player
         players = @players.reject(&:bankrupt)

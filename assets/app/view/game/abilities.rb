@@ -62,8 +62,8 @@ module View
           }
           props[:style][:textDecoration] = 'underline' if @selected_company == company
 
-          company_name = company.name.truncate(company.owner.id.size < 5 ? 32 : 19)
-          owner_name = company.owner.id.truncate
+          company_name = company.name.truncate(company.owner.name.size < 5 ? 32 : 19)
+          owner_name = company.owner.name.truncate
 
           h(:div, props, "#{company_name} (#{owner_name})")
         end.compact

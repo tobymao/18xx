@@ -21,6 +21,11 @@ module Engine
 
       IPO_RESERVED_NAME = 'Trade-in'
 
+      # Sell of one 5% wont affect stock price.
+      # Actually neither will 2 but they will be
+      # sold one at a time to accomplish that.
+      SELL_MOVEMENT = :down_per_10
+
       TRACK_RESTRICTION = :city_permissive
 
       STANDARD_GREEN_CITY_TILES = %w[14 15 619].freeze
@@ -91,8 +96,8 @@ module Engine
         @ndm_merge_share ||= ndm.shares.last
       end
 
-      def pac
-        @pac_corporation ||= corporation_by_id('PAC')
+      def fcp
+        @fcp_corporation ||= corporation_by_id('FCP')
       end
 
       def tm
@@ -226,13 +231,6 @@ module Engine
         super
       end
 
-      # If selling 5% NdM share it should not affect share price
-      def sell_shares_and_change_price(bundle)
-        return super if bundle.corporation != ndm || bundle.percent > 5
-
-        @share_pool.sell_shares(bundle)
-      end
-
       # 5% NdM is not counted for cert limit
       def countable_shares(shares)
         shares.select { |s| s.percent > 5 }
@@ -257,6 +255,20 @@ module Engine
         regular_bundles = super(player, ndm, shares: regular_shares)
         half_bundles = super(player, ndm, shares: half_shares)
         regular_bundles.concat(half_bundles)
+      end
+
+      def value_for_sellable(player, corporation)
+        max_bundle = all_bundles_for_corporation(player, corporation)
+          .select { |bundle| @round.active_step&.can_sell?(player, bundle) }
+          .max_by(&:price)
+        max_bundle&.price || 0
+      end
+
+      def value_for_dumpable(player, corporation)
+        max_bundle = all_bundles_for_corporation(player, corporation)
+          .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
+          .max_by(&:price)
+        max_bundle&.price || 0
       end
 
       def place_home_token(entity)
@@ -295,7 +307,7 @@ module Engine
 
       def event_ndm_merger!
         @log << "-- Event: #{ndm.name} merger --"
-        remove_ability(pac, :base)
+        remove_ability(fcp, :base)
         remove_ability(tm, :base)
         unless ndm.floated?
           @log << "No merge occur as #{ndm.name} has not floated!"
@@ -551,7 +563,7 @@ module Engine
       def mergeable_corporations
         corporations = @corporations
           .reject { |c| c.player == ndm.player }
-          .reject { |c| %w[PAC TM].include? c.name }
+          .reject { |c| %w[FCP TM].include? c.name }
         floated_player_corps, other_corps = corporations.partition { |c| c.owned_by_player? && c.floated? }
 
         # Sort eligible corporations so that they are in player order

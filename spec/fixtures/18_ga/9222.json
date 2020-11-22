@@ -28,7 +28,9 @@
   "status": "finished",
   "turn": 9,
   "round": "Operating Round",
-  "acting": [],
+  "acting": [
+
+  ],
   "result": {
     "Helen ": 3978,
     "LJHall": 5382,
@@ -37,7 +39,7 @@
   "actions": [
     {
       "type": "bid",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 1,
       "company": "M&BR",
@@ -45,21 +47,21 @@
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 2,
       "message": "I want the other 10% share company back"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 3,
       "message": "What do you mean?"
     },
     {
       "type": "bid",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 4,
       "company": "W&SR",
@@ -67,7 +69,7 @@
     },
     {
       "type": "bid",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 5,
       "company": "MRC",
@@ -75,14 +77,14 @@
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 6,
       "message": "oh no it is CoG again - sorry i forgot what i was doing for a minute there"
     },
     {
       "type": "bid",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 7,
       "company": "LTR",
@@ -90,7 +92,7 @@
     },
     {
       "type": "bid",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 8,
       "company": "OSR",
@@ -98,14 +100,14 @@
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 9,
       "message": "This didn't happen last time. Grr Dave has got that far too cheap!"
     },
     {
       "type": "par",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 10,
       "corporation": "ACL",
@@ -113,70 +115,70 @@
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 11,
       "message": "That's my company"
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 12,
       "message": "That 'private' round happened quick, I only got one go! LoooL Dave got CoG farrrrrrr too cheap"
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 13,
       "message": "Sorry Helen .... Dave got your company too cheap :))"
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 14,
       "message": "hehe"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 15,
       "message": "No Laura I launched ACL last time "
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 16,
       "message": "Was planning on doing so again"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 17,
       "message": "You launched GA"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 18,
       "message": "Mm shinaningon's 🤣🤣"
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 19,
       "message": "I'm pleased i got it at a good value :)"
     },
     {
       "type": "par",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 20,
       "corporation": "W&A",
@@ -184,14 +186,14 @@
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 21,
       "message": "More like a bloody steal!"
     },
     {
       "type": "par",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 22,
       "corporation": "CoG",
@@ -199,7 +201,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 23,
       "shares": [
@@ -209,84 +211,84 @@
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 24,
       "message": "Oh Helen has CoG .... crikey, the gloves are off already"
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 25,
       "message": "so ..... even though Dave had one share, you still got president Helen? I didn't realise that would happen, I though if I/you bought one ... it would be just one ie) Dave keeps control .... obviously not .... nice learning by me ...... why does nobody ever do this in Chesapeake then?"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 26,
       "message": "Well that's because you stole my company"
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 27,
       "message": "sorry"
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 28,
       "message": "hehe end the game :))"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 29,
       "message": "Because Vanderbilt comes with the president's "
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 30,
       "message": "I mean B&O"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 31,
       "message": "Dave did it to Hamish once"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 32,
       "message": "I forgive you for stealing my company but you had better not win with it! 🤣🤣"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 33,
       "message": "Hamish just launched something else and went on to win"
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 34,
       "message": "@LJHall the first person to buy a share in a company has to buy the president share. the key word is buy - i got the 10% share as part of my private "
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 35,
       "shares": [
@@ -296,14 +298,14 @@
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 36,
       "message": "This has changed my strategy somewhat though as CoG was company #2"
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 37,
       "shares": [
@@ -313,7 +315,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 38,
       "shares": [
@@ -323,21 +325,21 @@
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 39,
       "message": "Company 2?"
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 40,
       "message": "Always planning ahead"
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 41,
       "shares": [
@@ -347,7 +349,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 42,
       "shares": [
@@ -357,7 +359,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 43,
       "shares": [
@@ -367,7 +369,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 44,
       "shares": [
@@ -377,7 +379,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 45,
       "shares": [
@@ -387,7 +389,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 46,
       "shares": [
@@ -397,7 +399,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 47,
       "shares": [
@@ -407,19 +409,19 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 48
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 49
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 50,
       "shares": [
@@ -429,19 +431,19 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 51
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 52
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 53
     },
@@ -471,56 +473,56 @@
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 57,
       "message": "Are we only allowed to but one train?"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 58,
       "message": "Yes"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 59,
       "message": "Unless it's the last two"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 60,
       "message": "Then you can buy a two and a three"
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 61,
       "message": "Ahhh thank you"
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 62,
       "message": "I bet Dave runs W&A better than I dis!"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 63,
       "message": "Watch and learn ladies'!"
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 64,
       "message": "🤣🤣 no pressure dave!"
@@ -583,62 +585,62 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 72
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 73,
       "message": "Hmm I may not have thought through my aa"
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 74,
       "message": "Atlantic tile & Station"
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 75,
       "message": "Or Atlanta even"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 76,
       "message": "It's a difficult one"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 77,
       "message": "🤔"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 78,
       "message": "Depends what your plan is"
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 79,
       "message": "That tile is terrible, I didn’t even look at the tiles before first play...  as you saw I didn’t recover from it"
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 80,
       "shares": [
@@ -648,25 +650,25 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 81
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 82
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 83
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 84,
       "shares": [
@@ -676,13 +678,13 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 85
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 86,
       "shares": [
@@ -692,25 +694,25 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 87
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 88
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 89
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 90
     },
@@ -733,7 +735,7 @@
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 93,
       "message": "I've decided Atlanta should have been rotated one further step to the right"
@@ -764,7 +766,7 @@
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 96,
       "message": "(I've also spent too long agonising over this)"
@@ -777,7 +779,7 @@
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 98,
       "message": "I think you’ve done it right Dave! The way I did it was wrong and I blocked myself, you can build through the grey city ... I think you’ve done it correctly"
@@ -885,7 +887,7 @@
     {
       "id": 110,
       "type": "undo",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player"
     },
     {
@@ -938,7 +940,7 @@
     {
       "id": 118,
       "type": "undo",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player"
     },
     {
@@ -962,13 +964,13 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 122
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 123,
       "shares": [
@@ -978,13 +980,13 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 124
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 125,
       "shares": [
@@ -994,25 +996,25 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 126
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 127
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 128
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 129
     },
@@ -1072,28 +1074,28 @@
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 136,
       "message": "oh no!!! My move didn't work properly last time ... I should have checked :( my phone said \"you're not in the game\" and my train purchase last time did not work :(( "
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 137,
       "message": "If I lose by £50 I'll cry hahahaha"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 138,
       "message": "Wow that's annoying. I did think it was strange that you never bought a second train as you had a second route!"
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 139,
       "message": "I was on my phone and it always says \"you're not in the game\" :( "
@@ -1142,21 +1144,21 @@
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 145,
       "message": "I've wound back to your train purchase @LJHall"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 146,
       "message": "She meant last time Dave"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 147,
       "message": "She can't buy another one now"
@@ -1169,28 +1171,28 @@
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 149,
       "message": "I'm guessing it's been a long day Dave?"
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 150,
       "message": "ah sorry - yes indeed"
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 151,
       "message": "that's very kind of you Dave, but as Helen said it was over a whole round ago. ... Its early in the game maybe it won't affect me too much :) "
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 152,
       "message": "i've been back to back meetings since 8am"
@@ -1234,7 +1236,7 @@
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 157,
       "message": "Same as Hamish he has not long come off his last one for the day!"
@@ -1299,7 +1301,7 @@
     {
       "id": 164,
       "type": "par",
-      "entity": "Helen ",
+      "entity": 2394,
       "corporation": "GA",
       "entity_type": "player",
       "share_price": "55,3,2"
@@ -1307,25 +1309,25 @@
     {
       "id": 165,
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player"
     },
     {
       "id": 166,
       "type": "undo",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player"
     },
     {
       "id": 167,
       "type": "undo",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player"
     },
     {
       "id": 168,
       "type": "undo",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player"
     },
     {
@@ -1401,7 +1403,7 @@
     {
       "id": 178,
       "type": "par",
-      "entity": "Helen ",
+      "entity": 2394,
       "corporation": "GA",
       "entity_type": "player",
       "share_price": "55,3,2"
@@ -1409,25 +1411,25 @@
     {
       "id": 179,
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player"
     },
     {
       "id": 180,
       "type": "undo",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player"
     },
     {
       "id": 181,
       "type": "undo",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player"
     },
     {
       "id": 182,
       "type": "undo",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player"
     },
     {
@@ -1504,7 +1506,7 @@
     },
     {
       "type": "par",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 192,
       "corporation": "GA",
@@ -1512,13 +1514,13 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 193
     },
     {
       "type": "sell_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 194,
       "shares": [
@@ -1528,7 +1530,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 195,
       "shares": [
@@ -1539,7 +1541,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 196,
       "shares": [
@@ -1549,7 +1551,7 @@
     },
     {
       "type": "par",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 197,
       "corporation": "SAL",
@@ -1557,7 +1559,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 198,
       "shares": [
@@ -1567,13 +1569,13 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 199
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 200,
       "shares": [
@@ -1583,13 +1585,13 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 201
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 202,
       "shares": [
@@ -1599,26 +1601,26 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 203
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 204
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 205,
       "message": "I'm on auto pass"
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 206,
       "shares": [
@@ -1628,13 +1630,13 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 207
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 208,
       "shares": [
@@ -1644,19 +1646,19 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 209
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 210
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 211,
       "shares": [
@@ -1666,13 +1668,13 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 212
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 213,
       "shares": [
@@ -1682,25 +1684,25 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 214
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 215
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 216
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 217,
       "shares": [
@@ -1710,25 +1712,25 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 218
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 219
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 220
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 221
     },
@@ -1842,7 +1844,7 @@
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 234,
       "message": "Yep Atlanta was wrong way as the upgrade is not the direction I wanted"
@@ -1967,7 +1969,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 247,
       "shares": [
@@ -1978,7 +1980,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 248,
       "shares": [
@@ -1990,7 +1992,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 249,
       "shares": [
@@ -2000,7 +2002,7 @@
     },
     {
       "type": "par",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 250,
       "corporation": "G&F",
@@ -2008,7 +2010,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 251,
       "shares": [
@@ -2018,13 +2020,13 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 252
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 253,
       "shares": [
@@ -2034,13 +2036,13 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 254
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 255,
       "shares": [
@@ -2051,7 +2053,7 @@
     {
       "id": 256,
       "type": "sell_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "shares": [
         "G&F_1"
       ],
@@ -2061,18 +2063,18 @@
     {
       "id": 257,
       "type": "undo",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player"
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 258
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 259,
       "shares": [
@@ -2082,33 +2084,33 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 260
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 261
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 262,
       "message": "I'm on autopass now"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 263,
       "message": "Ok"
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 264,
       "shares": [
@@ -2118,13 +2120,13 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 265
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 266,
       "shares": [
@@ -2134,33 +2136,33 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 267
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 268
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 269,
       "message": "This is definitely an interesting game! "
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 270,
       "message": "Are you enjoying it more Laura?"
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 271,
       "shares": [
@@ -2170,21 +2172,21 @@
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 272,
       "message": "Yes, much more! I was frustrated with myself making such poor decisions last time "
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 273,
       "message": "Now what's Dave up to!"
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 274,
       "message": "No need to worry about that"
@@ -2192,7 +2194,7 @@
     {
       "id": 275,
       "type": "sell_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "shares": [
         "W&A_2"
       ],
@@ -2202,12 +2204,12 @@
     {
       "id": 276,
       "type": "undo",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player"
     },
     {
       "type": "sell_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 277,
       "shares": [
@@ -2217,13 +2219,13 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 278
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 279,
       "shares": [
@@ -2233,26 +2235,26 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 280
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 281
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 282,
       "message": "Hmm I thought you might have rumbled me"
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 283,
       "shares": [
@@ -2262,27 +2264,27 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 284
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 285,
       "message": "I'm scared now Dave ... are you going to dump some dirty nappy company on me later ?"
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 286,
       "message": "I'm scarred you know! LoooooL"
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 287,
       "shares": [
@@ -2292,26 +2294,26 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 288
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 289
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 290,
       "message": "I'm watching this unfold ..."
     },
     {
       "type": "sell_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 291,
       "shares": [
@@ -2321,7 +2323,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 292,
       "shares": [
@@ -2331,7 +2333,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 293,
       "shares": [
@@ -2341,25 +2343,25 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 294
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 295
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 296
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 297
     },
@@ -2973,7 +2975,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 358,
       "shares": [
@@ -2983,13 +2985,13 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 359
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 360,
       "shares": [
@@ -2999,7 +3001,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 361,
       "shares": [
@@ -3013,13 +3015,13 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 362
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 363,
       "shares": [
@@ -3029,13 +3031,13 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 364
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 365,
       "shares": [
@@ -3045,27 +3047,27 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 366
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 367,
       "message": "Question..... if I have one share of someone else's company can they sell down to 0 to give me it? ie) is one share always safe?"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 368,
       "message": "Yes"
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 369,
       "shares": [
@@ -3075,13 +3077,13 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 370
     },
     {
       "type": "sell_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 371,
       "shares": [
@@ -3091,7 +3093,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 372,
       "shares": [
@@ -3101,7 +3103,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 373,
       "shares": [
@@ -3111,13 +3113,13 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 374
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 375,
       "shares": [
@@ -3127,13 +3129,13 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 376
     },
     {
       "type": "sell_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 377,
       "shares": [
@@ -3144,7 +3146,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 378,
       "shares": [
@@ -3154,27 +3156,27 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 379
     },
     {
       "type": "message",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 380,
       "message": "I'm on autopass now :)"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 381,
       "message": "Ok"
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 382,
       "shares": [
@@ -3184,13 +3186,13 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 383
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 384,
       "shares": [
@@ -3200,19 +3202,19 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 385
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 386
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 387,
       "shares": [
@@ -3222,13 +3224,13 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 388
     },
     {
       "type": "sell_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 389,
       "shares": [
@@ -3238,7 +3240,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 390,
       "shares": [
@@ -3248,19 +3250,19 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 391
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 392
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 393,
       "shares": [
@@ -3270,25 +3272,25 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 394
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 395
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 396
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 397
     },
@@ -3971,7 +3973,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 450,
       "shares": [
@@ -3981,13 +3983,13 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 451
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 452,
       "shares": [
@@ -3997,13 +3999,13 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 453
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 454,
       "shares": [
@@ -4013,13 +4015,13 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 455
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 456,
       "shares": [
@@ -4029,13 +4031,13 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 457
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 458,
       "shares": [
@@ -4045,13 +4047,13 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 459
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 460,
       "shares": [
@@ -4061,13 +4063,13 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 461
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 462,
       "shares": [
@@ -4077,13 +4079,13 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 463
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 464,
       "shares": [
@@ -4093,13 +4095,13 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 465
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 466,
       "shares": [
@@ -4109,13 +4111,13 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 467
     },
     {
       "type": "buy_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 468,
       "shares": [
@@ -4125,13 +4127,13 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 469
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 470,
       "shares": [
@@ -4141,13 +4143,13 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 471
     },
     {
       "type": "buy_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 472,
       "shares": [
@@ -4157,19 +4159,19 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 473
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 474
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 475,
       "shares": [
@@ -4179,25 +4181,25 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 476
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 477
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 478
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 479,
       "shares": [
@@ -4207,25 +4209,25 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 480
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 481
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 482
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 483,
       "shares": [
@@ -4235,25 +4237,25 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 484
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 485
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 486
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 487,
       "shares": [
@@ -4263,25 +4265,25 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 488
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 489
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 490
     },
     {
       "type": "buy_shares",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 491,
       "shares": [
@@ -4291,25 +4293,25 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 492
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 493
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 494
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 495
     },
@@ -5379,20 +5381,20 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 574
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 575
     },
     {
       "id": 576,
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player"
     },
     {
@@ -5418,7 +5420,7 @@
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 580
     },
@@ -5485,63 +5487,63 @@
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 585,
       "message": "Still a lot of money in the bank!"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 586,
       "message": "I can't believe all three of my companies are going to have an eight!"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 587,
       "message": "So who's going to win out of you two?"
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 588,
       "message": "I think I'm being slightly out earned"
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 589,
       "message": "That said I have some control as to when I release shares back into the market"
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 590,
       "message": "Just checking you've both realised towns are not counted against train run length"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 591,
       "message": "I think I told you that! 🤣🤣"
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 592,
       "message": "Yes Laura has been doing it on her runs."
     },
     {
       "type": "message",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 593,
       "message": "I need to pay more attention"
@@ -6631,13 +6633,13 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 657
     },
     {
       "type": "sell_shares",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 658,
       "shares": [
@@ -6647,19 +6649,19 @@
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 659
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 660
     },
     {
       "type": "sell_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 661,
       "shares": [
@@ -6669,7 +6671,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 662,
       "shares": [
@@ -6680,31 +6682,31 @@
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 663
     },
     {
       "type": "pass",
-      "entity": "LJHall",
+      "entity": 2516,
       "entity_type": "player",
       "id": 664
     },
     {
       "type": "pass",
-      "entity": "SunnyD",
+      "entity": 1996,
       "entity_type": "player",
       "id": 665
     },
     {
       "type": "pass",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 666
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 667,
       "message": "Well done Dave. I take my hat off to you. You played a great game. Bank breaks in this first OR so game ends with I'm sure you as the victor. 🤣🤣"
@@ -7309,7 +7311,7 @@
     },
     {
       "type": "message",
-      "entity": "Helen ",
+      "entity": 2394,
       "entity_type": "player",
       "id": 706,
       "message": "Well done Dave you played a great game. "

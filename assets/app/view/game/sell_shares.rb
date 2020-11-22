@@ -21,10 +21,6 @@ module View
             ))
           end
 
-          num_shares = bundle.num_shares
-
-          text = num_shares == 1 && bundle.percent != 10 ? "a #{bundle.percent}%" : num_shares.to_s
-
           props = {
             style: {
               padding: '0.2rem 0',
@@ -32,10 +28,17 @@ module View
             },
             on: { click: sell },
           }
-          h('button.sell_share', props, "Sell #{text} (#{@game.format_currency(bundle.price)})")
+          h('button.sell_share', props, "Sell #{share_presentation(bundle)} (#{@game.format_currency(bundle.price)})")
         end
 
         h(:div, buttons.compact)
+      end
+
+      private
+
+      def share_presentation(bundle)
+        num_shares = bundle.num_shares
+        num_shares == 1 && bundle.percent != @corporation.share_percent ? "a #{bundle.percent}%" : num_shares.to_s
       end
     end
   end

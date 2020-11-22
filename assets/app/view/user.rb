@@ -19,76 +19,96 @@ module View
     ROUTE_COLORS = Lib::Settings::ROUTE_COLORS.freeze
 
     def render_content
-      title, inputs =
+      children =
         case @type
-        when :signup
-          ['Signup', [
-            render_input('User Name', id: :name),
-            render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
-            render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'new-password' }),
-            render_notifications,
-            h(:div, [render_button('Create Account') { submit }]),
-          ]]
-        when :login
-          ['Login', [
-            render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
-            render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
-            h(:div, { style: { marginBottom: '1rem' } }, [render_button('Login') { submit }]),
-            h(:a, { attrs: { href: '/forgot' } }, 'Forgot Password'),
-          ]]
         when :profile
-          ['Profile Settings', [
-            render_notifications(setting_for(:notifications)),
-            h('div#settings__colors', [
-              render_logo_color(setting_for(:red_logo)),
-              h(:div, [
-                render_color('Main Background', :bg, color_for(:bg)),
-                render_color('Main Font Color', :font, color_for(:font)),
-              ]),
-              h(:div, [
-                render_color('Alternative Background', :bg2, color_for(:bg2)),
-                render_color('Alternative Font Color', :font2, color_for(:font2)),
-              ]),
-              h(:div, [
-                render_color('Your Turn', :your_turn, color_for(:your_turn)),
-              ]),
-            ]),
-            render_tile_colors,
-            render_route_colors,
-            h('div#settings__buttons', [
-              render_button('Save Changes') { submit },
-              render_button('Reset to Defaults') { reset_settings },
-            ]),
-            h('div#settings__logout', [
-              render_button('Logout') { logout },
-            ]),
-            h(:div, [
-              render_button('Delete Account and All Data', style: { marginTop: '0' }) { delete },
-              render_input('Type DELETE to confirm', id: :confirm, type: :confirm),
-            ]),
-          ]]
+          render_profile
+        when :signup
+          render_signup
+        when :login
+          render_login
         end
-
-      children = [render_form(title, inputs)]
-
-      if @type == :profile
-        finished_games = @games.select { |game| user_in_game?(@user, game) && game['status'] == 'finished' }
-        .sort_by { |game| -game['updated_at'] }
-
-        children << h(
-          GameRow,
-          header: 'Your Finished Games',
-          game_row_games: finished_games,
-          type: :personal,
-          user: @user,
-        )
-      end
 
       h(:div, children)
     end
 
     def input_elm(setting)
       Native(@inputs[setting]).elm
+    end
+
+    def render_profile
+      return [h('h3', 'You are not logged in')] unless @user
+
+      title = 'Profile Settings'
+      inputs = [
+        render_notifications(setting_for(:notifications)),
+        h('div#settings__colors', [
+          render_logo_color(setting_for(:red_logo)),
+          h(:div, [
+            render_color('Main Background', :bg, color_for(:bg)),
+            render_color('Main Font Color', :font, color_for(:font)),
+          ]),
+          h(:div, [
+            render_color('Alternative Background', :bg2, color_for(:bg2)),
+            render_color('Alternative Font Color', :font2, color_for(:font2)),
+          ]),
+          h(:div, [
+            render_color('Your Turn', :your_turn, color_for(:your_turn)),
+          ]),
+        ]),
+        render_tile_colors,
+        render_route_colors,
+        h('div#settings__buttons', [
+          render_button('Save Changes') { submit },
+          render_button('Reset to Defaults') { reset_settings },
+        ]),
+        h('div#settings__logout', [
+          render_button('Logout') { logout },
+        ]),
+        h(:div, [
+          render_button('Delete Account and All Data', style: { marginTop: '0' }) { delete },
+          render_input('Type DELETE to confirm', id: :confirm, type: :confirm),
+        ]),
+      ]
+
+      finished_games = @games.select { |game| user_in_game?(@user, game) && game['status'] == 'finished' }
+                         .sort_by { |game| -game['updated_at'] }
+
+      [render_form(title, inputs),
+       h(GameRow,
+         header: 'Your Finished Games',
+         game_row_games: finished_games,
+         type: :personal,
+         user: @user)]
+    end
+
+    def render_signup
+      return [h('h3', 'You are already logged in')] if @user
+
+      title = 'Signup'
+      inputs = [
+        render_input('User Name', id: :name),
+        render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
+        render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'new-password' }),
+        render_notifications,
+        h(:div, [render_button('Create Account') { submit }]),
+      ]
+
+      [render_form(title, inputs)]
+    end
+
+    def render_login
+      return [h('h3', 'You are already logged in')] if @user
+
+      title = 'Login'
+      inputs = [
+        render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
+        render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
+        h(:div, { style: { marginBottom: '1rem' } }, [render_button('Login') { submit }]),
+        h(:a, { attrs: { href: '/forgot' } }, 'Forgot Password'),
+      ]
+
+      [render_form(title, inputs)]
     end
 
     def reset_settings
@@ -110,6 +130,16 @@ module View
       end
 
       submit
+    end
+
+    def render_username
+      h('div#settings__username', [
+        render_input(
+          'User Name:',
+          id: :name,
+          attrs: { value: @user&.dig('name') || '' }
+        ),
+      ])
     end
 
     def render_notifications(checked = true)

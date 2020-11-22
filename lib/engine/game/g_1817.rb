@@ -44,7 +44,8 @@ module Engine
       SELL_MOVEMENT = :none
       ALL_COMPANIES_ASSIGNABLE = true
       SELL_AFTER = :operate
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
+      OBSOLETE_TRAINS_COUNT_FOR_LIMIT = true
 
       ASSIGNMENT_TOKENS = {
         'bridge' => '/icons/1817/bridge_token.svg',
@@ -239,7 +240,9 @@ module Engine
           # Try closing shorts
           count = 0
           while entity_shorts(@share_pool, corporation).any? &&
-            (market_shares = @share_pool.shares_of(corporation).select { |share| share.percent.positive? }).any?
+            (market_shares = @share_pool.shares_of(corporation)
+             .select { |share| share.percent.positive? && !share.president }).any?
+
             unshort(@share_pool, market_shares.first)
             count += 1
           end
@@ -497,7 +500,7 @@ module Engine
         @companies.each do |company|
           next unless company.owner
 
-          company.abilities(:revenue_change, 'has_train') do |ability|
+          company.abilities(:revenue_change, time: 'has_train') do |ability|
             company.revenue = company.owner.trains.any? ? ability.revenue : 0
           end
         end

@@ -11,7 +11,7 @@ class Api
 
         # '/api/game/<game_id>/'
         r.is do
-          game_data = game.to_h(include_actions: true, player: user&.name)
+          game_data = game.to_h(include_actions: true, player: user&.id)
 
           game_data
         end
@@ -32,20 +32,22 @@ class Api
             game.to_h
           end
 
-          not_authorized! unless users.any? { |u| u.id == user.id || game.user_id == user.id }
-
           r.is 'leave' do
             halt(400, 'Cannot leave because game has started') unless game.status == 'new'
+            halt(400, 'You are not in the game') unless users.any? { |u| u.id == user.id }
             game.remove_player(user)
             game.to_h
           end
 
           # POST '/api/game/<game_id>/user_settings'
           r.is 'user_settings' do
-            game.update_player_settings(user.name, r.params)
+            game.update_player_settings(user.id, r.params)
             game.save
             game.to_h
           end
+
+          not_authorized! unless users.any? { |u| u.id == user.id } || game.user_id == user.id
+
           # POST '/api/game/<game_id>/action'
           r.is 'action' do
             acting, action = nil
