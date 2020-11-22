@@ -3,7 +3,7 @@
 module Engine
   module Part
     class Node < Base
-      attr_accessor :lanes, :node_id
+      attr_accessor :lanes
 
       def clear!
         @paths = nil

@@ -241,7 +241,9 @@ module Engine
       end
 
       def biggest_train(corporation)
-        corporation.trains.map { |t| t.distance.first }.max || 0
+        val = corporation.trains.map { |t| t.distance[0]['pay'] }.max || 0
+        puts "biggest_train = #{val}"
+        val
       end
 
       def get_token_cities(corporation)
@@ -431,10 +433,7 @@ module Engine
 
       def check_distance(route, visits)
         # will need to be modifed for original rules option
-        c_allowance = route.train.distance.first
-
-        visits.each { |node| c_allowance -= 1 if node.city? || node.offboard? }
-        game_error('Route has too many cities/offboards') if c_allowance.negative?
+        super
         game_error('Route cannot begin/end in a halt') if visits.first.halt? || visits.last.halt?
       end
 
@@ -461,7 +460,7 @@ module Engine
 
         cities = visits.select { |node| node.city? || node.offboard? }
         halts = visits.select(&:halt?)
-        th_allowance = route.train.distance.last + route.train.distance.first - cities.size
+        th_allowance = route.train.distance[-1]['pay'] + route.train.distance[0]['pay'] - cities.size
         [halts.size, th_allowance].min
       end
 
@@ -475,8 +474,8 @@ module Engine
         stops = visits.select { |node| node.city? || node.offboard? }
 
         # in 1860, unused city/offboard allowance can be used for towns/halts
-        c_allowance = route.train.distance.first
-        th_allowance = route.train.distance.last + c_allowance - stops.size
+        c_allowance = route.train.distance[0]['pay']
+        th_allowance = route.train.distance[-1]['pay'] + c_allowance - stops.size
 
         # add in halts requested
         halts = visits.select(&:halt?)
@@ -501,8 +500,6 @@ module Engine
         end
 
         route.halts = num_halts if halts.any?
-
-        game_error('Logic bug! too many stops selected for revenue') if stops.size > route.train.distance.sum
 
         stops
       end

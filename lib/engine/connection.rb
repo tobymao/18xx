@@ -83,7 +83,7 @@ module Engine
         begin
           # deal with ambiguous intra-tile path
           if @paths.one? && @paths[0].tile.ambiguous_connection?
-            node0, node1 = @paths[0].nodes.map(&:node_id).sort
+            node0, node1 = @paths[0].nodes.map(&:index).sort
             ["#{@paths[0].hex.id} #{node0}.#{node1}"]
           else
             uniq_paths = []

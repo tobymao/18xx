@@ -90,8 +90,7 @@ module Engine
                               visit_cost: params['visit_cost'],
                               route: params['route'],
                               format: params['format'],
-                              loc: params['loc'],
-                              node_id: cache.size)
+                              loc: params['loc'])
         cache << city
         city
       when 'town'
@@ -102,8 +101,7 @@ module Engine
                               route: params['route'],
                               format: params['format'],
                               loc: params['loc'],
-                              to_city: params['to_city'],
-                              node_id: cache.size)
+                              to_city: params['to_city'])
         cache << town
         town
       when 'halt'
@@ -113,8 +111,7 @@ module Engine
                               visit_cost: params['visit_cost'],
                               route: params['route'],
                               format: params['format'],
-                              loc: params['loc'],
-                              node_id: cache.size)
+                              loc: params['loc'])
         cache << halt
         halt
       when 'offboard'
@@ -123,8 +120,7 @@ module Engine
                                       hide: params['hide'],
                                       visit_cost: params['visit_cost'],
                                       route: params['route'],
-                                      format: params['format'],
-                                      node_id: cache.size)
+                                      format: params['format'])
         cache << offboard
         offboard
       when 'label'
@@ -507,11 +503,9 @@ module Engine
         end
       end
 
-      @parts.each.group_by(&:class).values.each do |parts|
-        parts.each.with_index do |part, index|
-          part.index = index
-          part.tile = self
-        end
+      @parts.each_with_index do |part, idx|
+        part.index = idx
+        part.tile = self
       end
 
       @nodes = @paths.flat_map(&:nodes).uniq
