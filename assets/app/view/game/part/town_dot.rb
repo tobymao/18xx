@@ -95,7 +95,7 @@ module View
               h(:g, { attrs: { transform: "translate(#{displacement} 0) rotate(#{-angle})" } }, [
                 if @town.halt?
                   h('text.tile__text',
-                    { attrs: { transform: "scale(1.5), rotate(#{rotation_for_layout})" } },
+                    { attrs: { transform: "scale(1.5), #{rotation_for_layout}" } },
                     @town.symbol)
                 else
                   h(Part::SingleRevenue, revenue: revenue, transform: rotation_for_layout)

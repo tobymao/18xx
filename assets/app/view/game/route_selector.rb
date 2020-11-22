@@ -28,14 +28,13 @@ module View
         last_run = operating[operating.keys.max]&.routes
         return [] unless last_run
 
+        halts = operating[operating.keys.max]&.halts
         last_run.map do |train, connections|
           next unless trains.include?(train)
 
-          connections = connections&.map do |ids|
-            ids.map { |id| @game.hex_by_id(id) }
-          end
           # A future enhancement to this could be to find trains and move the routes over
-          @routes << Engine::Route.new(@game, @game.phase, train, connection_hexes: connections, routes: @routes)
+          @routes << Engine::Route.new(@game, @game.phase, train, connection_hexes: connections,
+                                                                  routes: @routes, num_halts: halts[train])
         end.compact
       end
 
@@ -63,6 +62,7 @@ module View
           store(:selected_route, route, skip: true)
         end
 
+        render_halts = false
         trains = trains.flat_map do |train|
           onclick = lambda do
             unless (route = @routes.find { |t| t.train == train })
@@ -102,7 +102,13 @@ module View
             td_props = { style: { paddingRight: '0.8rem' } }
 
             children << h('td.right', td_props, route.distance)
-            children << h('td.right', td_props, revenue)
+            if route.halts
+              render_halts = true
+              children << h('td.right', td_props, halt_actions(route, revenue,
+                                                               @game.format_currency(route.subsidy)))
+            else
+              children << h('td.right', td_props, revenue)
+            end
             children << h(:td, route.hexes.map(&:name).join(' '))
           elsif !selected
             style[:border] = '1px solid'
@@ -141,10 +147,13 @@ module View
           },
         }
 
+        instructions = 'Click revenue centers, again to cycle paths.'
+        instructions += ' Click button under Revenue to pick number of halts.' if render_halts
+
         h(:div, div_props, [
           h(:h3, { style: { margin: '0.5rem 0 0.2rem' } }, 'Select Routes'),
           h('div.small_font', description),
-          h('div.small_font', 'Click revenue centers, again to cycle paths.'),
+          h('div.small_font', instructions),
           train_help,
           h(:table, table_props, [
             h(:thead, [
@@ -157,8 +166,22 @@ module View
             ]),
             h(:tbody, trains),
           ]),
-          actions,
+          actions(render_halts),
         ].compact)
+      end
+
+      def halt_actions(route, revenue, subsidy)
+        change_halts = lambda do
+          route.cycle_halts
+          store(:selected_route, route)
+        end
+
+        [
+          revenue,
+          h(:div, [
+            h('button.small', { style: { margin: '0px', padding: '0.2rem' }, on: { click: change_halts } }, subsidy),
+          ]),
+        ]
       end
 
       def cleanup
@@ -166,7 +189,7 @@ module View
         store(:routes, [], skip: true)
       end
 
-      def actions
+      def actions(render_halts)
         submit = lambda do
           process_action(Engine::Action::RunRoutes.new(@game.current_entity, routes: active_routes))
           cleanup
@@ -200,13 +223,15 @@ module View
                   rescue Engine::GameError
                     '(Invalid Route)'
                   end
+
+        subsidy = render_halts ? ' + ' + @game.format_currency(@game.routes_subsidy(active_routes)) : ''
         h(:div, { style: { overflow: 'auto', marginBottom: '1rem' } }, [
           h(:div, [
             h('button.small', { on: { click: clear } }, 'Clear Train'),
             h('button.small', { on: { click: clear_all } }, 'Clear All'),
             h('button.small', { on: { click: reset_all } }, 'Reset'),
           ]),
-          h(:button, { style: submit_style, on: { click: submit } }, 'Submit ' + revenue),
+          h(:button, { style: submit_style, on: { click: submit } }, 'Submit ' + revenue + subsidy),
         ])
       end
     end

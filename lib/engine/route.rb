@@ -4,9 +4,10 @@ require_relative 'game_error'
 
 module Engine
   class Route
+    attr_accessor :halts
     attr_reader :last_node, :phase, :train, :routes
 
-    def initialize(game, phase, train, connection_hexes: [], routes: [], override: nil)
+    def initialize(game, phase, train, connection_hexes: [], routes: [], override: nil, halts: nil)
       @connections = []
       @phase = phase
       @train = train
@@ -16,12 +17,22 @@ module Engine
       @override = override
       @game = game
       @stops = nil
+      @halts = halts
       restore_connections(connection_hexes) if connection_hexes
     end
 
     def reset!
       @connections.clear
       @last_node = nil
+      @stops = nil
+      @halts = nil
+    end
+
+    def cycle_halts
+      return unless @halts
+
+      @halts += 1
+      @halts = 0 if @halts > @game.max_halts(self)
       @stops = nil
     end
 
@@ -156,63 +167,32 @@ module Engine
     end
 
     def check_connected!(token)
-      paths_ = paths.uniq
+      @game.check_connected(self, token)
+    end
 
-      # rubocop:disable Style/GuardClause, Style/IfUnlessModifier
-      if token.select(paths_, corporation: corporation).size != paths_.size
-        @game.game_error('Route is not connected')
+    def ordered_paths
+      @connections.flat_map do |c|
+        cpaths = c[:connection].paths
+        cpaths[0].nodes.include?(c[:left]) ? cpaths : cpaths.reverse
       end
-      # rubocop:enable Style/GuardClause, Style/IfUnlessModifier
     end
 
     def check_terminals!
       return if paths.size < 3
 
-      ordered_paths = @connections.flat_map do |c|
-        cpaths = c[:connection].paths
-        cpaths[0].nodes.include?(c[:left]) ? cpaths : cpaths.reverse
-      end
-
       @game.game_error('Route cannot pass through terminal') if ordered_paths[1..-2].any?(&:terminal?)
     end
 
     def distance
-      visited_stops.sum(&:visit_cost)
+      @game.route_distance(self)
     end
 
     def check_distance!(visits)
-      distance = @train.distance
-      if distance.is_a?(Numeric)
-        route_distance = visits.sum(&:visit_cost)
-        @game.game_error("#{route_distance} is too many stops for #{distance} train") if distance < route_distance
+      @game.check_distance(self, visits)
+    end
 
-        return
-      end
-
-      type_info = Hash.new { |h, k| h[k] = [] }
-
-      distance.each do |h|
-        pay = h['pay']
-        visit = h['visit'] || pay
-        info = { pay: pay, visit: visit }
-        h['nodes'].each { |type| type_info[type] << info }
-      end
-
-      grouped = visits.group_by(&:type)
-
-      grouped.each do |type, group|
-        num = group.sum(&:visit_cost)
-
-        type_info[type].sort_by(&:size).each do |info|
-          next unless info[:visit].positive?
-
-          info[:visit] -= num
-          num = info[:visit] * -1
-          break unless num.positive?
-        end
-
-        @game.game_error('Route has too many stops') if num.positive?
-      end
+    def check_other!
+      @game.check_other(self)
     end
 
     def lock!
@@ -234,12 +214,17 @@ module Engine
       check_overlap!
       check_terminals!
       check_connected!(token)
+      check_other!
 
       visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
         @game.game_error("Cannot use group #{key} more than once") unless group.one?
       end
 
       @game.revenue_for(self, stops)
+    end
+
+    def subsidy
+      @game.subsidy_for(self, stops)
     end
 
     def corporation
@@ -270,8 +255,8 @@ module Engine
     private
 
     def restore_connections(connection_hexes)
-      possibilities = connection_hexes.map do |hexes|
-        hex_ids = hexes.map(&:id)
+      possibilities = connection_hexes.map do |hex_ids|
+        hexes = hex_ids.map { |hex_str| @game.hex_by_id(hex_str.split.first) }
         hexes[0].all_connections.select { |c| c.matches?(hex_ids) }
       end
 
@@ -300,55 +285,7 @@ module Engine
     end
 
     def compute_stops
-      visits = visited_stops
-      distance = @train.distance
-      return visits if distance.is_a?(Numeric)
-      return [] if visits.empty?
-
-      # distance is an array of hashes defining how many locations of
-      # each type can be hit. A 2+2 train (4 locations, at most 2 of
-      # which can be cities) looks like this:
-      #   [ { nodes: [ 'town' ],                     pay: 2},
-      #     { nodes: [ 'city', 'town', 'offboard' ], pay: 2} ]
-      # Stops use the first available slot, so for each stop in this case
-      # we'll try to put it in a town slot if possible and then
-      # in a city/town/offboard slot.
-      distance = distance.sort_by { |types, _| types.size }
-
-      max_num_stops = [distance.sum { |h| h['pay'] }, visits.size].min
-
-      max_num_stops.downto(1) do |num_stops|
-        # to_i to work around Opal bug
-        stops, revenue = visits.combination(num_stops.to_i).map do |stops|
-          # Make sure this set of stops is legal
-          # 1) At least one stop must have a token
-          next if stops.none? { |stop| stop.tokened_by?(corporation) }
-
-          # 2) We can't ask for more revenue centers of a type than are allowed
-          types_used = Array.new(distance.size, 0) # how many slots of each row are filled
-
-          next unless stops.all? do |stop|
-            row = distance.index.with_index do |h, i|
-              h['nodes'].include?(stop.type) && types_used[i] < h['pay']
-            end
-
-            types_used[row] += 1 if row
-            row
-          end
-
-          [stops, @game.revenue_for(self, stops)]
-        end.compact.max_by(&:last)
-
-        revenue ||= 0
-
-        # We assume that no stop collection with m < n stops could be
-        # better than a stop collection with n stops, so if we found
-        # anything usable with this number of stops we return it
-        # immediately.
-        return stops if revenue.positive?
-      end
-
-      []
+      @game.compute_stops(self)
     end
   end
 end

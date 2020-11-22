@@ -28,6 +28,8 @@ module Engine
       SELL_AFTER = :any_time
       SELL_BUY_ORDER = :sell_buy
 
+      HALT_SUBSIDY = 10
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'fishbourne_to_bank' => ['Fishbourne', 'Fishbourne Ferry Company available for purchase']
       ).freeze
@@ -102,7 +104,7 @@ module Engine
           Step::DiscardTrain,
           Step::G1860::Track,
           Step::Token,
-          Step::Route,
+          Step::G1860::Route,
           Step::Dividend,
           Step::BuyTrain,
         ], round_num: round_num)
@@ -239,7 +241,8 @@ module Engine
       end
 
       def biggest_train(corporation)
-        corporation.trains.map(&:distance).max || 0
+        val = corporation.trains.map { |t| t.distance[0]['pay'] }.max || 0
+        val
       end
 
       def get_token_cities(corporation)
@@ -260,12 +263,13 @@ module Engine
         node_distances[node] = distance
         distance += 1 if node.city?
 
+        return if corporation && node.blocks?(corporation)
+
         node.paths.each do |node_path|
           path_distance_walk(node_path, distance, path_distances: path_distances) do |path|
             yield path, distance
             path.nodes.each do |next_node|
               next if next_node == node
-              next if corporation && next_node.blocks?(corporation)
               next if path.terminal?
 
               node_distance_walk(
@@ -355,6 +359,170 @@ module Engine
         return true unless NO_ROTATION_TILES.include?(tile.name)
 
         tile.rotation.zero?
+      end
+
+      # at least one route must include home token
+      def check_home_token(corporation, routes)
+        tokens = get_token_cities(corporation)
+        home_city = tokens.find { |c| c.hex == hex_by_id(corporation.coordinates) }
+        found = false
+        routes.each { |r| found ||= r.visited_stops.include?(home_city) } if home_city
+        game_error('At least one route must include home token') unless found
+      end
+
+      def visit_route(ridx, intersects, visited)
+        return if visited[ridx]
+
+        visited[ridx] = true
+        intersects[ridx].each { |i| visit_route(i, intersects, visited) }
+      end
+
+      # all routes must intersect each other
+      def check_intersection(routes)
+        actual_routes = routes.reject { |r| r.connections.empty? }
+
+        # build a map of which routes intersect with each route
+        intersects = Hash.new { |h, k| h[k] = [] }
+        actual_routes.each_with_index do |r, ir|
+          actual_routes.each_with_index do |s, is|
+            next if ir == is
+
+            intersects[ir] << is if (r.visited_stops & s.visited_stops).any?
+          end
+          intersects[ir].uniq!
+        end
+
+        # starting with the first route, make sure every route can be visited
+        visited = {}
+        visit_route(0, intersects, visited)
+
+        game_error('Routes must intersect with each other') if visited.size != actual_routes.size
+      end
+
+      def tokened_out?(route)
+        visits = route.visited_stops
+        return false unless visits.size > 2
+
+        corporation = route.corporation
+        visits[1..-2].any? { |node| node.city? && node.blocks?(corporation) }
+      end
+
+      def check_connected(route, token)
+        visits = route.visited_stops
+        blocked = nil
+
+        if visits.size > 2
+          corporation = route.corporation
+          visits[1..-2].each do |node|
+            if node.city? && node.blocks?(corporation)
+              game_error('Route can only bypass one tokened-out city') if blocked
+              blocked = node
+            end
+          end
+        end
+
+        paths_ = route.paths.uniq
+        token = blocked if blocked
+        game_error('Route is not connected') if token.select(paths_, corporation: route.corporation).size != paths_.size
+
+        return unless blocked && route.routes.any? { |r| r != route && tokened_out?(r) }
+
+        game_error('Only one train can bypass a tokened-out city')
+      end
+
+      def check_distance(route, visits)
+        # will need to be modifed for original rules option
+        super
+        game_error('Route cannot begin/end in a halt') if visits.first.halt? || visits.last.halt?
+      end
+
+      def check_hex_reentry(route)
+        visited_hexes = {}
+        last_hex = nil
+        route.ordered_paths.each do |path|
+          hex = path.hex
+          game_error('Route cannot re-enter a hex') if hex != last_hex && visited_hexes[hex]
+
+          visited_hexes[hex] = true
+          last_hex = hex
+        end
+      end
+
+      def check_other(route)
+        check_hex_reentry(route)
+      end
+
+      def max_halts(route)
+        # FIXME: need to ignore halts after formation of Southern Railway
+        visits = route.visited_stops
+        return 0 if visits.empty?
+
+        cities = visits.select { |node| node.city? || node.offboard? }
+        halts = visits.select(&:halt?)
+        th_allowance = route.train.distance[-1]['pay'] + route.train.distance[0]['pay'] - cities.size
+        [halts.size, th_allowance].min
+      end
+
+      def compute_stops(route)
+        # FIXME: need to ignore halts after formation of Southern Railway
+        # will need to be modifed for original rules option
+        visits = route.visited_stops
+        return [] if visits.empty?
+
+        # no choice about citys/offboards => they must be stops
+        stops = visits.select { |node| node.city? || node.offboard? }
+
+        # in 1860, unused city/offboard allowance can be used for towns/halts
+        c_allowance = route.train.distance[0]['pay']
+        th_allowance = route.train.distance[-1]['pay'] + c_allowance - stops.size
+
+        # add in halts requested
+        halts = visits.select(&:halt?)
+        num_halts = [halts.size, (route.halts || 0)].min
+        if num_halts.positive?
+          stops.concat(halts.take(num_halts))
+          th_allowance -= num_halts
+        end
+
+        # pick highest revenue towns
+        towns = visits.select { |node| node.town? && !node.halt? }
+        num_towns = [th_allowance, towns.size].min
+        if num_towns.positive?
+          stops.concat(towns.sort_by(&:revenue).take(num_towns))
+          th_allowance -= num_towns
+        end
+
+        # if this is first time for this route, add as many halts as possible
+        if !route.halts && halts.any? && th_allowance.positive?
+          num_halts = [halts.size, th_allowance].min
+          stops.concat(halts.take(num_halts))
+        end
+
+        route.halts = num_halts if halts.any?
+
+        stops
+      end
+
+      def route_distance(route)
+        n_cities = route.stops.select { |n| n.city? || n.offboard? }.size
+        n_towns = route.stops.select { |n| n.town? && !n.halt? }.size
+        "#{n_cities}+#{n_towns}"
+      end
+
+      def revenue_for(route, stops)
+        stops.sum { |stop| stop.route_base_revenue(route.phase, route.train) }
+      end
+
+      def subsidy_for(_route, stops)
+        stops.select(&:halt?).size * HALT_SUBSIDY
+      end
+
+      def routes_revenue(routes)
+        routes.sum(&:revenue)
+      end
+
+      def routes_subsidy(routes)
+        routes.sum(&:subsidy)
       end
     end
   end
