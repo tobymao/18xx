@@ -339,6 +339,7 @@ module Engine
         @strict = strict
         @finished = false
         @log = []
+        @queued_log = []
         @actions = []
         @names = if names.is_a?(Hash)
                    names.freeze
@@ -1065,6 +1066,17 @@ module Engine
 
       def train_help(_runnable_trains)
         []
+      end
+
+      def queue_log!
+        old_size = @log.size
+        yield
+        @queued_log = @log.pop(@log.size - old_size)
+      end
+
+      def flush_log!
+        @queued_log.each { |l| @log << l }
+        @queued_log = []
       end
 
       private
