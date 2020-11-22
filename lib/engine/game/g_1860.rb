@@ -242,7 +242,6 @@ module Engine
 
       def biggest_train(corporation)
         val = corporation.trains.map { |t| t.distance[0]['pay'] }.max || 0
-        puts "biggest_train = #{val}"
         val
       end
 
