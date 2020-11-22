@@ -16,9 +16,6 @@ module View
 
       SIZE = 100
 
-      BORDER_COLOR_STROKE_WIDTH = 13
-      BORDER_COLOR_POINTS = Lib::Hex.points(scale: 1 - ((BORDER_COLOR_STROKE_WIDTH + 1) / 2) / Lib::Hex::Y_B).freeze
-
       LAYOUT = {
         flat: [SIZE * 3 / 2, SIZE * Math.sqrt(3) / 2],
         pointy: [SIZE * Math.sqrt(3) / 2, SIZE * 3 / 2],
@@ -59,26 +56,11 @@ module View
         children << h(TriangularGrid) if Lib::Params['grid']
         children << h(TileUnavailable, unavailable: @unavailable, layout: @hex.layout) if @unavailable
 
-        tile_color = @user&.dig(:settings, @tile&.color) || (Lib::Hex::COLOR[@tile&.color || 'white'])
-
-        if @tile&.color_as_border
-          attrs = {
-            stroke: tile_color,
-            'stroke-width': BORDER_COLOR_STROKE_WIDTH,
-            points: BORDER_COLOR_POINTS,
-          }
-          children.insert(1, h(:polygon, attrs: attrs))
-
-          fill_color = @user&.dig(:settings, :white) || (Lib::Hex::COLOR['white'])
-        else
-          fill_color = tile_color
-        end
-
         props = {
           key: @hex.id,
           attrs: {
             transform: transform,
-            fill: fill_color,
+            fill: @user&.dig(:settings, @tile&.color) || (Lib::Hex::COLOR[@tile&.color || 'white']),
             stroke: 'black',
           },
         }
