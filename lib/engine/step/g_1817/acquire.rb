@@ -179,7 +179,6 @@ module Engine
         end
 
         def process_acquire(buyer)
-          @buyer = buyer
           acquired_corp = @winner.corporation
 
           if !buyer || !mergeable(acquired_corp).include?(buyer)
@@ -189,6 +188,8 @@ module Engine
           if buyer.owner != @winner.entity
             @game.game_error("Target corporation must be owned by #{@winner.entity.name}")
           end
+
+          @buyer = buyer
 
           receiving = []
 
@@ -369,7 +370,7 @@ module Engine
 
         def mergeable(corporation)
           return [] if corporation.player?
-          return [] if @offer
+          return [] if @offer || @buyer
           return mergeable_by_entity(current_entity, corporation, min_bid(corporation)) unless @winner
 
           mergeable_by_entity(@winner.entity, corporation, @winner.price)
