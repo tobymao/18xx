@@ -253,7 +253,7 @@ module Engine
          "name":"Kansas City, Mexico, & Orient Railroad",
          "value":40,
          "revenue":10,
-         "desc":"Owning corporation may place the non-upgradable Copper Canyon tile in F5 for $60 (instead of the normal $120) unless that hex is already built. The tile lay does not have to be connected to an existing station token of the owning corporation. The lay does not count toward the normal lay limit but must be done during tile lay.",
+         "desc":"Owning corporation may place the non-upgradable Copper Canyon tile in F5 for $60 (instead of the normal $120) unless that hex is already built. The tile lay does not have to be connected to an existing station token of the owning corporation. The lay does not count toward the normal lay limit but must be done during tile lay. Using this tile laying ability closes the private company.",
          "abilities": [
             {
               "type": "tile_lay",

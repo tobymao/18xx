@@ -209,11 +209,11 @@ module Engine
     },
     GAMES_BY_TITLE['18MEX'] => {
       13_315 => {
-        'Jen Freeman' => 4156,
-        'Cogust' => 3872,
-        'Swedish-Per (GMT+2)' => 3499,
+        'Jen Freeman' => 4146,
+        'Cogust' => 3862,
         'LenaC' => 3440,
-        'shingoi' => 3388,
+        'shingoi' => 3362,
+        'Swedish-Per (GMT+2)' => 3255,
       },
     },
   }.freeze
