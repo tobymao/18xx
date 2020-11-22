@@ -197,7 +197,7 @@ def attempt_repair(actions)
       begin
         game.process_action(action)
       rescue Exception => e
-        #puts e.backtrace
+        puts e.backtrace
         puts "Break at #{e} #{action}"
         ever_repaired = true
         inplace_actions = repair(game, actions, filtered_actions, action)
