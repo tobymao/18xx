@@ -347,7 +347,7 @@ def migrate_db_to_json(id, filename)
   File.write(filename, JSON.pretty_generate(json))
 end
 
-def migrate_title(title, pin, dry_run=False)
+def migrate_title(title, pin, dry_run=false)
   DB[:games].order(:id).where(Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished], title: title).select(:id).paged_each(rows_per_fetch: 1) do |game|
     games = Game.eager(:user, :players, :actions).where(id: [game[:id]]).all
     games.each {|data|
@@ -357,7 +357,7 @@ def migrate_title(title, pin, dry_run=False)
   end
 end
 
-def migrate_all(pin, dry_run=False, game_ids: nil)
+def migrate_all(pin, dry_run=false, game_ids: nil)
   where_args = {
     Sequel.pg_jsonb_op(:settings).has_key?('pin') => false,
     status: %w[active finished],
