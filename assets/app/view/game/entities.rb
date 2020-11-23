@@ -22,6 +22,8 @@ module View
           players = players.rotate(i)
         end
 
+        bankrupt_players, players = players.partition(&:bankrupt)
+
         player_owned, bank_owned = (@game.corporations + @game.minors)
           .reject(&:closed?)
           .sort_by(&:name)
@@ -42,6 +44,8 @@ module View
           *@game.corporations.select(&:receivership?).map { |c| h(Corporation, corporation: c) },
           *bank_owned.map { |c| h(Corporation, corporation: c) },
         ].compact)
+
+        children = children.concat(bankrupt_players.map { |p| h(:div, [h(Player, player: p, game: @game)]) })
 
         h('div#entities', div_props, children)
       end
