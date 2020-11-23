@@ -86,6 +86,7 @@ module Engine
     def <=>(other)
       return 1 if other.corporation?
       return 0 if other.minor?
+
       super
     end
 

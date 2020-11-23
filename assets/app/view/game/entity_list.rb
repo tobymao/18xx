@@ -54,7 +54,7 @@ module View
           children = []
           if entity.corporation?
             size = TOKEN_SIZES[@game.corporation_size(entity)]
-            vpadding = (TOKEN_SIZES[:large] - size)/2
+            vpadding = (TOKEN_SIZES[:large] - size) / 2
             logo_props = {
               attrs: { src: entity.logo },
               style: {
@@ -68,7 +68,7 @@ module View
 
           text_props = { style: { margin: 'auto' } }
           small_props = { style: { fontSize: 'smaller' } }
-          owner = "#{entity.owner.name.truncate}" if !entity.player? && entity.owner
+          owner = entity.owner.name.truncate if !entity.player? && entity.owner
           owner = 'CLOSED' if entity.closed?
 
           text = [entity.name]

@@ -104,7 +104,7 @@ module View
             props = {
               attrs: { src: corporation.logo,
                        width: "#{TOKEN_SIZES[@game.corporation_size(corporation)]}px" },
-              style: { margin:"#{margin + VERTICAL_TOKEN_PAD}px #{margin}px #{margin}px #{margin}px" },
+              style: { margin: "#{margin + VERTICAL_TOKEN_PAD}px #{margin}px #{margin}px #{margin}px" },
             }
             h(:img, props)
           end

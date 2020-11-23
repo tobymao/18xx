@@ -240,6 +240,7 @@ module Engine
 
       def available_shorts(corporation)
         return 0 if corporation&.total_shares == 2
+
         corporation.total_shares - shorts(corporation).length
       end
 

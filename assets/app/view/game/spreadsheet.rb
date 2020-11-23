@@ -147,10 +147,12 @@ module View
             end,
             h(:th, @game.ipo_name),
             h(:th, 'Market'),
-            *(@hide_ipo ?
-                [h(:th, render_sort_link('Price', :share_price))] :
+            *(if @hide_ipo
+                [h(:th, render_sort_link('Price', :share_price))]
+              else
                 [h(:th, render_sort_link(@game.ipo_name, :par_price)),
-                  h(:th, render_sort_link('Market', :share_price))]),
+                 h(:th, render_sort_link('Market', :share_price))]
+              end),
             h(:th, render_sort_link('Cash', :cash)),
             h(:th, render_sort_link('Order', :order)),
             h(:th, 'Trains'),
@@ -206,8 +208,7 @@ module View
       def sorted_corporations
         floated_corporations = @game.round.entities
 
-        result = @game.all_corporations.reject(&:closed?)
-        result = @game.all_corporations.select { |c| c.minor? || c.ipoed }
+        result = @game.all_corporations.reject(&:closed?).select { |c| c.minor? || c.ipoed }
         result = result.sort.each.with_index.map do |c, order|
           operating_order = (floated_corporations.find_index(c) || -1) + 1
           [c, operating_order, order + 1]
@@ -217,25 +218,25 @@ module View
 
         result.sort_by! do |corporation, operating_order, order|
           [case @spreadsheet_sort_by
-            when :cash
-              corporation.cash
-            when :id
-              corporation.id
-            when :order
-              (operating_order.positive? ? operating_order : Float::INFINITY)
-            when :par_price
-              corporation.par_price&.price || 0
-            when :share_price
-              corporation.share_price&.price || 0
-            when :loans
-              corporation.loans.size
-            when :short
-              @game.available_shorts(corporation)
-            when :size
-              corporation.total_shares
-            else
-              @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
-          end, order]
+           when :cash
+             corporation.cash
+           when :id
+             corporation.id
+           when :order
+             (operating_order.positive? ? operating_order : Float::INFINITY)
+           when :par_price
+             corporation.par_price&.price || 0
+           when :share_price
+             corporation.share_price&.price || 0
+           when :loans
+             corporation.loans.size
+           when :short
+             @game.available_shorts(corporation)
+           when :size
+             corporation.total_shares
+           else
+             @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
+           end, order]
         end
 
         result.each(&:pop)
@@ -244,7 +245,7 @@ module View
         result
       end
 
-      def render_corporation(corporation, operating_order, current_round, index)
+      def render_corporation(corporation, operating_order, _current_round, index)
         border_style = "1px solid #{color_for(:font2)}"
 
         name_props =
@@ -268,13 +269,17 @@ module View
         order_props = { style: { paddingLeft: '1.2em' } }
         if operating_order.positive?
           operating_order_text = operating_order.to_s
-          operating_order_text += '*' if @game.round.has_acted?(corporation)
+          operating_order_text += '*' if @game.round.acted?(corporation)
         end
 
         extra = []
-        extra << h(:td, "#{corporation.loans.size} / #{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
-        extra << h(:td, "#{@game.available_shorts(corporation)}") if @game.respond_to?(:available_shorts)
-        extra << h(:td, @game.show_corporation_size?(corporation) ? corporation.total_shares.to_s : '') if @show_corporation_size
+        if @game.total_loans&.nonzero?
+          extra << h(:td, "#{corporation.loans.size} / #{@game.maximum_loans(corporation)}")
+        end
+        extra << h(:td, @game.available_shorts(corporation).to_s) if @game.respond_to?(:available_shorts)
+        if @show_corporation_size
+          extra << h(:td, @game.show_corporation_size?(corporation) ? corporation.total_shares.to_s : '')
+        end
 
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
@@ -283,7 +288,7 @@ module View
             if @game.round.active_step&.did_sell?(corporation, p)
               sold_props[:style][:backgroundColor] = '#9e0000'
               sold_props[:style][:color] = 'white'
-            elsif num_shares_of(p, corporation) == 0
+            elsif num_shares_of(p, corporation).zero?
               sold_props[:style][:opacity] = '0.5'
             end
 
@@ -295,7 +300,8 @@ module View
           h('td.padded_number', { style: { borderLeft: border_style } }, num_shares_of(corporation, corporation).to_s),
           h('td.padded_number', { style: { borderRight: border_style } },
             "#{corporation.receivership? ? '*' : ''}#{num_shares_of(@game.share_pool, corporation)}"),
-          (h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : '') unless @hide_ipo),
+          (h('td.padded_number',
+             corporation.par_price ? @game.format_currency(corporation.par_price.price) : '') unless @hide_ipo),
           h('td.padded_number', market_props,
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
           h('td.padded_number', @game.format_currency(corporation.cash)),

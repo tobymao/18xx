@@ -119,7 +119,7 @@ module Engine
 
         def can_short?(entity, corporation)
           # check total shorts
-          @game.available_shorts(corporation) > 0 &&
+          @game.available_shorts(corporation).positive? &&
             corporation.operated? &&
             entity.num_shares_of(corporation) <= 0 &&
             !(corporation.share_price.acquisition? || corporation.share_price.liquidation?) &&

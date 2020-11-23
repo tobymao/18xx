@@ -65,7 +65,9 @@ module View
           extras << render_buying_power
         end
         extras << render_corporation_size if @game.show_corporation_size?
-        extras << render_shorts if @game.respond_to?(:available_shorts) && @game.available_shorts(@corporation).positive?
+        if @game.respond_to?(:available_shorts) && @game.available_shorts(@corporation).positive?
+          extras << render_shorts
+        end
         if extras.any?
           props = { style: { borderCollapse: 'collapse' } }
           children << h('table.center', props, [h(:tbody, extras)])
