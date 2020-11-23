@@ -6,13 +6,13 @@ module Engine
   class Depot
     attr_reader :trains, :upcoming, :discarded
 
-    def initialize(trains, game)
+    def initialize(trains, game, bank)
       @game = game
       @trains = trains
       @trains.each { |train| train.owner = self }
       @upcoming = @trains.dup
       @discarded = []
-      @bank = @game.bank
+      @bank = bank
     end
 
     def export!

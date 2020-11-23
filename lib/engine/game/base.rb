@@ -1227,7 +1227,7 @@ module Engine
           end
         end
 
-        Depot.new(trains, self)
+        Depot.new(trains, self, @bank)
       end
 
       def num_trains(_train)

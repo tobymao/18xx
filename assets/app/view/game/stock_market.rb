@@ -22,6 +22,8 @@ module View
         gray: '#888888',
         green: '#aaffaa',
         white: '#ffffff',
+        olive: '#d1e189',
+        purple: '#9a4eae',
       }.freeze
 
       # All markets
