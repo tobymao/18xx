@@ -425,7 +425,7 @@ module Engine
       end
 
       def float_str(_entity)
-        '2 shares to start'
+        "Start as #{phase.corporation_sizes.join('/')} shares"
       end
 
       def buying_power(entity, _full = false)
@@ -474,8 +474,8 @@ module Engine
         CORPORATION_SIZES[entity.total_shares]
       end
 
-      def show_corporation_size?(_entity)
-        true
+      def show_corporation_size?(entity)
+        entity&.floated?
       end
 
       private

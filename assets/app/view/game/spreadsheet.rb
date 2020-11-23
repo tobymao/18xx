@@ -23,6 +23,7 @@ module View
 
         @players = @game.players.reject(&:bankrupt)
         @hide_ipo = @game.all_corporations.reject(&:minor?).all?(&:always_market_price)
+        @show_corporation_size = @game.all_corporations.any?(&@game.method(:show_corporation_size?))
 
         children = []
         children << h(Bank, game: @game)
@@ -126,8 +127,9 @@ module View
         }
 
         extra = []
-        extra << h(:th, 'Loans') if @game.total_loans&.nonzero?
-        extra << h(:th, 'Shorts') if @game.respond_to?(:available_shorts)
+        extra << h(:th, render_sort_link('Loans', :loans)) if @game.total_loans&.nonzero?
+        extra << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
+        extra << h(:th, render_sort_link('Size', :size)) if @show_corporation_size
         [
           h(:tr, [
             h(:th, ''),
@@ -225,6 +227,12 @@ module View
               corporation.par_price&.price || 0
             when :share_price
               corporation.share_price&.price || 0
+            when :loans
+              corporation.loans.size
+            when :short
+              @game.available_shorts(corporation)
+            when :size
+              corporation.total_shares
             else
               @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
           end, order]
@@ -266,6 +274,7 @@ module View
         extra = []
         extra << h(:td, "#{corporation.loans.size} / #{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
         extra << h(:td, "#{@game.available_shorts(corporation)}") if @game.respond_to?(:available_shorts)
+        extra << h(:td, @game.show_corporation_size?(corporation) ? corporation.total_shares.to_s : '') if @show_corporation_size
 
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
