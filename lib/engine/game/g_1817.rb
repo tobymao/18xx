@@ -238,6 +238,11 @@ module Engine
         @_shares.values.select { |share| share.corporation == corporation && share.percent.negative? }
       end
 
+      def available_shorts(corporation)
+        return 0 if corporation&.total_shares == 2
+        corporation.total_shares - shorts(corporation).length
+      end
+
       def entity_shorts(entity, corporation)
         entity.shares_of(corporation).select { |share| share.percent.negative? }
       end
