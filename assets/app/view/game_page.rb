@@ -15,6 +15,7 @@ module View
     needs :game, default: nil, store: true
     needs :connection
     needs :selected_company, default: nil, store: true
+    needs :tile_selector, default: nil, store: true
     needs :app_route, store: true
     needs :user
     needs :disable_user_errors
@@ -88,11 +89,11 @@ module View
         when nil
           render_game
         when 'map'
-          h(Game::Map, game: @game, opacity: 1.0)
+          h(Game::Map, game: @game, opacity: 1.0, tile_selector: @tile_selector)
         when 'market'
           h(Game::StockMarket, game: @game, explain_colors: true)
         when 'tiles'
-          h(Game::TileManifest, game: @game)
+          h(Game::TileManifest, game: @game, tile_selector: @tile_selector)
         when 'entities'
           h(Game::Entities, game: @game, user: @user)
         when 'info'
@@ -207,6 +208,7 @@ module View
 
     def item(name, anchor = '')
       change_anchor = lambda do
+        store(:tile_selector, nil, skip: true)
         store(:app_route, "#{@app_route.split('#').first}#{anchor}")
       end
 
