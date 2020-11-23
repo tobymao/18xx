@@ -137,6 +137,10 @@ module Engine
         @entity_index = (@entity_index + 1) % @entities.size
       end
 
+      def has_acted?(entity)
+        @entities.take(@entity_index + 1).any?(entity)
+      end
+
       def reset_entity_index!
         @entity_index = 0
       end

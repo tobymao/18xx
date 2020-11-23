@@ -22,6 +22,7 @@ module View
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
 
         @players = @game.players.reject(&:bankrupt)
+        @hide_ipo = @game.all_corporations.reject(&:minor?).all?(&:always_market_price)
 
         children = []
         children << h(Bank, game: @game)
@@ -132,7 +133,7 @@ module View
             h(:th, ''),
             h(:th, th_props[@players.size], 'Players'),
             h(:th, th_props[2, true], 'Bank'),
-            h(:th, th_props[2], 'Prices'),
+            h(:th, th_props[@hide_ipo ? 1 : 2], 'Prices'),
             h(:th, th_props[5 + extra.size, true, false], 'Corporation'),
             h(:th, ''),
             h(:th, th_props[or_history_titles.size, false, false], 'OR History'),
@@ -144,8 +145,10 @@ module View
             end,
             h(:th, @game.ipo_name),
             h(:th, 'Market'),
-            h(:th, render_sort_link(@game.ipo_name, :par_price)),
-            h(:th, render_sort_link('Market', :share_price)),
+            *(@hide_ipo ?
+                [h(:th, render_sort_link('Price', :share_price))] :
+                [h(:th, render_sort_link(@game.ipo_name, :par_price)),
+                  h(:th, render_sort_link('Market', :share_price))]),
             h(:th, render_sort_link('Cash', :cash)),
             h(:th, render_sort_link('Order', :order)),
             h(:th, 'Trains'),
@@ -154,7 +157,7 @@ module View
             h(:th, 'Companies'),
             h(:th, ''),
             *or_history_titles,
-          ]),
+          ].compact),
         ]
       end
 
@@ -194,34 +197,40 @@ module View
         current_round = @game.turn_round_num
 
         sorted_corporations.map.with_index do |corp_array, index|
-          render_corporation(corp_array[1], corp_array[0], current_round, index)
+          render_corporation(*corp_array, current_round, index)
         end
       end
 
       def sorted_corporations
         floated_corporations = @game.round.entities
 
-        result = @game.all_corporations.map do |c|
+        result = @game.all_corporations.reject(&:closed?)
+        result = @game.all_corporations.select { |c| c.minor? || c.ipoed }
+        result = result.sort.each.with_index.map do |c, order|
           operating_order = (floated_corporations.find_index(c) || -1) + 1
-          [operating_order, c]
+          [c, operating_order, order + 1]
         end
 
-        result.sort_by! do |operating_order, corporation|
-          case @spreadsheet_sort_by
-          when :cash
-            corporation.cash
-          when :id
-            corporation.id
-          when :order
-            operating_order
-          when :par_price
-            corporation.par_price&.price || 0
-          when :share_price
-            corporation.share_price&.price || 0
-          else
-            @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
-          end
+        result = result.map { |c, _, order| [c, order, order] } if result.to_enum.with_object(1).map(&:[]).all?(0)
+
+        result.sort_by! do |corporation, operating_order, order|
+          [case @spreadsheet_sort_by
+            when :cash
+              corporation.cash
+            when :id
+              corporation.id
+            when :order
+              (operating_order.positive? ? operating_order : Float::INFINITY)
+            when :par_price
+              corporation.par_price&.price || 0
+            when :share_price
+              corporation.share_price&.price || 0
+            else
+              @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
+          end, order]
         end
+
+        result.each(&:pop)
 
         result.reverse! if @spreadsheet_sort_order == 'DESC'
         result
@@ -249,15 +258,13 @@ module View
         end
 
         order_props = { style: { paddingLeft: '1.2em' } }
-        operating_order_text = ''
         if operating_order.positive?
-          corporation.operating_history.each do |history|
-            operating_order_text = "#{operating_order}#{history[0] == current_round ? '*' : ''}"
-          end
+          operating_order_text = operating_order.to_s
+          operating_order_text += '*' if @game.round.has_acted?(corporation)
         end
 
         extra = []
-        extra << h(:td, "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
+        extra << h(:td, "#{corporation.loans.size} / #{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
         extra << h(:td, "#{@game.available_shorts(corporation)}") if @game.respond_to?(:available_shorts)
 
         h(:tr, tr_props, [
@@ -267,26 +274,30 @@ module View
             if @game.round.active_step&.did_sell?(corporation, p)
               sold_props[:style][:backgroundColor] = '#9e0000'
               sold_props[:style][:color] = 'white'
+            elsif num_shares_of(p, corporation) == 0
+              sold_props[:style][:opacity] = '0.5'
             end
-            share_holding = corporation.president?(p) ? '*' : ''
-            share_holding += num_shares_of(p, corporation).to_s unless corporation.minor?
-            h('td.padded_number', sold_props, share_holding)
+
+            sold_props[:style][:fontWeight] = 'bold' if corporation.president?(p)
+            share_holding = num_shares_of(p, corporation).to_s unless corporation.minor?
+            share_holding = '*' if corporation.minor? && corporation.president?(p)
+            h('td.padded_number', sold_props, share_holding || '')
           end,
           h('td.padded_number', { style: { borderLeft: border_style } }, num_shares_of(corporation, corporation).to_s),
           h('td.padded_number', { style: { borderRight: border_style } },
             "#{corporation.receivership? ? '*' : ''}#{num_shares_of(@game.share_pool, corporation)}"),
-          h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
+          (h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : '') unless @hide_ipo),
           h('td.padded_number', market_props,
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
           h('td.padded_number', @game.format_currency(corporation.cash)),
           h('td.left', order_props, operating_order_text),
           h(:td, corporation.trains.map(&:name).join(', ')),
-          h(:td, "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
+          h(:td, "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum} / #{corporation.tokens.size}"),
           *extra,
           render_companies(corporation),
           h(:th, name_props, corporation.name),
           *render_history(corporation),
-        ])
+        ].compact)
       end
 
       def render_companies(entity)
