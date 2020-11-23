@@ -45,7 +45,7 @@ module Engine
             corporation.owner = @game.share_pool
           end
 
-          @round.recalculate_order
+          @round.recalculate_order if @round.respond_to?(:recalculate_order)
 
           if @cash_crisis_due_to_interest
             corp = @cash_crisis_due_to_interest
