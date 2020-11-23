@@ -108,7 +108,10 @@ module View
             },
           }
 
-          @step.available.select(&:company?).map do |company|
+          companies = @step.available.select(&:company?)
+          companies = companies.partition { |c| c == @step.auctioning }.flatten(1)
+
+          companies.map do |company|
             children = [h(Company, company: company, bids: @step.bids[company])]
             children << render_input(company) if @selected_company == company
             h(:div, props, children)
