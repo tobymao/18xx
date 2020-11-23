@@ -101,6 +101,12 @@ module Engine
       def entity_index
         @round.entity_index
       end
+
+      def buying_power(entity)
+        @game.buying_power(entity)
+      end
+
+      def try_take_loan(entity, price); end
     end
   end
 end

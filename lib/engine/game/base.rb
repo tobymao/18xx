@@ -1131,7 +1131,7 @@ module Engine
           liquidity(player, emergency: true)
       end
 
-      def buying_power(entity)
+      def buying_power(entity, _full = false)
         entity.cash + (issuable_shares(entity).map(&:price).max || 0)
       end
 

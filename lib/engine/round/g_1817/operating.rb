@@ -53,22 +53,9 @@ module Engine
           return if entity.loans.empty?
 
           bank = @game.bank
-          owed = @game.interest_owed(entity)
-
-          while owed > entity.cash &&
-              (loan = @game.loans[0]) &&
-              entity.loans.size < @game.maximum_loans(entity)
-            @game.take_loan(entity, loan)
-            owed = @game.interest_owed(entity)
-          end
+          return unless (owed = @game.pay_interest!(entity))
 
           owed_fmt = @game.format_currency(owed)
-
-          if owed <= entity.cash
-            @log << "#{entity.name} pays #{owed_fmt} interest for #{entity.loans.size} loans"
-            entity.spend(owed, bank)
-            return
-          end
 
           owner = entity.owner
           @game.liquidate!(entity)

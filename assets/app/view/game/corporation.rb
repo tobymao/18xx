@@ -419,7 +419,7 @@ module View
       def render_buying_power
         h('tr.ipo', [
           h('td.right', 'Buying Power'),
-          h('td.padded_number', @game.format_currency(@game.buying_power(@corporation)).to_s),
+          h('td.padded_number', @game.format_currency(@game.buying_power(@corporation, true)).to_s),
         ])
       end
 

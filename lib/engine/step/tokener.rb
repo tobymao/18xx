@@ -9,7 +9,7 @@ module Engine
       def can_place_token?(entity)
         current_entity == entity &&
           (tokens = available_tokens(entity)).any? &&
-          min_token_price(tokens) <= @game.buying_power(entity) &&
+          min_token_price(tokens) <= buying_power(entity) &&
           @game.graph.can_token?(entity)
       end
 
