@@ -47,7 +47,7 @@ module Engine
             @game.sell_shares_and_change_price(bundle)
           end
         end
-        @round.recalculate_order
+        @round.recalculate_order if @round.respond_to?(:recalculate_order)
 
         player.spend(player.cash, @game.bank) if player.cash.positive?
 
