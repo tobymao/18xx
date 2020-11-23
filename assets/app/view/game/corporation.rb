@@ -65,6 +65,7 @@ module View
           extras << render_buying_power
         end
         extras << render_corporation_size if @game.show_corporation_size?
+        extras << render_shorts if @game.respond_to?(:available_shorts) && @game.available_shorts(@corporation).positive?
         if extras.any?
           props = { style: { borderCollapse: 'collapse' } }
           children << h('table.center', props, [h(:tbody, extras)])
@@ -427,6 +428,13 @@ module View
         h('tr.ipo', [
           h('td.right', 'Corporation Size'),
           h('td.padded_number', @corporation.total_shares),
+        ])
+      end
+
+      def render_shorts
+        h('tr.shorts', [
+          h('td.right', 'Available shorts'),
+          h('td.padded_number', @game.available_shorts(@corporation)),
         ])
       end
 
