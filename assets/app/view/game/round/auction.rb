@@ -135,9 +135,7 @@ module View
           end
 
           company_actions =
-            if @step.respond_to?(:available_cash) && @step.available_cash(@current_entity) < @step.min_bid(company)
-              []
-            elsif @step.may_purchase?(company)
+            if @step.may_purchase?(company)
               [h(:button, { on: { click: buy } }, 'Buy')]
             elsif @step.may_choose?(company)
               [h(:button, { on: { click: choose } }, 'Choose')]

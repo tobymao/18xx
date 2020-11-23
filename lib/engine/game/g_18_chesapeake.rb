@@ -27,7 +27,6 @@ module Engine
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Chesapeake'
 
       MUST_BID_INCREMENT_MULTIPLE = true
-      ONLY_HIGHEST_BID_COMMITTED = true
       SELL_BUY_ORDER = :sell_buy
 
       def init_share_pool
