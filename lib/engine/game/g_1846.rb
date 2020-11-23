@@ -268,6 +268,10 @@ module Engine
         str
       end
 
+      def all_corporations
+        super + @minors
+      end
+
       def meat_packing
         @meat_packing ||= company_by_id('MPC')
       end

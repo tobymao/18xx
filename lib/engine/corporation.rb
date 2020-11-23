@@ -25,7 +25,7 @@ module Engine
     include Transfer
 
     attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization
-    attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :type
+    attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :type, :always_market_price
     attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
@@ -69,6 +69,7 @@ module Engine
       # corporation with higher share price, farthest on the right, and first position on the share price goes first
       return 1 unless (sp = share_price)
       return -1 unless (ops = other.share_price)
+      return -1 if other.minor?
 
       [ops.price, ops.coordinates.last, -ops.coordinates.first, -ops.corporations.find_index(other)] <=>
       [sp.price, sp.coordinates.last, -sp.coordinates.first, -sp.corporations.find_index(self)]

@@ -183,6 +183,10 @@ module Engine
         stock_round
       end
 
+      def all_corporations
+        super + @minors
+      end
+
       def meat_packing
         @meat_packing ||= company_by_id('LAC')
       end
