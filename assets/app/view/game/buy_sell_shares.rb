@@ -93,6 +93,18 @@ module View
 
         children << h(SellShares, player: current_entity, corporation: @corporation)
 
+        if step.current_actions.include?('initiate_merge') && step.can_merge?(@corporation, current_entity)
+          merge = lambda do
+            process_action(Engine::Action::InitiateMerge.new(current_entity, corporation: @corporation))
+          end
+
+          children << h(
+            :button,
+            { on: { click: merge } },
+            'Merge'
+          )
+        end
+
         h(:div, children)
       end
 
