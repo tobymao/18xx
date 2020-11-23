@@ -523,7 +523,7 @@ module Engine
       "num": 2,
       "events":[
       {
-         "type":"Nationalization"
+         "type":"nationalization"
       }
       ]
     },
@@ -586,7 +586,7 @@ module Engine
         "F15",
         "M4"
       ],
-      "city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1": [
+      "city=revenue:30;city=revenue:30;label=T;path=a:1,b:_0;path=a:4,b:_1": [
         "N11"
       ],
       "city=revenue:0;city=revenue:0;label=OO": [
