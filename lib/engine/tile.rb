@@ -125,11 +125,9 @@ module Engine
         offboard
       when 'label'
         label = Part::Label.new(params)
-        cache << label
         label
       when 'upgrade'
         upgrade = Part::Upgrade.new(params['cost'], params['terrain']&.split('|'))
-        cache << upgrade
         upgrade
       when 'border'
         Part::Border.new(params['edge'], params['type'], params['cost'])
@@ -237,6 +235,12 @@ module Engine
 
     def terrain
       @upgrades.flat_map(&:terrains).uniq
+    end
+
+    # if tile has more than one intra-tile paths, connections using those paths
+    # cannot be identified with just a hex name
+    def ambiguous_connection?
+      @ambiguous_connection ||= @paths.count { |p| p.nodes.size > 1 } > 1
     end
 
     def paths_are_subset_of?(other_paths)
@@ -498,11 +502,9 @@ module Engine
         end
       end
 
-      @parts.each.group_by(&:class).values.each do |parts|
-        parts.each.with_index do |part, index|
-          part.index = index
-          part.tile = self
-        end
+      @parts.each_with_index do |part, idx|
+        part.index = idx
+        part.tile = self
       end
 
       @nodes = @paths.flat_map(&:nodes).uniq

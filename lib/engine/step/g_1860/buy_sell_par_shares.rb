@@ -62,7 +62,7 @@ module Engine
         def sell_shares(entity, shares)
           @game.game_error("Cannot sell shares of #{shares.corporation.name}") unless can_sell?(entity, shares)
 
-          @players_sold[shares.owner][shares.corporation] = :now
+          @round.players_sold[shares.owner][shares.corporation] = :now
           @game.sell_shares_and_change_price(shares)
         end
 
@@ -131,7 +131,7 @@ module Engine
           player.companies.delete(company)
           @game.bank.spend(price, player) if price.positive?
           @log << "#{player.name} sells #{company.name} to bank for #{@game.format_currency(price)}"
-          @players_sold[player][company] = :now
+          @round.players_sold[player][company] = :now
         end
 
         def place_home_track(corporation)

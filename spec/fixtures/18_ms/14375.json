@@ -24,7 +24,9 @@
   "settings": {
     "seed": 1002827552,
     "unlisted": true,
-    "optional_rules": []
+    "optional_rules": [
+
+    ]
   },
   "user_settings": null,
   "status": "finished",
@@ -43,7 +45,7 @@
   "actions": [
     {
       "type": "bid",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 1,
       "company": "M&O",
@@ -51,7 +53,7 @@
     },
     {
       "type": "bid",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 2,
       "company": "BS",
@@ -59,7 +61,7 @@
     },
     {
       "type": "bid",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 3,
       "company": "M&M",
@@ -67,7 +69,7 @@
     },
     {
       "type": "par",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 4,
       "corporation": "GMO",
@@ -75,7 +77,7 @@
     },
     {
       "type": "par",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 5,
       "corporation": "IC",
@@ -83,7 +85,7 @@
     },
     {
       "type": "par",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 6,
       "corporation": "Fr",
@@ -91,7 +93,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 7,
       "shares": [
@@ -101,7 +103,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 8,
       "shares": [
@@ -111,7 +113,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 9,
       "shares": [
@@ -121,7 +123,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 10,
       "shares": [
@@ -132,7 +134,7 @@
     {
       "id": 11,
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "shares": [
         "Fr_2"
       ],
@@ -143,12 +145,12 @@
       "id": 12,
       "type": "undo",
       "user": "A Steaming Kyle",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player"
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 13,
       "shares": [
@@ -158,7 +160,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 14,
       "shares": [
@@ -168,7 +170,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 15,
       "shares": [
@@ -178,7 +180,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 16,
       "shares": [
@@ -188,7 +190,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 17,
       "shares": [
@@ -198,7 +200,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 18,
       "shares": [
@@ -208,7 +210,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 19,
       "shares": [
@@ -218,7 +220,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 20,
       "shares": [
@@ -228,7 +230,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 21,
       "shares": [
@@ -913,7 +915,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 105,
       "shares": [
@@ -923,13 +925,13 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 106
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 107,
       "shares": [
@@ -939,7 +941,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 108,
       "shares": [
@@ -949,13 +951,13 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 109
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 110,
       "shares": [
@@ -965,26 +967,26 @@
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 111
     },
     {
       "id": 112,
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player"
     },
     {
       "id": 113,
       "type": "undo",
       "user": "A Steaming Kyle",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player"
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 114,
       "shares": [
@@ -994,13 +996,13 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 115
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 116,
       "shares": [
@@ -1010,25 +1012,25 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 117
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 118
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 119
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 120
     },
@@ -1403,7 +1405,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 151,
       "shares": [
@@ -1413,7 +1415,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 152,
       "shares": [
@@ -1424,7 +1426,7 @@
     },
     {
       "type": "par",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 153,
       "corporation": "L&N",
@@ -1432,7 +1434,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 154,
       "shares": [
@@ -1443,7 +1445,7 @@
     },
     {
       "type": "par",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 155,
       "corporation": "WRA",
@@ -1451,7 +1453,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 156,
       "shares": [
@@ -1461,13 +1463,13 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 157
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 158,
       "shares": [
@@ -1477,14 +1479,14 @@
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 159
     },
     {
       "id": 160,
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "shares": [
         "L&N_2"
       ],
@@ -1494,12 +1496,12 @@
     {
       "id": 161,
       "type": "undo",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player"
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 162,
       "shares": [
@@ -1509,7 +1511,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 163,
       "shares": [
@@ -1519,13 +1521,13 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 164
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 165,
       "shares": [
@@ -1535,13 +1537,13 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 166
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 167,
       "shares": [
@@ -1551,13 +1553,13 @@
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 168
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 169,
       "shares": [
@@ -1567,7 +1569,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 170,
       "shares": [
@@ -1577,13 +1579,13 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 171
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 172,
       "shares": [
@@ -1593,7 +1595,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 173,
       "shares": [
@@ -1604,13 +1606,13 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 174
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 175,
       "shares": [
@@ -1620,13 +1622,13 @@
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 176
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 177,
       "shares": [
@@ -1636,13 +1638,13 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 178
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 179,
       "shares": [
@@ -1652,7 +1654,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 180,
       "shares": [
@@ -1663,13 +1665,13 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 181
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 182,
       "shares": [
@@ -1679,7 +1681,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 183,
       "shares": [
@@ -1689,13 +1691,13 @@
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 184
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 185,
       "shares": [
@@ -1705,13 +1707,13 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 186
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 187,
       "shares": [
@@ -1721,13 +1723,13 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 188
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 189,
       "shares": [
@@ -1737,19 +1739,19 @@
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 190
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 191
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 192,
       "shares": [
@@ -1759,25 +1761,25 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 193
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 194
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 195
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 196,
       "shares": [
@@ -1787,25 +1789,25 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 197
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 198
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 199
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 200
     },
@@ -2495,7 +2497,7 @@
     {
       "id": 270,
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "shares": [
         "Fr_8"
       ],
@@ -2505,12 +2507,12 @@
     {
       "id": 271,
       "type": "undo",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player"
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 272,
       "shares": [
@@ -2520,13 +2522,13 @@
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 273
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 274,
       "shares": [
@@ -2536,13 +2538,13 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 275
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 276,
       "shares": [
@@ -2552,14 +2554,14 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 277
     },
     {
       "id": 278,
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "shares": [
         "Fr_8"
       ],
@@ -2569,12 +2571,12 @@
     {
       "id": 279,
       "type": "undo",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player"
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 280,
       "shares": [
@@ -2584,14 +2586,14 @@
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 281
     },
     {
       "id": 282,
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "shares": [
         "IC_8"
       ],
@@ -2601,13 +2603,13 @@
     {
       "id": 283,
       "type": "undo",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player"
     },
     {
       "id": 284,
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "shares": [
         "WRA_1"
       ],
@@ -2617,12 +2619,12 @@
     {
       "id": 285,
       "type": "undo",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player"
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 286,
       "shares": [
@@ -2632,14 +2634,14 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 287
     },
     {
       "id": 288,
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "shares": [
         "WRA_5"
       ],
@@ -2649,12 +2651,12 @@
     {
       "id": 289,
       "type": "undo",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player"
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 290,
       "shares": [
@@ -2664,19 +2666,19 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 291
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 292
     },
     {
       "type": "sell_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 293,
       "shares": [
@@ -2686,7 +2688,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 294,
       "shares": [
@@ -2696,19 +2698,19 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 295
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 296
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 297
     },
@@ -3592,7 +3594,7 @@
       "id": 370,
       "type": "undo",
       "user": "PJBarns",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player"
     },
     {
@@ -3632,7 +3634,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 376,
       "shares": [
@@ -3642,13 +3644,13 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 377
     },
     {
       "type": "sell_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 378,
       "shares": [
@@ -3658,7 +3660,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 379,
       "shares": [
@@ -3670,18 +3672,18 @@
       "id": 380,
       "type": "undo",
       "user": "PJBarns",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player"
     },
     {
       "id": 381,
       "type": "redo",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player"
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 382,
       "shares": [
@@ -3691,7 +3693,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 383,
       "shares": [
@@ -3701,13 +3703,13 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 384
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 385,
       "shares": [
@@ -3717,19 +3719,19 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 386
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 387
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 388,
       "shares": [
@@ -3739,13 +3741,13 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 389
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 390,
       "shares": [
@@ -3755,19 +3757,19 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 391
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 392
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 393,
       "shares": [
@@ -3777,13 +3779,13 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 394
     },
     {
       "type": "buy_shares",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 395,
       "shares": [
@@ -3793,19 +3795,19 @@
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 396
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 397
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 398,
       "shares": [
@@ -3815,33 +3817,33 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 399
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 400
     },
     {
       "id": 401,
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player"
     },
     {
       "id": 402,
       "type": "undo",
       "user": "PJBarns",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player"
     },
     {
       "id": 403,
       "type": "sell_shares",
-      "entity": "PJBarns",
+      "entity": 680,
       "shares": [
         "GMO_3",
         "GMO_4"
@@ -3852,18 +3854,18 @@
     {
       "id": 404,
       "type": "undo",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player"
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 405
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 406,
       "shares": [
@@ -3873,26 +3875,26 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 407
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 408
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 409,
       "user": "A Steaming Kyle"
     },
     {
       "type": "buy_shares",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 410,
       "shares": [
@@ -3902,26 +3904,26 @@
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 411
     },
     {
       "type": "pass",
-      "entity": "kjlevs89",
+      "entity": 686,
       "entity_type": "player",
       "id": 412
     },
     {
       "type": "pass",
-      "entity": "PJBarns",
+      "entity": 680,
       "entity_type": "player",
       "id": 413,
       "user": "A Steaming Kyle"
     },
     {
       "type": "pass",
-      "entity": "A Steaming Kyle",
+      "entity": 4861,
       "entity_type": "player",
       "id": 414
     },

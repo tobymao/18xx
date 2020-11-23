@@ -36,6 +36,7 @@ module Engine
         end
 
         def purchase_tokens(corporation)
+          return @tokens_needed = nil if @tokens_needed.zero?
           return unless token_cost.positive?
           return if needs_money?(corporation)
 

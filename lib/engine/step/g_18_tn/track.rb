@@ -9,6 +9,7 @@ module Engine
         ACTIONS = %w[lay_tile pass].freeze
 
         def actions(entity)
+          return [] unless entity == current_entity
           return [] if entity.company? || !remaining_tile_lay?(entity)
 
           entity == current_entity ? ACTIONS : []

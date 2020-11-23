@@ -43,7 +43,7 @@
   "actions": [
     {
       "type": "bid",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 1,
       "company": "TR",
@@ -51,7 +51,7 @@
     },
     {
       "type": "bid",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 2,
       "company": "BLC",
@@ -59,7 +59,7 @@
     },
     {
       "type": "bid",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 3,
       "company": "M&C",
@@ -67,7 +67,7 @@
     },
     {
       "type": "bid",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 4,
       "company": "NDY",
@@ -75,7 +75,7 @@
     },
     {
       "type": "bid",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 5,
       "company": "BLC",
@@ -83,7 +83,7 @@
     },
     {
       "type": "bid",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 6,
       "company": "SNAR",
@@ -91,7 +91,7 @@
     },
     {
       "type": "bid",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 7,
       "company": "BLC",
@@ -99,13 +99,13 @@
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 8
     },
     {
       "type": "par",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 9,
       "corporation": "L&N",
@@ -113,7 +113,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 10,
       "shares": [
@@ -122,7 +122,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 11,
       "shares": [
@@ -131,7 +131,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 12,
       "shares": [
@@ -140,7 +140,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 13,
       "shares": [
@@ -149,7 +149,7 @@
     },
     {
       "type": "par",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 14,
       "corporation": "WRA",
@@ -157,7 +157,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 15,
       "shares": [
@@ -166,7 +166,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 16,
       "shares": [
@@ -175,7 +175,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 17,
       "shares": [
@@ -184,7 +184,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 18,
       "shares": [
@@ -193,7 +193,7 @@
     },
     {
       "type": "par",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 19,
       "corporation": "ATN",
@@ -201,7 +201,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 20,
       "shares": [
@@ -210,7 +210,7 @@
     },
     {
       "type": "buy_company",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 20.1,
       "company": "NDY",
@@ -218,7 +218,7 @@
     },
     {
       "type": "buy_company",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 20.2,
       "company": "NDY",
@@ -226,7 +226,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 21,
       "shares": [
@@ -235,7 +235,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 22,
       "shares": [
@@ -244,19 +244,19 @@
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 22.1
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 22.2
     },
     {
       "type": "buy_shares",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 23,
       "shares": [
@@ -265,25 +265,25 @@
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 23.1
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 23.2
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 23.3
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 23.4
     },
@@ -367,7 +367,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 34,
       "shares": [
@@ -376,19 +376,19 @@
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 35
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 36
     },
     {
       "type": "buy_shares",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 37,
       "shares": [
@@ -397,31 +397,31 @@
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 38
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 39
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 40
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 41
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 42
     },
@@ -584,25 +584,25 @@
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 60
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 61
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 62
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 63
     },
@@ -840,7 +840,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 88,
       "shares": [
@@ -849,13 +849,13 @@
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 89
     },
     {
       "type": "buy_shares",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 90,
       "shares": [
@@ -864,13 +864,13 @@
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 91
     },
     {
       "type": "buy_shares",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 92,
       "shares": [
@@ -879,13 +879,13 @@
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 93
     },
     {
       "type": "buy_shares",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 94,
       "shares": [
@@ -894,19 +894,19 @@
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 95
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 96
     },
     {
       "type": "buy_shares",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 97,
       "shares": [
@@ -915,31 +915,31 @@
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 98
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 99
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 100
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 101
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 102
     },
@@ -1429,7 +1429,7 @@
     },
     {
       "type": "par",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 142,
       "corporation": "M&O",
@@ -1437,13 +1437,13 @@
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 143
     },
     {
       "type": "buy_shares",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 144,
       "shares": [
@@ -1452,13 +1452,13 @@
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 145
     },
     {
       "type": "buy_shares",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 146,
       "shares": [
@@ -1467,13 +1467,13 @@
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 147
     },
     {
       "type": "buy_shares",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 148,
       "shares": [
@@ -1482,19 +1482,19 @@
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 149
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 150
     },
     {
       "type": "buy_shares",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 151,
       "shares": [
@@ -1503,13 +1503,13 @@
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 152
     },
     {
       "type": "buy_shares",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 153,
       "shares": [
@@ -1518,13 +1518,13 @@
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 154
     },
     {
       "type": "buy_shares",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 155,
       "shares": [
@@ -1533,31 +1533,31 @@
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 156
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 157
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 158
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 159
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 160
     },
@@ -2070,7 +2070,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 206,
       "shares": [
@@ -2079,13 +2079,13 @@
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 207
     },
     {
       "type": "buy_shares",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 208,
       "shares": [
@@ -2094,13 +2094,13 @@
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 209
     },
     {
       "type": "par",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 210,
       "corporation": "TAG",
@@ -2108,13 +2108,13 @@
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 211
     },
     {
       "type": "buy_shares",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 212,
       "shares": [
@@ -2123,31 +2123,31 @@
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 213
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 214
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 215
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 216
     },
     {
       "type": "buy_shares",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 217,
       "shares": [
@@ -2156,31 +2156,31 @@
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 218
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 219
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 220
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 221
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 222
     },
@@ -2759,25 +2759,25 @@
     },
     {
       "type": "pass",
-      "entity": "Adam",
+      "entity": 13,
       "entity_type": "player",
       "id": 261
     },
     {
       "type": "pass",
-      "entity": "Cecilia",
+      "entity": 15,
       "entity_type": "player",
       "id": 262
     },
     {
       "type": "pass",
-      "entity": "Daisy",
+      "entity": 16,
       "entity_type": "player",
       "id": 263
     },
     {
       "type": "pass",
-      "entity": "Bertil",
+      "entity": 14,
       "entity_type": "player",
       "id": 264
     },

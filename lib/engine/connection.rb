@@ -81,17 +81,23 @@ module Engine
     def id
       @id ||=
         begin
-          uniq_paths = []
-          junction_map = {}
+          # deal with ambiguous intra-tile path
+          if @paths.one? && @paths[0].tile.ambiguous_connection?
+            node0, node1 = @paths[0].nodes.map(&:index).sort
+            ["#{@paths[0].hex.id} #{node0}.#{node1}"]
+          else
+            uniq_paths = []
+            junction_map = {}
 
-          # skip over paths that have a junction we've already seen
-          @paths.each do |path|
-            uniq_paths << path if !junction_map[path.a] && !junction_map[path.b]
-            junction_map[path.a] = true if path.a.junction?
-            junction_map[path.b] = true if path.b.junction?
+            # skip over paths that have a junction we've already seen
+            @paths.each do |path|
+              uniq_paths << path if !junction_map[path.a] && !junction_map[path.b]
+              junction_map[path.a] = true if path.a.junction?
+              junction_map[path.b] = true if path.b.junction?
+            end
+
+            uniq_paths.map! { |path| path.hex.id }
           end
-
-          uniq_paths.map! { |path| path.hex.id }
         end
     end
 

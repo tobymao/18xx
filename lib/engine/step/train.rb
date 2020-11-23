@@ -18,7 +18,11 @@ module Engine
       end
 
       def room?(entity)
-        entity.trains.reject(&:obsolete).size < @game.phase.train_limit(entity)
+        if @game.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT
+          entity.trains
+        else
+          entity.trains.reject(&:obsolete)
+        end.size < @game.phase.train_limit(entity)
       end
 
       def must_buy_train?(entity)
@@ -33,7 +37,8 @@ module Engine
         train.variant = action.variant
         price = action.price
         exchange = action.exchange
-        @game.phase.buying_train!(entity, train)
+
+        @game.queue_log! { @game.phase.buying_train!(entity, train) }
 
         # Check if the train is actually buyable in the current situation
         @game.game_error('Not a buyable train') unless buyable_train_variants(train, entity).include?(train.variant)
@@ -67,6 +72,8 @@ module Engine
 
         @log << "#{entity.name} #{verb} a #{train.name} train for "\
           "#{@game.format_currency(price)} from #{source}"
+
+        @game.flush_log!
 
         entity.buy_train(train, price)
         pass! unless can_buy_train?(entity)

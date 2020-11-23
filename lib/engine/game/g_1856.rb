@@ -9,14 +9,20 @@ module Engine
       register_colors(black: '#37383a',
                       orange: '#f48221',
                       brightGreen: '#76a042',
-                      tgbOrange: '#fa460f',
-                      gtGreen: '#78c292',
+
+                      bbgPink: '#ffd9eb',
+                      caRed: '#f72d2d',
+                      cprPink: '#c474bc',
+                      cvPurple: '#2d0047',
+                      cgrBlack: '#000',
                       lpsBlue: '#c3deeb',
-                      wgbBlue: '#21234a',
-                      cprPink: '#91498b',
-                      thbYellow: '#979e5d',
+                      gtGreen: '#78c292',
                       gwGray: '#6e6966',
+                      tgbOrange: '#c94d00',
+                      thbYellow: '#ebff45',
+                      wgbBlue: '#494d99',
                       wrBrown: '#664c3a',
+
                       red: '#d81e3e',
                       turquoise: '#00a993',
                       blue: '#0189d1',
@@ -25,6 +31,14 @@ module Engine
       load_from_json(Config::Game::G1856::JSON)
 
       DEV_STAGE = :prealpha
+
+      # These plain city hexes upgrade to L tiles in brown
+      LAKE_HEXES = %w[B19 C14 F17 O18 P9 N3 L13].freeze
+
+      # These cities upgrade to the common BarrieLondon green tile,
+      #  but upgrade to specialized brown tiles
+      BARRIE_HEX = 'M4'
+      LONDON_HEX = 'F15'
 
       GAME_LOCATION = 'Ontario, Canada'
       GAME_RULES_URL = 'http://google.com'

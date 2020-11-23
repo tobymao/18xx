@@ -2,7 +2,7 @@
 
 require_relative '../base'
 require_relative '../../token'
-require_relative 'passable_auction'
+require_relative '../passable_auction'
 require_relative 'token_merger'
 
 module Engine
@@ -81,6 +81,8 @@ module Engine
             [@buyer]
           elsif @winner
             [@winner.entity]
+          else
+            []
           end
         end
 
@@ -91,7 +93,7 @@ module Engine
         end
 
         def show_other_players
-          false
+          true
         end
 
         def process_payoff_loan(action)
@@ -177,7 +179,6 @@ module Engine
         end
 
         def process_acquire(buyer)
-          @buyer = buyer
           acquired_corp = @winner.corporation
 
           if !buyer || !mergeable(acquired_corp).include?(buyer)
@@ -187,6 +188,8 @@ module Engine
           if buyer.owner != @winner.entity
             @game.game_error("Target corporation must be owned by #{@winner.entity.name}")
           end
+
+          @buyer = buyer
 
           receiving = []
 
@@ -367,7 +370,7 @@ module Engine
 
         def mergeable(corporation)
           return [] if corporation.player?
-          return [] if @offer
+          return [] if @offer || @buyer
           return mergeable_by_entity(current_entity, corporation, min_bid(corporation)) unless @winner
 
           mergeable_by_entity(@winner.entity, corporation, @winner.price)
@@ -441,7 +444,7 @@ module Engine
         end
 
         def auctioning_corporation
-          @offer || @auctioning || @winner.corporation
+          @offer || @auctioning || @winner&.corporation
         end
 
         def setup
@@ -494,7 +497,7 @@ module Engine
 
           else
             # This needs the owner to either offer(assign) or pass up putting the corp for sale.
-
+            @mode = :offered
             # Check to see if any players can actually buy it
             bidders = entities.select do |player|
               max_bid(player, corporation) >= min_bid(corporation)
@@ -504,7 +507,6 @@ module Engine
               @game.log << "#{corporation.name} may be offered for sale for "\
                 "#{@game.format_currency(starting_bid(corporation))}"
               @offer = corporation
-              @mode = :offered
             else
               @game.log << "#{corporation.name} cannot be bought at "\
                 "#{@game.format_currency(starting_bid(corporation))}, skipping"

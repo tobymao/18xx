@@ -64,7 +64,9 @@ module View
       def render
         step = @game.round.active_step
         @corporation = step.current_entity
-        @ability = @selected_company&.abilities(:train_discount, 'train') if @selected_company&.owner == @corporation
+        if @selected_company&.owner == @corporation
+          @ability = @selected_company&.abilities(:train_discount, time: 'train')
+        end
 
         @depot = @game.depot
 

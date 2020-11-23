@@ -313,7 +313,8 @@ module Engine
         100
       ],
       "coordinates": "J15",
-      "color": "pink"
+      "color": "bbgPink",
+      "text_color": "black"
     },
     {
       "sym": "CA",
@@ -325,7 +326,7 @@ module Engine
         100
       ],
       "coordinates": "D17",
-      "color": "red"
+      "color": "caRed"
     },
     {
       "sym": "CPR",
@@ -351,7 +352,7 @@ module Engine
       ],
       "coordinates": "N11",
       "city": 0,
-      "color": "purple"
+      "color": "cvPurple"
     },
     {
       "sym": "GT",
@@ -388,7 +389,8 @@ module Engine
         40
       ],
       "coordinates": "C14",
-      "color": "lpsBlue"
+      "color": "lpsBlue",
+      "text_color": "black"
     },
     {
       "sym": "TGB",
@@ -410,7 +412,8 @@ module Engine
         40
       ],
       "coordinates": "L15",
-      "color": "thbYellow"
+      "color": "thbYellow",
+      "text_color": "black"
     },
     {
       "sym": "WR",
@@ -450,7 +453,7 @@ module Engine
         100,
         100
       ],
-      "color": "black"
+      "color": "cgrBlack"
     }
   ],
   "trains": [
@@ -592,6 +595,11 @@ module Engine
       ],
       "city=revenue:0;city=revenue:0;label=OO;upgrade=cost:40,terrain:mountain": [
         "L15"
+      ]
+    },
+    "blue": {
+      "": [
+        "N5"
       ]
     },
     "white": {

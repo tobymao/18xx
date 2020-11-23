@@ -58,7 +58,7 @@ module Engine
           if hex.tile.nodes.any?
             # tile has a city/town/halt
             hex.tile.nodes.each do |tile_node|
-              nd = node_distances[tile_node] if node_distances[tile_node]
+              nd = node_distances[tile_node]
               if tile_node.city? || tile_node.offboard?
                 return true if nd && nd < max_distance
               elsif nd && nd <= max_distance

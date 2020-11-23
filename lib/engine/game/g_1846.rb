@@ -298,6 +298,10 @@ module Engine
         @illinois_central ||= corporation_by_id('IC')
       end
 
+      def preprocess_action(action)
+        check_special_tile_lay(action) unless psuedo_special_tile_lay?(action)
+      end
+
       def action_processed(action)
         case action
         when Action::Par
@@ -311,9 +315,7 @@ module Engine
 
         check_special_tile_lay(action)
 
-        @corporations.dup.each do |corporation|
-          close_corporation(corporation) if corporation.share_price&.price&.zero?
-        end
+        super
 
         @last_action = action
       end
@@ -321,6 +323,11 @@ module Engine
       def special_tile_lay?(action)
         (action.is_a?(Action::LayTile) &&
          (action.entity == michigan_central || action.entity == ohio_indiana))
+      end
+
+      def psuedo_special_tile_lay?(action)
+        (action.is_a?(Action::LayTile) &&
+         (action.entity == michigan_central&.owner || action.entity == ohio_indiana&.owner))
       end
 
       def check_special_tile_lay(action)
@@ -331,39 +338,6 @@ module Engine
 
         company.remove_ability(ability)
         @log << "#{company.name} forfeits second tile lay."
-      end
-
-      def close_corporation(corporation, quiet: false)
-        @log << "#{corporation.name} closes" unless quiet
-
-        hexes.each do |hex|
-          hex.tile.cities.each do |city|
-            if city.tokened_by?(corporation) || city.reserved_by?(corporation)
-              city.tokens.map! { |token| token&.corporation == corporation ? nil : token }
-              city.reservations.delete(corporation)
-            end
-          end
-        end
-
-        corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
-        corporation.trains.each { |t| t.buyable = false }
-        if corporation.companies.any?
-          @log << "#{corporation.name}'s companies close: #{corporation.companies.map(&:sym).join(', ')}"
-          corporation.companies.dup.each(&:close!)
-        end
-        @round.force_next_entity! if @round.current_entity == corporation
-
-        if corporation.corporation?
-          corporation.share_holders.keys.each do |share_holder|
-            share_holder.shares_by_corporation.delete(corporation)
-          end
-
-          @share_pool.shares_by_corporation.delete(corporation)
-          corporation.share_price.corporations.delete(corporation)
-          @corporations.delete(corporation)
-        else
-          @minors.delete(corporation)
-        end
       end
 
       def init_round
@@ -566,6 +540,30 @@ module Engine
             values[:final_train] = :one_more_full_or_set if two_player?
             values
           end
+      end
+
+      def east_west_desc
+        'E/W'
+      end
+
+      def train_help(runnable_trains)
+        help = []
+
+        nm_trains = runnable_trains.select { |t| t.name.include?('/') }
+
+        if nm_trains.any?
+          corporation = nm_trains.first.owner
+          trains = nm_trains.map(&:name).uniq.sort.join(', ')
+          help << "N/M trains (#{trains}) may visit M locations, but only "\
+                  'earn revenue from the best combination of N locations.'
+          help << "One of the N locations must include a #{corporation.name} "\
+                  'token.'
+          help << 'In order for an N/M train to earn bonuses for an '\
+                  "#{east_west_desc} route, both of the #{east_west_desc} "\
+                  'locations must be counted among the N locations.'
+        end
+
+        help
       end
     end
   end

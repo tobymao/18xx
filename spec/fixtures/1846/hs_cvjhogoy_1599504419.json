@@ -300,6 +300,12 @@
       "original_id": 33
     },
     {
+      "type": "pass",
+      "entity": "NYC",
+      "entity_type": "corporation",
+      "id": 0
+    },
+    {
       "type": "sell_shares",
       "entity": "B&O",
       "entity_type": "corporation",
