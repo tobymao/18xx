@@ -75,7 +75,9 @@ module Engine
         index = @entity_index + 1
         @entities[index..-1] = @entities[index..-1].sort if index < @entities.size - 1
 
-        @entities.pop while @entities.last&.corporation? && @entities.last.share_price.liquidation?
+        @entities.pop while @entities.last&.corporation? &&
+          @entities.last.share_price.liquidation? &&
+          @entities.size > index
       end
 
       def teleported?(entity)
