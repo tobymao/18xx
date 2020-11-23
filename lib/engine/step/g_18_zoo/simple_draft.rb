@@ -10,6 +10,7 @@ module Engine
 
         def setup
           @companies = @game.companies_for_isr.sort
+          @bank_companies = @game.bank_corporation.companies
           @finished = false
         end
 
@@ -71,6 +72,7 @@ module Engine
           player.spend(price, @game.bank)
 
           @companies.delete(company)
+          @bank_companies.delete(@bank_companies.select { |c| c.sym == company.sym }.first)
 
           @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
 

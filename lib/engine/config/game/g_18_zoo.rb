@@ -19,12 +19,6 @@ module Engine
     "columns": "letters"
   },
   "mustSellInBlocks": true,
-  "certLimit": {
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
-  },
   "tiles": {
     "7": 6,
     "8": 16,
@@ -61,73 +55,58 @@ module Engine
     "46": 1,
     "611": 3,
     "582": 3,
-    "455": 3,
-    "W7": {
-      "count": 0,
-      "color": "yellow",
-      "code": "town=revenue:10;path=a:0,b:_0;path=a:_0,b:1;upgrade=cost:0,terrain:water"
-    },
-    "W8": {
-      "count": 0,
-      "color": "blue",
-      "code": "town=revenue:10;path=a:0,b:_0;path=a:_0,b:2;upgrade=cost:0,terrain:water"
-    },
-    "W9": {
-      "count": 0,
-      "color": "blue",
-      "code": "town=revenue:10;path=a:0,b:_0;path=a:_0,b:3;upgrade=cost:0,terrain:water"
-    }
+    "455": 3
   },
   "market": [
     [
-      "7",
-      "8",
-      "9",
-      "10",
-      "11",
-      "12",
-      "13",
-      "14",
-      "15",
-      "16",
-      "20",
-      "24"
+      ["7",100,[1]],
+      ["8",150,[2]],
+      ["9",150,[2]],
+      ["10",200,[2,1]],
+      ["11",200,[2,2]],
+      ["12",250,[3,2]],
+      ["13",250,[3,2]],
+      ["14",300,[3,2]],
+      ["15",350,[3,3]],
+      ["16",400,[4]],
+      ["20",450,[5]],
+      ["24",0,[6]]
     ],
     [
-      "6",
-      "7p",
-      "8",
-      "9",
-      "10",
-      "11",
-      "12",
-      "13",
-      "14"
+      ["6",100,[1]],
+      ["7p",100,[1]],
+      ["8",150,[2]],
+      ["9",150,[2]],
+      ["10",200,[2]],
+      ["11",200,[2]],
+      ["12",250,[3]],
+      ["13",250,[3]],
+      ["14",300,[3]]
     ],
     [
-      "5",
-      "6p",
-      "7",
-      "8",
-      "9",
-      "10",
-      "11"
+      ["5",80,[1]],
+      ["6p",100,[1]],
+      ["7",100,[2]],
+      ["8",150,[2]],
+      ["9",150,[2]],
+      ["10",200,[2]],
+      ["11",200,[2]]
     ],
     [
-      "4",
-      "5p",
-      "6",
-      "7",
-      "8"
+      ["4",50,[1]],
+      ["5p",80,[1]],
+      ["6",100,[1]],
+      ["7",100,[2]],
+      ["8",150,[2]]
     ],
     [
-      "3",
-      "4",
-      "5"
+      ["3",40,[0]],
+      ["4",50,[1]],
+      ["5",80,[1]]
     ],
     [
-      "2",
-      "3"
+      ["2",30,[0]],
+      ["3",40,[0]]
     ]
   ],
   "companies": [
@@ -267,48 +246,149 @@ module Engine
       "desc": "A squirrel at will runs one more station - not applicable to 4J or 2J."
     }
   ],
-  "corporations": [],
   "hexes": {},
   "trains": [
     {
       "name": "2S",
-      "distance": 2,
+      "distance": [
+        {
+          "nodes":["city", "offboard"],
+          "pay": 2,
+          "visit": 2,
+          "multiplier": 1
+        },
+        {
+          "nodes": ["town"],
+          "pay": 99,
+          "visit": 99,
+          "multiplier": 1
+        }
+      ],
       "price": 7,
-      "rusts_on": "4S",
-      "num": 1
+      "rusts_on": "4S"
     },
     {
       "name": "3S",
-      "distance": 3,
+      "distance": [
+        {
+          "nodes":["city", "offboard"],
+          "pay": 3,
+          "visit": 3,
+          "multiplier": 1
+        },
+        {
+          "nodes": ["town"],
+          "pay": 99,
+          "visit": 99,
+          "multiplier": 1
+        }
+      ],
       "price": 12,
       "rusts_on": "5S",
-      "num": 4
+      "num": 3,
+      "events":[
+        {"type": "new_train"},
+        {"type": "green_par"}
+      ]
+    },
+    {
+      "name": "3S Long",
+      "distance": [
+        {
+          "nodes":["city", "offboard"],
+          "pay": 3,
+          "visit": 3,
+          "multiplier": 1
+        },
+        {
+          "nodes": ["town"],
+          "pay": 99,
+          "visit": 99,
+          "multiplier": 1
+        }
+      ],
+      "price": 12,
+      "rusts_on": "4J/2J",
+      "num": 1
     },
     {
       "name": "4S",
-      "distance": 4,
+      "distance": [
+        {
+          "nodes":["city", "offboard"],
+          "pay": 4,
+          "visit": 4,
+          "multiplier": 1
+        },
+        {
+          "nodes": ["town"],
+          "pay": 99,
+          "visit": 99,
+          "multiplier": 1
+        }
+      ],
       "price": 20,
-      "rusts_on": "4J/2J",
-      "num": 3
+      "obsolete_on": "4J/2J",
+      "num": 3,
+      "events":[
+        {"type": "new_train"},
+        {"type": "brown_par"}
+      ]
     },
     {
       "name": "5S",
-      "distance": 5,
+      "distance": [
+        {
+          "nodes":["city", "offboard"],
+          "pay": 5,
+          "visit": 5,
+          "multiplier": 1
+        },
+        {
+          "nodes": ["town"],
+          "pay": 99,
+          "visit": 99,
+          "multiplier": 1
+        }
+      ],
       "price": 30,
-      "num": 2
+      "num": 2,
+      "events":[
+        {"type": "new_train"}
+      ]
     },
     {
       "name": "4J",
-      "distance": 4,
+      "distance": [
+        {
+          "nodes":["city", "offboard","town"],
+          "pay": 4,
+          "visit": 4,
+          "multiplier": 2
+        }
+      ],
       "price": 47,
-      "num": 20
+      "num": 20,
+      "events":[
+        {"type": "new_train"}
+      ]
     },
     {
       "name": "2J",
-      "distance": 2,
+      "distance": [
+        {
+          "nodes":["city", "offboard","town"],
+          "pay": 2,
+          "visit": 2,
+          "multiplier": 2
+        }
+      ],
       "price": 37,
       "num": 20,
-      "available_on": "4J"
+      "available_on": "4J/2J",
+      "events":[
+        {"type": "new_train"}
+      ]
     }
   ],
   "phases": [
@@ -376,13 +456,18 @@ module Engine
 }
         DATA
 
-        JSON_MAP_SMALL = <<-'DATA'
+        JSON_CERT_LIMIT_MAP_SMALL = <<-'DATA'
 {
   "certLimit": {
     "2": 10,
     "3": 7,
     "4": 5
-  },
+  }
+}
+        DATA
+
+        JSON_STARTING_CASH_MAP_SMALL = <<-'DATA'
+{
   "startingCash": {
     "2": 40,
     "3": 28,
@@ -391,14 +476,19 @@ module Engine
 }
         DATA
 
-        JSON_MAP_LARGE = <<-'DATA'
+        JSON_CERT_LIMIT_MAP_LARGE = <<-'DATA'
 {
   "certLimit": {
     "2": 12,
     "3": 9,
     "4": 7,
     "5": 6
-  },
+  }
+}
+        DATA
+
+        JSON_STARTING_CASH_MAP_LARGE = <<-'DATA'
+{
   "startingCash": {
     "2": 48,
     "3": 32,
@@ -410,6 +500,29 @@ module Engine
 
         JSON_MAP_A = <<-'DATA'
 {
+  "locationNames": {
+    "B11": "O",
+    "B13": "O",
+    "E18": "O",
+    "G10": "O",
+    "H9": "O",
+    "H11": "O",
+    "I2": "O",
+    "K14": "O",
+    "M12": "O",
+    "M14": "O",
+    "D11": "MM",
+    "E10": "MM",
+    "F17": "MM",
+    "G18": "MM",
+    "J3": "MM",
+    "K18": "MM",
+    "M16": "MM",
+    "C12": "M",
+    "H15": "M",
+    "I14": "M",
+    "D17": "M"
+  },
   "corporations": [
     {
       "sym": "GI",
@@ -521,29 +634,6 @@ module Engine
       "text_color": "black"
     }
   ],
-  "locationNames": {
-    "B11": "O",
-    "B13": "O",
-    "E18": "O",
-    "G10": "O",
-    "H9": "O",
-    "H11": "O",
-    "I2": "O",
-    "K14": "O",
-    "M12": "O",
-    "M14": "O",
-    "D11": "MM",
-    "E10": "MM",
-    "F17": "MM",
-    "G18": "MM",
-    "J3": "MM",
-    "K18": "MM",
-    "M16": "MM",
-    "C12": "M",
-    "H15": "M",
-    "I14": "M",
-    "D17": "M"
-  },
   "hexes": {
     "gray": {
       "": [
@@ -702,428 +792,23 @@ module Engine
         DATA
 
         JSON_MAP_B = <<-'DATA'
-{
-  "certLimit": {
-    "2": 10,
-    "3": 7,
-    "4": 5
-  },
-  "startingCash": {
-    "2": 40,
-    "3": 28,
-    "4": 23
-  },
-  "corporations":[],
-  "hexes":{}
-}
+{}
         DATA
 
         JSON_MAP_C = <<-'DATA'
-{
-  "certLimit": {
-    "2": 10,
-    "3": 7,
-    "4": 5
-  },
-  "startingCash": {
-    "2": 40,
-    "3": 28,
-    "4": 23
-  },
-  "corporations":[],
-  "hexes":{}
-}
+{}
         DATA
 
         JSON_MAP_D = <<-'DATA'
-{
-  "corporations": [
-    {
-      "sym": "CR",
-      "float_percent": 40,
-      "name": "CROCODILES",
-      "logo": "18_zoo/crocodile",
-      "shares": [
-        40,
-        20,
-        20,
-        20
-      ],
-      "max_ownership_percent": 120,
-      "always_market_price": true,
-      "tokens": [
-        0,
-        2,
-        4,
-        4
-      ],
-      "coordinates": "G3",
-      "color": "#00af14"
-    },
-    {
-      "sym": "GI",
-      "float_percent": 40,
-      "name": "GIRAFFES",
-      "logo": "18_zoo/giraffe",
-      "shares": [
-        40,
-        20,
-        20,
-        20
-      ],
-      "max_ownership_percent": 120,
-      "always_market_price": true,
-      "tokens": [
-        0,
-        2
-      ],
-      "coordinates": "J10",
-      "color": "#fff793",
-      "text_color": "black"
-    },
-    {
-      "sym": "PB",
-      "float_percent": 40,
-      "name": "POLAR BEARS",
-      "logo": "18_zoo/polar-bear",
-      "shares": [
-        40,
-        20,
-        20,
-        20
-      ],
-      "max_ownership_percent": 120,
-      "always_market_price": true,
-      "tokens": [
-        0,
-        2,
-        4,
-        4
-      ],
-      "coordinates": "M11",
-      "color": "#efebeb",
-      "text_color": "black"
-    },
-    {
-      "sym": "PE",
-      "float_percent": 40,
-      "name": "PENGUINS",
-      "logo": "18_zoo/penguin",
-      "shares": [
-        40,
-        20,
-        20,
-        20
-      ],
-      "max_ownership_percent": 120,
-      "always_market_price": true,
-      "tokens": [
-        0,
-        2,
-        4,
-        4
-      ],
-      "coordinates": "J18",
-      "color": "#55b7b7",
-      "text_color": "black"
-    },
-    {
-      "sym": "LI",
-      "float_percent": 40,
-      "name": "LIONS",
-      "logo": "18_zoo/lion",
-      "shares": [
-        40,
-        20,
-        20,
-        20
-      ],
-      "max_ownership_percent": 120,
-      "always_market_price": true,
-      "tokens": [
-        0,
-        2,
-        4
-      ],
-      "coordinates": "D16",
-      "color": "#df251a"
-    },
-    {
-      "sym": "TI",
-      "float_percent": 40,
-      "name": "TIGERS",
-      "logo": "18_zoo/tiger",
-      "shares": [
-        40,
-        20,
-        20,
-        20
-      ],
-      "max_ownership_percent": 120,
-      "always_market_price": true,
-      "tokens": [
-        0,
-        2
-      ],
-      "coordinates": "G15",
-      "color": "#ffa023",
-      "text_color": "black"
-    },
-    {
-      "sym": "BB",
-      "float_percent": 40,
-      "name": "BROWN BEAR",
-      "logo": "18_zoo/brown-bear",
-      "shares": [
-        40,
-        20,
-        20,
-        20
-      ],
-      "max_ownership_percent": 120,
-      "always_market_price": true,
-      "tokens": [
-        0,
-        2,
-        4
-      ],
-      "coordinates": "H6",
-      "color": "#858585",
-      "text_color": "black"
-    }
-  ],
-  "locationNames": {
-    "B12": "O",
-    "B14": "O",
-    "E19": "O",
-    "F2": "O",
-    "G1": "O",
-    "G11": "O",
-    "H10": "O",
-    "H12": "O",
-    "I3": "O",
-    "K15": "O",
-    "M13": "O",
-    "M15": "O",
-    "C13": "M",
-    "D18": "M",
-    "H16": "M",
-    "I15": "M",
-    "J6": "M",
-    "D12": "MM",
-    "E11": "MM",
-    "F18": "MM",
-    "G19": "MM",
-    "J4": "MM",
-    "K7": "MM",
-    "K19": "MM",
-    "M17": "MM"
-  },
-  "hexes": {
-    "gray": {
-      "": [
-        "B10",
-        "C9",
-        "L14"
-      ],
-      "path=a:0,b:1": [
-        "F4",
-        "H0",
-        "M9"
-      ],
-      "path=a:0,b:3": [
-        "F10"
-      ],
-      "path=a:0,b:5": [
-        "A11","F0"
-      ],
-      "path=a:2,b:3": [
-        "G21"
-      ],
-      "path=a:2,b:4": [
-        "J20"
-      ],
-      "path=a:3,b:5": [
-        "A13"
-      ],
-      "path=a:4,b:5": [
-        "E5"
-      ],
-      "path=a:0,b:4;path=a:1,b:4": [
-        "L16"
-      ],
-      "path=a:1,b:4;path=a:3,b:5": [
-        "G17"
-      ],
-      "path=a:0,b:4;path=a:4,b:5": [
-        "J8"
-      ],
-      "offboard=revenue:0,hide:1;path=a:0,b:_0;path=a:4,b:_0": [
-        "D8"
-      ],
-      "junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0": [
-        "H4"
-      ],
-      "offboard=revenue:0,hide:1;path=a:1,b:_0": [
-        "L4", "N10"
-      ],
-      "offboard=revenue:0,hide:1;path=a:2,b:_0": [
-        "K11"
-      ],
-      "offboard=revenue:0,hide:1;path=a:3,b:_0": [
-        "F22"
-      ],
-      "offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5": [
-        "K9"
-      ],
-      "offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4": [
-        "L10"
-      ],
-      "offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4": [
-        "H14"
-      ]
-    },
-    "red": {
-      "offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R": [
-        "L6"
-      ],
-      "offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R": [
-        "M19"
-      ],
-      "offboard=revenue:yellow_30|brown_60;path=a:4,b:_0;label=R": [
-        "E9"
-      ],
-      "offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R": [
-        "B18"
-      ],
-      "offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R": [
-        "H20"
-      ]
-    },
-    "white": {
-      "": [
-        "B16",
-        "C11",
-        "C15",
-        "C17",
-        "D14",
-        "E7",
-        "E13",
-        "E15",
-        "E17",
-        "F8",
-        "F12",
-        "F14",
-        "F16",
-        "G5",
-        "G7",
-        "G9",
-        "G13",
-        "H2",
-        "H8",
-        "H18",
-        "I5",
-        "I7",
-        "I9",
-        "I11",
-        "I13",
-        "I17",
-        "I19",
-        "J12",
-        "J14",
-        "K13",
-        "K17",
-        "L12",
-        "L18"
-      ],
-      "city=revenue:0,slots:1": [
-        "D16",
-        "G3",
-        "G15",
-        "H6",
-        "J10",
-        "J18",
-        "M11"
-      ],
-      "upgrade=cost:0,terrain:water": [
-        "B12",
-        "B14",
-        "E19",
-        "F2",
-        "G1",
-        "G11",
-        "H10",
-        "H12",
-        "I3",
-        "K15",
-        "M13",
-        "M15"
-      ],
-      "upgrade=cost:1,terrain:mountain": [
-        "C13",
-        "D18",
-        "H16",
-        "I15",
-        "J6"
-      ],
-      "upgrade=cost:2,terrain:mountain": [
-        "D12",
-        "E11",
-        "F18",
-        "G19",
-        "J4",
-        "K7",
-        "K19",
-        "M17"
-      ],
-      "label=Y;city=revenue:yellow_30|green_40|brown_50,slots:1;offboard=revenue:yellow_20|brown_40,hide:1": [
-        "D10",
-        "F6",
-        "F20",
-        "J16",
-        "K5"
-      ]
-    }
-  }
-}
+{}
         DATA
 
         JSON_MAP_E = <<-'DATA'
-{
-  "certLimit": {
-    "2": 12,
-    "3": 9,
-    "4": 7,
-    "5": 6
-  },
-  "startingCash": {
-    "2": 48,
-    "3": 32,
-    "4": 27,
-    "5": 22
-  },
-  "corporations":[],
-  "hexes":{}
-}
+{}
         DATA
 
         JSON_MAP_F = <<-'DATA'
-{
-  "certLimit": {
-    "2": 12,
-    "3": 9,
-    "4": 7,
-    "5": 6
-  },
-  "startingCash": {
-    "2": 48,
-    "3": 32,
-    "4": 27,
-    "5": 22
-  },
-  "corporations":[],
-  "hexes":{}
-}
+{}
         DATA
       end
     end
