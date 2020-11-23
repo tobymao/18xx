@@ -11,6 +11,8 @@ module Engine
         end
 
         @game.sell_shares_and_change_price(action.bundle)
+
+        @round.recalculate_order if @round.respond_to?(:recalculate_order)
       end
 
       def can_sell?(_entity, bundle)

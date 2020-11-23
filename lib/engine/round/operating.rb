@@ -74,6 +74,8 @@ module Engine
         # to change order. Re-sort only them.
         index = @entity_index + 1
         @entities[index..-1] = @entities[index..-1].sort if index < @entities.size - 1
+
+        @entities.pop while @entities.last.corporation? && @entities.last.share_price.liquidation?
       end
 
       def teleported?(entity)

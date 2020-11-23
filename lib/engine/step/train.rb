@@ -90,7 +90,6 @@ module Engine
         @last_share_sold_price = action.bundle.price_per_share
         super
         @corporations_sold << action.bundle.corporation
-        @round.recalculate_order
       end
 
       def needed_cash(_entity)
