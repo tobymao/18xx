@@ -109,8 +109,8 @@ module Engine
       }.freeze
 
       MIN_BID_INCREMENT = 5
-
       MUST_BID_INCREMENT_MULTIPLE = false
+      ONLY_HIGHEST_BID_COMMITTED = false
 
       CAPITALIZATION = :full
 

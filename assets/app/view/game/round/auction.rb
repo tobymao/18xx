@@ -135,7 +135,9 @@ module View
           end
 
           company_actions =
-            if @step.may_purchase?(company)
+            if @step.auctioneer? && @step.max_bid(@current_entity, company) < @step.min_bid(company)
+              []
+            elsif @step.may_purchase?(company)
               [h(:button, { on: { click: buy } }, 'Buy')]
             elsif @step.may_choose?(company)
               [h(:button, { on: { click: choose } }, 'Choose')]

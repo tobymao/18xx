@@ -92,6 +92,10 @@ module Engine
         ''
       end
 
+      def auctioneer?
+        false
+      end
+
       private
 
       def entities
