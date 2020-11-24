@@ -38,7 +38,7 @@ module Engine
             pass_auction(entity)
             resolve_bids
           else
-            @log << "#{entity.name} passes bidding"
+            @log.action! 'passes bidding'
             entity.pass!
             return all_passed! if entities.all?(&:passed?)
 
@@ -105,10 +105,9 @@ module Engine
         def add_bid(bid)
           super(bid)
           company = bid.company
-          entity = bid.entity
           price = bid.price
 
-          @log << "#{entity.name} bids #{@game.format_currency(price)} for #{bid.company.name},"\
+          @log.action! "bids #{@game.format_currency(price)} for #{bid.company.name},"\
           " bank will provide #{@game.format_currency(seed_money_provided(company, price))}"
         end
 

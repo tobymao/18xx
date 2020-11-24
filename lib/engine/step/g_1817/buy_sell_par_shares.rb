@@ -159,7 +159,7 @@ module Engine
           return if available_subsidiaries(entity).any?
 
           if @corporate_action
-            @log << "#{entity.name} finishes acting for #{@corporate_action.entity.name}"
+            @log.action! "finishes acting for #{@corporate_action.entity.name}"
           else
             super
           end
@@ -218,9 +218,9 @@ module Engine
           end
 
           if @auctioning
-            @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
+            @log.action! "bids #{@game.format_currency(price)} for #{corporation.name}"
           else
-            @log << "#{entity.name} auctions #{corporation.name} for #{@game.format_currency(price)}"
+            @log.action! "auctions #{corporation.name} for #{@game.format_currency(price)}"
             @round.last_to_act = action.entity
             @current_actions.clear
             @game.place_home_token(action.corporation)
@@ -255,7 +255,7 @@ module Engine
           tokens = @game.tokens_needed(entity)
           token_cost = tokens * TOKEN_COST
           entity.spend(token_cost, @game.bank)
-          @log << "#{entity.name} buys #{tokens} tokens for #{@game.format_currency(token_cost)}"
+          @log.action! "buys #{tokens} tokens for #{@game.format_currency(token_cost)}"
           tokens.times.each do |_i|
             entity.tokens << Engine::Token.new(entity)
           end

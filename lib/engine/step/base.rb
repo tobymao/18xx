@@ -36,8 +36,8 @@ module Engine
         false
       end
 
-      def log_pass(entity)
-        @log << "#{entity.name} passes #{description.downcase}"
+      def log_pass(_entity)
+        @log.action! "passes #{description.downcase}"
       end
 
       def log_skip(entity)

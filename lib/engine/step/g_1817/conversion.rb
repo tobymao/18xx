@@ -33,7 +33,7 @@ module Engine
           before = corporation.total_shares
           @game.convert(corporation)
           after = corporation.total_shares
-          @log << "#{corporation.name} converts from #{before} to #{after} shares"
+          @log.action! "converts from #{before} to #{after} shares"
 
           tokens = corporation.tokens.size
 
@@ -99,7 +99,7 @@ module Engine
           price = share_price.price
           @game.stock_market.move(corporation, *share_price.coordinates)
 
-          @log << "#{corporation.name} merges with #{target.name} "\
+          @log.action! "merges with #{target.name} "\
             "at share price #{@game.format_currency(price)} receiving #{receiving.join(', ')}"
 
           owner = corporation.owner
@@ -110,7 +110,7 @@ module Engine
             if owner != target_owner
               owner.spend(price, corporation)
               share = corporation.shares[0]
-              @log << "#{owner.name} buys a #{share.percent}% share for #{@game.format_currency(price)} "\
+              @log.action! "buys a #{share.percent}% share for #{@game.format_currency(price)} "\
                 "and receives the president's share"
               @game.share_pool.buy_shares(target_owner, share.to_bundle, exchange: :free)
             end

@@ -106,22 +106,20 @@ module Engine
 
           if (ability = @steamboat.abilities(:assign_hexes))
             ability.use!
-            @log <<
-              if (hex = steamboat_assigned_hex)
-                "Steamboat Company is assigned to #{hex.name}"
-              else
-                'Steamboat Company is not assigned to any hex'
-              end
+            if (hex = steamboat_assigned_hex)
+              @log.action! "is assigned to #{hex.name}"
+            else
+              @log.action! 'is not assigned to any hex'
+            end
           end
 
           if (ability = @steamboat.abilities(:assign_corporation))
             ability.use!
-            @log <<
-              if (corp = steamboat_assigned_corp)
-                "Steamboat Company is assigned to #{corp.name}"
-              else
-                'Steamboat Company is not assigned to any corporation or minor'
-              end
+            if (corp = steamboat_assigned_corp)
+              @log.action! "is assigned to #{corp.name}"
+            else
+              @log.action! 'is not assigned to any corporation or minor'
+            end
           end
 
           pass!

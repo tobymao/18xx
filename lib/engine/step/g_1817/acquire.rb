@@ -117,17 +117,17 @@ module Engine
 
         def process_pass(action)
           if @offer
-            @game.log << "#{@offer.owner.name} declines to put #{@offer.name} up for sale"
+            @game.log.acted! @offer.owner, "declines to put #{@offer.name} up for sale"
             @round.offering.delete(@offer)
             @offer = nil
             setup_auction
           elsif @buyer && can_take_loan?(@buyer)
             @passed_take_loans = true
-            @game.log << "#{@buyer.name} passes taking additional loans"
+            @game.log.acted! @buyer, 'passes taking additional loans'
             acquire_post_loan
           elsif @buyer
             @passed_payoff_loans = true
-            @game.log << "#{@buyer.name} passes paying off additional loans"
+            @game.log.acted! @buyer, 'passes paying off additional loans'
             acquire_post_loan
           else
             pass_auction(action.entity)
@@ -252,7 +252,7 @@ module Engine
             # Note, these don't affect share price as they are the acquired corps loans.
             loan = @buyer.loans.last
             amount = loan.amount
-            @log << "#{@buyer.name} pays off #{acquired_corp.name} loan for #{@game.format_currency(amount)}"
+            @log.action! "pays off #{acquired_corp.name} loan for #{@game.format_currency(amount)}"
             @buyer.spend(amount, @game.bank)
 
             @buyer.loans.delete(loan)
@@ -426,12 +426,11 @@ module Engine
         end
 
         def process_bid(action)
-          entity = action.entity
           corporation = action.corporation
           price = action.price
 
           @game.game_error("Bid #{price} is not a multple of 10") unless (price % 10).zero?
-          @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
+          @log.action! "bids #{@game.format_currency(price)} for #{corporation.name}"
           add_bid(action)
           resolve_bids
         end
@@ -441,7 +440,7 @@ module Engine
           @game.game_error("Can only assign if offering for sale #{corporation.name}") unless @mode == :offered
           @game.game_error("Can only offer up #{@offer.name}") unless corporation == @offer
 
-          @game.log << "#{corporation.name} is offered at auction, buying corporation will receive "\
+          @log << "#{corporation.name} is offered at auction, buying corporation will receive "\
             "#{@game.format_currency(treasury_share_compensation(corporation))} for treasury shares"
           @offer = nil
           auction_entity(corporation)

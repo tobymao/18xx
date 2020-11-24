@@ -39,7 +39,7 @@ module Engine
           return super if only_one_company?
           raise @game.game_error 'Cannot pass on first turn' if @game.companies.none?(&:owned_by_player?)
 
-          @log << "#{action.entity.name} passes"
+          @log.action! 'passes'
           @round.next_entity_index!
           action.entity.pass!
         end
@@ -60,7 +60,7 @@ module Engine
 
           float_minor(company)
 
-          @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
+          @log.action! "buys #{company.name} for #{@game.format_currency(price)}"
         end
 
         def action_finalized

@@ -20,7 +20,7 @@ module Engine
             @game.game_error("Bridge already on #{target.name}") if target.assigned?(id)
             target.assign!(id)
             ability.use!
-            @log << "#{company.name} builds bridge on #{target.name}"
+            @log.action! "builds bridge on #{target.name}"
           end
         end
       end

@@ -22,7 +22,7 @@ module Engine
           return unless entity.operating_history[[@game.turn, @round.round_num]].revenue.positive?
 
           @game.bank.spend(mine_revenue, entity)
-          @log << "#{entity.name} collects #{@game.format_currency(mine_revenue)} from mines"
+          @log.action! "collects #{@game.format_currency(mine_revenue)} from mines"
         end
       end
     end

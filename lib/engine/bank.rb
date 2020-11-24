@@ -10,7 +10,7 @@ module Engine
     include ShareHolder
     include Spender
 
-    def initialize(cash, log: [])
+    def initialize(cash, log: Logger.new)
       @cash = cash
       @log = log
       @broken = false

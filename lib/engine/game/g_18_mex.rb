@@ -348,7 +348,7 @@ module Engine
       end
 
       def decline_merge(major)
-        @log << "#{major.name} declines"
+        @log.action! 'declines'
         @mergeable_candidates.delete(major)
         possible_auto_merge
       end
@@ -369,7 +369,7 @@ module Engine
           return
         end
 
-        @log << "-- #{major.name} merges into #{ndm.name} --"
+        @log.action! "merges into #{ndm.name}"
 
         # Rule 5e: Any other shares are sold off for half market price
         refund = major.ipoed ? (major.share_price.price / 2.0) : 0

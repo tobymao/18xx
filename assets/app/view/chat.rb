@@ -74,6 +74,7 @@ module View
     end
 
     def add_line(data)
+      data[:created_at] = Time.at(data[:created_at])
       store(:log, @log << data)
     end
   end

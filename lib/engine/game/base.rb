@@ -12,6 +12,7 @@ else
   require_rel '../step'
 end
 
+require_relative '../logger'
 require_relative '../bank'
 require_relative '../company'
 require_relative '../corporation'
@@ -31,7 +32,7 @@ require_relative '../player_info'
 module Engine
   module Game
     class Base
-      attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
+      attr_reader :actions, :current_action, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
@@ -341,7 +342,7 @@ module Engine
         @loading = false
         @strict = strict
         @finished = false
-        @log = []
+        @log = Logger.new(self)
         @queued_log = []
         @actions = []
         @names = if names.is_a?(Hash)
@@ -517,9 +518,7 @@ module Engine
           return clone(@actions)
         end
 
-        if action.user
-          @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
-        end
+        @current_action = action
 
         preprocess_action(action)
 
@@ -1203,17 +1202,6 @@ module Engine
 
       def train_help(_runnable_trains)
         []
-      end
-
-      def queue_log!
-        old_size = @log.size
-        yield
-        @queued_log = @log.pop(@log.size - old_size)
-      end
-
-      def flush_log!
-        @queued_log.each { |l| @log << l }
-        @queued_log = []
       end
 
       def ipo_name(_entity = nil)

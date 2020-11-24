@@ -14,7 +14,7 @@ module Engine
       end
 
       def process_message(action)
-        @log << action
+        @log.message! action
       end
 
       def skip!; end

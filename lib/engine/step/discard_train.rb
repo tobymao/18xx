@@ -29,7 +29,7 @@ module Engine
       def process_discard_train(action)
         train = action.train
         @game.depot.reclaim_train(train)
-        @log << "#{action.entity.name} discards #{train.name}"
+        @log.action! "discards #{train.name}"
       end
 
       def crowded_corps

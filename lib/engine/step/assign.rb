@@ -24,22 +24,22 @@ module Engine
           if (ability = company.abilities(:assign_hexes))
             assignable_hexes = ability.hexes.map { |h| @game.hex_by_id(h) }
             Assignable.remove_from_all!(assignable_hexes, company.id) do |unassigned|
-              @log << "#{company.name} is unassigned from #{unassigned.name}"
+              @log.action! "is unassigned from #{unassigned.name}"
             end
             target.assign!(company.id)
             ability.use!
-            @log << "#{company.name} is assigned to #{target.name}"
+            @log.action! "is assigned to #{target.name}"
           else
             @game.game_error("Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found")
           end
         when Corporation, Minor
           if assignable_corporations(company).include?(target) && (ability = company.abilities(:assign_corporation))
             Assignable.remove_from_all!(assignable_corporations, company.id) do |unassigned|
-              @log << "#{company.name} is unassigned from #{unassigned.name}"
+              @log.action! "is unassigned from #{unassigned.name}"
             end
             target.assign!(company.id)
             ability.use!
-            @log << "#{company.name} is assigned to #{target.name}"
+            @log.action! "is assigned to #{target.name}"
           else
             @game.game_error("Could not assign #{company.name} to #{target.name}; no assignable corporations found")
           end

@@ -36,7 +36,7 @@ module Engine
       end
 
       def pass_auction(entity)
-        @log << "#{entity.name} passes on #{auctioning.name}"
+        @log.action! "passes on #{auctioning.name}"
 
         @bids[auctioning]&.reject! do |bid|
           bid.entity == entity

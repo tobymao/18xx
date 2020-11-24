@@ -36,7 +36,7 @@ module Engine
           @game.game_error('Cannot run train that operated') if train.operated
 
           trains[train] = true
-          @log << "#{entity.name} runs a #{train.name} train for "\
+          @log.action! "runs a #{train.name} train for "\
             "#{@game.format_currency(route.revenue)}: #{@game.revenue_str(route)}"
         end
         pass!

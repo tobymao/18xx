@@ -80,7 +80,7 @@ module Engine
           player.companies << company
           player.spend(price, owner)
           @current_actions << action
-          @log << "#{player.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
+          @log.action! "buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
 
           @game.close_other_companies!(company) if company.sym == 'FFC'
         end
@@ -166,7 +166,7 @@ module Engine
           company.owner = @game.bank
           player.companies.delete(company)
           @game.bank.spend(price, player) if price.positive?
-          @log << "#{player.name} sells #{company.name} to bank for #{@game.format_currency(price)}"
+          @log.action! "sells #{company.name} to bank for #{@game.format_currency(price)}"
           @round.players_sold[player][company] = :now
         end
 

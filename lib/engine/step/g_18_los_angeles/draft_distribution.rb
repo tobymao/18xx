@@ -18,7 +18,7 @@ module Engine
         end
 
         def process_pass(action)
-          @log << "#{action.entity.name} passes"
+          @log.action! 'passes'
           @round.next_entity_index!
           @round.next_entity_index! if current_entity == action.entity
           action.entity.pass!

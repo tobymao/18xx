@@ -25,7 +25,7 @@ module Engine
         if auctioning
           pass_auction(action.entity)
         else
-          @log << "#{entity.name} passes bidding"
+          @log.action! 'passes bidding'
           entity.pass!
           all_passed! if entities.all?(&:passed?)
           @round.next_entity_index!
@@ -177,15 +177,14 @@ module Engine
         player.companies << company
         player.spend(price, @game.bank) if price.positive?
         @companies.delete(company)
-        @log <<
         case @bidders[company].size
         when 0
-          "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
+          @log.action! "buys #{company.name} for #{@game.format_currency(price)}"
         when 1
-          "#{player.name} wins the auction for #{company.name} "\
+          @log << "#{player.name} wins the auction for #{company.name} "\
             "with the only bid of #{@game.format_currency(price)}"
         else
-          "#{player.name} wins the auction for #{company.name} "\
+          @log << "#{player.name} wins the auction for #{company.name} "\
             "with a bid of #{@game.format_currency(price)}"
         end
 
@@ -218,7 +217,7 @@ module Engine
 
         @bidders[company] |= [entity]
 
-        @log << "#{entity.name} bids #{@game.format_currency(price)} for #{bid.company.name}"
+        @log.action! "bids #{@game.format_currency(price)} for #{bid.company.name}"
       end
     end
   end

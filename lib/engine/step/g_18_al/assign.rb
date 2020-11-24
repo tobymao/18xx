@@ -31,7 +31,7 @@ module Engine
           company.owner.add_ability(ability)
           @game.remove_mining_icons(hexes)
 
-          @log << "Warrior Coal Field token is placed in #{location} (#{target.id})"
+          @log.action! "places Warrior Coal Field token in #{location} (#{target.id})"
 
           # Skip warning if corporation has token in assigned city
           return if company.owner.tokens.any? { |t| t.city && t.city.hex.name == target.id }

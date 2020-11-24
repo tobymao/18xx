@@ -86,6 +86,7 @@ module Engine
           old_price = company.min_bid
           company.discount += 10
           new_price = company.min_bid
+          @log.action! "passes #{company.name}"
           @log << "#{company.name} price decreases from #{@game.format_currency(old_price)} "\
             "to #{@game.format_currency(new_price)}"
 
@@ -111,10 +112,10 @@ module Engine
           @choices[player] << company
 
           if only_one_company?
-            @log << "#{player.name} chooses #{company.name}"
+            @log.action! "chooses #{company.name}"
             @companies.clear
           else
-            @log << "#{player.name} chooses a company"
+            @log.action! 'chooses a company'
             @companies -= available_companies
             discarded = available_companies.sort_by { @game.rand }
             discarded.delete(company)

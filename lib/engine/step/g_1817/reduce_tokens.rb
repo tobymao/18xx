@@ -48,7 +48,7 @@ module Engine
           @game.game_error("Cannot remove #{token.corporation.name} token") unless available_hex(entity, token.city.hex)
 
           token.remove!
-          @log << "#{action.entity.name} removes token from #{action.city.hex.name}"
+          @log.action! "removes token from #{action.city.hex.name}"
 
           return if tokens_above_limits?(entity, acquired_corp)
 

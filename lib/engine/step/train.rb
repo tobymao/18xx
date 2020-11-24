@@ -38,7 +38,7 @@ module Engine
         price = action.price
         exchange = action.exchange
 
-        @game.queue_log! { @game.phase.buying_train!(entity, train) }
+        @game.log.queue! { @game.phase.buying_train!(entity, train) }
 
         # Check if the train is actually buyable in the current situation
         @game.game_error('Not a buyable train') unless buyable_train_variants(train, entity).include?(train.variant)
@@ -58,7 +58,7 @@ module Engine
 
           player = entity.owner
           player.spend(remaining, entity)
-          @log << "#{player.name} contributes #{@game.format_currency(remaining)}"
+          @log.action! "contributes #{@game.format_currency(remaining)}"
         end
 
         if exchange
@@ -70,10 +70,10 @@ module Engine
 
         source = @depot.discarded.include?(train) ? 'The Discard' : train.owner.name
 
-        @log << "#{entity.name} #{verb} a #{train.name} train for "\
+        @log.action! "#{verb} a #{train.name} train for "\
           "#{@game.format_currency(price)} from #{source}"
 
-        @game.flush_log!
+        @game.log.flush!
 
         try_take_loan(entity, price)
         entity.buy_train(train, price)
