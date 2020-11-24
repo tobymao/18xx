@@ -25,6 +25,10 @@ module Engine
         corporation.holding_ok?(entity, bundle.percent) &&
           (!corporation.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit)
       end
+
+      def swap_buy(_player, _corporation, _ipo_or_pool_share); end
+
+      def swap_sell(_player, _corporation, _bundle, _pool_share); end
     end
   end
 end

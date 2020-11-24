@@ -244,10 +244,6 @@ module Engine
         @current_actions << action
         @log << "-- #{entity.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
       end
-
-      def swap_buy(_player, _corporation, _ipo_or_pool_share); end
-
-      def swap_sell(_player, _corporation, _bundle, _pool_share); end
     end
   end
 end
