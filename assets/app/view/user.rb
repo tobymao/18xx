@@ -41,6 +41,7 @@ module View
 
       title = 'Profile Settings'
       inputs = [
+        render_username,
         render_notifications(setting_for(:notifications)),
         h('div#settings__colors', [
           render_logo_color(setting_for(:red_logo)),

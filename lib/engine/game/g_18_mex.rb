@@ -10,7 +10,7 @@ module Engine
       load_from_json(Config::Game::G18Mex::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
 
       GAME_LOCATION = 'Mexico'
       GAME_RULES_URL = 'https://secure.deepthoughtgames.com/games/18MEX/rules.pdf'
@@ -21,9 +21,9 @@ module Engine
 
       IPO_RESERVED_NAME = 'Trade-in'
 
-      # Sell of one 5% wont affect stock price.
-      # Actually neither will 2 but they will be
-      # sold one at a time to accomplish that.
+      # Sell of one 5% NdM share wont affect stock price.
+      # Actually neither should sell of 2 5% but they will
+      # always be sold just one at a time.
       SELL_MOVEMENT = :down_per_10
 
       TRACK_RESTRICTION = :city_permissive
@@ -239,9 +239,10 @@ module Engine
         super
       end
 
-      # 5% NdM is not counted for cert limit
-      def countable_shares(shares)
-        shares.select { |s| s.percent > 5 }
+      def num_certs(entity)
+        entity.companies.size + entity.shares.count do |s|
+          s.corporation.counts_for_limit && s.counts_for_limit && (s.corporation != ndm || s.percent > 5)
+        end
       end
 
       # In case of selling NdM, split 5% share in separate bundle and regular

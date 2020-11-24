@@ -166,6 +166,12 @@ module Engine
       end
 
       def buy_company(player, company, price)
+        if (available = max_bid(player, company)) < price
+          @game.game_error("#{player.name} has #{@game.format_currency(available)} "\
+                           'available and cannot spend '\
+                           "#{@game.format_currency(price)}")
+        end
+
         company.owner = player
         player.companies << company
         player.spend(price, @game.bank) if price.positive?
@@ -199,8 +205,8 @@ module Engine
         price = bid.price
         company = bid.company
         player = bid.entity
-        buy_company(player, company, price)
         @bids.delete(company)
+        buy_company(player, company, price)
       end
 
       def add_bid(bid)

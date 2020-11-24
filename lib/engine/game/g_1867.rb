@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../config/game/g_1817'
+require_relative '../config/game/g_1867'
 require_relative '../loan.rb'
 require_relative 'base'
 require_relative 'interest_on_loans'
@@ -29,8 +29,7 @@ module Engine
                       white: '#fff36b',
                       yellow: '#ffdea8')
 
-      # @todo: Actually import the 1867 config
-      load_from_json(Config::Game::G1817::JSON)
+      load_from_json(Config::Game::G1867::JSON)
 
       GAME_LOCATION = 'Canada'
       GAME_RULES_URL = 'tbd'
@@ -80,15 +79,6 @@ module Engine
       include InterestOnLoans
 
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
-
-      def init_stock_market
-        @owner_when_liquidated = {}
-        super
-      end
-
-      def bankruptcy_limit_reached?
-        @players.reject(&:bankrupt).one?
-      end
 
       # @todo: unchanged to here
 

@@ -227,6 +227,11 @@ describe 'Assets' do
         'Merge',
         'Pittsburgh, Shawmut and Northern Railroad',
         'Corporations that can merge with J']],
+      ['1817', 16_852, 996, 'cash_crisis',
+       ['Player owes the bank $294 and must sell shares if possible.']],
+      ['1817', 16_281, 1183, 'buy_sell_post_conversion',
+       ['Merger Round 4.2 (of 2) - Buy/Sell Shares Post Conversion',
+        'New York, Susquehanna and Western Railway']],
     ].freeze
 
     def render_game(jsonfile, no_actions, string)
