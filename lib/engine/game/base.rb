@@ -30,7 +30,7 @@ require_relative '../train'
 module Engine
   module Game
     class Base
-      attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
+      attr_reader :actions, :bank, :cert_limit, :cities, :cobank, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
@@ -202,6 +202,8 @@ module Engine
       MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
       OBSOLETE_TRAINS_COUNT_FOR_LIMIT = false
+      SEPARATE_BANKS = false
+      COBANK_CASH = 15_000
 
       CACHABLE = [
         %i[players player],
@@ -377,6 +379,7 @@ module Engine
         @total_loans = @loans.size
         @corporations = init_corporations(@stock_market)
         @bank = init_bank
+        @cobank = self.class::SEPARATE_BANKS ? init_cobank : @bank
         @tiles = init_tiles
         @all_tiles = init_tiles
         @cert_limit = init_cert_limit
@@ -1191,6 +1194,10 @@ module Engine
         Bank.new(cash, log: @log)
       end
 
+      def init_cobank
+        Bank.new(self.class::COBANK_CASH)
+      end
+
       def init_cert_limit
         cert_limit = self.class::CERT_LIMIT
         cert_limit = cert_limit[players.reject(&:bankrupt).length] if cert_limit.is_a?(Hash)
@@ -1227,7 +1234,7 @@ module Engine
           end
         end
 
-        Depot.new(trains, self, @bank)
+        Depot.new(trains, self)
       end
 
       def num_trains(_train)

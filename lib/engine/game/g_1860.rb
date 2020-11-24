@@ -6,8 +6,6 @@ require_relative 'base'
 module Engine
   module Game
     class G1860 < Base
-      attr_reader :cobank
-
       register_colors(black: '#000000',
                       orange: '#f48221',
                       brightGreen: '#76a042',
@@ -30,6 +28,7 @@ module Engine
       SELL_AFTER = :any_time
       SELL_BUY_ORDER = :sell_buy
 
+      SEPARATE_BANKS = true
       COBANK_CASH = 15_000
 
       STOCKMARKET_COLORS = {
@@ -103,10 +102,6 @@ module Engine
         reserve_share('IOW')
       end
 
-      def init_cobank
-        Bank.new(self.class::COBANK_CASH)
-      end
-
       def reserve_share(name)
         @corporations.find { |c| c.name == name }.shares.last.buyable = false
       end
@@ -125,7 +120,7 @@ module Engine
           Step::Bankrupt,
           Step::DiscardTrain,
           Step::G1860::Track,
-          Step::G1860::Token,
+          Step::Token,
           Step::G1860::Route,
           Step::G1860::Dividend,
           Step::BuyTrain,
@@ -160,18 +155,6 @@ module Engine
 
       def or_set_finished
         check_new_layer
-      end
-
-      def init_train_handler
-        @cobank = init_cobank
-
-        trains = self.class::TRAINS.flat_map do |train|
-          (train[:num] || num_trains(train)).times.map do |index|
-            Train.new(**train, index: index)
-          end
-        end
-
-        Depot.new(trains, self, @cobank)
       end
 
       def event_fishbourne_to_bank!
