@@ -167,21 +167,21 @@ module Engine
       "35",
       "40",
       "45",
-      "50p",
-      "55p",
-      "60p",
-      "65p",
+      "50x",
+      "55x",
+      "60x",
+      "65x",
       "70p",
       "80p",
       "90p",
-      "100y",
-      "110y",
-      "120y",
-      "135y",
-      "150y",
-      "165y",
-      "180y",
-      "200y",
+      "100p",
+      "110p",
+      "120p",
+      "135p",
+      "150z",
+      "165z",
+      "180z",
+      "200z",
       "220",
       "245",
       "270",
@@ -327,6 +327,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "yellow"
     },
     {
@@ -336,6 +338,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "yellow"
     },
     {
@@ -345,6 +349,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "yellow"
     },
     {
@@ -354,6 +360,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "yellow"
     },
     {
@@ -363,6 +371,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "yellow"
     },
     {
@@ -372,6 +382,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "yellow"
     },
     {
@@ -381,6 +393,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "yellow"
     },
     {
@@ -390,6 +404,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "yellow"
     },
     {
@@ -399,6 +415,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "yellow"
     },
     {
@@ -408,6 +426,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "yellow"
     },
     {
@@ -417,6 +437,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "green"
     },
     {
@@ -426,6 +448,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "green"
     },
     {
@@ -435,6 +459,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "green"
     },
     {
@@ -444,6 +470,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "green"
     },
     {
@@ -453,6 +481,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "green"
     },
     {
@@ -462,6 +492,8 @@ module Engine
       "tokens": [
         0
       ],
+      "shares": [100],
+      "max_ownership_percent": 100,
       "color": "green"
     },
     {
@@ -513,7 +545,10 @@ module Engine
       "name": "6",
       "distance": 6,
       "price": 650,
-      "num": 2
+      "num": 2,
+      "events":[
+        {"type": "close_companies"}
+      ]
     },
     {
       "name": "7",
@@ -525,19 +560,24 @@ module Engine
       "name": "8",
       "distance": 8,
       "price": 1000,
-      "num": 6
+      "num": 6,
+      "events": [
+        {"type": "signal_end_game"}
+      ]
     },
     {
       "name": "2+2",
       "distance": 2,
       "price": 600,
-      "num": 6
+      "num": 6,
+      "available_on": "8"
     },
     {
       "name": "5+5E",
       "distance": 5,
       "price": 1500,
-      "num": 7
+      "num": 7,
+      "available_on": "8"
     }
   ],
   "hexes": {
@@ -692,11 +732,21 @@ module Engine
   },
   "phases": [
     {
+      "name": "2",
+      "train_limit": 2,
+      "tiles": [
+        "yellow"
+      ]
+    },
+    {
       "name": "3",
       "train_limit": 4,
       "tiles": [
         "yellow",
         "green"
+      ],
+      "status":[
+        "can_buy_companies"
       ]
     },
     {
@@ -705,6 +755,9 @@ module Engine
       "tiles": [
         "yellow",
         "green"
+      ],
+      "status":[
+        "can_buy_companies"
       ]
     },
     {
@@ -714,6 +767,9 @@ module Engine
         "yellow",
         "green",
         "brown"
+      ],
+      "status":[
+        "can_buy_companies"
       ]
     },
     {
@@ -738,77 +794,6 @@ module Engine
     {
       "name": "8",
       "train_limit": 2,
-      "tiles": [
-        "yellow",
-        "green",
-        "brown",
-        "gray"
-      ]
-    },
-    {
-      "name": "2+2",
-      "train_limit": 2,
-      "tiles": [
-        "yellow",
-        "green",
-        "brown",
-        "gray"
-      ]
-    },
-    {
-      "name": "5+5E",
-      "train_limit": 2,
-      "tiles": [
-        "yellow",
-        "green",
-        "brown",
-        "gray"
-      ]
-    },
-    {
-      "name": "2",
-      "train_limit": 2,
-      "tiles": [
-        "yellow"
-      ]
-    },
-    {
-      "name": "3",
-      "train_limit": 2,
-      "tiles": [
-        "yellow",
-        "green"
-      ]
-    },
-    {
-      "name": "4",
-      "train_limit": 1,
-      "tiles": [
-        "yellow",
-        "green"
-      ]
-    },
-    {
-      "name": "5",
-      "train_limit": 1,
-      "tiles": [
-        "yellow",
-        "green",
-        "brown"
-      ]
-    },
-    {
-      "name": "6",
-      "train_limit": 1,
-      "tiles": [
-        "yellow",
-        "green",
-        "brown"
-      ]
-    },
-    {
-      "name": "7",
-      "train_limit": 1,
       "tiles": [
         "yellow",
         "green",

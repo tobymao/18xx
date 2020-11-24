@@ -1156,6 +1156,13 @@ module Engine
         extra_cities.each { |c| @_cities[c.id] = c }
       end
 
+      def find_share_price(price)
+        @stock_market
+          .market[0]
+          .reverse
+          .find { |sp| sp.price <= price }
+      end
+
       def after_par(corporation)
         return unless corporation.capitalization == :incremental
 
