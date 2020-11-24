@@ -98,7 +98,7 @@ module View
         store(:tile_selector, nil, skip: true)
       end
 
-      def link(text, title, action_id = nil, style_extra = {})
+      def history_link(text, title, action_id = nil, style_extra = {})
         route = Lib::Params.add(@app_route, 'action', action_id)
 
         click = lambda do

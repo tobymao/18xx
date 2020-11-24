@@ -20,7 +20,7 @@ module View
         style_extra = { marginRight: '2rem' }
 
         unless cursor&.zero?
-          divs << link('|<', 'Start', 0, style_extra)
+          divs << history_link('|<', 'Start', 0, style_extra)
 
           last_round =
             if cursor == @game.actions.size
@@ -28,17 +28,17 @@ module View
             else
               @game.round_history[-1]
             end
-          divs << link('<<', 'Previous Round', last_round, style_extra) if last_round
+          divs << history_link('<<', 'Previous Round', last_round, style_extra) if last_round
 
-          divs << link('<', 'Previous Action', cursor ? cursor - 1 : @num_actions - 1, style_extra)
+          divs << history_link('<', 'Previous Action', cursor ? cursor - 1 : @num_actions - 1, style_extra)
         end
 
         if cursor
-          divs << link('>', 'Next Action', cursor + 1 < @num_actions ? cursor + 1 : nil, style_extra)
+          divs << history_link('>', 'Next Action', cursor + 1 < @num_actions ? cursor + 1 : nil, style_extra)
           store(:round_history, @game.round_history, skip: true) unless @round_history
           next_round = @round_history[@game.round_history.size]
-          divs << link('>>', 'Next Round', next_round, style_extra) if next_round
-          divs << link('>|', 'Current', nil, style_extra)
+          divs << history_link('>>', 'Next Round', next_round, style_extra) if next_round
+          divs << history_link('>|', 'Current', nil, style_extra)
         end
 
         h(:div, divs)
