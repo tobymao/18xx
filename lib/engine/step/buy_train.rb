@@ -53,6 +53,8 @@ module Engine
         buy_train_action(action)
         pass! unless can_buy_train?(action.entity)
       end
+
+      def swap_sell(_player, _corporation, _bundle, _pool_share); end
     end
   end
 end

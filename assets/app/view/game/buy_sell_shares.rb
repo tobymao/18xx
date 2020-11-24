@@ -23,7 +23,7 @@ module View
         if step.current_actions.include?('buy_shares')
           price_protection = step.price_protection if step.respond_to?(:price_protection)
 
-          if step.can_buy?(current_entity, ipo_share)
+          if ipo_share && step.can_buy?(current_entity, ipo_share)
             children << h(
               :button,
               { on: { click: -> { buy_share(current_entity, ipo_share) } } },
@@ -40,7 +40,8 @@ module View
             .reject { |share| share.president && pool_shares.size > 1 }
           buyables.each do |share|
             text = buyables.size > 1 || share.percent != @corporation.share_percent ? "#{share.percent}% " : ''
-            children << h(:button, { on: { click: -> { buy_share(current_entity, share) } } },
+            children << h(:button,
+                          { on: { click: -> { buy_share(current_entity, share) } } },
                           "Buy #{text}Market Share")
           end
 
@@ -52,6 +53,27 @@ module View
             )
           end
 
+          if ipo_share && (swap_share = step.swap_buy(current_entity, @corporation, ipo_share))
+            puts("ipo_share = #{ipo_share.class} with price #{ipo_share.price}")
+            reduced_price = @game.format_currency(ipo_share.price - swap_share.price)
+            children << h(
+              :button,
+              { on: { click: -> { buy_share(current_entity, ipo_share, swap: swap_share) } } },
+              "Buy #{@game.class::IPO_NAME} Share (#{reduced_price} + #{swap_share.percent}% Share)",
+            )
+          end
+
+          pool_shares.each do |pool_share|
+            next unless (swap_share = step.swap_buy(current_entity, @corporation, pool_share))
+
+            puts("pool_share = #{pool_share.class} with price #{pool_share.price}")
+            reduced_price = @game.format_currency(pool_share.price - swap_share.price)
+            children << h(
+              :button,
+              { on: { click: -> { buy_share(current_entity, pool_share, swap: swap_share) } } },
+              "Buy #{pool_share.percent}% Market Share (#{reduced_price} + #{swap_share.percent}% Share)",
+            )
+          end
         end
 
         if step.current_actions.include?('short') && step.can_short?(current_entity, @corporation)
@@ -96,8 +118,8 @@ module View
         h(:div, children)
       end
 
-      def buy_share(entity, share)
-        process_action(Engine::Action::BuyShares.new(entity, shares: share))
+      def buy_share(entity, share, swap: nil)
+        process_action(Engine::Action::BuyShares.new(entity, shares: share, swap: swap))
       end
     end
   end

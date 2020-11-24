@@ -5,7 +5,7 @@ require_relative '../share_pool'
 module Engine
   module G18TN
     class SharePool < SharePool
-      def buy_shares(entity, shares, exchange: nil, exchange_price: nil)
+      def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil)
         super
 
         return if shares.corporation.id != 'L&N' || !@game.lnr.owner
