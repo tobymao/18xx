@@ -64,7 +64,7 @@ module View
         if @corporation.corporation? && @corporation.floated? && @game.total_loans.positive?
           extras << render_buying_power
         end
-        extras << render_corporation_size if @game.show_corporation_size?
+        extras << render_corporation_size if @game.show_corporation_size?(@corporation)
         if @game.respond_to?(:available_shorts) && @game.available_shorts(@corporation).positive?
           extras << render_shorts
         end
