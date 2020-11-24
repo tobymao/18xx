@@ -9,6 +9,7 @@ module Lib
     end
 
     def self.add(route, k, v)
+      route = route.split('#')[0]
       route = route.split('?')[0]
       return route unless v
 
