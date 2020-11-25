@@ -18,7 +18,7 @@ module Engine
         ability = Object.const_get("Engine::Ability::#{klass}").new(**ability)
         ability.owner = self
         @abilities << ability
-        next unless ability.start_count
+        next unless ability.show_count
 
         @start_count = ability.start_count
       end
