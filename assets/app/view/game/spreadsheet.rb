@@ -19,6 +19,8 @@ module View
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
 
+        @players = @game.players.reject(&:bankrupt)
+
         children = []
         children << h(Bank, game: @game)
         children << render_table
@@ -117,7 +119,7 @@ module View
         [
           h(:tr, [
             h(:th, ''),
-            h(:th, th_props[@game.players.size], 'Players'),
+            h(:th, th_props[@players.size], 'Players'),
             h(:th, th_props[2, true], 'Bank'),
             h(:th, th_props[2], 'Prices'),
             h(:th, th_props[5 + extra.size, true, false], 'Corporation'),
@@ -126,7 +128,7 @@ module View
           ]),
           h(:tr, [
             h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
-            *@game.players.map do |p|
+            *@players.map do |p|
               h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
             end,
             h(:th, @game.class::IPO_NAME),
@@ -248,7 +250,7 @@ module View
 
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
-          *@game.players.map do |p|
+          *@players.map do |p|
             sold_props = { style: {} }
             if @game.round.active_step&.did_sell?(corporation, p)
               sold_props[:style][:backgroundColor] = '#9e0000'
@@ -282,35 +284,35 @@ module View
       def render_player_companies
         h(:tr, zebra_props, [
           h(:th, 'Companies'),
-          *@game.players.map { |p| render_companies(p) },
+          *@players.map { |p| render_companies(p) },
         ])
       end
 
       def render_player_cash
         h(:tr, zebra_props, [
           h('th.left', 'Cash'),
-          *@game.players.map { |p| h('td.padded_number', @game.format_currency(p.cash)) },
+          *@players.map { |p| h('td.padded_number', @game.format_currency(p.cash)) },
         ])
       end
 
       def render_player_value
         h(:tr, zebra_props(true), [
           h('th.left', 'Value'),
-          *@game.players.map { |p| h('td.padded_number', @game.format_currency(p.value)) },
+          *@players.map { |p| h('td.padded_number', @game.format_currency(p.value)) },
         ])
       end
 
       def render_player_liquidity
         h(:tr, zebra_props, [
           h('th.left', 'Liquidity'),
-          *@game.players.map { |p| h('td.padded_number', @game.format_currency(@game.liquidity(p))) },
+          *@players.map { |p| h('td.padded_number', @game.format_currency(@game.liquidity(p))) },
         ])
       end
 
       def render_player_shares
         h(:tr, zebra_props(true), [
           h('th.left', 'Shares'),
-          *@game.players.map do |p|
+          *@players.map do |p|
             h('td.padded_number', @game.all_corporations.sum { |c| c.minor? ? 0 : num_shares_of(p, c) })
           end,
         ])
@@ -321,7 +323,7 @@ module View
         props = { style: { color: 'red' } }
         h(:tr, zebra_props(true), [
           h('th.left', "Certs/#{cert_limit}"),
-          *@game.players.map { |player| render_player_cert_count(player, cert_limit, props) },
+          *@players.map { |player| render_player_cert_count(player, cert_limit, props) },
         ])
       end
 
