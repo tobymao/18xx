@@ -29,9 +29,6 @@ module Engine
       SELL_AFTER = :any_time
       SELL_BUY_ORDER = :sell_buy
 
-      SEPARATE_BANKS = true
-      COBANK_CASH = 15_000
-
       STOCKMARKET_COLORS = {
         par: :yellow,
         endgame: :orange,
