@@ -8,7 +8,7 @@ module Engine
       module Tracker
         include Step::Tracker
         def available_hex(entity, hex)
-          graph.connected_hexes(entity)[hex]
+          @game.graph.connected_hexes(entity)[hex]
         end
 
         def legal_tile_rotation?(entity, hex, tile)
@@ -48,7 +48,7 @@ module Engine
         end
 
         def path_has_town(path)
-          path.ends.any? { |en| en.class == Engine::Part::Town }
+          path.ends.any?(&:town?)
         end
       end
     end
