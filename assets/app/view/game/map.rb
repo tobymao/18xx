@@ -15,8 +15,8 @@ module View
       needs :selected_route, default: nil, store: true
       needs :selected_company, default: nil, store: true
       needs :opacity, default: nil
-      needs :show_coords, default: Lib::Storage['show_coords'], store: true
-      needs :show_location_names, default: (s = Lib::Storage['show_location_names']).nil? ? true : s, store: true
+      needs :show_coords, default: nil, store: true
+      needs :show_location_names, default: nil, store: true
       needs :show_starting_map, default: false, store: true
 
       EDGE_LENGTH = 50
@@ -48,8 +48,8 @@ module View
             entity: current_entity,
             clickable: clickable,
             actions: actions,
-            show_coords: @show_coords,
-            show_location_names: @show_location_names,
+            show_coords: show_coords,
+            show_location_names: show_location_names,
           )
         end
         @hexes.compact!
@@ -145,7 +145,7 @@ module View
       end
 
       def render_controls
-        h(MapControls, show_location_names: @show_location_names, show_coords: @show_coords)
+        h(MapControls, show_location_names: show_location_names, show_coords: show_coords)
       end
 
       def render_map
@@ -173,6 +173,20 @@ module View
               map_y: map_y),
           ]),
         ])
+      end
+
+      def show_coords
+        stored = Lib::Storage['show_coords']
+        default = stored.nil? ? false : stored
+
+        @show_coords.nil? ? default : @show_coords
+      end
+
+      def show_location_names
+        stored = Lib::Storage['show_location_names']
+        default = stored.nil? ? true : stored
+
+        @show_location_names.nil? ? default : @show_location_names
       end
     end
   end
