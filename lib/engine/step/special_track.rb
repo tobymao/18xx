@@ -16,16 +16,8 @@ module Engine
         ACTIONS
       end
 
-      def description
-        "Lay Track for #{@company.name}"
-      end
-
-      def active_entities
-        @company ? [@company] : super
-      end
-
       def blocks?
-        tile_lay_abilities(@company)&.blocks
+        false
       end
 
       def process_lay_tile(action)
@@ -62,24 +54,17 @@ module Engine
         ability || entity.abilities(:tile_lay, time: 'track', &block)
       end
 
-      def check_connect(action, tile_ability)
-        company = action.entity
-        hex_ids = tile_ability.hexes
-        return if !tile_ability&.connect || hex_ids.size < 2
+      def check_connect(_action, ability)
+        hex_ids = ability.hexes
+        return unless ability.connect
+        return if hex_ids.size < 2
+        return if !ability.start_count || ability.start_count < 2 || ability.start_count == ability.count
 
-        if company == @company
-          paths = hex_ids.flat_map do |hex_id|
-            @game.hex_by_id(hex_id).tile.paths
-          end.uniq
+        paths = hex_ids.flat_map do |hex_id|
+          @game.hex_by_id(hex_id).tile.paths
+        end.uniq
 
-          @game.game_error('Paths must be connected') if paths.size != paths[0].select(paths).size
-        end
-
-        @company = company
-      end
-
-      def setup
-        @company = nil
+        @game.game_error('Paths must be connected') if paths.size != paths[0].select(paths).size
       end
     end
   end

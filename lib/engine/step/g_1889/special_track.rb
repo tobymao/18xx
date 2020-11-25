@@ -12,6 +12,14 @@ module Engine
           blocking_for_sold_company? ? ACTIONS : super
         end
 
+        def description
+          "Lay Track for #{@company.name}"
+        end
+
+        def active_entities
+          @company ? [@company] : super
+        end
+
         def blocking?
           blocking_for_sold_company? || super
         end
@@ -33,6 +41,7 @@ module Engine
         end
 
         def blocking_for_sold_company?
+          @company = nil
           just_sold_company = @round.respond_to?(:just_sold_company) && @round.just_sold_company
 
           if just_sold_company&.abilities(:tile_lay, time: 'sold')
