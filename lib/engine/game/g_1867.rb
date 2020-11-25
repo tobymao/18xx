@@ -3,6 +3,7 @@
 require_relative '../config/game/g_1867'
 require_relative '../loan.rb'
 require_relative 'base'
+require_relative 'interest_on_loans'
 
 module Engine
   module Game
@@ -75,6 +76,7 @@ module Engine
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :gray).freeze
       MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
       CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
+      include InterestOnLoans
 
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
@@ -99,7 +101,7 @@ module Engine
         return true if entity.cash + extra_cash > interest_owed(entity)
 
         # Can they cover it using buying_power minus the full interest
-        (buying_power(entity) + extra_cash) > interest_owed_for_loans(maximum_loans(entity))
+        (buying_power(entity, true) + extra_cash) > interest_owed_for_loans(maximum_loans(entity))
       end
 
       # @todo: unchanged to here
@@ -381,7 +383,8 @@ module Engine
           @loans.any?
       end
 
-      def buying_power(entity)
+      def buying_power(entity, full = false)
+        return entity.cash unless full
         return entity.cash unless entity.corporation?
 
         # Loans are actually generate $5 less than when taken out.
@@ -501,9 +504,7 @@ module Engine
 
       # @todo: unchanged to here
       def operating_round(round_num)
-        Round::G1817::Operating.new(self, [
-
-          Step::G1867::Loan,
+        Round::Operating.new(self, [
           Step::DiscardTrain,
           Step::BuyCompany,
           Step::G1867::RedeemShares,
@@ -511,7 +512,7 @@ module Engine
           Step::Token,
           Step::Route,
           Step::G1867::Dividend,
-          # @todo: loans?
+          Step::G1867::LoanOperations,
           Step::G1867::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)

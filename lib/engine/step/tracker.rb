@@ -14,7 +14,7 @@ module Engine
         action = get_tile_lay(entity)
         return false unless action
 
-        entity.tokens.any? && (@game.buying_power(entity) >= action[:cost]) && (action[:lay] || action[:upgrade])
+        entity.tokens.any? && (buying_power(entity) >= action[:cost]) && (action[:lay] || action[:upgrade])
       end
 
       def get_tile_lay(entity)
@@ -107,6 +107,7 @@ module Engine
             @game.tile_cost(old_tile, entity) + border + extra_cost - discount
           end
 
+        try_take_loan(spender, cost)
         spender.spend(cost, @game.bank) if cost.positive?
 
         cities = tile.cities
