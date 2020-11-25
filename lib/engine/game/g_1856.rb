@@ -34,6 +34,7 @@ module Engine
 
       # These plain city hexes upgrade to L tiles in brown
       LAKE_HEXES = %w[B19 C14 F17 O18 P9 N3 L13].freeze
+      BROWN_OO_TILES = %w[64 65 66 67 68].freeze
 
       # These cities upgrade to the common BarrieLondon green tile,
       #  but upgrade to specialized brown tiles
@@ -48,6 +49,10 @@ module Engine
 
       HOME_TOKEN_TIMING = :operating_round
 
+      def gray_phase?
+        @phase.tiles.include?('gray')
+      end
+
       def setup
         @straight_city ||= @tiles.find { |t| t.name == '57' }
         @sharp_city ||= @tiles.find { |t| t.name == '5' }
@@ -58,11 +63,12 @@ module Engine
         @gentle_track ||= @tiles.find { |t| t.name == '8' }
 
         @x_city ||= @tiles.find { |t| t.name == '14' }
-        @k_city ||= @tiles.find { |t| (t.name == '15') }
-      end
+        @k_city ||= @tiles.find { |t| t.name == '15' }
 
-      def gray_phase?
-        @phase.tiles.include?('gray')
+        @brown_london ||= @tiles.find { |t| t.name == '126' }
+        @brown_barrie ||= @tiles.find { |t| t.name == '127' }
+
+        @gray_hamilton ||= @tiles.find { |t| t.name == '123' }
       end
 
       def event_nationalization!
@@ -84,18 +90,18 @@ module Engine
       def upgrades_to?(from, to, special = false)
         return false if from.name == '470'
         # double dits upgrade to Green cities in gray
-        return @phase.tiles.include? 'gray' if to.name == '14' && %w[55 1].include?(from.name)
-        return @phase.tiles.include? 'gray' if to.name == '15' && %w[56 2].include?(from.name)
+        return gray_phase? if to.name == '14' && %w[55 1].include?(from.name)
+        return gray_phase? if to.name == '15' && %w[56 2].include?(from.name)
 
         # yellow dits upgrade to yellow cities in gray
-        return @phase.tiles.include? 'gray' if to.name == '5' && from.name == '3'
-        return @phase.tiles.include? 'gray' if to.name == '57' && from.name == '4'
-        return @phase.tiles.include? 'gray' if to.name == '6' && from.name == '58'
+        return gray_phase? if to.name == '5' && from.name == '3'
+        return gray_phase? if to.name == '57' && from.name == '4'
+        return gray_phase? if to.name == '6' && from.name == '58'
 
         # yellow dits upgrade to plain track in gray
-        return @phase.tiles.include? 'gray' if to.name == '7' && from.name == '3'
-        return @phase.tiles.include? 'gray' if to.name == '9' && from.name == '4'
-        return @phase.tiles.include? 'gray' if to.name == '8' && from.name == '58'
+        return gray_phase? if to.name == '7' && from.name == '3'
+        return gray_phase? if to.name == '9' && from.name == '4'
+        return gray_phase? if to.name == '8' && from.name == '58'
 
         # Certain green cities upgrade to other labels
         return to.name == '127' if from.color == :green && from.hex.name == BARRIE_HEX
@@ -123,7 +129,8 @@ module Engine
         return upgrades unless tile_manifest
 
         # In phase 6+ single dits may be turned into plain yellow track or yellow cities
-        if @phase.tiles.include?('gray')
+        if gray_phase?
+          puts 'gray'
           upgrades |= [@straight_city, @straight_track] if tile.name == '4'
           upgrades |= [@gentle_city, @gentle_track] if tile.name == '58'
           upgrades |= [@sharp_city, @sharp_track] if tile.name == '3'
@@ -133,8 +140,10 @@ module Engine
           upgrades |= [@k_city] if tile.name == '56'
           upgrades |= [@k_city] if tile.name == '2'
         end
-        upgrades |= @tiles.find { |t| t.name == '127' } if tile.name == '125'
-        upgrades |= @tiles.find { |t| t.name == '126' } if tile.name == '125'
+        puts 'other'
+        upgrades |= [@brown_london] if tile.name == '121'
+        upgrades |= [@brown_barrie] if tile.name == '121'
+        upgrades |= [@gray_hamilton] if BROWN_OO_TILES.include?(tile.name)
         upgrades
       end
 
