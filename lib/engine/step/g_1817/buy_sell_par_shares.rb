@@ -389,6 +389,10 @@ module Engine
           [MAX_BID, @game.bidding_power(player)].min
         end
 
+        def ipo_via_par?(_entity)
+          false
+        end
+
         def can_ipo_any?(_entity)
           false
         end

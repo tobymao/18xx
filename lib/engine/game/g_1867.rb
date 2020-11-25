@@ -39,13 +39,13 @@ module Engine
 
       # @todo: unchanged from here
       MUST_BID_INCREMENT_MULTIPLE = true
-      SEED_MONEY = 200
       MUST_BUY_TRAIN = :always # mostly true, needs custom code
       POOL_SHARE_DROP = :each
-      SELL_MOVEMENT = :none
+      SELL_MOVEMENT = :left_block_pres
       ALL_COMPANIES_ASSIGNABLE = true
       SELL_AFTER = :operate
       DEV_STAGE = :prealpha
+      SELL_BUY_ORDER = :sell_buy
 
       ASSIGNMENT_TOKENS = {
         'bridge' => '/icons/1817/bridge_token.svg',
@@ -69,14 +69,14 @@ module Engine
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         'no_new_shorts' => ['Cannot gain new shorts', 'Short selling is not permitted, existing shorts remain'],
       ).freeze
-      MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'Minimum Price for a 2($55), 5($70) and 10($120) share'\
-      ' corporation taking maximum loans to ensure it avoids acquisition',
-                                            acquisition: 'Acquisition (Pay $40 dividend to move right, $80'\
-                                            ' to double jump)').freeze
-      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :gray).freeze
-      MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
+      MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'Minor Corporation Par',
+                                            par_2: 'Major Corporation Par',
+                                            par: 'Major/Minor Corporation Par').freeze
+      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :orange, par_2: :green).freeze
       CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
       include InterestOnLoans
+
+      # Minors are done as corporations with a size of 2
 
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
@@ -106,7 +106,7 @@ module Engine
 
       # @todo: unchanged to here
       def maximum_loans(entity)
-        entity.minor? ? 2 : 5
+        entity.total_shares == 2 ? 2 : 5
       end
 
       # @todo: unchanged from here
@@ -210,26 +210,6 @@ module Engine
 
             unshort(@share_pool, market_shares.first)
             count += 1
-          end
-          @log << "Market closes #{count} shorts for #{corporation.name}" if count.positive?
-        end
-      end
-
-      def close_bank_shorts
-        # Close out shorts in stock market with the bank buying shares from the treasury
-        @corporations.each do |corporation|
-          count = 0
-          while entity_shorts(@share_pool, corporation).any? &&
-            corporation.shares.any?
-
-            # Market buys the share
-            share = corporation.shares.first
-            @share_pool.buy_shares(@share_pool, share)
-
-            # Then closes the share
-            unshort(@share_pool, share)
-            count += 1
-
           end
           @log << "Market closes #{count} shorts for #{corporation.name}" if count.positive?
         end
@@ -431,8 +411,8 @@ module Engine
                           "#{format_currency(per_share)} (#{receivers})"
         end
 
-        # Close corp
-        if corporation.minor?
+        # Close corp (minors close, majors reset)
+        if corporation.total_shares == 2
           close_corporation(corporation)
         else
           reset_corporation(corporation)
@@ -440,12 +420,6 @@ module Engine
       end
 
       # @todo Unchanged from here
-      def find_share_price(price)
-        @stock_market
-          .market[0]
-          .reverse
-          .find { |sp| sp.price <= price }
-      end
 
       def revenue_for(route, stops)
         revenue = super
@@ -492,13 +466,10 @@ module Engine
       # @todo: unchanged from here
 
       def stock_round
-        close_bank_shorts
-        @interest_fixed = nil
-
-        Round::G1817::Stock.new(self, [
+        Round::Stock.new(self, [
           Step::DiscardTrain,
           Step::HomeToken,
-          Step::G1817::BuySellParShares,
+          Step::G1867::BuySellParShares,
         ])
       end
 
