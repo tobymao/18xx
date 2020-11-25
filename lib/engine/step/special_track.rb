@@ -16,16 +16,8 @@ module Engine
         ACTIONS
       end
 
-      def description
-        "Lay Track for #{@company.name}"
-      end
-
-      def active_entities
-        @company ? [@company] : super
-      end
-
       def blocks?
-        tile_lay_abilities(@company)&.blocks
+        false
       end
 
       def process_lay_tile(action)
@@ -73,10 +65,6 @@ module Engine
         end.uniq
 
         @game.game_error('Paths must be connected') if paths.size != paths[0].select(paths).size
-      end
-
-      def setup
-        @company = nil
       end
     end
   end
