@@ -185,6 +185,23 @@ module Engine
         end
       end
 
+      def check_distance(route, visits)
+        super
+
+        distance = route.train.distance
+
+        return if distance.is_a?(Numeric)
+
+        cities_allowed = distance.find { |d| d['nodes'].include?('city') }['pay']
+        cities_visited = visits.count { |v| v.city? || v.offboard? }
+        start_at_town = visits.first.town? ? 1 : 0
+        end_at_town = visits.last.town? ? 1 : 0
+
+        return unless cities_allowed < (cities_visited + start_at_town + end_at_town)
+
+        game_error('Towns on route ends are counted against city limit.')
+      end
+
       def revenue_for(route, stops)
         revenue = super
 
