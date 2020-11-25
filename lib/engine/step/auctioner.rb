@@ -15,6 +15,10 @@ module Engine
 
       attr_reader :bids
 
+      def auctioneer?
+        true
+      end
+
       def pass_description
         if auctioning
           "Pass (on #{auctioning.id})"
@@ -93,7 +97,7 @@ module Engine
         bids << bid
       end
 
-      def committed_bids_for_player(player)
+      def bids_for_player(player)
         @bids.values.map do |bids|
           if @game.class::ONLY_HIGHEST_BID_COMMITTED
             highest_bid = bids.max_by(&:price)

@@ -33,6 +33,10 @@ module Engine
           :ignore_one_sale
         when /s/
           :safe_par
+        when /x/
+          :par_1
+        when /z/
+          :par_2
         end
 
       SharePrice.new([row, column],

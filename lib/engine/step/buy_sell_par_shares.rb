@@ -136,13 +136,13 @@ module Engine
       end
 
       def process_buy_shares(action)
-        buy_shares(action.entity, action.bundle)
+        buy_shares(action.entity, action.bundle, swap: action.swap)
         @round.last_to_act = action.entity
         @current_actions << action
       end
 
       def process_sell_shares(action)
-        sell_shares(action.entity, action.bundle)
+        sell_shares(action.entity, action.bundle, swap: action.swap)
         @round.last_to_act = action.entity
         @current_actions << action
       end
@@ -202,6 +202,10 @@ module Engine
         !bought? && @game.corporations.any? { |c| c.can_par?(entity) && can_buy?(entity, c.shares.first&.to_bundle) }
       end
 
+      def ipo_via_par?(_entity)
+        true
+      end
+
       def purchasable_companies(entity)
         return [] if bought? ||
           !entity.cash.positive? ||
@@ -217,11 +221,11 @@ module Engine
           .select { |p| p.price * 2 <= entity.cash }
       end
 
-      def sell_shares(entity, shares)
-        @game.game_error("Cannot sell shares of #{shares.corporation.name}") unless can_sell?(entity, shares)
+      def sell_shares(entity, shares, swap: nil)
+        @game.game_error("Cannot sell shares of #{shares.corporation.name}") if !can_sell?(entity, shares) && !swap
 
         @round.players_sold[shares.owner][shares.corporation] = :now
-        @game.sell_shares_and_change_price(shares)
+        @game.sell_shares_and_change_price(shares, swap: swap)
       end
 
       def bought?

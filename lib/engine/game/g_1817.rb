@@ -3,6 +3,7 @@
 require_relative '../config/game/g_1817'
 require_relative '../loan.rb'
 require_relative 'base'
+require_relative 'interest_on_loans'
 
 module Engine
   module Game
@@ -77,6 +78,7 @@ module Engine
       MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
       CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
 
+      include InterestOnLoans
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
       def init_cert_limit
@@ -416,7 +418,7 @@ module Engine
         '2 shares to start'
       end
 
-      def buying_power(entity)
+      def buying_power(entity, _full = false)
         return entity.cash unless entity.corporation?
 
         entity.cash + ((maximum_loans(entity) - entity.loans.size) * @loan_value)
@@ -425,13 +427,6 @@ module Engine
       def liquidate!(corporation)
         @owner_when_liquidated[corporation] = corporation.owner
         @stock_market.move(corporation, 0, 0, force: true)
-      end
-
-      def find_share_price(price)
-        @stock_market
-          .market[0]
-          .reverse
-          .find { |sp| sp.price <= price }
       end
 
       def revenue_for(route, stops)

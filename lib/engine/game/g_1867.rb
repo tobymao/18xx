@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-require_relative '../config/game/g_1817'
+require_relative '../config/game/g_1867'
 require_relative '../loan.rb'
 require_relative 'base'
+require_relative 'interest_on_loans'
 
 module Engine
   module Game
@@ -28,8 +29,7 @@ module Engine
                       white: '#fff36b',
                       yellow: '#ffdea8')
 
-      # @todo: Actually import the 1867 config
-      load_from_json(Config::Game::G1817::JSON)
+      load_from_json(Config::Game::G1867::JSON)
 
       GAME_LOCATION = 'Canada'
       GAME_RULES_URL = 'tbd'
@@ -39,13 +39,13 @@ module Engine
 
       # @todo: unchanged from here
       MUST_BID_INCREMENT_MULTIPLE = true
-      SEED_MONEY = 200
       MUST_BUY_TRAIN = :always # mostly true, needs custom code
       POOL_SHARE_DROP = :each
-      SELL_MOVEMENT = :none
+      SELL_MOVEMENT = :left_block_pres
       ALL_COMPANIES_ASSIGNABLE = true
       SELL_AFTER = :operate
       DEV_STAGE = :prealpha
+      SELL_BUY_ORDER = :sell_buy
 
       ASSIGNMENT_TOKENS = {
         'bridge' => '/icons/1817/bridge_token.svg',
@@ -69,24 +69,16 @@ module Engine
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         'no_new_shorts' => ['Cannot gain new shorts', 'Short selling is not permitted, existing shorts remain'],
       ).freeze
-      MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'Minimum Price for a 2($55), 5($70) and 10($120) share'\
-      ' corporation taking maximum loans to ensure it avoids acquisition',
-                                            acquisition: 'Acquisition (Pay $40 dividend to move right, $80'\
-                                            ' to double jump)').freeze
-      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :gray).freeze
-      MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
+      MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'Minor Corporation Par',
+                                            par_2: 'Major Corporation Par',
+                                            par: 'Major/Minor Corporation Par').freeze
+      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :orange, par_2: :green).freeze
       CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
+      include InterestOnLoans
+
+      # Minors are done as corporations with a size of 2
 
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
-
-      def init_stock_market
-        @owner_when_liquidated = {}
-        super
-      end
-
-      def bankruptcy_limit_reached?
-        @players.reject(&:bankrupt).one?
-      end
 
       # @todo: unchanged to here
 
@@ -109,12 +101,12 @@ module Engine
         return true if entity.cash + extra_cash > interest_owed(entity)
 
         # Can they cover it using buying_power minus the full interest
-        (buying_power(entity) + extra_cash) > interest_owed_for_loans(maximum_loans(entity))
+        (buying_power(entity, true) + extra_cash) > interest_owed_for_loans(maximum_loans(entity))
       end
 
       # @todo: unchanged to here
       def maximum_loans(entity)
-        entity.minor? ? 2 : 5
+        entity.total_shares == 2 ? 2 : 5
       end
 
       # @todo: unchanged from here
@@ -218,26 +210,6 @@ module Engine
 
             unshort(@share_pool, market_shares.first)
             count += 1
-          end
-          @log << "Market closes #{count} shorts for #{corporation.name}" if count.positive?
-        end
-      end
-
-      def close_bank_shorts
-        # Close out shorts in stock market with the bank buying shares from the treasury
-        @corporations.each do |corporation|
-          count = 0
-          while entity_shorts(@share_pool, corporation).any? &&
-            corporation.shares.any?
-
-            # Market buys the share
-            share = corporation.shares.first
-            @share_pool.buy_shares(@share_pool, share)
-
-            # Then closes the share
-            unshort(@share_pool, share)
-            count += 1
-
           end
           @log << "Market closes #{count} shorts for #{corporation.name}" if count.positive?
         end
@@ -391,7 +363,8 @@ module Engine
           @loans.any?
       end
 
-      def buying_power(entity)
+      def buying_power(entity, full = false)
+        return entity.cash unless full
         return entity.cash unless entity.corporation?
 
         # Loans are actually generate $5 less than when taken out.
@@ -438,8 +411,8 @@ module Engine
                           "#{format_currency(per_share)} (#{receivers})"
         end
 
-        # Close corp
-        if corporation.minor?
+        # Close corp (minors close, majors reset)
+        if corporation.total_shares == 2
           close_corporation(corporation)
         else
           reset_corporation(corporation)
@@ -447,12 +420,6 @@ module Engine
       end
 
       # @todo Unchanged from here
-      def find_share_price(price)
-        @stock_market
-          .market[0]
-          .reverse
-          .find { |sp| sp.price <= price }
-      end
 
       def revenue_for(route, stops)
         revenue = super
@@ -499,21 +466,16 @@ module Engine
       # @todo: unchanged from here
 
       def stock_round
-        close_bank_shorts
-        @interest_fixed = nil
-
-        Round::G1817::Stock.new(self, [
+        Round::Stock.new(self, [
           Step::DiscardTrain,
           Step::HomeToken,
-          Step::G1817::BuySellParShares,
+          Step::G1867::BuySellParShares,
         ])
       end
 
       # @todo: unchanged to here
       def operating_round(round_num)
-        Round::G1817::Operating.new(self, [
-
-          Step::G1867::Loan,
+        Round::Operating.new(self, [
           Step::DiscardTrain,
           Step::BuyCompany,
           Step::G1867::RedeemShares,
@@ -521,7 +483,7 @@ module Engine
           Step::Token,
           Step::Route,
           Step::G1867::Dividend,
-          # @todo: loans?
+          Step::G1867::LoanOperations,
           Step::G1867::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)

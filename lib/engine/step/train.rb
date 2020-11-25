@@ -10,11 +10,11 @@ module Engine
       def can_buy_train?(entity = nil)
         entity ||= current_entity
         can_buy_normal = room?(entity) &&
-          @game.buying_power(entity) >= @depot.min_price(entity)
+          buying_power(entity) >= @depot.min_price(entity)
 
         can_buy_normal || @depot
           .discountable_trains_for(entity)
-          .any? { |_, _, price| @game.buying_power(entity) >= price }
+          .any? { |_, _, price| buying_power(entity) >= price }
       end
 
       def room?(entity)
@@ -44,7 +44,7 @@ module Engine
         @game.game_error('Not a buyable train') unless buyable_train_variants(train, entity).include?(train.variant)
         @game.game_error('Must pay face value') if must_pay_face_value?(train, entity, price)
 
-        remaining = price - entity.cash
+        remaining = price - buying_power(entity)
         if remaining.positive? && must_buy_train?(entity)
           cheapest = @depot.min_depot_train
           @game.game_error("Cannot purchase #{train.name} train: #{cheapest.name} train available") if
@@ -75,6 +75,7 @@ module Engine
 
         @game.flush_log!
 
+        try_take_loan(entity, price)
         entity.buy_train(train, price)
         pass! unless can_buy_train?(entity)
       end
@@ -90,7 +91,6 @@ module Engine
         @last_share_sold_price = action.bundle.price_per_share
         super
         @corporations_sold << action.bundle.corporation
-        @round.recalculate_order
       end
 
       def needed_cash(_entity)
@@ -169,16 +169,16 @@ module Engine
       end
 
       def spend_minmax(entity, train)
-        if @game.class::EBUY_OTHER_VALUE && (entity.cash < train.price)
+        if @game.class::EBUY_OTHER_VALUE && (buying_power(entity) < train.price)
           min = if @last_share_sold_price
-                  (entity.cash + entity.owner.cash) - @last_share_sold_price + 1
+                  (buying_power(entity) + entity.owner.cash) - @last_share_sold_price + 1
                 else
                   1
                 end
-          max = [train.price, entity.cash + entity.owner.cash].min
+          max = [train.price, buying_power(entity) + entity.owner.cash].min
           [min, max]
         else
-          [1, entity.cash]
+          [1, buying_power(entity)]
         end
       end
 

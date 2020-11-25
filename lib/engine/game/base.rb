@@ -699,16 +699,18 @@ module Engine
         self.class::SELL_AFTER == :first ? @turn > 1 : true
       end
 
-      def sell_shares_and_change_price(bundle, allow_president_change: true)
+      def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
         corporation = bundle.corporation
         price = corporation.share_price.price
         was_president = corporation.president?(bundle.owner)
-        @share_pool.sell_shares(bundle, allow_president_change: allow_president_change)
+        @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
         case self.class::SELL_MOVEMENT
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
         when :down_per_10
-          (bundle.percent / 10).to_i.times { @stock_market.move_down(corporation) }
+          percent = bundle.percent
+          percent -= swap.percent if swap
+          (percent / 10).to_i.times { @stock_market.move_down(corporation) }
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
         when :none
@@ -1131,7 +1133,7 @@ module Engine
           liquidity(player, emergency: true)
       end
 
-      def buying_power(entity)
+      def buying_power(entity, _full = false)
         entity.cash + (issuable_shares(entity).map(&:price).max || 0)
       end
 
@@ -1152,6 +1154,13 @@ module Engine
         extra_cities = new_tile.cities
         @cities.concat(extra_cities)
         extra_cities.each { |c| @_cities[c.id] = c }
+      end
+
+      def find_share_price(price)
+        @stock_market
+          .market[0]
+          .reverse
+          .find { |sp| sp.price <= price }
       end
 
       def after_par(corporation)

@@ -43,6 +43,16 @@ module Engine
       GREEN_TOWN_TILES = %w[co8 co9 co10].freeze
       BROWN_CITY_TILES = %w[co4 63].freeze
 
+      STOCKMARKET_COLORS = {
+        par: :yellow,
+        acquisition: :red,
+      }.freeze
+
+      MARKET_TEXT = {
+        par: 'Par: C [40, 50, 60, 75] - 40%, B/C [80, 90, 100, 110] - 50%, A/B/C: [120, 135, 145, 160] - 60%',
+        acquisition: 'Acquisition: Corporation assets will be auctioned if entering Stock Round',
+      }.freeze
+
       PAR_FLOAT_GROUPS = {
         20 => %w[X],
         40 => %w[C B A],
