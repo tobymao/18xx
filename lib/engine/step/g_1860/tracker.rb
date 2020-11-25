@@ -113,7 +113,7 @@ module Engine
               @game.tile_cost(old_tile, entity) + border + extra_cost - discount
             end
 
-          spender.spend(cost, @game.cobank) if cost.positive?
+          spender.spend(cost, @game.bank) if cost.positive?
 
           cities = tile.cities
           if old_tile.paths.empty? &&
@@ -140,7 +140,7 @@ module Engine
             if terrain.include?(ability.terrain) && (!ability.owner_only || company.owner == entity)
               # If multiple borders are connected bonus counts each individually
               income = ability.income * terrain.find_all { |t| t == ability.terrain }.size
-              @game.cobank.spend(income, company.owner)
+              @game.bank.spend(income, company.owner)
               @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
                 " for the #{ability.terrain} tile built by #{company.name}"
             end

@@ -37,7 +37,7 @@ module Engine
 
           log_run_payout(entity, kind, revenue, subsidy, action, payout)
 
-          @game.cobank.spend(payout[:corporation], entity) if payout[:corporation].positive?
+          @game.bank.spend(payout[:corporation], entity) if payout[:corporation].positive?
 
           payout_shares(entity, revenue) if payout[:per_share].positive?
 

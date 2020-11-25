@@ -41,7 +41,7 @@ module Engine
         free = !token.price.positive?
         city.place_token(entity, token, free: free, cheater: special_ability&.cheater)
         unless free
-          entity.spend(token.price, @game.cobank)
+          entity.spend(token.price, @game.bank)
           price_log = " for #{@game.format_currency(token.price)}"
         end
 

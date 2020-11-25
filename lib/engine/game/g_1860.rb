@@ -2,6 +2,7 @@
 
 require_relative '../config/game/g_1860'
 require_relative 'base'
+require_relative '../g_1860/bank'
 
 module Engine
   module Game
@@ -86,6 +87,11 @@ module Engine
         775
       ].freeze
 
+      def init_bank
+        # amount doesn't matter here
+        Engine::G1860::Bank.new(20_000, self, log: @log)
+      end
+
       def setup
         @bankrupt_corps = []
         @receivership_corps = []
@@ -157,6 +163,10 @@ module Engine
         check_new_layer
       end
 
+      def bank_cash
+        self.class::BANK_CASH - @players.sum(&:cash)
+      end
+
       def event_fishbourne_to_bank!
         ffc = @companies.find { |c| c.sym == 'FFC' }
         ffc.owner = @bank
@@ -166,7 +176,7 @@ module Engine
       def float_corporation(corporation)
         @log << "#{corporation.name} floats"
 
-        @cobank.spend(corporation.par_price.price * 10, corporation)
+        @bank.spend(corporation.par_price.price * 10, corporation)
         @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
       end
 

@@ -12,7 +12,7 @@ module Engine
       @trains.each { |train| train.owner = self }
       @upcoming = @trains.dup
       @discarded = []
-      @bank = game.cobank
+      @bank = @game.bank
     end
 
     def export!
