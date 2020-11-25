@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
 require 'view/game/actionable'
+require 'view/game/button/buy_share'
 
 module View
   module Game
     class CorporateBuyShares < Snabberb::Component
       include Actionable
-
-      needs :game, store: true
 
       def render
         @step = @game.round.active_step
@@ -29,11 +28,13 @@ module View
         }
 
         @step.source_list(@entity).map do |source|
+          next if source.corporation? && !@game.corporation_available?(source)
+
           children = []
           if source.player?
             children << h(Player, player: source, game: @game)
             children << render_player_input(source)
-          elsif source.corporation? && @game.corporation_available?(source)
+          elsif source.corporation?
             children << h(Corporation, corporation: source)
             children << render_corporation_input(source)
           end
@@ -44,52 +45,36 @@ module View
       def render_player_input(player)
         return unless @step.current_actions.include?('corporate_buy_shares')
 
-        input = []
-        player.shares.group_by(&:corporation).values.each do |corp_shares|
-          input << render_player_buttons(corp_shares.group_by(&:percent).values.map(&:first))
-        end
+        input = player.shares.group_by(&:corporation).values.map do |corp_shares|
+          render_buttons(corp_shares.group_by(&:percent).values.map(&:first),
+                         source: corp_shares.first.corporation.name)
+        end.compact
 
-        h('div.margined_bottom', { style: { width: '20rem' } }, input.compact)
-      end
-
-      def render_player_buttons(shares)
-        children = []
-
-        shares
-          .select { |share| @step.can_buy?(@entity, share.to_bundle) }
-          .each do |share|
-            corp = share.corporation.name
-            text = shares.size > 1 ? "Buy #{share.percent}% #{corp} Share" : "Buy #{corp} Share"
-            children << h(:button, { on: { click: -> { buy_share(@entity, share) } } }, text)
-          end
-
-        h(:div, children) if children.any?
+        h('div.margined_bottom', { style: { width: '20rem' } }, input) if input.any?
       end
 
       def render_corporation_input(corporation)
         return unless @step.current_actions.include?('corporate_buy_shares')
 
         pool_shares = @game.share_pool.shares_by_corporation[corporation].group_by(&:percent).values.map(&:first)
-        input = [render_corporation_buttons(pool_shares)]
+        input = [render_buttons(pool_shares)].compact
 
-        h('div.margined_bottom', { style: { width: '20rem' } }, input.compact)
+        h('div.margined_bottom', { style: { width: '20rem' } }, input) if input.any?
       end
 
-      def render_corporation_buttons(shares)
-        children = []
+      def render_buttons(shares, source: 'Market')
+        children = shares.map do |share|
+          next unless @step.can_buy?(@entity, share.to_bundle)
 
-        shares
-          .select { |share| @step.can_buy?(@entity, share.to_bundle) }
-          .each do |share|
-            text = shares.size > 1 ? "Buy #{share.percent}% Market Share" : 'Buy Market Share'
-            children << h(:button, { on: { click: -> { buy_share(@entity, share) } } }, text)
-          end
+          h(Button::BuyShare,
+            share: share,
+            entity: @entity,
+            source: source,
+            percentages_available: shares.size,
+            action: Engine::Action::CorporateBuyShares)
+        end.compact
 
         h(:div, children) if children.any?
-      end
-
-      def buy_share(entity, share)
-        process_action(Engine::Action::CorporateBuyShares.new(entity, shares: share))
       end
     end
   end
