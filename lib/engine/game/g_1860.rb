@@ -173,13 +173,6 @@ module Engine
         @log << "#{ffc.name} is now available for purchase from the Bank"
       end
 
-      def float_corporation(corporation)
-        @log << "#{corporation.name} floats"
-
-        @bank.spend(corporation.par_price.price * 10, corporation)
-        @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
-      end
-
       def corp_bankrupt?(corp)
         @bankrupt_corps.include?(corp)
       end
