@@ -39,6 +39,7 @@ module Engine
       #  but upgrade to specialized brown tiles
       BARRIE_HEX = 'M4'
       LONDON_HEX = 'F15'
+      HAMILTON_HEX = 'L15'
 
       GAME_LOCATION = 'Ontario, Canada'
       GAME_RULES_URL = 'http://google.com'
@@ -46,6 +47,96 @@ module Engine
       GAME_INFO_URL = 'https://google.com'
 
       HOME_TOKEN_TIMING = :operating_round
+
+      def setup
+        @straight_city ||= @tiles.find { |t| t.name == '57' }
+        @sharp_city ||= @tiles.find { |t| t.name == '5' }
+        @gentle_city ||= @tiles.find { |t| t.name == '6' }
+
+        @straight_track ||= @tiles.find { |t| t.name == '9' }
+        @sharp_track ||= @tiles.find { |t| t.name == '7' }
+        @gentle_track ||= @tiles.find { |t| t.name == '8' }
+
+        @x_city ||= @tiles.find { |t| t.name == '14' }
+        @k_city ||= @tiles.find { |t| (t.name == '15') }
+      end
+
+      def gray_phase?
+        @phase.tiles.include?('gray')
+      end
+
+      def event_nationalization!
+        @log << '-- Event: CGR merger --'
+        # starting with the player who bought the 6 train, go around the table repaying loans
+
+        # player picks order of their companies.
+        # set aside compnanies that do not repay succesfully
+
+        # starting with the player who bought the 6 train, go around the table trading shares
+        # trade all shares
+      end
+
+      #
+      # Get the currently possible upgrades for a tile
+      # from: Tile - Tile to upgrade from
+      # to: Tile - Tile to upgrade to
+      # special - ???
+      def upgrades_to?(from, to, special = false)
+        return false if from.name == '470'
+        # double dits upgrade to Green cities in gray
+        return @phase.tiles.include? 'gray' if to.name == '14' && %w[55 1].include?(from.name)
+        return @phase.tiles.include? 'gray' if to.name == '15' && %w[56 2].include?(from.name)
+
+        # yellow dits upgrade to yellow cities in gray
+        return @phase.tiles.include? 'gray' if to.name == '5' && from.name == '3'
+        return @phase.tiles.include? 'gray' if to.name == '57' && from.name == '4'
+        return @phase.tiles.include? 'gray' if to.name == '6' && from.name == '58'
+
+        # yellow dits upgrade to plain track in gray
+        return @phase.tiles.include? 'gray' if to.name == '7' && from.name == '3'
+        return @phase.tiles.include? 'gray' if to.name == '9' && from.name == '4'
+        return @phase.tiles.include? 'gray' if to.name == '8' && from.name == '58'
+
+        # Certain green cities upgrade to other labels
+        return to.name == '127' if from.color == :green && from.hex.name == BARRIE_HEX
+        return to.name == '126' if from.color == :green && from.hex.name == LONDON_HEX
+        # You may lay the brown 5-spoke L if and only if it is laid on a L hex -
+        # NOT EVEN IF YOU GREEN A DOUBLE DIT ON A LAKE EDTGE
+        return to.name == '125' if from.color == :green && LAKE_HEXES.include?(from.hex.name)
+        # The L hexes on the map start as plain yellow cities
+        return %w[5 6 57].include?(to.name) if LAKE_HEXES.include?(from.hex.name) && from.color == 'white'
+        # B,L to B-L
+        return to.name == '121' if from.color == :yellow && [BARRIE_HEX, LONDON_HEX].include?(from.hex.name)
+        # Hamilton OO upgrade is yet another case of ignoring labels in upgrades
+        return to.name == '123' if from.color == :brown && from.hex.name == HAMILTON_HEX
+
+        super
+      end
+
+      #
+      # Get all possible upgrades for a tile
+      # tile: The tile to be upgraded
+      # tile_manifest: true/false Is this being called from the tile manifest screen
+      #
+      def all_potential_upgrades(tile, tile_manifest: false)
+        upgrades = super
+        return upgrades unless tile_manifest
+
+        # In phase 6+ single dits may be turned into plain yellow track or yellow cities
+        if @phase.tiles.include?('gray')
+          upgrades |= [@straight_city, @straight_track] if tile.name == '4'
+          upgrades |= [@gentle_city, @gentle_track] if tile.name == '58'
+          upgrades |= [@sharp_city, @sharp_track] if tile.name == '3'
+          # furthermore, double dits may be upgraded to green cities, if track can be preserved
+          upgrades |= [@x_city] if tile.name == '55'
+          upgrades |= [@x_city] if tile.name == '1'
+          upgrades |= [@k_city] if tile.name == '56'
+          upgrades |= [@k_city] if tile.name == '2'
+        end
+        upgrades |= @tiles.find { |t| t.name == '127' } if tile.name == '125'
+        upgrades |= @tiles.find { |t| t.name == '126' } if tile.name == '125'
+        upgrades
+      end
 
       # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
       STATUS_TEXT = {
@@ -88,14 +179,18 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
-          Step::Exchange,
+          # No exchanges.
           Step::DiscardTrain,
+          # Step::TakeLoans
+          Step::SpecialTrack,
           Step::BuyCompany,
-          Step::Track,
+          Step::G1856::Track,
           Step::Token,
           Step::Route,
+          # Step::Interest,
           Step::Dividend,
           Step::BuyTrain,
+          # Step::RepayLoans,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
