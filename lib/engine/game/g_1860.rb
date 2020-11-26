@@ -2,6 +2,7 @@
 
 require_relative '../config/game/g_1860'
 require_relative 'base'
+require_relative '../g_1860/bank'
 
 module Engine
   module Game
@@ -27,6 +28,20 @@ module Engine
       HOME_TOKEN_TIMING = :float
       SELL_AFTER = :any_time
       SELL_BUY_ORDER = :sell_buy
+
+      STOCKMARKET_COLORS = {
+        par: :yellow,
+        endgame: :orange,
+        close: :purple,
+        repar: :gray,
+        ignore_one_sale: :olive,
+        multiple_buy: :brown,
+        unlimited: :orange,
+        no_cert_limit: :yellow,
+        liquidation: :red,
+        acquisition: :yellow,
+        safe_par: :white,
+      }.freeze
 
       HALT_SUBSIDY = 10
 
@@ -69,6 +84,11 @@ module Engine
         775
       ].freeze
 
+      def init_bank
+        # amount doesn't matter here
+        Engine::G1860::Bank.new(20_000, self, log: @log)
+      end
+
       def setup
         @bankrupt_corps = []
         @receivership_corps = []
@@ -105,7 +125,7 @@ module Engine
           Step::G1860::Track,
           Step::Token,
           Step::G1860::Route,
-          Step::Dividend,
+          Step::G1860::Dividend,
           Step::BuyTrain,
         ], round_num: round_num)
       end
@@ -138,6 +158,10 @@ module Engine
 
       def or_set_finished
         check_new_layer
+      end
+
+      def bank_cash
+        self.class::BANK_CASH - @players.sum(&:cash)
       end
 
       def event_fishbourne_to_bank!

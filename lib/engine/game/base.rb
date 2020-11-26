@@ -1640,6 +1640,10 @@ module Engine
         end
       end
 
+      def bank_cash
+        @bank.cash
+      end
+
       def bankruptcy_limit_reached?
         @players.any?(&:bankrupt)
       end
