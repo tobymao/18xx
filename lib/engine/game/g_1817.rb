@@ -36,6 +36,8 @@ module Engine
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
       GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
+      PITTSBURGH_PRIVATE_NAME = 'PSM'
+      PITTSBURGH_PRIVATE_HEX = 'F13'
 
       MUST_BID_INCREMENT_MULTIPLE = true
       SEED_MONEY = 200
