@@ -76,15 +76,23 @@ module View
           h(:text, { attrs: attrs }, text)
         end
 
+        def cheater_token(entity)
+          token_abilities = entity.abilities(:token)
+          return nil if token_abilities.empty?
+
+          token_abilities&.cheater
+        end
+
         def on_click(event)
           return if @tile_selector&.is_a?(Lib::TileSelector)
 
           step = @game.round.active_step(@selected_company)
           entity = @selected_company || step.current_entity
           actions = step.actions(entity)
+
           return if (%w[remove_token place_token] & actions).empty?
-          return if @token && !step.can_replace_token?(entity, @token) &&
-                    !(cheater = entity.abilities(:token)&.cheater)
+
+          return if @token && !step.can_replace_token?(entity, @token) && !(cheater = cheater_token(entity))
 
           event.JS.stopPropagation
 
