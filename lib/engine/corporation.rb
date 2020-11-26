@@ -25,7 +25,8 @@ module Engine
     include Transfer
 
     attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization
-    attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :type, :always_market_price
+    attr_reader :companies, :min_price, :name, :full_name
+    attr_reader :fraction_shares, :type, :always_market_price
     attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
