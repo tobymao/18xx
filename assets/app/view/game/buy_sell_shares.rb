@@ -17,10 +17,10 @@ module View
         @current_entity = @step.current_entity
 
         @ipo_shares = @corporation.shares.group_by(&:percent).values
-          .map(&:first).sort { |a, b| b.percent <=> a.percent }
+          .map(&:first).sort.reverse
 
         @pool_shares = @game.share_pool.shares_by_corporation[@corporation].group_by(&:percent).values
-          .map(&:first).sort { |a, b| b.percent <=> a.percent }
+          .map(&:first).sort.reverse
 
         children = []
 
@@ -44,7 +44,7 @@ module View
         children.concat(render_reduced_price_shares(@ipo_shares, source: @game.class::IPO_NAME))
         children.concat(render_reduced_price_shares(@pool_shares))
 
-        children.compact
+        children
       end
 
       # Put up one buy button for each buyable percentage share type in market.
@@ -60,7 +60,7 @@ module View
             share: share,
             entity: @current_entity,
             percentages_available: @pool_shares.size)
-        end.compact
+        end
       end
 
       def render_ipo_shares
@@ -72,7 +72,7 @@ module View
             entity: @current_entity,
             percentages_available: @ipo_shares.size,
             source: @game.class::IPO_NAME)
-        end.compact
+        end
       end
 
       def render_price_protection
@@ -144,7 +144,7 @@ module View
             percentages_available: shares.size,
             prefix: "Exchange #{company.sym} for ",
             source: source)
-        end.compact
+        end
       end
     end
   end
