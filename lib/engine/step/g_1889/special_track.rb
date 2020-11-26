@@ -1,55 +1,24 @@
 # frozen_string_literal: true
 
 require_relative '../special_track'
+require_relative '../tile_lay_when_company_sold'
 
 module Engine
   module Step
     module G1889
       class SpecialTrack < SpecialTrack
-        ACTIONS = %w[lay_tile pass].freeze
-
-        def actions(entity)
-          blocking_for_sold_company? ? ACTIONS : super
-        end
-
-        def description
-          "Lay Track for #{@company.name}"
-        end
-
-        def active_entities
-          @company ? [@company] : super
-        end
-
-        def blocking?
-          blocking_for_sold_company? || super
-        end
+        include TileLayWhenCompanySold
 
         def process_lay_tile(action)
           return super unless action.entity == @company
 
-          lay_tile(action, spender: @round.company_sellers.first)
-          tile_lay_abilities(action.entity).use!
-        end
-
-        def process_pass(action)
-          @game.game_error("Not #{action.entity.name}'s turn: #{action.to_h}") unless action.entity == @company
-
+          entity = action.entity
           ability = @company.abilities(:tile_lay, time: 'sold')
-          @company.remove_ability(ability)
-          @log << "#{action.entity.name} passes lay track"
-          pass!
-        end
+          @game.game_error("Not #{entity.name}'s turn: #{action.to_h}") unless entity == @company
 
-        def blocking_for_sold_company?
-          @company = nil
-          just_sold_company = @round.respond_to?(:just_sold_company) && @round.just_sold_company
-
-          if just_sold_company&.abilities(:tile_lay, time: 'sold')
-            @company = just_sold_company
-            return true
-          end
-
-          false
+          lay_tile(action, spender: @round.company_sellers.first)
+          check_connect(action, ability)
+          ability.use!
         end
       end
     end
