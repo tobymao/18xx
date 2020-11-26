@@ -126,11 +126,7 @@ module View
           },
         }
 
-        extra = []
-        extra << h(:th, render_sort_link('Loans', :loans)) if @game.total_loans&.nonzero?
-        extra << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
-        extra << h(:th, render_sort_link('Size', :size)) if @show_corporation_size
-        [
+        top =
           h(:tr, [
             h(:th, ''),
             h(:th, th_props[@players.size], 'Players'),
@@ -139,30 +135,38 @@ module View
             h(:th, th_props[5 + extra.size, true, false], 'Corporation'),
             h(:th, ''),
             h(:th, th_props[or_history_titles.size, false, false], 'OR History'),
-          ]),
-          h(:tr, [
-            h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
-            *@players.map do |p|
-              h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
-            end,
-            h(:th, @game.ipo_name),
-            h(:th, 'Market'),
-            *(if @hide_ipo
-                [h(:th, render_sort_link('Price', :share_price))]
-              else
-                [h(:th, render_sort_link(@game.ipo_name, :par_price)),
-                 h(:th, render_sort_link('Market', :share_price))]
-              end),
-            h(:th, render_sort_link('Cash', :cash)),
-            h(:th, render_sort_link('Order', :order)),
-            h(:th, 'Trains'),
-            h(:th, 'Tokens'),
-            *extra,
-            h(:th, 'Companies'),
-            h(:th, ''),
-            *or_history_titles,
-          ].compact),
-        ]
+          ])
+
+        bottom = [h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id))]
+
+        @players.each do |p|
+          bottom << h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
+        end
+
+        bottom << h(:th, @game.ipo_name)
+        bottom << h(:th, 'Market')
+
+        if @hide_ipo
+          bottom << h(:th, render_sort_link('Price', :share_price))
+        else
+          bottom << h(:th, render_sort_link(@game.ipo_name, :par_price))
+          bottom << h(:th, render_sort_link('Market', :share_price))
+        end
+
+        bottom << h(:th, render_sort_link('Cash', :cash))
+        bottom << h(:th, render_sort_link('Order', :order))
+        bottom << h(:th, 'Trains')
+        bottom << h(:th, 'Tokens')
+
+        bottom << h(:th, render_sort_link('Loans', :loans)) if @game.total_loans&.nonzero?
+        bottom << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
+        bottom << h(:th, render_sort_link('Size', :size)) if @show_corporation_size
+
+        bottom << h(:th, 'Companies')
+        bottom << h(:th, '')
+        bottom = bottom.concat(or_history_titles)
+
+        [top, h(:tr, bottom)]
       end
 
       def render_sort_link(text, sort_by)
@@ -217,7 +221,7 @@ module View
         result = result.map { |c, _, order| [c, order, order] } if result.to_enum.with_object(1).map(&:[]).all?(0)
 
         result.sort_by! do |corporation, operating_order, order|
-          [case @spreadsheet_sort_by
+          main = case @spreadsheet_sort_by
            when :cash
              corporation.cash
            when :id
@@ -236,7 +240,8 @@ module View
              corporation.total_shares
            else
              @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
-           end, order]
+           end
+          [main, order]
         end
 
         result.each(&:pop)
@@ -272,47 +277,47 @@ module View
           operating_order_text += '*' if @game.round.acted?(corporation)
         end
 
-        extra = []
-        if @game.total_loans&.nonzero?
-          extra << h(:td, "#{corporation.loans.size} / #{@game.maximum_loans(corporation)}")
-        end
-        extra << h(:td, @game.available_shorts(corporation).to_s) if @game.respond_to?(:available_shorts)
-        if @show_corporation_size
-          extra << h(:td, @game.show_corporation_size?(corporation) ? corporation.total_shares.to_s : '')
+        children = [h(:th, name_props, corporation.name)]
+        @players.each do |p|
+          sold_props = { style: {} }
+          if @game.round.active_step&.did_sell?(corporation, p)
+            sold_props[:style][:backgroundColor] = '#9e0000'
+            sold_props[:style][:color] = 'white'
+          elsif num_shares_of(p, corporation).zero?
+            sold_props[:style][:opacity] = '0.5'
+          end
+
+          sold_props[:style][:fontWeight] = 'bold' if corporation.president?(p)
+          share_holding = num_shares_of(p, corporation).to_s unless corporation.minor?
+          share_holding = '*' if corporation.minor? && corporation.president?(p)
+
+          children << h('td.padded_number', sold_props, share_holding || '')
         end
 
-        h(:tr, tr_props, [
-          h(:th, name_props, corporation.name),
-          *@players.map do |p|
-            sold_props = { style: {} }
-            if @game.round.active_step&.did_sell?(corporation, p)
-              sold_props[:style][:backgroundColor] = '#9e0000'
-              sold_props[:style][:color] = 'white'
-            elsif num_shares_of(p, corporation).zero?
-              sold_props[:style][:opacity] = '0.5'
-            end
+        children << h('td.padded_number', { style: { borderLeft: border_style } },
+                      num_shares_of(corporation, corporation).to_s)
+        children << h('td.padded_number', { style: { borderRight: border_style } },
+                      "#{corporation.receivership? ? '*' : ''}#{num_shares_of(@game.share_pool, corporation)}")
 
-            sold_props[:style][:fontWeight] = 'bold' if corporation.president?(p)
-            share_holding = num_shares_of(p, corporation).to_s unless corporation.minor?
-            share_holding = '*' if corporation.minor? && corporation.president?(p)
-            h('td.padded_number', sold_props, share_holding || '')
-          end,
-          h('td.padded_number', { style: { borderLeft: border_style } }, num_shares_of(corporation, corporation).to_s),
-          h('td.padded_number', { style: { borderRight: border_style } },
-            "#{corporation.receivership? ? '*' : ''}#{num_shares_of(@game.share_pool, corporation)}"),
-          (h('td.padded_number',
-             corporation.par_price ? @game.format_currency(corporation.par_price.price) : '') unless @hide_ipo),
-          h('td.padded_number', market_props,
-            corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
-          h('td.padded_number', @game.format_currency(corporation.cash)),
-          h('td.left', order_props, operating_order_text),
-          h(:td, corporation.trains.map(&:name).join(', ')),
-          h(:td, "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum} / #{corporation.tokens.size}"),
-          *extra,
-          render_companies(corporation),
-          h(:th, name_props, corporation.name),
-          *render_history(corporation),
-        ].compact)
+        children << h('td.padded_number',
+                      corporation.par_price ? @game.format_currency(corporation.par_price.price) : '') unless @hide_ipo
+
+        children << h('td.padded_number', market_props,
+                      corporation.share_price ? @game.format_currency(corporation.share_price.price) : '')
+        children << h('td.padded_number', @game.format_currency(corporation.cash))
+        children << h('td.left', order_props, operating_order_text)
+        children << h(:td, corporation.trains.map(&:name).join(', '))
+        children << h(:td, "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum} / #{corporation.tokens.size}")
+
+        children << h(:td, "#{corporation.loans.size} / #{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
+        children << h(:td, @game.available_shorts(corporation).to_s) if @game.respond_to?(:available_shorts)
+        children << h(:td, @game.show_corporation_size?(corporation) ? corporation.total_shares.to_s : '') if @show_corporation_size
+
+        children << render_companies(corporation)
+        children << h(:th, name_props, corporation.name)
+        children = children.concat(render_history(corporation))
+
+        h(:tr, tr_props, children)
       end
 
       def render_companies(entity)

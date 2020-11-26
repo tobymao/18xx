@@ -93,7 +93,7 @@ module View
 
       def grid_1d
         token_height = @game.stock_market.market.first.map do |p|
-          (p.corporations.length + 1) * TOKEN_SIZE + VERTICAL_TOKEN_PAD
+          (p.corporations.size + 1) * TOKEN_SIZE + VERTICAL_TOKEN_PAD
         end.max
         box_height = token_height + VERTICAL_TOKEN_PAD + PRICE_HEIGHT + 2 * PAD
         height = "#{box_height - 2 * PAD - 2 * BORDER}px"

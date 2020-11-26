@@ -71,8 +71,8 @@ module View
           owner = entity.owner.name.truncate if !entity.player? && entity.owner
           owner = 'CLOSED' if entity.closed?
 
-          text = [entity.name]
-          text += [h(:br), h(:span, small_props, owner)] if owner
+          text = [h(:div, entity.name)]
+          text << h(:div, small_props, owner) if owner
           children << h(:span, text_props, text)
 
           h(:li, entity_props, children)

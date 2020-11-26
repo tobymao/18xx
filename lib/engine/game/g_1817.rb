@@ -241,7 +241,7 @@ module Engine
       def available_shorts(corporation)
         return 0 if corporation&.total_shares == 2
 
-        corporation.total_shares - shorts(corporation).length
+        corporation.total_shares - shorts(corporation).size
       end
 
       def entity_shorts(entity, corporation)
