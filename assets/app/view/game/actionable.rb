@@ -14,6 +14,8 @@ module View
         base.needs :user, store: true, default: nil
         base.needs :tile_selector, default: nil, store: true
         base.needs :selected_company, default: nil, store: true
+        base.needs :app_route, default: nil, store: true
+        base.needs :round_history, default: nil, store: true
       end
 
       def save_user_settings(settings)
@@ -94,6 +96,30 @@ module View
       def clear_ui_state
         store(:selected_company, nil, skip: true)
         store(:tile_selector, nil, skip: true)
+      end
+
+      def history_link(text, title, action_id = nil, style_extra = {})
+        route = Lib::Params.add(@app_route, 'action', action_id)
+
+        click = lambda do
+          store(:round_history, @game.round_history, skip: true) unless @round_history
+          store(:round_history, nil, skip: true) unless action_id
+          store(:app_route, route)
+          clear_ui_state
+        end
+
+        h(
+          Link,
+          href: route,
+          click: click,
+          title: title,
+          children: text,
+          style: {
+            color: 'currentColor',
+            textDecoration: 'none',
+            **style_extra,
+          },
+        )
       end
     end
   end

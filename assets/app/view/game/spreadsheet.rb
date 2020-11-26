@@ -6,12 +6,14 @@ require 'lib/storage'
 require 'view/link'
 require 'view/game/bank'
 require 'view/game/stock_market'
+require 'view/game/actionable'
 
 module View
   module Game
     class Spreadsheet < Snabberb::Component
       include Lib::Color
       include Lib::Settings
+      include Actionable
 
       needs :game
 
@@ -86,7 +88,15 @@ module View
                   padding: '0 0.15rem',
                 },
               }
-              h(:td, props, hist[x].revenue.abs)
+
+              if hist[x]&.dividend&.id&.positive?
+                link_h = history_link(hist[x].revenue.abs.to_s,
+                                      "Go to run #{x} of #{corporation.name}",
+                                      hist[x].dividend.id - 1)
+                h(:td, props, [link_h])
+              else
+                h(:td, props, hist[x].revenue.abs.to_s)
+              end
             else
               h(:td, '')
             end
