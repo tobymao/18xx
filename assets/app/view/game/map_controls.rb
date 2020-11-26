@@ -15,7 +15,8 @@ module View
           location_names_controls,
           hex_coord_controls,
           starting_map_controls,
-        ] + map_zoom_controls
+          *map_zoom_controls,
+        ]
 
         h(:div, children)
       end
