@@ -185,7 +185,6 @@ module Engine
             "H18"
           ],
           "count": 2,
-          "show_count": true,
           "owner_type": "corporation"
         }
       ]
@@ -229,8 +228,7 @@ module Engine
           "free": false,
           "when": "track",
           "owner_type": "corporation",
-          "count": 1,
-          "show_count": true
+          "count": 1
         }
       ]
     },
@@ -259,8 +257,7 @@ module Engine
           "free": false,
           "when": "track",
           "owner_type": "corporation",
-          "count": 3,
-          "show_count": true
+          "count": 3
         }
       ]
     },
