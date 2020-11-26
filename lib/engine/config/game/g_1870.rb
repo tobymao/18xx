@@ -70,13 +70,33 @@ module Engine
     "N17": "New Orleans"
   },
   "tiles": {
-    "5": 2,
-    "6": 2,
+    "1": 1,
+    "2": 1,
+    "3": 3,
+    "4": 6,
+    "5":{
+       "count":5,
+       "color":"yellow",
+       "code":"city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;optional_label=P"
+    },
+    "6":{
+       "count":5,
+       "color":"yellow",
+       "code":"city=revenue:20;path=a:0,b:_0;path=a:2,b:_0;optional_label=P"
+    },
     "7": 9,
     "8": 22,
     "9": 23,
-    "14": 4,
-    "15": 4,
+    "14":{
+       "count":4,
+       "color":"green",
+       "code":"city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;optional_label=P"
+    },
+    "15":{
+       "count":4,
+       "color":"green",
+       "code":"city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;optional_label=P"
+    },
     "16": 2,
     "17": 2,
     "18": 2,
@@ -100,9 +120,15 @@ module Engine
     "47": 2,
     "55": 1,
     "56": 1,
-    "57": 5,
+    "57":{
+       "count":5,
+       "color":"yellow",
+       "code":"city=revenue:20;path=a:0,b:_0;path=a:3,b:_0;optional_label=P"
+    },
     "58": 4,
+    "63": 5,
     "69": 1,
+    "70": 2,
     "141": 2,
     "142": 2,
     "143": 1,
@@ -110,9 +136,17 @@ module Engine
     "145": 2,
     "146": 2,
     "147": 2,
-    "170": 1,
-    "171": 1,
-    "172": 1
+    "170": 4,
+    "171K":{
+       "count":1,
+       "color":"gray",
+       "code":"city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=K"
+    },
+    "172L":{
+       "count":1,
+       "color":"gray",
+       "code":"city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=L"
+    }
   },
   "market": [
     [
@@ -305,23 +339,28 @@ module Engine
     },
     {
       "name": "Mississippi River Bridge Company",
-      "value": 30,
-      "revenue": 5,
+      "value": 40,
+      "revenue": 10,
       "desc": "Until this company is closed or sold to a public company, no company may bridge the Mississippi River. A company may lay track along the river, but may not lay track to cross the river, or do an upgrade that would cause track to cross the river. The public company that purchases the Mississippi River Bridge Company may build in one of the hexes along the Mississippi River for a $40 discount. This company may be purchased by one of the two companies on the Mississippi River (Missouri Pacific or St.Louis Southwestern) in phase one for $20 to $40. If one of these two public companies purchases this private company during their first operating round, that company can lay a tile at its starting city for no cost and in addition to its normal tile lay(s). The company cannot lay a tile in their starting city and upgrade it during the same operating round.",
       "sym": "MRBC",
       "abilities": [
         {
-          "type": "blocks_hexes",
-          "owner_type": "player",
-          "hexes": [
-            "N10"
-          ]
+          "type": "blocks_division",
+          "division_type": "water",
+          "owner_type": "player"
         },
         {
-          "type":"tile_discount",
+          "type":"tile_lay",
+          "when": "track",
           "discount": 40,
-          "terrain": "river",
-          "owner_type": "corporation"
+          "owner_type": "corporation",
+          "count": 1,
+          "reachable": true,
+          "special": false,
+          "hexes": [
+          ],
+          "tiles": [
+          ]
         }
       ]
     },
@@ -558,7 +597,10 @@ module Engine
       "distance": 3,
       "price": 180,
       "rusts_on": "6",
-      "num": 6
+      "num": 6,
+      "events": [
+        {"type": "companies_buyable"}
+      ]
     },
     {
       "name": "4",
@@ -691,10 +733,12 @@ module Engine
         "F5",
         "H13",
         "J3",
-        "J5",
         "K16",
         "M2",
         "M6"
+      ],
+      "city=revenue:0;label=P": [
+        "J5"
       ],
       "town=revenue:0": [
         "B7",
@@ -727,7 +771,7 @@ module Engine
         "J11",
         "K10"
       ],
-      "city=revenue:0;upgrade=cost:40,terrain:water": [
+      "city=revenue:0;upgrade=cost:40,terrain:water;label=P": [
         "B11"
       ],
       "city=revenue:0;upgrade=cost:60,terrain:water": [
@@ -742,38 +786,50 @@ module Engine
         "I10",
         "E20"
       ],
-      "upgrade=cost:40,terrain:river": [
+      "upgrade=cost:40,terrain:river;division=a:0-,b:2+,type:water": [
         "B17"
       ],
-      "upgrade=cost:60,terrain:river": [
-        "D17",
-        "E18",
-        "F19",
+      "upgrade=cost:60,terrain:river;division=a:3-,b:5+,type:water": [
+        "E18"
+      ],
+      "upgrade=cost:60,terrain:river;division=a:1-,b:3-,type:water": [
+        "F19"
+      ],
+      "upgrade=cost:60,terrain:river;division=a:1-,b:3+,type:water": [
         "G18",
-        "I16",
+        "I16"
+      ],
+      "upgrade=cost:60,terrain:river;division=a:0+,b:3+,type:water": [
         "J15"
       ],
-      "upgrade=cost:80,terrain:river": [
-        "L13",
+      "upgrade=cost:80,terrain:river;division=a:0-,b:4-,type:water": [
+        "L13"
+      ],
+      "upgrade=cost:80,terrain:river;division=a:2+,b:5+,type:water": [
         "N15"
       ],
-      "upgrade=cost:100,terrain:river": [
-        "O16",
+      "upgrade=cost:100,terrain:river;division=a:3-,b:4+,type:water": [
+        "O16"
+      ],
+      "upgrade=cost:100,terrain:river;division=a:0-,b:2-,type:water;border=edge:3,type:impassable": [
         "O18"
       ],
-      "city=revenue:0;upgrade=cost:40,terrain:river": [
+      "city=revenue:0,loc:0.5;upgrade=cost:40,terrain:river;division=a:0+,b:2+,type:water,restrict:inner,magnet:4;label=P": [
         "C18"
       ],
-      "city=revenue:0;upgrade=cost:40,terrain:river;icon=image:port": [
+      "city=revenue:0;upgrade=cost:40,terrain:river;icon=image:port;division=a:0-,b:2+,type:water,restrict:outer": [
         "M14"
       ],
-      "city=revenue:0;upgrade=cost:60,terrain:river;icon=image:port": [
+      "city=revenue:0;upgrade=cost:60,terrain:river;icon=image:port;division=a:1-,b:3+,type:water,restrict:outer": [
         "H17"
       ],
-      "town=revenue:0;upgrade=cost:80,terrain:river": [
+      "town=revenue:0;upgrade=cost:40,terrain:river;division=a:4-,b:5+,type:water": [
+        "D17"
+      ],
+      "town=revenue:0,loc:4.5;upgrade=cost:80,terrain:river;division=a:0+,b:4-,type:water,restrict:outer,magnet:-1": [
         "K14"
       ],
-      "town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:river": [
+      "town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:river;division=a:0-,b:3,type:water,restrict:inner": [
         "A16"
       ],
       "upgrade=cost:60,terrain:lake": [
@@ -793,7 +849,9 @@ module Engine
         "O14"
       ],
       "city=revenue:0;upgrade=cost:80,terrain:lake;icon=image:port": [
-        "N7",
+        "N7"
+      ],
+      "city=revenue:0;upgrade=cost:80,terrain:lake;icon=image:port;border=edge:4,type:impassable;label=P": [
         "N17"
       ],
       "town=revenue:0;upgrade=cost:80,terrain:lake": [
@@ -834,7 +892,10 @@ module Engine
       "tiles": [
         "yellow"
       ],
-      "operating_rounds": 1
+      "operating_rounds": 1,
+      "status": [
+        "can_buy_companies_from_other_players"
+      ]
     },
     {
       "name": "2",
@@ -845,8 +906,9 @@ module Engine
         "green"
       ],
       "operating_rounds": 2,
-      "status":[
-        "can_buy_companies"
+      "status": [
+        "can_buy_companies",
+        "can_buy_companies_from_other_players"
       ]
     },
     {
@@ -858,8 +920,10 @@ module Engine
         "green"
       ],
       "operating_rounds": 2,
-      "status":[
-        "can_buy_companies"
+      "status": [
+        "can_buy_companies",
+        "can_buy_companies_from_other_players"
+
       ]
     },
     {

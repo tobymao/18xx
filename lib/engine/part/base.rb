@@ -65,6 +65,10 @@ module Engine
         false
       end
 
+      def optional_label?
+        false
+      end
+
       def path?
         false
       end
@@ -98,6 +102,10 @@ module Engine
       end
 
       def stub?
+        false
+      end
+
+      def division?
         false
       end
 

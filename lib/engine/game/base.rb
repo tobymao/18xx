@@ -1030,7 +1030,7 @@ module Engine
         return true if special
 
         # correct label?
-        return false if from.label != to.label
+        return false unless from.label == to.label || (!from.label && to.label&.optional_label?)
 
         # honors existing town/city counts?
         # - allow labelled cities to upgrade regardless of count; they're probably
@@ -1216,7 +1216,8 @@ module Engine
         cert_limit = self.class::CERT_LIMIT
         cert_limit = cert_limit[players.reject(&:bankrupt).length] if cert_limit.is_a?(Hash)
         cert_limit = cert_limit.reject { |k, _| k.to_i < @corporations.size }
-                       .min_by(&:first)&.last || cert_limit.first.last if cert_limit.is_a?(Hash)
+                               .min_by { |k, _| k.to_i }
+                               &.last || cert_limit.first.last if cert_limit.is_a?(Hash)
         cert_limit || @cert_limit
       end
 
@@ -1297,6 +1298,13 @@ module Engine
           end
         end
 
+        division_blockers = {}
+        companies.each do |company|
+          company.abilities(:blocks_division) do |ability|
+            division_blockers[ability.division_type] = company
+          end
+        end
+
         reservations = Hash.new { |k, v| k[v] = [] }
         corporations.each do |c|
           reservations[c.coordinates] << { entity: c,
@@ -1325,6 +1333,12 @@ module Engine
 
               if (blocker = blockers[coord])
                 tile.add_blocker!(blocker)
+              end
+
+              tile.divisions.each do |division|
+                if (blocker = division_blockers[division.type])
+                  division.add_blocker!(blocker)
+                end
               end
 
               reservations[coord].each do |res|

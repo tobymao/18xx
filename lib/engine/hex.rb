@@ -167,6 +167,15 @@ module Engine
       tile.borders.concat(@tile.borders)
       @tile.borders.clear
 
+      tile.divisions.concat(@tile.divisions)
+      @tile.divisions.clear
+
+      if tile.label&.optional_label?
+        tile.parts.delete(tile.label)
+        tile.label = @tile.label
+        tile.parts << @tile.label if @tile.label
+      end
+
       @tile.hex = nil
       tile.hex = self
 

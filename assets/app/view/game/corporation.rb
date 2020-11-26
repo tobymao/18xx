@@ -50,7 +50,6 @@ module View
 
         unless @corporation.minor?
           children << render_shares
-          children << render_reserved if @corporation.reserved_shares.any?
           children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
         end
 
@@ -309,6 +308,14 @@ module View
             h('td.padded_number', share_price_str(@corporation.par_price)),
           ]),
         ]
+
+        if @corporation.reserved_shares.any?
+          pool_rows << h('tr.reserved', [
+            h('td.left', @game.class::IPO_RESERVED_NAME),
+            h('td.right', shares_props, share_number_str(@corporation.num_ipo_reserved_shares)),
+            h('td.padded_number', share_price_str(@corporation.par_price)),
+          ])
+        end
 
         market_tr_props = {
           style: {

@@ -28,7 +28,7 @@ module View
           },
         }
 
-        companies = @game.purchasable_companies.sort_by do |company|
+        companies = @game.purchasable_companies(@game.current_entity).sort_by do |company|
           [company.owner == @corporation.owner ? 0 : 1, company.value]
         end
 

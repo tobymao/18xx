@@ -48,7 +48,7 @@ module View
           if @price_protection
             num_presentation = @game.share_pool.num_presentation(@price_protection)
             children << h('div.margined',
-                          "You can price protect #{num_presentation} #{@price_protection.corporation.name} "\
+                          "You can price protect #{num_presentation} of #{@price_protection.corporation.name} "\
                           "for #{@game.format_currency(@price_protection.price)}")
           end
 

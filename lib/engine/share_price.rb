@@ -2,7 +2,8 @@
 
 module Engine
   class SharePrice
-    attr_reader :coordinates, :price, :corporations, :can_par, :type
+    attr_reader :coordinates, :corporations, :can_par, :type
+    attr_accessor :price
 
     def self.from_code(code, row, column, unlimited_types, multiple_buy_types: [])
       return nil if !code || code == ''

@@ -30,7 +30,7 @@ module Engine
 
     def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
-      @game.game_error('Cannot buy share from player') if shares.owner.player?
+      @game.game_error('Cannot buy share from player') if entity.player? && shares.owner.player?
 
       corporation = bundle.corporation
       ipoed = corporation.ipoed
@@ -45,10 +45,13 @@ module Engine
                 "#{@game.format_currency(par_price)}"
       end
 
-      share_str = "a #{bundle.percent}% share of #{corporation.name}"
+      share_str = "a #{bundle.percent}% share"
+      share_str += "of #{corporation.name}" unless entity == corporation
       incremental = corporation.capitalization == :incremental
 
-      from = bundle.owner.corporation? ? "the #{@game.ipo_name(corporation)}" : 'the market'
+      from = "the #{@game.ipo_name(corporation)}" if bundle.owner.corporation?
+      from = bundle.owner.name if bundle.owner.player?
+      from ||= 'the market'
       if exchange
         price = exchange_price || 0
         case exchange
@@ -65,7 +68,8 @@ module Engine
       else
         price -= swap.price if swap
         swap_text = swap ? " + swap of a #{swap.percent}% share" : ''
-        @log << "#{entity.name} buys #{share_str} "\
+        verb = entity == corporation ? 'redeems' : 'buys'
+        @log << "#{entity.name} #{verb} #{share_str} "\
           "from #{from} "\
           "for #{@game.format_currency(price)}#{swap_text}"
       end
@@ -98,7 +102,7 @@ module Engine
       swap_to_entity = swap ? entity : nil
 
       @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
-        "#{bundle.corporation.name} and receives #{@game.format_currency(price)}#{swap_text}"
+        "of #{bundle.corporation.name} and receives #{@game.format_currency(price)}#{swap_text}"
 
       transfer_shares(bundle,
                       self,
@@ -217,9 +221,9 @@ module Engine
 
     def num_presentation(bundle)
       num_shares = bundle.num_shares
-      return "a #{bundle.percent}% share of" if num_shares == 1
+      return "a #{bundle.percent}% share" if num_shares == 1
 
-      "#{num_shares} shares of"
+      "#{num_shares} shares"
     end
   end
 end

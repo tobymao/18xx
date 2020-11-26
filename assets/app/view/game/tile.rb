@@ -59,7 +59,7 @@ module View
         rendered_loc_name = render_tile_part(Part::LocationName) if @tile.location_name && @tile.cities.size > 1
 
         children << render_tile_part(Part::Revenue) if render_revenue
-        children << render_tile_part(Part::Label) if @tile.label
+        children << render_tile_part(Part::Label) if @tile.label && !@tile.label.optional_label?
 
         children << render_tile_part(Part::Upgrades) if @tile.upgrades.any?
         children << render_tile_part(Part::Blocker)
@@ -68,8 +68,10 @@ module View
         children << render_tile_part(Part::Icons) if @tile.icons.any?
 
         children << render_tile_part(Part::Assignments) if @tile.hex.assignments.any?
+
         # borders should always be the top layer
         children << borders if borders
+        children << render_tile_part(Part::Divisions) if @tile.divisions.any?
 
         children << rendered_loc_name if rendered_loc_name && @show_location_names
         children << render_coords if @show_coords
