@@ -82,11 +82,9 @@ module View
 
         return [] unless price_protection
 
-        protect = lambda do
-          process_action(Engine::Action::BuyShares.new(@current_entity, shares: price_protection.shares))
-        end
+        protect = -> { process_action(Engine::Action::BuyShares.new(@current_entity, shares: price_protection.shares)) }
 
-        [h(:button, { on: { click: -> { protect } } }, 'Protect Shares')]
+        [h(:button, { on: { click: protect } }, 'Protect Shares')]
       end
 
       def render_reduced_price_shares(shares, source: 'Market')
@@ -106,9 +104,7 @@ module View
         return [] unless @step.current_actions.include?('short')
         return [] unless @step.can_short?(@current_entity, @corporation)
 
-        short = lambda do
-          process_action(Engine::Action::Short.new(@current_entity, corporation: @corporation))
-        end
+        short = -> { process_action(Engine::Action::Short.new(@current_entity, corporation: @corporation)) }
 
         [h(:button, { on: { click: short } }, 'Short Share')]
       end
