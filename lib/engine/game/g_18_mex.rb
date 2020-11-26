@@ -142,8 +142,7 @@ module Engine
           train = @depot.upcoming[0]
           train.buyable = false
           update_end_of_life(train, nil, nil) if @optional_rules&.include?(:delay_minor_close)
-          minor.cash = 100
-          minor.buy_train(train)
+          minor.buy_train(train, :free)
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token)
         end
