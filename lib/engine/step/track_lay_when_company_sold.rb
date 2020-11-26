@@ -4,7 +4,7 @@ require_relative 'special_track'
 
 module Engine
   module Step
-    module TileLayWhenCompanySold
+    module TrackLayWhenCompanySold
       ACTIONS = %w[lay_tile].freeze
       ACTIONS_WITH_PASS = %w[lay_tile pass].freeze
 
