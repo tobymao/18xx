@@ -325,6 +325,7 @@ module Engine
           @minor_close = true
           return
         end
+        @minor_close = false
         merge_and_close_minor(a_company, minor_a, ndm, minor_a_reserved_share)
         merge_and_close_minor(b_company, minor_b, ndm, minor_b_reserved_share)
         merge_and_close_minor(c_company, minor_c, udy, minor_c_reserved_share)
