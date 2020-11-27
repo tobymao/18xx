@@ -179,24 +179,15 @@ module View
       end
 
       def show_coords
-        stored = Lib::Storage['show_coords']
-        default = stored.nil? ? false : stored
-
-        @show_coords.nil? ? default : @show_coords
+        @show_coords || Lib::Storage['show_coords'] || false
       end
 
       def show_location_names
-        stored = Lib::Storage['show_location_names']
-        default = stored.nil? ? true : stored
-
-        @show_location_names.nil? ? default : @show_location_names
+        @show_location_names || Lib::Storage['show_location_names'] || true
       end
 
       def map_zoom
-        stored = Lib::Storage['map_zoom']
-        default = stored.nil? ? 0 : stored
-
-        @map_zoom.nil? ? default : @map_zoom
+        @map_zoom || Lib::Storage['map_zoom'] || 1
       end
     end
   end
