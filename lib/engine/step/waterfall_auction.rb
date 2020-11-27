@@ -108,6 +108,7 @@ module Engine
 
       def resolve_bids_for_company(company)
         resolved = false
+        is_new_auction = company != @auctioning
         @auctioning = nil
         bids = @bids[company]
 
@@ -116,7 +117,7 @@ module Engine
           resolved = true
         elsif can_auction?(company)
           @auctioning = company
-          @log << "#{@auctioning.name} goes up for auction"
+          @log << "#{@auctioning.name} goes up for auction" if is_new_auction
         end
 
         resolved
