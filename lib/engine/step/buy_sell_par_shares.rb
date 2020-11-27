@@ -202,8 +202,8 @@ module Engine
         !bought? && @game.corporations.any? { |c| c.can_par?(entity) && can_buy?(entity, c.shares.first&.to_bundle) }
       end
 
-      def ipo_via_par?(_entity)
-        true
+      def ipo_type(_entity)
+        :par
       end
 
       def purchasable_companies(entity)

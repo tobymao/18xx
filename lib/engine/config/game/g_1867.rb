@@ -241,6 +241,7 @@ module Engine
         0,
         0
       ],
+      "type": "major",
       "color": "green"
     },
     {
@@ -252,6 +253,7 @@ module Engine
         0,
         0
       ],
+      "type": "major",
       "color": "red"
     },
     {
@@ -263,6 +265,7 @@ module Engine
         0,
         0
       ],
+      "type": "major",
       "color": "cyan"
     },
     {
@@ -274,6 +277,7 @@ module Engine
         0,
         0
       ],
+      "type": "major",
       "color": "orange"
     },
     {
@@ -285,6 +289,7 @@ module Engine
         0,
         0
       ],
+      "type": "major",
       "color": "brown"
     },
     {
@@ -296,6 +301,7 @@ module Engine
         0,
         0
       ],
+      "type": "major",
       "color": "yellow"
     },
     {
@@ -318,6 +324,7 @@ module Engine
         0,
         0
       ],
+      "type": "major",
       "color": "black"
     },
     {
@@ -327,6 +334,7 @@ module Engine
       "tokens": [
         0
       ],
+      "type": "minor",
       "shares": [100],
       "max_ownership_percent": 100,
       "color": "yellow"
@@ -340,6 +348,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "yellow"
     },
     {
@@ -351,6 +360,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "yellow"
     },
     {
@@ -362,6 +372,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "yellow"
     },
     {
@@ -373,6 +384,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "yellow"
     },
     {
@@ -384,6 +396,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "yellow"
     },
     {
@@ -395,6 +408,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "yellow"
     },
     {
@@ -406,6 +420,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "yellow"
     },
     {
@@ -417,6 +432,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "yellow"
     },
     {
@@ -428,6 +444,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "yellow"
     },
     {
@@ -439,6 +456,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "green"
     },
     {
@@ -450,6 +468,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "green"
     },
     {
@@ -461,6 +480,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "green"
     },
     {
@@ -472,6 +492,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "green"
     },
     {
@@ -483,6 +504,7 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "green"
     },
     {
@@ -494,23 +516,8 @@ module Engine
       ],
       "shares": [100],
       "max_ownership_percent": 100,
+      "type": "minor",
       "color": "green"
-    },
-    {
-      "sym": "CN",
-      "name": "Canadian National",
-      "logo": "1867/CN",
-      "tokens": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "color": "white"
     }
   ],
   "trains": [
@@ -526,20 +533,30 @@ module Engine
       "distance": 3,
       "price": 225,
       "rusts_on": "6",
-      "num": 7
+      "num": 7,
+      "events":[
+        {"type": "green_minors_available"}
+      ]
     },
     {
       "name": "4",
       "distance": 4,
       "price": 350,
       "rusts_on": "8",
-      "num": 4
+      "num": 4,
+      "events":[
+        {"type": "majors_can_ipo"}
+      ]
     },
     {
       "name": "5",
       "distance": 5,
       "price": 550,
-      "num": 4
+      "num": 4,
+      "events":[
+        {"type": "minors_cannot_start"}
+      ]
+
     },
     {
       "name": "6",
@@ -562,7 +579,9 @@ module Engine
       "price": 1000,
       "num": 6,
       "events": [
-        {"type": "signal_end_game"}
+        {"type": "signal_end_game"},
+        {"type": "minors_nationalized"}
+
       ]
     },
     {
@@ -733,36 +752,52 @@ module Engine
   "phases": [
     {
       "name": "2",
-      "train_limit": 2,
+      "train_limit": {
+        "minor": 2
+      },
       "tiles": [
         "yellow"
-      ]
+      ],
+      "operating_rounds": 2
     },
     {
       "name": "3",
-      "train_limit": 4,
+      "train_limit": {
+        "minor": 2,
+        "major": 4
+      },
       "tiles": [
         "yellow",
         "green"
       ],
       "status":[
         "can_buy_companies"
-      ]
+      ],
+      "on": "3",
+      "operating_rounds": 2
     },
     {
       "name": "4",
-      "train_limit": 3,
+      "train_limit": {
+        "minor": 1,
+        "major": 3
+      },
       "tiles": [
         "yellow",
         "green"
       ],
       "status":[
         "can_buy_companies"
-      ]
+      ],
+      "on": "4",
+      "operating_rounds": 2
     },
     {
       "name": "5",
-      "train_limit": 3,
+      "train_limit": {
+        "minor": 1,
+        "major": 3
+      },
       "tiles": [
         "yellow",
         "green",
@@ -770,36 +805,52 @@ module Engine
       ],
       "status":[
         "can_buy_companies"
-      ]
+      ],
+      "on": "5",
+      "operating_rounds": 2
     },
     {
       "name": "6",
-      "train_limit": 2,
+      "train_limit": {
+        "minor": 1,
+        "major": 2
+      },
       "tiles": [
         "yellow",
         "green",
         "brown"
-      ]
+      ],
+      "on": "6",
+      "operating_rounds": 2
     },
     {
       "name": "7",
-      "train_limit": 2,
+      "train_limit": {
+        "minor": 1,
+        "major": 2
+      },
       "tiles": [
         "yellow",
         "green",
         "brown",
         "gray"
-      ]
+      ],
+      "on": "7",
+      "operating_rounds": 2
     },
     {
       "name": "8",
-      "train_limit": 2,
+      "train_limit":  {
+        "major": 2
+      },
       "tiles": [
         "yellow",
         "green",
         "brown",
         "gray"
-      ]
+      ],
+      "on": "8",
+      "operating_rounds": 2
     }
   ]
 }

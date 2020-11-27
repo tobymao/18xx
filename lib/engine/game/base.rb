@@ -275,6 +275,7 @@ module Engine
           phase.transform_keys!(&:to_sym)
           phase[:tiles]&.map!(&:to_sym)
           phase[:events]&.transform_keys!(&:to_sym)
+          phase[:train_limit].transform_keys!(&:to_sym) if phase[:train_limit].is_a?(Hash)
           phase
         end
 

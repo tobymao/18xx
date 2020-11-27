@@ -32,7 +32,13 @@ module Engine
     end
 
     def train_limit(entity)
-      @train_limit + train_limit_increase(entity)
+      limit =
+        if @train_limit.is_a?(Hash)
+          @train_limit[entity.type] || 0
+        else
+          @train_limit
+        end
+      limit + train_limit_increase(entity)
     end
 
     def available?(phase_name)
