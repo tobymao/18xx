@@ -1631,6 +1631,8 @@ module Engine
 
       def cache_objects
         CACHABLE.each do |type, name|
+          next if methods.include?("#{name}_by_id")
+
           ivar = "@_#{type}"
           instance_variable_set(ivar, send(type).map { |x| [x.id, x] }.to_h)
 

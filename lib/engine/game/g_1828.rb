@@ -131,6 +131,10 @@ module Engine
         super
       end
 
+      def share_price_by_id(id)
+        share_prices.find {|sp| sp.id == id}
+      end
+
       def corporation_opts
         { can_hold_above_max: true }
       end
