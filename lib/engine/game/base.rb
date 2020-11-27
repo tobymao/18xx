@@ -1641,6 +1641,8 @@ module Engine
       end
 
       def clear_cache(type)
+        return unless CACHABLE.any? {|t,_n| t == type }
+
         ivar = "@_#{type}"
         instance_variable_set(ivar, send(type).map { |x| [x.id, x] }.to_h)
       end
