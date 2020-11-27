@@ -65,10 +65,11 @@ module Engine
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
                                                                   'Game Ends 3 ORs after purchase/export'\
-                                                                  ' of first 8 train']).freeze
-      STATUS_TEXT = Base::STATUS_TEXT.merge(
-        'no_new_shorts' => ['Cannot gain new shorts', 'Short selling is not permitted, existing shorts remain'],
-      ).freeze
+                                                                  ' of first 8 train'],
+                                            'green_minors_available' => ['Green Minors become available'],
+                                            'majors_can_ipo' => ['Majors can be ipoed'],
+                                            'minors_cannot_start' => ['Minors cannot start'],
+                                            'minors_nationalized' => ['Minors are nationalized']).freeze
       MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'Minor Corporation Par',
                                             par_2: 'Major Corporation Par',
                                             par: 'Major/Minor Corporation Par').freeze
@@ -81,7 +82,6 @@ module Engine
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
       # @todo: unchanged to here
-
       def interest_rate
         5 # constant
       end
@@ -106,7 +106,7 @@ module Engine
 
       # @todo: unchanged to here
       def maximum_loans(entity)
-        entity.total_shares == 2 ? 2 : 5
+        entity.type == :major ? 5 : 2
       end
 
       # @todo: unchanged from here
@@ -463,10 +463,8 @@ module Engine
         ])
       end
 
-      # @todo: unchanged from here
-
       def stock_round
-        Round::Stock.new(self, [
+        Round::G1867::Stock.new(self, [
           Step::DiscardTrain,
           Step::HomeToken,
           Step::G1867::BuySellParShares,
@@ -475,7 +473,7 @@ module Engine
 
       # @todo: unchanged to here
       def operating_round(round_num)
-        Round::Operating.new(self, [
+        Round::G1867::Operating.new(self, [
           Step::DiscardTrain,
           Step::BuyCompany,
           Step::G1867::RedeemShares,
@@ -489,15 +487,20 @@ module Engine
         ], round_num: round_num)
       end
 
-      # @todo: unchanged from here
       def or_round_finished
-        if @depot.upcoming.first.name == '2'
-          depot.export_all!('2')
+        current_phase = phase.name.to_i
+        depot.export! if current_phase >= 4 && current_phase <= 7
+      end
+
+      def new_or!
+        if @round.round_num < @operating_rounds
+          new_operating_round(@round.round_num + 1)
         else
-          depot.export!
+          @turn += 1
+          or_set_finished
+          new_stock_round
         end
       end
-      # @todo: unchanged to here
 
       def next_round!
         @round =
@@ -507,26 +510,22 @@ module Engine
             reorder_players
             new_operating_round
           when Round::Operating
-            # @todo: needs implementing
             or_round_finished
-            # Store the share price of each corp to determine if they can be acted upon in the AR
-            @stock_prices_start_merger = @corporations.map { |corp| [corp, corp.share_price] }.to_h
-            @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
-            Round::G1817::Merger.new(self, [
-              Step::G1817::ReduceTokens,
-              Step::DiscardTrain,
-              Step::G1817::PostConversion,
-              Step::G1817::PostConversionLoans,
-              Step::G1817::Conversion,
-            ], round_num: @round.round_num)
-          when Round::G1817::Merger
-            if @round.round_num < @operating_rounds
-              new_operating_round(@round.round_num + 1)
+            if phase.name.to_i <= 3
+              new_or!
             else
-              @turn += 1
-              or_set_finished
-              new_stock_round
+              # @todo: needs implementing
+              @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
+              Round::G1817::Merger.new(self, [
+                Step::G1817::ReduceTokens,
+                Step::DiscardTrain,
+                Step::G1817::PostConversion,
+                Step::G1817::PostConversionLoans,
+                Step::G1817::Conversion,
+              ], round_num: @round.round_num)
             end
+          when Round::G1817::Merger
+            new_or!
           when init_round.class
             reorder_players
             new_stock_round
@@ -550,6 +549,44 @@ module Engine
 
       def final_operating_rounds
         @final_operating_rounds || super
+      end
+
+      def init_corporations(stock_market)
+        corporations = super
+        green = COLORS[:green]
+        # Move green and majors out of the normal list
+        corporations, @future_corporations = corporations.partition do |corporation|
+          corporation.type == :minor && corporation.color != green
+        end
+        corporations
+      end
+
+      def event_green_minors_available!
+        @log << 'Green minors are now available'
+        # All the corporations become available, as minors can now merge/convert to corporations
+        @corporations += @future_corporations
+        @future_corporations = []
+      end
+
+      def event_majors_can_ipo!
+        @log << 'Majors can be ipoed'
+        # Done elsewhere
+      end
+
+      def event_minors_cannot_start!
+        @corporations, removed = @corporations.partition do |corporation|
+          corporation.owned_by_player? || corporation.type != :minor
+        end
+        @log << 'Minors can no longer be started' if removed.any?
+      end
+
+      def event_minors_nationalized!
+        # Given minors have a train limit of 1, this shouldn't cause the order to be disrupted.
+        @corporations, removed = @corporations.partition do |corporation|
+          corporation.type != :minor
+        end
+        @log << 'Minors nationalized' if removed.any?
+        removed.each { |c| nationalize!(c) }
       end
 
       def event_signal_end_game!

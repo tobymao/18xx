@@ -397,6 +397,10 @@ module Engine
           false
         end
 
+        def ipo_type(_entity)
+          :bid
+        end
+
         def setup
           setup_auction
           super

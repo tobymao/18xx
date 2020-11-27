@@ -18,8 +18,10 @@ module InterestOnLoans
     owed_fmt = format_currency(owed)
 
     if owed <= entity.cash
-      @log << "#{entity.name} pays #{owed_fmt} interest for #{entity.loans.size} loans"
-      entity.spend(owed, bank)
+      if owed.positive?
+        @log << "#{entity.name} pays #{owed_fmt} interest for #{entity.loans.size} loans"
+        entity.spend(owed, bank)
+      end
       return
     end
     owed

@@ -105,11 +105,14 @@ module View
           extra = []
           extra << h(:td, phase[:corporation_sizes].join(', ')) if corporation_sizes
 
+          train_limit = phase[:train_limit]
+          train_limit = train_limit.map { |type, limit| "#{type} => #{limit}" }.join(',') if train_limit.is_a?(Hash)
+
           h(:tr, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
             h(:td, phase[:on]),
             h(:td, phase[:operating_rounds]),
-            h(:td, phase[:train_limit]),
+            h(:td, train_limit),
             h(:td, phase_props, phase_color.capitalize),
             *extra,
             h(:td, row_events.map(&:first).join(', ')),

@@ -100,8 +100,17 @@ module Engine
         end
 
         def can_bid?(entity)
-          # @todo: check theres things to bid on
-          max_bid(entity) >= MIN_BID
+          max_bid(entity) >= MIN_BID && !bought? &&
+          @game.corporations.any? do |c|
+            c.can_par?(entity) && c.type == :minor && can_buy?(entity, c.shares.first&.to_bundle)
+          end
+        end
+
+        def can_ipo_any?(entity)
+          @game.phase.name.to_i >= 4 && !bought? &&
+          @game.corporations.any? do |c|
+            c.can_par?(entity) && c.type == :major && can_buy?(entity, c.shares.first&.to_bundle)
+          end
         end
 
         def min_bid(corporation)
@@ -122,9 +131,25 @@ module Engine
           end
         end
 
-        def ipo_via_par?(entity)
+        def get_par_prices(entity, _corp)
+          @game.stock_market
+          .market[0]
+          .reverse
+          .select { |sp| %i[par_2 par].include?(sp.type) && sp.price * 2 <= entity.cash }
+        end
+
+        def ipo_type(entity)
           # Major's are par, minors are bid
-          entity.total_shares == 10
+          phase = @game.phase.name.to_i
+          if entity.type == :major
+            if phase >= 4
+              :par
+            else
+              'Cannot start till phase 4'
+            end
+          else
+            :bid
+          end
         end
 
         def setup
