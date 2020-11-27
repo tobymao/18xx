@@ -295,6 +295,72 @@ module Engine
   "corporations": [
     {
       "float_percent": 20,
+      "sym": "A&S",
+      "name": "Alton & Southern Railway",
+      "logo": "1817/AS",
+      "shares": [100],
+      "max_ownership_percent": 100,
+      "tokens": [
+        0
+      ],
+      "always_market_price": true,
+      "color": "pink"
+    },
+    {
+      "float_percent": 20,
+      "sym": "A&A",
+      "name": "Arcade and Attica",
+      "logo": "1817/AA",
+      "shares": [100],
+      "max_ownership_percent": 100,
+      "tokens": [
+        0
+      ],
+      "always_market_price": true,
+      "color": "gold"
+    },
+    {
+      "float_percent": 20,
+      "sym": "Belt",
+      "name": "Belt Railway of Chicago",
+      "logo": "1817/Belt",
+      "shares": [100],
+      "max_ownership_percent": 100,
+      "tokens": [
+        0
+      ],
+      "always_market_price": true,
+      "text_color": "black",
+      "color": "orange"
+    },
+    {
+      "float_percent": 20,
+      "sym": "Bess",
+      "name": "Bessemer and Lake Erie Railroad",
+      "logo": "1817/Bess",
+      "shares": [100],
+      "max_ownership_percent": 100,
+      "tokens": [
+        0
+      ],
+      "always_market_price": true,
+      "color": "black"
+    },
+    {
+      "float_percent": 20,
+      "sym": "B&A",
+      "name": "Boston and Albany Railroad",
+      "logo": "1817/BA",
+      "shares": [100],
+      "max_ownership_percent": 100,
+      "tokens": [
+        0
+      ],
+      "always_market_price": true,
+      "color": "red"
+    },
+    {
+      "float_percent": 20,
       "sym": "DL&W",
       "name": "Delaware, Lackawanna and Western Railroad",
       "logo": "1817/DLW",

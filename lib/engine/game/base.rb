@@ -34,7 +34,7 @@ module Engine
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
-                  :optional_rules
+                  :optional_rules, :max_corps_ipoed
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -381,6 +381,7 @@ module Engine
         @all_tiles = init_tiles
         @cert_limit = init_cert_limit
         @removals = []
+        @max_corps_ipoed = nil
 
         @depot = init_train_handler
         init_starting_cash(@players, @bank)

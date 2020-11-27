@@ -68,6 +68,12 @@ module View
             h('td.right', @game.format_currency(@game.round.active_step.seed_money)),
           ])
         end
+        if (max_corps_ipoed = @game.max_corps_ipoed)
+          trs << h(:tr, [
+            h(:td, 'IPOed Corporations'),
+            h('td.right', "#{@game.num_corps_ipoed}/#{max_corps_ipoed}"),
+          ])
+        end
 
         return unless trs.any?
 

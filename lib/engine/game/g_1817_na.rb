@@ -8,7 +8,7 @@ module Engine
     class G1817NA < G1817
       load_from_json(Config::Game::G1817NA::JSON)
 
-      DEV_STAGE = :prealpha
+      DEV_STAGE = :alpha
       GAME_PUBLISHER = nil
       PITTSBURGH_PRIVATE_NAME = 'DTC'
       PITTSBURGH_PRIVATE_HEX = 'F14'
@@ -23,6 +23,19 @@ module Engine
 
       def self.title
         '1817NA'
+      end
+
+      def num_corps_ipoed
+        @corporations.count { |corp| corp.owner.nil? }
+      end
+
+      def max_corps_ipoed
+        15
+      end
+
+      # 1817NA and 1817WO limit the game to fewer than 20 corporations in-play at a time
+      def can_start_corporation
+        num_corps_ipoed < max_corps_ipoed
       end
 
       # Not genericifying 1817's loan logic just so it can be kept simpler, at least for now

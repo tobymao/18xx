@@ -102,6 +102,11 @@ module Engine
         [[5, ((loans_taken + 4) / 5).to_i * 5].max, 70].min
       end
 
+      # 1817NA and 1817WO limit the game to fewer than 20 corporations in-play at a time
+      def can_start_corporation
+        true
+      end
+
       def interest_rate
         @interest_fixed || future_interest_rate
       end

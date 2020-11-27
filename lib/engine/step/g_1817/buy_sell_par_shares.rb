@@ -43,7 +43,7 @@ module Engine
           actions = super
           unless bought?
             actions << 'short' if can_short_any?(entity)
-            actions << 'bid' if max_bid(entity) >= MIN_BID
+            actions << 'bid' if max_bid(entity) >= MIN_BID && @game.can_start_corporation
           end
           actions << 'pass' if (actions.any? || any_corporate_actions?(entity)) && !actions.include?('pass')
           actions
@@ -206,7 +206,6 @@ module Engine
           entity = action.entity
           corporation = action.corporation
           price = action.price
-
           options = available_company_options(entity).map(&:sum)
           if options.none? { |option| price >= option && price <= option + entity.cash }
             valid_options = options
