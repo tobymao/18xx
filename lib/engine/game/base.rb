@@ -1631,8 +1631,6 @@ module Engine
 
       def cache_objects
         CACHABLE.each do |type, name|
-          next if methods.include?("#{name}_by_id")
-
           ivar = "@_#{type}"
           instance_variable_set(ivar, send(type).map { |x| [x.id, x] }.to_h)
 
@@ -1640,6 +1638,11 @@ module Engine
             instance_variable_get(ivar)[id]
           end
         end
+      end
+
+      def clear_cache(type)
+        ivar = "@_#{type}"
+        instance_variable_set(ivar, send(type).map { |x| [x.id, x] }.to_h)
       end
 
       def bank_cash
