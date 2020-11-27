@@ -650,6 +650,7 @@ module Engine
 			"float_percent": 20,
 			"always_market_price": true,
 			"logo": "18_co/DSNG",
+			"shares":[20, 10, 20, 20, 10, 10, 10],
 			"tokens": [
 				0,
 				40
