@@ -20,7 +20,7 @@ module View
           .map(&:first).sort.reverse
 
         @pool_shares = @game.share_pool.shares_by_corporation[@corporation].group_by(&:percent).values
-          .map(&:first).sort.reverse
+          .map(&:first).sort_by(&:percent).reverse
 
         children = []
 
