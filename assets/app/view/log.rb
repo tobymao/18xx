@@ -103,10 +103,10 @@ module View
                         h('div.logline', line_props, [h(LogLine, line: line)])
                       else
                         h('div.chatline', line_props, [
-                                      h('span.time', time_props, time_str),
-                                      h('span.username', username_props, line[:user][:name]),
-                                      h('span.message', message_props, line[:message]),
-                                    ])
+                          h('span.time', time_props, time_str),
+                          h('span.username', username_props, line[:user][:name]),
+                          h('span.message', message_props, line[:message]),
+                        ])
                       end
         end
       end

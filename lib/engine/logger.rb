@@ -44,7 +44,7 @@ module Engine
         created_at: action.created_at,
         entity: entity&.name,
         player: player&.name,
-        user: @game.player_by_id(action.user)&.name || 'Owner',
+        user: (@game.player_by_id(action.user)&.name || 'Owner' if action.user),
         message: message,
       }
     end

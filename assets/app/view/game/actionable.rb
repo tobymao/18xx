@@ -99,7 +99,7 @@ module View
         store(:tile_selector, nil, skip: true)
       end
 
-      def history_link(text, title, action_id = nil, style_extra = {})
+      def history_link(text, title, action_id = nil)
         route = Lib::Params.add(@app_route, 'action', action_id)
 
         click = lambda do
@@ -118,7 +118,6 @@ module View
           style: {
             color: 'currentColor',
             textDecoration: 'none',
-            **style_extra,
           },
         )
       end
