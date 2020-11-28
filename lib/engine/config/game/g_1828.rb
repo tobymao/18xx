@@ -1240,7 +1240,7 @@ module Engine
             "city=revenue:30;path=a:3,b:_0;path=a:5,b:_0": [
                 "E27"
             ],
-            "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_1;label=OO;upgrade=cost:80,terrain:water": [
+            "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_1;label=NY;upgrade=cost:80,terrain:water": [
                 "G23"
             ],
             "city=revenue:30;path=a:0,b:_0;path=a:4,b:_0": [
