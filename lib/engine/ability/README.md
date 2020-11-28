@@ -166,6 +166,8 @@ normal tile lay actions.
 - `reachable`: If true, when tile layed, a check is done if one of the
   controlling corporation's station tokens are reachable; if not a game
   error is triggered. Default false.
+- `must_lay_together`: If true, all the tile lays must happen at the same
+  time. Default false.
 
 ## train_buy
 

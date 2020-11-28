@@ -9,15 +9,25 @@ module Engine
       include Tracker
 
       ACTIONS = %w[lay_tile].freeze
+      ACTIONS_WITH_PASS = %w[lay_tile pass].freeze
 
       def actions(entity)
-        return [] unless tile_lay_abilities(entity)
+        action = tile_lay_abilities(entity)
+        return [] unless action
 
-        ACTIONS
+        action.blocks ? ACTIONS : ACTIONS_WITH_PASS
+      end
+
+      def description
+        "Lay Track for #{@company.name}"
+      end
+
+      def active_entities
+        @company ? [@company] : super
       end
 
       def blocks?
-        false
+        @company
       end
 
       def process_lay_tile(action)
@@ -25,6 +35,18 @@ module Engine
         lay_tile(action, spender: action.entity.owner)
         check_connect(action, ability)
         ability.use!
+
+        @company = ability.count.positive? ? action.entity : nil if ability.must_lay_together
+      end
+
+      def process_pass(action)
+        entity = action.entity
+        ability = tile_lay_abilities(entity)
+        @game.game_error("Not #{entity.name}'s turn: #{action.to_h}") unless entity == @company
+
+        entity.remove_ability(ability)
+        @log << "#{entity.owner.name} passes laying additional track with #{entity.name}"
+        @company = nil
       end
 
       def available_hex(entity, hex)

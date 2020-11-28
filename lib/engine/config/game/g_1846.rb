@@ -356,6 +356,7 @@ module Engine
            "when": "owning_corp_or_turn",
            "owner_type":"corporation",
            "free":true,
+           "must_lay_together": true,
            "hexes":[
               "B10",
               "B12"
@@ -390,6 +391,7 @@ module Engine
            "when": "owning_corp_or_turn",
            "owner_type":"corporation",
            "free":true,
+           "must_lay_together": true,
            "hexes":[
               "F14",
               "F16"
