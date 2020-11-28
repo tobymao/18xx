@@ -1640,7 +1640,7 @@ module Engine
         end
       end
 
-      def clear_cache(type)
+      def update_cache(type)
         return unless CACHABLE.any? { |t, _n| t == type }
 
         ivar = "@_#{type}"
