@@ -1201,8 +1201,8 @@
     },
     {
       "type": "lay_tile",
-      "entity": "GT",
-      "entity_type": "corporation",
+      "entity": "MC",
+      "entity_type": "company",
       "id": 115,
       "hex": "B10",
       "tile": "9-8",

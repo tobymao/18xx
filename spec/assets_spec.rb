@@ -232,6 +232,8 @@ describe 'Assets' do
       ['1817', 16_281, 1183, 'buy_sell_post_conversion',
        ['Merger Round 4.2 (of 2) - Buy/Sell Shares Post Conversion',
         'New York, Susquehanna and Western Railway']],
+      ['18_chesapeake', 1905, 166, 'blocking_special_track',
+       ['Lay Track for Columbia - Philadelphia Railroad']],
     ].freeze
 
     def render_game(jsonfile, no_actions, string)

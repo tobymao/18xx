@@ -14,14 +14,6 @@ module Engine
         @company.abilities(:tile_lay, time: 'sold').blocks ? ACTIONS : ACTIONS_WITH_PASS
       end
 
-      def description
-        "Lay Track for #{@company.name}"
-      end
-
-      def active_entities
-        @company ? [@company] : super
-      end
-
       def blocking?
         blocking_for_sold_company? || super
       end
