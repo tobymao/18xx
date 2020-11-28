@@ -7,7 +7,6 @@ module Engine
     attr_accessor :cash
 
     def check_cash(amount)
-      amount.bad_func if (@cash - amount).negative?
       raise GameError, "#{name} has #{@cash} and cannot spend #{amount}" if (@cash - amount).negative?
     end
 
