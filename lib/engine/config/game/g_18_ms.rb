@@ -195,6 +195,7 @@ module Engine
              "free": true,
              "special": false,
              "reachable": true,
+             "must_lay_together": true,
              "hexes": [
              ],
              "tiles": [
