@@ -122,6 +122,17 @@ module Engine
         sm
       end
 
+      def init_tiles
+        tiles = super
+
+        tiles.find { |tile| tile.name == '53' }.label = 'Ba'
+        tiles.find { |tile| tile.name == '61' }.label = 'Ba'
+        tiles.find { |tile| tile.name == '121' }.label = 'Bo'
+        tiles.find { |tile| tile.name == '997' }.label = 'Bo'
+
+        tiles
+      end
+
       EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false, cost: 40 }].freeze
       EXTRA_TILE_LAY_CORPS = %w[B&M NYH].freeze
 
