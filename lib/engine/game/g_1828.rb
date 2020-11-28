@@ -143,16 +143,19 @@ module Engine
         @log << "-- Event: #{EVENTS_TEXT['green_par'][1]} --"
         stock_market.enable_par_price(86)
         stock_market.enable_par_price(94)
+        update_cache(:share_prices)
       end
 
       def event_blue_par!
         @log << "-- Event: #{EVENTS_TEXT['blue_par'][1]} --"
         stock_market.enable_par_price(105)
+        update_cache(:share_prices)
       end
 
       def event_brown_par!
         @log << "-- Event: #{EVENTS_TEXT['brown_par'][1]} --"
         stock_market.enable_par_price(120)
+        update_cache(:share_prices)
       end
 
       def event_close_companies!
