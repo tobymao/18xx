@@ -19,6 +19,8 @@ module Engine
           lay_tile(action, spender: @round.company_sellers.first)
           check_connect(action, ability)
           ability.use!
+
+          @company = nil
         end
       end
     end

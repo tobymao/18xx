@@ -28,6 +28,8 @@ module Engine
         lay_tile(action, spender: entity.owner)
         check_connect(action, ability)
         ability.use!
+
+        @company = nil
       end
 
       def process_pass(action)
@@ -38,6 +40,8 @@ module Engine
         @company.remove_ability(ability)
         @log << "#{entity.name} passes lay track"
         pass!
+
+        @company = nil
       end
 
       def blocking_for_sold_company?
