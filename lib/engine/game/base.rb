@@ -458,8 +458,8 @@ module Engine
         @round.active_step
       end
 
-      def active_player_names
-        active_players.map(&:name)
+      def active_players_id
+        active_players.map(&:id)
       end
 
       def self.filtered_actions(actions)
