@@ -93,7 +93,7 @@ class Api
                 action_id = r.params['id']
                 halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
 
-                r.params['user'] = user.name
+                r.params['user'] = user.id
 
                 engine = engine.process_action(r.params)
                 action = engine.actions.last.to_h

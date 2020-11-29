@@ -515,7 +515,9 @@ module Engine
           return clone(@actions)
         end
 
-        @log << "• Action(#{action.type}) via Master Mode by #{action.user}:" if action.user
+        if action.user
+          @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
+        end
 
         preprocess_action(action)
 
