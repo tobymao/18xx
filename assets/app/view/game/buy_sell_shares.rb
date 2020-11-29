@@ -17,10 +17,10 @@ module View
         @current_entity = @step.current_entity
 
         @ipo_shares = @corporation.shares.group_by(&:percent).values
-          .map(&:first).sort.reverse
+          .map(&:first).sort_by(&:percent).reverse
 
         @pool_shares = @game.share_pool.shares_by_corporation[@corporation].group_by(&:percent).values
-          .map(&:first).sort.reverse
+          .map(&:first).sort_by(&:percent).reverse
 
         children = []
 
