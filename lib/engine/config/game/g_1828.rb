@@ -464,7 +464,8 @@ module Engine
                 {
                     "type": "teleport",
                     "owner_type": "corporation",
-                    "when": "track",
+                    "cost": 120,
+                    "free_tile_lay": true,
                     "hexes": [
                       "F20"
                     ],
