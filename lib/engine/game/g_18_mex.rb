@@ -371,9 +371,9 @@ module Engine
         @log << "-- #{major.name} merges into #{ndm.name} --"
 
         # Rule 5e: Any other shares are sold off for half market price
-        refund = major.ipoed ? (major.share_price.price / 2.0).ceil : 0
+        refund = major.ipoed ? (major.share_price.price / 2.0) : 0
         @players.each do |p|
-          refund_count = 0
+          refund_amount = 0.0
           p.shares_of(major).dup.each do |s|
             next unless s
 
@@ -382,8 +382,7 @@ module Engine
               # Might trigger presidency change in NdM
               @share_pool.buy_shares(major.owner, ndm_merge_share, exchange: :free, exchange_price: 0)
             else
-              bank.spend(refund, p) if refund.positive?
-              refund_count += 1
+              refund_amount += refund
             end
             s.transfer(major)
           end
@@ -391,9 +390,11 @@ module Engine
           @share_pool.shares_of(major).dup.each do |s|
             s.transfer(major)
           end
-          if refund_count.positive?
-            @log << "#{p.name} receives #{format_currency(refund * refund_count)} in share compensation"
-          end
+          next unless refund_amount.positive?
+
+          refund_amount = refund_amount.ceil
+          bank.spend(refund_amount, p)
+          @log << "#{p.name} receives #{format_currency(refund_amount)} in share compensation"
         end
 
         # Rule 5f: Handle tokens. NdM gets two exchange tokens. The first exchange token will be used
