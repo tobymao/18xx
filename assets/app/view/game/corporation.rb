@@ -314,7 +314,7 @@ module View
 
         if @corporation.reserved_shares.any?
           pool_rows << h('tr.reserved', [
-            h('td.left', @game.class::IPO_RESERVED_NAME),
+            h('td.left', @game.ipo_reserved_name),
             h('td.right', shares_props, share_number_str(@corporation.num_ipo_reserved_shares)),
             h('td.padded_number', share_price_str(@corporation.par_price)),
           ])

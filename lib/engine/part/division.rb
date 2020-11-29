@@ -5,7 +5,7 @@ require_relative 'base'
 module Engine
   module Part
     class Division < Base
-      attr_reader :a, :asign, :b, :bsign, :type, :restrict, :magnet, :blockers, :inner, :outer
+      attr_reader :a, :a_sign, :b, :b_sign, :type, :restrict, :magnet, :blockers, :inner, :outer
 
       SIGN = {
         '-' => -1,
@@ -14,14 +14,19 @@ module Engine
       }.freeze
 
       def initialize(a, b, type, restrict, magnet)
+        # a and b are vertices of the hex. 0 represents the bottom one and then you go clockwise
+        # The sign tells if the division should be drawn a little bit before or after the vertex,
+        # but doesn't have any impact on the game
         a, b = [a, b].minmax
         @a = a[0].to_i
-        @asign = SIGN[a[1]]
+        @a_sign = SIGN[a[1]]
         @b = b[0].to_i
-        @bsign = SIGN[b[1]]
+        @b_sign = SIGN[b[1]]
 
         @type = type
+        # If restrict==inner, only allow paths between a and b. If outer, only between b and a
         @restrict = restrict
+        # Pulls the river to this vertex. Also only cosmetic
         @magnet = magnet&.to_i
         @blockers = []
 

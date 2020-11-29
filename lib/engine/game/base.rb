@@ -1030,7 +1030,7 @@ module Engine
         return true if special
 
         # correct label?
-        return false unless from.label == to.label || (!from.label && to.label&.optional_label?)
+        return false if from.label != to.label && (from.label || !to.label&.optional_label?)
 
         # honors existing town/city counts?
         # - allow labelled cities to upgrade regardless of count; they're probably

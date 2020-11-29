@@ -54,22 +54,22 @@ module View
           @tile.divisions.each do |division|
             next unless division.blockers.any? { |b| b.abilities(:blocks_division)&.blocks?(division.type) }
 
-            a_control = VERTICES[(division.a + division.asign) % 6]
+            a_control = VERTICES[(division.a + division.a_sign) % 6]
             vertex_a = convex_combination(VERTICES[division.a], a_control)
-            b_control = VERTICES[(division.b + division.bsign) % 6]
+            b_control = VERTICES[(division.b + division.b_sign) % 6]
             vertex_b = convex_combination(VERTICES[division.b], b_control)
 
-            da = if division.asign.nonzero?
+            da = if division.a_sign.nonzero?
                    VERTICES[division.a].map { |x| x * (1 - (1 - COEFFICIENT) * 2) } # cos(30) = 1/2
                  else
                    convex_combination(vertex_a, vertex_b)
-                 end. join(' ')
+                 end.join(' ')
 
-            db = if division.bsign.nonzero?
+            db = if division.b_sign.nonzero?
                    VERTICES[division.b].map { |x| x * (1 - (1 - COEFFICIENT) * 2) } # cos(30) = 1/2
                  else
                    convex_combination(vertex_b, vertex_a)
-                 end. join(' ')
+                 end.join(' ')
 
             magnet_str = ''
             if division.magnet
