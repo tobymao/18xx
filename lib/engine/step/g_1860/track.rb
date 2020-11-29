@@ -12,6 +12,7 @@ module Engine
 
         def actions(entity)
           return [] if entity.company? || !can_lay_tile?(entity)
+          return [] if entity.receivership?
 
           entity == current_entity ? ACTIONS : []
         end

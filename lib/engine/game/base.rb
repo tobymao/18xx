@@ -658,6 +658,10 @@ module Engine
         []
       end
 
+      def buyable_text(size, share)
+        size > 1 || share.percent != share.corporation.share_percent ? "#{share.percent}% " : ''
+      end
+
       def sellable_bundles(player, corporation)
         bundles = bundles_for_corporation(player, corporation)
         bundles.select { |bundle| @round.active_step&.can_sell?(player, bundle) }

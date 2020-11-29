@@ -39,7 +39,7 @@ module View
             .select { |share| step.can_buy?(current_entity, share) }
             .reject { |share| share.president && pool_shares.size > 1 }
           buyables.each do |share|
-            text = buyables.size > 1 || share.percent != @corporation.share_percent ? "#{share.percent}% " : ''
+            text = @game.buyable_text(buyables.size, share)
             children << h(:button,
                           { on: { click: -> { buy_share(current_entity, share) } } },
                           "Buy #{text}Market Share")
