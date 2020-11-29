@@ -6,20 +6,6 @@ module Engine
   module Step
     module G1870
       class BuySellParShares < BuySellParShares
-        POSSIBLE_PARS = {
-          72 => [5, 7],
-          76 => [4, 7],
-          82 => [3, 7],
-          90 => [2, 7],
-          100 => [1, 7],
-          110 => [1, 8],
-          120 => [1, 9],
-          140 => [1, 10],
-          160 => [1, 11],
-          180 => [1, 12],
-          200 => [1, 13],
-        }.freeze
-
         def actions(entity)
           return [] if @current_actions.last&.entity&.corporation?
 
@@ -54,7 +40,10 @@ module Engine
         end
 
         def issuable_shares(entity)
-          [Engine::ShareBundle.new(entity.shares_of(entity))]
+          bundle = Engine::ShareBundle.new(entity.shares_of(entity))
+          bundle.share_price = @game.stock_market.issue_par(entity)
+
+          [bundle]
         end
 
         def can_buy?(entity, bundle)
@@ -77,22 +66,22 @@ module Engine
         end
 
         def process_sell_shares(action)
+          return super unless action.entity.corporation?
+
+          corporation = action.entity
+
+          @log << "#{corporation.name} reissues #{@game.share_pool.num_presentation(action.bundle)}"
+
           action.bundle.shares.each do |s|
             s.buyable = true
           end
 
-          @log << "#{action.entity.name} reissues #{@game.share_pool.num_presentation(action.bundle)}"
+          corporation.capitalization = :incremental
+          @game.stock_market.issue_par_update(action.entity)
 
-          action.entity.capitalization = :incremental
+          @game.log << "#{corporation.name}'s par price is now #{@game.format_currency(corporation.par_price.price)}"
 
-          new_par = POSSIBLE_PARS.keys.reject { |v| v > 0.75 * action.entity.share_price.price }
-          if new_par.size.positive? && new_par.max > action.entity.par_price.price
-            action.entity.par_price = @game.stock_market.share_price(*(POSSIBLE_PARS[new_par.max]))
-
-            @log << "#{action.entity.name}'s par price is now #{@game.format_currency(action.entity.par_price.price)}"
-          end
-
-          @round.last_to_act = action.entity
+          @round.last_to_act = corporation.owner
           @current_actions << action
         end
       end
