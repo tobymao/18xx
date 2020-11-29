@@ -659,8 +659,8 @@ module Engine
         []
       end
 
-      def buyable_text(size, share)
-        size > 1 || share.percent != share.corporation.share_percent ? "#{share.percent}% " : ''
+      def allow_percentage_on_buy(_share)
+        true
       end
 
       def sellable_bundles(player, corporation)

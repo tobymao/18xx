@@ -21,7 +21,7 @@ module View
           reduced_price = @game.format_currency(@share.price - @swap_share.price) if @swap_share
 
           text = @prefix.to_s
-          text += " #{@share.percent}%" if show_percentage
+          text += " #{@share.percent}%" if show_percentage && @game.allow_percentage_on_buy(@share)
           text += " #{@source} Share"
           text += " (#{reduced_price} + #{@swap_share.percent}% Share)" if @swap_share
 

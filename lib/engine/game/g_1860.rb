@@ -226,9 +226,9 @@ module Engine
         entity.corporation? && can_ipo?(entity)
       end
 
-      # don't show percentage for president's share
-      def buyable_text(_size, _share)
-        ''
+      # don't show percentage when buying from market
+      def allow_percentage_on_buy(share)
+        share.owner != @share_pool
       end
 
       def bundles_for_corporation(share_holder, corporation, shares: nil)
