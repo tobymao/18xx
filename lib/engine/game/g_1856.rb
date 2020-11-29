@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1856'
+require_relative '../loan.rb'
 require_relative 'base'
 
 module Engine
@@ -29,7 +30,7 @@ module Engine
                       brown: '#7b352a')
 
       load_from_json(Config::Game::G1856::JSON)
-
+      attr_reader :loan_value
       DEV_STAGE = :prealpha
 
       # These plain city hexes upgrade to L tiles in brown
@@ -66,6 +67,53 @@ module Engine
 
       def gray_phase?
         @phase.tiles.include?('gray')
+      end
+
+      def maximum_loans(entity)
+        entity.num_player_shares
+      end
+
+      def interest_rate
+        10
+      end
+
+      def interest_owed_for_loans(loans)
+        interest_rate * loans
+      end
+
+      def interest_owed(entity)
+        interest_owed_for_loans(entity.loans.size)
+      end
+
+      def take_loan(entity, loan)
+        game_error("Cannot take more than #{maximum_loans(entity)} loans") unless can_take_loan?(entity)
+        price = entity.share_price.price
+        name = entity.name
+        name += " (#{entity.owner.name})" if @round.is_a?(Round::Stock)
+        @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
+        @bank.spend(loan.amount, entity)
+        log_share_price(entity, price)
+        entity.loans << loan
+        @loans.delete(loan)
+      end
+
+      def can_take_loan?(entity)
+        entity.corporation? &&
+          entity.loans.size < maximum_loans(entity) &&
+          @loans.any?
+      end
+
+      def init_loans
+        @loan_value = 100
+        110.times.map { |id| Loan.new(id, @loan_value) }
+      end
+
+      def can_pay_interest?(entity, extra_cash = 0)
+        # Can they cover it using cash?
+        return true if entity.cash + extra_cash > interest_owed(entity)
+
+        # Can they cover it using buying_power minus the full interest
+        (buying_power(entity) + extra_cash) > interest_owed_for_loans(maximum_loans(entity))
       end
 
       def setup
@@ -215,11 +263,12 @@ module Engine
         ],
       }.merge(Base::STATUS_TEXT)
       def operating_round(round_num)
-        Round::Operating.new(self, [
+        Round::G1856::Operating.new(self, [
           Step::Bankrupt,
           # No exchanges.
           Step::DiscardTrain,
           # Step::TakeLoans
+          Step::G1817::Loan,
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::G1856::Track,
