@@ -130,6 +130,8 @@ Lay a tile and place a station token without connectivity
   teleport destination.
 - `tiles`: An array of tile numbers which may be placed at the
   teleport destination.
+- `cost`: Cost to use the teleport ability.
+- `fee_tile_lay`: If true, the tile is laid with 0 cost. Default false.
 
 ## tile_discount
 
