@@ -59,8 +59,6 @@ module Engine
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
-      IPO_NAME = 'Treasury'
-
       LIMIT_TOKENS = 8
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
@@ -80,6 +78,10 @@ module Engine
       # Minors are done as corporations with a size of 2
 
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
+
+      def ipo_name(_entity = nil)
+        'Treasury'
+      end
 
       # @todo: unchanged to here
       def interest_rate

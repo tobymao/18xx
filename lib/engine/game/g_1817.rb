@@ -62,8 +62,6 @@ module Engine
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
-      IPO_NAME = 'Treasury'
-
       LIMIT_TOKENS = 8
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
@@ -87,6 +85,10 @@ module Engine
         @log << '1817 has not been tested thoroughly with more than seven players.' if @players.size > 7
 
         super
+      end
+
+      def ipo_name(_entity = nil)
+        'Treasury'
       end
 
       def init_stock_market

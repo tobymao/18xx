@@ -19,8 +19,6 @@ module Engine
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MEX'
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
-      IPO_RESERVED_NAME = 'Trade-in'
-
       # Sell of one 5% NdM share wont affect stock price.
       # Actually neither should sell of 2 5% but they will
       # always be sold just one at a time.
@@ -232,6 +230,10 @@ module Engine
         super
       end
 
+      def ipo_reserved_name(_entity = nil)
+        'Trade-in'
+      end
+
       def float_corporation(corporation)
         @recently_floated << corporation
 
@@ -291,8 +293,8 @@ module Engine
         default_revenue_minor = 15
         revenue = format_currency(default_revenue_minor)
         @minors.select(&:floated?).each do |minor|
-          bank.spend(default_revenue_minor, minor.owner)
-          bank.spend(default_revenue_minor, minor)
+          @bank.spend(default_revenue_minor, minor.owner)
+          @bank.spend(default_revenue_minor, minor)
           @log << "Minor #{minor.name} receives #{revenue}, as does its owner #{minor.owner.name}"
         end
       end
@@ -382,6 +384,7 @@ module Engine
               # Might trigger presidency change in NdM
               @share_pool.buy_shares(major.owner, ndm_merge_share, exchange: :free, exchange_price: 0)
             else
+              # Refund 10% share (as it is never NdM)
               refund_amount += refund
             end
             s.transfer(major)
