@@ -137,6 +137,14 @@ module Engine
 
       def init_round_finished
         @players.rotate!(@round.entity_index)
+
+        @companies.each do |company|
+          next unless company.owner
+
+          company.abilities(:revenue_change, time: 'auction_end') do |ability|
+            company.revenue = ability.revenue
+          end
+        end
       end
 
       def event_green_par!
@@ -259,6 +267,7 @@ module Engine
         @minors.each do |minor|
           train = @depot.upcoming[0]
           train.buyable = false
+          train.rusts_on = nil
           minor.buy_train(train, :free)
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token, free: true)
