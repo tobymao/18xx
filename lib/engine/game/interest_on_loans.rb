@@ -26,4 +26,12 @@ module InterestOnLoans
     end
     owed
   end
+
+  def can_pay_interest?(entity, extra_cash = 0)
+    # Can they cover it using cash?
+    return true if entity.cash + extra_cash >= interest_owed(entity)
+
+    # Can they cover it using buying_power minus the full interest
+    (buying_power(entity) + extra_cash) >= interest_owed_for_loans(maximum_loans(entity))
+  end
 end

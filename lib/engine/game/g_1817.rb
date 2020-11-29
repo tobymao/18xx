@@ -132,12 +132,12 @@ module Engine
         summary
       end
 
-      def can_pay_interest?(entity, extra_cash = 0)
-        # Can they cover it using cash?
-        return true if entity.cash + extra_cash > interest_owed(entity)
+      def format_currency(val)
+        # On dividends per share can be a float
+        # But don't show decimal points on all
+        return format('$%.1<val>f', val: val) if val.is_a?(Float) && (val % 1 != 0)
 
-        # Can they cover it using buying_power minus the full interest
-        (buying_power(entity) + extra_cash) > interest_owed_for_loans(maximum_loans(entity))
+        self.class::CURRENCY_FORMAT_STR % val
       end
 
       def maximum_loans(entity)
