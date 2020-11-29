@@ -110,7 +110,7 @@ module Engine
             else
               border, border_types = border_cost(tile, entity)
               terrain += border_types if border.positive?
-              @game.tile_cost(old_tile, entity) + border + extra_cost - discount
+              @game.tile_cost(old_tile, hex, entity) + border + extra_cost - discount
             end
 
           spender.spend(cost, @game.bank) if cost.positive?

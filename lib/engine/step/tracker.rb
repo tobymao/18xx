@@ -115,7 +115,7 @@ module Engine
           else
             border, border_types = border_cost(tile, entity)
             terrain += border_types if border.positive?
-            @game.tile_cost(old_tile, entity) + border + extra_cost - discount
+            @game.tile_cost(old_tile, hex, entity) + border + extra_cost - discount
           end
 
         try_take_loan(spender, cost)
@@ -169,7 +169,9 @@ module Engine
           neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
 
           ability = entity.all_abilities.find do |a|
-            (a.type == :tile_discount) && (border.type == a.terrain)
+            (a.type == :tile_discount) &&
+             (border.type == a.terrain) &&
+             (!a.hexes || a.hexes.include?(hex.name))
           end
           discount = ability&.discount || 0
 

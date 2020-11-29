@@ -981,8 +981,11 @@ module Engine
         city.place_token(corporation, token)
       end
 
-      def tile_cost(tile, entity)
-        ability = entity.all_abilities.find { |a| a.type == :tile_discount }
+      def tile_cost(tile, hex, entity)
+        ability = entity.all_abilities.find do |a|
+          a.type == :tile_discount &&
+          (!a.hexes || a.hexes.include?(hex.name))
+        end
 
         tile.upgrades.sum do |upgrade|
           discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
