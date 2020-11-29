@@ -23,7 +23,7 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent
-    attr_reader :capitalization, :companies, :min_price, :name, :full_name, :fraction_shares
+    attr_reader :capitalization, :companies, :min_price, :name, :full_name, :fraction_shares, :type
     attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
@@ -57,6 +57,7 @@ module Engine
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
       @par_via_exchange = nil
+      @type = opts[:type]
 
       init_abilities(opts[:abilities])
       init_operator(opts)

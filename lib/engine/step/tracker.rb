@@ -73,9 +73,9 @@ module Engine
         hex.lay(tile)
 
         @game.graph.clear
-        check_track_restrictions!(entity, old_tile, tile)
         free = false
         discount = 0
+        teleport = false
 
         tile_lay_abilities(entity) do |ability|
           next if ability.hexes.any? && (!ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name))
@@ -91,8 +91,19 @@ module Engine
         end
 
         entity.abilities(:teleport) do |ability, _|
-          ability.use! if ability.hexes.include?(hex.id) && ability.tiles.include?(tile.name)
+          next if !ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name)
+
+          teleport = true
+          free = true if ability.free_tile_lay
+          if ability.cost
+            spender.spend(ability.cost, @game.bank) if ability.cost.positive?
+            @log << "#{spender.name} spends #{@game.format_currency(ability.cost)} and teleports to #{hex.name}"
+          end
+
+          ability.use!
         end
+
+        check_track_restrictions!(entity, old_tile, tile) unless teleport
 
         terrain = old_tile.terrain
         cost =

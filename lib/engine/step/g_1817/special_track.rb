@@ -10,7 +10,7 @@ module Engine
           step = @round.active_step
           raise 'Can only be laid as part of lay track' unless step.is_a?(Step::Track)
 
-          if action.entity.id == 'PSM'
+          if action.entity.id == @game.class::PITTSBURGH_PRIVATE_NAME
             super
           else # Mine
             owner = action.entity.owner
@@ -27,7 +27,7 @@ module Engine
         end
 
         def available_hex(entity, hex)
-          return super if entity.company? && entity.id == 'PSM'
+          return super if entity.company? && entity.id == @game.class::PITTSBURGH_PRIVATE_NAME
 
           hexes = tile_lay_abilities(entity)&.hexes
           return if hexes&.any? && !hexes&.include?(hex.id)
@@ -45,7 +45,7 @@ module Engine
         end
 
         def legal_tile_rotation?(entity, hex, tile)
-          return super if entity.company? && entity.id == 'PSM'
+          return super if entity.company? && entity.id == @game.class::PITTSBURGH_PRIVATE_NAME
 
           super &&
           tile.exits.any? do |exit|

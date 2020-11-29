@@ -284,7 +284,8 @@ module Engine
           ],
           "when": "sold",
           "owner_type": "corporation",
-          "count": 1
+          "count": 1,
+          "blocks": false
         }
       ]
     },

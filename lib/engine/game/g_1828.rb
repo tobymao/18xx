@@ -122,6 +122,17 @@ module Engine
         sm
       end
 
+      def init_tiles
+        tiles = super
+
+        tiles.find { |tile| tile.name == '53' }.label = 'Ba'
+        tiles.find { |tile| tile.name == '61' }.label = 'Ba'
+        tiles.find { |tile| tile.name == '121' }.label = 'Bo'
+        tiles.find { |tile| tile.name == '997' }.label = 'Bo'
+
+        tiles
+      end
+
       EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false, cost: 40 }].freeze
       EXTRA_TILE_LAY_CORPS = %w[B&M NYH].freeze
 
@@ -143,16 +154,19 @@ module Engine
         @log << "-- Event: #{EVENTS_TEXT['green_par'][1]} --"
         stock_market.enable_par_price(86)
         stock_market.enable_par_price(94)
+        update_cache(:share_prices)
       end
 
       def event_blue_par!
         @log << "-- Event: #{EVENTS_TEXT['blue_par'][1]} --"
         stock_market.enable_par_price(105)
+        update_cache(:share_prices)
       end
 
       def event_brown_par!
         @log << "-- Event: #{EVENTS_TEXT['brown_par'][1]} --"
         stock_market.enable_par_price(120)
+        update_cache(:share_prices)
       end
 
       def event_close_companies!

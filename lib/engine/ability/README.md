@@ -130,6 +130,8 @@ Lay a tile and place a station token without connectivity
   teleport destination.
 - `tiles`: An array of tile numbers which may be placed at the
   teleport destination.
+- `cost`: Cost to use the teleport ability.
+- `fee_tile_lay`: If true, the tile is laid with 0 cost. Default false.
 
 ## tile_discount
 
@@ -166,6 +168,8 @@ normal tile lay actions.
 - `reachable`: If true, when tile layed, a check is done if one of the
   controlling corporation's station tokens are reachable; if not a game
   error is triggered. Default false.
+- `must_lay_together`: If true, all the tile lays must happen at the same
+  time. Default false.
 
 ## train_buy
 

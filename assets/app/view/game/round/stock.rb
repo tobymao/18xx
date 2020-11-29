@@ -98,11 +98,15 @@ module View
         end
 
         def render_pre_ipo
-          if @step.ipo_via_par?(@selected_corporation) && @current_actions.include?('par')
-            return h(Par, corporation: @selected_corporation)
+          type = @step.ipo_type(@selected_corporation)
+          case type
+          when :par
+            return h(Par, corporation: @selected_corporation) if @current_actions.include?('par')
+          when :bid
+            return h(Bid, entity: @current_entity, corporation: @selected_corporation)
+          when String
+            return h(:div, type)
           end
-          return h(Bid, entity: @current_entity, corporation: @selected_corporation) if @current_actions.include?('bid')
-
           nil
         end
 

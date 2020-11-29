@@ -275,6 +275,7 @@ module Engine
           phase.transform_keys!(&:to_sym)
           phase[:tiles]&.map!(&:to_sym)
           phase[:events]&.transform_keys!(&:to_sym)
+          phase[:train_limit].transform_keys!(&:to_sym) if phase[:train_limit].is_a?(Hash)
           phase
         end
 
@@ -1642,6 +1643,13 @@ module Engine
             instance_variable_get(ivar)[id]
           end
         end
+      end
+
+      def update_cache(type)
+        return unless CACHABLE.any? { |t, _n| t == type }
+
+        ivar = "@_#{type}"
+        instance_variable_set(ivar, send(type).map { |x| [x.id, x] }.to_h)
       end
 
       def bank_cash
