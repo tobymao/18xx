@@ -8,7 +8,6 @@ module Engine
       def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil)
         bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
         if bundle.presidents_share && bundle.owner == self
-          puts 'Detected purchase of presidents share from market'
           bundle = ShareBundle.new(bundle.shares, bundle.corporation.share_percent)
         end
 

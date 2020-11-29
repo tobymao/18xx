@@ -59,14 +59,6 @@ module Engine
           @game.par_prices(corp)
         end
 
-        def sell_shares(entity, shares, swap: nil)
-          @game.game_error("Cannot sell shares of #{shares.corporation.name}") unless can_sell?(entity, shares)
-          @game.game_error('Swap set on sell_shares') if swap
-
-          @round.players_sold[shares.owner][shares.corporation] = :now
-          @game.sell_shares_and_change_price(shares)
-        end
-
         def process_buy_shares(action)
           super
 

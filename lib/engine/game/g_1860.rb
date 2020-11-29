@@ -255,11 +255,11 @@ module Engine
         bundles
       end
 
-      def sell_shares_and_change_price(bundle)
+      def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
         corporation = bundle.corporation
         price = corporation.share_price.price
 
-        @share_pool.sell_shares(bundle)
+        @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
         num_shares = bundle.num_shares
         num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
         num_shares.times { @stock_market.move_left(corporation) }
