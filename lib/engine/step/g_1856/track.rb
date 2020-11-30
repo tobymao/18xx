@@ -31,11 +31,9 @@ module Engine
           # and there are no tiles mixed with towns and other things
           # so if it is gray phase, and the tile has towns, then we only need
           # to test that exits are preserved
-          old_exits = {}
-          new_exits = {}
-          old_paths.each { |path| path.exits.each { |exit| old_exits[exit] = true } }
-          new_paths.each { |path| path.exits.each { |exit| new_exits[exit] = true } }
-          return old_exits.all? { |exit, exits| !exits || new_exits[exit] } if
+          old_exits = old_paths.map(&:exits).flatten.uniq
+          new_exits = new_paths.map(&:exits).flatten.uniq
+          return old_exits.all? { |exit| new_exits.include?(exit) } if
             @game.gray_phase? && old_paths.any? { |old_path| path_has_town(old_path) }
 
           old_paths.all? { |path| new_paths.any? { |p| path <= p } }
