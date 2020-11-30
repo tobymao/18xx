@@ -17,7 +17,6 @@ module View
       needs :opacity, default: nil
       needs :show_coords, default: nil, store: true
       needs :show_location_names, default: nil, store: true
-      needs :map_zoom, default: 1, store: true
       needs :show_starting_map, default: false, store: true
 
       EDGE_LENGTH = 50
@@ -31,8 +30,6 @@ module View
         @cols = @hexes.reject(&:ignore_for_axes).map(&:x).uniq.sort.map(&:next)
         @rows = @hexes.reject(&:ignore_for_axes).map(&:y).uniq.sort.map(&:next)
         @layout = @game.layout
-
-        @scale = SCALE * @map_zoom
 
         step = @game.round.active_step(@selected_company)
         current_entity = @selected_company || step&.current_entity
@@ -60,8 +57,8 @@ module View
         children = [render_map, render_controls]
 
         if current_entity && @tile_selector
-          left = (@tile_selector.x + map_x)
-          top = (@tile_selector.y + map_y)
+          left = (@tile_selector.x + map_x) * SCALE
+          top = (@tile_selector.y + map_y) * SCALE
           selector =
             if @tile_selector.is_a?(Lib::TokenSelector)
               # 1882
@@ -139,16 +136,16 @@ module View
 
       def map_size
         if @layout == :flat
-          [((@cols.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP) * @map_zoom,
-           ((@rows.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) * @map_zoom]
+          [(@cols.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP,
+           (@rows.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP]
         else
-          [(((@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) + 1) * @map_zoom,
-           ((@rows.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP) * @map_zoom]
+          [((@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) + 1,
+           (@rows.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP]
         end
       end
 
       def render_controls
-        h(MapControls, show_location_names: show_location_names, show_coords: show_coords, map_zoom: map_zoom)
+        h(MapControls, show_location_names: show_location_names, show_coords: show_coords)
       end
 
       def render_map
@@ -163,7 +160,7 @@ module View
         }
 
         h(:svg, props, [
-          h(:g, { attrs: { transform: "scale(#{@scale})" } }, [
+          h(:g, { attrs: { transform: "scale(#{SCALE})" } }, [
             h(:g, { attrs: { id: 'map-hexes', transform: "translate(#{map_x} #{map_y})" } }, @hexes),
             h(Axis,
               cols: @cols,
@@ -179,15 +176,17 @@ module View
       end
 
       def show_coords
-        @show_coords || Lib::Storage['show_coords'] || false
+        stored = Lib::Storage['show_coords']
+        default = stored.nil? ? false : stored
+
+        @show_coords.nil? ? default : @show_coords
       end
 
       def show_location_names
-        @show_location_names || Lib::Storage['show_location_names'] || true
-      end
+        stored = Lib::Storage['show_location_names']
+        default = stored.nil? ? true : stored
 
-      def map_zoom
-        @map_zoom || Lib::Storage['map_zoom'] || 1
+        @show_location_names.nil? ? default : @show_location_names
       end
     end
   end
