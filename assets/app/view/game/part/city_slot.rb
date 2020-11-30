@@ -22,6 +22,7 @@ module View
         needs :tile_selector, default: nil, store: true
         needs :reservation, default: nil
         needs :game, default: nil, store: true
+        needs :city_render_location, default: nil
 
         RESERVATION_FONT_SIZE = {
           1 => 22,
@@ -109,8 +110,12 @@ module View
               store(:selected_company, nil, skip: true)
               process_action(action)
             else
+              coords = Hex.coordinates(@tile.hex)
+              coords[0] += @city_render_location[:x]
+              coords[1] += @city_render_location[:y]
+
               store(:tile_selector,
-                    Lib::TokenSelector.new(@tile.hex, Hex.coordinates(@tile.hex), @city, @slot_index))
+                    Lib::TokenSelector.new(@tile.hex, coords, @city, @slot_index))
             end
           end
         end
