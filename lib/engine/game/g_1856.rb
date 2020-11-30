@@ -130,7 +130,6 @@ module Engine
 
         # In phase 6+ single dits may be turned into plain yellow track or yellow cities
         if gray_phase?
-          puts 'gray'
           upgrades |= [@straight_city, @straight_track] if tile.name == '4'
           upgrades |= [@gentle_city, @gentle_track] if tile.name == '58'
           upgrades |= [@sharp_city, @sharp_track] if tile.name == '3'
@@ -140,7 +139,6 @@ module Engine
           upgrades |= [@k_city] if tile.name == '56'
           upgrades |= [@k_city] if tile.name == '2'
         end
-        puts 'other'
         upgrades |= [@brown_london] if tile.name == '121'
         upgrades |= [@brown_barrie] if tile.name == '121'
         upgrades |= [@gray_hamilton] if BROWN_OO_TILES.include?(tile.name)
