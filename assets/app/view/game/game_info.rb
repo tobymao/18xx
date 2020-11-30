@@ -163,7 +163,7 @@ module View
       def upcoming_trains
         rust_schedule = {}
         obsolete_schedule = {}
-        @depot.trains.group_by(&:name).each do |name, trains|
+        @depot.upcoming.group_by(&:name).each do |name, trains|
           first = trains.first
           rust_schedule[first.rusts_on] = Array(rust_schedule[first.rusts_on]).append(name)
           obsolete_schedule[first.obsolete_on] = Array(obsolete_schedule[first.obsolete_on]).append(name)
