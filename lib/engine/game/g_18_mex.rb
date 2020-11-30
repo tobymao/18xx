@@ -396,7 +396,7 @@ module Engine
           next unless refund_amount.positive?
 
           refund_amount = refund_amount.ceil
-          bank.spend(refund_amount, p)
+          @bank.spend(refund_amount, p)
           @log << "#{p.name} receives #{format_currency(refund_amount)} in share compensation"
         end
 
