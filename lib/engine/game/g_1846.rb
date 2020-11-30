@@ -81,7 +81,9 @@ module Engine
       # Two tiles can be laid, only one upgrade
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
-      IPO_NAME = 'Treasury'
+      def ipo_name(_entity = nil)
+        'Treasury'
+      end
 
       def corporation_opts
         two_player? ? { max_ownership_percent: 70 } : {}

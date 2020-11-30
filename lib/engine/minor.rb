@@ -7,6 +7,7 @@ require_relative 'operator'
 require_relative 'ownable'
 require_relative 'passer'
 require_relative 'spender'
+require_relative 'transfer'
 
 module Engine
   class Minor
@@ -17,6 +18,7 @@ module Engine
     include Ownable
     include Passer
     include Spender
+    include Transfer
 
     attr_reader :name, :full_name
 

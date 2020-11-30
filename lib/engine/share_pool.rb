@@ -48,7 +48,7 @@ module Engine
       share_str = "a #{bundle.percent}% share of #{corporation.name}"
       incremental = corporation.capitalization == :incremental
 
-      from = bundle.owner.corporation? ? "the #{@game.class::IPO_NAME}" : 'the market'
+      from = bundle.owner.corporation? ? "the #{@game.ipo_name(corporation)}" : 'the market'
       if exchange
         price = exchange_price || 0
         case exchange

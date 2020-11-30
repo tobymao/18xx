@@ -41,7 +41,7 @@ module View
         children.concat(render_ipo_shares)
         children.concat(render_market_shares)
         children.concat(render_price_protection)
-        children.concat(render_reduced_price_shares(@ipo_shares, source: @game.class::IPO_NAME))
+        children.concat(render_reduced_price_shares(@ipo_shares, source: @game.ipo_name(@corporation)))
         children.concat(render_reduced_price_shares(@pool_shares))
 
         children
@@ -71,7 +71,7 @@ module View
             share: share,
             entity: @current_entity,
             percentages_available: @ipo_shares.size,
-            source: @game.class::IPO_NAME)
+            source: @game.ipo_name(@current_entity))
         end
       end
 
@@ -119,7 +119,7 @@ module View
             next unless company.owner == @current_entity
 
             if ability.from.include?(:ipo)
-              children.concat(render_share_exchange(@ipo_shares, company, source: @game.class::IPO_NAME))
+              children.concat(render_share_exchange(@ipo_shares, company, source: @game.ipo_name(@corporation)))
             end
 
             children.concat(render_share_exchange(@pool_shares, company)) if ability.from.include?(:market)

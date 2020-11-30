@@ -36,8 +36,6 @@ module Engine
       # TODO: This changes in phase E to a single tile lay
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: false }].freeze
 
-      IPO_NAME = 'Treasury'
-
       # First 3 are Denver, Second 3 are CO Springs
       TILES_FIXED_ROTATION = %w[co1 co2 co3 co5 co6 co7].freeze
       GREEN_TOWN_TILES = %w[co8 co9 co10].freeze
@@ -83,6 +81,10 @@ module Engine
         ).freeze
 
       include CompanyPrice50To150Percent
+
+      def ipo_name(_entity = nil)
+        'Treasury'
+      end
 
       def dsng
         @dsng ||= corporation_by_id('DSNG')

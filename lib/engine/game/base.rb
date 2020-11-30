@@ -197,8 +197,6 @@ module Engine
                       repar: 'Par value after bankruptcy',
                       ignore_one_sale: 'Ignore first share sold when moving price' }.freeze
 
-      IPO_NAME = 'IPO'
-      IPO_RESERVED_NAME = 'IPO Reserved'
       MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
       OBSOLETE_TRAINS_COUNT_FOR_LIMIT = false
@@ -1195,6 +1193,14 @@ module Engine
       def flush_log!
         @queued_log.each { |l| @log << l }
         @queued_log = []
+      end
+
+      def ipo_name(_entity = nil)
+        'IPO'
+      end
+
+      def ipo_reserved_name(_entity = nil)
+        'IPO Reserved'
       end
 
       private
