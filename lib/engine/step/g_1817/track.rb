@@ -28,6 +28,8 @@ module Engine
           return unless (ability = psm.abilities(:tile_lay))
 
           psm.remove_ability(ability)
+          @game.log << "#{psm.name} closes as it can no longer be used"
+          psm.close!
         end
 
         def upgradeable_tiles(_entity, hex)

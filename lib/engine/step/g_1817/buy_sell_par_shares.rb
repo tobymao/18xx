@@ -287,13 +287,14 @@ module Engine
           # Pay the player for the company
           corporation.spend(company.value, entity)
 
+          @log << "#{company.name} used for forming #{corporation.name} "\
+            "contributing #{@game.format_currency(company.value)} value"
+
           company.abilities(:additional_token) do |ability|
             corporation.tokens << Engine::Token.new(corporation)
             ability.use!
           end
 
-          @log << "#{company.name} used for forming #{corporation.name} "\
-            "contributing #{@game.format_currency(company.value)} value"
           par_corporation if available_subsidiaries(entity).empty?
         end
 
