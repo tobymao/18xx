@@ -17,7 +17,7 @@ module View
       needs :opacity, default: nil
       needs :show_coords, default: nil, store: true
       needs :show_location_names, default: nil, store: true
-      needs :map_zoom, default: 1, store: true
+      needs :map_zoom, default: nil, store: true
       needs :show_starting_map, default: false, store: true
 
       EDGE_LENGTH = 50
@@ -32,7 +32,7 @@ module View
         @rows = @hexes.reject(&:ignore_for_axes).map(&:y).uniq.sort.map(&:next)
         @layout = @game.layout
 
-        @scale = SCALE * @map_zoom
+        @scale = SCALE * map_zoom
 
         step = @game.round.active_step(@selected_company)
         current_entity = @selected_company || step&.current_entity
@@ -139,11 +139,11 @@ module View
 
       def map_size
         if @layout == :flat
-          [((@cols.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP) * @map_zoom,
-           ((@rows.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) * @map_zoom]
+          [((@cols.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP) * map_zoom,
+           ((@rows.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) * map_zoom]
         else
-          [(((@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) + 1) * @map_zoom,
-           ((@rows.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP) * @map_zoom]
+          [(((@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) + 1) * map_zoom,
+           ((@rows.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP) * map_zoom]
         end
       end
 
@@ -179,15 +179,17 @@ module View
       end
 
       def show_coords
-        @show_coords || Lib::Storage['show_coords'] || false
+        show = Lib::Storage['show_coords']
+        show.nil? ? false : show
       end
 
       def show_location_names
-        @show_location_names || Lib::Storage['show_location_names'] || true
+        show = Lib::Storage['show_location_names']
+        show.nil? ? true : show
       end
 
       def map_zoom
-        @map_zoom || Lib::Storage['map_zoom'] || 1
+        Lib::Storage['map_zoom'] || 1
       end
     end
   end
