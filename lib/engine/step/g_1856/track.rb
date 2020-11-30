@@ -2,12 +2,10 @@
 
 require_relative '../base'
 require_relative '../track'
-
 module Engine
   module Step
     module G1856
       class Track < Track
-
         def legal_tile_rotation?(entity, hex, tile)
           old_paths = hex.tile.paths
           old_ctedges = hex.tile.city_town_edges
