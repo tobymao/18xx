@@ -58,7 +58,7 @@ module Engine
             # potentially be updated in future.
             (ntile.cities&.any? ||
              ntile.offboards&.any?) &&
-            (ntile.edges.any? { |e| e.num == Hex.invert(exit) } ||
+            (ntile.exits.any? { |e| e == Hex.invert(exit) } ||
              potential_future_tiles(entity, neighbor).any?)
           end
         end
