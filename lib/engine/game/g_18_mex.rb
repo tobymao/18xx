@@ -316,7 +316,7 @@ module Engine
 
       def purchasable_companies(entity = nil)
         return super if @phase.current[:name] != '2' || !@optional_rules&.include?(:early_buy_of_kcmo)
-        return [] unless p2_company.owner.player?
+        return [] unless p2_company.owner&.player?
 
         [p2_company]
       end
