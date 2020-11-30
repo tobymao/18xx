@@ -5,9 +5,9 @@ require '../lib/storage'
 module View
   module Game
     class MapControls < Snabberb::Component
-      needs :show_coords, store: true
-      needs :show_location_names, store: true
-      needs :map_zoom, store: true
+      needs :show_coords, default: nil, store: true
+      needs :show_location_names, default: nil, store: true
+      needs :map_zoom, default: nil, store: true
 
       def render
         children = [
