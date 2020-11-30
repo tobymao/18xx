@@ -5,15 +5,16 @@ require '../lib/storage'
 module View
   module Game
     class MapControls < Snabberb::Component
-      needs :show_coords, default: true, store: true
-      needs :show_location_names, default: true, store: true
-      needs :show_starting_map, default: false, store: true
+      needs :show_coords, store: true
+      needs :show_location_names, store: true
+      needs :map_zoom, store: true
 
       def render
         children = [
           location_names_controls,
           hex_coord_controls,
           starting_map_controls,
+          *map_zoom_controls,
         ]
 
         h(:div, children)
@@ -53,6 +54,19 @@ module View
         end
 
         render_button(text, on_click)
+      end
+
+      def map_zoom_controls
+        on_click = lambda do |z|
+          lambda do
+            store(:map_zoom, z)
+            Lib::Storage['map_zoom'] = z
+          end
+        end
+
+        [render_button('Zoom out', on_click.call(@map_zoom / 1.1)),
+         render_button('Default zoom', on_click.call(1)),
+         render_button('Zoom in', on_click.call(@map_zoom * 1.1))]
       end
 
       def render_button(text, action)

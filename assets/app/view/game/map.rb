@@ -18,6 +18,7 @@ module View
       needs :show_coords, default: nil, store: true
       needs :show_location_names, default: nil, store: true
       needs :show_starting_map, default: false, store: true
+      needs :map_zoom, default: nil, store: true
 
       EDGE_LENGTH = 50
       SIDE_TO_SIDE = 87
@@ -30,6 +31,8 @@ module View
         @cols = @hexes.reject(&:ignore_for_axes).map(&:x).uniq.sort.map(&:next)
         @rows = @hexes.reject(&:ignore_for_axes).map(&:y).uniq.sort.map(&:next)
         @layout = @game.layout
+
+        @scale = SCALE * map_zoom
 
         step = @game.round.active_step(@selected_company)
         current_entity = @selected_company || step&.current_entity
@@ -57,19 +60,19 @@ module View
         children = [render_map, render_controls]
 
         if current_entity && @tile_selector
-          left = (@tile_selector.x + map_x) * SCALE
-          top = (@tile_selector.y + map_y) * SCALE
+          left = (@tile_selector.x + map_x) * @scale
+          top = (@tile_selector.y + map_y) * @scale
           selector =
             if @tile_selector.is_a?(Lib::TokenSelector)
               # 1882
-              h(TokenSelector)
+              h(TokenSelector, zoom: map_zoom)
             elsif @tile_selector.role != :map
               # Tile selector not for the map
             elsif @tile_selector.hex.tile != @tile_selector.tile
               h(TileConfirmation)
             else
               # Selecting column A can cause tiles to go off the edge of the map
-              distance = TileSelector::DISTANCE + (TileSelector::TILE_SIZE / 2)
+              distance = (TileSelector::DISTANCE + (TileSelector::TILE_SIZE / 2)) * map_zoom
 
               width, height = map_size
               left = distance if (left - distance).negative?
@@ -100,7 +103,7 @@ module View
               # Add tiles that aren't part of all_upgrades (Mitsubishi ferry)
               select_tiles.append(*tiles.map { |t| [t, nil] })
 
-              h(TileSelector, layout: @layout, tiles: select_tiles, actions: actions)
+              h(TileSelector, layout: @layout, tiles: select_tiles, actions: actions, zoom: map_zoom)
             end
 
           # Move the position to the middle of the hex
@@ -136,16 +139,16 @@ module View
 
       def map_size
         if @layout == :flat
-          [(@cols.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP,
-           (@rows.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP]
+          [((@cols.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP) * map_zoom,
+           ((@rows.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) * map_zoom]
         else
-          [((@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) + 1,
-           (@rows.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP]
+          [(((@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) + 1) * map_zoom,
+           ((@rows.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP) * map_zoom]
         end
       end
 
       def render_controls
-        h(MapControls, show_location_names: show_location_names, show_coords: show_coords)
+        h(MapControls, show_location_names: show_location_names, show_coords: show_coords, map_zoom: map_zoom)
       end
 
       def render_map
@@ -160,7 +163,7 @@ module View
         }
 
         h(:svg, props, [
-          h(:g, { attrs: { transform: "scale(#{SCALE})" } }, [
+          h(:g, { attrs: { transform: "scale(#{@scale})" } }, [
             h(:g, { attrs: { id: 'map-hexes', transform: "translate(#{map_x} #{map_y})" } }, @hexes),
             h(Axis,
               cols: @cols,
@@ -183,6 +186,10 @@ module View
       def show_location_names
         show = Lib::Storage['show_location_names']
         show.nil? ? true : show
+      end
+
+      def map_zoom
+        Lib::Storage['map_zoom'] || 1
       end
     end
   end
