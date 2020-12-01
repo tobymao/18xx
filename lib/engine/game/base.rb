@@ -561,6 +561,10 @@ module Engine
         ipoed.sort + others
       end
 
+      def operated_operators
+        (@corporations + @minors).select(&:operated?)
+      end
+
       def current_action_id
         @actions.size + 1
       end

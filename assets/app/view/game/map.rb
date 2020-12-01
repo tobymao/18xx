@@ -18,6 +18,8 @@ module View
       needs :show_coords, default: nil, store: true
       needs :show_location_names, default: nil, store: true
       needs :show_starting_map, default: false, store: true
+      needs :routes, default: [], store: true
+      needs :historical_routes, default: [], store: true
 
       EDGE_LENGTH = 50
       SIDE_TO_SIDE = 87
@@ -38,6 +40,9 @@ module View
         selected_hex = @tile_selector&.hex
         @hexes << @hexes.delete(selected_hex) if @hexes.include?(selected_hex)
 
+        routes = @routes
+        routes = @historical_routes if routes.none?
+
         @hexes.map! do |hex|
           clickable = @show_starting_map ? false : step&.available_hex(current_entity, hex)
           opacity = clickable ? 1.0 : 0.5
@@ -50,6 +55,7 @@ module View
             actions: actions,
             show_coords: show_coords,
             show_location_names: show_location_names,
+            routes: routes
           )
         end
         @hexes.compact!
