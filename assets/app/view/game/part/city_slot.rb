@@ -111,8 +111,8 @@ module View
               process_action(action)
             else
               coords = Hex.coordinates(@tile.hex)
-              coords[0] += @city_render_location[:x]
-              coords[1] += @city_render_location[:y]
+              coords[0] += @city_render_location[:x] if @city_render_location
+              coords[1] += @city_render_location[:y] if @city_render_location
 
               store(:tile_selector,
                     Lib::TokenSelector.new(@tile.hex, coords, @city, @slot_index))
