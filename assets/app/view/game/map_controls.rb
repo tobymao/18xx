@@ -107,11 +107,11 @@ module View
           end
         end
 
-        @route_input = render_select('Show Route', id: :route, on: { input: route_change }, children: operators)
-        ['Last Route:', @route_input]
+        @route_input = render_select(id: :route, on: { input: route_change }, children: operators)
+        ['Show Last Route For:', @route_input]
       end
 
-      def render_select(_label, id:, on: {}, children: [])
+      def render_select(id:, on: {}, children: [])
         input_props = {
           attrs: {
             id: id,
