@@ -21,7 +21,7 @@ module Engine
             # Count how many cities on the new tile that aren't included by any of the old tile.
             # Make sure this isn't more than the number of new cities added.
             # 1836jr30 D6 -> 54 adds more cities
-            extra_cities >= new_ctedges.count { |newct| old_ctedges.all? { |oldct| (newct & oldct).none? } }
+            extra_cities >= new_ctedges.count { |newct| old_ctedges.all? { |oldct| (newct & oldct).empty? } }
         end
 
         def old_paths_are_preserved(old_paths, new_paths)
@@ -29,16 +29,11 @@ module Engine
           # and there are no tiles mixed with towns and other things
           # so if it is gray phase, and the tile has towns, then we only need
           # to test that exits are preserved
-          old_exits = old_paths.map(&:exits).flatten.uniq
-          new_exits = new_paths.map(&:exits).flatten.uniq
-          return old_exits.all? { |exit| new_exits.include?(exit) } if
-            @game.gray_phase? && old_paths.any? { |old_path| path_has_town(old_path) }
+          old_exits = old_paths.flat_map(&:exits).uniq
+          new_exits = new_paths.flat_map(&:exits).uniq
+          return (old_exits - new_exits).empty? if @game.gray_phase? && old_paths.any?(&:town)
 
           old_paths.all? { |path| new_paths.any? { |p| path <= p } }
-        end
-
-        def path_has_town(path)
-          path.ends.any?(&:town?)
         end
       end
     end
