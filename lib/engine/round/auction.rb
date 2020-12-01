@@ -9,6 +9,10 @@ module Engine
         'Auction Round'
       end
 
+      def self.short_name
+        'ISR'
+      end
+
       def select_entities
         @game.players
       end

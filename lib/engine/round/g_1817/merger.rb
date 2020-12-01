@@ -10,6 +10,10 @@ module Engine
           'Merger and Conversion Round'
         end
 
+        def self.short_name
+          'MR'
+        end
+
         def select_entities
           @game
             .corporations

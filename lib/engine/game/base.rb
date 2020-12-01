@@ -26,6 +26,7 @@ require_relative '../share_pool'
 require_relative '../stock_market'
 require_relative '../tile'
 require_relative '../train'
+require_relative '../player_info'
 
 module Engine
   module Game
@@ -536,8 +537,10 @@ module Engine
           @round.entities.each(&:unpass!)
 
           if end_now?(end_timing)
+
             end_game!
           else
+            store_player_info
             next_round!
 
             # Finalize round setup (for things that need round correctly set like place_home_token)
@@ -547,6 +550,12 @@ module Engine
         end
 
         self
+      end
+
+      def store_player_info
+        @players.each do |p|
+          p.history << PlayerInfo.new(@round.class.short_name, turn, @round.round_num, p)
+        end
       end
 
       def preprocess_action(_action); end
