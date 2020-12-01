@@ -17,11 +17,12 @@ module View
         needs :action, default: Engine::Action::BuyShares
 
         def render
-          show_percentage = @percentages_available > 1 || @share.percent != @share.corporation.share_percent
+          show_percentage = @percentages_available > 1 ||
+                            @share.percent != @share.corporation.share_percent && !@share.president
           reduced_price = @game.format_currency(@share.price - @swap_share.price) if @swap_share
 
           text = @prefix.to_s
-          text += " #{@share.percent}%" if show_percentage && @game.allow_percentage_on_buy(@share)
+          text += " #{@share.percent}%" if show_percentage
           text += " #{@source} Share"
           text += " (#{reduced_price} + #{@swap_share.percent}% Share)" if @swap_share
 

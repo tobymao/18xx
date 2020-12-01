@@ -659,10 +659,6 @@ module Engine
         []
       end
 
-      def allow_percentage_on_buy(_share)
-        true
-      end
-
       def sellable_bundles(player, corporation)
         bundles = bundles_for_corporation(player, corporation)
         bundles.select { |bundle| @round.active_step&.can_sell?(player, bundle) }
