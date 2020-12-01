@@ -288,6 +288,7 @@ module View
                             radius: SLOT_RADIUS,
                             reservation: @city.reservations[slot_index],
                             tile: @tile,
+                            city_render_location: render_location,
                             region_use: @region_use),
               ]),
             ])
