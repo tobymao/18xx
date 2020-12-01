@@ -109,11 +109,9 @@ module Engine
       end
 
       def can_pay_interest?(entity, extra_cash = 0)
-        # Can they cover it using cash?
-        return true if entity.cash + extra_cash > interest_owed(entity)
-
-        # Can they cover it using buying_power minus the full interest
-        (buying_power(entity) + extra_cash) > interest_owed_for_loans(maximum_loans(entity))
+        # TODO: A future PR may figure out how to implement buying_power
+        #  that accounts for a corporations revenue.
+        true
       end
 
       def setup
@@ -265,6 +263,7 @@ module Engine
       def operating_round(round_num)
         Round::G1856::Operating.new(self, [
           Step::Bankrupt,
+          Step::G1856::CashCrisis,
           # No exchanges.
           Step::DiscardTrain,
           # Step::TakeLoans
@@ -274,7 +273,7 @@ module Engine
           Step::G1856::Track,
           Step::Token,
           Step::Route,
-          # Step::Interest,
+          # Interest - See Loan
           Step::Dividend,
           Step::BuyTrain,
           # Step::RepayLoans,

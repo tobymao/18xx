@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../operating'
-require_relative '../../step/buy_train'
+require_relative '../../step/route'
 
 module Engine
   module Round
@@ -26,43 +26,43 @@ module Engine
         def pay_interest!(entity)
           @cash_crisis_due_to_interest = nil
           return if @paid_loans[entity]
-          return unless @steps.any? { |step| step.passed? && step.is_a?(Step::BuyTrain) }
+          return unless @steps.any? { |step| step.passed? && step.is_a?(Step::Route) }
 
           @paid_loans[entity] = true
           return if entity.loans.empty?
 
           bank = @game.bank
           owed = @game.interest_owed(entity)
-
-          while owed > entity.cash &&
-              (loan = @game.loans[0]) &&
-              entity.loans.size < @game.maximum_loans(entity)
-            @game.take_loan(entity, loan)
-            owed = @game.interest_owed(entity)
+          owed_fmt = @game.format_currency(owed)
+          @log << "#{entity.name} owes #{owed_fmt} interest for #{entity.loans.size} loans"
+          # Pay as much interest as possible from treasury in multiples of 10
+          payment = [owed, entity.cash - (entity.cash % 10)].min
+          if payment.positive?
+            owed -= payment
+            payment_fmt = @game.format_currency(payment)
+            entity.spend(payment, bank)
+            @log << "#{entity.name} pays #{payment_fmt} interest"
           end
+          return unless owed.positive?
 
           owed_fmt = @game.format_currency(owed)
+          @log << "#{entity.name} still owes #{owed_fmt} interest"
 
-          if owed <= entity.cash
-            @log << "#{entity.name} pays #{owed_fmt} interest for #{entity.loans.size} loans"
-            entity.spend(owed, bank)
-            return
+          # Deduct from routes
+          routes = @routes
+          routes_revenue = @game.routes_revenue(routes)
+          routes_deduction = [owed, routes_revenue].min
+          if routes_deduction.positive?
+            owed -= routes_deduction
+            routes_deduction_fmt = @game.format_currency(routes_deduction)
+            @log << "#{entity.name} deducts #{routes_deduction_fmt} from its run"
           end
+          return unless owed > 0
 
-          owner = entity.owner
-          @game.liquidate!(entity)
-          transferred = ''
-
-          if entity.cash.positive?
-            transferred = ", transferring #{@game.format_currency(entity.cash)} to #{owner.name}"
-            entity.spend(entity.cash, owner)
-          end
-
-          @log << "#{entity.name} cannot afford #{owed_fmt} interest and goes into liquidation#{transferred}"
-
-          owner.spend(owed, bank, check_cash: false)
+          owed_fmt = @game.format_currency(owed)
+          @log << "#{entity.name} cannot afford remaining #{owed_fmt} interest and president must cover the difference"
+          entity.owner.spend(owed, bank, check_cash: false)
           @cash_crisis_due_to_interest = entity
-          @log << "#{owner.name} pays #{owed_fmt} interest for #{entity.loans.size} loans"
         end
       end
     end
