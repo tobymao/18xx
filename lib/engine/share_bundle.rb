@@ -14,8 +14,9 @@ module Engine
       @share_price = nil
     end
 
-    def num_shares
-      @percent / corporation.share_percent
+    def num_shares(ceil: true)
+      num = @percent.to_f / corporation.share_percent
+      ceil ? num.ceil : num
     end
 
     def partial?
@@ -43,7 +44,7 @@ module Engine
     end
 
     def price
-      price_per_share * num_shares
+      (price_per_share * num_shares(ceil: false)).ceil
     end
 
     def can_dump?(entity)
@@ -54,6 +55,10 @@ module Engine
 
     def to_bundle
       self
+    end
+
+    def buyable
+      @shares.all?(&:buyable)
     end
 
     def ==(other)

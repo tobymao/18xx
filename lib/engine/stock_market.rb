@@ -4,18 +4,21 @@ require_relative 'share_price'
 
 module Engine
   class StockMarket
-    attr_reader :market, :par_prices
+    attr_reader :market, :par_prices, :has_close_cell
 
-    def initialize(market, unlimited_colors, multiple_buy_colors: [])
+    def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil)
       @par_prices = []
+      @has_close_cell = false
+      @zigzag = zigzag
       @market = market.map.with_index do |row, r_index|
         row.map.with_index do |code, c_index|
           price = SharePrice.from_code(code,
                                        r_index,
                                        c_index,
-                                       unlimited_colors,
-                                       multiple_buy_colors: multiple_buy_colors)
+                                       unlimited_types,
+                                       multiple_buy_types: multiple_buy_types)
           @par_prices << price if price&.can_par?
+          @has_close_cell = true if price&.type == :close
           price
         end
       end
@@ -27,6 +30,10 @@ module Engine
 
     def one_d?
       @one_d ||= @market.one?
+    end
+
+    def zigzag?
+      !!@zigzag
     end
 
     def set_par(corporation, share_price)
@@ -74,7 +81,11 @@ module Engine
     end
 
     def find_share_price(corporation, directions)
-      r, c = corporation.share_price.coordinates
+      find_relative_share_price(corporation.share_price, directions)
+    end
+
+    def find_relative_share_price(share, directions)
+      r, c = share.coordinates
 
       prices = [share_price(r, c)]
 

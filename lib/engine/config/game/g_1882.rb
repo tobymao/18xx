@@ -291,6 +291,7 @@ module Engine
         },
         {
           "type": "tile_lay",
+          "when": "track",
           "owner_type": "corporation",
           "count": 1,
           "hexes": [
@@ -308,8 +309,8 @@ module Engine
       "sym": "TB",
       "abilities": [
         {
-          "type": "share",
-          "share": "random_share",
+          "type": "shares",
+          "shares": "random_share",
           "corporations": [
             "CNR",
             "CPR",
@@ -340,8 +341,8 @@ module Engine
       "sym": "CP",
       "abilities": [
         {
-          "type": "share",
-          "share": "CPR_0"
+          "type": "shares",
+          "shares": "CPR_0"
         },
         {
           "type": "no_buy"

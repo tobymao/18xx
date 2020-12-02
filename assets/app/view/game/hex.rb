@@ -31,8 +31,12 @@ module View
       needs :actions, default: []
       needs :entity, default: nil
       needs :unavailable, default: nil
+      needs :show_coords, default: true
+      needs :show_location_names, default: true
 
       def render
+        return nil if @hex.empty
+
         @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
         @tile =
           if @selected && @actions.include?('lay_tile') && @tile_selector&.tile
@@ -41,7 +45,14 @@ module View
             @hex.tile
           end
         children = [h(:polygon, attrs: { points: Lib::Hex::POINTS })]
-        children << h(Tile, tile: @tile) if @tile
+        if @tile
+          children << h(
+            Tile,
+            tile: @tile,
+            show_coords: @show_coords && (@role == :map),
+            show_location_names: @show_location_names,
+          )
+        end
         children << h(TriangularGrid) if Lib::Params['grid']
         children << h(TileUnavailable, unavailable: @unavailable, layout: @hex.layout) if @unavailable
 

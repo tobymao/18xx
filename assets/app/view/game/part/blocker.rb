@@ -52,7 +52,7 @@ module View
         }.freeze
 
         def preferred_render_locations
-          if @tile.parts.one?
+          if @tile.parts.reject(&:border?).one?
             [
               P_CENTER,
             ]
@@ -80,7 +80,9 @@ module View
         end
 
         def should_render_company_sym?
-          blocker_open? && (!@blocker.owned_by_corporation? || @blocker.abilities(:tile_lay))
+          blocker_open? && (!@blocker.owned_by_corporation? ||
+                            @blocker.abilities(:tile_lay) ||
+                            @blocker.abilities(:teleport))
         end
 
         def should_render_barbell?

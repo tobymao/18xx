@@ -73,6 +73,10 @@ module Engine
         false
       end
 
+      def halt?
+        false
+      end
+
       def upgrade?
         false
       end
@@ -90,6 +94,10 @@ module Engine
       end
 
       def blocks_lay?
+        false
+      end
+
+      def stub?
         false
       end
 

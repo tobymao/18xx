@@ -1,41 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 170.1 170.1" style="enable-background:new 0 0 170.1 170.1;" xml:space="preserve">
+	 viewBox="0 0 65.8 65.8" style="enable-background:new 0 0 65.8 65.8;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#C98701;}
-	.st1{fill:#F6F6F6;}
-	.st2{fill:#BE111F;}
+	.st0{fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;}
+	.st1{fill:#FFFFFF;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st2{fill:none;stroke:#BE2026;stroke-width:2;stroke-miterlimit:10;}
+	.st3{fill:#FFDEA7;}
+	.st4{fill:#BE2026;}
+	.st5{fill:#1C94D2;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st6{fill:#FFFFFF;}
+	.st7{fill:#00AFAD;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st8{fill:#FFFFFF;stroke:#000000;stroke-width:0.25;stroke-miterlimit:10;}
+	.st9{fill:#06884B;}
+	.st10{fill:#BEC8CC;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st11{clip-path:url(#SVGID_2_);}
+	.st12{fill:#E22126;stroke:#FBE904;stroke-width:0.75;stroke-miterlimit:10;}
+	.st13{fill:#191817;}
+	.st14{fill:#FBE904;}
+	.st15{fill:#E63229;}
+	.st16{fill:#FEF16E;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st17{fill:#1F4180;}
+	.st18{fill:none;stroke:#E21E26;stroke-width:2;stroke-miterlimit:10;}
+	.st19{fill:#E96F2B;}
+	.st20{fill:#F29220;}
+	.st21{fill:#EF8322;}
+	.st22{fill:#EE3F80;}
+	.st23{fill:#F1A847;}
+	.st24{fill:#FDBA3A;}
+	.st25{clip-path:url(#SVGID_4_);}
+	.st26{fill:#383635;}
+	.st27{clip-path:url(#SVGID_6_);}
+	.st28{fill:#181A10;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st29{fill:#EF4323;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st30{fill:#BEDB86;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st31{fill:#FFFFFF;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
+	.st32{fill:#E38328;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st33{fill:#020202;}
+	.st34{fill:none;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st35{fill:#BFDEF3;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st36{fill:#994573;}
+	.st37{fill:#F6F6F6;}
+	.st38{fill:#8F4199;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st39{fill:#175633;}
+	.st40{fill:#984D2D;}
 </style>
+<circle class="st1" cx="32.9" cy="32.9" r="32.4"/>
 <g>
 	<g>
+		<path class="st2" d="M32.9,63L2.8,32.9L32.9,2.8L63,32.9L32.9,63z M6.5,32.9l26.4,26.5l26.5-26.5L32.9,6.4L6.5,32.9z"/>
+	</g>
+	<g>
 		
-			<rect x="29.9" y="29.9" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -35.2247 85.04)" class="st0" width="110.2" height="110.2"/>
+			<rect x="11.6" y="11.6" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -13.6224 32.8913)" class="st3" width="42.6" height="42.6"/>
 	</g>
 	<g>
-		<path class="st1" d="M85,155.2L14.8,85L85,14.8L155.2,85L85,155.2z M23.3,85L85,146.8L146.8,85L85,23.3L23.3,85z"/>
-	</g>
-	<g>
-		<circle class="st2" cx="85" cy="85" r="33.9"/>
+		<circle class="st4" cx="32.9" cy="32.9" r="16.5"/>
 	</g>
 	<g>
 		<g>
-			<path class="st1" d="M84.4,69.6v29.6h-4.5v-20l-6.8,17l0,0l-6.8-17v20h-4.5V69.6h5.7l5.5,15.5l5.4-15.5H84.4z"/>
-			<path class="st0" d="M85.4,100.3h-6.6V84.7l-5.8,14.4l-5.8-14.4v15.6h-6.6V68.6h7.5L73.1,82l4.7-13.4h7.6V100.3z M80.9,98.2h2.4
-				V70.7h-4.1l-6.2,17.6l-6.3-17.6h-4v27.5h2.4V73.8l7.9,19.6l7.9-19.6V98.2z"/>
+			<path class="st4" d="M32.6,25.4v14.4h-2.2V30l-3.3,8.3l0,0L23.8,30v9.8h-2.2V25.4h2.8l2.7,7.6l2.6-7.6H32.6z"/>
+			<path class="st3" d="M33.1,40.3h-3.2v-7.6l-2.8,7l-2.8-7v7.6H21V24.9h3.7l2.4,6.5l2.3-6.5h3.7C33.1,24.9,33.1,40.3,33.1,40.3z
+				 M30.9,39.3h1.2V25.9h-2l-3,8.6L24,25.9h-2v13.4h1.2V27.4L27,37l3.9-9.6C30.9,27.4,30.9,39.3,30.9,39.3z"/>
 		</g>
 	</g>
 	<g>
-		<rect x="89.8" y="69.6" class="st1" width="16.9" height="5.8"/>
-		<path class="st0" d="M107.7,76.4h-19v-7.9h19V76.4z M90.8,74.3h14.8v-3.7H90.8V74.3z"/>
+		<rect x="35.2" y="25.4" class="st4" width="8.2" height="2.8"/>
+		<path class="st3" d="M44,28.7h-9.3v-3.9H44V28.7z M35.7,27.7h7.2v-1.8h-7.2V27.7z"/>
 	</g>
 	<g>
-		<rect x="89.8" y="82.1" class="st1" width="16.9" height="5.5"/>
-		<path class="st0" d="M107.7,88.6h-19v-7.6h19V88.6z M90.8,86.5h14.8v-3.4H90.8V86.5z"/>
+		<rect x="35.2" y="31.5" class="st4" width="8.2" height="2.7"/>
+		<path class="st3" d="M44,34.6h-9.3v-3.7H44V34.6z M35.7,33.6h7.2v-1.7h-7.2V33.6z"/>
 	</g>
 	<g>
-		<rect x="89.8" y="94.3" class="st1" width="16.9" height="4.9"/>
-		<path class="st0" d="M107.7,100.3h-19v-7h19V100.3z M90.8,98.2h14.8v-2.8H90.8V98.2z"/>
+		<rect x="35.2" y="37.4" class="st4" width="8.2" height="2.4"/>
+		<path class="st3" d="M44,40.3h-9.3v-3.4H44V40.3z M35.7,39.3h7.2v-1.4h-7.2V39.3z"/>
 	</g>
 </g>
 </svg>

@@ -14,8 +14,8 @@ module Engine
 
             corporation = bundle.corporation
             entity.cash >= bundle.price_per_share && can_gain?(entity, bundle) &&
-              !@players_sold[entity][corporation] &&
-              (can_buy_multiple?(corporation) || !bought?)
+              !@round.players_sold[entity][corporation] &&
+              (can_buy_multiple?(entity, corporation) || !bought?)
           else
             super
           end

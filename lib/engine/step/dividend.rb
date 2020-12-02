@@ -95,7 +95,8 @@ module Engine
       end
 
       def dividends_for_entity(entity, holder, per_share)
-        holder.num_shares_of(entity) * per_share
+        # 1817 2 share half pay uses floats, for 18MEX num_shares can be a float for NdM
+        (holder.num_shares_of(entity, ceil: false) * per_share).ceil
       end
 
       def corporation_dividends(entity, per_share)
@@ -135,19 +136,26 @@ module Engine
 
         receiver ||= holder
         payouts[receiver] = amount
-        @game.bank.spend(amount, receiver)
+        @game.bank.spend(amount, receiver, check_positive: false)
       end
 
       def change_share_price(entity, payout)
         return unless payout[:share_direction]
 
         prev = entity.share_price.price
-        payout[:share_times].times do
-          case payout[:share_direction]
-          when :left
-            @game.stock_market.move_left(entity)
-          when :right
-            @game.stock_market.move_right(entity)
+
+        Array(payout[:share_times]).zip(Array(payout[:share_direction])).each do |share_times, direction|
+          share_times.times do
+            case direction
+            when :left
+              @game.stock_market.move_left(entity)
+            when :right
+              @game.stock_market.move_right(entity)
+            when :up
+              @game.stock_market.move_up(entity)
+            when :down
+              @game.stock_market.move_down(entity)
+            end
           end
         end
         @game.log_share_price(entity, prev)

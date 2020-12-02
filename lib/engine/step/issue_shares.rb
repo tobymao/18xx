@@ -5,13 +5,16 @@ require_relative 'base'
 module Engine
   module Step
     class IssueShares < Base
-      ACTIONS = %w[buy_shares sell_shares pass].freeze
-
       def actions(entity)
-        return [] unless entity.corporation?
-        return [] if redeemable_shares(entity).empty? && issuable_shares(entity).empty?
+        available_actions = []
+        return available_actions unless entity.corporation?
+        return available_actions if entity != current_entity
 
-        entity == current_entity ? ACTIONS : []
+        available_actions << 'buy_shares' unless redeemable_shares(entity).empty?
+        available_actions << 'sell_shares' unless issuable_shares(entity).empty?
+        available_actions << 'pass' if blocks? && !available_actions.empty?
+
+        available_actions
       end
 
       def description
@@ -34,24 +37,12 @@ module Engine
 
       def issuable_shares(entity)
         # Done via Sell Shares
-        num_shares = entity.num_player_shares - entity.num_market_shares
-        bundles = entity.bundles_for_corporation(entity)
-        share_price = @game.stock_market.find_share_price(entity, :left).price
-
-        bundles
-          .each { |bundle| bundle.share_price = share_price }
-          .reject { |bundle| bundle.num_shares > num_shares }
+        @game.issuable_shares(entity)
       end
 
       def redeemable_shares(entity)
         # Done via Buy Shares
-        share_price = @game.stock_market.find_share_price(entity, :right).price
-
-        @game
-          .share_pool
-          .bundles_for_corporation(entity)
-          .each { |bundle| bundle.share_price = share_price }
-          .reject { |bundle| entity.cash < bundle.price }
+        @game.redeemable_shares(entity)
       end
     end
   end

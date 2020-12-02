@@ -1,27 +1,30 @@
 # frozen_string_literal: true
 
 require_relative '../buy_sell_par_shares'
+require_relative 'swap_buy_sell'
 
 module Engine
   module Step
-    module G18MEX
+    module G18Mex
       class BuySellParShares < BuySellParShares
-        def process_buy_shares(action)
-          ensure_ndm_not_traded_to_early(action)
-          super
+        def can_buy?(entity, bundle)
+          super && !attempt_ndm_action_on_unavailable?(bundle)
         end
 
-        def process_sell_shares(action)
-          ensure_ndm_not_traded_to_early(action)
-          super
+        def can_sell?(entity, bundle)
+          super && !attempt_ndm_action_on_unavailable?(bundle)
         end
+
+        def can_gain?(entity, bundle)
+          super && !attempt_ndm_action_on_unavailable?(bundle)
+        end
+
+        include SwapBuySell
 
         private
 
-        def ensure_ndm_not_traded_to_early(action)
-          return if action.bundle.corporation.name != 'NdM' || @game.phase.status.include?('ndm_available')
-
-          @game.game_error('Cannot yet buy or sell NdM from stock market')
+        def attempt_ndm_action_on_unavailable?(bundle)
+          bundle.corporation == @game.ndm && @game.phase.status.include?('ndm_unavailable')
         end
       end
     end

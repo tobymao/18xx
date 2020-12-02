@@ -5,12 +5,16 @@ require_relative 'base'
 module Engine
   module Round
     class Operating < Base
+      def self.short_name
+        'OR'
+      end
+
       def name
         'Operating Round'
       end
 
       def select_entities
-        @game.minors + @game.corporations.select(&:floated?).sort
+        @game.minors.select(&:floated?) + @game.corporations.select(&:floated?).sort
       end
 
       def setup
@@ -29,7 +33,8 @@ module Engine
         return if action.type == 'message'
 
         if active_step
-          return if @entities[@entity_index].owner&.player?
+          entity = @entities[@entity_index]
+          return if entity.owner&.player? || entity.receivership?
         end
 
         next_entity!
@@ -45,6 +50,8 @@ module Engine
         return if @entity_index == @entities.size - 1
 
         next_entity_index!
+        return next_entity! if @entities[@entity_index].closed?
+
         @steps.each(&:unpass!)
         @steps.each(&:setup)
         start_operating
@@ -56,8 +63,8 @@ module Engine
           entity.remove_ability(ability)
         end
         entity.trains.each { |train| train.operated = false }
-        @game.place_home_token(entity) if @home_token_timing == :operate
         @log << "#{entity.owner.name} operates #{entity.name}" unless finished?
+        @game.place_home_token(entity) if @home_token_timing == :operate
         skip_steps
         next_entity! if finished?
       end
@@ -67,6 +74,10 @@ module Engine
         # to change order. Re-sort only them.
         index = @entity_index + 1
         @entities[index..-1] = @entities[index..-1].sort if index < @entities.size - 1
+
+        @entities.pop while @entities.last&.corporation? &&
+          @entities.last.share_price.liquidation? &&
+          @entities.size > index
       end
 
       def teleported?(entity)

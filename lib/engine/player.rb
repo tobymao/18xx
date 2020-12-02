@@ -13,21 +13,17 @@ module Engine
     include Spender
 
     attr_accessor :bankrupt
-    attr_reader :name, :companies
+    attr_reader :name, :companies, :id
 
-    def initialize(name, count_companies: true)
+    def initialize(id, name)
+      @id = id
       @name = name
       @cash = 0
       @companies = []
-      @count_companies = count_companies
     end
 
     def value
       @cash + shares.select { |s| s.corporation.ipoed }.sum(&:price) + @companies.sum(&:value)
-    end
-
-    def id
-      @name
     end
 
     def owner
@@ -44,11 +40,6 @@ module Engine
 
     def player?
       true
-    end
-
-    def num_certs
-      num_companies = @count_companies ? companies.size : 0
-      num_companies + shares.count { |s| s.corporation.counts_for_limit }
     end
 
     def to_s

@@ -61,6 +61,27 @@ created on your host machine, you are probably 1000. This means that any data
 postgres writes in the container should be owned by you, and you should have no
 trouble reading/writing it.
 
+To restore the local database from a `db.backup.gz`:
+
+1. stop your local stack and clear out your local db with `rm -rf db/data`, then
+   start the stack
+
+2. copy backup to db container
+
+```
+CONTAINER_ID=$(docker ps | grep 18xxgames_db | awk '{print $1}')
+docker cp db.backup.gz $CONTAINER_ID:/home/db
+```
+
+3. go to the container with `docker-compose exec db bash`, then run these
+   commands:
+
+```
+cd /home/db
+gzip -f -k -d db.backup.gz
+pg_restore -U root -d 18xx_development db.backup
+```
+
 #### Docker Documentation
 
 https://docs.docker.com/get-started/

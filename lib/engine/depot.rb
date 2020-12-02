@@ -53,7 +53,9 @@ module Engine
     end
 
     def max_depot_price
-      depot_trains.max_by(&:price).variants.map { |_, v| v[:price] }.max
+      return 0 unless (train = depot_trains.max_by(&:price))
+
+      train.variants.map { |_, v| v[:price] }.max
     end
 
     def unshift_train(train)
@@ -64,6 +66,12 @@ module Engine
     def remove_train(train)
       @upcoming.delete(train)
       @discarded.delete(train)
+    end
+
+    def add_train(train)
+      train.owner = self
+      @trains << train
+      @upcoming << train
     end
 
     def depot_trains
@@ -106,6 +114,10 @@ module Engine
 
     def name
       'The Depot'
+    end
+
+    def empty?
+      depot_trains.empty?
     end
   end
 end

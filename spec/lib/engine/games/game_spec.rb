@@ -8,6 +8,31 @@ require 'json'
 module Engine
   TEST_CASES = {
     GAMES_BY_TITLE['1846'] => {
+      3099 => {
+        'Blondie' => 7123,
+        'Emilybry26' => 6407,
+        'MrDiskord' => 4073,
+        'mfmise' => 6550,
+        'sirstevie3' => 4907,
+      },
+      11_181 => {
+        'zhaoyi93' => 2659,
+        'Oedipussy Rex' => 2090,
+        'beardbru' => 1930,
+        'Fritz von Catan' => 1058,
+        'George' => 0,
+      },
+      12_666 => {
+        'gragatrim' => 6180,
+        'the_seaward' => 4950,
+        'hoolaking' => 1803,
+      },
+      'hs_ymymwsiv_16134' => {
+        'Akado' => 1868,
+        'Ariel' => 1966,
+        'EdFactor' => 1573,
+        'Patrick of the Isles' => 0,
+      },
       # bankruptcy sending a corp into receivership, unable to buy a train on
       # the turn of the bankruptcy, and then buying a train on its next turn
       # thanks to company income; also includes emergency share issuing
@@ -27,6 +52,28 @@ module Engine
         'Player 1' => 530,
         'Player 2' => 508,
         'Player 3' => 0,
+      },
+    },
+    GAMES_BY_TITLE['1846 2p Variant'] => {
+      # This fixture tests all of the following behaviors, and should be
+      # replaced accordingly if it is ever removed;
+      # * both players passing triggers 2 ORs in draft
+      # * on last company, passing discounts it by $10
+      # * owning 70%
+      # * issuing fix in commit a6df06d
+      # * game end after last train is purchased
+      'hs_pzdxtics_1601680033' => {
+        'A' => 4312,
+        'B' => 2264,
+      },
+    },
+    GAMES_BY_TITLE['18 Los Angeles'] => {
+      'hs_srwgrtvq_1602711223' => {
+        'Player 2' => 8287,
+        'Player 3' => 7960,
+        'Player 1' => 7749,
+        'Player 5' => 6739,
+        'Player 4' => 4647,
       },
     },
     GAMES_BY_TITLE['18Chesapeake'] => {
@@ -118,11 +165,23 @@ module Engine
       },
     },
     GAMES_BY_TITLE['18GA'] => {
-      8643 => {
-        'willbeplaying' => 4074,
-        'Jac' => 3883,
-        'Arbalor' => 3822,
-        'Akado' => 3244,
+      9222 => {
+        'SunnyD' => 5923,
+        'LJHall' => 5382,
+        'Helen ' => 3978,
+      },
+      9487 => {
+        'Cogust' => 5032,
+        '1mmm' => 4500,
+        'piton' => 4049,
+        'ChrisShaffer' => 3673,
+      },
+    },
+    GAMES_BY_TITLE['18MS'] => {
+      14_375 => {
+        'A Steaming Kyle' => 3685,
+        'kjlevs89' => 3259,
+        'PJBarns' => 2301,
       },
     },
     GAMES_BY_TITLE['18TN'] => {
@@ -133,16 +192,40 @@ module Engine
         'MontyBrewster71' => 4354,
       },
     },
+    GAMES_BY_TITLE['1817'] => {
+      # Temporary until a fuller game is finished
+      13_707 => {
+        'sandholm' => 1458,
+        'tdh' => 989,
+        'tdh_test' => 420,
+      },
+      # This game is in progress, and will be updated
+      15_528 => {
+          'PedroS' => 10_127,
+          'FCR' => 7066,
+          'daniel.sousa.me' => 11_490,
+          'Zebsagaz' => 6257,
+      },
+    },
+    GAMES_BY_TITLE['18MEX'] => {
+      13_315 => {
+        'Jen Freeman' => 3255,
+        'Cogust' => 3170,
+        'LenaC' => 2752,
+        'Swedish-Per (GMT+2)' => 2343,
+        'shingoi' => 2436,
+      },
+    },
   }.freeze
 
   TEST_CASES.each do |game, results|
-    describe game do
+    describe game.title do
       results.each do |game_id, result|
         context game_id do
           it 'matches result exactly' do
-            game_path = game.title.gsub(/(.)([A-Z])/, '\1_\2').downcase
+            game_path = game.title.gsub(/ /, '_').gsub(/([0-9])([A-Z])/, '\1_\2').downcase
             data = JSON.parse(File.read("spec/fixtures/#{game_path}/#{game_id}.json"))
-            players = data['players'].map { |p| p['name'] }
+            players = data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h
             expect(game.new(players, id: game_id, actions: data['actions']).result).to eq(result)
             rungame = game.new(players, id: game_id, actions: data['actions'], strict: true)
             expect(rungame.result).to eq(result)

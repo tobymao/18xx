@@ -240,6 +240,7 @@ module Engine
       "abilities": [
         {
           "type": "tile_lay",
+          "when": "any",
           "hexes": [
             "B11",
             "G10",
@@ -283,7 +284,8 @@ module Engine
           ],
           "when": "sold",
           "owner_type": "corporation",
-          "count": 1
+          "count": 1,
+          "blocks": false
         }
       ]
     },

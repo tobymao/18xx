@@ -7,11 +7,11 @@
 module Engine
   module Config
     module Game
-      module G18MEX
+      module G18Mex
         JSON = <<-'DATA'
 {
    "filename":"18_mex",
-   "modulename":"18MEX",
+   "modulename":"18Mex",
    "currencyFormatStr":"$%d",
    "bankCash":9000,
    "certLimit":{
@@ -33,6 +33,7 @@ module Engine
       "B3":"Nogales / Tuscon",
       "D3":"Hermosillo",
       "E6":"Chihuahua",
+      "F5":"Copper Canyon",
       "D11":"San Antonio",
       "G10":"Nuevo Laredo",
       "I4":"Los Mochis",
@@ -47,7 +48,7 @@ module Engine
       "M10":"Querétaro",
       "M12":"Tampico",
       "O8":"Guadalajara",
-      "O10":"Mexico City & Toluca",
+      "O10":"Mexico City",
       "P7":"Puerto Vallarta",
       "P11":"Puebla",
       "P13":"Veracruz",
@@ -103,7 +104,7 @@ module Engine
       "471":1,
       "472":1,
       "473":1,
-      "474":1,
+      "474":2,
       "475":1,
       "476":1,
       "477":1,
@@ -111,12 +112,12 @@ module Engine
       "479MC":{
          "count":1,
          "color":"green",
-         "code":"city=revenue:40,slots:2,loc:center;town=revenue:0,loc:2.5;path=a:0,b:_0;path=a:4,b:_0;label=MC"
+         "code":"city=revenue:40,slots:2,loc:center;town=revenue:0,loc:2.5;path=a:3,b:_0;path=a:5,b:_0;label=MC"
       },
       "479P":{
          "count":1,
          "color":"green",
-         "code":"town=revenue:10;path=a:3,b:_0;path=a:_0,b:0;upgrade=cost:40,terrain:mountain;label=P"
+         "code":"town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;upgrade=cost:40,terrain:mountain;label=P"
       },
       "480":1,
       "481":1,
@@ -126,24 +127,24 @@ module Engine
       "485MC":{
          "count":1,
          "color":"brown",
-         "code":"city=revenue:60,slots:3,loc:center;town=revenue:10,loc:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:_1,b:_0;label=MC"
+         "code":"city=revenue:60,slots:3,loc:center;town=revenue:10,loc:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:2,b:_1;path=a:5,b:_0,lanes:2;path=a:_1,b:_0;label=MC"
       },
       "485P":{
          "count":1,
          "color":"brown",
-         "code":"town=revenue:10,loc:0;path=a:0,b:_0;path=a:3,b:_0;path=a:5,b:3;label=P"
+         "code":"town=revenue:10;path=a:2,b:_0,a_lane:2.1;path=a:5,b:_0;path=a:2,b:4,a_lane:2.0;label=P"
       },
       "486MC":{
          "count":1,
          "color":"brown",
-         "code":"city=revenue:50,slots:4,loc:center;town=revenue:10,loc:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:_1,b:_0;label=MC"
+         "code":"city=revenue:50,slots:4,loc:center;town=revenue:10,loc:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:2,b:_1;path=a:5,b:_0,lanes:2;path=a:_1,b:_0;label=MC"
       },
       "486P":{
          "count":1,
          "color":"brown",
-         "code":"town=revenue:10,loc:0;path=a:0,b:_0;path=a:3,b:_0;path=a:5,b:3;label=P"
+         "code":"town=revenue:10;path=a:2,b:_0,a_lane:2.1;path=a:5,b:_0;path=a:2,b:4,a_lane:2.0;label=P"
       },
-      "619":1
+      "619":2
    },
    "market":[
       [
@@ -252,7 +253,7 @@ module Engine
          "name":"Kansas City, Mexico, & Orient Railroad",
          "value":40,
          "revenue":10,
-         "desc":"Owning company may place the Copper Canyan tile in E6 for $60 unless that hex is already built.",
+         "desc":"Owning corporation may place the non-upgradable Copper Canyon tile in F5 for $60 (instead of the normal $120) unless that hex is already built. The tile lay does not have to be connected to an existing station token of the owning corporation. The lay does not count toward the normal lay limit but must be done during tile lay. Using this tile laying ability closes the private company.",
          "abilities": [
             {
               "type": "tile_lay",
@@ -262,7 +263,7 @@ module Engine
                  "470"
               ],
               "hexes": [
-                "E6"
+                "F5"
               ],
               "count": 1,
               "when": "track"
@@ -274,16 +275,11 @@ module Engine
          "name":"Interoceanic Railroad",
          "value":50,
          "revenue":0,
-         "desc":"Minor company A. Begins in Tampico (M12). Once closed owner receives a 5% share in NdM.",
+         "desc":"Owner takes control of minor corporation A. Begins in Tampico (M12). This private cannot be sold. When Phase 3½ begins, the minor corporation closes, but its owner receives a 5% share in NdM.",
          "abilities": [
             {
               "type": "no_buy",
               "owner_type": "player"
-            },
-            {
-               "type": "close",
-               "when": "3½",
-               "owner_type": "player"
             }
          ]
       },
@@ -292,16 +288,11 @@ module Engine
          "name":"Sonora-Baja California Railway",
          "value":50,
          "revenue":0,
-         "desc":"Minor company B. Begins in Mazatlán (K6). Once closed owner receives a 5% share in NdM.",
+         "desc":"Owner takes control of minor corporation B. Begins in Mazatlán (K6). This private cannot be sold. When Phase 3½ begins, the minor corporation closes, but its owner receives a 5% share in NdM.",
          "abilities": [
             {
               "type": "no_buy",
               "owner_type": "player"
-            },
-            {
-               "type": "close",
-               "when": "3½",
-               "owner_type": "player"
             }
          ]
       },
@@ -310,16 +301,11 @@ module Engine
          "name":"Southeastern Railway",
          "value":50,
          "revenue":0,
-         "desc":"Minor company C. Begins in Oaxaca (S12). Once closed owner receives a 10% share in UdY.",
+         "desc":"Owner takes control of minor corporation C. Begins in Oaxaca (S12). This private cannot be sold. When Phase 3½ begins, the minor corporation closes, but its owner receives a 10% share in UdY.",
          "abilities": [
             {
               "type": "no_buy",
               "owner_type": "player"
-            },
-            {
-               "type": "close",
-               "when": "3½",
-               "owner_type": "player"
             }
          ]
       },
@@ -331,8 +317,8 @@ module Engine
          "desc":"Comes with a 10% share of the Chihuahua Pacific Railway (CHI).",
          "abilities":[
             {
-               "type":"share",
-               "share":"CHI_1"
+               "type":"shares",
+               "shares":"CHI_1"
             },
             {
                "type":"blocks_hexes",
@@ -349,11 +335,11 @@ module Engine
          "name":"Mexican National Railroad",
          "value":140,
          "revenue":20,
-         "desc":"Comes with President's Certificate of NdM. Owner must immediately set NdM's par price. Closes when NdM buys a train. May not be sold to a company.",
+         "desc":"Comes with President's Certificate of NdM. Owner must immediately set NdM's par price. Closes when NdM buys a train. May not be sold to a corporation.",
          "abilities":[
             {
-               "type":"share",
-               "share":"NdM_0"
+               "type":"shares",
+               "shares":"NdM_0"
             },
             {
                "type":"close",
@@ -418,13 +404,28 @@ module Engine
          "sym":"NdM",
          "name":"National Railways of Mexico",
          "logo":"18_mex/NdM",
+         "shares":[20, 10, 10, 10, 10, 10, 10, 5, 5, 10],
          "tokens":[
             0,
             40,
             60,
-            80,
-            0,
-            0
+            80
+         ],
+         "abilities": [
+            {
+               "type": "train_buy",
+               "description": "Inter train buy/sell at face value",
+               "face_value": true
+            },
+            {
+               "type": "train_limit",
+               "description": "+1 train limit",
+               "increase": 1
+            },
+            {
+               "type": "no_buy",
+               "description": "Unavailable in SR before phase 3½"
+            }
          ],
          "coordinates":"O10",
          "color":"green"
@@ -443,14 +444,20 @@ module Engine
       },
       {
          "float_percent":50,
-         "sym":"PAC",
-         "name":"Pacific Railroad",
-         "logo":"18_mex/PAC",
+         "sym":"FCP",
+         "name":"Ferrocarril del Pacífico (Pacific Railroad)",
+         "logo":"18_mex/FCP",
          "tokens":[
             0,
             40,
             60,
             80
+         ],
+         "abilities": [
+            {
+               "type": "base",
+               "description": "Cannot be merged into NdM"
+            }
          ],
          "coordinates":"B3",
          "color":"yellow",
@@ -465,7 +472,13 @@ module Engine
             0,
             40
          ],
-         "coordinates":"J12",
+         "abilities": [
+            {
+               "type": "base",
+               "description": "Cannot be merged into NdM"
+            }
+         ],
+         "coordinates":"I12",
          "color":"orange"
       },
       {
@@ -553,10 +566,13 @@ module Engine
          ],
          "price":180,
          "num":4,
-         "rusts_on":"6"
+         "rusts_on":"6",
+         "events":[
+            {"type": "companies_buyable"}
+         ]
       },
       {
-         "name":"3½",
+         "name":"3'",
          "distance":[
             {
                "nodes":[
@@ -602,7 +618,7 @@ module Engine
          ],
          "price":300,
          "num":3,
-         "rusts_on":"6½"
+         "obsolete_on":"6'"
       },
       {
          "name":"5",
@@ -653,7 +669,7 @@ module Engine
          "num":1
       },
       {
-         "name":"6½",
+         "name":"6'",
          "distance":[
             {
                "nodes":[
@@ -683,7 +699,8 @@ module Engine
                   "offboard"
                ],
                "pay":4,
-               "visit":4
+               "visit":4,
+               "multiplier":2
             },
             {
                "nodes":[
@@ -738,7 +755,9 @@ module Engine
             "H5",
             "I6",
             "N9",
-            "P9",
+            "P9"
+         ],
+         "upgrade=cost:120,terrain:mountain;icon=image:18_al/coal":[
             "F5"
          ],
          "upgrade=cost:120,terrain:mountain;border=edge:4,type:impassable":[
@@ -821,7 +840,7 @@ module Engine
          "city=revenue:20,loc:center;town=revenue:10,loc:4;path=a:_0,b:_1;upgrade=cost:40,terrain:swamp;label=T":[
             "M12"
          ],
-         "city=revenue:0,loc:center;town=revenue:0,loc:5;upgrade=cost:40,terrain:swamp;label=V":[
+         "city=revenue:0,loc:center;town=revenue:0,loc:5;upgrade=cost:40,terrain:swamp;border=edge:2,type:impassable;label=V":[
             "P13"
          ],
          "town=revenue:0;upgrade=cost:120,terrain:mountain":[
@@ -835,10 +854,10 @@ module Engine
          "city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0":[
             "E6"
          ],
-         "city=revenue:20,loc:center;town=revenue:0,loc:2;path=a:3,b:_0;path=a:5,b:_0;label=MC":[
+         "city=revenue:20,loc:center;town=revenue:0,loc:2;path=a:3,b:_0;path=a:5,b:_0;border=edge:4,type:impassable;label=MC":[
             "O10"
          ],
-         "town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;upgrade=cost:60,terrain:mountain;label=P":[
+         "town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;upgrade=cost:60,terrain:mountain;border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:3,type:impassable;label=P":[
             "P11"
          ],
          "path=a:1,b:4;upgrade=cost:60,terrain:mountain":[
@@ -854,7 +873,9 @@ module Engine
             "yellow"
          ],
          "status":[
-            "limited_train_buy"
+            "can_buy_companies_from_other_players",
+            "limited_train_buy",
+            "ndm_unavailable"
          ],
          "operating_rounds": 1
       },
@@ -868,13 +889,15 @@ module Engine
          ],
          "status":[
             "can_buy_companies",
-            "limited_train_buy"
+            "can_buy_companies_from_other_players",
+            "limited_train_buy",
+            "ndm_unavailable"
          ],
          "operating_rounds": 2
       },
       {
          "name":"3½",
-         "on":"3½",
+         "on":"3'",
          "train_limit":3,
          "tiles":[
             "yellow",
@@ -882,8 +905,8 @@ module Engine
          ],
          "status":[
             "can_buy_companies",
-            "limited_train_buy",
-            "ndm_available"
+            "can_buy_companies_from_other_players",
+            "limited_train_buy"
          ],
          "operating_rounds": 2
       },
@@ -897,7 +920,7 @@ module Engine
          ],
          "status":[
             "can_buy_companies",
-            "ndm_available"
+            "can_buy_companies_from_other_players"
          ],
          "operating_rounds": 2
       },
@@ -910,9 +933,6 @@ module Engine
             "green",
             "brown"
          ],
-         "status":[
-            "ndm_available"
-         ],
          "operating_rounds": 3
       },
       {
@@ -924,22 +944,16 @@ module Engine
             "green",
             "brown"
          ],
-         "status":[
-            "ndm_available"
-         ],
          "operating_rounds": 3
       },
       {
          "name":"6½",
-         "on":"6½",
+         "on":"6'",
          "train_limit":2,
          "tiles":[
             "yellow",
             "green",
             "brown"
-         ],
-         "status":[
-            "ndm_available"
          ],
          "operating_rounds": 3
       },
@@ -952,9 +966,6 @@ module Engine
             "green",
             "brown",
             "gray"
-         ],
-         "status":[
-            "ndm_available"
          ],
          "operating_rounds": 3
       }

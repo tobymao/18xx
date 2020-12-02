@@ -11,18 +11,18 @@ module Engine
 
       load_from_json(Config::Game::G18MS::JSON)
 
+      DEV_STAGE = :production
+
       GAME_LOCATION = 'Mississippi, USA'
-      GAME_RULES_URL = 'https://boardgamegeek.com/thread/2461999/article/35755723#35755723'
+      GAME_RULES_URL = 'https://boardgamegeek.com/filepage/209791'
       GAME_DESIGNER = 'Mark Derrick'
-      GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
+      GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MS'
 
-      # Game ends after 5 * 2 ORs
-      GAME_END_CHECK = { final_or_set: 5 }.freeze
+      # Game will end after 10 ORs (or 11 in case of optional rule) - checked in end_now? below
+      GAME_END_CHECK = {}.freeze
 
       BANKRUPTCY_ALLOWED = false
-
-      HOME_TOKEN_TIMING = :operating_round
 
       EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false # Emergency buy can buy any available trains
       EBUY_PRES_SWAP = false # Do not allow presidental swap during emergency buy
@@ -37,6 +37,15 @@ module Engine
         'remove_tokens' => ['Remove Tokens', 'New Orleans route bonus removed']
       ).freeze
 
+      OPTIONAL_RULES = [
+        { sym: :or_11,
+          short_name: '11 ORs',
+          desc: 'There is an extra, final, OR, directly after OR 10' },
+        { sym: :allow_buy_rusting,
+          short_name: 'Allow buy rusting',
+          desc: 'A corporation is allowed to buy trains that are to be rusted, even if they have already run this OR' },
+      ].freeze
+
       HEXES_FOR_GRAY_TILE = %w[C9 E11].freeze
       COMPANY_1_AND_2 = %w[AGS BS].freeze
 
@@ -46,6 +55,10 @@ module Engine
 
       def p2_company
         @p2_company ||= company_by_id('BS')
+      end
+
+      def chattanooga_hex
+        @chattanooga_hex ||= @hexes.find { |h| h.name == 'B12' }
       end
 
       include CompanyPrice50To150Percent
@@ -69,21 +82,38 @@ module Engine
         @free_train = train_by_id('2+-4')
         @free_train.buyable = false
         neutral.buy_train(@free_train, :free)
+
+        @or = 0
+        @last_or = @optional_rules&.include?(:or_11) ? 11 : 10
+        @three_or_round = false
+      end
+
+      def timeline
+        @timeline ||= [
+          'At the start of OR 2, phase 3 starts.',
+          'After OR 4, all 2+ trains are rusted. Trains salvaged for $20 each.',
+          'After OR 6, all 3+ trains are rusted. Trains salvaged for $30 each.',
+          'After OR 8, all 4+ trains are rusted. Trains salvaged for $60 each.',
+          "Game ends after OR #{@last_or}!",
+        ].freeze
+        @timeline
       end
 
       def new_operating_round(round_num = 1)
+        @or += 1
         # For OR 1, set company buy price to face value only
         @companies.each do |company|
           company.min_price = company.value
           company.max_price = company.value
-        end if @turn == 1 && round_num == 1
+        end if @or == 1
 
-        # When OR1.2 is to start setup company prices and switch to green phase
-        if @turn == 1 && round_num == 2
+        # When OR2 is to start setup company prices and switch to green phase
+        if @or == 2
           setup_company_price_50_to_150_percent
           @phase.next!
         end
 
+        # Need to take new loan if in debt after SR
         if round_num == 1
           @players.each do |p|
             next unless p.cash.negative?
@@ -94,7 +124,31 @@ module Engine
             @log << "#{p.name} has to borrow another #{format_currency(interest)} as being in debt at end of SR"
           end
         end
+
+        # In case of 11 ORs, the last set will be 3 ORs
+        if @or == 9 && @optional_rules&.include?(:or_11)
+          @operating_rounds = 3
+          @three_or_round = true
+        end
+
         super
+      end
+
+      def round_description(name, _round_num = nil)
+        case name
+        when 'Stock'
+          super
+        when 'Draft'
+          name
+        else # 'Operating'
+          message = ''
+          message += ' - Change to Phase 3 after OR 1' if @or == 1
+          message += ' - 2+ trains rust after OR 4' if @or <= 4
+          message += ' - 3+ trains rust after OR 6' if @or > 4 && @or <= 6
+          message += ' - 4+ trains rust after OR 8' if @or > 6 && @or <= 8
+          message += " - Game end after OR #{@last_or}" if @or > 8
+          "#{name} Round #{@or} (of #{@last_or})#{message}"
+        end
       end
 
       def operating_round(round_num)
@@ -114,8 +168,14 @@ module Engine
         ], round_num: round_num)
       end
 
+      def stock_round
+        Round::Stock.new(self, [
+          Step::BuySellParShares,
+        ])
+      end
+
       def init_round
-        Round::Draft.new(self, [Step::G18MS::SimpleDraft])
+        Round::Draft.new(self, [Step::G18MS::SimpleDraft], reverse_order: true)
       end
 
       def priority_deal_player
@@ -126,6 +186,9 @@ module Engine
 
       def or_round_finished
         @recently_floated = []
+
+        # In case we get phase change during the last OR set we ensure we have 3 ORs
+        @operating_rounds = 3 if @three_or_round
       end
 
       def or_set_finished
@@ -136,6 +199,15 @@ module Engine
         end
       end
 
+      def or_description_short(turn, round)
+        ((turn - 1) * 2 + round).to_s
+      end
+
+      # Game will end directly after the end of OR 10
+      def end_now?(_after)
+        @or == @last_or
+      end
+
       def purchasable_companies(entity = nil)
         entity ||= current_entity
         return [] if entity.company?
@@ -143,7 +215,7 @@ module Engine
         # Only companies owned by the president may be bought
         # Allow MC to be bought only before OR 3.1 and there is room for a 2+ train
         companies = super.select { |c| c.owned_by?(entity.player) }
-        companies.reject! { |c| c.id == 'MC' && (@turn >= 3 || entity.trains.size == @phase.train_limit) }
+        companies.reject! { |c| c.id == 'MC' && (@turn >= 3 || entity.trains.size == @phase.train_limit(entity)) }
 
         return companies unless @phase.status.include?('can_buy_companies_operation_round_one')
 
@@ -156,9 +228,6 @@ module Engine
 
       def revenue_for(route, stops)
         revenue = super
-
-        # Diesels double normal revenue
-        revenue *= 2 if route.train.name.end_with?('D')
 
         route.corporation.abilities(:hexes_bonus) do |ability|
           revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
@@ -173,7 +242,7 @@ module Engine
 
           # Trains that are going to be salvaged at the end of this OR
           # cannot be sold when they have been run
-          t.buyable = false
+          t.buyable = false unless @optional_rules&.include?(:allow_buy_rusting)
         end if @round.round_num == 2
 
         super
@@ -278,7 +347,7 @@ module Engine
 
         @log << "-- Event: #{rusted_trains.map(&:name).uniq} trains rust " \
           "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
-        @log << "Corporations salvages #{format_currency(salvage)} from each rusted train"
+        @log << "Corporations salvage #{format_currency(salvage)} from each rusted train"
       end
     end
   end

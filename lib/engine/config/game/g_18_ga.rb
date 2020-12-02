@@ -205,6 +205,7 @@ module Engine
             {
                "type":"tile_lay",
                "free":true,
+               "count": 1,
                "owner_type":"corporation",
                "hexes":[
                   "F12"
@@ -269,8 +270,8 @@ module Engine
                ]
             },
             {
-             "type": "share",
-             "share": "CoG_1"
+             "type": "shares",
+             "shares": "CoG_1"
             }
          ]
       }
@@ -654,8 +655,7 @@ module Engine
          "tiles":[
             "yellow",
             "green",
-            "brown",
-            "gray"
+            "brown"
          ],
          "operating_rounds":3
       }

@@ -59,6 +59,8 @@ module Engine
       end
 
       def current_actions
+        return [] if current_entity&.closed?
+
         current_entity ? actions(current_entity) : []
       end
 
@@ -94,6 +96,10 @@ module Engine
         ''
       end
 
+      def auctioneer?
+        false
+      end
+
       private
 
       def entities
@@ -103,6 +109,12 @@ module Engine
       def entity_index
         @round.entity_index
       end
+
+      def buying_power(entity)
+        @game.buying_power(entity)
+      end
+
+      def try_take_loan(entity, price); end
     end
   end
 end

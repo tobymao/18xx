@@ -8,6 +8,14 @@ module Engine
     module G1846
       class IssueShares < IssueShares
         include ReceivershipSkip
+
+        def dividend_step_passes
+          pass!
+        end
+
+        def blocks?
+          false
+        end
       end
     end
   end

@@ -10,6 +10,7 @@ require_relative 'share'
 require_relative 'share_holder'
 require_relative 'spender'
 require_relative 'token'
+require_relative 'transfer'
 
 module Engine
   class Corporation
@@ -21,10 +22,11 @@ module Engine
     include Passer
     include ShareHolder
     include Spender
+    include Transfer
 
-    attr_accessor :ipoed, :share_price, :par_via_exchange
-    attr_reader :capitalization, :companies, :min_price, :name, :full_name
-    attr_writer :par_price
+    attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization
+    attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :type
+    attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
 
@@ -37,6 +39,7 @@ module Engine
       end
 
       shares.each { |share| shares_by_corporation[self] << share }
+      @fraction_shares = shares.find { |s| (s.percent % 10).positive? }
       @presidents_share = shares.first
       @second_share = shares[1]
 
@@ -47,12 +50,16 @@ module Engine
 
       @cash = 0
       @capitalization = opts[:capitalization] || :full
+      @closed = false
       @float_percent = opts[:float_percent] || 60
+      @floated = false
       @max_ownership_percent = opts[:max_ownership_percent] || 60
+      @can_hold_above_max = opts[:can_hold_above_max] || false
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
       @par_via_exchange = nil
+      @type = opts[:type]
 
       init_abilities(opts[:abilities])
       init_operator(opts)
@@ -60,8 +67,9 @@ module Engine
 
     def <=>(other)
       # corporation with higher share price, farthest on the right, and first position on the share price goes first
-      sp = share_price
-      ops = other.share_price
+      return 1 unless (sp = share_price)
+      return -1 unless (ops = other.share_price)
+
       [ops.price, ops.coordinates.last, -ops.coordinates.first, -ops.corporations.find_index(other)] <=>
       [sp.price, sp.coordinates.last, -sp.coordinates.first, -sp.corporations.find_index(self)]
     end
@@ -83,7 +91,15 @@ module Engine
       !@ipoed
     end
 
+    def share_price
+      return if closed?
+
+      @share_price
+    end
+
     def par_price
+      return if closed?
+
       @always_market_price ? @share_price : @par_price
     end
 
@@ -95,12 +111,20 @@ module Engine
       num_shares_of(self)
     end
 
+    def reserved_shares
+      shares_by_corporation[self].reject(&:buyable)
+    end
+
+    def num_ipo_reserved_shares
+      reserved_shares.sum(&:percent) / share_percent
+    end
+
     def num_player_shares
-      player_share_holders.values.sum / total_shares
+      player_share_holders.values.sum / share_percent
     end
 
     def num_market_shares
-      share_holders.select { |s_h, _| s_h.share_pool? }.values.sum / total_shares
+      share_holders.select { |s_h, _| s_h.share_pool? }.values.sum / share_percent
     end
 
     def share_holders
@@ -122,11 +146,11 @@ module Engine
     end
 
     def floated?
-      percent_of(self) <= 100 - @float_percent
+      @floated ||= percent_of(self) <= 100 - @float_percent
     end
 
     def percent_to_float
-      percent_of(self) - (100 - @float_percent)
+      @floated ? 0 : percent_of(self) - (100 - @float_percent)
     end
 
     def corporation?
@@ -143,16 +167,14 @@ module Engine
 
     # Is it legal to hold percent shares in this corporation?
     def holding_ok?(share_holder, extra_percent = 0)
+      return true if @can_hold_above_max
+
       percent = share_holder.percent_of(self) + extra_percent
-      %i[orange brown].include?(@share_price&.color) || percent <= @max_ownership_percent
+      %i[multiple_buy unlimited].include?(@share_price&.type) || percent <= @max_ownership_percent
     end
 
     def all_abilities
-      all = @companies.flat_map(&:all_abilities)
-      @abilities.each do |ability|
-        abilities(ability.type) { |a| all << a }
-      end
-      all
+      @companies.flat_map(&:all_abilities) + @abilities
     end
 
     def remove_ability(ability)
@@ -161,16 +183,16 @@ module Engine
       @companies.each { |company| company.remove_ability(ability) }
     end
 
-    def abilities(type, time = nil)
+    def abilities(type = nil, **opts)
       abilities = []
 
-      if (ability = super(type, time, &nil))
+      if (ability = super(type, **opts, &nil))
         abilities << ability
         yield ability, self if block_given?
       end
 
       @companies.each do |company|
-        company.abilities(type, time) do |company_ability|
+        company.abilities(type, **opts) do |company_ability|
           abilities << company_ability
           yield company_ability, company if block_given?
         end
@@ -191,18 +213,16 @@ module Engine
       @second_share&.percent || presidents_percent / 2
     end
 
-    def transfer(ownable_type, to)
-      ownables = send(ownable_type)
-      to_ownables = to.send(ownable_type)
+    def closed?
+      @closed
+    end
 
-      ownables.each do |ownable|
-        ownable.owner = to
-        to_ownables << ownable
-      end
-
-      transferred = ownables.dup
-      ownables.clear
-      transferred
+    def close!
+      share_price&.corporations&.delete(self)
+      @closed = true
+      @ipoed = false
+      @floated = false
+      @owner = nil
     end
   end
 end

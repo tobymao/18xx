@@ -54,6 +54,15 @@ module Engine
           true
         end
 
+        def sellable_bundle?(bundle)
+          # don't let President close the corporation that needs to buy a train
+          # https://boardgamegeek.com/thread/2094996/article/30495803#30495803
+          return false if (bundle.corporation == current_entity) &&
+                          (bundle.corporation.share_price.price == 10)
+
+          super
+        end
+
         def process_issue_shares(action)
           corporation = action.entity
           bundle = action.bundle
@@ -82,7 +91,12 @@ module Engine
 
         def buyable_trains(entity)
           trains = super
-          @last_share_issued_price ? trains.select(&:from_depot?) : trains
+
+          trains.select!(&:from_depot?) if @last_share_issued_price
+
+          trains.reject! { |t| t.owner.trains.one? } if @game.two_player? && @depot.empty?
+
+          trains
         end
 
         def buyable_train_variants(train, entity)

@@ -18,11 +18,11 @@ module Engine
       end
 
       def active?
-        @round.company_pending_par
+        companies_pending_par.any?
       end
 
       def active_entities
-        [@round.company_pending_par&.owner].compact
+        [@round.companies_pending_par.first&.owner].compact
       end
 
       def process_par(action)
@@ -30,11 +30,12 @@ module Engine
         corporation = action.corporation
         @game.stock_market.set_par(corporation, share_price)
         @game.share_pool.buy_shares(action.entity, corporation.shares.first, exchange: :free)
-        @round.company_pending_par = nil
+        @game.after_par(corporation)
+        @round.companies_pending_par.shift
       end
 
-      def company_pending_par
-        @round.company_pending_par
+      def companies_pending_par
+        @round.companies_pending_par
       end
 
       def get_par_prices(_entity, _corp)

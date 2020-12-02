@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(0.192558,-7.94411e-18,-9.55325e-18,0.192558,-37.7675,-37.7675)">
+        <g id="DSL">
+            <circle id="City" cx="300" cy="300" r="90.192" style="fill:white;"/>
+            <clipPath id="_clip1">
+                <circle id="City1" serif:id="City" cx="300" cy="300" r="90.192"/>
+            </clipPath>
+            <g clip-path="url(#_clip1)">
+                <g id="Logo" transform="matrix(0.339009,1.3986e-17,1.6819e-17,0.339009,198.297,198.297)">
+                    <circle cx="300" cy="300" r="270.468" style="fill:rgb(32,123,90);"/>
+                    <g transform="matrix(0.870819,0,0,0.870819,38.7542,38.7542)">
+                        <circle cx="300" cy="300" r="270.468" style="fill:rgb(255,235,210);"/>
+                    </g>
+                    <g>
+                        <g transform="matrix(0.942286,-0.334808,0.295588,0.831906,-112.847,190.637)">
+                            <rect x="330.926" y="415.653" width="23.31" height="133.623" style="fill:rgb(32,123,90);"/>
+                        </g>
+                        <g transform="matrix(1.00627,0,0,0.958678,-1.88477,10.3122)">
+                            <path d="M394.655,228.92L395.902,228.92L395.902,435.96L205.415,435.96L205.415,228.92L206.663,228.92C214.045,180.96 253.319,144.357 300.659,144.357C347.999,144.357 387.272,180.96 394.655,228.92ZM387.992,233.261L389.151,233.261L389.151,425.624L212.166,425.624L212.166,233.261L213.325,233.261C220.185,188.701 256.674,154.692 300.659,154.692C344.643,154.692 381.132,188.701 387.992,233.261Z" style="fill:rgb(32,123,90);"/>
+                        </g>
+                        <g transform="matrix(-0.942286,-0.334808,-0.295588,0.831906,715.185,190.637)">
+                            <rect x="330.926" y="415.653" width="23.31" height="133.623" style="fill:rgb(32,123,90);"/>
+                        </g>
+                        <rect x="193.044" y="504.973" width="214.817" height="15.002" style="fill:rgb(32,123,90);"/>
+                        <g transform="matrix(0.952807,0,0,1,19.248,-22.3014)">
+                            <path d="M198.671,504.973L392.062,504.973L400.095,519.975L193.044,519.975L198.671,504.973Z" style="fill:rgb(32,123,90);"/>
+                        </g>
+                        <g transform="matrix(0.854785,0,0,1,47.1555,-44.153)">
+                            <path d="M198.671,504.973L392.062,504.973L400.095,519.975L193.044,519.975L198.671,504.973Z" style="fill:rgb(32,123,90);"/>
+                        </g>
+                        <g transform="matrix(0.761247,0,0,1,72.8967,-67.0069)">
+                            <path d="M198.671,504.973L392.062,504.973L400.095,519.975L193.044,519.975L198.671,504.973Z" style="fill:rgb(32,123,90);"/>
+                        </g>
+                        <rect x="280.496" y="233.176" width="41.347" height="124.301" style="fill:rgb(32,123,90);"/>
+                        <g transform="matrix(2.83277e-16,1,-1,2.83277e-16,596.496,-5.84226)">
+                            <rect x="280.496" y="233.176" width="41.347" height="124.301" style="fill:rgb(32,123,90);"/>
+                        </g>
+                    </g>
+                    <g id="Text" transform="matrix(1,0,0,1,0,-3)">
+                        <g transform="matrix(0.473821,0.515261,-0.736087,0.676887,658.085,-220.636)">
+                            <text x="171.071px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">T</text>
+                        </g>
+                        <g transform="matrix(-0.575779,-0.398093,0.568705,-0.822542,61.0361,888.139)">
+                            <text x="171.071px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">T</text>
+                        </g>
+                        <g transform="matrix(-0.465763,-0.522556,0.746509,-0.665376,-67.4065,819.761)">
+                            <text x="167.824px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">H</text>
+                        </g>
+                        <g transform="matrix(-0.336916,-0.613586,0.876552,-0.481308,-173.6,723.943)">
+                            <text x="169.433px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">E</text>
+                        </g>
+                        <g transform="matrix(-0.121288,-0.689412,0.984875,-0.173268,-284.729,539.582)">
+                            <text x="167.824px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">D</text>
+                        </g>
+                        <g transform="matrix(0.0644491,-0.697027,0.995753,0.0920702,-328.231,384.559)">
+                            <text x="169.433px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">E</text>
+                        </g>
+                        <g transform="matrix(0.208283,-0.668295,0.954707,0.297547,-331.098,247.074)">
+                            <text x="167.824px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">N</text>
+                        </g>
+                        <g transform="matrix(0.356264,-0.602558,0.860797,0.508948,-300.934,105.396)">
+                            <text x="169.433px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">V</text>
+                        </g>
+                        <g transform="matrix(0.56232,-0.416889,0.595556,0.803314,-171.807,-116.164)">
+                            <text x="167.824px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">R</text>
+                        </g>
+                        <g transform="matrix(0.667394,-0.211151,0.301644,0.953421,-11.2596,-246.463)">
+                            <text x="167.824px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">&amp;</text>
+                        </g>
+                        <g transform="matrix(0.673061,0.192325,-0.274749,0.961516,307.312,-337.972)">
+                            <text x="169.433px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">S</text>
+                        </g>
+                        <g transform="matrix(0.661309,0.2295,-0.327858,0.944727,379.263,-327.815)">
+                            <text x="167.824px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">A</text>
+                        </g>
+                        <g transform="matrix(0.0652008,0.696957,-0.995653,0.093144,903.526,95.1075)">
+                            <text x="167.824px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">A</text>
+                        </g>
+                        <g transform="matrix(0.556782,0.424256,-0.606081,0.795403,562.386,-278.082)">
+                            <text x="171.071px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">L</text>
+                        </g>
+                        <g transform="matrix(0.292478,0.635969,-0.908527,0.417826,804.737,-84.8144)">
+                            <text x="171.071px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">L</text>
+                        </g>
+                        <g transform="matrix(-0.0992452,0.692929,-0.989898,-0.141779,934.03,248.059)">
+                            <text x="167.824px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">K</text>
+                        </g>
+                        <g transform="matrix(-0.583441,0.386777,-0.552538,-0.833488,762.564,739.356)">
+                            <text x="169.433px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">Y</text>
+                        </g>
+                        <g transform="matrix(-0.497298,0.492641,-0.703772,-0.710426,842.915,637.134)">
+                            <text x="167.824px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">R</text>
+                        </g>
+                        <g transform="matrix(0.526145,-0.461705,0.659578,0.751636,-224.975,-57.5993)">
+                            <text x="169.433px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">E</text>
+                        </g>
+                        <g transform="matrix(-0.239267,0.657838,-0.939769,-0.34181,929.504,385.12)">
+                            <text x="169.433px" y="459.96px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;fill:rgb(210,64,83);">E</text>
+                        </g>
+                    </g>
+                </g>
+            </g>
+            <path id="City2" serif:id="City" d="M300,197.282C243.308,197.282 197.282,243.308 197.282,300C197.282,356.692 243.308,402.718 300,402.718C356.692,402.718 402.718,356.692 402.718,300C402.718,243.308 356.692,197.282 300,197.282ZM300,209.808C349.778,209.808 390.192,250.222 390.192,300C390.192,349.778 349.778,390.192 300,390.192C250.222,390.192 209.808,349.778 209.808,300C209.808,250.222 250.222,209.808 300,209.808Z" style="fill:rgb(32,123,90);"/>
+        </g>
+    </g>
+</svg>

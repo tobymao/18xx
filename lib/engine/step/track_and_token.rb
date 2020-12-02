@@ -50,7 +50,7 @@ module Engine
           end
         end
 
-        (free || entity.cash >= @game.class::TILE_COST) && super
+        (free || buying_power(entity) >= @game.class::TILE_COST) && super
       end
 
       def process_place_token(action)

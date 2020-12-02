@@ -11,7 +11,7 @@ class Api
 
         # '/api/game/<game_id>/'
         r.is do
-          game_data = game.to_h(include_actions: true, player: user&.name)
+          game_data = game.to_h(include_actions: true, player: user&.id)
 
           game_data
         end
@@ -32,20 +32,22 @@ class Api
             game.to_h
           end
 
-          not_authorized! unless users.any? { |u| u.id == user.id }
-
           r.is 'leave' do
             halt(400, 'Cannot leave because game has started') unless game.status == 'new'
+            halt(400, 'You are not in the game') unless users.any? { |u| u.id == user.id }
             game.remove_player(user)
             game.to_h
           end
 
           # POST '/api/game/<game_id>/user_settings'
           r.is 'user_settings' do
-            game.update_player_settings(user.name, r.params)
+            game.update_player_settings(user.id, r.params)
             game.save
             game.to_h
           end
+
+          not_authorized! unless users.any? { |u| u.id == user.id } || game.user_id == user.id
+
           # POST '/api/game/<game_id>/action'
           r.is 'action' do
             acting, action = nil
@@ -69,7 +71,7 @@ class Api
                 )
 
                 active_players = meta['active_players']
-                acting = users.select { |u| active_players.include?(u.name) }
+                acting = users.select { |u| active_players.include?(u.id) || active_players.include?(u.name) }
 
                 game.round = meta['round']
                 game.turn = meta['turn']
@@ -80,14 +82,18 @@ class Api
 
                 game.save
               else
+                players = users.map { |u| [u.id, u.name] }.to_h
                 engine = Engine::GAMES_BY_TITLE[game.title].new(
-                  users.map(&:name),
+                  players,
                   id: game.id,
                   actions: actions_h(game),
+                  optional_rules: game.settings['optional_rules']&.map(&:to_sym),
                 )
 
                 action_id = r.params['id']
                 halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
+
+                r.params['user'] = user.id
 
                 engine = engine.process_action(r.params)
                 action = engine.actions.last.to_h
@@ -143,7 +149,12 @@ class Api
 
           # POST '/api/game/<game_id>/start
           r.is 'start' do
-            engine = Engine::GAMES_BY_TITLE[game.title].new(users.map(&:name), id: game.id)
+            players = users.map { |u| [u.id, u.name] }.to_h
+            engine = Engine::GAMES_BY_TITLE[game.title].new(
+              players,
+              id: game.id,
+              optional_rules: game.settings['optional_rules']&.map(&:to_sym),
+            )
             unless game.players.size.between?(*Engine.player_range(engine.class))
               halt(400, 'Player count not supported')
             end
@@ -176,7 +187,11 @@ class Api
             user: user,
             description: r['description'],
             max_players: r['max_players'],
-            settings: { seed: Random.new_seed },
+            settings: {
+              seed: Random.new_seed % 2**31,
+              unlisted: r['unlisted'],
+              optional_rules: r['optional_rules'],
+            },
             title: title,
             round: Engine::GAMES_BY_TITLE[title].new([]).round&.name,
           }
@@ -194,8 +209,8 @@ class Api
   end
 
   def set_game_state(game, engine, users)
-    active_players = engine.active_player_names
-    acting = users.select { |u| active_players.include?(u.name) }
+    active_players = engine.active_players_id
+    acting = users.select { |u| active_players.include?(u.id) }
 
     game.round = engine.round.name
     game.turn = engine.turn

@@ -357,8 +357,8 @@ module Engine
          "sym": "CFL",
          "abilities":[
             {
-               "type":"share",
-               "share":"GCL_1"
+               "type":"shares",
+               "shares":"GCL_1"
             },
             {
                "type":"blocks_hexes",
@@ -378,8 +378,8 @@ module Engine
          "sym": "CFLV",
          "abilities":[
             {
-               "type":"share",
-               "share":"Nord_0"
+               "type":"shares",
+               "shares":"Nord_0"
             },
             {
                "type":"close",

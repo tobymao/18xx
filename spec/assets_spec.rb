@@ -127,7 +127,7 @@ describe 'Assets' do
       expect(render(app_route: '/game/1', **needs)).to include('Takamatsu E-Railroad')
       expect(render(app_route: '/game/1#entities', **needs)).to include('Entities', 'Player 1', 'Awa Railroad')
       expect(render(app_route: '/game/1#map', **needs)).to include('Kotohira')
-      expect(render(app_route: '/game/1#market', **needs)).to include('Bank Cash')
+      expect(render(app_route: '/game/1#market', **needs)).to include('The Bank', 'Cash', 'Par value')
       expect(render(app_route: '/game/1#info', **needs)).to include('Upcoming')
       expect(render(app_route: '/game/1#tiles', **needs)).to include('492')
       expect(render(app_route: '/game/1#spreadsheet', **needs)).to include('Value')
@@ -170,27 +170,35 @@ describe 'Assets' do
        ['1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track',
         # Minor charter stuff
         'Michigan Southern', 'Trains', '2', 'Cash', 'C15', '$60']],
-      ['1846', 3099, 54, 'issue_shares', '1846: Operating Round 1.1 (of 2) - Issue or Redeem Shares'],
-      ['1846', 3099, 190, 'assign',
+      ['1846', 3099, 96, 'issue_shares',
+       ['1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track',
+        'Issue', '1 ($50)', '2 ($100)', '3 ($150)', '4 ($200)']],
+      ['1846', 3099, 120, 'dividend',
+       ['Pay or Withhold Dividends',
+        '2 right',
+        '1 right',
+        '1 left']],
+      ['1846', 3099, 186, 'assign',
        ['1846: Operating Round 2.1 (of 2) - Assign Steamboat Company',
         'Blondie may assign Steamboat Company to a new hex and/or corporation or minor.',
         'Add $20 per port symbol to all routes run to the assigned location '\
         'by the owning/assigned corporation/minor.']],
+      ['1846', 3099, nil, 'endgame', '1846: Operating Round 6.2 (of 2) - Game Over - Bank Broken'],
       ['1846', 'hs_cvjhogoy_1599504419', 49, 'buy_train_emr_shares', 'has $60 in sellable shares'],
       ['1846', 'hs_sudambau_1600037415', 37, 'buy_train',
        ['GT has $280',
         '!!can issue shares']],
-      ['1846', 'hs_sudambau_1600037415', 44, 'buy_train_issuing',
+      ['1846', 'hs_sudambau_1600037415', 41, 'buy_train_issuing',
        ['B&amp;O has $120',
         'B&amp;O can issue shares to raise up to $40',
         '!!Bankruptcy']],
-      ['1846', 'hs_sudambau_1600037415', 52, 'buy_train_president_cash',
+      ['1846', 'hs_sudambau_1600037415', 50, 'buy_train_president_cash',
        ['B&amp;O has $146',
         'Player 3 must contribute $14 for B&amp;O to afford a train from the Depot.',
         'Player 3 has $15',
         'Player 3 has $0 in sellable shares',
         '!!Bankruptcy']],
-      ['1846', 'hs_sudambau_1600037415', 62, 'buy_train_bankrupt',
+      ['1846', 'hs_sudambau_1600037415', 60, 'buy_train_bankrupt',
        ['B&amp;O has $0',
         'Player 3 must contribute $160 for B&amp;O to afford a train from the Depot.',
         'Player 3 has $15',
@@ -201,8 +209,31 @@ describe 'Assets' do
          'must declare bankruptcy.',
         'Declare Bankruptcy']],
       ['18_al', 4714, nil, 'endgame', '18AL: Operating Round 7.2 (of 3) - Game Over - Company hit max stock value'],
-      ['18_ga', 8643, nil, 'endgame', '18GA: Operating Round 8.1 (of 3) - Game Over - Bank Broken'],
+      ['18_ga', 9222, nil, 'endgame', '18GA: Operating Round 9.1 (of 3) - Game Over - Bank Broken'],
       ['18_tn', 7818, nil, 'endgame', '18TN: Operating Round 8.2 (of 3) - Game Over - Bank Broken'],
+      ['18_ms', 14_375, nil, 'endgame', '18MS: Operating Round 10 (of 10) - Game end after OR 10 - Game Over'],
+      ['18_mex', 13_315, 278, 'merge',
+       ['Merge',
+        'Decline',
+        'Corporations that can merge with NdM']],
+      ['1817', 15_528, 196, 'merge',
+       ['Convert',
+        'Merge',
+        'Grand Trunk Western Railroad',
+        'Corporations that can merge with A&amp;S']],
+      ['1817', 15_528, 205, 'offer', ['Offer for Sale', 'Warren &amp; Trumbull Railroad']],
+      ['1817', 15_528, 383, 'merge_with_other_players',
+       ['Convert',
+        'Merge',
+        'Pittsburgh, Shawmut and Northern Railroad',
+        'Corporations that can merge with J']],
+      ['1817', 16_852, 996, 'cash_crisis',
+       ['Player owes the bank $294 and must sell shares if possible.']],
+      ['1817', 16_281, 1183, 'buy_sell_post_conversion',
+       ['Merger Round 4.2 (of 2) - Buy/Sell Shares Post Conversion',
+        'New York, Susquehanna and Western Railway']],
+      ['18_chesapeake', 1905, 166, 'blocking_special_track',
+       ['Lay Track for Columbia - Philadelphia Railroad']],
     ].freeze
 
     def render_game(jsonfile, no_actions, string)

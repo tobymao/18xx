@@ -206,6 +206,7 @@ module Engine
             {
                "type":"tile_lay",
                "free":true,
+               "count": 1,
                "owner_type":"corporation",
                "hexes":[
                   "H17"
@@ -229,6 +230,7 @@ module Engine
             {
                "type":"tile_lay",
                "free":true,
+               "count": 1,
                "owner_type":"corporation",
                "hexes":[
                   "F19"
@@ -252,6 +254,7 @@ module Engine
             {
                "type":"tile_lay",
                "free":true,
+               "count": 1,
                "owner_type":"corporation",
                "hexes":[
                   "H3"
@@ -275,6 +278,7 @@ module Engine
             {
                "type":"tile_lay",
                "free":true,
+               "count": 1,
                "owner_type":"corporation",
                "hexes":[
                   "E16"
@@ -296,8 +300,8 @@ module Engine
          "desc":"The purchaser of this private company receives the president's certificate of the L&N Railroad and must immediately set its par value. The L&N automatically floats once this private company is purchased and is an exception to the normal rule. This private company closes immediately after the par value is set.",
          "abilities":[
             {
-               "type":"share",
-               "share":"L&N_0"
+               "type":"shares",
+               "shares":"L&N_0"
             }
          ]
       }
@@ -486,7 +490,6 @@ module Engine
             "H7"
          ],
          "upgrade=cost:60,terrain:mountain":[
-            "E16",
             "B15",
             "C14",
             "C18",
@@ -500,14 +503,21 @@ module Engine
             "I16",
             "J13"
          ],
+         "upgrade=cost:60,terrain:mountain;icon=image:18_tn/owr":[
+            "E16"
+         ],
          "upgrade=cost:120,terrain:mountain":[
-            "F19",
-            "H17",
             "F21",
             "G18",
             "G20"
          ],
-         "city=revenue:0;upgrade=cost:60,terrain:water":[
+         "upgrade=cost:120,terrain:mountain;icon=image:18_tn/etwcr":[
+            "F19"
+         ],
+         "upgrade=cost:120,terrain:mountain;icon=image:18_tn/tcc":[
+            "H17"
+         ],
+         "city=revenue:0;upgrade=cost:60,terrain:water;icon=image:18_tn/mcr":[
             "H3"
          ],
          "town=revenue:0;upgrade=cost:40,terrain:water":[
@@ -572,6 +582,7 @@ module Engine
             "yellow"
          ],
          "status":[
+            "can_buy_companies_from_other_players",
             "can_buy_companies_operation_round_one",
             "limited_train_buy"
          ],
@@ -586,6 +597,7 @@ module Engine
             "green"
          ],
          "status":[
+            "can_buy_companies_from_other_players",
             "can_buy_companies",
             "limited_train_buy"
          ],
@@ -600,6 +612,7 @@ module Engine
             "green"
          ],
          "status":[
+            "can_buy_companies_from_other_players",
             "can_buy_companies",
             "limited_train_buy"
          ],
@@ -614,6 +627,7 @@ module Engine
             "green"
          ],
          "status":[
+            "can_buy_companies_from_other_players",
             "can_buy_companies"
          ],
          "operating_rounds": 2

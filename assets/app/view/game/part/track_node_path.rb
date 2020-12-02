@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
 require 'view/game/part/base'
 require 'view/game/part/town_location'
 
@@ -8,12 +9,17 @@ module View
     module Part
       class TrackNodePath < Base
         include TownLocation
+        include Lib::Settings
 
         needs :tile
         needs :path
         needs :color, default: 'black'
         needs :width, default: 8
         needs :dash, default: '0'
+
+        CROSSOVER_GAP = 3
+        STRAIGHT_CROSSOVER = '1 55 63 56'
+        GENTLE_CROSSOVER = '1 55 47 56'
 
         PARALLEL_SPACING = [8, 6, 4].freeze
 
@@ -255,6 +261,14 @@ module View
             @end_edge = @path.edges.last.num
             @end_x = edge_x_pos(@end_edge, 87)
             @end_y = edge_y_pos(@end_edge, 87)
+            lanes = @path.lanes
+
+            if @tile.crossover? && @path.straight?
+              @crossover_dash = STRAIGHT_CROSSOVER
+            elsif @tile.crossover? && @path.gentle_curve?
+              @crossover_dash = GENTLE_CROSSOVER
+            end
+
           elsif @num_exits == 1
             @begin_edge = @path.exits[0]
             @begin_x = edge_x_pos(@begin_edge, 87)
@@ -278,6 +292,15 @@ module View
                                  ]
                                end
             end
+            lanes = @path.lanes
+            lanes.reverse! if @path.b.edge?
+
+            if @tile.crossover? && @path.straight?
+              @crossover_dash = STRAIGHT_CROSSOVER
+            elsif @tile.crossover? && @path.gentle_curve?
+              @crossover_dash = GENTLE_CROSSOVER
+            end
+
           else
             # city/town - city/town
             @ct_edge0 = @tile.preferred_city_town_edges[@stop0] if @stop0
@@ -302,6 +325,8 @@ module View
                                    calculate_stop_y(@ct_edge1, @tile),
                                  ]
                                end
+              lanes = @path.lanes
+              lanes.reverse! if @path.b == @stop0
             else
               @begin_edge = @ct_edge1
               @begin_x, @begin_y = if @stop1.rect?
@@ -321,6 +346,8 @@ module View
                                    calculate_stop_y(@ct_edge0, @tile),
                                  ]
                                end
+              lanes = @path.lanes
+              lanes.reverse! if @path.b == @stop1
             end
           end
 
@@ -335,16 +362,32 @@ module View
             @end_y
           ) if @need_arc
 
-          return if !@path.parallel? || !@begin_edge
+          return if @path.single? || !@begin_edge && !@end_edge
 
-          shift = (@path.lane_index * 2 - @path.lanes + 1) * (@width + PARALLEL_SPACING[@path.lanes - 2]) / 2.0
-          delta_x = (shift * Math.cos(@begin_edge * 60.0 * Math::PI / 180.0)).round(2)
-          delta_y = (shift * Math.sin(@begin_edge * 60.0 * Math::PI / 180.0)).round(2)
+          begin_shift_edge = @begin_edge || @end_edge
+          end_shift_edge = @end_edge || @begin_edge
 
-          @begin_x += delta_x
-          @begin_y += delta_y
-          @end_x += delta_x
-          @end_y += delta_y
+          begin_lane, end_lane = lanes
+
+          if begin_lane[0] > 1
+            begin_shift = (begin_lane[1] * 2 - begin_lane[0] + 1) *
+                          (@width.to_i + PARALLEL_SPACING[begin_lane[0] - 2]) / 2.0
+            begin_delta_x = (begin_shift * Math.cos(begin_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
+            begin_delta_y = (begin_shift * Math.sin(begin_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
+
+            @begin_x += begin_delta_x
+            @begin_y += begin_delta_y
+          end
+
+          return unless end_lane[0] > 1
+
+          end_shift = (end_lane[1] * 2 - end_lane[0] + 1) *
+                      (@width.to_i + PARALLEL_SPACING[end_lane[0] - 2]) / 2.0
+          end_delta_x = (end_shift * Math.cos(end_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
+          end_delta_y = (end_shift * Math.sin(end_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
+
+          @end_x += end_delta_x
+          @end_y += end_delta_y
         end
 
         def preferred_render_locations
@@ -376,10 +419,12 @@ module View
             "0 0 #{@arc_parameters[:sweep]} #{@end_x} #{@end_y}",
           ) if @need_arc
 
+          d_width = @width.to_i / 2
+
           # terminal tapered track only supported for centered city/town
           props[:attrs].merge!(
             transform: "rotate(#{rotation})",
-            d: 'M6 60 L 6 85 L -6 85 L -6 60 L 0 25 Z',
+            d: "M #{d_width} 60 L #{d_width} 87 L -#{d_width} 87 L -#{d_width} 60 L 0 25 Z",
             fill: @color,
             stroke: 'none',
             'stroke-linecap': 'butt',
@@ -388,7 +433,17 @@ module View
             'stroke-dasharray': @dash,
           ) if @terminal
 
-          h(:path, props)
+          children = [h(:path, props)]
+          if @crossover_dash
+            props[:attrs].merge!(
+              stroke: setting_for(@tile.color),
+              'stroke-width': @width.to_i + CROSSOVER_GAP * 2,
+              'stroke-dasharray': @crossover_dash,
+              'stroke-dashoffset': 1,
+            )
+            children.prepend(h(:path, props))
+          end
+          children
         end
       end
     end

@@ -3,7 +3,6 @@
 require_relative '../config/game/g_18_al'
 require_relative 'base'
 require_relative 'company_price_50_to_150_percent'
-require_relative 'revenue_4d'
 
 module Engine
   module Game
@@ -34,18 +33,38 @@ module Engine
 
       STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
 
+      OPTIONAL_RULES = [
+        { sym: :double_yellow_first_or,
+          short_name: 'Extra yellow',
+          desc: 'Allow corporation to lay 2 yellows its first OR' },
+        { sym: :LN_home_city_moved,
+          short_name: 'Move L&N home',
+          desc: 'Move L&N home city to Decatur - Nashville becomes off board hex' },
+        { sym: :unlimited_4d,
+          short_name: 'Unlimited 4D',
+          desc: 'Unlimited number of 4D' },
+        { sym: :hard_rust_t4,
+          short_name: 'Hard rust',
+          desc: '4 trains rust when 7 train is bought' },
+      ].freeze
+
       ASSIGNMENT_TOKENS = {
         'SNAR' => '/icons/18_al/snar_token.svg',
       }.freeze
       include CompanyPrice50To150Percent
-      include Revenue4D
 
       def route_bonuses
         ROUTE_BONUSES
       end
 
       def setup
+        @recently_floated = []
+
         setup_company_price_50_to_150_percent
+
+        move_ln_corporation if @optional_rules&.include?(:LN_home_city_moved)
+        add_extra_4d if @optional_rules&.include?(:unlimited_4d)
+        change_4t_to_hardrust if @optional_rules&.include?(:hard_rust_t4)
 
         @corporations.each do |corporation|
           corporation.abilities(:assign_hexes) do |ability|
@@ -78,6 +97,10 @@ module Engine
         ], round_num: round_num)
       end
 
+      def or_round_finished
+        @recently_floated = []
+      end
+
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
@@ -86,7 +109,7 @@ module Engine
       end
 
       def revenue_for(route, stops)
-        revenue = adjust_revenue_for_4d_train(route, stops, super)
+        revenue = super
 
         route.corporation.abilities(:hexes_bonus) do |ability|
           revenue += stops.sum { |stop| ability.hexes.include?(stop.hex.id) ? ability.amount : 0 }
@@ -154,6 +177,12 @@ module Engine
         super
       end
 
+      def float_corporation(corporation)
+        @recently_floated << corporation
+
+        super
+      end
+
       def all_potential_upgrades(tile, tile_manifest: false)
         # Lumber terminal cannot be upgraded
         return [] if tile.name == '445'
@@ -168,12 +197,55 @@ module Engine
         upgrades
       end
 
+      def tile_lays(entity)
+        return super if !@optional_rules&.include?(:double_yellow_first_or) ||
+          !@recently_floated&.include?(entity)
+
+        [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+      end
+
       private
 
       def route_bonus(route, type)
         route.corporation.abilities(type).sum do |ability|
           ability.hexes == (ability.hexes & route.hexes.map(&:name)) ? ability.amount : 0
         end
+      end
+
+      def move_ln_corporation
+        ln = corporation_by_id('L&N')
+        previous_hex = hex_by_id('A4')
+        old_tile = previous_hex.tile
+        tile_string = 'offboard=revenue:yellow_40|brown_50;path=a:0,b:_0;path=a:1,b:_0'
+        previous_hex.tile = Tile.from_code(old_tile.name, old_tile.color, tile_string)
+        previous_hex.tile.location_name = 'Nashville'
+
+        new_hex = hex_by_id('C4')
+        new_hex.tile.add_reservation!(ln, 0, 0)
+
+        ln.coordinates = 'C4'
+      end
+
+      def add_extra_4d
+        diesel_trains = @depot.trains.select { |t| t.name == '4D' }
+        diesel = diesel_trains.first
+        (diesel_trains.length + 1).upto(8) do |i|
+          new_4d = diesel.clone
+          new_4d.index = i
+          @depot.add_train(new_4d)
+        end
+      end
+
+      def change_4t_to_hardrust
+        @depot.trains
+          .select { |t| t.name == '4' }
+          .each { |t| change_to_hardrust(t) }
+      end
+
+      def change_to_hardrust(t)
+        t.rusts_on = t.obsolete_on
+        t.obsolete_on = nil
+        t.variants.each { |_, v| v.merge!(rusts_on: t.rusts_on, obsolete_on: t.obsolete_on) }
       end
     end
   end

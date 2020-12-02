@@ -48,16 +48,33 @@ module View
         props[:style][:boxSizing] = 'border-box'
       end
 
+      timestamp_props = { style: { margin: '0 0.2rem',
+                                   fontSize: 'smaller' } }
+      username_props = { style: { margin: '0 0.2rem',
+                                  fontWeight: 'bold' } }
+      message_props = { style: { margin: '0 0.2rem' } }
+
       lines = @log.each_with_index.map do |line, index|
-        line_props = { style: {} }
+        line_props = { style: { marginBottom: '0.2rem',
+                                paddingLeft: '0.5rem',
+                                textIndent: '-0.5rem' } }
         if line.is_a?(String)
           if line.start_with?('--')
             line_props[:style][:fontWeight] = 'bold'
             line_props[:style][:marginTop] = '0.5em' if index.positive?
           end
           h(:div, line_props, line)
+        elsif line.is_a?(Hash) # Homepage chat
+          time = Time.at(line[:created_at])
+          timestamp = time.strftime(time + 86_400 < Time.now ? '%F %T' : '%T')
+          h('div.chatline', line_props, [
+            h('span.timestamp', timestamp_props, timestamp),
+            h('span.username', username_props, line[:user][:name]),
+            h('span.message', message_props, line[:message]),
+          ])
         elsif line.is_a?(Engine::Action::Message)
-          h(:div, { style: { fontWeight: 'bold' } }, "#{line.entity.name}: #{line.message}")
+          sender = line.entity.name || line.user
+          h(:div, { style: { fontWeight: 'bold' } }, "#{sender}: #{line.message}")
         end
       end
 

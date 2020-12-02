@@ -12,7 +12,6 @@ module Engine
         @company = company
         @corporation = corporation
         @price = price
-        raise 'Company and corporation cannot both be nil' if !@company && !@corporation
       end
 
       def self.h_to_args(h, game)

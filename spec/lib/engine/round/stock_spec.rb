@@ -5,6 +5,7 @@ require './spec/spec_helper'
 require 'engine/game/g_1882'
 require 'engine/game/g_1889'
 require 'engine/game/g_18_chesapeake'
+require 'engine/game/g_1828'
 require 'engine/phase'
 require 'engine/round/operating'
 
@@ -146,7 +147,7 @@ module Engine
       let(:game) { Game::G18Chesapeake.new(%w[a b]) }
       it '30% presidency, remove share from share pool, allow dumping' do
         bo = game.corporation_by_id('B&O')
-        cv = game.cornelius.abilities(:share).share.corporation
+        cv = game.cornelius.abilities(:shares).shares.first.corporation
         corp = game.corporations.find { |c| ![bo, cv].include?(c) }
 
         player_0.cash = 10_000
@@ -199,6 +200,86 @@ module Engine
         )
         expect(corp.owner).to eq(player_1)
         expect_share_counts.call([2, 3, 0, 4, 2])
+      end
+    end
+
+    context '#1828' do
+      let(:game) { Game::G1828.new(%w[a b c]) }
+
+      before :each do
+        player_0.cash = 10_000
+        player_1.cash = 10_000
+
+        market.set_par(corp_0, market.par_prices[0])
+        5.times { game.share_pool.buy_shares(player_0, corp_0.shares.first) }
+
+        market.set_par(corp_1, market.par_prices[0])
+        5.times { game.share_pool.buy_shares(player_1, corp_1.shares.first) }
+      end
+
+      it 'director can buy two shares from ipo in orange' do
+        market.move(corp_0, 12, 0, force: true)
+        expect(corp_0.share_price.type).to eq(:unlimited)
+
+        market_share = corp_0.shares.first
+        game.share_pool.transfer_shares(market_share.to_bundle, game.bank, price: :free)
+
+        subject.process_action(Engine::Action::BuyShares.new(player_0, shares: corp_0.shares.first))
+        expect(subject.current_entity).to be(player_0)
+        expect(subject.active_step.can_buy?(player_0, corp_0.shares.first)).to be_truthy
+        expect(subject.active_step.can_buy?(player_0, market_share)).to be_truthy
+        subject.process_action(Engine::Action::BuyShares.new(player_0, shares: corp_0.shares.first))
+        expect(subject.current_entity).to be(player_1)
+
+        subject.process_action(Engine::Action::BuyShares.new(player_1, shares: corp_0.shares.first))
+        expect(subject.current_entity).not_to be(player_1)
+      end
+
+      it 'cannot buy stocks from second company after buying one orange' do
+        market.move(corp_0, 12, 0, force: true)
+        expect(corp_0.share_price.type).to eq(:unlimited)
+
+        subject.process_action(Engine::Action::BuyShares.new(player_0, shares: corp_0.shares.first))
+        expect(subject.current_entity).to be(player_0)
+        expect(subject.active_step.can_buy?(player_0, corp_1.shares.first)).to be_falsey
+      end
+
+      it 'corporation share price goes up if in orange at end of stock round' do
+        market.move(corp_0, 12, 0, force: true)
+        expect(corp_0.share_price.type).to eq(:unlimited)
+
+        r, c = corp_0.share_price.coordinates
+        subject.finish_round
+        expect(corp_0.share_price).to eq(game.stock_market.market[r - 1][c])
+      end
+
+      it 'corporation share price goes up if 80% owned by director at end of stock round' do
+        share_price = corp_1.share_price
+        subject.finish_round
+        expect(corp_0.share_price).to eq(share_price)
+
+        2.times { game.share_pool.buy_shares(player_0, corp_0.shares.first) }
+        expect(player_0.num_shares_of(corp_0)).to be(8)
+
+        subject.finish_round
+        r, c = share_price.coordinates
+        share_price = game.stock_market.market[r - 1][c]
+        expect(corp_0.share_price).to eq(share_price)
+      end
+
+      it 'corporation share price goes up 3 times if in orange, 80% owned by director, and sold out' do
+        market.move(corp_0, 12, 0, force: true)
+        expect(corp_0.share_price.type).to eq(:unlimited)
+
+        2.times { game.share_pool.buy_shares(player_0, corp_0.shares.first) }
+        expect(player_0.num_shares_of(corp_0)).to be(8)
+
+        2.times { game.share_pool.buy_shares(player_1, corp_0.shares.first) }
+        expect(corp_0.shares.none?).to be_truthy
+
+        r, c = corp_0.share_price.coordinates
+        subject.finish_round
+        expect(corp_0.share_price).to eq(game.stock_market.market[r - 3][c])
       end
     end
   end

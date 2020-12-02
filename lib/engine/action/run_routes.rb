@@ -11,6 +11,8 @@ module Engine
       def initialize(entity, routes:)
         @entity = entity
         @routes = routes
+
+        @routes.each(&:lock!)
       end
 
       def self.h_to_args(h, game)
@@ -28,9 +30,7 @@ module Engine
             }
           end
 
-          connection_hexes = route['connections']&.map do |ids|
-            ids.map { |id| game.hex_by_id(id) }
-          end
+          connection_hexes = route['connections']
 
           routes << Route.new(
             game,
@@ -39,6 +39,7 @@ module Engine
             connection_hexes: connection_hexes,
             override: override,
             routes: routes,
+            halts: route['halts'],
           )
         end
 
@@ -48,6 +49,8 @@ module Engine
       def args_to_h
         routes = @routes.map do |route|
           h = { 'train' => route.train.id }
+
+          h['halts'] = route.halts if route.halts
 
           if route.connections.any?
             h['connections'] = route.connection_hexes

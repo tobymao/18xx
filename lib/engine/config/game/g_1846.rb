@@ -20,11 +20,24 @@ module Engine
     "5": 9000
   },
   "certLimit": {
-    "3": 14,
-    "4": 12,
-    "5": 11
+    "3": {
+      "5" : 14,
+      "4" : 11
+    },
+    "4": {
+      "6" : 12,
+      "5" : 10,
+      "4" : 8
+    },
+    "5": {
+      "7" : 11,
+      "6" : 10,
+      "5" : 8,
+      "4" : 6
+    }
   },
   "startingCash": {
+    "2": 600,
     "3": 400,
     "4": 400,
     "5": 400
@@ -156,7 +169,7 @@ module Engine
       "value": 60,
       "discount": -80,
       "revenue": 0,
-      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). Splits revenue evenly with owner. Buyer pays an extra $80 (\"debt\").",
+      "desc": "Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). In ORs, this is the first minor to operate. Splits revenue evenly with owner. Buyer pays an extra $80 (\"debt\").",
       "sym": "MS"
     },
     {
@@ -164,18 +177,19 @@ module Engine
       "value": 40,
       "discount": -60,
       "revenue": 0,
-      "desc": "Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). Splits revenue evenly with owner. Buyer pays an extra $60 (\"debt\").",
+      "desc": "Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). In ORs, this is the second minor to operate. Splits revenue evenly with owner. Buyer pays an extra $60 (\"debt\").",
       "sym": "BIG4"
     },
     {
       "name": "Chicago and Western Indiana",
       "value": 60,
       "revenue": 10,
-      "desc": "Reserves a token slot in Chicago (D6), when purchased the owning corporation may place an extra token at no cost.",
+      "desc": "Reserves a token slot in Chicago (D6), in the city next to E7. The owning corporation may place an extra token there at no cost, with no connection needed. Once this company is purchased by a corporation, the slot that was reserved may be used by other corporations.",
       "sym": "C&WI",
       "abilities": [
         {
           "type": "token",
+          "when": "owning_corp_or_turn",
           "owner_type":"corporation",
           "hexes": [
             "D6"
@@ -232,6 +246,7 @@ module Engine
       "abilities": [
         {
           "type": "assign_hexes",
+          "when": "owning_corp_or_turn",
           "hexes": [
             "I1",
             "D6"
@@ -273,6 +288,7 @@ module Engine
         },
         {
           "type": "assign_hexes",
+          "when": "owning_corp_or_turn",
           "hexes": [
             "B8",
             "C5",
@@ -300,6 +316,7 @@ module Engine
       "abilities": [
         {
            "type":"tile_lay",
+           "when": "owning_corp_or_turn",
            "owner_type":"corporation",
            "free":true,
            "hexes":[
@@ -315,7 +332,6 @@ module Engine
               "296"
             ],
            "special": false,
-           "when":"track",
            "count": 1
         }
       ]
@@ -324,7 +340,7 @@ module Engine
       "name": "Michigan Central",
       "value": 40,
       "revenue": 15,
-      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's reserved hexes (B10, B12).",
+      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's reserved hexes (B10, B12). The owning corporation does not need to be connected to those hexes. If two tiles are laid, they must connect to each other.",
       "sym": "MC",
       "abilities": [
         {
@@ -337,8 +353,10 @@ module Engine
         },
         {
            "type":"tile_lay",
+           "when": "owning_corp_or_turn",
            "owner_type":"corporation",
            "free":true,
+           "must_lay_together": true,
            "hexes":[
               "B10",
               "B12"
@@ -348,7 +366,6 @@ module Engine
               "8",
               "9"
             ],
-           "when":"track",
            "blocks":false,
            "count": 2
         }
@@ -358,7 +375,7 @@ module Engine
       "name": "Ohio & Indiana",
       "value": 40,
       "revenue": 15,
-      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I's reserved hexes (F14, F16).",
+      "desc": "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I's reserved hexes (F14, F16). The owning corporation does not need to be connected to those hexes. If two tiles are laid, they must connect to each other.",
       "sym": "O&I",
       "abilities": [
         {
@@ -371,8 +388,10 @@ module Engine
         },
         {
            "type":"tile_lay",
+           "when": "owning_corp_or_turn",
            "owner_type":"corporation",
            "free":true,
+           "must_lay_together": true,
            "hexes":[
               "F14",
               "F16"
@@ -382,7 +401,6 @@ module Engine
               "8",
               "9"
             ],
-           "when":"track",
            "blocks": false,
            "count": 2
         }
@@ -425,7 +443,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
-          "description": "Reserved $40/$60 Ft. Wayne token",
+          "description": "Reserved $40/$60 Ft. Wayne (E11) token",
           "hexes": [
             "E11"
           ],
@@ -471,7 +489,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
-          "description": "Reserved $40/$100 Cincinnati token",
+          "description": "Reserved $40/$100 Cincinnati (H12) token",
           "hexes": [
             "H12"
           ],
@@ -519,7 +537,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
-          "description": "Reserved $40 Erie token",
+          "description": "Reserved $40 Erie (D20) token",
           "hexes": [
             "D20"
           ],
@@ -583,7 +601,7 @@ module Engine
         },
         {
           "type": "token",
-          "description": "Reserved $40 Centralia token",
+          "description": "Reserved $40 Centralia (I5) token",
           "hexes": [
             "I5"
           ],
@@ -672,7 +690,6 @@ module Engine
           "price": 900
         }
       ],
-      "num": 9,
       "events": [
         {"type": "remove_tokens"}
       ]
@@ -840,7 +857,6 @@ module Engine
     },
     "blue": {
       "": [
-        "C19",
         "D16"
       ]
     }

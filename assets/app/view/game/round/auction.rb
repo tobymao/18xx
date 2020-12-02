@@ -13,6 +13,7 @@ module View
         include Actionable
 
         needs :selected_company, default: nil, store: true
+        needs :selected_corporation, default: nil, store: true
         needs :hidden, default: true, store: true
         needs :flash_opts, default: {}, store: true
         needs :user
@@ -32,12 +33,14 @@ module View
 
           store(:before_process_pass, -> { hide! }, skip: true) if @current_actions.include?('pass')
 
-          if @current_actions.include?('par')
+          if @current_actions.include?('par') && @step.companies_pending_par
             h(:div, render_company_pending_par)
           else
             h(:div, [
+              render_turn_bid,
               render_show_button,
               *render_companies,
+              *render_corporations,
               render_players,
             ].compact)
           end
@@ -56,12 +59,16 @@ module View
         end
 
         def render_company_pending_par
-          corporation = @step.company_pending_par.abilities(:share).share.corporation
+          children = []
 
-          [
-            h(Corporation, corporation: corporation),
-            h(Par, corporation: corporation),
-          ]
+          @step.companies_pending_par.first.abilities(:shares).shares.each do |share|
+            next unless share.president
+
+            children << h(Corporation, corporation: share.corporation)
+            children << h(Par, corporation: share.corporation)
+          end
+
+          children
         end
 
         def render_show_button
@@ -101,7 +108,7 @@ module View
             },
           }
 
-          @step.available.map do |company|
+          @step.available.select(&:company?).map do |company|
             children = [h(Company, company: company, bids: @step.bids[company])]
             children << render_input(company) if @selected_company == company
             h(:div, props, children)
@@ -128,7 +135,9 @@ module View
           end
 
           company_actions =
-            if @step.may_purchase?(company)
+            if @step.auctioneer? && @step.max_bid(@current_entity, company) < @step.min_bid(company)
+              []
+            elsif @step.may_purchase?(company)
               [h(:button, { on: { click: buy } }, 'Buy')]
             elsif @step.may_choose?(company)
               [h(:button, { on: { click: choose } }, 'Choose')]
@@ -166,6 +175,57 @@ module View
           end
                     
           h(:div, { style: { textAlign: 'center', margin: '1rem' } }, company_actions)
+        end
+
+        def render_turn_bid
+          return if !@current_actions.include?('bid') || @step.auctioning != :turn
+
+          input = h(:input, style: { margin: '1rem 0px', marginRight: '1rem' }, props: {
+            value: @step.min_player_bid,
+            step: @step.min_increment,
+            min: @step.min_player_bid,
+            max: @step.max_player_bid(@current_entity),
+            type: 'number',
+            size: @current_entity.cash.to_s.size,
+          })
+
+          create_bid = lambda do
+            hide!
+            price = input.JS['elm'].JS['value'].to_i
+            process_action(Engine::Action::Bid.new(
+              @current_entity,
+              price: price,
+            ))
+          end
+          h(:div,
+            [
+              input,
+              h(:button, { on: { click: create_bid } }, 'Place Bid'),
+            ])
+        end
+
+        def render_corporations
+          return [] if !@current_actions.include?('bid') && !@current_actions.include?('par')
+
+          props = {
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'top',
+            },
+          }
+
+          @selected_corporation = @step.auctioning if @step.auctioning
+
+          @step.available.select(&:corporation?).map do |corporation|
+            children = []
+            children << h(Corporation, corporation: corporation)
+            children << render_ipo_input if @selected_corporation == corporation
+            h(:div, props, children)
+          end.compact
+        end
+
+        def render_ipo_input
+          h('div.margined_bottom', { style: { width: '20rem' } }, [h(Par, corporation: @selected_corporation)])
         end
 
         def hide!

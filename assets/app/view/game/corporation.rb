@@ -17,11 +17,14 @@ module View
       needs :selected_corporation, default: nil, store: true
       needs :game, store: true
       needs :display, default: 'inline-block'
+      needs :selectable, default: true
 
       def render
         select_corporation = lambda do
-          selected_corporation = selected? ? nil : @corporation
-          store(:selected_corporation, selected_corporation)
+          if @selectable
+            selected_corporation = selected? ? nil : @corporation
+            store(:selected_corporation, selected_corporation)
+          end
 
           if can_assign_corporation?
             company = @selected_company
@@ -47,6 +50,7 @@ module View
 
         unless @corporation.minor?
           children << render_shares
+          children << render_reserved if @corporation.reserved_shares.any?
           children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
         end
 
@@ -54,7 +58,17 @@ module View
           ability.owner.corporation? && ability.description
         end
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
-        children << render_loans if @corporation.loans.any?
+
+        extras = []
+        extras.concat(render_loans) if @corporation.loans.any?
+        if @corporation.corporation? && @corporation.floated? && @game.total_loans.positive?
+          extras << render_buying_power
+        end
+        extras << render_corporation_size if @game.show_corporation_size?
+        if extras.any?
+          props = { style: { borderCollapse: 'collapse' } }
+          children << h('table.center', props, [h(:tbody, extras)])
+        end
 
         if @corporation.owner
           props = {
@@ -139,8 +153,10 @@ module View
         holdings =
           if !@corporation.corporation? || @corporation.floated?
             h(:div, holdings_props, [render_trains, render_cash])
+          elsif @corporation.cash.positive?
+            h(:div, holdings_props, [render_to_float, render_cash])
           else
-            h(:div, holdings_props, "#{@corporation.percent_to_float}% to float")
+            h(:div, holdings_props, @game.float_str(@corporation))
           end
 
         h('div.corp__holdings', holdings_row_props, [
@@ -152,6 +168,10 @@ module View
 
       def render_cash
         render_header_segment(@game.format_currency(@corporation.cash), 'Cash')
+      end
+
+      def render_to_float
+        render_header_segment("#{@corporation.percent_to_float}%", 'to float')
       end
 
       def render_trains
@@ -244,7 +264,12 @@ module View
       end
 
       def share_number_str(number)
-        number.positive? ? number.to_s : ''
+        return '' if number.zero?
+
+        result = number.to_s
+        return result unless @corporation.fraction_shares
+
+        result.index('.') ? result : "#{result}.0"
       end
 
       def render_shares
@@ -252,7 +277,7 @@ module View
           [
             player,
             @corporation.president?(player),
-            player.num_shares_of(@corporation),
+            player.num_shares_of(@corporation, ceil: false),
             @game.round.active_step&.did_sell?(@corporation, player),
             !@corporation.holding_ok?(player, 1),
           ]
@@ -265,21 +290,22 @@ module View
         }
 
         player_rows = player_info
-          .select { |_, _, num_shares, did_sell| num_shares.positive? || did_sell }
+          .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
           .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
           .map do |player, president, num_shares, did_sell, at_limit|
             flags = (president ? '*' : '') + (at_limit ? 'L' : '')
             h('tr.player', [
               h("td.left.name.nowrap.#{president ? 'president' : ''}", player.name),
-              h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{num_shares}"),
+              h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{share_number_str(num_shares)}"),
               did_sell ? h('td.italic', 'Sold') : '',
             ])
           end
 
+        num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
         pool_rows = [
           h('tr.ipo', [
-            h('td.left', @game.class::IPO_NAME),
-            h('td.right', shares_props, share_number_str(@corporation.num_ipo_shares)),
+            h('td.left', @game.ipo_name(@corporation)),
+            h('td.right', shares_props, num_ipo_shares),
             h('td.padded_number', share_price_str(@corporation.par_price)),
           ]),
         ]
@@ -291,7 +317,8 @@ module View
         }
 
         if player_rows.any?
-          if !@corporation.counts_for_limit && (color = StockMarket::COLOR_MAP[@corporation.share_price.color])
+          if @corporation.share_price&.highlight? &&
+            (color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[@corporation.share_price.type]])
             market_tr_props[:style][:backgroundColor] = color
             market_tr_props[:style][:color] = contrast_on(color)
           end
@@ -332,6 +359,18 @@ module View
         ])
       end
 
+      def render_reserved
+        bold = { style: { fontWeight: 'bold' } }
+        h('table.center', [
+          h(:tbody, [
+            h('tr.reserved', [
+              h('td.left', bold, "#{@game.ipo_reserved_name} shares:"),
+              h('td.right', @corporation.reserved_shares.map { |s| "#{s.percent}%" }.join(', ')),
+            ]),
+          ]),
+        ])
+      end
+
       def render_revenue_history
         last_run = @corporation.operating_history[@corporation.operating_history.keys.max].revenue
         h(:div, { style: { display: 'inline' } }, [
@@ -344,8 +383,9 @@ module View
         return [] unless @game.round.current_entity&.operator?
 
         round = @game.round
-        if (n = @game.round.entities.find_index(@corporation))
-          span_class = '.bold' if n >= round.entities.find_index(round.current_entity)
+        if (n = @game.round.entities.index(@corporation))
+          m = round.entities.index(round.current_entity)
+          span_class = '.bold' if n && m && n >= m
           [h(:div, { style: { display: 'inline' } }, [
             'Order: ',
             h("span#{span_class}", n + 1),
@@ -356,21 +396,37 @@ module View
       end
 
       def render_loans
-        props = { style: { borderCollapse: 'collapse' } }
-        h('table.center', props, [
-          h(:thead, [
-            h(:tr, [
-              h(:th, 'Loans'),
-              h(:th, 'Interest Due'),
-            ]),
+        interest_props = { style: {} }
+        unless @game.can_pay_interest?(@corporation)
+          color = StockMarket::COLOR_MAP[:yellow]
+          interest_props[:style][:backgroundColor] = color
+          interest_props[:style][:color] = contrast_on(color)
+        end
+
+        [
+          h('tr.ipo', [
+            h('td.right', 'Loans'),
+            h('td.padded_number', "#{@corporation.loans.size}/"\
+            "#{@game.maximum_loans(@corporation)}"),
           ]),
-          h(:tbody, [
-            h('tr.ipo', [
-              h('td.right', "#{@corporation.loans.size}/"\
-              "#{@game.maximum_loans(@corporation)}"),
-              h('td.padded_number', @game.format_currency(@game.interest_owed(@corporation)).to_s),
-            ]),
+          h('tr.ipo', interest_props, [
+            h('td.right', 'Interest Due'),
+            h('td.padded_number', @game.format_currency(@game.interest_owed(@corporation)).to_s),
           ]),
+        ]
+      end
+
+      def render_buying_power
+        h('tr.ipo', [
+          h('td.right', 'Buying Power'),
+          h('td.padded_number', @game.format_currency(@game.buying_power(@corporation, true)).to_s),
+        ])
+      end
+
+      def render_corporation_size
+        h('tr.ipo', [
+          h('td.right', 'Corporation Size'),
+          h('td.padded_number', @corporation.total_shares),
         ])
       end
 

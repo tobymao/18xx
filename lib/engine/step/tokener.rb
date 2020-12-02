@@ -9,7 +9,7 @@ module Engine
       def can_place_token?(entity)
         current_entity == entity &&
           (tokens = available_tokens(entity)).any? &&
-          min_token_price(tokens) <= entity.cash &&
+          min_token_price(tokens) <= buying_power(entity) &&
           @game.graph.can_token?(entity)
       end
 
@@ -36,10 +36,10 @@ module Engine
 
         @game.game_error('Token is already used') if token.used
 
-        token, ability = adjust_token_price_ability!(entity, token, hex)
+        token, ability = adjust_token_price_ability!(entity, token, hex, city)
         entity.remove_ability(ability) if ability
         free = !token.price.positive?
-        city.place_token(entity, token, free: free)
+        city.place_token(entity, token, free: free, cheater: special_ability&.cheater)
         unless free
           entity.spend(token.price, @game.bank)
           price_log = " for #{@game.format_currency(token.price)}"
@@ -71,7 +71,7 @@ module Engine
         prices.compact.min
       end
 
-      def adjust_token_price_ability!(entity, token, hex)
+      def adjust_token_price_ability!(entity, token, hex, city)
         if (teleport = @round.teleported?(entity))
           token.price = 0
           return [token, teleport]
@@ -79,9 +79,21 @@ module Engine
 
         entity.abilities(:token) do |ability, _|
           next if ability.hexes.any? && !ability.hexes.include?(hex.id)
+          next if ability.city && ability.city != city.index
 
           # check if this is correct or should be a corporation
-          token = Engine::Token.new(entity) if ability.extra
+          if ability.extra
+            token = Engine::Token.new(entity)
+          elsif ability.neutral
+            neutral_corp = Corporation.new(
+              sym: 'N',
+              name: 'Neutral',
+              logo: 'open_city',
+              tokens: [0],
+            )
+            token = Engine::Token.new(neutral_corp, type: :neutral)
+          end
+
           token.price = ability.teleport_price if ability.teleport_price
           token.price = ability.price(token) if @game.graph.reachable_hexes(entity)[hex]
           return [token, ability]

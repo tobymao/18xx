@@ -68,11 +68,17 @@ Describe when the company closes, using the `when` attribute.
 - `corporation'`: If `when` is set to `"train"`, this value is the name
 of the corporation whose train purchase closes this company.
 
+## description
+
+Provide a description for an ability that is implemented outside of the ability framework.
+
+- `description`: Description of the ability.
+
 ## exchange
 
 Exchange this company for a share of a corporation.
 
-- `corporation`: The corporation whose share may be exchanged.
+- `corporation`: The corporation whose share may be exchanged. Use `"any"` to allow for all corporations.
 - `from`: Where the share may be take from, either `"ipo"`,
   `"market"`, or an array containing both.
 
@@ -124,6 +130,8 @@ Lay a tile and place a station token without connectivity
   teleport destination.
 - `tiles`: An array of tile numbers which may be placed at the
   teleport destination.
+- `cost`: Cost to use the teleport ability.
+- `fee_tile_lay`: If true, the tile is laid with 0 cost. Default false.
 
 ## tile_discount
 
@@ -131,6 +139,8 @@ Discount the cost for laying tiles in the specified terrain type
 
 - `discount`: Discount amount
 - `terrain`: Type of terrain for which discount is provided
+- `hexes`: If not specified, all applicable hexes qualifies for
+  the discount. If specified, only specified hexes qualify
 
 ## tile_income
 
@@ -147,6 +157,7 @@ normal tile lay actions.
 
 - `hexes`: Array of hex coordinates where tiles may be laid.
 - `tiles`: Array of tile numbers which may be laid.
+- `cost`: Cost to use the ability.
 - `free`: If true, the tiles are laid with 0 cost. Default false.
 - `discount`: Discount the cost of laying the tile by the given
   amount. Default 0.
@@ -159,6 +170,22 @@ normal tile lay actions.
 - `reachable`: If true, when tile layed, a check is done if one of the
   controlling corporation's station tokens are reachable; if not a game
   error is triggered. Default false.
+- `must_lay_together`: If true, all the tile lays must happen at the same
+  time. Default false.
+
+## train_buy
+
+Modify train buy in some way.
+
+- `face_value`: If true, any inter corporation train buy must be at
+  face value. Default false.
+
+## train_limit
+
+Modify train limit in some way.
+
+- `increase`: If positive, this will increase the train limit with this
+  amount in all faces. Default 0.
 
 ## token
 

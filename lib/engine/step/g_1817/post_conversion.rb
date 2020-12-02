@@ -2,12 +2,14 @@
 
 require_relative '../base'
 require_relative '../share_buying'
+require_relative 'share_buying_with_shorts'
 
 module Engine
   module Step
     module G1817
       class PostConversion < Base
         include ShareBuying
+        include ShareBuyingWithShorts
 
         def actions(entity)
           return [] if !entity.player? || !@round.converted
@@ -21,7 +23,10 @@ module Engine
 
         def process_buy_shares(action)
           player = action.entity
+          unshort = player.percent_of(corporation).negative?
           buy_shares(player, action.bundle)
+          @game.unshort(player, action.bundle.shares[0]) if unshort
+
           player.pass! if !corporation.president?(player.owner) || !can_buy_any?(player)
         end
 
@@ -36,14 +41,14 @@ module Engine
         end
 
         def can_buy_any?(entity)
-          can_buy?(entity, corporation.shares[0]) ||
-            can_buy?(entity, @game.share_pool.shares_by_corporation[corporation][0])
+          can_buy?(entity, corporation.shares[0])
         end
 
         def can_buy?(entity, bundle)
           return unless bundle
 
           corporation == bundle.corporation &&
+            bundle.owner != @game.share_pool &&
             entity.cash >= bundle.price &&
             can_gain?(entity, bundle)
         end
@@ -67,8 +72,11 @@ module Engine
 
         def active_entities
           return [] unless corporation
+          # Ensure players can't buy after taking loans
+          return [] unless corporation.share_price == @round.converted_price
 
-          [@game.players.rotate(@game.players.index(corporation.owner)).find(&:active?)].compact
+          [@game.players.rotate(@game.players.index(corporation.owner))
+          .select { |p| p.active? && (can_buy_any?(p) || can_sell?(p, nil)) }.first].compact
         end
       end
     end

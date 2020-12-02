@@ -1,69 +1,30 @@
 {
-  "id": 7818,
-  "description": "Open. Live. Let's dynamite some mountains",
-  "user": {
-    "id": 797,
-    "name": "nigelsandwich"
-  },
-  "players": [
-    {
-      "id": 797,
-      "name": "nigelsandwich"
-    },
-    {
-      "id": 648,
-      "name": "starchitect"
-    },
-    {
-      "id": 523,
-      "name": "MontyBrewster71"
-    },
-    {
-      "id": 3759,
-      "name": "wynad"
-    }
-  ],
-  "max_players": 5,
-  "title": "18TN",
-  "settings": {
-    "seed": 2.6685427666960467e+37
-  },
-  "user_settings": null,
   "status": "finished",
-  "turn": 8,
-  "round": "Operating Round",
-  "acting": [],
-  "result": {
-    "wynad": 4355,
-    "starchitect": 5615,
-    "nigelsandwich": 5368,
-    "MontyBrewster71": 4354
-  },
   "actions": [
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 1,
       "message": "GL and HF!"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 2,
       "message": "yeah, it looks like there are no real issues on github"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 3,
       "message": "i think per said it's about to go to beta"
     },
     {
       "type": "bid",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 4,
       "company": "MCR",
@@ -71,7 +32,7 @@
     },
     {
       "type": "bid",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 5,
       "company": "LNR",
@@ -79,7 +40,7 @@
     },
     {
       "type": "bid",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 6,
       "company": "LNR",
@@ -87,7 +48,7 @@
     },
     {
       "type": "bid",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 7,
       "company": "OWR",
@@ -95,7 +56,7 @@
     },
     {
       "type": "bid",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 8,
       "company": "ETWCR",
@@ -103,14 +64,14 @@
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 9,
       "message": "hmm, so only L&N can run a rout through Louiville, but everyone can bypass it by the looks?"
     },
     {
       "type": "bid",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 10,
       "company": "ETWCR",
@@ -118,14 +79,14 @@
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 11,
       "message": "yeah"
     },
     {
       "type": "bid",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 12,
       "company": "TCC",
@@ -133,14 +94,14 @@
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 13,
       "message": "you can end your route there"
     },
     {
       "type": "bid",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 14,
       "company": "ETWCR",
@@ -148,7 +109,7 @@
     },
     {
       "type": "bid",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 15,
       "company": "ETWCR",
@@ -156,13 +117,13 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 16
     },
     {
       "type": "bid",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 17,
       "company": "LNR",
@@ -170,7 +131,7 @@
     },
     {
       "type": "bid",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 18,
       "company": "LNR",
@@ -178,13 +139,13 @@
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 19
     },
     {
       "type": "par",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 20,
       "corporation": "L&N",
@@ -192,13 +153,13 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 21
     },
     {
       "type": "par",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 22,
       "corporation": "IC",
@@ -206,7 +167,7 @@
     },
     {
       "type": "par",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 23,
       "corporation": "SR",
@@ -214,7 +175,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 24,
       "shares": [
@@ -223,7 +184,7 @@
     },
     {
       "type": "par",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 25,
       "corporation": "GMO",
@@ -231,7 +192,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 26,
       "shares": [
@@ -240,7 +201,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 27,
       "shares": [
@@ -249,7 +210,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 28,
       "shares": [
@@ -258,7 +219,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 29,
       "shares": [
@@ -267,7 +228,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 30,
       "shares": [
@@ -276,7 +237,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 31,
       "shares": [
@@ -284,8 +245,14 @@
       ]
     },
     {
+      "type": "pass",
+      "entity": 523,
+      "entity_type": "player",
+      "id": 31.2
+    },
+    {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 32,
       "shares": [
@@ -293,8 +260,14 @@
       ]
     },
     {
+      "type": "pass",
+      "entity": 797,
+      "entity_type": "player",
+      "id": 32.2
+    },
+    {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 33,
       "shares": [
@@ -302,8 +275,14 @@
       ]
     },
     {
+      "type": "pass",
+      "entity": 523,
+      "entity_type": "player",
+      "id": 33.2
+    },
+    {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 34,
       "shares": [
@@ -311,13 +290,37 @@
       ]
     },
     {
+      "type": "pass",
+      "entity": 797,
+      "entity_type": "player",
+      "id": 34.2
+    },
+    {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 35,
       "shares": [
         "SR_4"
       ]
+    },
+    {
+      "type": "pass",
+      "entity": 523,
+      "entity_type": "player",
+      "id": 35.2
+    },
+    {
+      "type": "pass",
+      "entity": 3759,
+      "entity_type": "player",
+      "id": 35.4
+    },
+    {
+      "type": "pass",
+      "entity": 797,
+      "entity_type": "player",
+      "id": 35.6
     },
     {
       "type": "lay_tile",
@@ -381,19 +384,19 @@
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 43
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 44
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 45,
       "shares": [
@@ -402,31 +405,31 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 46
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 47
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 48
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 49
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 50
     },
@@ -532,84 +535,84 @@
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 62,
       "message": "hmm. Apparently I screwed up the can buy company in OR 1 thing"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 63,
       "message": "how so?"
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 64,
       "message": "I would have to. It is a weird rule."
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 65,
       "message": "I thought it was going to prompt me last turn but it went straight to the SR"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 66,
       "message": "buy the private"
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 67,
       "message": "Corps can buy one private for face value in OR1. After that, you have to wait until phase 3."
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 68,
       "message": "yeah... its weird"
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 69,
       "message": "And I dont know exactly when it expects you to?"
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 70,
       "message": "But at that point, can buy for 0.5-1.5x face value."
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 71,
       "message": "bc there is no buy companies phase"
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 72,
       "message": "Might need some work on implementation."
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 73,
       "message": "yeah its fine. Well I guess Im runnning one 2T"
@@ -654,7 +657,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 78,
       "shares": [
@@ -663,13 +666,13 @@
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 79
     },
     {
       "type": "buy_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 80,
       "shares": [
@@ -678,31 +681,31 @@
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 81
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 82
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 83
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 84
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 85
     },
@@ -874,7 +877,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 103,
       "shares": [
@@ -884,7 +887,7 @@
     {
       "id": 104,
       "type": "sell_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "shares": [
         "GMO_1"
       ],
@@ -894,18 +897,18 @@
     {
       "id": 105,
       "type": "undo",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player"
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 106
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 107,
       "shares": [
@@ -914,13 +917,13 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 108
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 109,
       "shares": [
@@ -929,13 +932,13 @@
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 110
     },
     {
       "type": "buy_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 111,
       "shares": [
@@ -944,13 +947,13 @@
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 112
     },
     {
       "type": "sell_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 113,
       "shares": [
@@ -960,13 +963,13 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 114
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 115,
       "shares": [
@@ -975,25 +978,25 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 116
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 117
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 118
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 119,
       "shares": [
@@ -1002,7 +1005,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 120,
       "shares": [
@@ -1012,31 +1015,31 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 121
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 122
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 123
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 124
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 125,
       "shares": [
@@ -1045,7 +1048,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 126,
       "shares": [
@@ -1055,19 +1058,19 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 127
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 128
     },
     {
       "type": "sell_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 129,
       "shares": [
@@ -1077,7 +1080,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 130,
       "shares": [
@@ -1086,13 +1089,13 @@
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 131
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 132,
       "shares": [
@@ -1101,19 +1104,19 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 133
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 134
     },
     {
       "type": "sell_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 135,
       "shares": [
@@ -1124,7 +1127,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 136,
       "shares": [
@@ -1133,25 +1136,25 @@
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 137
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 138
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 139
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 140
     },
@@ -1469,6 +1472,12 @@
       "id": 173
     },
     {
+      "type": "pass",
+      "entity": "L&N",
+      "entity_type": "corporation",
+      "id": 173.1
+    },
+    {
       "type": "run_routes",
       "entity": "L&N",
       "entity_type": "corporation",
@@ -1762,14 +1771,14 @@
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 198,
       "message": "oh thats nice, the civil war doesnt make you lose share value with 1 train"
     },
     {
       "type": "buy_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 199,
       "shares": [
@@ -1778,20 +1787,20 @@
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 200
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 201,
       "message": "yeah, it technically runs. just with 0 revenue"
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 202,
       "shares": [
@@ -1800,20 +1809,20 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 203
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 204,
       "message": "That is nice. Fair, I think."
     },
     {
       "type": "sell_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 205,
       "shares": [
@@ -1823,7 +1832,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 206,
       "shares": [
@@ -1833,28 +1842,28 @@
     },
     {
       "type": "message",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 207,
       "message": "lol, this is my first time playing"
     },
     {
       "type": "message",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 208,
       "message": "How do I make money?"
     },
     {
       "type": "message",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 209,
       "message": "I mean this title"
     },
     {
       "type": "sell_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 210,
       "shares": [
@@ -1865,14 +1874,14 @@
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 211,
       "message": "its just the civil war event. Happens once when the last 3T is bought"
     },
     {
       "type": "par",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 212,
       "corporation": "TC",
@@ -1880,28 +1889,28 @@
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 213,
       "message": "for 1 turn, your lowest rev train makes 0"
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 214,
       "message": "I'm in an async game of TN, but it is tough to get a feel that way, I think, so in many ways, this is my first game of TN, too."
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 215,
       "message": "which in your case was your only train"
     },
     {
       "type": "sell_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 216,
       "shares": [
@@ -1911,7 +1920,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 217,
       "shares": [
@@ -1922,14 +1931,14 @@
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 218,
       "message": "this has a good rundown on the mcguffins in this game: https://github.com/tobymao/18xx/wiki/18TN"
     },
     {
       "type": "par",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 219,
       "corporation": "NC&StL",
@@ -1937,7 +1946,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 220,
       "shares": [
@@ -1946,13 +1955,13 @@
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 221
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 222,
       "shares": [
@@ -1961,13 +1970,13 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 223
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 224,
       "shares": [
@@ -1976,13 +1985,13 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 225
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 226,
       "shares": [
@@ -1991,13 +2000,13 @@
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 227
     },
     {
       "type": "buy_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 228,
       "shares": [
@@ -2006,14 +2015,14 @@
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 229
     },
     {
       "id": 230,
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "shares": [
         "SR_7"
       ],
@@ -2022,12 +2031,12 @@
     {
       "id": 231,
       "type": "undo",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player"
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 232,
       "shares": [
@@ -2036,7 +2045,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 233,
       "shares": [
@@ -2046,13 +2055,13 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 234
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 235,
       "shares": [
@@ -2061,13 +2070,13 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 236
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 237,
       "shares": [
@@ -2076,13 +2085,13 @@
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 238
     },
     {
       "type": "sell_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 239,
       "shares": [
@@ -2092,7 +2101,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 240,
       "shares": [
@@ -2101,7 +2110,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 241,
       "shares": [
@@ -2110,13 +2119,13 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 242
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 243,
       "shares": [
@@ -2125,13 +2134,13 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 244
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 245,
       "shares": [
@@ -2140,19 +2149,19 @@
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 246
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 247
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 248,
       "shares": [
@@ -2161,7 +2170,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 249,
       "shares": [
@@ -2172,13 +2181,13 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 250
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 251,
       "shares": [
@@ -2187,13 +2196,13 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 252
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 253,
       "shares": [
@@ -2202,19 +2211,19 @@
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 254
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 255
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 256,
       "shares": [
@@ -2223,19 +2232,19 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 257
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 258
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 259,
       "shares": [
@@ -2244,19 +2253,19 @@
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 260
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 261
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 262,
       "shares": [
@@ -2265,7 +2274,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 263,
       "shares": [
@@ -2276,31 +2285,31 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 264
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 265
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 266
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 267
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 268,
       "shares": [
@@ -2309,31 +2318,31 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 269
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 270
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 271
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 272
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 273,
       "shares": [
@@ -2342,31 +2351,31 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 274
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 275
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 276
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 277
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 278,
       "shares": [
@@ -2375,31 +2384,31 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 279
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 280
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 281
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 282
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 283
     },
@@ -3061,28 +3070,28 @@
     },
     {
       "type": "message",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 338,
       "message": "what does 31/2 do?"
     },
     {
       "type": "message",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 339,
       "message": "its just another 3 train?"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 340,
       "message": "yeah"
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 341,
       "shares": [
@@ -3091,62 +3100,62 @@
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 342,
       "message": "it just signifies when the civil war is triggered"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 343,
       "message": "it's the fifth 3"
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 344,
       "message": "It is just a 3, but when the first 3' is bought is Civil War. Similarly, the 6 and 6' are the same, but when the first 6' is bought, the 4s become obsolete."
     },
     {
       "type": "message",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 345,
       "message": "same with 61/2"
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 346
     },
     {
       "type": "message",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 347,
       "message": "cool"
     },
     {
       "type": "message",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 348,
       "message": "Thanks"
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 349,
       "message": "np"
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 350,
       "shares": [
@@ -3155,13 +3164,13 @@
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 351
     },
     {
       "type": "buy_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 352,
       "shares": [
@@ -3170,13 +3179,13 @@
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 353
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 354,
       "shares": [
@@ -3185,13 +3194,13 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 355
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 356,
       "shares": [
@@ -3200,13 +3209,13 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 357
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 358,
       "shares": [
@@ -3215,19 +3224,19 @@
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 359
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 360
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 361,
       "shares": [
@@ -3236,13 +3245,13 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 362
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 363,
       "shares": [
@@ -3251,31 +3260,31 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 364
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 365
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 366
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 367
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 368
     },
@@ -4357,7 +4366,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 443,
       "shares": [
@@ -4366,13 +4375,13 @@
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 444
     },
     {
       "type": "buy_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 445,
       "shares": [
@@ -4381,13 +4390,13 @@
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 446
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 447,
       "shares": [
@@ -4396,13 +4405,13 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 448
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 449,
       "shares": [
@@ -4411,7 +4420,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 450,
       "shares": [
@@ -4421,25 +4430,25 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 451
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 452
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 453
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 454,
       "shares": [
@@ -4448,13 +4457,13 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 455
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 456,
       "shares": [
@@ -4463,7 +4472,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 457,
       "shares": [
@@ -4473,25 +4482,25 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 458
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 459
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 460
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 461,
       "shares": [
@@ -4500,13 +4509,13 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 462
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 463,
       "shares": [
@@ -4515,19 +4524,19 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 464
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 465
     },
     {
       "type": "buy_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 466,
       "shares": [
@@ -4536,7 +4545,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 467,
       "shares": [
@@ -4546,13 +4555,13 @@
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 468
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 469,
       "shares": [
@@ -4561,13 +4570,13 @@
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 470
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 471,
       "shares": [
@@ -4576,31 +4585,31 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 472
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 473
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 474
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 475
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 476
     },
@@ -5769,7 +5778,7 @@
     },
     {
       "type": "sell_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 558,
       "shares": [
@@ -5779,7 +5788,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 559,
       "shares": [
@@ -5788,7 +5797,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 560,
       "shares": [
@@ -5797,13 +5806,13 @@
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 561
     },
     {
       "type": "sell_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 562,
       "shares": [
@@ -5814,7 +5823,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 563,
       "shares": [
@@ -5823,7 +5832,7 @@
     },
     {
       "type": "buy_shares",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 564,
       "shares": [
@@ -5832,13 +5841,13 @@
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 565
     },
     {
       "type": "buy_shares",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 566,
       "shares": [
@@ -5847,13 +5856,13 @@
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 567
     },
     {
       "type": "buy_shares",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 568,
       "shares": [
@@ -5862,31 +5871,31 @@
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 569
     },
     {
       "type": "pass",
-      "entity": "wynad",
+      "entity": 3759,
       "entity_type": "player",
       "id": 570
     },
     {
       "type": "pass",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 571
     },
     {
       "type": "pass",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 572
     },
     {
       "type": "pass",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 573
     },
@@ -6210,14 +6219,14 @@
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 598,
       "message": "An interesting design. It feels a little unbalanced, at least at 4 - not enough players stuck with only 1 corp for safe share purchases, so the players who get 2 have an enormous advantage. But fun."
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 599,
       "message": "I would like to try it at 3 or 5 sometime."
@@ -6245,7 +6254,7 @@
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 603,
       "message": "yeah, I would like it much more id it were not train buy limited early"
@@ -6451,7 +6460,7 @@
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 617,
       "message": "That doesn't bother me that much, but I had a lot of cash with no safe place to park it for a good portion of the game. Might be because GMO was orange for so long, but it is hard to tell."
@@ -6516,14 +6525,14 @@
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 622,
       "message": "Yes, I know I should have bought my 1 share of NC&StL a SR earlier."
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 623,
       "message": "But still..."
@@ -6714,7 +6723,7 @@
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 636,
       "message": "I mean, I would try it again at 4, but my impression is it has problems at 4. At 5, there would be 4 corps that were the only corp for a player (no dumping likely), and at 3, everyone gets 2. But 4..."
@@ -6733,28 +6742,28 @@
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 639,
       "message": "You know?"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 640,
       "message": "yeah, i honestly haven't played it enough to tell"
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 641,
       "message": "yeah that does make sense"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 642,
       "message": "the train limit prevents a real aggro dumping strategy"
@@ -6811,90 +6820,130 @@
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 645,
       "message": "I get that. And you and star might not have noticed the issue the same way I did this game, since you had the two corps."
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 646,
       "message": "Still, good game all!"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 647,
       "message": "i did"
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 648,
       "message": "yep, gg"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 649,
       "message": "for sure. i was able to do a bit of train shuffling"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 650,
       "message": "even if it goofed it up"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 651,
       "message": "you and wynad were not"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 652,
       "message": "yeah good game"
     },
     {
       "type": "message",
-      "entity": "nigelsandwich",
+      "entity": 797,
       "entity_type": "player",
       "id": 653,
       "message": "thanks for the quick play"
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 654,
       "message": "And that always helps, but I knew that if I bought a second share of either of star's corps (and probably nigel's), I would find myself the proud President of a broke trainless corp next SR."
     },
     {
       "type": "message",
-      "entity": "MontyBrewster71",
+      "entity": 523,
       "entity_type": "player",
       "id": 655,
       "message": "star has done that to me at least once :D"
     },
     {
       "type": "message",
-      "entity": "starchitect",
+      "entity": 648,
       "entity_type": "player",
       "id": 656,
       "message": "see, I am just beinga good teacher, you have learned what to expect!"
     }
   ],
+  "id": "7818",
+  "players": [
+    {
+      "id": 797,
+      "name": "nigelsandwich"
+    },
+    {
+      "id": 648,
+      "name": "starchitect"
+    },
+    {
+      "id": 523,
+      "name": "MontyBrewster71"
+    },
+    {
+      "id": 3759,
+      "name": "wynad"
+    }
+  ],
+  "title": "18TN",
+  "description": "Open. Live. Let's dynamite some mountains",
+  "max_players": 5,
+  "user": {
+    "id": 0,
+    "name": "You"
+  },
+  "settings": {
+    "seed": 2.6685427666960467e+37
+  },
+  "user_settings": null,
+  "turn": 8,
+  "round": "Operating Round",
+  "acting": [],
+  "result": {
+    "wynad": 4355,
+    "starchitect": 5615,
+    "nigelsandwich": 5368,
+    "MontyBrewster71": 4354
+  },
   "loaded": true,
   "created_at": 1598498326,
   "updated_at": 1598507133
 }
+

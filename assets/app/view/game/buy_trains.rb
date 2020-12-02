@@ -64,7 +64,9 @@ module View
       def render
         step = @game.round.active_step
         @corporation = step.current_entity
-        @ability = @selected_company&.abilities(:train_discount, 'train') if @selected_company&.owner == @corporation
+        if @selected_company&.owner == @corporation
+          @ability = @selected_company&.abilities(:train_discount, time: 'train')
+        end
 
         @depot = @game.depot
 
@@ -191,13 +193,7 @@ module View
                 width: '3rem',
                 padding: '0 0 0 0.2rem',
               },
-              attrs: {
-                type: 'number',
-                min: 1,
-                max: @corporation.cash,
-                value: 1,
-                size: @corporation.cash.to_s.size,
-              },
+              attrs: price_range(group[0]),
             )
 
             buy_train = lambda do
@@ -241,6 +237,28 @@ module View
                              'Hide trains from other players')
         end
         trains_to_buy
+      end
+
+      def price_range(train)
+        step = @game.round.active_step
+        if step.must_buy_at_face_value?(train, @corporation)
+          {
+            type: 'number',
+            min: train.price,
+            max: train.price,
+            value: train.price,
+            size: 1,
+          }
+        else
+          min, max = step.spend_minmax(@corporation, train)
+          {
+            type: 'number',
+            min: min,
+            max: max,
+            value: min,
+            size: @corporation.cash.to_s.size,
+          }
+        end
       end
 
       def remaining_trains

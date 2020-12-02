@@ -273,6 +273,7 @@ module Engine
         {
           "type": "tile_lay",
           "owner_type": "corporation",
+          "must_lay_together": true,
           "hexes": [
             "H2",
             "I3"
@@ -304,6 +305,7 @@ module Engine
         {
           "type": "tile_lay",
           "owner_type": "corporation",
+          "must_lay_together": true,
           "hexes": [
             "F4",
             "G5"
@@ -351,8 +353,8 @@ module Engine
       "sym": "B&OR",
       "abilities": [
         {
-          "type": "share",
-          "share": "B&O_1"
+          "type": "shares",
+          "shares": "B&O_1"
         }
       ]
     },
@@ -364,8 +366,8 @@ module Engine
       "sym": "CV",
       "abilities": [
         {
-          "type": "share",
-          "share": "random_president"
+          "type": "shares",
+          "shares": "random_president"
         },
         {
           "type": "no_buy"

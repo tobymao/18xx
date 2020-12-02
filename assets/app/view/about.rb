@@ -18,7 +18,7 @@ module View
         Upon your request and expression of consent, we collect the following data for the purpose of providing services to you. It is removed upon your request to terminate these services.
 
         <p>
-        <b>Email Addresses</b> are collected in order to send notifications. These notifications can be disabled in the <a href='/profile'>profile</a> page. Emails are not publicly available and not shared to any 3rd party.
+        <b>Email Addresses</b> are collected in order to send notifications. These notifications can be disabled in the <a href='/profile'>profile</a> page. Emails are not publicly available and not shared to any 3rd party except when email notifications are enabled. Emails are sent using the <a href='https://elasticemail.com'>Elastic Email</a> service.
         </p>
 
         <p>
@@ -46,6 +46,7 @@ module View
         <a href='https://github.com/talbatross'>talbatross</a>
         <a href='https://github.com/scottredracecar'>scottredracecar</a>
         <a href='https://github.com/perwestling'>perwestling</a>
+        <a href='https://github.com/roseundy'>roseundy</a>
 
         <p>This website will always be open-source and free to play. If you'd like support this project, you can become a patron on
         <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>

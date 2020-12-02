@@ -11,7 +11,7 @@ module Engine
   module Round
     class Base
       attr_reader :entities, :entity_index, :round_num, :steps
-      attr_accessor :last_to_act
+      attr_accessor :last_to_act, :pass_order
 
       DEFAULT_STEPS = [
         Step::EndGame,
@@ -25,6 +25,7 @@ module Engine
         @round_num = opts[:round_num] || 1
         @entities = select_entities
         @last_to_act = nil
+        @pass_order = []
 
         @steps = (DEFAULT_STEPS + steps).map do |step, step_opts|
           step_opts ||= {}
@@ -88,7 +89,7 @@ module Engine
 
           blocking || process
         end
-        @game.game_error("No step found for action #{type} at #{action.id}") unless step
+        @game.game_error("No step found for action #{type} at #{action.id}: #{action.to_h}") unless step
 
         step.acted = true
         step.send("process_#{action.type}", action)
@@ -110,6 +111,12 @@ module Engine
           break if step.blocking?
         end
         actions.uniq
+      end
+
+      def step_for(entity, action)
+        return unless entity
+
+        @steps.find { |step| step.active? && step.actions(entity).include?(action) }
       end
 
       def active_step(entity = nil)
@@ -146,7 +153,7 @@ module Engine
 
       def skip_steps
         @steps.each do |step|
-          next if !step.active? || !step.blocks?
+          next if !step.active? || !step.blocks? || @entities[@entity_index]&.closed?
           break if step.blocking?
 
           step.skip!

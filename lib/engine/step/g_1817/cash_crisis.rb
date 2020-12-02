@@ -12,6 +12,12 @@ module Engine
         def actions(entity)
           return [] unless entity == current_entity
 
+          if @active_entity.nil?
+            @active_entity = entity
+            @game.log << "#{@active_entity.name} enters Cash Crisis and owes"\
+            " the bank #{@game.format_currency(needed_cash(@active_entity))}"
+          end
+
           ['sell_shares']
         end
 
@@ -24,11 +30,11 @@ module Engine
         end
 
         def active_entities
-          return [] unless @round.last_player
+          return [] unless @round.cash_crisis_player
 
           # Rotate players to order starting with the current player
-          players = @game.players.rotate(@game.players.index(@round.last_player))
-          players.select { |p| p.cash.negative? }
+          [@game.players.rotate(@game.players.index(@round.cash_crisis_player))
+          .find { |p| p.cash.negative? }].compact
         end
 
         def needed_cash(entity)
@@ -38,6 +44,19 @@ module Engine
         def available_cash(_player)
           0
         end
+
+        def process_sell_shares(action)
+          super
+          return if action.entity.cash.negative?
+
+          @active_entity = nil
+        end
+
+        def can_sell?(entity, bundle)
+          super && !(bundle.corporation.share_price.acquisition? || bundle.corporation.share_price.liquidation?)
+        end
+
+        def swap_sell(_player, _corporation, _bundle, _pool_share); end
       end
     end
   end

@@ -61,12 +61,15 @@ module Engine
         end
       end
 
+      def round_state
+        { players_sold: Hash.new { |h, k| h[k] = {} } }
+      end
+
       def setup
         # player => corporation => :now or :prev
         # this differentiates between preventing users from buying shares they sold
         # and preventing users from selling the same shares separately in the some action
-        @players_sold ||= Hash.new { |h, k| h[k] = {} }
-        @players_sold.each do |_player, corps|
+        @round.players_sold.each do |_player, corps|
           corps.each { |corp, _k| corps[corp] = :prev }
         end
 
@@ -77,16 +80,16 @@ module Engine
       # If a player has sold shares they cannot buy in many 18xx games
       # Some 18xx games can only buy one share per turn.
       def can_buy?(entity, bundle)
-        return unless bundle
+        return unless bundle&.buyable
 
         corporation = bundle.corporation
         entity.cash >= bundle.price && can_gain?(entity, bundle) &&
-          !@players_sold[entity][corporation] &&
-          (can_buy_multiple?(corporation) || !bought?)
+          !@round.players_sold[entity][corporation] &&
+          (can_buy_multiple?(entity, corporation) || !bought?)
       end
 
       def must_sell?(entity)
-        entity.num_certs > @game.cert_limit ||
+        @game.num_certs(entity) > @game.cert_limit ||
           !@game.corporations.all? { |corp| corp.holding_ok?(entity) }
       end
 
@@ -103,12 +106,14 @@ module Engine
             corporation.operated?
           when :p_any_operate
             corporation.operated? || corporation.president?(entity)
+          when :any_time
+            true
           else
             raise NotImplementedError
           end
 
         timing &&
-          !(@game.class::MUST_SELL_IN_BLOCKS && @players_sold[entity][corporation] == :now) &&
+          !(@game.class::MUST_SELL_IN_BLOCKS && @round.players_sold[entity][corporation] == :now) &&
           can_sell_order? &&
           @game.share_pool.fit_in_bank?(bundle) &&
           bundle.can_dump?(entity)
@@ -127,17 +132,17 @@ module Engine
       end
 
       def did_sell?(corporation, entity)
-        @players_sold[entity][corporation]
+        @round.players_sold[entity][corporation]
       end
 
       def process_buy_shares(action)
-        buy_shares(action.entity, action.bundle)
+        buy_shares(action.entity, action.bundle, swap: action.swap)
         @round.last_to_act = action.entity
         @current_actions << action
       end
 
       def process_sell_shares(action)
-        sell_shares(action.entity, action.bundle)
+        sell_shares(action.entity, action.bundle, swap: action.swap)
         @round.last_to_act = action.entity
         @current_actions << action
       end
@@ -151,6 +156,7 @@ module Engine
         @game.stock_market.set_par(corporation, share_price)
         share = corporation.shares.first
         buy_shares(entity, share.to_bundle)
+        @game.after_par(corporation)
         @round.last_to_act = entity
         @current_actions << action
       end
@@ -158,13 +164,15 @@ module Engine
       def pass!
         super
         if @current_actions.any?
+          @round.pass_order.delete(current_entity)
           current_entity.unpass!
         else
+          @round.pass_order |= [current_entity]
           current_entity.pass!
         end
       end
 
-      def can_buy_multiple?(corporation)
+      def can_buy_multiple?(_entity, corporation)
         corporation.buy_multiple? &&
          @current_actions.none? { |x| x.is_a?(Action::Par) } &&
          @current_actions.none? { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation != corporation }
@@ -172,7 +180,7 @@ module Engine
 
       def can_sell_any?(entity)
         @game.corporations.any? do |corporation|
-          bundles = entity.bundles_for_corporation(corporation)
+          bundles = @game.bundles_for_corporation(entity, corporation)
           bundles.any? { |bundle| can_sell?(entity, bundle) }
         end
       end
@@ -194,6 +202,10 @@ module Engine
         !bought? && @game.corporations.any? { |c| c.can_par?(entity) && can_buy?(entity, c.shares.first&.to_bundle) }
       end
 
+      def ipo_type(_entity)
+        :par
+      end
+
       def purchasable_companies(entity)
         return [] if bought? ||
           !entity.cash.positive? ||
@@ -209,11 +221,11 @@ module Engine
           .select { |p| p.price * 2 <= entity.cash }
       end
 
-      def sell_shares(entity, shares)
-        @game.game_error("Cannot sell shares of #{shares.corporation.name}") unless can_sell?(entity, shares)
+      def sell_shares(entity, shares, swap: nil)
+        @game.game_error("Cannot sell shares of #{shares.corporation.name}") if !can_sell?(entity, shares) && !swap
 
-        @players_sold[shares.owner][shares.corporation] = :now
-        @game.sell_shares_and_change_price(shares)
+        @round.players_sold[shares.owner][shares.corporation] = :now
+        @game.sell_shares_and_change_price(shares, swap: swap)
       end
 
       def bought?

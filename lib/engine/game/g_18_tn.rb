@@ -15,6 +15,7 @@ module Engine
       GAME_LOCATION = 'Tennessee, USA'
       GAME_RULES_URL = 'http://dl.deepthoughtgames.com/18TN-Rules.pdf'
       GAME_DESIGNER = 'Mark Derrick'
+      GAME_PUBLISHER = :golden_spike
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18TN'
 
@@ -22,8 +23,11 @@ module Engine
         'can_buy_companies_operation_round_one' =>
           ['Can Buy Companies OR 1', 'Corporations can buy companies for face value in OR 1'],
       ).merge(
-          Step::SingleDepotTrainBuy::STATUS_TEXT
-        ).freeze
+        'can_buy_companies_from_other_players' =>
+          ['Interplayer Company Buy', 'Companies can be bought between players']
+      ).merge(
+        Step::SingleDepotTrainBuy::STATUS_TEXT
+      ).freeze
 
       # Two lays or one upgrade
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
@@ -65,10 +69,10 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
-          Step::SpecialTrack,
+          Step::G18TN::SpecialTrack,
           Step::G18TN::BuyCompany,
           Step::HomeToken,
-          Step::Track,
+          Step::G18TN::Track,
           Step::Token,
           Step::Route,
           Step::G18TN::Dividend,
@@ -77,13 +81,22 @@ module Engine
         ], round_num: round_num)
       end
 
+      def stock_round
+        Round::Stock.new(self, [
+          Step::BuySellParShares,
+        ])
+      end
+
       def routes_revenue(routes)
         total_revenue = super
 
-        abilities = routes.first&.corporation&.abilities(:civil_war)
+        corporation = routes.first&.corporation
 
-        return total_revenue if !abilities || abilities.empty?
+        abilities = corporation&.abilities(:civil_war)
 
+        return total_revenue if !abilities || abilities.empty? || routes.size < corporation.trains.size
+
+        # The train with the lowest revenue loses the income due to the war effort
         total_revenue - routes.map(&:revenue).min
       end
 
@@ -91,18 +104,42 @@ module Engine
         Engine::G18TN::SharePool.new(self)
       end
 
+      def purchasable_companies(entity = nil)
+        candidates = @companies.select do |company|
+          company.owner&.player? && company.owner != entity
+        end
+
+        if allowed_to_buy_during_operation_round_one?
+          candidates.reject! { |c| @round.company_sellers.include?(c.owner) }
+        end
+        candidates
+      end
+
+      def allowed_to_buy_during_operation_round_one?
+        @turn == 1 && @round.is_a?(Round::Operating) && @phase.status.include?('can_buy_companies_operation_round_one')
+      end
+
       def event_civil_war!
         @log << '-- Event: Civil War! --'
-        @corporations.each do |c|
-          # No effect if corporation has no trains
-          next if c.trains.empty?
 
-          c.add_ability(Engine::Ability::Base.new(
+        # Corporations that are active and own trains does get a Civil War token.
+        # The current entity might not have any, but the 3' train it bought that
+        # triggered the Civil War will be part of the trains for it.
+        # There is a possibility that the trains will not have a valid route but
+        # that is handled in the route code.
+        corps = @corporations.select do |c|
+          (c == current_entity) || (c.floated? && c.trains.any?)
+        end
+
+        corps.each do |corp|
+          corp.add_ability(Engine::Ability::Base.new(
             type: :civil_war,
             description: 'Civil War! (One time effect)',
             count: 1,
           ))
         end
+
+        @log << "#{corps.map(&:name).sort.join(', ')} each receive a Civil War token which affects their next OR"
       end
 
       def lnr

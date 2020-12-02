@@ -65,8 +65,9 @@ module View
             y: -height / 2,
             width: width,
             height: height,
-            fill: @color,
-            stroke: 'none',
+            fill: (@town.halt? ? 'gray' : @color),
+            stroke: (@town.halt? ? @color : 'none'),
+            'stroke-width': 4,
           })]
 
           if (revenue = render_revenue)
@@ -83,7 +84,7 @@ module View
           return if revenues.size > 1
 
           revenue = revenues.first
-          return if revenue.zero?
+          return if !@town.halt? && revenue.zero?
 
           angle = 0
           displacement = 38
@@ -124,9 +125,11 @@ module View
           h(:g, { key: "#{@town.id}-r", attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
             h(:g, { attrs: { transform: "rotate(#{angle})" } }, [
               h(:g, { attrs: { transform: "translate(#{displacement} 0) #{rotation_for_layout}" } }, [
-                h(SingleRevenue,
-                  revenue: revenue,
-                  transform: "rotate(#{-angle})"),
+              if @town.halt?
+                h('text.tile__text', { attrs: { transform: "scale(1.5), rotate(#{-angle})" } }, @town.symbol)
+              else
+                h(SingleRevenue, revenue: revenue, transform: "rotate(#{-angle})")
+              end,
               ]),
             ]),
           ])

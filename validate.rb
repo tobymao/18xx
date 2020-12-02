@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 # rubocop:disable all
 
+require_relative 'models'
+
 Dir['./models/**/*.rb'].sort.each { |file| require file }
 Sequel.extension :pg_json_ops
 require './lib/engine'
@@ -17,7 +19,8 @@ def run_game(game, actions = nil)
   begin
     $total += 1
     time = Time.now
-    engine = Engine::GAMES_BY_TITLE[game.title].new(game.ordered_players.map(&:name), id: game.id, actions: actions)
+    players = game.ordered_players.map { |u| [u.id, u.name] }.to_h
+    engine = Engine::GAMES_BY_TITLE[game.title].new(players, id: game.id, actions: actions, optional_rules: game.settings['optional_rules'] || [])
     time = Time.now - time
     $total_time += time
     data['finished']=true
@@ -33,16 +36,23 @@ def run_game(game, actions = nil)
   data
 end
 
-def validate_all()
+def validate_all(*titles, game_ids: nil)
   $count = 0
   $total = 0
   $total_time = 0
   page = []
   data = {}
-  DB[:games].order(:id).where(Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished]).select(:id).paged_each(rows_per_fetch: 100) do |game|
+
+  where_args = {Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished]}
+  where_args[:title] = titles if titles.any?
+  where_args[:id] = game_ids if game_ids
+
+  DB[:games].order(:id).where(**where_args).select(:id).paged_each(rows_per_fetch: 100) do |game|
     page << game
     if page.size >= 100
-      games = Game.eager(:user, :players, :actions).where(id: page.map { |p| p[:id] }).all
+      where_args2 = {id: page.map { |p| p[:id] }}
+      where_args2[:title] = titles if titles.any?
+      games = Game.eager(:user, :players, :actions).where(**where_args2).all
       _ = games.each do |game|
         data[game.id]=run_game(game)
       end
@@ -50,7 +60,10 @@ def validate_all()
     end
   end
 
-  games = Game.eager(:user, :players, :actions).where(id: page.map { |p| p[:id] }).all
+  where_args3 = {id: page.map { |p| p[:id] }}
+  where_args3[:title] = titles if titles.any?
+
+  games = Game.eager(:user, :players, :actions).where(**where_args3).all
   _ = games.each do |game|
     data[game.id]=run_game(game)
   end
@@ -89,4 +102,23 @@ def revalidate_broken(filename)
   end.compact.to_h
   data['updated_summary']={'failed':$count, 'total':$total, 'total_time':$total_time, 'avg_time':$total_time / $total}
   File.write("revalidate.json", JSON.pretty_generate(data))
+end
+
+def validate_json(filename)
+  data = JSON.parse(File.read(filename))
+  players = data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h
+  engine = Engine::GAMES_BY_TITLE[data['title']]
+  engine.new(players, id: data['id'], actions: data['actions'], optional_rules: data.dig('settings', 'optional_rules') || [])
+end
+
+def pin_games(pin_version, game_ids)
+  game_ids.each do |id|
+    data = Game[id]
+    if (pin = data.settings['pin'])
+      puts "Game #{id} already pinned to #{pin}"
+    else
+      data.settings['pin'] = pin_version
+    end
+    data.save
+  end
 end

@@ -4,7 +4,7 @@ require_relative 'action/buy_train'
 
 module Engine
   class Phase
-    attr_reader :name, :operating_rounds, :train_limit, :tiles, :phases, :status
+    attr_reader :name, :operating_rounds, :tiles, :phases, :status, :corporation_sizes
 
     def initialize(phases, game)
       @index = 0
@@ -31,6 +31,16 @@ module Engine
       @phases[@index]
     end
 
+    def train_limit(entity)
+      limit =
+        if @train_limit.is_a?(Hash)
+          @train_limit[entity.type] || 0
+        else
+          @train_limit
+        end
+      limit + train_limit_increase(entity)
+    end
+
     def available?(phase_name)
       return false unless phase_name
 
@@ -46,6 +56,7 @@ module Engine
       @tiles = Array(phase[:tiles])
       @events = phase[:events] || []
       @status = phase[:status] || []
+      @corporation_sizes = phase[:corporation_sizes]
       @next_on = @phases[@index + 1]&.dig(:on)
 
       @log << "-- Phase #{@name} " \
@@ -59,11 +70,11 @@ module Engine
       @game.companies.each do |company|
         next unless company.owner
 
-        company.abilities(:revenue_change, @name) do |ability|
+        company.abilities(:revenue_change, time: @name) do |ability|
           company.revenue = ability.revenue
         end
 
-        company.abilities(:close, @name) do
+        company.abilities(:close, time: @name) do
           @log << "Company #{company.name} closes"
           company.close!
         end
@@ -76,7 +87,7 @@ module Engine
       @game.companies.each do |company|
         next if company.closed?
 
-        company.abilities(:close, :train) do |ability|
+        company.abilities(:close, time: :train) do |ability|
           next if entity&.name != ability.corporation
 
           company.close!
@@ -117,6 +128,13 @@ module Engine
     def next!
       @index += 1
       setup_phase!
+    end
+
+    private
+
+    def train_limit_increase(entity)
+      entity.abilities(:train_limit) { |ability| return ability.increase }
+      0
     end
   end
 end

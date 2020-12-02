@@ -7,7 +7,7 @@ module Engine
     module Auctioner
       ##
       # Auctioner keeps track of multiple auctions and provides utilities for auctions
-      # It does not apply any logic on it's own
+      # It does not apply any logic on its own
       #
       # Call setup_auction to initialize as part of setup
       # Uses the following variables
@@ -15,9 +15,13 @@ module Engine
 
       attr_reader :bids
 
+      def auctioneer?
+        true
+      end
+
       def pass_description
         if auctioning
-          "Pass (on #{auctioning.sym})"
+          "Pass (on #{auctioning.id})"
         else
           'Pass'
         end
@@ -57,7 +61,7 @@ module Engine
       end
 
       def min_bid(_company)
-        # Minimum increase in bid that can be done onid that an entity can bid
+        # Minimum a bid that an entity can bid
         raise NotImplementedError
       end
 
@@ -69,7 +73,7 @@ module Engine
       protected
 
       def auctioning
-        active_bids { |company, _| company }
+        active_auction { |company, _| company }
       end
 
       def highest_bid(company)
@@ -82,6 +86,9 @@ module Engine
         price = bid.price
         min = min_bid(company)
         @game.game_error("Minimum bid is #{@game.format_currency(min)} for #{company.name}") if price < min
+        if @game.class::MUST_BID_INCREMENT_MULTIPLE && ((price - min) % @game.class::MIN_BID_INCREMENT).nonzero?
+          @game.game_error("Must increase bid by a multiple of #{@game.class::MIN_BID_INCREMENT}")
+        end
         if price > max_bid(entity, company)
           @game.game_error("Cannot afford bid. Maximum possible bid is #{max_bid(entity, company)}")
         end
@@ -92,7 +99,12 @@ module Engine
 
       def bids_for_player(player)
         @bids.values.map do |bids|
-          bids.find { |bid| bid.entity == player }
+          if @game.class::ONLY_HIGHEST_BID_COMMITTED
+            highest_bid = bids.max_by(&:price)
+            highest_bid if highest_bid&.entity == player
+          else
+            bids.find { |bid| bid.entity == player }
+          end
         end.compact
       end
     end

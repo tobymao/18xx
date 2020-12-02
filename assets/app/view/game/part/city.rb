@@ -112,10 +112,12 @@ module View
           pointy: [nil, 42, 62, 57],
         }.freeze
 
+        ANGLE_RIGHT = -5
         ANGLE_UPPER_RIGHT = -60
         ANGLE_LOWER_RIGHT = 10
         ANGLE_LOWER_LEFT = 170
         ANGLE_UPPER_LEFT = -120
+        ANGLE_LEFT = -175
 
         REVENUE_LOCATIONS_BY_EDGE = {
           0 => [
@@ -125,10 +127,10 @@ module View
             { regions: [16], angle: ANGLE_UPPER_RIGHT },
           ],
           0.5 => [
-            { regions: [12, 13], angle: ANGLE_LOWER_LEFT },
+            { regions: [12, 13], angle: ANGLE_LEFT },
             { regions: [7, 14], angle: ANGLE_UPPER_LEFT },
             { regions: [15, 16], angle: ANGLE_UPPER_RIGHT },
-            { regions: [21, 22], angle: ANGLE_LOWER_RIGHT },
+            { regions: [21, 22], angle: ANGLE_RIGHT },
           ],
           1 => [
             { regions: [5], angle: ANGLE_LOWER_LEFT },
@@ -137,8 +139,8 @@ module View
             { regions: [20], angle: ANGLE_LOWER_RIGHT },
           ],
           1.5 => [
-            { regions: [0, 6], angle: ANGLE_LOWER_LEFT },
-            { regions: [13, 19], angle: ANGLE_LOWER_RIGHT },
+            { regions: [0, 6], angle: ANGLE_LEFT },
+            { regions: [13, 19], angle: ANGLE_RIGHT },
             { regions: [7, 8], angle: ANGLE_UPPER_LEFT },
             { regions: [14, 15], angle: ANGLE_UPPER_RIGHT },
           ],
@@ -149,10 +151,10 @@ module View
             { regions: [1], angle: ANGLE_LOWER_LEFT },
           ],
           2.5 => [
-            { regions: [5, 6], angle: ANGLE_LOWER_RIGHT },
+            { regions: [5, 6], angle: ANGLE_RIGHT },
             { regions: [7, 14], angle: ANGLE_UPPER_RIGHT },
             { regions: [8, 9], angle: ANGLE_UPPER_LEFT },
-            { regions: [2, 3], angle: ANGLE_LOWER_LEFT },
+            { regions: [2, 3], angle: ANGLE_LEFT },
           ],
           3 => [
             { regions: [4], angle: ANGLE_LOWER_LEFT },
@@ -161,10 +163,10 @@ module View
             { regions: [7], angle: ANGLE_UPPER_RIGHT },
           ],
           3.5 => [
-            { regions: [10, 11], angle: ANGLE_LOWER_LEFT },
+            { regions: [10, 11], angle: ANGLE_LEFT },
             { regions: [9, 16], angle: ANGLE_UPPER_LEFT },
             { regions: [7, 8], angle: ANGLE_UPPER_RIGHT },
-            { regions: [1, 2], angle: ANGLE_LOWER_RIGHT },
+            { regions: [1, 2], angle: ANGLE_RIGHT },
           ],
           4 => [
             { regions: [18], angle: ANGLE_LOWER_LEFT },
@@ -173,8 +175,8 @@ module View
             { regions: [3], angle: ANGLE_LOWER_RIGHT },
           ],
           4.5 => [
-            { regions: [4, 10], angle: ANGLE_LOWER_RIGHT },
-            { regions: [17, 23], angle: ANGLE_LOWER_LEFT },
+            { regions: [4, 10], angle: ANGLE_RIGHT },
+            { regions: [17, 23], angle: ANGLE_LEFT },
             { regions: [8, 9], angle: ANGLE_UPPER_RIGHT },
             { regions: [15, 16], angle: ANGLE_UPPER_LEFT },
           ],
@@ -185,10 +187,10 @@ module View
             { regions: [22], angle: ANGLE_LOWER_LEFT },
           ],
           5.5 => [
-            { regions: [17, 18], angle: ANGLE_LOWER_RIGHT },
+            { regions: [17, 18], angle: ANGLE_RIGHT },
             { regions: [14, 15], angle: ANGLE_UPPER_LEFT },
             { regions: [9, 16], angle: ANGLE_UPPER_RIGHT },
-            { regions: [20, 21], angle: ANGLE_LOWER_LEFT },
+            { regions: [20, 21], angle: ANGLE_LEFT },
           ],
         }.freeze
 
@@ -217,6 +219,8 @@ module View
             weights = EDGE_CITY_REGIONS[@edge]
             weights += EXTRA_SLOT_REGIONS[@edge] unless @city.slots == 1
             distance = 50
+            # move in if city is on a "half" edge and has more that one slot
+            distance -= 8 if @edge.to_i != @edge && @city.slots > 1
 
             # If there's a border on this edge, move the city slightly
             # towards the center to ensure track is visible.
@@ -284,6 +288,7 @@ module View
                             radius: SLOT_RADIUS,
                             reservation: @city.reservations[slot_index],
                             tile: @tile,
+                            city_render_location: render_location,
                             region_use: @region_use),
               ]),
             ])

@@ -8,22 +8,8 @@ module View
       include Lib::Settings
 
       needs :game
-      needs :layout, default: nil
 
       def render
-        if @layout == :card
-          render_card
-        else
-          props = {
-            style: {
-              marginBottom: '1rem',
-            },
-          }
-          h(:div, props, "Bank Cash: #{@game.format_currency(@game.bank.cash)}")
-        end
-      end
-
-      def render_card
         title_props = {
           style: {
             padding: '0.4rem',
@@ -42,10 +28,10 @@ module View
         }
 
         trs = []
-        if @game.class::GAME_END_CHECK.include?(:bank)
+        if @game.game_end_check_values.include?(:bank)
           trs << h(:tr, [
             h(:td, 'Cash'),
-            h('td.right', @game.format_currency(@game.bank.cash)),
+            h('td.right', @game.format_currency(@game.bank_cash)),
           ])
         end
         if (rate = @game.interest_rate)
@@ -53,15 +39,37 @@ module View
             h(:td, 'Interest per Loan'),
             h('td.right', @game.format_currency(rate)),
           ])
+          if @game.respond_to?(:future_interest_rate)
+            trs << h(:tr, [
+              h(:td, 'Future Interest per Loan'),
+              h('td.right', @game.format_currency(@game.future_interest_rate)),
+            ])
+          end
           trs << h(:tr, [
             h(:td, 'Loans'),
             h('td.right', "#{@game.loans_taken}/#{@game.total_loans}"),
           ])
+          if @game.respond_to?(:interest_change)
+            @game.interest_change.each do |text, price_change|
+              trs << h(:tr, [
+                h(:td, text),
+                h('td.right', @game.format_currency(price_change)),
+              ])
+            end
+          end
           trs << h(:tr, [
             h(:td, 'Loan Value'),
             h('td.right', @game.format_currency(@game.loan_value)),
           ])
         end
+        if @game.round.active_step.respond_to?(:seed_money)
+          trs << h(:tr, [
+            h(:td, 'Seed Money'),
+            h('td.right', @game.format_currency(@game.round.active_step.seed_money)),
+          ])
+        end
+
+        return unless trs.any?
 
         h('div.bank.card', [
           h('div.title.nowrap', title_props, [h(:em, 'The Bank')]),

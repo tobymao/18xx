@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require '../lib/storage'
 require 'view/game/axis'
 require 'view/game/hex'
 require 'view/game/tile_confirmation'
@@ -14,6 +15,9 @@ module View
       needs :selected_route, default: nil, store: true
       needs :selected_company, default: nil, store: true
       needs :opacity, default: nil
+      needs :show_coords, default: nil, store: true
+      needs :show_location_names, default: nil, store: true
+      needs :show_starting_map, default: false, store: true
 
       EDGE_LENGTH = 50
       SIDE_TO_SIDE = 87
@@ -22,9 +26,9 @@ module View
       SCALE = 0.5 # Scale for the map
 
       def render
-        @hexes = @game.hexes.dup
-        @cols = @hexes.map(&:x).uniq.sort.map(&:next)
-        @rows = @hexes.map(&:y).uniq.sort.map(&:next)
+        @hexes = @show_starting_map ? @game.init_hexes(@game.companies, @game.corporations) : @game.hexes.dup
+        @cols = @hexes.reject(&:ignore_for_axes).map(&:x).uniq.sort.map(&:next)
+        @rows = @hexes.reject(&:ignore_for_axes).map(&:y).uniq.sort.map(&:next)
         @layout = @game.layout
 
         step = @game.round.active_step(@selected_company)
@@ -35,19 +39,22 @@ module View
         @hexes << @hexes.delete(selected_hex) if @hexes.include?(selected_hex)
 
         @hexes.map! do |hex|
-          clickable = step&.available_hex(current_entity, hex)
+          clickable = @show_starting_map ? false : step&.available_hex(current_entity, hex)
           opacity = clickable ? 1.0 : 0.5
           h(
             Hex,
             hex: hex,
-            opacity: @opacity || opacity,
+            opacity: @show_starting_map ? 1.0 : (@opacity || opacity),
             entity: current_entity,
             clickable: clickable,
             actions: actions,
+            show_coords: show_coords,
+            show_location_names: show_location_names,
           )
         end
+        @hexes.compact!
 
-        children = [render_map]
+        children = [render_map, render_controls]
 
         if current_entity && @tile_selector
           left = (@tile_selector.x + map_x) * SCALE
@@ -132,9 +139,13 @@ module View
           [(@cols.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP,
            (@rows.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP]
         else
-          [(@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP,
+          [((@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) + 1,
            (@rows.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP]
         end
+      end
+
+      def render_controls
+        h(MapControls, show_location_names: show_location_names, show_coords: show_coords)
       end
 
       def render_map
@@ -162,6 +173,16 @@ module View
               map_y: map_y),
           ]),
         ])
+      end
+
+      def show_coords
+        show = Lib::Storage['show_coords']
+        show.nil? ? false : show
+      end
+
+      def show_location_names
+        show = Lib::Storage['show_location_names']
+        show.nil? ? true : show
       end
     end
   end

@@ -10,8 +10,14 @@ module Engine
         DIVIDEND_TYPES = %i[payout half withhold].freeze
         include HalfPay
 
+        def half_pay_withhold_amount(entity, revenue)
+          entity.total_shares == 2 ? revenue / 2.0 : super
+        end
+
         def share_price_change(entity, revenue = 0)
           price = entity.share_price.price
+          price = 40 if entity.share_price.acquisition?
+
           return { share_direction: :left, share_times: 1 } unless revenue.positive?
 
           times = 0

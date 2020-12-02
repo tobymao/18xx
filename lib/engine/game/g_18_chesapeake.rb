@@ -23,9 +23,11 @@ module Engine
       GAME_LOCATION = nil
       GAME_RULES_URL = 'https://www.dropbox.com/s/x0dsehrxqr1tl6w/18Chesapeake_Rules.pdf'
       GAME_DESIGNER = 'Scott Petersen'
-      GAME_PUBLISHER = Publisher::INFO[:all_aboard_games]
+      GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Chesapeake'
 
+      MUST_BID_INCREMENT_MULTIPLE = true
+      ONLY_HIGHEST_BID_COMMITTED = true
       SELL_BUY_ORDER = :sell_buy
 
       def init_share_pool
@@ -66,12 +68,12 @@ module Engine
         cornelius.add_ability(Ability::Close.new(
           type: :close,
           when: :train,
-          corporation: cornelius.abilities(:share).share.corporation.name,
+          corporation: cornelius.abilities(:shares).shares.first.corporation.name,
         ))
 
-        return unless players.size == 2
+        return unless two_player?
 
-        cv_corporation = cornelius.abilities(:share).share.corporation
+        cv_corporation = cornelius.abilities(:shares).shares.first.corporation
 
         @corporations.each do |corporation|
           next if corporation == cv_corporation
@@ -114,7 +116,7 @@ module Engine
       def float_corporation(corporation)
         super
 
-        return unless players.size == 2
+        return unless two_player?
 
         @log << "#{corporation.name}'s remaining shares are transferred to the Market"
         bundle = ShareBundle.new(corporation.shares_of(corporation))

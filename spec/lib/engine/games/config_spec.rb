@@ -6,18 +6,23 @@ require 'engine'
 require 'json'
 
 module Engine
+  players = ('a'..'z')
+
   Engine::GAMES.each do |title|
     describe title.title do
-      it 'can be initialized' do
-        players = %w[a b c]
-        title.new(players, id: 1)
-      end
-    end
+      let(:min_players) { players.take(Engine.player_range(title).min) }
+      let(:max_players) { players.take(Engine.player_range(title).max) }
 
-    describe title.title do
+      it 'can be initialized with min players' do
+        title.new(min_players, id: 1)
+      end
+
+      it 'can be initialized with max players' do
+        title.new(max_players, id: 2)
+      end
+
       it 'has consistent borders' do
-        players = %w[a b c]
-        game = title.new(players, id: 1)
+        game = title.new(max_players, id: 1)
         game.hexes.each do |hex|
           hex.tile.borders.each do |border|
             next unless border

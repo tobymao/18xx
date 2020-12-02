@@ -43,7 +43,7 @@ module View
 
       chatbar_props = {
         attrs: {
-          placeholder: 'Send a message',
+          placeholder: 'Send a message (Please keep discussions to 18xx)',
         },
         style: {
           height: '1.4rem',
@@ -74,10 +74,7 @@ module View
     end
 
     def add_line(data)
-      name = data[:user][:name]
-      ts = Time.at(data[:created_at]).strftime('%Y-%m-%d %H:%M:%S')
-      message = data[:message]
-      store(:log, @log << "#{ts} #{name}: #{message}")
+      store(:log, @log << data)
     end
   end
 end

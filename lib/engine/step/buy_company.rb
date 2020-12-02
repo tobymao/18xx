@@ -7,11 +7,16 @@ module Engine
     class BuyCompany < Base
       ACTIONS = %w[buy_company pass].freeze
       ACTIONS_NO_PASS = %w[buy_company].freeze
+      PASS = %w[pass].freeze
 
       def actions(entity)
         # 1846 and a few others minors can't buy companies
         return [] if entity.minor?
         return blocks? ? ACTIONS : ACTIONS_NO_PASS if can_buy_company?(entity)
+
+        return PASS if blocks? &&
+                       entity.corporation? &&
+                       entity.abilities(time: 'owning_corp_or_turn', owner_type: 'corporation', strict_time: true).any?
 
         []
       end
@@ -22,7 +27,7 @@ module Engine
         entity == current_entity &&
           @game.phase.status.include?('can_buy_companies') &&
           companies.any? &&
-          companies.map(&:min_price).min <= entity.cash
+          companies.map(&:min_price).min <= buying_power(entity)
       end
 
       def blocks?
@@ -74,7 +79,7 @@ module Engine
         company.remove_ability_when(:sold)
 
         @round.just_sold_company = company
-        @round.company_seller = owner
+        @round.company_sellers << owner
 
         entity.companies << company
         entity.spend(price, owner)
@@ -87,7 +92,7 @@ module Engine
       end
 
       def round_state
-        { just_sold_company: nil, company_seller: nil }
+        { just_sold_company: nil, company_sellers: [] }
       end
 
       def setup

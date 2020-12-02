@@ -16,7 +16,7 @@ module View
     needs :refreshing, default: nil, store: true
 
     def render
-      your_games, other_games = @games.partition { |game| user_in_game?(@user, game) }
+      your_games, other_games = @games.partition { |game| user_in_game?(@user, game) || user_owns_game?(@user, game) }
 
       children = [
         render_header,

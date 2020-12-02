@@ -7,8 +7,8 @@ module Engine
   class Hex
     include Assignable
 
-    attr_accessor :x, :y
-    attr_reader :connections, :coordinates, :layout, :neighbors, :tile, :location_name, :original_tile
+    attr_accessor :x, :y, :ignore_for_axes, :location_name
+    attr_reader :connections, :coordinates, :empty, :layout, :neighbors, :tile, :original_tile
 
     DIRECTIONS = {
       flat: {
@@ -30,8 +30,9 @@ module Engine
     }.freeze
 
     LETTERS = ('A'..'Z').to_a
+    NEGATIVE_LETTERS = [0] + ('a'..'z').to_a
 
-    COORD_LETTER = /([A-Z]+)/.freeze
+    COORD_LETTER = /([A-Za-z]+)/.freeze
     COORD_NUMBER = /([0-9]+)/.freeze
 
     def self.invert(dir)
@@ -46,14 +47,14 @@ module Engine
 
       x =
         if axes_config[:x] == :letter
-          LETTERS.index(letter)
+          LETTERS.index(letter) || -NEGATIVE_LETTERS.index(letter)
         else
           number - 1
         end
 
       y =
         if axes_config[:y] == :letter
-          LETTERS.index(letter)
+          LETTERS.index(letter) || -NEGATIVE_LETTERS.index(letter)
         else
           number - 1
         end
@@ -64,7 +65,8 @@ module Engine
     # Coordinates are of the form A1..Z99
     # x and y map to the double coordinate system
     # layout is :pointy or :flat
-    def initialize(coordinates, layout: nil, axes: nil, tile: Tile.for('blank'), location_name: nil)
+    def initialize(coordinates, layout: nil, axes: nil, tile: Tile.for('blank'),
+                   location_name: nil, empty: false)
       @coordinates = coordinates
       @layout = layout
       @x, @y = self.class.init_x_y(@coordinates, axes)
@@ -75,6 +77,8 @@ module Engine
       @original_tile = @tile = tile
       @tile.hex = self
       @activations = []
+      @empty = empty
+      @ignore_for_axes = false
     end
 
     def id
@@ -87,6 +91,11 @@ module Engine
 
     def name
       @coordinates
+    end
+
+    def tile=(new_tile)
+      @original_tile = @tile = new_tile
+      new_tile.hex = self
     end
 
     def lay(tile)
@@ -103,18 +112,20 @@ module Engine
           @tile.cities.map.with_index do |old_city, index|
             new_city = tile.cities.find do |city|
               # we want old_edges to be subset of new_edges
-              (old_city.exits - city.exits).empty?
+              # without the any? check, first city will always match
+              old_city.exits.any? && (old_city.exits - city.exits).empty?
             end
 
             # When downgrading from yellow to no-exit tiles, assume it's the same index
-            new_city ||= tile.cities[index]
+            # Also, when upgrading a no-exit city, assume it's the same index if possible
+            new_city ||= (tile.cities[index] || tile.cities[0])
             [old_city, new_city]
           end.to_h
         end
 
       # when upgrading, preserve reservations on previous tile
       city_map.each do |old_city, new_city|
-        old_city.reservations.each do |entity|
+        old_city.reservations.compact.each do |entity|
           entity.abilities(:reservation) do |ability|
             next unless ability.hex == coordinates
 
@@ -132,8 +143,9 @@ module Engine
       # when upgrading, preserve tokens on previous tile (must be handled after
       # reservations are completely done due to OO weirdness)
       city_map.each do |old_city, new_city|
-        old_city.tokens.each do |token|
-          new_city.exchange_token(token) if token
+        old_city.tokens.each.with_index do |token, index|
+          cheater = (index >= old_city.normal_slots) && index
+          new_city.exchange_token(token, cheater: cheater) if token
         end
         old_city.remove_tokens!
       end
@@ -164,25 +176,33 @@ module Engine
       @tile.location_name = nil
 
       @tile = tile
-      clear_cache
+
+      @connections.clear
+      @paths = nil
+
       connect!
     end
 
     def lay_downgrade(tile)
-      lay(tile)
-      neighbors.each do |_edge, neighbor|
-        neighbor.connections.clear
-        neighbor.connect!
+      hexes = []
+
+      @tile.paths.each do |path|
+        path.walk { |p| hexes << p.hex if p.node? }
       end
+
+      lay(tile)
+
+      hexes.uniq.each do |hex|
+        hex.connections.each do |_, connections|
+          connections.select!(&:valid?)
+        end
+      end
+
       tile.restore_borders
     end
 
     def connect!
       Connection.connect!(self)
-    end
-
-    def clear_cache
-      @paths = nil
     end
 
     def paths
@@ -199,7 +219,7 @@ module Engine
     end
 
     def all_connections
-      @connections.values.flatten.uniq
+      @connections.values.flatten.uniq.select(&:valid?)
     end
 
     def neighbor_direction(other)

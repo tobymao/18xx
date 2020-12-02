@@ -5,7 +5,7 @@ require_relative '../minor_half_pay'
 
 module Engine
   module Step
-    module G18MEX
+    module G18Mex
       class Dividend < Dividend
         include MinorHalfPay
       end

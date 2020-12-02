@@ -15,7 +15,7 @@ module View
           h(Log, log: @game.log, negative_pad: true),
         ]
 
-        @player = @game.player_by_id(@user['name']) if @user
+        @player = @game.player_by_id(@user['id']) if @user
 
         enter = lambda do |event|
           event = Native(event)
@@ -25,12 +25,13 @@ module View
             message = event['target']['value']
             if message.strip != ''
               event['target']['value'] = ''
-              process_action(Engine::Action::Message.new(@player, message: message))
+              sender = @player || Engine::Player.new(@game_data['user']['id'], @game_data['user']['name'])
+              process_action(Engine::Action::Message.new(sender, message: message))
             end
           end
         end
 
-        if @player
+        if participant?
           children << h(:div, { style: {
             margin: '1vmin 0',
             display: 'flex',

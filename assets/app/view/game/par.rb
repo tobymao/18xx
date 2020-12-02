@@ -29,11 +29,16 @@ module View
           props = {
             style: {
               width: 'calc(17.5rem/6)',
-              padding: '0.2rem 0',
+              padding: '0.2rem',
             },
             on: { click: par },
           }
-          h('button.small.par_price', props, @game.format_currency(share_price.price))
+          purchasable_shares = [(entity.cash / share_price.price).to_i,
+                                @corporation.max_ownership_percent / @corporation.total_shares].min
+          at_limit = purchasable_shares * @corporation.total_shares >= @corporation.max_ownership_percent
+          flags = at_limit ? ' L' : ''
+          text = "#{@game.format_currency(share_price.price)} (#{purchasable_shares}#{flags})"
+          h('button.small.par_price', props, text)
         end
 
         div_class = par_buttons.size < 5 ? '.inline' : ''

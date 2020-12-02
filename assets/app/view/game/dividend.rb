@@ -8,10 +8,15 @@ module View
     class Dividend < Snabberb::Component
       include Actionable
 
+      needs :routes, store: true, default: []
+
       def render
         @step = @game.active_step
 
-        options = @step.dividend_options(@step.current_entity)
+        entity = @step.current_entity
+        options = @step.dividend_options(entity)
+
+        store(:routes, @step.routes, skip: true)
 
         payout_options = @step.dividend_types.map do |type|
           option = options[type]
@@ -27,21 +32,39 @@ module View
               type
             end
 
-          click = lambda do
-            process_action(Engine::Action::Dividend.new(@step.current_entity, kind: type))
-          end
-          button = h('td.no_padding', [h(:button, { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
+          corp_income = option[:corporation] + option[:divs_to_corporation]
+
+          new_share = entity.share_price
+
           direction =
             if option[:share_direction]
-              "#{option[:share_times]} #{option[:share_direction]}"
+              moves = Array(option[:share_times]).zip(Array(option[:share_direction]))
+
+              moves.map do |times, dir|
+                times.times { new_share = @game.stock_market.find_relative_share_price(new_share, dir) }
+
+                "#{times} #{dir}"
+              end.join(', ')
             else
               'None'
             end
 
+          if entity.loans.any? && !@game.can_pay_interest?(entity, corp_income)
+            text += ' (Liquidate)'
+          elsif new_share.acquisition?
+            text += ' (Acquisition)'
+          end
+
+          click = lambda do
+            process_action(Engine::Action::Dividend.new(@step.current_entity, kind: type))
+            cleanup
+          end
+          button = h('td.no_padding', [h(:button, { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
+
           props = { style: { paddingRight: '1rem' } }
           h(:tr, [
             button,
-            h('td.right', props, [@game.format_currency(option[:corporation] + option[:divs_to_corporation])]),
+            h('td.right', props, [@game.format_currency(corp_income)]),
             h('td.right', props, [@game.format_currency(option[:per_share])]),
             h(:td, [direction]),
           ])
@@ -51,6 +74,10 @@ module View
           style: {
             margin: '0.5rem 0 0 0',
             textAlign: 'left',
+          },
+          key: 'dividend',
+          hook: {
+            destroy: -> { cleanup },
           },
         }
         share_props = { style: { width: '2.7rem' } }
@@ -66,6 +93,10 @@ module View
           ]),
           h(:tbody, payout_options),
         ])
+      end
+
+      def cleanup
+        store(:routes, [], skip: true)
       end
     end
   end

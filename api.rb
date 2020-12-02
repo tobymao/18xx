@@ -67,7 +67,7 @@ class Api < Roda
   use Rack::Deflater unless PRODUCTION
 
   STANDARD_ROUTES = %w[
-    / about hotseat login map new_game profile signup tiles tutorial forgot reset
+    / about hotseat login map market new_game profile signup tiles tutorial forgot reset
   ].freeze
 
   Dir['./routes/*'].sort.each { |file| require file }
@@ -105,7 +105,6 @@ class Api < Roda
 
     r.on 'game', Integer do |id|
       halt(404, 'Game not found') unless (game = Game[id])
-      halt(400, 'Game has not started yet') if game.status == 'new'
 
       pin = game.settings['pin']
       render(pin: pin, game_data: pin ? game.to_h(include_actions: true) : game.to_h)

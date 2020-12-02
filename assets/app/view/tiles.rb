@@ -38,7 +38,11 @@ module View
         text = tile.preprinted ? '' : '#'
         text += name
         text += "-#{rotation}" unless rotations == [0]
-        text += " × #{num}" if num
+        if tile.unlimited
+          text += ' × ∞'
+        elsif num
+          text += " × #{num}"
+        end
 
         hex = Engine::Hex.new(hex_coordinates || 'A1',
                               layout: layout,
