@@ -51,7 +51,6 @@ module Engine
           @round.redeemed_loan[entity] = true
         end
 
-        def setup end
       end
     end
   end

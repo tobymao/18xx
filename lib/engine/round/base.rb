@@ -82,7 +82,7 @@ module Engine
 
         step = @steps.find do |s|
           next unless s.active?
-          # puts action, action.entity, s, s.actions(action.entity), type
+
           process = s.actions(action.entity).include?(type)
           blocking = s.blocking?
           @game.game_error("Step #{s.description} cannot process #{action.to_h}") if blocking && !process
