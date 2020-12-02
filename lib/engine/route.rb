@@ -228,7 +228,7 @@ module Engine
     end
 
     def corporation
-      train.owner
+      @game.train_owner(train)
     end
 
     def connection_hexes

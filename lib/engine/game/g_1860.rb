@@ -30,6 +30,8 @@ module Engine
       SELL_AFTER = :any_time
       SELL_BUY_ORDER = :sell_buy
       MARKET_SHARE_LIMIT = 100
+      TRAIN_PRICE_MIN = 10
+      TRAIN_PRICE_MULTIPLE = 10
 
       STOCKMARKET_COLORS = {
         par: :yellow,
@@ -97,7 +99,6 @@ module Engine
 
       def setup
         @bankrupt_corps = []
-        @receivership_corps = []
         @insolvent_corps = []
         @closed_corps = []
         @highest_layer = 1
@@ -175,16 +176,49 @@ module Engine
         @log << "#{ffc.name} is now available for purchase from the Bank"
       end
 
-      def corp_bankrupt?(corp)
+      def insolvent?(corp)
+        @insolvent_corps.include?(corp)
+      end
+
+      def make_insolvent(corp)
+        return if insolvent?(corp)
+
+        @insolvent_corps << corp
+        @log << "#{corp.name} is now Insolvent"
+      end
+
+      def clear_insolvent(corp)
+        return unless insolvent?(corp)
+
+        @insolvent_corps.delete(corp)
+        @log << "#{corp.name} is no longer Insolvent"
+      end
+
+      def bankrupt?(corp)
         @bankrupt_corps.include?(corp)
       end
 
+      def make_bankrupt(corp)
+        @bankrupt_corps << corp unless bankrupt(corp)
+      end
+
+      def clear_bankrupt(corp)
+        @bankrupt_corps.delete(corp)
+      end
+
+      def status_str(corp)
+        status = nil
+        status = 'Insolvent' if insolvent?(corp)
+        status = status ? status + ', Bankrupt' : 'Bankrupt' if bankrupt?(corp)
+        status
+      end
+
       def corp_hi_par(corp)
-        (corp_bankrupt?(corp) ? REPAR_RANGE[corp_layer(corp)] : PAR_RANGE[corp_layer(corp)]).last
+        (bankrupt?(corp) ? REPAR_RANGE[corp_layer(corp)] : PAR_RANGE[corp_layer(corp)]).last
       end
 
       def corp_lo_par(corp)
-        (corp_bankrupt?(corp) ? REPAR_RANGE[corp_layer(corp)] : PAR_RANGE[corp_layer(corp)]).first
+        (bankrupt?(corp) ? REPAR_RANGE[corp_layer(corp)] : PAR_RANGE[corp_layer(corp)]).first
       end
 
       def corp_layer(corp)
@@ -192,7 +226,7 @@ module Engine
       end
 
       def par_prices(corp)
-        par_prices = corp_bankrupt?(corp) ? repar_prices : stock_market.par_prices
+        par_prices = bankrupt?(corp) ? repar_prices : stock_market.par_prices
         par_prices.select { |p| p.price <= corp_hi_par(corp) && p.price >= corp_lo_par(corp) }
       end
 
@@ -216,6 +250,12 @@ module Engine
           corp.num_ipo_shares.zero? || corp.operated?
         end.values
         layers.empty? ? 1 : layers.max + 1
+      end
+
+      def float_corporation(corporation)
+        # Designer says that bankrupt corps keep insolvency flag
+        clear_bankrupt(corporation)
+        super
       end
 
       def sorted_corporations
@@ -267,6 +307,33 @@ module Engine
         @corporations.each { |corp| corp.shares.each { |share| share.buyable = true } }
         @companies.reject { |c| c == company }.each(&:close!)
         @log << '-- Event: starting private companies close --'
+      end
+
+      def train_help(trains)
+        help = []
+
+        if trains.select { |t| t.owner == @depot }.any?
+          help << 'Leased trains ignore town/halt allowance.'
+          help << "Revenue = #{format_currency(40)} + number_of_stops * #{format_currency(20)}"
+        end
+
+        help
+      end
+
+      def train_owner(train)
+        train.owner == @depot ? lesee : train.owner
+      end
+
+      def lesee
+        current_entity
+      end
+
+      def route_trains(entity)
+        if insolvent?(entity)
+          [@depot.min_depot_train]
+        else
+          super
+        end
       end
 
       def biggest_train(corporation)
@@ -503,9 +570,13 @@ module Engine
 
         # in 1860, unused city/offboard allowance can be used for towns/halts
         c_allowance = route.train.distance[0]['pay']
-        th_allowance = route.train.distance[-1]['pay'] + c_allowance - stops.size
+        th_allowance = if route.train.owner != @depot
+                         route.train.distance[-1]['pay'] + c_allowance - stops.size
+                       else
+                         c_allowance - stops.size
+                       end
 
-        # add in halts requested
+        # add in halts requested (should be 0 for leased train)
         halts = visits.select(&:halt?)
         num_halts = [halts.size, (route.halts || 0)].min
         if num_halts.positive?
@@ -527,23 +598,33 @@ module Engine
           stops.concat(halts.take(num_halts))
         end
 
-        route.halts = num_halts if halts.any?
+        # update route halts unless this is a loaner train
+        route.halts = num_halts if halts.any? && route.train.owner != @depot
 
         stops
       end
 
       def route_distance(route)
         n_cities = route.stops.select { |n| n.city? || n.offboard? }.size
-        n_towns = route.stops.select { |n| n.town? && !n.halt? }.size
+        # halts are treated like towns for leased trains
+        n_towns = if route.train.owner != @depot
+                    route.stops.select { |n| n.town? && !n.halt? }.size
+                  else
+                    route.stops.select(&:town?).size
+                  end
         "#{n_cities}+#{n_towns}"
       end
 
       def revenue_for(route, stops)
-        stops.sum { |stop| stop.route_base_revenue(route.phase, route.train) }
+        if route.train.owner != @depot
+          stops.sum { |stop| stop.route_base_revenue(route.phase, route.train) }
+        else
+          40 + 20 * stops.size
+        end
       end
 
-      def subsidy_for(_route, stops)
-        stops.select(&:halt?).size * HALT_SUBSIDY
+      def subsidy_for(route, stops)
+        route.train.owner != @depot ? stops.select(&:halt?).size * HALT_SUBSIDY : 0
       end
 
       def routes_revenue(routes)

@@ -86,6 +86,20 @@ module View
           children << h(:div, props, subchildren)
         end
 
+        if @game.status_str(@corporation)
+          props = {
+            style: {
+              grid: '1fr / repeat(2, max-content)',
+              gap: '2rem',
+              justifyContent: 'center',
+              backgroundColor: color_for(:bg2),
+              color: color_for(:font2),
+            },
+          }
+
+          children << h(:div, props, render_status)
+        end
+
         h('div.corp.card', { style: card_style, on: { click: select_corporation } }, children)
       end
 
@@ -377,6 +391,12 @@ module View
           'Last Run: ',
           h('span.bold', @game.format_currency(last_run)),
         ])
+      end
+
+      def render_status
+        [h(:div, { style: { display: 'inline' } }, [
+          h('span.bold', @game.status_str(@corporation)),
+        ])]
       end
 
       def render_operating_order

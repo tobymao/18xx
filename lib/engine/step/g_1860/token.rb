@@ -7,7 +7,7 @@ module Engine
     module G1860
       class Token < Token
         def actions(entity)
-          return [] if entity.receivership?
+          return [] if entity.receivership? || @game.insolvent?(entity)
 
           super
         end

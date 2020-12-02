@@ -579,6 +579,14 @@ module Engine
         @depot.trains
       end
 
+      def train_owner(train)
+        train.owner
+      end
+
+      def route_trains(entity)
+        entity.runnable_trains
+      end
+
       def shares
         @corporations.flat_map(&:shares)
       end
@@ -1711,6 +1719,8 @@ module Engine
       def show_corporation_size?(_entity)
         false
       end
+
+      def status_str(_corporation); end
 
       # Override this, and add elements (paragraphs of text) here to display it on Info page.
       def timeline

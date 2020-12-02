@@ -23,7 +23,7 @@ module View
       end
 
       def generate_last_routes!
-        trains = @game.round.current_entity.runnable_trains
+        trains = @game.route_trains(@game.round.current_entity)
         operating = @game.round.current_entity.operating_history
         last_run = operating[operating.keys.max]&.routes
         return [] unless last_run
@@ -34,12 +34,12 @@ module View
 
           # A future enhancement to this could be to find trains and move the routes over
           @routes << Engine::Route.new(@game, @game.phase, train, connection_hexes: connections,
-                                                                  routes: @routes, num_halts: halts[train])
+                                                                  routes: @routes, halts: halts[train])
         end.compact
       end
 
       def render
-        trains = @game.round.current_entity.runnable_trains
+        trains = @game.route_trains(@game.round.current_entity)
 
         train_help =
           if (helps = @game.train_help(trains)).any?

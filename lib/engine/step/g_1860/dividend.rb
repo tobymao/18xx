@@ -31,7 +31,7 @@ module Engine
             revenue
           )
 
-          entity.trains.each { |train| train.operated = true }
+          entity.trains.each { |train| train.operated = true } unless @game.insolvent?(entity)
 
           @round.routes = []
 
