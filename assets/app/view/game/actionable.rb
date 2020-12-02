@@ -35,7 +35,8 @@ module View
         hotseat = @game_data[:mode] == :hotseat
 
         if Lib::Params['action']
-          return store(:flash_opts, 'You cannot make changes while browsing history. Press >| to navigate to the current game action.')
+          return store(:flash_opts, 'You cannot make changes while browsing history.
+            Press >| to navigate to the current game action.')
         end
 
         if !hotseat &&
