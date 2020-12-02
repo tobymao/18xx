@@ -28,7 +28,7 @@ module Engine
 
         def can_sell?(entity, bundle)
           # Use Base's implementation
-          Base.instance_method(:can_sell?).bind(self).call
+          Base.instance_method(:can_sell?).bind(self).call(entity, bundle)
         end
       end
     end

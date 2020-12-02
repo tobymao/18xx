@@ -22,44 +22,36 @@ module Engine
         end
 
         def can_payoff?(entity)
-          @round.paid_loans[entity] &&
-            (loan = entity.loans[0]) &&
+          (loan = entity.loans[0]) &&
             entity.cash >= loan.amount &&
-            !@after_payoff_loan
+            @round.steps.any? { |step| step.passed? && step.is_a?(Step::BuyTrain) }
         end
 
         def blocks?
-          can_payoff?(current_entity) || (
-            @round.paid_loans[current_entity] &&
-            @game.can_take_loan?(current_entity)
-          )
+          can_payoff?(current_entity)
         end
 
         def process_take_loan(action)
           entity = action.entity
-          @after_payoff_loan = true if @round.paid_loans[entity]
           @game.take_loan(entity, action.loan)
+          @round.took_loan[entity] = true
         end
 
         def process_payoff_loan(action)
           entity = action.entity
           loan = action.loan
           amount = loan.amount
+          @game.game_error("Loan doesn't belong to that entity") unless entity.loans.include?(loan)
+
           @log << "#{entity.name} pays off a loan for #{@game.format_currency(amount)}"
           entity.spend(amount, @game.bank)
 
           entity.loans.delete(loan)
           @game.loans << loan
-
-          price = entity.share_price.price
-          @game.stock_market.move_right(entity)
-          @game.log_share_price(entity, price)
+          @round.redeemed_loan[entity] = true
         end
 
-        def setup
-          # you cannot payoff loans that you've taken after the payoff step
-          @after_payoff_loan = false
-        end
+        def setup end
       end
     end
   end

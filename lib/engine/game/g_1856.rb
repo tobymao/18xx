@@ -86,13 +86,11 @@ module Engine
       end
 
       def take_loan(entity, loan)
-        game_error("Cannot take more than #{maximum_loans(entity)} loans") unless can_take_loan?(entity)
-        price = entity.share_price.price
+        game_error('Cannot take loan') unless can_take_loan?(entity)
         name = entity.name
-        name += " (#{entity.owner.name})" if @round.is_a?(Round::Stock)
-        @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
-        @bank.spend(loan.amount, entity)
-        log_share_price(entity, price)
+        loan_amount = @round.paid_interest[entity] ? 90 : 100
+        @log << "#{name} takes a loan and receives #{format_currency(loan_amount)}"
+        @bank.spend(loan_amount, entity)
         entity.loans << loan
         @loans.delete(loan)
       end
@@ -100,6 +98,8 @@ module Engine
       def can_take_loan?(entity)
         entity.corporation? &&
           entity.loans.size < maximum_loans(entity) &&
+          !@round.took_loan[entity] &&
+          !@round.redeemed_loan[entity] &&
           @loans.any?
       end
 
@@ -108,7 +108,7 @@ module Engine
         110.times.map { |id| Loan.new(id, @loan_value) }
       end
 
-      def can_pay_interest?(entity, extra_cash = 0)
+      def can_pay_interest?(_entity, _extra_cash = 0)
         # TODO: A future PR may figure out how to implement buying_power
         #  that accounts for a corporations revenue.
         true
@@ -266,8 +266,7 @@ module Engine
           Step::G1856::CashCrisis,
           # No exchanges.
           Step::DiscardTrain,
-          # Step::TakeLoans
-          Step::G1817::Loan,
+          Step::G1856::Loan,
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::G1856::Track,
@@ -276,7 +275,7 @@ module Engine
           # Interest - See Loan
           Step::Dividend,
           Step::BuyTrain,
-          # Step::RepayLoans,
+          # Repay Loans - See Loan
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
