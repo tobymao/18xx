@@ -164,10 +164,12 @@ module View
                 ))
                 store(:selected_company, nil, skip: true)
               end
+
               [
                 input,
                 h(:button, { on: { click: create_bid } }, 'Place Bid'),
-              ]
+                *render_move_bid_inputs(company, input),
+              ].compact
             end
 
           if @step.may_reduce?(company)
@@ -177,6 +179,33 @@ module View
           end
 
           h(:div, { style: { textAlign: 'center', margin: '1rem' } }, company_actions)
+        end
+
+        def render_move_bid_inputs(company, input)
+          return [] unless @current_actions.include?('move_bid')
+
+          moveable_bids = @step.moveable_bids(@current_entity, company)
+          return [] if moveable_bids.empty?
+
+          moveable_bids.map do |old_company, old_bids|
+            old_bids.map do |old_bid|
+              move_bid = lambda do
+                hide!
+                price = input.JS['elm'].JS['value'].to_i
+                process_action(Engine::Action::MoveBid.new(
+                  @current_entity,
+                  company: company,
+                  old_company: old_company,
+                  price: price,
+                  old_price: old_bid.price,
+                ))
+                store(:selected_company, nil, skip: true)
+              end
+
+              h(:button, { on: { click: move_bid } },
+                "Move #{old_company.sym} #{@game.format_currency(old_bid.price)} Bid")
+            end
+          end.flatten
         end
 
         def render_turn_bid
