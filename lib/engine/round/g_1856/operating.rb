@@ -8,13 +8,15 @@ module Engine
     module G1856
       class Operating < Operating
         attr_accessor :cash_crisis_player
-        attr_reader :paid_interest, :took_loan, :redeemed_loan, :interest_penalty
+        attr_reader :paid_interest, :took_loan, :redeemed_loan,
+                    :interest_penalty, :player_interest_penalty
 
         def after_setup
           @paid_interest = {}
           @redeemed_loan = {}
           @took_loan = {}
           @interest_penalty = {}
+          @player_interest_penalty = {}
           super
         end
 
@@ -67,6 +69,7 @@ module Engine
           end
           return unless owed.positive?
 
+          player_interest_penalty[entity] = owed
           owed_fmt = @game.format_currency(owed)
           @log << "#{entity.name} cannot afford remaining #{owed_fmt} interest and president must cover the difference"
           entity.owner.spend(owed, bank, check_cash: false)
