@@ -102,7 +102,6 @@ module View
           h(:p, corporation_penalty),
           h(:p, player_penalty),
         ]) if corporation_interest_penalty?(entity) || player_interest_penalty?(entity)
-        
 
         h(:div, div_props, [
           penalties,
@@ -116,9 +115,8 @@ module View
               ]),
             ]),
             h(:tbody, payout_options),
-          ])
+          ]),
         ])
-        
       end
 
       def corporation_interest_penalty?(entity)
