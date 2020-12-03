@@ -49,6 +49,21 @@ module Engine
 
       HOME_TOKEN_TIMING = :operating_round
 
+      PRE_NATIONALIZATION_CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
+      POST_NATIONALIZATION_CERT_LIMIT = {
+        11 => { 3 => 28, 4 => 22, 5 => 18, 6 => 15 },
+        10 => { 3 => 25, 4 => 20, 5 => 16, 6 => 14 },
+        9 => { 3 => 22, 4 => 18, 5 => 15, 6 => 12 },
+        8 => { 3 => 20, 4 => 16, 5 => 13, 6 => 11 },
+        7 => { 3 => 18, 4 => 14, 5 => 11, 6 => 10 },
+        6 => { 3 => 15, 4 => 12, 5 => 10, 6 => 8 },
+        5 => { 3 => 13, 4 => 10, 5 => 8, 6 => 7 },
+        4 => { 3 => 10, 4 => 8, 5 => 7, 6 => 6 },
+        3 => { 3 => 10, 4 => 8, 5 => 7, 6 => 6 },
+        2 => { 3 => 10, 4 => 8, 5 => 7, 6 => 6 },
+        1 => { 3 => 10, 4 => 8, 5 => 7, 6 => 6 },
+      }.freeze
+
       def gray_phase?
         @phase.tiles.include?('gray')
       end
@@ -80,6 +95,22 @@ module Engine
 
         # starting with the player who bought the 6 train, go around the table trading shares
         # trade all shares
+      end
+
+      def post_nationalization
+        # TODO: Update this with something more correct once nationalization is implemented
+        true
+      end
+
+      def num_corporations
+        # TODO: Update this with something more correct once nationalization is implemented
+        @corporations.size - 1
+      end
+
+      def cert_limit
+        return PRE_NATIONALIZATION_CERT_LIMIT[@players.size] unless post_nationalization
+
+        POST_NATIONALIZATION_CERT_LIMIT[num_corporations][@players.size]
       end
 
       #

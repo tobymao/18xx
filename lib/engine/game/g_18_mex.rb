@@ -139,7 +139,6 @@ module Engine
         @minors.each do |minor|
           train = @depot.upcoming[0]
           train.buyable = false
-          update_end_of_life(train, nil, nil) if @optional_rules&.include?(:delay_minor_close)
           minor.buy_train(train, :free)
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token)
@@ -466,6 +465,13 @@ module Engine
         end
 
         major.close!
+      end
+
+      def rust?(train)
+        return super unless @optional_rules&.include?(:delay_minor_close)
+
+        # Do not rust minor's 2 trains
+        !(train.name == '2' && train.owner.minor?)
       end
 
       def buy_first_5_train(player)
