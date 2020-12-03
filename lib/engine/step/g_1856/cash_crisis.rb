@@ -2,6 +2,7 @@
 
 require_relative '../g_1817/cash_crisis'
 require_relative '../base'
+require_relative '../emergency_money'
 
 module Engine
   module Step
@@ -27,8 +28,8 @@ module Engine
         end
 
         def can_sell?(entity, bundle)
-          # Use Base's implementation
-          Base.instance_method(:can_sell?).bind(self).call(entity, bundle)
+          # Use Emergency Money's implementation
+          EmergencyMoney.instance_method(:can_sell?).bind(self).call(entity, bundle)
         end
       end
     end

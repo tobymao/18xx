@@ -65,6 +65,8 @@ module Engine
         1 => { 3 => 10, 4 => 8, 5 => 7, 6 => 6 },
       }.freeze
 
+      PENALTY_TYPE = 'Interest'
+
       def gray_phase?
         @phase.tiles.include?('gray')
       end
@@ -273,7 +275,7 @@ module Engine
           Step::Token,
           Step::Route,
           # Interest - See Loan
-          Step::Dividend,
+          Step::G1856::Dividend,
           Step::BuyTrain,
           # Repay Loans - See Loan
           [Step::BuyCompany, blocks: true],

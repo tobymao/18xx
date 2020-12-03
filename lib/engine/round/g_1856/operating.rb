@@ -8,12 +8,13 @@ module Engine
     module G1856
       class Operating < Operating
         attr_accessor :cash_crisis_player
-        attr_reader :paid_interest, :took_loan, :redeemed_loan
+        attr_reader :paid_interest, :took_loan, :redeemed_loan, :interest_penalty
 
         def after_setup
           @paid_interest = {}
           @redeemed_loan = {}
           @took_loan = {}
+          @interest_penalty = {}
           super
         end
 
@@ -62,7 +63,7 @@ module Engine
             owed -= routes_deduction
             routes_deduction_fmt = @game.format_currency(routes_deduction)
             @log << "#{entity.name} deducts #{routes_deduction_fmt} from its run"
-            # TODO: Actually deduct from the run...
+            interest_penalty[entity] = routes_deduction
           end
           return unless owed.positive?
 

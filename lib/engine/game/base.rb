@@ -179,6 +179,10 @@ module Engine
       # allows multiple lays, value must be either true, false or :not_if_upgraded
       TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
 
+      # The Penalty is for when games may deduct from a corporations total payout for some reason,
+      #  such as missed interest payments (see 1856)
+      PENALTY_TYPE = nil
+
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
       EVENTS_TEXT = { 'close_companies' =>

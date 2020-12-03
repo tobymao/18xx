@@ -50,7 +50,6 @@ module Engine
           @game.loans << loan
           @round.redeemed_loan[entity] = true
         end
-
       end
     end
   end
