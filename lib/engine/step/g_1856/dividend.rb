@@ -49,8 +49,12 @@ module Engine
         end
 
         def log_run_payout(entity, kind, revenue, action, payout)
-          if payout[:penalty].positive?
-            @log << "#{entity.name} deducts #{@game.format_currency(payout[:penalty])} for unpaid interest"
+          if (@round.interest_penalty[entity] || 0).positive?
+            @log << "#{entity.name} deducts #{@game.format_currency(@round.interest_penalty[entity])} for unpaid interest"
+          end
+          if (@round.player_interest_penalty[entity] || 0).positive?
+            @log << "#{entity.owner.name} must personally contribute " +
+              "#{@game.format_currency(@round.player_interest_penalty[entity])} for unpaid interest"
           end
           unless Dividend::DIVIDEND_TYPES.include?(kind)
             @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
@@ -61,18 +65,6 @@ module Engine
           elsif payout[:per_share].zero?
             @log << "#{entity.name} does not run"
           end
-        end
-
-        def withhold(entity, revenue)
-          { corporation: revenue, per_share: 0, penalty: @round.interest_penalty[entity] || 0 }
-        end
-
-        def payout(entity, revenue)
-          {
-            corporation: 0,
-            per_share: payout_per_share(entity, revenue),
-            penalty: @round.interest_penalty[entity] || 0,
-          }
         end
       end
     end
