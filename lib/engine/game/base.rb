@@ -172,6 +172,7 @@ module Engine
       HOME_TOKEN_TIMING = :operate
 
       DISCARDED_TRAINS = :discard # discarded or removed?
+      DISCARDED_TRAIN_DISCOUNT = 0 # percent
       CLOSED_CORP_TRAINS = :removed # discarded or removed?
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
@@ -761,6 +762,13 @@ module Engine
           depot.depot_trains.any? &&
           (self.class::MUST_BUY_TRAIN == :always ||
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
+      end
+
+      def apply_discard_discount(train, price)
+        return price unless DISCARDED_TRAIN_DISCOUNT
+        return price unless @depot.discarded.include?(train)
+
+        (price * (100 - DISCARDED_TRAIN_DISCOUNT) / 100).ceil
       end
 
       def end_game!
