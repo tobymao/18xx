@@ -59,19 +59,16 @@ module View
       end
 
       def generate_last_route(entity)
-        trains = entity.trains
         operating = entity.operating_history
         last_run = operating[operating.keys.max]&.routes
         return [] unless last_run
 
         halts = operating[operating.keys.max]&.halts
         routes = []
-        last_run.map do |train, connections|
-          next unless trains.include?(train)
-
+        last_run.each do |train, connections|
           routes << Engine::Route.new(@game, @game.phase, train, connection_hexes: connections,
                                                                  routes: routes, num_halts: halts[train])
-        end.compact
+        end
 
         routes
       end
