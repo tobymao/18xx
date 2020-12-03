@@ -204,7 +204,7 @@ module Engine
       "value": 40,
       "discount": 10,
       "revenue": 5,
-      "desc": "No special abilities.  Can be bought by a Public Company for between 1-40£."
+      "desc": "No special abilities."
     },
     {
       "sym": "P2",
@@ -212,7 +212,7 @@ module Engine
       "value": 80,
       "discount": 10,
       "revenue": 10,
-      "desc": "If the company is owned by a Public Company or its Director, that company can, on one occasion, develop a cost-incurring desert hex for 40£ less than it would otherwise cost.  Can be bought by a Public Company for between 1-80£."
+      "desc": "Owning Public Company or its Director may build one (1) free tile on a desert hex (marked by a cactus icon). This power does not go away after a 5/5+ train is purchased."
     },
     {
       "sym": "P3",
@@ -220,7 +220,7 @@ module Engine
       "value": 140,
       "discount": 30,
       "revenue": 15,
-      "desc": "The Tasmania tile can be placed by a Public Company on one of the dark blue hexes. This is in addition to the company's normal build that turn.  Can be bought by a Public Company for between 1-140£."
+      "desc": "The Tasmania tile can be placed by a Public Company on one of the dark blue hexes. This is in addition to the company's normal build that turn."
     },
     {
       "sym": "P4",
@@ -228,7 +228,7 @@ module Engine
       "value": 220,
       "discount": 50,
       "revenue": 20,
-      "desc": "The owner has a one-time discount of £100 on the purchase of a 2E train, 'The Ghan'.  Can be bought by a Public Company for between 1-220£."
+      "desc": "Owning Public Company or its Director may receive a one-time discount of £100 on the purchase of a 2E (Ghan) train. This power does not go away after a 5/5+ train is purchased."
     },
     {
       "sym": "P5",
@@ -236,7 +236,7 @@ module Engine
       "value": 0,
       "discount": -170,
       "revenue": 25,
-      "desc": "The owner receives in addition a 10% share in the QR.  Cannot be bought by a Public Company."
+      "desc": "The owner receives a 10% share in the QR. Cannot be bought by a corporation"
     },
     {
       "sym": "P6",
@@ -244,7 +244,7 @@ module Engine
       "value": 0,
       "discount": -230,
       "revenue": 30,
-      "desc": "The owner receives in addition the Director's Share share in the CAR, which must start at a par value of 100£.  Cannot be bought by a Public Company."
+      "desc": "The owner receives a Director's Share share in the CAR, which must start at a par value of 100£. Cannot be bought by a corporation"
     }
   ],
   "corporations": [
