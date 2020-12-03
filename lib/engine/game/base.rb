@@ -579,6 +579,11 @@ module Engine
         @depot.trains
       end
 
+      # Before rusting, check if this train individual should rust.
+      def rust?(_train)
+        true
+      end
+
       def shares
         @corporations.flat_map(&:shares)
       end
