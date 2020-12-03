@@ -65,8 +65,6 @@ module Engine
         1 => { 3 => 10, 4 => 8, 5 => 7, 6 => 6 },
       }.freeze
 
-      PENALTY_TYPE = 'Interest'
-
       def gray_phase?
         @phase.tiles.include?('gray')
       end
