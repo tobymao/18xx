@@ -61,16 +61,12 @@ module View
           button = h('td.no_padding', [h(:button, { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
 
           props = { style: { paddingRight: '1rem' } }
-          columns = [
+          h(:tr, [
             button,
             h('td.right', props, [@game.format_currency(corp_income)]),
             h('td.right', props, [@game.format_currency(option[:per_share])]),
             h(:td, [direction]),
-          ]
-          if @game.class::PENALTY_TYPE
-            columns.insert(2, h('td.right', props, [@game.format_currency(option[:penalty])]))
-          end
-          h(:tr, columns)
+          ])
         end
 
         table_props = {
@@ -84,18 +80,14 @@ module View
           },
         }
         share_props = { style: { width: '2.7rem' } }
-        columns = [
-          h('th.no_padding', 'Dividend'),
-          h(:th, 'Treasury'),
-          h(:th, share_props, 'Per Share'),
-          h(:th, 'Stock Moves'),
-        ]
-        if @game.class::PENALTY_TYPE
-          columns.insert(2, h(:th, @game.class::PENALTY_TYPE))
-        end
         h(:table, table_props, [
           h(:thead, [
-            h(:tr, columns),
+            h(:tr, [
+              h('th.no_padding', 'Dividend'),
+              h(:th, 'Treasury'),
+              h(:th, share_props, 'Per Share'),
+              h(:th, 'Stock Moves'),
+            ]),
           ]),
           h(:tbody, payout_options),
         ])
