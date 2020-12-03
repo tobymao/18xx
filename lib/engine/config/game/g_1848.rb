@@ -479,7 +479,7 @@ module Engine
       ]
     },
     "white": {
-      "upgrade=cost:40,terrain:cactus": [
+      "upgrade=cost:40,terrain:desert": [
         "B3",
         "B7",
         "B9",
