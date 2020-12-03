@@ -548,10 +548,23 @@ module Engine
         check_hex_reentry(route)
       end
 
-      def max_halts(route)
+      def ignore_halts?
+        false
+      end
+
+      def ignore_halt_subsidies?(route)
         # FIXME: need to ignore halts after formation of Southern Railway
+        route.train.owner == @depot
+      end
+
+      def ignore_second_allowance?(route)
+        # FIXME: need to add Nationalization
+        route.train.owner == @depot
+      end
+
+      def max_halts(route)
         visits = route.visited_stops
-        return 0 if visits.empty?
+        return 0 if visits.empty? || ignore_halts?
 
         cities = visits.select { |node| node.city? || node.offboard? }
         halts = visits.select(&:halt?)
@@ -560,7 +573,6 @@ module Engine
       end
 
       def compute_stops(route)
-        # FIXME: need to ignore halts after formation of Southern Railway
         # will need to be modifed for original rules option
         visits = route.visited_stops
         return [] if visits.empty?
@@ -570,7 +582,7 @@ module Engine
 
         # in 1860, unused city/offboard allowance can be used for towns/halts
         c_allowance = route.train.distance[0]['pay']
-        th_allowance = if route.train.owner != @depot
+        th_allowance = if !ignore_second_allowance?(route)
                          route.train.distance[-1]['pay'] + c_allowance - stops.size
                        else
                          c_allowance - stops.size
@@ -578,6 +590,9 @@ module Engine
 
         # add in halts requested (should be 0 for leased train)
         halts = visits.select(&:halt?)
+
+        route.halts = nil if halts.empty? || ignore_halts? || ignore_halt_subsidies?(route)
+
         num_halts = [halts.size, (route.halts || 0)].min
         if num_halts.positive?
           stops.concat(halts.take(num_halts))
@@ -598,8 +613,8 @@ module Engine
           stops.concat(halts.take(num_halts))
         end
 
-        # update route halts unless this is a loaner train
-        route.halts = num_halts if halts.any? && route.train.owner != @depot
+        # update route halts
+        route.halts = num_halts if halts.any? && !ignore_halts? && !ignore_halt_subsidies?(route)
 
         stops
       end
