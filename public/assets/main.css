@@ -53,7 +53,7 @@ p {
   a:active {
     outline: 0;
   }
-  button:hover, button.active, .button_link:hover {
+  button:hover, .button_link:hover {
     background: black;
     border-color: gainsboro;
     color: gainsboro;
@@ -66,6 +66,11 @@ p {
     outline: 0;
     opacity: 0.8;
   }
+}
+
+button.active {
+  background: lightblue;
+  color: black;
 }
 
 input, select, textarea {
