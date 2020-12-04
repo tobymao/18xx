@@ -1,4 +1,3 @@
-# coding: utf-8
 # frozen_string_literal: true
 
 require_relative '../base'
@@ -12,7 +11,7 @@ module Engine
 
         attr_reader :companies
 
-        # TODO notes
+        # TODO: notes
         # must buy cheapest or reduce price of another
         # if everything is minimum, and nobody has bought a private, must buy
         # if someone has bought a private and everything is minimum, can pass
@@ -49,7 +48,7 @@ module Engine
           @round.next_entity_index!
         end
 
-        # TODO - do we need this?
+        # TODO: - do we need this?
         def process_pass(action)
           entity = action.entity
           @log << "#{entity.name} passes"
@@ -61,29 +60,29 @@ module Engine
         def process_reduce(action)
           action.entity.unpass!
           company = action.company
-          company.discount += 5;
+          company.discount += 5
           price = company.min_bid
           @log << "#{current_entity.name} reduces #{company.name} by £5 to #{@game.format_currency(price)}"
           @round.next_entity_index!
         end
 
         def may_reduce?(company)
-          #Each private can be discounted a maximum of 6 times
+          # Each private can be discounted a maximum of 6 times
 
-          if company.name == "Melbourne & Hobson's Bay Railway Company" && company.min_bid > 0
-            return true
-          elsif company.name == "Sydney Railway Company" && company.min_bid > 40
-            return true
-          elsif company.name == "Tasmanian Railways" && company.min_bid > 80
-            return true
-          elsif company.name == "The Ghan" && company.min_bid > 140
-            return true
-          elsif company.name == "Trans-Australian Railway" && company.min_bid > 140
-            return true
-          elsif company.name == "North Australian Railway" && company.min_bid > 200
-            return true
+          if company.name == "Melbourne & Hobson's Bay Railway Company" && company.min_bid.positive?
+            true
+          elsif company.name == 'Sydney Railway Company' && company.min_bid > 40
+            true
+          elsif company.name == 'Tasmanian Railways' && company.min_bid > 80
+            true
+          elsif company.name == 'The Ghan' && company.min_bid > 140
+            true
+          elsif company.name == 'Trans-Australian Railway' && company.min_bid > 140
+            true
+          elsif company.name == 'North Australian Railway' && company.min_bid > 200
+            true
           else
-            return false
+            false
           end
         end
 
@@ -108,18 +107,15 @@ module Engine
           }
         end
 
-        # TODO - refactor naming, since this is confusing as it reduces price, not min_bid
+        # TODO: - refactor naming, since this is confusing as it reduces price, not min_bid
         def min_bid(company)
           return unless company
-          return company.value-company.discount
+
+          company.value - company.discount
         end
 
-        def may_purchase?(company)
+        def may_purchase?(_company)
           true
-        end
-
-        def committed_cash(player, _show_hidden = false)
-          bids_for_player(player).sum(&:price)
         end
 
         def max_bid(player, company)
@@ -157,8 +153,7 @@ module Engine
           yield company, bids if bids.size > 1
         end
 
-
-        # TODO - should pay out dividends, not reduce values
+        # TODO: - should pay out dividends, not reduce values
         def all_passed!
           # Everyone has passed so we need to run a fake OR.
           if @companies.include?(@cheapest)
@@ -182,7 +177,7 @@ module Engine
           entities.each(&:unpass!)
         end
 
-        # TODO - does this check if player has the money
+        # TODO: - does this check if player has the money
         def buy_company(player, company, price)
           company.owner = player
           player.companies << company
@@ -194,14 +189,13 @@ module Engine
             share = ability.share
 
             if share.president
-              # TODO - I think this isn't necessary since we must par CAR to 100
+              # TODO: - I think this isn't necessary since we must par CAR to 100
               @round.company_pending_par = company
             else
               @game.share_pool.buy_shares(player, share, exchange: :free)
             end
           end
         end
-
       end
     end
   end

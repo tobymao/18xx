@@ -8,9 +8,9 @@ module Engine
     class G1848 < Base
       load_from_json(Config::Game::G1848::JSON)
 
-      # TODO - private abilities need defined in config
+      # TODO: - private abilities need defined in config
 
-      # TODO - market has a hanging 'zero' spot
+      # TODO: - market has a hanging 'zero' spot
 
       DEV_STAGE = :prealpha
       GAME_LOCATION = 'Australia'
@@ -25,9 +25,9 @@ module Engine
 
       HOME_TOKEN_TIMING = :operate
 
-      #<TODO> Need to define cert_limit (see g_1846 for reference?)
+      # <TODO> Need to define cert_limit (see g_1846 for reference?)
 
-      # TODO - privates shouldn't count against cert limit
+      # TODO: - privates shouldn't count against cert limit
 
       def new_auction_round
         Round::Auction.new(self, [
@@ -35,8 +35,8 @@ module Engine
         ])
       end
 
-      #<TODO> removed (Step::G1848::SpecialTrack, from after DiscardTrain)
-      #probably need to add this back in
+      # <TODO> removed (Step::G1848::SpecialTrack, from after DiscardTrain)
+      # probably need to add this back in
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
@@ -51,7 +51,6 @@ module Engine
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
-
     end
   end
 end
