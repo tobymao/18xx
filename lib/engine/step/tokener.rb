@@ -36,7 +36,7 @@ module Engine
 
         @game.game_error('Token is already used') if token.used
 
-        token, ability = adjust_token_price_ability!(entity, token, hex, city)
+        token, ability = adjust_token_price_ability!(entity, token, hex, city, special_ability)
         tokener = entity.name
         if ability
           tokener = "#{entity.name} (#{ability.owner.sym})" if ability.owner != entity
@@ -76,13 +76,14 @@ module Engine
         prices.compact.min
       end
 
-      def adjust_token_price_ability!(entity, token, hex, city)
+      def adjust_token_price_ability!(entity, token, hex, city, special_ability = nil)
         if (teleport = @round.teleported?(entity))
           token.price = 0
           return [token, teleport]
         end
 
         entity.abilities(:token) do |ability, _|
+          next if ability.special_only && ability != special_ability
           next if ability.hexes.any? && !ability.hexes.include?(hex.id)
           next if ability.city && ability.city != city.index
 
