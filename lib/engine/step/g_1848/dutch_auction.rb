@@ -48,7 +48,6 @@ module Engine
           @round.next_entity_index!
         end
 
-        # TODO: - do we need this?
         def process_pass(action)
           entity = action.entity
           @log << "#{entity.name} passes"
@@ -101,12 +100,6 @@ module Engine
           @cheapest = @companies.first
         end
 
-        def round_state
-          {
-            companies_pending_par: [],
-          }
-        end
-
         # TODO: - refactor naming, since this is confusing as it reduces price, not min_bid
         def min_bid(company)
           return unless company
@@ -153,26 +146,10 @@ module Engine
           yield company, bids if bids.size > 1
         end
 
-        # TODO: - should pay out dividends, not reduce values
         def all_passed!
-          # Everyone has passed so we need to run a fake OR.
-          if @companies.include?(@cheapest)
-            # No one has bought anything so we reduce the value of the cheapest company.
-            value = @cheapest.min_bid
-            @cheapest.discount += 5
-            new_value = @cheapest.min_bid
-            @log << "#{@cheapest.name} minimum bid decreases from "\
-              "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
-
-            if new_value <= 0
-              # It's now free so the current player is forced to take it.
-              buy_company(current_entity, @cheapest, 0)
-              resolve_bids
-            end
-          else
-            @game.payout_companies
-            @game.or_set_finished
-          end
+          # Run a fake OR where all privates pay once
+          @game.payout_companies
+          @game.or_set_finished
 
           entities.each(&:unpass!)
         end
