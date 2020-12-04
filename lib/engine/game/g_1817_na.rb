@@ -15,6 +15,7 @@ module Engine
 
       GAME_LOCATION = 'North America'
       SEED_MONEY = 150
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817NA'
       GAME_RULES_URL = {
         '1817NA' => 'https://docs.google.com/document/d/1b1qmHoyLnzBo8SRV8Ff17iDWnB7UWNbIsOyDADT0-zY/view',
         '1817 Rules' => 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view',
