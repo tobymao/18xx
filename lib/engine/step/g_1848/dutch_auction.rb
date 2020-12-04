@@ -11,12 +11,11 @@ module Engine
 
         attr_reader :companies
 
-        # TODO: notes
-        # must buy cheapest or reduce price of another
-        # if everything is minimum, and nobody has bought a private, must buy
-        # if someone has bought a private and everything is minimum, can pass
-        # once you buy a private, can pass forever if you want
-        # if privates are left and everyone passes, privates pay
+        # On your turn, must buy any private or reduce price of any private
+        # Once you own a private, you may pass
+        # if everything is reduced to minimum price, and nobody has bought a private, you must buy one
+        # if any privates are left and everyone passes in a row, owned privates pay and auction continues
+        # if someone has bought a private and everything is minimum, you can pass
 
         ACTIONS = %w[bid reduce].freeze
         ACTIONS_WITH_PASS = %w[bid reduce pass].freeze
@@ -38,7 +37,7 @@ module Engine
         end
 
         def pass_description
-          'Pass (Buy or Reduce)'
+          'Pass'
         end
 
         def process_bid(action)
@@ -100,7 +99,6 @@ module Engine
           @cheapest = @companies.first
         end
 
-        # TODO: - refactor naming, since this is confusing as it reduces price, not min_bid
         def min_bid(company)
           return unless company
 
@@ -111,39 +109,10 @@ module Engine
           true
         end
 
-        def max_bid(player, company)
-          player.cash - committed_cash(player) + current_bid_amount(player, company)
-        end
-
         protected
 
-        def resolve_bids
-          until (company = @companies.first).nil?
-            break unless resolve_bids_for_company(company)
-          end
-        end
-
-        def resolve_bids_for_company(company)
-          resolved = false
-          is_new_auction = company != @auctioning
-          @auctioning = nil
-          bids = @bids[company]
-
-          if bids.one?
-            accept_bid(bids.first)
-            resolved = true
-          elsif can_auction?(company)
-            @auctioning = company
-            @log << "#{@auctioning.name} goes up for auction" if is_new_auction
-          end
-
-          resolved
-        end
-
         def active_auction
-          company = @auctioning
-          bids = @bids[company]
-          yield company, bids if bids.size > 1
+          false
         end
 
         def all_passed!

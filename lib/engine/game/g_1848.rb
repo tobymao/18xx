@@ -27,7 +27,17 @@ module Engine
 
       # <TODO> Need to define cert_limit (see g_1846 for reference?)
 
+      # TODO: end game trigger e.g. 18mex
+
+      # TODO: Receivership mechanics
+
       # TODO: - privates shouldn't count against cert limit
+
+      # TODO: Game End Conditions:
+      # 1. The Bank has run out of money.
+      # 2. A company's share price has reached the highest possible position on the Share Price Chart.
+      # 3. The Bank of England has given 16 or more loans.
+      # 4. There are five or more companies being administered by the Bank of England.
 
       def new_auction_round
         Round::Auction.new(self, [
@@ -35,8 +45,6 @@ module Engine
         ])
       end
 
-      # <TODO> removed (Step::G1848::SpecialTrack, from after DiscardTrain)
-      # probably need to add this back in
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
