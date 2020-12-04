@@ -17,12 +17,23 @@ module Engine
           @no_upgrades = false
         end
 
+        def round_state
+          state = super || {}
+          state[:last_tile_lay] = nil
+          state
+        end
+
         def get_tile_lay(entity)
           action = super
           return unless action
 
           action[:upgrade] = false if @no_upgrades
           action
+        end
+
+        def process_lay_tile(action)
+          @round.last_tile_lay = action.tile
+          super
         end
       end
     end

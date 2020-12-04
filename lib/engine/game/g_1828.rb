@@ -261,6 +261,12 @@ module Engine
         end
       end
 
+      def can_run_route?(entity)
+        return false if entity.id == 'C&P' && !@round.last_tile_lay
+
+        super
+      end
+
       private
 
       def setup_minors
