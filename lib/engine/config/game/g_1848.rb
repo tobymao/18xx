@@ -345,7 +345,7 @@ module Engine
         100
       ],
       "coordinates": "D1",
-      "color": "orangeRed"
+      "color": "maroon"
     },
     {
       "sym": "QR",
