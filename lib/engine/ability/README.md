@@ -66,7 +66,7 @@ company is bought in by a corporation.
 Describe when the company closes, using the `when` attribute.
 
 - `corporation'`: If `when` is set to `"train"`, this value is the name
-of the corporation whose train purchase closes this company.
+  of the corporation whose train purchase closes this company.
 
 ## description
 
@@ -101,6 +101,14 @@ Reserve a token slot
 - `slot`: A specific token slot to designate
 - `city`: Which city to reserve, if multiple cities are on one hex
 
+## return_token
+
+Take a station token off the board and place back on the charter
+in the most expensive open location
+
+- `reimburse`: If true, the corporation is reimbursed the token cost
+  of the location where the token is placed
+
 ## revenue_change
 
 The revenue for this company changes when the conditions set by `when`
@@ -119,8 +127,7 @@ This company comes with a share of a corporation when acquired.
   president's certificate randomly selected at game setup. Gives one
   ordinary share of one the corporations listed in `corporations`,
   randomly selected at game setup.
-- `corporations`: A list of corporations to be used with `"share":
-  "random_share"`
+- `corporations`: A list of corporations to be used with `"share": "random_share"`
 
 ## teleport
 
