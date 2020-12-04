@@ -222,6 +222,12 @@ module Engine
         upgrades
       end
 
+      def can_go_bankrupt?(player, corporation)
+        # Corporation is nil in the case of interest / loan bankruptcies
+        return liquidity(player, emergency: true).negative? if corporation.nil?
+        super
+      end
+
       # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
       STATUS_TEXT = {
         'escrow' => [
@@ -262,7 +268,7 @@ module Engine
       }.merge(Base::STATUS_TEXT)
       def operating_round(round_num)
         Round::G1856::Operating.new(self, [
-          Step::Bankrupt,
+          Step::G1856::Bankrupt,
           Step::G1856::CashCrisis,
           # No exchanges.
           Step::DiscardTrain,

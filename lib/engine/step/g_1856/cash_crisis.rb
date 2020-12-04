@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require_relative '../g_1817/cash_crisis'
 require_relative '../base'
 require_relative '../emergency_money'
 
 module Engine
   module Step
     module G1856
-      class CashCrisis < G1817::CashCrisis
+      class CashCrisis < Base
+        include EmergencyMoney
         # 1856 Has several situations outside of buying trains where
         #  a president is forced to contribute funds (and may even go bankrupt)
         #  so reusing the 1817 CashCrisis makes sense
@@ -27,10 +27,33 @@ module Engine
           'Emergency Fundraising'
         end
 
-        def can_sell?(entity, bundle)
-          # Use Emergency Money's implementation
-          EmergencyMoney.instance_method(:can_sell?).bind(self).call(entity, bundle)
+        def active?
+          active_entities.any?
         end
+
+        def active_entities
+          return [] unless @round.cash_crisis_player && @round.cash_crisis_player.cash.negative?
+          [@round.cash_crisis_player]
+        end
+
+        def needed_cash(entity)
+          -entity.cash
+        end
+
+        def available_cash(_player)
+          0
+        end
+
+        def process_sell_shares(action)
+          super
+          return if action.entity.cash.negative?
+
+          @active_entity = nil
+        end
+
+        # Use EmergencyMoney can_sell?
+
+        def swap_sell(_player, _corporation, _bundle, _pool_share); end
       end
     end
   end
