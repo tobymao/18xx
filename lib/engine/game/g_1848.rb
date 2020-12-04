@@ -8,6 +8,12 @@ module Engine
     class G1848 < Base
       load_from_json(Config::Game::G1848::JSON)
 
+      # TODO - private abilities need defined in config
+
+      # TODO - need to include company icons
+
+      # TODO - BoE name doesn't show up on card
+
       DEV_STAGE = :alpha
       GAME_LOCATION = 'Australia'
       GAME_RULES_URL = 'http://ohley.de/english/1848/1848-rules.pdf'
@@ -23,8 +29,10 @@ module Engine
 
       #<TODO> Need to define cert_limit (see g_1846 for reference?)
 
-      def init_round
-        Round::Auction.new(self, [Step::G1848::DutchAuction])
+      def new_auction_round
+        Round::Auction.new(self, [
+          Step::G1848::DutchAuction,
+        ])
       end
 
       #<TODO> removed (Step::G1848::SpecialTrack, from after DiscardTrain)
