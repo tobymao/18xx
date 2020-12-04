@@ -17,7 +17,7 @@ module Engine
           []
         end
 
-        def adjust_token_price_ability!(entity, token, hex, city)
+        def adjust_token_price_ability!(entity, token, hex, city, special_ability = nil)
           return [token, nil] if @game.active_step.current_entity.corporation?
 
           super

@@ -341,6 +341,7 @@ module Engine
           "count": 1,
           "from_owner": true,
           "cheater": 0,
+          "special_only": true,
           "discount": 0,
           "hexes": [
             "A2", "A4", "A6", "A8", "B5", "B7", "B9", "B11", "B13", "C2", "C4",
@@ -365,6 +366,7 @@ module Engine
           "price": 0,
           "teleport_price": 0,
           "count": 1,
+          "special_only": true,
           "neutral": true,
           "hexes": [
             "A4", "A6", "A8", "B5", "B7", "B9", "B11", "B13", "C4", "C6", "C8",
