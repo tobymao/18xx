@@ -22,14 +22,16 @@ module Engine
         ACTIONS = %w[bid reduce].freeze
         ACTIONS_WITH_PASS = %w[bid reduce pass].freeze
 
-        # TODO - fix the 'Buy' button changing to "Place Bid" for non-cheapest ones
-
         def description
           "Buy a Company or Reduce its Price by #{@game.format_currency(5)}"
         end
 
         def available
           @companies
+        end
+
+        def auctioneer?
+          false
         end
 
         def committed_cash(_player, _show_hidden = false)
@@ -40,8 +42,6 @@ module Engine
           'Pass (Buy or Reduce)'
         end
 
-        # TODO - idk how bidding renders "Buy" when Cheapest
-        # we want that behavior but w/o the auction logic
         def process_bid(action)
           company = action.company
           price = company.min_bid
@@ -59,13 +59,12 @@ module Engine
         end
 
         def process_reduce(action)
-          # TODO - not sure if we need to set pass/unpass status
           action.entity.unpass!
           company = action.company
           company.discount += 5;
           price = company.min_bid
           @log << "#{current_entity.name} reduces #{company.name} by £5 to #{@game.format_currency(price)}"
-          @round.next_entity_index! #TODO not sure about this
+          @round.next_entity_index!
         end
 
         def may_reduce?(company)
@@ -116,8 +115,7 @@ module Engine
         end
 
         def may_purchase?(company)
-          active_auction { return false }
-          company && company == @companies.first
+          true
         end
 
         def committed_cash(player, _show_hidden = false)

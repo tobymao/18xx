@@ -10,11 +10,9 @@ module Engine
 
       # TODO - private abilities need defined in config
 
-      # TODO - need to include company icons
+      # TODO - market has a hanging 'zero' spot
 
-      # TODO - BoE name doesn't show up on card
-
-      DEV_STAGE = :alpha
+      DEV_STAGE = :prealpha
       GAME_LOCATION = 'Australia'
       GAME_RULES_URL = 'http://ohley.de/english/1848/1848-rules.pdf'
       GAME_DESIGNER = 'Leonhard Orgler and Helmut Ohley'
@@ -28,6 +26,8 @@ module Engine
       HOME_TOKEN_TIMING = :operate
 
       #<TODO> Need to define cert_limit (see g_1846 for reference?)
+
+      # TODO - privates shouldn't count against cert limit
 
       def new_auction_round
         Round::Auction.new(self, [
