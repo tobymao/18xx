@@ -112,7 +112,7 @@ module Engine
         protected
 
         def active_auction
-          true
+          false
         end
 
         def all_passed!
