@@ -67,17 +67,17 @@ module Engine
         def may_reduce?(company)
           # Each private can be discounted a maximum of 6 times
 
-          if company.name == "Melbourne & Hobson's Bay Railway Company" && company.min_bid.positive?
+          if company.sym == 'P1' && company.min_bid.positive?
             true
-          elsif company.name == 'Sydney Railway Company' && company.min_bid > 40
+          elsif company.sym == 'P2' && company.min_bid > 40
             true
-          elsif company.name == 'Tasmanian Railways' && company.min_bid > 80
+          elsif company.sym == 'P3' && company.min_bid > 80
             true
-          elsif company.name == 'The Ghan' && company.min_bid > 140
+          elsif company.sym == 'P4' && company.min_bid > 140
             true
-          elsif company.name == 'Trans-Australian Railway' && company.min_bid > 140
+          elsif company.sym == 'P5' && company.min_bid > 140
             true
-          elsif company.name == 'North Australian Railway' && company.min_bid > 200
+          elsif company.sym == 'P6' && company.min_bid > 200
             true
           else
             false
