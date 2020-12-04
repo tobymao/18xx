@@ -154,11 +154,11 @@ module Engine
           entities.each(&:unpass!)
         end
 
-        # TODO: - does this check if player has the money
         def buy_company(player, company, price)
           company.owner = player
           player.companies << company
-          player.spend(price, @game.bank) if price.positive?
+          # P1 can be reduced to free, so we disable `check_positive`
+          player.spend(price, @game.bank, check_positive: false)
           @companies.delete(company)
           @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
 
