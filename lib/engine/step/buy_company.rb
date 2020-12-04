@@ -58,7 +58,7 @@ module Engine
 
         log_later = []
         company.owner = entity
-        owner.companies.delete(company)
+        owner&.companies&.delete(company)
 
         company.abilities(:assign_corporation) do |ability|
           Assignable.remove_from_all!(assignable_corporations, company.id) do |unassigned|
@@ -82,8 +82,10 @@ module Engine
         @round.company_sellers << owner
 
         entity.companies << company
-        entity.spend(price, owner)
-        @log << "#{entity.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
+        entity.spend(price, owner.nil? ? @game.bank : owner)
+        @log << "#{entity.name} buys #{company.name} from"\
+                "#{owner.nil? ? 'the market' : owner.name} for"\
+                "#{@game.format_currency(price)}"
         log_later.each { |l| @log << l }
       end
 
