@@ -99,7 +99,6 @@ module Engine
           @cheapest = @companies.first
         end
 
-        # TODO: - refactor naming, since this is confusing as it reduces price, not min_bid
         def min_bid(company)
           return unless company
 
