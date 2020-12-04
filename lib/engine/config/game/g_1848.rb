@@ -253,7 +253,8 @@ module Engine
       "name": "Bank of England",
       "logo": "1848/BOE",
       "tokens": [],
-      "color": "white"
+      "text_color": "black",
+      "color": "antiqueWhite"
     },
     {
       "sym": "CAR",
@@ -265,7 +266,7 @@ module Engine
         100
       ],
       "coordinates": "E4",
-      "color": "black"
+      "color": "#232b2b"
     },
     {
       "sym": "VR",
@@ -277,7 +278,8 @@ module Engine
         100
       ],
       "coordinates": "H11",
-      "color": "yellow"
+      "text_color": "black",
+      "color": "gold"
     },
     {
       "sym": "NSW",
@@ -290,6 +292,7 @@ module Engine
         100
       ],
       "coordinates": "F17",
+      "text_color": "black",
       "color": "orange"
     },
     {
@@ -303,12 +306,12 @@ module Engine
         100
       ],
       "coordinates": "G6",
-      "color": "purple"
+      "color": "darkMagenta"
     },
     {
-      "sym": "CR",
+      "sym": "COM",
       "name": "Commonwealth Railways",
-      "logo": "1848/CR",
+      "logo": "1848/COM",
       "tokens": [
         0,
         0,
@@ -316,7 +319,7 @@ module Engine
         100,
         100
       ],
-      "color": "gray"
+      "color": "dimGray"
     },
     {
       "sym": "FT",
@@ -329,7 +332,7 @@ module Engine
         100
       ],
       "coordinates": "G14",
-      "color": "blue"
+      "color": "mediumBlue"
     },
     {
       "sym": "WA",
@@ -343,7 +346,7 @@ module Engine
         100
       ],
       "coordinates": "D1",
-      "color": "red"
+      "color": "orangeRed"
     },
     {
       "sym": "QR",
@@ -357,7 +360,7 @@ module Engine
         100
       ],
       "coordinates": "B19",
-      "color": "green"
+      "color": "darkGreen"
     }
   ],
   "trains": [
