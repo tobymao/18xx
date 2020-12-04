@@ -71,7 +71,7 @@ class Api
                 )
 
                 active_players = meta['active_players']
-                acting = users.select { |u| active_players.include?(u.name) }
+                acting = users.select { |u| active_players.include?(u.id) || active_players.include?(u.name) }
 
                 game.round = meta['round']
                 game.turn = meta['turn']
@@ -93,7 +93,7 @@ class Api
                 action_id = r.params['id']
                 halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
 
-                r.params['user'] = user.name
+                r.params['user'] = user.id
 
                 engine = engine.process_action(r.params)
                 action = engine.actions.last.to_h
@@ -209,8 +209,8 @@ class Api
   end
 
   def set_game_state(game, engine, users)
-    active_players = engine.active_player_names
-    acting = users.select { |u| active_players.include?(u.name) }
+    active_players = engine.active_players_id
+    acting = users.select { |u| active_players.include?(u.id) }
 
     game.round = engine.round.name
     game.turn = engine.turn

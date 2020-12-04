@@ -30,7 +30,7 @@ module View
           ability.corporation == 'any' ? @game.corporations : [@game.corporation_by_id(ability.corporation)]
         corporations.each do |corporation|
           ipo_share = corporation.shares.find { |s| !s.president }
-          children << render_exchange(ipo_share, @game.class::IPO_NAME) if ability.from.include?(:ipo)
+          children << render_exchange(ipo_share, @game.ipo_name(corporation)) if ability.from.include?(:ipo)
 
           pool_share = @game.share_pool.shares_by_corporation[corporation]&.first
           children << render_exchange(pool_share, 'Market') if ability.from.include?(:market)

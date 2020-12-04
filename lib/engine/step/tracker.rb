@@ -73,9 +73,9 @@ module Engine
         hex.lay(tile)
 
         @game.graph.clear
-        check_track_restrictions!(entity, old_tile, tile)
         free = false
         discount = 0
+        teleport = false
 
         tile_lay_abilities(entity) do |ability|
           next if ability.hexes.any? && (!ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name))
@@ -91,8 +91,19 @@ module Engine
         end
 
         entity.abilities(:teleport) do |ability, _|
-          ability.use! if ability.hexes.include?(hex.id) && ability.tiles.include?(tile.name)
+          next if !ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name)
+
+          teleport = true
+          free = true if ability.free_tile_lay
+          if ability.cost
+            spender.spend(ability.cost, @game.bank) if ability.cost.positive?
+            @log << "#{spender.name} spends #{@game.format_currency(ability.cost)} and teleports to #{hex.name}"
+          end
+
+          ability.use!
         end
+
+        check_track_restrictions!(entity, old_tile, tile) unless teleport
 
         terrain = old_tile.terrain
         cost =
@@ -104,7 +115,7 @@ module Engine
           else
             border, border_types = border_cost(tile, entity)
             terrain += border_types if border.positive?
-            @game.tile_cost(old_tile, entity) + border + extra_cost - discount
+            @game.tile_cost(old_tile, hex, entity) + border + extra_cost - discount
           end
 
         try_take_loan(spender, cost)
@@ -125,6 +136,7 @@ module Engine
           token.remove!
         end
         @log << "#{spender.name}"\
+          "#{spender == entity ? '' : " (#{entity.sym})"}"\
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile ##{tile.name}"\
           " with rotation #{rotation} on #{hex.name}"
@@ -158,7 +170,9 @@ module Engine
           neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
 
           ability = entity.all_abilities.find do |a|
-            (a.type == :tile_discount) && (border.type == a.terrain)
+            (a.type == :tile_discount) &&
+             (border.type == a.terrain) &&
+             (!a.hexes || a.hexes.include?(hex.name))
           end
           discount = ability&.discount || 0
 

@@ -197,8 +197,6 @@ module Engine
                       repar: 'Par value after bankruptcy',
                       ignore_one_sale: 'Ignore first share sold when moving price' }.freeze
 
-      IPO_NAME = 'IPO'
-      IPO_RESERVED_NAME = 'IPO Reserved'
       MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
       OBSOLETE_TRAINS_COUNT_FOR_LIMIT = false
@@ -458,8 +456,8 @@ module Engine
         @round.active_step
       end
 
-      def active_player_names
-        active_players.map(&:name)
+      def active_players_id
+        active_players.map(&:id)
       end
 
       def self.filtered_actions(actions)
@@ -515,7 +513,9 @@ module Engine
           return clone(@actions)
         end
 
-        @log << "• Action(#{action.type}) via Master Mode by #{action.user}:" if action.user
+        if action.user
+          @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
+        end
 
         preprocess_action(action)
 
@@ -577,6 +577,11 @@ module Engine
 
       def trains
         @depot.trains
+      end
+
+      # Before rusting, check if this train individual should rust.
+      def rust?(_train)
+        true
       end
 
       def shares
@@ -981,8 +986,11 @@ module Engine
         city.place_token(corporation, token)
       end
 
-      def tile_cost(tile, entity)
-        ability = entity.all_abilities.find { |a| a.type == :tile_discount }
+      def tile_cost(tile, hex, entity)
+        ability = entity.all_abilities.find do |a|
+          a.type == :tile_discount &&
+          (!a.hexes || a.hexes.include?(hex.name))
+        end
 
         tile.upgrades.sum do |upgrade|
           discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
@@ -1190,6 +1198,14 @@ module Engine
       def flush_log!
         @queued_log.each { |l| @log << l }
         @queued_log = []
+      end
+
+      def ipo_name(_entity = nil)
+        'IPO'
+      end
+
+      def ipo_reserved_name(_entity = nil)
+        'IPO Reserved'
       end
 
       private

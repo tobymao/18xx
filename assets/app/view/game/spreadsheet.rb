@@ -141,9 +141,9 @@ module View
             *@players.map do |p|
               h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
             end,
-            h(:th, @game.class::IPO_NAME),
+            h(:th, @game.ipo_name),
             h(:th, 'Market'),
-            h(:th, render_sort_link(@game.class::IPO_NAME, :par_price)),
+            h(:th, render_sort_link(@game.ipo_name, :par_price)),
             h(:th, render_sort_link('Market', :share_price)),
             h(:th, render_sort_link('Cash', :cash)),
             h(:th, render_sort_link('Order', :order)),

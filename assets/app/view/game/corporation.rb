@@ -304,7 +304,7 @@ module View
         num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
         pool_rows = [
           h('tr.ipo', [
-            h('td.left', @game.class::IPO_NAME),
+            h('td.left', @game.ipo_name(@corporation)),
             h('td.right', shares_props, num_ipo_shares),
             h('td.padded_number', share_price_str(@corporation.par_price)),
           ]),
@@ -364,7 +364,7 @@ module View
         h('table.center', [
           h(:tbody, [
             h('tr.reserved', [
-              h('td.left', bold, "#{@game.class::IPO_RESERVED_NAME} shares:"),
+              h('td.left', bold, "#{@game.ipo_reserved_name} shares:"),
               h('td.right', @corporation.reserved_shares.map { |s| "#{s.percent}%" }.join(', ')),
             ]),
           ]),

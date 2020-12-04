@@ -3,6 +3,7 @@
 require_relative '../config/game/g_1860'
 require_relative 'base'
 require_relative '../g_1860/bank'
+require_relative '../g_1860/share_pool'
 
 module Engine
   module Game
@@ -28,6 +29,7 @@ module Engine
       HOME_TOKEN_TIMING = :float
       SELL_AFTER = :any_time
       SELL_BUY_ORDER = :sell_buy
+      MARKET_SHARE_LIMIT = 100
 
       STOCKMARKET_COLORS = {
         par: :yellow,
@@ -89,6 +91,10 @@ module Engine
         Engine::G1860::Bank.new(20_000, self, log: @log)
       end
 
+      def init_share_pool
+        Engine::G1860::SharePool.new(self)
+      end
+
       def setup
         @bankrupt_corps = []
         @receivership_corps = []
@@ -119,14 +125,13 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::Operating.new(self, [
-          Step::Bankrupt,
+        Round::G1860::Operating.new(self, [
           Step::DiscardTrain,
           Step::G1860::Track,
-          Step::Token,
+          Step::G1860::Token,
           Step::G1860::Route,
           Step::G1860::Dividend,
-          Step::BuyTrain,
+          Step::G1860::BuyTrain,
         ], round_num: round_num)
       end
 
@@ -245,11 +250,11 @@ module Engine
         bundles
       end
 
-      def sell_shares_and_change_price(bundle)
+      def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
         corporation = bundle.corporation
         price = corporation.share_price.price
 
-        @share_pool.sell_shares(bundle)
+        @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
         num_shares = bundle.num_shares
         num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
         num_shares.times { @stock_market.move_left(corporation) }

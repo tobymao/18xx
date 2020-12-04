@@ -19,8 +19,6 @@ module Engine
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MEX'
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
-      IPO_RESERVED_NAME = 'Trade-in'
-
       # Sell of one 5% NdM share wont affect stock price.
       # Actually neither should sell of 2 5% but they will
       # always be sold just one at a time.
@@ -141,7 +139,6 @@ module Engine
         @minors.each do |minor|
           train = @depot.upcoming[0]
           train.buyable = false
-          update_end_of_life(train, nil, nil) if @optional_rules&.include?(:delay_minor_close)
           minor.buy_train(train, :free)
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token)
@@ -232,6 +229,10 @@ module Engine
         super
       end
 
+      def ipo_reserved_name(_entity = nil)
+        'Trade-in'
+      end
+
       def float_corporation(corporation)
         @recently_floated << corporation
 
@@ -291,8 +292,8 @@ module Engine
         default_revenue_minor = 15
         revenue = format_currency(default_revenue_minor)
         @minors.select(&:floated?).each do |minor|
-          bank.spend(default_revenue_minor, minor.owner)
-          bank.spend(default_revenue_minor, minor)
+          @bank.spend(default_revenue_minor, minor.owner)
+          @bank.spend(default_revenue_minor, minor)
           @log << "Minor #{minor.name} receives #{revenue}, as does its owner #{minor.owner.name}"
         end
       end
@@ -314,7 +315,7 @@ module Engine
 
       def purchasable_companies(entity = nil)
         return super if @phase.current[:name] != '2' || !@optional_rules&.include?(:early_buy_of_kcmo)
-        return [] unless p2_company.owner.player?
+        return [] unless p2_company.owner&.player?
 
         [p2_company]
       end
@@ -371,9 +372,9 @@ module Engine
         @log << "-- #{major.name} merges into #{ndm.name} --"
 
         # Rule 5e: Any other shares are sold off for half market price
-        refund = major.ipoed ? (major.share_price.price / 2.0).ceil : 0
+        refund = major.ipoed ? (major.share_price.price / 2.0) : 0
         @players.each do |p|
-          refund_count = 0
+          refund_amount = 0.0
           p.shares_of(major).dup.each do |s|
             next unless s
 
@@ -382,8 +383,8 @@ module Engine
               # Might trigger presidency change in NdM
               @share_pool.buy_shares(major.owner, ndm_merge_share, exchange: :free, exchange_price: 0)
             else
-              bank.spend(refund, p) if refund.positive?
-              refund_count += 1
+              # Refund 10% share (as it is never NdM)
+              refund_amount += refund
             end
             s.transfer(major)
           end
@@ -391,9 +392,11 @@ module Engine
           @share_pool.shares_of(major).dup.each do |s|
             s.transfer(major)
           end
-          if refund_count.positive?
-            @log << "#{p.name} receives #{format_currency(refund * refund_count)} in share compensation"
-          end
+          next unless refund_amount.positive?
+
+          refund_amount = refund_amount.ceil
+          @bank.spend(refund_amount, p)
+          @log << "#{p.name} receives #{format_currency(refund_amount)} in share compensation"
         end
 
         # Rule 5f: Handle tokens. NdM gets two exchange tokens. The first exchange token will be used
@@ -462,6 +465,13 @@ module Engine
         end
 
         major.close!
+      end
+
+      def rust?(train)
+        return super unless @optional_rules&.include?(:delay_minor_close)
+
+        # Do not rust minor's 2 trains
+        !(train.name == '2' && train.owner.minor?)
       end
 
       def buy_first_5_train(player)

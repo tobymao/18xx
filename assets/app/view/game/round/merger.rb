@@ -20,7 +20,8 @@ module View
           actions = @round.actions_for(entity)
           auctioning_corporation = @step.auctioning_corporation if @step.respond_to?(:auctioning_corporation)
           corporation_to_merge_into = @step.merge_target if @step.respond_to?(:merge_target)
-          merge_entity = auctioning_corporation || corporation_to_merge_into || entity
+          buyer = @step.buyer if @step.respond_to?(:buyer)
+          merge_entity = buyer || auctioning_corporation || corporation_to_merge_into || entity
 
           if @step.respond_to?(:mergeable)
             mergeable_entities = @step.mergeable(merge_entity)

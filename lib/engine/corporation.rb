@@ -10,6 +10,7 @@ require_relative 'share'
 require_relative 'share_holder'
 require_relative 'spender'
 require_relative 'token'
+require_relative 'transfer'
 
 module Engine
   class Corporation
@@ -21,9 +22,10 @@ module Engine
     include Passer
     include ShareHolder
     include Spender
+    include Transfer
 
-    attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent
-    attr_reader :capitalization, :companies, :min_price, :name, :full_name, :fraction_shares, :type
+    attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization
+    attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :type
     attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
@@ -209,20 +211,6 @@ module Engine
 
     def share_percent
       @second_share&.percent || presidents_percent / 2
-    end
-
-    def transfer(ownable_type, to)
-      ownables = send(ownable_type)
-      to_ownables = to.send(ownable_type)
-
-      ownables.each do |ownable|
-        ownable.owner = to
-        to_ownables << ownable
-      end
-
-      transferred = ownables.dup
-      ownables.clear
-      transferred
     end
 
     def closed?

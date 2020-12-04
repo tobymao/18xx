@@ -130,6 +130,8 @@ Lay a tile and place a station token without connectivity
   teleport destination.
 - `tiles`: An array of tile numbers which may be placed at the
   teleport destination.
+- `cost`: Cost to use the teleport ability.
+- `fee_tile_lay`: If true, the tile is laid with 0 cost. Default false.
 
 ## tile_discount
 
@@ -137,6 +139,8 @@ Discount the cost for laying tiles in the specified terrain type
 
 - `discount`: Discount amount
 - `terrain`: Type of terrain for which discount is provided
+- `hexes`: If not specified, all applicable hexes qualifies for
+  the discount. If specified, only specified hexes qualify
 
 ## tile_income
 
@@ -193,3 +197,14 @@ Modified station token placement
   token without connectivity, for the given price.
 - `extra`: If true, this ability may be used in addition to the turn's
   normal token placement step. Default false.
+- `cheater`: If an integer is given, this token will be placed into a city at
+  whichever is the lowest unoccupied slot index of the following: a regular slot
+  in the city; the `cheater` value; one slot higher than the city actually has,
+  effectively increasing the city's size by one. (See 18 Los Angeles's optional
+  company "Dewey, Cheatham, and Howe" or the corporations which get removed in
+  1846 2p Variant for examples). Default nil.
+- `special_only`: If true, this ability may only be used by explicitly
+  activating the company to which it belongs (i.e., using the `SpecialTrack`
+  step); if unset or false, `Engine::Step::Tokener#adjust_token_price_ability!`
+  infers that the special ability ought to be used whenever a token is being
+  placed in a location that the ability is allowed to use. Default false.

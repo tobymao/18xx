@@ -158,7 +158,7 @@ module View
 
     def render_title
       title = "#{@game.class.title} - #{@game.id} - 18xx.Games"
-      title = "* #{title}" if @game.active_player_names.include?(@user&.dig('name'))
+      title = "* #{title}" if @game.active_players_id.include?(@user&.dig('id'))
       `document.title = #{title}`
       change_favicon(active_player)
       change_tab_color(active_player)
@@ -167,7 +167,7 @@ module View
     def active_player
       @game_data[:mode] != :hotseat &&
         !cursor &&
-        @game.active_players.map(&:name).include?(@user&.dig('name'))
+        @game.active_players_id.include?(@user&.dig('id'))
     end
 
     def menu

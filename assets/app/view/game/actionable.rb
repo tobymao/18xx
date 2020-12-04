@@ -35,19 +35,20 @@ module View
         hotseat = @game_data[:mode] == :hotseat
 
         if Lib::Params['action']
-          return store(:flash_opts, 'You cannot make changes in history mode. Press >| to go current')
+          return store(:flash_opts, 'You cannot make changes while browsing history.
+            Press >| to navigate to the current game action.')
         end
 
         if !hotseat &&
           !action.free? &&
           participant? &&
-          !@game.active_players.map(&:id).include?(@user['id'])
+          !@game.active_players_id.include?(@user['id'])
 
           unless Lib::Storage[@game.id]&.dig('master_mode')
-            return store(:flash_opts, 'Not your turn. Turn on master mode in the tools tab to act for others.')
+            return store(:flash_opts, 'Not your turn. Turn on master mode under the Tools menu to act for others.')
           end
 
-          action.user = @user['name']
+          action.user = @user['id']
         end
 
         game = @game.process_action(action)
@@ -70,7 +71,7 @@ module View
             meta = {
               'game_result': @game_data[:result],
               'game_status': @game_data[:status],
-              'active_players': game.active_players.map(&:id),
+              'active_players': game.active_players_id,
               'turn': game.turn,
               'round': game.round.name,
             }

@@ -36,6 +36,7 @@ module Engine
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
       GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
+      TRAIN_STATION_PRIVATE_NAME = 'TS'
       PITTSBURGH_PRIVATE_NAME = 'PSM'
       PITTSBURGH_PRIVATE_HEX = 'F13'
 
@@ -62,8 +63,6 @@ module Engine
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
-      IPO_NAME = 'Treasury'
-
       LIMIT_TOKENS = 8
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
@@ -87,6 +86,10 @@ module Engine
         @log << '1817 has not been tested thoroughly with more than seven players.' if @players.size > 7
 
         super
+      end
+
+      def ipo_name(_entity = nil)
+        'Treasury'
       end
 
       def init_stock_market
@@ -132,12 +135,12 @@ module Engine
         summary
       end
 
-      def can_pay_interest?(entity, extra_cash = 0)
-        # Can they cover it using cash?
-        return true if entity.cash + extra_cash > interest_owed(entity)
+      def format_currency(val)
+        # On dividends per share can be a float
+        # But don't show decimal points on all
+        return format('$%.1<val>f', val: val) if val.is_a?(Float) && (val % 1 != 0)
 
-        # Can they cover it using buying_power minus the full interest
-        (buying_power(entity) + extra_cash) > interest_owed_for_loans(maximum_loans(entity))
+        self.class::CURRENCY_FORMAT_STR % val
       end
 
       def maximum_loans(entity)
@@ -473,7 +476,7 @@ module Engine
       private
 
       def new_auction_round
-        log << "Seed Money for initial auction is #{format_currency(SEED_MONEY)}" unless @round
+        log << "Seed Money for initial auction is #{format_currency(self.class::SEED_MONEY)}" unless @round
         Round::Auction.new(self, [
           Step::G1817::SelectionAuction,
         ])

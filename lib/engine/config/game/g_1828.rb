@@ -464,7 +464,8 @@ module Engine
                 {
                     "type": "teleport",
                     "owner_type": "corporation",
-                    "when": "track",
+                    "cost": 120,
+                    "free_tile_lay": true,
                     "hexes": [
                       "F20"
                     ],
@@ -1237,13 +1238,13 @@ module Engine
                 "E15",
                 "H22"
             ],
-            "city=revenue:30;path=a:3,b:_0;path=a:5,b:_0": [
+            "city=revenue:30;path=a:3,b:_0;path=a:5,b:_0;label=Bo": [
                 "E27"
             ],
-            "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_1;label=OO;upgrade=cost:80,terrain:water": [
+            "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_1;label=NY;upgrade=cost:80,terrain:water": [
                 "G23"
             ],
-            "city=revenue:30;path=a:0,b:_0;path=a:4,b:_0": [
+            "city=revenue:30;path=a:0,b:_0;path=a:4,b:_0;label=Ba": [
                 "I19"
             ],
             "city=revenue:20;path=a:1,b:_0;path=a:4,b:_0": [
