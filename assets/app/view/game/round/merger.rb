@@ -51,7 +51,7 @@ module View
           corps_actionable = (%w[assign merge] & actions).any?
           buttons << render_offer(entity, auctioning_corporation) if actions.include?('assign')
 
-          buttons << render_merge(entity, auctioning_corporation) if actions.include?('merge')
+          buttons << render_merge(entity) if actions.include?('merge')
           children << h(:div, buttons) if buttons.any?
 
           props = {
@@ -83,7 +83,7 @@ module View
             hidden_corps = false
             mergeable_entities.each do |target|
               corp = @selected_corporation if corps_actionable
-              if @step.show_other_players || @show_other_players || target.owner == merge_entity.owner
+              if @step.show_other_players || @show_other_players || target.owner == merge_entity.owner || !target.owner
                 children << h(Corporation, corporation: target, selected_corporation: corp)
               else
                 hidden_corps = true
@@ -152,7 +152,7 @@ module View
           )
         end
 
-        def render_merge(corporation, auctioning_corporation)
+        def render_merge(corporation)
           merge = lambda do
             if @selected_corporation
               process_action(Engine::Action::Merge.new(
@@ -164,7 +164,7 @@ module View
             end
           end
 
-          h(:button, { on: { click: merge } }, auctioning_corporation ? 'Acquire' : 'Merge')
+          h(:button, { on: { click: merge } }, @step.merge_name)
         end
       end
     end

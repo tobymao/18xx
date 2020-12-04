@@ -48,7 +48,14 @@ module Engine
           if must_buy_train?(entity) && @depot_train
             super
           elsif cost > entity.cash
-            reason = must_buy_train?(entity) ? 'as train is not from depot' : 'as do not need to buy'
+            reason =
+              if must_buy_train?(entity)
+                'as train is not from depot'
+              elsif @game.buying_power(entity, true) <= needed_cash(entity)
+                'cannot take enough loans to purchase'
+              else
+                'as do not need to buy'
+              end
             @game.game_error("Not able to take loan to purchase at #{@game.format_currency(cost)}, " + reason)
           end
         end
