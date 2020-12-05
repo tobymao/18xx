@@ -32,6 +32,9 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
 
+      CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = true
+      CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
+
       # Two tiles can be laid, only one upgrade
       # TODO: This changes in phase E to a single tile lay
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: false }].freeze
@@ -164,6 +167,7 @@ module Engine
         Step::HomeToken,
         Step::BuyCompany,
         Step::G18CO::RedeemShares,
+        Step::CorporateBuyShares,
         Step::G18CO::Track,
         Step::Token,
         Step::Route,

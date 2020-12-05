@@ -201,6 +201,9 @@ module Engine
       ALL_COMPANIES_ASSIGNABLE = false
       OBSOLETE_TRAINS_COUNT_FOR_LIMIT = false
 
+      CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = false
+      CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = false
+
       CACHABLE = [
         %i[players player],
         %i[corporations corporation],

@@ -51,6 +51,7 @@ module View
         unless @corporation.minor?
           children << render_shares
           children << render_reserved if @corporation.reserved_shares.any?
+          children << render_owned_other_shares if @corporation.corporate_shares.any?
           children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
         end
 
@@ -301,6 +302,28 @@ module View
             ])
           end
 
+        other_corp_info = @game.corporations.reject { |c| c == @corporation }.map do |other_corp|
+          [
+            other_corp,
+            @corporation.president?(other_corp),
+            other_corp.num_shares_of(@corporation, ceil: false),
+            @game.round.active_step&.did_sell?(@corporation, other_corp),
+            !@corporation.holding_ok?(other_corp, 1),
+          ]
+        end
+
+        other_corp_rows = other_corp_info
+          .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
+          .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
+          .map do |other_corp, president, num_shares, did_sell, at_limit|
+            flags = (president ? '*' : '') + (at_limit ? 'L' : '')
+            h('tr.corp', [
+              h("td.left.name.nowrap.#{president ? 'president' : ''}", other_corp.name),
+              h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{share_number_str(num_shares)}"),
+              did_sell ? h('td.italic', 'Sold') : '',
+            ])
+          end
+
         num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
         pool_rows = [
           h('tr.ipo', [
@@ -341,6 +364,7 @@ module View
         rows = [
           *pool_rows,
           *player_rows,
+          *other_corp_rows,
         ]
 
         props = { style: { borderCollapse: 'collapse' } }
@@ -356,6 +380,44 @@ module View
           h(:tbody, [
             *rows,
           ]),
+        ])
+      end
+
+      def render_owned_other_shares
+        shares = @corporation
+          .shares_by_corporation.reject { |c, s| s.empty? || c == @corporation }
+          .sort_by { |c, s| [s.sum(&:percent), c.president?(@corporation) ? 1 : 0, c.name] }
+          .reverse
+          .map { |c, s| render_owned_other_corp(c, s) }
+
+        h(:table, shares)
+      end
+
+      def render_owned_other_corp(corporation, shares)
+        td_props = {
+          style: {
+            padding: '0 0.2rem',
+          },
+        }
+        div_props = {
+          style: {
+            height: '20px',
+          },
+        }
+        logo_props = {
+          attrs: {
+            src: corporation.logo,
+          },
+          style: {
+            height: '20px',
+          },
+        }
+
+        president_marker = corporation.president?(@corporation) ? '*' : ''
+        h('tr.row', [
+          h('td.center', td_props, [h(:div, div_props, [h(:img, logo_props)])]),
+          h(:td, td_props, corporation.name + president_marker),
+          h('td.right', td_props, "#{shares.sum(&:percent)}%"),
         ])
       end
 
