@@ -1,1 +1,82 @@
-<svg id="art" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 34.02 34.02"><defs><style>.cls-1{fill:none;}.cls-2{clip-path:url(#clip-path);}.cls-3{fill:#b43e95;}.cls-4{fill:#fff;}</style><clipPath id="clip-path"><circle class="cls-1" cx="17.01" cy="17.01" r="16.67"/></clipPath></defs><g class="cls-2"><path class="cls-3" d="M37.84,17A20.84,20.84,0,1,1,17-3.83,20.83,20.83,0,0,1,37.84,17Z"/><path class="cls-4" d="M14.75,13H13.34v2.53H14a2.34,2.34,0,0,0,.87-.25H15v1.88h-.11a2.16,2.16,0,0,0-.87-.25h-.68v3.44H15a1.06,1.06,0,0,0,.42-.09A5.88,5.88,0,0,0,16,20h.06v1.87H11.36v-.1a1.82,1.82,0,0,0,.25-.8v-8.5a1.82,1.82,0,0,0-.25-.79v-.1h4.5v1.82H15.8A2.78,2.78,0,0,0,14.75,13Z"/><path class="cls-4" d="M20.94,21.82l-1.31-4.29h-.5v3.39a1.89,1.89,0,0,0,.23.8v.1H17.14v-.1a1.7,1.7,0,0,0,.25-.8v-8.5a1.7,1.7,0,0,0-.25-.79v-.1H20a2.45,2.45,0,0,1,1.91.79,3,3,0,0,1,.73,2.09,3.52,3.52,0,0,1-.46,1.82,2.76,2.76,0,0,1-1.1,1.12L22.44,21a2.89,2.89,0,0,0,.44.75v.1Zm-.48-6.18a1.49,1.49,0,0,0,.36-1.05,1.26,1.26,0,0,0-1.4-1.44h-.29V16h.5A1.08,1.08,0,0,0,20.46,15.64Z"/></g></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="art"
+   viewBox="0 0 34.02 34.02"
+   version="1.1"
+   sodipodi:docname="CGR.svg"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)">
+  <metadata
+     id="metadata3751">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview3749"
+     showgrid="false"
+     inkscape:zoom="24.985302"
+     inkscape:cx="18.885189"
+     inkscape:cy="18.427318"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g3746" />
+  <defs
+     id="defs3738">
+    <style
+       id="style3733">.cls-1{fill:none;}.cls-2{clip-path:url(#clip-path);}.cls-3{fill:#ffd9eb;}.cls-4{fill:#fff;}</style>
+    <clipPath
+       id="clip-path">
+      <circle
+         class="cls-1"
+         cx="17.01"
+         cy="17.01"
+         r="16.67"
+         id="circle3735" />
+    </clipPath>
+  </defs>
+  <g
+     class="cls-2"
+     clip-path="url(#clip-path)"
+     id="g3746">
+    <path
+       class="cls-3"
+       d="m 38.280259,16.759859 a 20.84,20.84 0 1 1 -20.84,-20.8300002 20.83,20.83 0 0 1 20.84,20.8300002 z"
+       id="path3740"
+       style="fill:#000000;fill-opacity:1"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:1.25;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none"
+       x="3.442023"
+       y="21.292519"
+       id="text4564"><tspan
+         sodipodi:role="line"
+         id="tspan4562"
+         x="3.442023"
+         y="21.292519">CGR</tspan></text>
+  </g>
+</svg>
