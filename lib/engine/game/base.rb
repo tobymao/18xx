@@ -686,11 +686,11 @@ module Engine
       end
 
       def bundles_for_corporation(share_holder, corporation, shares: nil)
-        all_bundles_for_corporation(share_holder, corporation, shares)
+        all_bundles_for_corporation(share_holder, corporation, shares: shares)
       end
 
       # Needed for 18MEX
-      def all_bundles_for_corporation(share_holder, corporation, shares)
+      def all_bundles_for_corporation(share_holder, corporation, shares: nil)
         return [] unless corporation.ipoed
 
         shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)

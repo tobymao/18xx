@@ -215,6 +215,14 @@ module Engine
         'Swedish-Per (GMT+2)' => 2343,
         'shingoi' => 2436,
       },
+      # No optional rules, Declined NdM merge, Declared bankrupcy
+      17_849 => {
+        'Matchstick' => 601,
+        'ventusignis' => 485,
+        'heliopolix' => 470,
+        'ThePymonster' => 363,
+        'TIE53' => 320,
+      },
     },
   }.freeze
 
