@@ -13,13 +13,14 @@ module Engine
     include Spender
 
     attr_accessor :bankrupt
-    attr_reader :name, :companies, :id
+    attr_reader :name, :companies, :id, :history
 
     def initialize(id, name)
       @id = id
       @name = name
       @cash = 0
       @companies = []
+      @history = []
     end
 
     def value
