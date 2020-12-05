@@ -476,7 +476,7 @@ module Engine
       private
 
       def new_auction_round
-        log << "Seed Money for initial auction is #{format_currency(SEED_MONEY)}" unless @round
+        log << "Seed Money for initial auction is #{format_currency(self.class::SEED_MONEY)}" unless @round
         Round::Auction.new(self, [
           Step::G1817::SelectionAuction,
         ])

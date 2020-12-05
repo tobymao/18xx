@@ -4,10 +4,10 @@ require_relative '../merger'
 
 module Engine
   module Round
-    module G1817
+    module G1867
       class Merger < Merger
         def name
-          'Merger and Conversion Round'
+          'Merger Round'
         end
 
         def self.short_name
@@ -17,7 +17,7 @@ module Engine
         def select_entities
           @game
             .corporations
-            .select { |c| c.floated? && c.share_price.normal_movement? && !c.share_price.acquisition? }
+            .select { |c| c.floated? && c.type == :minor }
             .sort
         end
 
@@ -82,6 +82,10 @@ module Engine
           else
             @entities
           end
+        end
+
+        def force_next_entity!
+          # called from the close corporation, ignore it
         end
       end
     end

@@ -123,6 +123,10 @@ module Engine
       player_share_holders.values.sum / share_percent
     end
 
+    def num_corporate_shares
+      corporate_share_holders.values.sum / share_percent
+    end
+
     def num_market_shares
       share_holders.select { |s_h, _| s_h.share_pool? }.values.sum / share_percent
     end
@@ -133,6 +137,14 @@ module Engine
 
     def player_share_holders
       share_holders.select { |s_h, _| s_h.player? }
+    end
+
+    def corporate_share_holders
+      share_holders.select { |s_h, _| s_h.corporation? && s_h != self }
+    end
+
+    def corporate_shares
+      shares.reject { |share| share.corporation == self }
     end
 
     def id

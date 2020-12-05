@@ -33,6 +33,7 @@ module View
       needs :unavailable, default: nil
       needs :show_coords, default: true
       needs :show_location_names, default: true
+      needs :routes, default: []
 
       def render
         return nil if @hex.empty
@@ -51,6 +52,7 @@ module View
             tile: @tile,
             show_coords: @show_coords && (@role == :map),
             show_location_names: @show_location_names,
+            routes: @routes
           )
         end
         children << h(TriangularGrid) if Lib::Params['grid']

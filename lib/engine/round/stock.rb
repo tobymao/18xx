@@ -13,6 +13,10 @@ module Engine
         @game.players.reject(&:bankrupt)
       end
 
+      def self.short_name
+        'SR'
+      end
+
       def name
         'Stock Round'
       end

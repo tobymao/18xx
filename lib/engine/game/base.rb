@@ -26,6 +26,7 @@ require_relative '../share_pool'
 require_relative '../stock_market'
 require_relative '../tile'
 require_relative '../train'
+require_relative '../player_info'
 
 module Engine
   module Game
@@ -200,6 +201,9 @@ module Engine
       MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
       OBSOLETE_TRAINS_COUNT_FOR_LIMIT = false
+
+      CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = false
+      CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = false
 
       CACHABLE = [
         %i[players player],
@@ -536,8 +540,10 @@ module Engine
           @round.entities.each(&:unpass!)
 
           if end_now?(end_timing)
+
             end_game!
           else
+            store_player_info
             next_round!
 
             # Finalize round setup (for things that need round correctly set like place_home_token)
@@ -547,6 +553,12 @@ module Engine
         end
 
         self
+      end
+
+      def store_player_info
+        @players.each do |p|
+          p.history << PlayerInfo.new(@round.class.short_name, turn, @round.round_num, p)
+        end
       end
 
       def preprocess_action(_action); end
@@ -559,6 +571,10 @@ module Engine
         # Corporations sorted by some potential game rules
         ipoed, others = corporations.partition(&:ipoed)
         ipoed.sort + others
+      end
+
+      def operated_operators
+        (@corporations + @minors).select(&:operated?)
       end
 
       def current_action_id

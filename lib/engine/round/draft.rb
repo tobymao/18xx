@@ -13,6 +13,10 @@ module Engine
         super
       end
 
+      def self.short_name
+        'DR'
+      end
+
       def name
         'Draft Round'
       end
