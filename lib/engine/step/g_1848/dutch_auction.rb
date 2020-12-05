@@ -17,8 +17,8 @@ module Engine
         # if any privates are left and everyone passes in a row, owned privates pay and auction continues
         # if someone has bought a private and everything is minimum, you can pass
 
-        ACTIONS = %w[bid reduce].freeze
-        ACTIONS_WITH_PASS = %w[bid reduce pass].freeze
+        ACTIONS = %w[bid assign].freeze
+        ACTIONS_WITH_PASS = %w[bid assign pass].freeze
 
         MIN_PRICES = {
           'P1' => 0,
@@ -64,7 +64,7 @@ module Engine
           @round.next_entity_index!
         end
 
-        def process_reduce(action)
+        def process_assign(action)
           action.entity.unpass!
           company = action.company
           company.discount += 5
