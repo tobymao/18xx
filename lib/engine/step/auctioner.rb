@@ -70,10 +70,6 @@ module Engine
         raise NotImplementedError
       end
 
-      def may_reduce?(_company)
-        false
-      end
-
       protected
 
       def auctioning
