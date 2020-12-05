@@ -112,12 +112,12 @@ module Engine
       "479MC":{
          "count":1,
          "color":"green",
-         "code":"city=revenue:40,slots:2,loc:center;town=revenue:0,loc:2.5;path=a:3,b:_0;path=a:5,b:_0;label=MC"
+         "code":"city=revenue:40,slots:2,loc:center;town=revenue:0,loc:2.5;path=a:3,b:_0;path=a:5,b:_0;label=MC;border=edge:5"
       },
       "479P":{
          "count":1,
          "color":"green",
-         "code":"town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;upgrade=cost:40,terrain:mountain;label=P"
+         "code":"town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;upgrade=cost:40,terrain:mountain;label=P;border=edge:2"
       },
       "480":1,
       "481":1,
@@ -137,12 +137,12 @@ module Engine
       "486MC":{
          "count":1,
          "color":"brown",
-         "code":"city=revenue:50,slots:4,loc:center;town=revenue:10,loc:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:2,b:_1;path=a:5,b:_0,lanes:2;path=a:_1,b:_0;label=MC"
+         "code":"city=revenue:50,slots:4,loc:center;town=revenue:10,loc:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:2,b:_1;path=a:5,b:_0,lanes:2;path=a:_1,b:_0;label=MC;border=edge:5"
       },
       "486P":{
          "count":1,
          "color":"brown",
-         "code":"town=revenue:10;path=a:2,b:_0,a_lane:2.1;path=a:5,b:_0;path=a:2,b:4,a_lane:2.0;label=P"
+         "code":"town=revenue:10;path=a:2,b:_0,a_lane:2.1;path=a:5,b:_0;path=a:2,b:4,a_lane:2.0;label=P;border=edge:2"
       },
       "619":2
    },
@@ -854,10 +854,10 @@ module Engine
          "city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0":[
             "E6"
          ],
-         "city=revenue:20,loc:center;town=revenue:0,loc:2;path=a:3,b:_0;path=a:5,b:_0;border=edge:4,type:impassable;label=MC":[
+         "city=revenue:20,loc:center;town=revenue:0,loc:2;path=a:3,b:_0;path=a:5,b:_0;border=edge:4,type:impassable;label=MC;border=edge:5":[
             "O10"
          ],
-         "town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;upgrade=cost:60,terrain:mountain;border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:3,type:impassable;label=P":[
+         "town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;upgrade=cost:60,terrain:mountain;border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:3,type:impassable;label=P;border=edge:2":[
             "P11"
          ],
          "path=a:1,b:4;upgrade=cost:60,terrain:mountain":[

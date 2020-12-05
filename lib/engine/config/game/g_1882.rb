@@ -643,16 +643,16 @@ module Engine
       "city=revenue:30;path=a:2,b:_0;path=a:_0,b:4": [
         "N6"
       ],
-      "path=a:0,b:1": [
+      "path=a:0,b:1;border=edge:5": [
         "C7"
       ],
-      "city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;border=edge:0,type:water,cost:40": [
+      "city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;border=edge:0,type:water,cost:40;border=edge:2;border=edge:4": [
         "D8"
       ],
       "path=a:3,b:4": [
         "N8"
       ],
-      "town=revenue:10;path=a:0,b:_0;path=a:_0,b:4;border=edge:0,type:water,cost:20": [
+      "town=revenue:10;path=a:0,b:_0;path=a:_0,b:4;border=edge:0,type:water,cost:20;border=edge:1": [
         "C9"
       ],
       "path=a:2,b:4": [
