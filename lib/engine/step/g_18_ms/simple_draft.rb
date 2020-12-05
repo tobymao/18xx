@@ -22,6 +22,10 @@ module Engine
           true
         end
 
+        def may_reduce?(_company)
+          false
+        end
+
         def auctioning; end
 
         def bids
