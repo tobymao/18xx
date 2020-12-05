@@ -409,7 +409,10 @@ module Engine
       "name": "5",
       "distance": 5,
       "price": 500,
-      "num": 3
+      "num": 3,
+      "events":[
+        {"type": "close_companies"}
+      ]
     },
     {
       "name": "5+",
@@ -564,61 +567,68 @@ module Engine
       "train_limit": 4,
       "tiles": [
         "yellow"
-      ]
+      ],
+      "operating_rounds": 1
     },
     {
       "name": "3",
+      "on": "3",
       "train_limit": 4,
       "tiles": [
         "yellow",
         "green"
+      ],
+      "operating_rounds": 2,
+      "status":[
+         "can_buy_companies"
       ]
     },
     {
       "name": "4",
+      "on": "4",
       "train_limit": 3,
       "tiles": [
         "yellow",
         "green"
+      ],
+      "operating_rounds": 2,
+      "status":[
+         "can_buy_companies"
       ]
     },
     {
       "name": "5",
+      "on": "5",
       "train_limit": 2,
       "tiles": [
         "yellow",
         "green",
         "brown"
-      ]
+      ],
+      "operating_rounds": 3
     },
     {
       "name": "6",
+      "on": "6",
       "train_limit": 2,
       "tiles": [
         "yellow",
         "green",
         "brown"
-      ]
+      ],
+      "operating_rounds": 3
     },
     {
       "name": "8",
+      "on": "8",
       "train_limit": 2,
       "tiles": [
         "yellow",
         "green",
         "brown",
         "gray"
-      ]
-    },
-    {
-      "name": "2E",
-      "train_limit": 2,
-      "tiles": [
-        "yellow",
-        "green",
-        "brown",
-        "gray"
-      ]
+      ],
+      "operating_rounds": 3
     }
   ]
 }

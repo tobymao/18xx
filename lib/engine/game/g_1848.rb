@@ -8,10 +8,6 @@ module Engine
     class G1848 < Base
       load_from_json(Config::Game::G1848::JSON)
 
-      # TODO: - private abilities need defined in config
-
-      # TODO: - market has a hanging 'zero' spot
-
       DEV_STAGE = :prealpha
       GAME_LOCATION = 'Australia'
       GAME_RULES_URL = 'http://ohley.de/english/1848/1848-rules.pdf'
@@ -20,24 +16,12 @@ module Engine
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1848'
 
       # Two tiles can be laid at a time, with max one upgrade
-      # TODO - until green, can only build one yellow - is this reflected?
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
+      SELL_BUY_ORDER = :sell_buy
+      SELL_MOVEMENT = :down_block
+
       HOME_TOKEN_TIMING = :operate
-
-      # <TODO> Need to define cert_limit (see g_1846 for reference?)
-
-      # TODO: end game trigger e.g. 18mex
-
-      # TODO: Receivership mechanics
-
-      # TODO: - privates shouldn't count against cert limit
-
-      # TODO: Game End Conditions:
-      # 1. The Bank has run out of money.
-      # 2. A company's share price has reached the highest possible position on the Share Price Chart.
-      # 3. The Bank of England has given 16 or more loans.
-      # 4. There are five or more companies being administered by the Bank of England.
 
       def new_auction_round
         Round::Auction.new(self, [
