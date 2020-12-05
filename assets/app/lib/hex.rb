@@ -12,6 +12,15 @@ module Lib
 
     POINTS = "#{X_R},#{Y_M} #{X_M_R},#{Y_B} #{X_M_L},#{Y_B} #{X_L},#{Y_M} #{X_M_L},#{Y_T} #{X_M_R},#{Y_T}"
 
+    EDGE_PATHS = [
+      "M #{X_M_R},#{Y_B} H #{X_M_L}",
+      "M #{X_M_L},#{Y_B} L #{X_L}, #{Y_M}",
+      "M #{X_L},#{Y_M} #{X_M_L},#{Y_T}",
+      "M #{X_M_L},#{Y_T} H #{X_M_R}",
+      "M #{X_M_R},#{Y_T} L #{X_R},#{Y_M}",
+      "M #{X_R},#{Y_M} L #{X_M_R}, #{Y_B}",
+    ].freeze
+
     COLOR = {
       white: '#EAE0C8',
       yellow: '#fde900',
