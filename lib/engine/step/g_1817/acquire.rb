@@ -26,6 +26,10 @@ module Engine
           actions
         end
 
+        def merge_name
+          'Acquire'
+        end
+
         def description
           'Acquire Corporations'
         end
