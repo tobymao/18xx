@@ -764,11 +764,11 @@ module Engine
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
       end
 
-      def apply_discard_discount(train, price)
-        return price unless DISCARDED_TRAIN_DISCOUNT
+      def discard_discount(train, price)
+        return price unless self.class::DISCARDED_TRAIN_DISCOUNT
         return price unless @depot.discarded.include?(train)
 
-        (price * (100 - DISCARDED_TRAIN_DISCOUNT) / 100).ceil
+        (price * (100.0 - self.class::DISCARDED_TRAIN_DISCOUNT.to_f) / 100.0).ceil.to_i
       end
 
       def end_game!
