@@ -207,7 +207,6 @@ module Engine
       end
 
       def status_str(corp)
-        status = nil
         status = 'Insolvent' if insolvent?(corp)
         status = status ? status + ', Bankrupt' : 'Bankrupt' if bankrupt?(corp)
         status
@@ -321,10 +320,10 @@ module Engine
       end
 
       def train_owner(train)
-        train.owner == @depot ? lesee : train.owner
+        train.owner == @depot ? lessee : train.owner
       end
 
-      def lesee
+      def lessee
         current_entity
       end
 
@@ -623,9 +622,9 @@ module Engine
         n_cities = route.stops.select { |n| n.city? || n.offboard? }.size
         # halts are treated like towns for leased trains
         n_towns = if route.train.owner != @depot
-                    route.stops.select { |n| n.town? && !n.halt? }.size
+                    route.stops.count { |n| n.town? && !n.halt? }
                   else
-                    route.stops.select(&:town?).size
+                    route.stops.count(&:town?)
                   end
         "#{n_cities}+#{n_towns}"
       end
@@ -639,7 +638,7 @@ module Engine
       end
 
       def subsidy_for(route, stops)
-        route.train.owner != @depot ? stops.select(&:halt?).size * HALT_SUBSIDY : 0
+        route.train.owner != @depot ? stops.count(&:halt?) * HALT_SUBSIDY : 0
       end
 
       def routes_revenue(routes)
