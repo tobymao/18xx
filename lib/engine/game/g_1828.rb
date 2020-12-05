@@ -278,6 +278,12 @@ module Engine
         super
       end
 
+      def find_token_for_entity(entity, stops)
+        return (@graph.connected_nodes(entity).keys & stops).first if entity.id == 'C&P'
+
+        super
+      end
+
       private
 
       def setup_minors

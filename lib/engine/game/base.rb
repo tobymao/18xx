@@ -779,6 +779,10 @@ module Engine
         routes.reject { |r| r == route }.flat_map(&:paths)
       end
 
+      def find_token_for_entity(entity, stops)
+        stops.find { |stop| stop.tokened_by?(entity) }
+      end
+
       def check_overlap(routes)
         tracks = []
 
