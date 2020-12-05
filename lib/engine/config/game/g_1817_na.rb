@@ -686,11 +686,15 @@ module Engine
       "offboard=revenue:yellow_0,visit_cost:99;path=a:3,b:_0": [
         "I17",
         "C1",
-        "F8",
-        "I9",
+        "F8"
+      ],
+      "offboard=revenue:yellow_0,visit_cost:99;path=a:3,b:_0;border=edge:4": [
+        "I9"
+      ],
+      "offboard=revenue:yellow_0,visit_cost:99;path=a:3,b:_0;border=edge:2": [
         "J12"
       ],
-      "offboard=revenue:yellow_0,visit_cost:99;path=a:2,b:_0;offboard=revenue:yellow_0,visit_cost:99;path=a:4,b:_0": [
+      "offboard=revenue:yellow_0,visit_cost:99;path=a:2,b:_0;offboard=revenue:yellow_0,visit_cost:99;path=a:4,b:_0;border=edge:1;border=edge:5": [
         "I11"
       ],
       "offboard=revenue:yellow_0,visit_cost:99;path=a:5,b:_0": [
