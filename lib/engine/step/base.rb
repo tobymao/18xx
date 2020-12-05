@@ -36,10 +36,6 @@ module Engine
         false
       end
 
-      def may_reduce?(_company)
-        false
-      end
-
       def log_pass(entity)
         @log << "#{entity.name} passes #{description.downcase}"
       end
