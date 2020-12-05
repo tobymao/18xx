@@ -148,6 +148,8 @@ module Engine
       end
 
       def mine_create(entity, count)
+        return unless count.positive?
+
         mines_remove(entity)
         total = count * mine_value(entity)
         entity.add_ability(Engine::Ability::Base.new(
