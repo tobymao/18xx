@@ -225,6 +225,7 @@ module Engine
       def can_go_bankrupt?(player, corporation)
         # Corporation is nil in the case of interest / loan bankruptcies
         return liquidity(player, emergency: true).negative? if corporation.nil?
+
         super
       end
 

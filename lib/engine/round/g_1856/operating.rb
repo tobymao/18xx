@@ -9,7 +9,7 @@ module Engine
       class Operating < Operating
         attr_accessor :cash_crisis_player
         attr_reader :paid_interest, :took_loan, :redeemed_loan,
-                    :interest_penalty, :player_interest_penalty
+                    :interest_penalty, :player_interest_penalty, :cash_crisis_due_to_interest
 
         def after_setup
           @paid_interest = {}
@@ -72,8 +72,8 @@ module Engine
           player_interest_penalty[entity] = owed
           owed_fmt = @game.format_currency(owed)
           @log << "#{entity.name} cannot afford remaining #{owed_fmt} interest and president must cover the difference"
-          entity.owner.spend(owed, bank, check_cash: false)
           @cash_crisis_due_to_interest = entity
+          entity.owner.spend(owed, bank, check_cash: false)
         end
       end
     end

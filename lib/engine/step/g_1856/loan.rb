@@ -28,7 +28,7 @@ module Engine
         end
 
         def blocks?
-          can_payoff?(current_entity)
+          @round.steps.any? { |step| step.passed? && step.is_a?(Step::BuyTrain) }
         end
 
         def process_take_loan(action)

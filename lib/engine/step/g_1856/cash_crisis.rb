@@ -32,7 +32,8 @@ module Engine
         end
 
         def active_entities
-          return [] unless @round.cash_crisis_player && @round.cash_crisis_player.cash.negative?
+          return [] unless @round&.cash_crisis_player&.cash&.negative?
+
           [@round.cash_crisis_player]
         end
 
@@ -51,6 +52,28 @@ module Engine
           @active_entity = nil
         end
 
+        def sellable_bundle?(bundle)
+          player = bundle.owner
+          # Can't sell president's share
+          return false unless bundle.can_dump?(player)
+
+          # Can't oversaturate the market
+          return false unless @game.share_pool.fit_in_bank?(bundle)
+
+          # Can't swap presidency
+          corporation = bundle.corporation
+          if corporation.president?(player) && (
+              @round.cash_crisis_due_to_interest == corporation ||
+              corporation == current_entity)
+            share_holders = corporation.player_share_holders
+            remaining = share_holders[player] - bundle.percent
+            next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
+            return false if remaining < next_highest
+          end
+
+          # Otherwise we're good
+          true
+        end
         # Use EmergencyMoney can_sell?
 
         def swap_sell(_player, _corporation, _bundle, _pool_share); end

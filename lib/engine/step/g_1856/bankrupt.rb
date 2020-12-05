@@ -12,6 +12,7 @@ module Engine
 
         def active_entities
           return [] unless @round.cash_crisis_player
+
           [@round.cash_crisis_player]
         end
 

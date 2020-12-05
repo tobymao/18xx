@@ -50,10 +50,11 @@ module Engine
 
         def log_run_payout(entity, kind, revenue, action, payout)
           if (@round.interest_penalty[entity] || 0).positive?
-            @log << "#{entity.name} deducts #{@game.format_currency(@round.interest_penalty[entity])} for unpaid interest"
+            @log << "#{entity.name} deducts #{@game.format_currency(@round.interest_penalty[entity])}"\
+              ' for unpaid interest'
           end
           if (@round.player_interest_penalty[entity] || 0).positive?
-            @log << "#{entity.owner.name} must personally contribute " +
+            @log << "#{entity.owner.name} must personally contribute "\
               "#{@game.format_currency(@round.player_interest_penalty[entity])} for unpaid interest"
           end
           unless Dividend::DIVIDEND_TYPES.include?(kind)
