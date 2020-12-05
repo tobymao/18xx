@@ -494,25 +494,25 @@ module Engine
          "offboard=revenue:yellow_30|brown_50;path=a:1,b:_0":[
             "H10"
          ],
-         "city=revenue:yellow_40|brown_50;path=a:5,b:_0;path=a:4,b:_0":[
+         "city=revenue:yellow_40|brown_50;path=a:5,b:_0;path=a:4,b:_0;border=edge:4":[
             "A1"
          ],
          "city=revenue:yellow_50|brown_80,loc:center;town=revenue:10,loc:5.5;path=a:3,b:_0;path=a:_1,b:_0;icon=image:18_ms/coins":[
             "I1"
          ],
-         "path=a:1,b:5":[
+         "path=a:1,b:5;border=edge:1":[
             "A3"
          ],
-         "path=a:0,b:5":[
+         "path=a:0,b:5;border=edge:5":[
             "D12"
          ],
-         "path=a:0,b:4;path=a:1,b:4;path=a:2,b:4":[
+         "path=a:0,b:4;path=a:1,b:4;path=a:2,b:4;border=edge:0;border=edge:2;border=edge:4":[
             "E13"
          ],
-         "path=a:2,b:3":[
+         "path=a:2,b:3;border=edge:3":[
             "F12"
          ],
-         "offboard=revenue:yellow_40|brown_50;path=a:1,b:_0":[
+         "offboard=revenue:yellow_40|brown_50;path=a:1,b:_0;border=edge:1":[
             "E15"
          ]
       },
