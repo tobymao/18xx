@@ -8,7 +8,7 @@ module Engine
       attr_reader :train
 
       def initialize(entity, train:)
-        super(entity)
+        super
         @train = train
       end
 

@@ -8,7 +8,7 @@ module Engine
       attr_reader :city, :slot
 
       def initialize(entity, city:, slot:)
-        super(entity)
+        super
         @city = city
         @slot = slot
       end

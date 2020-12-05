@@ -5,10 +5,10 @@ require_relative 'base'
 module Engine
   module Action
     class BuySpecial < Base
-      attr_reader :entity, :item
+      attr_reader :item
 
       def initialize(entity, item:)
-        @entity = entity
+        super
         @item = item
       end
 

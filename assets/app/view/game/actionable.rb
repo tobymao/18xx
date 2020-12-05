@@ -122,29 +122,5 @@ module View
         )
       end
     end
-
-    def history_link(text, title, action_id = nil, style_extra = {})
-      route = Lib::Params.add(@app_route, 'action', action_id)
-
-      click = lambda do
-        store(:round_history, @game.round_history, skip: true) unless @round_history
-        store(:round_history, nil, skip: true) unless action_id
-        store(:app_route, route)
-        clear_ui_state
-      end
-
-      h(
-        Link,
-        href: route,
-        click: click,
-        title: title,
-        children: text,
-        style: {
-          color: 'currentColor',
-          textDecoration: 'none',
-          **style_extra,
-        },
-      )
-    end
   end
 end

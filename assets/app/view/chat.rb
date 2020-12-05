@@ -14,7 +14,6 @@ module View
 
     def render
       @connection.subscribe('/chat', 0) do |data|
-        data[:created_at] = Time.at(data[:created_at])
         add_line(data)
       end unless @subscribed
 
@@ -35,7 +34,7 @@ module View
         if code && code == 13
           message = event['target']['value']
           if message.strip != ''
-            add_line(user: @user, created_at: Time.now, message: message)
+            add_line(user: @user, created_at: Time.now.to_i, message: message)
             event['target']['value'] = ''
             @connection.post('/chat', message: message)
           end

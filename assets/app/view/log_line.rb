@@ -16,18 +16,14 @@ module View
       message_props = { style: { margin: '0 0.1rem' } }
 
       time_str = '⇤'
-      if @line[:created_at]
-        time = @line[:created_at]
-        time_str = time.strftime('%R')
-      end
+      time_str = Time.at(@line[:created_at]).strftime('%R') if @line[:created_at]
 
       case @line[:type]
       when :action
-        entity_props = { style: { margin: '0 0.2rem',
-                                  fontStyle: 'italic' } }
-        preamble_props = { style: { margin: '0.1rem',
-                                    fontSize: 'smaller' } }
-        children = [h('span.time', time_props, [history_link(time_str, "Go to action##{@line[:id]}", @line[:id])])]
+        entity_props = { style: { margin: '0 0.2rem', fontStyle: 'italic' } }
+        preamble_props = { style: { margin: '0.1rem', fontSize: 'smaller' } }
+
+        children = [h('span.time', time_props, [history_link(time_str, "Go to action ##{@line[:id]}", @line[:id])])]
 
         children << h('span.entity', entity_props, @line[:entity]) if @line[:entity]
 

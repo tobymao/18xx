@@ -5,10 +5,10 @@ require_relative 'base'
 module Engine
   module Action
     class BuyCompany < Base
-      attr_reader :entity, :company, :price
+      attr_reader :company, :price
 
       def initialize(entity, company:, price:)
-        super(entity)
+        super
         @company = company
         @price = price
       end

@@ -8,7 +8,7 @@ module Engine
       attr_reader :kind
 
       def initialize(entity, kind:)
-        super(entity)
+        super
         @kind = kind
       end
 

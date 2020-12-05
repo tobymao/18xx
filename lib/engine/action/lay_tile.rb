@@ -8,7 +8,7 @@ module Engine
       attr_reader :hex, :tile, :rotation
 
       def initialize(entity, tile:, hex:, rotation:)
-        super(entity)
+        super
         @hex = hex
         @tile = tile
         @rotation = rotation

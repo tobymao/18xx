@@ -71,7 +71,7 @@ module View
         message_props = { style: { margin: '0 0.1rem' } }
 
         if line[:created_at]
-          time = line[:created_at]
+          time = Time.at(line[:created_at])
           time_str = time.strftime('%R')
 
           if date_previous < time.strftime('%Y%j').to_i

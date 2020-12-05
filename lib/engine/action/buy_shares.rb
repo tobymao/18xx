@@ -5,10 +5,10 @@ require_relative 'base'
 module Engine
   module Action
     class BuyShares < Base
-      attr_reader :entity, :bundle, :swap
+      attr_reader :bundle, :swap
 
       def initialize(entity, shares:, share_price: nil, percent: nil, swap: nil)
-        super(entity)
+        super
         @bundle = ShareBundle.new(Array(shares), percent)
         @bundle.share_price = share_price
         @swap = swap

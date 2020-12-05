@@ -14,7 +14,7 @@ module Engine
         entity = game.get(h['entity_type'], h['entity']) || Player.new(nil, h['entity'])
         obj = new(entity, **h_to_args(h, game))
         obj.user = h['user'] if entity.player && h['user'] != entity.player&.id
-        obj.created_at = Time.at(h['created_at']) if h['created_at'].is_a?(Integer)
+        obj.created_at = h['created_at']
         obj
       end
 
@@ -26,10 +26,10 @@ module Engine
         klass.name.split('::')
       end
 
-      def initialize(entity)
+      def initialize(entity, **_kwargs)
         @entity = entity
         # Overwritten by from_h unless this action is directly created
-        @created_at = Time.now
+        @created_at = Time.now.to_i
       end
 
       def [](field)
@@ -43,7 +43,7 @@ module Engine
           'entity_type' => type_s(entity),
           'id' => @id,
           'user' => @user,
-          'created_at' => @created_at&.to_i,
+          'created_at' => @created_at,
           **args_to_h,
         }.reject { |_, v| v.nil? }
       end

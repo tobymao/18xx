@@ -8,7 +8,7 @@ module Engine
       attr_reader :choice
 
       def initialize(entity, choice:)
-        super(entity)
+        super
         @choice = choice
       end
 
