@@ -170,7 +170,7 @@ module View
               ]
             end
 
-          if @step.respond_to?(:may_reduce) && @step.may_reduce?(company)
+          if @step.respond_to?(:may_reduce?) && @step.may_reduce?(company)
             company_actions << h(:button, {
                on: { click: -> { process_action(Engine::Action::Assign.new(@current_entity, target: company)) } },
  }, 'Reduce Price')
