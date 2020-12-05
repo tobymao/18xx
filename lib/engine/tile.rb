@@ -14,10 +14,10 @@ module Engine
   class Tile
     include Config::Tile
 
-    attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :reservations
-    attr_reader :blocks_lay, :borders, :cities, :color, :edges, :junction, :label, :nodes,
+    attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :reservations, :label
+    attr_reader :blocks_lay, :borders, :cities, :color, :edges, :junction, :nodes,
                 :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers,
-                :city_towns, :unlimited, :stubs, :id
+                :city_towns, :unlimited, :stubs, :divisions, :id
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -142,6 +142,8 @@ module Engine
         Part::Icon.new(params['image'], params['name'], params['sticky'], params['blocks_lay'])
       when 'stub'
         Part::Stub.new(params['edge'].to_i)
+      when 'division'
+        Part::Division.new(params['a'], params['b'], params['type'], params['restrict'], params['magnet'])
       end
     end
 
@@ -163,6 +165,7 @@ module Engine
       @cities = []
       @paths = []
       @stubs = []
+      @divisions = []
       @towns = []
       @city_towns = []
       @all_stop = []
@@ -444,11 +447,6 @@ module Engine
       @revenue_to_render ||= @stops.map(&:revenue_to_render)
     end
 
-    # Used to set label for a recently placed tile
-    def label=(label_name)
-      @label = Part::Label.new(label_name)
-    end
-
     def restore_borders(edges = nil)
       edges ||= ALL_EDGES
 
@@ -497,6 +495,8 @@ module Engine
           @icons << part
         elsif part.stub?
           @stubs << part
+        elsif part.division?
+          @divisions << part
         else
           raise "Part #{part} not separated."
         end

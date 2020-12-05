@@ -101,6 +101,10 @@ module Engine
         false
       end
 
+      def division?
+        false
+      end
+
       def visit_cost
         0
       end

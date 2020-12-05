@@ -167,6 +167,9 @@ module Engine
       tile.borders.concat(@tile.borders)
       @tile.borders.clear
 
+      tile.divisions.concat(@tile.divisions)
+      @tile.divisions.clear
+
       @tile.hex = nil
       tile.hex = self
 

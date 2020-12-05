@@ -1353,11 +1353,19 @@ module Engine
           end
         end
 
+        division_blockers = {}
+        companies.each do |company|
+          company.abilities(:blocks_division) do |ability|
+            division_blockers[ability.division_type] = company
+          end
+        end
+
         reservations = Hash.new { |k, v| k[v] = [] }
         corporations.each do |c|
           reservations[c.coordinates] << { entity: c,
                                            city: c.city }
         end
+
         (corporations + companies).each do |c|
           c.abilities(:reservation) do |ability|
             reservations[ability.hex] << { entity: c,
@@ -1381,6 +1389,12 @@ module Engine
 
               if (blocker = blockers[coord])
                 tile.add_blocker!(blocker)
+              end
+
+              tile.divisions.each do |division|
+                if (blocker = division_blockers[division.type])
+                  division.add_blocker!(blocker)
+                end
               end
 
               reservations[coord].each do |res|
