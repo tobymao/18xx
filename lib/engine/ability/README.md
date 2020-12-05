@@ -108,7 +108,7 @@ and `owner_type` are satisfied.
 
 - `revenue`: The new revenue value
 
-## share
+## shares
 
 This company comes with a share of a corporation when acquired.
 
