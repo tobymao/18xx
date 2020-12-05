@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 144">
+    <circle class="color-main color-orange" fill="#ff6603" cx="72" cy="72" r="70.2"/>
+    <path class="color-yellow color-reserved-white" fill="#ffdc0c" d="M121.2 78.3H22.9c-.7 0-1 .8-.5 1.3l8.2 8.2c.5.5 1.1.7 1.8.7h63.2c.6 0 .8.7.4 1.1l-10.7 10.7c-.5.5-.1 1.3.5 1.3h12.7c.8 0 1.6-.3 2.2-.9l20.9-20.9c.7-.6.3-1.5-.4-1.5z"/>
+    <path class="color-red color-reserved-white" fill="#ee100f" d="M23 69.4h98.2c.7 0 1-.8.5-1.3l-8.2-8.2c-.5-.5-1.1-.7-1.8-.7H48.5c-.6 0-.8-.7-.4-1.1l10.7-10.7c.5-.5.1-1.3-.5-1.3H45.5c-.8 0-1.6.3-2.2.9L22.4 68c-.5.5-.1 1.4.6 1.4z"/>
+</svg>

@@ -170,6 +170,12 @@ module View
               ]
             end
 
+          if @step.may_reduce?(company)
+            company_actions << h(:button, {
+               on: { click: -> { process_action(Engine::Action::Assign.new(@current_entity, target: company)) } },
+ }, 'Reduce Price')
+          end
+
           h(:div, { style: { textAlign: 'center', margin: '1rem' } }, company_actions)
         end
 
