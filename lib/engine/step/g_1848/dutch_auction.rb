@@ -117,8 +117,8 @@ module Engine
         def buy_company(player, company, price)
           company.owner = player
           player.companies << company
-          # P1 can be reduced to free, so we disable `check_positive`
-          player.spend(price, @game.bank, check_positive: false)
+          # P1 can be reduced to free, so we disable `check_positive` in that case
+          player.spend(price, @game.bank, check_positive: company.sym != 'P1')
           @companies.delete(company)
           @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
 
