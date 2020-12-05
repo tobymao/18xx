@@ -66,7 +66,7 @@ module Engine
 
         def process_assign(action)
           action.entity.unpass!
-          company = action.company
+          company = action.target
           company.discount += 5
           price = company.min_bid
           @log << "#{current_entity.name} reduces #{company.name} by #{@game.format_currency(5)}
