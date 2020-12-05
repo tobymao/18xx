@@ -34,6 +34,7 @@ module Engine
 
       CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = true
       CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
+      DISCARDED_TRAIN_DISCOUNT = 50
 
       # Two tiles can be laid, only one upgrade
       # TODO: This changes in phase E to a single tile lay
