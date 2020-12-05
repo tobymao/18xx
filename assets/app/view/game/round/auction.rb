@@ -171,11 +171,9 @@ module View
             end
 
           if @step.may_reduce?(company)
-            company_actions << h(:button, { on: { click: lambda {
-                                                           process_action(
-                                                           Engine::Action::Reduce.new(@current_entity, company: company)
-                                                         )
-                                                         } } }, 'Reduce Price')
+            company_actions << h(:button, {
+               on: { click: -> { process_action(Engine::Action::Reduce.new(@current_entity, company: company)) } },
+ }, 'Reduce Price')
           end
 
           h(:div, { style: { textAlign: 'center', margin: '1rem' } }, company_actions)
