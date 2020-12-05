@@ -211,7 +211,23 @@ module Engine
       "value": 80,
       "discount": 10,
       "revenue": 10,
-      "desc": "Owning Public Company or its Director may build one (1) free tile on a desert hex (marked by a cactus icon). This power does not go away after a 5/5+ train is purchased."
+      "desc": "Owning Public Company or its Director may build one (1) free tile on a desert hex (marked by a cactus icon). This power does not go away after a 5/5+ train is purchased.",
+      "abilities": [
+        {
+          "type":"tile_discount",
+          "discount": 40,
+          "terrain": "desert",
+          "count": 1,
+          "owner_type": "corporation"
+        },
+        {
+          "type":"tile_discount",
+          "discount": 40,
+          "terrain": "desert",
+          "count": 1,
+          "owner_type": "player"
+        }
+      ]
     },
     {
       "sym": "P3",

@@ -10,7 +10,7 @@ module Engine
       def initialize(entity, company: nil)
         @entity = entity
         @company = company
-        raisenp 'Company cannot be nil' unless @company
+        raise GameError, 'Company cannot be nil' unless @company
       end
 
       def self.h_to_args(h, game)

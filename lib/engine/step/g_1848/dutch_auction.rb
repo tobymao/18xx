@@ -79,12 +79,9 @@ module Engine
         end
 
         def actions(entity)
-          return [] if @companies.empty?
-          return [] unless entity.player?
+          return [] if @companies.empty? || !entity.player? || (entity != current_entity)
 
-          actions = entity.player.companies.empty? ? ACTIONS : ACTIONS_WITH_PASS
-
-          entity == current_entity ? actions : []
+          entity.player.companies.empty? ? ACTIONS : ACTIONS_WITH_PASS
         end
 
         def setup
