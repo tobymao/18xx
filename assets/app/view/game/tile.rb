@@ -14,7 +14,8 @@ module View
   module Game
     class Tile < Snabberb::Component
       needs :tile
-      needs :routes, default: [], store: true
+      needs :routes, default: []
+
       needs :show_coords, default: true
       needs :show_location_names, default: true
 

@@ -123,7 +123,7 @@ task 'stackprof', [:json] do |_task, args|
     100.times do
       data = JSON.parse(File.read(args[:json]))
       Engine::GAMES_BY_TITLE[data['title']].new(
-        data['players'].map { |p| p['name'] },
+        data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h,
         id: data['id'],
         actions: data['actions'],
       )
