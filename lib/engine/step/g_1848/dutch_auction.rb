@@ -69,7 +69,8 @@ module Engine
           company = action.company
           company.discount += 5
           price = company.min_bid
-          @log << "#{current_entity.name} reduces #{company.name} by £5 to #{@game.format_currency(price)}"
+          @log << "#{current_entity.name} reduces #{company.name} by #{@game.format_currency(5)}
+                  to #{@game.format_currency(price)}"
           @round.next_entity_index!
         end
 
