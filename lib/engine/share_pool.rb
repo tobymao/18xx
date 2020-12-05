@@ -141,16 +141,22 @@ module Engine
       corporation = bundle.corporation
       owner = bundle.owner
       previous_president = bundle.president
-      percent = bundle.percent
-      percent -= swap.percent if swap
-      price ||= swap ? bundle.price - swap.price : bundle.price
+      price ||= bundle.price
 
-      corporation.share_holders[owner] -= percent
-      corporation.share_holders[to_entity] += percent
+      corporation.share_holders[owner] -= bundle.percent
+      corporation.share_holders[to_entity] += bundle.percent
+
+      if swap
+        # Need to handle this separately as transfer and swap
+        # might be between different pair (ie player buy from IPO
+        # and the player's swap share end up in Market)
+        corporation.share_holders[swap.owner] -= swap.percent
+        corporation.share_holders[swap_to_entity] += swap.percent
+        move_share(swap, swap_to_entity)
+      end
 
       spender.spend(price, receiver) if spender && receiver && price.positive?
       bundle.shares.each { |s| move_share(s, to_entity) }
-      move_share(swap, swap_to_entity) if swap
 
       return unless allow_president_change
 
