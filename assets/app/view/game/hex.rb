@@ -31,7 +31,7 @@ module View
       needs :actions, default: []
       needs :entity, default: nil
       needs :unavailable, default: nil
-      needs :show_coords, default: true
+      needs :show_coords, default: nil
       needs :show_location_names, default: true
       needs :routes, default: []
 

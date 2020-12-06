@@ -5,7 +5,7 @@ require '../lib/storage'
 module View
   module Game
     class MapControls < Snabberb::Component
-      needs :show_coords, default: true, store: true
+      needs :show_coords, default: nil, store: true
       needs :show_location_names, default: true, store: true
       needs :show_starting_map, default: false, store: true
       needs :historical_routes, default: [], store: true
