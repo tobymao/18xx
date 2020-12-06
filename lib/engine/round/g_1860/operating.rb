@@ -9,7 +9,7 @@ module Engine
     module G1860
       class Operating < Operating
         def after_process(action)
-          if (entity = @entities[@entity_index]).receivership?
+          if (entity = @entities[@entity_index]).receivership? || @game.insolvent?(entity)
             case action
             when Engine::Action::RunRoutes
               process_action(Engine::Action::Dividend.new(entity, kind: 'withhold'))
@@ -17,6 +17,21 @@ module Engine
           end
 
           super
+        end
+
+        def next_entity!
+          after_operating(@entities[@entity_index])
+          super
+        end
+
+        def after_operating(entity)
+          return unless entity.corporation?
+
+          if entity.trains.empty? && @game.can_run_route?(entity)
+            @game.make_insolvent(entity)
+          elsif !entity.trains.empty?
+            @game.clear_insolvent(entity)
+          end
         end
       end
     end
