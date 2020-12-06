@@ -98,11 +98,20 @@ module Engine
       new_tile.hex = self
     end
 
-    def lay(tile)
+    def lay(tile, downgrade = false)
+      
       # key: city on @tile (AKA old_city)
       # values: city on tile (AKA new_city)
       #
       # map old cities to new based on edges they are connected to
+      #isolated = false
+      isolated = isolated_lay?(tile) && !downgrade
+      #if id == 'E20'
+        
+      #  puts isolated, $actionid
+      #  puts "before", @connections
+      #end
+
       city_map =
         # if @tile is blank, map cities by index
         if @tile.cities.flat_map(&:exits).empty? && (@tile.cities.size == tile.cities.size)
@@ -167,6 +176,7 @@ module Engine
       tile.borders.concat(@tile.borders)
       @tile.borders.clear
 
+      old_tile = @tile
       @tile.hex = nil
       tile.hex = self
 
@@ -177,10 +187,13 @@ module Engine
 
       @tile = tile
 
-      @connections.clear
       @paths = nil
-
-      connect!
+      if isolated
+        Connection.migration_connections(self, old_tile)
+      else
+        connect!
+      end
+      #puts "after", @connections if id == 'D7'
     end
 
     def lay_downgrade(tile)
@@ -190,7 +203,7 @@ module Engine
         path.walk { |p| hexes << p.hex if p.node? }
       end
 
-      lay(tile)
+      lay(tile, downgrade = true)
 
       hexes.uniq.each do |hex|
         hex.connections.each do |_, connections|
@@ -203,6 +216,29 @@ module Engine
 
     def connect!
       Connection.connect!(self)
+    end
+
+    def isolated_lay?(tile)
+      # Does laying this tile add no new connections?
+      #wanted_hex = 'D6'
+      #if id == wanted_hex
+      #  puts "old", @tile.paths 
+      #  puts "new", tile.paths
+      #  puts tile.paths.map(&:exits)
+      #  puts tile.paths.map(&:exits).uniq
+      #end
+
+      # The migration code cannot handle Chicago like upgrades
+      return false if tile.paths.map(&:exits) != tile.paths.map(&:exits).uniq
+
+      old_active=@tile.paths.count do |path|
+        path.exits.any? { |e| @neighbors[e].targeting?(self) }
+      end
+      new_active=tile.paths.count do |path|
+        path.exits.any? { |e| @neighbors[e].targeting?(self) }
+      end
+      #puts old_active,new_active
+      return old_active == new_active
     end
 
     def paths

@@ -4,14 +4,22 @@ module Engine
   class Connection
     attr_reader :paths
 
-    def self.connect!(hex)
-      connections = {}
+    def self.calculate_node_paths(hex)
       node_paths = []
-      hex_edges = {}
-
       hex.tile.paths.each do |path|
         path.walk { |p| node_paths << p if p.node? }
       end
+      node_paths
+    end
+
+    def self.connect!(hex)
+      connections = {}
+      
+      hex_edges = {}
+
+      node_paths = calculate_node_paths(hex)
+
+      hex.connections.clear
 
       node_paths.uniq.each do |node_path|
         node_path.walk(chain: []) do |chain|
@@ -22,6 +30,7 @@ module Engine
 
           [chain[0], chain[-1]].each do |path|
             hex = path.hex
+            #puts chain if hex.id == "D7"
             if path.exits.empty?
               hex_edges[[hex, :internal]] = true
               hex.connections[:internal] << connection
@@ -40,6 +49,46 @@ module Engine
         connections.select!(&:valid?)
         connections.uniq!(&:hash)
       end
+    end
+
+    def self.update_connections(connections, mapping)
+      connections.each do |e, conns|
+        conns.each do |c|
+          c.paths.map! { |p| mapping[p] || p }
+          c.clear_cache
+        end
+      end
+    end
+
+    def self.migration_connections(hex, old_tile)
+      # Migrate old connections from the old tile to the new without re-walking.
+
+      # Create mapping from old paths to new paths
+      #puts "migrate", hex.id
+
+      mapping = {}
+      old_tile.paths.each do |op|
+        mapping[op] = hex.tile.paths.find { |np| (np.exits & op.exits == np.exits) && np.lanes == op.lanes }
+      end
+
+      #wanted_hex = 'D6'
+      #if hex.id == wanted_hex
+      #  puts hex.connections
+      #  puts "old_paths",old_tile.paths
+      #  puts "new_paths",hex.tile.paths
+      #  puts mapping
+      #end
+      # Update paths on this tile and those referenced, since they share the connection object we only have
+      # to change those in this hex.
+      update_connections(hex.connections, mapping)
+
+      node_paths = calculate_node_paths(hex)
+
+      node_paths.map(&:hex).uniq.each do |node_hex|
+        #puts node_hex.id, node_hex.connections if hex.id == wanted_hex
+        update_connections(node_hex.connections, mapping)
+      end
+
     end
 
     def self.valid_connection?(chain)
