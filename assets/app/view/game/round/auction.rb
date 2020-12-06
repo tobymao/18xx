@@ -187,25 +187,25 @@ module View
           moveable_bids = @step.moveable_bids(@current_entity, company)
           return [] if moveable_bids.empty?
 
-          moveable_bids.map do |old_company, old_bids|
-            old_bids.map do |old_bid|
+          moveable_bids.flat_map do |from_company, from_bids|
+            from_bids.map do |from_bid|
               move_bid = lambda do
                 hide!
                 price = input.JS['elm'].JS['value'].to_i
                 process_action(Engine::Action::MoveBid.new(
                   @current_entity,
                   company: company,
-                  old_company: old_company,
+                  from_company: from_company,
                   price: price,
-                  old_price: old_bid.price,
+                  from_price: from_bid.price,
                 ))
                 store(:selected_company, nil, skip: true)
               end
 
               h(:button, { on: { click: move_bid } },
-                "Move #{old_company.sym} #{@game.format_currency(old_bid.price)} Bid")
+                "Move #{from_company.sym} #{@game.format_currency(from_bid.price)} Bid")
             end
-          end.flatten
+          end
         end
 
         def render_turn_bid
