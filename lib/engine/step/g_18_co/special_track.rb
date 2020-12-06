@@ -10,7 +10,7 @@ module Engine
         include Tracker
 
         def process_lay_tile(action)
-          super(action)
+          super
 
           clear_upgrade_icon(action.hex.tile)
           collect_mines(action.entity.owner, action.hex)

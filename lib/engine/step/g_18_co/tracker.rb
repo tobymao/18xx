@@ -14,7 +14,7 @@ module Engine
 
         def collect_mines(corporation, hex)
           # Mine Token Collection
-          return unless hex.tile.icons.map(&:name).include?('mine')
+          return unless hex.tile.icons.any? { |icon| icon.name == 'mine' }
 
           # Remove mine symbol from hex
           hex.tile.icons.reject! { |icon| icon.name == 'mine' }
