@@ -3,6 +3,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1846'
+require_relative 'company_price_up_to_face'
 require_relative 'base'
 
 module Engine
@@ -106,6 +107,8 @@ module Engine
         two_player? ? 0 : players.size
       end
 
+      include CompanyPriceUpToFace
+
       def setup
         @turn = setup_turn
 
@@ -138,10 +141,8 @@ module Engine
 
         @cert_limit = init_cert_limit
 
-        @companies.each do |company|
-          company.min_price = 1
-          company.max_price = company.value
-        end
+        setup_company_price_up_to_face
+
         @draft_finished = false
 
         @minors.each do |minor|
