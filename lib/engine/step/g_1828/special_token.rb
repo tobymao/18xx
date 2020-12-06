@@ -54,7 +54,7 @@ module Engine
         def blocking_for_sold_company?
           return false unless (company = @round.just_sold_company)
 
-#          company = @round.respond_to?(:just_sold_company) && @round.just_sold_company
+          #          company = @round.respond_to?(:just_sold_company) && @round.just_sold_company
 
           if (ability = company.abilities(:token, time: 'sold'))
             if available_tokens(company.owner) && !already_tokened_this_round?(company.owner)
