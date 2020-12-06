@@ -31,6 +31,8 @@ module Engine
 
       SELL_BUY_ORDER = :sell_buy
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
+      MUST_BID_INCREMENT_MULTIPLE = true
+      ONLY_HIGHEST_BID_COMMITTED = false
 
       CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = true
       CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
@@ -193,7 +195,7 @@ module Engine
       def new_auction_round
         Round::Auction.new(self, [
           Step::G18CO::CompanyPendingPar,
-          Step::WaterfallAuction,
+          Step::G18CO::MovingBidAuction,
         ])
       end
 
