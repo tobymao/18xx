@@ -36,6 +36,7 @@ module Engine
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
       GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
+      TRAIN_STATION_PRIVATE_NAME = 'TS'
       PITTSBURGH_PRIVATE_NAME = 'PSM'
       PITTSBURGH_PRIVATE_HEX = 'F13'
 
@@ -475,7 +476,7 @@ module Engine
       private
 
       def new_auction_round
-        log << "Seed Money for initial auction is #{format_currency(SEED_MONEY)}" unless @round
+        log << "Seed Money for initial auction is #{format_currency(self.class::SEED_MONEY)}" unless @round
         Round::Auction.new(self, [
           Step::G1817::SelectionAuction,
         ])

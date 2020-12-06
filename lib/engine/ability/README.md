@@ -108,7 +108,7 @@ and `owner_type` are satisfied.
 
 - `revenue`: The new revenue value
 
-## share
+## shares
 
 This company comes with a share of a corporation when acquired.
 
@@ -197,3 +197,14 @@ Modified station token placement
   token without connectivity, for the given price.
 - `extra`: If true, this ability may be used in addition to the turn's
   normal token placement step. Default false.
+- `cheater`: If an integer is given, this token will be placed into a city at
+  whichever is the lowest unoccupied slot index of the following: a regular slot
+  in the city; the `cheater` value; one slot higher than the city actually has,
+  effectively increasing the city's size by one. (See 18 Los Angeles's optional
+  company "Dewey, Cheatham, and Howe" or the corporations which get removed in
+  1846 2p Variant for examples). Default nil.
+- `special_only`: If true, this ability may only be used by explicitly
+  activating the company to which it belongs (i.e., using the `SpecialTrack`
+  step); if unset or false, `Engine::Step::Tokener#adjust_token_price_ability!`
+  infers that the special ability ought to be used whenever a token is being
+  placed in a location that the ability is allowed to use. Default false.

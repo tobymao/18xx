@@ -12,6 +12,6 @@ class Action < Base
   end
 
   def to_h
-    action.to_h.merge('user' => user_id)
+    action.to_h.merge('user' => user_id, 'created_at' => created_at_ts)
   end
 end

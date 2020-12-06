@@ -216,6 +216,7 @@ describe 'Assets' do
        ['Merge',
         'Decline',
         'Corporations that can merge with NdM']],
+      ['18_mex', 17_849, nil, 'endgame', '18MEX: Operating Round 4.2 (of 2) - Game Over - Bankruptcy'],
       ['1817', 15_528, 196, 'merge',
        ['Convert',
         'Merge',

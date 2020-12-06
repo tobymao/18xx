@@ -136,6 +136,7 @@ module Engine
           token.remove!
         end
         @log << "#{spender.name}"\
+          "#{spender == entity ? '' : " (#{entity.sym})"}"\
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile ##{tile.name}"\
           " with rotation #{rotation} on #{hex.name}"

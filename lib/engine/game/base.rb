@@ -26,6 +26,7 @@ require_relative '../share_pool'
 require_relative '../stock_market'
 require_relative '../tile'
 require_relative '../train'
+require_relative '../player_info'
 
 module Engine
   module Game
@@ -171,6 +172,7 @@ module Engine
       HOME_TOKEN_TIMING = :operate
 
       DISCARDED_TRAINS = :discard # discarded or removed?
+      DISCARDED_TRAIN_DISCOUNT = 0 # percent
       CLOSED_CORP_TRAINS = :removed # discarded or removed?
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
@@ -200,6 +202,9 @@ module Engine
       MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
       OBSOLETE_TRAINS_COUNT_FOR_LIMIT = false
+
+      CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = false
+      CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = false
 
       CACHABLE = [
         %i[players player],
@@ -536,8 +541,10 @@ module Engine
           @round.entities.each(&:unpass!)
 
           if end_now?(end_timing)
+
             end_game!
           else
+            store_player_info
             next_round!
 
             # Finalize round setup (for things that need round correctly set like place_home_token)
@@ -547,6 +554,12 @@ module Engine
         end
 
         self
+      end
+
+      def store_player_info
+        @players.each do |p|
+          p.history << PlayerInfo.new(@round.class.short_name, turn, @round.round_num, p)
+        end
       end
 
       def preprocess_action(_action); end
@@ -559,6 +572,10 @@ module Engine
         # Corporations sorted by some potential game rules
         ipoed, others = corporations.partition(&:ipoed)
         ipoed.sort + others
+      end
+
+      def operated_operators
+        (@corporations + @minors).select(&:operated?)
       end
 
       def current_action_id
@@ -577,6 +594,19 @@ module Engine
 
       def trains
         @depot.trains
+      end
+
+      def train_owner(train)
+        train.owner
+      end
+
+      def route_trains(entity)
+        entity.runnable_trains
+      end
+
+      # Before rusting, check if this train individual should rust.
+      def rust?(_train)
+        true
       end
 
       def shares
@@ -665,11 +695,11 @@ module Engine
       end
 
       def bundles_for_corporation(share_holder, corporation, shares: nil)
-        all_bundles_for_corporation(share_holder, corporation, shares)
+        all_bundles_for_corporation(share_holder, corporation, shares: shares)
       end
 
       # Needed for 18MEX
-      def all_bundles_for_corporation(share_holder, corporation, shares)
+      def all_bundles_for_corporation(share_holder, corporation, shares: nil)
         return [] unless corporation.ipoed
 
         shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
@@ -740,6 +770,13 @@ module Engine
           depot.depot_trains.any? &&
           (self.class::MUST_BUY_TRAIN == :always ||
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
+      end
+
+      def discard_discount(train, price)
+        return price unless self.class::DISCARDED_TRAIN_DISCOUNT
+        return price unless @depot.discarded.include?(train)
+
+        (price * (100.0 - self.class::DISCARDED_TRAIN_DISCOUNT.to_f) / 100.0).ceil.to_i
       end
 
       def end_game!
@@ -1711,6 +1748,8 @@ module Engine
       def show_corporation_size?(_entity)
         false
       end
+
+      def status_str(_corporation); end
 
       # Override this, and add elements (paragraphs of text) here to display it on Info page.
       def timeline

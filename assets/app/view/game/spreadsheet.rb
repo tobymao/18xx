@@ -52,6 +52,10 @@ module View
             render_player_companies,
             render_player_certs,
           ]),
+          h(:thead, [
+            h(:tr, { style: { height: '1rem' } }, ''),
+          ]),
+          *render_player_history,
         ])
         # TODO: consider adding OR information (could do both corporation OR revenue and player change in value)
         # TODO: consider adding train availability
@@ -63,6 +67,25 @@ module View
 
       def render_history_titles(corporations)
         or_history(corporations).map { |turn, round| h(:th, @game.or_description_short(turn, round)) }
+      end
+
+      def render_player_history
+        # OR history should exist in all
+        zebra_row = true
+        last_values = nil
+        @game.players.first.history.map do |h|
+          values = @players.map do |p|
+            p.history.find { |h2| h2.round == h.round }.value
+          end
+          next if values == last_values
+
+          last_values = values
+          zebra_row = !zebra_row
+          h(:tr, zebra_props(zebra_row), [
+            h('th.left', h.round),
+            *values.map { |v| h('td.padded_number', @game.format_currency(v)) },
+          ])
+        end.compact.reverse
       end
 
       def render_history(corporation)

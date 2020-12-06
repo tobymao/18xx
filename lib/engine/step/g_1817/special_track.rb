@@ -12,6 +12,7 @@ module Engine
 
           if action.entity.id == @game.class::PITTSBURGH_PRIVATE_NAME
             super
+            action.entity.close!
           else # Mine
             owner = action.entity.owner
             tile_lay = step.get_tile_lay(owner)
@@ -21,7 +22,9 @@ module Engine
             lay_tile(action, extra_cost: tile_lay[:cost] - 15, entity: owner, spender: owner)
             tile.hex.assign!('mine')
             @game.log << "#{owner.name} adds mine to #{tile.hex.name}"
-            tile_lay_abilities(action.entity).use!
+            ability = tile_lay_abilities(action.entity)
+            ability.use!
+            action.entity.close! if ability.count.zero?
           end
           step.laid_track = step.laid_track + 1
         end
@@ -58,7 +61,7 @@ module Engine
             # potentially be updated in future.
             (ntile.cities&.any? ||
              ntile.offboards&.any?) &&
-            (ntile.edges.any? { |e| e.num == Hex.invert(exit) } ||
+            (ntile.exits.any? { |e| e == Hex.invert(exit) } ||
              potential_future_tiles(entity, neighbor).any?)
           end
         end

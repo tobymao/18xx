@@ -139,7 +139,6 @@ module Engine
         @minors.each do |minor|
           train = @depot.upcoming[0]
           train.buyable = false
-          update_end_of_life(train, nil, nil) if @optional_rules&.include?(:delay_minor_close)
           minor.buy_train(train, :free)
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token)
@@ -316,7 +315,7 @@ module Engine
 
       def purchasable_companies(entity = nil)
         return super if @phase.current[:name] != '2' || !@optional_rules&.include?(:early_buy_of_kcmo)
-        return [] unless p2_company.owner.player?
+        return [] unless p2_company.owner&.player?
 
         [p2_company]
       end
@@ -396,7 +395,7 @@ module Engine
           next unless refund_amount.positive?
 
           refund_amount = refund_amount.ceil
-          bank.spend(refund_amount, p)
+          @bank.spend(refund_amount, p)
           @log << "#{p.name} receives #{format_currency(refund_amount)} in share compensation"
         end
 
@@ -466,6 +465,13 @@ module Engine
         end
 
         major.close!
+      end
+
+      def rust?(train)
+        return super unless @optional_rules&.include?(:delay_minor_close)
+
+        # Do not rust minor's 2 trains
+        !(train.name == '2' && train.owner.minor?)
       end
 
       def buy_first_5_train(player)

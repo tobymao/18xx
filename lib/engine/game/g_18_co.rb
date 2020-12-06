@@ -31,6 +31,12 @@ module Engine
 
       SELL_BUY_ORDER = :sell_buy
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
+      MUST_BID_INCREMENT_MULTIPLE = true
+      ONLY_HIGHEST_BID_COMMITTED = false
+
+      CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = true
+      CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
+      DISCARDED_TRAIN_DISCOUNT = 50
 
       # Two tiles can be laid, only one upgrade
       # TODO: This changes in phase E to a single tile lay
@@ -39,6 +45,7 @@ module Engine
       # First 3 are Denver, Second 3 are CO Springs
       TILES_FIXED_ROTATION = %w[co1 co2 co3 co5 co6 co7].freeze
       GREEN_TOWN_TILES = %w[co8 co9 co10].freeze
+      GREEN_CITY_TILES = %w[14 15].freeze
       BROWN_CITY_TILES = %w[co4 63].freeze
 
       STOCKMARKET_COLORS = {
@@ -145,6 +152,8 @@ module Engine
       end
 
       def mine_create(entity, count)
+        return unless count.positive?
+
         mines_remove(entity)
         total = count * mine_value(entity)
         entity.add_ability(Engine::Ability::Base.new(
@@ -164,6 +173,8 @@ module Engine
         Step::HomeToken,
         Step::BuyCompany,
         Step::G18CO::RedeemShares,
+        Step::CorporateBuyShares,
+        Step::G18CO::SpecialTrack,
         Step::G18CO::Track,
         Step::Token,
         Step::Route,
@@ -184,7 +195,7 @@ module Engine
       def new_auction_round
         Round::Auction.new(self, [
           Step::G18CO::CompanyPendingPar,
-          Step::WaterfallAuction,
+          Step::G18CO::MovingBidAuction,
         ])
       end
 
@@ -246,6 +257,8 @@ module Engine
       end
 
       def upgrades_to?(from, to, special = false)
+        return true if special && from.hex.tile.color == :yellow && GREEN_CITY_TILES.include?(to.name)
+
         # Green towns can't be upgraded to brown cities unless the hex has the upgrade icon
         if GREEN_TOWN_TILES.include?(from.hex.tile.name)
           return BROWN_CITY_TILES.include?(to.name) if from.hex.tile.icons.any? { |icon| icon.name == 'upgrade' }

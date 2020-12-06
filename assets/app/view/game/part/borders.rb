@@ -58,8 +58,6 @@ module View
         def color(border)
           color =
             case border.type
-            when nil
-              @tile.color
             when :mountain
               :brown
             when :water
@@ -106,6 +104,8 @@ module View
           children = []
 
           @tile.borders.each do |border|
+            next unless border.type
+
             children << h(:line, attrs: {
               **EDGES[border.edge],
               stroke: color(border),

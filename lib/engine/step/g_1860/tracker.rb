@@ -113,6 +113,10 @@ module Engine
               @game.tile_cost(old_tile, hex, entity) + border + extra_cost - discount
             end
 
+          if @game.insolvent?(spender) && cost.positive?
+            @game.game_error("#{spender.id} cannot pay for a tile when insolvent")
+          end
+
           spender.spend(cost, @game.bank) if cost.positive?
 
           cities = tile.cities

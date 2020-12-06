@@ -162,6 +162,7 @@ module View
             price = variant[:price]
             president_assist, _fee = @game.president_assisted_buy(@corporation, train, price)
             price = @ability&.discounted_price(train, price) || price
+            price = @game.discard_discount(train, price)
 
             buy_train = lambda do
               process_action(Engine::Action::BuyTrain.new(

@@ -68,6 +68,11 @@ p {
   }
 }
 
+button.active {
+  background: lightblue;
+  color: black;
+}
+
 input, select, textarea {
   background: whitesmoke;
   border-radius: 5px;
