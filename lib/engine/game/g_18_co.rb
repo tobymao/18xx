@@ -43,6 +43,7 @@ module Engine
       # First 3 are Denver, Second 3 are CO Springs
       TILES_FIXED_ROTATION = %w[co1 co2 co3 co5 co6 co7].freeze
       GREEN_TOWN_TILES = %w[co8 co9 co10].freeze
+      GREEN_CITY_TILES = %w[14 15].freeze
       BROWN_CITY_TILES = %w[co4 63].freeze
 
       STOCKMARKET_COLORS = {
@@ -171,6 +172,7 @@ module Engine
         Step::BuyCompany,
         Step::G18CO::RedeemShares,
         Step::CorporateBuyShares,
+        Step::G18CO::SpecialTrack,
         Step::G18CO::Track,
         Step::Token,
         Step::Route,
@@ -253,6 +255,8 @@ module Engine
       end
 
       def upgrades_to?(from, to, special = false)
+        return true if special && from.hex.tile.color == :yellow && GREEN_CITY_TILES.include?(to.name)
+
         # Green towns can't be upgraded to brown cities unless the hex has the upgrade icon
         if GREEN_TOWN_TILES.include?(from.hex.tile.name)
           return BROWN_CITY_TILES.include?(to.name) if from.hex.tile.icons.any? { |icon| icon.name == 'upgrade' }
