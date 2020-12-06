@@ -109,20 +109,21 @@ module View
         if discountable_trains.any?
           children << h(:h3, h3_props, 'Exchange Trains')
 
-          discountable_trains.each do |train, discount_train, price|
+          discountable_trains.each do |train, discount_train, discount_name, price|
             exchange_train = lambda do
               process_action(
                 Engine::Action::BuyTrain.new(
                   @corporation,
                   train: discount_train,
                   price: price,
+                  variant: discount_name,
                   exchange: train,
                 )
               )
             end
 
             children << h(:div, [
-              "#{train.name} -> #{discount_train.name} #{@game.format_currency(price)} ",
+              "#{train.name} -> #{discount_name} #{@game.format_currency(price)} ",
               h('button.no_margin', { on: { click: exchange_train } }, 'Exchange'),
             ])
           end

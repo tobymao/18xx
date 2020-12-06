@@ -14,7 +14,7 @@ module Engine
 
         can_buy_normal || @depot
           .discountable_trains_for(entity)
-          .any? { |_, _, price| buying_power(entity) >= price }
+          .any? { |_, _, _, price| buying_power(entity) >= price }
       end
 
       def room?(entity)

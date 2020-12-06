@@ -89,9 +89,20 @@ module Engine
           discounted_price = discount_train.price(train)
           next if discount_train.price == discounted_price
 
-          [train, discount_train, discounted_price]
+          name = discount_train.name
+          discount_info = [[train, discount_train, name, discounted_price]]
+
+          # Add variants if any - they have same discount as base version
+          discount_train.variants.each do |_, v|
+            next if v[:name] == name
+
+            price = v[:price] - (discount_train.price - discounted_price)
+            discount_info << [train, discount_train, v[:name], price]
+          end
+
+          discount_info
         end.compact
-      end
+      end.flatten(1)
     end
 
     def available(corporation)
