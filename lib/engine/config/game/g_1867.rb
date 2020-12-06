@@ -718,7 +718,7 @@ module Engine
       ]
     },
     "yellow": {
-      "city=revenue:40;city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:3,b:_1;label=M;upgrade=cost:20,terrain:water": [
+      "city=revenue:40;city=revenue:40;city=revenue:40,loc:5;path=a:1,b:_0;path=a:3,b:_1;label=M;upgrade=cost:20,terrain:water": [
         "L12"
       ],
       "city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=T": [
