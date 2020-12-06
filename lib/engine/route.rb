@@ -205,7 +205,9 @@ module Engine
 
       visited = visited_stops
       @game.game_error('Route must have at least 2 stops') if @connections.any? && visited.size < 2
-      @game.game_error('Route must contain token') unless (token = find_token(visited))
+      unless (token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) })
+        @game.game_error('Route must contain token')
+      end
 
       check_distance!(visited)
       check_cycles!
@@ -219,10 +221,6 @@ module Engine
       end
 
       @game.revenue_for(self, stops)
-    end
-
-    def find_token(stops)
-      @game.find_token_for_entity(corporation, stops)
     end
 
     def subsidy
@@ -266,7 +264,7 @@ module Engine
 
       if possibilities.one?
         connection = possibilities[0].find do |conn|
-          find_token(conn.nodes) && # .any? { |node| node.tokened_by?(corporation) } &&
+          conn.nodes.any? { |node| @game.city_tokened_by?(node, corporation) } &&
             (conn.paths & other_paths).empty?
         end
         left, right = connection&.nodes
