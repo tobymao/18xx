@@ -23,7 +23,7 @@ module Engine
           ability = tile_lay_abilities(action.entity)
           ability.use!
 
-          if @game.river_corporations.any?(owner) && !owner.operated?
+          if @game.river_corporations.include?(owner) && !owner.operated?
             @round.river_special_tile_lay = tile.hex
           else
             step.laid_track = step.laid_track + 1

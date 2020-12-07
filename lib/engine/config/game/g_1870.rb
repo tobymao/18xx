@@ -325,7 +325,7 @@ module Engine
       "sym": "MRBC",
       "abilities": [
         {
-          "type": "blocks_crossing_partition",
+          "type": "blocks_partition",
           "partition_type": "water",
           "owner_type": "player"
         },
@@ -886,7 +886,7 @@ module Engine
       "upgrade=cost:100,terrain:river;partition=a:0-,b:2-,type:water;border=edge:3,type:impassable": [
         "O18"
       ],
-      "city=revenue:0;upgrade=cost:40,terrain:river;partition=a:0+,b:2+,type:water,restrict:inner,magnet:4;label=P": [
+      "city=revenue:0;upgrade=cost:40,terrain:river;partition=a:0+,b:2+,type:water,restrict:inner;label=P": [
         "C18"
       ],
       "city=revenue:0;upgrade=cost:40,terrain:river;icon=image:port;partition=a:0-,b:2+,type:water,restrict:outer": [
@@ -898,10 +898,10 @@ module Engine
       "town=revenue:0;upgrade=cost:40,terrain:river;partition=a:4-,b:5+,type:water": [
         "D17"
       ],
-      "town=revenue:0,loc:4.5;upgrade=cost:80,terrain:river;partition=a:0+,b:4-,type:water,restrict:outer,magnet:-1": [
+      "town=revenue:0;upgrade=cost:80,terrain:river;partition=a:0+,b:4-,type:water,restrict:outer": [
         "K14"
       ],
-      "town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:river;partition=a:0-,b:3,type:water,restrict:inner": [
+      "town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:river;partition=a:0-,b:3,type:water": [
         "A16"
       ],
       "upgrade=cost:60,terrain:lake": [

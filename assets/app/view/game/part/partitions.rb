@@ -52,7 +52,7 @@ module View
           children = []
 
           @tile.partitions.each do |partition|
-            next unless partition.blockers.any? { |b| b.abilities(:blocks_crossing_partition)&.blocks?(partition.type) }
+            next unless partition.blockers.any? { |b| b.abilities(:blocks_partition)&.blocks?(partition.type) }
 
             a_control = VERTICES[(partition.a + partition.a_sign) % 6]
             vertex_a = convex_combination(VERTICES[partition.a], a_control)
@@ -72,8 +72,11 @@ module View
                  end.join(' ')
 
             magnet_str = ''
-            if partition.magnet
-              magnet = VERTICES[partition.magnet].map { |x| x * 0.5 }
+            if partition.restrict
+              magnet = ((partition.a + partition.b) / 2).to_i
+              magnet = (magnet + 3) % 6 if @restrict == 'inner'
+              magnet = VERTICES[magnet].map { |x| x * 0.5 }
+
               magnet_control = [vertex_a, vertex_b, magnet].transpose.map { |a, b, m| m - (b - a) * 2 / 7 }
               magnet_str = ", #{magnet_control.join(' ')}, #{magnet.join(' ')} S"
             end

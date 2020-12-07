@@ -4,7 +4,7 @@ require_relative 'base'
 
 module Engine
   module Ability
-    class BlocksCrossingPartition < Base
+    class BlocksPartition < Base
       attr_reader :partition_type
 
       def setup(partition_type:)

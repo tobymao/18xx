@@ -91,7 +91,7 @@ module Engine
 
         @corporations.each do |corp|
           corp.assignments.dup.each do |company, _|
-            if ASSIGNMENT_TOKENS.keys.any?(company)
+            if ASSIGNMENT_TOKENS[company]
               removals[company][:corporation] = corp.name
               corp.remove_assignment!(company)
             end
@@ -100,7 +100,7 @@ module Engine
 
         @hexes.each do |hex|
           hex.assignments.dup.each do |company, _|
-            if ASSIGNMENT_TOKENS.keys.any?(company)
+            if ASSIGNMENT_TOKENS[company]
               removals[company][:hex] = hex.name
               hex.remove_assignment!(company)
             end
@@ -135,8 +135,9 @@ module Engine
       end
 
       def purchasable_companies(entity = nil)
+        entity ||= current_entity
         return super unless @phase.name == '1'
-        return [river_company] if [mp_corporation, ssw_corporation].any?(entity)
+        return [river_company] if [mp_corporation, ssw_corporation].include?(entity)
 
         []
       end
@@ -171,7 +172,7 @@ module Engine
       end
 
       def legal_tile_rotation?(_entity, hex, tile)
-        return true unless river_company.abilities(:blocks_crossing_partition)
+        return true unless river_company.abilities(:blocks_partition)
 
         (tile.exits & hex.tile.borders.select { |b| b.type == :water }.map(&:edge)).empty? &&
           hex.tile.partitions.all? do |partition|
@@ -182,12 +183,12 @@ module Engine
       end
 
       def upgrades_to?(from, to, _special = false)
-        return to.name == '170' if from.color == :green && P_HEXES.any?(from.hex.name)
+        return to.name == '170' if from.color == :green && P_HEXES.include?(from.hex.name)
 
         return to.name == '171K' if from.color == :brown && from.hex.name == 'B11'
         return to.name == '172L' if from.color == :brown && from.hex.name == 'C18'
 
-        super(from, to, false, to.cities.size.positive? && %i[yellow green].any?(to.color))
+        super(from, to, false, to.cities.any? && %i[yellow green].include?(to.color))
       end
 
       def border_impassable?(border)

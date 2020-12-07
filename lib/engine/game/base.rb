@@ -1355,7 +1355,7 @@ module Engine
 
         partition_blockers = {}
         companies.each do |company|
-          company.abilities(:blocks_crossing_partition) do |ability|
+          company.abilities(:blocks_partition) do |ability|
             partition_blockers[ability.partition_type] = company
           end
         end

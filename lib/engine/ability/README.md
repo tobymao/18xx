@@ -61,7 +61,7 @@ company is bought in by a corporation.
 
 - `hexes`: An array of hex coordinates that are blocked
 
-## blocks_crossing_partition
+## blocks_partition
 
 Designate a type of partition which this ability disallows crossing.
 A partition separates an hex in 2 halves. Use the `owner_type: "player"`
