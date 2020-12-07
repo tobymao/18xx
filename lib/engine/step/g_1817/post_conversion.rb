@@ -55,7 +55,7 @@ module Engine
 
         def can_sell?(entity, _bundle)
           !corporation.president?(entity) &&
-            entity.shares_of(corporation).any?
+            entity.shares_of(corporation).any? { |share| share.percent.positive? }
         end
 
         def description
