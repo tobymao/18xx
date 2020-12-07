@@ -120,11 +120,11 @@ module View
       end
 
       def corporation_interest_penalty?(entity)
-        @game.round.interest_penalty[entity] if @game.round.respond_to? :interest_penalty
+        @game.round.interest_penalty[entity] if @game.round.respond_to?(:interest_penalty)
       end
 
       def player_interest_penalty?(entity)
-        @game.round.player_interest_penalty[entity] if @game.round.respond_to? :player_interest_penalty
+        @game.round.player_interest_penalty[entity] if @game.round.respond_to?(:player_interest_penalty)
       end
 
       def cleanup

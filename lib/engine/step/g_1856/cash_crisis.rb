@@ -14,7 +14,7 @@ module Engine
         def actions(entity)
           return [] unless entity == current_entity
 
-          if @active_entity.nil?
+          unless @active_entity
             @active_entity = entity
             @game.log << "#{@active_entity.name} enters Emergency Fundraising and owes"\
             " the bank #{@game.format_currency(needed_cash(@active_entity))}"
