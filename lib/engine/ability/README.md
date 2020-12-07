@@ -61,6 +61,16 @@ company is bought in by a corporation.
 
 - `hexes`: An array of hex coordinates that are blocked
 
+## blocks_crossing_partition
+
+Designate a type of partition which this ability disallows crossing.
+A partition separates an hex in 2 halves. Use the `owner_type: "player"`
+to specify that the blocking ends when the company is bought in by a
+corporation.
+
+- `partition_type`: The name of the partition type that is to be
+blocked, akin to terrain and border types.
+
 ## close
 
 Describe when the company closes, using the `when` attribute.

@@ -166,12 +166,12 @@ module Engine
       end
 
       def legal_tile_rotation?(_entity, hex, tile)
-        return true unless river_company.abilities(:blocks_division)
+        return true unless river_company.abilities(:blocks_crossing_partition)
 
         (tile.exits & hex.tile.borders.select { |b| b.type == :water }.map(&:edge)).empty? &&
-          hex.tile.divisions.all? do |division|
+          hex.tile.partitions.all? do |partition|
             tile.paths.all? do |path|
-              (path.exits - division.inner).empty? || (path.exits - division.outer).empty?
+              (path.exits - partition.inner).empty? || (path.exits - partition.outer).empty?
             end
           end
       end

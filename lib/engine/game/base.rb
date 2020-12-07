@@ -1353,10 +1353,10 @@ module Engine
           end
         end
 
-        division_blockers = {}
+        partition_blockers = {}
         companies.each do |company|
-          company.abilities(:blocks_division) do |ability|
-            division_blockers[ability.division_type] = company
+          company.abilities(:blocks_crossing_partition) do |ability|
+            partition_blockers[ability.partition_type] = company
           end
         end
 
@@ -1391,9 +1391,9 @@ module Engine
                 tile.add_blocker!(blocker)
               end
 
-              tile.divisions.each do |division|
-                if (blocker = division_blockers[division.type])
-                  division.add_blocker!(blocker)
+              tile.partitions.each do |partition|
+                if (blocker = partition_blockers[partition.type])
+                  partition.add_blocker!(blocker)
                 end
               end
 

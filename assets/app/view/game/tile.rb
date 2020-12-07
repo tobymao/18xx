@@ -71,7 +71,7 @@ module View
         children << render_tile_part(Part::Assignments) if @tile.hex.assignments.any?
         # borders should always be the top layer
         children << borders if borders
-        children << render_tile_part(Part::Divisions) if @tile.divisions.any?
+        children << render_tile_part(Part::Partitions) if @tile.partitions.any?
 
         children << rendered_loc_name if rendered_loc_name && @show_location_names
         children << render_coords if @show_coords

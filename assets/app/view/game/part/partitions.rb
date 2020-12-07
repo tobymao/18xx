@@ -8,7 +8,7 @@ require 'view/game/part/base'
 module View
   module Game
     module Part
-      class Divisions < Base
+      class Partitions < Base
         include Lib::Color
         include Lib::Settings
 
@@ -28,9 +28,9 @@ module View
 
         COEFFICIENT = 0.8
 
-        def color(division)
+        def color(partition)
           color =
-            case division.type
+            case partition.type
             when nil
               @tile.color
             when :mountain
@@ -51,29 +51,29 @@ module View
         def render_part
           children = []
 
-          @tile.divisions.each do |division|
-            next unless division.blockers.any? { |b| b.abilities(:blocks_division)&.blocks?(division.type) }
+          @tile.partitions.each do |partition|
+            next unless partition.blockers.any? { |b| b.abilities(:blocks_crossing_partition)&.blocks?(partition.type) }
 
-            a_control = VERTICES[(division.a + division.a_sign) % 6]
-            vertex_a = convex_combination(VERTICES[division.a], a_control)
-            b_control = VERTICES[(division.b + division.b_sign) % 6]
-            vertex_b = convex_combination(VERTICES[division.b], b_control)
+            a_control = VERTICES[(partition.a + partition.a_sign) % 6]
+            vertex_a = convex_combination(VERTICES[partition.a], a_control)
+            b_control = VERTICES[(partition.b + partition.b_sign) % 6]
+            vertex_b = convex_combination(VERTICES[partition.b], b_control)
 
-            da = if division.a_sign.nonzero?
-                   VERTICES[division.a].map { |x| x * (1 - (1 - COEFFICIENT) * 2) } # cos(30) = 1/2
+            da = if partition.a_sign.nonzero?
+                   VERTICES[partition.a].map { |x| x * (1 - (1 - COEFFICIENT) * 2) } # cos(30) = 1/2
                  else
                    convex_combination(vertex_a, vertex_b)
                  end.join(' ')
 
-            db = if division.b_sign.nonzero?
-                   VERTICES[division.b].map { |x| x * (1 - (1 - COEFFICIENT) * 2) } # cos(30) = 1/2
+            db = if partition.b_sign.nonzero?
+                   VERTICES[partition.b].map { |x| x * (1 - (1 - COEFFICIENT) * 2) } # cos(30) = 1/2
                  else
                    convex_combination(vertex_b, vertex_a)
                  end.join(' ')
 
             magnet_str = ''
-            if division.magnet
-              magnet = VERTICES[division.magnet].map { |x| x * 0.5 }
+            if partition.magnet
+              magnet = VERTICES[partition.magnet].map { |x| x * 0.5 }
               magnet_control = [vertex_a, vertex_b, magnet].transpose.map { |a, b, m| m - (b - a) * 2 / 7 }
               magnet_str = ", #{magnet_control.join(' ')}, #{magnet.join(' ')} S"
             end
@@ -82,7 +82,7 @@ module View
 
             children << h(:path, attrs: {
               d: d,
-              stroke: color(division),
+              stroke: color(partition),
               'stroke-width': '5',
             })
           end

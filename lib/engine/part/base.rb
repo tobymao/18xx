@@ -101,7 +101,7 @@ module Engine
         false
       end
 
-      def division?
+      def partition?
         false
       end
 
