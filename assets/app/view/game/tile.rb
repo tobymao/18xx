@@ -16,7 +16,7 @@ module View
       needs :tile
       needs :routes, default: []
 
-      needs :show_coords, default: true
+      needs :show_coords, default: nil
       needs :show_location_names, default: true
 
       # helper method to pass @tile and @region_use to every part

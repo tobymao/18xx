@@ -15,6 +15,7 @@ module View
       needs :distance, default: nil
       needs :role, default: :tile_selector
       needs :unavailable_clickable, default: false
+      needs :zoom, default: 1
 
       SCALE = 0.3
       TILE_SIZE = 60
@@ -35,8 +36,8 @@ module View
 
         hexes = list_coordinates(hexes, @distance, SIZE).map do |hex, left, bottom|
           h(:svg,
-            { style: style(left, bottom, TILE_SIZE) },
-            [h(:g, { attrs: { transform: "scale(#{SCALE})" } }, [hex])])
+            { style: style(left * @zoom, bottom * @zoom, TILE_SIZE * @zoom) },
+            [h(:g, { attrs: { transform: "scale(#{SCALE * @zoom})" } }, [hex])])
         end
 
         h(:div, hexes)
