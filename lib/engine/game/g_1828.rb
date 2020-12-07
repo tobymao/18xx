@@ -289,7 +289,7 @@ module Engine
       end
 
       def city_tokened_by?(city, entity)
-        return @graph.connected_nodes(entity).keys.include?(city) if entity.id == 'C&P'
+        return @graph.connected_nodes(entity)[city] if entity.id == 'C&P'
 
         super
       end
