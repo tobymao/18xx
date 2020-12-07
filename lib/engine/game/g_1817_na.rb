@@ -8,7 +8,7 @@ module Engine
     class G1817NA < G1817
       load_from_json(Config::Game::G1817NA::JSON)
 
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
       GAME_PUBLISHER = nil
       PITTSBURGH_PRIVATE_NAME = 'DTC'
       PITTSBURGH_PRIVATE_HEX = 'F14'
