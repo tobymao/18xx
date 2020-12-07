@@ -70,6 +70,12 @@ describe 'Assets' do
       {
         # games with config but not full implementation; just do a quick spot check
         '1817' => %w[Pittsburgh],
+        '1817NA' => %w[
+          Anchorage The Klondike Dawson City Hazelton Arctic Edmonton Winnipeg
+          Quebec Europe Seattle Denver Toronto New York Hawaii Los Angeles
+          Guadalajara Mexico City Miami New Orleans Belize South America
+          20 30 40 50 60 80 15 10 B Asia
+        ],
         '1846' => %w[Chicago],
 
         # games with full implementation; verify every string on the map

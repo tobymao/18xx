@@ -31,7 +31,7 @@ module View
       needs :actions, default: []
       needs :entity, default: nil
       needs :unavailable, default: nil
-      needs :show_coords, default: true
+      needs :show_coords, default: nil
       needs :show_location_names, default: true
       needs :routes, default: []
 
@@ -114,7 +114,9 @@ module View
       def on_hex_click
         return if @actions.empty? && @role != :tile_page
 
-        return store(:tile_selector, nil) if !@clickable || (@hex == @tile_selector&.hex && !@tile_selector.tile)
+        if !@clickable || (@hex == @tile_selector&.hex && !(@tile_selector.respond_to?(:tile) && @tile_selector.tile))
+          return store(:tile_selector, nil)
+        end
 
         nodes = @hex.tile.nodes
 

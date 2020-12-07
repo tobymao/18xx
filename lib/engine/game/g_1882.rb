@@ -191,7 +191,12 @@ module Engine
         revenue
       end
 
-      def action_processed(_action)
+      def action_processed(action)
+        if action.is_a?(Action::LayTile) && action.tile.name == 'R2'
+          action.tile.location_name = 'Regina'
+          return
+        end
+
         return unless @sc_company
         return if !@sc_company.closed? && !@sc_company&.owner&.corporation?
 
