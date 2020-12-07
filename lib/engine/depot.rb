@@ -85,7 +85,7 @@ module Engine
       discountable_trains = depot_trains.select(&:discount)
 
       corporation.trains.flat_map do |train|
-        discountable_trains.map do |discount_train|
+        discountable_trains.flat_map do |discount_train|
           discounted_price = discount_train.price(train)
           next if discount_train.price == discounted_price
 
@@ -102,7 +102,7 @@ module Engine
 
           discount_info
         end.compact
-      end.flatten(1)
+      end
     end
 
     def available(corporation)
