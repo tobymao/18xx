@@ -12,15 +12,83 @@ module Engine
       node_paths
     end
 
-    def self.connect!(hex)
+    def self.connect!(hex, old_tile=nil)
+      # Migrate old connections from the old tile to the new without re-walking.
+
+      # Create mapping from old paths to new paths
+      wanted_hex = 'I3'
+      full_rebuild = false
+
+      old_exits = {}
+
+      # Don't have a previous tile, rebuild
+      full_rebuild = true unless old_tile
+
+      # Loop through old tile paths creating a hash of each exit to paths
+      # If a second path uses the exit go into full rebuild, and early exit
+      # If any of them use lanes go into full rebuild, and early exit (lanes might not be needed)
+      full_rebuild = generate_pathmap(old_tile, old_exits) unless full_rebuild
+      new_exits = {}
+      full_rebuild = generate_pathmap(hex.tile, new_exits) unless full_rebuild
+
+      # Downgrade
+      full_rebuild = true if old_exits.none? || old_exits.size > new_exits.size
+
+      # Create the mapping
+      mapping = {}
+      unless full_rebuild
+        old_tile.paths.each do |op|
+          new_path = new_exits[op.exits.first]
+          #puts "update", new_path.exits, op.exits if hex.id == wanted_hex
+          if new_path && (new_path.exits & op.exits == op.exits)
+            mapping[op] = new_path
+          else
+            # Exits might be broken
+            full_rebuild = true
+            break
+          end
+        end
+      end
+
+      if hex.id == wanted_hex
+        puts hex.connections
+        puts "old_paths",old_tile.paths if old_tile
+        puts "new_paths",hex.tile.paths
+        puts old_exits, full_rebuild
+        puts mapping
+        full_rebuild = true
+      end
+
+      #puts "migrate", hex.id unless full_rebuild
+      #puts "non-migrate", hex.id if full_rebuild
+
+      hex.connections.clear if full_rebuild
+
+      node_paths = []
+      update_paths = []
+      hex.tile.paths.each do |path|       
+        # Migrate or recalculate depending if it already existed
+        if !full_rebuild && old_exits.include?(path.exits.first)
+          # If connections are present, just update these since the connections are shared
+          if hex.connections.any?
+            # Already existed, port over the connections
+            update_connections(hex.connections, mapping)
+          else
+            path.walk { |p| update_paths << p if p.node? }
+          end
+        else
+          path.walk { |p| node_paths << p if p.node? }
+        end
+      end
+
+      # Update connections on all hexs connected to the retained exits
+      update_paths.map(&:hex).uniq.each do |node_hex|
+        update_connections(node_hex.connections, mapping)
+      end
+
+      # Run over new paths and add new connections
       connections = {}
-      
       hex_edges = {}
-
-      node_paths = calculate_node_paths(hex)
-
-      hex.connections.clear
-
       node_paths.uniq.each do |node_path|
         node_path.walk(chain: []) do |chain|
           next unless valid_connection?(chain)
@@ -30,7 +98,6 @@ module Engine
 
           [chain[0], chain[-1]].each do |path|
             hex = path.hex
-            #puts chain if hex.id == "D7"
             if path.exits.empty?
               hex_edges[[hex, :internal]] = true
               hex.connections[:internal] << connection
@@ -49,6 +116,8 @@ module Engine
         connections.select!(&:valid?)
         connections.uniq!(&:hash)
       end
+
+      puts hex.connections if hex.id == wanted_hex
     end
 
     def self.update_connections(connections, mapping)
@@ -60,36 +129,23 @@ module Engine
       end
     end
 
-    def self.migration_connections(hex, old_tile)
-      # Migrate old connections from the old tile to the new without re-walking.
+    def self.generate_pathmap(tile, exits)
+      tile.paths.each do |p|
+        if p.single?
+          p.exits.each do |exit|
+            return true if exits.include?(exit)
 
-      # Create mapping from old paths to new paths
-      #puts "migrate", hex.id
+            exits[exit] = p
+          end
 
-      mapping = {}
-      old_tile.paths.each do |op|
-        mapping[op] = hex.tile.paths.find { |np| (np.exits & op.exits == np.exits) && np.lanes == op.lanes }
+        else
+          return true
+        end
       end
-
-      #wanted_hex = 'D6'
-      #if hex.id == wanted_hex
-      #  puts hex.connections
-      #  puts "old_paths",old_tile.paths
-      #  puts "new_paths",hex.tile.paths
-      #  puts mapping
-      #end
-      # Update paths on this tile and those referenced, since they share the connection object we only have
-      # to change those in this hex.
-      update_connections(hex.connections, mapping)
-
-      node_paths = calculate_node_paths(hex)
-
-      node_paths.map(&:hex).uniq.each do |node_hex|
-        #puts node_hex.id, node_hex.connections if hex.id == wanted_hex
-        update_connections(node_hex.connections, mapping)
-      end
-
+      false
     end
+
+
 
     def self.valid_connection?(chain)
       path_hist = {}
