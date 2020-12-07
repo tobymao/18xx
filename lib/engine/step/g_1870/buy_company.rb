@@ -9,7 +9,9 @@ module Engine
         def can_buy_company?(entity)
           return super unless @game.phase.name == '1'
 
-          @game.purchasable_companies(entity).any? && @game.river_company.min_price <= entity.cash
+          entity == current_entity &&
+            @game.purchasable_companies(entity).any? &&
+            @game.river_company.min_price <= entity.cash
         end
       end
     end

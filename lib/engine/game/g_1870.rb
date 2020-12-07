@@ -58,12 +58,13 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::Operating.new(self, [
+        Round::G1870::Operating.new(self, [
           Step::Bankrupt,
           Step::Exchange,
           Step::DiscardTrain,
           Step::G1870::BuyCompany,
-          Step::Track,
+          Step::G1870::SpecialTrack,
+          Step::G1870::Track,
           Step::Token,
           Step::Route,
           Step::G1870::Dividend,
@@ -127,6 +128,10 @@ module Engine
 
       def ssw_corporation
         @ssw_corporation ||= corporation_by_id('SSW')
+      end
+
+      def river_corporations
+        [ssw_corporation, mp_corporation]
       end
 
       def purchasable_companies(entity = nil)
