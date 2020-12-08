@@ -239,8 +239,8 @@ module Engine
       "float_percent": 20,
       "tokens": [
         0,
-        0,
-        0
+        20,
+        40
       ],
       "type": "major",
       "color": "green"
@@ -252,8 +252,8 @@ module Engine
       "float_percent": 20,
       "tokens": [
         0,
-        0,
-        0
+        20,
+        40
       ],
       "type": "major",
       "color": "red"
@@ -265,8 +265,8 @@ module Engine
       "float_percent": 20,
       "tokens": [
         0,
-        0,
-        0
+        20,
+        40
       ],
       "type": "major",
       "color": "cyan"
@@ -278,8 +278,8 @@ module Engine
       "float_percent": 20,
       "tokens": [
         0,
-        0,
-        0
+        20,
+        40
       ],
       "type": "major",
       "color": "orange"
@@ -291,8 +291,8 @@ module Engine
       "float_percent": 20,
       "tokens": [
         0,
-        0,
-        0
+        20,
+        40
       ],
       "type": "major",
       "color": "brown"
@@ -304,8 +304,8 @@ module Engine
       "float_percent": 20,
       "tokens": [
         0,
-        0,
-        0
+        20,
+        40
       ],
       "type": "major",
       "color": "yellow"
@@ -317,8 +317,8 @@ module Engine
       "float_percent": 20,
       "tokens": [
         0,
-        0,
-        0
+        20,
+        40
       ],
       "color": "tan"
     },
@@ -329,8 +329,8 @@ module Engine
       "float_percent": 20,
       "tokens": [
         0,
-        0,
-        0
+        20,
+        40
       ],
       "type": "major",
       "color": "black"
@@ -618,7 +618,6 @@ module Engine
         "D4",
         "D6",
         "D14",
-        "D18",
         "E3",
         "E5",
         "E7",
@@ -656,20 +655,44 @@ module Engine
         "M5",
         "M7",
         "N6",
-        "O11",
-        "N8",
-        "O9",
-        "N10",
-        "M11",
-        "C9",
-        "D10",
-        "E11",
-        "C11",
-        "D12",
+        "O11"
+      ],
+      "border=edge:5,type:impassable":[
+        "D18"
+      ],
+      "border=edge:0,type:impassable;border=edge:5,type:impassable":[
+        "C9"
+      ],
+      "border=edge:2,type:impassable;border=edge:1,type:impassable;border=edge:0,type:impassable;border=edge:5,type:impassable":[
+        "D10"
+      ],
+      "border=edge:2,type:impassable;border=edge:1,type:impassable":[
+        "E11"
+      ],
+      "border=edge:0,type:impassable;border=edge:3,type:impassable;border=edge:4,type:impassable":[
+        "C11"
+      ],
+      "border=edge:3,type:impassable;border=edge:4,type:impassable":[
+        "D12"
+      ],
+      "border=edge:3,type:impassable":[
         "C13"
       ],
       "upgrade=cost:20,terrain:water": [
         "K11"
+      ],
+      "border=edge:0,type:water,cost:80;border=edge:5,type:water,cost:80": [
+        "N8"
+      ],
+      "border=edge:2,type:water,cost:80;border=edge:3,type:water,cost:80": [
+        "N10",
+        "M11"
+      ],
+      "border=edge:2,type:water,cost:80": [
+        "O9"
+      ],
+      "city=revenue:0;border=edge:5,type:water,cost:80;border=edge:0,type:water,cost:80": [
+        "M9"
       ],
       "city=revenue:0": [
         "D8",
@@ -679,7 +702,6 @@ module Engine
         "C17",
         "G15",
         "I15",
-        "M9",
         "N12"
       ],
       "city=revenue:0;label=Y": [
@@ -690,13 +712,17 @@ module Engine
       "city=revenue:0;label=Y;label=O;upgrade=cost:20,terrain:water": [
         "J12"
       ],
+      "town=revenue:0;border=edge:5,type:water,cost:80": [
+        "L10"
+      ],
+      "town=revenue:0;border=edge:0,type:impassable": [
+        "H14"
+      ],
       "town=revenue:0": [
         "C15",
         "B18",
-        "H14",
         "H10",
         "K13",
-        "L10",
         "M13"
       ]
     },
@@ -749,10 +775,10 @@ module Engine
       ]
     },
     "blue": {
-      "offboard=revenue:10;path=a:3,b:_0": [
+      "offboard=revenue:10;path=a:3,b:_0;border=edge:2,type:impassable": [
         "E19"
       ],
-      "offboard=revenue:10;path=a:2,b:_0;path=a:4,b:_0": [
+      "offboard=revenue:10;path=a:2,b:_0;path=a:4,b:_0;border=edge:3,type:impassable": [
         "H16"
       ]
     }
