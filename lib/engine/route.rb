@@ -205,7 +205,7 @@ module Engine
 
       visited = visited_stops
       @game.game_error('Route must have at least 2 stops') if @connections.any? && visited.size < 2
-      unless (token = visited.find { |stop| stop.tokened_by?(corporation) })
+      unless (token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) })
         @game.game_error('Route must contain token')
       end
 
@@ -228,7 +228,7 @@ module Engine
     end
 
     def corporation
-      train.owner
+      @game.train_owner(train)
     end
 
     def connection_hexes
@@ -264,7 +264,7 @@ module Engine
 
       if possibilities.one?
         connection = possibilities[0].find do |conn|
-          conn.nodes.any? { |node| node.tokened_by?(corporation) } &&
+          conn.nodes.any? { |node| @game.city_tokened_by?(node, corporation) } &&
             (conn.paths & other_paths).empty?
         end
         left, right = connection&.nodes

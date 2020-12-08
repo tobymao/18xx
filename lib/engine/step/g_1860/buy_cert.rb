@@ -243,7 +243,7 @@ module Engine
           share_str = "a #{bundle.percent}% share of #{corporation.name}"
 
           @log << "#{entity.name} buys #{share_str} "\
-            "from the #{@game.class::IPO_NAME} "\
+            "from the #{@game.ipo_name(corporation)} "\
             "for #{@game.format_currency(discounted_price)}"
 
           @game.share_pool.transfer_shares(

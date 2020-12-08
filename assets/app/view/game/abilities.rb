@@ -13,7 +13,7 @@ module View
       ABILITIES = %i[tile_lay teleport assign_hexes assign_corporation token exchange].freeze
 
       def render
-        companies = @game.companies.select { |company| !company.closed? && actions_for(company).any? }
+        companies = @game.companies.select { |company| !company.closed? && actions_for(company).any? && company.owner }
         return h(:div) if companies.empty? || @game.round.current_entity.company?
 
         current, others = companies.partition { |company| @game.current_entity.player == company.player }
@@ -37,7 +37,7 @@ module View
             on: { click: toggle_show },
           }
           children << h(:button, props, "#{@show_other_abilities ? 'Hide' : 'Show'} Others")
-          children.concat(render_companies(others)) if @show_other_abilities
+          children << h(:div, render_companies(others)) if @show_other_abilities
         end
 
         if companies.include?(@selected_company)
@@ -54,18 +54,13 @@ module View
             on: {
               click: -> { store(:selected_company, @selected_company == company ? nil : company) },
             },
-            style: {
-              cursor: 'pointer',
-              display: 'inline-block',
-              padding: '0 0.5rem',
-            },
           }
-          props[:style][:textDecoration] = 'underline' if @selected_company == company
+          props[:class] = { active: true } if @selected_company == company
 
           company_name = company.name.truncate(company.owner.name.size < 5 ? 32 : 19)
           owner_name = company.owner.name.truncate
 
-          h(:div, props, "#{company_name} (#{owner_name})")
+          h(:button, props, "#{company_name} (#{owner_name})")
         end.compact
       end
 

@@ -91,7 +91,7 @@ module Engine
       end
 
       def committed_cash(player, _show_hidden = false)
-        committed_bids_for_player(player).sum(&:price)
+        bids_for_player(player).sum(&:price)
       end
 
       def max_bid(player, company)
@@ -108,6 +108,7 @@ module Engine
 
       def resolve_bids_for_company(company)
         resolved = false
+        is_new_auction = company != @auctioning
         @auctioning = nil
         bids = @bids[company]
 
@@ -116,7 +117,7 @@ module Engine
           resolved = true
         elsif can_auction?(company)
           @auctioning = company
-          @log << "#{@auctioning.name} goes up for auction"
+          @log << "#{@auctioning.name} goes up for auction" if is_new_auction
         end
 
         resolved
@@ -166,7 +167,7 @@ module Engine
       end
 
       def buy_company(player, company, price)
-        if (available = available_cash(player)) < price
+        if (available = max_bid(player, company)) < price
           @game.game_error("#{player.name} has #{@game.format_currency(available)} "\
                            'available and cannot spend '\
                            "#{@game.format_currency(price)}")
@@ -197,10 +198,6 @@ module Engine
             end
           end
         end
-      end
-
-      def available_cash(player)
-        player.cash - committed_cash(player)
       end
 
       private

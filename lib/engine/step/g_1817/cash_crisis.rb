@@ -33,8 +33,8 @@ module Engine
           return [] unless @round.cash_crisis_player
 
           # Rotate players to order starting with the current player
-          @game.players.rotate(@game.players.index(@round.cash_crisis_player))
-          .select { |p| p.cash.negative? }
+          [@game.players.rotate(@game.players.index(@round.cash_crisis_player))
+          .find { |p| p.cash.negative? }].compact
         end
 
         def needed_cash(entity)
@@ -55,6 +55,8 @@ module Engine
         def can_sell?(entity, bundle)
           super && !(bundle.corporation.share_price.acquisition? || bundle.corporation.share_price.liquidation?)
         end
+
+        def swap_sell(_player, _corporation, _bundle, _pool_share); end
       end
     end
   end

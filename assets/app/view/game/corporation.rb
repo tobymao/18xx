@@ -51,6 +51,7 @@ module View
         unless @corporation.minor?
           children << render_shares
           children << render_reserved if @corporation.reserved_shares.any?
+          children << render_owned_other_shares if @corporation.corporate_shares.any?
           children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
         end
 
@@ -84,6 +85,20 @@ module View
           subchildren = render_operating_order
           subchildren << render_revenue_history if @corporation.operating_history.any?
           children << h(:div, props, subchildren)
+        end
+
+        if @game.status_str(@corporation)
+          props = {
+            style: {
+              grid: '1fr / repeat(2, max-content)',
+              gap: '2rem',
+              justifyContent: 'center',
+              backgroundColor: color_for(:bg2),
+              color: color_for(:font2),
+            },
+          }
+
+          children << h(:div, props, render_status)
         end
 
         h('div.corp.card', { style: card_style, on: { click: select_corporation } }, children)
@@ -301,10 +316,32 @@ module View
             ])
           end
 
+        other_corp_info = @game.corporations.reject { |c| c == @corporation }.map do |other_corp|
+          [
+            other_corp,
+            @corporation.president?(other_corp),
+            other_corp.num_shares_of(@corporation, ceil: false),
+            @game.round.active_step&.did_sell?(@corporation, other_corp),
+            !@corporation.holding_ok?(other_corp, 1),
+          ]
+        end
+
+        other_corp_rows = other_corp_info
+          .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
+          .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
+          .map do |other_corp, president, num_shares, did_sell, at_limit|
+            flags = (president ? '*' : '') + (at_limit ? 'L' : '')
+            h('tr.corp', [
+              h("td.left.name.nowrap.#{president ? 'president' : ''}", other_corp.name),
+              h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{share_number_str(num_shares)}"),
+              did_sell ? h('td.italic', 'Sold') : '',
+            ])
+          end
+
         num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
         pool_rows = [
           h('tr.ipo', [
-            h('td.left', @game.class::IPO_NAME),
+            h('td.left', @game.ipo_name(@corporation)),
             h('td.right', shares_props, num_ipo_shares),
             h('td.padded_number', share_price_str(@corporation.par_price)),
           ]),
@@ -341,6 +378,7 @@ module View
         rows = [
           *pool_rows,
           *player_rows,
+          *other_corp_rows,
         ]
 
         props = { style: { borderCollapse: 'collapse' } }
@@ -359,12 +397,50 @@ module View
         ])
       end
 
+      def render_owned_other_shares
+        shares = @corporation
+          .shares_by_corporation.reject { |c, s| s.empty? || c == @corporation }
+          .sort_by { |c, s| [s.sum(&:percent), c.president?(@corporation) ? 1 : 0, c.name] }
+          .reverse
+          .map { |c, s| render_owned_other_corp(c, s) }
+
+        h(:table, shares)
+      end
+
+      def render_owned_other_corp(corporation, shares)
+        td_props = {
+          style: {
+            padding: '0 0.2rem',
+          },
+        }
+        div_props = {
+          style: {
+            height: '20px',
+          },
+        }
+        logo_props = {
+          attrs: {
+            src: corporation.logo,
+          },
+          style: {
+            height: '20px',
+          },
+        }
+
+        president_marker = corporation.president?(@corporation) ? '*' : ''
+        h('tr.row', [
+          h('td.center', td_props, [h(:div, div_props, [h(:img, logo_props)])]),
+          h(:td, td_props, corporation.name + president_marker),
+          h('td.right', td_props, "#{shares.sum(&:percent)}%"),
+        ])
+      end
+
       def render_reserved
         bold = { style: { fontWeight: 'bold' } }
         h('table.center', [
           h(:tbody, [
             h('tr.reserved', [
-              h('td.left', bold, "#{@game.class::IPO_RESERVED_NAME} shares:"),
+              h('td.left', bold, "#{@game.ipo_reserved_name} shares:"),
               h('td.right', @corporation.reserved_shares.map { |s| "#{s.percent}%" }.join(', ')),
             ]),
           ]),
@@ -377,6 +453,12 @@ module View
           'Last Run: ',
           h('span.bold', @game.format_currency(last_run)),
         ])
+      end
+
+      def render_status
+        [h(:div, { style: { display: 'inline' } }, [
+          h('span.bold', @game.status_str(@corporation)),
+        ])]
       end
 
       def render_operating_order
@@ -419,7 +501,7 @@ module View
       def render_buying_power
         h('tr.ipo', [
           h('td.right', 'Buying Power'),
-          h('td.padded_number', @game.format_currency(@game.buying_power(@corporation)).to_s),
+          h('td.padded_number', @game.format_currency(@game.buying_power(@corporation, true)).to_s),
         ])
       end
 

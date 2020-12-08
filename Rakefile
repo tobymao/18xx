@@ -119,16 +119,19 @@ desc 'Profile loading data'
 task 'stackprof', [:json] do |_task, args|
   require 'stackprof'
   require_relative 'lib/engine'
+  starttime = Time.new
   StackProf.run(mode: :cpu, out: 'stackprof.dump', raw: true, interval: 10) do
     100.times do
       data = JSON.parse(File.read(args[:json]))
       Engine::GAMES_BY_TITLE[data['title']].new(
-        data['players'].map { |p| p['name'] },
+        data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h,
         id: data['id'],
         actions: data['actions'],
       )
     end
   end
+  endtime = Time.new
+  puts "#{endtime - starttime} seconds"
 end
 
 desc 'Migrate JSON'

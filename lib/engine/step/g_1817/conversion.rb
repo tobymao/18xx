@@ -20,6 +20,10 @@ module Engine
           actions
         end
 
+        def merge_name
+          'Merge'
+        end
+
         def description
           'Convert or Merge Corporation'
         end

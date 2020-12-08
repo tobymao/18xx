@@ -8,14 +8,19 @@ module View
     class TokenSelector < Snabberb::Component
       include Lib::RadialSelector
       include Actionable
+
       needs :tile_selector, store: true
+      needs :zoom, default: 1
+
       TOKEN_SIZE = 40
-      SIZE = TOKEN_SIZE / 2
-      DISTANCE = TOKEN_SIZE
 
       def render
+        @token_size = TOKEN_SIZE * @zoom
+        @size = @token_size / 2
+        @distance = @token_size
+
         tokens = @game.current_entity.tokens_by_type
-        tokens = list_coordinates(tokens, DISTANCE, SIZE).map do |token, left, bottom|
+        tokens = list_coordinates(tokens, @distance, @size).map do |token, left, bottom|
           click = lambda do
             action = Engine::Action::PlaceToken.new(
               @game.current_entity,
@@ -33,7 +38,7 @@ module View
             on: {
               click: click,
             },
-            style: style(left, bottom, TOKEN_SIZE),
+            style: style(left, bottom, @token_size),
           }
 
           h(:img, props)

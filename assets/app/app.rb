@@ -12,6 +12,7 @@ require 'view/home'
 require 'view/flash'
 require 'view/game_page'
 require 'view/map_page'
+require 'view/market_page'
 require 'view/navigation'
 require 'view/tiles_page'
 require 'view/user'
@@ -73,6 +74,8 @@ class App < Snabberb::Component
         h(View::TilesPage, route: @app_route)
       when /map/
         h(View::MapPage, route: @app_route)
+      when /market/
+        h(View::MarketPage, route: @app_route)
       else
         h(View::Home, user: @user)
       end
@@ -114,7 +117,7 @@ class App < Snabberb::Component
 
       var location = window.location
 
-      if (location.pathname + location.hash + location.search != #{@app_route}) {
+      if (location.pathname + location.search + location.hash != #{@app_route}) {
         window.history.pushState(#{@game_data.to_n}, #{@app_route}, #{@app_route})
       }
     }
@@ -127,7 +130,7 @@ class App < Snabberb::Component
   end
 
   def store_app_route(skip: true)
-    window_route = `window.location.pathname + window.location.hash + window.location.search`
+    window_route = `window.location.pathname + window.location.search + window.location.hash`
     store(:app_route, window_route, skip: skip) unless window_route == ''
   end
 end

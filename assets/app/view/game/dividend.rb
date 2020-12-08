@@ -41,7 +41,7 @@ module View
               moves = Array(option[:share_times]).zip(Array(option[:share_direction]))
 
               moves.map do |times, dir|
-                new_share = @game.stock_market.find_relative_share_price(new_share, dir)
+                times.times { new_share = @game.stock_market.find_relative_share_price(new_share, dir) }
 
                 "#{times} #{dir}"
               end.join(', ')

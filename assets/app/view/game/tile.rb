@@ -14,8 +14,9 @@ module View
   module Game
     class Tile < Snabberb::Component
       needs :tile
-      needs :routes, default: [], store: true
-      needs :show_coords, default: true
+      needs :routes, default: []
+
+      needs :show_coords, default: nil
       needs :show_location_names, default: true
 
       # helper method to pass @tile and @region_use to every part
@@ -54,7 +55,7 @@ module View
         children << render_tile_part(Part::Cities, show_revenue: !render_revenue) if @tile.cities.any?
         children << render_tile_part(Part::Towns, routes: @routes) if @tile.towns.any?
 
-        borders = render_tile_part(Part::Borders) if @tile.borders.any?
+        borders = render_tile_part(Part::Borders) if @tile.borders.any?(&:type)
         # OO tiles have different rules...
         rendered_loc_name = render_tile_part(Part::LocationName) if @tile.location_name && @tile.cities.size > 1
 

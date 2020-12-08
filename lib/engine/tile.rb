@@ -17,7 +17,7 @@ module Engine
     attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :reservations
     attr_reader :blocks_lay, :borders, :cities, :color, :edges, :junction, :label, :nodes,
                 :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers,
-                :city_towns, :unlimited, :stubs
+                :city_towns, :unlimited, :stubs, :id
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -181,6 +181,7 @@ module Engine
       @blocks_lay = nil
       @reservation_blocks = opts[:reservation_blocks] || false
       @unlimited = opts[:unlimited] || false
+      @id = "#{@name}-#{@index}"
 
       separate_parts
     end
@@ -197,10 +198,6 @@ module Engine
                location_name: @location_name,
                reservation_blocks: @reservation_blocks,
                unlimited: @unlimited)
-    end
-
-    def id
-      "#{@name}-#{@index}"
     end
 
     def <=>(other)

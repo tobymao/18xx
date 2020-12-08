@@ -31,17 +31,32 @@ module Engine
 
       SELL_BUY_ORDER = :sell_buy
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
+      MUST_BID_INCREMENT_MULTIPLE = true
+      ONLY_HIGHEST_BID_COMMITTED = false
+
+      CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = true
+      CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
+      DISCARDED_TRAIN_DISCOUNT = 50
 
       # Two tiles can be laid, only one upgrade
       # TODO: This changes in phase E to a single tile lay
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: false }].freeze
 
-      IPO_NAME = 'Treasury'
-
       # First 3 are Denver, Second 3 are CO Springs
       TILES_FIXED_ROTATION = %w[co1 co2 co3 co5 co6 co7].freeze
       GREEN_TOWN_TILES = %w[co8 co9 co10].freeze
+      GREEN_CITY_TILES = %w[14 15].freeze
       BROWN_CITY_TILES = %w[co4 63].freeze
+
+      STOCKMARKET_COLORS = {
+        par: :yellow,
+        acquisition: :red,
+      }.freeze
+
+      MARKET_TEXT = {
+        par: 'Par: C [40, 50, 60, 75] - 40%, B/C [80, 90, 100, 110] - 50%, A/B/C: [120, 135, 145, 160] - 60%',
+        acquisition: 'Acquisition: Corporation assets will be auctioned if entering Stock Round',
+      }.freeze
 
       PAR_FLOAT_GROUPS = {
         20 => %w[X],
@@ -73,6 +88,10 @@ module Engine
         ).freeze
 
       include CompanyPrice50To150Percent
+
+      def ipo_name(_entity = nil)
+        'Treasury'
+      end
 
       def dsng
         @dsng ||= corporation_by_id('DSNG')
@@ -133,6 +152,8 @@ module Engine
       end
 
       def mine_create(entity, count)
+        return unless count.positive?
+
         mines_remove(entity)
         total = count * mine_value(entity)
         entity.add_ability(Engine::Ability::Base.new(
@@ -152,6 +173,8 @@ module Engine
         Step::HomeToken,
         Step::BuyCompany,
         Step::G18CO::RedeemShares,
+        Step::CorporateBuyShares,
+        Step::G18CO::SpecialTrack,
         Step::G18CO::Track,
         Step::Token,
         Step::Route,
@@ -172,7 +195,7 @@ module Engine
       def new_auction_round
         Round::Auction.new(self, [
           Step::G18CO::CompanyPendingPar,
-          Step::WaterfallAuction,
+          Step::G18CO::MovingBidAuction,
         ])
       end
 
@@ -183,6 +206,23 @@ module Engine
         when Action::BuyCompany
           mine_update_text(action.entity) if action.company == imc && action.entity.corporation?
         end
+      end
+
+      def check_distance(route, visits)
+        super
+
+        distance = route.train.distance
+
+        return if distance.is_a?(Numeric)
+
+        cities_allowed = distance.find { |d| d['nodes'].include?('city') }['pay']
+        cities_visited = visits.count { |v| v.city? || v.offboard? }
+        start_at_town = visits.first.town? ? 1 : 0
+        end_at_town = visits.last.town? ? 1 : 0
+
+        return unless cities_allowed < (cities_visited + start_at_town + end_at_town)
+
+        game_error('Towns on route ends are counted against city limit.')
       end
 
       def revenue_for(route, stops)
@@ -217,6 +257,8 @@ module Engine
       end
 
       def upgrades_to?(from, to, special = false)
+        return true if special && from.hex.tile.color == :yellow && GREEN_CITY_TILES.include?(to.name)
+
         # Green towns can't be upgraded to brown cities unless the hex has the upgrade icon
         if GREEN_TOWN_TILES.include?(from.hex.tile.name)
           return BROWN_CITY_TILES.include?(to.name) if from.hex.tile.icons.any? { |icon| icon.name == 'upgrade' }

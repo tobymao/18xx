@@ -464,7 +464,8 @@ module Engine
                 {
                     "type": "teleport",
                     "owner_type": "corporation",
-                    "when": "track",
+                    "cost": 120,
+                    "free_tile_lay": true,
                     "hexes": [
                       "F20"
                     ],
@@ -488,7 +489,7 @@ module Engine
                 {
                     "type": "revenue_change",
                     "revenue": 0,
-                    "when": "sold"
+                    "when": "auction_end"
                 }
             ]
         },
@@ -1237,13 +1238,13 @@ module Engine
                 "E15",
                 "H22"
             ],
-            "city=revenue:30;path=a:3,b:_0;path=a:5,b:_0": [
+            "city=revenue:30;path=a:3,b:_0;path=a:5,b:_0;label=Bo": [
                 "E27"
             ],
-            "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_1;label=OO;upgrade=cost:80,terrain:water": [
+            "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_1;label=NY;upgrade=cost:80,terrain:water": [
                 "G23"
             ],
-            "city=revenue:30;path=a:0,b:_0;path=a:4,b:_0": [
+            "city=revenue:30;path=a:0,b:_0;path=a:4,b:_0;label=Ba": [
                 "I19"
             ],
             "city=revenue:20;path=a:1,b:_0;path=a:4,b:_0": [
@@ -1308,10 +1309,10 @@ module Engine
             "offboard=revenue:60;path=a:4,b:_0": [
                 "A3"
             ],
-            "offboard=revenue:yellow_30|brown_50,groups:Canada;path=a:4,b:5": [
+            "offboard=revenue:yellow_30|brown_50,groups:Canada;path=a:4,b:5;border=edge:4": [
                 "A13"
             ],
-            "city=revenue:yellow_30|brown_50,groups:Canada;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1": [
+            "city=revenue:yellow_30|brown_50,groups:Canada;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1;border=edge:1": [
                 "A15"
             ],
             "offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:1,b:_0": [

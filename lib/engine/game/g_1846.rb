@@ -3,6 +3,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1846'
+require_relative 'company_price_up_to_face'
 require_relative 'base'
 
 module Engine
@@ -81,7 +82,9 @@ module Engine
       # Two tiles can be laid, only one upgrade
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
-      IPO_NAME = 'Treasury'
+      def ipo_name(_entity = nil)
+        'Treasury'
+      end
 
       def corporation_opts
         two_player? ? { max_ownership_percent: 70 } : {}
@@ -103,6 +106,8 @@ module Engine
       def num_pass_companies(players)
         two_player? ? 0 : players.size
       end
+
+      include CompanyPriceUpToFace
 
       def setup
         @turn = setup_turn
@@ -136,10 +141,8 @@ module Engine
 
         @cert_limit = init_cert_limit
 
-        @companies.each do |company|
-          company.min_price = 1
-          company.max_price = company.value
-        end
+        setup_company_price_up_to_face
+
         @draft_finished = false
 
         @minors.each do |minor|
@@ -381,7 +384,7 @@ module Engine
         ], round_num: round_num)
       end
 
-      def tile_cost(tile, entity)
+      def tile_cost(tile, hex, entity)
         [TILE_COST, super].max
       end
 

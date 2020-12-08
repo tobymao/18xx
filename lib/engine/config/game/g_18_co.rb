@@ -75,15 +75,27 @@ module Engine
 		"L20": "Fort Worth, TX"
 	},
 	"tiles": {
-		"3": 6,
-		"4": 6,
+		"3a": {
+			"count": 6,
+			"color": "yellow",
+			"code": "town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:1"
+		},
+		"4a": {
+			"count": 6,
+			"color": "yellow",
+			"code": "town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:3"
+		},
 		"5": 3,
 		"6": 6,
 		"7": 15,
 		"8": 25,
 		"9": 25,
 		"57": 6,
-		"58": 6,
+		"58a": {
+			"count": 6,
+			"color": "yellow",
+			"code": "town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:2"
+		},
 		"co1": {
 			"count": 1,
 			"color": "yellow",
@@ -346,6 +358,7 @@ module Engine
 					"owner_type": "corporation",
 					"when": "track",
 					"count": 1,
+					"special": true,
 					"tiles": [
 						"14",
 						"15"
@@ -421,7 +434,17 @@ module Engine
 
 					],
 					"tiles": [
-
+						"co1",
+						"co5",
+						"3a",
+						"4a",
+						"5",
+						"6",
+						"7",
+						"8",
+						"9",
+						"57",
+						"58a"
 					]
 				}
 			]
@@ -650,6 +673,7 @@ module Engine
 			"float_percent": 20,
 			"always_market_price": true,
 			"logo": "18_co/DSNG",
+			"shares":[20, 10, 20, 20, 10, 10, 10],
 			"tokens": [
 				0,
 				40

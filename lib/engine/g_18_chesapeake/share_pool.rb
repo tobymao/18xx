@@ -6,7 +6,7 @@ require_relative '../share_pool'
 module Engine
   module G18Chesapeake
     class SharePool < SharePool
-      def buy_shares(entity, shares, exchange: nil, exchange_price: nil)
+      def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil)
         return super unless shares
         return super unless @game.two_player?
 

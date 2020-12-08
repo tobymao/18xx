@@ -9,11 +9,13 @@ module Engine
       include Tracker
 
       ACTIONS = %w[lay_tile].freeze
+      ACTIONS_WITH_PASS = %w[lay_tile pass].freeze
 
       def actions(entity)
-        return [] unless tile_lay_abilities(entity)
+        action = tile_lay_abilities(entity)
+        return [] unless action
 
-        ACTIONS
+        action.blocks ? ACTIONS : ACTIONS_WITH_PASS
       end
 
       def description
@@ -25,7 +27,7 @@ module Engine
       end
 
       def blocks?
-        tile_lay_abilities(@company)&.blocks
+        @company
       end
 
       def process_lay_tile(action)
@@ -33,6 +35,18 @@ module Engine
         lay_tile(action, spender: action.entity.owner)
         check_connect(action, ability)
         ability.use!
+
+        @company = ability.count.positive? ? action.entity : nil if ability.must_lay_together
+      end
+
+      def process_pass(action)
+        entity = action.entity
+        ability = tile_lay_abilities(entity)
+        @game.game_error("Not #{entity.name}'s turn: #{action.to_h}") unless entity == @company
+
+        entity.remove_ability(ability)
+        @log << "#{entity.owner.name} passes laying additional track with #{entity.name}"
+        @company = nil
       end
 
       def available_hex(entity, hex)
@@ -62,24 +76,17 @@ module Engine
         ability || entity.abilities(:tile_lay, time: 'track', &block)
       end
 
-      def check_connect(action, tile_ability)
-        company = action.entity
-        hex_ids = tile_ability.hexes
-        return if !tile_ability&.connect || hex_ids.size < 2
+      def check_connect(_action, ability)
+        hex_ids = ability.hexes
+        return unless ability.connect
+        return if hex_ids.size < 2
+        return if !ability.start_count || ability.start_count < 2 || ability.start_count == ability.count
 
-        if company == @company
-          paths = hex_ids.flat_map do |hex_id|
-            @game.hex_by_id(hex_id).tile.paths
-          end.uniq
+        paths = hex_ids.flat_map do |hex_id|
+          @game.hex_by_id(hex_id).tile.paths
+        end.uniq
 
-          @game.game_error('Paths must be connected') if paths.size != paths[0].select(paths).size
-        end
-
-        @company = company
-      end
-
-      def setup
-        @company = nil
+        @game.game_error('Paths must be connected') if paths.size != paths[0].select(paths).size
       end
     end
   end

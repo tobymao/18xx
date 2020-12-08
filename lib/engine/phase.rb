@@ -32,7 +32,13 @@ module Engine
     end
 
     def train_limit(entity)
-      @train_limit + train_limit_increase(entity)
+      limit =
+        if @train_limit.is_a?(Hash)
+          @train_limit[entity.type] || 0
+        else
+          @train_limit
+        end
+      limit + train_limit_increase(entity)
     end
 
     def available?(phase_name)
@@ -107,6 +113,7 @@ module Engine
 
         should_rust = t.rusts_on == train.sym || (t.obsolete_on == train.sym && @depot.discarded.include?(t))
         next unless should_rust
+        next unless @game.rust?(t)
 
         rusted_trains << t.name
         owners[t.owner.name] += 1

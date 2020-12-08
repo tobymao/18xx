@@ -35,7 +35,7 @@ module Engine
           return super unless entity.minor?
 
           home_hex = @game.hex_by_id(entity.coordinates)
-          return @game.tile_cost(home_hex.tile, entity) <= entity.cash if home_hex.tile.color == :white
+          return @game.tile_cost(home_hex.tile, home_hex, entity) <= entity.cash if home_hex.tile.color == :white
 
           super
         end

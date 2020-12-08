@@ -90,6 +90,7 @@ module Engine
           Step::DiscardTrain,
           Step::G1828::SpecialTrack,
           Step::G1828::BuyCompany,
+          Step::G1828::SpecialToken,
           Step::G1828::BuySpecial,
           Step::G1828::Track,
           Step::G1828::Token,
@@ -110,6 +111,8 @@ module Engine
         @coal_marker_ability =
           Engine::Ability::Description.new(type: 'description', description: 'Coal Marker')
         block_va_coalfields
+
+        @blocking_corporation = Corporation.new(sym: 'B', name: 'Blocking', logo: '1828/blocking', tokens: [0])
       end
 
       def init_stock_market
@@ -120,6 +123,17 @@ module Engine
         sm.enable_par_price(79)
 
         sm
+      end
+
+      def init_tiles
+        tiles = super
+
+        tiles.find { |tile| tile.name == '53' }.label = 'Ba'
+        tiles.find { |tile| tile.name == '61' }.label = 'Ba'
+        tiles.find { |tile| tile.name == '121' }.label = 'Bo'
+        tiles.find { |tile| tile.name == '997' }.label = 'Bo'
+
+        tiles
       end
 
       EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false, cost: 40 }].freeze
@@ -137,35 +151,46 @@ module Engine
 
       def init_round_finished
         @players.rotate!(@round.entity_index)
+
+        @companies.each do |company|
+          next unless company.owner
+
+          company.abilities(:revenue_change, time: 'auction_end') do |ability|
+            company.revenue = ability.revenue
+          end
+        end
       end
 
       def event_green_par!
         @log << "-- Event: #{EVENTS_TEXT['green_par'][1]} --"
         stock_market.enable_par_price(86)
         stock_market.enable_par_price(94)
+        update_cache(:share_prices)
       end
 
       def event_blue_par!
         @log << "-- Event: #{EVENTS_TEXT['blue_par'][1]} --"
         stock_market.enable_par_price(105)
+        update_cache(:share_prices)
       end
 
       def event_brown_par!
         @log << "-- Event: #{EVENTS_TEXT['brown_par'][1]} --"
         stock_market.enable_par_price(120)
+        update_cache(:share_prices)
       end
 
       def event_close_companies!
         super
 
-        @minors.dup.each { |minor| remove_minor!(minor) }
+        @minors.dup.each { |minor| remove_minor!(minor, block: true) }
       end
 
       def event_remove_corporations!
         @log << "-- Event: #{EVENTS_TEXT['remove_corporations'][1]}. --"
         @corporations.reject(&:ipoed).each do |corporation|
-          place_home_token(corporation)
-          place_second_home_token(corporation) if corporation.name == 'ERIE'
+          place_home_blocking_token(corporation)
+          place_second_home_blocking_token(corporation) if corporation.name == 'ERIE'
           @log << "Removing #{corporation.name}"
           @corporations.delete(corporation)
         end
@@ -175,10 +200,17 @@ module Engine
         @phase.current[:name] == 'Purple'
       end
 
-      def remove_minor!(minor)
-        @round.force_next_entity! if @round.current_entity == minor
+      def remove_minor!(minor, block: false)
         minor.spend(minor.cash, @bank) if minor.cash.positive?
+        minor.tokens.each do |token|
+          city = token&.city
+          token.remove!
+          place_blocking_token(city.hex) if block && city
+        end
+        @graph.clear_graph_for(minor)
         @minors.delete(minor)
+
+        @round.force_next_entity! if @round.current_entity == minor
       end
 
       def upgrades_to?(from, to, special = false)
@@ -250,12 +282,25 @@ module Engine
         end
       end
 
+      def can_run_route?(entity)
+        return false if entity.id == 'C&P' && !@round.last_tile_lay
+
+        super
+      end
+
+      def city_tokened_by?(city, entity)
+        return @graph.connected_nodes(entity)[city] if entity.id == 'C&P'
+
+        super
+      end
+
       private
 
       def setup_minors
         @minors.each do |minor|
           train = @depot.upcoming[0]
           train.buyable = false
+          train.rusts_on = nil
           minor.buy_train(train, :free)
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token, free: true)
@@ -281,11 +326,20 @@ module Engine
         @log << "Removing #{to_remove.name} train"
       end
 
-      def place_second_home_token(corporation)
-        token = corporation.find_token_by_type
+      def place_blocking_token(hex, city_index: 0)
+        @log << "Placing a blocking token on #{hex.name} (#{hex.location_name})"
+        token = Token.new(@blocking_corporation)
+        hex.tile.cities[city_index].place_token(@blocking_corporation, token, check_tokenable: false)
+      end
+
+      def place_home_blocking_token(corporation, city_index: 0)
         hex = hex_by_id(corporation.coordinates)
-        @log << "#{corporation.name} places a second token on #{hex.name}"
-        hex.tile.cities[1].place_token(corporation, token, check_tokenable: false)
+        hex.tile.cities[city_index].remove_reservation!(corporation)
+        place_blocking_token(hex, city_index: city_index)
+      end
+
+      def place_second_home_blocking_token(corporation)
+        place_home_blocking_token(corporation, city_index: 1)
       end
     end
   end
