@@ -1,0 +1,23 @@
+<svg width="37.2" height="37.2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <style type="text/css">.st0{clip-path:url(#SVGID_2_);fill-rule:evenodd;clip-rule:evenodd;fill:#010101;}
+	.st1{fill:#FFFFFF;}
+	.st2{font-family:'Times-Bold';}
+	.st3{font-size:22px;}</style>
+ <g>
+  <title>background</title>
+  <rect x="-1" y="-1" width="39.2" height="39.2" id="canvas_background" fill="none"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <g id="svg_1">
+   <defs>
+    <circle id="SVGID_1_" cx="18.6" cy="18.6" r="18.6"/>
+   </defs>
+   <clipPath id="SVGID_2_">
+    <use xlink:href="#SVGID_1_" id="svg_2"/>
+   </clipPath>
+   <path class="st0" d="m42.6,18.6c0,-13.3 -10.7,-24 -24,-24c-13.3,0 -24,10.7 -24,24c0,13.3 10.7,24 24,24c13.3,0 24,-10.7 24,-24" id="svg_3"/>
+  </g>
+  <text class="st1 st2 st3" id="svg_4" y="26.0986" x="11.25657">B</text>
+ </g>
+</svg>

@@ -55,8 +55,8 @@ module Engine
         phase.buying_train!(corporation, game.trains.find { |t| t.name == 'D' })
         expect(game.corporations.size).to be(1)
         expect(game.corporations.first).to eq(corporation)
-        expect(erie_home_tile.cities[0].tokened_by?(erie)).to be_truthy
-        expect(erie_home_tile.cities[1].tokened_by?(erie)).to be_truthy
+        expect(erie_home_tile.cities[0].available_slots).to eq(0)
+        expect(erie_home_tile.cities[1].available_slots).to eq(0)
       end
 
       it 'should trigger end game at purple phase' do

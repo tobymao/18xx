@@ -489,7 +489,7 @@ module Engine
                 {
                     "type": "revenue_change",
                     "revenue": 0,
-                    "when": "sold"
+                    "when": "auction_end"
                 }
             ]
         },

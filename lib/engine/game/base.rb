@@ -811,6 +811,10 @@ module Engine
         routes.reject { |r| r == route }.flat_map(&:paths)
       end
 
+      def city_tokened_by?(city, entity)
+        city.tokened_by?(entity)
+      end
+
       def check_overlap(routes)
         tracks = []
 

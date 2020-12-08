@@ -15,12 +15,17 @@ module Engine
           return unless (minor = @game.minor_by_id(company.id))
 
           cash = minor.cash
+          @log << "#{entity.name} receives #{@game.format_currency(cash)} from #{minor.name}'s treasury"
           minor.spend(cash, entity) if cash.positive?
-          minor.tokens[0].swap!(Engine::Token.new(entity))
-          @log << "#{entity.name} receives #{@game.format_currency(cash)} "\
-            "and may place a token on #{minor.coordinates} for free"
-          @game.graph.clear_graph_for(minor)
-          @game.remove_minor(minor)
+
+          company.add_ability(Engine::Ability::Token.new(type: 'token',
+                                                         hexes: [minor.coordinates],
+                                                         price: 0,
+                                                         teleport_price: 0,
+                                                         from_owner: true,
+                                                         when: 'sold'))
+
+          @game.remove_minor!(minor)
         end
       end
     end
