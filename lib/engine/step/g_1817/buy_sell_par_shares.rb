@@ -386,8 +386,10 @@ module Engine
           highest_bid(corporation).price + min_increment
         end
 
-        def max_bid(player, _corporation = nil)
-          [MAX_BID, @game.bidding_power(player)].min
+        def max_bid(entity, _corporation = nil)
+          return 0 if @game.num_certs(entity) >= @game.cert_limit
+
+          [MAX_BID, @game.bidding_power(entity)].min
         end
 
         def ipo_via_par?(_entity)

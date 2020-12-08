@@ -54,6 +54,10 @@ def repair(game, original_actions, actions, broken_action)
       return
     end
   elsif broken_action['type'] == 'pass'
+    if game.active_step.is_a?(Engine::Step::G1817::PostConversionLoans)
+      actions.delete(broken_action)
+      return
+    end
     if game.active_step.is_a?(Engine::Step::G1817::Conversion)
       # Remove corps passes that went into acquisition
       actions.delete(broken_action)

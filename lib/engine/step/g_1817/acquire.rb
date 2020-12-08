@@ -302,7 +302,7 @@ module Engine
 
               @shareholder_cash = 0
             elsif loan_value.positive?
-              unless president == @game.share_pool
+              if president != @game.share_pool && @buyer
                 @game.log << "#{@buyer.name} settles #{acquired_corp.name} loans for "\
                 "#{@game.format_currency(loan_value)}"
               end

@@ -48,7 +48,7 @@ module Engine
       SELL_MOVEMENT = :none
       ALL_COMPANIES_ASSIGNABLE = true
       SELL_AFTER = :operate
-      DEV_STAGE = :beta
+      DEV_STAGE = :production
       OBSOLETE_TRAINS_COUNT_FOR_LIMIT = true
 
       ASSIGNMENT_TOKENS = {
