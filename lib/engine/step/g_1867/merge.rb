@@ -9,6 +9,7 @@ module Engine
       class Merge < Base
         def actions(entity)
           return [] if !entity.corporation? || entity != current_entity
+          return [] if @round.converted
 
           actions = []
 
@@ -31,6 +32,8 @@ module Engine
         end
 
         def description
+          return 'Choose Major Corporation' if @converting
+
           'Convert or Merge Minor Corporation'
         end
 
@@ -49,7 +52,6 @@ module Engine
           @game.stock_market.set_par(target, corporation.share_price)
           owner = corporation.owner
 
-          @round.entities.delete(corporation)
           @converting = nil
           @game.close_corporation(corporation)
 
@@ -60,6 +62,12 @@ module Engine
           receiving = move_assets(corporation, target)
 
           @log << "#{corporation.name} converts into #{target.name} receiving #{receiving.join(', ')}"
+
+          # Replace the entity with the new one.
+          @round.entities[@round.entity_index] = target
+          @round.converted = target
+          # All players are eligable to buy shares unlike merger
+          @round.share_dealing_players = @game.players.rotate(@game.players.index(target.owner))
         end
 
         def move_assets(from, to)
@@ -135,9 +143,7 @@ module Engine
         def round_state
           {
             converted: nil,
-            converted_price: nil,
-            tokens_needed: nil,
-            converts: [],
+            share_dealing_players: [],
           }
         end
       end
