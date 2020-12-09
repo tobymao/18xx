@@ -26,8 +26,8 @@ module Engine
 
           text = ''
           if current_entity.receivership?
-            text += "#{current_entity.name} is in receivership (it has no president)."\
-              'Most of its actions are automated, but it must have a player manually run'\
+            text += "#{current_entity.name} is in receivership (it has no president). "\
+              'Most of its actions are automated, but it must have a player manually run '\
               "its trains. Please enter the best route you see for #{current_entity.name}."
           end
           text += ' In addition, ' if current_entity.receivership? && @game.insolvent?(current_entity)

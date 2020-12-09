@@ -7,6 +7,16 @@ module View
       needs :radius
 
       def render
+        if @token.status != :flipped
+          render_token
+        else
+          children = [render_token]
+          children.concat(render_stroke)
+          h(:g, children)
+        end
+      end
+
+      def render_token
         h(
           :image, attrs: {
             href: @token.logo,
@@ -16,6 +26,39 @@ module View
             width: (2 * @radius),
           },
         )
+      end
+
+      def render_stroke
+        redw = 7
+        whitew = 2
+        s = (@radius / Math.sqrt(2)).round(2)
+        d = ((redw + whitew) / 2.0 / Math.sqrt(2)).round(2)
+        [
+          h(
+            :path, attrs: {
+              d: "M #{s} #{-s} L #{-s} #{s}",
+              stroke: 'red',
+              'stroke-width': redw,
+              'stroke-opacity': '0.6',
+            },
+          ),
+          h(
+            :path, attrs: {
+              d: "M #{s - d} #{-s - d} L #{-s - d} #{s - d}",
+              stroke: 'white',
+              'stroke-width': whitew,
+              'stroke-opacity': '1.0',
+            },
+          ),
+          h(
+            :path, attrs: {
+              d: "M #{s + d} #{-s + d} L #{-s + d} #{s + d}",
+              stroke: 'white',
+              'stroke-width': whitew,
+              'stroke-opacity': '1.0',
+            },
+          ),
+        ]
       end
     end
   end
