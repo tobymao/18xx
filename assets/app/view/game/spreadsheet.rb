@@ -72,7 +72,7 @@ module View
         zebra_row = true
         last_values = nil
         @game.players.first.history.map do |h|
-          values = @players.map do |p|
+          values = @game.players.map do |p|
             p.history.find { |h2| h2.round == h.round }.value
           end
           next if values == last_values
