@@ -27,8 +27,7 @@ module Engine
         end
 
         def can_convert?(entity)
-          # @todo: share price
-          entity.type == :minor
+          entity.share_price.types.include?(:convert_range) && entity.type == :minor
         end
 
         def description

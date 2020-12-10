@@ -30,7 +30,7 @@ module Engine
   "layout": "flat",
   "mustSellInBlocks": false,
   "locationNames": {
-    "D2": "Timmins",
+    "D2": "Timmins ($80 if includes T/M/Q)",
     "D8": "Sudbury",
     "F8": "North Bay",
     "E13": "Barrie",
@@ -65,9 +65,9 @@ module Engine
     "4": 4,
     "5": 2,
     "6": 2,
-    "7": 3,
-    "8": 19,
-    "9": 24,
+    "7": "unlimited",
+    "8": "unlimited",
+    "9": "unlimited",
     "14": 2,
     "15": 4,
     "16": 2,
@@ -174,14 +174,14 @@ module Engine
       "70p",
       "80p",
       "90p",
-      "100p",
-      "110p",
-      "120p",
-      "135p",
-      "150z",
-      "165z",
-      "180z",
-      "200z",
+      "100pC",
+      "110pC",
+      "120pC",
+      "135pC",
+      "150zC",
+      "165zC",
+      "180zC",
+      "200zCm",
       "220",
       "245",
       "270",
@@ -767,10 +767,10 @@ module Engine
       "offboard=revenue:yellow_30|green_30|brown_40|gray_40;path=a:2,b:_0;path=a:1,b:_0": [
         "P8"
       ],
-      "path=a:5,b:0;border=edge:0": [
+      "offboard=revenue:yellow_30|green_40|brown_50|gray_70,hide:1,groups:Detroit;path=a:5,b:_0;border=edge:0": [
         "A17"
       ],
-      "offboard=revenue:yellow_30|green_40|brown_50|gray_70;path=a:4,b:_0;border=edge:3": [
+      "offboard=revenue:yellow_30|green_40|brown_50|gray_70,groups:Detroit;path=a:4,b:_0;border=edge:3": [
         "A19"
       ]
     },

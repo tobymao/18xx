@@ -70,7 +70,9 @@ module Engine
                                             'minors_nationalized' => ['Minors are nationalized']).freeze
       MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'Minor Corporation Par',
                                             par_2: 'Major Corporation Par',
-                                            par: 'Major/Minor Corporation Par').freeze
+                                            par: 'Major/Minor Corporation Par',
+                                            convert_range: 'Price range to convert minor to major',
+                                            max_price: 'Maximum price for a minor').freeze
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :orange, par_2: :green).freeze
       CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
       include InterestOnLoans
@@ -232,8 +234,6 @@ module Engine
 
       private
 
-      # @todo: unchanged to here
-
       def new_auction_round
         Round::Auction.new(self, [
           Step::G1867::SingleItemAuction,
@@ -248,7 +248,6 @@ module Engine
         ])
       end
 
-      # @todo: unchanged to here
       def operating_round(round_num)
         Round::G1867::Operating.new(self, [
           Step::DiscardTrain,
@@ -314,8 +313,7 @@ module Engine
       end
 
       def round_end
-        # @todo: needs fixing
-        Round::G1817::Merger
+        Round::G1867::Merger
       end
 
       def custom_end_game_reached?
@@ -327,6 +325,10 @@ module Engine
       end
 
       def setup
+        # Set minors maximum share price
+        max_price = @stock_market.market.first.find { |stockprice| stockprice.types.include?(:max_price) }
+        @corporations.select { |c| c.type == :minor }.each { |c| c.max_share_price = max_price }
+
         # Move green and majors out of the normal list
         green = COLORS[:green]
         @corporations, @future_corporations = @corporations.partition do |corporation|
