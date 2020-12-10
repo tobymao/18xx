@@ -124,6 +124,10 @@ module Engine
         reserve_share('IOW')
       end
 
+      def share_prices
+        repar_prices
+      end
+
       def reserve_share(name)
         @corporations.find { |c| c.name == name }.shares.last.buyable = false
       end
