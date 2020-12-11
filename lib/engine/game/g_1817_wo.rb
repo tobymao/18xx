@@ -6,6 +6,7 @@ require_relative '../config/game/g_1817_wo'
 module Engine
   module Game
     class G1817WO < G1817
+      attr_reader :new_zealand_city
       load_from_json(Config::Game::G1817WO::JSON)
 
       DEV_STAGE = :prealpha
@@ -52,6 +53,14 @@ module Engine
 
       def corp_has_new_zealand?(corporation)
         corporation.tokens.any? { |token| token.city == @new_zealand_city }
+      end
+
+      def home_token_locations(corporation)
+        # Cannot place a home token in Nieuw Zeeland until phase 3
+        return super unless %w[2 2+].include?(@phase.name)
+        hexes.select do |hex|
+          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true)  && city != new_zealand_city}
+        end
       end
 
       # Override InterestOnLoans.pay_interest! so that we can pay "negative" interest for New Zealand
