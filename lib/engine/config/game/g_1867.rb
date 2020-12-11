@@ -222,28 +222,28 @@ module Engine
       "sym": "NFB",
       "value": 45,
       "revenue": 15,
-      "desc": "+10 Buffalo"
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Buffalo"
     },
     {
       "name": "Montreal Bridge",
       "sym": "MB",
       "value": 60,
       "revenue": 20,
-      "desc": "+10 Montreal"
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Montreal"
     },
     {
       "name": "Quebec Bridge",
       "sym": "QB",
       "value": 75,
       "revenue": 25,
-      "desc": "+10 Quebec"
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Quebec"
     },
     {
       "name": "St. Clair Tunnel",
       "sym": "SCT",
       "value": 90,
       "revenue": 30,
-      "desc": "+10 Detroit"
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Detroit"
     }
   ],
   "corporations": [

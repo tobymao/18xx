@@ -54,6 +54,9 @@ module Engine
 
       GAME_END_CHECK = { bank: :current_or, custom: :one_more_full_or_set }.freeze
 
+      HEX_WITH_O_LABEL = %w[J12].freeze
+      HEX_UPGRADES_FOR_O = %w[201 202 203 207 208 622 623 801 X8].freeze
+
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
 
       # Two lays with one being an upgrade, second tile costs 20
@@ -401,6 +404,15 @@ module Engine
         @final_operating_rounds = 3
 
         @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
+      end
+
+      def upgrades_to?(from, to, special = false)
+        # O labelled tile upgrades to Ys until Grey
+        return super unless HEX_WITH_O_LABEL.include?(from.hex.name)
+
+        return false unless HEX_UPGRADES_FOR_O.include?(to.name)
+
+        super(from, to, true)
       end
     end
   end
