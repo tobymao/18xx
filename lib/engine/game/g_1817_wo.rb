@@ -58,8 +58,9 @@ module Engine
       def home_token_locations(corporation)
         # Cannot place a home token in Nieuw Zeeland until phase 3
         return super unless %w[2 2+].include?(@phase.name)
+
         hexes.select do |hex|
-          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true)  && city != new_zealand_city}
+          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) && city != new_zealand_city }
         end
       end
 
@@ -98,6 +99,17 @@ module Engine
           Step::G1817::Dividend,
           Step::G1817::BuyTrain,
         ], round_num: round_num)
+      end
+
+      def stock_round
+        close_bank_shorts
+        @interest_fixed = nil
+
+        Round::G1817::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::HomeToken,
+          Step::G1817WO::BuySellParShares,
+        ])
       end
 
       def interest_change
