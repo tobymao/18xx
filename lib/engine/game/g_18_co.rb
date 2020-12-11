@@ -8,6 +8,8 @@ require_relative 'company_price_50_to_150_percent'
 module Engine
   module Game
     class G18CO < Base
+      attr_accessor :presidents_choice
+
       register_colors(green: '#237333',
                       red: '#d81e3e',
                       blue: '#0189d1',
@@ -84,7 +86,11 @@ module Engine
       BASE_MINE_VALUE = 10
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'remove_mines' => ['Mines Close', 'Mine tokens removed from board and corporations']
+          'remove_mines' => ['Mines Close', 'Mine tokens removed from board and corporations'],
+          'presidents_choice' => [
+            'President\'s Choice Triggered',
+            'President\'s choice round will occur at the beginning of the next Stock Round',
+          ]
         ).freeze
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -112,6 +118,7 @@ module Engine
       def setup
         setup_company_price_50_to_150_percent
         setup_corporations
+        @presidents_choice = nil
       end
 
       def setup_corporations
@@ -208,11 +215,48 @@ module Engine
         ])
       end
 
+      def new_presidents_choice_round
+        @log << '-- President\'s Choice --'
+        Round::G18CO::PresidentsChoice.new(self, [
+          Step::G18CO::PresidentsChoice,
+        ])
+      end
+
       def new_auction_round
         Round::Auction.new(self, [
           Step::G18CO::CompanyPendingPar,
           Step::G18CO::MovingBidAuction,
         ])
+      end
+
+      def next_round!
+        @round =
+          case @round
+          when Round::G18CO::PresidentsChoice
+            new_stock_round
+          when Round::Stock
+            @operating_rounds = @phase.operating_rounds
+            reorder_players
+            new_operating_round
+          when Round::Operating
+            if @round.round_num < @operating_rounds
+              or_round_finished
+              new_operating_round(@round.round_num + 1)
+            else
+              @turn += 1
+              or_round_finished
+              or_set_finished
+              if @presidents_choice == :triggered
+                new_presidents_choice_round
+              else
+                new_stock_round
+              end
+            end
+          when init_round.class
+            init_round_finished
+            reorder_players
+            new_stock_round
+          end
       end
 
       def action_processed(action)
@@ -316,6 +360,15 @@ module Engine
         return REDUCED_TILE_LAYS if @phase.status.include?('reduced_tile_lay')
 
         super
+      end
+
+      def event_presidents_choice!
+        return if @presidents_choice
+
+        @log << '-- Event: President\'s Choice --'
+        @log << 'President\'s choice round will occur at the beginning of the next Stock Round'
+
+        @presidents_choice = :triggered
       end
 
       def sell_shares_and_change_price(bundle)

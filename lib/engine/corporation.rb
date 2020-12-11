@@ -147,6 +147,10 @@ module Engine
       shares.reject { |share| share.corporation == self }
     end
 
+    def ipo_shares
+      shares.select { |share| share.corporation == self }
+    end
+
     def id
       @name
     end
