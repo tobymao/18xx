@@ -115,16 +115,21 @@ module Engine
         end
 
         def all_passed!
+          # company is deleted from @companies when they are won, so we can't loop
+          # through @companies instead of @bids.
           @bids.each do |company, bids|
             resolve_bids_for_company(company, bids)
+          end
+
+          # discount the price of remaining companies
+          @companies.each do |company|
+            company.max_price = company.min_price
           end
         end
 
         def resolve_bids_for_company(company, bids)
           return if bids.empty?
 
-          # Companies without bids can be bought be corporations later
-          # Unsure how that will be accomplished at this time
           high_bid = highest_bid(company)
           buy_company(high_bid.entity, company, high_bid.price)
         end

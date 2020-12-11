@@ -15,6 +15,12 @@ module Engine
 
           @game.par_change_float_percent(action.corporation)
         end
+
+        def purchasable_companies(entity = nil)
+          companies = super
+
+          companies.select(&:owner)
+        end
       end
     end
   end

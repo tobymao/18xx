@@ -355,6 +355,14 @@ module Engine
         bundles_for_corporation(share_pool, entity)
           .reject { |bundle| entity.cash < bundle.price }
       end
+
+      def purchasable_companies(entity = nil)
+        @companies.select do |company|
+          (company.owner&.player? || company.owner.nil?) &&
+            (entity.nil? || entity != company.owner) &&
+            !company.abilities(:no_buy)
+        end
+      end
     end
   end
 end
