@@ -23,7 +23,7 @@ module Engine
         end
 
         def active?
-          takeover_in_progress?
+          takeover_in_progress
         end
 
         def current_entity
@@ -84,29 +84,28 @@ module Engine
 
           return if place_count.positive? &&
             taken_entity.placed_tokens.any? &&
-            current_entity.unplaced_tokens.empty?
+            current_entity.unplaced_tokens.any?
 
           close_corporation(taken_entity)
         end
 
-        def takeover_in_progress?
+        def takeover_in_progress
           return true unless current_entity.nil?
 
-          @game.corporations.find do |source|
-            next if source.nil?
-            next unless source.floated?
-
-            takeover_corporation?(source)
+          @game.corporations.dup.find do |source|
+            source == takeover_corporation(source)
           end
         end
 
-        def takeover_corporation?(source)
+        def takeover_corporation(source)
+          return unless source.floated?
+
           president_share_count = source.owner.num_shares_of(source)
           source.corporate_share_holders.find do |c_s_h|
             corporation, corporate_share_percent = c_s_h
             next unless president_share_count < (corporate_share_percent / source.share_percent)
 
-            execute(source, corporation)
+            source == execute(source, corporation)
           end
         end
 
@@ -139,8 +138,7 @@ module Engine
             .map { |key, vals| [key, vals.size] }
 
           cash = {}
-          # must use while as shares array is modified by transfer
-          while (share = source.corporate_shares.first)
+          source.corporate_shares.dup.each do |share|
             @game.bank.spend(share.price, source)
             cash[share.corporation] =
               cash[share.corporation].nil? ? share.price : cash[share.corporation] + share.price
@@ -201,7 +199,7 @@ module Engine
         # Treasury money paid to shares in the Market is returned to the Bank.
         # Any leftover treasury cash is transferred to the owning Corporation's treasury.
         def distribute_treasury(source, destination)
-          payout = (source.cash.to_f / 10).floor.to_i
+          payout = (source.cash.to_f / 10).floor
 
           payout_shareholders(source, payout)
 
