@@ -325,6 +325,32 @@ module Engine
       end
 
       def setup
+        # Hide the special 3 company
+        @hidden_company = company_by_id('3')
+        @companies.delete(@hidden_company)
+
+        # CN corporation only exists to hold tokens
+        @cn_corporation = corporation_by_id('CN')
+        @corporations.delete(@cn_corporation)
+
+        @green_tokens = []
+        @hexes.each do |hex|
+          case hex.id
+          when 'D2'
+            token = Token.new(@cn_corporation, price: 0, logo: '/logos/1867/neutral.svg', type: :neutral)
+            @cn_corporation.tokens << token
+            hex.tile.cities.first.exchange_token(token)
+            @green_tokens << token
+          when 'L12'
+            token = Token.new(@cn_corporation, price: 0, logo: '/logos/1867/neutral.svg', type: :neutral)
+            @cn_corporation.tokens << token
+            hex.tile.cities.last.exchange_token(token)
+            @green_tokens << token
+          when 'F16'
+            hex.tile.cities.first.exchange_token(@cn_corporation.tokens.first)
+          end
+        end
+
         # Set minors maximum share price
         max_price = @stock_market.market.first.find { |stockprice| stockprice.types.include?(:max_price) }
         @corporations.select { |c| c.type == :minor }.each { |c| c.max_share_price = max_price }
@@ -338,6 +364,12 @@ module Engine
 
       def event_green_minors_available!
         @log << 'Green minors are now available'
+
+        # Can now lay on the 3
+        @hidden_company.close!
+        # Remove the green tokens
+        @green_tokens.map(&:remove!)
+
         # All the corporations become available, as minors can now merge/convert to corporations
         @corporations += @future_corporations
         @future_corporations = []

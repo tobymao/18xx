@@ -196,6 +196,21 @@ module Engine
   ],
   "companies": [
     {
+      "name": "Hidden corporation to lock the 3 spots",
+      "sym": "3",
+      "value": 3,
+      "revenue": 0,
+      "desc": "Hidden corporation",
+      "abilities": [
+        {
+        "type": "blocks_hexes",
+        "owner_type": "player",
+        "hexes": [
+          "M13"
+        ]
+      }]
+    },
+    {
       "name": "Champlain & St. Lawrence",
       "sym": "C&SL",
       "value": 30,
@@ -526,6 +541,15 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "color": "green"
+    },
+    {
+      "sym": "CN",
+      "name": "Canadian National",
+      "logo": "1867/CN",
+      "tokens": [
+        0
+      ],
+      "color": "white"
     }
   ],
   "trains": [
