@@ -98,9 +98,7 @@ module View
         }
 
         if @corporation.trains.any? && !@corporation.floated?
-          if @corporation.trains.any? && !@corporation.floated?
-            children << h(:div, status_props, @game.float_str(@corporation))
-          end
+          children << h(:div, status_props, @game.float_str(@corporation))
         end
         children << h(:div, status_props, render_status) if @game.status_str(@corporation)
 

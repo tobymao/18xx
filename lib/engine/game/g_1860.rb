@@ -536,8 +536,7 @@ module Engine
           on[path] = 1 if on[path]
         end
 
-        val = on.keys.select { |p| on[p] == 1 }
-        val
+        on.keys.select { |p| on[p] == 1 }
       end
 
       # needed for custom_blocks?
