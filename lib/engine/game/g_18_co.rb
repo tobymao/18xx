@@ -180,6 +180,7 @@ module Engine
         Step::Route,
         Step::G18CO::Dividend,
         Step::BuyTrain,
+        Step::CorporateSellShares,
         Step::G18CO::IssueShares,
         [Step::BuyCompany, blocks: true],
         ], round_num: round_num)

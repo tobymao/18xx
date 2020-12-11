@@ -99,7 +99,7 @@ module Engine
     def sell_shares(bundle, allow_president_change: true, swap: nil)
       entity = bundle.owner
 
-      verb = entity.corporation? ? 'issues' : 'sells'
+      verb = entity.corporation? && entity == bundle.corporation ? 'issues' : 'sells'
 
       price = bundle.price
       price -= swap.price if swap
