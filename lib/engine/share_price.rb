@@ -4,6 +4,24 @@ module Engine
   class SharePrice
     attr_reader :coordinates, :price, :corporations, :can_par, :type, :types
 
+    TYPE_MAP = {
+      'p' => :par,
+      'e' => :endgame,
+      'c' => :close,
+      'b' => :multiple_buy,
+      'o' => :unlimited,
+      'y' => :no_cert_limit,
+      'l' => :liquidation,
+      'a' => :acquisition,
+      'r' => :repar,
+      'i' => :ignore_one_sale,
+      's' => :safe_par,
+      'x' => :par_1,
+      'z' => :par_2,
+      'C' => :convert_range,
+      'm' => :max_price,
+    }.freeze
+
     def self.from_code(code, row, column, unlimited_types, multiple_buy_types: [])
       return nil if !code || code == ''
 
@@ -12,24 +30,7 @@ module Engine
 
       types = []
       m[2].chars.each do |char|
-        type_map = {
-          'p' => :par,
-          'e' => :endgame,
-          'c' => :close,
-          'b' => :multiple_buy,
-          'o' => :unlimited,
-          'y' => :no_cert_limit,
-          'l' => :liquidation,
-          'a' => :acquisition,
-          'r' => :repar,
-          'i' => :ignore_one_sale,
-          's' => :safe_par,
-          'x' => :par_1,
-          'z' => :par_2,
-          'C' => :convert_range,
-          'm' => :max_price,
-        }.freeze
-        type = type_map[char]
+        type = TYPE_MAP[char]
         types << type
       end
 

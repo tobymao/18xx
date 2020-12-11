@@ -32,7 +32,7 @@ module Engine
       load_from_json(Config::Game::G1867::JSON)
 
       GAME_LOCATION = 'Canada'
-      GAME_RULES_URL = 'tbd'
+      GAME_RULES_URL = 'https://boardgamegeek.com/filepage/212807/18611867-rulebook'
       GAME_DESIGNER = 'Ian D. Wilson'
       GAME_PUBLISHER = :grand_trunk_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1867'
