@@ -6,6 +6,7 @@ require_relative '../config/game/g_1817_wo'
 module Engine
   module Game
     class G1817WO < G1817
+      attr_reader :new_zealand_city
       load_from_json(Config::Game::G1817WO::JSON)
 
       DEV_STAGE = :prealpha
@@ -25,6 +26,11 @@ module Engine
         '1817WO'
       end
 
+      def setup
+        super
+        @new_zealand_city = hexes.find { |hex| hex.location_name == 'Nieuw Zeeland' }.tile.cities[0]
+      end
+
       # Not genericifying 1817's loan logic just so it can be kept simpler, at least for now
       def init_loans
         @loan_value = 100
@@ -33,6 +39,77 @@ module Engine
 
       def future_interest_rate
         [[5, ((loans_taken + 2) / 3).to_i * 5].max, 65].min
+      end
+
+      def interest_owed(entity)
+        super unless corp_has_new_zealand?(entity)
+
+        # A corporation with a token in new zealand gets $20 if it doesn't have any loans
+        return -20 unless entity.loans.size.positive?
+
+        # Otherwise it gets interest for one loan paid for free
+        interest_owed_for_loans(entity.loans.size - 1)
+      end
+
+      def corp_has_new_zealand?(corporation)
+        corporation.tokens.any? { |token| token.city == @new_zealand_city }
+      end
+
+      def home_token_locations(corporation)
+        # Cannot place a home token in Nieuw Zeeland until phase 3
+        return super unless %w[2 2+].include?(@phase.name)
+
+        hexes.select do |hex|
+          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) && city != new_zealand_city }
+        end
+      end
+
+      # Override InterestOnLoans.pay_interest! so that we can pay "negative" interest for New Zealand
+      def pay_interest!(entity)
+        owed = interest_owed(entity)
+        return super unless owed.negative?
+
+        # Negative interest -> corporation has New Zealand
+        @log << "#{entity.name} gets $20 for a token in Nieuw Zeeland"
+        entity.spend(owed, bank, check_cash: false, check_positive: false)
+      end
+
+      def operating_round(round_num)
+        @interest_fixed = nil
+        @interest_fixed = interest_rate
+        # Revaluate if private companies are owned by corps with trains
+        @companies.each do |company|
+          next unless company.owner
+
+          company.abilities(:revenue_change, time: 'has_train') do |ability|
+            company.revenue = company.owner.trains.any? ? ability.revenue : 0
+          end
+        end
+
+        Round::G1817WO::Operating.new(self, [
+          Step::G1817::Bankrupt,
+          Step::G1817::CashCrisis,
+          Step::G1817::Loan,
+          Step::G1817::SpecialTrack,
+          Step::G1817::Assign,
+          Step::DiscardTrain,
+          Step::G1817::Track,
+          Step::Token,
+          Step::Route,
+          Step::G1817::Dividend,
+          Step::G1817::BuyTrain,
+        ], round_num: round_num)
+      end
+
+      def stock_round
+        close_bank_shorts
+        @interest_fixed = nil
+
+        Round::G1817::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::HomeToken,
+          Step::G1817WO::BuySellParShares,
+        ])
       end
 
       def interest_change
