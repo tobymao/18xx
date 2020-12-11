@@ -2,58 +2,54 @@
 
 module Engine
   class SharePrice
-    attr_reader :coordinates, :price, :corporations, :can_par, :type
+    attr_reader :coordinates, :price, :corporations, :can_par, :type, :types
+
+    TYPE_MAP = {
+      'p' => :par,
+      'e' => :endgame,
+      'c' => :close,
+      'b' => :multiple_buy,
+      'o' => :unlimited,
+      'y' => :no_cert_limit,
+      'l' => :liquidation,
+      'a' => :acquisition,
+      'r' => :repar,
+      'i' => :ignore_one_sale,
+      's' => :safe_par,
+      'x' => :par_1,
+      'z' => :par_2,
+      'C' => :convert_range,
+      'm' => :max_price,
+    }.freeze
 
     def self.from_code(code, row, column, unlimited_types, multiple_buy_types: [])
       return nil if !code || code == ''
 
-      price = code.scan(/\d/).join('').to_i
+      m = code.match(/(\d*)([a-zA-Z]*)/)
+      price = m[1].to_i
 
-      type =
-        case code
-        when /p/
-          :par
-        when /e/
-          :endgame
-        when /c/
-          :close
-        when /b/
-          :multiple_buy
-        when /o/
-          :unlimited
-        when /y/
-          :no_cert_limit
-        when /l/
-          :liquidation
-        when /a/
-          :acquisition
-        when /r/
-          :repar
-        when /i/
-          :ignore_one_sale
-        when /s/
-          :safe_par
-        when /x/
-          :par_1
-        when /z/
-          :par_2
-        end
+      types = []
+      m[2].chars.each do |char|
+        type = TYPE_MAP[char]
+        types << type
+      end
 
       SharePrice.new([row, column],
                      price: price,
-                     type: type,
+                     types: types,
                      unlimited_types: unlimited_types,
                      multiple_buy_types: multiple_buy_types)
     end
 
     def initialize(coordinates,
                    price:,
-                   type: nil,
+                   types: [],
                    unlimited_types: [],
                    multiple_buy_types: [])
       @coordinates = coordinates
       @price = price
-      @type = type
+      @type = types&.first
+      @types = types
       @corporations = []
       @can_buy_multiple = multiple_buy_types.include?(type)
       @limited = !unlimited_types.include?(type)
