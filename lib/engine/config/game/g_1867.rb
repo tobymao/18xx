@@ -222,28 +222,64 @@ module Engine
       "sym": "NFB",
       "value": 45,
       "revenue": 15,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Buffalo"
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Buffalo",
+      "abilities": [
+        {
+        "type": "hex_bonus",
+        "owner_type": "corporation",
+        "hexes": [
+          "F18"
+        ],
+        "amount": 10
+      }]
     },
     {
       "name": "Montreal Bridge",
       "sym": "MB",
       "value": 60,
       "revenue": 20,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Montreal"
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Montreal",
+      "abilities": [
+        {
+        "type": "hex_bonus",
+        "owner_type": "corporation",
+        "hexes": [
+          "L12"
+        ],
+        "amount": 10
+      }]
     },
     {
       "name": "Quebec Bridge",
       "sym": "QB",
       "value": 75,
       "revenue": 25,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Quebec"
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Quebec",
+      "abilities": [
+        {
+        "type": "hex_bonus",
+        "owner_type": "corporation",
+        "hexes": [
+          "O7"
+        ],
+        "amount": 10
+      }]
     },
     {
       "name": "St. Clair Tunnel",
       "sym": "SCT",
       "value": 90,
       "revenue": 30,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Detroit"
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Detroit",
+      "abilities": [
+        {
+        "type": "hex_bonus",
+        "owner_type": "corporation",
+        "hexes": [
+          "A19"
+        ],
+        "amount": 10
+      }]
     }
   ],
   "corporations": [

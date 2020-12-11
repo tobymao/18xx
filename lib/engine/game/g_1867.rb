@@ -208,7 +208,19 @@ module Engine
 
         game_error('Route visits same hex twice') if route.hexes.size != route.hexes.uniq.size
 
-        # @todo: route bonuses
+        route.corporation.companies.each do |company|
+          company.abilities(:hex_bonus) do |ability|
+            revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
+          end
+        end
+
+        # Quebec, Montreal and Toronto
+        capitals = stops.find { |stop| %w[F16 L12 O7].include?(stop.hex.name) }
+        # Timmins
+        timmins = stops.find { |stop| stop.hex.name == 'D2' }
+
+        revenue += 40 if capitals && timmins
+
         revenue
       end
 
