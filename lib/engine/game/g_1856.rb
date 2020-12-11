@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1856'
+require_relative '../loan.rb'
 require_relative 'base'
 
 module Engine
@@ -29,7 +30,7 @@ module Engine
                       brown: '#7b352a')
 
       load_from_json(Config::Game::G1856::JSON)
-
+      attr_reader :loan_value
       DEV_STAGE = :prealpha
 
       # These plain city hexes upgrade to L tiles in brown
@@ -66,6 +67,51 @@ module Engine
 
       def gray_phase?
         @phase.tiles.include?('gray')
+      end
+
+      def maximum_loans(entity)
+        entity.num_player_shares
+      end
+
+      def interest_rate
+        10
+      end
+
+      def interest_owed_for_loans(loans)
+        interest_rate * loans
+      end
+
+      def interest_owed(entity)
+        interest_owed_for_loans(entity.loans.size)
+      end
+
+      def take_loan(entity, loan)
+        game_error('Cannot take loan') unless can_take_loan?(entity)
+        name = entity.name
+        loan_amount = @round.paid_interest[entity] ? 90 : 100
+        @log << "#{name} takes a loan and receives #{format_currency(loan_amount)}"
+        @bank.spend(loan_amount, entity)
+        entity.loans << loan
+        @loans.delete(loan)
+      end
+
+      def can_take_loan?(entity)
+        entity.corporation? &&
+          entity.loans.size < maximum_loans(entity) &&
+          !@round.took_loan[entity] &&
+          !@round.redeemed_loan[entity] &&
+          @loans.any?
+      end
+
+      def init_loans
+        @loan_value = 100
+        110.times.map { |id| Loan.new(id, @loan_value) }
+      end
+
+      def can_pay_interest?(_entity, _extra_cash = 0)
+        # TODO: A future PR may figure out how to implement buying_power
+        #  that accounts for a corporations revenue.
+        true
       end
 
       def setup
@@ -176,6 +222,13 @@ module Engine
         upgrades
       end
 
+      def can_go_bankrupt?(player, corporation)
+        # Corporation is nil in the case of interest / loan bankruptcies
+        return liquidity(player, emergency: true).negative? unless corporation
+
+        super
+      end
+
       # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
       STATUS_TEXT = {
         'escrow' => [
@@ -215,20 +268,21 @@ module Engine
         ],
       }.merge(Base::STATUS_TEXT)
       def operating_round(round_num)
-        Round::Operating.new(self, [
-          Step::Bankrupt,
+        Round::G1856::Operating.new(self, [
+          Step::G1856::Bankrupt,
+          Step::G1856::CashCrisis,
           # No exchanges.
           Step::DiscardTrain,
-          # Step::TakeLoans
+          Step::G1856::Loan,
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::G1856::Track,
           Step::Token,
           Step::Route,
-          # Step::Interest,
-          Step::Dividend,
+          # Interest - See Loan
+          Step::G1856::Dividend,
           Step::BuyTrain,
-          # Step::RepayLoans,
+          # Repay Loans - See Loan
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
