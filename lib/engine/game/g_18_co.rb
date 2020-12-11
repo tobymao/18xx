@@ -171,6 +171,7 @@ module Engine
         Step::Bankrupt,
         Step::DiscardTrain,
         Step::HomeToken,
+        Step::ReturnToken,
         Step::BuyCompany,
         Step::G18CO::RedeemShares,
         Step::CorporateBuyShares,

@@ -398,7 +398,12 @@ module Engine
 			"revenue": 10,
 			"desc": "An owning Corporation may return a station token to its charter to gain the token cost. Corporation must always have at least one token on the board. Action closes the company or closes on purchase of “5” train.",
 			"abilities": [
-
+				{
+					"type": "return_token",
+					"owner_type": "corporation",
+					"count": 1,
+					"reimburse": true
+				}
 			]
 		},
 		{
