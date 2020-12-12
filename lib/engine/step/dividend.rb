@@ -117,7 +117,7 @@ module Engine
         per_share = payout_per_share(entity, revenue)
 
         payouts = {}
-        [@game.players, @game.corporations].flatten.each do |payee|
+        (@game.players + @game.corporations).each do |payee|
           next if entity == payee
 
           payout_entity(entity, payee, per_share, payouts)
