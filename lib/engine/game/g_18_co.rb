@@ -143,8 +143,12 @@ module Engine
         end
       end
 
+      def mines_add(entity, count)
+        mine_create(entity, mines_count(entity) + count)
+      end
+
       def mine_add(entity)
-        mine_create(entity, mines_count(entity) + 1)
+        mines_add(entity, 1)
       end
 
       def mine_update_text(entity)
@@ -169,6 +173,7 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
         Step::Bankrupt,
+        Step::G18CO::Takeover,
         Step::DiscardTrain,
         Step::HomeToken,
         Step::ReturnToken,
@@ -188,6 +193,7 @@ module Engine
 
       def stock_round
         Round::Stock.new(self, [
+        Step::G18CO::Takeover,
         Step::DiscardTrain,
         Step::G18CO::BuySellParShares,
         ])
