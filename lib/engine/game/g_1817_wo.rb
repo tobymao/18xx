@@ -51,6 +51,42 @@ module Engine
         interest_owed_for_loans(entity.loans.size - 1)
       end
 
+      def place_second_token(corporation)
+        return unless corporation.next_token # 1882
+
+        hex = hex_by_id(corporation.coordinates)
+
+        tile = hex&.tile
+        if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
+
+          # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
+          # otherwise the entity must choose now.
+          @log << "#{corporation.name} may choose city for second token"
+
+          hexes =
+            if hex
+              [hex]
+            else
+              home_token_locations(corporation)
+            end
+
+          @round.pending_tokens << {
+            entity: corporation,
+            hexes: hexes,
+            token: corporation.find_token_by_type,
+          }
+          @round.clear_cache!
+          return
+        end
+        cities = tile.cities
+        city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+        token = corporation.find_token_by_type
+        return unless city.tokenable?(corporation, tokens: token)
+
+        @log << "#{corporation.name} places a token on #{hex.name}"
+        city.place_token(corporation, token)
+      end
+
       def corp_has_new_zealand?(corporation)
         corporation.tokens.any? { |token| token.city == @new_zealand_city }
       end
@@ -62,6 +98,15 @@ module Engine
         hexes.select do |hex|
           hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) && city != new_zealand_city }
         end
+      end
+
+      # This must be overridden to use 1817WO step
+      def redeemable_shares(entity)
+        return [] unless entity.corporation?
+        return [] unless round.steps.find { |step| step.class == Step::G1817WO::BuySellParShares }.active?
+
+        bundles_for_corporation(share_pool, entity)
+          .reject { |bundle| entity.cash < bundle.price }
       end
 
       # Override InterestOnLoans.pay_interest! so that we can pay "negative" interest for New Zealand

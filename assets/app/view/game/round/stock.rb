@@ -90,6 +90,7 @@ module View
             @selected_corporation.ipoed ? h(BuySellShares, corporation: @selected_corporation) : render_pre_ipo,
             render_loan,
             render_buy_tokens,
+            render_buy_and_place_tokens,
           ]
           if @step.actions(@selected_corporation).include?('buy_shares')
             inputs << h(IssueShares, entity: @selected_corporation)
@@ -143,6 +144,18 @@ module View
           end
 
           h(:button, { on: { click: buy_tokens } }, 'Buy Tokens')
+        end
+
+        def render_buy_and_place_tokens
+          return unless @step.actions(@selected_corporation).include?('buy_and_place_tokens')
+
+          buy_tokens = lambda do
+            process_action(Engine::Action::BuyAndPlaceTokens.new(
+              @selected_corporation
+            ))
+          end
+
+          h(:button, { on: { click: buy_tokens } }, 'Buy Tokens and Place Second Home')
         end
 
         def render_player_companies
