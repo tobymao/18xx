@@ -90,26 +90,30 @@ module Engine
         end
 
         def takeover_in_progress
-          return true unless current_entity.nil?
+          return true if current_entity
 
-          @game.corporations.dup.find do |source|
-            source == takeover_corporation(source)
+          @game.corporations.dup.each do |source|
+            corporation = find_takeover_corporation(source)
+            execute_takeover!(source, corporation) if corporation
+            return true if current_entity
           end
+
+          false
         end
 
-        def takeover_corporation(source)
+        def find_takeover_corporation(source)
           return unless source.floated?
 
           president_share_count = source.owner.num_shares_of(source)
-          source.corporate_share_holders.find do |c_s_h|
+          source.corporate_share_holders.each do |c_s_h|
             corporation, corporate_share_percent = c_s_h
-            next unless president_share_count < (corporate_share_percent / source.share_percent)
-
-            source == execute(source, corporation)
+            return corporation if president_share_count < (corporate_share_percent / source.share_percent)
           end
+
+          nil
         end
 
-        def execute(source, destination)
+        def execute_takeover!(source, destination)
           @game.log << "#{source.name} to be taken over by #{destination.name}"
 
           @round.pending_takeover = {
@@ -127,8 +131,6 @@ module Engine
           transfer_trains(source, destination)
           replace_tokens(source, destination)
           close_corporation(source) unless place_count.positive?
-
-          current_entity
         end
 
         def return_corporate_shares_to_market(source)
