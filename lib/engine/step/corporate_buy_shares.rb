@@ -46,6 +46,10 @@ module Engine
         @game.share_pool.shares.any? { |s| can_buy?(entity, s.to_bundle) }
       end
 
+      def can_buy_corp_from_market?(entity, corporation)
+        @game.share_pool.shares_by_corporation[corporation].any? { |s| can_buy?(entity, s.to_bundle) }
+      end
+
       def can_buy_any_from_president?(entity)
         return unless @game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT
 
@@ -72,13 +76,21 @@ module Engine
       end
 
       def source_list(entity)
-        if @game.class::CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY && bought?
-          source = @game.sorted_corporations
-            .select { |corp| (corp == @bought.last && !corp.num_market_shares.zero?) }
-        else
-          source = @game.sorted_corporations
-            .select { |corp| corp != entity && corp.floated? && !corp.closed? && !corp.num_market_shares.zero? }
-        end
+        source = if @game.class::CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY && bought?
+                   @game.sorted_corporations.select do |corp|
+                     corp == @bought.last &&
+                       !corp.num_market_shares.zero? &&
+                       can_buy_corp_from_market?(entity, corp)
+                   end
+                 else
+                   @game.sorted_corporations.select do |corp|
+                     corp != entity &&
+                       corp.floated? &&
+                       !corp.closed? &&
+                       !corp.num_market_shares.zero? &&
+                       can_buy_corp_from_market?(entity, corp)
+                   end
+                 end
 
         if @game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && can_buy_any_from_president?(entity)
           source << entity.owner
