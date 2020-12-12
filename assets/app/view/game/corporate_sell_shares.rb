@@ -10,16 +10,15 @@ module View
 
       def render
         @step = @game.round.active_step
-        current_actions = @step.current_actions
-        @entity ||= @game.current_entity
-        children = []
+        @current_actions = @step.current_actions
+        @entity = @game.current_entity
 
-        children.concat(render_sources) if current_actions.include?('corporate_sell_shares')
-
-        h('div.margined', children.compact)
+        h('div.margined', render_sources)
       end
 
       def render_sources
+        return [] unless @current_actions.include?('corporate_sell_shares')
+
         @step.source_list(@entity).flat_map do |source|
           [
             h(Corporation, corporation: source),
