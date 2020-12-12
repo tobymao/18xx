@@ -19,6 +19,7 @@ module Engine
 
           clear_upgrade_icon(action.hex.tile)
           collect_mines(action.entity.owner, action.hex)
+          migrate_reservations(action.hex.tile)
 
           return if ability.count.positive?
 

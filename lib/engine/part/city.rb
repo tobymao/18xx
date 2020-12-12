@@ -61,6 +61,10 @@ module Engine
         @reservations.delete(entity)
       end
 
+      def remove_all_reservations!
+        @reservations = []
+      end
+
       def city?
         true
       end

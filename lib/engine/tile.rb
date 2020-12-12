@@ -281,7 +281,7 @@ module Engine
 
     def add_reservation!(entity, city, slot = 0)
       # Single city, assume the first
-      city = 0 if @cities.one?
+      city = 0 if @cities.one? && available_slot?
 
       if city
         @cities[city].add_reservation!(entity, slot)
@@ -466,6 +466,10 @@ module Engine
         neighbor = @hex.neighbors[edge]&.tile
         neighbor&.restore_borders([Hex.invert(edge)])
       end
+    end
+
+    def available_slot?
+      cities.sum(&:available_slots).positive?
     end
 
     private
