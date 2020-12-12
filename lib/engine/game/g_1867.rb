@@ -54,6 +54,9 @@ module Engine
 
       GAME_END_CHECK = { bank: :current_or, custom: :one_more_full_or_set }.freeze
 
+      HEX_WITH_O_LABEL = %w[J12].freeze
+      HEX_UPGRADES_FOR_O = %w[201 202 203 207 208 622 623 801 X8].freeze
+
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
 
       # Two lays with one being an upgrade, second tile costs 20
@@ -205,7 +208,19 @@ module Engine
 
         game_error('Route visits same hex twice') if route.hexes.size != route.hexes.uniq.size
 
-        # @todo: route bonuses
+        route.corporation.companies.each do |company|
+          company.abilities(:hex_bonus) do |ability|
+            revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
+          end
+        end
+
+        # Quebec, Montreal and Toronto
+        capitals = stops.find { |stop| %w[F16 L12 O7].include?(stop.hex.name) }
+        # Timmins
+        timmins = stops.find { |stop| stop.hex.name == 'D2' }
+
+        revenue += 40 if capitals && timmins
+
         revenue
       end
 
@@ -325,6 +340,32 @@ module Engine
       end
 
       def setup
+        # Hide the special 3 company
+        @hidden_company = company_by_id('3')
+        @companies.delete(@hidden_company)
+
+        # CN corporation only exists to hold tokens
+        @cn_corporation = corporation_by_id('CN')
+        @corporations.delete(@cn_corporation)
+
+        @green_tokens = []
+        @hexes.each do |hex|
+          case hex.id
+          when 'D2'
+            token = Token.new(@cn_corporation, price: 0, logo: '/logos/1867/neutral.svg', type: :neutral)
+            @cn_corporation.tokens << token
+            hex.tile.cities.first.exchange_token(token)
+            @green_tokens << token
+          when 'L12'
+            token = Token.new(@cn_corporation, price: 0, logo: '/logos/1867/neutral.svg', type: :neutral)
+            @cn_corporation.tokens << token
+            hex.tile.cities.last.exchange_token(token)
+            @green_tokens << token
+          when 'F16'
+            hex.tile.cities.first.exchange_token(@cn_corporation.tokens.first)
+          end
+        end
+
         # Set minors maximum share price
         max_price = @stock_market.market.first.find { |stockprice| stockprice.types.include?(:max_price) }
         @corporations.select { |c| c.type == :minor }.each { |c| c.max_share_price = max_price }
@@ -338,6 +379,12 @@ module Engine
 
       def event_green_minors_available!
         @log << 'Green minors are now available'
+
+        # Can now lay on the 3
+        @hidden_company.close!
+        # Remove the green tokens
+        @green_tokens.map(&:remove!)
+
         # All the corporations become available, as minors can now merge/convert to corporations
         @corporations += @future_corporations
         @future_corporations = []
@@ -369,6 +416,15 @@ module Engine
         @final_operating_rounds = 3
 
         @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
+      end
+
+      def upgrades_to?(from, to, special = false)
+        # O labelled tile upgrades to Ys until Grey
+        return super unless HEX_WITH_O_LABEL.include?(from.hex.name)
+
+        return false unless HEX_UPGRADES_FOR_O.include?(to.name)
+
+        super(from, to, true)
       end
     end
   end
