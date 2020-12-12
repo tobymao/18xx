@@ -33,6 +33,8 @@ module Engine
       TRAIN_PRICE_MIN = 10
       TRAIN_PRICE_MULTIPLE = 10
 
+      SOLD_OUT_INCREASE = false
+
       STOCKMARKET_COLORS = {
         par: :yellow,
         endgame: :orange,
@@ -46,6 +48,16 @@ module Engine
         acquisition: :yellow,
         safe_par: :white,
       }.freeze
+
+      MARKET_TEXT = { par: 'Par values (varies by corporation)',
+                      no_cert_limit: 'UNUSED',
+                      unlimited: 'UNUSED',
+                      multiple_buy: 'UNUSED',
+                      close: 'Corporation bankrupts',
+                      endgame: 'End game trigger',
+                      liquidation: 'UNUSED',
+                      repar: 'Par values after bankruptcy (varies by corporation)',
+                      ignore_one_sale: 'Ignore first share sold when moving price' }.freeze
 
       HALT_SUBSIDY = 10
 
@@ -110,6 +122,10 @@ module Engine
         reserve_share('FYN')
         reserve_share('C&N')
         reserve_share('IOW')
+      end
+
+      def share_prices
+        repar_prices
       end
 
       def reserve_share(name)
@@ -198,11 +214,63 @@ module Engine
         @bankrupt_corps.include?(corp)
       end
 
-      def make_bankrupt(corp)
-        @bankrupt_corps << corp unless bankrupt(corp)
+      def make_bankrupt!(corp)
+        return if bankrupt?(corp)
+
+        @bankrupt_corps << corp
+        @log << "#{corp.name} enters Bankruptcy"
+
+        # un-IPO the corporation
+        corp.share_price.corporations.delete(corp)
+        corp.share_price = nil
+        corp.par_price = nil
+        corp.ipoed = false
+        corp.unfloat!
+
+        # return shares to IPO
+        corp.share_holders.keys.each do |share_holder|
+          next if share_holder == corp
+
+          shares = share_holder.shares_by_corporation[corp].compact
+          corp.share_holders.delete(share_holder)
+          shares.each do |share|
+            share_holder.shares_by_corporation[corp].delete(share)
+            share.owner = corp
+            corp.shares_by_corporation[corp] << share
+          end
+        end
+        corp.shares_by_corporation[corp].sort_by!(&:index)
+        corp.share_holders[corp] = 100
+        corp.owner = nil
+
+        # "flip" any tokens for corporation placed on map
+        corp.tokens.each do |token|
+          token.status = :flipped if token.used
+        end
+
+        # find new priority deal: player with lowest total share count
+        @players.rotate!(@players.index(priority_deal_player))
+        player = @players.min_by { |p| p.shares.sum(&:percent) }
+        @players.rotate!(@players.index(player))
+        @log << "#{@players.first.name} has priority deal"
+
+        # restart stock round if in middle of one
+        return unless @round.class == Round::Stock
+
+        @log << 'Restarting Stock Round'
+        @round.entities.each(&:unpass!)
+        @round = stock_round
       end
 
-      def clear_bankrupt(corp)
+      def clear_bankrupt!(corp)
+        return unless bankrupt?(corp)
+
+        # Designer says that bankrupt corps keep insolvency flag
+
+        # "unflip" any tokens for corporation placed on map
+        corp.tokens.each do |token|
+          token.status = nil if token.used
+        end
         @bankrupt_corps.delete(corp)
       end
 
@@ -252,9 +320,14 @@ module Engine
       end
 
       def float_corporation(corporation)
-        # Designer says that bankrupt corps keep insolvency flag
-        clear_bankrupt(corporation)
+        clear_bankrupt!(corporation)
         super
+      end
+
+      def action_processed(_action)
+        @corporations.each do |corporation|
+          make_bankrupt!(corporation) if corporation.share_price&.type == :close
+        end
       end
 
       def sorted_corporations
@@ -289,6 +362,11 @@ module Engine
         bundles
       end
 
+      def selling_movement?(corporation)
+        # FIXME: no price movement on selling after 8 train
+        corporation.operated?
+      end
+
       def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
         corporation = bundle.corporation
         price = corporation.share_price.price
@@ -296,7 +374,7 @@ module Engine
         @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
         num_shares = bundle.num_shares
         num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
-        num_shares.times { @stock_market.move_left(corporation) }
+        num_shares.times { @stock_market.move_left(corporation) } if selling_movement?(corporation)
         log_share_price(corporation, price)
       end
 
@@ -450,6 +528,55 @@ module Engine
         @hex_distances[corporation] = h_distances
       end
 
+      # needed for custom_node_walk
+      def custom_node_select(node, paths, corporation: nil)
+        on = paths.map { |p| [p, 0] }.to_h
+
+        custom_node_walk(node, on: on, corporation: corporation) do |path|
+          on[path] = 1 if on[path]
+        end
+
+        on.keys.select { |p| on[p] == 1 }
+      end
+
+      # needed for custom_blocks?
+      def custom_node_walk(node, visited: nil, on: nil, corporation: nil, visited_paths: {})
+        return if visited&.[](node)
+
+        visited = visited&.dup || {}
+        visited[node] = true
+
+        node.paths.each do |node_path|
+          node_path.walk(visited: visited_paths, on: on) do |path, vp|
+            yield path
+            path.nodes.each do |next_node|
+              next if next_node == node
+              next if corporation && custom_blocks?(next_node, corporation)
+              next if path.terminal?
+
+              custom_node_walk(
+                next_node,
+                visited: visited,
+                on: on,
+                corporation: corporation,
+                visited_paths: visited_paths.merge(vp),
+              ) { |p| yield p }
+            end
+          end
+        end
+      end
+
+      # needed for :flipped check
+      def custom_blocks?(node, corporation)
+        return false unless node.city?
+        return false unless corporation
+        return false if node.tokened_by?(corporation)
+        return false if node.tokens.include?(nil)
+        return false if node.tokens.any? { |t| t&.type == :neutral || t&.status == :flipped }
+
+        true
+      end
+
       def legal_tile_rotation?(_entity, _hex, tile)
         return true unless NO_ROTATION_TILES.include?(tile.name)
 
@@ -509,7 +636,7 @@ module Engine
         if visits.size > 2
           corporation = route.corporation
           visits[1..-2].each do |node|
-            if node.city? && node.blocks?(corporation)
+            if node.city? && custom_blocks?(node, corporation)
               game_error('Route can only bypass one tokened-out city') if blocked
               blocked = node
             end
@@ -518,7 +645,9 @@ module Engine
 
         paths_ = route.paths.uniq
         token = blocked if blocked
-        game_error('Route is not connected') if token.select(paths_, corporation: route.corporation).size != paths_.size
+        if custom_node_select(token, paths_, corporation: route.corporation).size != paths_.size
+          game_error('Route is not connected')
+        end
 
         return unless blocked && route.routes.any? { |r| r != route && tokened_out?(r) }
 

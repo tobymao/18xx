@@ -3,7 +3,7 @@
 module Engine
   class Token
     attr_reader :corporation, :logo
-    attr_accessor :city, :price, :type, :used
+    attr_accessor :city, :price, :type, :used, :status
 
     def initialize(corporation, price: 0, logo: nil, type: :normal)
       @corporation = corporation
@@ -12,6 +12,7 @@ module Engine
       @used = false
       @type = type
       @city = nil
+      @status = nil
     end
 
     def destroy!

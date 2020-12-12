@@ -165,6 +165,10 @@ module Engine
       @floated ? 0 : percent_of(self) - (100 - @float_percent)
     end
 
+    def unfloat!
+      @floated = false
+    end
+
     def corporation?
       true
     end

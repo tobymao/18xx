@@ -141,6 +141,9 @@ module Engine
       # none, one, each
       POOL_SHARE_DROP = :none
 
+      # do sold out shares increase the price?
+      SOLD_OUT_INCREASE = true
+
       # :after_last_to_act -- player after the last to act goes first. Order remains the same.
       # :first_to_pass -- players ordered by when they first started passing.
       NEXT_SR_PLAYER_ORDER = :after_last_to_act

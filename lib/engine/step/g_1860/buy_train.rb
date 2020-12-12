@@ -56,7 +56,8 @@ module Engine
         end
 
         def illegal_train_buy?(entity, train)
-          entity.receivership? ||
+          @game.bankrupt?(train.owner) ||
+            entity.receivership? ||
             train.owner.receivership? ||
             entity.trains.any? && train.owner.trains.size < 2
         end
