@@ -71,7 +71,7 @@ module View
             share: share,
             entity: @current_entity,
             percentages_available: @ipo_shares.size,
-            source: @game.ipo_name(@current_entity))
+            source: @game.ipo_name(share.corporation))
         end
       end
 
