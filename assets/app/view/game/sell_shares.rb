@@ -9,11 +9,12 @@ module View
 
       needs :player
       needs :corporation
+      needs :action, default: Engine::Action::SellShares
 
       def render
         buttons = @game.sellable_bundles(@player, @corporation).map do |bundle|
           sell = lambda do
-            process_action(Engine::Action::SellShares.new(
+            process_action(@action.new(
               @player,
               shares: bundle.shares,
               share_price: bundle.share_price,
@@ -27,7 +28,11 @@ module View
             },
             on: { click: sell },
           }
-          h('button.sell_share', props, "Sell #{share_presentation(bundle)} (#{@game.format_currency(bundle.price)})")
+          h(
+            'button.sell_share',
+            props,
+            "Sell #{share_presentation(bundle)} (#{@game.format_currency(bundle.price)})"
+          )
         end
 
         step = @game.round.active_step
@@ -53,7 +58,7 @@ module View
       def sell_with_swap(player, bundle, swap_sell)
         reduced_price = @game.format_currency(bundle.price - swap_sell.price)
         swap = lambda do
-          process_action(Engine::Action::SellShares.new(
+          process_action(@action.new(
             player,
             shares: bundle.shares,
             share_price: bundle.share_price,
@@ -74,7 +79,7 @@ module View
       end
 
       def sell_bundle(player, bundle, swap: nil)
-        process_action(Engine::Action::SellShares.new(
+        process_action(@action.new(
           player,
           shares: bundle.shares,
           share_price: bundle.share_price,

@@ -15,8 +15,8 @@ module Engine
         'Corporate Share Buying'
       end
 
-      def setup
-        @bought = []
+      def round_state
+        { corporations_bought: Hash.new { |h, k| h[k] = [] } }
       end
 
       def actions(entity)
@@ -58,8 +58,8 @@ module Engine
         return if bundle.presidents_share
         return if entity == bundle.corporation
 
-        if @game.class::CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY && bought?
-          return unless bundle.corporation == @bought.last
+        if @game.class::CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY && bought?(entity)
+          return unless bundle.corporation == last_bought(entity)
         end
 
         entity.cash >= bundle.price
@@ -67,14 +67,14 @@ module Engine
 
       def process_corporate_buy_shares(action)
         buy_shares(action.entity, action.bundle)
-        @bought << action.bundle.corporation
+        @round.corporations_bought[action.entity] << action.bundle.corporation
         pass! unless can_buy_any?(action.entity)
       end
 
       def source_list(entity)
-        if @game.class::CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY && bought?
+        if @game.class::CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY && bought?(entity)
           source = @game.sorted_corporations
-            .select { |corp| (corp == @bought.last && !corp.num_market_shares.zero?) }
+            .select { |corp| (corp == last_bought(entity) && !corp.num_market_shares.zero?) }
         else
           source = @game.sorted_corporations
             .select { |corp| corp != entity && corp.floated? && !corp.closed? && !corp.num_market_shares.zero? }
@@ -87,8 +87,12 @@ module Engine
         source
       end
 
-      def bought?
-        @bought.any?
+      def bought?(entity)
+        @round.corporations_bought[entity].any?
+      end
+
+      def last_bought(entity)
+        @round.corporations_bought[entity].last
       end
     end
   end
