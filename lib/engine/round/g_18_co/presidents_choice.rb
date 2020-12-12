@@ -26,7 +26,7 @@ module Engine
           return if action.type == :message
 
           if action.type == :pass
-            @entities.reject! { |e| e == action.entity }
+            @entities.delete(action.entity)
             return finish_round if finished?
 
             passed_next_entity_index!

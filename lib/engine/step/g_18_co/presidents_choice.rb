@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../base'
+require_relative '../share_buying'
 
 module Engine
   module Step
