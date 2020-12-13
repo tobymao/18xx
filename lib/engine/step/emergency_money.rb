@@ -19,13 +19,13 @@ module Engine
         return false unless sellable_bundle?(bundle)
 
         # Can only sell as much as you need to afford the train
-        player = bundle.owner
-        unless @game.class::EBUY_SELL_MORE_THAN_NEEDED
-          total_cash = bundle.price + available_cash(player)
-          return false if total_cash >= needed_cash(player) + bundle.price_per_share
-        end
+        selling_minimum_shares?(bundle) unless @game.class::EBUY_SELL_MORE_THAN_NEEDED
+      end
 
-        true
+      def selling_minimum_shares?(bundle)
+        seller = bundle.owner
+        total_cash = bundle.price + available_cash(seller)
+        total_cash < needed_cash(seller) + bundle.price_per_share
       end
 
       def sellable_bundle?(bundle)
