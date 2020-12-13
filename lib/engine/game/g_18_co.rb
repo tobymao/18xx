@@ -97,6 +97,10 @@ module Engine
         @dsng ||= corporation_by_id('DSNG')
       end
 
+      def drgr
+        @drgr ||= company_by_id('DRGR')
+      end
+
       def imc
         @imc ||= company_by_id('IMC')
       end
