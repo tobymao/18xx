@@ -6,11 +6,12 @@ module Engine
   module Step
     module G18CO
       class BuyTrain < BuyTrain
-        def issuable_shares
-          # seems likes this should be generic?
-          return [] if room?(current_entity) && available_cash(current_entity) >= @depot.min_depot_price
+        def issuable_shares(entity)
+          shares = super
 
-          @game.emergency_issuable_bundles(current_entity)
+          return [] if available_cash(entity) >= @depot.min_depot_price
+
+          shares
         end
       end
     end
