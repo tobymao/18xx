@@ -30,6 +30,7 @@ module Engine
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18CO:-Rock-&-Stock'
 
       SELL_BUY_ORDER = :sell_buy
+      EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
       MUST_BID_INCREMENT_MULTIPLE = true
       ONLY_HIGHEST_BID_COMMITTED = false
@@ -189,7 +190,7 @@ module Engine
         Step::Token,
         Step::Route,
         Step::G18CO::Dividend,
-        Step::BuyTrain,
+        Step::G18CO::BuyTrain,
         Step::CorporateSellShares,
         Step::G18CO::IssueShares,
         [Step::BuyCompany, blocks: true],
@@ -350,6 +351,14 @@ module Engine
 
           break
         end
+      end
+
+      def emergency_issuable_cash(corporation)
+        emergency_issuable_bundles(corporation).max_by(&:num_shares)&.price || 0
+      end
+
+      def emergency_issuable_bundles(entity)
+        issuable_shares(entity)
       end
 
       def issuable_shares(entity)
