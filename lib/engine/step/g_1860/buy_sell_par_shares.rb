@@ -67,6 +67,12 @@ module Engine
           @game.check_new_layer
         end
 
+        def process_sell_shares(action)
+          super
+
+          @game.check_bank_broken!
+        end
+
         def process_buy_company(action)
           player = action.entity
           company = action.company
@@ -135,6 +141,7 @@ module Engine
 
           sell_company(player, company, action.price)
           @round.last_to_act = player
+          @game.check_bank_broken!
         end
 
         def sell_price(entity)

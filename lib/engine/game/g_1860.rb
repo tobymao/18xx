@@ -62,10 +62,14 @@ module Engine
       HALT_SUBSIDY = 10
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-        'fishbourne_to_bank' => ['Fishbourne', 'Fishbourne Ferry Company available for purchase']
+        'fishbourne_to_bank' => ['Fishbourne', 'Fishbourne Ferry Company available for purchase.'],
+        'relax_cert_limit' => ['No Cert Limit', "No limit on certificates/player; Selling doesn't reduce share price."],
+        'southern_forms' => ['Southern Forms', 'Southern RR forms; No track or token after the next SR.']
       ).freeze
 
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded_or_city, upgrade: false }].freeze
+
+      GAME_END_CHECK = { stock_market: :current_or, bank: :current_or, custom: :immediate }.freeze
 
       PAR_RANGE = {
         1 => [74, 100],
@@ -122,6 +126,11 @@ module Engine
         reserve_share('FYN')
         reserve_share('C&N')
         reserve_share('IOW')
+
+        @no_price_drop_on_sale = false
+        @southern_formed = false
+        @sr_after_southern = false
+        @nationalization = false
       end
 
       def share_prices
@@ -186,10 +195,23 @@ module Engine
         self.class::BANK_CASH - @players.sum(&:cash)
       end
 
+      def check_bank_broken!
+        @bank.break! if !@nationalization && bank_cash.negative?
+      end
+
       def event_fishbourne_to_bank!
         ffc = @companies.find { |c| c.sym == 'FFC' }
         ffc.owner = @bank
         @log << "#{ffc.name} is now available for purchase from the Bank"
+      end
+
+      def event_relax_cert_limit!
+        @no_price_drop_on_sale = true
+        @cert_limit = 999
+      end
+
+      def event_southern_forms!
+        @southern_formed = true
       end
 
       def insolvent?(corp)
@@ -363,8 +385,7 @@ module Engine
       end
 
       def selling_movement?(corporation)
-        # FIXME: no price movement on selling after 8 train
-        corporation.operated?
+        corporation.operated? && !@no_price_drop_on_sale
       end
 
       def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)

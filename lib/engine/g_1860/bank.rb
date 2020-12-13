@@ -10,9 +10,9 @@ module Engine
         @broken = false
       end
 
-      def check_cash(amount)
-        return unless (@game.bank_cash - amount).negative?
+      def check_cash(amount); end
 
+      def break!
         @log << '-- The bank has broken --' unless @broken
         @broken = true
       end

@@ -698,7 +698,10 @@ module Engine
         }
       ],
       "price": 700,
-      "num": 1
+      "num": 1,
+      "events": [
+        {"type": "relax_cert_limit"}
+      ]
     },
     {
       "name": "9+5",
@@ -715,7 +718,10 @@ module Engine
         }
       ],
       "price": 800,
-      "num": 6
+      "num": 6,
+      "events": [
+        {"type": "southern_forms"}
+      ]
     }
   ],
   "hexes": {
