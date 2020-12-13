@@ -88,9 +88,9 @@ module Engine
       end
 
       def process_sell_shares(action)
-        @last_share_sold_price = action.bundle.price_per_share
+        @last_share_sold_price = action.bundle.price_per_share unless action.entity == current_entity
         super
-        @corporations_sold << action.bundle.corporation
+        @corporations_sold << action.bundle.corporation unless action.entity == current_entity
       end
 
       def needed_cash(_entity)
