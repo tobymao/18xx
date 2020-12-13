@@ -20,6 +20,7 @@ module Engine
       'z' => :par_2,
       'C' => :convert_range,
       'm' => :max_price,
+      'u' => :phase_limited,
     }.freeze
 
     def self.from_code(code, row, column, unlimited_types, multiple_buy_types: [])
