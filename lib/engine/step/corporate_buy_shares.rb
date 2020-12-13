@@ -76,7 +76,7 @@ module Engine
       end
 
       def source_list(entity)
-        source = if @game.class::CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY && bought?
+        source = if @game.class::CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY && bought?(entity)
                    @game.sorted_corporations.select do |corp|
                      corp == @bought.last &&
                        !corp.num_market_shares.zero? &&
