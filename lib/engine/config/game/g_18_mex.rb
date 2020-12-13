@@ -361,7 +361,7 @@ module Engine
             0
          ],
          "coordinates":"M12",
-         "color":"green"
+         "color":"#232b2b"
       },
       {
          "sym":"B",
@@ -371,7 +371,7 @@ module Engine
             0
          ],
          "coordinates":"K6",
-         "color":"green"
+         "color":"#232b2b"
       },
       {
          "sym":"C",
@@ -381,7 +381,7 @@ module Engine
             0
          ],
          "coordinates":"S12",
-         "color":"purple"
+         "color":"#232b2b"
       }
    ],
    "corporations":[
@@ -397,7 +397,7 @@ module Engine
             80
          ],
          "coordinates":"E6",
-         "color":"red"
+         "color":"#FF4136"
       },
       {
          "float_percent":50,
@@ -428,7 +428,7 @@ module Engine
             }
          ],
          "coordinates":"O10",
-         "color":"green"
+         "color":"#00AC00"
       },
       {
          "float_percent":50,
@@ -440,12 +440,12 @@ module Engine
             40
          ],
          "coordinates":"I8",
-         "color":"black"
+         "color":"#232b2b"
       },
       {
          "float_percent":50,
          "sym":"FCP",
-         "name":"Ferrocarril del Pacífico (Pacific Railroad)",
+         "name":"Pacific Railroad",
          "logo":"18_mex/FCP",
          "tokens":[
             0,
@@ -460,7 +460,7 @@ module Engine
             }
          ],
          "coordinates":"B3",
-         "color":"yellow",
+         "color":"#FFF128",
          "text_color":"black"
       },
       {
@@ -479,7 +479,8 @@ module Engine
             }
          ],
          "coordinates":"I12",
-         "color":"orange"
+         "color":"#FFC502",
+         "text_color":"black"
       },
       {
          "float_percent":50,
@@ -492,7 +493,7 @@ module Engine
             60
          ],
          "coordinates":"P13",
-         "color":"gray",
+         "color":"darkGray",
          "text_color":"black"
       },
       {
@@ -506,7 +507,7 @@ module Engine
             60
          ],
          "coordinates":"O8",
-         "color":"blue"
+         "color":"#0080FF"
       },
       {
          "float_percent":50,
@@ -518,7 +519,7 @@ module Engine
             40
          ],
          "coordinates":"Q14",
-         "color":"purple"
+         "color":"darkMagenta"
       }
    ],
    "trains":[
