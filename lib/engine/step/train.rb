@@ -80,9 +80,9 @@ module Engine
         pass! unless can_buy_train?(entity)
       end
 
-      def can_sell?(_entity, bundle)
+      def can_sell?(entity, bundle)
         return false if @game.class::MUST_SELL_IN_BLOCKS && @corporations_sold.include?(bundle.corporation)
-        return false if must_issue_before_ebuy?(current_entity)
+        return false if current_entity != entity && must_issue_before_ebuy?(current_entity)
 
         super
       end
