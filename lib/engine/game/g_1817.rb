@@ -520,6 +520,15 @@ module Engine
         ], round_num: round_num)
       end
 
+      # This must be overridden to use 1817WO step
+      def redeemable_shares(entity)
+        return [] unless entity.corporation?
+        return [] unless round.steps.find { |step| step.class == Step::G1817WO::BuySellParShares }.active?
+
+        bundles_for_corporation(share_pool, entity)
+          .reject { |bundle| entity.cash < bundle.price }
+      end
+
       def or_round_finished
         if @depot.upcoming.first.name == '2'
           depot.export_all!('2')
