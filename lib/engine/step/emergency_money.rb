@@ -60,8 +60,10 @@ module Engine
         remaining < next_highest
       end
 
-      def issuable_shares
-        []
+      def issuable_shares(entity)
+        return [] unless entity.corporation?
+
+        @game.emergency_issuable_bundles(entity)
       end
     end
   end

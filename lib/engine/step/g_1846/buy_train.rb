@@ -30,12 +30,6 @@ module Engine
           @round.receivership_train_buy(self, :process_buy_train)
         end
 
-        def issuable_shares(entity)
-          return [] unless entity.corporation?
-
-          @game.emergency_issuable_bundles(entity)
-        end
-
         def process_sell_shares(action)
           return process_issue_shares(action) if action.entity.corporation?
 

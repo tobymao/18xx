@@ -144,10 +144,6 @@ module Engine
         @corporations_sold = []
       end
 
-      def issuable_shares
-        []
-      end
-
       def must_issue_before_ebuy?(corporation)
         @game.class::MUST_EMERGENCY_ISSUE_BEFORE_EBUY &&
           !@last_share_issued_price &&
