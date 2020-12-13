@@ -799,7 +799,7 @@ module Engine
       end
 
       def float_str(entity)
-        "#{entity.percent_to_float}% to float"
+        "#{entity.percent_to_float}% to float" if entity.corporation?
       end
 
       def route_distance(route)
