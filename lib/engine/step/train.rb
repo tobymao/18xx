@@ -97,8 +97,10 @@ module Engine
         @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST ? @depot.min_depot_price : @depot.max_depot_price
       end
 
-      def available_cash(player)
-        player.cash + current_entity.cash
+      def available_cash(entity)
+        return current_entity.cash if entity == current_entity
+
+        entity.cash + current_entity.cash
       end
 
       def buyable_trains(entity)
