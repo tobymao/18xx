@@ -1133,7 +1133,7 @@ module Engine
           end
 
           @share_pool.shares_by_corporation.delete(corporation)
-          corporation.share_price.corporations.delete(corporation)
+          corporation.share_price&.corporations&.delete(corporation)
           @corporations.delete(corporation)
         else
           @minors.delete(corporation)

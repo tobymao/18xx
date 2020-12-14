@@ -97,6 +97,10 @@ module Engine
         @dsng ||= corporation_by_id('DSNG')
       end
 
+      def drgr
+        @drgr ||= company_by_id('DRGR')
+      end
+
       def imc
         @imc ||= company_by_id('IMC')
       end
@@ -176,7 +180,7 @@ module Engine
         Step::G18CO::Takeover,
         Step::DiscardTrain,
         Step::HomeToken,
-        Step::ReturnToken,
+        Step::G18CO::ReturnToken,
         Step::BuyCompany,
         Step::G18CO::RedeemShares,
         Step::CorporateBuyShares,
