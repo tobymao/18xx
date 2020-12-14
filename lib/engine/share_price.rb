@@ -22,6 +22,9 @@ module Engine
       'm' => :max_price,
     }.freeze
 
+    # Types which are info only and shouldn't
+    NON_HIGHLIGHT_TYPES = %i[par safe_par par_1 par_2 safe_par convert_range max_price].freeze
+
     def self.from_code(code, row, column, unlimited_types, multiple_buy_types: [])
       return nil if !code || code == ''
 
@@ -89,7 +92,7 @@ module Engine
 
     def highlight?
       # Should it be highlighted in corporation/spreadsheet UI
-      @type && !%i[par safe_par].include?(@type)
+      @type && !NON_HIGHLIGHT_TYPES.include?(@type)
     end
 
     def normal_movement?
