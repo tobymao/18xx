@@ -492,6 +492,7 @@ module Engine
           end
         end
 
+        @trainless_major = @trainless_major.sort.reverse
         @trainless_nationalization = false
       end
     end

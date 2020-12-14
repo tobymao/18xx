@@ -7,7 +7,7 @@ module Engine
     module G1867
       class Operating < Operating
         def select_entities
-          minors, majors = @game.corporations.select(&:floated?).sort.partition(&:type)
+          minors, majors = @game.corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
           minors + majors
         end
       end
