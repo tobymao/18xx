@@ -20,8 +20,7 @@ module Engine
 
         def choices
           corporation = @winning_bid.corporation
-          super unless @game.corp_has_new_zealand?(corporation)
-
+          return super unless @game.corp_has_new_zealand?(corporation)
           super.reject { |size| size == 2 }
         end
 
