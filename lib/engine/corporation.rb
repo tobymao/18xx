@@ -59,7 +59,7 @@ module Engine
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
       @par_via_exchange = nil
-      @type = opts[:type]
+      @type = opts[:type]&.to_sym
 
       init_abilities(opts[:abilities])
       init_operator(opts)

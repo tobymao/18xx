@@ -37,7 +37,7 @@ module Engine
       GAME_PUBLISHER = :grand_trunk_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1867'
 
-      # @todo: unchanged from here
+      HOME_TOKEN_TIMING = :float
       MUST_BID_INCREMENT_MULTIPLE = true
       MUST_BUY_TRAIN = :always # mostly true, needs custom code
       POOL_SHARE_DROP = :each
@@ -70,7 +70,11 @@ module Engine
                                             'green_minors_available' => ['Green Minors become available'],
                                             'majors_can_ipo' => ['Majors can be ipoed'],
                                             'minors_cannot_start' => ['Minors cannot start'],
-                                            'minors_nationalized' => ['Minors are nationalized']).freeze
+                                            'minors_nationalized' => ['Minors are nationalized'],
+                                            'trainless_nationalization' =>
+                                            ['Trainless Nationalization',
+                                             'Operating Trainless Minors are nationalized'\
+                                             ', Operating Trainless Majors may nationalize']).freeze
       MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'Minor Corporation Par',
                                             par_2: 'Major Corporation Par',
                                             par: 'Major/Minor Corporation Par',
@@ -82,13 +86,12 @@ module Engine
 
       # Minors are done as corporations with a size of 2
 
-      attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
+      attr_reader :loan_value, :trainless_major
 
       def ipo_name(_entity = nil)
         'Treasury'
       end
 
-      # @todo: unchanged to here
       def interest_rate
         5 # constant
       end
@@ -106,8 +109,18 @@ module Engine
       end
 
       def home_token_locations(corporation)
-        hexes.select do |hex|
+        open_locations = hexes.select do |hex|
           hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+        end
+
+        return open_locations if corporation.type == :minor
+
+        # @todo: this may need optimizing when changing connections for loading.
+        unconnected = open_locations.select { |hex| hex.connections.none? }
+        if unconnected.none?
+          open_locations
+        else
+          unconnected
         end
       end
 
@@ -175,6 +188,7 @@ module Engine
 
         # Payout players for shares
         per_share = corporation.share_price.price
+        total_payout = corporation.total_shares * per_share
         payouts = {}
         @players.each do |player|
           amount = player.num_shares_of(corporation) * per_share
@@ -189,7 +203,7 @@ module Engine
                         .sort_by { |_r, c| -c }
                         .map { |receiver, cash| "#{format_currency(cash)} to #{receiver.name}" }.join(', ')
 
-          @log << "#{corporation.name} settles with shareholders #{format_currency(@shareholder_cash)} = "\
+          @log << "#{corporation.name} settles with shareholders #{format_currency(total_payout)} = "\
                           "#{format_currency(per_share)} (#{receivers})"
         end
 
@@ -200,8 +214,6 @@ module Engine
           reset_corporation(corporation)
         end
       end
-
-      # @todo Unchanged from here
 
       def revenue_for(route, stops)
         revenue = super
@@ -243,8 +255,50 @@ module Engine
         CORPORATION_SIZES[entity.total_shares]
       end
 
-      def show_corporation_size?(_entity)
-        true
+      def upgrades_to?(from, to, special = false)
+        # O labelled tile upgrades to Ys until Grey
+        return super unless HEX_WITH_O_LABEL.include?(from.hex.name)
+
+        return false unless HEX_UPGRADES_FOR_O.include?(to.name)
+
+        super(from, to, true)
+      end
+
+      def compute_stops(route)
+        # 1867 should always have two distances, one with a pay of zero, the other with the full distance.
+        visits = route.visited_stops
+        distance = route.train.distance
+        return [] if visits.empty?
+
+        mandatory_distance = distance.find { |d| d['pay'].positive? }
+
+        # Find all the mandatory stops
+        mandatory_stops, optional_stops = visits.partition { |node| mandatory_distance['nodes'].include?(node.type) }
+
+        # Only both with the extra step if it's not all mandatory
+        return mandatory_stops if mandatory_stops.size == mandatory_distance['pay']
+
+        need_token = mandatory_stops.none? { |stop| stop.tokened_by?(route.corporation) }
+
+        remaining_stops = mandatory_distance['pay'] - mandatory_stops.size
+
+        # Allocate optional stops
+        stops, revenue = optional_stops.combination(remaining_stops.to_i).map do |stops|
+          # Make sure this set of stops is legal
+          # 1) At least one stop must have a token (for 5+5E train)
+          next if need_token && stops.none? { |stop| stop.tokened_by?(route.corporation) }
+
+          all_stops = mandatory_stops + stops
+          [all_stops, revenue_for(route, all_stops)]
+        end.compact.max_by(&:last)
+
+        revenue ||= 0
+
+        return stops if revenue.positive?
+      end
+
+      def post_train_buy
+        postevent_trainless_nationalization! if @trainless_nationalization
       end
 
       private
@@ -257,6 +311,7 @@ module Engine
 
       def stock_round
         Round::G1867::Stock.new(self, [
+          Step::G1867::MajorTrainless,
           Step::DiscardTrain,
           Step::HomeToken,
           Step::G1867::BuySellParShares,
@@ -265,6 +320,7 @@ module Engine
 
       def operating_round(round_num)
         Round::G1867::Operating.new(self, [
+          Step::G1867::MajorTrainless,
           Step::DiscardTrain,
           Step::BuyCompany,
           Step::G1867::RedeemShares,
@@ -308,6 +364,7 @@ module Engine
               @log << "-- #{round_description('Merger', @round.round_num)} --"
               Round::G1867::Merger.new(self, [
                 # Step::G1817::ReduceTokens, #@todo
+                Step::G1867::MajorTrainless,
                 Step::DiscardTrain,
                 Step::G1867::PostMergerShares,
                 Step::G1867::Merge,
@@ -323,8 +380,8 @@ module Engine
 
       def init_loans
         @loan_value = 50
-        # @todo: this is wrong, but can be calculated
-        70.times.map { |id| Loan.new(id, @loan_value) }
+        # 16 minors * 2, 8 majors * 5
+        72.times.map { |id| Loan.new(id, @loan_value) }
       end
 
       def round_end
@@ -391,7 +448,7 @@ module Engine
       end
 
       def event_majors_can_ipo!
-        @log << 'Majors can be ipoed'
+        @log << 'Majors can now be started via IPO'
         # Done elsewhere
       end
 
@@ -418,13 +475,24 @@ module Engine
         @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
       end
 
-      def upgrades_to?(from, to, special = false)
-        # O labelled tile upgrades to Ys until Grey
-        return super unless HEX_WITH_O_LABEL.include?(from.hex.name)
+      def event_trainless_nationalization!
+        # Store flag, has to be done after the trains are rusted
+        @trainless_nationalization = true
+      end
 
-        return false unless HEX_UPGRADES_FOR_O.include?(to.name)
+      def postevent_trainless_nationalization!
+        trainless = @corporations.select { |c| c.operated? && c.trains.none? }
 
-        super(from, to, true)
+        @trainless_major = []
+        trainless.each do |c|
+          if c.type == :major
+            @trainless_major << c
+          else
+            nationalize!(c)
+          end
+        end
+
+        @trainless_nationalization = false
       end
     end
   end
