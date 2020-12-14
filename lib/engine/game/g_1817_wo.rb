@@ -55,6 +55,15 @@ module Engine
         corporation.tokens.any? { |token| token.city == @new_zealand_city }
       end
 
+      # This must be overridden to use 1817WO step
+      def redeemable_shares(entity)
+        return [] unless entity.corporation?
+        return [] unless round.steps.find { |step| step.class == Step::G1817WO::BuySellParShares }.active?
+
+        bundles_for_corporation(share_pool, entity)
+          .reject { |bundle| entity.cash < bundle.price }
+      end
+
       def tokenable_location_exists?()
         # Using hexes > tile > cities because simply using cities also gets cities
         # that are on tiles not yet laid.
