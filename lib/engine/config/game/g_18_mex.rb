@@ -361,7 +361,7 @@ module Engine
             0
          ],
          "coordinates":"M12",
-         "color":"#232b2b"
+         "color":"limeGreen"
       },
       {
          "sym":"B",
@@ -371,7 +371,7 @@ module Engine
             0
          ],
          "coordinates":"K6",
-         "color":"#232b2b"
+         "color":"darkGreen"
       },
       {
          "sym":"C",
@@ -381,7 +381,7 @@ module Engine
             0
          ],
          "coordinates":"S12",
-         "color":"#232b2b"
+         "color":"darkMagenta"
       }
    ],
    "corporations":[
