@@ -64,11 +64,11 @@ module Engine
           .reject { |bundle| entity.cash < bundle.price }
       end
 
-      def tokenable_location_exists?()
+      def tokenable_location_exists?
         # Using hexes > tile > cities because simply using cities also gets cities
         # that are on tiles not yet laid.
-        hexes.any? { |h| h.tile.cities.any? { |c| c.tokens.count { |t| t.nil? } } }
-      end      
+        hexes.any? { |h| h.tile.cities.any? { |c| c.tokens.count(&:nil?).positive? } }
+      end
 
       def place_second_token(corporation)
         return unless tokenable_location_exists?
