@@ -55,6 +55,50 @@ module Engine
         corporation.tokens.any? { |token| token.city == @new_zealand_city }
       end
 
+      def tokenable_location_exists?()
+        # Using hexes > tile > cities because simply using cities also gets cities
+        # that are on tiles not yet laid.
+        hexes.any? { |h| h.tile.cities.any? { |c| c.tokens.count { |t| t.nil? } } }
+      end      
+
+      def place_second_token(corporation)
+        return unless tokenable_location_exists?
+
+        hex = hex_by_id(corporation.coordinates)
+
+        tile = hex&.tile
+        if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
+
+          # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
+          # otherwise the entity must choose now.
+          @log << "#{corporation.name} must choose city for home token"
+
+          hexes =
+            if hex
+              [hex]
+            else
+              home_token_locations(corporation)
+            end
+
+          @round.pending_tokens << {
+            entity: corporation,
+            hexes: hexes,
+            token: corporation.find_token_by_type,
+          }
+
+          @round.clear_cache!
+          return
+        end
+
+        cities = tile.cities
+        city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+        token = corporation.find_token_by_type
+        return unless city.tokenable?(corporation, tokens: token)
+
+        @log << "#{corporation.name} places a token on #{hex.name}"
+        city.place_token(corporation, token)
+      end
+
       def home_token_locations(corporation)
         # Cannot place a home token in Nieuw Zeeland until phase 3
         return super unless %w[2 2+].include?(@phase.name)
