@@ -105,10 +105,6 @@ module Engine
         @imc ||= company_by_id('IMC')
       end
 
-      def dnp
-        @dnp ||= company_by_id('DNP')
-      end
-
       def setup
         setup_company_price_50_to_150_percent
         setup_corporations
@@ -184,7 +180,7 @@ module Engine
         Step::G18CO::Takeover,
         Step::DiscardTrain,
         Step::HomeToken,
-        Step::ReturnToken,
+        Step::G18CO::ReturnToken,
         Step::BuyCompany,
         Step::G18CO::RedeemShares,
         Step::CorporateBuyShares,
@@ -221,11 +217,6 @@ module Engine
         case action
         when Action::BuyCompany
           mine_update_text(action.entity) if action.company == imc && action.entity.corporation?
-        when Action::RemoveToken
-          if action.entity == dnp
-            action.entity.close!
-            log << "#{action.entity.name} closes"
-          end
         end
       end
 
