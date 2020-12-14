@@ -39,8 +39,8 @@ module Engine
       DISCARDED_TRAIN_DISCOUNT = 50
 
       # Two tiles can be laid, only one upgrade
-      # TODO: This changes in phase E to a single tile lay
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: false }].freeze
+      REDUCED_TILE_LAYS = [{ lay: true, upgrade: true }].freeze
 
       # First 3 are Denver, Second 3 are CO Springs
       TILES_FIXED_ROTATION = %w[co1 co2 co3 co5 co6 co7].freeze
@@ -86,6 +86,10 @@ module Engine
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_mines' => ['Mines Close', 'Mine tokens removed from board and corporations']
         ).freeze
+
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'reduced_tile_lay' => ['Reduced Tile Lay', 'Corporations place only one tile per OR.']
+      ).freeze
 
       include CompanyPrice50To150Percent
 
@@ -306,6 +310,12 @@ module Engine
         @corporations.each do |corporation|
           mines_remove(corporation)
         end
+      end
+
+      def tile_lays(_entity)
+        return REDUCED_TILE_LAYS if @phase.status.include?('reduced_tile_lay')
+
+        super
       end
 
       def sell_shares_and_change_price(bundle)

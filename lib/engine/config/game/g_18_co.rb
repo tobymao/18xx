@@ -1199,10 +1199,7 @@ module Engine
 			"tiles": [
 				"yellow"
 			],
-			"operating_rounds": 2,
-			"status": [
-				"can_buy_companies_from_other_players"
-			]
+			"operating_rounds": 2
 		},
 		{
 			"name": "3",
@@ -1213,8 +1210,7 @@ module Engine
 				"green"
 			],
 			"status": [
-				"can_buy_companies",
-				"can_buy_companies_from_other_players"
+				"can_buy_companies"
 			],
 			"operating_rounds": 2
 		},
@@ -1227,8 +1223,7 @@ module Engine
 				"green"
 			],
 			"status": [
-				"can_buy_companies",
-				"can_buy_companies_from_other_players"
+				"can_buy_companies"
 			],
 			"operating_rounds": 2
 		},
@@ -1284,6 +1279,9 @@ module Engine
 				"yellow",
 				"green",
 				"brown"
+			],
+			"status":[
+				"reduced_tile_lay"
 			],
 			"operating_rounds": 2
 		}
