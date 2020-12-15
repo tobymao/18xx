@@ -718,7 +718,7 @@ module Engine
         }
       ],
       "price": 800,
-      "num": 6,
+      "num": 16,
       "events": [
         {"type": "southern_forms"}
       ]
