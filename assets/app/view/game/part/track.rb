@@ -15,6 +15,21 @@ module View
           color: '#000000',
           width: 8,
           dash: '0',
+          broad: {
+            color: '#000000',
+            width: 8,
+            dash: '0',
+          },
+          narrow: {
+            color: '#000000',
+            width: 8,
+            dash: '12',
+          },
+          dual: {
+            color: '#FFFFFF',
+            width: 8,
+            dash: '0',
+          },
         }.freeze
 
         needs :tile
@@ -37,9 +52,9 @@ module View
 
           sorted.map do |path, index|
             props = {
-              color: value_for_index(index, :color),
+              color: value_for_index(index, :color, path.track),
               width: width_for_index(path, index, path_indexes),
-              dash: value_for_index(index, :dash),
+              dash: value_for_index(index, :dash, path.track),
             }
 
             if path.stub?
@@ -63,8 +78,8 @@ module View
           indexes.empty? ? [nil] : indexes
         end
 
-        def value_for_index(index, prop)
-          index ? route_prop(index, prop) : TRACK[prop]
+        def value_for_index(index, prop, track)
+          index ? route_prop(index, prop) : TRACK[track][prop]
         end
 
         def width_for_index(path, index, path_indexes)
@@ -75,7 +90,7 @@ module View
               [1, 3 * path_indexes[path].reverse.index(index)].max
             end
 
-          value_for_index(index, :width).to_f * multiplier.to_i
+          value_for_index(index, :width, path.track).to_f * multiplier.to_i
         end
       end
     end
