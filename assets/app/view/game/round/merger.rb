@@ -33,6 +33,8 @@ module View
 
           children = []
 
+          children << h(Choose) if actions.include?('choose')
+
           if (%w[buy_shares sell_shares] & actions).any?
             return h(CashCrisis) if @step.respond_to?(:needed_cash)
 

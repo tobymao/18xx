@@ -26,7 +26,7 @@ module Engine
     "5": 252,
     "6": 210
   },
-  "capitalization": "full",
+  "capitalization": "incremental",
   "layout": "flat",
   "mustSellInBlocks": false,
   "locationNames": {
@@ -390,6 +390,7 @@ module Engine
       "sym": "BBG",
       "name": "Buffalo, Brantford, and Goderich",
       "logo": "1867/BBG",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -402,6 +403,7 @@ module Engine
       "sym": "BO",
       "name": "Brockville and Ottawa",
       "logo": "1867/BO",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -426,6 +428,7 @@ module Engine
       "sym": "CV",
       "name": "Credit Valley Railway",
       "logo": "1867/CV",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -438,6 +441,7 @@ module Engine
       "sym": "KP",
       "name": "Kingston and Pembroke",
       "logo": "1867/KP",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -450,6 +454,7 @@ module Engine
       "sym": "LPS",
       "name": "London and Port Stanley",
       "logo": "1867/LPS",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -462,6 +467,7 @@ module Engine
       "sym": "OP",
       "name": "Ottawa and Prescott",
       "logo": "1867/OP",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -474,6 +480,7 @@ module Engine
       "sym": "SLA",
       "name": "St. Lawrence and Atlantic",
       "logo": "1867/SLA",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -486,6 +493,7 @@ module Engine
       "sym": "TGB",
       "name": "Toronto, Grey, and Bruce",
       "logo": "1867/TGB",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -498,6 +506,7 @@ module Engine
       "sym": "TN",
       "name": "Toronto and Nipissing",
       "logo": "1867/TN",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -510,6 +519,7 @@ module Engine
       "sym": "TN",
       "name": "Algoma Eastern Railway",
       "logo": "1867/TN",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -522,6 +532,7 @@ module Engine
       "sym": "CA",
       "name": "Canada Atlantic Railway",
       "logo": "1867/CA",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -534,6 +545,7 @@ module Engine
       "sym": "NYO",
       "name": "New York and Ottawa",
       "logo": "1867/NYO",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -546,6 +558,7 @@ module Engine
       "sym": "PM",
       "name": "Pere Marquette Railway",
       "logo": "1867/PM",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -558,6 +571,7 @@ module Engine
       "sym": "QLS",
       "name": "Quebec and Lake St. John",
       "logo": "1867/QLS",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -570,6 +584,7 @@ module Engine
       "sym": "THB",
       "name": "Toronto, Hamilton and Buffalo",
       "logo": "1867/THB",
+      "float_percent": 100,
       "tokens": [
         0
       ],
@@ -591,14 +606,36 @@ module Engine
   "trains": [
     {
       "name": "2",
-      "distance": 2,
+      "distance": [
+        {
+          "nodes": ["city", "offboard"],
+          "pay": 2,
+          "visit": 2
+        },
+        {
+          "nodes": ["town"],
+          "pay": 0,
+          "visit": 99
+        }
+      ],
       "price": 100,
       "rusts_on": "4",
       "num": 10
     },
     {
       "name": "3",
-      "distance": 3,
+      "distance": [
+        {
+          "nodes": ["city", "offboard"],
+          "pay": 3,
+          "visit": 3
+        },
+        {
+          "nodes": ["town"],
+          "pay": 0,
+          "visit": 99
+        }
+      ],
       "price": 225,
       "rusts_on": "6",
       "num": 7,
@@ -608,17 +645,40 @@ module Engine
     },
     {
       "name": "4",
-      "distance": 4,
+      "distance": [
+        {
+          "nodes": ["city", "offboard"],
+          "pay": 4,
+          "visit": 4
+        },
+        {
+          "nodes": ["town"],
+          "pay": 0,
+          "visit": 99
+        }
+      ],
       "price": 350,
       "rusts_on": "8",
       "num": 4,
       "events":[
-        {"type": "majors_can_ipo"}
+        {"type": "majors_can_ipo"},
+        {"type": "trainless_nationalization"}
       ]
     },
     {
       "name": "5",
-      "distance": 5,
+      "distance": [
+        {
+          "nodes": ["city", "offboard"],
+          "pay": 5,
+          "visit": 5
+        },
+        {
+          "nodes": ["town"],
+          "pay": 0,
+          "visit": 99
+        }
+      ],
       "price": 550,
       "num": 4,
       "events":[
@@ -628,40 +688,97 @@ module Engine
     },
     {
       "name": "6",
-      "distance": 6,
+      "distance": [
+        {
+          "nodes": ["city", "offboard"],
+          "pay": 6,
+          "visit": 6
+        },
+        {
+          "nodes": ["town"],
+          "pay": 0,
+          "visit": 99
+        }
+      ],
       "price": 650,
       "num": 2,
       "events":[
-        {"type": "close_companies"}
+        {"type": "close_companies"},
+        {"type": "trainless_nationalization"}
       ]
     },
     {
       "name": "7",
-      "distance": 7,
+      "distance": [
+        {
+          "nodes": ["city", "offboard"],
+          "pay": 7,
+          "visit": 7
+        },
+        {
+          "nodes": ["town"],
+          "pay": 0,
+          "visit": 99
+        }
+      ],
       "price": 800,
       "num": 2
     },
     {
       "name": "8",
-      "distance": 8,
+      "distance": [
+        {
+          "nodes": ["city", "offboard"],
+          "pay": 8,
+          "visit": 8
+        },
+        {
+          "nodes": ["town"],
+          "pay": 0,
+          "visit": 99
+        }
+      ],
       "price": 1000,
       "num": 6,
       "events": [
         {"type": "signal_end_game"},
-        {"type": "minors_nationalized"}
-
+        {"type": "minors_nationalized"},
+        {"type": "trainless_nationalization"}
       ]
     },
     {
       "name": "2+2",
-      "distance": 2,
+      "distance": [
+        {
+          "nodes": ["city", "offboard"],
+          "pay": 2,
+          "visit": 2,
+          "multiplier":2
+        },
+        {
+          "nodes": ["town"],
+          "pay": 0,
+          "visit": 99
+        }
+      ],
       "price": 600,
       "num": 6,
       "available_on": "8"
     },
     {
       "name": "5+5E",
-      "distance": 5,
+      "distance": [
+        {
+          "nodes": ["offboard"],
+          "pay": 5,
+          "visit": 5
+        },
+        {
+          "nodes": ["city", "town"],
+          "pay": 0,
+          "visit": 99
+        }
+      ],
       "price": 1500,
       "num": 7,
       "available_on": "8"
@@ -847,7 +964,8 @@ module Engine
     {
       "name": "2",
       "train_limit": {
-        "minor": 2
+        "minor": 2,
+        "major": 2
       },
       "tiles": [
         "yellow"

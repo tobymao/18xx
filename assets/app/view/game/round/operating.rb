@@ -43,6 +43,8 @@ module View
             left << h(CorporateBuyShares)
           elsif @current_actions.include?('corporate_sell_shares')
             left << h(CorporateSellShares)
+          elsif @current_actions.include?('choose')
+            left << h(Choose)
           end
           left << h(Loans, corporation: entity) if (%w[take_loan payoff_loan] & @current_actions).any?
 
