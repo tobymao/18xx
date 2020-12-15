@@ -173,6 +173,7 @@ module Engine
         {
           "type": "assign_hexes",
           "hexes": [
+            "G4", "K4"
           ],
           "owner_type": "corporation"
         }

@@ -20,9 +20,23 @@ module Engine
 
         def choices
           corporation = @winning_bid.corporation
-          super unless @game.corp_has_new_zealand?(corporation)
+          return super unless @game.corp_has_new_zealand?(corporation)
 
           super.reject { |size| size == 2 }
+        end
+
+        def process_buy_tokens(action)
+          # Buying tokens is not an 'action' and so can be done with player actions
+          entity = action.entity
+          @game.game_error('Cannot buy tokens') unless can_buy_tokens?(entity)
+          tokens = @game.tokens_needed(entity)
+          token_cost = tokens * TOKEN_COST
+          entity.spend(token_cost, @game.bank)
+          @log << "#{entity.name} buys #{tokens} tokens for #{@game.format_currency(token_cost)}"
+          tokens.times.each do |_i|
+            entity.tokens << Engine::Token.new(entity)
+          end
+          @game.place_second_token(entity) if @game.corp_has_new_zealand?(entity)
         end
       end
     end
