@@ -19,39 +19,51 @@ module Engine
         return false unless sellable_bundle?(bundle)
 
         # Can only sell as much as you need to afford the train
-        player = bundle.owner
-        unless @game.class::EBUY_SELL_MORE_THAN_NEEDED
-          total_cash = bundle.price + available_cash(player)
-          return false if total_cash >= needed_cash(player) + bundle.price_per_share
-        end
+        selling_minimum_shares?(bundle) unless @game.class::EBUY_SELL_MORE_THAN_NEEDED
+      end
 
-        true
+      def selling_minimum_shares?(bundle)
+        seller = bundle.owner
+        total_cash = bundle.price + available_cash(seller)
+        total_cash < needed_cash(seller) + bundle.price_per_share
       end
 
       def sellable_bundle?(bundle)
-        player = bundle.owner
+        seller = bundle.owner
         # Can't sell president's share
-        return false unless bundle.can_dump?(player)
+        return false unless bundle.can_dump?(seller)
 
         # Can't oversaturate the market
         return false unless @game.share_pool.fit_in_bank?(bundle)
 
-        # Can't swap presidency
         corporation = bundle.corporation
-        if corporation.president?(player) &&
-            (!@game.class::EBUY_PRES_SWAP || corporation == current_entity)
-          share_holders = corporation.player_share_holders
-          remaining = share_holders[player] - bundle.percent
-          next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
-          return false if remaining < next_highest
-        end
+        return true if corporation == seller
+
+        # Can't swap presidency
+        return false if president_swap_disallowed?(corporation, seller) &&
+          causes_president_swap?(corporation, bundle)
 
         # Otherwise we're good
         true
       end
 
-      def issuable_shares
-        []
+      def president_swap_disallowed?(corporation, seller)
+        corporation.president?(seller) &&
+          (!@game.class::EBUY_PRES_SWAP || corporation == current_entity)
+      end
+
+      def causes_president_swap?(corporation, bundle)
+        seller = bundle.owner
+        share_holders = corporation.player_share_holders
+        remaining = share_holders[seller] - bundle.percent
+        next_highest = share_holders.reject { |k, _| k == seller }.values.max || 0
+        remaining < next_highest
+      end
+
+      def issuable_shares(entity)
+        return [] unless entity.corporation?
+
+        @game.emergency_issuable_bundles(entity)
       end
     end
   end
