@@ -212,6 +212,13 @@ module Engine
       shares
     end
 
+    def move_share(share, to_entity)
+      corporation = share.corporation
+      share.owner.shares_by_corporation[corporation].delete(share)
+      to_entity.shares_by_corporation[corporation] << share
+      share.owner = to_entity
+    end
+
     private
 
     def distance(player_a, player_b)
@@ -221,13 +228,6 @@ module Engine
       a = entities.find_index(player_a)
       b = entities.find_index(player_b)
       a < b ? b - a : b - (a - entities.size)
-    end
-
-    def move_share(share, to_entity)
-      corporation = share.corporation
-      share.owner.shares_by_corporation[corporation].delete(share)
-      to_entity.shares_by_corporation[corporation] << share
-      share.owner = to_entity
     end
 
     def num_presentation(bundle)
