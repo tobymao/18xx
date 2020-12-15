@@ -147,7 +147,7 @@ module Engine
         def sell_price(entity)
           return 0 unless can_sell_company?(entity)
 
-          entity.value - 30
+          entity.value - @game.class::COMPANY_SALE_FEE
         end
 
         def can_sell_any_companies?(entity)

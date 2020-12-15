@@ -35,6 +35,8 @@ module Engine
       TRAIN_PRICE_MIN = 10
       TRAIN_PRICE_MULTIPLE = 10
 
+      COMPANY_SALE_FEE = 30
+
       SOLD_OUT_INCREASE = false
 
       STOCKMARKET_COLORS = {
@@ -246,6 +248,22 @@ module Engine
 
       def check_bank_broken!
         @bank.break! if !@nationalization && bank_cash.negative?
+      end
+
+      def player_value(player)
+        player.cash +
+          player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
+          player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }.sum { |s| (s.price / 2).to_i } +
+          player.companies.sum(&:value)
+      end
+
+      def liquidity(player)
+        company_value = turn > 1 ? player.companies.sum { |c| c.value - COMPANY_SALE_FEE } : 0
+
+        player.cash +
+          player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
+          player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }.sum { |s| (s.price / 2).to_i } +
+          company_value
       end
 
       def event_fishbourne_to_bank!

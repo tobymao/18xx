@@ -329,7 +329,7 @@ module View
       def render_player_value
         h(:tr, zebra_props(true), [
           h('th.left', 'Value'),
-          *@game.players.map { |p| h('td.padded_number', @game.format_currency(p.value)) },
+          *@game.players.map { |p| h('td.padded_number', @game.format_currency(@game.player_value(p))) },
         ])
       end
 

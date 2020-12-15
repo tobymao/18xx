@@ -5,11 +5,11 @@ module Engine
   class PlayerInfo
     attr_reader :round_name, :turn, :round_no, :value
 
-    def initialize(round_name, turn, round_no, player)
+    def initialize(round_name, turn, round_no, player_value)
       @round_name = round_name
       @turn = turn
       @round_no = round_no
-      @value = player.value
+      @value = player_value
     end
 
     def round

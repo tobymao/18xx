@@ -100,7 +100,7 @@ module View
         trs.concat([
           h(:tr, [
             h(:td, 'Value'),
-            h('td.right', @game.format_currency(@player.value)),
+            h('td.right', @game.format_currency(@game.player_value(@player))),
           ]),
           h(:tr, [
             h(:td, 'Liquidity'),
