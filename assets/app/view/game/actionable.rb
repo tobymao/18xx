@@ -64,6 +64,9 @@ module View
         end
 
         if hotseat
+          @game_data[:turn] = game.turn
+          @game_data[:round] = game.round.name
+          @game_data[:acting] = game.active_players_id
           Lib::Storage[@game_data[:id]] = @game_data
         elsif participant?
           json = action.to_h
