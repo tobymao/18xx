@@ -23,7 +23,7 @@ module Engine
       GAME_LOCATION = 'Isle of Wight'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/79633/second-edition-rules'
       GAME_DESIGNER = 'Mike Hutton'
-      GAME_PUBLISHER = :zman_games
+      GAME_PUBLISHER = nil
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1860'
 
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
@@ -889,8 +889,10 @@ module Engine
         return 0 if visits.empty? || ignore_halts?
 
         cities = visits.select { |node| node.city? || node.offboard? }
+        towns = visits.select { |node| node.town? && !node.halt? }
         halts = visits.select(&:halt?)
         th_allowance = route.train.distance[-1]['pay'] + route.train.distance[0]['pay'] - cities.size
+        th_allowance = [th_allowance - towns.size, 0].max if maximize_revenue
         [halts.size, th_allowance].min
       end
 
@@ -936,7 +938,7 @@ module Engine
         end
 
         # update route halts
-        route.halts = num_halts if halts.any? && !ignore_halts? && !ignore_halt_subsidies?(route) && !maximize_revenue?
+        route.halts = num_halts if halts.any? && !ignore_halts? && !ignore_halt_subsidies?(route)
 
         stops
       end
