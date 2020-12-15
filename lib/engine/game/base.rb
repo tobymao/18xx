@@ -92,6 +92,7 @@ module Engine
       CERT_LIMIT_TYPES = %i[multiple_buy unlimited no_cert_limit].freeze
       # Does the cert limit decrease when a player becomes bankrupt?
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = false
+      CERT_LIMIT_INCLUDES_PRIVATES = true
 
       MULTIPLE_BUY_TYPES = %i[multiple_buy].freeze
 
@@ -726,7 +727,11 @@ module Engine
       end
 
       def num_certs(entity)
-        entity.companies.size + entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
+        if self.class::CERT_LIMIT_INCLUDES_PRIVATES
+          entity.companies.size + entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
+        else
+          entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
+        end
       end
 
       def sellable_turn?
