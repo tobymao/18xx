@@ -20,6 +20,7 @@ module Engine
       'z' => :par_2,
       'C' => :convert_range,
       'm' => :max_price,
+      'u' => :phase_limited,
     }.freeze
 
     # Types which are info only and shouldn't

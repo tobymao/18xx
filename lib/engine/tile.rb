@@ -69,6 +69,8 @@ module Engine
             [k, v]
           when 'lanes'
             [k, v.to_i]
+          when 'track'
+            [k, v.to_sym]
           else
             case v[0]
             when '_'
@@ -81,7 +83,8 @@ module Engine
 
         Part::Path.make_lanes(params['a'], params['b'], terminal: params['terminal'],
                                                         lanes: params['lanes'], a_lane: params['a_lane'],
-                                                        b_lane: params['b_lane'])
+                                                        b_lane: params['b_lane'],
+                                                        track: params['track'])
       when 'city'
         city = Part::City.new(params['revenue'],
                               slots: params['slots'],
