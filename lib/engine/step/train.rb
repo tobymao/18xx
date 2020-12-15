@@ -80,27 +80,25 @@ module Engine
         pass! unless can_buy_train?(entity)
       end
 
-      def can_sell?(entity, bundle)
+      def can_sell?(_entity, bundle)
         return false if @game.class::MUST_SELL_IN_BLOCKS && @corporations_sold.include?(bundle.corporation)
-        return false if current_entity != entity && must_issue_before_ebuy?(current_entity)
+        return false if must_issue_before_ebuy?(current_entity)
 
         super
       end
 
       def process_sell_shares(action)
-        @last_share_sold_price = action.bundle.price_per_share unless action.entity == current_entity
+        @last_share_sold_price = action.bundle.price_per_share
         super
-        @corporations_sold << action.bundle.corporation unless action.entity == current_entity
+        @corporations_sold << action.bundle.corporation
       end
 
       def needed_cash(_entity)
         @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST ? @depot.min_depot_price : @depot.max_depot_price
       end
 
-      def available_cash(entity)
-        return current_entity.cash if entity == current_entity
-
-        entity.cash + current_entity.cash
+      def available_cash(player)
+        player.cash + current_entity.cash
       end
 
       def buyable_trains(entity)
@@ -142,6 +140,10 @@ module Engine
         @last_share_sold_price = nil
         @last_share_issued_price = nil
         @corporations_sold = []
+      end
+
+      def issuable_shares
+        []
       end
 
       def must_issue_before_ebuy?(corporation)
