@@ -8,6 +8,8 @@ require_relative '../g_1860/share_pool'
 module Engine
   module Game
     class G1860 < Base
+      attr_reader :nationalization, :sr_after_southern
+
       register_colors(black: '#000000',
                       orange: '#f48221',
                       brightGreen: '#76a042',
@@ -21,7 +23,7 @@ module Engine
       GAME_LOCATION = 'Isle of Wight'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/79633/second-edition-rules'
       GAME_DESIGNER = 'Mike Hutton'
-      GAME_PUBLISHER = :zman_games
+      GAME_PUBLISHER = nil
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1860'
 
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
@@ -32,6 +34,8 @@ module Engine
       MARKET_SHARE_LIMIT = 100
       TRAIN_PRICE_MIN = 10
       TRAIN_PRICE_MULTIPLE = 10
+
+      COMPANY_SALE_FEE = 30
 
       SOLD_OUT_INCREASE = false
 
@@ -62,10 +66,14 @@ module Engine
       HALT_SUBSIDY = 10
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-        'fishbourne_to_bank' => ['Fishbourne', 'Fishbourne Ferry Company available for purchase']
+        'fishbourne_to_bank' => ['Fishbourne', 'Fishbourne Ferry Company available for purchase.'],
+        'relax_cert_limit' => ['No Cert Limit', "No limit on certificates/player; Selling doesn't reduce share price."],
+        'southern_forms' => ['Southern Forms', 'Southern RR forms; No track or token after the next SR.']
       ).freeze
 
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded_or_city, upgrade: false }].freeze
+
+      GAME_END_CHECK = { stock_market: :current_or, bank: :current_or, custom: :immediate }.freeze
 
       PAR_RANGE = {
         1 => [74, 100],
@@ -112,7 +120,7 @@ module Engine
       def setup
         @bankrupt_corps = []
         @insolvent_corps = []
-        @closed_corps = []
+        @nationalized_corps = []
         @highest_layer = 1
         @node_distances = {}
         @path_distances = {}
@@ -122,6 +130,11 @@ module Engine
         reserve_share('FYN')
         reserve_share('C&N')
         reserve_share('IOW')
+
+        @no_price_drop_on_sale = false
+        @southern_formed = false
+        @sr_after_southern = false
+        @nationalization = false
       end
 
       def share_prices
@@ -178,18 +191,150 @@ module Engine
         @players.rotate!(@players.index(player))
       end
 
+      def new_stock_round
+        trigger_sr_after_southern! if @southern_formed
+
+        super
+      end
+
       def or_set_finished
         check_new_layer
+      end
+
+      def next_round!
+        @round =
+          case @round
+          when Round::Stock
+            @operating_rounds = @phase.operating_rounds
+            reorder_players
+            trigger_nationalization! if check_nationalize?
+            new_operating_round
+          when Round::Operating
+            if @round.round_num < @operating_rounds || check_nationalize?
+              trigger_nationalization! if check_nationalize?
+              or_round_finished
+              new_operating_round(@round.round_num + 1)
+            else
+              @turn += 1
+              or_round_finished
+              or_set_finished
+              new_stock_round
+            end
+          when init_round.class
+            init_round_finished
+            reorder_players
+            new_stock_round
+          end
+      end
+
+      def round_description(name, round_number = nil)
+        round_number ||= @round.round_num
+        description = "#{name} Round "
+
+        total = total_rounds(name)
+
+        description += @turn.to_s unless @turn.zero?
+        description += '.' if total && !@turn.zero?
+        description += round_number.to_s if total
+        description += " (of #{total})" if total && !@nationalization
+        description += ' (Nationalization)' if total && @nationalization
+
+        description.strip
       end
 
       def bank_cash
         self.class::BANK_CASH - @players.sum(&:cash)
       end
 
+      def check_bank_broken!
+        @bank.break! if !@nationalization && bank_cash.negative?
+      end
+
+      def player_value(player)
+        player.cash +
+          player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
+          player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }.sum { |s| (s.price / 2).to_i } +
+          player.companies.sum(&:value)
+      end
+
+      def liquidity(player)
+        company_value = turn > 1 ? player.companies.sum { |c| c.value - COMPANY_SALE_FEE } : 0
+
+        player.cash +
+          player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
+          player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }.sum { |s| (s.price / 2).to_i } +
+          company_value
+      end
+
       def event_fishbourne_to_bank!
         ffc = @companies.find { |c| c.sym == 'FFC' }
         ffc.owner = @bank
         @log << "#{ffc.name} is now available for purchase from the Bank"
+      end
+
+      def event_relax_cert_limit!
+        @log << 'Selling shares no longer decreases share value; No limit on certificates per player.'
+        @no_price_drop_on_sale = true
+        @cert_limit = 999
+      end
+
+      def event_southern_forms!
+        @log << 'Southern Railway Forms; End of game triggered (via Nationalization).'
+        @southern_formed = true
+      end
+
+      def trigger_sr_after_southern!
+        return if @sr_after_southern
+
+        @log << 'Stock round after Southern has formed - No track or token building, halts are ignored'
+        @sr_after_southern = true
+      end
+
+      def trigger_nationalization!
+        return if @nationalization
+
+        @log << 'All non-Receivership corporations own at least one train. Nationalization begins.'
+        @nationalization = true
+      end
+
+      def check_nationalize?
+        return false unless @southern_formed
+        return true if @nationalization
+
+        @corporations.select { |c| c.ipoed && !c.receivership? }.all? { |c| c.trains.any? }
+      end
+
+      # OR has just finished, find two lowest revenues and nationalize the corporations
+      # associated with each
+      def nationalize_corps!
+        revenues = @corporations.select { |c| c.floated? && !nationalized?(c) }
+          .map { |c| [c, c.operating_history[c.operating_history.keys.max].revenue] }.to_h
+
+        sorted_corps = revenues.keys.sort_by { |c| c.operating_history[c.operating_history.keys.max].revenue }
+
+        if sorted_corps.size < 3
+          # if two or less corps left, they are both nationalized
+          sorted_corps.each { |c| make_nationalized!(c) }
+        else
+          # all companies with the lowest revenue are nationalized
+          # if only one has the lowest revenue, then all companies with the next lowest revenue are nationalized
+          min_revenue = revenues[sorted_corps[0]]
+          next_revenue_corp = sorted_corps.find { |c| revenues[c] > min_revenue }
+          next_revenue = revenues[next_revenue_corp] if next_revenue_corp
+
+          grouped = revenues.keys.group_by { |c| revenues[c] }
+          grouped[min_revenue].each { |c| make_nationalized!(c) }
+          grouped[next_revenue].each { |c| make_nationalized!(c) } if next_revenue_corp && grouped[min_revenue].one?
+        end
+      end
+
+      # game ends when all floated corps have nationalized
+      def custom_end_game_reached?
+        return false unless @nationalization
+        return false unless @round.finished?
+
+        nationalize_corps! if @nationalization
+        @corporations.select(&:floated?).all? { |corp| nationalized?(corp) }
       end
 
       def insolvent?(corp)
@@ -255,6 +400,7 @@ module Engine
         @log << "#{@players.first.name} has priority deal"
 
         # restart stock round if in middle of one
+        @round.clear_cache!
         return unless @round.class == Round::Stock
 
         @log << 'Restarting Stock Round'
@@ -272,6 +418,17 @@ module Engine
           token.status = nil if token.used
         end
         @bankrupt_corps.delete(corp)
+      end
+
+      def nationalized?(corp)
+        @nationalized_corps.include?(corp)
+      end
+
+      def make_nationalized!(corp)
+        return if nationalized?(corp)
+
+        @log << "#{corp.name} is Nationalized and will cease to operate."
+        @nationalized_corps << corp
       end
 
       def status_str(corp)
@@ -363,8 +520,7 @@ module Engine
       end
 
       def selling_movement?(corporation)
-        # FIXME: no price movement on selling after 8 train
-        corporation.operated?
+        corporation.operated? && !@no_price_drop_on_sale
       end
 
       def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
@@ -384,6 +540,42 @@ module Engine
         @corporations.each { |corp| corp.shares.each { |share| share.buyable = true } }
         @companies.reject { |c| c == company }.each(&:close!)
         @log << '-- Event: starting private companies close --'
+      end
+
+      def game_ending_description
+        reason, after = game_end_check
+        return unless after
+
+        after_text = ''
+
+        unless @finished
+          after_text = case after
+                       when :immediate
+                         ' : Game Ends immediately'
+                       when :current_round
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         else
+                           " : Game Ends at conclusion of this round (#{turn})"
+                         end
+                       when :current_or
+                         " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                       when :full_or
+                         " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
+                       when :one_more_full_or_set
+                         " : Game Ends at conclusion of #{round_end.short_name}"\
+                           " #{@final_turn}.#{final_operating_rounds}"
+                       end
+        end
+
+        reason_map = {
+          bank: 'Bank Broken',
+          bankrupt: 'Bankruptcy',
+          stock_market: 'Company hit max stock value',
+          final_train: 'Final train was purchased',
+          custom: 'Nationalization complete',
+        }
+        "#{reason_map[reason]}#{after_text}"
       end
 
       def train_help(trains)
@@ -676,18 +868,20 @@ module Engine
         check_hex_reentry(route)
       end
 
+      def maximize_revenue?
+        @nationalization
+      end
+
       def ignore_halts?
-        false
+        @sr_after_southern
       end
 
       def ignore_halt_subsidies?(route)
-        # FIXME: need to ignore halts after formation of Southern Railway
         route.train.owner == @depot
       end
 
       def ignore_second_allowance?(route)
-        # FIXME: need to add Nationalization
-        route.train.owner == @depot
+        route.train.owner == @depot || @nationalization
       end
 
       def max_halts(route)
@@ -695,8 +889,10 @@ module Engine
         return 0 if visits.empty? || ignore_halts?
 
         cities = visits.select { |node| node.city? || node.offboard? }
+        towns = visits.select { |node| node.town? && !node.halt? }
         halts = visits.select(&:halt?)
         th_allowance = route.train.distance[-1]['pay'] + route.train.distance[0]['pay'] - cities.size
+        th_allowance = [th_allowance - towns.size, 0].max if maximize_revenue
         [halts.size, th_allowance].min
       end
 
@@ -719,7 +915,7 @@ module Engine
         # add in halts requested (should be 0 for leased train)
         halts = visits.select(&:halt?)
 
-        route.halts = nil if halts.empty? || ignore_halts? || ignore_halt_subsidies?(route)
+        route.halts = nil if halts.empty? || ignore_halts? || ignore_halt_subsidies?(route) || maximize_revenue?
 
         num_halts = [halts.size, (route.halts || 0)].min
         if num_halts.positive?
@@ -731,7 +927,7 @@ module Engine
         towns = visits.select { |node| node.town? && !node.halt? }
         num_towns = [th_allowance, towns.size].min
         if num_towns.positive?
-          stops.concat(towns.sort_by(&:revenue).take(num_towns))
+          stops.concat(towns.sort_by { |t| t.uniq_revenues.first }.reverse.take(num_towns))
           th_allowance -= num_towns
         end
 

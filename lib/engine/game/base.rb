@@ -443,7 +443,7 @@ module Engine
         @players
           .sort_by(&:value)
           .reverse
-          .map { |p| [p.name, p.value] }
+          .map { |p| [p.name, player_value(p)] }
           .to_h
       end
 
@@ -562,7 +562,7 @@ module Engine
 
       def store_player_info
         @players.each do |p|
-          p.history << PlayerInfo.new(@round.class.short_name, turn, @round.round_num, p)
+          p.history << PlayerInfo.new(@round.class.short_name, turn, @round.round_num, player_value(p))
         end
       end
 
@@ -644,6 +644,10 @@ module Engine
         @companies.select do |company|
           company.owner&.player? && entity != company.owner && !company.abilities(:no_buy)
         end
+      end
+
+      def player_value(player)
+        player.value
       end
 
       def liquidity(player, emergency: false)

@@ -9,6 +9,7 @@ module Engine
         def actions(entity)
           return [] if entity.receivership? && entity.trains.any?
           return [] if entity != current_entity || buyable_trains(entity).empty?
+          return [] if @game.bankrupt?(entity)
           return %w[buy_train] if must_buy_train?(entity)
 
           super
@@ -37,6 +38,7 @@ module Engine
 
         def must_buy_train?(entity)
           entity.trains.empty? &&
+            !@game.bankrupt?(entity) &&
             @game.depot.min_depot_price.positive? &&
             entity.cash > @game.depot.min_depot_price &&
             @game.can_run_route?(entity)
@@ -48,7 +50,7 @@ module Engine
 
           depot_trains = [] if entity.cash < @depot.min_depot_price
 
-          other_trains = [] if entity.cash < @game.class::TRAIN_PRICE_MIN
+          other_trains = [] if entity.cash < @game.class::TRAIN_PRICE_MIN || @game.nationalization
 
           other_trains.reject! { |t| illegal_train_buy?(entity, t) }
 
