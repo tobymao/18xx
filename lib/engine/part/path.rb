@@ -8,6 +8,8 @@ module Engine
       attr_reader :a, :b, :city, :edges, :exit_lanes, :junction,
                   :lanes, :nodes, :offboard, :stops, :terminal, :town, :track
 
+      LANES = [[1, 0].freeze, [1, 0].freeze].freeze
+
       def self.decode_lane_spec(x_lane)
         if x_lane
           [x_lane.to_i, ((x_lane.to_f - x_lane.to_i) * 10).to_i]
@@ -26,14 +28,20 @@ module Engine
                       else
                         a_lanes
                       end
-            Path.new(a, b, terminal, [a_lanes, b_lanes], track)
+            Path.new(a, b,
+                     terminal: terminal,
+                     lanes: [a_lanes, b_lanes],
+                     track: track)
           end
         else
-          Path.new(a, b, terminal, [decode_lane_spec(a_lane), decode_lane_spec(b_lane)], track)
+          Path.new(a, b,
+                   terminal: terminal,
+                   lanes: [decode_lane_spec(a_lane), decode_lane_spec(b_lane)],
+                   track: track)
         end
       end
 
-      def initialize(a, b, terminal = nil, lanes = [[1, 0], [1, 0]], track = :broad)
+      def initialize(a, b, terminal: nil, lanes: LANES, track: :broad)
         @a = a
         @b = b
         @terminal = terminal
@@ -182,7 +190,10 @@ module Engine
       end
 
       def rotate(ticks)
-        path = Path.new(@a.rotate(ticks), @b.rotate(ticks), @terminal, @lanes, @track)
+        path = Path.new(@a.rotate(ticks), @b.rotate(ticks),
+                        terminal: @terminal,
+                        lanes: @lanes,
+                        track: @track)
         path.index = index
         path.tile = @tile
         path
