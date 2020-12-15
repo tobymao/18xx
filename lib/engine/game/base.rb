@@ -178,6 +178,7 @@ module Engine
       DISCARDED_TRAINS = :discard # discarded or removed?
       DISCARDED_TRAIN_DISCOUNT = 0 # percent
       CLOSED_CORP_TRAINS = :removed # discarded or removed?
+      CLOSED_CORP_RESERVATIONS = :removed # remain or removed?
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
 
@@ -1122,7 +1123,7 @@ module Engine
           hex.tile.cities.each do |city|
             if city.tokened_by?(corporation) || city.reserved_by?(corporation)
               city.tokens.map! { |token| token&.corporation == corporation ? nil : token }
-              city.reservations.delete(corporation)
+              city.reservations.delete(corporation) if self.class::CLOSED_CORP_RESERVATIONS == :removed
             end
           end
         end
@@ -1171,6 +1172,7 @@ module Engine
         @corporations.map! { |c| c.id == corporation.id ? corporation : c }
         @_corporations[corporation.id] = corporation
         corporation.shares.each { |share| @_shares[share.id] = share }
+        corporation
       end
 
       def emergency_issuable_bundles(_corporation)
