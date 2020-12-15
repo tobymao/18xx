@@ -1083,6 +1083,11 @@ module Engine
         return false if from.towns.size != to.towns.size
         return false if !from.label && from.cities.size != to.cities.size
 
+        # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
+        if (from.color == :white) && from.label == Engine::Part::Label.new('OO') && from.cities.size != to.cities.size
+          return false
+        end
+
         true
       end
 
