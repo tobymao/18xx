@@ -433,7 +433,9 @@ module Engine
 
       def status_str(corp)
         status = 'Insolvent' if insolvent?(corp)
+        status = status ? status + ', Receivership' : 'Receivership' if corp.receivership?
         status = status ? status + ', Bankrupt' : 'Bankrupt' if bankrupt?(corp)
+        status = status ? status + ', Nationalized' : 'Nationalized' if nationalized?(corp)
         status
       end
 
