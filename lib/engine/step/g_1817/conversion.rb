@@ -87,7 +87,7 @@ module Engine
 
           remove_duplicate_tokens(corporation, target)
           if tokens_above_limits?(corporation, target)
-            @game.log << "#{corporation.name} will be above token limit and must decide which tokens to keep"
+            @game.log << "#{corporation.name} will be above token limit and must decide which tokens to remove"
             @round.corporations_removing_tokens = [corporation, target]
           else
             tokens = move_tokens_to_surviving(corporation, target)

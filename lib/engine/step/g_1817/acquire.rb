@@ -228,7 +228,7 @@ module Engine
 
           remove_duplicate_tokens(buyer, acquired_corp)
           if tokens_above_limits?(buyer, acquired_corp)
-            @game.log << "#{buyer.name} will be above token limit and must decide which tokens to keep"
+            @game.log << "#{buyer.name} will be above token limit and must decide which tokens to remove"
             @round.corporations_removing_tokens = [buyer, acquired_corp]
           else
             tokens = move_tokens_to_surviving(buyer, acquired_corp)
