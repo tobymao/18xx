@@ -345,20 +345,20 @@ module Engine
         "C3",
         "E7"
       ],
-      "border=edge:1,type:impassable;upgrade=cost:40,terrain:mountain": [
+      "border=edge:1,type:impassable;upgrade=cost:40,terrain:rough": [
         "B2"
       ],
-      "border=edge:0,type:impassable;border=edge:1,type:impassable;upgrade=cost:40,terrain:mountain": [
+      "border=edge:0,type:impassable;border=edge:1,type:impassable;upgrade=cost:40,terrain:rough": [
         "K11"
       ],
       "town=revenue:0;border=edge:3,type:impassable;upgrade=cost:160,terrain:mountain": [
         "F10"
       ],
-      "upgrade=cost:40,terrain:mountain": [
+      "upgrade=cost:40,terrain:rough": [
         "H6",
         "H10"
       ],
-      "upgrade=cost:80,terrain:mountain": [
+      "upgrade=cost:80,terrain:hills": [
         "E3",
         "F6",
         "I5",
@@ -374,12 +374,12 @@ module Engine
         "D12",
         "L12"
       ],
-      "town=revenue:0;upgrade=cost:40,terrain:mountain": [
+      "town=revenue:0;upgrade=cost:40,terrain:rough": [
         "D4",
         "I7",
         "J10"
       ],
-      "town=revenue:0;upgrade=cost:80,terrain:mountain": [
+      "town=revenue:0;upgrade=cost:80,terrain:hills": [
         "H4",
         "G9"
       ],
@@ -390,10 +390,10 @@ module Engine
       "town=revenue:0;border=edge:2,type:impassable;border=edge:3,type:impassable;upgrade=cost:160,terrain:mountain": [
         "E11"
       ],
-      "city=revenue:0;upgrade=cost:80,terrain:mountain": [
+      "city=revenue:0;upgrade=cost:80,terrain:hills": [
         "H8"
       ],
-      "city=revenue:0;upgrade=cost:40,terrain:mountain": [
+      "city=revenue:0;upgrade=cost:40,terrain:rough": [
         "J6"
       ]
     },
@@ -413,7 +413,7 @@ module Engine
       "label=M;city=revenue:30;path=a:0,b:_0": [
         "B14"
       ],
-      "city=revenue:20;upgrade=cost:40,terrain:mountain;path=a:1,b:_0;path=a:4,b:_0,track:narrow;border=edge:3,type:impassable;border=edge:5,type:impassable": [
+      "city=revenue:20;upgrade=cost:40,terrain:rough;path=a:1,b:_0;path=a:4,b:_0,track:narrow;border=edge:3,type:impassable;border=edge:5,type:impassable": [
         "M11"
       ],
       "path=a:2,b:4": [

@@ -69,6 +69,8 @@ module View
             delta_y = 5 + (20 * index)
             {
               mountain: mountain(delta_x: delta_x, delta_y: delta_y),
+              hills: mountain(delta_x: delta_x, delta_y: delta_y),
+              rough: mountain(delta_x: delta_x, delta_y: delta_y),
               water: water(delta_x: delta_x, delta_y: delta_y),
               swamp: svg(delta_x: delta_x, delta_y: delta_y, icon: 'swamp'),
               desert: svg(delta_x: delta_x, delta_y: delta_y, icon: 'cactus'),
