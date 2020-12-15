@@ -79,7 +79,13 @@ module Engine
                 end
 
               players = @game.players.rotate((@game.players.index(owner) + 1) % @game.players.size)
-              [players.find { |p| @active_bidders.include?(p) }]
+              player = players.find { |p| @active_bidders.include?(p) }
+              if player.bankrupt
+                pass_auction(player)
+                active_entities
+              else
+                [player]
+              end
             end
           elsif @buyer
             [@buyer]
