@@ -269,7 +269,7 @@ module Engine
           Step::BuyCompany,
           Step::G1867::RedeemShares,
           Step::G1867::Track,
-          Step::Token,
+          Step::G1867::Token,
           Step::Route,
           Step::G1867::Dividend,
           Step::G1867::LoanOperations,

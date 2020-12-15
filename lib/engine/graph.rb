@@ -10,6 +10,7 @@ module Engine
       @connected_nodes = {}
       @connected_paths = {}
       @reachable_hexes = {}
+      @tokenable_cities = {}
       @routes = {}
       @tokens = {}
     end
@@ -19,6 +20,7 @@ module Engine
       @connected_nodes.clear
       @connected_paths.clear
       @reachable_hexes.clear
+      @tokenable_cities.clear
       @tokens.clear
       @routes.delete_if do |_, route|
         !route[:route_train_purchase]
@@ -52,6 +54,19 @@ module Engine
       end
       @tokens[corporation] ||= false
       @tokens[corporation]
+    end
+
+    def tokenable_cities(corporation)
+      # A list of all tokenable cities per corporation
+      return @tokenable_cities[corporation] if @tokenable_cities.key?(corporation)
+
+      cities = []
+      compute(corporation) do |node|
+        cities << node if node.tokenable?(corporation, free: true)
+      end
+
+      @tokenable_cities[corporation] = cities if cities.any?
+      cities
     end
 
     def connected_hexes(corporation)

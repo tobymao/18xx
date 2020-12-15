@@ -235,6 +235,21 @@ module Engine
       self.class.invert(dir)
     end
 
+    def distance(other)
+      # Distance as the crow flies
+
+      dx = (other.x - x).abs
+      dy = (other.y - y).abs
+
+      # pointy = double width
+      # flat = double height
+      if @layout == :pointy
+        dy + [0, (dx - dy) / 2].max
+      else
+        dx + [0, (dy - dx) / 2].max
+      end
+    end
+
     def inspect
       "<#{self.class.name}: #{name}, tile: #{@tile.name}>"
     end
