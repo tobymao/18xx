@@ -20,6 +20,14 @@ module Engine
         @mountain ||= @terrains.include?(:mountain)
       end
 
+      def hills?
+        @hills ||= @terrains.include?(:hills)
+      end
+
+      def rough?
+        @rough ||= @terrains.include?(:rough)
+      end
+
       def water?
         @water ||= @terrains.include?(:water)
       end
