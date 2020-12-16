@@ -55,7 +55,7 @@ module Engine
             bundle,
             player,
             spender: player,
-            receiver: @bank,
+            receiver: @game.bank,
             price: price
           )
 

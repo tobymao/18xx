@@ -89,7 +89,7 @@ module Engine
           bundle,
           entity,
           spender: entity == self ? @bank : entity,
-          receiver: incremental && bundle.owner.corporation? ? bundle.owner : @bank,
+          receiver: ((incremental && bundle.owner.corporation?) || bundle.owner.player?) ? bundle.owner : @bank,
           price: price,
           swap: swap,
           swap_to_entity: swap ? self : nil
