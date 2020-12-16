@@ -220,7 +220,7 @@ module Engine
         @game.game_error("Cannot use group #{key} more than once") unless group.one?
       end
 
-      @game.revenue_for(self, stops)
+      @game.revenue_for(self, stops, routes: @routes)
     end
 
     def subsidy

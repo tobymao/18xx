@@ -29,7 +29,10 @@ module Engine
         Step::SingleDepotTrainBuy::STATUS_TEXT
       ).freeze
 
-      ROUTE_BONUSES = %i[atlanta_birmingham mobile_nashville].freeze
+      ROUTE_BONUSES = {
+        atlanta_birmingham: "ATL>BRM",
+        mobile_nashville: "MOB>NSH",
+      }.freeze
 
       STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
 
@@ -108,24 +111,52 @@ module Engine
         ])
       end
 
-      def revenue_for(route, stops)
+      def route_hex_bonus(ability, stops)
+        stops.map do |stop|
+          next unless ability.hexes.include?(stop.hex.id)
+
+          { revenue: ability.amount, description: "Coal(#{stop.hex.name})" }
+        end.compact
+      end
+
+      def revenue_for(route, stops, routes: [])
         revenue = super
 
         abilities(route.corporation, :hexes_bonus) do |ability|
-          revenue += stops.sum { |stop| ability.hexes.include?(stop.hex.id) ? ability.amount : 0 }
+          revenue += route_hex_bonus(ability, stops).sum { |b| b[:revenue] }
         end
+
+        revenue += routes_revenue_bonuses(routes).sum { |b| b[:route] == route ? b[:revenue] : 0  }
 
         revenue
       end
 
-      def routes_revenue(routes)
-        total_revenue = super
-        route_bonuses.each do |type|
-          return total_revenue unless abilities(routes.first.corporation, type)
 
-          total_revenue += routes.map { |r| route_bonus(r, type) }.max
-        end if routes.any?
-        total_revenue
+      def routes_revenue_bonuses(routes)
+        return [] if routes.empty?
+
+        route_bonuses.map do |type, _description|
+          next unless abilities(routes.first.corporation, type)
+
+          possible_bonuses = routes.map { |r| route_bonus(r, type) }.compact
+          best_bonus = possible_bonuses.max { |b| b[:revenue] }
+          next unless best_bonus
+
+          best_bonus
+        end.compact
+      end
+
+      def revenue_str(route, routes: [])
+        str = super
+
+        r_bonuses = []
+        r_bonuses.concat(routes_revenue_bonuses(routes).select { |b| b[:route] == route })
+        abilities(route.corporation, :hexes_bonus) do |ability|
+          r_bonuses += route_hex_bonus(ability, route.stops)
+        end
+        str += " + #{r_bonuses.map { |b| b[:description] }.join(' + ')}" if r_bonuses.any?
+
+        str
       end
 
       def event_remove_tokens!
@@ -206,9 +237,10 @@ module Engine
       private
 
       def route_bonus(route, type)
-        Array(abilities(route.corporation, type)).sum do |ability|
-          ability.hexes == (ability.hexes & route.hexes.map(&:name)) ? ability.amount : 0
-        end
+        return unless ability = abilities(route.corporation, type)
+        return unless ability.hexes == (ability.hexes & route.hexes.map(&:name))
+
+        { route: route, revenue: ability.amount, description: route_bonuses[type] }
       end
 
       def move_ln_corporation

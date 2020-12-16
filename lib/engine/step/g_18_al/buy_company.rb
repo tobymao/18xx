@@ -11,7 +11,7 @@ module Engine
 
           return unless action.company.sym == 'M&C'
 
-          rob_bonus, pan_bonus = @game.route_bonuses
+          rob_bonus, pan_bonus = @game.route_bonuses.keys
           action.entity.add_ability(create_hexes_bonus_ability(rob_bonus, 'Robert E. Lee', %w[G8 G4], 20))
           action.entity.add_ability(create_hexes_bonus_ability(pan_bonus, 'Pan American', %w[Q2 A4], 40))
         end
