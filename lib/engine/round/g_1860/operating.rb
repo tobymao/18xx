@@ -36,7 +36,7 @@ module Engine
         def after_operating(entity)
           return unless entity.corporation?
 
-          if entity.trains.empty? && @game.can_run_route?(entity)
+          if entity.trains.empty? && @game.legal_route?(entity)
             @game.make_insolvent(entity)
           elsif !entity.trains.empty?
             @game.clear_insolvent(entity)
