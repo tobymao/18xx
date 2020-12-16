@@ -601,6 +601,10 @@ module Engine
         current_entity
       end
 
+      def legal_route?(entity)
+        @graph.route_info(entity)&.dig(:route_train_purchase)
+      end
+
       def route_trains(entity)
         if insolvent?(entity)
           [@depot.min_depot_train]
