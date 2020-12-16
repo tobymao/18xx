@@ -42,8 +42,7 @@ module Engine
       end
 
       def interest_owed(entity)
-        super unless corp_has_new_zealand?(entity)
-
+        return super unless corp_has_new_zealand?(entity)
         # A corporation with a token in new zealand gets $20 if it doesn't have any loans
         return -20 unless entity.loans.size.positive?
 
