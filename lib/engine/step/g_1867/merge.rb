@@ -144,7 +144,7 @@ module Engine
             if target.shares.first.president && owner.percent_of(target) == 10
               # give the 10% back
               presidency = target.shares.first
-              @game.share_pool.move_share(owner.shares_of(target).first, presidency.owner)
+              owner.shares_of(target).first.transfer(presidency.owner)
               # grab the presidency
               @game.share_pool.buy_shares(owner, presidency.to_bundle, exchange: :free)
             else
