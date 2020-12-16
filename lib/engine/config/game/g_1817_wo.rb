@@ -176,6 +176,7 @@ module Engine
             "G4", "K4"
           ],
           "count":1,
+          "when": "owning_corp_or_turn",
           "owner_type": "corporation"
         }
       ]

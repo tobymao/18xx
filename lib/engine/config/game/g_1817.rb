@@ -200,6 +200,7 @@ module Engine
             "H9"
           ],
           "count": 1,
+          "when": "owning_corp_or_turn",
           "owner_type": "corporation"
         }
       ]
@@ -225,6 +226,7 @@ module Engine
             "H9"
           ],
           "count": 2,
+          "when": "owning_corp_or_turn",
           "owner_type": "corporation"
         }
       ]
