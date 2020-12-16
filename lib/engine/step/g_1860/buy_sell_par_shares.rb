@@ -184,7 +184,7 @@ module Engine
           # skip if a tile is already in home location
           return unless tile.color == :white
 
-          @log << "#{corporation.name} must choose tile for home location"
+          @log << "#{corporation.name} (#{corporation.owner.name}) must choose tile for home location"
 
           @round.pending_tracks << {
             entity: corporation,

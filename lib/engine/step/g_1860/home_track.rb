@@ -16,6 +16,10 @@ module Engine
           ACTIONS
         end
 
+        def active_entities
+          [pending_entity]
+        end
+
         def round_state
           {
             pending_tracks: [],
