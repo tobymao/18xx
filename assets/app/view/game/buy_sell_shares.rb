@@ -16,7 +16,7 @@ module View
         @step = @game.round.active_step
         @current_entity = @step.current_entity
 
-        @ipo_shares = @corporation.shares.group_by(&:percent).values
+        @ipo_shares = @corporation.ipo_shares.group_by(&:percent).values
           .map(&:first).sort_by(&:percent).reverse
 
         @pool_shares = @game.share_pool.shares_by_corporation[@corporation].group_by(&:percent).values
@@ -40,6 +40,7 @@ module View
 
         children.concat(render_ipo_shares)
         children.concat(render_market_shares)
+        children.concat(render_corporate_shares)
         children.concat(render_price_protection)
         children.concat(render_reduced_price_shares(@ipo_shares, source: @game.ipo_name(@corporation)))
         children.concat(render_reduced_price_shares(@pool_shares))
@@ -72,6 +73,20 @@ module View
             entity: @current_entity,
             percentages_available: @ipo_shares.size,
             source: @game.ipo_name(share.corporation))
+        end
+      end
+
+      def render_corporate_shares
+        @corporation.corporate_shares.group_by(&:corporation).values.flat_map do |corp_shares|
+          corp_shares.group_by(&:percent).values.map(&:first).sort_by(&:percent).reverse.map do |share|
+            next unless @step.can_buy?(@current_entity, share)
+
+            h(Button::BuyShare,
+              share: share,
+              entity: @current_entity,
+              percentages_available: @ipo_shares.size,
+              source: share.corporation.name)
+          end
         end
       end
 

@@ -53,7 +53,7 @@ module Engine
 
       from = 'the market'
       if bundle.owner.corporation?
-        from = "the #{@game.ipo_name(corporation)}"
+        from = bundle.owner == bundle.corporation ? "the #{@game.ipo_name(corporation)}" : bundle.owner.name
       elsif bundle.owner.player?
         from = bundle.owner.name
       end
