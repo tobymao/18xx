@@ -151,7 +151,7 @@ module Engine
         {
             "type": "tile_income",
             "income" : 20,
-            "terrain": "mountain",
+            "terrain": "lake",
             "owner_type": "corporation",
             "owner_only": true
         }
