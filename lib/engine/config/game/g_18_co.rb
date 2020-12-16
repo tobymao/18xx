@@ -878,6 +878,11 @@ module Engine
 					"visit": 99
 				}
 			],
+			"events": [
+				{
+					"type": "presidents_choice"
+				}
+			],
 			"available_on": "6",
 			"price": 850,
 			"num": 2
@@ -899,6 +904,11 @@ module Engine
 					],
 					"pay": 99,
 					"visit": 99
+				}
+			],
+			"events": [
+				{
+					"type": "presidents_choice"
 				}
 			],
 			"available_on": "6",
