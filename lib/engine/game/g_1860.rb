@@ -433,7 +433,9 @@ module Engine
 
       def status_str(corp)
         status = 'Insolvent' if insolvent?(corp)
+        status = status ? status + ', Receivership' : 'Receivership' if corp.receivership?
         status = status ? status + ', Bankrupt' : 'Bankrupt' if bankrupt?(corp)
+        status = status ? status + ', Nationalized' : 'Nationalized' if nationalized?(corp)
         status
       end
 
@@ -473,7 +475,7 @@ module Engine
           corp = @corporations.find { |c| c.name == name }
           corp.num_ipo_shares.zero? || corp.operated?
         end.values
-        layers.empty? ? 1 : layers.max + 1
+        layers.empty? ? 1 : [layers.max + 1, 4].min
       end
 
       def float_corporation(corporation)
@@ -891,8 +893,14 @@ module Engine
         cities = visits.select { |node| node.city? || node.offboard? }
         towns = visits.select { |node| node.town? && !node.halt? }
         halts = visits.select(&:halt?)
-        th_allowance = route.train.distance[-1]['pay'] + route.train.distance[0]['pay'] - cities.size
-        th_allowance = [th_allowance - towns.size, 0].max if maximize_revenue
+        c_allowance = route.train.distance[0]['pay']
+        th_allowance = if !ignore_second_allowance?(route)
+                         route.train.distance[-1]['pay'] + c_allowance - cities.size
+                       else
+                         c_allowance - cities.size
+                       end
+        # if required to maximize revenue only use halts if there aren't enough cities or towns
+        th_allowance = [th_allowance - towns.size, 0].max if maximize_revenue?
         [halts.size, th_allowance].min
       end
 
@@ -912,10 +920,16 @@ module Engine
                          c_allowance - stops.size
                        end
 
-        # add in halts requested (should be 0 for leased train)
+        # add in halts requested (from previous run or UI button)
+        #
+        # reset requested halts to nil if no halts on route, ignoring halts, not using halt for subsidies,
+        # maximum halts allowed is zero, or requested halts is greater than maximum allowed
         halts = visits.select(&:halt?)
 
-        route.halts = nil if halts.empty? || ignore_halts? || ignore_halt_subsidies?(route) || maximize_revenue?
+        halt_max = max_halts(route)
+
+        route.halts = nil if halts.empty? || ignore_halts? || ignore_halt_subsidies?(route) || halt_max.zero?
+        route.halts = nil if route.halts && route.halts > halt_max
 
         num_halts = [halts.size, (route.halts || 0)].min
         if num_halts.positive?
@@ -923,7 +937,7 @@ module Engine
           th_allowance -= num_halts
         end
 
-        # pick highest revenue towns
+        # after adding requested halts, pick highest revenue towns
         towns = visits.select { |node| node.town? && !node.halt? }
         num_towns = [th_allowance, towns.size].min
         if num_towns.positive?
@@ -931,14 +945,15 @@ module Engine
           th_allowance -= num_towns
         end
 
-        # if this is first time for this route, add as many halts as possible
-        if !route.halts && halts.any? && th_allowance.positive?
+        # if requested halts is nil (i.e. this is first time for this route), add as many halts as possible if
+        # there are halts on route, there is room for some, and we aren't ignoring halts
+        if !route.halts && halts.any? && th_allowance.positive? && !ignore_halts?
           num_halts = [halts.size, th_allowance].min
           stops.concat(halts.take(num_halts))
         end
 
         # update route halts
-        route.halts = num_halts if halts.any? && !ignore_halts? && !ignore_halt_subsidies?(route)
+        route.halts = num_halts if (num_halts.positive? || route.halts) && !ignore_halt_subsidies?(route)
 
         stops
       end
@@ -951,7 +966,7 @@ module Engine
                   else
                     route.stops.count(&:town?)
                   end
-        "#{n_cities}+#{n_towns}"
+        route.train.owner != @depot ? "#{n_cities}+#{n_towns}" : (n_cities + n_towns).to_s
       end
 
       def revenue_for(route, stops)

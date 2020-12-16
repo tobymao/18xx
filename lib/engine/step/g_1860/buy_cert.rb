@@ -105,6 +105,8 @@ module Engine
               @game.game_error("Cannot afford bid. Maximum possible bid is #{max_player_bid(player)}")
             end
 
+            @game.game_error("Must bid at least #{min_player_bid}") if price < min_player_bid
+
             @log << "#{player.name} bids #{@game.format_currency(price)}"
 
             @bids[player] = price
