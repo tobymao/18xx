@@ -154,7 +154,7 @@ module Engine
               target.total_shares != 10 &&
               target.total_shares == corporation.total_shares &&
             # on 5 share merges ensure one player will have at least enough shares to take the presidency
-            (target.total_shares != 5 || merged_max_share_holder(corporation, target) > 40) &&
+            (target.total_shares != 5 || merged_max_share_holder(corporation, target) >= 40) &&
             owner_can_afford_extra_share(corporation, target)
           end
         end
