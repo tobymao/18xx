@@ -129,7 +129,7 @@ module Engine
         # Negative interest -> corporation has New Zealand
         @log << "#{entity.name} gets $20 for having a token in Nieuw Zeeland and no loans"
         entity.spend(owed, bank, check_cash: false, check_positive: false)
-        return
+        nil
       end
 
       def operating_round(round_num)
