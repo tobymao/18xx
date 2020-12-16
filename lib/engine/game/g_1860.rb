@@ -475,7 +475,7 @@ module Engine
           corp = @corporations.find { |c| c.name == name }
           corp.num_ipo_shares.zero? || corp.operated?
         end.values
-        layers.empty? ? 1 : layers.max + 1
+        layers.empty? ? 1 : [layers.max + 1, 4].min
       end
 
       def float_corporation(corporation)
