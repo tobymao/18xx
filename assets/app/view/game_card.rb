@@ -43,7 +43,7 @@ module View
       return false unless player
       return false unless (acting = @gdata['acting'])
 
-      acting.include?(player['id'])
+      acting.include?(player['id'] || player['name'])
     end
 
     def render_header
