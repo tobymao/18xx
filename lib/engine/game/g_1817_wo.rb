@@ -9,7 +9,7 @@ module Engine
       attr_reader :new_zealand_city
       load_from_json(Config::Game::G1817WO::JSON)
 
-      DEV_STAGE = :prealpha
+      DEV_STAGE = :alpha
       GAME_PUBLISHER = nil
       PITTSBURGH_PRIVATE_NAME = 'PSM'
       PITTSBURGH_PRIVATE_HEX = 'I6'
