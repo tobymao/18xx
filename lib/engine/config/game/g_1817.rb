@@ -183,7 +183,7 @@ module Engine
       "name" : "Ohio Bridge Company",
       "value" : 40,
       "revenue" : 0,
-      "desc" : "Comes with one $10 bridge token that may be placed by the owning corp in Louisville, Cincinnati, or Charleston, max one token per city, regardless of connectivity..  Allows owning corp to skip $10 river fee when placing yellow tiles.",
+      "desc" : "Comes with one $10 bridge token that may be placed by the owning corp in Louisville, Cincinnati, or Charleston, max one token per city, regardless of connectivity.  Allows owning corp to skip $10 river fee when placing yellow tiles.",
       "sym" : "OBC",
       "abilities": [
         {
@@ -199,6 +199,7 @@ module Engine
             "G6",
             "H9"
           ],
+          "count": 1,
           "owner_type": "corporation"
         }
       ]

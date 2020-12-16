@@ -175,6 +175,7 @@ module Engine
           "hexes": [
             "G4", "K4"
           ],
+          "count":1,
           "owner_type": "corporation"
         }
       ]
