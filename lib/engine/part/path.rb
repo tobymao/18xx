@@ -215,7 +215,7 @@ module Engine
       def inspect
         name = self.class.name.split('::').last
         if single?
-          "<#{name}: hex: #{hex&.name}, exit: #{exits}>"
+          "<#{name}: hex: #{hex&.name}, exit: #{exits}, track: #{track}>"
         else
           "<#{name}: hex: #{hex&.name}, exit: #{exits}, lanes: #{@lanes.first} #{@lanes.last}>"
         end

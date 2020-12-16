@@ -138,6 +138,41 @@ module Engine
                              ], round_num: round_num)
       end
 
+      def track_type(paths)
+        types = paths.map(&:track).uniq
+        game_error('Can only change track type at station.') if types.include?(:broad) && types.include?(:narrow)
+        case
+        when types.include?(:narrow)
+          :narrow
+        when types.include?(:broad)
+          :broad
+        else
+          :dual
+        end
+      end
+
+      def hex_edge_cost(conn, train)
+        track = track_type(conn.paths)
+        edges = conn.paths.each_cons(2).sum do |a, b|
+          a.hex == b.hex ? 0 : 1
+        end
+        if train.name == 'R6H'
+          track == :broad ? edges * 2 : edges
+        else
+          track == :narrow ? edges * 2 : edges
+        end
+      end
+
+      def check_distance(route, _visits)
+        limit = route.train.distance
+        cost = route.connections.sum { |conn| hex_edge_cost(conn, route.train) }
+        game_error("#{cost} is too many hex edges for #{route.train.name} train") if cost > limit
+      end
+
+      def check_other(route)
+        # TODO: route can't have just a city and a port
+      end
+
       def issuable_shares(entity)
         return [] unless entity.operating_history.size > 1
 
@@ -152,17 +187,6 @@ module Engine
 
         bundles_for_corporation(share_pool, entity)
           .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
-      end
-
-      def event_earthquake!
-        @log << '-- Event: Messina Earthquake --'
-        # Remove tile from Messina
-
-        # Remove from game tokens on Messina
-
-        # If Garibaldi's only token removed, close Garibaldi
-
-        # Messina cannot be upgraded until after next stock round
       end
 
       def new_track(old_tile, new_tile)
@@ -197,6 +221,17 @@ module Engine
           end
           upgrade.cost - discount
         end
+      end
+
+      def event_earthquake!
+        @log << '-- Event: Messina Earthquake --'
+        # Remove tile from Messina
+
+        # Remove from game tokens on Messina
+
+        # If Garibaldi's only token removed, close Garibaldi
+
+        # Messina cannot be upgraded until after next stock round
       end
     end
   end
