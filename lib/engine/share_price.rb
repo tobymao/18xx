@@ -24,7 +24,7 @@ module Engine
     }.freeze
 
     # Types which are info only and shouldn't
-    NON_HIGHLIGHT_TYPES = %i[par safe_par par_1 par_2 safe_par convert_range max_price].freeze
+    NON_HIGHLIGHT_TYPES = %i[par safe_par par_1 par_2 safe_par convert_range max_price repar].freeze
 
     def self.from_code(code, row, column, unlimited_types, multiple_buy_types: [])
       return nil if !code || code == ''
