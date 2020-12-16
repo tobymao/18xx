@@ -120,10 +120,14 @@ module Engine
       # Override InterestOnLoans.pay_interest! so that we can pay "negative" interest for New Zealand
       def pay_interest!(entity)
         owed = interest_owed(entity)
+        # This is here so that the log message does not get duplicated.
+        if corp_has_new_zealand?(entity) && entity.loans.size.positive?
+          @log << "#{entity.name}'s token in Nieuw Zeeland covers one loan's worth of interest"
+        end
         return super unless owed.negative?
 
         # Negative interest -> corporation has New Zealand
-        @log << "#{entity.name} gets $20 for a token in Nieuw Zeeland"
+        @log << "#{entity.name} gets $20 for having a token in Nieuw Zeeland and no loans"
         entity.spend(owed, bank, check_cash: false, check_positive: false)
         return
       end
