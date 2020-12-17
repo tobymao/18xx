@@ -16,7 +16,7 @@ module Engine
           ability = @company.abilities(:tile_lay, time: 'sold')
           @game.game_error("Not #{entity.name}'s turn: #{action.to_h}") unless entity == @company
 
-          lay_tile(action, spender: @round.company_sellers.first)
+          lay_tile(action, spender: @round.company_sellers[@company])
           check_connect(action, ability)
           ability.use!
 
