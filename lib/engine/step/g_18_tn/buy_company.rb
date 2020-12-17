@@ -8,7 +8,9 @@ module Engine
       class BuyCompany < BuyCompany
         def can_buy_company?(entity)
           return true if super
-          return false if entity != current_entity || !@game.allowed_to_buy_during_operation_round_one?
+          return false if entity != current_entity ||
+                          entity.companies.any? ||
+                          !@game.allowed_to_buy_during_operation_round_one?
 
           companies = @game.purchasable_companies
           companies.any? && companies.map(&:value).min <= entity.cash
