@@ -68,6 +68,9 @@ module View
         if @corporation.corporation? && @corporation.respond_to?(:capitalization_type_desc)
           extras << render_capitalization_type
         end
+        if @corporation.corporation? && @corporation.respond_to?(:escrow) && @corporation.escrow
+          extras << render_escrow_account
+        end
         extras << render_corporation_size if @game.show_corporation_size?
         if extras.any?
           props = { style: { borderCollapse: 'collapse' } }
@@ -511,6 +514,13 @@ module View
         h('tr.ipo', [
           h('td.right', 'Cap. Type'),
           h('td.padded_number', @corporation.capitalization_type_desc.to_s),
+        ])
+      end
+
+      def render_escrow_account
+        h('tr.ipo', [
+          h('td.right', 'Escrow'),
+          h('td.padded_number', @game.format_currency(@corporation.escrow)),
         ])
       end
 
