@@ -65,6 +65,11 @@ module Engine
       init_operator(opts)
     end
 
+    # This is used to allow "Buying power" to be rendered
+    def can_buy?
+      true
+    end
+
     def <=>(other)
       # corporation with higher share price, farthest on the right, and first position on the share price goes first
       return 1 unless (sp = share_price)

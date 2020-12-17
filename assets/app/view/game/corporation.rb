@@ -62,7 +62,8 @@ module View
 
         extras = []
         extras.concat(render_loans) if @corporation.loans.any?
-        if @corporation.corporation? && @corporation.floated? && @game.total_loans.positive?
+        if @corporation.corporation? && @corporation.floated? &&
+              @game.total_loans.positive? && @corporation.can_buy?
           extras << render_buying_power
         end
         if @corporation.corporation? && @corporation.respond_to?(:capitalization_type_desc)

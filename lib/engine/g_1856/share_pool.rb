@@ -101,7 +101,7 @@ module Engine
 
         spender.spend(price, receiver) if spender && receiver && price.positive?
         # This line is the only difference from super
-        corporation.escrow_share_buy! if corporation.capitalization == :escrow and receiver == corporation
+        corporation.escrow_share_buy! if corporation.capitalization == :escrow && receiver == corporation
         bundle.shares.each { |s| move_share(s, to_entity) }
 
         return unless allow_president_change

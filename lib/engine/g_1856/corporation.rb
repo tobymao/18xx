@@ -10,7 +10,7 @@ module Engine
         full: 'Full',
         incremental: 'Incremental',
         escrow: 'Escrow',
-      }
+      }.freeze
       def initialize(game, sym:, name:, **opts)
         @game = game
         @started = false
@@ -30,6 +30,10 @@ module Engine
 
       def float!
         @started = true
+      end
+
+      def can_buy?
+        false
       end
 
       def par!
@@ -52,6 +56,7 @@ module Engine
       def escrow_share_buy!
         # Take in money normally when buying the first 50% of stock
         return if percent_of(self) > 50
+
         # Otherwise everything goes to escrow..
         @escrow += @par_price.price
         @cash -= @par_price.price
