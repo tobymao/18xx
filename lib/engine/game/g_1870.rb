@@ -28,6 +28,9 @@ module Engine
 
       CLOSED_CORP_TRAINS = :discarded
 
+      CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
+      IPO_RESERVED_NAME = 'Treasury'
+
       TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }, { lay: :not_if_upgraded, upgrade: false, cost: 0 }].freeze
 
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(unlimited: :green).merge(par: :white).merge(ignore_one_sale: :red).freeze
@@ -52,7 +55,7 @@ module Engine
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
-          Step::BuySellParShares,
+          Step::G1870::BuySellParShares,
           Step::G1870::PriceProtection,
         ])
       end
@@ -76,6 +79,10 @@ module Engine
       def init_stock_market
         Engine::G1870::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
                                        multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+      end
+
+      def ipo_reserved_name(_entity = nil)
+        'Treasury'
       end
 
       def setup
