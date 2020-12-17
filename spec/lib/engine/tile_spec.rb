@@ -9,6 +9,13 @@ module Engine
   include Engine::Part
 
   describe Tile do
+    describe '#path_track' do
+      it 'should be the the right gauge' do
+        expect(Tile.for('7').paths[0].track).to eq(:broad)
+        expect(Tile.for('78').paths[0].track).to eq(:narrow)
+      end
+    end
+
     describe '#exits' do
       it 'should have the right exits' do
         expect(Tile.for('6').exits.to_a).to eq([0, 2])

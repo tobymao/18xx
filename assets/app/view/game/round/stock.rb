@@ -103,7 +103,9 @@ module View
           when :par
             return h(Par, corporation: @selected_corporation) if @current_actions.include?('par')
           when :bid
-            return h(Bid, entity: @current_entity, corporation: @selected_corporation)
+            if @current_actions.include?('bid')
+              return h(Bid, entity: @current_entity, corporation: @selected_corporation)
+            end
           when String
             return h(:div, type)
           end

@@ -568,6 +568,24 @@ module Engine
 
         help
       end
+
+      def potential_minor_cash(entity, allowed_trains: (0..3))
+        if entity.corporation? && entity.cash.positive? && allowed_trains.include?(entity.trains.size)
+          @minors.reduce(0) do |memo, minor|
+            minor.owned_by_player? && minor.cash.positive? ? memo + minor.cash - 1 : memo
+          end
+        else
+          0
+        end
+      end
+
+      def track_buying_power(entity)
+        buying_power(entity) + potential_minor_cash(entity)
+      end
+
+      def train_buying_power(entity)
+        buying_power(entity) + potential_minor_cash(entity, allowed_trains: (1..2))
+      end
     end
   end
 end

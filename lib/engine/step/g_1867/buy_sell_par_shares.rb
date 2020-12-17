@@ -11,6 +11,7 @@ module Engine
         TOKEN_COST = 50
         MIN_BID = 100
         MAX_BID = 400
+        MAJOR_PHASE = 4
 
         def actions(entity)
           return [] unless entity == current_entity
@@ -107,7 +108,7 @@ module Engine
         end
 
         def can_ipo_any?(entity)
-          @game.phase.name.to_i >= 4 && !bought? &&
+          @game.phase.name.to_i >= MAJOR_PHASE && !bought? &&
           @game.corporations.any? do |c|
             c.can_par?(entity) && c.type == :major && can_buy?(entity, c.shares.first&.to_bundle)
           end
@@ -142,10 +143,10 @@ module Engine
           # Major's are par, minors are bid
           phase = @game.phase.name.to_i
           if entity.type == :major
-            if phase >= 4
+            if phase >= MAJOR_PHASE
               :par
             else
-              'Cannot start till phase 4'
+              "Cannot start till phase #{MAJOR_PHASE}"
             end
           else
             :bid

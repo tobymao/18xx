@@ -12,7 +12,7 @@ module Engine
         include HalfPay
 
         def actions(entity)
-          return [] unless entity.type == :major
+          return [] if !entity.corporation? || entity.type == :minor
 
           super
         end

@@ -92,6 +92,7 @@ module Engine
       CERT_LIMIT_TYPES = %i[multiple_buy unlimited no_cert_limit].freeze
       # Does the cert limit decrease when a player becomes bankrupt?
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = false
+      CERT_LIMIT_INCLUDES_PRIVATES = true
 
       MULTIPLE_BUY_TYPES = %i[multiple_buy].freeze
 
@@ -140,6 +141,9 @@ module Engine
       # do shares in the pool drop the price?
       # none, one, each
       POOL_SHARE_DROP = :none
+
+      # do sold out shares increase the price?
+      SOLD_OUT_INCREASE = true
 
       # :after_last_to_act -- player after the last to act goes first. Order remains the same.
       # :first_to_pass -- players ordered by when they first started passing.
@@ -439,7 +443,7 @@ module Engine
         @players
           .sort_by(&:value)
           .reverse
-          .map { |p| [p.name, p.value] }
+          .map { |p| [p.name, player_value(p)] }
           .to_h
       end
 
@@ -558,7 +562,7 @@ module Engine
 
       def store_player_info
         @players.each do |p|
-          p.history << PlayerInfo.new(@round.class.short_name, turn, @round.round_num, p)
+          p.history << PlayerInfo.new(@round.class.short_name, turn, @round.round_num, player_value(p))
         end
       end
 
@@ -642,6 +646,10 @@ module Engine
         end
       end
 
+      def player_value(player)
+        player.value
+      end
+
       def liquidity(player, emergency: false)
         return player.cash unless sellable_turn?
 
@@ -723,7 +731,11 @@ module Engine
       end
 
       def num_certs(entity)
-        entity.companies.size + entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
+        if self.class::CERT_LIMIT_INCLUDES_PRIVATES
+          entity.companies.size + entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
+        else
+          entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
+        end
       end
 
       def sellable_turn?
@@ -796,7 +808,7 @@ module Engine
       end
 
       def float_str(entity)
-        "#{entity.percent_to_float}% to float"
+        "#{entity.percent_to_float}% to float" if entity.corporation?
       end
 
       def route_distance(route)
@@ -1080,6 +1092,9 @@ module Engine
         return false if from.towns.size != to.towns.size
         return false if !from.label && from.cities.size != to.cities.size
 
+        # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
+        return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
+
         true
       end
 
@@ -1130,7 +1145,7 @@ module Engine
           end
 
           @share_pool.shares_by_corporation.delete(corporation)
-          corporation.share_price.corporations.delete(corporation)
+          corporation.share_price&.corporations&.delete(corporation)
           @corporations.delete(corporation)
         else
           @minors.delete(corporation)
@@ -1338,11 +1353,19 @@ module Engine
           end
         end
 
+        partition_blockers = {}
+        companies.each do |company|
+          company.abilities(:blocks_partition) do |ability|
+            partition_blockers[ability.partition_type] = company
+          end
+        end
+
         reservations = Hash.new { |k, v| k[v] = [] }
         corporations.each do |c|
           reservations[c.coordinates] << { entity: c,
                                            city: c.city }
         end
+
         (corporations + companies).each do |c|
           c.abilities(:reservation) do |ability|
             reservations[ability.hex] << { entity: c,
@@ -1366,6 +1389,12 @@ module Engine
 
               if (blocker = blockers[coord])
                 tile.add_blocker!(blocker)
+              end
+
+              tile.partitions.each do |partition|
+                if (blocker = partition_blockers[partition.type])
+                  partition.add_blocker!(blocker)
+                end
               end
 
               reservations[coord].each do |res|

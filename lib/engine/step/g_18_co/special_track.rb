@@ -10,11 +10,20 @@ module Engine
         include Tracker
 
         def process_lay_tile(action)
-          super
+          ability = tile_lay_abilities(action.entity)
+          lay_tile(action, spender: action.entity.owner)
+          check_connect(action, ability)
+          ability.use!
+
+          @company = ability.count.positive? ? action.entity : nil if ability.must_lay_together
 
           clear_upgrade_icon(action.hex.tile)
           collect_mines(action.entity.owner, action.hex)
-          action.entity.close! if ability.count.zero?
+
+          return if ability.count.positive?
+
+          action.entity.close!
+          @game.log << "#{action.entity.name} closes"
         end
       end
     end

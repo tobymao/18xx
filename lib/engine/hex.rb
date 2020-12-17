@@ -167,6 +167,9 @@ module Engine
       tile.borders.concat(@tile.borders)
       @tile.borders.clear
 
+      tile.partitions.concat(@tile.partitions)
+      @tile.partitions.clear
+
       @tile.hex = nil
       tile.hex = self
 
@@ -233,6 +236,21 @@ module Engine
 
     def invert(dir)
       self.class.invert(dir)
+    end
+
+    def distance(other)
+      # Distance as the crow flies
+
+      dx = (other.x - x).abs
+      dy = (other.y - y).abs
+
+      # pointy = double width
+      # flat = double height
+      if @layout == :pointy
+        dy + [0, (dx - dy) / 2].max
+      else
+        dx + [0, (dy - dx) / 2].max
+      end
     end
 
     def inspect

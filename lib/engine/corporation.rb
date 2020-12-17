@@ -24,7 +24,7 @@ module Engine
     include Spender
     include Transfer
 
-    attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization
+    attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :max_share_price
     attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :type
     attr_writer :par_price, :share_price
 
@@ -59,7 +59,7 @@ module Engine
       @always_market_price = opts[:always_market_price] || false
       @needs_token_to_par = opts[:needs_token_to_par] || false
       @par_via_exchange = nil
-      @type = opts[:type]
+      @type = opts[:type]&.to_sym
 
       init_abilities(opts[:abilities])
       init_operator(opts)
@@ -147,6 +147,10 @@ module Engine
       shares.reject { |share| share.corporation == self }
     end
 
+    def ipo_shares
+      shares.select { |share| share.corporation == self }
+    end
+
     def id
       @name
     end
@@ -163,6 +167,10 @@ module Engine
 
     def percent_to_float
       @floated ? 0 : percent_of(self) - (100 - @float_percent)
+    end
+
+    def unfloat!
+      @floated = false
     end
 
     def corporation?

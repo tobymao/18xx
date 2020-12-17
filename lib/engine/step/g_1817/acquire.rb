@@ -79,7 +79,13 @@ module Engine
                 end
 
               players = @game.players.rotate((@game.players.index(owner) + 1) % @game.players.size)
-              [players.find { |p| @active_bidders.include?(p) }]
+              player = players.find { |p| @active_bidders.include?(p) }
+              if player.bankrupt
+                pass_auction(player)
+                active_entities
+              else
+                [player]
+              end
             end
           elsif @buyer
             [@buyer]
@@ -222,7 +228,7 @@ module Engine
 
           remove_duplicate_tokens(buyer, acquired_corp)
           if tokens_above_limits?(buyer, acquired_corp)
-            @game.log << "#{buyer.name} will be above token limit and must decide which tokens to keep"
+            @game.log << "#{buyer.name} will be above token limit and must decide which tokens to remove"
             @round.corporations_removing_tokens = [buyer, acquired_corp]
           else
             tokens = move_tokens_to_surviving(buyer, acquired_corp)
@@ -302,7 +308,7 @@ module Engine
 
               @shareholder_cash = 0
             elsif loan_value.positive?
-              unless president == @game.share_pool
+              if president != @game.share_pool && @buyer
                 @game.log << "#{@buyer.name} settles #{acquired_corp.name} loans for "\
                 "#{@game.format_currency(loan_value)}"
               end

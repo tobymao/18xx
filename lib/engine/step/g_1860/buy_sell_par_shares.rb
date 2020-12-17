@@ -67,6 +67,12 @@ module Engine
           @game.check_new_layer
         end
 
+        def process_sell_shares(action)
+          super
+
+          @game.check_bank_broken!
+        end
+
         def process_buy_company(action)
           player = action.entity
           company = action.company
@@ -135,12 +141,13 @@ module Engine
 
           sell_company(player, company, action.price)
           @round.last_to_act = player
+          @game.check_bank_broken!
         end
 
         def sell_price(entity)
           return 0 unless can_sell_company?(entity)
 
-          entity.value - 30
+          entity.value - @game.class::COMPANY_SALE_FEE
         end
 
         def can_sell_any_companies?(entity)
@@ -177,7 +184,7 @@ module Engine
           # skip if a tile is already in home location
           return unless tile.color == :white
 
-          @log << "#{corporation.name} must choose tile for home location"
+          @log << "#{corporation.name} (#{corporation.owner.name}) must choose tile for home location"
 
           @round.pending_tracks << {
             entity: corporation,

@@ -15,6 +15,20 @@ module Engine
 
           @game.par_change_float_percent(action.corporation)
         end
+
+        def purchasable_companies(entity = nil)
+          companies = super
+
+          companies.select(&:owner)
+        end
+
+        def can_buy?(entity, bundle)
+          if bundle&.owner&.corporation? && bundle.corporation != bundle.owner && @game.presidents_choice != :done
+            return false unless bundle.owner.president?(entity)
+          end
+
+          super
+        end
       end
     end
   end

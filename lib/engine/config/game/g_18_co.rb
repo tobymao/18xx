@@ -398,7 +398,12 @@ module Engine
 			"revenue": 10,
 			"desc": "An owning Corporation may return a station token to its charter to gain the token cost. Corporation must always have at least one token on the board. Action closes the company or closes on purchase of “5” train.",
 			"abilities": [
-
+				{
+					"type": "return_token",
+					"owner_type": "corporation",
+					"count": 1,
+					"reimburse": true
+				}
 			]
 		},
 		{
@@ -873,6 +878,11 @@ module Engine
 					"visit": 99
 				}
 			],
+			"events": [
+				{
+					"type": "presidents_choice"
+				}
+			],
 			"available_on": "6",
 			"price": 850,
 			"num": 2
@@ -894,6 +904,11 @@ module Engine
 					],
 					"pay": 99,
 					"visit": 99
+				}
+			],
+			"events": [
+				{
+					"type": "presidents_choice"
 				}
 			],
 			"available_on": "6",
@@ -1194,10 +1209,7 @@ module Engine
 			"tiles": [
 				"yellow"
 			],
-			"operating_rounds": 2,
-			"status": [
-				"can_buy_companies_from_other_players"
-			]
+			"operating_rounds": 2
 		},
 		{
 			"name": "3",
@@ -1208,8 +1220,7 @@ module Engine
 				"green"
 			],
 			"status": [
-				"can_buy_companies",
-				"can_buy_companies_from_other_players"
+				"can_buy_companies"
 			],
 			"operating_rounds": 2
 		},
@@ -1222,8 +1233,7 @@ module Engine
 				"green"
 			],
 			"status": [
-				"can_buy_companies",
-				"can_buy_companies_from_other_players"
+				"can_buy_companies"
 			],
 			"operating_rounds": 2
 		},
@@ -1279,6 +1289,9 @@ module Engine
 				"yellow",
 				"green",
 				"brown"
+			],
+			"status":[
+				"reduced_tile_lay"
 			],
 			"operating_rounds": 2
 		}

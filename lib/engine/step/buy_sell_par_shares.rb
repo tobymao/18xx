@@ -30,12 +30,8 @@ module Engine
       def log_pass(entity)
         return @log << "#{entity.name} passes" if @current_actions.empty?
 
-        action = if bought?
-                   'selling'
-                 else
-                   'buying'
-                 end
-        @log << "#{entity.name} passes #{action} shares"
+        action = bought? ? 'to sell' : 'to buy'
+        @log << "#{entity.name} declines #{action} shares"
       end
 
       def log_skip(entity)

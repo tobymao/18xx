@@ -115,6 +115,10 @@ module Engine
 
           variants
         end
+
+        def buying_power(entity)
+          @game.train_buying_power(entity)
+        end
       end
     end
   end

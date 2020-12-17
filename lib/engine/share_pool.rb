@@ -53,7 +53,7 @@ module Engine
 
       from = 'the market'
       if bundle.owner.corporation?
-        from = "the #{@game.ipo_name(corporation)}"
+        from = bundle.owner == bundle.corporation ? "the #{@game.ipo_name(corporation)}" : bundle.owner.name
       elsif bundle.owner.player?
         from = bundle.owner.name
       end
@@ -99,7 +99,7 @@ module Engine
     def sell_shares(bundle, allow_president_change: true, swap: nil)
       entity = bundle.owner
 
-      verb = entity.corporation? ? 'issues' : 'sells'
+      verb = entity.corporation? && entity == bundle.corporation ? 'issues' : 'sells'
 
       price = bundle.price
       price -= swap.price if swap

@@ -239,6 +239,7 @@ module View
           @exit = @path.edges.any?
           @num_cts = @path.stops.size
           @num_exits = @path.edges.size
+          @track = @path.track
 
           @stop0 = @path.stops.first
           @stop1 = @path.stops.last if @num_cts > 1

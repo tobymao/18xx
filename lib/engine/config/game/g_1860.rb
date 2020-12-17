@@ -112,7 +112,7 @@ module Engine
     "746": {
       "count": 2,
       "color": "yellow",
-      "code": "city=revenue:20;path=a:0,b:_0;path=a:_0,b:3;label=B"
+      "code": "city=revenue:10;path=a:0,b:_0;path=a:_0,b:3;label=B"
     },
     "747": {
       "count": 3,
@@ -698,7 +698,10 @@ module Engine
         }
       ],
       "price": 700,
-      "num": 1
+      "num": 1,
+      "events": [
+        {"type": "relax_cert_limit"}
+      ]
     },
     {
       "name": "9+5",
@@ -715,7 +718,10 @@ module Engine
         }
       ],
       "price": 800,
-      "num": 6
+      "num": 16,
+      "events": [
+        {"type": "southern_forms"}
+      ]
     }
   ],
   "hexes": {
@@ -751,6 +757,7 @@ module Engine
       ],
       "": [
         "E3",
+        "E11",
         "K7",
         "D8"
       ],

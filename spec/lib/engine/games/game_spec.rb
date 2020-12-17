@@ -207,15 +207,6 @@ module Engine
           'Zebsagaz' => 6257,
       },
     },
-    GAMES_BY_TITLE['1817NA'] => {
-      # This game has a bankrupcy
-      17_386 => {
-        'wheresvic' => 8_066,
-        'daniel.sousa.me' => 8_033,
-        'Aolivei8' => 6_899,
-        'Random Guy' => 0,
-      },
-    },
     GAMES_BY_TITLE['18MEX'] => {
       13_315 => {
         'Jen Freeman' => 3255,

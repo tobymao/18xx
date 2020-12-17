@@ -14,6 +14,10 @@ module Engine
       def stub?
         true
       end
+
+      def track
+        :broad
+      end
     end
   end
 end

@@ -176,15 +176,15 @@ describe 'Assets' do
        ['1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track',
         # Minor charter stuff
         'Michigan Southern', 'Trains', '2', 'Cash', 'C15', '$60']],
-      ['1846', 3099, 96, 'issue_shares',
+      ['1846', 3099, 74, 'issue_shares',
        ['1846: Operating Round 1.1 (of 2) - Place a Token or Lay Track',
         'Issue', '1 ($50)', '2 ($100)', '3 ($150)', '4 ($200)']],
-      ['1846', 3099, 120, 'dividend',
+      ['1846', 3099, 94, 'dividend',
        ['Pay or Withhold Dividends',
         '2 right',
         '1 right',
         '1 left']],
-      ['1846', 3099, 186, 'assign',
+      ['1846', 3099, 142, 'assign',
        ['1846: Operating Round 2.1 (of 2) - Assign Steamboat Company',
         'Blondie may assign Steamboat Company to a new hex and/or corporation or minor.',
         'Add $20 per port symbol to all routes run to the assigned location '\

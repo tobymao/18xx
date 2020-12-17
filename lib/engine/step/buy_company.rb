@@ -58,7 +58,7 @@ module Engine
 
         log_later = []
         company.owner = entity
-        owner.companies.delete(company)
+        owner&.companies&.delete(company)
 
         company.abilities(:assign_corporation) do |ability|
           Assignable.remove_from_all!(assignable_corporations, company.id) do |unassigned|
@@ -79,11 +79,13 @@ module Engine
         company.remove_ability_when(:sold)
 
         @round.just_sold_company = company
-        @round.company_sellers << owner
+        @round.company_sellers[company] = owner
 
         entity.companies << company
-        entity.spend(price, owner)
-        @log << "#{entity.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
+        entity.spend(price, owner.nil? ? @game.bank : owner)
+        @log << "#{entity.name} buys #{company.name} from "\
+                "#{owner.nil? ? 'the market' : owner.name} for "\
+                "#{@game.format_currency(price)}"
         log_later.each { |l| @log << l }
       end
 
@@ -92,7 +94,7 @@ module Engine
       end
 
       def round_state
-        { just_sold_company: nil, company_sellers: [] }
+        { just_sold_company: nil, company_sellers: {} }
       end
 
       def setup

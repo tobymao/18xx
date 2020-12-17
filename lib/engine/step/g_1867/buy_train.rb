@@ -34,6 +34,7 @@ module Engine
         def buy_train_action(action, entity = nil)
           @depot_train = action.train.from_depot?
           super
+          @game.post_train_buy
         end
 
         def buying_power(entity)

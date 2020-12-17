@@ -151,7 +151,7 @@ module Engine
         {
             "type": "tile_income",
             "income" : 20,
-            "terrain": "mountain",
+            "terrain": "lake",
             "owner_type": "corporation",
             "owner_only": true
         }
@@ -173,7 +173,10 @@ module Engine
         {
           "type": "assign_hexes",
           "hexes": [
+            "G4", "K4"
           ],
+          "count":1,
+          "when": "owning_corp_or_turn",
           "owner_type": "corporation"
         }
       ]

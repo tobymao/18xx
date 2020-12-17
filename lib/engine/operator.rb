@@ -62,5 +62,13 @@ module Engine
     def tokens_by_type
       @tokens.reject(&:used).uniq(&:type)
     end
+
+    def unplaced_tokens
+      @tokens.reject(&:city)
+    end
+
+    def placed_tokens
+      @tokens.select(&:city)
+    end
   end
 end

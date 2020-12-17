@@ -185,6 +185,7 @@ module Engine
             "H18"
           ],
           "count": 2,
+          "when": "owning_corp_or_turn",
           "owner_type": "corporation"
         }
       ]
@@ -650,7 +651,7 @@ module Engine
         "B16",
         "C21"
       ],
-      "city=revenue:yellow_30|green_50|brown_60|gray_80;path=a:1,b:_0;path=a:_0,b:2;path=a:0,b:_0;path=a:_0,b:1": [
+      "city=revenue:yellow_20|green_30|brown_50|gray_60;path=a:1,b:_0;path=a:_0,b:2;path=a:0,b:_0;path=a:_0,b:1": [
         "I21"
       ]
     },

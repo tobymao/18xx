@@ -12,7 +12,7 @@ module Engine
           check_insolvency!(entity)
           return [] if !entity.operator? ||
                        entity.trains.empty? && !@game.insolvent?(entity) ||
-                       !@game.can_run_route?(entity)
+                       !@game.legal_route?(entity)
 
           ACTIONS
         end
@@ -26,8 +26,8 @@ module Engine
 
           text = ''
           if current_entity.receivership?
-            text += "#{current_entity.name} is in receivership (it has no president)."\
-              'Most of its actions are automated, but it must have a player manually run'\
+            text += "#{current_entity.name} is in receivership (it has no president). "\
+              'Most of its actions are automated, but it must have a player manually run '\
               "its trains. Please enter the best route you see for #{current_entity.name}."
           end
           text += ' In addition, ' if current_entity.receivership? && @game.insolvent?(current_entity)
@@ -42,7 +42,7 @@ module Engine
           return unless entity.corporation?
 
           if entity.receivership? && entity.trains.empty? &&
-              @game.can_run_route?(entity) && !can_afford_depot_train?(entity)
+              @game.legal_route?(entity) && !can_afford_depot_train?(entity)
             @game.make_insolvent(entity)
           elsif @game.insolvent?(entity) && can_afford_depot_train?(entity)
             @game.clear_insolvent(entity)
@@ -69,9 +69,9 @@ module Engine
             train = route.train
             if train.owner && @game.train_owner(train) != entity
               @game.game_error("Cannot run another corporation's train. refresh")
+              @game.game_error('Cannot run train that operated') if train.operated
             end
             @game.game_error('Cannot run train twice') if trains[train]
-            @game.game_error('Cannot run train that operated') if train.operated
 
             trains[train] = true
             @log << "#{entity.name} runs a #{train.name} train for "\

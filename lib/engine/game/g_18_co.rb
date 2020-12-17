@@ -8,6 +8,8 @@ require_relative 'company_price_50_to_150_percent'
 module Engine
   module Game
     class G18CO < Base
+      attr_accessor :presidents_choice
+
       register_colors(green: '#237333',
                       red: '#d81e3e',
                       blue: '#0189d1',
@@ -30,6 +32,7 @@ module Engine
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18CO:-Rock-&-Stock'
 
       SELL_BUY_ORDER = :sell_buy
+      EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
       MUST_BID_INCREMENT_MULTIPLE = true
       ONLY_HIGHEST_BID_COMMITTED = false
@@ -39,8 +42,8 @@ module Engine
       DISCARDED_TRAIN_DISCOUNT = 50
 
       # Two tiles can be laid, only one upgrade
-      # TODO: This changes in phase E to a single tile lay
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: false }].freeze
+      REDUCED_TILE_LAYS = [{ lay: true, upgrade: true }].freeze
 
       # First 3 are Denver, Second 3 are CO Springs
       TILES_FIXED_ROTATION = %w[co1 co2 co3 co5 co6 co7].freeze
@@ -84,8 +87,16 @@ module Engine
       BASE_MINE_VALUE = 10
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'remove_mines' => ['Mines Close', 'Mine tokens removed from board and corporations']
+          'remove_mines' => ['Mines Close', 'Mine tokens removed from board and corporations'],
+          'presidents_choice' => [
+            'President\'s Choice Triggered',
+            'President\'s choice round will occur at the beginning of the next Stock Round',
+          ]
         ).freeze
+
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'reduced_tile_lay' => ['Reduced Tile Lay', 'Corporations place only one tile per OR.']
+      ).freeze
 
       include CompanyPrice50To150Percent
 
@@ -97,6 +108,10 @@ module Engine
         @dsng ||= corporation_by_id('DSNG')
       end
 
+      def drgr
+        @drgr ||= company_by_id('DRGR')
+      end
+
       def imc
         @imc ||= company_by_id('IMC')
       end
@@ -104,6 +119,7 @@ module Engine
       def setup
         setup_company_price_50_to_150_percent
         setup_corporations
+        @presidents_choice = nil
       end
 
       def setup_corporations
@@ -143,8 +159,12 @@ module Engine
         end
       end
 
+      def mines_add(entity, count)
+        mine_create(entity, mines_count(entity) + count)
+      end
+
       def mine_add(entity)
-        mine_create(entity, mines_count(entity) + 1)
+        mines_add(entity, 1)
       end
 
       def mine_update_text(entity)
@@ -169,8 +189,10 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
         Step::Bankrupt,
+        Step::G18CO::Takeover,
         Step::DiscardTrain,
         Step::HomeToken,
+        Step::G18CO::ReturnToken,
         Step::BuyCompany,
         Step::G18CO::RedeemShares,
         Step::CorporateBuyShares,
@@ -179,7 +201,8 @@ module Engine
         Step::Token,
         Step::Route,
         Step::G18CO::Dividend,
-        Step::BuyTrain,
+        Step::G18CO::BuyTrain,
+        Step::CorporateSellShares,
         Step::G18CO::IssueShares,
         [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
@@ -187,8 +210,16 @@ module Engine
 
       def stock_round
         Round::Stock.new(self, [
+        Step::G18CO::Takeover,
         Step::DiscardTrain,
         Step::G18CO::BuySellParShares,
+        ])
+      end
+
+      def new_presidents_choice_round
+        @log << '-- President\'s Choice --'
+        Round::G18CO::PresidentsChoice.new(self, [
+          Step::G18CO::PresidentsChoice,
         ])
       end
 
@@ -197,6 +228,36 @@ module Engine
           Step::G18CO::CompanyPendingPar,
           Step::G18CO::MovingBidAuction,
         ])
+      end
+
+      def next_round!
+        @round =
+          case @round
+          when Round::G18CO::PresidentsChoice
+            new_stock_round
+          when Round::Stock
+            @operating_rounds = @phase.operating_rounds
+            reorder_players
+            new_operating_round
+          when Round::Operating
+            if @round.round_num < @operating_rounds
+              or_round_finished
+              new_operating_round(@round.round_num + 1)
+            else
+              @turn += 1
+              or_round_finished
+              or_set_finished
+              if @presidents_choice == :triggered
+                new_presidents_choice_round
+              else
+                new_stock_round
+              end
+            end
+          when init_round.class
+            init_round_finished
+            reorder_players
+            new_stock_round
+          end
       end
 
       def action_processed(action)
@@ -296,6 +357,21 @@ module Engine
         end
       end
 
+      def tile_lays(_entity)
+        return REDUCED_TILE_LAYS if @phase.status.include?('reduced_tile_lay')
+
+        super
+      end
+
+      def event_presidents_choice!
+        return if @presidents_choice
+
+        @log << '-- Event: President\'s Choice --'
+        @log << 'President\'s choice round will occur at the beginning of the next Stock Round'
+
+        @presidents_choice = :triggered
+      end
+
       def sell_shares_and_change_price(bundle)
         corporation = bundle.corporation
         price = corporation.share_price.price
@@ -340,6 +416,14 @@ module Engine
         end
       end
 
+      def emergency_issuable_cash(corporation)
+        emergency_issuable_bundles(corporation).max_by(&:num_shares)&.price || 0
+      end
+
+      def emergency_issuable_bundles(entity)
+        issuable_shares(entity)
+      end
+
       def issuable_shares(entity)
         return [] unless entity.corporation?
         return [] unless entity.num_ipo_shares
@@ -353,6 +437,14 @@ module Engine
 
         bundles_for_corporation(share_pool, entity)
           .reject { |bundle| entity.cash < bundle.price }
+      end
+
+      def purchasable_companies(entity = nil)
+        @companies.select do |company|
+          (company.owner&.player? || company.owner.nil?) &&
+            (entity.nil? || entity != company.owner) &&
+            !company.abilities(:no_buy)
+        end
       end
     end
   end

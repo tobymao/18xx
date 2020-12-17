@@ -25,7 +25,7 @@ module Engine
         end
 
         def sold_out?(corporation)
-          corporation.total_shares > 2 && corporation.player_share_holders.values.sum >= 100
+          corporation.total_shares > 2 && corporation.player_share_holders.values.select(&:positive?).sum >= 100
         end
       end
     end

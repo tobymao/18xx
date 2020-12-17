@@ -8,8 +8,10 @@ module Engine
       attr_reader :symbol
 
       def initialize(symbol, **opts)
-        @symbol = symbol
         super('0', **opts)
+
+        @symbol = symbol
+        @route = (opts[:route] || :optional).to_sym
       end
 
       def <=(other)

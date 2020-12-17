@@ -11,7 +11,7 @@ module Engine
         REMOVE_TOKEN_ACTIONS = %w[remove_token].freeze
 
         def description
-          "Choose tokens to remove to drop below #{@game.class::LIMIT_TOKENS}"
+          "Choose tokens to remove to drop below limit of #{@game.class::LIMIT_TOKENS} tokens"
         end
 
         def actions(entity)
