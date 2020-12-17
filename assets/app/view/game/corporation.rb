@@ -65,6 +65,9 @@ module View
         if @corporation.corporation? && @corporation.floated? && @game.total_loans.positive?
           extras << render_buying_power
         end
+        if @corporation.corporation? && @corporation.respond_to?(:capitalization_type_desc)
+          extras << render_capitalization_type
+        end
         extras << render_corporation_size if @game.show_corporation_size?
         if extras.any?
           props = { style: { borderCollapse: 'collapse' } }
@@ -502,6 +505,13 @@ module View
             h('td.padded_number', @game.format_currency(@game.interest_owed(@corporation)).to_s),
           ]),
         ]
+      end
+
+      def render_capitalization_type
+        h('tr.ipo', [
+          h('td.right', 'Cap. Type'),
+          h('td.padded_number', @corporation.capitalization_type_desc.to_s),
+        ])
       end
 
       def render_buying_power

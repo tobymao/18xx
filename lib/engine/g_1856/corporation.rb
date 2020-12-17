@@ -28,6 +28,19 @@ module Engine
         @capitalization = capitalization_type
       end
 
+      def capitalization_type_desc
+        case @capitalization
+        when :full
+          'Full'
+        when :incremental
+          'Incremental'
+        when :escrow
+          'Escrow'
+        else
+          raise NotImplementedError
+        end
+      end
+
       def capitalization_type
         # TODO: escrow
         return :incremental if @game.phase.status.include? :escrow
