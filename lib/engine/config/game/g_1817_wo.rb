@@ -45,7 +45,8 @@ module Engine
     "H9": "Libertalia",
     "J9": "You are lost",
     "L1": "Gold Rush",
-    "L9": "Nieuw Zeeland"
+    "L9": "Nieuw Zeeland",
+    "C4": "NY"
   },
   "tiles": {
     "5": "unlimited",
