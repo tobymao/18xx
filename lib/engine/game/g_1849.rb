@@ -128,6 +128,57 @@ module Engine
 
         # Messina cannot be upgraded until after next stock round
       end
+
+      def operating_round(round_num)
+        Round::Operating.new(self, [
+                               Step::Bankrupt,
+                               Step::Exchange,
+                               Step::DiscardTrain,
+                               Step::SpecialTrack,
+                               Step::BuyCompany,
+                               Step::G1849::Track,
+                               Step::Token,
+                               Step::Route,
+                               Step::Dividend,
+                               Step::BuyTrain,
+                               [Step::BuyCompany, blocks: true],
+                             ], round_num: round_num)
+      end
+
+      def new_track(old_tile, new_tile)
+        # Assume path retention checked elsewhere
+        old_track = old_tile.paths.map(&:track)
+        added_track = new_tile.paths.map(&:track)
+        old_track.each { |t| added_track.slice!(added_track.index(t) || added_track.length) }
+        if added_track.include?(:dual)
+          :dual
+        else
+          added_track.include?(:broad) ? :broad : :narrow
+        end
+      end
+
+      def tile_cost(tile, _hex, entity, new_tile: nil)
+        return 0 if tile.upgrades.empty?
+
+        upgrade = tile.upgrades[0]
+        track = new_track(tile, new_tile)
+        case track
+        when :dual
+          upgrade.cost
+        when :narrow
+          @log << "#{entity.name} pays 1/4 cost for narrow gauge track"
+          upgrade.cost / 4
+        when :broad
+          ability = entity.all_abilities.find { |a| a.type == :tile_discount }
+          discount = ability ? upgrade.cost / 2 : 0
+          if discount.positive?
+            @log << "#{entity.name} receives a discount of "\
+                    "#{format_currency(discount)} from "\
+                    "#{ability.owner.name}"
+          end
+          upgrade.cost - discount
+        end
+      end
     end
   end
 end

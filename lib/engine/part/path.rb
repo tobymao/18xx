@@ -61,7 +61,18 @@ module Engine
 
       def <=(other)
         other_ends = other.ends
-        ends.all? { |t| other_ends.any? { |o| t <= o } }
+        ends.all? { |t| other_ends.any? { |o| t <= o } } && tracks_match(other.track)
+      end
+
+      def tracks_match(other)
+        case @track
+        when :broad
+          %i[broad dual].include?(other)
+        when :narrow
+          %i[narrow dual].include?(other)
+        when :dual
+          other == :dual
+        end
       end
 
       def ends
