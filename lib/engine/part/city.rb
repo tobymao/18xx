@@ -96,7 +96,7 @@ module Engine
 
       def place_token(corporation, token, free: false, check_tokenable: true, cheater: false)
         if check_tokenable && !tokenable?(corporation, free: free, tokens: token, cheater: cheater)
-          raise GameError, "#{corporation.name} cannot lay token on #{id}"
+          raise GameError, "#{corporation.name} cannot lay token on #{id} #{tile.hex&.id}"
         end
 
         exchange_token(token, cheater: cheater)
