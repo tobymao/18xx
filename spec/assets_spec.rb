@@ -152,7 +152,7 @@ describe 'Assets' do
         'Owning corporation may ignore building cost for mountain hexes']],
       ['1889', 314, 81, 'track_and_buy_company',
        ['1889: Operating Round 3.1 (of 1) - Lay Track',
-        'Blocks Takamatsu (K4) while owned by a player.']],
+        'Show companies from other players']],
       ['1889', 314, 87, 'special_track',
        ['1889: Operating Round 3.1 (of 1) - Lay Track for Ehime Railway',
         'Blocks C4 while owned by a player.']],
