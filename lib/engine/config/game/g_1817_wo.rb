@@ -46,7 +46,7 @@ module Engine
     "J9": "You are lost",
     "L1": "Gold Rush",
     "L9": "Nieuw Zeeland",
-    "C4": "NY"
+    "C4": "NYC"
   },
   "tiles": {
     "5": "unlimited",
