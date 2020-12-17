@@ -13,7 +13,7 @@ module Engine
 
       # ~Ab~RE-using floated? to represent whether or not a corporation has operated
       def floated?
-        @started
+        @started || ( (@capitalization == :full) && (percent_of(self) <= 100 - percent_to_float) )
       end
 
       def floatable?
@@ -25,7 +25,7 @@ module Engine
       end
 
       def par!
-        @capitalization = capitalization_type
+        @capitalization = _capitalization_type
       end
 
       def capitalization_type_desc
@@ -41,7 +41,7 @@ module Engine
         end
       end
 
-      def capitalization_type
+      def _capitalization_type
         # TODO: escrow
         return :incremental if @game.phase.status.include? :escrow
         return :incremental if @game.phase.status.include? :incremental
@@ -51,6 +51,7 @@ module Engine
         raise NotImplementedError
       end
 
+      # As long as this is only used in core code for display we can re-use it
       def percent_to_float
         return 20 if @game.phase.status.include? :facing_2
         return 30 if @game.phase.status.include? :facing_3

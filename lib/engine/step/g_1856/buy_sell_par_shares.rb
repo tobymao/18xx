@@ -13,6 +13,7 @@ module Engine
           @game.game_error("#{corporation} cannot be parred") unless corporation.can_par?(entity)
 
           corporation.par!
+          @log << "#{corporation.name} is parred as a #{corporation.capitalization_type_desc} cap corporation"
           @game.stock_market.set_par(corporation, share_price)
           share = corporation.shares.first
           buy_shares(entity, share.to_bundle)

@@ -243,6 +243,11 @@ module Engine
         super
       end
 
+      def float_corporation(corporation)
+        corporation.float!
+        super
+      end
+
       # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
       STATUS_TEXT = {
         'escrow' => [
