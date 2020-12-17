@@ -78,7 +78,7 @@ module Engine
         Round::G1828::Stock.new(self, [
           Step::DiscardTrain,
           Step::Exchange,
-          Step::SpecialTrack,
+          Step::G1828::Merger,
           Step::G1828::BuySellParShares,
         ])
       end

@@ -12,6 +12,9 @@ module View
       needs :action, default: Engine::Action::SellShares
 
       def render
+        step = @game.round.active_step
+        return unless step.current_actions.include?('sell_shares')
+
         buttons = @game.sellable_bundles(@player, @corporation).map do |bundle|
           sell = lambda do
             process_action(@action.new(
@@ -35,7 +38,6 @@ module View
           )
         end
 
-        step = @game.round.active_step
         @game.bundles_for_corporation(@player, @corporation).map do |bundle|
           pool_shares = @game.share_pool.shares_by_corporation[@corporation].group_by(&:percent).values.map(&:first)
           pool_shares.each do |pool_share|

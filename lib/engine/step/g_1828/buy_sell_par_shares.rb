@@ -12,11 +12,25 @@ module Engine
 
           actions = super
           if @current_actions.empty?
-            actions << 'initiate_merge' if can_merge_any?(entity)
+            actions << 'start_merge' if can_merge_any?(entity)
             actions << 'pass' if actions.any? && !actions.include?('pass')
           end
 
           actions
+        end
+
+        def round_state
+          state = super || {}
+          state[:merge_initiator] = nil
+          state[:acting_player] = nil
+          state
+        end
+
+        def process_start_merge(action)
+          @game.game_error('No eligible corporation to merge with') unless can_merge?(action.entity, action.corporation)
+
+          @round.merge_initiator = action.corporation
+          @round.acting_player = action.entity
         end
 
         def can_buy_multiple?(entity, corporation)
@@ -28,10 +42,10 @@ module Engine
         end
 
         def can_merge_any?(entity)
-          @game.corporations.any? { |corporation| can_merge?(corporation, entity) }
+          @game.corporations.any? { |corporation| can_merge?(entity, corporation) }
         end
 
-        def can_merge?(corporation, entity)
+        def can_merge?(entity, corporation)
           return false if corporation.owner != entity
 
           corporations = @game.corporations.select do |candidate|
@@ -44,7 +58,7 @@ module Engine
             @game.players.any? do |player|
               num_shares = player.num_shares_of(candidate) + player.num_shares_of(corporation)
               num_shares >= 6 ||
-                (num_shares == 5 && !did_sell?(player, entity) && !did_sell?(player, entity))
+                (num_shares == 5 && !did_sell?(player, candidate) && !did_sell?(player, corporation))
             end
           end
           corporations.any?

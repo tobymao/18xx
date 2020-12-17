@@ -96,6 +96,10 @@ module Engine
         false
       end
 
+      def purchasable_companies(_entity = nil)
+        []
+      end
+
       private
 
       def entities
