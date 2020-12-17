@@ -48,14 +48,16 @@ module Engine
                 "#{@game.format_currency(par_price)}"
       end
 
-      share_str = "a #{bundle.percent}% share of #{corporation.name}"
+      share_str = "a #{bundle.percent}% share"
+      share_str += "of #{corporation.name}" unless entity == corporation
       incremental = corporation.capitalization == :incremental
 
-      from = 'the market'
       if bundle.owner.corporation?
-        from = bundle.owner == bundle.corporation ? "the #{@game.ipo_name(corporation)}" : bundle.owner.name
+        from = (bundle.owner == bundle.corporation ? "the #{@game.ipo_name(corporation)}" : bundle.owner.name)
       elsif bundle.owner.player?
         from = bundle.owner.name
+      else
+        from = 'the market'
       end
 
       if exchange
@@ -74,7 +76,8 @@ module Engine
       else
         price -= swap.price if swap
         swap_text = swap ? " + swap of a #{swap.percent}% share" : ''
-        @log << "#{entity.name} buys #{share_str} "\
+        verb = entity == corporation ? 'redeems' : 'buys'
+        @log << "#{entity.name} #{verb} #{share_str} "\
           "from #{from} "\
           "for #{@game.format_currency(price)}#{swap_text}"
       end
@@ -107,7 +110,7 @@ module Engine
       swap_to_entity = swap ? entity : nil
 
       @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
-        "#{bundle.corporation.name} and receives #{@game.format_currency(price)}#{swap_text}"
+        "of #{bundle.corporation.name} and receives #{@game.format_currency(price)}#{swap_text}"
 
       transfer_shares(bundle,
                       self,
@@ -232,9 +235,9 @@ module Engine
 
     def num_presentation(bundle)
       num_shares = bundle.num_shares
-      return "a #{bundle.percent}% share of" if num_shares == 1
+      return "a #{bundle.percent}% share" if num_shares == 1
 
-      "#{num_shares} shares of"
+      "#{num_shares} shares"
     end
   end
 end

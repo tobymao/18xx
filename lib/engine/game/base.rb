@@ -1272,7 +1272,7 @@ module Engine
         cert_limit = self.class::CERT_LIMIT
         cert_limit = cert_limit[players.reject(&:bankrupt).length] if cert_limit.is_a?(Hash)
         cert_limit = cert_limit.reject { |k, _| k.to_i < @corporations.size }
-                       .min_by(&:first)&.last || cert_limit.first.last if cert_limit.is_a?(Hash)
+                               .min_by(&:first)&.last || cert_limit.first.last if cert_limit.is_a?(Hash)
         cert_limit || @cert_limit
       end
 
