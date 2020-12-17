@@ -58,6 +58,11 @@ module Engine
           entity = action.entity
           @round.routes = action.routes
 
+          if @round.routes.empty? && @game.legal_route?(entity) && (entity.trains.any? || @game.insolvent?(entity)) &&
+              (!entity.receivership? || !@game.nationalization)
+            @game.game_error('Must run a route')
+          end
+
           # the following two checks must be made here, after all routes have been defined
           if @round.routes.reject { |r| r.connections.empty? }.any?
             @game.check_home_token(entity, @round.routes)
