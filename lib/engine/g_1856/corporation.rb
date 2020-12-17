@@ -5,15 +5,23 @@ require_relative '../corporation'
 module Engine
   module G1856
     class Corporation < Corporation
+      attr_accessor :escrow
+      CAPITALIZATION_STRS = {
+        full: 'Full',
+        incremental: 'Incremental',
+        escrow: 'Escrow',
+      }
       def initialize(game, sym:, name:, **opts)
         @game = game
         @started = false
+        @escrow = nil
         super(sym: sym, name: name, **opts)
+        @capitalization = nil
       end
 
       # ~Ab~RE-using floated? to represent whether or not a corporation has operated
       def floated?
-        @started || ( (@capitalization == :full) && (percent_of(self) <= 100 - percent_to_float) )
+        @started || (@capitalization == :full && percent_of(self) <= 100 - percent_to_float)
       end
 
       def floatable?
@@ -26,24 +34,22 @@ module Engine
 
       def par!
         @capitalization = _capitalization_type
+        escrow = 0 if @capitalization == :escrow
       end
 
       def capitalization_type_desc
-        case @capitalization
-        when :full
-          'Full'
-        when :incremental
-          'Incremental'
-        when :escrow
-          'Escrow'
-        else
-          raise NotImplementedError
-        end
+        CAPITALIZATION_STRS[@capitalization || _capitalization_type]
+      end
+
+      def release_escrow!
+        @log << "Releasing #{@game.format_currency(@escrow)} from escrow for ${@name}"
+        @cash += @escrow
+        @escrow = nil
       end
 
       def _capitalization_type
         # TODO: escrow
-        return :incremental if @game.phase.status.include? :escrow
+        return :escrow if @game.phase.status.include? :escrow
         return :incremental if @game.phase.status.include? :incremental
         return :full if @game.phase.status.include? :fullcap
 
