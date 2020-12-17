@@ -21,7 +21,7 @@ module Engine
         end
 
         def select_entities
-          (@game.corporations.select(&:floatable?) + super).sort
+          @game.corporations.select { |c| c.floated? || c.floatable? }.sort
         end
 
         def start_operating
