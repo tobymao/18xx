@@ -2,6 +2,7 @@
 
 require_relative '../config/game/g_1856'
 require_relative '../loan.rb'
+require_relative '../g_1856/corporation'
 require_relative 'base'
 
 module Engine
@@ -112,6 +113,19 @@ module Engine
         # TODO: A future PR may figure out how to implement buying_power
         #  that accounts for a corporations revenue.
         true
+      end
+
+      def init_corporations(stock_market)
+        min_price = stock_market.par_prices.map(&:price).min
+
+        self.class::CORPORATIONS.map do |corporation|
+          Engine::G1856::Corporation.new(
+            self,
+            min_price: min_price,
+            capitalization: nil,
+            **corporation.merge(corporation_opts),
+          )
+        end
       end
 
       def setup
@@ -285,6 +299,15 @@ module Engine
           # Repay Loans - See Loan
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
+      end
+
+      def stock_round
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::Exchange,
+          Step::SpecialTrack,
+          Step::G1856::BuySellParShares,
+        ])
       end
     end
   end
