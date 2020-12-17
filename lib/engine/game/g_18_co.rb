@@ -288,7 +288,8 @@ module Engine
 
         return unless tile_has_max_cities(tile)
 
-        @corporations.dup.reject(&:ipoed).each do |corp|
+        @corporations.dup.each do |corp|
+          next if corp.ipoed
           next unless corp.coordinates == tile.hex.name
 
           next if city.tokenable?(corp, free: true)
@@ -405,7 +406,7 @@ module Engine
       def event_unreserve_home_stations!
         @log << '-- Event: Home station reservations removed --'
 
-        hexes.map { |h| h.tile.cities.map(&:remove_all_reservations!) }
+        hexes.each { |h| h.tile.cities.each(&:remove_all_reservations!) }
       end
 
       def tile_lays(_entity)

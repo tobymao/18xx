@@ -62,7 +62,7 @@ module Engine
       end
 
       def remove_all_reservations!
-        @reservations = []
+        @reservations.clear
       end
 
       def city?
