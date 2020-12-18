@@ -9,9 +9,11 @@ module Engine
       class HomeTrack < Base
         include Tracker
         ACTIONS = %w[lay_tile].freeze
+        ALL_ACTIONS = %w[pass lay_tile].freeze
 
         def actions(entity)
           return [] unless entity == pending_entity
+          return ALL_ACTIONS unless any_tiles?(entity)
 
           ACTIONS
         end
@@ -44,6 +46,17 @@ module Engine
 
         def description
           "Lay home track for #{pending_entity.name}"
+        end
+
+        def any_tiles?(entity)
+          hex = pending_track[:hexes].first
+          upgradeable_tiles(entity, hex).any?
+        end
+
+        def process_pass(action)
+          log_pass(action.entity)
+          @round.pending_tracks.shift
+          pass!
         end
 
         def process_lay_tile(action)

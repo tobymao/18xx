@@ -60,10 +60,12 @@ module Engine
         end
 
         def process_buy_shares(action)
+          corporation = action.bundle.corporation
+          floated = corporation.floated?
+
           super
 
-          corporation = action.bundle.corporation
-          place_home_track(corporation) if corporation.floated?
+          place_home_track(corporation) if corporation.floated? && !floated && !@game.sr_after_southern
           @game.check_new_layer
         end
 

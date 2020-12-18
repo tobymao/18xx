@@ -191,6 +191,7 @@ module Engine
         @log << "#{player.name} has #{reason}"
 
         @players.rotate!(@players.index(player))
+        @log << "#{@players.first.name} has priority deal"
       end
 
       def new_stock_round
@@ -224,7 +225,6 @@ module Engine
             end
           when init_round.class
             init_round_finished
-            reorder_players
             new_stock_round
           end
       end
@@ -266,6 +266,13 @@ module Engine
           player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
           player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }.sum { |s| (s.price / 2).to_i } +
           company_value
+      end
+
+      def place_home_token(corporation)
+        # will this break the game?
+        return if sr_after_southern
+
+        super
       end
 
       def event_fishbourne_to_bank!
