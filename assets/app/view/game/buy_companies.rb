@@ -34,7 +34,7 @@ module View
         end
 
         companies_to_buy = companies.map do |company|
-          unless company.owner == @corporation.owner || @show_other_players
+          if company.owner != @corporation.owner && !@show_other_players
             hidden_companies = true
             next
           end
@@ -60,7 +60,7 @@ module View
                                 { on: { click: -> { store(:show_other_players, false) } }, **button_props },
                                 'Hide companies from other players')
         end
-        companies_to_buy
+        companies_to_buy.compact
       end
 
       def render_input
