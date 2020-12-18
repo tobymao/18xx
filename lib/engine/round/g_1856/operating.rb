@@ -30,21 +30,15 @@ module Engine
           super
         end
 
-        # nil if the entity doesn't need to pay off loans, # otherwise
-        def must_payoff?(entity)
-          loans_to_repay = entity.loans.size - @game.maximum_loans(entity)
-          loans_to_repay.positive? ? loans_to_repay : nil
-        end
-
         def force_repay_loans!(entity)
+          loans_to_payoff = entity.loans.size - @game.maximum_loans(entity)
           @cash_crisis_due_to_forced_repay = nil
-          return unless @steps.any? { |step| step.passed? && step.is_a?(Step::BuyTrain) } && must_payoff?(entity)
+          return unless @steps.any? { |step| step.passed? && step.is_a?(Step::BuyTrain) } && loans_to_payoff.positive?
 
           bank = @game.bank
-          loans_to_payoff = must_payoff?(entity)
           owed = 100 * loans_to_payoff
           owed_fmt = @game.format_currency(owed)
-          @log << "#{entity.name} must repay #{must_payoff?(entity)} loans and owes #{owed_fmt}"
+          @log << "#{entity.name} must repay #{loans_to_payoff} loans and owes #{owed_fmt}"
 
           # TODO: In the weird edge case where someone goes bankrupt in a cash crisis over this, are the loans
           # redeemed at the time of end game value? If so, how many?
