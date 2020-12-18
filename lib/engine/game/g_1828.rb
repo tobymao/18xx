@@ -88,6 +88,7 @@ module Engine
           Step::Bankrupt,
           Step::Exchange,
           Step::DiscardTrain,
+          Step::HomeToken,
           Step::G1828::SpecialTrack,
           Step::G1828::BuyCompany,
           Step::G1828::SpecialToken,
