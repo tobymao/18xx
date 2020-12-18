@@ -306,13 +306,17 @@ module Engine
         @corporations.select { |c| c.ipoed && !c.receivership? }.all? { |c| c.trains.any? }
       end
 
+      def get_or_revenue(info)
+        info.dividend.kind == 'withhold' ? 0 : info.revenue
+      end
+
       # OR has just finished, find two lowest revenues and nationalize the corporations
       # associated with each
       def nationalize_corps!
         revenues = @corporations.select { |c| c.floated? && !nationalized?(c) }
-          .map { |c| [c, c.operating_history[c.operating_history.keys.max].revenue] }.to_h
+          .map { |c| [c, get_or_revenue(c.operating_history[c.operating_history.keys.max])] }.to_h
 
-        sorted_corps = revenues.keys.sort_by { |c| c.operating_history[c.operating_history.keys.max].revenue }
+        sorted_corps = revenues.keys.sort_by { |c| revenues[c] }
 
         if sorted_corps.size < 3
           # if two or less corps left, they are both nationalized
