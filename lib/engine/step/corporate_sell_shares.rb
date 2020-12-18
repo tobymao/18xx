@@ -24,6 +24,10 @@ module Engine
         actions
       end
 
+      def pass_description
+        'Pass (Share Sale)'
+      end
+
       def log_pass(entity)
         @log << "#{entity.name} passes selling shares"
       end
