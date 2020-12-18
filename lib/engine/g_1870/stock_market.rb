@@ -5,6 +5,7 @@ require_relative 'stock_market'
 module Engine
   module G1870
     class StockMarket < StockMarket
+      # Possible pars after reissuing, with their coordinates on the stock market
       ISSUE_PAR_PRICES = {
         68 => [6, 7],
         72 => [5, 7],
