@@ -156,7 +156,7 @@ module Engine
         @companies.each do |company|
           next unless company.owner
 
-          company.abilities(:revenue_change, time: 'auction_end') do |ability|
+          abilities(company, :revenue_change, time: 'auction_end') do |ability|
             company.revenue = ability.revenue
           end
         end

@@ -643,7 +643,7 @@ module Engine
 
       def purchasable_companies(entity = nil)
         @companies.select do |company|
-          company.owner&.player? && entity != company.owner && !company.abilities(:no_buy)
+          company.owner&.player? && entity != company.owner && !abilities(company, :no_buy)
         end
       end
 
@@ -960,7 +960,7 @@ module Engine
 
       def all_companies_with_ability(ability)
         @companies.each do |company|
-          if (found_ability = company.abilities(ability))
+          if (found_ability = abilities(company, ability))
             yield company, found_ability
           end
         end
@@ -1366,7 +1366,7 @@ module Engine
       def init_hexes(companies, corporations)
         blockers = {}
         companies.each do |company|
-          company.abilities(:blocks_hexes) do |ability|
+          abilities(company, :blocks_hexes) do |ability|
             ability.hexes.each do |hex|
               blockers[hex] = company
             end
@@ -1375,7 +1375,7 @@ module Engine
 
         partition_blockers = {}
         companies.each do |company|
-          company.abilities(:blocks_partition) do |ability|
+          abilities(company, :blocks_partition) do |ability|
             partition_blockers[ability.partition_type] = company
           end
         end
@@ -1387,7 +1387,7 @@ module Engine
         end
 
         (corporations + companies).each do |c|
-          c.abilities(:reservation) do |ability|
+          abilities(c, :reservation) do |ability|
             reservations[ability.hex] << { entity: c,
                                            city: ability.city.to_i,
                                            slot: ability.slot.to_i,
@@ -1472,7 +1472,7 @@ module Engine
 
       def init_company_abilities
         @companies.each do |company|
-          next unless (ability = company.abilities(:shares))
+          next unless (ability = abilities(company, :shares))
 
           real_shares = []
           ability.shares.each do |share|
@@ -1722,7 +1722,7 @@ module Engine
         @log << '-- Event: Private companies close --'
 
         @companies.each do |company|
-          if (ability = company.abilities(:close))
+          if (ability = abilities(company, :close))
             next if ability.when == 'never' ||
               @phase.phases.any? { |phase| ability.when == phase[:name] }
           end

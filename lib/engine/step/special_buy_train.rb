@@ -42,7 +42,7 @@ module Engine
       def ability(entity)
         return unless entity.company?
 
-        entity.abilities(:train_discount, time: 'train')
+        @game.abilities(entity, :train_discount, time: 'train')
       end
     end
   end

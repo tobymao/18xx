@@ -221,7 +221,7 @@ module Engine
         game_error('Route visits same hex twice') if route.hexes.size != route.hexes.uniq.size
 
         route.corporation.companies.each do |company|
-          company.abilities(:hex_bonus) do |ability|
+          abilities(company, :hex_bonus) do |ability|
             revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
           end
         end

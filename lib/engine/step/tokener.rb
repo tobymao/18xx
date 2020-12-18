@@ -68,7 +68,7 @@ module Engine
 
         prices = tokens.map(&:price)
 
-        token.corporation.abilities(:token) do |ability, _|
+        @game.abilities(token.corporation, :token) do |ability, _|
           prices << ability.price(token)
           prices << ability.teleport_price
         end
@@ -82,7 +82,7 @@ module Engine
           return [token, teleport]
         end
 
-        entity.abilities(:token) do |ability, _|
+        @game.abilities(entity, :token) do |ability, _|
           next if ability.special_only && ability != special_ability
           next if ability.hexes.any? && !ability.hexes.include?(hex.id)
           next if ability.city && ability.city != city.index
