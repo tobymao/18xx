@@ -67,6 +67,10 @@ module Engine
         1 => { 3 => 10, 4 => 8, 5 => 7, 6 => 6 },
       }.freeze
 
+      def national
+        @national ||= corporation_by_id('CGR')
+      end
+
       def gray_phase?
         @phase.tiles.include?('gray')
       end
