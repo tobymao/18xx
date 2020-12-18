@@ -15,10 +15,14 @@ module Engine
   "currencyFormatStr": "L.%d",
   "bankCash": 7760,
   "certLimit": {
-    "4": 11
+    "3": 12,
+    "4": 11,
+    "5": 9
   },
   "startingCash": {
-    "4": 375
+    "3": 500,
+    "4": 375,
+    "5": 300
   },
   "capitalization": "incremental",
   "layout": "flat",
@@ -482,10 +486,121 @@ module Engine
     }
   ],
   "companies": [
+    {
+      "name": "Società Corriere Etnee",
+      "value": 20,
+      "revenue": 5,
+      "desc": "Blocks Acireale (G13) while owned by a player.",
+      "sym": "SCE",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "G13"
+          ]
+        }
+      ]
+    }
   ],
   "corporations": [
+    {
+      "float_percent": 20,
+      "sym": "AFG",
+      "name": "Azienda Ferroviaria Garibaldi",
+      "logo": "1849/AFG",
+      "tokens": [
+        0,
+        0,
+        0
+      ],
+      "shares":[20, 10, 10, 10, 10, 10, 10, 20],
+      "always_market_price": true,
+      "color": "red"
+    },
+    {
+      "float_percent": 20,
+      "sym": "ATA",
+      "name": "Azienda Trasporti Archimede",
+      "logo": "1849/ATA",
+      "tokens": [
+        0,
+        0,
+        0
+      ],
+      "shares":[20, 10, 10, 10, 10, 10, 10, 20],
+      "coordinates": "M13",
+      "always_market_price": true,
+      "color": "green"
+    },
+    {
+      "float_percent": 20,
+      "sym": "CTL",
+      "name": "Compagnia Trasporti Lilibeo",
+      "logo": "1849/CTL",
+      "tokens": [
+        0,
+        0,
+        0
+      ],
+      "shares":[20, 10, 10, 10, 10, 10, 10, 20],
+      "coordinates": "E1",
+      "always_market_price": true,
+      "color": "goldenrod"
+    },
+    {
+      "float_percent": 20,
+      "sym": "IFT",
+      "name": "Impresa Ferroviaria Trinacria",
+      "logo": "1849/IFT",
+      "tokens": [
+        0,
+        0,
+        0
+      ],
+      "shares":[20, 10, 10, 10, 10, 10, 10, 20],
+      "coordinates": "H12",
+      "always_market_price": true,
+      "color": "blue"
+    },
+    {
+      "float_percent": 20,
+      "sym": "RCS",
+      "name": "Rete Centrale Sicula",
+      "logo": "1849/RCS",
+      "tokens": [
+        0,
+        0,
+        0
+      ],
+      "shares":[20, 10, 10, 10, 10, 10, 10, 20],
+      "coordinates": "C5",
+      "always_market_price": true,
+      "color": "orange"
+    },
+    {
+      "float_percent": 20,
+      "sym": "SFA",
+      "name": "Società Ferroviaria Akragas",
+      "logo": "1849/SFA",
+      "tokens": [
+        0,
+        0,
+        0
+      ],
+      "shares":[20, 10, 10, 10, 10, 10, 10, 20],
+      "coordinates": "J6",
+      "always_market_price": true,
+      "color": "pink"
+    }
   ],
   "trains": [
+    {
+      "name": "2",
+      "distance": 2,
+      "price": 80,
+      "num": 6
+    }
   ]
 }
         DATA

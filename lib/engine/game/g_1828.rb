@@ -91,6 +91,7 @@ module Engine
           Step::Bankrupt,
           Step::Exchange,
           Step::DiscardTrain,
+          Step::HomeToken,
           Step::G1828::SpecialTrack,
           Step::G1828::BuyCompany,
           Step::G1828::SpecialToken,
@@ -301,7 +302,7 @@ module Engine
 
       def setup_minors
         @minors.each do |minor|
-          train = @depot.upcoming[0]
+          train = @depot.upcoming[1]
           train.buyable = false
           train.rusts_on = nil
           minor.buy_train(train, :free)

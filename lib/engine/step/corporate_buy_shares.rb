@@ -24,10 +24,13 @@ module Engine
 
         actions = []
         actions << 'corporate_buy_shares' if can_buy_any?(entity)
-
         actions << 'pass' if actions.any?
 
         actions
+      end
+
+      def pass_description
+        'Pass (Share Buy)'
       end
 
       def log_pass(entity)

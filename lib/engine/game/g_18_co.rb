@@ -50,6 +50,7 @@ module Engine
       GREEN_TOWN_TILES = %w[co8 co9 co10].freeze
       GREEN_CITY_TILES = %w[14 15].freeze
       BROWN_CITY_TILES = %w[co4 63].freeze
+      MAX_CITY_TILES = %w[14 15 co1 co2 co3 co4 co7 63].freeze
 
       STOCKMARKET_COLORS = {
         par: :yellow,
@@ -91,11 +92,20 @@ module Engine
           'presidents_choice' => [
             'President\'s Choice Triggered',
             'President\'s choice round will occur at the beginning of the next Stock Round',
+          ],
+          'unreserve_home_stations' => [
+            'Remove Reservations',
+            'Home stations are no longer reserved for unparred corporations.',
           ]
         ).freeze
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
-        'reduced_tile_lay' => ['Reduced Tile Lay', 'Corporations place only one tile per OR.']
+        'reduced_tile_lay' => ['Reduced Tile Lay', 'Corporations place only one tile per OR.'],
+        'closable_corporations' => [
+          'Closable Corporations',
+          'Unparred corporations are removed if there is no station available to place their home token. '\
+          'Parring a corporation restores its home token reservation.',
+        ]
       ).freeze
 
       include CompanyPrice50To150Percent
@@ -191,7 +201,7 @@ module Engine
         Step::Bankrupt,
         Step::G18CO::Takeover,
         Step::DiscardTrain,
-        Step::HomeToken,
+        Step::G18CO::HomeToken,
         Step::G18CO::ReturnToken,
         Step::BuyCompany,
         Step::G18CO::RedeemShares,
@@ -223,6 +233,14 @@ module Engine
         ])
       end
 
+      def new_acquisition_round
+        @log << '-- Acquisition Round --'
+        Round::G18CO::Acquisition.new(self, [
+          Step::G18CO::AcquisitionTakeover,
+          Step::G18CO::AcquisitionAuction,
+        ])
+      end
+
       def new_auction_round
         Round::Auction.new(self, [
           Step::G18CO::CompanyPendingPar,
@@ -233,8 +251,14 @@ module Engine
       def next_round!
         @round =
           case @round
-          when Round::G18CO::PresidentsChoice
+          when Round::G18CO::Acquisition
             new_stock_round
+          when Round::G18CO::PresidentsChoice
+            if acquirable_corporations.any?
+              new_acquisition_round
+            else
+              new_stock_round
+            end
           when Round::Stock
             @operating_rounds = @phase.operating_rounds
             reorder_players
@@ -249,6 +273,8 @@ module Engine
               or_set_finished
               if @presidents_choice == :triggered
                 new_presidents_choice_round
+              elsif acquirable_corporations.any?
+                new_acquisition_round
               else
                 new_stock_round
               end
@@ -260,13 +286,53 @@ module Engine
           end
       end
 
+      def acquirable_corporations
+        corporations.select { |c| c&.share_price&.acquisition? }
+      end
+
       def action_processed(action)
         super
 
         case action
         when Action::BuyCompany
           mine_update_text(action.entity) if action.company == imc && action.entity.corporation?
+        when Action::PlaceToken
+          remove_corporations_if_no_home(action.city) if @phase.status.include?('closable_corporations')
+        when Action::Par
+          rereserve_home_station(action.corporation) if @phase.status.include?('closable_corporations')
         end
+      end
+
+      def remove_corporations_if_no_home(city)
+        tile = city.tile
+
+        return unless tile_has_max_cities(tile)
+
+        @corporations.dup.each do |corp|
+          next if corp.ipoed
+          next unless corp.coordinates == tile.hex.name
+
+          next if city.tokenable?(corp, free: true)
+
+          log << "#{corp.name} closes as its home station can never be available"
+          close_corporation(corp, quiet: true)
+          corp.close!
+        end
+      end
+
+      def tile_has_max_cities(tile)
+        tile.color == :red || MAX_CITY_TILES.include?(tile.hex.name)
+      end
+
+      def rereserve_home_station(corporation)
+        return unless corporation.coordinates
+
+        tile = hex_by_id(corporation.coordinates).tile
+        city = tile.cities[corporation.city || 0]
+        slot = city.get_slot(corporation)
+        tile.add_reservation!(corporation, slot ? corporation.city : nil, slot)
+        log << "#{corporation.name} reserves station on #{tile.hex.name}"\
+          "#{slot ? '' : " which must be upgraded to place the #{corporation.name} home station"}"
       end
 
       def check_distance(route, visits)
@@ -355,6 +421,12 @@ module Engine
         @corporations.each do |corporation|
           mines_remove(corporation)
         end
+      end
+
+      def event_unreserve_home_stations!
+        @log << '-- Event: Home station reservations removed --'
+
+        hexes.each { |h| h.tile.cities.each(&:remove_all_reservations!) }
       end
 
       def tile_lays(_entity)

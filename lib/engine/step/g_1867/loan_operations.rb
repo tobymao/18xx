@@ -28,10 +28,7 @@ module Engine
             return
           end
 
-          while can_payoff?(entity)
-            @log << "#{entity.name} pays off a loan for #{@game.format_currency(amount)}"
-            @game.repay_loan(entity, loan)
-          end
+          @game.repay_loan(entity, entity.loans.first) while can_payoff?(entity)
         end
       end
     end

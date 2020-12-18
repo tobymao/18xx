@@ -2,11 +2,13 @@
 
 require_relative '../base'
 require_relative '../../token'
+require_relative '../token_merger'
 
 module Engine
   module Step
     module G1867
       class Merge < Base
+        include TokenMerger
         LIMIT_OWNED_BY_ONE_ENTITY = 6
         LIMIT_MERGE = 10
 
@@ -151,12 +153,21 @@ module Engine
               @game.share_pool.buy_shares(owner, share.to_bundle, exchange: :free)
             end
 
-            # @todo: token reduction code
             move_tokens(corporation, target)
+
             receiving = move_assets(corporation, target)
 
             @log << "#{corporation.name} merges into #{target.name} receiving #{receiving.join(', ')}"
             @round.entities.delete(corporation)
+          end
+
+          remove_duplicate_tokens(target, @merging)
+          if tokens_above_limits?(target, @merging)
+            @game.log << "#{target.name} will be above token limit and must decide which tokens to remove"
+            @round.corporations_removing_tokens = [target] + @merging
+          else
+            tokens = move_tokens_to_surviving(target, @merging)
+            @log << "#{target.name} has tokens (#{tokens.size}: hexes #{tokens.compact}) after merger"
           end
 
           # Deleting the entity changes turn order, restore it.
@@ -167,7 +178,7 @@ module Engine
           players = @game.players.select { |p| owners.include?(p) }
           @round.share_dealing_players = players.rotate(players.index(initiator))
           @round.share_dealing_multiple = players
-          # @todo: 2 tokens, less than 20% ownership
+          # @todo: less than 20% ownership
         end
 
         def process_merge(action)

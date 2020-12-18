@@ -76,6 +76,8 @@ module Engine
             end
         end
 
+        company.abilities(:revenue_change, time: :sold) { |ability| company.revenue = ability.revenue }
+
         company.remove_ability_when(:sold)
 
         @round.just_sold_company = company

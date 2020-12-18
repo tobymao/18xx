@@ -16,7 +16,7 @@ module Engine
           if (entity = @entities[@entity_index]).receivership? || @game.insolvent?(entity)
             case action
             when Engine::Action::RunRoutes
-              process_action(Engine::Action::Dividend.new(entity, kind: 'withhold'))
+              process_action(Engine::Action::Dividend.new(entity, kind: 'withhold')) if action.routes.any?
             end
           elsif @game.nationalization
             case action
