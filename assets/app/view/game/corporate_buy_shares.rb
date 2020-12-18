@@ -46,7 +46,7 @@ module View
         return unless @step.current_actions.include?('corporate_buy_shares')
 
         input = player.shares.group_by(&:corporation).values.map do |corp_shares|
-          render_buttons(corp_shares.group_by(&:percent).values.map(&:first),
+          render_buttons(corp_shares.reject(&:president).group_by(&:percent).values.map(&:first),
                          source: corp_shares.first.corporation.name)
         end.compact
 
