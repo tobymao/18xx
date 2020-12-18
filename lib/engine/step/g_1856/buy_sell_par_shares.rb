@@ -6,6 +6,22 @@ module Engine
   module Step
     module G1856
       class BuySellParShares < BuySellParShares
+        def can_buy?(entity, bundle)
+          super && !attempt_cgr_action_while_not_floated?(bundle)
+        end
+
+        def can_sell?(entity, bundle)
+          super && !attempt_cgr_action_while_not_floated?(bundle)
+        end
+
+        def can_gain?(entity, bundle)
+          super && !attempt_cgr_action_while_not_floated?(bundle)
+        end
+
+        def attempt_cgr_action_while_not_floated?(bundle)
+          bundle.corporation == @game.national && !bundle.corporation.floated?
+        end
+
         def process_par(action)
           share_price = action.share_price
           corporation = action.corporation
