@@ -81,7 +81,7 @@ module Engine
       end
 
       def teleported?(entity)
-        entity.abilities(:teleport)&.find(&:used?)
+        Array(@game.abilities(entity, :teleport)).find(&:used?)
       end
 
       def operating?

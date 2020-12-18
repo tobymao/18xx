@@ -9,10 +9,8 @@ module Engine
         def process_dividend(action)
           super
 
-          abilities = action.entity.abilities(:civil_war)
-          return if !abilities || abilities.empty?
+          return unless (civil_war = @game.abilities(action.entity, :civil_war))
 
-          civil_war = abilities.first
           @log << "#{action.entity.name} resolves Civil War"
           civil_war.use!
         end
@@ -43,8 +41,8 @@ module Engine
 
         private
 
-        def civil_war_effect_with_single_train?(entity)
-          entity.trains.one? && entity.abilities(:civil_war)&.any?
+        def civil_war_effect_with_single_train?(corporation)
+          corporation.trains.one? && Array(@game.abilities(corporation, :civil_war)).any?
         end
       end
     end
