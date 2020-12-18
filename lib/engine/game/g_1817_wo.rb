@@ -16,6 +16,7 @@ module Engine
 
       GAME_LOCATION = 'Earth.'
       SEED_MONEY = 100
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817WO'
       GAME_RULES_URL = {
         '1817WO' => 'https://docs.google.com/document/d/1g9QnttpJa8yOCOTnfPaU9hfAZFFzg-rAs_WGy9T38J0/',
         '1817 Rules' => 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view',
