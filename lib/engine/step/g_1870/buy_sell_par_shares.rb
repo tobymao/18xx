@@ -50,11 +50,9 @@ module Engine
           return unless bundle
           return unless bundle.buyable
 
-          if entity.corporation?
-            entity.cash >= bundle.price && redeemable_shares(entity).include?(bundle)
-          else
-            super
-          end
+          return super unless entity.corporation?
+
+          entity.cash >= bundle.price && redeemable_shares(entity).include?(bundle)
         end
 
         def process_buy_shares(action)
