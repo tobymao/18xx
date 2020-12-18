@@ -6,6 +6,8 @@ module View
   module Game
     module Part
       class Blocker < Base
+        needs :game, default: nil, store: true
+
         # prefix these constant names with "P" (for "PART") to avoid conflicts
         # with constants in Part::Base
         P_CENTER = {
@@ -81,8 +83,8 @@ module View
 
         def should_render_company_sym?
           blocker_open? && (!@blocker.owned_by_corporation? ||
-                            @blocker.abilities(:tile_lay) ||
-                            @blocker.abilities(:teleport))
+                            @game.abilities(@blocker, :tile_lay) ||
+                            @game.abilities(@blocker, :teleport))
         end
 
         def should_render_barbell?
