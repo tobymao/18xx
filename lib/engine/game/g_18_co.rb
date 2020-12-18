@@ -233,6 +233,14 @@ module Engine
         ])
       end
 
+      def new_acquisition_round
+        @log << '-- Acquisition Round --'
+        Round::G18CO::Acquisition.new(self, [
+          Step::G18CO::AcquisitionTakeover,
+          Step::G18CO::AcquisitionAuction,
+        ])
+      end
+
       def new_auction_round
         Round::Auction.new(self, [
           Step::G18CO::CompanyPendingPar,
@@ -243,8 +251,14 @@ module Engine
       def next_round!
         @round =
           case @round
-          when Round::G18CO::PresidentsChoice
+          when Round::G18CO::Acquisition
             new_stock_round
+          when Round::G18CO::PresidentsChoice
+            if acquirable_corporations.any?
+              new_acquisition_round
+            else
+              new_stock_round
+            end
           when Round::Stock
             @operating_rounds = @phase.operating_rounds
             reorder_players
@@ -259,6 +273,8 @@ module Engine
               or_set_finished
               if @presidents_choice == :triggered
                 new_presidents_choice_round
+              elsif acquirable_corporations.any?
+                new_acquisition_round
               else
                 new_stock_round
               end
@@ -268,6 +284,10 @@ module Engine
             reorder_players
             new_stock_round
           end
+      end
+
+      def acquirable_corporations
+        corporations.select { |c| c&.share_price&.acquisition? }
       end
 
       def action_processed(action)

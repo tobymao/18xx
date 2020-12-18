@@ -26,6 +26,10 @@ module Engine
           takeover_in_progress
         end
 
+        def active_entities
+          [current_entity]
+        end
+
         def current_entity
           pending_takeover[:destination_corp]
         end
@@ -77,7 +81,8 @@ module Engine
 
           old_token = taken_entity.tokens.find { |t| t.city == action.city }
           new_token = entity.unplaced_tokens.last
-          old_token.swap!(new_token)
+          old_token.remove!
+          action.city.exchange_token(new_token)
           pending_takeover[:place_count] -= 1
 
           @game.log << "#{current_entity.name} replaces #{taken_entity.name} token on #{action.city.hex.name}"
