@@ -121,8 +121,7 @@ module Engine
       def routes_revenue(routes)
         total_revenue = super
         route_bonuses.each do |type|
-          abilities = routes.first.corporation.abilities(type)
-          return total_revenue if abilities.empty?
+          return total_revenue unless abilities(routes.first.corporation, type)
 
           total_revenue += routes.map { |r| route_bonus(r, type) }.max
         end if routes.any?
@@ -147,7 +146,7 @@ module Engine
 
         # Remove mining icons if Warrior Coal Field has not been assigned
         @corporations.each do |corporation|
-          next if corporation.abilities(:hexes_bonus).empty?
+          next unless abilities(corporation, :hexes_bonus)
 
           @companies.each do |company|
             company.abilities(:assign_hexes) do |ability|
@@ -207,7 +206,7 @@ module Engine
       private
 
       def route_bonus(route, type)
-        route.corporation.abilities(type).sum do |ability|
+        Array(abilities(route.corporation, type)).sum do |ability|
           ability.hexes == (ability.hexes & route.hexes.map(&:name)) ? ability.amount : 0
         end
       end

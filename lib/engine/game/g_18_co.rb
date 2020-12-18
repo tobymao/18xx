@@ -148,7 +148,7 @@ module Engine
       end
 
       def mines_count(entity)
-        entity.abilities(:mine_income).sum(&:count_per_or)
+        Array(abilities(entity, :mine_income)).sum(&:count_per_or)
       end
 
       def mine_multiplier(entity)

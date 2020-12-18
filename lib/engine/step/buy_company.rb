@@ -16,7 +16,10 @@ module Engine
 
         return PASS if blocks? &&
                        entity.corporation? &&
-                       entity.abilities(time: 'owning_corp_or_turn', owner_type: 'corporation', strict_time: true).any?
+                       @game.abilities(entity,
+                                       time: 'owning_corp_or_turn',
+                                       owner_type: 'corporation',
+                                       strict_time: true)
 
         []
       end
