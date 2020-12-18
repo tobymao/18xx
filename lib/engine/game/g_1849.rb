@@ -149,7 +149,7 @@ module Engine
         # Assume path retention checked elsewhere
         old_track = old_tile.paths.map(&:track)
         added_track = new_tile.paths.map(&:track)
-        old_track.each { |t| added_track.slice!(added_track.index(t) || added_track.length) }
+        old_track.each { |t| added_track.slice!(added_track.index(t) || added_track.size) }
         if added_track.include?(:dual)
           :dual
         else
@@ -157,12 +157,11 @@ module Engine
         end
       end
 
-      def tile_cost(tile, _hex, entity, new_tile: nil)
+      def tile_cost(tile, hex, entity)
         return 0 if tile.upgrades.empty?
 
         upgrade = tile.upgrades[0]
-        track = new_track(tile, new_tile)
-        case track
+        case new_track(tile, hex.tile)
         when :dual
           upgrade.cost
         when :narrow
