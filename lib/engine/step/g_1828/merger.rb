@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
 require_relative '../base'
-# require_relative '../../token'
-# require_relative 'token_merger'
+require_relative 'token_merger'
 
 module Engine
   module Step
     module G1828
       class Merger < Base
-        #        include TokenMerger
         ACTIONS = %w[merge].freeze
+
+        def initialize
+          @token_merger = TokenMerger.new(@game.blocking_corporation)
+        end
 
         def description
           "Select a corporation to merge with #{initiator.name}"
@@ -77,6 +79,20 @@ module Engine
                 (num_shares == 5 && !did_sell?(player, candidate) && !did_sell?(player, corporation))
             end
           end
+        end
+
+        def merge_corporations(first, second)
+          @system = first
+          second.spend(second.cash, @system)
+          second.transfer(:trains, @system)
+          @token_merger.merge(@system, second)
+
+          if @token_merger.hexes_to_resolve.any?
+            @round.corporation_removing_tokens = @system
+            @round.hexes_to_remove_tokens = @token_merger.hexes_to_resolve
+          end
+
+          @system
         end
       end
     end

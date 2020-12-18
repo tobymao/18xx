@@ -63,6 +63,8 @@ module Engine
       COAL_MARKER_ICON = 'coal'
       COAL_MARKER_COST = 120
 
+      attr_reader :blocking_corporation
+
       def self.title
         '1828.Games'
       end
@@ -77,8 +79,9 @@ module Engine
       def stock_round
         Round::G1828::Stock.new(self, [
           Step::DiscardTrain,
-          Step::Exchange,
+          Step::G1828::RemoveToken,
           Step::G1828::Merger,
+          Step::Exchange,
           Step::G1828::BuySellParShares,
         ])
       end
