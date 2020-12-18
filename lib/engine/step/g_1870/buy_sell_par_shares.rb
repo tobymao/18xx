@@ -68,7 +68,7 @@ module Engine
         def process_sell_shares(action)
           return super unless action.entity.corporation?
 
-          @log.action! "reissues #{@game.share_pool.num_presentation(action.bundle)}"
+          @log << "#{action.entity.name} reissues #{@game.share_pool.num_presentation(action.bundle)}"
 
           @game.stock_market.update_par!(action.entity)
           action.bundle.shares.each do |s|
