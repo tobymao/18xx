@@ -299,7 +299,7 @@ module Engine
 
       def setup_minors
         @minors.each do |minor|
-          train = @depot.upcoming[0]
+          train = @depot.upcoming[1]
           train.buyable = false
           train.rusts_on = nil
           minor.buy_train(train, :free)
