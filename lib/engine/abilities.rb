@@ -22,23 +22,6 @@ module Engine
       @start_count = @abilities.map(&:start_count).compact.max
     end
 
-    def abilities(type = nil, time: nil, owner_type: nil, strict_time: false)
-      active_abilities = @abilities.select do |ability|
-        right_type?(ability, type) &&
-          right_owner?(ability, owner_type) &&
-          usable_this_or?(ability) &&
-          right_time?(ability, time, strict_time) &&
-          usable?(ability)
-      end
-
-      active_abilities.each { |ability| yield ability } if block_given?
-
-      return nil if active_abilities.none?
-      return active_abilities.first if active_abilities.one?
-
-      active_abilities
-    end
-
     def add_ability(ability)
       ability.owner = self
       @abilities << ability
@@ -73,65 +56,6 @@ module Engine
         count = [a.count, a.start_count] if a.start_count
       end
       count
-    end
-
-    private
-
-    def right_type?(ability, type)
-      !type || (ability.type == type)
-    end
-
-    def right_owner?(ability, owner_type)
-      correct_owner_type =
-        case ability.owner_type
-        when :player
-          !owner || owner.player?
-        when :corporation
-          owner&.corporation?
-        when nil
-          true
-        end
-      return false unless correct_owner_type
-      return false if owner_type && (ability.owner_type.to_s != owner_type.to_s)
-
-      true
-    end
-
-    def usable_this_or?(ability)
-      !ability.count_per_or || (ability.count_this_or < ability.count_per_or)
-    end
-
-    def right_time?(ability, time, strict_time)
-      return false if strict_time && !ability.when
-      return true unless time
-
-      if ability.when == 'any'
-        !strict_time
-      elsif ability.when == 'owning_corp_or_turn'
-        %w[owning_corp_or_turn track].include?(time)
-      else
-        ability.when == time.to_s
-      end
-    end
-
-    def usable?(ability)
-      case ability
-      when Ability::Token
-        return true if ability.hexes.none?
-
-        corporation =
-          if ability.owner.is_a?(Corporation)
-            ability.owner
-          elsif ability.owner.owner.is_a?(Corporation)
-            ability.owner.owner
-          end
-        return true unless corporation
-
-        tokened_hexes = corporation.tokens.select(&:used).map(&:city).map(&:hex).map(&:id)
-        (ability.hexes - tokened_hexes).any?
-      else
-        true
-      end
     end
   end
 end
