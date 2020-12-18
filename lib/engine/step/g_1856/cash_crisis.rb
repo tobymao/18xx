@@ -64,6 +64,7 @@ module Engine
           corporation = bundle.corporation
           if corporation.president?(player) && (
               @round.cash_crisis_due_to_interest == corporation ||
+              @round.cash_crisis_due_to_forced_repay == corporation ||
               corporation == current_entity)
             share_holders = corporation.player_share_holders
             remaining = share_holders[player] - bundle.percent
