@@ -648,7 +648,7 @@ module Engine
       end
 
       def remove_ability(corporation, ability_name)
-        corporation.abilities(ability_name) do |ability|
+        abilities(corporation, ability_name) do |ability|
           corporation.remove_ability(ability)
         end
       end

@@ -23,7 +23,7 @@ module View
       end
 
       def render
-        return h(:span) unless (ability = @selected_company&.abilities(:exchange))
+        return h(:span) unless (ability = @game.abilities(@selected_company, :exchange))
 
         children = []
         corporations =

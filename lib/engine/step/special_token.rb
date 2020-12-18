@@ -51,7 +51,7 @@ module Engine
       def ability(entity)
         return unless entity&.company?
 
-        entity.abilities(:token)
+        @game.abilities(entity, :token)
       end
     end
   end

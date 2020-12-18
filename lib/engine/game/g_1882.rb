@@ -121,13 +121,13 @@ module Engine
         cp.add_ability(Ability::Close.new(
           type: :close,
           when: :train,
-          corporation: cp.abilities(:shares).shares.first.corporation.name,
+          corporation: abilities(cp, :shares).shares.first.corporation.name,
         ))
       end
 
       def init_company_abilities
         @companies.each do |company|
-          next unless (ability = company.abilities(:exchange))
+          next unless (ability = abilities(company, :exchange))
 
           next unless ability.from.include?(:par)
 

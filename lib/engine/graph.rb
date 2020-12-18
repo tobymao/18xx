@@ -105,7 +105,7 @@ module Engine
 
       tokens = nodes.dup
 
-      corporation.abilities(:token) do |ability, c|
+      @game.abilities(corporation, :token) do |ability, c|
         next unless c == corporation # Private company token ability uses round/special.rb.
         next unless ability.teleport_price
 
@@ -117,7 +117,7 @@ module Engine
         end
       end
 
-      corporation.abilities(:teleport) do |ability, _|
+      @game.abilities(corporation, :teleport) do |ability, _|
         ability.hexes.each do |hex_id|
           hex = @game.hex_by_id(hex_id)
           hex.neighbors.each { |e, _| hexes[hex][e] = true }

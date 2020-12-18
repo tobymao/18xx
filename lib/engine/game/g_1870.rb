@@ -172,7 +172,7 @@ module Engine
       end
 
       def legal_tile_rotation?(_entity, hex, tile)
-        return true unless river_company.abilities(:blocks_partition)
+        return true unless abilities(river_company, :blocks_partition)
 
         (tile.exits & hex.tile.borders.select { |b| b.type == :water }.map(&:edge)).empty? &&
           hex.tile.partitions.all? do |partition|

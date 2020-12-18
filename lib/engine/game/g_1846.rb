@@ -132,7 +132,7 @@ module Engine
         corporation_removal_groups.each do |group|
           remove_from_group!(group, @corporations) do |corporation|
             place_home_token(corporation)
-            corporation.abilities(:reservation) do |ability|
+            abilities(corporation, :reservation) do |ability|
               corporation.remove_ability(ability)
             end
             place_second_token(corporation)
@@ -336,7 +336,7 @@ module Engine
       def check_special_tile_lay(action)
         company = @last_action&.entity
         return unless special_tile_lay?(@last_action)
-        return unless (ability = company.abilities(:tile_lay))
+        return unless (ability = abilities(company, :tile_lay))
         return if action.entity == company
 
         company.remove_ability(ability)

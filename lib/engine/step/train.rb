@@ -183,7 +183,7 @@ module Engine
       private
 
       def face_value_ability?(entity)
-        entity.abilities(:train_buy) { |ability| return ability.face_value }
+        @game.abilities(entity, :train_buy) { |ability| return ability.face_value }
         false
       end
     end

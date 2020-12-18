@@ -12,7 +12,7 @@ module Engine
           @game.game_error("#{company.owner.name} owns no trains") if company.owner.trains.empty?
 
           target = action.target
-          hexes = company.abilities(:assign_hexes)&.hexes
+          hexes = @game.abilities(company, :assign_hexes)&.hexes
           location = @game.get_location_name(target.id)
           if !@game.loading && @game.graph.reachable_hexes(company.owner).find { |h, _| h.id == target.id }.nil?
             @game.game_error("#{location} is not reachable")

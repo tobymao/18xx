@@ -152,11 +152,11 @@ module Engine
 
           case @state
           when nil
-            entity.abilities(:token)
+            @game.abilities(entity, :token)
           when :place_token
-            entity.abilities(:token)
+            @game.abilities(entity, :token)
           when :lay_tile
-            entity.abilities(:tile_lay, time: 'track')
+            @game.abilities(entity, :tile_lay, time: 'track')
           end
         end
       end
