@@ -63,7 +63,7 @@ module Engine
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
-      LIMIT_TOKENS = 8
+      LIMIT_TOKENS_AFTER_MERGER = 8
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
                                                                   'Game Ends 3 ORs after purchase/export'\
@@ -541,7 +541,7 @@ module Engine
             @stock_prices_start_merger = @corporations.map { |corp| [corp, corp.share_price] }.to_h
             @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
             Round::G1817::Merger.new(self, [
-              Step::G1817::ReduceTokens,
+              Step::ReduceTokens,
               Step::DiscardTrain,
               Step::G1817::PostConversion,
               Step::G1817::PostConversionLoans,
@@ -550,7 +550,7 @@ module Engine
           when Round::G1817::Merger
             @log << "-- #{round_description('Acquisition', @round.round_num)} --"
             Round::G1817::Acquisition.new(self, [
-              Step::G1817::ReduceTokens,
+              Step::ReduceTokens,
               Step::G1817::Bankrupt,
               Step::G1817::CashCrisis,
               Step::DiscardTrain,

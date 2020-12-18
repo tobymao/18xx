@@ -2,7 +2,7 @@
 
 require_relative '../base'
 require_relative '../../token'
-require_relative 'token_merger'
+require_relative '../token_merger'
 
 module Engine
   module Step
