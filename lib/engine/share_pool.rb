@@ -48,7 +48,7 @@ module Engine
                 "#{@game.format_currency(par_price)}"
       end
 
-      share_str = "a #{bundle.percent}% share"
+      share_str = "a #{bundle.percent}% share "
       share_str += "of #{corporation.name}" unless entity == corporation
       incremental = corporation.capitalization == :incremental
 
