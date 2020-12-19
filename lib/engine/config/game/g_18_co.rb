@@ -486,7 +486,8 @@ module Engine
 				},
 				{
 					"type": "close",
-					"corporation": "Durango and Silverton Narrow Gauge"
+					"when": "run_train",
+					"corporation": "DSNG"
 				},
 				{
 					"type": "no_buy"
