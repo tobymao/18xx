@@ -105,6 +105,7 @@ module Engine
 
         exchange_token(token, cheater: cheater)
         tile.reservations.delete(corporation)
+        reservations.delete(corporation)
       end
 
       def exchange_token(token, cheater: false)

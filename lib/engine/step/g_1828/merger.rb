@@ -1,17 +1,13 @@
 # frozen_string_literal: true
 
 require_relative '../base'
-require_relative 'token_merger'
+require_relative '../../token'
 
 module Engine
   module Step
     module G1828
       class Merger < Base
         ACTIONS = %w[merge].freeze
-
-        def initialize
-          @token_merger = TokenMerger.new(@game.blocking_corporation)
-        end
 
         def description
           "Select a corporation to merge with #{initiator.name}"
@@ -31,6 +27,8 @@ module Engine
           corporation = action.entity
           target = action.corporation
           @log << "Merging #{corporation.name} with #{target.name}"
+
+          merge_corporations(corporation, target)
         end
 
         def merging_corporation
@@ -81,18 +79,52 @@ module Engine
           end
         end
 
+      private
+
         def merge_corporations(first, second)
           @system = first
           second.spend(second.cash, @system)
-          second.transfer(:trains, @system)
-          @token_merger.merge(@system, second)
+          #second.transfer(:trains, @system)
+          hexes_to_remove_tokens = merge_tokens(@system, second)
 
-          if @token_merger.hexes_to_resolve.any?
+          if hexes_to_remove_tokens.any?
             @round.corporation_removing_tokens = @system
-            @round.hexes_to_remove_tokens = @token_merger.hexes_to_resolve
+            @round.hexes_to_remove_tokens = hexes_to_remove_tokens
           end
 
           @system
+        end
+
+        def merge_tokens(first, second)
+          hexes_to_remove_tokens = []
+
+          used, unused = (first.tokens + second.tokens).partition(&:used)
+          first.tokens.clear
+
+          used.group_by { |t| t.city.hex }.each do |hex, tokens|
+            if tokens.one? && tokens.first.corporation == first
+              first.tokens << tokens.first
+            elsif tokens.one?
+              replace_token(first, tokens.first)
+            elsif tokens[0].city == tokens[1].city
+              tokens.find { |t| t.corporation == second }.remove!
+              @game.place_blocking_token(hex)
+            else
+              first.tokens << tokens.find { |t| t.corporation == first }
+              replace_token(first, tokens.find { |t| t.corporation == second })
+              hexes_to_remove_tokens << hex
+            end
+          end
+
+          unused.each { |t| first.tokens << Engine::Token.new(first, price: t.price) }
+
+          hexes_to_remove_tokens
+        end
+
+        def replace_token(corporation, token)
+          new_token = Engine::Token.new(corporation, price: token.price)
+          corporation.tokens << new_token
+          token.swap!(new_token, check_tokenable: false)
         end
       end
     end
