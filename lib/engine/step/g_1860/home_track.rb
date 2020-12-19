@@ -50,7 +50,7 @@ module Engine
 
         def any_tiles?(entity)
           hex = pending_track[:hexes].first
-          upgradeable_tiles(entity, hex).any?
+          any_upgradeable_tiles?(entity, hex)
         end
 
         def process_pass(action)

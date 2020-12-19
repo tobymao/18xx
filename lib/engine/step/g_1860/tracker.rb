@@ -196,6 +196,22 @@ module Engine
           end
         end
 
+        # can be used by Step to see if any layable tiles exist for a given hex
+        # This has fewer side-effects than the base upgradeable_tiles method
+        def any_upgradeable_tiles?(entity, hex)
+          potential_tiles(entity, hex).each do |tile|
+            return true if tile.legal_rotations.any?
+
+            tile.rotate!(0) # reset tile to no rotation since calculations are absolute
+            tile.legal_rotations = legal_tile_rotations(entity, hex, tile)
+            next if tile.legal_rotations.empty?
+
+            tile.rotate! # rotate it to the first legal rotation
+            return true
+          end
+          false
+        end
+
         def legal_tile_rotation?(entity, hex, tile)
           return false unless @game.legal_tile_rotation?(entity, hex, tile)
 
