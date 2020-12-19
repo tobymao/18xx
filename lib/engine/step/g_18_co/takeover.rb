@@ -186,6 +186,7 @@ module Engine
         def transfer_trains(source, destination)
           return unless source.trains.any?
 
+          source.trains.each { |train| train.operated = false }
           transferred = source.transfer(:trains, destination)
 
           @game.log << "#{destination.name} takes #{transferred.map(&:name).join(', ')}"\
