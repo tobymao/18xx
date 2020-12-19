@@ -83,7 +83,7 @@ module Engine
         'A' => 60,
       }.freeze
 
-      EAST_HEXES = %w[A26 J26 E27 G27].freeze
+      EAST_HEXES = %w[B26 J26 E27 G27].freeze
 
       BASE_MINE_VALUE = 10
 
