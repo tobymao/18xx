@@ -118,17 +118,6 @@ module Engine
         ])
       end
 
-      def event_earthquake!
-        @log << '-- Event: Messina Earthquake --'
-        # Remove tile from Messina
-
-        # Remove from game tokens on Messina
-
-        # If Garibaldi's only token removed, close Garibaldi
-
-        # Messina cannot be upgraded until after next stock round
-      end
-
       def operating_round(round_num)
         Round::Operating.new(self, [
                                Step::Bankrupt,
@@ -141,8 +130,36 @@ module Engine
                                Step::Route,
                                Step::Dividend,
                                Step::BuyTrain,
+                               Step::G1849::IssueShares,
                                [Step::BuyCompany, blocks: true],
                              ], round_num: round_num)
+      end
+
+      def issuable_shares(entity)
+        return [] unless entity.operating_history.size > 1
+
+        num_shares = 5 - entity.num_market_shares
+        bundles = bundles_for_corporation(entity, entity)
+
+        bundles.reject { |bundle| bundle.num_shares > num_shares }
+      end
+
+      def redeemable_shares(entity)
+        return [] unless entity.operating_history.size > 1
+
+        bundles_for_corporation(share_pool, entity)
+          .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
+      end
+
+      def event_earthquake!
+        @log << '-- Event: Messina Earthquake --'
+        # Remove tile from Messina
+
+        # Remove from game tokens on Messina
+
+        # If Garibaldi's only token removed, close Garibaldi
+
+        # Messina cannot be upgraded until after next stock round
       end
 
       def new_track(old_tile, new_tile)
