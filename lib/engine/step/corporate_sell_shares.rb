@@ -62,7 +62,7 @@ module Engine
           next if bought?(entity, share.corporation)
 
           share.corporation
-        end.compact
+        end.compact.uniq
       end
 
       def bought?(entity, corporation)
