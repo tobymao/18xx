@@ -43,7 +43,7 @@ module Engine
 
         def can_exchange?(entity, bundle = nil)
           return false unless entity.company?
-          return false unless (ability = entity.abilities(:exchange))
+          return false unless (ability = @game.abilities(entity, :exchange))
 
           owner = entity.owner
           return can_gain?(owner, bundle, exchange: true) if bundle

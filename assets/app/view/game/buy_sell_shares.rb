@@ -130,7 +130,7 @@ module View
         children = []
 
         @game.companies.each do |company|
-          company.abilities(:exchange) do |ability|
+          @game.abilities(company, :exchange) do |ability|
             next if ability.corporation != @corporation.name && ability.corporation != 'any'
             next unless company.owner == @current_entity
 

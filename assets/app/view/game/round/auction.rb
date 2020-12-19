@@ -61,7 +61,8 @@ module View
         def render_company_pending_par
           children = []
 
-          @step.companies_pending_par.first.abilities(:shares).shares.each do |share|
+          company = @step.companies_pending_par.first
+          @game.abilities(company, :shares).shares.each do |share|
             next unless share.president
 
             children << h(Corporation, corporation: share.corporation)

@@ -126,7 +126,8 @@ module Engine
       # when upgrading, preserve reservations on previous tile
       city_map.each do |old_city, new_city|
         old_city.reservations.compact.each do |entity|
-          entity.abilities(:reservation) do |ability|
+          entity.all_abilities.each do |ability|
+            next unless ability.type == :reservation
             next unless ability.hex == coordinates
 
             ability.tile = new_city.tile

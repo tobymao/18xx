@@ -25,7 +25,7 @@ module Engine
 
         def remaining_tile_lay?(entity)
           can_lay_tile?(entity) ||
-          @game.companies.find { |c| c.owner == entity && c.abilities(:tile_lay)&.count&.positive? }
+          @game.companies.find { |c| c.owner == entity && @game.abilities(c, :tile_lay)&.count&.positive? }
         end
       end
     end

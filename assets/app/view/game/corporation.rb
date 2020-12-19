@@ -541,7 +541,7 @@ module View
       end
 
       def can_assign_corporation?
-        @selected_corporation && @selected_company&.abilities(:assign_corporation)
+        @selected_corporation && @game.abilities(@selected_company, :assign_corporation)
       end
     end
   end

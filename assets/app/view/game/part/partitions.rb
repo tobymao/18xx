@@ -52,7 +52,9 @@ module View
           children = []
 
           @tile.partitions.each do |partition|
-            next unless partition.blockers.any? { |b| b.abilities(:blocks_partition)&.blocks?(partition.type) }
+            next if partition.blockers.none? do |blocker|
+              blocker.all_abilities.find { |a| a.type == :blocks_partition && a.blocks?(partition.type) }
+            end
 
             a_control = VERTICES[(partition.a + partition.a_sign) % 6]
             vertex_a = convex_combination(VERTICES[partition.a], a_control)

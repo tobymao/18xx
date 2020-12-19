@@ -71,9 +71,9 @@ module Engine
       def tile_lay_abilities(entity, &block)
         return unless entity&.company?
 
-        ability = entity.abilities(:tile_lay, time: 'sold', &block) if @round.respond_to?(:just_sold_company) &&
+        ability = @game.abilities(entity, :tile_lay, time: 'sold', &block) if @round.respond_to?(:just_sold_company) &&
           entity == @round.just_sold_company
-        ability || entity.abilities(:tile_lay, time: 'track', &block)
+        ability || @game.abilities(entity, :tile_lay, time: 'track', &block)
       end
 
       def check_connect(_action, ability)

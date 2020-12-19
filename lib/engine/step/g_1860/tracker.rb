@@ -47,7 +47,7 @@ module Engine
 
           @game.companies.each do |company|
             next if company.closed?
-            next unless (ability = company.abilities(:blocks_hexes))
+            next unless (ability = @game.abilities(company, :blocks_hexes))
 
             @game.game_error("#{hex.id} is blocked by #{company.name}") if ability.hexes.include?(hex.id)
           end
@@ -96,7 +96,7 @@ module Engine
             extra_cost += ability.cost
           end
 
-          entity.abilities(:teleport) do |ability, _|
+          @game.abilities(entity, :teleport) do |ability, _|
             ability.use! if ability.hexes.include?(hex.id) && ability.tiles.include?(tile.name)
           end
 

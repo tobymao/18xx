@@ -9,7 +9,8 @@ module Engine
 
       def actions(entity)
         return [] unless entity.company?
-        return ACTIONS if entity.abilities(:assign_hexes) || entity.abilities(:assign_corporation)
+        return ACTIONS if @game.abilities(entity, :assign_hexes) ||
+                          @game.abilities(entity, :assign_corporation)
 
         []
       end
@@ -21,7 +22,7 @@ module Engine
 
         case target
         when Hex
-          if (ability = company.abilities(:assign_hexes))
+          if (ability = @game.abilities(company, :assign_hexes))
             assignable_hexes = ability.hexes.map { |h| @game.hex_by_id(h) }
             Assignable.remove_from_all!(assignable_hexes, company.id) do |unassigned|
               @log << "#{company.name} is unassigned from #{unassigned.name}"
@@ -33,7 +34,8 @@ module Engine
             @game.game_error("Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found")
           end
         when Corporation, Minor
-          if assignable_corporations(company).include?(target) && (ability = company.abilities(:assign_corporation))
+          if assignable_corporations(company).include?(target) &&
+             (ability = @game.abilities(company, :assign_corporation))
             Assignable.remove_from_all!(assignable_corporations, company.id) do |unassigned|
               @log << "#{company.name} is unassigned from #{unassigned.name}"
             end
@@ -54,7 +56,7 @@ module Engine
 
       def available_hex(entity, hex)
         return unless entity.company?
-        return unless entity.abilities(:assign_hexes)&.hexes&.include?(hex.id)
+        return unless @game.abilities(entity, :assign_hexes)&.hexes&.include?(hex.id)
         return if hex.assigned?(entity.id)
 
         @game.hex_by_id(hex.id).neighbors.keys

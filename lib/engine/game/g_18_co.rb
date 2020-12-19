@@ -148,7 +148,7 @@ module Engine
       end
 
       def mines_count(entity)
-        entity.abilities(:mine_income).sum(&:count_per_or)
+        Array(abilities(entity, :mine_income)).sum(&:count_per_or)
       end
 
       def mine_multiplier(entity)
@@ -164,7 +164,7 @@ module Engine
       end
 
       def mines_remove(entity)
-        entity.abilities(:mine_income) do |ability|
+        abilities(entity, :mine_income) do |ability|
           entity.remove_ability(ability)
         end
       end
@@ -515,7 +515,7 @@ module Engine
         @companies.select do |company|
           (company.owner&.player? || company.owner.nil?) &&
             (entity.nil? || entity != company.owner) &&
-            !company.abilities(:no_buy)
+            !abilities(company, :no_buy)
         end
       end
     end

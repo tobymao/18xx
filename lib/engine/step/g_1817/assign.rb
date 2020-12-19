@@ -10,7 +10,7 @@ module Engine
           company = action.entity
           target = action.target
 
-          unless (ability = company.abilities(:assign_hexes))
+          unless (ability = @game.abilities(company, :assign_hexes))
             @game.game_error("Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found")
           end
 
