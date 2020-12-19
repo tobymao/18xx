@@ -171,7 +171,13 @@ module View
     end
 
     def menu
-      bg_color = color_for(@game_data['mode'] == :hotseat ? :hotseat_game : (active_player ? :your_turn : :bg2))
+      bg_color =  if @game_data['mode'] == :hotseat
+                    color_for(:hotseat_game)
+                  elsif active_player
+                    color_for(:your_turn)
+                  else
+                    color_for(:bg2)
+                  end
       nav_props = {
         attrs: {
           role: 'navigation',
