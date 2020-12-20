@@ -264,7 +264,16 @@ module Engine
       "sym": "FT",
       "value": 20,
       "revenue": 5,
-      "desc": "No special abilities."
+      "desc": "No special abilities.",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "L3"
+          ]
+        }
+      ]
     },
     {
       "name": "Waterloo & Saugeen Railway Co.",
