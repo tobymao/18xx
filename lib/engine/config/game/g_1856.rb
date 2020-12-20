@@ -287,7 +287,31 @@ module Engine
       "sym": "TCC",
       "value": 50,
       "revenue": 10,
-      "desc": "During its operating turn, the public company owning this private company may place a track tile in the hex occupied by this private company (H11). This track lay is in addition to the public company's normal track lay. This action does not close the private company."
+      "desc": "During its operating turn, the public company owning this private company may place a track tile in the hex occupied by this private company (H11). This track lay is in addition to the public company's normal track lay. This action does not close the private company.",
+      "abilities":[
+         {
+            "type":"blocks_hexes",
+            "owner_type":"player",
+            "hexes":[
+               "H11"
+            ]
+         },
+         {
+            "type":"tile_lay",
+            "owner_type":"corporation",
+            "free":true,
+            "hexes":[
+               "H11"
+            ],
+             "tiles": [
+               "3",
+               "4",
+               "58"
+             ],
+            "when":"track",
+            "count":1
+         }
+      ]
     },
     {
       "name": "Great Lakes Shipping Company",
