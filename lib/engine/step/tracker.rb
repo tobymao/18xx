@@ -171,6 +171,7 @@ module Engine
 
           ability = entity.all_abilities.find do |a|
             (a.type == :tile_discount) &&
+             a.terrain &&
              (border.type == a.terrain) &&
              (!a.hexes || a.hexes.include?(hex.name))
           end

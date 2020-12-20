@@ -6,9 +6,10 @@ module Engine
   module Ability
     class TileDiscount < Base
       attr_reader :terrain, :discount, :hexes
-      def setup(terrain:, discount:, hexes: nil)
-        @terrain = terrain.to_sym
+
+      def setup(discount:, terrain: nil, hexes: nil)
         @discount = discount
+        @terrain = terrain&.to_sym
         @hexes = hexes
       end
     end

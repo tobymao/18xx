@@ -1041,18 +1041,30 @@ module Engine
           (!a.hexes || a.hexes.include?(hex.name))
         end
 
-        tile.upgrades.sum do |upgrade|
+        cost = tile.upgrades.sum do |upgrade|
           discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
 
-          if discount.positive?
-            @log << "#{entity.name} receives a discount of "\
-              "#{format_currency(discount)} from "\
-              "#{ability.owner.name}"
-          end
+          log_tile_cost_discount(entity, ability, discount)
 
           total_cost = upgrade.cost - discount
           total_cost
         end
+
+        if ability && ability.terrain.nil?
+          log_tile_cost_discount(entity, ability, discount)
+
+          cost -= ability.discount
+        end
+
+        cost
+      end
+
+      def log_tile_cost_discount(entity, ability, discount)
+        return unless discount.positive?
+
+        @log << "#{entity.name} receives a discount of "\
+                "#{format_currency(discount)} from "\
+                "#{ability.owner.name}"
       end
 
       def declare_bankrupt(player)
