@@ -197,6 +197,7 @@ describe 'Assets' do
       ['1846', 'hs_sudambau_1600037415', 41, 'buy_train_issuing',
        ['B&amp;O has $120',
         'B&amp;O can issue shares to raise up to $40',
+        'Emergency Issue',
         '!!Bankruptcy']],
       ['1846', 'hs_sudambau_1600037415', 50, 'buy_train_president_cash',
        ['B&amp;O has $146',
