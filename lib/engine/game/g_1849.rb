@@ -71,6 +71,9 @@ module Engine
 
       def after_par(corporation)
         super
+        corporation.spend(corporation.token_fee, @bank)
+        @log << "#{corporation.name} spends #{format_currency(corporation.token_fee)}
+                 for tokens"
         corporation.next_to_par = false
         index = @corporations.index(corporation)
 
@@ -114,7 +117,7 @@ module Engine
         Round::Stock.new(self, [
           Step::DiscardTrain,
           Step::HomeToken,
-          Step::BuySellParShares,
+          Step::G1849::BuySellParShares,
         ])
       end
 
