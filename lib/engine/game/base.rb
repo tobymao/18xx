@@ -711,24 +711,26 @@ module Engine
       def all_bundles_for_corporation(share_holder, corporation, shares: nil)
         return [] unless corporation.ipoed
 
-        shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
+        shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.price] }
 
         bundles = shares.flat_map.with_index do |share, index|
           bundle = shares.take(index + 1)
           percent = bundle.sum(&:percent)
           bundles = [Engine::ShareBundle.new(bundle, percent)]
-          if share.president
-            normal_percent = corporation.share_percent
-            difference = corporation.presidents_percent - normal_percent
-            num_partial_bundles = difference / normal_percent
-            (1..num_partial_bundles).each do |n|
-              bundles.insert(0, Engine::ShareBundle.new(bundle, percent - (normal_percent * n)))
-            end
-          end
+          bundles.concat(partial_bundles_for_presidents_share(corporation, bundle, percent)) if share.president
           bundles
         end
 
-        bundles
+        bundles.sort_by(&:percent)
+      end
+
+      def partial_bundles_for_presidents_share(corporation, bundle, percent)
+        normal_percent = corporation.share_percent
+        difference = corporation.presidents_percent - normal_percent
+        num_partial_bundles = difference / normal_percent
+        (1..num_partial_bundles).map do |n|
+          Engine::ShareBundle.new(bundle, percent - (normal_percent * n))
+        end
       end
 
       def num_certs(entity)
