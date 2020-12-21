@@ -21,6 +21,23 @@ module Engine
           super
         end
 
+        def select_entities
+          @game.corporations.select { |c| c.floated? || c.floatable? }.sort
+        end
+
+        def start_operating
+          corporation = @entities[@entity_index]
+          if !corporation.floated? && corporation.floatable?
+            @log << "#{corporation.name} floats"
+            corporation.float!
+          end
+          unless corporation.floated?
+            @log << "#{corporation.name} failed to float and is skipped"
+            return force_next_entity!
+          end
+          super
+        end
+
         def after_process(_action)
           # Keep track of last_player for Cash Crisis
           entity = @entities[@entity_index]
