@@ -29,20 +29,57 @@ module View
           @num_cities = @tile.cities.size
         end
 
-        def render_part
-          children = @icons.map.with_index do |icon, index|
-            h(:image,
-              attrs: {
-                href: icon.image,
-                x: ((index - (@icons.size - 1) / 2.0) * -DELTA_X).round(2),
-                width: "#{ICON_RADIUS * 2}px",
-                height: "#{ICON_RADIUS * 2}px",
-              })
+        def destination_icon_patterns
+          @icons.select{ |i| i.destination?}.map.with_index do |icon, index|
+            h(:pattern,
+              {
+                attrs: {
+                  id: "#{@tile.id}_#{index}",
+                  width: "#{2 * ICON_RADIUS}",
+                  height: "#{2 * ICON_RADIUS}"
+                }
+              },
+              [
+                h(
+                  :image,
+                  attrs: {
+                    href: icon.image,
+                    width: "#{2 * ICON_RADIUS}",
+                    height: "#{2 * ICON_RADIUS}",
+                  }
+                )
+              ]
+            )
           end
+        end
 
-          h(:g, { attrs: { transform: "#{rotation_for_layout} translate(#{-ICON_RADIUS} #{-ICON_RADIUS})" } }, [
+        def render_part
+          patterns = destination_icon_patterns
+          children = @icons.map.with_index do |icon, index|
+            if icon.destination?
+              h(:circle,
+                attrs: {
+                  fill: "url(##{@tile.id}_#{index})",#icon.image,
+                  cx: "#{ICON_RADIUS + ((index - (@icons.size - 1) / 2.0) * -DELTA_X).round(2)}px",
+                  cy: "#{ICON_RADIUS}px",
+                  r: "#{ICON_RADIUS}px"
+                })
+            elsif
+              h(:image,
+                attrs: {
+                  href: icon.image,
+                  x: ((index - (@icons.size - 1) / 2.0) * -DELTA_X).round(2),
+                  width: "#{ICON_RADIUS * 2}px",
+                  height: "#{ICON_RADIUS * 2}px",
+                })
+            end
+          end
+          h(:g, [
+            h(:defs, patterns),
+            h(:g, { attrs: { transform: "#{rotation_for_layout} translate(#{-ICON_RADIUS} #{-ICON_RADIUS})" } }, [
               h(:g, { attrs: { transform: translate } }, children),
             ])
+          ])
         end
       end
     end

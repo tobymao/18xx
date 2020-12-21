@@ -81,6 +81,14 @@ game config/code:
       normal black line so that two adjacent tiles appear joined.
     - **cost** - integer - cost to cross for mountain/water borders
 - **junction** - the center point of a Lawson-style tile
+- **destination** - Specialization of icon
+    - **image** - *required* - name of image, will be rendered with file at `public/#{image}.svg`
+    - **name** - Ignored. Name is taken from the one of two of `corporation` or `minor` that is specified
+    - **corporation** - *optional* - symbol for the corporation this destination is for. Either this or `minor` must be specified
+    - **minor** - *optional* - symbol for the minor this destination is for. Either this or `corporation` must be specified
+    - **sticky** - `1` indicates the icon should remain visible when a tile
+      upgrade is placed on this hex
+    - **blocks_lay** - indicates this tile cannot be laid normally
 - **icon**
     - **image** - *required* - name of image, will be rendered with file at
       `public/icons/#{image}.svg`
