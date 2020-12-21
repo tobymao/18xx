@@ -72,7 +72,7 @@ module Engine
 
       def gray_phase?
         @phase.tiles.include?('gray')
-      end     
+      end
 
       def revenue_for(route, stops)
         revenue = super
@@ -292,7 +292,7 @@ module Engine
           Step::G1856::CashCrisis,
           # No exchanges.
           Step::DiscardTrain,
-          Step::Assign,
+          Step::G1856::Assign,
           Step::G1856::Loan,
           Step::SpecialTrack,
           Step::BuyCompany,
