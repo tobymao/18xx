@@ -292,6 +292,7 @@ module Engine
           Step::G1856::CashCrisis,
           # No exchanges.
           Step::DiscardTrain,
+          Step::Assign,
           Step::G1856::Loan,
           Step::SpecialTrack,
           Step::BuyCompany,
