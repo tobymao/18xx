@@ -383,7 +383,7 @@ module Engine
             new_operating_round
           when Round::Operating
             or_round_finished
-            if phase.name.to_i <= 3 || phase.name.to_i >= 8
+            if phase.name.to_i < 3 || phase.name.to_i >= 8
               new_or!
             else
               @log << "-- #{round_description('Merger', @round.round_num)} --"
