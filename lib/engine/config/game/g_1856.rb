@@ -280,7 +280,26 @@ module Engine
       "sym": "WSRC",
       "value": 40,
       "revenue": 10,
-      "desc": "The public company that owns this private company may place a free station marker and green #59 tile on the Kitchener hex (I12). This action closes the private company."
+      "desc": "The public company that owns this private company may place a free station marker and green #59 tile on the Kitchener hex (I12). This action closes the private company.",
+      "abilities":[
+         {
+            "type":"blocks_hexes",
+            "owner_type":"player",
+            "hexes":[
+               "I12"
+            ]
+         },
+         {
+            "type":"teleport",
+            "owner_type":"corporation",
+            "hexes":[
+               "I12"
+            ],
+             "tiles": [
+               "59"
+             ]
+         }
+      ]
     },
     {
       "name": "The Canada Company",
