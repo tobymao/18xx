@@ -36,6 +36,10 @@ module Engine
         false
       end
 
+      def can_par?
+        self == @game.national ? false : super
+      end
+
       def par!
         @capitalization = _capitalization_type
         @escrow = 0 if @capitalization == :escrow

@@ -72,6 +72,10 @@ module Engine
         'GLSC' => '/icons/1846/sc_token.svg',
       }.freeze
 
+      def national
+        @national ||= corporation_by_id('CGR')
+      end
+
       def gray_phase?
         @phase.tiles.include?('gray')
       end
