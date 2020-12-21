@@ -55,7 +55,7 @@ module View
           elsif (company = entity).company?
             left << h(Company, company: company)
 
-            if company.abilities(:assign_corporation)
+            if @game.abilities(company, :assign_corporation)
               props = {
                 style: {
                   display: 'inline-block',

@@ -185,6 +185,7 @@ module Engine
             "H18"
           ],
           "count": 2,
+          "when": "owning_corp_or_turn",
           "owner_type": "corporation"
         }
       ]

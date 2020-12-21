@@ -7,7 +7,7 @@ module View
   module Game
     class BuyCompanies < Snabberb::Component
       include Actionable
-
+      needs :show_other_players, default: nil, store: true
       needs :selected_company, default: nil, store: true
       needs :limit_width, default: false
 
@@ -21,6 +21,7 @@ module View
       end
 
       def render_companies
+        hidden_companies = false
         props = {
           style: {
             display: 'inline-block',
@@ -32,11 +33,34 @@ module View
           [company.owner == @corporation.owner ? 0 : 1, company.value]
         end
 
-        companies.map do |company|
+        companies_to_buy = companies.map do |company|
+          if company.owner != @corporation.owner && !@show_other_players
+            hidden_companies = true
+            next
+          end
           children = [h(Company, company: company)]
           children << render_input if @selected_company == company
           h(:div, props, children)
         end
+
+        button_props = {
+          style: {
+            display: 'grid',
+            gridColumn: '1/4',
+            width: 'max-content',
+          },
+        }
+
+        if hidden_companies
+          companies_to_buy << h('button.no_margin',
+                                { on: { click: -> { store(:show_other_players, true) } }, **button_props },
+                                'Show companies from other players')
+        elsif @show_other_players
+          companies_to_buy << h('button.no_margin',
+                                { on: { click: -> { store(:show_other_players, false) } }, **button_props },
+                                'Hide companies from other players')
+        end
+        companies_to_buy.compact
       end
 
       def render_input

@@ -24,10 +24,13 @@ module Engine
 
         actions = []
         actions << 'corporate_buy_shares' if can_buy_any?(entity)
-
         actions << 'pass' if actions.any?
 
         actions
+      end
+
+      def pass_description
+        'Pass (Share Buy)'
       end
 
       def log_pass(entity)
@@ -78,7 +81,7 @@ module Engine
       def source_list(entity)
         source = if @game.class::CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY && bought?(entity)
                    @game.sorted_corporations.select do |corp|
-                     corp == @bought.last &&
+                     corp == last_bought(entity) &&
                        !corp.num_market_shares.zero? &&
                        can_buy_corp_from_market?(entity, corp)
                    end

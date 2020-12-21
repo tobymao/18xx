@@ -37,8 +37,7 @@ module Engine
       end
 
       def can_par?
-        return super unless self == @game.national
-        false
+        self == @game.national ? false : super
       end
 
       def par!

@@ -178,6 +178,7 @@ module Engine
       DISCARDED_TRAINS = :discard # discarded or removed?
       DISCARDED_TRAIN_DISCOUNT = 0 # percent
       CLOSED_CORP_TRAINS = :removed # discarded or removed?
+      CLOSED_CORP_RESERVATIONS = :removed # remain or removed?
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
 
@@ -642,7 +643,7 @@ module Engine
 
       def purchasable_companies(entity = nil)
         @companies.select do |company|
-          company.owner&.player? && entity != company.owner && !company.abilities(:no_buy)
+          company.owner&.player? && entity != company.owner && !abilities(company, :no_buy)
         end
       end
 
@@ -710,24 +711,26 @@ module Engine
       def all_bundles_for_corporation(share_holder, corporation, shares: nil)
         return [] unless corporation.ipoed
 
-        shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
+        shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.price] }
 
         bundles = shares.flat_map.with_index do |share, index|
           bundle = shares.take(index + 1)
           percent = bundle.sum(&:percent)
           bundles = [Engine::ShareBundle.new(bundle, percent)]
-          if share.president
-            normal_percent = corporation.share_percent
-            difference = corporation.presidents_percent - normal_percent
-            num_partial_bundles = difference / normal_percent
-            (1..num_partial_bundles).each do |n|
-              bundles.insert(0, Engine::ShareBundle.new(bundle, percent - (normal_percent * n)))
-            end
-          end
+          bundles.concat(partial_bundles_for_presidents_share(corporation, bundle, percent)) if share.president
           bundles
         end
 
-        bundles
+        bundles.sort_by(&:percent)
+      end
+
+      def partial_bundles_for_presidents_share(corporation, bundle, percent)
+        normal_percent = corporation.share_percent
+        difference = corporation.presidents_percent - normal_percent
+        num_partial_bundles = difference / normal_percent
+        (1..num_partial_bundles).map do |n|
+          Engine::ShareBundle.new(bundle, percent - (normal_percent * n))
+        end
       end
 
       def num_certs(entity)
@@ -959,7 +962,7 @@ module Engine
 
       def all_companies_with_ability(ability)
         @companies.each do |company|
-          if (found_ability = company.abilities(ability))
+          if (found_ability = abilities(company, ability))
             yield company, found_ability
           end
         end
@@ -1040,18 +1043,30 @@ module Engine
           (!a.hexes || a.hexes.include?(hex.name))
         end
 
-        tile.upgrades.sum do |upgrade|
+        cost = tile.upgrades.sum do |upgrade|
           discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
 
-          if discount.positive?
-            @log << "#{entity.name} receives a discount of "\
-              "#{format_currency(discount)} from "\
-              "#{ability.owner.name}"
-          end
+          log_tile_cost_discount(entity, ability, discount)
 
           total_cost = upgrade.cost - discount
           total_cost
         end
+
+        if ability && ability.terrain.nil?
+          log_tile_cost_discount(entity, ability, ability.discount)
+
+          cost -= ability.discount
+        end
+
+        cost
+      end
+
+      def log_tile_cost_discount(entity, ability, discount)
+        return unless discount.positive?
+
+        @log << "#{entity.name} receives a discount of "\
+                "#{format_currency(discount)} from "\
+                "#{ability.owner.name}"
       end
 
       def declare_bankrupt(player)
@@ -1122,7 +1137,7 @@ module Engine
           hex.tile.cities.each do |city|
             if city.tokened_by?(corporation) || city.reserved_by?(corporation)
               city.tokens.map! { |token| token&.corporation == corporation ? nil : token }
-              city.reservations.delete(corporation)
+              city.reservations.delete(corporation) if self.class::CLOSED_CORP_RESERVATIONS == :removed
             end
           end
         end
@@ -1171,6 +1186,7 @@ module Engine
         @corporations.map! { |c| c.id == corporation.id ? corporation : c }
         @_corporations[corporation.id] = corporation
         corporation.shares.each { |share| @_shares[share.id] = share }
+        corporation
       end
 
       def emergency_issuable_bundles(_corporation)
@@ -1257,6 +1273,24 @@ module Engine
 
       def ipo_reserved_name(_entity = nil)
         'IPO Reserved'
+      end
+
+      def abilities(entity, type = nil, time: nil, owner_type: nil, strict_time: false)
+        return nil unless entity
+
+        active_abilities = entity.all_abilities.select do |ability|
+          ability_right_type?(ability, type) &&
+            ability_right_owner?(ability.owner, ability, owner_type) &&
+            ability_usable_this_or?(ability) &&
+            ability_right_time?(ability, time, strict_time) &&
+            ability_usable?(ability)
+        end
+        active_abilities.each { |a| yield a, a.owner } if block_given?
+
+        return nil if active_abilities.empty?
+        return active_abilities.first if active_abilities.one?
+
+        active_abilities
       end
 
       private
@@ -1346,10 +1380,17 @@ module Engine
       def init_hexes(companies, corporations)
         blockers = {}
         companies.each do |company|
-          company.abilities(:blocks_hexes) do |ability|
+          abilities(company, :blocks_hexes) do |ability|
             ability.hexes.each do |hex|
               blockers[hex] = company
             end
+          end
+        end
+
+        partition_blockers = {}
+        companies.each do |company|
+          abilities(company, :blocks_partition) do |ability|
+            partition_blockers[ability.partition_type] = company
           end
         end
 
@@ -1358,8 +1399,9 @@ module Engine
           reservations[c.coordinates] << { entity: c,
                                            city: c.city }
         end
+
         (corporations + companies).each do |c|
-          c.abilities(:reservation) do |ability|
+          abilities(c, :reservation) do |ability|
             reservations[ability.hex] << { entity: c,
                                            city: ability.city.to_i,
                                            slot: ability.slot.to_i,
@@ -1381,6 +1423,12 @@ module Engine
 
               if (blocker = blockers[coord])
                 tile.add_blocker!(blocker)
+              end
+
+              tile.partitions.each do |partition|
+                if (blocker = partition_blockers[partition.type])
+                  partition.add_blocker!(blocker)
+                end
               end
 
               reservations[coord].each do |res|
@@ -1438,7 +1486,7 @@ module Engine
 
       def init_company_abilities
         @companies.each do |company|
-          next unless (ability = company.abilities(:shares))
+          next unless (ability = abilities(company, :shares))
 
           real_shares = []
           ability.shares.each do |share|
@@ -1688,7 +1736,7 @@ module Engine
         @log << '-- Event: Private companies close --'
 
         @companies.each do |company|
-          if (ability = company.abilities(:close))
+          if (ability = abilities(company, :close))
             next if ability.when == 'never' ||
               @phase.phases.any? { |phase| ability.when == phase[:name] }
           end
@@ -1773,6 +1821,63 @@ module Engine
       # Override this, and add elements (paragraphs of text) here to display it on Info page.
       def timeline
         []
+      end
+
+      def ability_right_type?(ability, type)
+        !type || (ability.type == type)
+      end
+
+      def ability_right_owner?(entity, ability, owner_type)
+        correct_owner_type =
+          case ability.owner_type
+          when :player
+            !entity.owner || entity.owner.player?
+          when :corporation
+            entity.owner&.corporation?
+          when nil
+            true
+          end
+        return false unless correct_owner_type
+        return false if owner_type && (ability.owner_type.to_s != owner_type.to_s)
+
+        true
+      end
+
+      def ability_usable_this_or?(ability)
+        !ability.count_per_or || (ability.count_this_or < ability.count_per_or)
+      end
+
+      def ability_right_time?(ability, time, strict_time)
+        return false if strict_time && !ability.when
+        return true unless time
+
+        if ability.when == 'any'
+          !strict_time
+        elsif ability.when == 'owning_corp_or_turn'
+          %w[owning_corp_or_turn track].include?(time)
+        else
+          ability.when == time.to_s
+        end
+      end
+
+      def ability_usable?(ability)
+        case ability
+        when Ability::Token
+          return true if ability.hexes.none?
+
+          corporation =
+            if ability.owner.is_a?(Corporation)
+              ability.owner
+            elsif ability.owner.owner.is_a?(Corporation)
+              ability.owner.owner
+            end
+          return true unless corporation
+
+          tokened_hexes = corporation.tokens.select(&:used).map(&:city).map(&:hex).map(&:id)
+          (ability.hexes - tokened_hexes).any?
+        else
+          true
+        end
       end
     end
   end

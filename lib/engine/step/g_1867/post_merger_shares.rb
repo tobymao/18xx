@@ -10,6 +10,7 @@ module Engine
         include ShareBuying
 
         def actions(entity)
+          # @todo: this needs to catch the failed merge case
           return [] if !entity.player? || !@round.converted
 
           actions = []
@@ -20,9 +21,13 @@ module Engine
 
         def process_buy_shares(action)
           player = action.entity
+
+          # @todo: this needs to catch the 10% -> 20% presidency case
           buy_shares(player, action.bundle)
 
-          player.pass! if !corporation.president?(player.owner) || !can_buy_any?(player)
+          player.pass! if !@round.share_dealing_multiple.include?(player) || !can_buy_any?(player)
+
+          # @todo: need to cover rule 9.2 D
         end
 
         def process_pass(action)

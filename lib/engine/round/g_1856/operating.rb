@@ -9,7 +9,8 @@ module Engine
       class Operating < Operating
         attr_accessor :cash_crisis_player
         attr_reader :paid_interest, :took_loan, :redeemed_loan,
-                    :interest_penalty, :player_interest_penalty, :cash_crisis_due_to_interest
+                    :interest_penalty, :player_interest_penalty,
+                    :cash_crisis_due_to_interest, :cash_crisis_due_to_forced_repay
 
         def after_setup
           @paid_interest = {}
@@ -42,7 +43,37 @@ module Engine
           entity = @entities[@entity_index]
           @cash_crisis_player = entity.player
           pay_interest!(entity)
+          force_repay_loans!(entity)
           super
+        end
+
+        def force_repay_loans!(entity)
+          loans_to_payoff = entity.loans.size - @game.maximum_loans(entity)
+          @cash_crisis_due_to_forced_repay = nil
+          return unless @steps.any? { |step| step.passed? && step.is_a?(Step::BuyTrain) } && loans_to_payoff.positive?
+
+          bank = @game.bank
+          owed = 100 * loans_to_payoff
+          owed_fmt = @game.format_currency(owed)
+          @log << "#{entity.name} must repay #{loans_to_payoff} loans and owes #{owed_fmt}"
+
+          # TODO: In the weird edge case where someone goes bankrupt in a cash crisis over this, are the loans
+          # redeemed at the time of end game value? If so, how many?
+          # See: https://github.com/tobymao/18xx/issues/2707
+          @game.loans << entity.loans.pop(loans_to_payoff)
+          @redeemed_loan[entity] = true
+
+          payment = [owed, entity.cash].min
+          payment_fmt = @game.format_currency(payment)
+          entity.spend(payment, bank) if payment.positive?
+          owed -= payment
+          @log << "#{entity.name} pays #{payment_fmt} to redeem loans"
+          return unless owed.positive?
+
+          owed_fmt = @game.format_currency(owed)
+          @log << "#{entity.name} cannot pay remaining #{owed_fmt} in loans and president must cover the difference"
+          @cash_crisis_due_to_forced_repay = entity
+          entity.owner.spend(owed, bank, check_cash: false)
         end
 
         def pay_interest!(entity)

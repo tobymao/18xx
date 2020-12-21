@@ -16,6 +16,7 @@ module Engine
 
       GAME_LOCATION = 'Earth.'
       SEED_MONEY = 100
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817WO'
       GAME_RULES_URL = {
         '1817WO' => 'https://docs.google.com/document/d/1g9QnttpJa8yOCOTnfPaU9hfAZFFzg-rAs_WGy9T38J0/',
         '1817 Rules' => 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view',
@@ -42,8 +43,7 @@ module Engine
       end
 
       def interest_owed(entity)
-        super unless corp_has_new_zealand?(entity)
-
+        return super unless corp_has_new_zealand?(entity)
         # A corporation with a token in new zealand gets $20 if it doesn't have any loans
         return -20 unless entity.loans.size.positive?
 
@@ -139,7 +139,7 @@ module Engine
         @companies.each do |company|
           next unless company.owner
 
-          company.abilities(:revenue_change, time: 'has_train') do |ability|
+          abilities(company, :revenue_change, time: 'has_train') do |ability|
             company.revenue = company.owner.trains.any? ? ability.revenue : 0
           end
         end

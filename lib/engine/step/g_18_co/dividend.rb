@@ -18,11 +18,26 @@ module Engine
           super
 
           entity = action.entity
-          return unless (mine_revenue = @game.mines_total(entity)).positive?
           return unless entity.operating_history[[@game.turn, @round.round_num]].revenue.positive?
+
+          close_companies_on_run_train!(entity)
+          return unless (mine_revenue = @game.mines_total(entity)).positive?
 
           @game.bank.spend(mine_revenue, entity)
           @log << "#{entity.name} collects #{@game.format_currency(mine_revenue)} from mines"
+        end
+
+        def close_companies_on_run_train!(entity)
+          @game.companies.each do |company|
+            next if company.closed?
+
+            @game.abilities(company, :close, time: :run_train) do |ability|
+              next if entity&.name != ability.corporation
+
+              company.close!
+              @log << "#{company.name} closes"
+            end
+          end
         end
       end
     end

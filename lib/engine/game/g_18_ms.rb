@@ -229,7 +229,7 @@ module Engine
       def revenue_for(route, stops)
         revenue = super
 
-        route.corporation.abilities(:hexes_bonus) do |ability|
+        abilities(route.corporation, :hexes_bonus) do |ability|
           revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
         end
 
@@ -250,7 +250,7 @@ module Engine
 
       def event_remove_tokens!
         @corporations.each do |corporation|
-          corporation.abilities(:hexes_bonus) do |a|
+          abilities(corporation, :hexes_bonus) do |a|
             bonus_hex = @hexes.find { |h| a.hexes.include?(h.name) }
             hex_name = bonus_hex.name
             corporation.remove_ability(a)

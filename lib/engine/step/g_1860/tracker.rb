@@ -47,7 +47,7 @@ module Engine
 
           @game.companies.each do |company|
             next if company.closed?
-            next unless (ability = company.abilities(:blocks_hexes))
+            next unless (ability = @game.abilities(company, :blocks_hexes))
 
             @game.game_error("#{hex.id} is blocked by #{company.name}") if ability.hexes.include?(hex.id)
           end
@@ -96,7 +96,7 @@ module Engine
             extra_cost += ability.cost
           end
 
-          entity.abilities(:teleport) do |ability, _|
+          @game.abilities(entity, :teleport) do |ability, _|
             ability.use! if ability.hexes.include?(hex.id) && ability.tiles.include?(tile.name)
           end
 
@@ -194,6 +194,22 @@ module Engine
           else
             raise
           end
+        end
+
+        # can be used by Step to see if any layable tiles exist for a given hex
+        # This has fewer side-effects than the base upgradeable_tiles method
+        def any_upgradeable_tiles?(entity, hex)
+          potential_tiles(entity, hex).each do |tile|
+            return true if tile.legal_rotations.any?
+
+            tile.rotate!(0) # reset tile to no rotation since calculations are absolute
+            tile.legal_rotations = legal_tile_rotations(entity, hex, tile)
+            next if tile.legal_rotations.empty?
+
+            tile.rotate! # rotate it to the first legal rotation
+            return true
+          end
+          false
         end
 
         def legal_tile_rotation?(entity, hex, tile)

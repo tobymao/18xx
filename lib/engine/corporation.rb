@@ -208,24 +208,6 @@ module Engine
       @companies.each { |company| company.remove_ability(ability) }
     end
 
-    def abilities(type = nil, **opts)
-      abilities = []
-
-      if (ability = super(type, **opts, &nil))
-        abilities << ability
-        yield ability, self if block_given?
-      end
-
-      @companies.each do |company|
-        company.abilities(type, **opts) do |company_ability|
-          abilities << company_ability
-          yield company_ability, company if block_given?
-        end
-      end
-
-      abilities
-    end
-
     def available_share
       shares_by_corporation[self].find { |share| !share.president }
     end

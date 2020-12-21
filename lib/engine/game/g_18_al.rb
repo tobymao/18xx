@@ -67,7 +67,7 @@ module Engine
         change_4t_to_hardrust if @optional_rules&.include?(:hard_rust_t4)
 
         @corporations.each do |corporation|
-          corporation.abilities(:assign_hexes) do |ability|
+          abilities(corporation, :assign_hexes) do |ability|
             ability.description = "Historical objective: #{get_location_name(ability.hexes.first)}"
           end
         end
@@ -111,7 +111,7 @@ module Engine
       def revenue_for(route, stops)
         revenue = super
 
-        route.corporation.abilities(:hexes_bonus) do |ability|
+        abilities(route.corporation, :hexes_bonus) do |ability|
           revenue += stops.sum { |stop| ability.hexes.include?(stop.hex.id) ? ability.amount : 0 }
         end
 
@@ -121,8 +121,7 @@ module Engine
       def routes_revenue(routes)
         total_revenue = super
         route_bonuses.each do |type|
-          abilities = routes.first.corporation.abilities(type)
-          return total_revenue if abilities.empty?
+          return total_revenue unless abilities(routes.first.corporation, type)
 
           total_revenue += routes.map { |r| route_bonus(r, type) }.max
         end if routes.any?
@@ -131,7 +130,7 @@ module Engine
 
       def event_remove_tokens!
         @corporations.each do |corporation|
-          corporation.abilities(:hexes_bonus) do |a|
+          abilities(corporation, :hexes_bonus) do |a|
             assigned_hex = @hexes.find { |h| a.hexes.include?(h.name) }
             hex_name = assigned_hex.name
             assigned_hex.remove_assignment!(south_and_north_alabama_railroad.id)
@@ -147,10 +146,10 @@ module Engine
 
         # Remove mining icons if Warrior Coal Field has not been assigned
         @corporations.each do |corporation|
-          next if corporation.abilities(:hexes_bonus).empty?
+          next unless abilities(corporation, :hexes_bonus)
 
           @companies.each do |company|
-            company.abilities(:assign_hexes) do |ability|
+            abilities(company, :assign_hexes) do |ability|
               remove_mining_icons(ability.hexes)
             end
           end
@@ -207,7 +206,7 @@ module Engine
       private
 
       def route_bonus(route, type)
-        route.corporation.abilities(type).sum do |ability|
+        Array(abilities(route.corporation, type)).sum do |ability|
           ability.hexes == (ability.hexes & route.hexes.map(&:name)) ? ability.amount : 0
         end
       end

@@ -45,7 +45,8 @@ module Engine
     "H9": "Libertalia",
     "J9": "You are lost",
     "L1": "Gold Rush",
-    "L9": "Nieuw Zeeland"
+    "L9": "Nieuw Zeeland",
+    "C4": "NYC"
   },
   "tiles": {
     "5": "unlimited",
@@ -175,6 +176,8 @@ module Engine
           "hexes": [
             "G4", "K4"
           ],
+          "count":1,
+          "when": "owning_corp_or_turn",
           "owner_type": "corporation"
         }
       ]
@@ -436,6 +439,7 @@ module Engine
       "name": "2+",
       "distance": 2,
       "price": 100,
+      "obsolete_on": "4",
       "num": 2
     },
     {

@@ -26,6 +26,8 @@ module Engine
         end
 
         def check_track_restrictions!(entity, old_tile, new_tile)
+          return true if pending_token(entity)
+
           super(entity, old_tile, new_tile)
 
           return if new_tile.color == :yellow # not an upgrade
@@ -76,6 +78,25 @@ module Engine
         def all_new_paths_have_new_exits?(brand_new_exit_junctions)
           brand_new_exit_junctions.size >=
             brand_new_exit_junctions.sum { |_bnp, new_exit_junctions| new_exit_junctions.size }
+        end
+
+        def pending_token(entity)
+          @round.pending_tokens.find { |pt| pt[:entity] == entity }
+        end
+
+        def migrate_reservations(tile)
+          return unless @game.phase.status.include?('closable_corporations')
+          return unless tile.cities.one?
+
+          tile.reservations.dup.each do |corp|
+            city = tile.cities.first
+            slot = city.get_slot(corp)
+
+            break unless slot
+
+            tile.reservations.delete(corp)
+            city.add_reservation!(corp, slot)
+          end
         end
       end
     end

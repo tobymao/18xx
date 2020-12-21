@@ -84,7 +84,7 @@ module View
           actions = step.actions(entity)
           return if (%w[remove_token place_token] & actions).empty?
           return if @token && !step.can_replace_token?(entity, @token) &&
-                    !(cheater = entity.abilities(:token)&.cheater)
+                    !(cheater = @game.abilities(entity, :token)&.cheater)
 
           event.JS.stopPropagation
 

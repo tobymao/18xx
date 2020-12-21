@@ -189,7 +189,7 @@ module Engine
             "with a bid of #{@game.format_currency(price)}"
         end
 
-        company.abilities(:shares) do |ability|
+        @game.abilities(company, :shares) do |ability|
           ability.shares.each do |share|
             if share.president
               @round.companies_pending_par << company
