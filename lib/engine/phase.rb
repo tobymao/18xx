@@ -16,7 +16,7 @@ module Engine
     end
 
     def buying_train!(entity, train)
-      next! if train.sym == @next_on
+      next! while @next_on.include?(train.sym)
 
       train.events.each do |event|
         @game.send("event_#{event['type']}!")
@@ -57,7 +57,7 @@ module Engine
       @events = phase[:events] || []
       @status = phase[:status] || []
       @corporation_sizes = phase[:corporation_sizes]
-      @next_on = @phases[@index + 1]&.dig(:on)
+      @next_on = Array(@phases[@index + 1]&.dig(:on))
 
       @log << "-- Phase #{@name} " \
         "(Operating Rounds: #{@operating_rounds}, Train Limit: #{@train_limit}, "\
