@@ -242,6 +242,8 @@ describe 'Assets' do
         'New York, Susquehanna and Western Railway']],
       ['18_chesapeake', 1905, 166, 'blocking_special_track',
        ['Lay Track for Columbia - Philadelphia Railroad']],
+      ['18_co', 0, 513, 'lay_track',
+       ['18CO: Operating Round 4.2 (of 2) - Lay Track']],
     ].freeze
 
     def render_game(jsonfile, no_actions, string)
