@@ -52,7 +52,7 @@ module Engine
           hex = city.hex
           @game.game_error("Cannot remove #{token.corporation.name} token") unless available_hex(entity, hex)
 
-          @log << "#{entity.name} removes token from #{hex.name}"
+          @log << "#{entity.name} removes token from #{hex.name} (#{hex.location_name})"
           token.destroy!
           @game.place_blocking_token(hex, city_index: hex.tile.cities.index(city))
 

@@ -19,17 +19,10 @@ module Engine
           actions
         end
 
-        def round_state
-          state = super || {}
-          state[:merge_initiator] = nil
-          state[:acting_player] = nil
-          state
-        end
-
         def process_start_merge(action)
           @game.game_error('No eligible corporation to merge with') unless can_merge?(action.entity, action.corporation)
 
-          @round.merge_initiator = action.corporation
+          @round.merging_corporation = action.corporation
           @round.acting_player = action.entity
         end
 
