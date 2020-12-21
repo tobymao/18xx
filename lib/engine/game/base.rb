@@ -1053,7 +1053,7 @@ module Engine
         end
 
         if ability && ability.terrain.nil?
-          log_tile_cost_discount(entity, ability, discount)
+          log_tile_cost_discount(entity, ability, ability.discount)
 
           cost -= ability.discount
         end
