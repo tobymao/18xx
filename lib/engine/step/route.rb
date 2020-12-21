@@ -38,7 +38,7 @@ module Engine
 
           trains[train] = true
           revenue = @game.format_currency(route.revenue)
-          revenue_str = @game.revenue_str(route, routes: @round.routes)
+          revenue_str = @game.revenue_str(route)
           @log << "#{entity.name} runs a #{train.name} train for #{revenue}: #{revenue_str}"
         end
         pass!

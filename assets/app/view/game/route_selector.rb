@@ -109,7 +109,7 @@ module View
             else
               children << h('td.right', td_props, revenue)
             end
-            children << h(:td, @game.revenue_str(route, routes: @routes))
+            children << h(:td, @game.revenue_str(route))
           elsif !selected
             style[:border] = '1px solid'
             style[:padding] = '5px 8px'

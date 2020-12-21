@@ -30,8 +30,8 @@ module Engine
       ).freeze
 
       ROUTE_BONUSES = {
-        atlanta_birmingham: "ATL>BRM",
-        mobile_nashville: "MOB>NSH",
+        atlanta_birmingham: 'ATL>BRM',
+        mobile_nashville: 'MOB>NSH',
       }.freeze
 
       STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
@@ -119,18 +119,17 @@ module Engine
         end.compact
       end
 
-      def revenue_for(route, stops, routes: [])
+      def revenue_for(route, stops)
         revenue = super
 
         abilities(route.corporation, :hexes_bonus) do |ability|
           revenue += route_hex_bonus(ability, stops).sum { |b| b[:revenue] }
         end
 
-        revenue += routes_revenue_bonuses(routes).sum { |b| b[:route] == route ? b[:revenue] : 0  }
+        revenue += routes_revenue_bonuses(route.routes).sum { |b| b[:route] == route ? b[:revenue] : 0 }
 
         revenue
       end
-
 
       def routes_revenue_bonuses(routes)
         return [] if routes.empty?
@@ -146,11 +145,11 @@ module Engine
         end.compact
       end
 
-      def revenue_str(route, routes: [])
+      def revenue_str(route)
         str = super
 
         r_bonuses = []
-        r_bonuses.concat(routes_revenue_bonuses(routes).select { |b| b[:route] == route })
+        r_bonuses.concat(routes_revenue_bonuses(route.routes).select { |b| b[:route] == route })
         abilities(route.corporation, :hexes_bonus) do |ability|
           r_bonuses += route_hex_bonus(ability, route.stops)
         end
@@ -237,10 +236,13 @@ module Engine
       private
 
       def route_bonus(route, type)
-        return unless ability = abilities(route.corporation, type)
-        return unless ability.hexes == (ability.hexes & route.hexes.map(&:name))
+        revenue = Array(abilities(route.corporation, type)).sum do |ability|
+          ability.hexes == (ability.hexes & route.hexes.map(&:name)) ? ability.amount : 0
+        end
 
-        { route: route, revenue: ability.amount, description: route_bonuses[type] }
+        return unless revenue.positive?
+
+        { route: route, revenue: revenue, description: route_bonuses[type] }
       end
 
       def move_ln_corporation
