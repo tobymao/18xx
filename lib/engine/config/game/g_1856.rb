@@ -628,13 +628,13 @@ module Engine
       "offboard=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:5,b:_0;border=edge:1": [
         "B13"
       ],
-      "offboard=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:_0,b:4;path=a:4,b:_0;path=a:_0,b:5;path=a:0,b:_0;path=a:_0,b:5": [
+      "offboard=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:_0,b:4;path=a:4,b:_0;path=a:_0,b:5;path=a:0,b:_0;path=a:_0,b:5;icon=image:port": [
         "F9"
       ],
-      "offboard=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:5,b:_0": [
+      "offboard=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:5,b:_0;icon=image:port": [
         "H5"
       ],
-      "offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:5,b:_0": [
+      "offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:5,b:_0;icon=image:port": [
         "K2"
       ],
       "offboard=revenue:yellow_20|brown_30|gray_50;path=a:0,b:_0;path=a:1,b:_0;border=edge:5": [
@@ -692,10 +692,12 @@ module Engine
       "city=revenue:0;label=L": [
         "B19",
         "L13",
-        "P9",
+        "P9"
+      ],
+      "city=revenue:0;label=L;icon=image:port": [
+        "C14",
         "F17",
-        "O18",
-        "C14"
+        "O18"
       ],
       "city=revenue:0;label=L;upgrade=cost:40,terrain:water": [
         "N3"
@@ -706,16 +708,20 @@ module Engine
         "L9",
         "M6",
         "N9",
+        "H11"
+      ],
+      "town=revenue:0;icon=image:port": [
         "D19",
         "H17",
         "J5",
-        "M18",
-        "H11"
+        "M18"
       ],
       "town=revenue:0;town=revenue:0": [
         "I14",
         "F13",
-        "M10",
+        "M10"
+      ],
+      "town=revenue:0;town=revenue:0;icon=image:port": [
         "E18",
         "H7",
         "J17"
