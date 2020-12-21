@@ -28,7 +28,7 @@ module Engine
 
         def route_bonus_ability
           @game.corporations.each do |corporation|
-            @game.abilities(corporation, @game.route_bonuses.first) do |ability|
+            @game.abilities(corporation, @game.route_bonuses.keys.first) do |ability|
               return ability
             end
           end

@@ -29,6 +29,7 @@ module Engine
         entity = action.entity
         @round.routes = action.routes
         trains = {}
+
         @round.routes.each do |route|
           train = route.train
           @game.game_error("Cannot run another corporation's train. refresh") if train.owner && train.owner != entity
@@ -36,8 +37,9 @@ module Engine
           @game.game_error('Cannot run train that operated') if train.operated
 
           trains[train] = true
-          @log << "#{entity.name} runs a #{train.name} train for "\
-            "#{@game.format_currency(route.revenue)}: #{@game.revenue_str(route)}"
+          revenue = @game.format_currency(route.revenue)
+          revenue_str = @game.revenue_str(route)
+          @log << "#{entity.name} runs a #{train.name} train for #{revenue}: #{revenue_str}"
         end
         pass!
       end
