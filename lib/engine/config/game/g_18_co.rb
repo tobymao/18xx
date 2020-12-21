@@ -350,7 +350,7 @@ module Engine
 			"name": "Grand Junction and Grand River Valley Railway",
 			"value": 40,
 			"revenue": 10,
-			"desc": "An owning Corporation may upgrade a yellow town to a green city in additional to its normal tile lay. Action closes the company or closes on purchase of “5” train.",
+			"desc": "An owning Corporation may upgrade a yellow town to a green city in additional to its normal tile lay at any time during its turn. Action closes the company or closes on purchase of “5” train.",
 			"abilities": [
 				{
 					"type": "tile_lay",
@@ -424,7 +424,7 @@ module Engine
 			"name": "Laramie, North Park and Western Railroad",
 			"value": 70,
 			"revenue": 15,
-			"desc": "An owning Corporation may lay an extra tile at no cost in addition to its normal tile lay. Action closes the company or closes on purchase of “5” train.",
+			"desc": "When laying track tiles, an owning Corporation may lay an extra tile at no cost in addition to its normal tile lay. Action closes the company or closes on purchase of “5” train.",
 			"abilities": [
 				{
 					"type": "tile_lay",
@@ -1054,7 +1054,7 @@ module Engine
 			"town=revenue:0;upgrade=cost:40,terrain:mountain;icon=image:18_co/mine,sticky:1,name:mine;border=edge:0,type:mountain,cost:40;border=edge:1,type:mountain,cost:40;border=edge:4,type:mountain,cost:40;border=edge:5,type:mountain,cost:40;": [
 				"E11"
 			],
-			"town=revenue:0;upgrade=cost:40,terrain:mountain;icon=image:18_co/mine,sticky:1,name:mine;border=edge:0,type:mountain,cost:40;border=edge:0,type:mountain,cost:40;border=edge:4,type:mountain,cost:40;border=edge:5,type:mountain,cost:40;": [
+			"town=revenue:0;upgrade=cost:40,terrain:mountain;icon=image:18_co/mine,sticky:1,name:mine;border=edge:0,type:mountain,cost:40;border=edge:4,type:mountain,cost:40;border=edge:5,type:mountain,cost:40;": [
 				"J6"
 			],
 			"town=revenue:0;upgrade=cost:40,terrain:mountain;icon=image:18_co/upgrade,sticky:1,name:upgrade;border=edge:0,type:mountain,cost:40;": [
