@@ -82,6 +82,8 @@ module Engine
                                             max_price: 'Maximum price for a minor').freeze
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :orange, par_2: :green).freeze
       CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
+      # A token is reserved for Montreal is reserved for nationalization
+      CN_RESERVATIONS = ['L12'].freeze
       include InterestOnLoans
 
       # Minors are done as corporations with a size of 2
@@ -109,8 +111,9 @@ module Engine
       end
 
       def home_token_locations(corporation)
+        # Can only place home token in cities that have no other tokens.
         open_locations = hexes.select do |hex|
-          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) && city.tokens.none? }
         end
 
         return open_locations if corporation.type == :minor
@@ -205,6 +208,28 @@ module Engine
 
           @log << "#{corporation.name} settles with shareholders #{format_currency(total_payout)} = "\
                           "#{format_currency(per_share)} (#{receivers})"
+        end
+
+        # Rules say if not enough tokens remain, do it in highest payout then randomly
+        # We'll treat random as in hex order
+        corporation.tokens.select(&:used)
+        .sort_by { |t| [t.city.max_revenue, t.city.hex.id] }
+        .reverse
+        .each do |token|
+          city = token.city
+          token.remove!
+
+          new_token = @cn_corporation.next_token
+          next unless new_token
+
+          if @cn_reservations.include?(city.hex.id)
+            @cn_reservations.delete(city.hex.id)
+          elsif @cn_corporation.tokens.count(&:used) == @cn_reservations.size
+            # Don't place if only reservations are left
+            next
+          end
+
+          city.place_token(@cn_corporation, new_token, check_tokenable: false)
         end
 
         # Close corp (minors close, majors reset)
@@ -403,6 +428,7 @@ module Engine
 
         # CN corporation only exists to hold tokens
         @cn_corporation = corporation_by_id('CN')
+        @cn_reservations = CN_RESERVATIONS.dup
         @corporations.delete(@cn_corporation)
 
         @green_tokens = []
