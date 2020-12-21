@@ -21,7 +21,7 @@ module Engine
       load_from_json(Config::Game::G1860::JSON)
 
       GAME_LOCATION = 'Isle of Wight'
-      GAME_RULES_URL = 'https://boardgamegeek.com/filepage/79633/second-edition-rules'
+      GAME_RULES_URL = 'https://www.dropbox.com/s/usfbqtdjzx6ug8f/1860-rules.pdf'
       GAME_DESIGNER = 'Mike Hutton'
       GAME_PUBLISHER = nil
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1860'
