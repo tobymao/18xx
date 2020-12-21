@@ -598,6 +598,13 @@ module Engine
       "name": "Canadian National",
       "logo": "1867/CN",
       "tokens": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0
       ],
       "color": "white"
