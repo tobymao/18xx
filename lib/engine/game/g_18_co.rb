@@ -518,6 +518,10 @@ module Engine
             !abilities(company, :no_buy)
         end
       end
+
+      def company_available_for_other_corps(_company)
+        false
+      end
     end
   end
 end

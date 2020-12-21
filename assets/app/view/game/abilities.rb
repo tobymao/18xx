@@ -17,6 +17,9 @@ module View
         return h(:div) if companies.empty? || @game.round.current_entity.company?
 
         current, others = companies.partition { |company| @game.current_entity.player == company.player }
+        others = others.select { |other_company| @game.company_available_for_other_corps(other_company) }
+
+        return h(:div) if current.empty? && others.empty?
 
         children = [
           h('h3.inline', { style: { marginRight: '0.5rem' } }, 'Abilities:'),
