@@ -50,7 +50,7 @@ module Engine
       GREEN_TOWN_TILES = %w[co8 co9 co10].freeze
       GREEN_CITY_TILES = %w[14 15].freeze
       BROWN_CITY_TILES = %w[co4 63].freeze
-      MAX_CITY_TILES = %w[14 15 co1 co2 co3 co4 co7 63].freeze
+      MAX_STATION_TILES = %w[14 15 co1 co2 co3 co4 co7 63].freeze
 
       STOCKMARKET_COLORS = {
         par: :yellow,
@@ -306,7 +306,7 @@ module Engine
       def remove_corporations_if_no_home(city)
         tile = city.tile
 
-        return unless tile_has_max_cities(tile)
+        return unless tile_has_max_stations(tile)
 
         @corporations.dup.each do |corp|
           next if corp.ipoed
@@ -320,8 +320,8 @@ module Engine
         end
       end
 
-      def tile_has_max_cities(tile)
-        tile.color == :red || MAX_CITY_TILES.include?(tile.hex.name)
+      def tile_has_max_stations(tile)
+        tile.color == :red || MAX_STATION_TILES.include?(tile.name)
       end
 
       def rereserve_home_station(corporation)
