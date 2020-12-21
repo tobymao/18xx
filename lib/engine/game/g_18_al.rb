@@ -111,47 +111,24 @@ module Engine
         ])
       end
 
-      def route_hex_bonus(ability, stops)
-        stops.map do |stop|
-          next unless ability.hexes.include?(stop.hex.id)
-
-          { revenue: ability.amount, description: "Coal(#{stop.hex.name})" }
-        end.compact
-      end
-
       def revenue_for(route, stops)
         revenue = super
 
         abilities(route.corporation, :hexes_bonus) do |ability|
-          revenue += route_hex_bonus(ability, stops).sum { |b| b[:revenue] }
+          revenue += bonuses_for_hex_on_route(ability, stops).sum { |b| b[:revenue] }
         end
 
-        revenue += routes_revenue_bonuses(route.routes).sum { |b| b[:route] == route ? b[:revenue] : 0 }
+        revenue += bonuses_for_routes(route.routes).sum { |b| b[:route] == route ? b[:revenue] : 0 }
 
         revenue
-      end
-
-      def routes_revenue_bonuses(routes)
-        return [] if routes.empty?
-
-        route_bonuses.map do |type, _description|
-          next unless abilities(routes.first.corporation, type)
-
-          possible_bonuses = routes.map { |r| route_bonus(r, type) }.compact
-          best_bonus = possible_bonuses.max { |b| b[:revenue] }
-          next unless best_bonus
-
-          best_bonus
-        end.compact
       end
 
       def revenue_str(route)
         str = super
 
-        r_bonuses = []
-        r_bonuses.concat(routes_revenue_bonuses(route.routes).select { |b| b[:route] == route })
+        r_bonuses = bonuses_for_routes(route.routes).select { |b| b[:route] == route }
         abilities(route.corporation, :hexes_bonus) do |ability|
-          r_bonuses += route_hex_bonus(ability, route.stops)
+          r_bonuses += bonuses_for_hex_on_route(ability, route.stops)
         end
         str += " + #{r_bonuses.map { |b| b[:description] }.join(' + ')}" if r_bonuses.any?
 
@@ -235,7 +212,29 @@ module Engine
 
       private
 
-      def route_bonus(route, type)
+      def bonuses_for_hex_on_route(ability, stops)
+        stops.map do |stop|
+          next unless ability.hexes.include?(stop.hex.id)
+
+          { revenue: ability.amount, description: "Coal(#{stop.hex.name})" }
+        end.compact
+      end
+
+      def bonuses_for_routes(routes)
+        return [] if routes.empty?
+
+        route_bonuses.map do |type, _description|
+          next unless abilities(routes.first.corporation, type)
+
+          possible_bonuses = routes.map { |r| bonus_for_route(r, type) }.compact
+          best_bonus = possible_bonuses.max { |b| b[:revenue] }
+          next unless best_bonus
+
+          best_bonus
+        end.compact
+      end
+
+      def bonus_for_route(route, type)
         revenue = Array(abilities(route.corporation, type)).sum do |ability|
           ability.hexes == (ability.hexes & route.hexes.map(&:name)) ? ability.amount : 0
         end
