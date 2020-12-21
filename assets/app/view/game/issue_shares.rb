@@ -6,8 +6,14 @@ module View
   module Game
     class IssueShares < Snabberb::Component
       include Actionable
-
       needs :entity, default: nil
+
+      def emergency?
+        return false unless @game.round.active_step.respond_to?(:must_buy_train?)
+
+        @game.round.active_step.must_buy_train?(@entity)
+      end
+
       def render
         @step = @game.round.active_step
         @entity ||= @game.current_entity
@@ -16,7 +22,8 @@ module View
 
         if @current_actions.include?('sell_shares')
           if (step = @game.round.step_for(@entity, 'sell_shares'))
-            children << render_shares('Issue', step.issuable_shares(@entity), Engine::Action::SellShares)
+            issue_text = emergency? ? 'Emergency Issue' : 'Issue'
+            children << render_shares(issue_text, step.issuable_shares(@entity), Engine::Action::SellShares)
           end
         end
 
@@ -49,7 +56,9 @@ module View
       end
 
       def render_button(bundle, &block)
-        h('button.small', { on: { click: block } }, "#{bundle.num_shares} (#{@game.format_currency(bundle.price)})")
+        str = "#{bundle.num_shares} (#{@game.format_currency(bundle.price)})"
+        str += " from #{bundle.owner.name}" if bundle.owner.player?
+        h('button.small', { on: { click: block } }, str)
       end
     end
   end

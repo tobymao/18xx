@@ -65,7 +65,7 @@ module View
         step = @game.round.active_step
         @corporation = step.current_entity
         if @selected_company&.owner == @corporation
-          @ability = @selected_company&.abilities(:train_discount, time: 'train')
+          @ability = @game.abilities(@selected_company, :train_discount, time: 'train')
         end
 
         @depot = @game.depot
@@ -133,7 +133,8 @@ module View
         children << remaining_trains
 
         children << h(:div, "#{@corporation.name} has #{@game.format_currency(@corporation.cash)}.")
-        if (issuable_cash = @game.emergency_issuable_cash(@corporation)).positive?
+        if step.issuable_shares(@corporation).any? &&
+           (issuable_cash = @game.emergency_issuable_cash(@corporation)).positive?
           children << h(:div, "#{@corporation.name} can issue shares to raise up to "\
                               "#{@game.format_currency(issuable_cash)} (the corporation "\
                               'must issue shares before the president may contribute).')

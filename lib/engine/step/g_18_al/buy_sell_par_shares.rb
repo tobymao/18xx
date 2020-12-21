@@ -28,7 +28,7 @@ module Engine
 
         def route_bonus_ability
           @game.corporations.each do |corporation|
-            corporation.abilities(@game.route_bonuses.first) do |ability|
+            @game.abilities(corporation, @game.route_bonuses.first) do |ability|
               return ability
             end
           end
@@ -38,7 +38,7 @@ module Engine
 
         def president_changed(corporation)
           @game.route_bonuses.each do |type|
-            corporation.abilities(type) do |ability|
+            @game.abilities(corporation, type) do |ability|
               corporation.remove_ability(ability)
             end
           end

@@ -123,7 +123,7 @@ module Engine
           @companies.delete(company)
           @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
 
-          company.abilities(:share) do |ability|
+          @game.abilities(company, :share) do |ability|
             share = ability.share
 
             if share.president

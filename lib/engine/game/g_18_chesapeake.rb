@@ -68,12 +68,12 @@ module Engine
         cornelius.add_ability(Ability::Close.new(
           type: :close,
           when: :train,
-          corporation: cornelius.abilities(:shares).shares.first.corporation.name,
+          corporation: abilities(cornelius, :shares).shares.first.corporation.name,
         ))
 
         return unless two_player?
 
-        cv_corporation = cornelius.abilities(:shares).shares.first.corporation
+        cv_corporation = abilities(cornelius, :shares).shares.first.corporation
 
         @corporations.each do |corporation|
           next if corporation == cv_corporation
@@ -87,7 +87,7 @@ module Engine
       end
 
       def check_special_tile_lay(action, company)
-        company.abilities(:tile_lay) do |ability|
+        abilities(company, :tile_lay) do |ability|
           hexes = ability.hexes
           next unless hexes.include?(action.hex.id)
           next if company.closed? || action.entity == company

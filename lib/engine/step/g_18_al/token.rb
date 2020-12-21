@@ -9,7 +9,7 @@ module Engine
         def place_token(entity, city, token, teleport: false)
           super
 
-          entity.abilities(:assign_hexes) do |ability|
+          @game.abilities(entity, :assign_hexes) do |ability|
             next unless ability.hexes.one?
 
             if city.hex.name == ability.hexes.first

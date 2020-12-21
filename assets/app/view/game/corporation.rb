@@ -352,6 +352,9 @@ module View
           end
 
         num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
+        if !num_ipo_shares.empty? && @corporation.capitalization != @game.class::CAPITALIZATION
+          num_ipo_shares = '* ' + num_ipo_shares
+        end
         pool_rows = [
           h('tr.ipo', [
             h('td.left', @game.ipo_name(@corporation)),
@@ -359,6 +362,14 @@ module View
             h('td.padded_number', share_price_str(@corporation.par_price)),
           ]),
         ]
+
+        if @corporation.reserved_shares.any?
+          pool_rows << h('tr.reserved', [
+            h('td.left', @game.ipo_reserved_name),
+            h('td.right', shares_props, share_number_str(@corporation.num_ipo_reserved_shares)),
+            h('td.padded_number', share_price_str(@corporation.par_price)),
+          ])
+        end
 
         market_tr_props = {
           style: {
@@ -562,7 +573,7 @@ module View
       end
 
       def can_assign_corporation?
-        @selected_corporation && @selected_company&.abilities(:assign_corporation)
+        @selected_corporation && @game.abilities(@selected_company, :assign_corporation)
       end
     end
   end

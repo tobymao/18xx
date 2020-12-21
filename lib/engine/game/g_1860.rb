@@ -21,7 +21,7 @@ module Engine
       load_from_json(Config::Game::G1860::JSON)
 
       GAME_LOCATION = 'Isle of Wight'
-      GAME_RULES_URL = 'https://boardgamegeek.com/filepage/79633/second-edition-rules'
+      GAME_RULES_URL = 'https://www.dropbox.com/s/usfbqtdjzx6ug8f/1860-rules.pdf'
       GAME_DESIGNER = 'Mike Hutton'
       GAME_PUBLISHER = nil
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1860'
@@ -191,6 +191,7 @@ module Engine
         @log << "#{player.name} has #{reason}"
 
         @players.rotate!(@players.index(player))
+        @log << "#{@players.first.name} has priority deal"
       end
 
       def new_stock_round
@@ -224,7 +225,6 @@ module Engine
             end
           when init_round.class
             init_round_finished
-            reorder_players
             new_stock_round
           end
       end
@@ -268,6 +268,13 @@ module Engine
           company_value
       end
 
+      def place_home_token(corporation)
+        # will this break the game?
+        return if sr_after_southern
+
+        super
+      end
+
       def event_fishbourne_to_bank!
         ffc = @companies.find { |c| c.sym == 'FFC' }
         ffc.owner = @bank
@@ -306,13 +313,17 @@ module Engine
         @corporations.select { |c| c.ipoed && !c.receivership? }.all? { |c| c.trains.any? }
       end
 
+      def get_or_revenue(info)
+        info.dividend.kind == 'withhold' ? 0 : info.revenue
+      end
+
       # OR has just finished, find two lowest revenues and nationalize the corporations
       # associated with each
       def nationalize_corps!
         revenues = @corporations.select { |c| c.floated? && !nationalized?(c) }
-          .map { |c| [c, c.operating_history[c.operating_history.keys.max].revenue] }.to_h
+          .map { |c| [c, get_or_revenue(c.operating_history[c.operating_history.keys.max])] }.to_h
 
-        sorted_corps = revenues.keys.sort_by { |c| c.operating_history[c.operating_history.keys.max].revenue }
+        sorted_corps = revenues.keys.sort_by { |c| revenues[c] }
 
         if sorted_corps.size < 3
           # if two or less corps left, they are both nationalized
@@ -599,6 +610,10 @@ module Engine
 
       def lessee
         current_entity
+      end
+
+      def legal_route?(entity)
+        @graph.route_info(entity)&.dig(:route_train_purchase)
       end
 
       def route_trains(entity)

@@ -16,7 +16,10 @@ module Engine
 
         return PASS if blocks? &&
                        entity.corporation? &&
-                       entity.abilities(time: 'owning_corp_or_turn', owner_type: 'corporation', strict_time: true).any?
+                       @game.abilities(entity,
+                                       time: 'owning_corp_or_turn',
+                                       owner_type: 'corporation',
+                                       strict_time: true)
 
         []
       end
@@ -60,7 +63,7 @@ module Engine
         company.owner = entity
         owner&.companies&.delete(company)
 
-        company.abilities(:assign_corporation) do |ability|
+        @game.abilities(company, :assign_corporation) do |ability|
           Assignable.remove_from_all!(assignable_corporations, company.id) do |unassigned|
             log_later << "#{company.name} is unassigned from #{unassigned.name}" if unassigned.name != entity.name
           end
@@ -76,10 +79,12 @@ module Engine
             end
         end
 
+        @game.abilities(company, :revenue_change, time: :sold) { |ability| company.revenue = ability.revenue }
+
         company.remove_ability_when(:sold)
 
         @round.just_sold_company = company
-        @round.company_sellers << owner
+        @round.company_sellers[company] = owner
 
         entity.companies << company
         entity.spend(price, owner.nil? ? @game.bank : owner)
@@ -94,7 +99,7 @@ module Engine
       end
 
       def round_state
-        { just_sold_company: nil, company_sellers: [] }
+        { just_sold_company: nil, company_sellers: {} }
       end
 
       def setup

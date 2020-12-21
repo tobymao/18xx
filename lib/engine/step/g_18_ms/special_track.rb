@@ -13,7 +13,7 @@ module Engine
           super
 
           # If private P2 was used once it cannot be used again
-          tile_lay = @game.p2_company.abilities(:tile_lay)
+          tile_lay = @game.abilities(@game.p2_company, :tile_lay)
           tile_lay.use! if tile_lay&.count == 1
         end
       end

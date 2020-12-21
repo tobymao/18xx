@@ -62,7 +62,7 @@ module Engine
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
-      LIMIT_TOKENS = 8
+      LIMIT_TOKENS_AFTER_MERGER = 2
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
                                                                   'Game Ends 3 ORs after purchase/export'\
@@ -150,11 +150,11 @@ module Engine
       end
 
       def repay_loan(entity, loan)
-        @log << "#{entity.name} pays off a loan for #{format_currency(amount)}"
-        entity.spend(amount, bank)
+        @log << "#{entity.name} pays off a loan for #{format_currency(loan.amount)}"
+        entity.spend(loan.amount, bank)
 
         entity.loans.delete(loan)
-        @game.loans << loan
+        @loans << loan
       end
 
       def can_take_loan?(entity)
@@ -221,7 +221,7 @@ module Engine
         game_error('Route visits same hex twice') if route.hexes.size != route.hexes.uniq.size
 
         route.corporation.companies.each do |company|
-          company.abilities(:hex_bonus) do |ability|
+          abilities(company, :hex_bonus) do |ability|
             revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
           end
         end
@@ -363,10 +363,10 @@ module Engine
             else
               @log << "-- #{round_description('Merger', @round.round_num)} --"
               Round::G1867::Merger.new(self, [
-                # Step::G1817::ReduceTokens, #@todo
                 Step::G1867::MajorTrainless,
-                Step::DiscardTrain,
-                Step::G1867::PostMergerShares,
+                Step::G1867::PostMergerShares, # Step C & D
+                Step::G1867::ReduceTokens, # Step E
+                Step::DiscardTrain, # Step F
                 Step::G1867::Merge,
               ], round_num: @round.round_num)
             end

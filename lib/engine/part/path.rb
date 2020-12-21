@@ -9,6 +9,8 @@ module Engine
                   :lanes, :nodes, :offboard, :stops, :terminal, :town, :track
 
       LANES = [[1, 0].freeze, [1, 0].freeze].freeze
+      MATCHES_BROAD = %i[broad dual].freeze
+      MATCHES_NARROW = %i[narrow dual].freeze
 
       def self.decode_lane_spec(x_lane)
         if x_lane
@@ -61,7 +63,18 @@ module Engine
 
       def <=(other)
         other_ends = other.ends
-        ends.all? { |t| other_ends.any? { |o| t <= o } }
+        ends.all? { |t| other_ends.any? { |o| t <= o } } && tracks_match(other.track)
+      end
+
+      def tracks_match(other)
+        case @track
+        when :broad
+          MATCHES_BROAD.include?(other)
+        when :narrow
+          MATCHES_NARROW.include?(other)
+        when :dual
+          other == :dual
+        end
       end
 
       def ends

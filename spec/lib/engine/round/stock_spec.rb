@@ -147,7 +147,7 @@ module Engine
       let(:game) { Game::G18Chesapeake.new(%w[a b]) }
       it '30% presidency, remove share from share pool, allow dumping' do
         bo = game.corporation_by_id('B&O')
-        cv = game.cornelius.abilities(:shares).shares.first.corporation
+        cv = game.abilities(game.cornelius, :shares).shares.first.corporation
         corp = game.corporations.find { |c| ![bo, cv].include?(c) }
 
         player_0.cash = 10_000

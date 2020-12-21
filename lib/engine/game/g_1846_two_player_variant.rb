@@ -12,7 +12,7 @@ module Engine
         '1846 2p Variant Rules' => 'https://boardgamegeek.com/thread/1616729/draft-2-player-1846-rules-game-designer',
       }.freeze
 
-      CERT_LIMIT = { 2 => 19 }.freeze
+      CERT_LIMIT = { 2 => { 5 => 19, 4 => 16 } }.freeze
 
       def self.title
         '1846 2p Variant'

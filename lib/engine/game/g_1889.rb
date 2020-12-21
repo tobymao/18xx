@@ -48,7 +48,8 @@ module Engine
       def active_players
         return super if @finished
 
-        current_entity == company_by_id('ER') ? [@round.company_sellers.first] : super
+        company = company_by_id('ER')
+        current_entity == company ? [@round.company_sellers[company]] : super
       end
     end
   end

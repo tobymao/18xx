@@ -290,7 +290,7 @@ module Engine
           @log << "#{company.name} used for forming #{corporation.name} "\
             "contributing #{@game.format_currency(company.value)} value"
 
-          company.abilities(:additional_token) do |ability|
+          @game.abilities(company, :additional_token) do |ability|
             corporation.tokens << Engine::Token.new(corporation)
             ability.use!
           end

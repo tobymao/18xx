@@ -33,7 +33,7 @@ module Engine
           [@game.p1_company, @game.p2_company]
             .select { |p| p.owner == entity }
             .each do |p|
-              ability = p.abilities(:tile_lay)
+              ability = @game.abilities(p, :tile_lay)
               use_left += ability.count if ability
             end
 

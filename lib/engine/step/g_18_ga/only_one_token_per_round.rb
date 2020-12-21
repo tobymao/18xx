@@ -21,7 +21,8 @@ module Engine
 
         def remaining_token_ability?(entity)
           corporation = entity_corporation(entity)
-          return false if @game.p3_company.owner != corporation || !@game.p3_company.abilities(:token)&.count&.positive?
+          return false if @game.p3_company.owner != corporation ||
+                          !@game.abilities(@game.p3_company, :token)&.count&.positive?
 
           @game.waycross_hex.tile.cities.each do |c|
             return true if c.tokenable?(corporation, free: true)
