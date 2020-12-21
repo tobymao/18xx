@@ -65,8 +65,27 @@ module Engine
         1 => { 3 => 10, 4 => 8, 5 => 7, 6 => 6 },
       }.freeze
 
+      # TODO: Get a proper token
+      ASSIGNMENT_TOKENS = {
+        'GLSC' => '/icons/1846/sc_token.svg',
+      }.freeze
+
       def gray_phase?
         @phase.tiles.include?('gray')
+      end     
+
+      def revenue_for(route, stops)
+        revenue = super
+
+        revenue += 20 if route.corporation.assigned?(port.id) && stops.any? { |stop| stop.hex.assigned?(port.id) }
+
+        # TODO: Add bridge and tunnel private revenue modifiers
+
+        revenue
+      end
+
+      def port
+        @port ||= company_by_id('GLSC')
       end
 
       def maximum_loans(entity)

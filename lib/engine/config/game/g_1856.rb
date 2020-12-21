@@ -337,7 +337,30 @@ module Engine
       "sym": "GLSC",
       "value": 70,
       "revenue": 15,
-      "desc": "At any time during its operating turn, the owning public company may place the port token in any one city adjacent to Lake Erie, Lake Huron or Georgian Bay. Placement of this token closes the Great Lakes Shipping Company."
+      "desc": "At any time during its operating turn, the owning public company may place the port token in any one city adjacent to Lake Erie, Lake Huron or Georgian Bay. Placement of this token closes the Great Lakes Shipping Company.",
+      "abilities": [{
+        "type": "assign_hexes",
+        "when": "owning_corp_or_turn",
+        "hexes": [
+          "C14",
+          "D19",
+          "E18",
+          "F17", "F9",
+          "H17", "H7", "H5",
+          "J17", "J5",
+          "K2",
+          "M18",
+          "O18"
+        ],
+        "count": 1,
+        "owner_type": "corporation"
+      },
+      {
+        "type": "assign_corporation",
+        "when": "sold",
+        "count": 1,
+        "owner_type": "corporation"
+      }]
     },
     {
       "name": "Niagara Falls Suspension Bridge Company",
