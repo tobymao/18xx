@@ -13,18 +13,18 @@ module Engine
   "filename": "18_cz",
   "modulename": "18CZ",
   "currencyFormatStr": "K%d",
-  "bankCash": 12000,
+  "bankCash": 120000,
   "certLimit": {
-    "3": 21,
-    "4": 16,
-    "5": 13,
-    "6": 11
+    "3": 14,
+    "4": 12,
+    "5": 10,
+    "6": 9
   },
   "startingCash": {
-    "3": 500,
-    "4": 375,
-    "5": 300,
-    "6": 250
+    "3": 350,
+    "4": 300,
+    "5": 250,
+    "6": 210
   },
   "capitalization": "full",
   "layout": "pointy",
@@ -44,17 +44,18 @@ module Engine
     "B8": "Teplice & Ustid nad Labem",
     "D26": "Frydland & Frydek",
     "C7": "Chomutov & Most",
-    "E11": "Praha"
+    "E11": "Praha",
+    "D2": "Cheb",
+    "D4": "Karolvy Vary",
+    "E15": "Pardubice",
+    "C25": "Ostrava",
+    "F22": "Pferov",
+    "G19": "Brno",
+    "I9": "Strakonice"
   },
-  "tiles": { 
-     "1": 1,
-  "2": 1,
-  "5": 3,
-  "6": 4,
-  "7": 4,
-  "8": 9,
-  "9": 12,
-  "14": 3},
+  "tiles": {
+    "3": 2
+  },
   "market": [
     [
       "Closed",
@@ -78,29 +79,223 @@ module Engine
       "300"
     ]
   ],
-  "companies": [ {
-    "sym": "P1",
-    "name": "Melbourne & Hobson's Bay Railway Company",
-    "value": 40,
-    "discount": 10,
-    "revenue": 5,
-    "desc": "No special abilities."
-  }],
+  "companies": [
+    {
+      "name": "Takamatsu E-Railroad",
+      "value": 20,
+      "revenue": 5,
+      "desc": "Blocks Takamatsu (K4).",
+      "sym": "TR",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "hexes": [
+            "K4"
+          ]
+        }
+      ]
+    }
+  ],
   "corporations": [
     {
       "float_percent": 50,
       "sym": "SX",
-      "name": "Saxonian",
+      "name": "Sächsische Eisenbahn",
       "logo": "18_cz/SX",
       "tokens": [
         0,
         40
       ],
       "coordinates": "A7",
-      "color": "green"
+      "color": "red"
+    },
+    {
+      "float_percent": 50,
+      "sym": "PR",
+      "name": "Preußische Eisenbahn",
+      "logo": "18_cz/PR",
+      "tokens": [
+        0,
+        40
+      ],
+      "coordinates": "A21",
+      "color": "black"
+    },
+    {
+      "float_percent": 50,
+      "sym": "BY",
+      "name": "Bayrische Staatsbahn",
+      "logo": "18_cz/BY",
+      "tokens": [
+        0,
+        40
+      ],
+      "coordinates": "F2",
+      "color": "blue"
+    },
+    {
+      "float_percent": 50,
+      "sym": "kk",
+      "name": "kk Staatsbahn",
+      "logo": "18_cz/kk",
+      "tokens": [
+        0,
+        40
+      ],
+      "coordinates": "J14",
+      "color": "orange"
+    },
+    {
+      "float_percent": 50,
+      "sym": "Ug",
+      "name": "ungar. Staatsbahn",
+      "logo": "18_cz/Ug",
+      "tokens": [
+        0,
+        40
+      ],
+      "coordinates": "G27",
+      "color": "purple"
+    },
+    {
+      "float_percent": 50,
+      "sym": "BN",
+      "name": "Böhmische Nordbahn",
+      "logo": "18_cz/BN",
+      "tokens": [
+        0,
+        40,
+        100
+      ],
+      "coordinates": "E11",
+      "color": "grey"
+    },
+    {
+      "float_percent": 50,
+      "sym": "NWB",
+      "name": "Österreichische Nordwestbahn",
+      "logo": "18_cz/NWB",
+      "tokens": [
+        0,
+        40,
+        100
+      ],
+      "coordinates": "E11",
+      "color": "yellow"
+    },
+    {
+      "float_percent": 50,
+      "sym": "ATE",
+      "name": "Aussig-Teplitzer Eisenbahn",
+      "logo": "18_cz/ATE",
+      "tokens": [
+        0,
+        40,
+        100
+      ],
+      "color": "gold"
+    },
+    {
+      "float_percent": 50,
+      "sym": "BTE",
+      "name": "Buschtehrader Eisenbahn",
+      "logo": "18_cz/BTE",
+      "tokens": [
+        0,
+        40,
+        100
+      ],
+      "coordinates": "D2",
+      "color": "brightGreen"
+    },
+    {
+      "float_percent": 50,
+      "sym": "KFN",
+      "name": "Kaiser Ferdinands Nordbahn",
+      "logo": "18_cz/KFN",
+      "tokens": [
+        0,
+        40,
+        100
+      ],
+      "coordinates": "G19",
+      "color": "brown"
+    },
+    {
+      "float_percent": 50,
+      "sym": "EKJ",
+      "name": "Eisenbahn Karlsbad – Johanngeorgenstadt",
+      "logo": "18_cz/EKJ",
+      "tokens": [
+        0,
+        40,
+        100
+      ],
+      "coordinates": "D4",
+      "color": "lightBlue"
+    },
+    {
+      "float_percent": 50,
+      "sym": "OFE",
+      "name": "Ostrau-Friedlander Eisenbahn",
+      "logo": "18_cz/OFE",
+      "tokens": [
+        0,
+        40,
+        100
+      ],
+      "coordinates": "C25",
+      "color": "navyBlue"
+    },
+    {
+      "float_percent": 50,
+      "sym": "BCB",
+      "name": "Böhmische Commercialbahn",
+      "logo": "18_cz/BCB",
+      "tokens": [
+        0,
+        40,
+        100
+      ],
+      "coordinates": "E15",
+      "color": "orange"
+    },
+    {
+      "float_percent": 50,
+      "sym": "MW",
+      "name": "Mährische Westbahn",
+      "logo": "18_cz/MW",
+      "tokens": [
+        0,
+        40,
+        100
+      ],
+      "coordinates": "F22",
+      "color": "violet"
+    },
+    {
+      "float_percent": 50,
+      "sym": "VBW",
+      "name": "Vereinigte Böhmerwaldbahnen",
+      "logo": "18_cz/VBW",
+      "tokens": [
+        0,
+        40,
+        100
+      ],
+      "coordinates": "I9",
+      "color": "turquoise"
     }
   ],
-  "trains": [],
+  "trains": [
+    {
+      "name": "2",
+      "distance": 2,
+      "price": 80,
+      "rusts_on": "4",
+      "num": 6
+    }
+  ],
   "hexes": {
     "white": {
       "": [
@@ -113,6 +308,7 @@ module Engine
         "D18",
         "D20",
         "D22",
+        "D24",
         "E7",
         "E17",
         "E19",
@@ -179,11 +375,13 @@ module Engine
       ],
       "town=revenue:0;upgrade=cost:10,terrain:water": [
         "F10",
+        "A9",
         "C9",
         "C11"
       ],
       "city=revenue:0;upgrade=cost:10,terrain:water": [
-        "D16"
+        "D16",
+        "E15"
       ],
       "city=revenue:0": [
         "B10",
@@ -191,12 +389,18 @@ module Engine
         "E21",
         "G23",
         "G11",
-        "E9"
+        "E9",
+        "D2",
+        "D4",
+        "F22"
       ],
       "city=revenue:0;label=Y": [
         "B12",
         "I11",
-        "F6"
+        "F6",
+        "C25",
+        "G19",
+        "I9"
       ],
       "town=revenue:0": [
         "E1",
@@ -262,9 +466,7 @@ module Engine
         "green"
       ],
       "operating_rounds": 2,
-      "status":[
-         "can_buy_companies"
-      ]
+      "buy_companies": true
     },
     {
       "name": "4",
@@ -275,9 +477,7 @@ module Engine
         "green"
       ],
       "operating_rounds": 2,
-      "status":[
-         "can_buy_companies"
-      ]
+      "buy_companies": true
     },
     {
       "name": "5",
@@ -288,7 +488,10 @@ module Engine
         "green",
         "brown"
       ],
-      "operating_rounds": 3
+      "operating_rounds": 3,
+      "events": {
+        "close_companies": true
+      }
     },
     {
       "name": "6",
@@ -302,14 +505,13 @@ module Engine
       "operating_rounds": 3
     },
     {
-      "name": "8",
-      "on": "8",
+      "name": "D",
+      "on": "D",
       "train_limit": 2,
       "tiles": [
         "yellow",
         "green",
-        "brown",
-        "gray"
+        "brown"
       ],
       "operating_rounds": 3
     }
