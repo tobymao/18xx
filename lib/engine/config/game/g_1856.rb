@@ -264,28 +264,103 @@ module Engine
       "sym": "FT",
       "value": 20,
       "revenue": 5,
-      "desc": "No special abilities."
+      "desc": "No special abilities.",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "L3"
+          ]
+        }
+      ]
     },
     {
       "name": "Waterloo & Saugeen Railway Co.",
       "sym": "WSRC",
       "value": 40,
       "revenue": 10,
-      "desc": "The public company that owns this private company may place a free station marker and green #59 tile on the Kitchener hex (I12). This action closes the private company."
+      "desc": "The public company that owns this private company may place a free station marker and green #59 tile on the Kitchener hex (I12). This action closes the private company.",
+      "abilities":[
+         {
+            "type":"blocks_hexes",
+            "owner_type":"player",
+            "hexes":[
+               "I12"
+            ]
+         },
+         {
+            "type":"teleport",
+            "owner_type":"corporation",
+            "hexes":[
+               "I12"
+            ],
+             "tiles": [
+               "59"
+             ]
+         }
+      ]
     },
     {
       "name": "The Canada Company",
       "sym": "TCC",
       "value": 50,
       "revenue": 10,
-      "desc": "During its operating turn, the public company owning this private company may place a track tile in the hex occupied by this private company (H11). This track lay is in addition to the public company's normal track lay. This action does not close the private company."
+      "desc": "During its operating turn, the public company owning this private company may place a track tile in the hex occupied by this private company (H11). This track lay is in addition to the public company's normal track lay. This action does not close the private company.",
+      "abilities":[
+         {
+            "type":"blocks_hexes",
+            "owner_type":"player",
+            "hexes":[
+               "H11"
+            ]
+         },
+         {
+            "type":"tile_lay",
+            "owner_type":"corporation",
+            "free":true,
+            "hexes":[
+               "H11"
+            ],
+             "tiles": [
+               "3",
+               "4",
+               "58"
+             ],
+            "when":"track",
+            "count":1
+         }
+      ]
     },
     {
       "name": "Great Lakes Shipping Company",
       "sym": "GLSC",
       "value": 70,
       "revenue": 15,
-      "desc": "At any time during its operating turn, the owning public company may place the port token in any one city adjacent to Lake Erie, Lake Huron or Georgian Bay. Placement of this token closes the Great Lakes Shipping Company."
+      "desc": "At any time during its operating turn, the owning public company may place the port token in any one city adjacent to Lake Erie, Lake Huron or Georgian Bay. Placement of this token closes the Great Lakes Shipping Company.",
+      "abilities": [{
+        "type": "assign_hexes",
+        "when": "owning_corp_or_turn",
+        "hexes": [
+          "C14",
+          "D19",
+          "E18",
+          "F17", "F9",
+          "H17", "H7", "H5",
+          "J17", "J5",
+          "K2",
+          "M18",
+          "O18"
+        ],
+        "count": 1,
+        "owner_type": "corporation"
+      },
+      {
+        "type": "assign_corporation",
+        "when": "sold",
+        "count": 1,
+        "owner_type": "corporation"
+      }]
     },
     {
       "name": "Niagara Falls Suspension Bridge Company",
@@ -553,13 +628,13 @@ module Engine
       "offboard=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:5,b:_0;border=edge:1": [
         "B13"
       ],
-      "offboard=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:_0,b:4;path=a:4,b:_0;path=a:_0,b:5;path=a:0,b:_0;path=a:_0,b:5": [
+      "offboard=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:_0,b:4;path=a:4,b:_0;path=a:_0,b:5;path=a:0,b:_0;path=a:_0,b:5;icon=image:port": [
         "F9"
       ],
-      "offboard=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:5,b:_0": [
+      "offboard=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:5,b:_0;icon=image:port": [
         "H5"
       ],
-      "offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:5,b:_0": [
+      "offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:5,b:_0;icon=image:port": [
         "K2"
       ],
       "offboard=revenue:yellow_20|brown_30|gray_50;path=a:0,b:_0;path=a:1,b:_0;border=edge:5": [
@@ -617,10 +692,12 @@ module Engine
       "city=revenue:0;label=L": [
         "B19",
         "L13",
-        "P9",
+        "P9"
+      ],
+      "city=revenue:0;label=L;icon=image:port": [
+        "C14",
         "F17",
-        "O18",
-        "C14"
+        "O18"
       ],
       "city=revenue:0;label=L;upgrade=cost:40,terrain:water": [
         "N3"
@@ -631,16 +708,20 @@ module Engine
         "L9",
         "M6",
         "N9",
+        "H11"
+      ],
+      "town=revenue:0;icon=image:port": [
         "D19",
         "H17",
         "J5",
-        "M18",
-        "H11"
+        "M18"
       ],
       "town=revenue:0;town=revenue:0": [
         "I14",
         "F13",
-        "M10",
+        "M10"
+      ],
+      "town=revenue:0;town=revenue:0;icon=image:port": [
         "E18",
         "H7",
         "J17"
