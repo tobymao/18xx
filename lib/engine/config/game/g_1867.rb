@@ -215,6 +215,7 @@ module Engine
       "sym": "C&SL",
       "value": 30,
       "revenue": 10,
+      "discount": 10,
       "desc": "No special abilities."
     },
     {
@@ -222,6 +223,7 @@ module Engine
       "sym": "NFB",
       "value": 45,
       "revenue": 15,
+      "discount": 15,
       "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Buffalo",
       "abilities": [
         {
@@ -238,6 +240,7 @@ module Engine
       "sym": "MB",
       "value": 60,
       "revenue": 20,
+      "discount": 20,
       "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Montreal",
       "abilities": [
         {
@@ -254,6 +257,7 @@ module Engine
       "sym": "QB",
       "value": 75,
       "revenue": 25,
+      "discount": 25,
       "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Quebec",
       "abilities": [
         {
@@ -270,13 +274,14 @@ module Engine
       "sym": "SCT",
       "value": 90,
       "revenue": 30,
+      "discount": 30,
       "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Detroit",
       "abilities": [
         {
         "type": "hex_bonus",
         "owner_type": "corporation",
         "hexes": [
-          "A19"
+          "A19", "A17"
         ],
         "amount": 10
       }]
