@@ -15,6 +15,7 @@ module View
       needs :gap
       needs :map_x, default: 0
       needs :map_y, default: 0
+      needs :start_pos, default: [1, 1]
 
       X_OFFSET = 100
       LETTERS = ('A'..'Z').to_a.freeze
@@ -44,7 +45,7 @@ module View
         hex_x, hex_y = hex_size
 
         labels = @cols.map do |col|
-          x = hex_x * (col.to_i - 1)
+          x = hex_x * (col.to_i - @start_pos[0])
 
           label =
             if @axes[:x] == :letter
@@ -79,7 +80,7 @@ module View
         hex_x, hex_y = hex_size
 
         labels = @rows.map do |row|
-          multiplier = row.to_i
+          multiplier = row.to_i - @start_pos[1] + 1
           multiplier -= 0.5 if @layout == :pointy
           y = hex_y * multiplier
 
