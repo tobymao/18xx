@@ -45,8 +45,8 @@ module View
         # this is needed for the rare case when moving directly between run_routes steps
         if @last_entity != current_entity || @last_round != @game.round
           cleanup
-          store(:last_entity, current_entity)
-          store(:last_round, @game.round)
+          store(:last_entity, current_entity, skip: true)
+          store(:last_round, @game.round, skip: true)
         end
 
         trains = @game.route_trains(current_entity)
