@@ -46,7 +46,8 @@ module View
           end
         end
 
-        h(:div, buttons.compact)
+        buttons = buttons.compact
+        h(:div, buttons) if buttons.any?
       end
 
       private

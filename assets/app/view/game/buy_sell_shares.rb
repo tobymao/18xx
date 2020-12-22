@@ -30,7 +30,8 @@ module View
 
         children << h(SellShares, player: @current_entity, corporation: @corporation)
 
-        h(:div, children.compact)
+        children = children.compact
+        h(:div, children) if children.any?
       end
 
       def render_buy_shares
