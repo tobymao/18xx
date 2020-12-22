@@ -7,7 +7,7 @@ module Engine
         # Automatically take loans for an entity
 
         def buying_power(entity)
-          @game.buying_power(entity, true)
+          @game.buying_power(entity, full: true)
         end
 
         def try_take_loan(entity, cost)
