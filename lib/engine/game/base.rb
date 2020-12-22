@@ -1302,6 +1302,10 @@ module Engine
         active_abilities
       end
 
+      def company_available_for_other_corps(_company)
+        true
+      end
+
       private
 
       def init_bank
