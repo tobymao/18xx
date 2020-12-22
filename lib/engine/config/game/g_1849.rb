@@ -477,12 +477,60 @@ module Engine
   },
   "phases": [
     {
-      "name": "4",
+      "name": "4H",
       "train_limit": 4,
       "tiles": [
         "yellow"
       ],
       "operating_rounds": 1
+    },
+    {
+      "name": "6H",
+      "train_limit": 4,
+      "tiles": [
+        "yellow",
+        "green"
+      ],
+      "operating_rounds": 2
+    },
+    {
+      "name": "8H",
+      "train_limit": 3,
+      "tiles": [
+        "yellow",
+        "green"
+      ],
+      "operating_rounds": 2
+    },
+    {
+      "name": "10H",
+      "train_limit": 2,
+      "tiles": [
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "operating_rounds": 3
+    },
+    {
+      "name": "12H",
+      "train_limit": 2,
+      "tiles": [
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "operating_rounds": 3
+    },
+    {
+      "name": "16H",
+      "train_limit": 2,
+      "tiles": [
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "operating_rounds": 3
     }
   ],
   "companies": [
@@ -602,10 +650,50 @@ module Engine
   ],
   "trains": [
     {
-      "name": "2",
-      "distance": 2,
-      "price": 80,
-      "num": 6
+      "name": "4H",
+      "num": 4,
+      "distance": 4,
+      "price": 100,
+      "rusts_on": "8H"
+    },
+    {
+      "name": "6H",
+      "num": 4,
+      "distance": 6,
+      "price": 200,
+      "rusts_on": "10H"
+    },
+    {
+      "name": "8H",
+      "num": 3,
+      "distance": 8,
+      "price": 350,
+      "rusts_on": "16H"
+    },
+    {
+      "name": "10H",
+      "num": 2,
+      "distance": 10,
+      "price": 550
+    },
+    {
+      "name": "12H",
+      "num": 1,
+      "distance": 12,
+      "price": 800
+    },
+    {
+      "name": "16H",
+      "num": 5,
+      "distance": 16,
+      "price": 1100
+    },
+    {
+      "name": "R6H",
+      "num": 2,
+      "available_on": "16H",
+      "distance": 6,
+      "price": 350
     }
   ]
 }
