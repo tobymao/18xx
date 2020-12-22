@@ -324,6 +324,7 @@ module Engine
           Step::G1856::Loan,
           Step::SpecialTrack,
           Step::BuyCompany,
+          Step::HomeToken,
           Step::G1856::Track,
           Step::Token,
           Step::Route,
