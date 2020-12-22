@@ -486,34 +486,47 @@ module Engine
     },
     {
       "name": "6H",
+      "on": "6H",
       "train_limit": 4,
       "tiles": [
         "yellow",
         "green"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "status": [
+        "can_buy_companies"
+      ]
     },
     {
       "name": "8H",
+      "on": "8H",
       "train_limit": 3,
       "tiles": [
         "yellow",
         "green"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "status": [
+        "can_buy_companies"
+      ]
     },
     {
       "name": "10H",
+      "on": "10H",
       "train_limit": 2,
       "tiles": [
         "yellow",
         "green",
         "brown"
       ],
-      "operating_rounds": 3
+      "operating_rounds": 3,
+      "status": [
+        "can_buy_companies"
+      ]
     },
     {
       "name": "12H",
+      "on": "12H",
       "train_limit": 2,
       "tiles": [
         "yellow",
@@ -524,13 +537,17 @@ module Engine
     },
     {
       "name": "16H",
+      "on": "16H",
       "train_limit": 2,
       "tiles": [
         "yellow",
         "green",
         "brown"
       ],
-      "operating_rounds": 3
+      "operating_rounds": 3,
+      "status": [
+        "blue_zone"
+      ]
     }
   ],
   "companies": [
@@ -658,14 +675,15 @@ module Engine
     },
     {
       "name": "6H",
-      "num": 4,
       "distance": 6,
       "price": 200,
-      "rusts_on": "10H"
+      "rusts_on": "10H",
+      "events": [
+        {"type": "green_par"}
+      ]
     },
     {
       "name": "8H",
-      "num": 3,
       "distance": 8,
       "price": 350,
       "rusts_on": "16H"
@@ -674,17 +692,23 @@ module Engine
       "name": "10H",
       "num": 2,
       "distance": 10,
-      "price": 550
+      "price": 550,
+      "events": [
+        {"type": "brown_par"}
+      ]
     },
     {
       "name": "12H",
       "num": 1,
       "distance": 12,
-      "price": 800
+      "price": 800,
+      "events": [
+        {"type": "close_companies"},
+        {"type": "earthquake"}
+      ]
     },
     {
       "name": "16H",
-      "num": 5,
       "distance": 16,
       "price": 1100
     },
