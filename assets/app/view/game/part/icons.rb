@@ -30,7 +30,8 @@ module View
         end
 
         def destination_icon_patterns
-          @icons.select{ |i| i.destination?}.map.with_index do |icon, index|
+          @icons.map.with_index do |icon, index|
+            next unless icon.destination?
             h(:pattern,
               {
                 attrs: {
@@ -50,7 +51,7 @@ module View
                 )
               ]
             )
-          end
+          end.compact
         end
 
         def render_part
@@ -64,7 +65,7 @@ module View
                   cy: "#{ICON_RADIUS}px",
                   r: "#{ICON_RADIUS}px"
                 })
-            elsif
+            else
               h(:image,
                 attrs: {
                   href: icon.image,

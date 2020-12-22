@@ -43,6 +43,7 @@ module Engine
     "M4": "Barrie",
     "N11": "Toronto",
     "I12": "Kitchener",
+    "I14": "Drumbo",
     "L15": "Hamilton",
     "N17": "Welland",
     "H15": "Woodstock",
@@ -723,7 +724,7 @@ module Engine
         "J5",
         "M18"
       ],
-      "town=revenue:0;town=revenue:0;destination=corporation:BBG,image:logos/1856/BBG;destination=corporation:THB,image:logos/1856/THB;destination=corporation:WR,image:logos/1856/WR": [
+      "town=revenue:0;town=revenue:0": [
         "I14",
         "F13",
         "M10"

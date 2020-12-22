@@ -77,6 +77,34 @@ module Engine
         1 => { 3 => 10, 4 => 8, 5 => 7, 6 => 6 },
       }.freeze
 
+      DESTINATIONS = {
+        BBG: 'N17',
+        CA: 'H15',
+        CPR: 'N11',
+        CV: 'I14',
+        GT: 'K8',
+        GW: 'A20',
+        LPS: 'F17',
+        TGB: 'H5',
+        THB: 'J11',
+        WGB: 'F9',
+        WR: 'L15'
+      }.freeze
+
+      ALTERNATE_DESTINATIONS = {
+        BBG: 'N11',
+        CA: 'A20', # ['A20', 'F15'], # Connect London to Detroit
+        CPR: 'P9',
+        CV: 'M4',
+        GT: 'L13',
+        GW: 'J15',
+        LPS: 'F15',
+        TGB: 'O2', # [['N1', 'O2']] # Canadaian West, but it's a 2 hex offboard
+        THB: 'H15',
+        WGB: 'H5',
+        WR: 'L15'
+      }.freeze
+
       # TODO: Get a proper token
       ASSIGNMENT_TOKENS = {
         'GLSC' => '/icons/1846/sc_token.svg',
@@ -236,7 +264,16 @@ module Engine
 
         # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
         @available_bridge_tokens = 2
-        @available_tunnel_tokens = 2
+        @available_tunnel_tokens = 2        
+
+        set_destinations DESTINATIONS
+      end
+
+      def set_destinations(destinations)
+        destinations.each do |corp, dest|
+          puts corp, hex_by_id(dest).tile.location_name
+          hex_by_id(dest).original_tile.add_destination!(Part::Destination.new(image: "logos/1856/#{corp}", corporation: corp))
+        end
       end
 
       def num_corporations
