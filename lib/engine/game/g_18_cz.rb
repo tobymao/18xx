@@ -6,6 +6,9 @@ require_relative 'base'
 module Engine
   module Game
     class G18CZ < Base
+
+      register_colors(brightGreen: '#c2ce33', beige: '#e5d19e', lightBlue: '#1EA2D6', mintGreen: '#B1CEC7', yellow: '#ffe600', lightRed: '#F3B1B3')
+
       load_from_json(Config::Game::G18CZ::JSON)
 
       DEV_STAGE = :prealpha

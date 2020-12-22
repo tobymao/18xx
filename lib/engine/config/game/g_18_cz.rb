@@ -181,7 +181,8 @@ module Engine
         100
       ],
       "coordinates": "E11",
-      "color": "yellow"
+      "color": "yellow",
+      "text_color": "black"
     },
     {
       "float_percent": 50,
@@ -193,7 +194,8 @@ module Engine
         40,
         100
       ],
-      "color": "gold"
+      "color": "gold",
+      "text_color": "black"
     },
     {
       "float_percent": 50,
@@ -206,7 +208,8 @@ module Engine
         100
       ],
       "coordinates": "D2",
-      "color": "brightGreen"
+      "color": "brightGreen",
+      "text_color": "black"
     },
     {
       "float_percent": 50,
@@ -219,7 +222,7 @@ module Engine
         100
       ],
       "coordinates": "G19",
-      "color": "brown"
+      "color": "lightBlue"
     },
     {
       "float_percent": 50,
@@ -232,7 +235,8 @@ module Engine
         100
       ],
       "coordinates": "D4",
-      "color": "lightBlue"
+      "color": "white",
+      "text_color": "black"
     },
     {
       "float_percent": 50,
@@ -245,7 +249,8 @@ module Engine
         100
       ],
       "coordinates": "C25",
-      "color": "navyBlue"
+      "color": "lightRed",
+      "text_color": "black"
     },
     {
       "float_percent": 50,
@@ -258,7 +263,8 @@ module Engine
         100
       ],
       "coordinates": "E15",
-      "color": "orange"
+      "color": "orange",
+      "text_color": "black"
     },
     {
       "float_percent": 50,
@@ -271,7 +277,8 @@ module Engine
         100
       ],
       "coordinates": "F22",
-      "color": "violet"
+      "color": "mintGreen",
+      "text_color": "black"
     },
     {
       "float_percent": 50,
