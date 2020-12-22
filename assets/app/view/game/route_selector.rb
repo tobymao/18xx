@@ -12,6 +12,8 @@ module View
       include Lib::Color
       include Lib::Settings
 
+      needs :last_entity, store: true, default: nil
+      needs :last_round, store: true, default: nil
       needs :routes, store: true, default: []
       needs :selected_route, store: true, default: nil
 
@@ -39,7 +41,15 @@ module View
       end
 
       def render
-        trains = @game.route_trains(@game.round.current_entity)
+        current_entity = @game.round.current_entity
+        # this is needed for the rare case when moving directly between run_routes steps
+        if @last_entity != current_entity || @last_round != @game.round
+          cleanup
+          store(:last_entity, current_entity)
+          store(:last_round, @game.round)
+        end
+
+        trains = @game.route_trains(current_entity)
 
         train_help =
           if (helps = @game.train_help(trains)).any?
