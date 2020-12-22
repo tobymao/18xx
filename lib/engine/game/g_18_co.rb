@@ -519,8 +519,8 @@ module Engine
         end
       end
 
-      def company_available_for_other_corps(_company)
-        false
+      def entity_can_use_company?(entity, company)
+        entity.corporation? && entity == company.owner
       end
     end
   end
