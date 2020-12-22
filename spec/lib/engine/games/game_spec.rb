@@ -224,6 +224,15 @@ module Engine
         'TIE53' => 320,
       },
     },
+    GAMES_BY_TITLE['18CO'] => {
+      # Bank Broken
+      'hs_ghyigehv_1608562373' => {
+        'Andy' => 7004,
+        'Betty' => 6068,
+        'Cory' => 10_592,
+        'David' => 6675,
+      },
+    },
   }.freeze
 
   TEST_CASES.each do |game, results|
