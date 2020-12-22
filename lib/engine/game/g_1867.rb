@@ -9,23 +9,17 @@ module Engine
   module Game
     class G1867 < Base
       register_colors(black: '#16190e',
-                      blue: '#165633',
-                      brightGreen: '#0a884b',
-                      brown: '#984573',
-                      gold: '#904098',
-                      gray: '#984d2d',
-                      green: '#bedb86',
-                      lavender: '#e96f2c',
-                      lightBlue: '#bedef3',
-                      lightBrown: '#bec8cc',
-                      lime: '#00afad',
-                      navy: '#003d84',
-                      natural: '#e31f21',
-                      orange: '#f2a847',
-                      pink: '#ee3e80',
+                      blue: '#0189d1',
+                      brown: '#7b352a',
+                      gray: '#7c7b8c',
+                      green: '#3c7b5c',
+                      lightBlue: '#4cb5d2',
+                      lightishBlue: '#0097df',
+                      teal: '#009595',
+                      orange: '#d75500',
+                      magenta: '#d30869',
+                      purple: '#772282',
                       red: '#ef4223',
-                      turquoise: '#0095da',
-                      violet: '#e48329',
                       white: '#fff36b',
                       yellow: '#ffdea8')
 
@@ -84,6 +78,7 @@ module Engine
       CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
       # A token is reserved for Montreal is reserved for nationalization
       CN_RESERVATIONS = ['L12'].freeze
+      GREEN_CORPORATIONS = %w[BBG LPS QLS SLA TGB THB].freeze
       include InterestOnLoans
 
       # Minors are done as corporations with a size of 2
@@ -454,9 +449,8 @@ module Engine
         @corporations.select { |c| c.type == :minor }.each { |c| c.max_share_price = max_price }
 
         # Move green and majors out of the normal list
-        green = COLORS[:green]
         @corporations, @future_corporations = @corporations.partition do |corporation|
-          corporation.type == :minor && corporation.color != green
+          corporation.type == :minor && !GREEN_CORPORATIONS.include?(corporation.id)
         end
       end
 

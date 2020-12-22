@@ -325,7 +325,7 @@ module Engine
         40
       ],
       "type": "major",
-      "color": "cyan"
+      "color": "blue"
     },
     {
       "sym": "GTR",
@@ -351,7 +351,7 @@ module Engine
         40
       ],
       "type": "major",
-      "color": "brown"
+      "color": "darkBlue"
     },
     {
       "sym": "ICR",
@@ -364,7 +364,7 @@ module Engine
         40
       ],
       "type": "major",
-      "color": "yellow"
+      "color": "brown"
     },
     {
       "sym": "NTR",
@@ -376,7 +376,7 @@ module Engine
         20,
         40
       ],
-      "color": "tan"
+      "color": "green"
     },
     {
       "sym": "NYC",
@@ -389,7 +389,7 @@ module Engine
         40
       ],
       "type": "major",
-      "color": "black"
+      "color": "purple"
     },
     {
       "sym": "BBG",
@@ -402,7 +402,7 @@ module Engine
       "type": "minor",
       "shares": [100],
       "max_ownership_percent": 100,
-      "color": "yellow"
+      "color": "gray"
     },
     {
       "sym": "BO",
@@ -415,19 +415,20 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "teal"
     },
     {
       "sym": "CS",
       "name": "Canada Southern",
       "logo": "1867/CS",
+      "float_percent": 100,
       "tokens": [
         0
       ],
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "lightBlue"
     },
     {
       "sym": "CV",
@@ -440,7 +441,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "lightishBlue"
     },
     {
       "sym": "KP",
@@ -453,7 +454,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "lightishBlue"
     },
     {
       "sym": "LPS",
@@ -466,7 +467,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "gray"
     },
     {
       "sym": "OP",
@@ -479,7 +480,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "magenta"
     },
     {
       "sym": "SLA",
@@ -492,7 +493,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "gray"
     },
     {
       "sym": "TGB",
@@ -505,7 +506,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "darkBlue"
     },
     {
       "sym": "TN",
@@ -518,7 +519,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "brown"
     },
     {
       "sym": "AE",
@@ -531,7 +532,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "green"
+      "color": "orange"
     },
     {
       "sym": "CA",
@@ -544,7 +545,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "green"
+      "color": "purple"
     },
     {
       "sym": "NO",
@@ -557,7 +558,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "green"
+      "color": "orange"
     },
     {
       "sym": "PM",
@@ -570,7 +571,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "green"
+      "color": "lightBlue"
     },
     {
       "sym": "QLS",
@@ -583,7 +584,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "green"
+      "color": "blue"
     },
     {
       "sym": "THB",
@@ -596,7 +597,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "green"
+      "color": "orange"
     },
     {
       "sym": "CN",
