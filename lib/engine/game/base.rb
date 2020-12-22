@@ -253,6 +253,14 @@ module Engine
         end
       end
 
+      # use to modify hexes based on optional rules
+      def optional_hexes
+        self.class::HEXES
+      end
+
+      # use to modify tiles based on optional rules
+      def optional_tiles; end
+
       def self.title
         name.split('::').last.slice(1..-1)
       end
@@ -388,6 +396,7 @@ module Engine
         @bank = init_bank
         @tiles = init_tiles
         @all_tiles = init_tiles
+        optional_tiles
         @cert_limit = init_cert_limit
         @removals = []
 
@@ -1409,7 +1418,7 @@ module Engine
           end
         end
 
-        self.class::HEXES.map do |color, hexes|
+        optional_hexes.map do |color, hexes|
           hexes.map do |coords, tile_string|
             coords.map.with_index do |coord, index|
               next Hex.new(coord, layout: layout, axes: axes, empty: true) if color == :empty
@@ -1442,7 +1451,7 @@ module Engine
               Hex.new(coord, layout: layout, axes: axes, tile: tile, location_name: location_name)
             end
           end
-        end.flatten
+        end.flatten.compact
       end
 
       def init_tiles

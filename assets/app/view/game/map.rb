@@ -32,6 +32,7 @@ module View
         @hexes = @show_starting_map ? @game.init_hexes(@game.companies, @game.corporations) : @game.hexes.dup
         @cols = @hexes.reject(&:ignore_for_axes).map(&:x).uniq.sort.map(&:next)
         @rows = @hexes.reject(&:ignore_for_axes).map(&:y).uniq.sort.map(&:next)
+        @start_pos = [@cols.first, @rows.first]
         @layout = @game.layout
 
         @scale = SCALE * map_zoom
@@ -58,7 +59,8 @@ module View
             actions: actions,
             show_coords: show_coords,
             show_location_names: show_location_names,
-            routes: routes
+            routes: routes,
+            start_pos: @start_pos
           )
         end
         @hexes.compact!
@@ -179,7 +181,8 @@ module View
               font_size: FONT_SIZE,
               gap: GAP,
               map_x: map_x,
-              map_y: map_y),
+              map_y: map_y,
+              start_pos: @start_pos),
           ]),
         ])
       end

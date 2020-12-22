@@ -73,6 +73,19 @@ module Engine
         'southern_forms' => ['Southern Forms', 'Southern RR forms; No track or token after the next SR.']
       ).freeze
 
+      OPTIONAL_RULES = [
+        { sym: :two_player_map,
+          short_name: '2-3P map',
+          desc: 'Use the smaller first edition map suitable for 2-3 players' },
+        { sym: :original_insolvency,
+          short_name: 'Original insolvency',
+          desc: 'Use the original insolvency rules' },
+      ].freeze
+
+      OPTION_REMOVE_HEXES = %w[A5 A7 B4 E11].freeze
+      OPTION_ADD_HEXES = { ['B4'] => 'city=revenue:0' }.freeze
+      OPTION_TILES = %w[776-2 770-1].freeze
+
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded_or_city, upgrade: false }].freeze
 
       GAME_END_CHECK = { stock_market: :current_or, bank: :current_or, custom: :immediate }.freeze
@@ -117,6 +130,40 @@ module Engine
 
       def init_share_pool
         Engine::G1860::SharePool.new(self)
+      end
+
+      def option_23p_map?
+        @optional_rules&.include?(:two_player_map) || @optional_rules&.include?(:original_game)
+      end
+
+      def option_original_insolvency?
+        @optional_rules&.include?(:original_insolvency) || @optional_rules&.include?(:original_game)
+      end
+
+      def optional_hexes
+        return self.class::HEXES unless option_23p_map?
+
+        new_hexes = {}
+        HEXES.keys.each do |color|
+          new_map = self.class::HEXES[color].map do |coords, tile_string|
+            [coords - OPTION_REMOVE_HEXES, tile_string]
+          end.to_h
+          OPTION_ADD_HEXES.each { |coords, tile_str| new_map[coords] = tile_str } if color == :white
+
+          new_hexes[color] = new_map
+        end
+
+        new_hexes
+      end
+
+      def optional_tiles
+        return unless option_23p_map?
+
+        # remove 2nd edition tiles
+        OPTION_TILES.each do |ot|
+          @tiles.reject! { |t| t.id == ot }
+          @all_tiles.reject! { |t| t.id == ot }
+        end
       end
 
       def setup
@@ -596,9 +643,12 @@ module Engine
       def train_help(trains)
         help = []
 
-        if trains.select { |t| t.owner == @depot }.any?
+        if trains.select { |t| t.owner == @depot }.any? && !option_original_insolvency?
           help << 'Leased trains ignore town/halt allowance.'
           help << "Revenue = #{format_currency(40)} + number_of_stops * #{format_currency(20)}"
+        end
+        if trains.select { |t| t.owner == @depot }.any? && option_original_insolvency?
+          help << 'Leased trains run for half revenue (but full subsidies).'
         end
 
         help
@@ -895,12 +945,24 @@ module Engine
         @sr_after_southern
       end
 
-      def ignore_halt_subsidies?(route)
+      def loaner?(route)
         route.train.owner == @depot
       end
 
+      def loaner_new_rules?(route)
+        loaner?(route) && !option_original_insolvency?
+      end
+
+      def loaner_orig_rules?(route)
+        loaner?(route) && option_original_insolvency?
+      end
+
+      def ignore_halt_subsidies?(route)
+        loaner_new_rules?(route)
+      end
+
       def ignore_second_allowance?(route)
-        route.train.owner == @depot || @nationalization
+        loaner_new_rules?(route) || @nationalization
       end
 
       def max_halts(route)
@@ -970,32 +1032,34 @@ module Engine
         end
 
         # update route halts
-        route.halts = num_halts if (num_halts.positive? || route.halts) && !ignore_halt_subsidies?(route)
+        route.halts = num_halts if (num_halts.positive? || route.halts) && !loaner_new_rules?(route)
 
         stops
       end
 
       def route_distance(route)
         n_cities = route.stops.select { |n| n.city? || n.offboard? }.size
-        # halts are treated like towns for leased trains
-        n_towns = if route.train.owner != @depot
+        # halts are treated like towns for leased trains (new rules)
+        n_towns = if !loaner_new_rules?(route)
                     route.stops.count { |n| n.town? && !n.halt? }
                   else
                     route.stops.count(&:town?)
                   end
-        route.train.owner != @depot ? "#{n_cities}+#{n_towns}" : (n_cities + n_towns).to_s
+        loaner_new_rules?(route) ? (n_cities + n_towns).to_s : "#{n_cities}+#{n_towns}"
       end
 
       def revenue_for(route, stops)
-        if route.train.owner != @depot
-          stops.sum { |stop| stop.route_base_revenue(route.phase, route.train) }
-        else
+        if loaner_new_rules?(route)
           40 + 20 * stops.size
+        elsif loaner_orig_rules?(route)
+          (stops.sum { |stop| stop.route_base_revenue(route.phase, route.train) } / 2).ceil
+        else
+          stops.sum { |stop| stop.route_base_revenue(route.phase, route.train) }
         end
       end
 
       def subsidy_for(route, stops)
-        route.train.owner != @depot ? stops.count(&:halt?) * HALT_SUBSIDY : 0
+        !ignore_halt_subsidies?(route) ? stops.count(&:halt?) * HALT_SUBSIDY : 0
       end
 
       def routes_revenue(routes)

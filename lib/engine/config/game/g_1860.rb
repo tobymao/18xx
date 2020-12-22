@@ -34,7 +34,7 @@ module Engine
     "F2": "Cowes",
     "J2": "Ryde Pier",
     "G3": "Whippingham",
-    "I3": "Ryde",
+    "I3": "Ryde Esp",
     "B4": "Yarmouth",
     "F4": "Cement Mills",
     "H4": "Wooton & Havenstreet",
@@ -492,7 +492,7 @@ module Engine
     },
     {
       "sym": "IWNJ",
-      "name": "Isle of Wight, Newport Juntion",
+      "name": "Isle of Wight, Newport Junction",
       "logo": "1860/IWNJ",
       "float_percent": 50,
       "max_ownership_percent": 100,
