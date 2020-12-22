@@ -1284,7 +1284,7 @@ module Engine
 		},
 		{
 			"name": "6b",
-			"on": "5D",
+			"on": ["5D", "E"],
 			"train_limit": 2,
 			"tiles": [
 				"yellow",

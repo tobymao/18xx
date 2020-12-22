@@ -110,7 +110,7 @@ module View
 
           h(:tr, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
-            h(:td, phase[:on]),
+            h(:td, Array(phase[:on]).first),
             h(:td, phase[:operating_rounds]),
             h(:td, train_limit),
             h(:td, phase_props, phase_color.capitalize),
