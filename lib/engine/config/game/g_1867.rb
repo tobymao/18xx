@@ -521,9 +521,9 @@ module Engine
       "color": "yellow"
     },
     {
-      "sym": "TN",
+      "sym": "AE",
       "name": "Algoma Eastern Railway",
-      "logo": "1867/TN",
+      "logo": "1867/AE",
       "float_percent": 100,
       "tokens": [
         0
@@ -547,9 +547,9 @@ module Engine
       "color": "green"
     },
     {
-      "sym": "NYO",
+      "sym": "NO",
       "name": "New York and Ottawa",
-      "logo": "1867/NYO",
+      "logo": "1867/NO",
       "float_percent": 100,
       "tokens": [
         0
