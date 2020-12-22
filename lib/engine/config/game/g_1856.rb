@@ -628,10 +628,10 @@ module Engine
       "offboard=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:5,b:_0;border=edge:1": [
         "B13"
       ],
-      "offboard=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:5,b:_0;icon=image:port": [
+      "offboard=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:5,b:_0;icon=image:port,sticky:1": [
         "H5"
       ],
-      "offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:5,b:_0;icon=image:port": [
+      "offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:5,b:_0;icon=image:port,sticky:1": [
         "K2"
       ],
       "offboard=revenue:yellow_20|brown_30|gray_50,hide:1,groups:Canadian West;path=a:0,b:_0;path=a:1,b:_0;border=edge:5": [
@@ -675,7 +675,7 @@ module Engine
       ]
     },
     "gray": {
-      "town=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:port": [
+      "town=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:port,sticky:1": [
         "F9"
       ]
     },
@@ -696,7 +696,7 @@ module Engine
         "L13",
         "P9"
       ],
-      "city=revenue:0;label=L;icon=image:port": [
+      "city=revenue:0;label=L;icon=image:port,sticky:1": [
         "C14",
         "F17",
         "O18"
@@ -712,7 +712,7 @@ module Engine
         "N9",
         "H11"
       ],
-      "town=revenue:0;icon=image:port": [
+      "town=revenue:0;icon=image:port,sticky:1": [
         "D19",
         "H17",
         "J5",
@@ -723,7 +723,7 @@ module Engine
         "F13",
         "M10"
       ],
-      "town=revenue:0;town=revenue:0;icon=image:port": [
+      "town=revenue:0;town=revenue:0;icon=image:port,sticky:1": [
         "E18",
         "H7",
         "J17"
