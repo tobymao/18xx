@@ -24,7 +24,7 @@ module Engine
                       tgbOrange: '#c94d00',
                       thbYellow: '#ebff45',
                       wgbBlue: '#494d99',
-                      wrBrown: '#664c3a',
+                      wrBrown: '#54230e',
 
                       red: '#d81e3e',
                       turquoise: '#00a993',
