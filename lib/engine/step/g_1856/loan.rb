@@ -28,6 +28,8 @@ module Engine
         end
 
         def blocks?
+          return false if @game.post_nationalization
+
           @round.steps.any? { |step| step.passed? && step.is_a?(Step::BuyTrain) }
         end
 
