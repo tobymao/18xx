@@ -429,6 +429,10 @@ module Engine
         entity.cash + ((maximum_loans(entity) - entity.loans.size) * @loan_value)
       end
 
+      def unstarted_corporation_summary
+        (@corporations.count { |c| !c.ipoed }).to_s
+      end
+
       def liquidate!(corporation)
         @owner_when_liquidated[corporation] = corporation.owner
         @stock_market.move(corporation, 0, 0, force: true)
@@ -467,10 +471,6 @@ module Engine
       def corporation_size(entity)
         # For display purposes is a corporation small, medium or large
         CORPORATION_SIZES[entity.total_shares]
-      end
-
-      def show_corporation_size?(_entity)
-        true
       end
 
       private

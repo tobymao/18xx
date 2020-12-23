@@ -68,6 +68,12 @@ module View
             h('td.right', @game.format_currency(@game.round.active_step.seed_money)),
           ])
         end
+        if @game.respond_to?(:unstarted_corporation_summary)
+          trs << h(:tr, [
+            h(:td, 'Unstarted corporations'),
+            h('td.right', @game.unstarted_corporation_summary),
+          ])
+        end
 
         return unless trs.any?
 

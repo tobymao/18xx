@@ -61,7 +61,7 @@ module View
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
 
         extras = []
-        extras.concat(render_loans) if @corporation.loans.any?
+        extras.concat(render_loans) if @game.total_loans&.nonzero?
         if @corporation.corporation? && @corporation.floated? &&
               @game.total_loans.positive? && @corporation.can_buy?
           extras << render_buying_power
@@ -72,7 +72,6 @@ module View
         if @corporation.corporation? && @corporation.respond_to?(:escrow) && @corporation.escrow
           extras << render_escrow_account
         end
-        extras << render_corporation_size if @game.show_corporation_size?
         if extras.any?
           props = { style: { borderCollapse: 'collapse' } }
           children << h('table.center', props, [h(:tbody, extras)])
@@ -540,13 +539,6 @@ module View
         h('tr.ipo', [
           h('td.right', 'Buying Power'),
           h('td.padded_number', @game.format_currency(@game.buying_power(@corporation, true)).to_s),
-        ])
-      end
-
-      def render_corporation_size
-        h('tr.ipo', [
-          h('td.right', 'Corporation Size'),
-          h('td.padded_number', @corporation.total_shares),
         ])
       end
 

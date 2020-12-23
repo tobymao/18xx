@@ -1825,10 +1825,6 @@ module Engine
         :small
       end
 
-      def show_corporation_size?(_entity)
-        false
-      end
-
       def status_str(_corporation); end
 
       # Override this, and add elements (paragraphs of text) here to display it on Info page.
