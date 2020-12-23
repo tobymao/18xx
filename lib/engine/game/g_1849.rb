@@ -73,7 +73,10 @@ module Engine
       def setup
         @corporations.sort_by! { rand }
         remove_corp if @players.size == 3
-        @corporations.each { |c| c.next_to_par = false }
+        @corporations.each do |c|
+          c.next_to_par = false
+          c.shares.last.last_cert = true
+        end
         @corporations[0].next_to_par = true
       end
 
@@ -140,6 +143,7 @@ module Engine
       def close_corporation(corporation, quiet: false)
         super
         corporation = reset_corporation(corporation)
+        corporation.shares.last.last_cert = true
         @corporations.push(corporation)
         corporation.closed_recently = true
         corporation.next_to_par = true if @corporations[@corporations.length - 2].floated?
@@ -216,14 +220,48 @@ module Engine
         num_shares = 5 - entity.num_market_shares
         bundles = bundles_for_corporation(entity, entity)
 
-        bundles.reject { |bundle| bundle.num_shares > num_shares }
+        bundles.reject { |bundle| bundle.num_shares > num_shares || !last_cert_last?(bundle) }
       end
 
       def redeemable_shares(entity)
         return [] unless entity.operating_history.size > 1
 
         bundles_for_corporation(share_pool, entity)
-          .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
+          .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price || !last_cert_last?(bundle) }
+      end
+
+      def dumpable(bundle)
+        return true unless bundle.presidents_share
+
+        owner_percent = bundle.owner.percent_of(bundle.corporation)
+        other_percent = @players.reject { |p| p.id == bundle.owner.id }.map { |o| o.percent_of(bundle.corporation) }.max
+
+        other_percent > owner_percent - bundle.percent
+      end
+
+      def bundles_for_corporation(share_holder, corporation, shares: nil)
+        return [] unless corporation.ipoed
+
+        shares = (shares || share_holder.shares_of(corporation))
+
+        bundles = (1..shares.size).flat_map do |n|
+          shares.combination(n).to_a.map { |ss| Engine::ShareBundle.new(ss) }
+        end
+
+        (bundles.uniq do |b|
+          [b.shares.count { |s| s.percent == 10 },
+           b.presidents_share ? 1 : 0,
+           b.shares.find(&:last_cert) ? 1 : 0]
+        end).select { |b| dumpable(b) }.sort_by(&:percent)
+      end
+
+      def last_cert_last?(bundle)
+        bundle = bundle.to_bundle
+        last_cert = bundle.shares.find(&:last_cert)
+        return true unless last_cert
+
+        location = last_cert.corporation.shares.include?(last_cert) ? last_cert.corporation.shares : share_pool.shares
+        location.size == bundle.shares.size
       end
 
       def new_track(old_tile, new_tile)
