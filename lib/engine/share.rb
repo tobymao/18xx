@@ -7,10 +7,11 @@ module Engine
   class Share
     include Ownable
 
-    attr_accessor :percent, :buyable, :counts_for_limit
+    attr_accessor :percent, :buyable, :counts_for_limit, :cert_size
     attr_reader :corporation, :president, :index
 
-    def initialize(corporation, owner: nil, president: false, percent: 10, index: 0)
+    def initialize(corporation, owner: nil, president: false, percent: 10, index: 0, cert_size: 1)
+      @cert_size = cert_size
       @corporation = corporation
       @president = president
       @percent = percent
