@@ -6,6 +6,10 @@ module Engine
   module Step
     module G1849
       class BuySellParShares < BuySellParShares
+        def can_buy?(entity, bundle)
+          super && @game.last_cert_last?(bundle)
+        end
+
         def can_buy_multiple?(entity, corp)
           super || (corp.owner == entity && just_parred(corp) && num_shares_bought(corp) < 2)
         end
