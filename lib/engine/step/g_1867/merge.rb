@@ -28,6 +28,7 @@ module Engine
 
         def merge_name
           return 'Convert' if @converting
+          return 'Finish Merge' if @merge_major
 
           'Merge'
         end
@@ -250,8 +251,8 @@ module Engine
           available = []
           # Mergeable candidates must be connected by track, minors only have one token which simplifies it
           mergeable.each do |corp|
-            cities = @game.graph.connected_nodes(corp).keys
-            corporations = cities.flat_map { |c| c.tokens.compact.map(&:corporation) }
+            parts = @game.graph.connected_nodes(corp).keys
+            corporations = parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
             available += corporations - mergeable
           end
 
