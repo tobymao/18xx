@@ -413,7 +413,7 @@ module Engine
           # Notionally pay off all the acquired corps loans, and then they can be taken again
           loan_payoff = acquired_corp.loans.size * @game.loan_value
 
-          buying_power(corporation) +
+          @game.buying_power(corporation, extra_loans: acquired_corp.loans.size) +
           acquired_corp.cash +
           treasury_share_compensation(acquired_corp) -
           loan_payoff

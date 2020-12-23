@@ -161,7 +161,7 @@ module Engine
           @loans.any?
       end
 
-      def buying_power(entity, full = false)
+      def buying_power(entity, full: false)
         return entity.cash unless full
         return entity.cash unless entity.corporation?
 
