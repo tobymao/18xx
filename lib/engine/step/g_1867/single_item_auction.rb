@@ -136,6 +136,9 @@ module Engine
         end
 
         def post_win_bid(winner, company)
+          # Avoid startup infinite recursion
+          return if @game.players.empty?
+
           if winner
             @round.goto_entity!(winner.entity)
             @round.next_entity_index!
