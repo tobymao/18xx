@@ -171,6 +171,9 @@ module Engine
         @gray_hamilton ||= @tiles.find { |t| t.name == '123' }
 
         @post_nationalization = false
+        @national_formed = false
+        @pre_national_percent_by_player = {}
+        @pre_national_market_shares = 0
       end
 
       def num_corporations
@@ -351,17 +354,13 @@ module Engine
 
         # starting with the player who bought the 6 train, go around the table trading shares
         # trade all shares
+        puts 'nationalization done'
       end
 
       # Raw from 18MEX
 
       def buy_first_6_train(player)
         @nationalization_trigger ||= player
-      end
-
-      def merge_decider
-        candidate = @nationalizables.first
-        candidate.floated? ? candidate : ndm
       end
 
       def nationalizables
@@ -382,6 +381,26 @@ module Engine
         end
       end
 
+      def merge_major(major)
+        @national_formed = true
+        @log << "-- #{major.name} merges into #{@national.name} --"
+        # Trains are transferred
+        major.trains.each { |t| national.buy_train(t, :free) }
+        # Leftover cash is transferred
+        major.spend(major.cash, national) if major.cash.positive?
+        # Tunnel / Bridge rights are transferred
+        # TODO: Implement tunnel / bridge rights
+
+        # Tokens:
+        # TODO: this should probably be after president is determined.
+        major.player_share_holders.each do |player, num|
+          @pre_national_percent_by_player[player] ||= 0
+          @pre_national_percent_by_player[player] += num
+        end
+        @pre_national_market_shares += major.num_market_shares
+        major.close!
+        @nationalizables.delete(major)
+      end
 
       def nationalizable_corporations
         floated_player_corps = @corporations.select { |c| c.floated? && c != @national }

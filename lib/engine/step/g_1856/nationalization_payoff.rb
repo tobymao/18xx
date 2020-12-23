@@ -19,7 +19,7 @@ module Engine
         end
 
         def active_entities
-          merge_ongoing? ? [@game.merge_decider].compact : []
+          merge_ongoing? ? [@game.nationalizables.first].compact : []
         end
 
         def merge_target
