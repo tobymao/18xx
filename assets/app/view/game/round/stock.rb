@@ -37,6 +37,9 @@ module View
           end
 
           children = []
+
+          children << h(Choose) if @current_actions.include?('choose') && @step.choice_available?(@current_entity)
+
           if @step.respond_to?(:must_sell?) && @step.must_sell?(@current_entity)
             children << if @game.num_certs(@current_entity) > @game.cert_limit
                           h('div.margined', 'Must sell stock: above certificate limit')
@@ -80,7 +83,7 @@ module View
             if @selected_corporation == corporation && @game.corporation_available?(corporation)
               children << render_input
             end
-            children << h(Choose) if @current_actions.include?('choose')
+            children << h(Choose) if @current_actions.include?('choose') && @step.choice_available?(corporation)
             h(:div, props, children)
           end.compact
         end

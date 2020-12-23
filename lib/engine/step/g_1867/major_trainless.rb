@@ -47,6 +47,10 @@ module Engine
         def trainless_major
           @game.trainless_major
         end
+
+        def choice_available?(entity)
+          entity.corporation?
+        end
       end
     end
   end
