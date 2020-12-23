@@ -3,6 +3,7 @@
 require_relative '../config/game/g_1849'
 require_relative 'base'
 require_relative '../g_1849/corporation'
+require_relative '../g_1849/stock_market'
 
 module Engine
   module Game
@@ -53,20 +54,44 @@ module Engine
         phase_limited: :blue,
       }.freeze
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'green_par': ['144 par available',
+                      'Corporations may now par at 144 (in addition to 67 and 100)'],
+        'brown_par': ['216 par available',
+                      'Corporations may now par at 216 (in addition to 67, 100, and 144)'],
+        'earthquake': ['Messina earthquake',
+                       'Messina (B14) downgraded to yellow, tokens removed from game.
+                        Cannot be upgraded until after next stock round']
+      ).freeze
+
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'blue_zone': ['Blue zone available', 'Corporation share prices can enter the blue zone']
+      ).freeze
+
       AFG_HEXES = %w[C1 H8 M9 M11 B14].freeze
 
       def setup
         @corporations.sort_by! { rand }
-        # TODO: Add variant for 4 player 5 corp game
-        remove_corp_and_trains if @players.size == 3
+        remove_corp if @players.size == 3
         @corporations.each { |c| c.next_to_par = false }
         @corporations[0].next_to_par = true
       end
 
-      def remove_corp_and_trains
+      def remove_corp
         removed = @corporations.pop
         @log << "Removed #{removed.name}"
-        # TODO: Remove 6H, 8H, 16H
+      end
+
+      def num_trains(train)
+        fewer = @players.size < 4
+        case train[:name]
+        when '6H'
+          fewer ? 3 : 4
+        when '8H'
+          fewer ? 2 : 3
+        when '16H'
+          fewer ? 4 : 5
+        end
       end
 
       def after_par(corporation)
@@ -86,6 +111,18 @@ module Engine
         AFG_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
           hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
         end
+      end
+
+      def init_stock_market
+        sm = Engine::G1849::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+                                            multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+
+        sm.game = self
+
+        sm.enable_par_price(68)
+        sm.enable_par_price(100)
+
+        sm
       end
 
       def init_corporations(stock_market)
@@ -131,7 +168,7 @@ module Engine
                                Step::G1849::Track,
                                Step::Token,
                                Step::Route,
-                               Step::Dividend,
+                               Step::G1849::Dividend,
                                Step::BuyTrain,
                                Step::G1849::IssueShares,
                                [Step::BuyCompany, blocks: true],
@@ -221,6 +258,18 @@ module Engine
           end
           upgrade.cost - discount
         end
+      end
+
+      def event_green_par!
+        @log << "-- Event: #{EVENTS_TEXT['green_par'][1]} --"
+        stock_market.enable_par_price(144)
+        update_cache(:share_prices)
+      end
+
+      def event_brown_par!
+        @log << "-- Event: #{EVENTS_TEXT['brown_par'][1]} --"
+        stock_market.enable_par_price(216)
+        update_cache(:share_prices)
       end
 
       def event_earthquake!
