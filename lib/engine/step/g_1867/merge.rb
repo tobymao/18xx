@@ -253,7 +253,7 @@ module Engine
           mergeable.each do |corp|
             parts = @game.graph.connected_nodes(corp).keys
             corporations = parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
-            available += corporations - mergeable
+            available.concat(corporations - mergeable)
           end
 
           available.uniq.reject { |c| c.type == :major || owner_at_limit.include?(c.owner) }
