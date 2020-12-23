@@ -1048,31 +1048,41 @@ module Engine
         city.place_token(corporation, token)
       end
 
-      def tile_cost(tile, hex, entity)
+      def upgrade_cost(tile, hex, entity)
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
-          (!a.hexes || a.hexes.include?(hex.name))
+            (!a.hexes || a.hexes.include?(hex.name))
         end
 
         cost = tile.upgrades.sum do |upgrade|
           discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
 
-          log_tile_cost_discount(entity, ability, discount)
+          log_cost_discount(entity, ability, discount)
 
           total_cost = upgrade.cost - discount
           total_cost
         end
 
-        if ability && ability.terrain.nil?
-          log_tile_cost_discount(entity, ability, ability.discount)
-
-          cost -= ability.discount
-        end
-
         cost
       end
 
-      def log_tile_cost_discount(entity, ability, discount)
+      def tile_cost_with_discount(_tile, hex, entity, cost)
+        ability = entity.all_abilities.find do |a|
+          a.type == :tile_discount &&
+            !a.terrain &&
+            (!a.hexes || a.hexes.include?(hex.name))
+        end
+
+        return cost unless ability
+
+        discount = [cost, ability.discount].min
+        log_cost_discount(entity, ability, discount)
+
+        end_cost = cost - discount
+        end_cost
+      end
+
+      def log_cost_discount(entity, ability, discount)
         return unless discount.positive?
 
         @log << "#{entity.name} receives a discount of "\
