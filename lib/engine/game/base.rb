@@ -1302,7 +1302,7 @@ module Engine
         active_abilities
       end
 
-      def company_available_for_other_corps(_company)
+      def entity_can_use_company?(_entity, _company)
         true
       end
 
