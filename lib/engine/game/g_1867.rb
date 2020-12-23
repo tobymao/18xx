@@ -169,6 +169,11 @@ module Engine
         entity.cash + ((maximum_loans(entity) - entity.loans.size) * @loan_value - 5)
       end
 
+      def unstarted_corporation_summary
+        minor, major = @corporations.reject(&:ipoed).partition { |c| c.type == :minor }
+        "#{minor.size} minor, #{major.size} major"
+      end
+
       def nationalize!(corporation)
         @log << "#{corporation.name} is nationalized"
 

@@ -39,10 +39,15 @@ module View
           ])
         end
 
+        extra_bank = []
+        unless @game.respond_to?(:unstarted_corporation_summary)
+          extra_bank += bank_owned.map { |c| h(Corporation, corporation: c) }
+        end
         children << h(:div, [
           h(Bank, game: @game),
+          h(GameInfo, game: @game, layout: 'upcoming_trains'),
           *@game.corporations.select(&:receivership?).map { |c| h(Corporation, corporation: c) },
-          *bank_owned.map { |c| h(Corporation, corporation: c) },
+          *extra_bank,
         ].compact)
 
         children = children.concat(bankrupt_players.map { |p| h(:div, [h(Player, player: p, game: @game)]) })

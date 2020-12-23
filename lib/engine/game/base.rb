@@ -1825,7 +1825,7 @@ module Engine
         :small
       end
 
-      def show_corporation_size?(_entity)
+      def show_loans?(_entity)
         false
       end
 
