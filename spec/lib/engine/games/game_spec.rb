@@ -232,6 +232,16 @@ module Engine
         'David' => 6675,
       },
     },
+    GAMES_BY_TITLE['1867'] => {
+      # Pre-alpha spec
+      'hs_ahjzadkh_19792' => {
+        'Alice' => 655,
+        'scottredracecar2' => 615,
+        'JenFreeman' => 590,
+        'ChrisRericha' => 425,
+      },
+    },
+
   }.freeze
 
   TEST_CASES.each do |game, results|

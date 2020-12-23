@@ -1,0 +1,2432 @@
+{
+  "status": "finished",
+  "actions": [
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 1,
+      "message": "lets see how far we get in say 2 hours"
+    },
+    {
+      "id": 2,
+      "type": "bid",
+      "price": 20,
+      "entity": 6124,
+      "company": "C&SL",
+      "entity_type": "player",
+      "user": 6124,
+      "created_at": 1608741968
+    },
+    {
+      "id": 3,
+      "type": "undo",
+      "entity": 6126,
+      "entity_type": "player",
+      "user": 6124,
+      "created_at": 1608741979
+    },
+    {
+      "type": "bid",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 4,
+      "company": "C&SL",
+      "price": 20
+    },
+    {
+      "type": "pass",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 5
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 6,
+      "message": "ok for 2h"
+    },
+    {
+      "type": "bid",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 7,
+      "company": "C&SL",
+      "price": 25
+    },
+    {
+      "type": "bid",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 8,
+      "company": "C&SL",
+      "price": 30
+    },
+    {
+      "type": "bid",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 9,
+      "company": "C&SL",
+      "price": 35
+    },
+    {
+      "type": "pass",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 10
+    },
+    {
+      "type": "pass",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 11
+    },
+    {
+      "type": "bid",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 12,
+      "company": "NFB",
+      "price": 35
+    },
+    {
+      "type": "bid",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 13,
+      "company": "NFB",
+      "price": 40
+    },
+    {
+      "type": "bid",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 14,
+      "company": "NFB",
+      "price": 45
+    },
+    {
+      "type": "bid",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 15,
+      "company": "NFB",
+      "price": 50
+    },
+    {
+      "type": "pass",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 16
+    },
+    {
+      "type": "pass",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 17
+    },
+    {
+      "type": "bid",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 18,
+      "company": "NFB",
+      "price": 55
+    },
+    {
+      "type": "pass",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 19
+    },
+    {
+      "type": "bid",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 20,
+      "company": "MB",
+      "price": 40
+    },
+    {
+      "type": "bid",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 21,
+      "company": "MB",
+      "price": 60
+    },
+    {
+      "type": "bid",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 22,
+      "company": "MB",
+      "price": 65
+    },
+    {
+      "type": "pass",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 23
+    },
+    {
+      "type": "bid",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 24,
+      "company": "MB",
+      "price": 70
+    },
+    {
+      "type": "bid",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 25,
+      "company": "MB",
+      "price": 75
+    },
+    {
+      "type": "bid",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 26,
+      "company": "MB",
+      "price": 80
+    },
+    {
+      "type": "message",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 27,
+      "message": "What notable rule differences should I be aware of relative to 1861?"
+    },
+    {
+      "type": "bid",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 28,
+      "company": "MB",
+      "price": 85
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 29,
+      "message": "the national is basically export train only and nationalization"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 30,
+      "message": "minors are auctioned like 1817"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 31,
+      "message": "pick a spot and auction"
+    },
+    {
+      "type": "pass",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 32
+    },
+    {
+      "type": "pass",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 33
+    },
+    {
+      "type": "bid",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 34,
+      "company": "QB",
+      "price": 85
+    },
+    {
+      "type": "bid",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 35,
+      "company": "QB",
+      "price": 90
+    },
+    {
+      "type": "pass",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 36
+    },
+    {
+      "type": "pass",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 37
+    },
+    {
+      "type": "pass",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 38
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 39,
+      "message": "Jen, are you operating Alice?"
+    },
+    {
+      "type": "bid",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 40,
+      "company": "SCT",
+      "price": 60
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 41,
+      "message": "(this is okay, just curious)'"
+    },
+    {
+      "type": "pass",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 42
+    },
+    {
+      "type": "message",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 43,
+      "message": "I'm operating it, but my other half is telling me what to do :)"
+    },
+    {
+      "type": "message",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 44,
+      "message": "normally playing as LenaC"
+    },
+    {
+      "type": "bid",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 45,
+      "company": "SCT",
+      "price": 105
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 46,
+      "message": "ah, ok"
+    },
+    {
+      "type": "pass",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 47
+    },
+    {
+      "type": "bid",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 48,
+      "company": "SCT",
+      "price": 110
+    },
+    {
+      "type": "bid",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 49,
+      "company": "SCT",
+      "price": 115
+    },
+    {
+      "type": "bid",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 50,
+      "company": "SCT",
+      "price": 120
+    },
+    {
+      "type": "pass",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 51
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 52,
+      "message": "oops, overspent :)"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 53,
+      "message": "hmm, these tokens aren't doing it for me :-("
+    },
+    {
+      "type": "bid",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 54,
+      "corporation": "CV",
+      "price": 100
+    },
+    {
+      "type": "place_token",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 55,
+      "city": "L12-0-0",
+      "slot": 0
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 56,
+      "message": "they're the official ones"
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 57,
+      "message": "well the GTG version anyway"
+    },
+    {
+      "type": "pass",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 58
+    },
+    {
+      "type": "bid",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 59,
+      "corporation": "CV",
+      "price": 110
+    },
+    {
+      "type": "pass",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 60
+    },
+    {
+      "type": "bid",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 61,
+      "corporation": "CV",
+      "price": 120
+    },
+    {
+      "type": "pass",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 62
+    },
+    {
+      "type": "bid",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 63,
+      "corporation": "CA",
+      "price": 100
+    },
+    {
+      "type": "place_token",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 64,
+      "city": "G15-5-0",
+      "slot": 0
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 65,
+      "message": "oh 1867 has some funky rules about yellow tile lays connecting to the major cities"
+    },
+    {
+      "type": "pass",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 66
+    },
+    {
+      "type": "pass",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 67
+    },
+    {
+      "type": "message",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 68,
+      "message": "Oh yeah?"
+    },
+    {
+      "type": "bid",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 69,
+      "corporation": "CS",
+      "price": 100
+    },
+    {
+      "type": "place_token",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 70,
+      "city": "O7-2-0",
+      "slot": 0
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 71,
+      "message": "nothing that special, just screwage limitations"
+    },
+    {
+      "type": "message",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 72,
+      "message": "Like limited tile roster?"
+    },
+    {
+      "type": "pass",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 73
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 74,
+      "message": "like toronto has an arrow coming out of it to not cut off the toronto slot"
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 75,
+      "message": "yeah, it's not shown on the map itself but the implementation enforces it"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 76,
+      "message": "cool"
+    },
+    {
+      "type": "pass",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 77
+    },
+    {
+      "type": "message",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 78,
+      "message": "The difference between tokens for corps of the same color is hard to distinguish"
+    },
+    {
+      "type": "bid",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 79,
+      "corporation": "OP",
+      "price": 100
+    },
+    {
+      "type": "place_token",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 80,
+      "city": "E17-0-0",
+      "slot": 0
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 81,
+      "message": "yeah, 4 blues? yikes"
+    },
+    {
+      "type": "bid",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 82,
+      "corporation": "OP",
+      "price": 115
+    },
+    {
+      "type": "message",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 83,
+      "message": "yeah, i'm not sure why he chose that"
+    },
+    {
+      "type": "pass",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 84
+    },
+    {
+      "type": "bid",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 85,
+      "corporation": "OP",
+      "price": 120
+    },
+    {
+      "type": "pass",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 86
+    },
+    {
+      "type": "bid",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 87,
+      "corporation": "TN",
+      "price": 100
+    },
+    {
+      "type": "place_token",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "id": 88,
+      "city": "F16-0-1",
+      "slot": 0
+    },
+    {
+      "type": "message",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 89,
+      "message": "Probably okay for minors since they only have one token. Are the same used for majors?"
+    },
+    {
+      "id": 90,
+      "type": "pass",
+      "entity": 671,
+      "entity_type": "player",
+      "user": 671,
+      "created_at": 1608743391
+    },
+    {
+      "id": 91,
+      "type": "undo",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "user": 671,
+      "created_at": 1608743397
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 92,
+      "message": "wow, why did it skip me then"
+    },
+    {
+      "id": 93,
+      "type": "pass",
+      "entity": 671,
+      "entity_type": "player",
+      "user": 671,
+      "created_at": 1608743434
+    },
+    {
+      "id": 94,
+      "type": "undo",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "user": 671,
+      "created_at": 1608743437
+    },
+    {
+      "id": 95,
+      "type": "redo",
+      "entity": 671,
+      "entity_type": "player",
+      "user": 671,
+      "created_at": 1608743440
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 96,
+      "message": "i don't know what is going on"
+    },
+    {
+      "id": 97,
+      "type": "undo",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "user": 671,
+      "created_at": 1608743445
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 98,
+      "message": "I see that it is on Jen to bid on TN"
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 99,
+      "message": "yeah, if i pass we go to OR"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 100,
+      "message": "ok, it maybe doesn't know I still have actions?"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 101,
+      "message": "no, I guess if you pass, you also have actions"
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 102,
+      "message": "yeah, debugging"
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 103,
+      "message": "the majors have nicer tokens"
+    },
+    {
+      "type": "pass",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 104
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 105,
+      "message": "i've bodged it temporarily"
+    },
+    {
+      "type": "bid",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 106,
+      "corporation": "PM",
+      "price": 125
+    },
+    {
+      "type": "place_token",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 107,
+      "city": "L12-0-1",
+      "slot": 0
+    },
+    {
+      "type": "bid",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 108,
+      "corporation": "NO",
+      "price": 100
+    },
+    {
+      "type": "place_token",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 109,
+      "city": "D16-1-0",
+      "slot": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 110,
+      "hex": "K13",
+      "tile": "58-0",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 111
+    },
+    {
+      "type": "buy_train",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 112,
+      "train": "2-0",
+      "price": 100,
+      "variant": "2"
+    },
+    {
+      "type": "message",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 113,
+      "message": "I can't recall, do dits count as a stop?"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 114,
+      "hex": "E17",
+      "tile": "621-0",
+      "rotation": 2
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 115,
+      "message": "so usually if you can't hit a large station"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 116,
+      "message": "is the only time they are relevant"
+    },
+    {
+      "type": "pass",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 117
+    },
+    {
+      "type": "buy_train",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 118,
+      "train": "2-1",
+      "price": 100,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 119
+    },
+    {
+      "type": "lay_tile",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 120,
+      "hex": "L10",
+      "tile": "58-1",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 121,
+      "hex": "M9",
+      "tile": "57-0",
+      "rotation": 1
+    },
+    {
+      "type": "buy_train",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 122,
+      "train": "2-2",
+      "price": 100,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 123
+    },
+    {
+      "type": "lay_tile",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 124,
+      "hex": "G15",
+      "tile": "57-1",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 125
+    },
+    {
+      "type": "buy_train",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 126,
+      "train": "2-3",
+      "price": 100,
+      "variant": "2"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 127,
+      "message": "I don't think the green circles should have the \"N\"? (kind of confusing with the 82 N?)"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 128,
+      "hex": "O7",
+      "tile": "202-0",
+      "rotation": 5
+    },
+    {
+      "type": "lay_tile",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 129,
+      "hex": "N8",
+      "tile": "9-0",
+      "rotation": 1
+    },
+    {
+      "type": "buy_train",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 130,
+      "train": "2-4",
+      "price": 100,
+      "variant": "2"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 131,
+      "message": "To me, the N represents that there is a token there"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 132,
+      "message": "Not sure what Josh did for his board, I kept them green filled circles"
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 133,
+      "message": "you can't lay there can you?"
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 134,
+      "message": "they're green circles"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 135,
+      "message": "correct, you can't, but there is no token there"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 136,
+      "message": "unless Josh put tokens in"
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 137,
+      "message": "i've implemented it as identical to neutral tokens"
+    },
+    {
+      "type": "pass",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 138
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 139,
+      "message": "is there any difference (i can get rid of the 'N')"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 140,
+      "message": "I suppose, but I think it is best to match the physical game, 82 has tokens, 67 does not"
+    },
+    {
+      "type": "pass",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "id": 141
+    },
+    {
+      "type": "buy_train",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "id": 142,
+      "train": "2-5",
+      "price": 100,
+      "variant": "2"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 143,
+      "hex": "D16",
+      "tile": "201-0",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 144
+    },
+    {
+      "type": "buy_train",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 145,
+      "train": "2-6",
+      "price": 100,
+      "variant": "2"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 146,
+      "hex": "J12",
+      "tile": "202-1",
+      "rotation": 5
+    },
+    {
+      "type": "pass",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 147
+    },
+    {
+      "type": "run_routes",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 148,
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "J12",
+              "K13"
+            ],
+            [
+              "K13",
+              "L12"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "message",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 149,
+      "message": "Shows buy train even though I don't have the cash to do so"
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 150,
+      "message": "you can buy from other players"
+    },
+    {
+      "type": "message",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 151,
+      "message": "Oh, right"
+    },
+    {
+      "type": "pass",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 152
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 153,
+      "message": "theoretically"
+    },
+    {
+      "type": "message",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 154,
+      "message": "I'll take a train for a $1 :-)"
+    },
+    {
+      "type": "pass",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 155
+    },
+    {
+      "type": "run_routes",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 156,
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "E17",
+              "F18"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 157
+    },
+    {
+      "type": "pass",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 158
+    },
+    {
+      "type": "run_routes",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 159,
+      "routes": [
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "M9",
+              "L10"
+            ],
+            [
+              "L10",
+              "L12"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 160
+    },
+    {
+      "type": "lay_tile",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 161,
+      "hex": "H14",
+      "tile": "4-0",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 162
+    },
+    {
+      "type": "run_routes",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 163,
+      "routes": [
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "G15",
+              "F16"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "buy_train",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 164,
+      "train": "2-5",
+      "price": 25
+    },
+    {
+      "type": "pass",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 165
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 166,
+      "message": "\"PM skips redeem shares\" log comment is incorrect because minors have no shares to issue"
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 167,
+      "message": "yeah, it's a minor bug i need to sort sometime"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 168,
+      "message": "\"CA skips buy companies\" is also incorrect"
+    },
+    {
+      "type": "run_routes",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 169,
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "O7",
+              "P8"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "id": 170
+    },
+    {
+      "type": "buy_train",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "id": 171,
+      "train": "2-7",
+      "price": 100,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "id": 172
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 173,
+      "hex": "E15",
+      "tile": "6-0",
+      "rotation": 5
+    },
+    {
+      "type": "pass",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 174
+    },
+    {
+      "type": "run_routes",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 175,
+      "routes": [
+        {
+          "train": "2-6",
+          "connections": [
+            [
+              "D16",
+              "E17"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 176
+    },
+    {
+      "type": "pass",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 177
+    },
+    {
+      "type": "bid",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 178,
+      "corporation": "BO",
+      "price": 110
+    },
+    {
+      "type": "place_token",
+      "entity": "BO",
+      "entity_type": "corporation",
+      "id": 179,
+      "city": "C17-4-0",
+      "slot": 0
+    },
+    {
+      "type": "pass",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 180
+    },
+    {
+      "type": "bid",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 181,
+      "corporation": "AE",
+      "price": 165
+    },
+    {
+      "type": "place_token",
+      "entity": "AE",
+      "entity_type": "corporation",
+      "id": 182,
+      "city": "202-1-0",
+      "slot": 0
+    },
+    {
+      "type": "bid",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 183,
+      "corporation": "KP",
+      "price": 110
+    },
+    {
+      "type": "place_token",
+      "entity": "KP",
+      "entity_type": "corporation",
+      "id": 184,
+      "city": "F8-1-0",
+      "slot": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "AE",
+      "entity_type": "corporation",
+      "id": 185,
+      "hex": "I13",
+      "tile": "8-0",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "AE",
+      "entity_type": "corporation",
+      "id": 186
+    },
+    {
+      "type": "buy_train",
+      "entity": "AE",
+      "entity_type": "corporation",
+      "id": 187,
+      "train": "2-8",
+      "price": 100,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "AE",
+      "entity_type": "corporation",
+      "id": 188
+    },
+    {
+      "type": "message",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 189,
+      "message": "No valid track lays. Should it skip the track step?"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 190,
+      "message": "I don't think the core system does that"
+    },
+    {
+      "type": "pass",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 191
+    },
+    {
+      "type": "run_routes",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 192,
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "J12",
+              "K13"
+            ],
+            [
+              "K13",
+              "L12"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 193,
+      "message": "no, we've never done it"
+    },
+    {
+      "type": "pass",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 194
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 195,
+      "message": "also, minors only have one token, so we don't need \"CV skips place a token\""
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 196,
+      "message": "yeah, i've a note of that :)"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 197,
+      "message": "ok"
+    },
+    {
+      "type": "pass",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 198
+    },
+    {
+      "type": "message",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 199,
+      "message": "I'm paying closer attention than normal...didn't notice these things when playing live haha"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 200,
+      "message": "The rules on taking loans for tile/terrain are a little tricky (you are allowed only if you can't pay with treasury money), I haven't had a chance to try"
+    },
+    {
+      "type": "run_routes",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 201,
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "E17",
+              "F18"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 202
+    },
+    {
+      "type": "pass",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 203
+    },
+    {
+      "type": "run_routes",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 204,
+      "routes": [
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "M9",
+              "L10"
+            ],
+            [
+              "L10",
+              "L12"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 205
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 206,
+      "message": "apologies, other half on phone"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BO",
+      "entity_type": "corporation",
+      "id": 207,
+      "hex": "C17",
+      "tile": "6-1",
+      "rotation": 5
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BO",
+      "entity_type": "corporation",
+      "id": 208,
+      "hex": "B18",
+      "tile": "4-1",
+      "rotation": 1
+    },
+    {
+      "type": "buy_train",
+      "entity": "BO",
+      "entity_type": "corporation",
+      "id": 209,
+      "train": "2-9",
+      "price": 100,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "BO",
+      "entity_type": "corporation",
+      "id": 210
+    },
+    {
+      "type": "lay_tile",
+      "entity": "KP",
+      "entity_type": "corporation",
+      "id": 211,
+      "hex": "F8",
+      "tile": "5-0",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "KP",
+      "entity_type": "corporation",
+      "id": 212
+    },
+    {
+      "type": "buy_train",
+      "entity": "KP",
+      "entity_type": "corporation",
+      "id": 213,
+      "train": "2-2",
+      "price": 110
+    },
+    {
+      "type": "pass",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 214
+    },
+    {
+      "type": "run_routes",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 215,
+      "routes": [
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "G15",
+              "F16"
+            ]
+          ]
+        },
+        {
+          "train": "2-5",
+          "connections": [
+            [
+              "H14",
+              "G15"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 216
+    },
+    {
+      "type": "run_routes",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 217,
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "O7",
+              "P8"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 218
+    },
+    {
+      "type": "pass",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 219
+    },
+    {
+      "type": "run_routes",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 220,
+      "routes": [
+        {
+          "train": "2-6",
+          "connections": [
+            [
+              "D16",
+              "E17"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 221
+    },
+    {
+      "type": "pass",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "id": 222
+    },
+    {
+      "type": "run_routes",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "id": 223,
+      "routes": [
+        {
+          "train": "2-7",
+          "connections": [
+            [
+              "G15",
+              "F16"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "id": 224
+    },
+    {
+      "type": "lay_tile",
+      "entity": "AE",
+      "entity_type": "corporation",
+      "id": 225,
+      "hex": "I15",
+      "tile": "5-1",
+      "rotation": 3
+    },
+    {
+      "type": "pass",
+      "entity": "AE",
+      "entity_type": "corporation",
+      "id": 226
+    },
+    {
+      "type": "run_routes",
+      "entity": "AE",
+      "entity_type": "corporation",
+      "id": 227,
+      "routes": [
+        {
+          "train": "2-8",
+          "connections": [
+            [
+              "K13",
+              "L12"
+            ],
+            [
+              "J12",
+              "K13"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "buy_train",
+      "entity": "AE",
+      "entity_type": "corporation",
+      "id": 228,
+      "train": "2-0",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 229
+    },
+    {
+      "type": "buy_train",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 230,
+      "train": "3-0",
+      "price": 225,
+      "variant": "3"
+    },
+    {
+      "type": "pass",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 231
+    },
+    {
+      "type": "pass",
+      "entity": "CV",
+      "entity_type": "corporation",
+      "id": 232
+    },
+    {
+      "type": "lay_tile",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 233,
+      "hex": "E17",
+      "tile": "208-0",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 234
+    },
+    {
+      "type": "run_routes",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 235,
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "E17",
+              "F18"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 236
+    },
+    {
+      "type": "buy_company",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 237,
+      "company": "NFB",
+      "price": 90
+    },
+    {
+      "type": "pass",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "id": 238
+    },
+    {
+      "type": "lay_tile",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 239,
+      "hex": "M9",
+      "tile": "619-0",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 240
+    },
+    {
+      "type": "buy_train",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 241,
+      "train": "3-1",
+      "price": 225,
+      "variant": "3"
+    },
+    {
+      "type": "pass",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 242
+    },
+    {
+      "type": "pass",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "id": 243
+    },
+    {
+      "type": "lay_tile",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 244,
+      "hex": "I13",
+      "tile": "24-0",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 245
+    },
+    {
+      "type": "run_routes",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 246,
+      "routes": [
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "G15",
+              "F16"
+            ]
+          ]
+        },
+        {
+          "train": "2-5",
+          "connections": [
+            [
+              "J12",
+              "I13",
+              "H14"
+            ],
+            [
+              "H14",
+              "G15"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 247,
+      "message": "What is \"Skip companies\" step?"
+    },
+    {
+      "type": "pass",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "id": 248
+    },
+    {
+      "type": "message",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 249,
+      "message": "Buy a company"
+    },
+    {
+      "type": "message",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 250,
+      "message": "ok, I privates, forgot"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 251,
+      "hex": "O7",
+      "tile": "207-0",
+      "rotation": 5
+    },
+    {
+      "type": "pass",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 252
+    },
+    {
+      "type": "run_routes",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 253,
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "O7",
+              "P8"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 254
+    },
+    {
+      "type": "pass",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "id": 255
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 256,
+      "hex": "D16",
+      "tile": "622-0",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 257
+    },
+    {
+      "type": "run_routes",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 258,
+      "routes": [
+        {
+          "train": "2-6",
+          "connections": [
+            [
+              "D16",
+              "E17"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 259
+    },
+    {
+      "type": "pass",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "id": 260
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BO",
+      "entity_type": "corporation",
+      "id": 261,
+      "hex": "C17",
+      "tile": "619-1",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "BO",
+      "entity_type": "corporation",
+      "id": 262
+    },
+    {
+      "type": "run_routes",
+      "entity": "BO",
+      "entity_type": "corporation",
+      "id": 263,
+      "routes": [
+        {
+          "train": "2-9",
+          "connections": [
+            [
+              "C17",
+              "B18"
+            ],
+            [
+              "B18",
+              "A19"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "BO",
+      "entity_type": "corporation",
+      "id": 264
+    },
+    {
+      "type": "pass",
+      "entity": "BO",
+      "entity_type": "corporation",
+      "id": 265
+    },
+    {
+      "type": "lay_tile",
+      "entity": "KP",
+      "entity_type": "corporation",
+      "id": 266,
+      "hex": "E9",
+      "tile": "8-1",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "KP",
+      "entity_type": "corporation",
+      "id": 267,
+      "hex": "D8",
+      "tile": "57-0",
+      "rotation": 2
+    },
+    {
+      "type": "run_routes",
+      "entity": "KP",
+      "entity_type": "corporation",
+      "id": 268,
+      "routes": [
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "D8",
+              "E9",
+              "F8"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "KP",
+      "entity_type": "corporation",
+      "id": 269
+    },
+    {
+      "type": "pass",
+      "entity": "KP",
+      "entity_type": "corporation",
+      "id": 270
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "id": 271,
+      "hex": "F16",
+      "tile": "120-0",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "id": 272
+    },
+    {
+      "type": "run_routes",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "id": 273,
+      "routes": [
+        {
+          "train": "2-7",
+          "connections": [
+            [
+              "F16",
+              "G15"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 274,
+      "message": "hit another bug, gotta go for a while"
+    },
+    {
+      "type": "message",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 275,
+      "message": "grab dinner and fight the supermarkets :("
+    },
+    {
+      "type": "pass",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "id": 276,
+      "user": 671
+    },
+    {
+      "type": "merge",
+      "entity": "AE",
+      "entity_type": "corporation",
+      "id": 277,
+      "user": 671,
+      "corporation": "CV"
+    },
+    {
+      "type": "merge",
+      "entity": "AE",
+      "entity_type": "corporation",
+      "id": 278,
+      "user": 671,
+      "corporation": "CA"
+    },
+    {
+      "type": "merge",
+      "entity": "AE",
+      "entity_type": "corporation",
+      "id": 279,
+      "user": 671,
+      "corporation": "TN"
+    },
+    {
+      "id": 280,
+      "type": "merge",
+      "entity": "AE",
+      "corporation": "CNR",
+      "entity_type": "corporation",
+      "user": 671,
+      "created_at": 1608761277
+    },
+    {
+      "id": 281,
+      "type": "undo",
+      "entity": 6124,
+      "entity_type": "player",
+      "user": 671,
+      "created_at": 1608761281
+    },
+    {
+      "type": "merge",
+      "entity": "AE",
+      "entity_type": "corporation",
+      "id": 282,
+      "user": 671,
+      "corporation": "CNR"
+    },
+    {
+      "type": "buy_shares",
+      "entity": 6124,
+      "entity_type": "player",
+      "id": 283,
+      "user": 671,
+      "shares": [
+        "CNR_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 284,
+      "user": 671,
+      "shares": [
+        "CNR_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 6126,
+      "entity_type": "player",
+      "id": 285,
+      "user": 671,
+      "shares": [
+        "CNR_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 286,
+      "shares": [
+        "CNR_4"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 6120,
+      "entity_type": "player",
+      "id": 287,
+      "user": 671,
+      "shares": [
+        "CNR_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "remove_token",
+      "entity": "CNR",
+      "entity_type": "corporation",
+      "id": 288,
+      "user": 671,
+      "city": "L12-0-0",
+      "slot": 0
+    },
+    {
+      "type": "remove_token",
+      "entity": "CNR",
+      "entity_type": "corporation",
+      "id": 289,
+      "user": 671,
+      "city": "202-1-0",
+      "slot": 0
+    },
+    {
+      "type": "discard_train",
+      "entity": "CNR",
+      "entity_type": "corporation",
+      "id": 290,
+      "user": 671,
+      "train": "2-3"
+    },
+    {
+      "type": "discard_train",
+      "entity": "CNR",
+      "entity_type": "corporation",
+      "id": 291,
+      "user": 671,
+      "train": "2-5"
+    },
+    {
+      "type": "end_game",
+      "entity": 671,
+      "entity_type": "player",
+      "id": 292
+    }
+  ],
+  "id": "hs_ahjzadkh_19792",
+  "description": "Cloned from game 19792",
+  "user": {
+    "id": 0,
+    "name": "You"
+  },
+  "players": [
+    {
+      "id": 6124,
+      "name": "ChrisRericha"
+    },
+    {
+      "id": 6126,
+      "name": "scottredracecar2"
+    },
+    {
+      "id": 671,
+      "name": "JenFreeman"
+    },
+    {
+      "id": 6120,
+      "name": "Alice"
+    }
+  ],
+  "max_players": 4,
+  "title": "1867",
+  "settings": {
+    "seed": 55131509,
+    "unlisted": false,
+    "optional_rules": []
+  },
+  "user_settings": null,
+  "turn": 3,
+  "round": "Stock Round",
+  "acting": [
+    6120
+  ],
+  "result": {
+    "Alice": 655,
+    "scottredracecar2": 615,
+    "JenFreeman": 590,
+    "ChrisRericha": 425
+  },
+  "loaded": true,
+  "created_at": "2020-12-23",
+  "updated_at": 1608761449,
+  "mode": "hotseat"
+}

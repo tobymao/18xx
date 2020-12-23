@@ -977,8 +977,7 @@ module Engine
     {
       "name": "2",
       "train_limit": {
-        "minor": 2,
-        "major": 2
+        "minor": 2
       },
       "tiles": [
         "yellow"
