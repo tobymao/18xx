@@ -41,9 +41,8 @@ module Engine
         end
 
         def help
-          help_text = ["Select a #{@game.merged_major.name} token to replace with an #{@game.ndm.name} exchange token."]
-          help_text << "Remaining #{@game.merged_major.name} token(s) will be removed."
-          help_text
+          ["Select a #{@game.merged_major.name} token to replace with an #{@game.ndm.name} exchange token.",
+           "Remaining #{@game.merged_major.name} token(s) will be removed."]
         end
 
         private
