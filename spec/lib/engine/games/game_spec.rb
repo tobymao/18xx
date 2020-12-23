@@ -193,18 +193,17 @@ module Engine
       },
     },
     GAMES_BY_TITLE['1817'] => {
-      # Temporary until a fuller game is finished
-      13_707 => {
-        'sandholm' => 1458,
-        'tdh' => 989,
-        'tdh_test' => 420,
-      },
-      # This game is in progress, and will be updated
       15_528 => {
           'PedroS' => 10_127,
           'FCR' => 7066,
           'daniel.sousa.me' => 11_490,
           'Zebsagaz' => 6257,
+      },
+      16_281 => {
+        'pence' => 2094,
+        'GeekNightsRym' => 1894,
+        'Apreche' => 1444,
+        'theknoxinator' => 1412,
       },
     },
     GAMES_BY_TITLE['18MEX'] => {

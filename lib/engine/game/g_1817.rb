@@ -165,6 +165,7 @@ module Engine
       def redeemable_shares(entity)
         return [] unless entity.corporation?
         return [] unless round.steps.find { |step| step.class == Step::G1817::BuySellParShares }.active?
+        return [] if entity.share_price.acquisition? || entity.share_price.liquidation?
 
         bundles_for_corporation(share_pool, entity)
           .reject { |bundle| entity.cash < bundle.price }
@@ -423,10 +424,14 @@ module Engine
         '2 shares to start'
       end
 
-      def buying_power(entity, _full = false)
+      def available_loans(entity, extra_loans)
+        [maximum_loans(entity) - entity.loans.size, @loans.size + extra_loans].min
+      end
+
+      def buying_power(entity, extra_loans: 0, **)
         return entity.cash unless entity.corporation?
 
-        entity.cash + ((maximum_loans(entity) - entity.loans.size) * @loan_value)
+        entity.cash + (available_loans(entity, extra_loans) * @loan_value)
       end
 
       def unstarted_corporation_summary
