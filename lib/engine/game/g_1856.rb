@@ -32,7 +32,7 @@ module Engine
                       brown: '#7b352a')
 
       load_from_json(Config::Game::G1856::JSON)
-      attr_reader :loan_value
+      attr_reader :loan_value, :post_nationalization
       DEV_STAGE = :prealpha
 
       # These plain city hexes upgrade to L tiles in brown
@@ -125,7 +125,8 @@ module Engine
           entity.loans.size < maximum_loans(entity) &&
           !@round.took_loan[entity] &&
           !@round.redeemed_loan[entity] &&
-          @loans.any?
+          @loans.any? &&
+          !@post_nationalization
       end
 
       def init_loans
@@ -168,22 +169,8 @@ module Engine
         @brown_barrie ||= @tiles.find { |t| t.name == '127' }
 
         @gray_hamilton ||= @tiles.find { |t| t.name == '123' }
-      end
 
-      def event_nationalization!
-        @log << '-- Event: CGR merger --'
-        # starting with the player who bought the 6 train, go around the table repaying loans
-
-        # player picks order of their companies.
-        # set aside compnanies that do not repay succesfully
-
-        # starting with the player who bought the 6 train, go around the table trading shares
-        # trade all shares
-      end
-
-      def post_nationalization
-        # TODO: Update this with something more correct once nationalization is implemented
-        true
+        @post_nationalization = false
       end
 
       def num_corporations
@@ -192,7 +179,7 @@ module Engine
       end
 
       def cert_limit
-        return PRE_NATIONALIZATION_CERT_LIMIT[@players.size] unless post_nationalization
+        return PRE_NATIONALIZATION_CERT_LIMIT[@players.size] unless @post_nationalization
 
         POST_NATIONALIZATION_CERT_LIMIT[num_corporations][@players.size]
       end
@@ -325,12 +312,16 @@ module Engine
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::HomeToken,
+
+          # Nationalization!!
+          Step::G1856::NationalizationPayoff,
+
           Step::G1856::Track,
           Step::Token,
           Step::Route,
           # Interest - See Loan
           Step::G1856::Dividend,
-          Step::BuyTrain,
+          Step::G1856::BuyTrain,
           # Repay Loans - See Loan
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
@@ -343,6 +334,79 @@ module Engine
           Step::SpecialTrack,
           Step::G1856::BuySellParShares,
         ])
+      end
+
+      # Nationalization Methods
+
+      def event_nationalization!
+        @post_nationalization = true
+        @log << '-- Event: CGR merger --'
+        corporations_repay_loans
+        @nationalizables = nationalizable_corporations
+        @log << "Merge candidates: #{present_nationalizables(@nationalizables)}" if @nationalizables.any?
+        # starting with the player who bought the 6 train, go around the table repaying loans
+
+        # player picks order of their companies.
+        # set aside compnanies that do not repay succesfully
+
+        # starting with the player who bought the 6 train, go around the table trading shares
+        # trade all shares
+      end
+
+      # Raw from 18MEX
+
+      def buy_first_6_train(player)
+        @nationalization_trigger ||= player
+      end
+
+      def merge_decider
+        candidate = @nationalizables.first
+        candidate.floated? ? candidate : ndm
+      end
+
+      def nationalizables
+        @nationalizables ||= []
+      end
+
+      def corporations_repay_loans
+        @corporations.each do |corp|
+          next unless corp.floated? && corp.loans.size.positive?
+
+          loans_repaid = [corp.loans.size, (corp.cash / 100).to_i].min
+          amount_repaid = 100 * loans_repaid
+          next unless amount_repaid.positive?
+
+          corp.spend(amount_repaid, @bank)
+          @loans << corp.loans.pop(loans_repaid)
+          @log << "#{corp.name} repays #{format_currency(amount_repaid)} to redeem #{loans_repaid} loans"          
+        end
+      end
+
+
+      def nationalizable_corporations
+        floated_player_corps = @corporations.select { |c| c.floated? && c != @national }
+        floated_player_corps.select! { |c| c.loans.size.positive? }
+        # Sort eligible corporations so that they are in player order
+        # starting with the player that bought the 6 train
+        index_for_trigger = @players.index(@nationalization_trigger)
+        # This is based off the code in 18MEX; 10 appears to be an arbitrarily large integer
+        #  where the exact value doesn't really matter
+        order = Hash[@players.each_with_index.map { |p, i| i < index_for_trigger ? [p, i + 10] : [p, i] }]
+        floated_player_corps.sort_by! { |c| [order[c.player], @round.entities.index(c)] }
+      end
+
+      def present_nationalizables(nationalizables)
+        last = nationalizables.last
+        nationalizables.map do |c|
+          "#{c.name} (#{c.player.name})"
+        end.join(', ')
+      end
+
+      def nationalization_president_payoff(major, owed)
+        major.owner.spend(owed, @bank)
+        @loans << major.loans.pop(major.loans.size)
+        @log << "#{major.owner.name} pays off the #{format_currency(owed)} debt for #{major.name}"
+        @nationalizables.delete(major)
       end
     end
   end
