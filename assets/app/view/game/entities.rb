@@ -41,7 +41,7 @@ module View
 
         extra_bank = []
         unless @game.respond_to?(:unstarted_corporation_summary)
-          extra_bank += bank_owned.map { |c| h(Corporation, corporation: c) }
+          extra_bank.concat(bank_owned.map { |c| h(Corporation, corporation: c) })
         end
         children << h(:div, [
           h(Bank, game: @game),
