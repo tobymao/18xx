@@ -45,6 +45,10 @@ module Engine
       LONDON_HEX = 'F15'
       HAMILTON_HEX = 'L15'
 
+      # This is unlimited in 1891
+      # They're also 5% shares if there are more than 20 shares. It's weird.
+      NATIONAL_MAX_SHARE_PERCENT_AWARDED = 200
+
       GAME_LOCATION = 'Ontario, Canada'
       GAME_RULES_URL = 'http://google.com'
       GAME_DESIGNER = 'Bill Dixon'
@@ -172,8 +176,11 @@ module Engine
 
         @post_nationalization = false
         @national_formed = false
+
+        # These are already halved to account for the 2 to 1 tradeins, but don't reflect
+        #  a 10 v 20 v more share national
         @pre_national_percent_by_player = {}
-        @pre_national_market_shares = 0
+        @pre_national_market_percent = 0
       end
 
       def num_corporations
@@ -318,7 +325,6 @@ module Engine
 
           # Nationalization!!
           Step::G1856::NationalizationPayoff,
-
           Step::G1856::Track,
           Step::Token,
           Step::Route,
@@ -354,7 +360,6 @@ module Engine
 
         # starting with the player who bought the 6 train, go around the table trading shares
         # trade all shares
-        puts 'nationalization done'
       end
 
       # Raw from 18MEX
@@ -385,7 +390,9 @@ module Engine
         @national_formed = true
         @log << "-- #{major.name} merges into #{@national.name} --"
         # Trains are transferred
-        major.trains.each { |t| national.buy_train(t, :free) }
+        major.trains.clone.each do |t|
+          national.buy_train(t, :free)
+        end
         # Leftover cash is transferred
         major.spend(major.cash, national) if major.cash.positive?
         # Tunnel / Bridge rights are transferred
@@ -393,13 +400,32 @@ module Engine
 
         # Tokens:
         # TODO: this should probably be after president is determined.
+
+        # Shares
+        merge_major_shares(major)
+        major.close!
+        @nationalizables.delete(major)
+        post_corp_nationalization
+      end
+
+      def merge_major_shares(major)
         major.player_share_holders.each do |player, num|
           @pre_national_percent_by_player[player] ||= 0
           @pre_national_percent_by_player[player] += num
         end
-        @pre_national_market_shares += major.num_market_shares
-        major.close!
-        @nationalizables.delete(major)
+        @pre_national_market_percent += (major.num_market_shares * 5)
+        if total_national_percent_issued > 10 * @national.shares.count && @national.shares.count == 10
+          @national.issue_shares!
+        end
+      end
+
+      def total_national_percent_issued
+        @pre_national_market_percent + @pre_national_percent_by_player.values.sum
+      end
+
+      # Called regardless of if president saved or merged corp
+      def post_corp_nationalization
+        puts 'post', nationalizables
       end
 
       def nationalizable_corporations
@@ -425,7 +451,9 @@ module Engine
         major.owner.spend(owed, @bank)
         @loans << major.loans.pop(major.loans.size)
         @log << "#{major.owner.name} pays off the #{format_currency(owed)} debt for #{major.name}"
+        major.issue_shares!
         @nationalizables.delete(major)
+        post_corp_nationalization
       end
     end
   end

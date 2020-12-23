@@ -15,7 +15,9 @@ module Engine
         @game = game
         @started = false
         @escrow = nil
+        @log = @game.log
         super(sym: sym, name: name, **opts)
+        @all_shares = shares_by_corporation[self].dup
         @capitalization = nil
       end
 
@@ -54,6 +56,32 @@ module Engine
         @cash += @escrow
         @escrow = nil
         @capitalization = :incremental
+      end
+
+      # Issue more shares
+      # THIS DOES NOT WORK IF THE PRESIDENCY IS HELD BY A PLAYER
+      def issue_shares!
+        if total_shares == 10 #was 10 share
+          @log << "#{@name} shares are 5% shares"
+          @fraction_shares = true
+          # Currently there are 9 5% shares; fix this by adding a 10th
+          new_share = Share.new(self, percent: 5, index: 9, cert_size: 0.5)
+          @all_shares << new_share
+          shares_by_corporation[self] << new_share
+        end
+
+        @log << "#{@name} issues 10 more shares"
+        @all_shares.each do |share|
+          share.percent = 5
+          share.cert_size = 0.5
+        end
+        num_shares = @all_shares.count
+        # Yes, this can create 50 5% shares in one corp. 1891 does this. It is weird
+        10.times do |i|
+          new_share = Share.new(self, percent: 5, index: num_shares + i, cert_size: 0.5)
+          @all_shares << new_share
+          shares_by_corporation[self] << new_share
+        end
       end
 
       # This is invoked BEFORE the share is moved out of the corporation
