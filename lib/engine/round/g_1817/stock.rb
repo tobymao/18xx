@@ -24,6 +24,11 @@ module Engine
           !corporation.operated? && @game.tokens_needed(corporation).positive?
         end
 
+        def sold_out_stock_movement(corp)
+          @game.stock_market.move_up(corp)
+          @game.stock_market.move_up(corp) if @game.option_short_squeeze?
+        end
+
         def sold_out?(corporation)
           corporation.total_shares > 2 && corporation.player_share_holders.values.select(&:positive?).sum >= 100
         end

@@ -79,6 +79,15 @@ module Engine
       MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
       CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
 
+      OPTIONAL_RULES = [
+        { sym: :short_squeeze,
+          short_name: 'Short Squeeze',
+          desc: '100% sold out corporations move twice at end of SR' },
+        { sym: :five_shorts,
+          short_name: '5 Shorts',
+          desc: 'Only allow 5 shorts on 10 share corporations' },
+      ].freeze
+
       include InterestOnLoans
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
@@ -86,6 +95,14 @@ module Engine
         @log << '1817 has not been tested thoroughly with more than seven players.' if @players.size > 7
 
         super
+      end
+
+      def option_short_squeeze?
+        @optional_rules&.include?(:short_squeeze)
+      end
+
+      def option_five_shorts?
+        @optional_rules&.include?(:five_shorts)
       end
 
       def ipo_name(_entity = nil)
