@@ -32,6 +32,7 @@ module Engine
 
     def initialize(sym:, name:, **opts)
       @name = sym
+      @id = sym
       @full_name = name
 
       shares = (opts[:shares] || SHARES).map.with_index do |percent, index|
@@ -151,9 +152,7 @@ module Engine
       shares.select { |share| share.corporation == self }
     end
 
-    def id
-      @name
-    end
+    attr_reader :id
 
     def president?(player)
       return false unless player

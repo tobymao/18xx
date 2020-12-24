@@ -3,6 +3,7 @@
 require_relative '../config/game/g_1828'
 require_relative 'base'
 require_relative '../g_1828/stock_market'
+require_relative '../g_1828/system'
 
 module Engine
   module Game
@@ -138,13 +139,17 @@ module Engine
         tiles
       end
 
-      EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false, cost: 40 }].freeze
+      SYSTEM_EXTRA_TILE_LAY = { lay: true, upgrade: :not_if_upgraded }.freeze
+      EXTRA_TILE_LAYS = { lay: :not_if_upgraded, upgrade: false, cost: 40 }.freeze
       EXTRA_TILE_LAY_CORPS = %w[B&M NYH].freeze
 
       def tile_lays(entity)
-        return self.class::EXTRA_TILE_LAYS if EXTRA_TILE_LAY_CORPS.any?(entity.id)
+        tile_lays = super
+        tile_lays << SYSTEM_EXTRA_TILE_LAY if entity.system?
+        tile_lays << ABILITY_EXTRA_TILE_LAY if EXTRA_TILE_LAY_CORPS.include?(entity.name)
+        tile_lays << ABILITY_EXTRA_TILE_LAY if entity.system? && EXTRA_TILE_LAY_CORPS.include?(entity.shells.last.name)
 
-        super
+        tile_lays
       end
 
       def corporation_opts
@@ -222,6 +227,84 @@ module Engine
         super
       end
 
+      def create_system(corporations)
+        system_data = CORPORATIONS.find { |c| c['sym'] == corporations.first.id }.dup
+        system_data['sym'] = corporations.map(&:name).join('-')
+        system_data['tokens'] = []
+        system = init_corporation(@stock_market, system_data)
+        system.extend(Engine::G1828::System)
+        system.name = corporations.first.name
+        corporations.each { |corp| system.shells << corp }
+
+        @corporations << system
+        @_corporations[system.id] = system
+        system.shares.each { |share| @_shares[share.id] = share }
+
+        corporations.each { |corp| corp.spend(corp.cash, system) }
+        create_system_tokens(system, corporations)
+
+        @stock_market.set_par(system, system_market_price(corporations))
+
+        corporations.map(&:companies).flatten.each { |company| system.companies << company }
+        corporations.each { |corp| corp.companies.clear }
+
+        corporations.map(&:all_abilities).flatten.each do |ability|
+          system.add_ability(ability)
+          @target.remove_ability(ability)
+        end
+
+        system
+      end
+
+      def create_system_tokens(system, corporations)
+        used, unused = corporations.map(&:tokens).flatten.partition(&:used)
+
+        used.group_by { |t| t.city.hex }.each do |hex, tokens|
+          if tokens.one?
+            replace_token(system, tokens.first)
+          elsif tokens[0].city == tokens[1].city
+            replace_token(system, tokens.first)
+            tokens[1].remove!
+            place_blocking_token(hex)
+          else
+            tokens.each { |t| replace_token(system, t) }
+          end
+        end
+
+        # TODO: change reservations
+        unused.each { |t| system.tokens << Engine::Token.new(system, price: t.price) }
+
+        corporations.each { |corp| corp.tokens.clear }
+      end
+
+      def replace_token(corporation, token)
+        new_token = Engine::Token.new(corporation, price: token.price)
+        corporation.tokens << new_token
+        token.swap!(new_token, check_tokenable: false)
+      end
+
+      def system_market_price(corporations)
+        market = @stock_market.market
+        share_prices = corporations.map(&:share_price)
+        share_values = share_prices.map(&:price).sort
+
+        left_most_col = share_prices.min { |a, b| a.coordinates[1] <=> b.coordinates[1] }.coordinates[1]
+        max_share_value = share_values[1] + (share_values[0] / 2).floor
+
+        new_market_price = nil
+        if market[0][left_most_col].price < max_share_value
+          i = market[0].size - 1
+          i -= 1 while market[0][i].price > max_share_value
+          new_market_price = market[0][i]
+        else
+          i = 0
+          i += 1 while market[i][left_most_col].price > max_share_value
+          new_market_price = market[i][left_most_col]
+        end
+
+        new_market_price
+      end
+
       def coal_marker_available?
         hex_by_id(VA_COALFIELDS_HEX).tile.icons.any? { |icon| icon.name == COAL_MARKER_ICON }
       end
@@ -296,6 +379,14 @@ module Engine
         super
       end
 
+      def over_train_limit?(entity)
+        if entity.system?
+          false # entity.trains_by_shell.find(entity).size > @phase.train_limit(entity)
+        else
+          super
+        end
+      end
+
       private
 
       def setup_minors
@@ -326,6 +417,14 @@ module Engine
         to_remove = @depot.trains.reverse.find { |train| train.name == '5' }
         @depot.remove_train(to_remove)
         @log << "Removing #{to_remove.name} train"
+      end
+
+      def place_home_token(corporation)
+        if corporation.system?
+          corporations.shells.each { |shell| place_home_token(shell) }
+        else
+          super
+        end
       end
 
       def place_blocking_token(hex, city_index: 0)

@@ -6,6 +6,8 @@ module Engine
   module Step
     module G1828
       class BuySellParShares < BuySellParShares
+        PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::StartMerge]
+
         def actions(entity)
           return [] unless entity == current_entity
           return ['sell_shares'] if must_sell?(entity)
@@ -21,9 +23,11 @@ module Engine
 
         def process_start_merge(action)
           @game.game_error('No eligible corporation to merge with') unless can_merge?(action.entity, action.corporation)
-
           @round.merging_corporation = action.corporation
           @round.acting_player = action.entity
+
+          @round.last_to_act = action.entity
+          @current_actions << action
         end
 
         def can_buy_multiple?(entity, corporation)
@@ -40,9 +44,11 @@ module Engine
 
         def can_merge?(entity, corporation)
           return false if corporation.owner != entity
+          return false if corporation.system?
 
           corporations = @game.corporations.select do |candidate|
             next if candidate == corporation ||
+                    candidate.system? ||
                     !candidate.ipoed ||
                     candidate.operated? != corporation.operated? ||
                     (!candidate.floated? && !corporation.floated?)

@@ -33,13 +33,7 @@ module Engine
       end
 
       def crowded_corps
-        @game.corporations.select do |c|
-          if @game.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT
-            c.trains
-          else
-            c.trains.reject(&:obsolete)
-          end.size > @game.phase.train_limit(c)
-        end
+        @game.corporations.select { |c| @game.over_train_limit?(c) }
       end
     end
   end
