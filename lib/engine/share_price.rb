@@ -76,7 +76,7 @@ module Engine
     end
 
     def can_par?
-      @type == :par
+      %i[par par_1 par_2].include?(@type)
     end
 
     def end_game_trigger?
