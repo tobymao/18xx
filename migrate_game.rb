@@ -39,10 +39,12 @@ def repair(game, original_actions, actions, broken_action)
     return [broken_action]
   elsif game.active_step.is_a?(Engine::Step::G1817::PostConversion)
     pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+    pass.user = pass.entity.player.id
     actions.insert(action_idx, pass)
     return
   elsif game.active_step.is_a?(Engine::Step::G1817::Acquire)
     pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+    pass.user = pass.entity.player.id
     actions.insert(action_idx, pass)
     return
   elsif game.active_step.is_a?(Engine::Step::G1889::SpecialTrack)
@@ -50,6 +52,7 @@ def repair(game, original_actions, actions, broken_action)
     # explicit pass
     if broken_action['entity'] != 'ER'
       pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+      pass.user = pass.entity.player.id
       actions.insert(action_idx, pass)
       return
     end
@@ -99,16 +102,19 @@ def repair(game, original_actions, actions, broken_action)
   elsif broken_action['type'] == 'lay_tile'
     if game.active_step.is_a?(Engine::Step::BuyCompany)
       pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+      pass.user = pass.entity.player.id
       actions.insert(action_idx, pass)
       return
     end
     if game.active_step.is_a?(Engine::Step::BuyTrain) && game.active_step.actions(game.active_step.current_entity).include?('pass')
       pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+      pass.user = pass.entity.player.id
       actions.insert(action_idx, pass)
       return
     end
     if game.active_step.is_a?(Engine::Step::IssueShares)
       pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+      pass.user = pass.entity.player.id
       actions.insert(action_idx, pass)
       return
     end
@@ -133,11 +139,13 @@ def repair(game, original_actions, actions, broken_action)
     end
     if game.active_step.is_a?(Engine::Step::Track)
       pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+      pass.user = pass.entity.player.id
       actions.insert(action_idx, pass)
       return
     end
     if game.active_step.is_a?(Engine::Step::Token)
       pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+      pass.user = pass.entity.player.id
       actions.insert(action_idx, pass)
       return
     end
@@ -152,11 +160,13 @@ def repair(game, original_actions, actions, broken_action)
     end
     if game.active_step.is_a?(Engine::Step::Track)
       pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+      pass.user = pass.entity.player.id
       actions.insert(action_idx, pass)
       return
     end
     if game.active_step.is_a?(Engine::Step::Token)
       pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+      pass.user = pass.entity.player.id
       actions.insert(action_idx, pass)
       return
     end
@@ -169,6 +179,7 @@ def repair(game, original_actions, actions, broken_action)
     return [broken_action]
   elsif game.active_step.is_a?(Engine::Step::Token)
     pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+    pass.user = pass.entity.player.id
     actions.insert(action_idx, pass)
     return
 
@@ -179,6 +190,7 @@ def repair(game, original_actions, actions, broken_action)
       return
     end
     pass = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+    pass.user = pass.entity.player.id
     actions.insert(action_idx, pass)
     return
   elsif game.active_step.is_a?(Engine::Step::IssueShares) && broken_action['type']=='buy_company'
@@ -316,7 +328,7 @@ def migrate_db_actions(data, pin, dry_run=false)
             game.process_action(action)
             Action.create(
               game: data,
-              user: data.user,
+              user: action.key?('user') ? User[action['user']] : data.user,
               action_id: game.actions.last.id,
               turn: game.turn,
               round: game.round.name,

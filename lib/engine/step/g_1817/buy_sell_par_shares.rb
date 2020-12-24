@@ -77,7 +77,12 @@ module Engine
 
         def corporate_actions(entity)
           return [] if @winning_bid
-          return [] if @corporation_action && @corporation_action.entity != entity
+
+          if @corporate_action && @corporate_action.entity != entity
+            return ['buy_tokens'] if can_buy_tokens?(entity)
+
+            return []
+          end
 
           actions = []
           if @current_actions.none?
@@ -110,7 +115,9 @@ module Engine
         end
 
         def can_sell?(entity, bundle)
-          super && !(bundle.corporation.share_price.acquisition? || bundle.corporation.share_price.liquidation?)
+          super &&
+          !@corporate_action &&
+          !(bundle.corporation.share_price.acquisition? || bundle.corporation.share_price.liquidation?)
         end
 
         def can_short_any?(entity)

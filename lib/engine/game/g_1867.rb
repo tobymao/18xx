@@ -57,6 +57,7 @@ module Engine
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
       LIMIT_TOKENS_AFTER_MERGER = 2
+      MINIMUM_MINOR_PRICE = 50
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
                                                                   'Game Ends 3 ORs after purchase/export'\
@@ -91,6 +92,18 @@ module Engine
 
       def interest_rate
         5 # constant
+      end
+
+      def init_corporations(stock_market)
+        major_min_price = stock_market.par_prices.map(&:price).min
+        minor_min_price = MINIMUM_MINOR_PRICE
+        self.class::CORPORATIONS.map do |corporation|
+          Corporation.new(
+            min_price: corporation[:type] == :major ? major_min_price : minor_min_price,
+            capitalization: self.class::CAPITALIZATION,
+            **corporation.merge(corporation_opts),
+          )
+        end
       end
 
       def interest_owed_for_loans(loans)
@@ -161,12 +174,17 @@ module Engine
           @loans.any?
       end
 
-      def buying_power(entity, full = false)
+      def buying_power(entity, full: false)
         return entity.cash unless full
         return entity.cash unless entity.corporation?
 
         # Loans are actually generate $5 less than when taken out.
         entity.cash + ((maximum_loans(entity) - entity.loans.size) * @loan_value - 5)
+      end
+
+      def unstarted_corporation_summary
+        minor, major = @corporations.reject(&:ipoed).partition { |c| c.type == :minor }
+        "#{minor.size} minor, #{major.size} major"
       end
 
       def nationalize!(corporation)

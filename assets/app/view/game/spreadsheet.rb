@@ -23,7 +23,20 @@ module View
         @delta_value = Lib::Storage['delta_value']
 
         children = []
-        children << h(Bank, game: @game)
+
+        top_line_props = {
+          style: {
+            display: 'grid',
+            grid: 'auto / repeat(auto-fill, minmax(20rem, 1fr))',
+            gap: '3rem 1.2rem',
+          },
+        }
+        top_line = h(:div, top_line_props, [
+          h(Bank, game: @game),
+          h(GameInfo, game: @game, layout: 'upcoming_trains'),
+        ])
+
+        children << top_line
         children << render_table
         children << render_spreadsheet_controls
 

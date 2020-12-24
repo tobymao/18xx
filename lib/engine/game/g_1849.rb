@@ -3,6 +3,7 @@
 require_relative '../config/game/g_1849'
 require_relative 'base'
 require_relative '../g_1849/corporation'
+require_relative '../g_1849/stock_market'
 
 module Engine
   module Game
@@ -53,20 +54,48 @@ module Engine
         phase_limited: :blue,
       }.freeze
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'green_par': ['144 par available',
+                      'Corporations may now par at 144 (in addition to 67 and 100)'],
+        'brown_par': ['216 par available',
+                      'Corporations may now par at 216 (in addition to 67, 100, and 144)'],
+        'earthquake': ['Messina earthquake',
+                       'Messina (B14) downgraded to yellow, tokens removed from game.
+                        Cannot be upgraded until after next stock round']
+      ).freeze
+
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'blue_zone': ['Blue zone available', 'Corporation share prices can enter the blue zone']
+      ).freeze
+
       AFG_HEXES = %w[C1 H8 M9 M11 B14].freeze
+      PORT_HEXES = %w[a12 A5 L14 N8].freeze
 
       def setup
         @corporations.sort_by! { rand }
-        # TODO: Add variant for 4 player 5 corp game
-        remove_corp_and_trains if @players.size == 3
-        @corporations.each { |c| c.next_to_par = false }
+        remove_corp if @players.size == 3
+        @corporations.each do |c|
+          c.next_to_par = false
+          c.shares.last.last_cert = true
+        end
         @corporations[0].next_to_par = true
       end
 
-      def remove_corp_and_trains
+      def remove_corp
         removed = @corporations.pop
         @log << "Removed #{removed.name}"
-        # TODO: Remove 6H, 8H, 16H
+      end
+
+      def num_trains(train)
+        fewer = @players.size < 4
+        case train[:name]
+        when '6H'
+          fewer ? 3 : 4
+        when '8H'
+          fewer ? 2 : 3
+        when '16H'
+          fewer ? 4 : 5
+        end
       end
 
       def after_par(corporation)
@@ -88,6 +117,18 @@ module Engine
         end
       end
 
+      def init_stock_market
+        sm = Engine::G1849::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+                                            multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+
+        sm.game = self
+
+        sm.enable_par_price(68)
+        sm.enable_par_price(100)
+
+        sm
+      end
+
       def init_corporations(stock_market)
         min_price = stock_market.par_prices.map(&:price).min
 
@@ -103,6 +144,7 @@ module Engine
       def close_corporation(corporation, quiet: false)
         super
         corporation = reset_corporation(corporation)
+        corporation.shares.last.last_cert = true
         @corporations.push(corporation)
         corporation.closed_recently = true
         corporation.next_to_par = true if @corporations[@corporations.length - 2].floated?
@@ -131,7 +173,7 @@ module Engine
                                Step::G1849::Track,
                                Step::Token,
                                Step::Route,
-                               Step::Dividend,
+                               Step::G1849::Dividend,
                                Step::BuyTrain,
                                Step::G1849::IssueShares,
                                [Step::BuyCompany, blocks: true],
@@ -170,7 +212,9 @@ module Engine
       end
 
       def check_other(route)
-        # TODO: route can't have just a city and a port
+        return unless (route.stops.map(&:hex).map(&:id) & PORT_HEXES).any?
+
+        game_error('Route must include two non-port stops.') unless route.stops.size > 2
       end
 
       def issuable_shares(entity)
@@ -179,14 +223,48 @@ module Engine
         num_shares = 5 - entity.num_market_shares
         bundles = bundles_for_corporation(entity, entity)
 
-        bundles.reject { |bundle| bundle.num_shares > num_shares }
+        bundles.reject { |bundle| bundle.num_shares > num_shares || !last_cert_last?(bundle) }
       end
 
       def redeemable_shares(entity)
         return [] unless entity.operating_history.size > 1
 
         bundles_for_corporation(share_pool, entity)
-          .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
+          .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price || !last_cert_last?(bundle) }
+      end
+
+      def dumpable(bundle)
+        return true unless bundle.presidents_share
+
+        owner_percent = bundle.owner.percent_of(bundle.corporation)
+        other_percent = @players.reject { |p| p.id == bundle.owner.id }.map { |o| o.percent_of(bundle.corporation) }.max
+
+        other_percent > owner_percent - bundle.percent
+      end
+
+      def bundles_for_corporation(share_holder, corporation, shares: nil)
+        return [] unless corporation.ipoed
+
+        shares = (shares || share_holder.shares_of(corporation))
+
+        bundles = (1..shares.size).flat_map do |n|
+          shares.combination(n).to_a.map { |ss| Engine::ShareBundle.new(ss) }
+        end
+
+        (bundles.uniq do |b|
+          [b.shares.count { |s| s.percent == 10 },
+           b.presidents_share ? 1 : 0,
+           b.shares.find(&:last_cert) ? 1 : 0]
+        end).select { |b| dumpable(b) }.sort_by(&:percent)
+      end
+
+      def last_cert_last?(bundle)
+        bundle = bundle.to_bundle
+        last_cert = bundle.shares.find(&:last_cert)
+        return true unless last_cert
+
+        location = last_cert.corporation.shares.include?(last_cert) ? last_cert.corporation.shares : share_pool.shares
+        location.size == bundle.shares.size
       end
 
       def new_track(old_tile, new_tile)
@@ -199,6 +277,20 @@ module Engine
         else
           added_track.include?(:broad) ? :broad : :narrow
         end
+      end
+
+      def legal_tile_rotation?(corp, hex, tile)
+        connection_directions = graph.connected_hexes(corp).find { |k, _| k.id == hex.id }[1]
+        connection_directions.each do |dir|
+          connecting_path = tile.paths.find { |p| p.exits.include?(dir) }
+          next unless connecting_path
+
+          connecting_track = connecting_path.track
+          neighboring_tile = hex.neighbors[dir].tile
+          neighboring_path = neighboring_tile.paths.find { |p| p.exits.include?(Engine::Hex.invert(dir)) }
+          return true if neighboring_path.tracks_match(connecting_track)
+        end
+        false
       end
 
       def tile_cost(tile, hex, entity)
@@ -221,6 +313,18 @@ module Engine
           end
           upgrade.cost - discount
         end
+      end
+
+      def event_green_par!
+        @log << "-- Event: #{EVENTS_TEXT['green_par'][1]} --"
+        stock_market.enable_par_price(144)
+        update_cache(:share_prices)
+      end
+
+      def event_brown_par!
+        @log << "-- Event: #{EVENTS_TEXT['brown_par'][1]} --"
+        stock_market.enable_par_price(216)
+        update_cache(:share_prices)
       end
 
       def event_earthquake!

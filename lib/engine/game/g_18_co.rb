@@ -24,7 +24,7 @@ module Engine
       load_from_json(Config::Game::G18CO::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
-      # DEV_STAGE = :beta
+      DEV_STAGE = :alpha
 
       GAME_LOCATION = 'Colorado, USA'
       GAME_RULES_URL = 'https://drive.google.com/open?id=0B3lRHMrbLMG_eEp4elBZZ0toYnM'
@@ -444,13 +444,13 @@ module Engine
         @presidents_choice = :triggered
       end
 
-      def sell_shares_and_change_price(bundle)
+      def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
         corporation = bundle.corporation
         price = corporation.share_price.price
         was_president = corporation.president?(bundle.owner)
         was_issued = bundle.owner == bundle.corporation
 
-        @share_pool.sell_shares(bundle)
+        @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
 
         return if !(was_president || was_issued) && bundle.num_shares == 1
 
@@ -519,8 +519,8 @@ module Engine
         end
       end
 
-      def company_available_for_other_corps(_company)
-        false
+      def entity_can_use_company?(entity, company)
+        entity.corporation? && entity == company.owner
       end
     end
   end

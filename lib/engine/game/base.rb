@@ -1013,6 +1013,11 @@ module Engine
         tile = hex&.tile
         if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
 
+          if @round.pending_tokens.any? { |p| p[:entity] == corporation }
+            # 1867: Avoid adding the same token twice
+            @round.clear_cache!
+            return
+          end
           # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
           # otherwise the entity must choose now.
           @log << "#{corporation.name} must choose city for home token"
@@ -1215,7 +1220,7 @@ module Engine
           liquidity(player, emergency: true)
       end
 
-      def buying_power(entity, _full = false)
+      def buying_power(entity, **)
         entity.cash + (issuable_shares(entity).map(&:price).max || 0)
       end
 
@@ -1299,7 +1304,7 @@ module Engine
         active_abilities
       end
 
-      def company_available_for_other_corps(_company)
+      def entity_can_use_company?(_entity, _company)
         true
       end
 
@@ -1820,10 +1825,6 @@ module Engine
       def corporation_size(_entity)
         # For display purposes is a corporation small, medium or large
         :small
-      end
-
-      def show_corporation_size?(_entity)
-        false
       end
 
       def status_str(_corporation); end
