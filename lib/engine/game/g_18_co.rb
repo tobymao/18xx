@@ -53,12 +53,16 @@ module Engine
       MAX_STATION_TILES = %w[14 15 co1 co2 co3 co4 co7 63].freeze
 
       STOCKMARKET_COLORS = {
-        par: :yellow,
+        par: :blue,
+        par_1: :purple,
+        par_2: :yellow,
         acquisition: :red,
       }.freeze
 
       MARKET_TEXT = {
-        par: 'Par: C [40, 50, 60, 75] - 40%, B/C [80, 90, 100, 110] - 50%, A/B/C: [120, 135, 145, 160] - 60%',
+        par: 'Par: 40% - C',
+        par_1: 'Par: 50% - B/C',
+        par_2: 'Par: 60% - A/B/C',
         acquisition: 'Acquisition: Corporation assets will be auctioned if entering Stock Round',
       }.freeze
 
