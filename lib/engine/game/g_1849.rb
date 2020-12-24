@@ -346,7 +346,7 @@ module Engine
         false
       end
 
-      def tile_cost(tile, hex, entity)
+      def upgrade_cost(tile, hex, entity)
         return 0 if tile.upgrades.empty?
 
         upgrade = tile.upgrades[0]
