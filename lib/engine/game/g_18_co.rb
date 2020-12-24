@@ -42,7 +42,7 @@ module Engine
       DISCARDED_TRAIN_DISCOUNT = 50
 
       # Two tiles can be laid, only one upgrade
-      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: false }].freeze
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
       REDUCED_TILE_LAYS = [{ lay: true, upgrade: true }].freeze
 
       # First 3 are Denver, Second 3 are CO Springs
