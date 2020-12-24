@@ -743,11 +743,8 @@ module Engine
       end
 
       def num_certs(entity)
-        if self.class::CERT_LIMIT_INCLUDES_PRIVATES
-          entity.companies.size + entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
-        else
-          entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
-        end
+        certs = entity.shares.select { |s| s.corporation.counts_for_limit && s.counts_for_limit }.sum(&:cert_size)
+        certs + (self.class::CERT_LIMIT_INCLUDES_PRIVATES ? entity.companies.size : 0)
       end
 
       def sellable_turn?
