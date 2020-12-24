@@ -244,6 +244,8 @@ describe 'Assets' do
        ['Lay Track for Columbia - Philadelphia Railroad']],
       ['18_co', 'hs_ghyigehv_1608562373', 687, 'dividend',
        ['18CO: Operating Round 6.2 (of 2) - Game Over - Bank Broken']],
+      ['1860', '19_354', nil, 'endgame',
+       ['1860: Operating Round 8.4 (Nationalization) - Game Over - Nationalization complete']],
     ].freeze
 
     def render_game(jsonfile, no_actions, string)
