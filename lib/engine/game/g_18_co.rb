@@ -505,7 +505,7 @@ module Engine
         return [] unless entity.num_ipo_shares
 
         bundles_for_corporation(entity, entity)
-          .reject { |bundle| bundle.num_shares > 1 }
+          .select { |bundle| bundle.shares.size == 1 && @share_pool.fit_in_bank?(bundle) }
       end
 
       def redeemable_shares(entity)

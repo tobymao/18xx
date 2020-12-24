@@ -225,11 +225,10 @@ module Engine
     },
     GAMES_BY_TITLE['18CO'] => {
       # Bank Broken
-      'hs_ghyigehv_1608562373' => {
-        'Andy' => 7004,
-        'Betty' => 6068,
-        'Cory' => 10_592,
-        'David' => 6675,
+      19_958 => {
+        'tvahlsing' => 13_185,
+        'WyoBadger' => 13_165,
+        'PeteCal' => 10_869,
       },
     },
     GAMES_BY_TITLE['1867'] => {
