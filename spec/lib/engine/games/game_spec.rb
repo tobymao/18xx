@@ -241,6 +241,13 @@ module Engine
         'ChrisRericha' => 425,
       },
     },
+    GAMES_BY_TITLE['1860'] => {
+      # Nationalization w/SR
+      '19_354' => {
+        'Aavar' => 11_002,
+        'TIE53' => 12_601,
+      },
+    },
 
   }.freeze
 
