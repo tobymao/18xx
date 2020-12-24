@@ -40,6 +40,11 @@ module Engine
           @game.merged_cities_to_select.find { |t| t.city.hex == hex }
         end
 
+        def help
+          ["Select a #{@game.merged_major.name} token to replace with an #{@game.ndm.name} exchange token.",
+           "Remaining #{@game.merged_major.name} token(s) will be removed."]
+        end
+
         private
 
         def ndm_merge_assign_ongoing?
