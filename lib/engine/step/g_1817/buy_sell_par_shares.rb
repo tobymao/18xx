@@ -416,6 +416,10 @@ module Engine
           super
           @corporate_action = nil
         end
+
+        def choice_available?(entity)
+          entity.corporation?
+        end
       end
     end
   end
