@@ -1054,7 +1054,7 @@ module Engine
             (!a.hexes || a.hexes.include?(hex.name))
         end
 
-        cost = tile.upgrades.sum do |upgrade|
+        tile.upgrades.sum do |upgrade|
           discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
 
           log_cost_discount(entity, ability, discount)
@@ -1062,8 +1062,6 @@ module Engine
           total_cost = upgrade.cost - discount
           total_cost
         end
-
-        cost
       end
 
       def tile_cost_with_discount(_tile, hex, entity, cost)
@@ -1078,8 +1076,7 @@ module Engine
         discount = [cost, ability.discount].min
         log_cost_discount(entity, ability, discount)
 
-        end_cost = cost - discount
-        end_cost
+        cost - discount
       end
 
       def log_cost_discount(entity, ability, discount)
