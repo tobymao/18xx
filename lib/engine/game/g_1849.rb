@@ -69,6 +69,7 @@ module Engine
       ).freeze
 
       AFG_HEXES = %w[C1 H8 M9 M11 B14].freeze
+      PORT_HEXES = %w[a12 A5 L14 N8].freeze
 
       def setup
         @corporations.sort_by! { rand }
@@ -211,7 +212,9 @@ module Engine
       end
 
       def check_other(route)
-        # TODO: route can't have just a city and a port
+        return unless (route.stops.map(&:hex).map(&:id) & PORT_HEXES).any?
+
+        game_error('Route must include two non-port stops.') unless route.stops.size > 2
       end
 
       def issuable_shares(entity)
@@ -274,6 +277,20 @@ module Engine
         else
           added_track.include?(:broad) ? :broad : :narrow
         end
+      end
+
+      def legal_tile_rotation?(corp, hex, tile)
+        connection_directions = graph.connected_hexes(corp).find { |k, _| k.id == hex.id }[1]
+        connection_directions.each do |dir|
+          connecting_path = tile.paths.find { |p| p.exits.include?(dir) }
+          next unless connecting_path
+
+          connecting_track = connecting_path.track
+          neighboring_tile = hex.neighbors[dir].tile
+          neighboring_path = neighboring_tile.paths.find { |p| p.exits.include?(Engine::Hex.invert(dir)) }
+          return true if neighboring_path.tracks_match(connecting_track)
+        end
+        false
       end
 
       def tile_cost(tile, hex, entity)
