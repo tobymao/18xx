@@ -482,7 +482,10 @@ module Engine
       "tiles": [
         "yellow"
       ],
-      "operating_rounds": 1
+      "operating_rounds": 1,
+      "status": [
+        "gray_uses_yellow"
+      ]
     },
     {
       "name": "6H",
@@ -494,6 +497,7 @@ module Engine
       ],
       "operating_rounds": 2,
       "status": [
+        "gray_uses_yellow",
         "can_buy_companies"
       ]
     },
@@ -507,6 +511,7 @@ module Engine
       ],
       "operating_rounds": 2,
       "status": [
+        "gray_uses_green",
         "can_buy_companies"
       ]
     },
@@ -521,6 +526,7 @@ module Engine
       ],
       "operating_rounds": 3,
       "status": [
+        "gray_uses_green",
         "can_buy_companies"
       ]
     },
@@ -533,7 +539,10 @@ module Engine
         "green",
         "brown"
       ],
-      "operating_rounds": 3
+      "operating_rounds": 3,
+      "status": [
+        "gray_uses_brown"
+      ]
     },
     {
       "name": "16H",
@@ -546,6 +555,7 @@ module Engine
       ],
       "operating_rounds": 3,
       "status": [
+        "gray_uses_brown",
         "blue_zone"
       ]
     }

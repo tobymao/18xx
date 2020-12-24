@@ -6,8 +6,8 @@ require_relative 'share_bundle'
 module Engine
   class Share
     include Ownable
-    
-    attr_accessor :percent, :buyable, :counts_for_limit, :cert_size,  :last_cert
+
+    attr_accessor :percent, :buyable, :counts_for_limit, :cert_size, :last_cert
     attr_reader :corporation, :president, :index
 
     def initialize(corporation, owner: nil, president: false, percent: 10, index: 0, cert_size: 1)

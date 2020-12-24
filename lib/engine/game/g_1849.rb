@@ -55,18 +55,61 @@ module Engine
       }.freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-        'green_par': ['144 par available',
+        'green_par': ['144 Par Available',
                       'Corporations may now par at 144 (in addition to 67 and 100)'],
-        'brown_par': ['216 par available',
+        'brown_par': ['216 Par Available',
                       'Corporations may now par at 216 (in addition to 67, 100, and 144)'],
-        'earthquake': ['Messina earthquake',
+        'earthquake': ['Messina Earthquake',
                        'Messina (B14) downgraded to yellow, tokens removed from game.
                         Cannot be upgraded until after next stock round']
       ).freeze
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
-        'blue_zone': ['Blue zone available', 'Corporation share prices can enter the blue zone']
+        'blue_zone': ['Blue Zone Available', 'Corporation share prices can enter the blue zone'],
+        'gray_uses_yellow': ['Yellow Revenues', 'Gray locations use yellow revenue values'],
+        'gray_uses_green': ['Green Revenues', 'Gray locations use green revenue values'],
+        'gray_uses_brown': ['Brown Revenues', 'Gray locations use brown revenue values']
       ).freeze
+
+      GRAY_REVENUE_CENTERS =
+        {
+          'C1':
+            {
+              '4H': 20,
+              '6H': 20,
+              '8H': 30,
+              '10H': 30,
+              '12H': 40,
+              '16H': 40,
+            },
+          'E1':
+            {
+              '4H': 20,
+              '6H': 20,
+              '8H': 30,
+              '10H': 30,
+              '12H': 40,
+              '16H': 40,
+            },
+          'C15':
+            {
+              '4H': 10,
+              '6H': 10,
+              '8H': 30,
+              '10H': 30,
+              '12H': 90,
+              '16H': 90,
+            },
+          'M9':
+            {
+              '4H': 20,
+              '6H': 20,
+              '8H': 30,
+              '10H': 30,
+              '12H': 40,
+              '16H': 40,
+            },
+        }.freeze
 
       AFG_HEXES = %w[C1 H8 M9 M11 B14].freeze
       PORT_HEXES = %w[a12 A5 L14 N8].freeze
@@ -215,6 +258,16 @@ module Engine
         return unless (route.stops.map(&:hex).map(&:id) & PORT_HEXES).any?
 
         game_error('Route must include two non-port stops.') unless route.stops.size > 2
+      end
+
+      def revenue_for(route, stops)
+        stops.sum { |stop| stop_revenue(stop, route.phase, route.train) }
+      end
+
+      def stop_revenue(stop, phase, train)
+        return stop.route_revenue(phase, train) unless GRAY_REVENUE_CENTERS.keys.include?(stop.hex.id)
+
+        GRAY_REVENUE_CENTERS[stop.hex.id][@phase.name]
       end
 
       def issuable_shares(entity)
