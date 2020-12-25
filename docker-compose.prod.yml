@@ -8,6 +8,7 @@ services:
       RACK_ENV: production
       DATABASE_URL: $DATABASE_URL
       ELASTIC_KEY: $ELASTIC_KEY
+      RUBYOPTS: --jit
     build:
       args:
         RACK_ENV: production

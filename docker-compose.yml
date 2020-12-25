@@ -2,6 +2,8 @@ version: '3.5'
 
 services:
   rack:
+    environment:
+      RUBYOPTS: --jit
     build: .
     depends_on:
       - db

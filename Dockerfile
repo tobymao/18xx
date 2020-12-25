@@ -1,4 +1,4 @@
-FROM ruby:2.7.1-buster
+FROM ruby:3.0-rc
 
 ARG RACK_ENV
 RUN mkdir /18xx
