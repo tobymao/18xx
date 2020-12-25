@@ -64,7 +64,6 @@ module Engine
       def issue_shares!
         if total_shares == 10 #was 10 share
           @log << "#{@name} shares are 5% shares"
-          @fraction_shares = true
 
           @all_shares.each_with_index do |share, index|
             share.percent = index == 0 ? 10 : 5

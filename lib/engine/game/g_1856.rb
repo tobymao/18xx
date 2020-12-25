@@ -465,7 +465,6 @@ module Engine
       # Called regardless of if president saved or merged corp
       def post_corp_nationalization
         return unless nationalizables.empty?
-        puts 'post'
         if !@national_formed
           @log << "#{national.name} does not form"
           @national.close!
@@ -479,10 +478,10 @@ module Engine
         #  where the exact value doesn't really matter
         players_in_order = (0..@players.count - 1).to_a.sort { |i| i < index_for_trigger ? i + 10 : i }
         #Determine the president before exchanging shares for ease of distribution
+        shares_to_distribute = 20
         president_shares = 0
         president = nil
         players_in_order.each do |i|
-          shares_to_distribute = @national.all_shares.count + 1
           player = @players[i]
           next unless @pre_national_percent_by_player[player]
 
@@ -505,6 +504,8 @@ module Engine
             president = player
           end
         end
+        # More than 10 shares were issued so issue the second set
+        @national.issue_shares! if shares_to_distribute < 10
         national_share_index = 1
         players_in_order.each do |i|
           player = @players[i]
@@ -519,14 +520,13 @@ module Engine
               # TODO: Handle this case properly.
               puts 'TODO'
             else # This player gets the presidency, which is 2 shares
-              puts player, @national.all_shares[0]
-              # @share_pool.buy_shares(player, @national.all_shares[0], exchange: :free, exchange_price: 0)
+              @share_pool.buy_shares(player, @national.all_shares[0], exchange: :free, exchange_price: 0)
               player_national_shares -= 2
             end
           end
           # not president, just give them shares
           while player_national_shares > 0 do
-            if national_share_index == @national.all_shares.size - 1
+            if national_share_index == @national.all_shares.size
               @log << "#{@national.name} is out of shares to issue, #{player.name} gets no more shares"
               player_national_shares = 0
             else
