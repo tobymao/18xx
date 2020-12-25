@@ -106,7 +106,7 @@ module Engine
         0,
         40
       ],
-      "coordinates": "A7",
+      "coordinates": ["A7", "B4"],
       "color": "red"
     },
     {
@@ -118,7 +118,7 @@ module Engine
         0,
         40
       ],
-      "coordinates": "A21",
+      "coordinates": ["A21", "B18"],
       "color": "black"
     },
     {
@@ -130,7 +130,7 @@ module Engine
         0,
         40
       ],
-      "coordinates": "F2",
+      "coordinates": ["F2", "H4"],
       "color": "blue"
     },
     {
@@ -142,7 +142,7 @@ module Engine
         0,
         40
       ],
-      "coordinates": "J14",
+      "coordinates": ["J14", "I17"],
       "color": "orange"
     },
     {
@@ -154,7 +154,7 @@ module Engine
         0,
         40
       ],
-      "coordinates": "G27",
+      "coordinates": ["G27", "I23"],
       "color": "purple"
     },
     {
@@ -167,6 +167,7 @@ module Engine
         40,
         100
       ],
+      "city": 1,
       "coordinates": "E11",
       "color": "grey"
     },
@@ -180,6 +181,7 @@ module Engine
         40,
         100
       ],
+      "city": 0,
       "coordinates": "E11",
       "color": "yellow",
       "text_color": "black"
@@ -195,7 +197,8 @@ module Engine
         100
       ],
       "color": "gold",
-      "text_color": "black"
+      "text_color": "black",
+      "coordinates": "B8"
     },
     {
       "float_percent": 50,
@@ -423,35 +426,37 @@ module Engine
         "F20",
         "B14"
       ],
-      "city=revenue:20;city=revenue:20;label=P;upgrade=cost:10,terrain:water": [
+      "city=revenue:20;city=revenue:20;path=a:5,b:_0;path=a:3,b:_1;label=P;upgrade=cost:10,terrain:water": [
         "E11"
       ],
-      "city=revenue:0;label=SX": [
+      "label=SX;border=edge:0,type:impassible;border=edge:5,type:impassible;border=edge:4,type:impassible": [
         "A7",
         "B4"
       ],
-      "city=revenue:0;label=PR": [
+      "label=PR;border=edge:0,type:impassible;border=edge:5,type:impassible;border=edge:4,type:impassible;border=edge:1,type:impassible": [
         "A21",
         "B18"
       ],
-      "city=revenue:0;label=BY": [
+      "label=BY;border=edge:2,type:impassible;border=edge:3,type:impassible;border=edge:4,type:impassible;border=edge:5,type:impassible": [
         "F2",
         "H4"
       ],
-      "city=revenue:0;label=kk": [
+      "label=kk;border=edge:1,type:impassible;border=edge:2,type:impassible;border=edge:3,type:impassible;border=edge:4,type:impassible": [
         "J14",
         "I17"
       ],
-      "city=revenue:0;label=Ug": [
+      "label=Ug;border=edge:1,type:impassible;border=edge:2,type:impassible;border=edge:3,type:impassible": [
         "G27",
         "I23"
       ]
     },
     "yellow": {
       "city=revenue:0;city=revenue:0;label=OO": [
-        "B8",
         "D26",
         "C7"
+      ],
+      "city=revenue:0;city=revenue:0;label=OO;upgrade=cost:10,terrain:water": [
+        "B8"
       ]
     }
   },
