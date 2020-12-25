@@ -7,7 +7,6 @@ module Engine
     class SharePool < SharePool
       def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil)
         bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
-
         if !@game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && shares.owner.player?
           @game.game_error('Cannot buy share from player')
         end
@@ -24,7 +23,6 @@ module Engine
           @log << "#{entity.name} pars #{corporation.name} at "\
                   "#{@game.format_currency(par_price)}"
         end
-
         share_str = "a #{bundle.percent}% share of #{corporation.name}"
         incremental = corporation.capitalization == :incremental
 
