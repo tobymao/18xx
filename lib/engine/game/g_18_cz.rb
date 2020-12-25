@@ -40,6 +40,10 @@ module Engine
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
+
+      def init_stock_market
+        StockMarket.new(self.class::MARKET, [], zigzag: true)
+      end
     end
   end
 end
