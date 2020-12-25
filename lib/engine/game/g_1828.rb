@@ -140,14 +140,14 @@ module Engine
       end
 
       SYSTEM_EXTRA_TILE_LAY = { lay: true, upgrade: :not_if_upgraded }.freeze
-      EXTRA_TILE_LAYS = { lay: :not_if_upgraded, upgrade: false, cost: 40 }.freeze
+      CORP_EXTRA_TILE_LAY = { lay: :not_if_upgraded, upgrade: false, cost: 40 }.freeze
       EXTRA_TILE_LAY_CORPS = %w[B&M NYH].freeze
 
       def tile_lays(entity)
         tile_lays = super
-        tile_lays << SYSTEM_EXTRA_TILE_LAY if entity.system?
-        tile_lays << ABILITY_EXTRA_TILE_LAY if EXTRA_TILE_LAY_CORPS.include?(entity.name)
-        tile_lays << ABILITY_EXTRA_TILE_LAY if entity.system? && EXTRA_TILE_LAY_CORPS.include?(entity.shells.last.name)
+        tile_lays += [SYSTEM_EXTRA_TILE_LAY] if entity.system?
+        tile_lays += [CORP_EXTRA_TILE_LAY] if EXTRA_TILE_LAY_CORPS.include?(entity.name)
+        tile_lays += [CORP_EXTRA_TILE_LAY] if entity.system? && EXTRA_TILE_LAY_CORPS.include?(entity.shells.last.name)
 
         tile_lays
       end
@@ -240,10 +240,11 @@ module Engine
         @_corporations[system.id] = system
         system.shares.each { |share| @_shares[share.id] = share }
 
-        corporations.each { |corp| corp.spend(corp.cash, system) }
+        corporations.each { |corp| corp.spend(corp.cash, system) if corp.cash.positive? }
         create_system_tokens(system, corporations)
 
         @stock_market.set_par(system, system_market_price(corporations))
+        system.ipoed = true
 
         corporations.map(&:companies).flatten.each { |company| system.companies << company }
         corporations.each { |corp| corp.companies.clear }
@@ -272,7 +273,7 @@ module Engine
         end
 
         # TODO: change reservations
-        unused.each { |t| system.tokens << Engine::Token.new(system, price: t.price) }
+        unused.sort_by(&:price).each { |t| system.tokens << Engine::Token.new(system, price: t.price) }
 
         corporations.each { |corp| corp.tokens.clear }
       end
@@ -421,7 +422,12 @@ module Engine
 
       def place_home_token(corporation)
         if corporation.system?
-          corporations.shells.each { |shell| place_home_token(shell) }
+          corporation.shells.each do |shell|
+            token = Engine::Token.new(shell)
+            shell.tokens << token
+            place_home_token(shell)
+            token.swap!(corporation.tokens.find { |t| t.price.zero? && !t.used }, check_tokenable: false)
+          end
         else
           super
         end

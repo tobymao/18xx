@@ -217,7 +217,9 @@ module Engine
 
         def create_system
           @system = @game.create_system(corporations)
-          if (hexes = @system.tokens.select(&:used).group_by { |t| t.city.tile.hex }.select { |_k, v| v.size > 1 }.keys)
+
+          used_tokens = @system.tokens.select(&:used)
+          if (hexes = used_tokens.group_by { |t| t.city.tile.hex }.select { |_k, v| v.size > 1 }.keys).any?
             @round.corporation_removing_tokens = @system
             @round.hexes_to_remove_tokens = hexes
           end
@@ -253,6 +255,7 @@ module Engine
           entity.shares_of(share_corps.first).first.transfer(from) unless entity == from
           entity.shares_of(share_corps.last).first.transfer(@discard)
           from.shares_of(@merger).first.transfer(@used)
+
           @system.shares_of(@system).first.transfer(entity) unless entity == @merger
 
           msg = if share_corps.uniq.size == 2
@@ -393,7 +396,7 @@ module Engine
 
           total_shares.times { @system.shares_of(@system).first.transfer(@game.share_pool) }
 
-          @log << "#{remaining_system_shares} discarded system shares placed in the market"
+          @log << "#{total_shares} discarded system shares placed in the market"
         end
 
         def complete_merger
@@ -402,14 +405,19 @@ module Engine
           # Selling either corporation this round constitutes as a sale of the system
           players.each { |p| sold_share(p, @system) if sold_share?(p, @target) || sold_share?(p, @merger) }
 
+          # TODO: Determine proper president
+
           # Donate share
           if (president = players.find { |p| p.shares_of(@system).find(&:president) })
             if president.num_shares_of(@system) >= 3
-              puts 'Good case'
               @system.owner = president
+
+              share = president.shares_of(@system).find { |s| !s.president }
+              share.buyable = false
+              @game.share_pool.transfer_shares(share.to_bundle, @system)
             else
               puts 'Bad case'
-              # Merge failed -- need to implement
+              # TODO: Merge failed -- need to implement
             end
           end
 
@@ -418,8 +426,8 @@ module Engine
             @log << "#{@system.name} not yet floated. Discarding treasury."
           end
 
-          (@discard.shares_of(@merger) + @used.shares_of(@merger)).each { |share| share.transfer(share.corporation) }
-          (@discard.shares_of(@target) + @used.shares_of(@target)).each { |share| share.transfer(share.corporation) }
+          (@discard.shares_of(@merger) + @used.shares_of(@merger)).each { |s| s.transfer(s.corporation) }
+          (@discard.shares_of(@target) + @used.shares_of(@target)).each { |s| s.transfer(s.corporation) }
           @merger.close!
           @target.close!
 

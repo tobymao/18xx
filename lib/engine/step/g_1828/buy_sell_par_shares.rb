@@ -50,6 +50,7 @@ module Engine
             next if candidate == corporation ||
                     candidate.system? ||
                     !candidate.ipoed ||
+                    (corporation.owner != entity && candidate.owner != entity) ||
                     candidate.operated? != corporation.operated? ||
                     (!candidate.floated? && !corporation.floated?)
 
