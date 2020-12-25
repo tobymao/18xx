@@ -177,10 +177,23 @@ module Engine
         @post_nationalization = false
         @national_formed = false
 
-        # These are already halved to account for the 2 to 1 tradeins, but don't reflect
-        #  a 10 v 20 v more share national
         @pre_national_percent_by_player = {}
         @pre_national_market_percent = 0
+
+        @pre_national_market_prices = {}
+
+
+        # Is the president of the national a "false" president?
+        # A false president gets the presidency with only one share; in this case the president gets
+        # the full president's certificate but is obligated to buy up to the full presidency in the
+        # following SR unless a different player becomes rightfully president during share exchange
+        # It is impossible for someone who didn't become president in
+        # exchange (1 share tops) to steal the presidency in the SR because
+        # they'd have to buy 2 shares in one action which is a no-no
+        # nil: Presidency not awarded yet at all
+        # true: 1-share false presidency has been awarded
+        # false: 2-sahre true presidency has been awarded
+        @false_national_president = nil
       end
 
       def num_corporations
@@ -403,6 +416,7 @@ module Engine
 
         # Shares
         merge_major_shares(major)
+        @pre_national_market_prices[major.name] = major.share_price.price
         major.close!
         @nationalizables.delete(major)
         post_corp_nationalization
@@ -423,9 +437,109 @@ module Engine
         @pre_national_market_percent + @pre_national_percent_by_player.values.sum
       end
 
+      def calculate_national_price
+        prices = @pre_national_market_prices.values
+        # If more than two companies merging in drop the lowest share price
+        prices.delete_at(prices.index(prices.min)) if prices.size > 2
+
+        # Average the values of the companies and round *down* to the nearest $5 increment
+        ave = (0.2 * prices.sum / prices.size).to_i * 5
+
+        # The value is 100 at the bare minimum
+        # Should this be <, or <=? Rules don't specify. Let's go with the game hates you.
+        market_price = if ave < 105
+          100
+        # The next share value is 110
+        elsif ave <= 115
+          110
+        #everything else is multiples of 25
+        else
+          delta = ave % 25
+          delta < 12.5 ? ave - delta : ave - delta + 25
+        end
+
+        # The stock market token is placed on the top row
+        @stock_market.market[0].find { |p| p.price == market_price }
+      end
+
       # Called regardless of if president saved or merged corp
       def post_corp_nationalization
-        puts 'post', nationalizables
+        return unless nationalizables.empty?
+        puts 'post'
+        if !@national_formed
+          @log << "#{national.name} does not form"
+          @national.close!
+          return
+        end
+        @national.float!
+        @stock_market.set_par(@national, calculate_national_price)
+        @national.ipoed = true
+        index_for_trigger = @players.index(@nationalization_trigger)
+        # This is based off the code in 18MEX; 10 appears to be an arbitrarily large integer
+        #  where the exact value doesn't really matter
+        players_in_order = (0..@players.count - 1).to_a.sort { |i| i < index_for_trigger ? i + 10 : i }
+        #Determine the president before exchanging shares for ease of distribution
+        president_shares = 0
+        president = nil
+        players_in_order.each do |i|
+          shares_to_distribute = @national.all_shares.count + 1
+          player = @players[i]
+          next unless @pre_national_percent_by_player[player]
+
+          shares_awarded = [(@pre_national_percent_by_player[player] / 20).to_i, shares_to_distribute].min
+          shares_to_distribute -= shares_awarded
+          @log << "#{player.name} gets #{shares_awarded} shares of #{@national.name}"
+
+          if shares_awarded > president_shares
+            @log << "#{player.name} becomes president of the #{@national.name}"
+            if shares_awarded == 1
+              @log << "#{player.name} will need to buy the 2nd share of the #{@national.name} "\
+                "president's cert in the next SR unless a new president is found"
+              @false_national_president = true
+            elsif @false_national_president
+              @log << "Since #{president.name} is no longer president of the #{@national.name} "\
+                " and is no longer obligated to buy a second share in the following SR"
+                @false_national_president = false
+            end
+            president_shares = shares_awarded
+            president = player
+          end
+        end
+        national_share_index = 1
+        players_in_order.each do |i|
+          player = @players[i]
+          player_national_shares = (@pre_national_percent_by_player[player] / 20).to_i
+          # Extra single shares are placed in the market
+          @pre_national_market_percent += (@pre_national_percent_by_player[player] % 20)
+          # We will distribute shares from the national starting with the second, skipping the presidency
+          next unless player_national_shares.positive?
+
+          if player == president
+            if @false_national_president
+              # TODO: Handle this case properly.
+              puts 'TODO'
+            else # This player gets the presidency, which is 2 shares
+              puts player, @national.all_shares[0]
+              # @share_pool.buy_shares(player, @national.all_shares[0], exchange: :free, exchange_price: 0)
+              player_national_shares -= 2
+            end
+          end
+          # not president, just give them shares
+          while player_national_shares > 0 do
+            if national_share_index == @national.all_shares.size - 1
+              @log << "#{@national.name} is out of shares to issue, #{player.name} gets no more shares"
+              player_national_shares = 0
+            else
+              @share_pool.buy_shares(
+                player,
+                @national.all_shares[national_share_index],
+                exchange: :free,
+                exchange_price: 0)
+              player_national_shares -= 1
+              national_share_index += 1
+            end
+          end
+        end
       end
 
       def nationalizable_corporations
@@ -451,7 +565,6 @@ module Engine
         major.owner.spend(owed, @bank)
         @loans << major.loans.pop(major.loans.size)
         @log << "#{major.owner.name} pays off the #{format_currency(owed)} debt for #{major.name}"
-        major.issue_shares!
         @nationalizables.delete(major)
         post_corp_nationalization
       end
