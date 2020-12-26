@@ -749,6 +749,10 @@ module Engine
 				{
 					"type": "description",
 					"description": "Pars @ $75(C) via DRG Silverton Branch"
+				},
+        {
+					"type": "base",
+					"description": "Shares: 2P/2/2/1/1/1/1"
 				}
 			]
 		}
