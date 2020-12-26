@@ -89,10 +89,85 @@ module Engine
     "46": 1,
     "47": 1,
     "70": 1,
+    "8885": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:1,b:_1;path=a:_1,b:3;label=OO"
+    },
+    "8859": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:3;path=a:2,b:_1;path=a:_1,b:5;label=OO"
+    },
+    "8860": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:_0,b:5;path=a:2,b:_1;path=a:_1,b:4;label=OO"
+    },
+    "8863": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:5;label=OO"
+    },
+    "8864": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:_0,b:5;path=a:2,b:_1;path=a:_1,b:3;label=OO"
+    },
+    "8865": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:_0,b:5;path=a:3,b:_1;path=a:_1,b:4;label=OO"
+    },
+    "8889": {
+      "count": 1,
+      "color": "yellow",
+      "code": "city=revenue:30;city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_2;label=P"
+    },
+    "8890": {
+      "count": 1,
+      "color": "yellow",
+      "code": "city=revenue:30;city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;label=P"
+    },
+    "8891": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_3;label=P"
+    },
     "8892": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=P"
+    },
+    "8893": {
       "count": 1,
       "color": "gray",
       "code": "city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=P"
+    },
+    "8894": {
+      "count": 1,
+      "color": "red",
+      "code": "city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1"
+    },
+    "8895": {
+      "count": 1,
+      "color": "red",
+      "code": "city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1"
+    },
+    "8896": {
+      "count": 1,
+      "color": "red",
+      "code": "city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1"
+    },
+    "8897": {
+      "count": 1,
+      "color": "red",
+      "code": "city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1"
+    },
+    "8898": {
+      "count": 1,
+      "color": "red",
+      "code": "city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1"
     }
   },
   "market": [
