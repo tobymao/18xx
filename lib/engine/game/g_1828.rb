@@ -89,7 +89,7 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::Exchange,
-          Step::DiscardTrain,
+          Step::G1828::DiscardTrain,
           Step::HomeToken,
           Step::G1828::SpecialTrack,
           Step::G1828::BuyCompany,
@@ -99,6 +99,7 @@ module Engine
           Step::G1828::Token,
           Step::G1828::Route,
           Step::G1828::Dividend,
+          Step::G1828::SwapTrain,
           Step::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
@@ -254,6 +255,8 @@ module Engine
           @target.remove_ability(ability)
         end
 
+        # TODO return coal token if has two
+
         system
       end
 
@@ -272,7 +275,6 @@ module Engine
           end
         end
 
-        # TODO: change reservations
         unused.sort_by(&:price).each { |t| system.tokens << Engine::Token.new(system, price: t.price) }
 
         corporations.each { |corp| corp.tokens.clear }
@@ -380,12 +382,11 @@ module Engine
         super
       end
 
-      def over_train_limit?(entity)
-        if entity.system?
-          false # entity.trains_by_shell.find(entity).size > @phase.train_limit(entity)
-        else
-          super
-        end
+      def train_limit(entity)
+        limit = super
+        limit *= 2 if entity.system?
+     
+        limit
       end
 
       private
@@ -421,7 +422,7 @@ module Engine
       end
 
       def place_home_token(corporation)
-        if corporation.system?
+        if corporation.system? && !corporation.tokens.first&.used && !corporation.tokens.first&.used
           corporation.shells.each do |shell|
             token = Engine::Token.new(shell)
             shell.tokens << token
