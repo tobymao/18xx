@@ -350,7 +350,7 @@ module Engine
 			"name": "Grand Junction and Grand River Valley Railway",
 			"value": 40,
 			"revenue": 10,
-			"desc": "An owning Corporation may upgrade a yellow town to a green city in additional to its normal tile lay at any time during its turn. Action closes the company or closes on purchase of “5” train.",
+			"desc": "An owning Corporation may upgrade a yellow town to a green city in additional to its normal tile lay at any time during its turn. This tile does not need to be reachable by the corporation's trains. Action closes the company or closes on purchase of “5” train.",
 			"abilities": [
 				{
 					"type": "tile_lay",
@@ -424,7 +424,7 @@ module Engine
 			"name": "Laramie, North Park and Western Railroad",
 			"value": 70,
 			"revenue": 15,
-			"desc": "When laying track tiles, an owning Corporation may lay an extra tile at no cost in addition to its normal tile lay. Action closes the company or closes on purchase of “5” train.",
+			"desc": "When laying track tiles, an owning Corporation may lay an extra yellow tile at no cost in addition to its normal tile lay. Action closes the company or closes on purchase of “5” train.",
 			"abilities": [
 				{
 					"type": "tile_lay",
@@ -508,7 +508,13 @@ module Engine
 				100
 			],
 			"coordinates": "E27",
-			"color": "brown"
+			"color": "brown",
+			"abilities": [
+				{
+					"type": "description",
+					"description": "Par Group - C"
+				}
+			]
 		},
 		{
 			"sym": "CM",
@@ -524,7 +530,13 @@ module Engine
 				100
 			],
 			"coordinates": "G17",
-			"color": "lightBlue"
+			"color": "lightBlue",
+			"abilities": [
+				{
+					"type": "description",
+					"description": "Par Group - C"
+				}
+			]
 		},
 		{
 			"sym": "CS",
@@ -540,7 +552,13 @@ module Engine
 				100
 			],
 			"coordinates": "K17",
-			"color": "black"
+			"color": "black",
+			"abilities": [
+				{
+					"type": "description",
+					"description": "Par Group - C"
+				}
+			]
 		},
 		{
 			"sym": "DPAC",
@@ -555,7 +573,13 @@ module Engine
 			],
 			"city": 2,
 			"coordinates": "E15",
-			"color": "purple"
+			"color": "purple",
+			"abilities": [
+				{
+					"type": "description",
+					"description": "Par Group - C"
+				}
+			]
 		},
 		{
 			"sym": "DSL",
@@ -570,7 +594,13 @@ module Engine
 			],
 			"city": 1,
 			"coordinates": "E15",
-			"color": "green"
+			"color": "green",
+			"abilities": [
+				{
+					"type": "description",
+					"description": "Par Group - C"
+				}
+			]
 		},
 		{
 			"sym": "DRG",
@@ -590,7 +620,13 @@ module Engine
 			"city": 0,
 			"coordinates": "E15",
 			"color": "yellow",
-			"text_color": "black"
+			"text_color": "black",
+			"abilities": [
+				{
+					"type": "description",
+					"description": "Par Group - B"
+				}
+			]
 		},
 		{
 			"sym": "ATSF",
@@ -608,7 +644,13 @@ module Engine
 				100
 			],
 			"coordinates": "J26",
-			"color": "blue"
+			"color": "blue",
+			"abilities": [
+				{
+					"type": "description",
+					"description": "Par Group - B"
+				}
+			]
 		},
 		{
 			"sym": "CBQ",
@@ -628,7 +670,13 @@ module Engine
 			],
 			"coordinates": "B26",
 			"color": "orange",
-			"text_color": "black"
+			"text_color": "black",
+			"abilities": [
+				{
+					"type": "description",
+					"description": "Par Group - A"
+				}
+			]
 		},
 		{
 			"sym": "ROCK",
@@ -648,7 +696,13 @@ module Engine
 				100
 			],
 			"coordinates": "G27",
-			"color": "red"
+			"color": "red",
+			"abilities": [
+				{
+					"type": "description",
+					"description": "Par Group - A"
+				}
+			]
 		},
 		{
 			"sym": "UP",
@@ -669,7 +723,13 @@ module Engine
 			],
 			"coordinates": "A17",
 			"color": "white",
-			"text_color": "black"
+			"text_color": "black",
+			"abilities": [
+				{
+					"type": "description",
+					"description": "Par Group - A"
+				}
+			]
 		},
 		{
 			"sym": "DSNG",
@@ -684,7 +744,17 @@ module Engine
 				40
 			],
 			"coordinates": "K5",
-			"color": "pink"
+			"color": "pink",
+			"abilities": [
+				{
+					"type": "description",
+					"description": "Pars @ $75(C) via DRG Silverton Branch"
+				},
+        {
+					"type": "base",
+					"description": "Shares: 2P/2/2/1/1/1/1"
+				}
+			]
 		}
 	],
 	"trains": [
