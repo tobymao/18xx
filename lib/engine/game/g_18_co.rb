@@ -304,7 +304,14 @@ module Engine
           remove_corporations_if_no_home(action.city) if @phase.status.include?('closable_corporations')
         when Action::Par
           rereserve_home_station(action.corporation) if @phase.status.include?('closable_corporations')
+          remove_par_group_ability(action.corporation)
         end
+      end
+
+      def remove_par_group_ability(corporation)
+        par_group = abilities(corporation, :description)
+
+        corporation.remove_ability(par_group) if par_group
       end
 
       def remove_corporations_if_no_home(city)
