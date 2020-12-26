@@ -25,7 +25,7 @@ module View
         }
 
         children = []
-  
+
         @corporation.shells.each do |shell|
           children << h(:h3, h3_props, "#{shell.name} Shell Trains")
           children << h(:div, div_props, shell_trains(shell.trains))
@@ -44,9 +44,9 @@ module View
 
       def shell_trains(trains)
         return [h(:div, 'Empty')] if trains.empty?
-        
+
         trains.flat_map do |train|
-          swap_train = lambda { process_action(Engine::Action::SwapTrain.new(@corporation, train: train)) }
+          swap_train = -> { process_action(Engine::Action::SwapTrain.new(@corporation, train: train)) }
 
           [h(:div, train.name),
            h('button.no_margin', { on: { click: swap_train } }, 'Swap')]

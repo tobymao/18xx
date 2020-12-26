@@ -255,7 +255,7 @@ module Engine
           @target.remove_ability(ability)
         end
 
-        # TODO return coal token if has two
+        # TODO: return coal token if has two
 
         system
       end
@@ -385,7 +385,7 @@ module Engine
       def train_limit(entity)
         limit = super
         limit *= 2 if entity.system?
-     
+
         limit
       end
 

@@ -8,7 +8,7 @@ module Engine
       class SwapTrain < Base
         def actions(entity)
           actions = []
-          return actions if !entity.system? || !entity.trains.any?
+          return actions if !entity.system? || entity.trains.none?
 
           actions << 'swap_train'
           actions << 'pass' unless over_train_limit?(entity)
@@ -31,7 +31,7 @@ module Engine
         def process_swap_train(action)
           train = action.train
           entity = action.entity
-          @game.game_error("Only systems can swap trains") unless entity.system?
+          @game.game_error('Only systems can swap trains') unless entity.system?
           @game.game_error("Train not owned by #{action.entity.name}") unless entity.shells.include?(train.owner)
 
           new_corp = entity.shells.find { |shell| !shell.trains.include?(train) }
