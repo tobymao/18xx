@@ -350,7 +350,7 @@ module Engine
 			"name": "Grand Junction and Grand River Valley Railway",
 			"value": 40,
 			"revenue": 10,
-			"desc": "An owning Corporation may upgrade a yellow town to a green city in additional to its normal tile lay at any time during its turn. Action closes the company or closes on purchase of “5” train.",
+			"desc": "An owning Corporation may upgrade a yellow town to a green city in additional to its normal tile lay at any time during its turn. This tile does not need to be reachable by the corporation's trains. Action closes the company or closes on purchase of “5” train.",
 			"abilities": [
 				{
 					"type": "tile_lay",
@@ -424,7 +424,7 @@ module Engine
 			"name": "Laramie, North Park and Western Railroad",
 			"value": 70,
 			"revenue": 15,
-			"desc": "When laying track tiles, an owning Corporation may lay an extra tile at no cost in addition to its normal tile lay. Action closes the company or closes on purchase of “5” train.",
+			"desc": "When laying track tiles, an owning Corporation may lay an extra yellow tile at no cost in addition to its normal tile lay. Action closes the company or closes on purchase of “5” train.",
 			"abilities": [
 				{
 					"type": "tile_lay",
