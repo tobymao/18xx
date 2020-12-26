@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_18_co'
+require_relative '../g_18_co/share_pool'
 require_relative '../g_18_co/stock_market'
 require_relative 'base'
 require_relative 'company_price_50_to_150_percent'
@@ -141,6 +142,10 @@ module Engine
         train = @depot.upcoming[0]
         train.buyable = false
         dsng.buy_train(train, :free)
+      end
+
+      def init_share_pool
+        Engine::G18CO::SharePool.new(self)
       end
 
       def init_stock_market

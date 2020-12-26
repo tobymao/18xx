@@ -164,10 +164,10 @@ module Engine
       return unless allow_president_change
 
       # check if we need to change presidency
-      max_shares = corporation.player_share_holders.values.max
+      max_shares = corporation.corporate_player_share_holders.values.max
 
       majority_share_holders = corporation
-        .player_share_holders
+        .corporate_player_share_holders
         .select { |_, p| p == max_shares }
         .keys
 
@@ -207,8 +207,14 @@ module Engine
 
       num_shares = presidents_share.percent / corporation.share_percent
 
-      possible_reorder(president.shares_of(corporation)).take(num_shares).each { |s| move_share(s, swap_to) }
+      totaling_num(possible_reorder(president.shares_of(corporation)), num_shares).each do |s|
+        move_share(s, swap_to)
+      end
       move_share(presidents_share, president)
+    end
+
+    def totaling_num(shares, num_shares)
+      shares.take(num_shares)
     end
 
     def possible_reorder(shares)
@@ -219,6 +225,7 @@ module Engine
 
     def distance(player_a, player_b)
       return 0 if !player_a || !player_b
+      return @game.players.size if player_b.corporation?
 
       entities = @game.players.reject(&:bankrupt)
       a = entities.find_index(player_a)
