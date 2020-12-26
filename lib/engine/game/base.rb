@@ -1279,12 +1279,8 @@ module Engine
         active_abilities
       end
 
-      def over_train_limit?(entity)
-        if OBSOLETE_TRAINS_COUNT_FOR_LIMIT
-          entity.trains
-        else
-          entity.trains.reject(&:obsolete)
-        end.size > @phase.train_limit(entity)
+      def train_limit(entity)
+        @phase.train_limit(entity)
       end
 
       private
