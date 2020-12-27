@@ -32,17 +32,21 @@ module Engine
           train = action.train
           entity = action.entity
           @game.game_error('Only systems can swap trains') unless entity.system?
-          @game.game_error("Train not owned by #{action.entity.name}") unless entity.shells.include?(train.owner)
+          @game.game_error("Train not owned by #{action.entity.name}") unless train.owner == entity
 
-          new_corp = entity.shells.find { |shell| !shell.trains.include?(train) }
-          @log << "#{entity.name} system swaps #{train.name} from #{train.owner.name} shell to #{new_corp.name} shell"
-          new_corp.buy_train(train, :free)
+          current_shell = entity.shells.find { |shell| shell.trains.include?(train) }
+          current_shell.trains.delete(train)
+          
+          new_shell = entity.shells.find { |shell| shell != current_shell }
+          new_shell.trains << train
+          
+          @log << "#{entity.name} swaps #{train.name} from #{current_shell.name} shell to #{new_shell.name} shell"
 
           @round.ignore_train_limit = true
         end
 
         def over_train_limit?(entity)
-          entity.shells.any? { |shell| shell.trains.size > @game.train_limit(shell) }
+          entity.shells.any? { |shell| shell.trains.size > @game.train_limit(entity) }
         end
       end
     end

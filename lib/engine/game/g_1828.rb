@@ -4,6 +4,7 @@ require_relative '../config/game/g_1828'
 require_relative 'base'
 require_relative '../g_1828/stock_market'
 require_relative '../g_1828/system'
+require_relative '../g_1828/shell'
 
 module Engine
   module Game
@@ -77,7 +78,7 @@ module Engine
 
       def stock_round
         Round::G1828::Stock.new(self, [
-          Step::DiscardTrain,
+          Step::G1828::DiscardTrain,
           Step::G1828::RemoveTokens,
           Step::G1828::Merger,
           Step::Exchange,
@@ -100,7 +101,7 @@ module Engine
           Step::G1828::Route,
           Step::G1828::Dividend,
           Step::G1828::SwapTrain,
-          Step::BuyTrain,
+          Step::G1828::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
@@ -147,8 +148,9 @@ module Engine
       def tile_lays(entity)
         tile_lays = super
         tile_lays += [SYSTEM_EXTRA_TILE_LAY] if entity.system?
-        tile_lays += [CORP_EXTRA_TILE_LAY] if EXTRA_TILE_LAY_CORPS.include?(entity.name)
-        tile_lays += [CORP_EXTRA_TILE_LAY] if entity.system? && EXTRA_TILE_LAY_CORPS.include?(entity.shells.last.name)
+        (entity.system? ? entity.corporations.map(&:name) : [entity.name]).each do |corp_name|
+          tile_lays += [CORP_EXTRA_TILE_LAY] if EXTRA_TILE_LAY_CORPS.include?(corp_name)
+        end
 
         tile_lays
       end
@@ -235,27 +237,45 @@ module Engine
         system = init_corporation(@stock_market, system_data)
         system.extend(Engine::G1828::System)
         system.name = corporations.first.name
-        corporations.each { |corp| system.shells << corp }
 
         @corporations << system
         @_corporations[system.id] = system
         system.shares.each { |share| @_shares[share.id] = share }
 
-        corporations.each { |corp| corp.spend(corp.cash, system) if corp.cash.positive? }
         create_system_tokens(system, corporations)
+
+        # Make sure the system will not own two coal markers
+        if corporations.count { |corp| coal_marker?(corp) } == 2
+          remove_coal_marker(corporations.last)
+          add_coal_marker_to_va_coalfields
+          @log << "#{system.name} cannot have two coal markers, returning one to Virginia Coalfields"
+        end
+
+        corporations.each do |corporation|
+          system.corporations << corporation
+          corporation.spend(corporation.cash, system) if corporation.cash.positive?
+          
+          shell = Engine::G1828::Shell.new(corporation.name, system)
+          corporation.trains.dup.each do |train| 
+            system.buy_train(train, :free)
+            shell.trains << train
+          end
+          system.shells << shell
+
+          corporation.companies.each do |company|
+            company.owner = system
+            system.companies << company
+          end
+          corporation.companies.clear
+        
+          corporation.all_abilities.each do |ability|
+            system.add_ability(ability)
+            @target.remove_ability(ability)
+          end
+        end
 
         @stock_market.set_par(system, system_market_price(corporations))
         system.ipoed = true
-
-        corporations.map(&:companies).flatten.each { |company| system.companies << company }
-        corporations.each { |corp| corp.companies.clear }
-
-        corporations.map(&:all_abilities).flatten.each do |ability|
-          system.add_ability(ability)
-          @target.remove_ability(ability)
-        end
-
-        # TODO: return coal token if has two
 
         system
       end
@@ -356,6 +376,11 @@ module Engine
         end
       end
 
+      def remove_coal_marker(entity)
+        coal = entity.all_abilities.find { |ability| ability.description == @coal_marker_ability.description }
+        entity.remove_ability(coal)
+      end
+
       def add_coal_marker_to_va_coalfields
         hex_by_id(VA_COALFIELDS_HEX).tile.icons << Engine::Part::Icon.new('1828/coal', 'coal')
       end
@@ -380,13 +405,6 @@ module Engine
         return @graph.connected_nodes(entity)[city] if entity.id == 'C&P'
 
         super
-      end
-
-      def train_limit(entity)
-        limit = super
-        limit *= 2 if entity.system?
-
-        limit
       end
 
       private
@@ -422,11 +440,11 @@ module Engine
       end
 
       def place_home_token(corporation)
-        if corporation.system? && !corporation.tokens.first&.used && !corporation.tokens.first&.used
-          corporation.shells.each do |shell|
-            token = Engine::Token.new(shell)
-            shell.tokens << token
-            place_home_token(shell)
+        if corporation.system? && !corporation.tokens.first&.used
+          corporation.corporations.each do |c|
+            token = Engine::Token.new(c)
+            c.tokens << token
+            place_home_token(c)
             token.swap!(corporation.tokens.find { |t| t.price.zero? && !t.used }, check_tokenable: false)
           end
         else

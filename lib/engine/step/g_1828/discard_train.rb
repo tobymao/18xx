@@ -15,7 +15,13 @@ module Engine
         def crowded_corps
           return [] if @round.ignore_train_limit
 
-          super.reject(&:system?)
+          super.reject(&:system?).concat(crowded_systems)
+        end
+
+        def crowded_systems
+          @game.corporations.select do |c|
+            c.system? && c.shells.any? { |shell| shell.trains.size > @game.train_limit(c) }
+          end
         end
       end
     end
