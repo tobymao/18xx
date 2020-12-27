@@ -1058,7 +1058,7 @@ module Engine
 
         # after adding requested halts, pick highest revenue towns
         towns = visits.select { |node| node.town? && !node.halt? }
-        num_towns = use_all_towns? ? towns.size : [th_allowance, towns.size].min
+        num_towns = option_no_skip_towns? ? towns.size : [th_allowance, towns.size].min
         if num_towns.positive?
           stops.concat(towns.sort_by { |t| t.uniq_revenues.first }.reverse.take(num_towns))
           th_allowance -= num_towns
