@@ -88,7 +88,9 @@ game config/code:
     - **sticky** - `1` indicates the icon should remain visible when a tile
       upgrade is placed on this hex
     - **blocks_lay** - indicates this tile cannot be laid normally
-  but can only be laid by special ability, such as a private company's ability.
+      but can only be laid by special ability, such as a private company's ability.
+- **frame**
+    - **color** - *required* - the color of the frame
 
 #### Town/City/Offboard sub parts
 
