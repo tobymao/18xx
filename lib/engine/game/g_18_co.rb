@@ -533,6 +533,13 @@ module Engine
       def entity_can_use_company?(entity, company)
         entity.corporation? && entity == company.owner
       end
+
+      def player_value(player)
+        value = player.value
+        return value unless drgr&.owner == player
+
+        value - drgr.value
+      end
     end
   end
 end
