@@ -93,6 +93,9 @@ module Engine
       # Does the cert limit decrease when a player becomes bankrupt?
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = false
       CERT_LIMIT_INCLUDES_PRIVATES = true
+      # Does the cert limit care about how many players started the game or how
+      # many remain?
+      CERT_LIMIT_COUNTS_BANKRUPTED = false
 
       MULTIPLE_BUY_TYPES = %i[multiple_buy].freeze
 
@@ -1326,7 +1329,10 @@ module Engine
 
       def init_cert_limit
         cert_limit = self.class::CERT_LIMIT
-        cert_limit = cert_limit[players.reject(&:bankrupt).length] if cert_limit.is_a?(Hash)
+        if cert_limit.is_a?(Hash)
+          player_count = (self.class::CERT_LIMIT_COUNTS_BANKRUPTED ? players : players.reject(&:bankrupt)).size
+          cert_limit = cert_limit[player_count]
+        end
         cert_limit = cert_limit.reject { |k, _| k.to_i < @corporations.size }
                        .min_by(&:first)&.last || cert_limit.first.last if cert_limit.is_a?(Hash)
         cert_limit || @cert_limit

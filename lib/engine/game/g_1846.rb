@@ -36,6 +36,7 @@ module Engine
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
       HOME_TOKEN_TIMING = :float
       MUST_BUY_TRAIN = :always
+      CERT_LIMIT_COUNTS_BANKRUPTED = true
 
       ORANGE_GROUP = [
         'Lake Shore Line',
