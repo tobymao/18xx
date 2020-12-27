@@ -53,6 +53,12 @@ module Engine
         'Player 2' => 508,
         'Player 3' => 0,
       },
+      19_962 => {
+        'EAB' => 1828,
+        'DrAwesome' => 1910,
+        'Random Guy' => 1918,
+        'Talbatross' => 0,
+      },
     },
     GAMES_BY_TITLE['1846 2p Variant'] => {
       # This fixture tests all of the following behaviors, and should be
@@ -65,6 +71,10 @@ module Engine
       'hs_pzdxtics_1601680033' => {
         'A' => 4312,
         'B' => 2264,
+      },
+      11_098 => {
+        'yrael (GMT +0)' => 7331,
+        'Claramity' => 7624,
       },
     },
     GAMES_BY_TITLE['18 Los Angeles'] => {
