@@ -18,6 +18,13 @@ module Engine
         # we want the bundle with the most shares, as higher percent in fewer shares in more valuable
         matching_bundles.max_by(&:size)
       end
+
+      def distance(entity_a, entity_b)
+        return 0 if !entity_a || !entity_b
+        return @game.players.size + 485 - entity_b.share_price.price if entity_b.corporation?
+
+        super
+      end
     end
   end
 end

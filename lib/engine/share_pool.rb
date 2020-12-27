@@ -225,7 +225,6 @@ module Engine
 
     def distance(player_a, player_b)
       return 0 if !player_a || !player_b
-      return @game.players.size if player_b.corporation?
 
       entities = @game.players.reject(&:bankrupt)
       a = entities.find_index(player_a)
