@@ -17,7 +17,7 @@ module View
 
         children = []
 
-        verb = @must_buy_train ? "must" : "may"
+        verb = @must_buy_train ? 'must' : 'may'
 
         cash = @corporation.cash + player.cash
         share_funds_required = @depot.min_depot_price - cash
@@ -80,7 +80,7 @@ module View
 
         @must_buy_train = step.must_buy_train?(@corporation)
         @should_buy_train = step.should_buy_train?(@corporation)
-        
+
         @president_may_contribute = step.president_may_contribute?(@corporation, @active_shell)
 
         h3_props = {
@@ -96,10 +96,11 @@ module View
             alignItems: 'center',
           },
         }
-        
+
         children << render_shells
 
-        if (step.can_buy_train?(@corporation, @active_shell) && step.room?(@corporation, @active_shell)) || @must_buy_train
+        if (step.can_buy_train?(@corporation, @active_shell) && step.room?(@corporation, @active_shell)) ||
+           @must_buy_train
           children << h(:div, "#{@corporation.name} must buy an available train") if @must_buy_train
           if @should_buy_train == :liquidation
             children << h(:div, "#{@corporation.name} must buy a train or it will be liquidated")
@@ -183,7 +184,7 @@ module View
                 shell: @active_shell,
               ))
             end
-            
+
             source = @depot.discarded.include?(train) ? 'The Discard' : 'The Depot'
 
             [h(:div, name),
@@ -308,8 +309,8 @@ module View
         @active_shell = @corporation.shells.first if !@active_shell || @active_shell.system != @corporation
 
         buttons = @corporation.shells.flat_map do |shell|
-          button_props = { 
-            on: { 
+          button_props = {
+            on: {
               click: -> { store(:active_shell, shell) },
             },
           }
@@ -317,7 +318,7 @@ module View
 
           h(:button, button_props, "#{shell.name} shell")
         end
-        
+
         button_div_props = {
           style: {
             display: 'grid',

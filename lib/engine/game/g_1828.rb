@@ -254,9 +254,9 @@ module Engine
         corporations.each do |corporation|
           system.corporations << corporation
           corporation.spend(corporation.cash, system) if corporation.cash.positive?
-          
+
           shell = Engine::G1828::Shell.new(corporation.name, system)
-          corporation.trains.dup.each do |train| 
+          corporation.trains.dup.each do |train|
             system.buy_train(train, :free)
             shell.trains << train
           end
@@ -267,7 +267,7 @@ module Engine
             system.companies << company
           end
           corporation.companies.clear
-        
+
           corporation.all_abilities.each do |ability|
             system.add_ability(ability)
             @target.remove_ability(ability)

@@ -36,10 +36,10 @@ module Engine
 
           current_shell = entity.shells.find { |shell| shell.trains.include?(train) }
           current_shell.trains.delete(train)
-          
+
           new_shell = entity.shells.find { |shell| shell != current_shell }
           new_shell.trains << train
-          
+
           @log << "#{entity.name} swaps #{train.name} from #{current_shell.name} shell to #{new_shell.name} shell"
 
           @round.ignore_train_limit = true

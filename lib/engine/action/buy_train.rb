@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
-#require_relative '../g_1828/system'
+# require_relative '../g_1828/system'
 
 module Engine
   module Action
@@ -41,7 +41,7 @@ module Engine
         return nil unless name
 
         game.corporations.select(&:system?).each do |system|
-          if (shell = system.shells.find { |shell| shell.name == name })
+          if (shell = system.shells.find { |s| s.name == name })
             return shell
           end
         end
