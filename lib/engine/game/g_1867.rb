@@ -233,7 +233,7 @@ module Engine
 
           if @cn_reservations.include?(city.hex.id)
             @cn_reservations.delete(city.hex.id)
-          elsif @cn_corporation.tokens.count(&:used) == @cn_reservations.size
+          elsif @cn_corporation.tokens.count { |t| !t.used } == @cn_reservations.size
             # Don't place if only reservations are left
             next
           end
