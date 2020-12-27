@@ -86,6 +86,9 @@ module Engine
         { sym: :five_shorts,
           short_name: '5 Shorts',
           desc: 'Only allow 5 shorts on 10 share corporations' },
+        { sym: :modern_trains,
+          short_name: 'Modern Trains',
+          desc: '7 & 8 trains earn $10 & $20 respectively for each station marker of the corporation' },
       ].freeze
 
       include InterestOnLoans
@@ -103,6 +106,10 @@ module Engine
 
       def option_five_shorts?
         @optional_rules&.include?(:five_shorts)
+      end
+
+      def option_modern_trains?
+        @optional_rules&.include?(:modern_trains)
       end
 
       def ipo_name(_entity = nil)
@@ -470,6 +477,15 @@ module Engine
         mine = 'mine'
         if route.hexes.first.assigned?(mine) || route.hexes.last.assigned?(mine)
           game_error('Route cannot start or end with a mine')
+        end
+
+        if option_modern_trains? && [7, 8].include?(route.train.distance)
+          per_token = route.train.distance == 7 ? 10 : 20
+          revenue += stops.sum do |stop|
+            next per_token if stop.city? && stop.tokened_by?(route.train.owner)
+
+            0
+          end
         end
 
         revenue += 10 * route.all_hexes.count { |hex| hex.assigned?(mine) }
