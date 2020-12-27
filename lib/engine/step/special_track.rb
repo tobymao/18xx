@@ -31,6 +31,12 @@ module Engine
       end
 
       def process_lay_tile(action)
+        if @company && (@company != action.entity) &&
+           (ability = @game.abilities(@company, :tile_lay, time: 'track')) &&
+           ability.must_lay_together && ability.must_lay_all
+          @game.game_error("Cannot interrupt #{@company.name}'s tile lays")
+        end
+
         ability = tile_lay_abilities(action.entity)
         lay_tile(action, spender: action.entity.owner)
         check_connect(action, ability)

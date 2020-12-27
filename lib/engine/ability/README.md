@@ -182,13 +182,16 @@ normal tile lay actions.
   labels and city count. Default true.
 - `connect`: If true, and `count` is greater than 1, tiles laid must
   connect to each other. Default true.
-- `blocks`: If true and `count` is greater than 1, all tile lays must
-  be performed at once.
+- `blocks`: If true and `when` is `sold`, then the step
+  `TrackLayWhenCompanySold` will require a tile lay. Default false.
 - `reachable`: If true, when tile layed, a check is done if one of the
   controlling corporation's station tokens are reachable; if not a game
   error is triggered. Default false.
-- `must_lay_together`: If true, all the tile lays must happen at the same
-  time. Default false.
+- `must_lay_together`: If true and `count` is greater than 1, all the tile lays
+  must happen at the same time. Default false.
+- `must_lay_all`: If true and `count` is greater than 1 and `must_lay_together`
+  is true, all the tile lays must be used; if false, then some tile lays may be
+  forfeited. Default false.
 
 ## train_buy
 
