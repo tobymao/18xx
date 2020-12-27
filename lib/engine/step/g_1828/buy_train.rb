@@ -19,7 +19,7 @@ module Engine
 
         def room?(entity, shell = nil)
           return super unless entity.system?
-          return shell.trains.size < @game.train_limit(entity) if shell
+          return shell.trains.size < @game.phase.train_limit(entity) if shell
 
           shells_with_room(entity).any?
         end
@@ -34,7 +34,7 @@ module Engine
         def shells_with_room(entity)
           return [] unless entity.system?
 
-          entity.shells.select { |shell| shell.trains.size < @game.train_limit(entity) }
+          entity.shells.select { |shell| shell.trains.size < @game.phase.train_limit(entity) }
         end
 
         def can_buy_normal?(entity)

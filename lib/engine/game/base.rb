@@ -1311,10 +1311,6 @@ module Engine
         active_abilities
       end
 
-      def train_limit(entity)
-        @phase.train_limit(entity)
-      end
-
       def entity_can_use_company?(_entity, _company)
         true
       end

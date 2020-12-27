@@ -38,7 +38,7 @@ module Engine
             c.trains
           else
             c.trains.reject(&:obsolete)
-          end.size > @game.train_limit(c)
+          end.size > @game.phase.train_limit(c)
         end
       end
     end
