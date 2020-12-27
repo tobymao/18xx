@@ -101,6 +101,10 @@ module Engine
         false
       end
 
+      def frame?
+        false
+      end
+
       def partition?
         false
       end

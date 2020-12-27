@@ -128,7 +128,7 @@ module Engine
           # rounded down between 100-200 (200 can be ignored since max price of minor) between
           min = @merging.map { |c| c.share_price.price }.min
           max = @merging.map { |c| c.share_price.price }.max
-          merged_par = @game.find_share_price([100, (max + min) / 2].max)
+          merged_par = @game.find_share_price([100, (max + min)].max)
 
           # Players who owned shares are eligable to buy shares unlike merger
           owners = @merging.map(&:owner)
@@ -149,7 +149,6 @@ module Engine
           # Transfer assets starting with the initiator
           @merging.sort_by { |m| players.index(m.owner) }.each do |corporation|
             owner = corporation.owner
-            @game.close_corporation(corporation)
 
             share = target.shares.last
 
@@ -166,7 +165,7 @@ module Engine
             move_tokens(corporation, target)
 
             receiving = move_assets(corporation, target)
-
+            @game.close_corporation(corporation)
             @log << "#{corporation.name} merges into #{target.name} receiving #{receiving.join(', ')}"
             @round.entities.delete(corporation)
           end
@@ -177,12 +176,20 @@ module Engine
             @round.corporations_removing_tokens = [target] + @merging
           else
             tokens = move_tokens_to_surviving(target, @merging)
-            @log << "#{target.name} has tokens (#{tokens.size}: hexes #{tokens.compact}) after merger"
+
+            # Add the $40 token back
+            if target.tokens.size < 3
+              new_token = Engine::Token.new(target, price: 40)
+              target.tokens << new_token
+            end
+
+            @log << "#{target.name} has tokens (#{target.tokens.size}: hexes #{tokens.compact}) after merger"
           end
 
           # Deleting the entity changes turn order, restore it.
           @round.goto_entity!(target) unless @round.entities.empty?
 
+          @merging = nil
           @round.converted = target
 
           @round.share_dealing_players = players
@@ -256,7 +263,7 @@ module Engine
             available.concat(corporations - mergeable)
           end
 
-          available.uniq.reject { |c| c.type == :major || owner_at_limit.include?(c.owner) }
+          available.uniq.reject { |c| c.type != :minor || owner_at_limit.include?(c.owner) }
         end
 
         def mergeable(corporation)

@@ -38,18 +38,13 @@ module Engine
       SELL_MOVEMENT = :left_block_pres
       ALL_COMPANIES_ASSIGNABLE = true
       SELL_AFTER = :operate
-      DEV_STAGE = :prealpha
+      DEV_STAGE = :alpha
       SELL_BUY_ORDER = :sell_buy
-
-      ASSIGNMENT_TOKENS = {
-        'bridge' => '/icons/1817/bridge_token.svg',
-        'mine' => '/icons/1817/mine_token.svg',
-      }.freeze
 
       GAME_END_CHECK = { bank: :current_or, custom: :one_more_full_or_set }.freeze
 
       HEX_WITH_O_LABEL = %w[J12].freeze
-      HEX_UPGRADES_FOR_O = %w[201 202 203 207 208 622 623 801 X8].freeze
+      HEX_UPGRADES_FOR_O = %w[201 202 203 207 208 621 622 623 801 X8].freeze
 
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
 
@@ -81,6 +76,7 @@ module Engine
       CN_RESERVATIONS = ['L12'].freeze
       GREEN_CORPORATIONS = %w[BBG LPS QLS SLA TGB THB].freeze
       include InterestOnLoans
+      include CompanyPriceUpToFace
 
       # Minors are done as corporations with a size of 2
 
@@ -237,7 +233,7 @@ module Engine
 
           if @cn_reservations.include?(city.hex.id)
             @cn_reservations.delete(city.hex.id)
-          elsif @cn_corporation.tokens.count(&:used) == @cn_reservations.size
+          elsif @cn_corporation.tokens.count { |t| !t.used } == @cn_reservations.size
             # Don't place if only reservations are left
             next
           end
@@ -435,6 +431,8 @@ module Engine
       end
 
       def setup
+        setup_company_price_up_to_face
+
         # Hide the special 3 company
         @hidden_company = company_by_id('3')
         @companies.delete(@hidden_company)

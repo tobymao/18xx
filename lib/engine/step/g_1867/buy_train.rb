@@ -22,6 +22,11 @@ module Engine
           current_entity.buying_power
         end
 
+        def pass!
+          @game.nationalize!(current_entity) if current_entity.trains.none?
+          super
+        end
+
         def must_buy_train?(entity)
           # Can afford one by taking out max loans
           super && @game.buying_power(entity, full: true) >= needed_cash(entity)

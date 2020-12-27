@@ -141,8 +141,10 @@ module Engine
       @share_holders ||= Hash.new(0)
     end
 
-    def player_share_holders
-      share_holders.select { |s_h, _| s_h.player? }
+    def player_share_holders(corporate: false)
+      share_holders.select do |s_h, _|
+        s_h.player? || (corporate && s_h.corporation? && s_h != self)
+      end
     end
 
     def corporate_share_holders
