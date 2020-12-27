@@ -173,6 +173,71 @@ module Engine
       "count": 2,
       "color": "green",
       "code": "town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;frame=color:purple"
+    },
+    "8866": {
+      "count": 2,
+      "color": "green",
+      "code": "town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;frame=color:purple"
+    },
+    "14": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:20,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple"
+    },
+    "887": {
+      "count": 4,
+      "color": "green",
+      "code": "town=revenue:20;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0;path=a:2,b:_0;frame=color:purple"
+    },
+    "15": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;frame=color:purple"
+    },
+    "888": {
+      "count": 4,
+      "color": "green",
+      "code": "town=revenue:20;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0;path=a:2,b:_0;frame=color:purple"
+    },
+    "889": {
+      "count": 2,
+      "color": "brown",
+      "code": "town=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple"
+    },
+    "611": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;frame=color:purple"
+    },
+    "216": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y;frame=color:purple"
+    },
+    "8894": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:60,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO;frame=color:purple"
+    },
+    "8895": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO;frame=color:purple"
+    },
+    "8896": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=OO;frame=color:purple"
+    },
+    "8857": {
+      "count": 1,
+      "color": "gray",
+      "code": "city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Y;frame=color:purple"
+    },
+    "595": {
+      "count": 2,
+      "color": "gray",
+      "code": "city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple"
     }
   },
   "market": [
