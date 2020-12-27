@@ -44,7 +44,7 @@ module Engine
       GAME_END_CHECK = { bank: :current_or, custom: :one_more_full_or_set }.freeze
 
       HEX_WITH_O_LABEL = %w[J12].freeze
-      HEX_UPGRADES_FOR_O = %w[201 202 203 207 208 622 623 801 X8].freeze
+      HEX_UPGRADES_FOR_O = %w[201 202 203 207 208 621 622 623 801 X8].freeze
 
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
 
