@@ -41,6 +41,7 @@ module Engine
       CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = true
       CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
       DISCARDED_TRAIN_DISCOUNT = 50
+      MAX_SHARE_VALUE = 485
 
       # Two tiles can be laid, only one upgrade
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze

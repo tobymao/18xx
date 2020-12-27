@@ -5,7 +5,11 @@ require_relative '../share_pool'
 module Engine
   module G18CO
     class SharePool < SharePool
-      def totaling_num(shares, num_shares)
+      def presidency_check_shares(corporation)
+        corporation.player_share_holders(corporate: true)
+      end
+
+      def shares_for_presidency_swap(shares, num_shares)
         return [] if shares.empty?
         return [] unless num_shares
         return shares if shares.one?
@@ -21,7 +25,7 @@ module Engine
 
       def distance(entity_a, entity_b)
         return 0 if !entity_a || !entity_b
-        return @game.players.size + 485 - entity_b.share_price.price if entity_b.corporation?
+        return @game.players.size + @game.class::MAX_SHARE_VALUE - entity_b.share_price.price if entity_b.corporation?
 
         super
       end

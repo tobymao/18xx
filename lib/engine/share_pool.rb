@@ -164,12 +164,9 @@ module Engine
       return unless allow_president_change
 
       # check if we need to change presidency
-      max_shares = corporation.corporate_player_share_holders.values.max
+      max_shares = presidency_check_shares(corporation).values.max
 
-      majority_share_holders = corporation
-        .corporate_player_share_holders
-        .select { |_, p| p == max_shares }
-        .keys
+      majority_share_holders = presidency_check_shares(corporation).select { |_, p| p == max_shares }.keys
 
       return if majority_share_holders.any? { |player| player == previous_president }
 
@@ -207,13 +204,17 @@ module Engine
 
       num_shares = presidents_share.percent / corporation.share_percent
 
-      totaling_num(possible_reorder(president.shares_of(corporation)), num_shares).each do |s|
+      shares_for_presidency_swap(possible_reorder(president.shares_of(corporation)), num_shares).each do |s|
         move_share(s, swap_to)
       end
       move_share(presidents_share, president)
     end
 
-    def totaling_num(shares, num_shares)
+    def presidency_check_shares(corporation)
+      corporation.player_share_holders
+    end
+
+    def shares_for_presidency_swap(shares, num_shares)
       shares.take(num_shares)
     end
 
