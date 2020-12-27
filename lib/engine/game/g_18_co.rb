@@ -462,10 +462,11 @@ module Engine
         was_issued = bundle.owner == bundle.corporation
 
         @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
+        share_drop_num = bundle.num_shares - (swap ? 1 : 0)
 
-        return if !(was_president || was_issued) && bundle.num_shares == 1
+        return if !(was_president || was_issued) && share_drop_num == 1
 
-        bundle.num_shares.times { @stock_market.move_down(corporation) }
+        share_drop_num.times { @stock_market.move_down(corporation) }
 
         log_share_price(corporation, price) if self.class::SELL_MOVEMENT != :none
       end
@@ -520,6 +521,20 @@ module Engine
 
         bundles_for_corporation(share_pool, entity)
           .reject { |bundle| entity.cash < bundle.price }
+      end
+
+      def all_bundles_for_corporation(share_holder, corporation, shares: nil)
+        return [] unless corporation.ipoed
+
+        shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.price] }
+
+        return [] if shares.empty?
+
+        bundles = (1..shares.size).flat_map do |n|
+          shares.combination(n).to_a.map { |ss| Engine::ShareBundle.new(ss) }
+        end
+
+        bundles.uniq(&:percent).sort_by(&:percent)
       end
 
       def purchasable_companies(entity = nil)
