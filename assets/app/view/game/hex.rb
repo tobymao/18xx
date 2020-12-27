@@ -62,9 +62,9 @@ module View
         children << h(TriangularGrid) if Lib::Params['grid']
         children << h(TileUnavailable, unavailable: @unavailable, layout: @hex.layout) if @unavailable
 
-        if @tile&.frame && @tile&.frame.color
+        if (color = @tile&.frame&.color)
           attrs = {
-            stroke: @tile&.frame.color,
+            stroke: color,
             'stroke-width': FRAME_COLOR_STROKE_WIDTH,
             points: FRAME_COLOR_POINTS,
           }
