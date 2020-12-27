@@ -242,8 +242,8 @@ describe 'Assets' do
         'New York, Susquehanna and Western Railway']],
       ['18_chesapeake', 1905, 166, 'blocking_special_track',
        ['Lay Track for Columbia - Philadelphia Railroad']],
-      ['18_co', 19_958, 709, 'dividend',
-       ['18CO: Operating Round 7.2 (of 2) - Game Over - Bank Broken']],
+      ['18_co', 20_125, 605, 'end_game',
+       ['18CO: Operating Round 5.1 (of 2) - Game Over']],
       ['1860', '19_354', nil, 'endgame',
        ['1860: Operating Round 8.4 (Nationalization) - Game Over - Nationalization complete']],
     ].freeze
