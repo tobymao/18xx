@@ -38,13 +38,8 @@ module Engine
       SELL_MOVEMENT = :left_block_pres
       ALL_COMPANIES_ASSIGNABLE = true
       SELL_AFTER = :operate
-      DEV_STAGE = :prealpha
+      DEV_STAGE = :alpha
       SELL_BUY_ORDER = :sell_buy
-
-      ASSIGNMENT_TOKENS = {
-        'bridge' => '/icons/1817/bridge_token.svg',
-        'mine' => '/icons/1817/mine_token.svg',
-      }.freeze
 
       GAME_END_CHECK = { bank: :current_or, custom: :one_more_full_or_set }.freeze
 
