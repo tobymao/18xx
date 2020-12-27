@@ -14,7 +14,6 @@ module Engine
       def frame?
         true
       end
-
     end
   end
 end
