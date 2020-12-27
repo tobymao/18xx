@@ -234,7 +234,7 @@ module Engine
     GAMES_BY_TITLE['1867'] => {
       # Pre-alpha spec
       'hs_ahjzadkh_19792' => {
-        'Alice' => 655,
+        'Alice' => 610,
         'scottredracecar2' => 615,
         'JenFreeman' => 590,
         'ChrisRericha' => 425,

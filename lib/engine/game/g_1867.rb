@@ -76,6 +76,7 @@ module Engine
       CN_RESERVATIONS = ['L12'].freeze
       GREEN_CORPORATIONS = %w[BBG LPS QLS SLA TGB THB].freeze
       include InterestOnLoans
+      include CompanyPriceUpToFace
 
       # Minors are done as corporations with a size of 2
 
@@ -430,6 +431,8 @@ module Engine
       end
 
       def setup
+        setup_company_price_up_to_face
+
         # Hide the special 3 company
         @hidden_company = company_by_id('3')
         @companies.delete(@hidden_company)
