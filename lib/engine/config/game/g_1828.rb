@@ -536,6 +536,7 @@ module Engine
                     "type": "tile_lay",
                     "owner_type": "corporation",
                     "when": "sold",
+                    "blocks": true,
                     "count": 1,
                     "hexes": [
                         "E7"

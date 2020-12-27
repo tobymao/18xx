@@ -200,8 +200,7 @@ module Engine
              ],
              "tiles": [
              ],
-             "when":"track",
-             "blocks": false
+             "when":"track"
            }
          ]
       },
