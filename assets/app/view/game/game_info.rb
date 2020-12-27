@@ -20,6 +20,8 @@ module View
 
         if @layout == :discarded_trains
           @depot.discarded.empty? ? '' : discarded_trains
+        elsif @layout == :upcoming_trains
+          upcoming_trains_card
         else
           h('div#game_info', render_body)
         end
@@ -110,7 +112,7 @@ module View
 
           h(:tr, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
-            h(:td, phase[:on]),
+            h(:td, Array(phase[:on]).first),
             h(:td, phase[:operating_rounds]),
             h(:td, train_limit),
             h(:td, phase_props, phase_color.capitalize),
@@ -160,7 +162,7 @@ module View
         ]
       end
 
-      def upcoming_trains
+      def rust_obsolete_schedule
         rust_schedule = {}
         obsolete_schedule = {}
         @depot.trains.group_by(&:name).each do |name, trains|
@@ -168,8 +170,63 @@ module View
           rust_schedule[first.rusts_on] = Array(rust_schedule[first.rusts_on]).append(name)
           obsolete_schedule[first.obsolete_on] = Array(obsolete_schedule[first.obsolete_on]).append(name)
         end
+        [rust_schedule, obsolete_schedule]
+      end
+
+      def upcoming_trains_card
+        title_props = {
+          style: {
+            padding: '0.4rem',
+            backgroundColor: color_for(:bg2),
+            color: color_for(:font2),
+          },
+        }
+        body_props = {
+          style: {
+            margin: '0.3rem 0.5rem 0.4rem',
+            display: 'grid',
+            grid: 'auto / 1fr',
+            gap: '0.5rem',
+            justifyItems: 'center',
+          },
+        }
+        info_props = {
+          style: {
+            verticalAlign: 'top',
+          },
+        }
+
+        rust_schedule, obsolete_schedule = rust_obsolete_schedule
+        trs = @game.depot.upcoming.group_by(&:name).map do |name, trains|
+          train = trains.first
+          names_to_prices = train.names_to_prices
+          summary = [h(:div,
+                       "#{trains.size} at " + names_to_prices.values.map { |p| @game.format_currency(p) }.join(', '))]
+          summary << h(:div, ' rusts ' + rust_schedule[name].join(',')) if rust_schedule[name]
+          summary << h(:div, ' obsoletes ' + obsolete_schedule[name].join(',')) if obsolete_schedule[name]
+
+          h(:tr, [
+            h(:td, info_props, names_to_prices.keys.join(', ')),
+            h('td.right', summary),
+])
+        end
+
+        return unless trs.any?
+
+        h('div.bank.card', [
+          h('div.title.nowrap', title_props, [h(:em, 'Upcoming Trains')]),
+          h(:div, body_props, [
+            h(:table, trs),
+          ]),
+        ])
+      end
+
+      def upcoming_trains
+        rust_schedule, obsolete_schedule = rust_obsolete_schedule
 
         show_obsolete_schedule = obsolete_schedule.keys.any?
+        show_upgrade = @depot.upcoming.any?(&:discount)
+        show_available = @depot.upcoming.any?(&:available_on)
         events = []
 
         rows = @depot.upcoming.group_by(&:name).map do |name, trains|
@@ -203,12 +260,11 @@ module View
             h(:td, trains.size),
           ]
           upcoming_train_content << h(:td, obsolete_schedule[name]&.join(', ') || 'None') if show_obsolete_schedule
-          upcoming_train_content.concat([
-            h(:td, rust_schedule[name]&.join(', ') || 'None'),
-            h(:td, discounts&.join(' ')),
-            h(:td, train.available_on),
-            h(:td, event_text.join(', ')),
-])
+          upcoming_train_content << h(:td, rust_schedule[name]&.join(', ') || 'None')
+
+          upcoming_train_content << h(:td, discounts&.join(' ')) if show_upgrade
+          upcoming_train_content << h(:td, train.available_on) if show_available
+          upcoming_train_content << h(:td, event_text.join(', '))
           h(:tr, upcoming_train_content)
         end
 
@@ -237,12 +293,15 @@ module View
         ]
 
         upcoming_train_header << h(:th, 'Phases out') if show_obsolete_schedule
-        upcoming_train_header.concat([
-          h(:th, 'Rusts'),
-          h(:th, 'Upgrade Discount'),
-          h(:th, { attrs: { title: 'Available after purchase of first train of type' } }, 'Available'),
-          h(:th, 'Events'),
-        ])
+        upcoming_train_header << h(:th, 'Rusts')
+        upcoming_train_header << h(:th, 'Upgrade Discount') if show_upgrade
+        if show_available
+          upcoming_train_header << h(:th,
+                                     { attrs: { title: 'Available after purchase of first train of type' } },
+                                     'Available')
+        end
+        upcoming_train_header << h(:th, 'Events')
+
         [
           h(:h3, 'Upcoming Trains'),
           h(:div, { style: { overflowX: 'auto' } }, [

@@ -9,23 +9,17 @@ module Engine
   module Game
     class G1867 < Base
       register_colors(black: '#16190e',
-                      blue: '#165633',
-                      brightGreen: '#0a884b',
-                      brown: '#984573',
-                      gold: '#904098',
-                      gray: '#984d2d',
-                      green: '#bedb86',
-                      lavender: '#e96f2c',
-                      lightBlue: '#bedef3',
-                      lightBrown: '#bec8cc',
-                      lime: '#00afad',
-                      navy: '#003d84',
-                      natural: '#e31f21',
-                      orange: '#f2a847',
-                      pink: '#ee3e80',
+                      blue: '#0189d1',
+                      brown: '#7b352a',
+                      gray: '#7c7b8c',
+                      green: '#3c7b5c',
+                      lightBlue: '#4cb5d2',
+                      lightishBlue: '#0097df',
+                      teal: '#009595',
+                      orange: '#d75500',
+                      magenta: '#d30869',
+                      purple: '#772282',
                       red: '#ef4223',
-                      turquoise: '#0095da',
-                      violet: '#e48329',
                       white: '#fff36b',
                       yellow: '#ffdea8')
 
@@ -63,6 +57,7 @@ module Engine
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
       LIMIT_TOKENS_AFTER_MERGER = 2
+      MINIMUM_MINOR_PRICE = 50
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
                                                                   'Game Ends 3 ORs after purchase/export'\
@@ -82,6 +77,9 @@ module Engine
                                             max_price: 'Maximum price for a minor').freeze
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :orange, par_2: :green).freeze
       CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
+      # A token is reserved for Montreal is reserved for nationalization
+      CN_RESERVATIONS = ['L12'].freeze
+      GREEN_CORPORATIONS = %w[BBG LPS QLS SLA TGB THB].freeze
       include InterestOnLoans
 
       # Minors are done as corporations with a size of 2
@@ -94,6 +92,18 @@ module Engine
 
       def interest_rate
         5 # constant
+      end
+
+      def init_corporations(stock_market)
+        major_min_price = stock_market.par_prices.map(&:price).min
+        minor_min_price = MINIMUM_MINOR_PRICE
+        self.class::CORPORATIONS.map do |corporation|
+          Corporation.new(
+            min_price: corporation[:type] == :major ? major_min_price : minor_min_price,
+            capitalization: self.class::CAPITALIZATION,
+            **corporation.merge(corporation_opts),
+          )
+        end
       end
 
       def interest_owed_for_loans(loans)
@@ -109,8 +119,9 @@ module Engine
       end
 
       def home_token_locations(corporation)
+        # Can only place home token in cities that have no other tokens.
         open_locations = hexes.select do |hex|
-          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) && city.tokens.none? }
         end
 
         return open_locations if corporation.type == :minor
@@ -163,12 +174,17 @@ module Engine
           @loans.any?
       end
 
-      def buying_power(entity, full = false)
+      def buying_power(entity, full: false)
         return entity.cash unless full
         return entity.cash unless entity.corporation?
 
         # Loans are actually generate $5 less than when taken out.
         entity.cash + ((maximum_loans(entity) - entity.loans.size) * @loan_value - 5)
+      end
+
+      def unstarted_corporation_summary
+        minor, major = @corporations.reject(&:ipoed).partition { |c| c.type == :minor }
+        "#{minor.size} minor, #{major.size} major"
       end
 
       def nationalize!(corporation)
@@ -205,6 +221,28 @@ module Engine
 
           @log << "#{corporation.name} settles with shareholders #{format_currency(total_payout)} = "\
                           "#{format_currency(per_share)} (#{receivers})"
+        end
+
+        # Rules say if not enough tokens remain, do it in highest payout then randomly
+        # We'll treat random as in hex order
+        corporation.tokens.select(&:used)
+        .sort_by { |t| [t.city.max_revenue, t.city.hex.id] }
+        .reverse
+        .each do |token|
+          city = token.city
+          token.remove!
+
+          new_token = @cn_corporation.next_token
+          next unless new_token
+
+          if @cn_reservations.include?(city.hex.id)
+            @cn_reservations.delete(city.hex.id)
+          elsif @cn_corporation.tokens.count(&:used) == @cn_reservations.size
+            # Don't place if only reservations are left
+            next
+          end
+
+          city.place_token(@cn_corporation, new_token, check_tokenable: false)
         end
 
         # Close corp (minors close, majors reset)
@@ -358,7 +396,7 @@ module Engine
             new_operating_round
           when Round::Operating
             or_round_finished
-            if phase.name.to_i <= 3
+            if phase.name.to_i < 3 || phase.name.to_i >= 8
               new_or!
             else
               @log << "-- #{round_description('Merger', @round.round_num)} --"
@@ -403,6 +441,7 @@ module Engine
 
         # CN corporation only exists to hold tokens
         @cn_corporation = corporation_by_id('CN')
+        @cn_reservations = CN_RESERVATIONS.dup
         @corporations.delete(@cn_corporation)
 
         @green_tokens = []
@@ -428,9 +467,8 @@ module Engine
         @corporations.select { |c| c.type == :minor }.each { |c| c.max_share_price = max_price }
 
         # Move green and majors out of the normal list
-        green = COLORS[:green]
         @corporations, @future_corporations = @corporations.partition do |corporation|
-          corporation.type == :minor && corporation.color != green
+          corporation.type == :minor && !GREEN_CORPORATIONS.include?(corporation.id)
         end
       end
 

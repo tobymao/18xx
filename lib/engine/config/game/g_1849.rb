@@ -73,7 +73,7 @@ module Engine
     "78": 10,
     "79": 7,
     "644": 2,
-    "545": 2,
+    "645": 2,
     "657": 2,
     "658": 2,
     "659": 2,
@@ -477,12 +477,87 @@ module Engine
   },
   "phases": [
     {
-      "name": "4",
+      "name": "4H",
       "train_limit": 4,
       "tiles": [
         "yellow"
       ],
-      "operating_rounds": 1
+      "operating_rounds": 1,
+      "status": [
+        "gray_uses_yellow"
+      ]
+    },
+    {
+      "name": "6H",
+      "on": "6H",
+      "train_limit": 4,
+      "tiles": [
+        "yellow",
+        "green"
+      ],
+      "operating_rounds": 2,
+      "status": [
+        "gray_uses_yellow",
+        "can_buy_companies"
+      ]
+    },
+    {
+      "name": "8H",
+      "on": "8H",
+      "train_limit": 3,
+      "tiles": [
+        "yellow",
+        "green"
+      ],
+      "operating_rounds": 2,
+      "status": [
+        "gray_uses_green",
+        "can_buy_companies"
+      ]
+    },
+    {
+      "name": "10H",
+      "on": "10H",
+      "train_limit": 2,
+      "tiles": [
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "operating_rounds": 3,
+      "status": [
+        "gray_uses_green",
+        "can_buy_companies"
+      ]
+    },
+    {
+      "name": "12H",
+      "on": "12H",
+      "train_limit": 2,
+      "tiles": [
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "operating_rounds": 3,
+      "status": [
+        "gray_uses_brown"
+      ]
+    },
+    {
+      "name": "16H",
+      "on": "16H",
+      "train_limit": 2,
+      "tiles": [
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "operating_rounds": 3,
+      "status": [
+        "gray_uses_brown",
+        "blue_zone"
+      ]
     }
   ],
   "companies": [
@@ -509,6 +584,7 @@ module Engine
       "sym": "AFG",
       "name": "Azienda Ferroviaria Garibaldi",
       "logo": "1849/AFG",
+      "token_fee": 40,
       "tokens": [
         0,
         0,
@@ -523,6 +599,7 @@ module Engine
       "sym": "ATA",
       "name": "Azienda Trasporti Archimede",
       "logo": "1849/ATA",
+      "token_fee": 30,
       "tokens": [
         0,
         0,
@@ -538,6 +615,7 @@ module Engine
       "sym": "CTL",
       "name": "Compagnia Trasporti Lilibeo",
       "logo": "1849/CTL",
+      "token_fee": 40,
       "tokens": [
         0,
         0,
@@ -553,6 +631,7 @@ module Engine
       "sym": "IFT",
       "name": "Impresa Ferroviaria Trinacria",
       "logo": "1849/IFT",
+      "token_fee": 90,
       "tokens": [
         0,
         0,
@@ -568,6 +647,7 @@ module Engine
       "sym": "RCS",
       "name": "Rete Centrale Sicula",
       "logo": "1849/RCS",
+      "token_fee": 130,
       "tokens": [
         0,
         0,
@@ -583,6 +663,7 @@ module Engine
       "sym": "SFA",
       "name": "Società Ferroviaria Akragas",
       "logo": "1849/SFA",
+      "token_fee": 40,
       "tokens": [
         0,
         0,
@@ -596,10 +677,57 @@ module Engine
   ],
   "trains": [
     {
-      "name": "2",
-      "distance": 2,
-      "price": 80,
-      "num": 6
+      "name": "4H",
+      "num": 4,
+      "distance": 4,
+      "price": 100,
+      "rusts_on": "8H"
+    },
+    {
+      "name": "6H",
+      "distance": 6,
+      "price": 200,
+      "rusts_on": "10H",
+      "events": [
+        {"type": "green_par"}
+      ]
+    },
+    {
+      "name": "8H",
+      "distance": 8,
+      "price": 350,
+      "rusts_on": "16H"
+    },
+    {
+      "name": "10H",
+      "num": 2,
+      "distance": 10,
+      "price": 550,
+      "events": [
+        {"type": "brown_par"}
+      ]
+    },
+    {
+      "name": "12H",
+      "num": 1,
+      "distance": 12,
+      "price": 800,
+      "events": [
+        {"type": "close_companies"},
+        {"type": "earthquake"}
+      ]
+    },
+    {
+      "name": "16H",
+      "distance": 16,
+      "price": 1100
+    },
+    {
+      "name": "R6H",
+      "num": 2,
+      "available_on": "16H",
+      "distance": 6,
+      "price": 350
     }
   ]
 }

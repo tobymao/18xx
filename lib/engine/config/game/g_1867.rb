@@ -215,6 +215,7 @@ module Engine
       "sym": "C&SL",
       "value": 30,
       "revenue": 10,
+      "discount": 10,
       "desc": "No special abilities."
     },
     {
@@ -222,6 +223,7 @@ module Engine
       "sym": "NFB",
       "value": 45,
       "revenue": 15,
+      "discount": 15,
       "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Buffalo",
       "abilities": [
         {
@@ -238,6 +240,7 @@ module Engine
       "sym": "MB",
       "value": 60,
       "revenue": 20,
+      "discount": 20,
       "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Montreal",
       "abilities": [
         {
@@ -254,6 +257,7 @@ module Engine
       "sym": "QB",
       "value": 75,
       "revenue": 25,
+      "discount": 25,
       "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Quebec",
       "abilities": [
         {
@@ -270,13 +274,14 @@ module Engine
       "sym": "SCT",
       "value": 90,
       "revenue": 30,
+      "discount": 30,
       "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Detroit",
       "abilities": [
         {
         "type": "hex_bonus",
         "owner_type": "corporation",
         "hexes": [
-          "A19"
+          "A19", "A17"
         ],
         "amount": 10
       }]
@@ -320,7 +325,7 @@ module Engine
         40
       ],
       "type": "major",
-      "color": "cyan"
+      "color": "blue"
     },
     {
       "sym": "GTR",
@@ -346,7 +351,7 @@ module Engine
         40
       ],
       "type": "major",
-      "color": "brown"
+      "color": "darkBlue"
     },
     {
       "sym": "ICR",
@@ -359,7 +364,7 @@ module Engine
         40
       ],
       "type": "major",
-      "color": "yellow"
+      "color": "brown"
     },
     {
       "sym": "NTR",
@@ -371,7 +376,7 @@ module Engine
         20,
         40
       ],
-      "color": "tan"
+      "color": "green"
     },
     {
       "sym": "NYC",
@@ -384,7 +389,7 @@ module Engine
         40
       ],
       "type": "major",
-      "color": "black"
+      "color": "purple"
     },
     {
       "sym": "BBG",
@@ -397,7 +402,7 @@ module Engine
       "type": "minor",
       "shares": [100],
       "max_ownership_percent": 100,
-      "color": "yellow"
+      "color": "gray"
     },
     {
       "sym": "BO",
@@ -410,19 +415,20 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "teal"
     },
     {
       "sym": "CS",
       "name": "Canada Southern",
       "logo": "1867/CS",
+      "float_percent": 100,
       "tokens": [
         0
       ],
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "lightBlue"
     },
     {
       "sym": "CV",
@@ -435,7 +441,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "lightishBlue"
     },
     {
       "sym": "KP",
@@ -448,7 +454,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "lightishBlue"
     },
     {
       "sym": "LPS",
@@ -461,7 +467,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "gray"
     },
     {
       "sym": "OP",
@@ -474,7 +480,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "magenta"
     },
     {
       "sym": "SLA",
@@ -487,7 +493,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "gray"
     },
     {
       "sym": "TGB",
@@ -500,7 +506,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "darkBlue"
     },
     {
       "sym": "TN",
@@ -513,12 +519,12 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "yellow"
+      "color": "brown"
     },
     {
-      "sym": "TN",
+      "sym": "AE",
       "name": "Algoma Eastern Railway",
-      "logo": "1867/TN",
+      "logo": "1867/AE",
       "float_percent": 100,
       "tokens": [
         0
@@ -526,7 +532,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "green"
+      "color": "orange"
     },
     {
       "sym": "CA",
@@ -539,12 +545,12 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "green"
+      "color": "purple"
     },
     {
-      "sym": "NYO",
+      "sym": "NO",
       "name": "New York and Ottawa",
-      "logo": "1867/NYO",
+      "logo": "1867/NO",
       "float_percent": 100,
       "tokens": [
         0
@@ -552,7 +558,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "green"
+      "color": "orange"
     },
     {
       "sym": "PM",
@@ -565,7 +571,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "green"
+      "color": "lightBlue"
     },
     {
       "sym": "QLS",
@@ -578,7 +584,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "green"
+      "color": "blue"
     },
     {
       "sym": "THB",
@@ -591,13 +597,20 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "green"
+      "color": "orange"
     },
     {
       "sym": "CN",
       "name": "Canadian National",
       "logo": "1867/CN",
       "tokens": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0
       ],
       "color": "white"
@@ -964,8 +977,7 @@ module Engine
     {
       "name": "2",
       "train_limit": {
-        "minor": 2,
-        "major": 2
+        "minor": 2
       },
       "tiles": [
         "yellow"

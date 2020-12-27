@@ -253,6 +253,14 @@ module Engine
         end
       end
 
+      # use to modify hexes based on optional rules
+      def optional_hexes
+        self.class::HEXES
+      end
+
+      # use to modify tiles based on optional rules
+      def optional_tiles; end
+
       def self.title
         name.split('::').last.slice(1..-1)
       end
@@ -388,6 +396,7 @@ module Engine
         @bank = init_bank
         @tiles = init_tiles
         @all_tiles = init_tiles
+        optional_tiles
         @cert_limit = init_cert_limit
         @removals = []
 
@@ -711,32 +720,31 @@ module Engine
       def all_bundles_for_corporation(share_holder, corporation, shares: nil)
         return [] unless corporation.ipoed
 
-        shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
+        shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.price] }
 
         bundles = shares.flat_map.with_index do |share, index|
           bundle = shares.take(index + 1)
           percent = bundle.sum(&:percent)
           bundles = [Engine::ShareBundle.new(bundle, percent)]
-          if share.president
-            normal_percent = corporation.share_percent
-            difference = corporation.presidents_percent - normal_percent
-            num_partial_bundles = difference / normal_percent
-            (1..num_partial_bundles).each do |n|
-              bundles.insert(0, Engine::ShareBundle.new(bundle, percent - (normal_percent * n)))
-            end
-          end
+          bundles.concat(partial_bundles_for_presidents_share(corporation, bundle, percent)) if share.president
           bundles
         end
 
-        bundles
+        bundles.sort_by(&:percent)
+      end
+
+      def partial_bundles_for_presidents_share(corporation, bundle, percent)
+        normal_percent = corporation.share_percent
+        difference = corporation.presidents_percent - normal_percent
+        num_partial_bundles = difference / normal_percent
+        (1..num_partial_bundles).map do |n|
+          Engine::ShareBundle.new(bundle, percent - (normal_percent * n))
+        end
       end
 
       def num_certs(entity)
-        if self.class::CERT_LIMIT_INCLUDES_PRIVATES
-          entity.companies.size + entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
-        else
-          entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
-        end
+        certs = entity.shares.select { |s| s.corporation.counts_for_limit && s.counts_for_limit }.sum(&:cert_size)
+        certs + (self.class::CERT_LIMIT_INCLUDES_PRIVATES ? entity.companies.size : 0)
       end
 
       def sellable_turn?
@@ -1005,6 +1013,11 @@ module Engine
         tile = hex&.tile
         if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
 
+          if @round.pending_tokens.any? { |p| p[:entity] == corporation }
+            # 1867: Avoid adding the same token twice
+            @round.clear_cache!
+            return
+          end
           # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
           # otherwise the entity must choose now.
           @log << "#{corporation.name} must choose city for home token"
@@ -1035,24 +1048,43 @@ module Engine
         city.place_token(corporation, token)
       end
 
-      def tile_cost(tile, hex, entity)
+      def upgrade_cost(tile, hex, entity)
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
-          (!a.hexes || a.hexes.include?(hex.name))
+            (!a.hexes || a.hexes.include?(hex.name))
         end
 
         tile.upgrades.sum do |upgrade|
           discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
 
-          if discount.positive?
-            @log << "#{entity.name} receives a discount of "\
-              "#{format_currency(discount)} from "\
-              "#{ability.owner.name}"
-          end
+          log_cost_discount(entity, ability, discount)
 
           total_cost = upgrade.cost - discount
           total_cost
         end
+      end
+
+      def tile_cost_with_discount(_tile, hex, entity, cost)
+        ability = entity.all_abilities.find do |a|
+          a.type == :tile_discount &&
+            !a.terrain &&
+            (!a.hexes || a.hexes.include?(hex.name))
+        end
+
+        return cost unless ability
+
+        discount = [cost, ability.discount].min
+        log_cost_discount(entity, ability, discount)
+
+        cost - discount
+      end
+
+      def log_cost_discount(entity, ability, discount)
+        return unless discount.positive?
+
+        @log << "#{entity.name} receives a discount of "\
+                "#{format_currency(discount)} from "\
+                "#{ability.owner.name}"
       end
 
       def declare_bankrupt(player)
@@ -1195,7 +1227,7 @@ module Engine
           liquidity(player, emergency: true)
       end
 
-      def buying_power(entity, _full = false)
+      def buying_power(entity, **)
         entity.cash + (issuable_shares(entity).map(&:price).max || 0)
       end
 
@@ -1281,6 +1313,10 @@ module Engine
 
       def train_limit(entity)
         @phase.train_limit(entity)
+      end
+
+      def entity_can_use_company?(_entity, _company)
+        true
       end
 
       private
@@ -1399,7 +1435,7 @@ module Engine
           end
         end
 
-        self.class::HEXES.map do |color, hexes|
+        optional_hexes.map do |color, hexes|
           hexes.map do |coords, tile_string|
             coords.map.with_index do |coord, index|
               next Hex.new(coord, layout: layout, axes: axes, empty: true) if color == :empty
@@ -1432,7 +1468,7 @@ module Engine
               Hex.new(coord, layout: layout, axes: axes, tile: tile, location_name: location_name)
             end
           end
-        end.flatten
+        end.flatten.compact
       end
 
       def init_tiles
@@ -1800,10 +1836,6 @@ module Engine
       def corporation_size(_entity)
         # For display purposes is a corporation small, medium or large
         :small
-      end
-
-      def show_corporation_size?(_entity)
-        false
       end
 
       def status_str(_corporation); end

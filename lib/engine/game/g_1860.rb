@@ -21,7 +21,7 @@ module Engine
       load_from_json(Config::Game::G1860::JSON)
 
       GAME_LOCATION = 'Isle of Wight'
-      GAME_RULES_URL = 'https://boardgamegeek.com/filepage/79633/second-edition-rules'
+      GAME_RULES_URL = 'https://www.dropbox.com/s/usfbqtdjzx6ug8f/1860-rules.pdf'
       GAME_DESIGNER = 'Mike Hutton'
       GAME_PUBLISHER = nil
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1860'
@@ -73,6 +73,25 @@ module Engine
         'southern_forms' => ['Southern Forms', 'Southern RR forms; No track or token after the next SR.']
       ).freeze
 
+      OPTIONAL_RULES = [
+        { sym: :two_player_map,
+          short_name: '2-3P map',
+          desc: 'Use the smaller first edition map suitable for 2-3 players' },
+        { sym: :original_insolvency,
+          short_name: 'Original insolvency',
+          desc: 'Use the original (first edition) insolvency rules' },
+        { sym: :no_skip_towns,
+          short_name: 'No skipping towns',
+          desc: "Use the original (first edition) town rules - they can't be skipped on runs" },
+        { sym: :original_game,
+          short_name: 'First edition rules and map',
+          desc: 'Use all of the first edition rules (smaller map, original insolvency, no skipping towns)' },
+      ].freeze
+
+      OPTION_REMOVE_HEXES = %w[A5 A7 B4 E11].freeze
+      OPTION_ADD_HEXES = { ['B4'] => 'city=revenue:0' }.freeze
+      OPTION_TILES = %w[776-2 770-1].freeze
+
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded_or_city, upgrade: false }].freeze
 
       GAME_END_CHECK = { stock_market: :current_or, bank: :current_or, custom: :immediate }.freeze
@@ -117,6 +136,44 @@ module Engine
 
       def init_share_pool
         Engine::G1860::SharePool.new(self)
+      end
+
+      def option_23p_map?
+        @optional_rules&.include?(:two_player_map) || @optional_rules&.include?(:original_game)
+      end
+
+      def option_original_insolvency?
+        @optional_rules&.include?(:original_insolvency) || @optional_rules&.include?(:original_game)
+      end
+
+      def option_no_skip_towns?
+        @optional_rules&.include?(:no_skip_towns) || @optional_rules&.include?(:original_game)
+      end
+
+      def optional_hexes
+        return self.class::HEXES unless option_23p_map?
+
+        new_hexes = {}
+        HEXES.keys.each do |color|
+          new_map = self.class::HEXES[color].map do |coords, tile_string|
+            [coords - OPTION_REMOVE_HEXES, tile_string]
+          end.to_h
+          OPTION_ADD_HEXES.each { |coords, tile_str| new_map[coords] = tile_str } if color == :white
+
+          new_hexes[color] = new_map
+        end
+
+        new_hexes
+      end
+
+      def optional_tiles
+        return unless option_23p_map?
+
+        # remove 2nd edition tiles
+        OPTION_TILES.each do |ot|
+          @tiles.reject! { |t| t.id == ot }
+          @all_tiles.reject! { |t| t.id == ot }
+        end
       end
 
       def setup
@@ -191,6 +248,7 @@ module Engine
         @log << "#{player.name} has #{reason}"
 
         @players.rotate!(@players.index(player))
+        @log << "#{@players.first.name} has priority deal"
       end
 
       def new_stock_round
@@ -224,7 +282,6 @@ module Engine
             end
           when init_round.class
             init_round_finished
-            reorder_players
             new_stock_round
           end
       end
@@ -266,6 +323,13 @@ module Engine
           player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
           player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }.sum { |s| (s.price / 2).to_i } +
           company_value
+      end
+
+      def place_home_token(corporation)
+        # will this break the game?
+        return if sr_after_southern
+
+        super
       end
 
       def event_fishbourne_to_bank!
@@ -589,9 +653,12 @@ module Engine
       def train_help(trains)
         help = []
 
-        if trains.select { |t| t.owner == @depot }.any?
+        if trains.select { |t| t.owner == @depot }.any? && !option_original_insolvency?
           help << 'Leased trains ignore town/halt allowance.'
           help << "Revenue = #{format_currency(40)} + number_of_stops * #{format_currency(20)}"
+        end
+        if trains.select { |t| t.owner == @depot }.any? && option_original_insolvency?
+          help << 'Leased trains run for half revenue (but full subsidies).'
         end
 
         help
@@ -617,9 +684,13 @@ module Engine
         end
       end
 
-      def biggest_train(corporation)
-        val = corporation.trains.map { |t| t.distance[0]['pay'] }.max || 0
-        val
+      def biggest_train_distance(corporation)
+        if (biggest = corporation.trains.max_by { |t| t.distance[0]['pay'] })
+          town_distance = option_no_skip_towns? ? biggest.distance[-1]['pay'] : 9999
+          [biggest.distance[0]['pay'], town_distance]
+        else
+          [0, 0]
+        end
       end
 
       def get_token_cities(corporation)
@@ -634,11 +705,25 @@ module Engine
         tokens
       end
 
-      def node_distance_walk(node, distance, node_distances: {}, corporation: nil, path_distances: {})
-        return if (node_distances[node] || 999) <= distance
+      def smaller_or_equal_distance?(a, b)
+        a ||= [999, 999]
+        a.first <= b.first && a.last <= b.last
+      end
 
-        node_distances[node] = distance
-        distance += 1 if node.city?
+      def merge_distance(a, b)
+        a ||= [999, 999]
+        [[a.first, b.first].min, [a.last, b.last].min]
+      end
+
+      def node_distance_walk(node, distance, node_distances: {}, corporation: nil, path_distances: {})
+        return if smaller_or_equal_distance?(node_distances[node], distance)
+
+        node_distances[node] = merge_distance(node_distances[node], distance)
+        if node.city?
+          distance = [distance.first + 1, distance.last]
+        elsif node.town? && !node.halt?
+          distance = [distance.first, distance.last + 1]
+        end
 
         return if corporation && node.blocks?(corporation)
 
@@ -666,9 +751,9 @@ module Engine
       end
 
       def path_distance_walk(path, distance, skip: nil, jskip: nil, path_distances: {})
-        return if (path_distances[path] || 999) <= distance
+        return if smaller_or_equal_distance?(path_distances[path], distance)
 
-        path_distances[path] = distance
+        path_distances[path] = merge_distance(path_distances[path], distance)
 
         yield path
 
@@ -720,10 +805,10 @@ module Engine
         h_distances = {}
 
         tokens.each do |node|
-          node_distance_walk(node, 0, node_distances: n_distances,
-                                      corporation: corporation, path_distances: p_distances) do |path, dist|
+          node_distance_walk(node, [0, 0], node_distances: n_distances,
+                                           corporation: corporation, path_distances: p_distances) do |path, dist|
             hex = path.hex
-            h_distances[hex] = dist if !h_distances[hex] || h_distances[hex] > dist
+            h_distances[hex] = merge_distance(h_distances[hex], dist)
           end
         end
 
@@ -859,8 +944,19 @@ module Engine
       end
 
       def check_distance(route, visits)
-        # will need to be modifed for original rules option
-        super
+        city_stops = visits.select { |node| node.city? || node.offboard? }
+        town_stops = visits.select { |node| node.town? && !node.halt? }
+
+        # in 1860, unused city/offboard allowance can be used for towns/halts
+        c_allowance = route.train.distance[0]['pay']
+        th_allowance = if !ignore_second_allowance?(route)
+                         [route.train.distance[-1]['pay'] + c_allowance - city_stops.size, 0].max
+                       else
+                         [c_allowance - city_stops.size, 0].max
+                       end
+
+        game_error('Route has too many cities/offboards') if city_stops.size > c_allowance
+        game_error('Route has too many towns') if town_stops.size > th_allowance && option_no_skip_towns?
         game_error('Route cannot begin/end in a halt') if visits.first.halt? || visits.last.halt?
       end
 
@@ -880,20 +976,33 @@ module Engine
         check_hex_reentry(route)
       end
 
-      def maximize_revenue?
-        @nationalization
+      # must stop at all towns on route or must maximize revenue
+      def use_all_towns?
+        @nationalization || option_no_skip_towns?
       end
 
       def ignore_halts?
         @sr_after_southern
       end
 
-      def ignore_halt_subsidies?(route)
+      def loaner?(route)
         route.train.owner == @depot
       end
 
+      def loaner_new_rules?(route)
+        loaner?(route) && !option_original_insolvency?
+      end
+
+      def loaner_orig_rules?(route)
+        loaner?(route) && option_original_insolvency?
+      end
+
+      def ignore_halt_subsidies?(route)
+        loaner_new_rules?(route)
+      end
+
       def ignore_second_allowance?(route)
-        route.train.owner == @depot || @nationalization
+        loaner_new_rules?(route) || @nationalization
       end
 
       def max_halts(route)
@@ -909,8 +1018,8 @@ module Engine
                        else
                          c_allowance - cities.size
                        end
-        # if required to maximize revenue only use halts if there aren't enough cities or towns
-        th_allowance = [th_allowance - towns.size, 0].max if maximize_revenue?
+        # if required to use all towns only use halts if there aren't enough cities or towns
+        th_allowance = [th_allowance - towns.size, 0].max if use_all_towns?
         [halts.size, th_allowance].min
       end
 
@@ -949,7 +1058,7 @@ module Engine
 
         # after adding requested halts, pick highest revenue towns
         towns = visits.select { |node| node.town? && !node.halt? }
-        num_towns = [th_allowance, towns.size].min
+        num_towns = option_no_skip_towns? ? towns.size : [th_allowance, towns.size].min
         if num_towns.positive?
           stops.concat(towns.sort_by { |t| t.uniq_revenues.first }.reverse.take(num_towns))
           th_allowance -= num_towns
@@ -963,32 +1072,34 @@ module Engine
         end
 
         # update route halts
-        route.halts = num_halts if (num_halts.positive? || route.halts) && !ignore_halt_subsidies?(route)
+        route.halts = num_halts if (num_halts.positive? || route.halts) && !loaner_new_rules?(route)
 
         stops
       end
 
       def route_distance(route)
         n_cities = route.stops.select { |n| n.city? || n.offboard? }.size
-        # halts are treated like towns for leased trains
-        n_towns = if route.train.owner != @depot
+        # halts are treated like towns for leased trains (new rules)
+        n_towns = if !loaner_new_rules?(route)
                     route.stops.count { |n| n.town? && !n.halt? }
                   else
                     route.stops.count(&:town?)
                   end
-        route.train.owner != @depot ? "#{n_cities}+#{n_towns}" : (n_cities + n_towns).to_s
+        loaner_new_rules?(route) ? (n_cities + n_towns).to_s : "#{n_cities}+#{n_towns}"
       end
 
       def revenue_for(route, stops)
-        if route.train.owner != @depot
-          stops.sum { |stop| stop.route_base_revenue(route.phase, route.train) }
-        else
+        if loaner_new_rules?(route)
           40 + 20 * stops.size
+        elsif loaner_orig_rules?(route)
+          (stops.sum { |stop| stop.route_base_revenue(route.phase, route.train) } / 2).ceil
+        else
+          stops.sum { |stop| stop.route_base_revenue(route.phase, route.train) }
         end
       end
 
       def subsidy_for(route, stops)
-        route.train.owner != @depot ? stops.count(&:halt?) * HALT_SUBSIDY : 0
+        !ignore_halt_subsidies?(route) ? stops.count(&:halt?) * HALT_SUBSIDY : 0
       end
 
       def routes_revenue(routes)

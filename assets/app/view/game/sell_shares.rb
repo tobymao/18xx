@@ -24,6 +24,7 @@ module View
               percent: bundle.percent,
             ))
           end
+          double_cert = bundle.shares.any?(&:last_cert) ? '[d]' : ''
           props = {
             style: {
               padding: '0.2rem 0',
@@ -34,7 +35,7 @@ module View
           h(
             'button.sell_share',
             props,
-            "Sell #{share_presentation(bundle)} (#{@game.format_currency(bundle.price)})"
+            "Sell #{share_presentation(bundle)}#{double_cert} (#{@game.format_currency(bundle.price)})"
           )
         end
 

@@ -69,7 +69,7 @@ to specify that the blocking ends when the company is bought in by a
 corporation.
 
 - `partition_type`: The name of the partition type that is to be
-blocked, akin to terrain and border types.
+  blocked, akin to terrain and border types.
 
 ## close
 
@@ -155,7 +155,7 @@ Lay a tile and place a station token without connectivity
 Discount the cost for laying tiles in the specified terrain type
 
 - `discount`: Discount amount
-- `terrain`: Type of terrain for which discount is provided
+- `terrain`: If set, type of terrain for which discount is provided, otherwise the discount is off the total cost
 - `hexes`: If not specified, all applicable hexes qualifies for
   the discount. If specified, only specified hexes qualify
 

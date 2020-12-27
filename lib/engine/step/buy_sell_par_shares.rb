@@ -29,6 +29,7 @@ module Engine
 
       def log_pass(entity)
         return @log << "#{entity.name} passes" if @current_actions.empty?
+        return if bought? && sold?
 
         action = bought? ? 'to sell' : 'to buy'
         @log << "#{entity.name} declines #{action} shares"
@@ -226,6 +227,10 @@ module Engine
 
       def bought?
         @current_actions.any? { |x| self.class::PURCHASE_ACTIONS.include?(x.class) }
+      end
+
+      def sold?
+        @current_actions.any? { |x| x.class == Action::SellShares }
       end
 
       def process_buy_company(action)

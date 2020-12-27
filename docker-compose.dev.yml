@@ -6,6 +6,7 @@ services:
     environment:
       DATABASE_URL: postgres://root:password@db:5432/18xx_development
       RACK_ENV: development
+      RUBYOPTS: --jit
     ports:
       - 9292:9292
     volumes:
@@ -18,6 +19,7 @@ services:
     environment:
       DATABASE_URL: postgres://root:password@db:5432/18xx_development
       RACK_ENV: development
+      RUBYOPTS: --jit
     volumes:
       - .:/18xx
       - /18xx/vendor

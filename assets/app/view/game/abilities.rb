@@ -13,7 +13,12 @@ module View
       ABILITIES = %i[tile_lay teleport assign_hexes assign_corporation token exchange].freeze
 
       def render
-        companies = @game.companies.select { |company| !company.closed? && actions_for(company).any? && company.owner }
+        companies = @game.companies.select do |company|
+          !company.closed? &&
+            actions_for(company).any? &&
+            company.owner &&
+            @game.entity_can_use_company?(@game.current_entity, company)
+        end
         return h(:div) if companies.empty? || @game.round.current_entity.company?
 
         current, others = companies.partition { |company| @game.current_entity.player == company.player }

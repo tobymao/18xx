@@ -24,7 +24,7 @@ module Engine
 
         def must_buy_train?(entity)
           # Can afford one by taking out max loans
-          super && @game.buying_power(entity, true) >= needed_cash(entity)
+          super && @game.buying_power(entity, full: true) >= needed_cash(entity)
         end
 
         def ebuy_president_can_contribute?(_corporation)
@@ -39,7 +39,7 @@ module Engine
 
         def buying_power(entity)
           if must_buy_train?(entity)
-            @game.buying_power(entity, true)
+            @game.buying_power(entity, full: true)
           else
             @game.buying_power(entity)
           end
@@ -52,7 +52,7 @@ module Engine
             reason =
               if must_buy_train?(entity)
                 'as train is not from depot'
-              elsif @game.buying_power(entity, true) <= needed_cash(entity)
+              elsif @game.buying_power(entity, full: true) <= needed_cash(entity)
                 'cannot take enough loans to purchase'
               else
                 'as do not need to buy'

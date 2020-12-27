@@ -24,7 +24,7 @@ module Engine
       load_from_json(Config::Game::G18CO::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
-      # DEV_STAGE = :beta
+      DEV_STAGE = :alpha
 
       GAME_LOCATION = 'Colorado, USA'
       GAME_RULES_URL = 'https://drive.google.com/open?id=0B3lRHMrbLMG_eEp4elBZZ0toYnM'
@@ -42,7 +42,7 @@ module Engine
       DISCARDED_TRAIN_DISCOUNT = 50
 
       # Two tiles can be laid, only one upgrade
-      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: false }].freeze
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
       REDUCED_TILE_LAYS = [{ lay: true, upgrade: true }].freeze
 
       # First 3 are Denver, Second 3 are CO Springs
@@ -50,15 +50,19 @@ module Engine
       GREEN_TOWN_TILES = %w[co8 co9 co10].freeze
       GREEN_CITY_TILES = %w[14 15].freeze
       BROWN_CITY_TILES = %w[co4 63].freeze
-      MAX_CITY_TILES = %w[14 15 co1 co2 co3 co4 co7 63].freeze
+      MAX_STATION_TILES = %w[14 15 co1 co2 co3 co4 co7 63].freeze
 
       STOCKMARKET_COLORS = {
-        par: :yellow,
+        par: :blue,
+        par_1: :purple,
+        par_2: :yellow,
         acquisition: :red,
       }.freeze
 
       MARKET_TEXT = {
-        par: 'Par: C [40, 50, 60, 75] - 40%, B/C [80, 90, 100, 110] - 50%, A/B/C: [120, 135, 145, 160] - 60%',
+        par: 'Par: 40% - C',
+        par_1: 'Par: 50% - B/C',
+        par_2: 'Par: 60% - A/B/C',
         acquisition: 'Acquisition: Corporation assets will be auctioned if entering Stock Round',
       }.freeze
 
@@ -83,7 +87,7 @@ module Engine
         'A' => 60,
       }.freeze
 
-      EAST_HEXES = %w[A26 J26 E27 G27].freeze
+      EAST_HEXES = %w[B26 J26 E27 G27].freeze
 
       BASE_MINE_VALUE = 10
 
@@ -300,13 +304,20 @@ module Engine
           remove_corporations_if_no_home(action.city) if @phase.status.include?('closable_corporations')
         when Action::Par
           rereserve_home_station(action.corporation) if @phase.status.include?('closable_corporations')
+          remove_par_group_ability(action.corporation)
         end
+      end
+
+      def remove_par_group_ability(corporation)
+        par_group = abilities(corporation, :description)
+
+        corporation.remove_ability(par_group) if par_group
       end
 
       def remove_corporations_if_no_home(city)
         tile = city.tile
 
-        return unless tile_has_max_cities(tile)
+        return unless tile_has_max_stations(tile)
 
         @corporations.dup.each do |corp|
           next if corp.ipoed
@@ -320,8 +331,8 @@ module Engine
         end
       end
 
-      def tile_has_max_cities(tile)
-        tile.color == :red || MAX_CITY_TILES.include?(tile.hex.name)
+      def tile_has_max_stations(tile)
+        tile.color == :red || MAX_STATION_TILES.include?(tile.name)
       end
 
       def rereserve_home_station(corporation)
@@ -444,13 +455,13 @@ module Engine
         @presidents_choice = :triggered
       end
 
-      def sell_shares_and_change_price(bundle)
+      def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
         corporation = bundle.corporation
         price = corporation.share_price.price
         was_president = corporation.president?(bundle.owner)
         was_issued = bundle.owner == bundle.corporation
 
-        @share_pool.sell_shares(bundle)
+        @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
 
         return if !(was_president || was_issued) && bundle.num_shares == 1
 
@@ -501,7 +512,7 @@ module Engine
         return [] unless entity.num_ipo_shares
 
         bundles_for_corporation(entity, entity)
-          .reject { |bundle| bundle.num_shares > 1 }
+          .select { |bundle| bundle.shares.size == 1 && @share_pool.fit_in_bank?(bundle) }
       end
 
       def redeemable_shares(entity)
@@ -517,6 +528,17 @@ module Engine
             (entity.nil? || entity != company.owner) &&
             !abilities(company, :no_buy)
         end
+      end
+
+      def entity_can_use_company?(entity, company)
+        entity.corporation? && entity == company.owner
+      end
+
+      def player_value(player)
+        value = player.value
+        return value unless drgr&.owner == player
+
+        value - drgr.value
       end
     end
   end

@@ -34,6 +34,7 @@ module View
       needs :show_coords, default: nil
       needs :show_location_names, default: true
       needs :routes, default: []
+      needs :start_pos, default: [1, 1]
 
       def render
         return nil if @hex.empty
@@ -98,13 +99,13 @@ module View
         "translate(#{x}, #{y})"
       end
 
-      def self.coordinates(hex)
+      def self.coordinates(hex, start_pos = [1, 1])
         t_x, t_y = LAYOUT[hex.layout]
-        [(t_x * hex.x + SIZE).round(2), (t_y * hex.y + SIZE).round(2)]
+        [(t_x * (hex.x - start_pos[0] + 1) + SIZE).round(2), (t_y * (hex.y - start_pos[1] + 1) + SIZE).round(2)]
       end
 
       def coordinates
-        self.class.coordinates(@hex)
+        self.class.coordinates(@hex, @start_pos)
       end
 
       def transform

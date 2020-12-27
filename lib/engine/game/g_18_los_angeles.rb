@@ -80,6 +80,10 @@ module Engine
 
       MEAT_REVENUE_DESC = 'Citrus'
 
+      EVENTS_TEXT = G1846::EVENTS_TEXT.merge(
+        'remove_tokens' => ['Remove Tokens', 'Remove LA Steamship and LA Citrus tokens']
+      ).freeze
+
       def self.title
         '18 Los Angeles'
       end

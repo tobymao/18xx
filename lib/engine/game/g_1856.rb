@@ -2,6 +2,8 @@
 
 require_relative '../config/game/g_1856'
 require_relative '../loan.rb'
+require_relative '../g_1856/corporation'
+require_relative '../g_1856/share_pool'
 require_relative 'base'
 
 module Engine
@@ -22,7 +24,7 @@ module Engine
                       tgbOrange: '#c94d00',
                       thbYellow: '#ebff45',
                       wgbBlue: '#494d99',
-                      wrBrown: '#664c3a',
+                      wrBrown: '#54230e',
 
                       red: '#d81e3e',
                       turquoise: '#00a993',
@@ -65,8 +67,31 @@ module Engine
         1 => { 3 => 10, 4 => 8, 5 => 7, 6 => 6 },
       }.freeze
 
+      # TODO: Get a proper token
+      ASSIGNMENT_TOKENS = {
+        'GLSC' => '/icons/1846/sc_token.svg',
+      }.freeze
+
+      def national
+        @national ||= corporation_by_id('CGR')
+      end
+
       def gray_phase?
         @phase.tiles.include?('gray')
+      end
+
+      def revenue_for(route, stops)
+        revenue = super
+
+        revenue += 20 if route.corporation.assigned?(port.id) && stops.any? { |stop| stop.hex.assigned?(port.id) }
+
+        # TODO: Add bridge and tunnel private revenue modifiers
+
+        revenue
+      end
+
+      def port
+        @port ||= company_by_id('GLSC')
       end
 
       def maximum_loans(entity)
@@ -112,6 +137,19 @@ module Engine
         # TODO: A future PR may figure out how to implement buying_power
         #  that accounts for a corporations revenue.
         true
+      end
+
+      def init_corporations(stock_market)
+        min_price = stock_market.par_prices.map(&:price).min
+
+        self.class::CORPORATIONS.map do |corporation|
+          Engine::G1856::Corporation.new(
+            self,
+            min_price: min_price,
+            capitalization: nil,
+            **corporation.merge(corporation_opts),
+          )
+        end
       end
 
       def setup
@@ -229,6 +267,15 @@ module Engine
         super
       end
 
+      def float_corporation(corporation)
+        corporation.float!
+        super
+      end
+
+      def init_share_pool
+        Engine::G1856::SharePool.new(self)
+      end
+
       # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
       STATUS_TEXT = {
         'escrow' => [
@@ -273,9 +320,11 @@ module Engine
           Step::G1856::CashCrisis,
           # No exchanges.
           Step::DiscardTrain,
+          Step::G1856::Assign,
           Step::G1856::Loan,
           Step::SpecialTrack,
           Step::BuyCompany,
+          Step::HomeToken,
           Step::G1856::Track,
           Step::Token,
           Step::Route,
@@ -285,6 +334,15 @@ module Engine
           # Repay Loans - See Loan
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
+      end
+
+      def stock_round
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::Exchange,
+          Step::SpecialTrack,
+          Step::G1856::BuySellParShares,
+        ])
       end
     end
   end

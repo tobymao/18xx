@@ -55,7 +55,7 @@ module Engine
             bundle,
             player,
             spender: player,
-            receiver: @bank,
+            receiver: @game.bank,
             price: price
           )
 
@@ -63,7 +63,7 @@ module Engine
 
           num_presentation = @game.share_pool.num_presentation(bundle)
           @log << "#{player.name} price protects #{num_presentation} "\
-                  "#{bundle.corporation.name} for #{@game.format_currency(price)}"
+                  "of #{bundle.corporation.name} for #{@game.format_currency(price)}"
         end
 
         def skip!(action)
@@ -88,7 +88,7 @@ module Engine
 
           verb = forced ? 'can\'t' : 'doesn\'t'
           num_presentation = @game.share_pool.num_presentation(bundle)
-          @log << "#{player.name} #{verb} price protect #{num_presentation} #{corporation.name}"
+          @log << "#{player.name} #{verb} price protect #{num_presentation} of #{corporation.name}"
 
           if current_ignore && !previous_ignore
             @log << "#{corporation.name} hits the ledge"

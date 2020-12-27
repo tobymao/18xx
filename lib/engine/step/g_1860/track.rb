@@ -32,22 +32,42 @@ module Engine
         end
 
         def reachable_path?(entity, path, max_distance)
-          return false if max_distance.zero?
+          return false if max_distance[0].zero?
 
           path_distances = @game.path_distances(entity)
-          path_distances[path] <= max_distance
+          path_distances[path][0] <= max_distance[0] && path_distances[path][-1] <= max_distance[-1]
+        end
+
+        def reachable_city?(node_distance, train_distance)
+          unused = train_distance[0] - node_distance[0] - 1
+
+          node_distance[0] < train_distance[0] && node_distance[-1] <= train_distance[-1] + unused
+        end
+
+        def reachable_town?(node_distance, train_distance)
+          unused = train_distance[0] - node_distance[0]
+
+          node_distance[0] <= train_distance[0] && node_distance[-1] < train_distance[-1] + unused
+        end
+
+        def reachable_halt?(node_distance, train_distance)
+          unused = train_distance[0] - node_distance[0]
+
+          node_distance[0] <= train_distance[0] && node_distance[-1] <= train_distance[-1] + unused
         end
 
         def reachable_node?(entity, node, max_distance)
-          return false if max_distance.zero?
+          return false if max_distance[0].zero?
 
           node_distances = @game.node_distances(entity)
           return false unless node_distances[node]
 
           if node.city?
-            node_distances[node] < max_distance
+            reachable_city?(node_distances[node], max_distance)
+          elsif node.town? && !node.halt?
+            reachable_town?(node_distances[node], max_distance)
           else
-            node_distances[node] <= max_distance
+            reachable_halt?(node_distances[node], max_distance)
           end
         end
 
@@ -61,9 +81,12 @@ module Engine
             # tile has a city/town/halt
             hex.tile.nodes.each do |tile_node|
               nd = node_distances[tile_node]
+
               if tile_node.city? || tile_node.offboard?
-                return true if nd && nd < max_distance
-              elsif nd && nd <= max_distance
+                return true if nd && reachable_city?(nd, max_distance)
+              elsif tile_node.town? && !tile_node.halt?
+                return true if nd && reachable_town?(nd, max_distance)
+              elsif nd && reachable_halt?(nd, max_distance)
                 return true
               end
             end
@@ -71,8 +94,9 @@ module Engine
             # tile is just track
             # Assumption: 1860 has no tiles that have track that doesn't connect to a node on the same tile
             hex.tile.paths.each do |tile_path|
-              pd = path_distances[tile_path] if path_distances[tile_path]
-              return true if pd && pd <= max_distance
+              pd = path_distances[tile_path]
+
+              return true if pd && reachable_halt?(pd, max_distance)
             end
           end
 
@@ -86,8 +110,8 @@ module Engine
           return true if hex.tile.color == :white
 
           # upgrades subject to train size
-          max_distance = @game.biggest_train(entity)
-          return false if max_distance.zero?
+          max_distance = @game.biggest_train_distance(entity)
+          return false if max_distance[0].zero?
 
           return true if reachable_hex?(entity, hex, max_distance)
 
@@ -104,8 +128,9 @@ module Engine
             npath = nhex.tile.paths.find { |p| path_distances[p] && p.exits.include?(nedge) }
             next unless npath
 
-            return true if hex.tile.cities.any? && path_distances[npath] < max_distance
-            return true if hex.tile.cities.empty? && path_distances[npath] <= max_distance
+            return true if hex.tile.cities.any? && reachable_city?(path_distances[npath], max_distance)
+            return true if hex.tile.towns.any? { |t| !t.halt? } && reachable_town?(path_distances[npath], max_distance)
+            return true if hex.tile.towns.any?(&:halt?) && reachable_halt?(path_distances[npath], max_distance)
           end
 
           false

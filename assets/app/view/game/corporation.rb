@@ -61,11 +61,17 @@ module View
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
 
         extras = []
-        extras.concat(render_loans) if @corporation.loans.any?
-        if @corporation.corporation? && @corporation.floated? && @game.total_loans.positive?
+        extras.concat(render_loans) if @game.total_loans&.nonzero?
+        if @corporation.corporation? && @corporation.floated? &&
+              @game.total_loans.positive? && @corporation.can_buy?
           extras << render_buying_power
         end
-        extras << render_corporation_size if @game.show_corporation_size?
+        if @corporation.corporation? && @corporation.respond_to?(:capitalization_type_desc)
+          extras << render_capitalization_type
+        end
+        if @corporation.corporation? && @corporation.respond_to?(:escrow) && @corporation.escrow
+          extras << render_escrow_account
+        end
         if extras.any?
           props = { style: { borderCollapse: 'collapse' } }
           children << h('table.center', props, [h(:tbody, extras)])
@@ -301,6 +307,7 @@ module View
             player.num_shares_of(@corporation, ceil: false),
             @game.round.active_step&.did_sell?(@corporation, player),
             !@corporation.holding_ok?(player, 1),
+            player.shares_of(@corporation).any?(&:last_cert),
           ]
         end
 
@@ -313,8 +320,8 @@ module View
         player_rows = player_info
           .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
           .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
-          .map do |player, president, num_shares, did_sell, at_limit|
-            flags = (president ? '*' : '') + (at_limit ? 'L' : '')
+          .map do |player, president, num_shares, did_sell, at_limit, last_cert|
+            flags = (president ? '*' : '') + (last_cert ? 'd' : '') + (at_limit ? 'L' : '')
             h('tr.player', [
               h("td.left.name.nowrap.#{president ? 'president' : ''}", player.name),
               h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{share_number_str(num_shares)}"),
@@ -345,13 +352,26 @@ module View
           end
 
         num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
+        if !num_ipo_shares.empty? && @corporation.capitalization != @game.class::CAPITALIZATION
+          num_ipo_shares = '* ' + num_ipo_shares
+        end
+        last_cert = @corporation.shares_of(@corporation).any?(&:last_cert)
         pool_rows = [
           h('tr.ipo', [
             h('td.left', @game.ipo_name(@corporation)),
-            h('td.right', shares_props, num_ipo_shares),
+            h('td.right', shares_props,
+              (last_cert ? 'd ' : '') + num_ipo_shares),
             h('td.padded_number', share_price_str(@corporation.par_price)),
           ]),
         ]
+
+        if @corporation.reserved_shares.any?
+          pool_rows << h('tr.reserved', [
+            h('td.left', @game.ipo_reserved_name),
+            h('td.right', shares_props, share_number_str(@corporation.num_ipo_reserved_shares)),
+            h('td.padded_number', share_price_str(@corporation.par_price)),
+          ])
+        end
 
         market_tr_props = {
           style: {
@@ -369,8 +389,9 @@ module View
 
         if player_rows.any? || @corporation.num_market_shares.positive?
           at_limit = @game.share_pool.bank_at_limit?(@corporation)
+          last_cert = @game.share_pool.shares_of(@corporation).any?(&:last_cert)
 
-          flags = (@corporation.receivership? ? '*' : '') + (at_limit ? 'L' : '')
+          flags = (@corporation.receivership? ? '*' : '') + (last_cert ? 'd' : '') + (at_limit ? 'L' : '')
 
           pool_rows << h('tr.market', market_tr_props, [
             h('td.left', 'Market'),
@@ -504,17 +525,24 @@ module View
         ]
       end
 
-      def render_buying_power
+      def render_capitalization_type
         h('tr.ipo', [
-          h('td.right', 'Buying Power'),
-          h('td.padded_number', @game.format_currency(@game.buying_power(@corporation, true)).to_s),
+          h('td.right', 'Cap. Type'),
+          h('td.padded_number', @corporation.capitalization_type_desc.to_s),
         ])
       end
 
-      def render_corporation_size
+      def render_escrow_account
         h('tr.ipo', [
-          h('td.right', 'Corporation Size'),
-          h('td.padded_number', @corporation.total_shares),
+          h('td.right', 'Escrow'),
+          h('td.padded_number', @game.format_currency(@corporation.escrow)),
+        ])
+      end
+
+      def render_buying_power
+        h('tr.ipo', [
+          h('td.right', 'Buying Power'),
+          h('td.padded_number', @game.format_currency(@game.buying_power(@corporation, full: true)).to_s),
         ])
       end
 

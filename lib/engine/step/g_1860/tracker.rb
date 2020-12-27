@@ -64,7 +64,7 @@ module Engine
 
           @game.add_extra_tile(tile) if tile.unlimited
 
-          max_distance = @game.biggest_train(entity)
+          max_distance = @game.biggest_train_distance(entity)
           old_revenues = if old_tile.color == :white
                            []
                          else
@@ -110,7 +110,7 @@ module Engine
             else
               border, border_types = border_cost(tile, entity)
               terrain += border_types if border.positive?
-              @game.tile_cost(old_tile, hex, entity) + border + extra_cost - discount
+              @game.upgrade_cost(old_tile, hex, entity) + border + extra_cost - discount
             end
 
           if @game.insolvent?(spender) && cost.positive?
@@ -194,6 +194,22 @@ module Engine
           else
             raise
           end
+        end
+
+        # can be used by Step to see if any layable tiles exist for a given hex
+        # This has fewer side-effects than the base upgradeable_tiles method
+        def any_upgradeable_tiles?(entity, hex)
+          potential_tiles(entity, hex).each do |tile|
+            return true if tile.legal_rotations.any?
+
+            tile.rotate!(0) # reset tile to no rotation since calculations are absolute
+            tile.legal_rotations = legal_tile_rotations(entity, hex, tile)
+            next if tile.legal_rotations.empty?
+
+            tile.rotate! # rotate it to the first legal rotation
+            return true
+          end
+          false
         end
 
         def legal_tile_rotation?(entity, hex, tile)

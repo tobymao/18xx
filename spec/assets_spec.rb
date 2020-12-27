@@ -197,6 +197,7 @@ describe 'Assets' do
       ['1846', 'hs_sudambau_1600037415', 41, 'buy_train_issuing',
        ['B&amp;O has $120',
         'B&amp;O can issue shares to raise up to $40',
+        'Emergency Issue',
         '!!Bankruptcy']],
       ['1846', 'hs_sudambau_1600037415', 50, 'buy_train_president_cash',
        ['B&amp;O has $146',
@@ -234,13 +235,17 @@ describe 'Assets' do
         'Merge',
         'Pittsburgh, Shawmut and Northern Railroad',
         'Corporations that can merge with J']],
-      ['1817', 16_852, 996, 'cash_crisis',
+      ['1817', 16_852, 889, 'cash_crisis',
        ['Player owes the bank $294 and must sell shares if possible.']],
-      ['1817', 16_281, 1183, 'buy_sell_post_conversion',
+      ['1817', 16_281, 812, 'buy_sell_post_conversion',
        ['Merger Round 4.2 (of 2) - Buy/Sell Shares Post Conversion',
         'New York, Susquehanna and Western Railway']],
       ['18_chesapeake', 1905, 166, 'blocking_special_track',
        ['Lay Track for Columbia - Philadelphia Railroad']],
+      ['18_co', 19_958, 709, 'dividend',
+       ['18CO: Operating Round 7.2 (of 2) - Game Over - Bank Broken']],
+      ['1860', '19_354', nil, 'endgame',
+       ['1860: Operating Round 8.4 (Nationalization) - Game Over - Nationalization complete']],
     ].freeze
 
     def render_game(jsonfile, no_actions, string)

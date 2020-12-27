@@ -14,9 +14,9 @@ module Engine
   class Tile
     include Config::Tile
 
-    attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :reservations
+    attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :reservations, :upgrades
     attr_reader :blocks_lay, :borders, :cities, :color, :edges, :junction, :nodes, :label,
-                :parts, :preprinted, :rotation, :stops, :towns, :upgrades, :offboards, :blockers,
+                :parts, :preprinted, :rotation, :stops, :towns, :offboards, :blockers,
                 :city_towns, :unlimited, :stubs, :partitions, :id
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze

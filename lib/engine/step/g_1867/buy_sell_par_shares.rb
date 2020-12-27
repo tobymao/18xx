@@ -10,7 +10,7 @@ module Engine
         include PassableAuction
         TOKEN_COST = 50
         MIN_BID = 100
-        MAX_BID = 400
+        MAX_BID = 270
         MAJOR_PHASE = 4
 
         def actions(entity)

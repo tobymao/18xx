@@ -7,6 +7,8 @@ require_relative 'company_price_50_to_150_percent'
 module Engine
   module Game
     class G18Mex < Base
+      attr_reader :merged_major
+
       load_from_json(Config::Game::G18Mex::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
@@ -369,6 +371,7 @@ module Engine
           return
         end
 
+        @merged_major = major
         @log << "-- #{major.name} merges into #{ndm.name} --"
 
         # Rule 5e: Any other shares are sold off for half market price

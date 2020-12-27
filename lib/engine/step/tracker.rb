@@ -115,7 +115,8 @@ module Engine
           else
             border, border_types = border_cost(tile, entity)
             terrain += border_types if border.positive?
-            @game.tile_cost(old_tile, hex, entity) + border + extra_cost - discount
+            base_cost = @game.upgrade_cost(old_tile, hex, entity) + border + extra_cost - discount
+            @game.tile_cost_with_discount(tile, hex, entity, base_cost)
           end
 
         try_take_loan(spender, cost)
@@ -171,6 +172,7 @@ module Engine
 
           ability = entity.all_abilities.find do |a|
             (a.type == :tile_discount) &&
+             a.terrain &&
              (border.type == a.terrain) &&
              (!a.hexes || a.hexes.include?(hex.name))
           end

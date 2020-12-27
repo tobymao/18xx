@@ -7,10 +7,11 @@ module Engine
   class Share
     include Ownable
 
-    attr_accessor :percent, :buyable, :counts_for_limit
+    attr_accessor :percent, :buyable, :counts_for_limit, :cert_size, :last_cert
     attr_reader :corporation, :president, :index
 
-    def initialize(corporation, owner: nil, president: false, percent: 10, index: 0)
+    def initialize(corporation, owner: nil, president: false, percent: 10, index: 0, cert_size: 1)
+      @cert_size = cert_size
       @corporation = corporation
       @president = president
       @percent = percent
@@ -22,6 +23,9 @@ module Engine
 
       # counts_for_limit: set to false if share is disregarded for cert limit
       @counts_for_limit = true
+
+      # last_cert: set to true if share must be bought/issued last from its location
+      @last_cert = false
     end
 
     def id

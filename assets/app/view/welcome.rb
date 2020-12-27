@@ -17,10 +17,9 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>1817WO is now in alpha!</p>
-        <p>1860 is now in alpha!</p>
-        <p>1817NA and 18MEX are now in beta!</p>
-        <p>1817 is in production!</p>
+        <p>18CO: Rock & Stock, 1817WO and 1860 are now in alpha!</p>
+        <p>18MEX is now in beta!</p>
+        <p>1817 and 1817NA are in production!</p>
 
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>

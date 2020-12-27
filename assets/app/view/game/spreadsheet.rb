@@ -20,10 +20,25 @@ module View
       def render
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
+        @delta_value = Lib::Storage['delta_value']
 
         children = []
-        children << h(Bank, game: @game)
+
+        top_line_props = {
+          style: {
+            display: 'grid',
+            grid: 'auto / repeat(auto-fill, minmax(20rem, 1fr))',
+            gap: '3rem 1.2rem',
+          },
+        }
+        top_line = h(:div, top_line_props, [
+          h(Bank, game: @game),
+          h(GameInfo, game: @game, layout: 'upcoming_trains'),
+        ])
+
+        children << top_line
         children << render_table
+        children << render_spreadsheet_controls
 
         h('div#spreadsheet', { style: {
           overflow: 'auto',
@@ -77,11 +92,19 @@ module View
           end
           next if values == last_values
 
+          delta_v = (last_values || Array.new(values.size, 0)).map(&:-@).zip(values).map(&:sum) if @delta_value
           last_values = values
           zebra_row = !zebra_row
+          row_content = values.map.with_index do |v, i|
+            disp_value = @delta_value ? delta_v[i] : v
+            h('td.padded_number',
+              disp_value.negative? ? { style: { color: 'red' } } : {},
+              @game.format_currency(disp_value))
+          end
+
           h(:tr, zebra_props(zebra_row), [
             h('th.left', h.round),
-            *values.map { |v| h('td.padded_number', @game.format_currency(v)) },
+            *row_content,
           ])
         end.compact.reverse
       end
@@ -208,6 +231,15 @@ module View
       def toggle_sort_order
         Lib::Storage['spreadsheet_sort_order'] = @spreadsheet_sort_order == 'ASC' ? 'DESC' : 'ASC'
         update
+      end
+
+      def toggle_delta_value
+        Lib::Storage['delta_value'] = !@delta_value
+        update
+      end
+
+      def render_spreadsheet_controls
+        h(:button, { on: { click: -> { toggle_delta_value } } }, "Show #{@delta_value ? 'Total' : 'Delta'} Value")
       end
 
       def render_corporations
