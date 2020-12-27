@@ -177,7 +177,14 @@ module Engine
             @round.corporations_removing_tokens = [target] + @merging
           else
             tokens = move_tokens_to_surviving(target, @merging)
-            @log << "#{target.name} has tokens (#{tokens.size}: hexes #{tokens.compact}) after merger"
+
+            # Add the $40 token back
+            if target.tokens.size < 3
+              new_token = Engine::Token.new(target, price: 40)
+              target.tokens << new_token
+            end
+
+            @log << "#{target.name} has tokens (#{target.tokens.size}: hexes #{tokens.compact}) after merger"
           end
 
           # Deleting the entity changes turn order, restore it.
