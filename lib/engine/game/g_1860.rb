@@ -79,7 +79,13 @@ module Engine
           desc: 'Use the smaller first edition map suitable for 2-3 players' },
         { sym: :original_insolvency,
           short_name: 'Original insolvency',
-          desc: 'Use the original insolvency rules' },
+          desc: 'Use the original (first edition) insolvency rules' },
+        { sym: :no_skip_towns,
+          short_name: 'No skipping towns',
+          desc: "Use the original (first edition) town rules - they can't be skipped on runs" },
+        { sym: :original_game,
+          short_name: 'First edition rules and map',
+          desc: 'Use all of the first edition rules (smaller map, original insolvency, no skipping towns)' },
       ].freeze
 
       OPTION_REMOVE_HEXES = %w[A5 A7 B4 E11].freeze
@@ -138,6 +144,10 @@ module Engine
 
       def option_original_insolvency?
         @optional_rules&.include?(:original_insolvency) || @optional_rules&.include?(:original_game)
+      end
+
+      def option_no_skip_towns?
+        @optional_rules&.include?(:no_skip_towns) || @optional_rules&.include?(:original_game)
       end
 
       def optional_hexes
@@ -674,9 +684,13 @@ module Engine
         end
       end
 
-      def biggest_train(corporation)
-        val = corporation.trains.map { |t| t.distance[0]['pay'] }.max || 0
-        val
+      def biggest_train_distance(corporation)
+        if (biggest = corporation.trains.max_by { |t| t.distance[0]['pay'] })
+          town_distance = option_no_skip_towns? ? biggest.distance[-1]['pay'] : 9999
+          [biggest.distance[0]['pay'], town_distance]
+        else
+          [0, 0]
+        end
       end
 
       def get_token_cities(corporation)
@@ -691,11 +705,25 @@ module Engine
         tokens
       end
 
-      def node_distance_walk(node, distance, node_distances: {}, corporation: nil, path_distances: {})
-        return if (node_distances[node] || 999) <= distance
+      def smaller_or_equal_distance?(a, b)
+        a ||= [999, 999]
+        a.first <= b.first && a.last <= b.last
+      end
 
-        node_distances[node] = distance
-        distance += 1 if node.city?
+      def merge_distance(a, b)
+        a ||= [999, 999]
+        [[a.first, b.first].min, [a.last, b.last].min]
+      end
+
+      def node_distance_walk(node, distance, node_distances: {}, corporation: nil, path_distances: {})
+        return if smaller_or_equal_distance?(node_distances[node], distance)
+
+        node_distances[node] = merge_distance(node_distances[node], distance)
+        if node.city?
+          distance = [distance.first + 1, distance.last]
+        elsif node.town? && !node.halt?
+          distance = [distance.first, distance.last + 1]
+        end
 
         return if corporation && node.blocks?(corporation)
 
@@ -723,9 +751,9 @@ module Engine
       end
 
       def path_distance_walk(path, distance, skip: nil, jskip: nil, path_distances: {})
-        return if (path_distances[path] || 999) <= distance
+        return if smaller_or_equal_distance?(path_distances[path], distance)
 
-        path_distances[path] = distance
+        path_distances[path] = merge_distance(path_distances[path], distance)
 
         yield path
 
@@ -777,10 +805,10 @@ module Engine
         h_distances = {}
 
         tokens.each do |node|
-          node_distance_walk(node, 0, node_distances: n_distances,
-                                      corporation: corporation, path_distances: p_distances) do |path, dist|
+          node_distance_walk(node, [0, 0], node_distances: n_distances,
+                                           corporation: corporation, path_distances: p_distances) do |path, dist|
             hex = path.hex
-            h_distances[hex] = dist if !h_distances[hex] || h_distances[hex] > dist
+            h_distances[hex] = merge_distance(h_distances[hex], dist)
           end
         end
 
@@ -916,8 +944,19 @@ module Engine
       end
 
       def check_distance(route, visits)
-        # will need to be modifed for original rules option
-        super
+        city_stops = visits.select { |node| node.city? || node.offboard? }
+        town_stops = visits.select { |node| node.town? && !node.halt? }
+
+        # in 1860, unused city/offboard allowance can be used for towns/halts
+        c_allowance = route.train.distance[0]['pay']
+        th_allowance = if !ignore_second_allowance?(route)
+                         [route.train.distance[-1]['pay'] + c_allowance - city_stops.size, 0].max
+                       else
+                         [c_allowance - city_stops.size, 0].max
+                       end
+
+        game_error('Route has too many cities/offboards') if city_stops.size > c_allowance
+        game_error('Route has too many towns') if town_stops.size > th_allowance && option_no_skip_towns?
         game_error('Route cannot begin/end in a halt') if visits.first.halt? || visits.last.halt?
       end
 
@@ -937,8 +976,9 @@ module Engine
         check_hex_reentry(route)
       end
 
-      def maximize_revenue?
-        @nationalization
+      # must stop at all towns on route or must maximize revenue
+      def use_all_towns?
+        @nationalization || option_no_skip_towns?
       end
 
       def ignore_halts?
@@ -978,8 +1018,8 @@ module Engine
                        else
                          c_allowance - cities.size
                        end
-        # if required to maximize revenue only use halts if there aren't enough cities or towns
-        th_allowance = [th_allowance - towns.size, 0].max if maximize_revenue?
+        # if required to use all towns only use halts if there aren't enough cities or towns
+        th_allowance = [th_allowance - towns.size, 0].max if use_all_towns?
         [halts.size, th_allowance].min
       end
 
@@ -1018,7 +1058,7 @@ module Engine
 
         # after adding requested halts, pick highest revenue towns
         towns = visits.select { |node| node.town? && !node.halt? }
-        num_towns = [th_allowance, towns.size].min
+        num_towns = option_no_skip_towns? ? towns.size : [th_allowance, towns.size].min
         if num_towns.positive?
           stops.concat(towns.sort_by { |t| t.uniq_revenues.first }.reverse.take(num_towns))
           th_allowance -= num_towns
