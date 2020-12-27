@@ -98,24 +98,13 @@ module Engine
           return true if current_entity
 
           @game.corporations.dup.each do |source|
-            corporation = find_takeover_corporation(source)
-            execute_takeover!(source, corporation) if corporation
+            next unless source&.owner&.corporation?
+
+            execute_takeover!(source, source.owner)
             return true if current_entity
           end
 
           false
-        end
-
-        def find_takeover_corporation(source)
-          return unless source.floated?
-
-          president_share_count = source.owner.num_shares_of(source)
-          source.corporate_share_holders.each do |c_s_h|
-            corporation, corporate_share_percent = c_s_h
-            return corporation if president_share_count < (corporate_share_percent / source.share_percent)
-          end
-
-          nil
         end
 
         def execute_takeover!(source, destination)
