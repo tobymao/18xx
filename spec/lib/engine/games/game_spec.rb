@@ -224,11 +224,12 @@ module Engine
       },
     },
     GAMES_BY_TITLE['18CO'] => {
-      # Bank Broken
-      19_958 => {
-        'tvahlsing' => 13_185,
-        'WyoBadger' => 13_165,
-        'PeteCal' => 10_869,
+      # Alpha Spec
+      20_125 => {
+        'Dix' => 3_044,
+        'CarlosPalomino ' => 1_571,
+        'Random Guy' => 2_513,
+        'DrAwesome' => 2_888,
       },
     },
     GAMES_BY_TITLE['1867'] => {

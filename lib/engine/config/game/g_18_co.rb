@@ -13,7 +13,7 @@ module Engine
 	"currencyFormatStr": "$%d",
 	"bankCash": 10000,
 	"certLimit": {
-		"3": 19,
+		"3": 17,
 		"4": 14,
 		"5": 12,
 		"6": 10
