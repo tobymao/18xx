@@ -78,6 +78,7 @@ module Engine
         teleport = false
 
         tile_lay_abilities(entity) do |ability|
+          next if ability.owner != entity
           next if ability.hexes.any? && (!ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name))
 
           @game.game_error("Track laid must be connected to one of #{spender.id}'s stations") if ability.reachable &&
