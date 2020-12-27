@@ -64,7 +64,7 @@ module Engine
 
           @game.add_extra_tile(tile) if tile.unlimited
 
-          max_distance = @game.biggest_train(entity)
+          max_distance = @game.biggest_train_distance(entity)
           old_revenues = if old_tile.color == :white
                            []
                          else
