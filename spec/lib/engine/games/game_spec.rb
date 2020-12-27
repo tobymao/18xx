@@ -235,9 +235,9 @@ module Engine
       # Pre-alpha spec
       'hs_ahjzadkh_19792' => {
         'Alice' => 610,
-        'scottredracecar2' => 615,
+        'scottredracecar2' => 655,
         'JenFreeman' => 590,
-        'ChrisRericha' => 425,
+        'ChrisRericha' => 465,
       },
     },
     GAMES_BY_TITLE['1860'] => {
