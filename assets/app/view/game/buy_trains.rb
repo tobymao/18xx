@@ -97,7 +97,11 @@ module View
           },
         }
 
-        children << render_shells
+        if @corporation.system?
+          children << render_shells
+        else
+          store(:active_shell, nil)
+        end
 
         if (step.can_buy_train?(@corporation, @active_shell) && step.room?(@corporation, @active_shell)) ||
            @must_buy_train
@@ -301,11 +305,6 @@ module View
       end
 
       def render_shells
-        unless @corporation.system?
-          store(:active_shell, nil)
-          return
-        end
-
         @active_shell = @corporation.shells.first if !@active_shell || @active_shell.system != @corporation
 
         buttons = @corporation.shells.flat_map do |shell|

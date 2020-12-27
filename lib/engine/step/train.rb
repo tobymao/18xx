@@ -9,6 +9,10 @@ module Engine
       include EmergencyMoney
       def can_buy_train?(entity = nil, _shell = nil)
         entity ||= current_entity
+        can_buy_normal?(entity)
+      end
+
+      def can_buy_normal?(entity)
         can_buy_normal = room?(entity) &&
           buying_power(entity) >= @depot.min_price(entity)
 
@@ -29,8 +33,8 @@ module Engine
         @game.must_buy_train?(entity)
       end
 
-      def president_may_contribute?(_entity, _shell = nil)
-        false
+      def president_may_contribute?(entity, _shell = nil)
+        must_buy_train?(entity)
       end
 
       def should_buy_train?(entity); end
@@ -49,7 +53,7 @@ module Engine
         @game.game_error('Must pay face value') if must_pay_face_value?(train, entity, price)
 
         remaining = price - buying_power(entity)
-        if remaining.positive? && (must_buy_train?(entity) || president_may_contribute?(entity, action.shell))
+        if remaining.positive? && president_may_contribute?(entity, action.shell)
           cheapest = @depot.min_depot_train
           @game.game_error("Cannot purchase #{train.name} train: #{cheapest.name} train available") if
             train != cheapest &&

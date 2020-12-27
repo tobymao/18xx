@@ -407,6 +407,25 @@ module Engine
         super
       end
 
+      def place_home_token(corporation)
+        if corporation.system? && !corporation.tokens.first&.used
+          corporation.corporations.each do |c|
+            token = Engine::Token.new(c)
+            c.tokens << token
+            place_home_token(c)
+            token.swap!(corporation.tokens.find { |t| t.price.zero? && !t.used }, check_tokenable: false)
+          end
+        else
+          super
+        end
+      end
+      
+      def place_blocking_token(hex, city_index: 0)
+        @log << "Placing a blocking token on #{hex.name} (#{hex.location_name})"
+        token = Token.new(@blocking_corporation)
+        hex.tile.cities[city_index].place_token(@blocking_corporation, token, check_tokenable: false)
+      end
+
       private
 
       def setup_minors
@@ -437,25 +456,6 @@ module Engine
         to_remove = @depot.trains.reverse.find { |train| train.name == '5' }
         @depot.remove_train(to_remove)
         @log << "Removing #{to_remove.name} train"
-      end
-
-      def place_home_token(corporation)
-        if corporation.system? && !corporation.tokens.first&.used
-          corporation.corporations.each do |c|
-            token = Engine::Token.new(c)
-            c.tokens << token
-            place_home_token(c)
-            token.swap!(corporation.tokens.find { |t| t.price.zero? && !t.used }, check_tokenable: false)
-          end
-        else
-          super
-        end
-      end
-
-      def place_blocking_token(hex, city_index: 0)
-        @log << "Placing a blocking token on #{hex.name} (#{hex.location_name})"
-        token = Token.new(@blocking_corporation)
-        hex.tile.cities[city_index].place_token(@blocking_corporation, token, check_tokenable: false)
       end
 
       def place_home_blocking_token(corporation, city_index: 0)

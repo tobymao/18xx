@@ -26,7 +26,7 @@ module Engine
 
         def president_may_contribute?(entity, shell = nil)
           shell_empty = shell ? shell.trains.empty? : any_shell_empty?(entity)
-          super || shell_empty
+          super || (shell_empty && !can_buy_normal?(entity))
         end
 
         private
@@ -35,6 +35,10 @@ module Engine
           return [] unless entity.system?
 
           entity.shells.select { |shell| shell.trains.size < @game.train_limit(entity) }
+        end
+
+        def can_buy_normal?(entity)
+          room?(entity) && buying_power(entity) >= @depot.min_price(entity)
         end
 
         def any_shell_empty?(entity)
