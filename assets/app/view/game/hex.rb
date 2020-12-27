@@ -16,6 +16,9 @@ module View
 
       SIZE = 100
 
+      FRAME_COLOR_STROKE_WIDTH = 10
+      FRAME_COLOR_POINTS = Lib::Hex.points(scale: 1 - ((FRAME_COLOR_STROKE_WIDTH + 1) / 2) / Lib::Hex::Y_B).freeze
+
       LAYOUT = {
         flat: [SIZE * 3 / 2, SIZE * Math.sqrt(3) / 2],
         pointy: [SIZE * Math.sqrt(3) / 2, SIZE * 3 / 2],
@@ -58,6 +61,15 @@ module View
         end
         children << h(TriangularGrid) if Lib::Params['grid']
         children << h(TileUnavailable, unavailable: @unavailable, layout: @hex.layout) if @unavailable
+
+        if @tile&.frame && @tile&.frame.color
+          attrs = {
+            stroke: @tile&.frame.color,
+            'stroke-width': FRAME_COLOR_STROKE_WIDTH,
+            points: FRAME_COLOR_POINTS,
+          }
+          children.insert(1, h(:polygon, attrs: attrs))
+        end
 
         props = {
           key: @hex.id,
