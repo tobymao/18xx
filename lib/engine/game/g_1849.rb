@@ -130,6 +130,10 @@ module Engine
       def remove_corp
         removed = @corporations.pop
         @log << "Removed #{removed.name}"
+        return if removed.name == 'AFG'
+
+        hex_by_id(removed.coordinates).tile.city_towns.first.remove_reservation!(removed)
+        @log << "Removed token reservation at #{removed.coordinates}"
       end
 
       def num_trains(train)
@@ -202,6 +206,7 @@ module Engine
 
       def new_stock_round
         @corporations.each { |c| c.closed_recently = false }
+        @messina_upgradeable = true
         super
       end
 
@@ -342,18 +347,25 @@ module Engine
         end
       end
 
+      def upgrades_to?(from, to, special = false)
+        super && (from.hex.id != 'B14' || @messina_upgradeable)
+      end
+
       def legal_tile_rotation?(corp, hex, tile)
         connection_directions = graph.connected_hexes(corp).find { |k, _| k.id == hex.id }[1]
+        ever_not_nil = false # to permit teleports and SFA/AFG initial tile lay
         connection_directions.each do |dir|
           connecting_path = tile.paths.find { |p| p.exits.include?(dir) }
           next unless connecting_path
 
-          connecting_track = connecting_path.track
           neighboring_tile = hex.neighbors[dir].tile
           neighboring_path = neighboring_tile.paths.find { |p| p.exits.include?(Engine::Hex.invert(dir)) }
-          return true if neighboring_path.tracks_match(connecting_track)
+          if neighboring_path
+            ever_not_nil = true
+            return true if connecting_path.tracks_match(neighboring_path, dual_ok: true)
+          end
         end
-        false
+        !ever_not_nil
       end
 
       def can_par?(corporation, _parrer)
@@ -396,13 +408,29 @@ module Engine
 
       def event_earthquake!
         @log << '-- Event: Messina Earthquake --'
-        # Remove tile from Messina
+        messina = @hexes.find { |h| h.id == 'B14' }
 
-        # Remove from game tokens on Messina
+        city = messina.tile.cities[0]
 
         # If Garibaldi's only token removed, close Garibaldi
+        if (garibaldi = @corporations.find { |c| c.name == 'AFG' })
+          if city.tokened_by?(garibaldi) && garibaldi.placed_tokens.one?
+            @log << '-- AFG loses only token, closing. --'
+            close_corporation(garibaldi)
+          end
+        end
+
+        # Remove from game tokens on Messina
+        @log << '-- Removing tokens from game. --'
+        city.tokens.each { |t| t&.destroy! }
+
+        # Remove tile from Messina
+        @log << '-- Returning Messina to yellow. --'
+        messina.lay_downgrade(messina.original_tile)
 
         # Messina cannot be upgraded until after next stock round
+        @log << '-- Messina cannot be upgraded until after the next stock round. --'
+        @messina_upgradeable = false
       end
     end
   end
