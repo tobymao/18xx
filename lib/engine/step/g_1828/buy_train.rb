@@ -18,11 +18,13 @@ module Engine
 
         def room?(entity, shell = nil)
           return super unless entity.system?
+
           shell ? shell.trains.size < @game.phase.train_limit(entity) : shells_with_room(entity).any?
         end
 
         def president_may_contribute?(entity, shell = nil)
           shell_empty = shell ? shell.trains.empty? : empty_shells(entity).any?
+
           (super || shell_empty) && ebuy_president_can_contribute?(entity)
         end
 
@@ -30,11 +32,13 @@ module Engine
 
         def shells_with_room(entity)
           return [] unless entity.system?
+
           entity.shells.select { |shell| shell.trains.size < @game.phase.train_limit(entity) }
         end
 
         def empty_shells(entity)
           return [] unless entity.system?
+
           entity.shells.select { |shell| shell.trains.empty? }
         end
       end

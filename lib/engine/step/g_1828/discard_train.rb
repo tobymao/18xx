@@ -26,7 +26,8 @@ module Engine
 
         def trains(corporation)
           return super unless corporation.system?
-          corporation.shells.find {|s| s.trains.size > @game.phase.train_limit(corporation) }.trains
+
+          corporation.shells.find { |s| s.trains.size > @game.phase.train_limit(corporation) }.trains
         end
       end
     end

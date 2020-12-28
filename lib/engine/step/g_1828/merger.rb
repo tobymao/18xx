@@ -16,7 +16,7 @@ module Engine
         def actions(_entity)
           return [] unless merge_in_progress?
 
-          [:select_target, :failed].include?(@state) ? MERGE_ACTIONS : CHOOSE_ACTIONS
+          %i[select_target failed].include?(@state) ? MERGE_ACTIONS : CHOOSE_ACTIONS
         end
 
         def description
@@ -25,7 +25,7 @@ module Engine
           elsif @state == :select_target
             "Select a corporation to merge with #{mergeable_entity.name}"
           else
-            "Merge failed"
+            'Merge failed'
           end
         end
 
@@ -96,7 +96,11 @@ module Engine
           merge_corporations if @state == :token_removal
           return [] unless merge_in_progress?
 
-          (!@state || @state == :select_target) ? [@round.acting_player] : [@players.first]
+          if !@state || @state == :select_target
+            [@round.acting_player]
+          else
+            [@players.first]
+          end
         end
 
         def mergeable_entities(entity = @round.acting_player, corporation = mergeable_entity)

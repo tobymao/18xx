@@ -242,10 +242,10 @@ module Engine
                   (!candidate.floated? && !corporation.floated?)
 
           # account for another player having 5+ shares
-          @players.any? do |player|
-            num_shares = player.num_shares_of(candidate) + player.num_shares_of(corporation)
+          @players.any? do |p|
+            num_shares = p.num_shares_of(candidate) + p.num_shares_of(corporation)
             num_shares >= 6 ||
-              (num_shares == 5 && !sold_this_round?(player, candidate) && !sold_this_round?(player, corporation))
+              (num_shares == 5 && !sold_this_round?(p, candidate) && !sold_this_round?(p, corporation))
           end
         end
       end
@@ -445,7 +445,7 @@ module Engine
           super
         end
       end
-      
+
       def place_blocking_token(hex, city_index: 0)
         @log << "Placing a blocking token on #{hex.name} (#{hex.location_name})"
         token = Token.new(@blocking_corporation)
