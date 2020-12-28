@@ -26,7 +26,7 @@ module View
           @step = @game.round.active_step
           @current_actions = @step.current_actions
           @auctioning_corporation = @step.auctioning_corporation if @step.respond_to?(:auctioning_corporation)
-          @merging_corporation = @step.merging_corporation if @step.respond_to?(:merging_corporation)
+          @mergeable_entity = @step.mergeable_entity if @step.respond_to?(:mergeable_entity)
           @selected_corporation ||= @auctioning_corporation
 
           @price_protection = @step.price_protection if @step.respond_to?(:price_protection)
@@ -63,7 +63,9 @@ module View
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
           children.concat(render_bank_companies)
           children << h(Players, game: @game)
-          children << h(BuyCompanyFromOtherPlayer, game: @game) if @step.purchasable_companies(@current_entity).any?
+          if @step.respond_to?(:purchasable_companies) && @step.purchasable_companies(@current_entity).any?
+            children << h(BuyCompanyFromOtherPlayer, game: @game)
+          end
           children << h(StockMarket, game: @game)
 
           h(:div, children)
@@ -80,7 +82,7 @@ module View
           merge = lambda do
             if @selected_corporation
               process_action(Engine::Action::Merge.new(
-                @merging_corporation,
+                @mergeable_entity,
                 corporation: @selected_corporation,
               ))
             else
@@ -88,7 +90,7 @@ module View
             end
           end
 
-          [h(:button, { on: { click: merge } }, @step.merge_name)]
+          [h(:button, { on: { click: merge } }, @step.merge_action)]
         end
 
         def render_corporations
@@ -101,7 +103,7 @@ module View
 
           @game.sorted_corporations.reject(&:closed?).map do |corporation|
             next if @auctioning_corporation && @auctioning_corporation != corporation
-            next if @merging_corporation && @merging_corporation != corporation
+            next if @mergeable_entity && @mergeable_entity != corporation
             next if @price_protection && @price_protection.corporation != corporation
 
             children = []
@@ -181,7 +183,7 @@ module View
 
           mergeable_entities = @step.mergeable_entities
           player_corps = mergeable_entities.select do |target|
-            target.owner == @merging_corporation.owner || @step.show_other_players
+            target.owner == @mergeable_entity.owner || @step.show_other_players
           end
           @selected_corporation = player_corps.first if player_corps.one?
           return unless mergeable_entities
@@ -193,12 +195,12 @@ module View
               margin: '0.5rem 1rem 0 0',
             },
           }
-          children << h(:div, props, @step.mergeable_type(@merging_corporation))
+          children << h(:div, props, @step.mergeable_type(@mergeable_entity))
 
           hidden_corps = false
           @show_other_players = true if @step.show_other_players
           mergeable_entities.each do |target|
-            if @show_other_players || target.owner == @merging_corporation.owner || !target.owner
+            if @show_other_players || target.owner == @mergeable_entity.owner || !target.owner
               children << h(Corporation, corporation: target, selected_corporation: @selected_corporation)
             else
               hidden_corps = true

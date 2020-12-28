@@ -23,7 +23,7 @@ module Engine
 
         def president_may_contribute?(entity, shell = nil)
           shell_empty = shell ? shell.trains.empty? : empty_shells(entity).any?
-          super || (shell_empty && !can_buy_normal?(entity))
+          (super || shell_empty) && ebuy_president_can_contribute?(entity)
         end
 
         private

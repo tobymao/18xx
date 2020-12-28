@@ -22,7 +22,7 @@ module Engine
 
         def process_start_merge(action)
           @game.game_error('No eligible corporation to merge with') unless can_merge?(action.entity, action.corporation)
-          @round.merging_corporation = action.corporation
+          @round.merge_initiator = action.corporation
           @round.acting_player = action.entity
 
           @round.last_to_act = action.entity
@@ -42,25 +42,7 @@ module Engine
         end
 
         def can_merge?(entity, corporation)
-          return false if corporation.owner != entity
-          return false if corporation.system?
-
-          corporations = @game.corporations.select do |candidate|
-            next if candidate == corporation ||
-                    candidate.system? ||
-                    !candidate.ipoed ||
-                    (corporation.owner != entity && candidate.owner != entity) ||
-                    candidate.operated? != corporation.operated? ||
-                    (!candidate.floated? && !corporation.floated?)
-
-            # account for another player having 5+ shares
-            @game.players.any? do |player|
-              num_shares = player.num_shares_of(candidate) + player.num_shares_of(corporation)
-              num_shares >= 6 ||
-                (num_shares == 5 && !did_sell?(player, candidate) && !did_sell?(player, corporation))
-            end
-          end
-          corporations.any?
+          @game.merge_candidates(entity, corporation).any?
         end
       end
     end

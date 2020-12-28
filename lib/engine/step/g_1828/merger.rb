@@ -16,14 +16,16 @@ module Engine
         def actions(_entity)
           return [] unless merge_in_progress?
 
-          @state == :select_target ? MERGE_ACTIONS : CHOOSE_ACTIONS
+          [:select_target, :failed].include?(@state) ? MERGE_ACTIONS : CHOOSE_ACTIONS
         end
 
         def description
           if @player_choice
             @player_choice.step_description
+          elsif @state == :select_target
+            "Select a corporation to merge with #{mergeable_entity.name}"
           else
-            "Select a corporation to merge with #{merging_corporation.name}"
+            "Merge failed"
           end
         end
 
@@ -32,18 +34,18 @@ module Engine
         end
 
         def merge_in_progress?
-          merging_corporation
+          mergeable_entity
         end
 
         def process_merge(action)
           @target = action.corporation
           @game.game_error('Invalid action') unless @state == :select_target
-          @game.game_error('Wrong company') unless action.entity == merging_corporation
-          unless mergeable_entities(@round.acting_player, merging_corporation).include?(@target)
-            @game.game_error("Unable to merge #{merging_corporation.name} with #{action.corporation.name}")
+          @game.game_error('Wrong company') unless action.entity == mergeable_entity
+          unless mergeable_entities(@round.acting_player, mergeable_entity).include?(@target)
+            @game.game_error("Unable to merge #{mergeable_entity.name} with #{action.corporation.name}")
           end
 
-          @merger = merging_corporation
+          @merger = mergeable_entity
           merge_corporations
         end
 
@@ -57,41 +59,53 @@ module Engine
           merge_corporations
         end
 
-        def merge_name
-          'Merge'
+        def merge_action
+          @state == :failed ? 'Acknowledge' : 'Merge'
         end
 
         def mergeable_type(corporation)
           "Corporations that can merge with #{corporation.name}"
         end
 
-        def merging_corporation
-          @state = :select_target if !@state && @round.merging_corporation
-          @system || @round.merging_corporation
+        def mergeable_entity
+          @state = :select_target if !@state && @round.merge_initiator
+          @system || @round.merge_initiator
+        end
+
+        def merging_corporations
+          [@merger, @target]
         end
 
         def choice_name
-          @player_choice ? @player_choice.choice_description : 'And so here we are'
+          @player_choice&.choice_description
         end
 
         def choices
-          @player_choice ? @player_choice.choices : ['DONE']
+          @player_choice&.choices
         end
 
         def show_other_players
           false
         end
 
+        def choice_available?(entity)
+          @player_choice && entity == @players.first
+        end
+
         def active_entities
           merge_corporations if @state == :token_removal
           return [] unless merge_in_progress?
 
-          @state == :select_target ? [@round.acting_player] : [@players.first]
+          (!@state || @state == :select_target) ? [@round.acting_player] : [@players.first]
+        end
+
+        def mergeable_entities(entity = @round.acting_player, corporation = mergeable_entity)
+          @game.merge_candidates(entity, corporation)
         end
 
         def round_state
           {
-            merging_corporation: nil,
+            merge_initiator: nil,
             acting_player: nil,
           }
         end
@@ -118,28 +132,6 @@ module Engine
           include Engine::ShareHolder
         end
 
-        def corporations
-          [@merger, @target]
-        end
-
-        def mergeable_entities(entity = @round.acting_player, corporation = @round.merging_corporation)
-          return [] if corporation.owner != entity
-
-          @game.corporations.select do |candidate|
-            next if candidate == corporation ||
-                    !candidate.ipoed ||
-                    candidate.operated? != corporation.operated? ||
-                    (!candidate.floated? && !corporation.floated?)
-
-            # Mergeable not possible unless a player owns 5+ shares between the corporations
-            @game.players.any? do |player|
-              num_shares = player.num_shares_of(candidate) + player.num_shares_of(corporation)
-              num_shares >= 6 ||
-                (num_shares == 5 && !did_sell?(player, candidate) && !did_sell?(player, corporation))
-            end
-          end
-        end
-
         def merge_corporations
           if @state == :select_target
             create_system
@@ -149,14 +141,6 @@ module Engine
           enter_exchange_pairs_state if @state == :token_removal && !@round.corporation_removing_tokens
 
           if @state == :exchange_pairs
-            @players.each do |p|
-              if (share = p.shares_of(@merger).find(&:president))
-                share.transfer(@used)
-              end
-              if (share = p.shares_of(@target).find(&:president))
-                share.transfer(@used)
-              end
-            end
             while @players.any?
               exchange_pairs(@players.first)
               return if @player_choice
@@ -180,6 +164,7 @@ module Engine
 
           exchange_pairs(@game.share_pool)
           exchange_singles(@game.share_pool)
+          combine_ipo_shares
           exchange_pairs(@merger)
           exchange_singles(@merger)
           exchange_discarded_shares
@@ -211,12 +196,12 @@ module Engine
           @target = nil
           @players = nil
           @system = nil
-          @round.merging_corporation = nil
+          @round.merge_initiator = nil
           @round.acting_player = nil
         end
 
         def create_system
-          @system = @game.create_system(corporations)
+          @system = @game.create_system(merging_corporations)
 
           used_tokens = @system.tokens.select(&:used)
           if (hexes = used_tokens.group_by { |t| t.city.tile.hex }.select { |_k, v| v.size > 1 }.keys).any?
@@ -224,25 +209,32 @@ module Engine
             @round.hexes_to_remove_tokens = hexes
           end
 
-          @log << "Merging #{@target.name} into #{@merger.name}. #{@merger.name} " \
-                  "receives #{@game.format_currency(@target.cash)} cash, " \
-                  "trains (#{@target.trains.map(&:name).join(', ')}), and tokens (#{@target.tokens.size}). " \
+          trains = @system.trains.any? ? @system.trains.map(&:name).join(', ') : 'None'
+          @log << "Merging #{@target.name} into #{@merger.name}. #{@merger.name} system " \
+                  "receives #{@game.format_currency(@system.cash)} cash, " \
+                  "trains (#{trains}), and tokens (#{@target.tokens.size}). " \
                   "New share price is #{@game.format_currency(@merger.share_price.price)}. "
+        end
+
+        def combine_ipo_shares
+          @target.num_shares_of(@target).times { @target.shares_of(@target).first.transfer(@merger) }
         end
 
         def exchange_pairs(entity)
           return unless entity.num_shares_of(@merger) + entity.num_shares_of(@target) >= 2
 
+          # Determine which share not to trade-in if entity has an odd number of shares
           hide_odd_share(entity)
           return if @player_choice
 
+          # Determine where the system share will come from
           from = exchange_source(entity)
           return if @player_choice
           return entity.shares_of(@target).each { |share| share.transfer(@discard) } unless from
 
-          # Execute trade if needed
+          # Execute trade if the system share comes from another player
           if from != entity && from.player?
-            trade_share(entity, @target, @player_selection, @merger)
+            trade_share(entity, @target, from, @merger)
             from = entity
           end
 
@@ -255,7 +247,6 @@ module Engine
           entity.shares_of(share_corps.first).first.transfer(from) unless entity == from
           entity.shares_of(share_corps.last).first.transfer(@discard)
           from.shares_of(@merger).first.transfer(@used)
-
           @system.shares_of(@system).first.transfer(entity) unless entity == @merger
 
           msg = if share_corps.uniq.size == 2
@@ -265,7 +256,9 @@ module Engine
                 end
           @log << "#{entity.name} exchanges #{msg} for a system share"
 
+          # Repeat until all pairs owned by the entity are exchanged
           exchange_pairs(entity) if entity.num_shares_of(@merger).positive? || entity.num_shares_of(@target).positive?
+
           restore_odd_share(entity)
         end
 
@@ -280,9 +273,9 @@ module Engine
           elsif entity.player? &&
                 entity.num_shares_of(@merger) > num_system_shares &&
                 entity.num_shares_of(@target).positive?
-            @player_choice = PlayerChoice.new(step_description: 'Choose which share to keep after pairs are exchanged',
+            @player_choice = PlayerChoice.new(step_description: 'Choose Share Not to Exchange',
                                               choice_description: 'Choose share',
-                                              choices: corporations.map(&:name))
+                                              choices: merging_corporations.map(&:name))
             return
           elsif entity.num_shares_of(@merger) <= num_system_shares
             @odd_share = entity.shares_of(@target).first
@@ -299,6 +292,7 @@ module Engine
         def exchange_singles(entity)
           return if entity.num_shares_of(@merger).zero? && entity.num_shares_of(@target).zero?
 
+          # Determine if the entity can exchange a single share for a system sahre
           corp = entity.num_shares_of(@merger).positive? ? @merger : @target
           if entity.player? &&
               ([@merger, @target].any? { |c| sold_share?(entity, c) } ||
@@ -312,17 +306,18 @@ module Engine
             return
           end
 
+          # Determine where the system share will come from
           from = exchange_source(entity)
           return if @player_choice
           return entity.shares_of(@target).each { |share| share.transfer(@discard) } unless from
 
-          # Execute trade if needed
+          # Execute trade if the system share comes from another player
           if from != entity && from.player?
-            trade_share(entity, @target, @player_selection, @merger)
+            trade_share(entity, @target, from, @merger)
             from = entity
           end
 
-          # Exchange the share
+          # Exchange the share and pay the difference in cost
           share_corp = from == entity ? @merger : @target
           payment_msg = ''
           if entity.player?
@@ -347,7 +342,7 @@ module Engine
             source = @discard
           elsif (players = @players.select { |p| p.num_shares_of(@merger).positive? }).any?
             if players.size > 1 && !@player_selection
-              @player_choice = PlayerChoice.new(step_description: 'Choose which player to trade for system share',
+              @player_choice = PlayerChoice.new(step_description: 'Choose Player to Trade with for a System Share',
                                                 choice_description: 'Choose player',
                                                 choices: players.map(&:name))
               return
@@ -367,20 +362,23 @@ module Engine
           player_a.shares_of(corporation_a).first.transfer(player_b)
           player_b.shares_of(corporation_b).first.transfer(player_a)
 
-          msg = ''
+          msg = nil
           cash_difference = corporation_b.share_price.price - corporation_a.share_price.price
           if cash_difference.positive?
             @game.bank.spend(cash_difference, player_b)
+
             msg = "#{player_b.name} receives #{@game.format_currency(cash_difference)} from the bank."
           elsif cash_difference.negative?
-            cash_difference *= -1
+            cash_difference = cash_difference.abs
             if player_b.cash >= cash_difference
               player_b.spend(cash_difference, @game.bank)
+
               msg = "#{player_b.name} pays #{@game.format_currency(cash_difference)} to the bank."
             else
               player_b.shares_of(corporation_a).first.transfer(@discard)
               sold_share(player_b, corporation_a)
               @game.bank.spend(corporation_b.share_price.price, player_b)
+
               msg = "#{player_b.name} must discard the #{corporation_a.name} share and receives " \
                     "#{@game.format_currency(corporation_b.share_price.price)} from the bank."
             end
@@ -405,8 +403,6 @@ module Engine
           # Selling either corporation this round constitutes as a sale of the system
           players.each { |p| sold_share(p, @system) if sold_share?(p, @target) || sold_share?(p, @merger) }
 
-          # TODO: Determine proper president
-
           # Donate share
           if (president = players.find { |p| p.shares_of(@system).find(&:president) })
             if president.num_shares_of(@system) >= 3
@@ -416,14 +412,15 @@ module Engine
               share.buyable = false
               @game.share_pool.transfer_shares(share.to_bundle, @system)
             else
-              puts 'Bad case'
-              # TODO: Merge failed -- need to implement
+              @state = :failed
+              return
+              # TODO: Implement multi-turn undo
             end
           end
 
           unless @system.floated?
             @system.spend(@system.cash, @game.bank)
-            @log << "#{@system.name} not yet floated. Discarding treasury."
+            @log << "#{@system.name} not yet floated, discarding treasury."
           end
 
           (@discard.shares_of(@merger) + @used.shares_of(@merger)).each { |s| s.transfer(s.corporation) }
