@@ -376,6 +376,7 @@ module Engine
         20,
         40
       ],
+      "type": "major",
       "color": "green"
     },
     {
