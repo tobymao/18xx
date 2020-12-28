@@ -18,6 +18,8 @@ module Engine
       def self.title
         '18Chesapeake After Dark'
       end
+
+      def or_set_finished; end
     end
   end
 end
