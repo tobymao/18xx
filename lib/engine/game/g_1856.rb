@@ -181,6 +181,7 @@ module Engine
         @pre_national_market_percent = 0
 
         @pre_national_market_prices = {}
+        @nationalized_corps = []
 
 
         # Is the president of the national a "false" president?
@@ -417,7 +418,8 @@ module Engine
         # Shares
         merge_major_shares(major)
         @pre_national_market_prices[major.name] = major.share_price.price
-        major.close!
+        @nationalized_corps << major
+        # Corporation will close soon, but not now. See post_corp_nationalization
         @nationalizables.delete(major)
         post_corp_nationalization
       end
@@ -540,6 +542,54 @@ module Engine
             end
           end
         end
+
+        # Now that shares and president are determined, it's time to do presidential things
+
+        # Token swap
+        # The CGR has ten station markers. Up to ten station markers of the absorbed companies are exchanged for CGR
+        # tokens. All home station markers must be replaced first. Then the other station markers are replaced in
+        # whatever order the president chooses. Because the CGR cannot have two or more station markers on the same
+        # tile, the president of the CGR may choose which one to use, except that exchanging a company's home station
+        # marker must take precedence. All station markers that can be legally exchanged must be, even if the president
+        # would rather not do so. Further station markers may be placed during operating rounds at a cost of $100 each.
+        exchange_tokens = @national.tokens.dup
+
+        # Homes first, those are mandatory
+        # The case where all 11 corporations are nationalized is undefined behavior in the rules;
+        #  The national only has 10 tokens but home tokens are mandatory. This is exceedingly bad play
+        #  so it shouldn't ever happen..
+        home_bases = @nationalized_corps.map { |c| nationalize_home_token(c, exchange_tokens.shift()) }
+        # Other tokens second, ignoring duplicates from the home token set
+        # TODO:
+
+        # Close corporations
+        @nationalized_corps.each { |c| close_corporation(c) }
+          # Reduce the nationals train holding limit to the real value
+        # (It was artificially high to avoid forced discard triggering early)
+        # TODO: Do it.
+      end
+
+      # Convert the home token of the corporation to one of the national's
+      # Return the nationalized corps home coordinates
+      def nationalize_home_token(corp, exchange_token)
+        if exchange_token.nil?
+          # Why would this ever happen?
+          @log << "#{national.name} is out of tokens and does not get a token for #{corp.name}'s home"
+          return
+        end
+        # A nationalized corporation needs to have a loan which means it needs to have operated so it must have a home
+        home_token = corp.tokens.first
+
+        replace_token(corp, home_token, exchange_token)
+
+        corp.coordinates
+      end
+
+      def replace_token(major, major_token, exchange_token)
+        city = major_token.city
+        @log << "#{major.name}'s token in #{city.hex.name} is replaced with a #{@national.name} token"
+        major_token.remove!
+        city.place_token(@national, exchange_token, check_tokenable: false)
       end
 
       def nationalizable_corporations

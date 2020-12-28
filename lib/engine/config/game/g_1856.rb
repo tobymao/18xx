@@ -526,6 +526,7 @@ module Engine
         100,
         100,
         100,
+        100,
         100
       ],
       "color": "cgrBlack",
