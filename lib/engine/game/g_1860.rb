@@ -502,11 +502,23 @@ module Engine
       end
 
       def status_str(corp)
-        status = 'Insolvent' if insolvent?(corp)
-        status = status ? status + ', Receivership' : 'Receivership' if corp.receivership?
-        status = status ? status + ', Bankrupt' : 'Bankrupt' if bankrupt?(corp)
-        status = status ? status + ', Nationalized' : 'Nationalized' if nationalized?(corp)
-        status
+        layer_str = "Layer #{corp_layer(corp)}"
+        layer_str += ' (N/A)' unless can_ipo?(corp)
+
+        prices = par_prices(corp).map(&:price).sort
+        par_str = if !corp.ipoed && bankrupt?(corp)
+                    " | Par #{prices[0]}-#{prices[-1]}"
+                  elsif !corp.ipoed
+                    " | Par #{prices.join(', ')}"
+                  else
+                    ''
+                  end
+
+        status = ' | Inslvt' if insolvent?(corp)
+        status = status ? status + ',Rcv' : ' | Rcv' if corp.receivership?
+        status = status ? status + ',Bkrpt' : ' | Bkrpt' if bankrupt?(corp)
+        status = status ? status + ',Nat' : ' | Nat' if nationalized?(corp)
+        layer_str + par_str + (status || '')
       end
 
       def corp_hi_par(corp)
