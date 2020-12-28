@@ -413,7 +413,16 @@ module Engine
         # TODO: Implement tunnel / bridge rights
 
         # Tokens:
-        # TODO: this should probably be after president is determined.
+        # Remove reservations
+
+        hexes.each do |hex|
+          hex.tile.cities.each do |city|
+            if city.tokened_by?(major)
+              city.tokens.map! { |token| token&.corporation == major ? nil : token }
+              city.reservations.delete(major)
+            end
+          end
+        end
 
         # Shares
         merge_major_shares(major)
@@ -552,16 +561,30 @@ module Engine
         # tile, the president of the CGR may choose which one to use, except that exchanging a company's home station
         # marker must take precedence. All station markers that can be legally exchanged must be, even if the president
         # would rather not do so. Further station markers may be placed during operating rounds at a cost of $100 each.
-        exchange_tokens = @national.tokens.dup
 
         # Homes first, those are mandatory
         # The case where all 11 corporations are nationalized is undefined behavior in the rules;
         #  The national only has 10 tokens but home tokens are mandatory. This is exceedingly bad play
         #  so it shouldn't ever happen..
-        home_bases = @nationalized_corps.map { |c| nationalize_home_token(c, exchange_tokens.shift()) }
+        home_bases = @nationalized_corps.map do |c| 
+          nationalize_home_token(c, create_national_token())
+        end
+        # So the national will get 11 tokens if and only if all 11 majors merge in
+        remaining_tokens = [10 - home_bases.size, 0].min
         # Other tokens second, ignoring duplicates from the home token set
         # TODO:
+        @nationalized_corps.each do |corp|
+        end
+        # Remove duplicates (OO) first
+        # remove_duplicate_tokens(buyer, acquired_corp)
 
+        # Then reduce down to limit
+        if @national.tokens.size > 10
+          @log << "#{@national.name} will is above token limit and must decide which tokens to remove"
+          @round.corporations_removing_tokens = [buyer, acquired_corp]
+        end
+        @log << "#{@national.name} has #{remaining_tokens} spare #{format_currency(100)} tokens"
+        remaining_tokens.times { @national.tokens << Engine::Token.new(@national, price:100) }
         # Close corporations
         @nationalized_corps.each { |c| close_corporation(c) }
           # Reduce the nationals train holding limit to the real value
@@ -569,10 +592,29 @@ module Engine
         # TODO: Do it.
       end
 
+      # Creates and returns a token for the national 
+      def create_national_token()
+        token = Engine::Token.new(@national, price: 100)
+        @national.tokens << token
+        token
+      end
+
+      def remove_duplicate_tokens(surviving, others)
+        # If there are 2 station markers on the same city the
+        # surviving company must remove one and place it on its charter.
+        # In the case of NY tiles this is ambigious and must be solved by the user
+
+        others = others_tokens(others).map(&:city).compact
+        surviving.tokens.each do |token|
+          city = token.city
+          token.remove! if others.include?(city)
+        end
+      end
+
       # Convert the home token of the corporation to one of the national's
       # Return the nationalized corps home coordinates
-      def nationalize_home_token(corp, exchange_token)
-        if exchange_token.nil?
+      def nationalize_home_token(corp, token)
+        if token.nil?
           # Why would this ever happen?
           @log << "#{national.name} is out of tokens and does not get a token for #{corp.name}'s home"
           return
@@ -580,16 +622,16 @@ module Engine
         # A nationalized corporation needs to have a loan which means it needs to have operated so it must have a home
         home_token = corp.tokens.first
 
-        replace_token(corp, home_token, exchange_token)
+        replace_token(corp, home_token, token)
 
         corp.coordinates
       end
 
-      def replace_token(major, major_token, exchange_token)
+      def replace_token(major, major_token, token)
         city = major_token.city
         @log << "#{major.name}'s token in #{city.hex.name} is replaced with a #{@national.name} token"
         major_token.remove!
-        city.place_token(@national, exchange_token, check_tokenable: false)
+        city.place_token(@national, token, check_tokenable: false)
       end
 
       def nationalizable_corporations

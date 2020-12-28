@@ -517,18 +517,7 @@ module Engine
       "sym": "CGR",
       "logo": "1856/CGR",
       "name": "Canadian Government Railway",
-      "tokens": [
-        100,
-        100,
-        100,
-        100,
-        100,
-        100,
-        100,
-        100,
-        100,
-        100
-      ],
+      "tokens": [],
       "color": "cgrBlack",
       "abilities": [
          {
