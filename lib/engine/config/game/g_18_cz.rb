@@ -550,9 +550,245 @@ module Engine
     {
       "name": "2",
       "distance": 2,
-      "price": 80,
+      "price": 70,
       "rusts_on": "4",
-      "num": 6
+      "num": 5
+    },
+    {
+      "name": "2+",
+      "distance": 2,
+      "price": 70,
+      "rusts_on": "4",
+      "num": 4,
+      "variants": [
+        {
+          "name": "2+2",
+          "rusts_on": "4+4",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 3
+            }
+          ],
+          "price": 80
+        }
+     ]
+    },
+    {
+      "name": "3",
+      "distance": 3,
+      "price": 120,
+      "rusts_on": "5",
+      "num": 4,
+      "variants": [
+        {
+          "name": "2+2",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 3
+            }
+          ],
+          "price": 80
+        }
+     ]
+    },
+    {
+      "name": "3+",
+      "distance": 3,
+      "price": 120,
+      "rusts_on": "5",
+      "num": 4,
+      "variants": [
+        {
+          "name": "3+3",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 3
+            }
+          ],
+          "price": 180
+        },
+        {
+          "name": "3E",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 3
+            }
+          ],
+          "price": 250
+        }
+     ]
+    },
+    {
+      "name": "4",
+      "distance": 4,
+      "price": 250,
+      "num": 4,
+      "variants": [
+        {
+          "name": "3+3",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 3
+            }
+          ],
+          "price": 180
+        },
+        {
+          "name": "3E",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 3
+            }
+          ],
+          "price": 250
+        }
+     ]
+    },
+    {
+      "name": "4+",
+      "distance": 4,
+      "price": 250,
+      "num": 4,
+      "variants": [
+        {
+          "name": "4+4",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 4
+            }
+          ],
+          "price": 400
+        },
+        {
+          "name": "4E",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 3
+            }
+          ],
+          "price": 350
+        }
+     ]
+    },
+    {
+      "name": "5",
+      "distance": 4,
+      "price": 350,
+      "num": 4,
+      "variants": [
+        {
+          "name": "4+4",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 4
+            }
+          ],
+          "price": 400
+        },
+        {
+          "name": "4E",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 3
+            }
+          ],
+          "price": 350
+        }
+     ]
+    },
+    {
+      "name": "5+",
+      "distance": 4,
+      "price": 350,
+      "num": 2,
+      "variants": [
+        {
+          "name": "5+5",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 4
+            }
+          ],
+          "price": 500
+        },
+        {
+          "name": "5E",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 3
+            }
+          ],
+          "price": 700
+        }
+     ]
+    },
+    {
+      "name": "5++",
+      "distance": 4,
+      "price": 350,
+      "num": 2,
+      "variants": [
+        {
+          "name": "5+5",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 4
+            }
+          ],
+          "price": 500
+        },
+        {
+          "name": "6E",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 3
+            }
+          ],
+          "price": 800
+        }
+     ]
+    },
+    {
+      "name": "5+++",
+      "distance": 4,
+      "price": 350,
+      "num": 30,
+      "variants": [
+        {
+          "name": "5+5",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 4
+            }
+          ],
+          "price": 500
+        },
+        {
+          "name": "8E",
+          "distance": [
+            {
+              "nodes": ["city", "offboard"],
+              "distance": 3
+            }
+          ],
+          "price": 1000
+        }
+     ]
     }
   ],
   "hexes": {
