@@ -51,6 +51,7 @@ module Engine
         end
 
         def can_payoff?(entity)
+          @unpaid_loans ||= 0
           entity == @buyer && @unpaid_loans.positive? && @buyer.cash >= @game.loan_value && !@passed_payoff_loans
         end
 

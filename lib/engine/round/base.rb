@@ -110,7 +110,6 @@ module Engine
           actions.concat(available_actions)
           break if step.blocking?
         end
-        puts actions.uniq if entity == current_entity
         actions.uniq
       end
 

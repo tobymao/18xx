@@ -9,11 +9,10 @@ module Engine
         PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::StartMerge]
 
         def actions(entity)
-          return [] unless entity == current_entity
-          return ['sell_shares'] if must_sell?(entity)
-
           actions = super
-          if @current_actions.empty?
+          return actions if entity != current_entity || must_sell?(entity)
+
+          unless bought?
             actions << 'start_merge' if can_merge_any?(entity)
             actions << 'pass' if actions.any? && !actions.include?('pass')
           end
