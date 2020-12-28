@@ -63,9 +63,15 @@ module Engine
     "58": 4,
     "4": 4,
     "5": 4,
+    "6": 4,
+    "57": 4,
+    "201": 2,
+    "202": 2,
+    "621": 2,
     "55": 1,
     "56": 1,
     "69": 1,
+    "16": 1,
     "19": 1,
     "20": 1,
     "23": 3,
@@ -74,6 +80,12 @@ module Engine
     "26": 2,
     "27": 2,
     "28": 1,
+    "29": 1,
+    "30": 1,
+    "31": 1,
+    "14": 4,
+    "15": 4,
+    "619": 4,
     "208": 2,
     "207": 2,
     "622": 2,
@@ -297,6 +309,7 @@ module Engine
       "revenue": 5,
       "desc": "Blocks Takamatsu (K4).",
       "sym": "TR",
+      "max_ownership_percent": 60,
       "abilities": [
         {
           "type": "blocks_hexes",
@@ -313,6 +326,7 @@ module Engine
       "sym": "SX",
       "name": "Sächsische Eisenbahn",
       "logo": "18_cz/SX",
+      "max_ownership_percent": 60,
       "tokens": [
         0,
         40
@@ -325,6 +339,7 @@ module Engine
       "sym": "PR",
       "name": "Preußische Eisenbahn",
       "logo": "18_cz/PR",
+      "max_ownership_percent": 60,
       "tokens": [
         0,
         40
@@ -337,6 +352,7 @@ module Engine
       "sym": "BY",
       "name": "Bayrische Staatsbahn",
       "logo": "18_cz/BY",
+      "max_ownership_percent": 60,
       "tokens": [
         0,
         40
@@ -349,6 +365,7 @@ module Engine
       "sym": "kk",
       "name": "kk Staatsbahn",
       "logo": "18_cz/kk",
+      "max_ownership_percent": 60,
       "tokens": [
         0,
         40
@@ -361,6 +378,7 @@ module Engine
       "sym": "Ug",
       "name": "ungar. Staatsbahn",
       "logo": "18_cz/Ug",
+      "max_ownership_percent": 60,
       "tokens": [
         0,
         40
@@ -373,6 +391,8 @@ module Engine
       "sym": "BN",
       "name": "Böhmische Nordbahn",
       "logo": "18_cz/BN",
+      "max_ownership_percent": 60,
+      "shares":[40, 20, 20, 20],
       "tokens": [
         0,
         40,
@@ -387,6 +407,8 @@ module Engine
       "sym": "NWB",
       "name": "Österreichische Nordwestbahn",
       "logo": "18_cz/NWB",
+      "max_ownership_percent": 60,
+      "shares":[40, 20, 20, 20],
       "tokens": [
         0,
         40,
@@ -402,6 +424,8 @@ module Engine
       "sym": "ATE",
       "name": "Aussig-Teplitzer Eisenbahn",
       "logo": "18_cz/ATE",
+      "max_ownership_percent": 60,
+      "shares":[40, 20, 20, 20],
       "tokens": [
         0,
         40,
@@ -416,6 +440,8 @@ module Engine
       "sym": "BTE",
       "name": "Buschtehrader Eisenbahn",
       "logo": "18_cz/BTE",
+      "max_ownership_percent": 60,
+      "shares":[40, 20, 20, 20],
       "tokens": [
         0,
         40,
@@ -430,6 +456,8 @@ module Engine
       "sym": "KFN",
       "name": "Kaiser Ferdinands Nordbahn",
       "logo": "18_cz/KFN",
+      "max_ownership_percent": 60,
+      "shares":[40, 20, 20, 20],
       "tokens": [
         0,
         40,
@@ -443,6 +471,8 @@ module Engine
       "sym": "EKJ",
       "name": "Eisenbahn Karlsbad – Johanngeorgenstadt",
       "logo": "18_cz/EKJ",
+      "max_ownership_percent": 75,
+      "shares":[50, 25, 25],
       "tokens": [
         0,
         40,
@@ -457,6 +487,8 @@ module Engine
       "sym": "OFE",
       "name": "Ostrau-Friedlander Eisenbahn",
       "logo": "18_cz/OFE",
+      "max_ownership_percent": 75,
+      "shares":[50, 25, 25],
       "tokens": [
         0,
         40,
@@ -471,6 +503,8 @@ module Engine
       "sym": "BCB",
       "name": "Böhmische Commercialbahn",
       "logo": "18_cz/BCB",
+      "max_ownership_percent": 75,
+      "shares":[50, 25, 25],
       "tokens": [
         0,
         40,
@@ -485,6 +519,8 @@ module Engine
       "sym": "MW",
       "name": "Mährische Westbahn",
       "logo": "18_cz/MW",
+      "max_ownership_percent": 75,
+      "shares":[50, 25, 25],
       "tokens": [
         0,
         40,
@@ -499,6 +535,8 @@ module Engine
       "sym": "VBW",
       "name": "Vereinigte Böhmerwaldbahnen",
       "logo": "18_cz/VBW",
+      "max_ownership_percent": 75,
+      "shares":[50, 25, 25],
       "tokens": [
         0,
         40,
