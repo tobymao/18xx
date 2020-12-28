@@ -540,7 +540,7 @@ module Engine
           shares.combination(n).to_a.map { |ss| Engine::ShareBundle.new(ss) }
         end
 
-        bundles.uniq(&:percent).sort_by(&:percent)
+        bundles.sort_by { |b| [b.presidents_share ? 1 : 0, b.percent, -b.shares.size] }.uniq(&:percent)
       end
 
       def purchasable_companies(entity = nil)
