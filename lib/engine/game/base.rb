@@ -1554,8 +1554,6 @@ module Engine
             hex.neighbors[direction] = neighbor
           end
         end
-
-        @hexes.select { |h| h.tile.cities.any? || h.tile.exits.any? }.each(&:connect!)
       end
 
       def total_rounds(name)

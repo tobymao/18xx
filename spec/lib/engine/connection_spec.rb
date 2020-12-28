@@ -95,10 +95,10 @@ module Engine
 
         ritsurin_connection = subject.connections[2][1]
         expect(ritsurin_connection.nodes).to eq([
-          ritsurin.tile.towns[0],
           subject.tile.cities[0],
+          ritsurin.tile.towns[0],
         ])
-        expect(ritsurin_connection.hexes.map(&:name)).to eq(%w[J5 I6 I8 J7 K8])
+        expect(ritsurin_connection.hexes.map(&:name)).to eq(%w[K8 J7 I8 I6 J5])
         expect(game.hex_by_id('J7').all_connections).to be_empty
       end
 
