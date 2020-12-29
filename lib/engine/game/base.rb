@@ -30,6 +30,40 @@ require_relative '../player_info'
 
 module Engine
   module Game
+    def self.load(data, at_action: nil, **kwargs)
+      game_data =
+        case data
+        when String
+          return load(JSON.parse(File.exist?(data) ? File.read(data) : data), at_action: at_action, **kwargs)
+        when Hash
+          {
+            title: data['title'],
+            names: data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h,
+            id: data['id'],
+            actions: data['actions'] || [],
+            pin: data.dig('settings', 'pin'),
+            optional_rules: data.dig('settings', 'optional_rules') || [],
+          }
+        when Integer
+          return load(::Game[data], at_action: at_action, **kwargs)
+        when ::Game
+          {
+            title: data.title,
+            names: data.ordered_players.map { |u| [u.id, u.name] }.to_h,
+            id: data.id,
+            actions: data.actions.map(&:to_h),
+            pin: data.settings['pin'],
+            optional_rules: data.settings['optional_rules'] || [],
+          }
+        end
+      title = game_data.delete(:title)
+      names = game_data.delete(:names)
+      game_data.merge!(kwargs)
+      game_data[:actions] = game_data[:actions].take(at_action) if at_action
+
+      Engine::GAMES_BY_TITLE[title].new(names, **game_data)
+    end
+
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
