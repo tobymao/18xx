@@ -371,6 +371,7 @@ module Engine
       def or_round_finished
         current_phase = phase.name.to_i
         depot.export! if current_phase >= 4 && current_phase <= 7
+        post_train_buy
       end
 
       def new_or!
