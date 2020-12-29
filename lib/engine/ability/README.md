@@ -206,6 +206,7 @@ Modify train limit in some way.
 
 - `increase`: If positive, this will increase the train limit with this
   amount in all faces. Default 0.
+- `constant`: If positive, this is the train limit used. Default 0.
 
 ## token
 
