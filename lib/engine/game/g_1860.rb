@@ -215,11 +215,11 @@ module Engine
 
       def operating_round(round_num)
         Round::G1860::Operating.new(self, [
+          Step::DiscardTrain,
           Step::G1860::Track,
           Step::G1860::Token,
           Step::G1860::Route,
           Step::G1860::Dividend,
-          Step::DiscardTrain,
           Step::G1860::BuyTrain,
         ], round_num: round_num)
       end

@@ -319,6 +319,7 @@ module Engine
           Step::G1856::Bankrupt,
           Step::G1856::CashCrisis,
           # No exchanges.
+          Step::DiscardTrain,
           Step::G1856::Assign,
           Step::G1856::Loan,
           Step::SpecialTrack,
@@ -329,7 +330,6 @@ module Engine
           Step::Route,
           # Interest - See Loan
           Step::G1856::Dividend,
-          Step::DiscardTrain,
           Step::BuyTrain,
           # Repay Loans - See Loan
           [Step::BuyCompany, blocks: true],

@@ -22,6 +22,7 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::Exchange,
+          Step::DiscardTrain,
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::HomeToken,
@@ -29,7 +30,6 @@ module Engine
           Step::Token,
           Step::Route,
           Step::Dividend,
-          Step::DiscardTrain,
           Step::G1836Jr30::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)

@@ -189,6 +189,7 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::G18Mex::Assign,
+          Step::DiscardTrain,
           Step::G18Mex::BuyCompany,
           Step::HomeToken,
           Step::G18Mex::Merge,
@@ -197,7 +198,6 @@ module Engine
           Step::Token,
           Step::Route,
           Step::G18Mex::Dividend,
-          Step::DiscardTrain,
           Step::G18Mex::SingleDepotTrainBuy,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)

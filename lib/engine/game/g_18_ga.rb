@@ -80,6 +80,7 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
+          Step::DiscardTrain,
           Step::G18GA::SpecialToken,
           Step::G18GA::BuyCompany,
           Step::HomeToken,
@@ -88,7 +89,6 @@ module Engine
           Step::G18GA::Token,
           Step::Route,
           Step::Dividend,
-          Step::DiscardTrain,
           Step::SingleDepotTrainBuy,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
