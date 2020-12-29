@@ -256,7 +256,7 @@ module Engine
 
         route.corporation.companies.each do |company|
           abilities(company, :hex_bonus) do |ability|
-            revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
+            revenue += stops.map { |s| s.hex.id }.uniq&.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
           end
         end
 
@@ -447,12 +447,10 @@ module Engine
           case hex.id
           when 'D2'
             token = Token.new(@cn_corporation, price: 0, logo: '/logos/1867/neutral.svg', type: :neutral)
-            @cn_corporation.tokens << token
             hex.tile.cities.first.exchange_token(token)
             @green_tokens << token
           when 'L12'
             token = Token.new(@cn_corporation, price: 0, logo: '/logos/1867/neutral.svg', type: :neutral)
-            @cn_corporation.tokens << token
             hex.tile.cities.last.exchange_token(token)
             @green_tokens << token
           when 'F16'
