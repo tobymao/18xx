@@ -62,12 +62,12 @@ module Engine
       # Issue more shares
       # THIS DOES NOT WORK IF THE PRESIDENCY IS HELD BY A PLAYER
       def issue_shares!
-        if total_shares == 10 #was 10 share
+        if total_shares == 10 # was 10 share
           @log << "#{@name} shares are 5% shares"
 
           @all_shares.each_with_index do |share, index|
-            share.percent = index == 0 ? 10 : 5
-            share.cert_size = index == 0 ? 1 : 0.5
+            share.percent = index.zero? ? 10 : 5
+            share.cert_size = index.zero? ? 1 : 0.5
           end
         end
 
