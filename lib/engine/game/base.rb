@@ -1748,13 +1748,13 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::Exchange,
-          Step::DiscardTrain,
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::Track,
           Step::Token,
           Step::Route,
           Step::Dividend,
+          Step::DiscardTrain,
           Step::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
@@ -1874,6 +1874,11 @@ module Engine
       def ability_right_time?(ability, time, strict_time)
         return false if strict_time && !ability.when
         return true unless time
+
+        current_step = @round.steps.select(&:blocks?).reject(&:passed).first
+        if current_step && (ability.type == :tile_lay) && (current_step.name == 'special_track')
+          return current_step.company == ability.owner
+        end
 
         if ability.when == 'any'
           !strict_time

@@ -210,7 +210,6 @@ module Engine
         Round::Operating.new(self, [
         Step::Bankrupt,
         Step::G18CO::Takeover,
-        Step::DiscardTrain,
         Step::G18CO::HomeToken,
         Step::G18CO::ReturnToken,
         Step::BuyCompany,
@@ -221,6 +220,7 @@ module Engine
         Step::Token,
         Step::Route,
         Step::G18CO::Dividend,
+        Step::DiscardTrain,
         Step::G18CO::BuyTrain,
         Step::CorporateSellShares,
         Step::G18CO::IssueShares,

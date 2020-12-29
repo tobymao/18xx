@@ -64,13 +64,13 @@ module Engine
         Round::G1870::Operating.new(self, [
           Step::Bankrupt,
           Step::Exchange,
-          Step::DiscardTrain,
           Step::G1870::BuyCompany,
           Step::G1870::SpecialTrack,
           Step::G1870::Track,
           Step::Token,
           Step::Route,
           Step::G1870::Dividend,
+          Step::DiscardTrain,
           Step::BuyTrain,
           [Step::G1870::BuyCompany, blocks: true],
         ], round_num: round_num)
