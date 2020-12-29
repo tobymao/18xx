@@ -212,7 +212,7 @@ module Engine
       end
 
       def purchasable_unsold_companies
-        @game.companies.select { |c| c.owner.nil? }
+        @game.companies.reject(&:owner)
       end
 
       def get_par_prices(entity, _corp)
@@ -251,10 +251,8 @@ module Engine
         entity.companies << company
         entity.spend(price, owner.nil? ? @game.bank : owner)
         @current_actions << action
-        @log << "#{owner.nil? ? '' : '-- '}"\
-                "#{entity.name} buys #{company.name} from "\
-                "#{owner.nil? ? 'the market' : owner.name} for "\
-                "#{@game.format_currency(price)}"
+        @log << "#{owner ? '-- ' : ''}#{entity.name} buys #{company.name} from "\
+                "#{owner ? owner.name : 'the market'} for #{@game.format_currency(price)}"
       end
     end
   end
