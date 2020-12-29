@@ -17,14 +17,6 @@ module Engine
         @round = round
         @opts = opts
         @acted = false
-        @name = name
-      end
-
-      def name
-        @name ||= self.class.name.split('::').last.slice(0..-1)
-                    .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
-                    .gsub(/([a-z\d])([A-Z])/, '\1_\2')
-                    .downcase
       end
 
       def description

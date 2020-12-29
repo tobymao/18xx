@@ -125,6 +125,10 @@ module Engine
         @active_step ||= @steps.find { |step| step.active? && step.blocking? }
       end
 
+      def potential_blocking_step
+        @steps.find { |step| step.blocks? && !step.passed? && !step.inactive }
+      end
+
       def finished?
         !active_step
       end
