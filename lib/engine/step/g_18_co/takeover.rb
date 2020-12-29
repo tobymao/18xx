@@ -249,6 +249,10 @@ module Engine
 
         def close_corporation(entity)
           @game.close_corporation(entity)
+          if entity == @game.dsng && !@game.drgr&.closed?
+            @game.log << "#{@game.drgr.name} closes due to takeover of #{@game.dsng.name}"
+            @game.drgr.close!
+          end
           entity.close!
           @round.pending_takeover = nil
         end

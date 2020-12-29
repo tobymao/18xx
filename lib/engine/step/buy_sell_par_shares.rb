@@ -211,6 +211,10 @@ module Engine
         @game.purchasable_companies(entity)
       end
 
+      def purchasable_unsold_companies
+        @game.companies.reject(&:owner)
+      end
+
       def get_par_prices(entity, _corp)
         @game
           .stock_market
@@ -239,15 +243,16 @@ module Engine
         price = action.price
         owner = company.owner
 
-        @game.game_error("Cannot buy #{company.name} from #{owner.name}") unless owner.player?
+        @game.game_error("Cannot buy #{company.name} from #{owner.name}") if owner&.corporation?
 
         company.owner = entity
-        owner.companies.delete(company)
+        owner&.companies&.delete(company)
 
         entity.companies << company
-        entity.spend(price, owner)
+        entity.spend(price, owner.nil? ? @game.bank : owner)
         @current_actions << action
-        @log << "-- #{entity.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
+        @log << "#{owner ? '-- ' : ''}#{entity.name} buys #{company.name} from "\
+                "#{owner ? owner.name : 'the market'} for #{@game.format_currency(price)}"
       end
     end
   end
