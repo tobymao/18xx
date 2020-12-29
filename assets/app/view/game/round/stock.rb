@@ -81,21 +81,13 @@ module View
 
             children = []
             children.concat(render_subsidiaries)
-            children << h(Corporation, corporation: corporation)
 
-            if @game.corporation_available?(corporation)
-              input = render_input(corporation)
-            end
+            input = render_input(corporation) if @game.corporation_available?(corporation)
             choose = h(Choose) if @current_actions.include?('choose') && @step.choice_available?(corporation)
 
-            if input || choose
-              props['style']['opacity'] = '1.0'
-              children << input if input && @selected_corporation == corporation
-              children << choose if choose
-            else
-              props['style']['opacity'] = '0.6'
-            end
-
+            children << h(Corporation, corporation: corporation, interactive: input || choose)
+            children << input if input && @selected_corporation == corporation
+            children << choose if choose
 
             h(:div, props, children)
           end.compact
@@ -107,9 +99,7 @@ module View
             render_loan(corporation),
             render_buy_tokens(corporation),
           ]
-          if @step.actions(corporation).include?('buy_shares')
-            inputs << h(IssueShares, entity: corporation)
-          end
+          inputs << h(IssueShares, entity: corporation) if @step.actions(corporation).include?('buy_shares')
           inputs = inputs.compact
           h('div.margined_bottom', { style: { width: '20rem' } }, inputs) if inputs.any?
         end
@@ -120,9 +110,7 @@ module View
           when :par
             return h(Par, corporation: corporation) if @current_actions.include?('par')
           when :bid
-            if @current_actions.include?('bid')
-              return h(Bid, entity: @current_entity, corporation: corporation)
-            end
+            return h(Bid, entity: @current_entity, corporation: corporation) if @current_actions.include?('bid')
           when String
             return h(:div, type)
           end
