@@ -94,6 +94,7 @@ module Engine
           t.nil? && @reservations[i].nil?
         end
         return [open_slot || @slots, cheater].max if cheater
+
         reservation || open_slot
       end
 

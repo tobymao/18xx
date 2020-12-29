@@ -743,7 +743,7 @@ module Engine
       end
 
       def num_certs(entity)
-        certs = entity.shares.select{ |s| s.corporation.counts_for_limit && s.counts_for_limit }.sum(&:cert_size)
+        certs = entity.shares.select { |s| s.corporation.counts_for_limit && s.counts_for_limit }.sum(&:cert_size)
         certs + (self.class::CERT_LIMIT_INCLUDES_PRIVATES ? entity.companies.size : 0)
       end
 
