@@ -137,8 +137,7 @@ module Engine
     private
 
     def train_limit_increase(entity)
-      @game.abilities(entity, :train_limit) { |ability| return ability.increase if ability.increase }
-      0
+      Array(@game.abilities(entity, :train_limit)).sum(&:increase)
     end
 
     def train_limit_constant(entity)
