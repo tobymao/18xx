@@ -790,8 +790,7 @@ module Engine
         {
           "nodes": ["city", "offboard"],
           "pay": 2,
-          "visit": 2,
-          "multiplier":2
+          "visit": 2
         },
         {
           "nodes": ["town"],
@@ -799,6 +798,7 @@ module Engine
           "visit": 99
         }
       ],
+      "multiplier":2,
       "price": 600,
       "num": 6,
       "available_on": "8"

@@ -265,7 +265,7 @@ module Engine
         # Timmins
         timmins = stops.find { |stop| stop.hex.name == 'D2' }
 
-        revenue += 40 if capitals && timmins
+        revenue += 40 * (route.train.multiplier || 1) if capitals && timmins
 
         revenue
       end
@@ -316,8 +316,10 @@ module Engine
 
         remaining_stops = mandatory_distance['pay'] - mandatory_stops.size
 
-        # Allocate optional stops
-        stops, revenue = optional_stops.combination(remaining_stops.to_i).map do |stops|
+        # Allocate optional stops, combination returns nothing if stops doesn't cover the remaining stops
+        combinations = optional_stops.combination(remaining_stops.to_i).to_a
+        combinations = [optional_stops] if combinations.empty?
+        stops, revenue = combinations.map do |stops|
           # Make sure this set of stops is legal
           # 1) At least one stop must have a token (for 5+5E train)
           next if need_token && stops.none? { |stop| stop.tokened_by?(route.corporation) }
