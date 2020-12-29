@@ -6,7 +6,7 @@ module Engine
   module Step
     class Base
       include Passer
-      attr_accessor :acted, :inactive
+      attr_accessor :acted
       attr_reader :company
 
       ACTIONS = [].freeze

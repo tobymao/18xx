@@ -125,10 +125,6 @@ module Engine
         @active_step ||= @steps.find { |step| step.active? && step.blocking? }
       end
 
-      def potential_blocking_step
-        @steps.find { |step| step.blocks? && !step.passed? && !step.inactive }
-      end
-
       def finished?
         !active_step
       end
@@ -157,8 +153,7 @@ module Engine
 
       def skip_steps
         @steps.each do |step|
-          step.inactive = !step.active?
-          next if step.inactive || !step.blocks? || @entities[@entity_index]&.closed?
+          next if !step.active? || !step.blocks? || @entities[@entity_index]&.closed?
           break if step.blocking?
 
           step.skip!
