@@ -175,7 +175,7 @@ module Engine
         return entity.cash unless entity.corporation?
 
         # Loans are actually generate $5 less than when taken out.
-        entity.cash + ((maximum_loans(entity) - entity.loans.size) * @loan_value - 5)
+        entity.cash + ((maximum_loans(entity) - entity.loans.size) * (@loan_value - 5))
       end
 
       def unstarted_corporation_summary
