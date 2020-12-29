@@ -34,7 +34,7 @@ module Engine
       HOME_TOKEN_TIMING = :float
       MUST_BID_INCREMENT_MULTIPLE = true
       MUST_BUY_TRAIN = :always # mostly true, needs custom code
-      POOL_SHARE_DROP = :each
+      POOL_SHARE_DROP = :none
       SELL_MOVEMENT = :left_block_pres
       ALL_COMPANIES_ASSIGNABLE = true
       SELL_AFTER = :operate
