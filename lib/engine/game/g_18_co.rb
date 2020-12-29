@@ -443,7 +443,13 @@ module Engine
       def event_unreserve_home_stations!
         @log << '-- Event: Home station reservations removed --'
 
-        hexes.each { |h| h.tile.cities.each(&:remove_all_reservations!) }
+        @corporations.each do |corporation|
+          next if corporation.ipoed
+
+          tile = hex_by_id(corporation.coordinates).tile
+          city = tile.cities[corporation.city || 0]
+          city.remove_reservation!(corporation)
+        end
       end
 
       def tile_lays(_entity)
