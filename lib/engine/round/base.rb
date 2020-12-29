@@ -153,7 +153,8 @@ module Engine
 
       def skip_steps
         @steps.each do |step|
-          next if !step.active? || !step.blocks? || @entities[@entity_index]&.closed?
+          step.inactive = !step.active?
+          next if step.inactive || !step.blocks? || @entities[@entity_index]&.closed?
           break if step.blocking?
 
           step.skip!

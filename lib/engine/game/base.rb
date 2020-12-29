@@ -1875,7 +1875,7 @@ module Engine
         return false if strict_time && !ability.when
         return true unless time
 
-        current_step = @round.steps.select(&:blocks?).reject(&:passed).first
+        current_step = @round.steps.find { |s| s.blocks? && !s.passed? && !s.inactive }
         if current_step && (ability.type == :tile_lay) && (current_step.name == 'special_track')
           return current_step.company == ability.owner
         end
