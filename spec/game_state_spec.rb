@@ -5,9 +5,7 @@ require 'find'
 require 'engine'
 require 'spec_helper'
 
-FIXTURES_DIR = File.join(File.dirname(__FILE__), 'fixtures')
-
-def game_at_action(game_file, action_id)
+def game_at_action(game_file, action_id = nil)
   Engine::Game.load(game_file, at_action: action_id)
 end
 
