@@ -60,7 +60,6 @@ module Engine
       end
 
       # Issue more shares
-      # THIS DOES NOT WORK IF THE PRESIDENCY IS HELD BY A PLAYER
       def issue_shares!
         if total_shares == 10 # was 10 share
           @log << "#{@name} shares are 5% shares"

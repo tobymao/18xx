@@ -343,7 +343,7 @@ module Engine
           Step::Route,
           # Interest - See Loan
           Step::G1856::Dividend,
-          Step::G1856::BuyTrain,
+          Step::BuyTrain,
           # Repay Loans - See Loan
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
@@ -361,6 +361,7 @@ module Engine
       # Nationalization Methods
 
       def event_nationalization!
+        @nationalization_trigger ||= @round.active_step.current_entity.owner
         @post_nationalization = true
         @log << '-- Event: CGR merger --'
         corporations_repay_loans
@@ -373,12 +374,6 @@ module Engine
 
         # starting with the player who bought the 6 train, go around the table trading shares
         # trade all shares
-      end
-
-      # Raw from 18MEX
-
-      def buy_first_6_train(player)
-        @nationalization_trigger ||= player
       end
 
       def nationalizables
