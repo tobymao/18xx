@@ -14,16 +14,16 @@ module Engine
           connection = Connection.new(chain)
 
           if path.exits.empty?
-            hex.connections_cached[:internal] << connection
+            hex.connections[:internal] << connection
           else
             path.exits.each do |edge|
-              hex.connections_cached[edge] << connection
+              hex.connections[edge] << connection
             end
           end
         end
       end
 
-      hex.connections_cached.values.each do |connections|
+      hex.connections.values.each do |connections|
         connections.uniq!(&:hash)
       end
     end

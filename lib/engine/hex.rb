@@ -208,10 +208,6 @@ module Engine
       @connections
     end
 
-    def connections_cached
-      @connections
-    end
-
     def lay_downgrade(tile)
       lay(tile)
 
