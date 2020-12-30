@@ -16,6 +16,7 @@ module View
         entity = @game.round.current_entity
         current_actions = @game.round.actions_for(entity)
         children << h(UndoButton) if @game.undo_possible
+        children << h(RestartTurnButton) if @game.undo_possible
         children << h(RedoButton) if @game.redo_possible
         children << h(PassButton, before_process_pass: @before_process_pass) if current_actions.include?('pass')
         h(:div, children)

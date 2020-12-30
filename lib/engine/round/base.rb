@@ -10,7 +10,7 @@ end
 module Engine
   module Round
     class Base
-      attr_reader :entities, :entity_index, :round_num, :steps
+      attr_reader :entities, :entity_index, :round_num, :steps, :turn_start
       attr_accessor :last_to_act, :pass_order
 
       DEFAULT_STEPS = [
@@ -134,6 +134,7 @@ module Engine
       end
 
       def next_entity_index!
+        @turn_start = @game.current_action_id
         @entity_index = (@entity_index + 1) % @entities.size
       end
 

@@ -486,12 +486,15 @@ module Engine
         actions.each.with_index do |action, index|
           case action['type']
           when 'undo'
-            i = filtered_actions.rindex { |a| a && a['type'] != 'message' }
-            active_undos << [filtered_actions[i], i]
-            filtered_actions[i] = nil
+            undo_to = action[:action_id] || filtered_actions.rindex { |a| a && a['type'] != 'message' }
+            active_undos << filtered_actions[undo_to...index].map.with_index do |a, i|
+              next if !a || a[:type] == 'message'
+
+              filtered_actions[undo_to + i] = nil
+              [a, undo_to + i]
+            end.compact
           when 'redo'
-            a, i = active_undos.pop
-            filtered_actions[i] = a
+            active_undos.pop.each { |undo| filtered_actions[undo.last] = undo.first }
           when 'message'
             # Messages do not get undoed.
             # warning adding more types of action here will break existing game
