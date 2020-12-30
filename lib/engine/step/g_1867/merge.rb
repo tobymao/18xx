@@ -64,13 +64,14 @@ module Engine
           owner = corporation.owner
 
           @converting = nil
-          @game.close_corporation(corporation)
 
           share = target.shares.first
           @game.share_pool.buy_shares(owner, share.to_bundle, exchange: :free)
 
           move_tokens(corporation, target)
           receiving = move_assets(corporation, target)
+
+          @game.close_corporation(corporation)
 
           @log << "#{corporation.name} converts into #{target.name} receiving #{receiving.join(', ')}"
 

@@ -34,7 +34,7 @@ module Engine
       HOME_TOKEN_TIMING = :float
       MUST_BID_INCREMENT_MULTIPLE = true
       MUST_BUY_TRAIN = :always # mostly true, needs custom code
-      POOL_SHARE_DROP = :each
+      POOL_SHARE_DROP = :none
       SELL_MOVEMENT = :left_block_pres
       ALL_COMPANIES_ASSIGNABLE = true
       SELL_AFTER = :operate
@@ -175,7 +175,7 @@ module Engine
         return entity.cash unless entity.corporation?
 
         # Loans are actually generate $5 less than when taken out.
-        entity.cash + ((maximum_loans(entity) - entity.loans.size) * @loan_value - 5)
+        entity.cash + ((maximum_loans(entity) - entity.loans.size) * (@loan_value - 5))
       end
 
       def unstarted_corporation_summary
@@ -256,7 +256,7 @@ module Engine
 
         route.corporation.companies.each do |company|
           abilities(company, :hex_bonus) do |ability|
-            revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
+            revenue += stops.map { |s| s.hex.id }.uniq&.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
           end
         end
 
@@ -265,7 +265,7 @@ module Engine
         # Timmins
         timmins = stops.find { |stop| stop.hex.name == 'D2' }
 
-        revenue += 40 if capitals && timmins
+        revenue += 40 * (route.train.multiplier || 1) if capitals && timmins
 
         revenue
       end
@@ -316,8 +316,10 @@ module Engine
 
         remaining_stops = mandatory_distance['pay'] - mandatory_stops.size
 
-        # Allocate optional stops
-        stops, revenue = optional_stops.combination(remaining_stops.to_i).map do |stops|
+        # Allocate optional stops, combination returns nothing if stops doesn't cover the remaining stops
+        combinations = optional_stops.combination(remaining_stops.to_i).to_a
+        combinations = [optional_stops] if combinations.empty?
+        stops, revenue = combinations.map do |stops|
           # Make sure this set of stops is legal
           # 1) At least one stop must have a token (for 5+5E train)
           next if need_token && stops.none? { |stop| stop.tokened_by?(route.corporation) }
@@ -371,6 +373,7 @@ module Engine
       def or_round_finished
         current_phase = phase.name.to_i
         depot.export! if current_phase >= 4 && current_phase <= 7
+        post_train_buy
       end
 
       def new_or!
@@ -447,12 +450,10 @@ module Engine
           case hex.id
           when 'D2'
             token = Token.new(@cn_corporation, price: 0, logo: '/logos/1867/neutral.svg', type: :neutral)
-            @cn_corporation.tokens << token
             hex.tile.cities.first.exchange_token(token)
             @green_tokens << token
           when 'L12'
             token = Token.new(@cn_corporation, price: 0, logo: '/logos/1867/neutral.svg', type: :neutral)
-            @cn_corporation.tokens << token
             hex.tile.cities.last.exchange_token(token)
             @green_tokens << token
           when 'F16'
