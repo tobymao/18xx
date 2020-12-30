@@ -53,20 +53,7 @@ module View
       return if game_id == @game&.id &&
         ((!cursor && @game.actions.size == @num_actions) || (cursor == @game.actions.size))
 
-      # Some Hotseat games don't have player ids, use names instead.
-      players = @game_data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h
-      # Back compatibility, make hotseat games continue to work after the change to play names
-      if actions&.first&.dig(:entity_type) == 'player' && actions.first[:entity].is_a?(String)
-        players = @game_data['players'].map { |p| [p['name'], p['name']] }.to_h
-      end
-
-      @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
-        players,
-        id: game_id,
-        actions: cursor ? actions.take(cursor) : actions,
-        pin: @pin,
-        optional_rules: @game_data.dig('settings', 'optional_rules') || [],
-      )
+      @game = Engine::Game.load(@game_data, at_action: cursor)
       store(:game, @game, skip: true)
     end
 
