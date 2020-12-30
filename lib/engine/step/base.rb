@@ -7,7 +7,6 @@ module Engine
     class Base
       include Passer
       attr_accessor :acted
-      attr_reader :company
 
       ACTIONS = [].freeze
 
