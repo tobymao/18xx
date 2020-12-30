@@ -32,7 +32,7 @@ module Engine
                       brown: '#7b352a')
 
       load_from_json(Config::Game::G1856::JSON)
-      attr_reader :loan_value, :post_nationalization
+      attr_reader :post_nationalization
       DEV_STAGE = :prealpha
 
       # These plain city hexes upgrade to L tiles in brown
@@ -102,7 +102,19 @@ module Engine
         entity.num_player_shares
       end
 
+      def loan_value
+        100
+      end
+
       def interest_rate
+        10
+      end
+
+      def national_token_price
+        100
+      end
+
+      def national_token_limit
         10
       end
 
@@ -117,7 +129,7 @@ module Engine
       def take_loan(entity, loan)
         game_error('Cannot take loan') unless can_take_loan?(entity)
         name = entity.name
-        loan_amount = @round.paid_interest[entity] ? 90 : 100
+        loan_amount = @round.paid_interest[entity] ? loan_value - interest_rate : loan_value
         @log << "#{name} takes a loan and receives #{format_currency(loan_amount)}"
         @bank.spend(loan_amount, entity)
         entity.loans << loan
@@ -133,9 +145,13 @@ module Engine
           !@post_nationalization
       end
 
+      def num_loans
+        # @corporations is not available at the time of init_loans
+        110
+      end
+
       def init_loans
-        @loan_value = 100
-        110.times.map { |id| Loan.new(id, @loan_value) }
+        num_loans.times.map { |id| Loan.new(id, loan_value) }
       end
 
       def can_pay_interest?(_entity, _extra_cash = 0)
@@ -197,8 +213,9 @@ module Engine
       end
 
       def num_corporations
-        # TODO: Update this with something more correct once nationalization is implemented
-        @corporations.size - 1
+        # Before nationalization, the national is in @corporations but doesn't count
+        # After nationalization, if the national is in corporations it does count
+        @post_nationalization ? @corporations.size : @corporations.size - 1
       end
 
       def cert_limit
@@ -366,7 +383,7 @@ module Engine
         @log << '-- Event: CGR merger --'
         corporations_repay_loans
         @nationalizables = nationalizable_corporations
-        @log << "Merge candidates: #{present_nationalizables(@nationalizables)}" if @nationalizables.any?
+        @log << "Merge candidates: #{present_nationalizables(nationalizables)}" if nationalizables.any?
         # starting with the player who bought the 6 train, go around the table repaying loans
 
         # player picks order of their companies.
@@ -384,8 +401,8 @@ module Engine
         @corporations.each do |corp|
           next unless corp.floated? && corp.loans.size.positive?
 
-          loans_repaid = [corp.loans.size, (corp.cash / 100).to_i].min
-          amount_repaid = 100 * loans_repaid
+          loans_repaid = [corp.loans.size, (corp.cash / loan_value).to_i].min
+          amount_repaid = loan_value * loans_repaid
           next unless amount_repaid.positive?
 
           corp.spend(amount_repaid, @bank)
@@ -423,7 +440,7 @@ module Engine
         @pre_national_market_prices[major.name] = major.share_price.price
         @nationalized_corps << major
         # Corporation will close soon, but not now. See post_corp_nationalization
-        @nationalizables.delete(major)
+        nationalizables.delete(major)
         post_corp_nationalization
       end
 
@@ -452,6 +469,8 @@ module Engine
 
         # The value is 100 at the bare minimum
         # Should this be <, or <=? Rules don't specify. Let's go with the game hates you.
+        # Also the stock market increases as such:
+        # 90 > 100 > 110 > 125 > 150
         market_price = if ave < 105
                          100
                        # The next share value is 110
@@ -566,7 +585,7 @@ module Engine
           nationalize_home_token(c, create_national_token)
         end
         # So the national will get 11 tokens if and only if all 11 majors merge in
-        remaining_tokens = [10 - home_bases.size, 0].max
+        remaining_tokens = [national_token_limit - home_bases.size, 0].max
         # Other tokens second, ignoring duplicates from the home token set
         # TODO:
         puts home_bases
@@ -581,12 +600,12 @@ module Engine
 
         # Then reduce down to limit
         # TODO: Possibly override ReduceTokens?
-        if national.tokens.size > 10
+        if national.tokens.size > national_token_limit
           @log << "#{national.name} will is above token limit and must decide which tokens to remove"
           # @round.corporations_removing_tokens = [buyer, acquired_corp]
         end
-        @log << "#{national.name} has #{remaining_tokens} spare #{format_currency(100)} tokens"
-        remaining_tokens.times { national.tokens << Engine::Token.new(@national, price: 100) }
+        @log << "#{national.name} has #{remaining_tokens} spare #{format_currency(national_token_price)} tokens"
+        remaining_tokens.times { national.tokens << Engine::Token.new(@national, price: national_token_price) }
         # Close corporations
         @nationalized_corps.each { |c| close_corporation(c) }
         # Reduce the nationals train holding limit to the real value
@@ -596,7 +615,7 @@ module Engine
 
       # Creates and returns a token for the national
       def create_national_token
-        token = Engine::Token.new(national, price: 100)
+        token = Engine::Token.new(national, price: national_token_price)
         national.tokens << token
         token
       end
@@ -658,7 +677,7 @@ module Engine
         major.owner.spend(owed, @bank)
         @loans << major.loans.pop(major.loans.size)
         @log << "#{major.owner.name} pays off the #{format_currency(owed)} debt for #{major.name}"
-        @nationalizables.delete(major)
+        nationalizables.delete(major)
         post_corp_nationalization
       end
     end
