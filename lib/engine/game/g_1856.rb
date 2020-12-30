@@ -396,7 +396,7 @@ module Engine
 
       def merge_major(major)
         @national_formed = true
-        @log << "-- #{major.name} merges into #{@national.name} --"
+        @log << "-- #{major.name} merges into #{national.name} --"
         # Trains are transferred
         major.trains.clone.each do |t|
           national.buy_train(t, :free)
@@ -433,9 +433,9 @@ module Engine
           @pre_national_percent_by_player[player] += num
         end
         @pre_national_market_percent += (major.num_market_shares * 5)
-        return unless total_national_percent_issued > 10 * @national.shares.count && @national.shares.count == 10
+        return unless total_national_percent_issued > 10 * national.shares.count && national.shares.count == 10
 
-        @national.issue_shares!
+        national.issue_shares!
       end
 
       def total_national_percent_issued
@@ -473,12 +473,12 @@ module Engine
 
         unless @national_formed
           @log << "#{national.name} does not form"
-          @national.close!
+          national.close!
           return
         end
-        @national.float!
-        @stock_market.set_par(@national, calculate_national_price)
-        @national.ipoed = true
+        national.float!
+        @stock_market.set_par(national, calculate_national_price)
+        national.ipoed = true
         index_for_trigger = @players.index(@nationalization_trigger)
         # This is based off the code in 18MEX; 10 appears to be an arbitrarily large integer
         #  where the exact value doesn't really matter
@@ -493,17 +493,17 @@ module Engine
 
           shares_awarded = [(@pre_national_percent_by_player[player] / 20).to_i, shares_to_distribute].min
           shares_to_distribute -= shares_awarded
-          @log << "#{player.name} gets #{shares_awarded} shares of #{@national.name}"
+          @log << "#{player.name} gets #{shares_awarded} shares of #{national.name}"
 
           next unless shares_awarded > president_shares
 
-          @log << "#{player.name} becomes president of the #{@national.name}"
+          @log << "#{player.name} becomes president of the #{national.name}"
           if shares_awarded == 1
-            @log << "#{player.name} will need to buy the 2nd share of the #{@national.name} "\
+            @log << "#{player.name} will need to buy the 2nd share of the #{national.name} "\
               "president's cert in the next SR unless a new president is found"
             @false_national_president = true
           elsif @false_national_president
-            @log << "Since #{president.name} is no longer president of the #{@national.name} "\
+            @log << "Since #{president.name} is no longer president of the #{national.name} "\
               ' and is no longer obligated to buy a second share in the following SR'
             @false_national_president = false
           end
@@ -511,7 +511,7 @@ module Engine
           president = player
         end
         # More than 10 shares were issued so issue the second set
-        @national.issue_shares! if shares_to_distribute < 10
+        national.issue_shares! if shares_to_distribute < 10
         national_share_index = 1
         players_in_order.each do |i|
           player = @players[i]
@@ -526,19 +526,19 @@ module Engine
               # TODO: Handle this case properly.
               puts 'TODO'
             else # This player gets the presidency, which is 2 shares
-              @share_pool.buy_shares(player, @national.all_shares[0], exchange: :free, exchange_price: 0)
+              @share_pool.buy_shares(player, national.all_shares[0], exchange: :free, exchange_price: 0)
               player_national_shares -= 2
             end
           end
           # not president, just give them shares
           while player_national_shares.positive?
-            if national_share_index == @national.all_shares.size
-              @log << "#{@national.name} is out of shares to issue, #{player.name} gets no more shares"
+            if national_share_index == national.all_shares.size
+              @log << "#{national.name} is out of shares to issue, #{player.name} gets no more shares"
               player_national_shares = 0
             else
               @share_pool.buy_shares(
                 player,
-                @national.all_shares[national_share_index],
+                national.all_shares[national_share_index],
                 exchange: :free,
                 exchange_price: 0
               )
@@ -581,12 +581,12 @@ module Engine
 
         # Then reduce down to limit
         # TODO: Possibly override ReduceTokens?
-        if @national.tokens.size > 10
-          @log << "#{@national.name} will is above token limit and must decide which tokens to remove"
+        if national.tokens.size > 10
+          @log << "#{national.name} will is above token limit and must decide which tokens to remove"
           # @round.corporations_removing_tokens = [buyer, acquired_corp]
         end
-        @log << "#{@national.name} has #{remaining_tokens} spare #{format_currency(100)} tokens"
-        remaining_tokens.times { @national.tokens << Engine::Token.new(@national, price: 100) }
+        @log << "#{national.name} has #{remaining_tokens} spare #{format_currency(100)} tokens"
+        remaining_tokens.times { national.tokens << Engine::Token.new(@national, price: 100) }
         # Close corporations
         @nationalized_corps.each { |c| close_corporation(c) }
         # Reduce the nationals train holding limit to the real value
@@ -596,8 +596,8 @@ module Engine
 
       # Creates and returns a token for the national
       def create_national_token
-        token = Engine::Token.new(@national, price: 100)
-        @national.tokens << token
+        token = Engine::Token.new(national, price: 100)
+        national.tokens << token
         token
       end
 
@@ -631,13 +631,13 @@ module Engine
 
       def replace_token(major, major_token, token)
         city = major_token.city
-        @log << "#{major.name}'s token in #{city.hex.name} is replaced with a #{@national.name} token"
+        @log << "#{major.name}'s token in #{city.hex.name} is replaced with a #{national.name} token"
         major_token.remove!
-        city.place_token(@national, token, check_tokenable: false)
+        city.place_token(national, token, check_tokenable: false)
       end
 
       def nationalizable_corporations
-        floated_player_corps = @corporations.select { |c| c.floated? && c != @national }
+        floated_player_corps = @corporations.select { |c| c.floated? && c != national }
         floated_player_corps.select! { |c| c.loans.size.positive? }
         # Sort eligible corporations so that they are in player order
         # starting with the player that bought the 6 train
