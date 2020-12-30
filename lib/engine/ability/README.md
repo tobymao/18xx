@@ -200,6 +200,15 @@ Modify train buy in some way.
 - `face_value`: If true, any inter corporation train buy must be at
   face value. Default false.
 
+## train_discount
+
+Discount the train buy cost. The `count` attribute specify how many times the discount can be used.
+
+- `discount`: Discount amount. If > 1 this is an absolute amount. If 0 < amount < 1 it is the fraction, e.g. 0.75 is a 75% discount.
+- `trains`: An array of all train names that the discount applies to.
+- `closed_when_used_up`: This ability has a count that is decreased each time it is used. If this attribute is true the private is closed when count reaches zero, if false the private
+remains open but the discount can no longer be used. Default true.
+
 ## train_limit
 
 Modify train limit in some way.

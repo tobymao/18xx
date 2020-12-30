@@ -29,18 +29,22 @@ module Engine
 
         @round.bought_trains << corporation if from_depot && @round.respond_to?(:bought_trains)
 
+        # Need to keep some attributes in case ability is removed when used
+        count_after_use = ability.count - 1
+        closed_when_used_up = ability.closed_when_used_up
+
         ability.use! if action.price < action.train.price &&
           ability.discounted_price(action.train, action.train.price) == action.price
-        begin
+        if count_after_use.zero? && closed_when_used_up
           action.entity.close!
           @log << "#{company.name} closes due to use of discount to buy train"
-        end if ability.count.zero?
+        end
 
         pass! unless can_buy_train?(corporation)
       end
 
       def ability(entity)
-        return unless entity.company?
+        return unless entity&.company?
 
         @game.abilities(entity, :train_discount, time: 'train')
       end
