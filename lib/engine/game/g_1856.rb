@@ -486,18 +486,15 @@ module Engine
         @stock_market.market[0].find { |p| p.price == market_price }
       end
 
-      # Called regardless of if president saved or merged corp
-      def post_corp_nationalization
-        return unless nationalizables.empty?
-
-        unless @national_formed
-          @log << "#{national.name} does not form"
-          national.close!
-          return
-        end
+      def float_national
         national.float!
         @stock_market.set_par(national, calculate_national_price)
         national.ipoed = true
+      end
+
+      # Handles the share exchange in nationalization
+      # Returns the president Player
+      def national_share_swap
         index_for_trigger = @players.index(@nationalization_trigger)
         # This is based off the code in 18MEX; 10 appears to be an arbitrarily large integer
         #  where the exact value doesn't really matter
@@ -566,9 +563,9 @@ module Engine
             end
           end
         end
+      end
 
-        # Now that shares and president are determined, it's time to do presidential things
-
+      def national_token_swap
         # Token swap
         # The CGR has ten station markers. Up to ten station markers of the absorbed companies are exchanged for CGR
         # tokens. All home station markers must be replaced first. Then the other station markers are replaced in
@@ -586,9 +583,8 @@ module Engine
         end
         # So the national will get 11 tokens if and only if all 11 majors merge in
         remaining_tokens = [national_token_limit - home_bases.size, 0].max
+
         # Other tokens second, ignoring duplicates from the home token set
-        # TODO:
-        puts home_bases
         @nationalized_corps.each do |corp|
           corp.tokens.each do |token|
             next if token.city.nil? || home_bases.include?(token.city.hex)
@@ -602,12 +598,30 @@ module Engine
         # TODO: Possibly override ReduceTokens?
         if national.tokens.size > national_token_limit
           @log << "#{national.name} will is above token limit and must decide which tokens to remove"
+          # TODO: implement this case, maybe use a varaiation of the below?
           # @round.corporations_removing_tokens = [buyer, acquired_corp]
         end
+
         @log << "#{national.name} has #{remaining_tokens} spare #{format_currency(national_token_price)} tokens"
         remaining_tokens.times { national.tokens << Engine::Token.new(@national, price: national_token_price) }
-        # Close corporations
+      end
+
+      # Called regardless of if president saved or merged corp
+      def post_corp_nationalization
+        return unless nationalizables.empty?
+
+        unless @national_formed
+          @log << "#{national.name} does not form"
+          national.close!
+          return
+        end
+        float_national
+        national_share_swap
+        # Now that shares and president are determined, it's time to do presidential things
+        national_token_swap
+        # Close corporations now that trains, cash, rights, and tokens have been stripped
         @nationalized_corps.each { |c| close_corporation(c) }
+
         # Reduce the nationals train holding limit to the real value
         # (It was artificially high to avoid forced discard triggering early)
         # TODO: Do it.
