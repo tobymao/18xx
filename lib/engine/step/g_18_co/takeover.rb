@@ -154,13 +154,13 @@ module Engine
           return if source.placed_tokens.empty?
           return if destination.unplaced_tokens.empty?
 
-          destination_cities = destination.tokens.map(&:city).compact
+          destination_hexes = destination.tokens.map { |token| token&.city&.hex }.compact
 
           source.tokens.each do |token|
             next unless token.used
 
             token.city&.remove_reservation!(source)
-            token.remove! if destination_cities.include?(token.city)
+            token.remove! if destination_hexes.include?(token.city.hex)
           end
         end
 
