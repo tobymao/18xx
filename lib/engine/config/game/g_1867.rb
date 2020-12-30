@@ -196,7 +196,7 @@ module Engine
   ],
   "companies": [
     {
-      "name": "Hidden corporation to lock the 3 spots",
+      "name": "rules until start of phase 3",
       "sym": "3",
       "value": 3,
       "revenue": 0,
@@ -204,7 +204,6 @@ module Engine
       "abilities": [
         {
         "type": "blocks_hexes",
-        "owner_type": "player",
         "hexes": [
           "M13"
         ]
