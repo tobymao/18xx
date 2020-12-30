@@ -39,10 +39,16 @@ module View
         card_style = {
           cursor: 'pointer',
         }
-        card_style[:border] = '4px solid' if @game.round.can_act?(@corporation)
+
         card_style[:display] = @display
 
-        card_style[:backgroundColor] = '#ededed' unless interactive?
+        unless interactive?
+          factor = Native(`window.matchMedia('(prefers-color-scheme: dark)').matches`) ? 0.8 : 0.5
+          card_style[:backgroundColor] = convert_hex_to_rgba(color_for(:bg2), factor)
+          card_style[:border] = '1px dashed'
+        end
+
+        card_style[:border] = '4px solid' if @game.round.can_act?(@corporation)
 
         if selected?
           card_style[:backgroundColor] = 'lightblue'
