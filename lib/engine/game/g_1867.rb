@@ -438,7 +438,6 @@ module Engine
 
         # Hide the special 3 company
         @hidden_company = company_by_id('3')
-        @companies.delete(@hidden_company)
 
         # CN corporation only exists to hold tokens
         @cn_corporation = corporation_by_id('CN')
