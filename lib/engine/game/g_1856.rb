@@ -489,6 +489,7 @@ module Engine
       def float_national
         national.float!
         @stock_market.set_par(national, calculate_national_price)
+        national.remove_ability(national.all_abilities.find { |a| a.type == :unparrable })
         national.ipoed = true
       end
 

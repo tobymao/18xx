@@ -39,10 +39,6 @@ module Engine
         false
       end
 
-      def can_par?
-        self == @game.national ? !@ipoed : super
-      end
-
       def par!
         @capitalization = _capitalization_type
         @escrow = 0 if @capitalization == :escrow
@@ -65,6 +61,7 @@ module Engine
           @log << "#{@name} shares are 5% shares"
 
           @all_shares.each_with_index do |share, index|
+            # Presidents cert is a 10% 2-share 1-cert paper, everything else is a 5% 1-share 0.5-cert paper
             share.percent = index.zero? ? 10 : 5
             share.cert_size = index.zero? ? 1 : 0.5
           end

@@ -527,11 +527,11 @@ module Engine
          },
          {
             "type": "train_limit",
-            "description": "+1 train limit",
+            "description": "3 train limit",
             "increase": 100
          },
          {
-            "type": "no_buy",
+            "type": "unparrable",
             "description": "Unavailable until nationalization"
          }
       ]
