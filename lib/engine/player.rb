@@ -36,9 +36,7 @@ module Engine
     end
 
     def ==(other)
-      return false if !other || !other.player?
-
-      @name == other.name
+      other&.player? && (@name == other&.name)
     end
 
     def player?

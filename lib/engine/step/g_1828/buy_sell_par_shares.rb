@@ -6,24 +6,30 @@ module Engine
   module Step
     module G1828
       class BuySellParShares < BuySellParShares
-        PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::StartMerge]
+        PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::Choose]
 
         def actions(entity)
           actions = super
           return actions if entity != current_entity || must_sell?(entity)
 
           unless bought?
-            actions << 'start_merge' if can_merge_any?(entity)
+            actions << 'choose' if can_merge_any?(entity)
             actions << 'pass' if actions.any? && !actions.include?('pass')
           end
 
           actions
         end
 
-        def process_start_merge(action)
-          @game.game_error('No eligible corporation to merge with') unless can_merge?(action.entity, action.corporation)
-          @round.merge_initiator = action.corporation
+        def choice_available?(_entity)
+          false
+        end
+
+        def process_choose(action)
+          @game.game_error('No eligible corporation to merge with') unless can_merge?(action.entity, action.choice)
+
+          # Set the round variables needed to activate the merge step
           @round.acting_player = action.entity
+          @round.merge_initiator = action.choice
 
           @round.last_to_act = action.entity
           @current_actions << action

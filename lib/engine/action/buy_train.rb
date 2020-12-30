@@ -33,7 +33,7 @@ module Engine
           'price' => @price,
           'variant' => @variant,
           'exchange' => @exchange&.id,
-          'shell' => @shell ? @shell.name : nil,
+          'shell' => @shell&.name,
         }
       end
 

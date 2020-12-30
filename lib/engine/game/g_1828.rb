@@ -231,6 +231,7 @@ module Engine
       end
 
       def merge_candidates(player, corporation)
+        return [] if !player || !corporation
         return [] if corporation.system?
 
         @corporations.select do |candidate|

@@ -3,7 +3,8 @@
 module Engine
   module G1828
     class Shell
-      attr_accessor :name, :trains, :system
+      attr_reader :trains
+      attr_accessor :name, :system
 
       def initialize(name, system)
         @name = name

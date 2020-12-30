@@ -39,6 +39,7 @@ module View
           )
         end
 
+        step = @game.round.active_step
         @game.bundles_for_corporation(@player, @corporation).map do |bundle|
           pool_shares = @game.share_pool.shares_by_corporation[@corporation].group_by(&:percent).values.map(&:first)
           pool_shares.each do |pool_share|

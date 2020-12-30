@@ -160,14 +160,14 @@ module View
       end
 
       def render_merge
-        return [] unless @step.current_actions.include?('start_merge')
+        return [] unless @step.current_actions.include?('choose')
         return [] unless @step.can_merge?(@current_entity, @corporation)
 
         merge = lambda do
-          process_action(Engine::Action::StartMerge.new(@current_entity, corporation: @corporation))
+          process_action(Engine::Action::Choose.new(@current_entity, choice: @corporation))
         end
 
-        [h(:button, { on: { click: merge } }, 'Start Merge')]
+        [h(:button, { on: { click: merge } }, 'Merge')]
       end
     end
   end
