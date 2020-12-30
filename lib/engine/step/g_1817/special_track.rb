@@ -56,11 +56,12 @@ module Engine
             ntile = neighbor&.tile
             next false unless ntile
 
-            # The neighbouring tile must have a city or offboard
+            # The neighbouring tile must have a city or offboard or town
             # That neighbouring tile must either connect to an edge on the tile or
             # potentially be updated in future.
             (ntile.cities&.any? ||
-             ntile.offboards&.any?) &&
+             ntile.offboards&.any? ||
+             ntile.towns&.any?) &&
             (ntile.exits.any? { |e| e == Hex.invert(exit) } ||
              potential_future_tiles(entity, neighbor).any?)
           end
