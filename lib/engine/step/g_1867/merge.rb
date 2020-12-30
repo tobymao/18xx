@@ -77,6 +77,7 @@ module Engine
           # Replace the entity with the new one.
           @round.entities[@round.entity_index] = target
           @round.converted = target
+          @round.merge_type = :convert
           # All players are eligable to buy shares unlike merger
           @round.share_dealing_players = @game.players.rotate(@game.players.index(target.owner))
           @round.share_dealing_multiple = [corporation.owner]
@@ -191,6 +192,7 @@ module Engine
 
           @merging = nil
           @round.converted = target
+          @round.merge_type = :merge
 
           @round.share_dealing_players = players
           @round.share_dealing_multiple = players
@@ -284,6 +286,7 @@ module Engine
         def round_state
           {
             converted: nil,
+            merge_type: nil,
             share_dealing_players: [],
             share_dealing_multiple: [],
           }
