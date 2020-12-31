@@ -36,10 +36,6 @@ module Engine
         false
       end
 
-      def can_par?
-        self == @game.national ? false : super
-      end
-
       def par!
         @capitalization = _capitalization_type
         @escrow = 0 if @capitalization == :escrow
@@ -47,6 +43,13 @@ module Engine
 
       def capitalization_type_desc
         CAPITALIZATION_STRS[@capitalization || _capitalization_type]
+      end
+
+      def release_escrow!
+        @log << "Releasing #{@game.format_currency(@escrow)} from escrow for ${@name}"
+        @cash += @escrow
+        @escrow = nil
+        @capitalization = :incremental
       end
 
       # This is invoked BEFORE the share is moved out of the corporation

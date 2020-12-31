@@ -234,6 +234,10 @@ module Engine
         super
       end
 
+      def corporation_parrable?(corporation, parrer)
+        corporation == national ? false : super
+      end
+
       #
       # Get all possible upgrades for a tile
       # tile: The tile to be upgraded
