@@ -1441,15 +1441,13 @@ module Engine
       end
 
       def init_corporations(stock_market)
-        self.class::CORPORATIONS.map { |corporation| init_corporation(stock_market, corporation) }
-      end
-
-      def init_corporation(stock_market, corporation)
-        Corporation.new(
-          min_price: stock_market.par_prices.map(&:price).min,
-          capitalization: self.class::CAPITALIZATION,
-          **corporation.merge(corporation_opts),
-        )
+        self.class::CORPORATIONS.map do |corporation|
+          Corporation.new(
+            min_price: stock_market.par_prices.map(&:price).min,
+            capitalization: self.class::CAPITALIZATION,
+            **corporation.merge(corporation_opts),
+          )
+        end
       end
 
       def init_hexes(companies, corporations)
