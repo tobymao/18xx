@@ -12,6 +12,7 @@ module Lib
     ENTER_GREEN = '#3CB371'
     JOIN_YELLOW = '#F0E58C'
     YOUR_TURN_ORANGE = '#FF8C00'
+    HOTSEAT_VIOLET = '#AF8CFF'
     FINISHED_GREY = '#D3D3D3'
 
     ROUTES = ROUTE_COLORS.flat_map.with_index do |color, index|
@@ -26,6 +27,7 @@ module Lib
       font: DARK ? '#ffffff' : '#000000',
       font2: '#000000',
       your_turn: YOUR_TURN_ORANGE,
+      hotseat_game: HOTSEAT_VIOLET,
       **Lib::Hex::COLOR,
       **ROUTES,
     }.freeze
