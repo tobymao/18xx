@@ -1362,7 +1362,8 @@ module Engine
 				"brown"
 			],
 			"status": [
-				"closable_corporations"
+				"closable_corporations",
+				"corporate_shares_open"
 			],
 			"operating_rounds": 2
 		},
@@ -1377,6 +1378,7 @@ module Engine
 			],
 			"status":[
 				"closable_corporations",
+				"corporate_shares_open",
 				"reduced_tile_lay"
 			],
 			"operating_rounds": 2

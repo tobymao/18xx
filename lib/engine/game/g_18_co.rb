@@ -107,6 +107,10 @@ module Engine
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         'reduced_tile_lay' => ['Reduced Tile Lay', 'Corporations place only one tile per OR.'],
+        'corporate_shares_open' => [
+          'Corporate Shares Open',
+          'All corporate shares are available for any player to purchase.',
+        ],
         'closable_corporations' => [
           'Closable Corporations',
           'Unparred corporations are removed if there is no station available to place their home token. '\
