@@ -346,6 +346,10 @@ module Engine
         false
       end
 
+      def corporation_parrable?(corporation, _parrer)
+        !corporation.ipoed && corporation.next_to_par && !corporation.closed_recently
+      end
+
       def upgrade_cost(tile, hex, entity)
         return 0 if tile.upgrades.empty?
 

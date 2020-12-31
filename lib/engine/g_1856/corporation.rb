@@ -49,13 +49,6 @@ module Engine
         CAPITALIZATION_STRS[@capitalization || _capitalization_type]
       end
 
-      def release_escrow!
-        @log << "Releasing #{@game.format_currency(@escrow)} from escrow for ${@name}"
-        @cash += @escrow
-        @escrow = nil
-        @capitalization = :incremental
-      end
-
       # This is invoked BEFORE the share is moved out of the corporation
       def escrow_share_buy!
         # Take in money normally when buying the first 50% of stock
