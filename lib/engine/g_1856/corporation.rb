@@ -16,7 +16,6 @@ module Engine
         @game = game
         @started = false
         @escrow = nil
-        @log = @game.log
         super(sym: sym, name: name, **opts)
         @all_shares = shares_by_corporation[self].dup
         @capitalization = nil
@@ -48,33 +47,15 @@ module Engine
         CAPITALIZATION_STRS[@capitalization || _capitalization_type]
       end
 
+      def total_shares
+        @all_shares.count + 1 # 1 "share" in the @all_shares is the 2 share president's cert
+      end
+
       def release_escrow!
-        @log << "Releasing #{@game.format_currency(@escrow)} from escrow for ${@name}"
+        @game.log << "Releasing #{@game.format_currency(@escrow)} from escrow for #{@name}"
         @cash += @escrow
         @escrow = nil
         @capitalization = :incremental
-      end
-
-      # Issue more shares
-      def issue_shares!
-        if total_shares == 10 # was 10 share
-          @log << "#{@name} shares are 5% shares"
-
-          @all_shares.each_with_index do |share, index|
-            # Presidents cert is a 10% 2-share 1-cert paper, everything else is a 5% 1-share 0.5-cert paper
-            share.percent = index.zero? ? 10 : 5
-            share.cert_size = index.zero? ? 1 : 0.5
-          end
-        end
-
-        @log << "#{@name} issues 10 more shares"
-        num_shares = @all_shares.count
-        # Yes, this can create 50 5% shares in one corp. 1891 does this. It is weird
-        10.times do |i|
-          new_share = Share.new(self, percent: 5, index: num_shares + i, cert_size: 0.5)
-          @all_shares << new_share
-          shares_by_corporation[self] << new_share
-        end
       end
 
       # This is invoked BEFORE the share is moved out of the corporation

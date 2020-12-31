@@ -397,6 +397,10 @@ module Engine
         @nationalizables ||= []
       end
 
+      def max_national_shares
+        20
+      end
+
       def corporations_repay_loans
         @corporations.each do |corp|
           next unless corp.floated? && corp.loans.size.positive?
@@ -450,9 +454,25 @@ module Engine
           @pre_national_percent_by_player[player] += num
         end
         @pre_national_market_percent += (major.num_market_shares * 5)
-        return unless total_national_percent_issued > 10 * national.shares.count && national.shares.count == 10
+      end
 
-        national.issue_shares!
+      # Issue more shares
+      def national_issue_shares!
+        return unless national.total_shares == 10
+
+        @log << "#{national.name} issues 10 more shares and all shares are now 5% shares"
+        national.all_shares.each_with_index do |share, index|
+          # Presidents cert is a 10% 2-share 1-cert paper, everything else is a 5% 1-share 0.5-cert paper
+          share.percent = index.zero? ? 10 : 5
+          share.cert_size = index.zero? ? 1 : 0.5
+        end
+
+        num_shares = national.total_shares
+        10.times do |i|
+          new_share = Share.new(national, percent: 5, index: num_shares + i, cert_size: 0.5)
+          national.all_shares << new_share
+          national.shares_by_corporation[national] << new_share
+        end
       end
 
       def total_national_percent_issued
@@ -468,7 +488,6 @@ module Engine
         ave = (0.2 * prices.sum / prices.size).to_i * 5
 
         # The value is 100 at the bare minimum
-        # Should this be <, or <=? Rules don't specify. Let's go with the game hates you.
         # Also the stock market increases as such:
         # 90 > 100 > 110 > 125 > 150
         market_price = if ave < 105
@@ -501,7 +520,7 @@ module Engine
         #  where the exact value doesn't really matter
         players_in_order = (0..@players.count - 1).to_a.sort { |i| i < index_for_trigger ? i + 10 : i }
         # Determine the president before exchanging shares for ease of distribution
-        shares_to_distribute = 20
+        shares_to_distribute = max_national_shares
         president_shares = 0
         president = nil
         players_in_order.each do |i|
@@ -528,7 +547,7 @@ module Engine
           president = player
         end
         # More than 10 shares were issued so issue the second set
-        national.issue_shares! if shares_to_distribute < 10
+        national_issue_shares! if shares_to_distribute < 10
         national_share_index = 1
         players_in_order.each do |i|
           player = @players[i]
@@ -543,13 +562,13 @@ module Engine
               # TODO: Handle this case properly.
               puts 'TODO'
             else # This player gets the presidency, which is 2 shares
-              @share_pool.buy_shares(player, national.all_shares[0], exchange: :free, exchange_price: 0)
+              @share_pool.buy_shares(player, national.all_shares.first, exchange: :free, exchange_price: 0)
               player_national_shares -= 2
             end
           end
           # not president, just give them shares
           while player_national_shares.positive?
-            if national_share_index == national.all_shares.size
+            if national_share_index == max_national_shares
               @log << "#{national.name} is out of shares to issue, #{player.name} gets no more shares"
               player_national_shares = 0
             else
