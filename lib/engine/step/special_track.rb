@@ -8,6 +8,8 @@ module Engine
     class SpecialTrack < Base
       include Tracker
 
+      attr_reader :company
+
       ACTIONS = %w[lay_tile].freeze
       ACTIONS_WITH_PASS = %w[lay_tile pass].freeze
 

@@ -357,7 +357,6 @@ module Engine
       def operating_round(round_num)
         Round::G1867::Operating.new(self, [
           Step::G1867::MajorTrainless,
-          Step::DiscardTrain,
           Step::BuyCompany,
           Step::G1867::RedeemShares,
           Step::G1867::Track,
@@ -365,6 +364,7 @@ module Engine
           Step::Route,
           Step::G1867::Dividend,
           Step::G1867::LoanOperations,
+          Step::DiscardTrain,
           Step::G1867::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)

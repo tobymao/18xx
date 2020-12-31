@@ -150,11 +150,11 @@ module Engine
           Step::G1817::Loan,
           Step::G1817::SpecialTrack,
           Step::G1817::Assign,
-          Step::DiscardTrain,
           Step::G1817::Track,
           Step::Token,
           Step::Route,
           Step::G1817::Dividend,
+          Step::DiscardTrain,
           Step::G1817::BuyTrain,
         ], round_num: round_num)
       end
