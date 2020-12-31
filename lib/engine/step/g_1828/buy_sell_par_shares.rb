@@ -25,11 +25,12 @@ module Engine
         end
 
         def process_choose(action)
-          @game.game_error('No eligible corporation to merge with') unless can_merge?(action.entity, action.choice)
+          corporation = @game.corporation_by_id(action.choice)
+          @game.game_error('No eligible corporation to merge with') unless can_merge?(action.entity, corporation)
 
           # Set the round variables needed to activate the merge step
           @round.acting_player = action.entity
-          @round.merge_initiator = action.choice
+          @round.merge_initiator = corporation
 
           @round.last_to_act = action.entity
           @current_actions << action

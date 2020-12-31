@@ -24,11 +24,9 @@ module View
           },
         }
 
-        children = []
-
-        @corporation.shells.each do |shell|
-          children << h(:h3, h3_props, "#{shell.name} Shell Trains")
-          children << h(:div, div_props, shell_trains(shell.trains))
+        children = @corporation.shells.flat_map do |shell|
+          [h(:h3, h3_props, "#{shell.name} Shell Trains"),
+           h(:div, div_props, shell_trains(shell.trains))]
         end
 
         props = {

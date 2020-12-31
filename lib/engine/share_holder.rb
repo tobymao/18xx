@@ -16,6 +16,10 @@ module Engine
       shares_by_corporation[corporation]
     end
 
+    def certs_of(corporation)
+      shares_of(corporation)
+    end
+
     def percent_of(corporation)
       return 0 unless corporation
 

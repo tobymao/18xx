@@ -164,7 +164,7 @@ module View
         return [] unless @step.can_merge?(@current_entity, @corporation)
 
         merge = lambda do
-          process_action(Engine::Action::Choose.new(@current_entity, choice: @corporation))
+          process_action(Engine::Action::Choose.new(@current_entity, choice: @corporation.name))
         end
 
         [h(:button, { on: { click: merge } }, 'Merge')]

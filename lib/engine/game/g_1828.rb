@@ -258,101 +258,31 @@ module Engine
       end
 
       def create_system(corporations)
+        return nil unless corporations.size == 2
+
         system_data = CORPORATIONS.find { |c| c['sym'] == corporations.first.id }.dup
         system_data['sym'] = corporations.map(&:name).join('-')
         system_data['tokens'] = []
-        system = init_corporation(@stock_market, system_data)
-        system.extend(Engine::G1828::System)
-        system.name = corporations.first.name
+        system_data['corporations'] = corporations
+        system = init_system(@stock_market, system_data)
 
         @corporations << system
         @_corporations[system.id] = system
         system.shares.each { |share| @_shares[share.id] = share }
 
-        create_system_tokens(system, corporations)
+        place_system_blocking_tokens(system)
 
         # Make sure the system will not own two coal markers
-        if corporations.count { |corp| coal_marker?(corp) } == 2
-          remove_coal_marker(corporations.last)
+        if coal_markers(system).size > 1
+          remove_coal_marker(system)
           add_coal_marker_to_va_coalfields
           @log << "#{system.name} cannot have two coal markers, returning one to Virginia Coalfields"
-        end
-
-        corporations.each do |corporation|
-          system.corporations << corporation
-          corporation.spend(corporation.cash, system) if corporation.cash.positive?
-
-          shell = Engine::G1828::Shell.new(corporation.name, system)
-          corporation.trains.dup.each do |train|
-            system.buy_train(train, :free)
-            shell.trains << train
-          end
-          system.shells << shell
-
-          corporation.companies.each do |company|
-            company.owner = system
-            system.companies << company
-          end
-          corporation.companies.clear
-
-          corporation.all_abilities.each do |ability|
-            system.add_ability(ability)
-            @target.remove_ability(ability)
-          end
         end
 
         @stock_market.set_par(system, system_market_price(corporations))
         system.ipoed = true
 
         system
-      end
-
-      def create_system_tokens(system, corporations)
-        used, unused = corporations.map(&:tokens).flatten.partition(&:used)
-
-        used.group_by { |t| t.city.hex }.each do |hex, tokens|
-          if tokens.one?
-            replace_token(system, tokens.first)
-          elsif tokens[0].city == tokens[1].city
-            replace_token(system, tokens.first)
-            tokens[1].remove!
-            place_blocking_token(hex)
-          else
-            tokens.each { |t| replace_token(system, t) }
-          end
-        end
-
-        unused.sort_by(&:price).each { |t| system.tokens << Engine::Token.new(system, price: t.price) }
-
-        corporations.each { |corp| corp.tokens.clear }
-      end
-
-      def replace_token(corporation, token)
-        new_token = Engine::Token.new(corporation, price: token.price)
-        corporation.tokens << new_token
-        token.swap!(new_token, check_tokenable: false)
-      end
-
-      def system_market_price(corporations)
-        market = @stock_market.market
-        share_prices = corporations.map(&:share_price)
-        share_values = share_prices.map(&:price).sort
-
-        left_most_col = share_prices.min { |a, b| a.coordinates[1] <=> b.coordinates[1] }.coordinates[1]
-        max_share_value = share_values[1] + (share_values[0] / 2).floor
-
-        new_market_price = nil
-        if market[0][left_most_col].price < max_share_value
-          i = market[0].size - 1
-          i -= 1 while market[0][i].price > max_share_value
-          new_market_price = market[0][i]
-        else
-          i = 0
-          i += 1 while market[i][left_most_col].price > max_share_value
-          new_market_price = market[i][left_most_col]
-        end
-
-        new_market_price
       end
 
       def coal_marker_available?
@@ -362,7 +292,11 @@ module Engine
       def coal_marker?(entity)
         return false unless entity.corporation?
 
-        entity.all_abilities.any? { |ability| ability.description == @coal_marker_ability.description }
+        coal_markers(entity).any?
+      end
+
+      def coal_markers(entity)
+        entity.all_abilities.select { |ability| ability.description == @coal_marker_ability.description }
       end
 
       def connected_to_coalfields?(entity)
@@ -493,6 +427,45 @@ module Engine
 
       def place_second_home_blocking_token(corporation)
         place_home_blocking_token(corporation, city_index: 1)
+      end
+
+      def init_system(stock_market, system)
+        Engine::G1828::System.new(
+          min_price: stock_market.par_prices.map(&:price).min,
+          capitalization: self.class::CAPITALIZATION,
+          **system.merge(corporation_opts),
+        )
+      end
+
+      def place_system_blocking_tokens(system)
+        system.tokens.select(&:used).group_by(&:city).each do |city, tokens|
+          next unless tokens.size > 1
+
+          tokens[1].remove!
+          place_blocking_token(city.hex)
+        end
+      end
+
+      def system_market_price(corporations)
+        market = @stock_market.market
+        share_prices = corporations.map(&:share_price)
+        share_values = share_prices.map(&:price).sort
+
+        left_most_col = share_prices.min { |a, b| a.coordinates[1] <=> b.coordinates[1] }.coordinates[1]
+        max_share_value = share_values[1] + (share_values[0] / 2).floor
+
+        new_market_price = nil
+        if market[0][left_most_col].price < max_share_value
+          i = market[0].size - 1
+          i -= 1 while market[0][i].price > max_share_value
+          new_market_price = market[0][i]
+        else
+          i = 0
+          i += 1 while market[i][left_most_col].price > max_share_value
+          new_market_price = market[i][left_most_col]
+        end
+
+        new_market_price
       end
     end
   end
