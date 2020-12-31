@@ -51,7 +51,8 @@ module Engine
         end
 
         def can_payoff?(entity)
-          entity == @buyer && @unpaid_loans.positive? && @buyer.cash >= @game.loan_value && !@passed_payoff_loans
+          # Parens are to workaround an Opal bug
+          (entity == @buyer) && @unpaid_loans.positive? && @buyer.cash >= @game.loan_value && !@passed_payoff_loans
         end
 
         def active_entities

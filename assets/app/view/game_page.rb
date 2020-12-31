@@ -166,7 +166,13 @@ module View
     end
 
     def menu
-      bg_color = active_player ? color_for(:your_turn) : color_for(:bg2)
+      bg_color =  if @game_data['mode'] == :hotseat
+                    color_for(:hotseat_game)
+                  elsif active_player
+                    color_for(:your_turn)
+                  else
+                    color_for(:bg2)
+                  end
       nav_props = {
         attrs: {
           role: 'navigation',
@@ -231,7 +237,8 @@ module View
     end
 
     def render_round
-      description = "#{@game.class.title}: "
+      description = @game_data['mode'] == :hotseat ? '[HOTSEAT] ' : ''
+      description += "#{@game.class.title}: "
       name = @round.class.name.split(':').last
       description += @game.round_description(name)
       description += @game.finished ? ' - Game Over' : " - #{@round.description}"
@@ -250,7 +257,7 @@ module View
 
       case @round
       when Engine::Round::Stock
-        if (%w[place_token lay_tile] & current_actions).any?
+        if (%w[place_token lay_tile remove_token] & current_actions).any?
           h(Game::Map, game: @game)
         else
           h(Game::Round::Stock, game: @game)

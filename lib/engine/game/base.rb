@@ -1189,12 +1189,12 @@ module Engine
         true
       end
 
-      def corporation_parrable?
-        return false if @par_via_exchange && @par_via_exchange.owner != entity
-        return false if @needs_token_to_par && @tokens.empty?
-        return false if all_abilities.find { |a| a.type == :unparrable }
+      def can_par?(corporation, parrer)
+        return false if corporation.par_via_exchange && corporation.par_via_exchange.owner != parrer
+        return false if corporation.needs_token_to_par && corporation.tokens.empty?
+        return false if corporation.all_abilities.find { |a| a.type == :unparrable }
 
-        !@ipoed
+        !corporation.ipoed
       end
 
       def float_corporation(corporation)
@@ -1449,11 +1449,9 @@ module Engine
       end
 
       def init_corporations(stock_market)
-        min_price = stock_market.par_prices.map(&:price).min
-
         self.class::CORPORATIONS.map do |corporation|
           Corporation.new(
-            min_price: min_price,
+            min_price: stock_market.par_prices.map(&:price).min,
             capitalization: self.class::CAPITALIZATION,
             **corporation.merge(corporation_opts),
           )

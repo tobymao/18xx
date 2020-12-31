@@ -25,6 +25,7 @@ module View
         children = []
 
         children.concat(render_buy_shares)
+        children.concat(render_merge)
         children.concat(render_short)
         children.concat(render_exchanges)
 
@@ -156,6 +157,17 @@ module View
             prefix: "Exchange #{company.sym} for ",
             source: source)
         end
+      end
+
+      def render_merge
+        return [] unless @step.current_actions.include?('choose')
+        return [] unless @step.can_merge?(@current_entity, @corporation)
+
+        merge = lambda do
+          process_action(Engine::Action::Choose.new(@current_entity, choice: @corporation.name))
+        end
+
+        [h(:button, { on: { click: merge } }, 'Merge')]
       end
     end
   end

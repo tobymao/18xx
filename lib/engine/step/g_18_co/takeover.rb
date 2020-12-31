@@ -212,7 +212,7 @@ module Engine
         def payout_shareholders(source, payout)
           share_percent = source.share_percent
 
-          payout_string = source.share_holders.map do |s_h|
+          payouts = source.share_holders.map do |s_h|
             entity, percent = s_h
             next if source == entity
 
@@ -223,9 +223,9 @@ module Engine
 
             source.spend(total_payout, entity)
             "#{@game.format_currency(total_payout)} to #{entity.name}"
-          end.compact.join(', ')
+          end.compact
 
-          @game.log << "#{source.name} distributes #{payout_string}"
+          @game.log << "#{source.name} distributes #{payouts.join(', ')}" if payouts.any?
         end
 
         def increase_train_limit(source, destination)
