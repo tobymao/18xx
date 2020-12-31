@@ -16,8 +16,27 @@ module Engine
           'Moving Bid Auction for Companies'
         end
 
+        def active?
+          !entities.all?(&:passed?)
+        end
+
         def available
           @companies
+        end
+
+        def skip!
+          entity = @round.entities[@round.entity_index]
+          return unless entity.player? && entity.cash <= committed_cash(entity)
+
+          entity.pass!
+          log_skip(entity)
+          all_passed! if entities.all?(&:passed?)
+          @round.next_entity_index!
+          skip! unless entities.all?(&:passed?)
+        end
+
+        def log_skip(entity)
+          @log << "#{entity.name} skips bidding as all their cash is committed"
         end
 
         def process_pass(action)
@@ -40,8 +59,9 @@ module Engine
           @round.next_entity_index!
         end
 
-        def actions(_entity)
+        def actions(entity)
           return [] if entities.all?(&:passed?)
+          return [] if entity.player? && entity.cash <= committed_cash(entity)
 
           ACTIONS
         end
@@ -160,14 +180,6 @@ module Engine
               end
             end
           end
-        end
-
-        def accept_bid(bid)
-          price = bid.price
-          company = bid.company
-          player = bid.entity
-          @bids.delete(company)
-          buy_company(player, company, price)
         end
 
         def add_bid(bid)
