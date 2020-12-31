@@ -80,7 +80,7 @@ module Engine
         end
 
         def process_pass(_action)
-          @game.game_error('Cannot pass') unless only_one_company?
+          raise GameError, 'Cannot pass' unless only_one_company?
 
           company = @companies[0]
           old_price = company.min_bid
@@ -106,7 +106,7 @@ module Engine
         def choose_company(player, company)
           available_companies = available
 
-          raise @game.game_error "Cannot choose #{company.name}" unless available_companies.include?(company)
+          raise GameError, "Cannot choose #{company.name}" unless available_companies.include?(company)
 
           @choices[player] << company
 

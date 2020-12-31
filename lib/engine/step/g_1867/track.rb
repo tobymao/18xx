@@ -15,7 +15,8 @@ module Engine
         end
 
         def lay_tile(action, extra_cost: 0, entity: nil)
-          @game.game_error('Cannot lay and upgrade the same tile in the same turn') if action.hex == @hex
+          raise GameError, 'Cannot lay and upgrade the same tile in the same turn' if action.hex == @hex
+
           super
           @hex = action.hex
         end

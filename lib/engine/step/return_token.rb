@@ -21,18 +21,18 @@ module Engine
         company = action.entity
         corporation = action.entity.owner
 
-        @game.game_error("#{company.name} must be owned by a corporation") unless corporation.corporation?
+        raise GameError, "#{company.name} must be owned by a corporation" unless corporation.corporation?
 
         last_used_token = available_tokens(corporation).first
 
-        @game.game_error("#{corporation.name} cannot return its only placed token") unless last_used_token
+        raise GameError, "#{corporation.name} cannot return its only placed token" unless last_used_token
 
         selected_city = action.city
         hex = selected_city.hex
 
         city_string = hex.tile.cities.size > 1 ? " city #{selected_city.index}" : ''
         unless available_city(corporation, selected_city)
-          @game.game_error("Cannot return token from #{hex.name}#{city_string} to #{corporation.name}")
+          raise GameError, "Cannot return token from #{hex.name}#{city_string} to #{corporation.name}"
         end
 
         last_city = last_used_token.city

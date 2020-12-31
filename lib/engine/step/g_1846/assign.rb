@@ -102,7 +102,7 @@ module Engine
         end
 
         def process_pass(action)
-          @game.game_error("Not #{action.entity.name}'s turn: #{action.to_h}") unless action.entity == @steamboat
+          raise GameError, "Not #{action.entity.name}'s turn: #{action.to_h}" unless action.entity == @steamboat
 
           if (ability = @game.abilities(@steamboat, :assign_hexes))
             ability.use!

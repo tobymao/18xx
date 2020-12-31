@@ -40,7 +40,7 @@ module Engine
           return process_issue_shares(action) if action.entity.corporation?
 
           if can_issue?(@round.current_entity)
-            @game.game_error('President may not sell shares while corporation can issues shares.')
+            raise GameError, 'President may not sell shares while corporation can issues shares.'
           end
 
           super
@@ -71,7 +71,7 @@ module Engine
           bundle_index = issuable.index(bundle)
 
           if !can_issue?(corporation) || !bundle_index
-            @game.game_error("#{corporation.name} cannot issue share bundle: #{bundle.shares}")
+            raise GameError, "#{corporation.name} cannot issue share bundle: #{bundle.shares}"
           end
 
           @last_share_issued_price = if bundle_index.zero?

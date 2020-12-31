@@ -14,7 +14,8 @@ module Engine
         def process_lay_tile(action)
           if action.entity.id == 'E&K' && !@company
             track_step = @round.steps.find { |step| step.is_a?(Track) }
-            @game.game_error("Cannot use #{action.entity.name} after a tile upgrade") if track_step.upgraded
+            raise GameError, "Cannot use #{action.entity.name} after a tile upgrade" if track_step.upgraded
+
             track_step.no_upgrades = true
           end
 

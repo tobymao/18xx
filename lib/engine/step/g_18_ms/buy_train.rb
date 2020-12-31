@@ -29,11 +29,11 @@ module Engine
           if price > available_funds && must_buy_train?(entity)
 
             if can_sell_anything?(player, entity)
-              @game.game_error("#{player.name} may not loan money as long as #{entity.name} has shares to sell")
+              raise GameError, "#{player.name} may not loan money as long as #{entity.name} has shares to sell"
             end
 
             cheapest = @game.depot.min_depot_train
-            @game.game_error("#{player.name} may not loan money when affordable trains exist") if
+            raise GameError, "#{player.name} may not loan money when affordable trains exist" if
               cheapest.price <= available_funds
 
             # Prepare to take a loan

@@ -25,8 +25,9 @@ module Engine
           company = action.entity
           bundle = action.bundle
           unless can_exchange?(company, bundle)
-            @game.game_error("Cannot exchange #{action.entity.id} for #{bundle.corporation.id}")
+            raise GameError, "Cannot exchange #{action.entity.id} for #{bundle.corporation.id}"
           end
+
           corporation = bundle.corporation
           floated = corporation.floated?
 

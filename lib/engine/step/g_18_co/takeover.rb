@@ -76,7 +76,7 @@ module Engine
           entity = action.entity
 
           unless available_hex(entity, action.city.hex)
-            @game.game_error("Cannot place a token on #{action.city.hex.name}")
+            raise GameError, "Cannot place a token on #{action.city.hex.name}"
           end
 
           old_token = taken_entity.tokens.find { |t| t.city == action.city }
@@ -154,13 +154,13 @@ module Engine
           return if source.placed_tokens.empty?
           return if destination.unplaced_tokens.empty?
 
-          destination_hexes = destination.tokens.map { |token| token&.city&.hex }.compact
+          destination_cities = destination.tokens.map(&:city).compact
 
           source.tokens.each do |token|
             next unless token.used
 
             token.city&.remove_reservation!(source)
-            token.remove! if destination_hexes.include?(token.city.hex)
+            token.remove! if destination_cities.include?(token.city)
           end
         end
 
@@ -249,10 +249,6 @@ module Engine
 
         def close_corporation(entity)
           @game.close_corporation(entity)
-          if entity == @game.dsng && !@game.drgr&.closed?
-            @game.log << "#{@game.drgr.name} closes due to takeover of #{@game.dsng.name}"
-            @game.drgr.close!
-          end
           entity.close!
           @round.pending_takeover = nil
         end

@@ -57,7 +57,7 @@ module Engine
           target = action.corporation
 
           if !target || !mergeable(corporation).include?(target)
-            @game.game_error("Choose a corporation to merge with #{corporation.name}")
+            raise GameError, "Choose a corporation to merge with #{corporation.name}"
           end
 
           @game.stock_market.set_par(target, corporation.share_price)
@@ -138,7 +138,7 @@ module Engine
           players = players.rotate(players.index(initiator))
 
           if players.none? { |player| player.cash >= merged_par.price || owners.count(player) >= 2 }
-            @game.game_error('Merge impossible, no player can become president')
+            raise GameError, 'Merge impossible, no player can become president'
           end
 
           @game.stock_market.set_par(target, merged_par)
@@ -205,7 +205,7 @@ module Engine
           return finish_merge_to_major(action) if @merge_major
 
           unless mergeable(action.entity).include?(action.corporation)
-            @game.game_error("Cannot merge with t#{action.corporation.name}")
+            raise GameError, "Cannot merge with t#{action.corporation.name}"
           end
 
           @merging ||= [action.entity]

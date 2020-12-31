@@ -19,7 +19,8 @@ module Engine
 
         def process_lay_tile(action)
           @mexico_city_double_hex_lay = false
-          @game.game_error('Cannot do normal tile lay') unless can_lay_tile?(action.entity)
+          raise GameError, 'Cannot do normal tile lay' unless can_lay_tile?(action.entity)
+
           lay_tile_action(action)
           lay_in_other_hex_of_double_hex(action) if MEXICO_CITY_DOUBLE_HEX.include?(action.hex.id)
           pass! unless remaining_tile_lay?(action.entity)

@@ -176,13 +176,14 @@ module Engine
           price = bid.price
           min = min_bid(company)
 
-          @game.game_error("Minimum bid is #{@game.format_currency(min)} for #{company.name}") if price < min
+          raise GameError, "Minimum bid is #{@game.format_currency(min)} for #{company.name}" if price < min
           if @game.class::MUST_BID_INCREMENT_MULTIPLE && ((price - min) % min_increment).nonzero?
-            @game.game_error("Must increase bid by a multiple of #{@game.format_currency(min_increment)}")
+            raise GameError, "Must increase bid by a multiple of #{@game.format_currency(min_increment)}"
           end
+
           if price > max_bid(entity, company)
-            @game.game_error("Cannot afford bid. Maximum possible bid is
-              #{@game.format_currency(max_bid(entity, company))}")
+            raise GameError, 'Cannot afford bid. Maximum possible bid is '\
+              "#{@game.format_currency(max_bid(entity, company))}"
           end
 
           bids = @bids[company]
@@ -201,17 +202,18 @@ module Engine
           from_price = bid.from_price
           min = min_bid(company)
 
-          @game.game_error("Minimum bid is #{@game.format_currency(min)} for #{company.name}") if price < min
+          raise GameError, "Minimum bid is #{@game.format_currency(min)} for #{company.name}" if price < min
           if @game.class::MUST_BID_INCREMENT_MULTIPLE && ((price - min) % min_increment).nonzero?
-            @game.game_error("Must increase bid by a multiple of #{@game.format_currency(min_increment)}")
+            raise GameError, "Must increase bid by a multiple of #{@game.format_currency(min_increment)}"
           end
+
           if price > max_bid(entity, company)
-            @game.game_error("Cannot afford bid. Maximum possible bid is
-              #{@game.format_currency(max_bid(entity, company))}")
+            raise GameError, 'Cannot afford bid. Maximum possible bid is '\
+              "#{@game.format_currency(max_bid(entity, company))}"
           end
           if price < from_price + min_increment
-            @game.game_error("Bid movement must increase original bid by a multiple of
-              #{@game.format_currency(min_increment)}")
+            raise GameError, 'Bid movement must increase original bid by a multiple of '\
+              "#{@game.format_currency(min_increment)}"
           end
 
           @bids[from_company].reject! { |b| b.entity == entity && b.price == from_price }

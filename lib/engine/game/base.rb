@@ -16,6 +16,7 @@ require_relative '../bank'
 require_relative '../company'
 require_relative '../corporation'
 require_relative '../depot'
+require_relative '../game_error'
 require_relative '../graph'
 require_relative '../hex'
 require_relative '../minor'
@@ -914,25 +915,23 @@ module Engine
         end
 
         tracks.group_by(&:itself).each do |k, v|
-          game_error("Route cannot reuse track on #{k[0].id}") if v.size > 1
+          raise GameError, "Route cannot reuse track on #{k[0].id}" if v.size > 1
         end
       end
 
       def check_connected(route, token)
         paths_ = route.paths.uniq
 
-        # rubocop:disable Style/GuardClause, Style/IfUnlessModifier
-        if token.select(paths_, corporation: route.corporation).size != paths_.size
-          game_error('Route is not connected')
-        end
-        # rubocop:enable Style/GuardClause, Style/IfUnlessModifier
+        return if token.select(paths_, corporation: route.corporation).size == paths_.size
+
+        raise GameError, 'Route is not connected'
       end
 
       def check_distance(route, visits)
         distance = route.train.distance
         if distance.is_a?(Numeric)
           route_distance = visits.sum(&:visit_cost)
-          game_error("#{route_distance} is too many stops for #{distance} train") if distance < route_distance
+          raise GameError, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
 
           return
         end
@@ -959,7 +958,7 @@ module Engine
             break unless num.positive?
           end
 
-          game_error('Route has too many stops') if num.positive?
+          raise GameError, 'Route has too many stops' if num.positive?
         end
       end
 
@@ -1145,7 +1144,7 @@ module Engine
       def declare_bankrupt(player)
         if player.bankrupt
           msg = "#{player.name} is already bankrupt, cannot declare bankruptcy again."
-          game_error(msg)
+          raise GameError, msg
         end
 
         player.bankrupt = true
@@ -1188,10 +1187,6 @@ module Engine
 
       def legal_tile_rotation?(_entity, _hex, _tile)
         true
-      end
-
-      def game_error(msg)
-        raise GameError, msg
       end
 
       def float_corporation(corporation)
@@ -1291,7 +1286,7 @@ module Engine
       end
 
       def add_extra_tile(tile)
-        game_error('Add extra tile only works if unlimited') unless tile.unlimited
+        raise GameError, 'Add extra tile only works if unlimited' unless tile.unlimited
 
         # Find the highest tile that exists of this type in the tile list and duplicate it.
         # The highest one in the list should be the highest index anywhere.
