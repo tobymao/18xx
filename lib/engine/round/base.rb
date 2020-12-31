@@ -91,7 +91,7 @@ module Engine
 
           blocking || process
         end
-        @game.game_error("No step found for action #{type} at #{action.id}: #{action.to_h}") unless step
+        raise GameError, "No step found for action #{type} at #{action.id}: #{action.to_h}" unless step
 
         step.acted = true
         step.send("process_#{action.type}", action)

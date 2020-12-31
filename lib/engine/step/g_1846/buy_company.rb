@@ -29,7 +29,7 @@ module Engine
           company = action.company
           return unless (minor = @game.minor_by_id(company.id))
 
-          @game.game_error('Cannot buy minor because train tight') unless room?(entity)
+          raise GameError, 'Cannot buy minor because train tight' unless room?(entity)
 
           cash = minor.cash
           minor.spend(cash, entity) if cash.positive?

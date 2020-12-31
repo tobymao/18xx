@@ -16,7 +16,7 @@ module Engine
 
         def process_buy_special(action)
           item = action.item
-          @game.game_error("Cannot buy unknown item: #{item.description}") if item != @items.first
+          raise GameError, "Cannot buy unknown item: #{item.description}" if item != @items.first
 
           @game.buy_coal_marker(action.entity)
         end

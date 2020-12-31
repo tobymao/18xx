@@ -18,7 +18,7 @@ module Engine
                   "sellable shares total #{buying_power}, and the cheapest train in the "\
                   "Depot costs #{price}."
 
-            @game.game_error(msg)
+            raise GameError, msg
           end
 
           @log << "-- #{player.name} goes bankrupt and sells remaining shares --"

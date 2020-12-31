@@ -17,7 +17,8 @@ module Engine
             owner = action.entity.owner
             tile_lay = step.get_tile_lay(owner)
             tile = action.tile
-            @game.game_error('Cannot lay an yellow now') if tile.color == :yellow && !tile_lay[:lay]
+            raise GameError, 'Cannot lay an yellow now' if tile.color == :yellow && !tile_lay[:lay]
+
             # Subtract 15 from the cost cancelling the terrain cost
             lay_tile(action, extra_cost: tile_lay[:cost] - 15, entity: owner, spender: owner)
             tile.hex.assign!('mine')
@@ -56,12 +57,11 @@ module Engine
             ntile = neighbor&.tile
             next false unless ntile
 
-            # The neighbouring tile must have a city or offboard or town
+            # The neighbouring tile must have a city or offboard
             # That neighbouring tile must either connect to an edge on the tile or
             # potentially be updated in future.
             (ntile.cities&.any? ||
-             ntile.offboards&.any? ||
-             ntile.towns&.any?) &&
+             ntile.offboards&.any?) &&
             (ntile.exits.any? { |e| e == Hex.invert(exit) } ||
              potential_future_tiles(entity, neighbor).any?)
           end

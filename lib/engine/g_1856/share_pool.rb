@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../game_error'
 require_relative '../share_pool'
 
 module Engine
@@ -9,7 +10,7 @@ module Engine
         bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
 
         if !@game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && shares.owner.player?
-          @game.game_error('Cannot buy share from player')
+          raise GameError, 'Cannot buy share from player'
         end
 
         corporation = bundle.corporation

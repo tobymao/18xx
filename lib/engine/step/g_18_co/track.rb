@@ -35,7 +35,7 @@ module Engine
 
         def lay_tile_action(action)
           if @previous_laid_hexes.include?(action.hex)
-            @game.game_error("#{action.hex.id} cannot be upgraded as the tile was just laid")
+            raise GameError, "#{action.hex.id} cannot be upgraded as the tile was just laid"
           end
 
           super

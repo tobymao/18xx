@@ -265,7 +265,7 @@ module Engine
 
         tracks_by_type.each do |_type, tracks|
           tracks.group_by(&:itself).each do |k, v|
-            @game.game_error("Route cannot reuse track on #{k[0].id}") if v.size > 1
+            raise GameError, "Route cannot reuse track on #{k[0].id}" if v.size > 1
           end
         end
       end

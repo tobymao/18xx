@@ -44,7 +44,7 @@ module Engine
       def process_remove_token(action)
         entity = action.entity
         token = action.city.tokens[action.slot]
-        @game.game_error("Cannot remove #{token.corporation.name} token") unless available_hex(entity, token.city.hex)
+        raise GameError, "Cannot remove #{token.corporation.name} token" unless available_hex(entity, token.city.hex)
 
         token.remove!
         @log << "#{action.entity.name} removes token from #{action.city.hex.name}"
