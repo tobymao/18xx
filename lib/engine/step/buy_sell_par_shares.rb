@@ -213,6 +213,10 @@ module Engine
         @game.purchasable_companies(entity)
       end
 
+      def purchasable_unsold_companies
+        @game.companies.reject(&:owner)
+      end
+
       def get_par_prices(entity, _corp)
         @game
           .stock_market
