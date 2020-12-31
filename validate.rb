@@ -19,7 +19,7 @@ def run_game(game, actions = nil)
   begin
     $total += 1
     time = Time.now
-    engine = Engine::Game.load(game)
+    engine = Engine::Game.load(game, disable_user_errors: true)
     time = Time.now - time
     $total_time += time
     data['finished']=true
@@ -104,7 +104,7 @@ def revalidate_broken(filename)
 end
 
 def validate_json(filename)
-  Engine::Game.load(filename)
+  Engine::Game.load(filename, disable_user_errors: true)
 end
 
 def pin_games(pin_version, game_ids)

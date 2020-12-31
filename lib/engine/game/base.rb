@@ -69,7 +69,7 @@ module Engine
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
-                  :optional_rules
+                  :optional_rules, :exception, :last_processed_action
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -386,7 +386,7 @@ module Engine
         const_set(:LAYOUT, data['layout'].to_sym)
       end
 
-      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [])
+      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [], disable_user_errors: false)
         @id = id
         @turn = 1
         @final_turn = nil
@@ -396,6 +396,8 @@ module Engine
         @log = []
         @queued_log = []
         @actions = []
+        @disable_user_errors = disable_user_errors
+        @exception = nil
         @names = if names.is_a?(Hash)
                    names.freeze
                  else
@@ -552,7 +554,20 @@ module Engine
         filtered_actions.each.with_index do |action, index|
           if !action.nil?
             action = action.copy(self) if action.is_a?(Action::Base)
-            process_action(action)
+
+            if @disable_user_errors
+              # Opal exceptions lack backtraces, so do this outside of a rescue
+              # in dev mode to preserve the backtrace
+              process_action(action)
+            else
+              begin
+                process_action(action)
+              rescue Engine::GameError => e
+                @exception = e
+                @actions << action
+                break
+              end
+            end
           else
             # Restore the original action to the list to ensure action ids remain consistent but don't apply them
             @actions << actions[index]
@@ -604,6 +619,8 @@ module Engine
             @round_history << @actions.size
           end
         end
+
+        @last_processed_action = action.id
 
         self
       end
@@ -1174,7 +1191,7 @@ module Engine
       end
 
       def game_error(msg)
-        raise GameError.new(msg, current_action_id)
+        raise GameError, msg
       end
 
       def float_corporation(corporation)

@@ -34,6 +34,13 @@ module View
       def process_action(action)
         hotseat = @game_data[:mode] == :hotseat
 
+        if @game.exception
+          msg = 'This game is broken and cannot accept any new actions. If '\
+                'this issue has not already been reported, please follow the '\
+                'instructions at the top of the page to report it.'
+          return store(:flash_opts, msg)
+        end
+
         if Lib::Params['action']
           return store(:flash_opts, 'You cannot make changes while browsing history.
             Press >| to navigate to the current game action.')
