@@ -12,10 +12,6 @@ module Engine
         super
         @token_fee = opts[:token_fee]
       end
-
-      def can_par?(_entity)
-        !@ipoed && @next_to_par && !@closed_recently
-      end
     end
   end
 end

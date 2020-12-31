@@ -51,13 +51,6 @@ module Engine
         @all_shares.count + 1 # 1 "share" in the @all_shares is the 2 share president's cert
       end
 
-      def release_escrow!
-        @game.log << "Releasing #{@game.format_currency(@escrow)} from escrow for #{@name}"
-        @cash += @escrow
-        @escrow = nil
-        @capitalization = :incremental
-      end
-
       # This is invoked BEFORE the share is moved out of the corporation
       def escrow_share_buy!
         # Take in money normally when buying the first 50% of stock

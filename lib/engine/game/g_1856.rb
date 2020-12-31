@@ -303,6 +303,13 @@ module Engine
         Engine::G1856::SharePool.new(self)
       end
 
+      def release_escrow!(corporation)
+        @log << "Releasing #{format_currency(corporation.escrow)} from escrow for #{corporation.name}"
+        corporation.cash += corporation.escrow
+        corporation.escrow = nil
+        corporation.capitalization = :incremental
+      end
+
       # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
       STATUS_TEXT = {
         'escrow' => [

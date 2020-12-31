@@ -26,7 +26,7 @@ module Engine
           share_price = action.share_price
           corporation = action.corporation
           entity = action.entity
-          raise GameError, "#{corporation} cannot be parred" unless corporation.can_par?(entity)
+          raise GameError, "#{corporation} cannot be parred" unless @game.corporation.parrable?(entity)
 
           corporation.par!
           @log << "#{corporation.name} is parred as a #{corporation.capitalization_type_desc} cap corporation"
