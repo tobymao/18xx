@@ -8,6 +8,11 @@ module Engine
     module G1828
       class Dividend < Dividend
         include MinorHalfPay
+
+        def dividends_for_entity(entity, holder, per_share)
+          # Include payout for treasury share
+          entity.system? ? ((holder.num_shares_of(entity) + 1) * per_share).ceil : super
+        end
       end
     end
   end

@@ -14,6 +14,10 @@ module Engine
       false
     end
 
+    def system?
+      false
+    end
+
     def operator?
       false
     end

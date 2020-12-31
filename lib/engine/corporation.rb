@@ -25,13 +25,14 @@ module Engine
     include Transfer
 
     attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :max_share_price
-    attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :type, :needs_token_to_par
+    attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :type, :id, :needs_token_to_par
     attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
 
     def initialize(sym:, name:, **opts)
       @name = sym
+      @id = sym
       @full_name = name
 
       shares = (opts[:shares] || SHARES).map.with_index do |percent, index|
@@ -149,10 +150,6 @@ module Engine
 
     def ipo_shares
       shares.select { |share| share.corporation == self }
-    end
-
-    def id
-      @name
     end
 
     def president?(player)

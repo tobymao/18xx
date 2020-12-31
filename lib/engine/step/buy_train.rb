@@ -17,7 +17,7 @@ module Engine
 
         return [] if entity != current_entity
         # TODO: Not sure this is right
-        return %w[sell_shares buy_train] if must_buy_train?(entity)
+        return %w[sell_shares buy_train] if president_may_contribute?(entity)
         return %w[buy_train pass] if can_buy_train?(entity)
 
         []

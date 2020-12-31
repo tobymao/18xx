@@ -257,7 +257,7 @@ module View
 
       case @round
       when Engine::Round::Stock
-        if (%w[place_token lay_tile] & current_actions).any?
+        if (%w[place_token lay_tile remove_token] & current_actions).any?
           h(Game::Map, game: @game)
         else
           h(Game::Round::Stock, game: @game)
