@@ -60,10 +60,10 @@ module Engine
             # The neighbouring tile must have a city or offboard
             # That neighbouring tile must either connect to an edge on the tile or
             # potentially be updated in future.
-            (ntile.cities&.any? ||
-             ntile.offboards&.any?) &&
-            (ntile.exits.any? { |e| e == Hex.invert(exit) } ||
-             potential_future_tiles(entity, neighbor).any?)
+            # 1817 doesn't have any coal next to towns but 1817NA does and
+            #  Marc Voyer confirmed that coal should be able to connect to the gray pre-printed town
+            (ntile.cities&.any? || ntile.offboards&.any? || ntile.towns&.any?) &&
+            (ntile.exits.any? { |e| e == Hex.invert(exit) } || potential_future_tiles(entity, neighbor).any?)
           end
         end
       end
