@@ -30,8 +30,8 @@ module Engine
       def lay_tile_action(action)
         tile = action.tile
         tile_lay = get_tile_lay(action.entity)
-        @game.game_error('Cannot lay an upgrade now') if tile.color != :yellow && !tile_lay[:upgrade]
-        @game.game_error('Cannot lay an yellow now') if tile.color == :yellow && !tile_lay[:lay]
+        raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && !tile_lay[:upgrade]
+        raise GameError, 'Cannot lay an yellow now' if tile.color == :yellow && !tile_lay[:lay]
 
         lay_tile(action, extra_cost: tile_lay[:cost])
         @upgraded = true if action.tile.color != :yellow
@@ -54,15 +54,16 @@ module Engine
           next if company.closed?
           next unless (ability = @game.abilities(company, :blocks_hexes))
 
-          @game.game_error("#{hex.id} is blocked by #{company.name}") if ability.hexes.include?(hex.id)
+          raise GameError, "#{hex.id} is blocked by #{company.name}" if ability.hexes.include?(hex.id)
         end
 
         tile.rotate!(rotation)
 
-        @game.game_error("#{old_tile.name} is not upgradeable to #{tile.name}")\
-          unless @game.upgrades_to?(old_tile, tile, entity.company?)
+        unless @game.upgrades_to?(old_tile, tile, entity.company?)
+          raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}"
+        end
         if !@game.loading && !legal_tile_rotation?(entity, hex, tile)
-          @game.game_error("#{old_tile.name} is not legally rotated for #{tile.name}")
+          raise GameError, "#{old_tile.name} is not legally rotated for #{tile.name}"
         end
 
         @game.add_extra_tile(tile) if tile.unlimited
@@ -81,7 +82,7 @@ module Engine
           next if ability.owner != entity
           next if ability.hexes.any? && (!ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name))
 
-          @game.game_error("Track laid must be connected to one of #{spender.id}'s stations") if ability.reachable &&
+          raise GameError, "Track laid must be connected to one of #{spender.id}'s stations" if ability.reachable &&
             hex.name != spender.coordinates &&
             !@game.loading &&
             !@game.graph.reachable_hexes(spender)[hex]
@@ -211,11 +212,11 @@ module Engine
         when :permissive
           true
         when :city_permissive
-          @game.game_error('Must be city tile or use new track') if new_tile.cities.none? && !used_new_track
+          raise GameError, 'Must be city tile or use new track' if new_tile.cities.none? && !used_new_track
         when :restrictive
-          @game.game_error('Must use new track') unless used_new_track
+          raise GameError, 'Must use new track' unless used_new_track
         when :semi_restrictive
-          @game.game_error('Must use new track or change city value') if !used_new_track && !changed_city
+          raise GameError, 'Must use new track or change city value' if !used_new_track && !changed_city
         else
           raise
         end

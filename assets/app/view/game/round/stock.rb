@@ -55,6 +55,8 @@ module View
                           "for #{@game.format_currency(@price_protection.price)}")
           end
 
+          children << h(BuyCompaniesAtFaceValue, game: @game) if @current_actions.include?('buy_company') &&
+            @step.purchasable_unsold_companies.any?
           children.concat(render_corporations)
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
           children.concat(render_bank_companies)

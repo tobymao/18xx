@@ -39,7 +39,7 @@ module Engine
         def process_pass(action)
           entity = action.entity
           ability = @game.abilities(@company, :token, time: 'sold')
-          @game.game_error("Not #{entity.name}'s turn: #{action.to_h}") unless entity == @company
+          raise GameError, "Not #{entity.name}'s turn: #{action.to_h}" unless entity == @company
 
           hex = @game.hex_by_id(ability.hexes.first)
           @log << "#{entity.owner.name} passes placing a token on #{hex.name} (#{hex.location_name})"

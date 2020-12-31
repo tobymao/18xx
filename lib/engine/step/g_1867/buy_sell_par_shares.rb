@@ -121,7 +121,7 @@ module Engine
         end
 
         def max_bid(player, _corporation = nil)
-          [MAX_BID, player.cash].min
+          player.cash
         end
 
         def pass_description

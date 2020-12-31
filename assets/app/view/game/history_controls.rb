@@ -30,10 +30,18 @@ module View
             end
           divs << history_link('<<', 'Previous Round', last_round, style_extra) if last_round
 
-          divs << history_link('<', 'Previous Action', cursor ? cursor - 1 : @num_actions - 1, style_extra)
+          prev_action =
+            if @game.exception
+              @game.last_processed_action
+            elsif cursor
+              cursor - 1
+            else
+              @num_actions - 1
+            end
+          divs << history_link('<', 'Previous Action', prev_action, style_extra)
         end
 
-        if cursor
+        if cursor && !@game.exception
           divs << history_link('>', 'Next Action', cursor + 1 < @num_actions ? cursor + 1 : nil, style_extra)
           store(:round_history, @game.round_history, skip: true) unless @round_history
           next_round = @round_history[@game.round_history.size]

@@ -76,7 +76,7 @@ module Engine
           entity = action.entity
 
           unless available_hex(entity, action.city.hex)
-            @game.game_error("Cannot place a token on #{action.city.hex.name}")
+            raise GameError, "Cannot place a token on #{action.city.hex.name}"
           end
 
           old_token = taken_entity.tokens.find { |t| t.city == action.city }

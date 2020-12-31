@@ -11,13 +11,14 @@ module Engine
           target = action.target
 
           unless (ability = @game.abilities(company, :assign_hexes))
-            @game.game_error("Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found")
+            raise GameError, "Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found"
           end
 
           case company.id
           when 'UBC', 'OBC'
             id = 'bridge'
-            @game.game_error("Bridge already on #{target.name}") if target.assigned?(id)
+            raise GameError, "Bridge already on #{target.name}" if target.assigned?(id)
+
             target.assign!(id)
             ability.use!
             @log << "#{company.name} builds bridge on #{target.name}"

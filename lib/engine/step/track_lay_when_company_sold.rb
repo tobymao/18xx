@@ -23,7 +23,7 @@ module Engine
 
         entity = action.entity
         ability = @game.abilities(@company, :tile_lay, time: 'sold')
-        @game.game_error("Not #{entity.name}'s turn: #{action.to_h}") unless entity == @company
+        raise GameError, "Not #{entity.name}'s turn: #{action.to_h}" unless entity == @company
 
         lay_tile(action, spender: entity.owner)
         check_connect(action, ability)
@@ -35,7 +35,7 @@ module Engine
       def process_pass(action)
         entity = action.entity
         ability = @game.abilities(@company, :tile_lay, time: 'sold')
-        @game.game_error("Not #{entity.name}'s turn: #{action.to_h}") unless entity == @company
+        raise GameError, "Not #{entity.name}'s turn: #{action.to_h}" unless entity == @company
 
         @company.remove_ability(ability)
         @log << "#{entity.name} passes lay track"

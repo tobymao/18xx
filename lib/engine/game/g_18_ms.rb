@@ -154,7 +154,6 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Exchange,
-          Step::DiscardTrain,
           Step::G18MS::SpecialTrack,
           Step::G18MS::SpecialToken,
           Step::G18MS::BuyCompany,
@@ -162,6 +161,7 @@ module Engine
           Step::G18MS::Token,
           Step::Route,
           Step::Dividend,
+          Step::DiscardTrain,
           Step::SpecialBuyTrain,
           Step::G18MS::BuyTrain,
           [Step::BuyCompany, blocks: true],

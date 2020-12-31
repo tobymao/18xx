@@ -144,7 +144,7 @@ module Engine
     "X5": {
       "count": 1,
       "color": "brown",
-      "code": "city=revenue:70,slots:2;city=revenue:70;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_1;path=a:_0,b:_1;label=M"
+      "code": "city=revenue:70,slots:2;city=revenue:70;path=a:0,b:_1;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_0;path=a:5,b:_0;label=M"
     },
     "X6": {
       "count": 1,
@@ -154,7 +154,7 @@ module Engine
     "X7": {
       "count": 1,
       "color": "brown",
-      "code": "city=revenue:70,slots:2;city=revenue:70;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;path=a:2,b:_1;path=a:4,b:_1;label=M"
+      "code": "city=revenue:70,slots:2;city=revenue:70;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:4,b:_1;path=a:5,b:_0;label=M"
     },
     "X8": {
       "count": 1,
@@ -196,7 +196,7 @@ module Engine
   ],
   "companies": [
     {
-      "name": "Hidden corporation to lock the 3 spots",
+      "name": "rules until start of phase 3",
       "sym": "3",
       "value": 3,
       "revenue": 0,
@@ -204,7 +204,6 @@ module Engine
       "abilities": [
         {
         "type": "blocks_hexes",
-        "owner_type": "player",
         "hexes": [
           "M13"
         ]
@@ -293,6 +292,7 @@ module Engine
       "name": "Canadian Northern Railway",
       "logo": "1867/CNR",
       "float_percent": 20,
+      "always_market_price": true,
       "tokens": [
         0,
         20,
@@ -306,6 +306,7 @@ module Engine
       "name": "Canadian Pacific Railway",
       "logo": "1867/CPR",
       "float_percent": 20,
+      "always_market_price": true,
       "tokens": [
         0,
         20,
@@ -319,6 +320,7 @@ module Engine
       "name": "Chesapeake and Ohio Railway",
       "logo": "1867/CO",
       "float_percent": 20,
+      "always_market_price": true,
       "tokens": [
         0,
         20,
@@ -332,6 +334,7 @@ module Engine
       "name": "Grand Trunk Railway",
       "logo": "1867/GTR",
       "float_percent": 20,
+      "always_market_price": true,
       "tokens": [
         0,
         20,
@@ -345,6 +348,7 @@ module Engine
       "name": "Great Western Railway",
       "logo": "1867/GWR",
       "float_percent": 20,
+      "always_market_price": true,
       "tokens": [
         0,
         20,
@@ -358,6 +362,7 @@ module Engine
       "name": "Intercolonial Railway",
       "logo": "1867/ICR",
       "float_percent": 20,
+      "always_market_price": true,
       "tokens": [
         0,
         20,
@@ -371,6 +376,7 @@ module Engine
       "name": "National Transcontinental Railway",
       "logo": "1867/NTR",
       "float_percent": 20,
+      "always_market_price": true,
       "tokens": [
         0,
         20,
@@ -384,6 +390,7 @@ module Engine
       "name": "New York Central Railroad",
       "logo": "1867/NYC",
       "float_percent": 20,
+      "always_market_price": true,
       "tokens": [
         0,
         20,
@@ -397,6 +404,7 @@ module Engine
       "name": "Buffalo, Brantford, and Goderich",
       "logo": "1867/BBG",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -410,6 +418,7 @@ module Engine
       "name": "Brockville and Ottawa",
       "logo": "1867/BO",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -423,6 +432,7 @@ module Engine
       "name": "Canada Southern",
       "logo": "1867/CS",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -436,6 +446,7 @@ module Engine
       "name": "Credit Valley Railway",
       "logo": "1867/CV",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -449,6 +460,7 @@ module Engine
       "name": "Kingston and Pembroke",
       "logo": "1867/KP",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -462,6 +474,7 @@ module Engine
       "name": "London and Port Stanley",
       "logo": "1867/LPS",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -475,6 +488,7 @@ module Engine
       "name": "Ottawa and Prescott",
       "logo": "1867/OP",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -488,6 +502,7 @@ module Engine
       "name": "St. Lawrence and Atlantic",
       "logo": "1867/SLA",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -501,6 +516,7 @@ module Engine
       "name": "Toronto, Grey, and Bruce",
       "logo": "1867/TGB",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -514,6 +530,7 @@ module Engine
       "name": "Toronto and Nipissing",
       "logo": "1867/TN",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -527,6 +544,7 @@ module Engine
       "name": "Algoma Eastern Railway",
       "logo": "1867/AE",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -540,6 +558,7 @@ module Engine
       "name": "Canada Atlantic Railway",
       "logo": "1867/CA",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -553,6 +572,7 @@ module Engine
       "name": "New York and Ottawa",
       "logo": "1867/NO",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -566,6 +586,7 @@ module Engine
       "name": "Pere Marquette Railway",
       "logo": "1867/PM",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -579,6 +600,7 @@ module Engine
       "name": "Quebec and Lake St. John",
       "logo": "1867/QLS",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -592,6 +614,7 @@ module Engine
       "name": "Toronto, Hamilton and Buffalo",
       "logo": "1867/THB",
       "float_percent": 100,
+      "always_market_price": true,
       "tokens": [
         0
       ],
@@ -766,8 +789,7 @@ module Engine
         {
           "nodes": ["city", "offboard"],
           "pay": 2,
-          "visit": 2,
-          "multiplier":2
+          "visit": 2
         },
         {
           "nodes": ["town"],
@@ -775,6 +797,7 @@ module Engine
           "visit": 99
         }
       ],
+      "multiplier":2,
       "price": 600,
       "num": 6,
       "available_on": "8"
@@ -793,6 +816,7 @@ module Engine
           "visit": 99
         }
       ],
+      "multiplier": 2,
       "price": 1500,
       "num": 7,
       "available_on": "8"
