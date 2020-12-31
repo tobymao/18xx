@@ -13,7 +13,7 @@ module View
 
       def render
         step = @game.round.active_step
-        return unless step.current_actions.include?('sell_shares')
+        return unless (step.current_actions & %w[sell_shares corporate_sell_shares]).any?
 
         buttons = @game.sellable_bundles(@player, @corporation).map do |bundle|
           sell = lambda do
@@ -39,7 +39,6 @@ module View
           )
         end
 
-        step = @game.round.active_step
         @game.bundles_for_corporation(@player, @corporation).map do |bundle|
           pool_shares = @game.share_pool.shares_by_corporation[@corporation].group_by(&:percent).values.map(&:first)
           pool_shares.each do |pool_share|
