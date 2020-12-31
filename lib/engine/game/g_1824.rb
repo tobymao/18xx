@@ -2,7 +2,7 @@
 
 require_relative '../config/game/g_1824'
 require_relative 'base'
-require_relative '../g_1824/corporation'
+require_relative '../corporation'
 module Engine
   module Game
     class G1824 < Base
@@ -64,7 +64,7 @@ module Engine
         min_price = stock_market.par_prices.map(&:price).min
 
         self.class::CORPORATIONS.map do |corporation|
-          Engine::G1824::Corporation.new(
+          Engine::Corporation.new(
             min_price: min_price,
             capitalization: self.class::CAPITALIZATION,
             **corporation.merge(corporation_opts),
@@ -92,6 +92,10 @@ module Engine
         return 'Treasury' if @coal_corporations.include?(entity)
 
         'IPO'
+      end
+
+      def can_par?(corporation, parrer)
+        super && !corporation.all_abilities.find { |a| a.type == :no_buy }
       end
     end
   end

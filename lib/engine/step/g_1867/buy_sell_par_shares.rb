@@ -103,14 +103,14 @@ module Engine
         def can_bid?(entity)
           max_bid(entity) >= MIN_BID && !bought? &&
           @game.corporations.any? do |c|
-            c.can_par?(entity) && c.type == :minor && can_buy?(entity, c.shares.first&.to_bundle)
+            @game.can_par?(c, entity) && c.type == :minor && can_buy?(entity, c.shares.first&.to_bundle)
           end
         end
 
         def can_ipo_any?(entity)
           @game.phase.name.to_i >= MAJOR_PHASE && !bought? &&
           @game.corporations.any? do |c|
-            c.can_par?(entity) && c.type == :major && can_buy?(entity, c.shares.first&.to_bundle)
+            @game.can_par?(c, entity) && c.type == :major && can_buy?(entity, c.shares.first&.to_bundle)
           end
         end
 

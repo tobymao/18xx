@@ -234,6 +234,10 @@ module Engine
         super
       end
 
+      def can_par?(corporation, parrer)
+        corporation == national ? false : super
+      end
+
       #
       # Get all possible upgrades for a tile
       # tile: The tile to be upgraded
@@ -274,6 +278,13 @@ module Engine
 
       def init_share_pool
         Engine::G1856::SharePool.new(self)
+      end
+
+      def release_escrow!(corporation)
+        @log << "Releasing #{format_currency(corporation.escrow)} from escrow for #{corporation.name}"
+        corporation.cash += corporation.escrow
+        corporation.escrow = nil
+        corporation.capitalization = :incremental
       end
 
       # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
