@@ -85,7 +85,9 @@ module Engine
 
           process = s.actions(action.entity).include?(type)
           blocking = s.blocking?
-          @game.game_error("Step #{s.description} cannot process #{action.to_h}") if blocking && !process
+          if blocking && !process
+            raise GameError, "Blocking step #{s.description} cannot process action #{action['id']}"
+          end
 
           blocking || process
         end
