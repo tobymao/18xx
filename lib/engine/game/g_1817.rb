@@ -203,7 +203,7 @@ module Engine
 
       def size_corporation(corporation, size)
         original_shares = @_shares.values.select { |share| share.corporation == corporation }
-        game_error('Can only convert 2 share corporation') unless corporation.total_shares == 2
+        raise GameError, 'Can only convert 2 share corporation' unless corporation.total_shares == 2
 
         corporation.share_holders.clear
 
@@ -247,7 +247,7 @@ module Engine
           shares[0].percent = 20
           new_shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 4) }
         else
-          game_error('Cannot convert 10 share corporation')
+          raise GameError, 'Cannot convert 10 share corporation'
         end
 
         corporation.max_ownership_percent = 60
@@ -340,7 +340,7 @@ module Engine
         max_shares = corporation.player_share_holders.values.max
 
         # Check cross-short merge problem
-        game_error('At least one player must have more than 20% to allow a merge') if max_shares < 20
+        raise GameError, 'At least one player must have more than 20% to allow a merge' if max_shares < 20
 
         # Find the new president, tie break is the surviving corporation president
         # This is done before the cancelling to ensure the new president can cancel any shorts
@@ -426,7 +426,8 @@ module Engine
       end
 
       def take_loan(entity, loan)
-        game_error("Cannot take more than #{maximum_loans(entity)} loans") unless can_take_loan?(entity)
+        raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
+
         price = entity.share_price.price
         name = entity.name
         name += " (#{entity.owner.name})" if @round.is_a?(Round::Stock)
@@ -472,11 +473,11 @@ module Engine
 
         revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
 
-        game_error('Route visits same hex twice') if route.hexes.size != route.hexes.uniq.size
+        raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
 
         mine = 'mine'
         if route.hexes.first.assigned?(mine) || route.hexes.last.assigned?(mine)
-          game_error('Route cannot start or end with a mine')
+          raise GameError, 'Route cannot start or end with a mine'
         end
 
         if option_modern_trains? && [7, 8].include?(route.train.distance)

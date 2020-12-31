@@ -890,7 +890,7 @@ module Engine
         home_city = tokens.find { |c| c.hex == hex_by_id(corporation.coordinates) }
         found = false
         routes.each { |r| found ||= r.visited_stops.include?(home_city) } if home_city
-        game_error('At least one route must include home token') unless found
+        raise GameError, 'At least one route must include home token' unless found
       end
 
       def visit_route(ridx, intersects, visited)
@@ -919,7 +919,7 @@ module Engine
         visited = {}
         visit_route(0, intersects, visited)
 
-        game_error('Routes must intersect with each other') if visited.size != actual_routes.size
+        raise GameError, 'Routes must intersect with each other' if visited.size != actual_routes.size
       end
 
       def tokened_out?(route)
@@ -937,22 +937,22 @@ module Engine
         if visits.size > 2
           corporation = route.corporation
           visits[1..-2].each do |node|
-            if node.city? && custom_blocks?(node, corporation)
-              game_error('Route can only bypass one tokened-out city') if blocked
-              blocked = node
-            end
+            next if !node.city? || !custom_blocks?(node, corporation)
+            raise GameError, 'Route can only bypass one tokened-out city' if blocked
+
+            blocked = node
           end
         end
 
         paths_ = route.paths.uniq
         token = blocked if blocked
         if custom_node_select(token, paths_, corporation: route.corporation).size != paths_.size
-          game_error('Route is not connected')
+          raise GameError, 'Route is not connected'
         end
 
         return unless blocked && route.routes.any? { |r| r != route && tokened_out?(r) }
 
-        game_error('Only one train can bypass a tokened-out city')
+        raise GameError, 'Only one train can bypass a tokened-out city'
       end
 
       def check_distance(route, visits)
@@ -967,9 +967,9 @@ module Engine
                          [c_allowance - city_stops.size, 0].max
                        end
 
-        game_error('Route has too many cities/offboards') if city_stops.size > c_allowance
-        game_error('Route has too many towns') if town_stops.size > th_allowance && option_no_skip_towns?
-        game_error('Route cannot begin/end in a halt') if visits.first.halt? || visits.last.halt?
+        raise GameError, 'Route has too many cities/offboards' if city_stops.size > c_allowance
+        raise GameError, 'Route has too many towns' if town_stops.size > th_allowance && option_no_skip_towns?
+        raise GameError, 'Route cannot begin/end in a halt' if visits.first.halt? || visits.last.halt?
       end
 
       def check_hex_reentry(route)
@@ -977,7 +977,7 @@ module Engine
         last_hex = nil
         route.ordered_paths.each do |path|
           hex = path.hex
-          game_error('Route cannot re-enter a hex') if hex != last_hex && visited_hexes[hex]
+          raise GameError, 'Route cannot re-enter a hex' if hex != last_hex && visited_hexes[hex]
 
           visited_hexes[hex] = true
           last_hex = hex

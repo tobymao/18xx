@@ -370,7 +370,7 @@ module Engine
 
         return unless cities_allowed < (cities_visited + start_at_town + end_at_town)
 
-        game_error('Towns on route ends are counted against city limit.')
+        raise GameError, 'Towns on route ends are counted against city limit.'
       end
 
       def revenue_for(route, stops)
