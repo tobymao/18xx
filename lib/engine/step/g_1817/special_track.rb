@@ -57,7 +57,7 @@ module Engine
             ntile = neighbor&.tile
             next false unless ntile
 
-            # The neighbouring tile must have a city or offboard
+            # The neighbouring tile must have a city or offboard or town
             # That neighbouring tile must either connect to an edge on the tile or
             # potentially be updated in future.
             # 1817 doesn't have any coal next to towns but 1817NA does and

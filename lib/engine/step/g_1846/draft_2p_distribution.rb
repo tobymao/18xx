@@ -37,7 +37,7 @@ module Engine
 
         def process_pass(action)
           return super if only_one_company?
-          raise GameError, 'Canno pass on first turn' if @game.companies.none?(&:owned_by_player?)
+          raise GameError, 'Cannot pass on first turn' if @game.companies.none?(&:owned_by_player?)
 
           @log << "#{action.entity.name} passes"
           @round.next_entity_index!
