@@ -100,7 +100,7 @@ module View
         if @corporation.system?
           children << render_shells
         else
-          store(:active_shell, nil)
+          store(:active_shell, nil, skip: true)
         end
 
         if (step.can_buy_train?(@corporation, @active_shell) && step.room?(@corporation, @active_shell)) ||
