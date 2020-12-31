@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative '../assets/app/lib/settings'
 require 'argon2'
 
 class User < Base
@@ -10,7 +11,7 @@ class User < Base
 
   RESET_WINDOW = 60 * 15 # 15 minutes
 
-  SETTINGS = (8.times.flat_map do |index|
+  SETTINGS = (Lib::Settings::ROUTE_COLORS.size.times.flat_map do |index|
     %w[color dash width].map do |prop|
       "r#{index}_#{prop}"
     end
