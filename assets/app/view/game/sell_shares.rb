@@ -13,7 +13,6 @@ module View
 
       def render
         step = @game.round.active_step
-        return unless (step.current_actions & %w[sell_shares corporate_sell_shares]).any?
 
         buttons = @game.sellable_bundles(@player, @corporation).map do |bundle|
           sell = lambda do
