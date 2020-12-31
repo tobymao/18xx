@@ -37,7 +37,7 @@ module Engine
             share_price = action.share_price
             corporation = action.corporation
             parrer = action.entity
-            raise GameError, "#{corporation} cannot be parred" unless @game.corporation_parrable?(corporation, parrer)
+            raise GameError, "#{corporation} cannot be parred" unless @game.can_par?(corporation, parrer)
 
             @game.stock_market.set_par(corporation, share_price)
             share = corporation.shares.first

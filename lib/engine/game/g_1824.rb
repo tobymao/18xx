@@ -94,7 +94,7 @@ module Engine
         'IPO'
       end
 
-      def corporation_parrable?(corporation, parrer)
+      def can_par?(corporation, parrer)
         super && !corporation.all_abilities.find { |a| a.type == :no_buy }
       end
     end

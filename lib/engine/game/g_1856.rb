@@ -234,7 +234,7 @@ module Engine
         super
       end
 
-      def corporation_parrable?(corporation, parrer)
+      def can_par?(corporation, parrer)
         corporation == national ? false : super
       end
 

@@ -346,7 +346,7 @@ module Engine
         false
       end
 
-      def corporation_parrable?(corporation, _parrer)
+      def can_par?(corporation, _parrer)
         !corporation.ipoed && corporation.next_to_par && !corporation.closed_recently
       end
 

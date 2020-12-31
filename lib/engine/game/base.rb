@@ -1189,7 +1189,7 @@ module Engine
         true
       end
 
-      def corporation_parrable?(corporation, parrer)
+      def can_par?(corporation, parrer)
         return false if corporation.par_via_exchange && corporation.par_via_exchange.owner != parrer
         return false if corporation.needs_token_to_par && corporation.tokens.empty?
         return false if corporation.all_abilities.find { |a| a.type == :unparrable }

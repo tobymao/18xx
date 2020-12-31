@@ -148,7 +148,7 @@ module Engine
         share_price = action.share_price
         corporation = action.corporation
         entity = action.entity
-        raise GameError, "#{corporation.name} cannot be parred" unless @game.corporation_parrable?(corporation, entity)
+        raise GameError, "#{corporation.name} cannot be parred" unless @game.can_par?(corporation, entity)
 
         @game.stock_market.set_par(corporation, share_price)
         share = corporation.shares.first
@@ -197,7 +197,7 @@ module Engine
 
       def can_ipo_any?(entity)
         !bought? && @game.corporations.any? do |c|
-          @game.corporation_parrable?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
+          @game.can_par?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
         end
       end
 
