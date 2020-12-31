@@ -11,8 +11,9 @@ module Engine
           target = action.target
 
           unless (ability = @game.abilities(company, :assign_hexes))
-            @game.game_error("Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found")
+            raise GameError, "Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found"
           end
+
           case company.id
           when 'GLSC'
             target.assign!(company.id)

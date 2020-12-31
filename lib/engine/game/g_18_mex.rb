@@ -12,7 +12,7 @@ module Engine
       load_from_json(Config::Game::G18Mex::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
-      DEV_STAGE = :beta
+      DEV_STAGE = :production
 
       GAME_LOCATION = 'Mexico'
       GAME_RULES_URL = 'https://secure.deepthoughtgames.com/games/18MEX/rules.pdf'
@@ -189,7 +189,6 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::G18Mex::Assign,
-          Step::DiscardTrain,
           Step::G18Mex::BuyCompany,
           Step::HomeToken,
           Step::G18Mex::Merge,
@@ -198,6 +197,7 @@ module Engine
           Step::Token,
           Step::Route,
           Step::G18Mex::Dividend,
+          Step::DiscardTrain,
           Step::G18Mex::SingleDepotTrainBuy,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)

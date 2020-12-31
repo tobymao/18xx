@@ -15,7 +15,7 @@ module Engine
         def process_place_token(action)
           token = action.city.tokens[action.slot]
           if token
-            @game.game_error("Cannot replace #{token.corporation.name} token") unless token.corporation.name == 'CN'
+            raise GameError, "Cannot replace #{token.corporation.name} token" unless token.corporation.name == 'CN'
 
             @log << "#{action.entity.name} removes neutral token from #{action.city.hex.name}"
             # CN may no longer have a valid route.

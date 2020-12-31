@@ -40,12 +40,12 @@ module Engine
           old_connected_paths = prior_connected_paths(entity, new_tile, old_tile)
           return if all_prior_paths_accessible?(old_tile.paths, old_connected_paths)
 
-          @game.game_error('Must have route to access existing track') if old_connected_paths.empty?
+          raise GameError, 'Must have route to access existing track' if old_connected_paths.empty?
 
           return if accessible_new_path_creates_new_exit?(brand_new_exit_junctions)
           return if all_new_paths_have_new_exits?(brand_new_exit_junctions)
 
-          @game.game_error('Must have route to access both ends of at least one path of new track')
+          raise GameError, 'Must have route to access both ends of at least one path of new track'
         end
 
         def new_exit_junctions(old_tile, new_tile)

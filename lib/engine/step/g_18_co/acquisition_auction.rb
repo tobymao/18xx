@@ -45,7 +45,7 @@ module Engine
           price = action.price
           min = min_bid(corporation)
 
-          @game.game_error("#{entity.name} must bid at least #{@game.format_currency(min)}") if price < min
+          raise GameError, "#{entity.name} must bid at least #{@game.format_currency(min)}" if price < min
 
           @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
           @round.next_entity_index!
@@ -124,7 +124,7 @@ module Engine
           corporation = bid.corporation
           price = bid.price
           min = min_bid(corporation)
-          @game.game_error("Minimum bid is #{@game.format_currency(min)} for #{corporation.name}") if price < min
+          raise GameError, "Minimum bid is #{@game.format_currency(min)} for #{corporation.name}" if price < min
 
           @bids[corporation] << bid
 

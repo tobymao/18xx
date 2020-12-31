@@ -8,7 +8,7 @@ module Engine
     include Assignable
 
     attr_accessor :x, :y, :ignore_for_axes, :location_name
-    attr_reader :connections, :coordinates, :empty, :layout, :neighbors, :tile, :original_tile
+    attr_reader :coordinates, :empty, :layout, :neighbors, :tile, :original_tile
 
     DIRECTIONS = {
       flat: {
@@ -72,6 +72,7 @@ module Engine
       @x, @y = self.class.init_x_y(@coordinates, axes)
       @neighbors = {}
       @connections = Hash.new { |h, k| h[k] = [] }
+      @connected = false
       @location_name = location_name
       tile.location_name = location_name
       @original_tile = @tile = tile
@@ -181,32 +182,36 @@ module Engine
 
       @tile = tile
 
-      @connections.clear
+      invalidate_connections
+      invalidate_connected
       @paths = nil
-
-      connect!
     end
 
-    def lay_downgrade(tile)
+    def invalidate_connected
       hexes = []
-
-      @tile.paths.each do |path|
-        path.walk { |p| hexes << p.hex if p.node? }
-      end
-
-      lay(tile)
-
-      hexes.uniq.each do |hex|
-        hex.connections.each do |_, connections|
-          connections.select!(&:valid?)
+      tile.paths.each do |path|
+        path.walk do |p|
+          hexes << p.hex
         end
       end
 
-      tile.restore_borders
+      hexes.uniq.each(&:invalidate_connections)
     end
 
-    def connect!
-      Connection.connect!(self)
+    def invalidate_connections
+      @connected = false
+      @connections.clear
+    end
+
+    def connections
+      connect unless @connected
+      @connections
+    end
+
+    def lay_downgrade(tile)
+      lay(tile)
+
+      tile.restore_borders
     end
 
     def paths
@@ -223,7 +228,7 @@ module Engine
     end
 
     def all_connections
-      @connections.values.flatten.uniq.select(&:valid?)
+      connections.values.flatten.uniq.select(&:valid?)
     end
 
     def neighbor_direction(other)
@@ -256,6 +261,13 @@ module Engine
 
     def inspect
       "<#{self.class.name}: #{name}, tile: #{@tile.name}>"
+    end
+
+    private
+
+    def connect
+      @connected = true
+      Connection.connect!(self)
     end
   end
 end

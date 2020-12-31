@@ -58,7 +58,9 @@ module Engine
       end
 
       def remove_reservation!(entity)
-        @reservations.delete(entity)
+        return unless (index = @reservations.index(entity))
+
+        @reservations[index] = nil
       end
 
       def remove_all_reservations!
@@ -105,6 +107,7 @@ module Engine
 
         exchange_token(token, cheater: cheater)
         tile.reservations.delete(corporation)
+        remove_reservation!(corporation)
       end
 
       def exchange_token(token, cheater: false)

@@ -8,11 +8,12 @@ module Engine
       class Route < Route
         def process_run_routes(action)
           if route_includes_coalfields?(action.routes) && !@game.coal_marker?(action.entity)
-            @game.game_error('Cannot run to Virginia Coalfields without a Coal Marker')
+            raise GameError, 'Cannot run to Virginia Coalfields without a Coal Marker'
           end
 
+          # C&P route must include the tile it laid this turn
           if action.entity.id == 'C&P' && !route_uses_tile_lay(action.routes)
-            @game.game_error("#{action.entity.name} must use laid tile in route")
+            raise GameError, "#{action.entity.name} must use laid tile in route"
           end
 
           super

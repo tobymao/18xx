@@ -483,7 +483,7 @@ module View
       end
 
       def render_status
-        [h(:div, { style: { display: 'inline' } }, [
+        [h(:div, { style: { display: 'inline', fontSize: 'small' } }, [
           h('span.bold', @game.status_str(@corporation)),
         ])]
       end

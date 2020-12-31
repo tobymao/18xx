@@ -107,6 +107,10 @@ module Engine
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         'reduced_tile_lay' => ['Reduced Tile Lay', 'Corporations place only one tile per OR.'],
+        'corporate_shares_open' => [
+          'Corporate Shares Open',
+          'All corporate shares are available for any player to purchase.',
+        ],
         'closable_corporations' => [
           'Closable Corporations',
           'Unparred corporations are removed if there is no station available to place their home token. '\
@@ -443,7 +447,13 @@ module Engine
       def event_unreserve_home_stations!
         @log << '-- Event: Home station reservations removed --'
 
-        hexes.each { |h| h.tile.cities.each(&:remove_all_reservations!) }
+        @corporations.each do |corporation|
+          next if corporation.ipoed
+
+          tile = hex_by_id(corporation.coordinates).tile
+          city = tile.cities[corporation.city || 0]
+          city.remove_reservation!(corporation)
+        end
       end
 
       def tile_lays(_entity)
@@ -540,7 +550,7 @@ module Engine
           shares.combination(n).to_a.map { |ss| Engine::ShareBundle.new(ss) }
         end
 
-        bundles.uniq(&:percent).sort_by(&:percent)
+        bundles.sort_by { |b| [b.presidents_share ? 1 : 0, b.percent, -b.shares.size] }.uniq(&:percent)
       end
 
       def purchasable_companies(entity = nil)
@@ -560,6 +570,12 @@ module Engine
         return value unless drgr&.owner == player
 
         value - drgr.value
+      end
+
+      private
+
+      def ability_blocking_step
+        @round.steps.find { |step| step.blocks? && !step.passed? && !step.is_a?(Step::DiscardTrain) }
       end
     end
   end

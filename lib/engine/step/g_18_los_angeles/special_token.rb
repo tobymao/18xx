@@ -8,8 +8,8 @@ module Engine
       class SpecialToken < SpecialToken
         def process_place_token(action)
           if (action.entity == @game.dch) && action.city.tokenable?(action.entity.owner)
-            @game.game_error('Dewey, Cheatham, and Howe can only place a token in '\
-                             'a city (other than Long Beach) with no open slots.')
+            raise GameError, 'Dewey, Cheatham, and Howe can only place a token in '\
+                             'a city (other than Long Beach) with no open slots.'
           end
 
           super

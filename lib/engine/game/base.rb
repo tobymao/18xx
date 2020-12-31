@@ -16,6 +16,7 @@ require_relative '../bank'
 require_relative '../company'
 require_relative '../corporation'
 require_relative '../depot'
+require_relative '../game_error'
 require_relative '../graph'
 require_relative '../hex'
 require_relative '../minor'
@@ -30,12 +31,46 @@ require_relative '../player_info'
 
 module Engine
   module Game
+    def self.load(data, at_action: nil, **kwargs)
+      game_data =
+        case data
+        when String
+          return load(JSON.parse(File.exist?(data) ? File.read(data) : data), at_action: at_action, **kwargs)
+        when Hash
+          {
+            title: data['title'],
+            names: data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h,
+            id: data['id'],
+            actions: data['actions'] || [],
+            pin: data.dig('settings', 'pin'),
+            optional_rules: data.dig('settings', 'optional_rules') || [],
+          }
+        when Integer
+          return load(::Game[data], at_action: at_action, **kwargs)
+        when ::Game
+          {
+            title: data.title,
+            names: data.ordered_players.map { |u| [u.id, u.name] }.to_h,
+            id: data.id,
+            actions: data.actions.map(&:to_h),
+            pin: data.settings['pin'],
+            optional_rules: data.settings['optional_rules'] || [],
+          }
+        end
+      title = game_data.delete(:title)
+      names = game_data.delete(:names)
+      game_data.merge!(kwargs)
+      game_data[:actions] = game_data[:actions].take(at_action) if at_action
+
+      Engine::GAMES_BY_TITLE[title].new(names, **game_data)
+    end
+
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
-                  :optional_rules
+                  :optional_rules, :exception, :last_processed_action
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -93,6 +128,9 @@ module Engine
       # Does the cert limit decrease when a player becomes bankrupt?
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = false
       CERT_LIMIT_INCLUDES_PRIVATES = true
+      # Does the cert limit care about how many players started the game or how
+      # many remain?
+      CERT_LIMIT_COUNTS_BANKRUPTED = false
 
       MULTIPLE_BUY_TYPES = %i[multiple_buy].freeze
 
@@ -266,7 +304,8 @@ module Engine
       end
 
       def self.<=>(other)
-        [DEV_STAGES.index(self::DEV_STAGE), title] <=> [DEV_STAGES.index(other::DEV_STAGE), other.title]
+        [DEV_STAGES.index(self::DEV_STAGE), title.sub(/18\s+/, '18').downcase] <=>
+          [DEV_STAGES.index(other::DEV_STAGE), other.title.sub(/18\s+/, '18').downcase]
       end
 
       def self.register_colors(colors)
@@ -348,7 +387,7 @@ module Engine
         const_set(:LAYOUT, data['layout'].to_sym)
       end
 
-      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [])
+      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [], disable_user_errors: false)
         @id = id
         @turn = 1
         @final_turn = nil
@@ -358,6 +397,8 @@ module Engine
         @log = []
         @queued_log = []
         @actions = []
+        @disable_user_errors = disable_user_errors
+        @exception = nil
         @names = if names.is_a?(Hash)
                    names.freeze
                  else
@@ -517,7 +558,20 @@ module Engine
         filtered_actions.each.with_index do |action, index|
           if !action.nil?
             action = action.copy(self) if action.is_a?(Action::Base)
-            process_action(action)
+
+            if @disable_user_errors
+              # Opal exceptions lack backtraces, so do this outside of a rescue
+              # in dev mode to preserve the backtrace
+              process_action(action)
+            else
+              begin
+                process_action(action)
+              rescue Engine::GameError => e
+                @exception = e
+                @actions << action
+                break
+              end
+            end
           else
             # Restore the original action to the list to ensure action ids remain consistent but don't apply them
             @actions << actions[index]
@@ -569,6 +623,8 @@ module Engine
             @round_history << @actions.size
           end
         end
+
+        @last_processed_action = action.id
 
         self
       end
@@ -862,25 +918,23 @@ module Engine
         end
 
         tracks.group_by(&:itself).each do |k, v|
-          game_error("Route cannot reuse track on #{k[0].id}") if v.size > 1
+          raise GameError, "Route cannot reuse track on #{k[0].id}" if v.size > 1
         end
       end
 
       def check_connected(route, token)
         paths_ = route.paths.uniq
 
-        # rubocop:disable Style/GuardClause, Style/IfUnlessModifier
-        if token.select(paths_, corporation: route.corporation).size != paths_.size
-          game_error('Route is not connected')
-        end
-        # rubocop:enable Style/GuardClause, Style/IfUnlessModifier
+        return if token.select(paths_, corporation: route.corporation).size == paths_.size
+
+        raise GameError, 'Route is not connected'
       end
 
       def check_distance(route, visits)
         distance = route.train.distance
         if distance.is_a?(Numeric)
           route_distance = visits.sum(&:visit_cost)
-          game_error("#{route_distance} is too many stops for #{distance} train") if distance < route_distance
+          raise GameError, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
 
           return
         end
@@ -907,7 +961,7 @@ module Engine
             break unless num.positive?
           end
 
-          game_error('Route has too many stops') if num.positive?
+          raise GameError, 'Route has too many stops' if num.positive?
         end
       end
 
@@ -1093,7 +1147,7 @@ module Engine
       def declare_bankrupt(player)
         if player.bankrupt
           msg = "#{player.name} is already bankrupt, cannot declare bankruptcy again."
-          game_error(msg)
+          raise GameError, msg
         end
 
         player.bankrupt = true
@@ -1138,8 +1192,12 @@ module Engine
         true
       end
 
-      def game_error(msg)
-        raise GameError.new(msg, current_action_id)
+      def can_par?(corporation, parrer)
+        return false if corporation.par_via_exchange && corporation.par_via_exchange.owner != parrer
+        return false if corporation.needs_token_to_par && corporation.tokens.empty?
+        return false if corporation.all_abilities.find { |a| a.type == :unparrable }
+
+        !corporation.ipoed
       end
 
       def float_corporation(corporation)
@@ -1239,7 +1297,7 @@ module Engine
       end
 
       def add_extra_tile(tile)
-        game_error('Add extra tile only works if unlimited') unless tile.unlimited
+        raise GameError, 'Add extra tile only works if unlimited' unless tile.unlimited
 
         # Find the highest tile that exists of this type in the tile list and duplicate it.
         # The highest one in the list should be the highest index anywhere.
@@ -1329,7 +1387,10 @@ module Engine
 
       def init_cert_limit
         cert_limit = self.class::CERT_LIMIT
-        cert_limit = cert_limit[players.reject(&:bankrupt).length] if cert_limit.is_a?(Hash)
+        if cert_limit.is_a?(Hash)
+          player_count = (self.class::CERT_LIMIT_COUNTS_BANKRUPTED ? players : players.reject(&:bankrupt)).size
+          cert_limit = cert_limit[player_count]
+        end
         cert_limit = cert_limit.reject { |k, _| k.to_i < @corporations.size }
                        .min_by(&:first)&.last || cert_limit.first.last if cert_limit.is_a?(Hash)
         cert_limit || @cert_limit
@@ -1391,15 +1452,15 @@ module Engine
       end
 
       def init_corporations(stock_market)
-        min_price = stock_market.par_prices.map(&:price).min
+        self.class::CORPORATIONS.map { |corporation| init_corporation(stock_market, corporation) }
+      end
 
-        self.class::CORPORATIONS.map do |corporation|
-          Corporation.new(
-            min_price: min_price,
-            capitalization: self.class::CAPITALIZATION,
-            **corporation.merge(corporation_opts),
-          )
-        end
+      def init_corporation(stock_market, corporation)
+        Corporation.new(
+          min_price: stock_market.par_prices.map(&:price).min,
+          capitalization: self.class::CAPITALIZATION,
+          **corporation.merge(corporation_opts),
+        )
       end
 
       def init_hexes(companies, corporations)
@@ -1557,8 +1618,6 @@ module Engine
             hex.neighbors[direction] = neighbor
           end
         end
-
-        @hexes.select { |h| h.tile.cities.any? || h.tile.exits.any? }.each(&:connect!)
       end
 
       def total_rounds(name)
@@ -1745,13 +1804,13 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::Exchange,
-          Step::DiscardTrain,
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::Track,
           Step::Token,
           Step::Route,
           Step::Dividend,
+          Step::DiscardTrain,
           Step::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
@@ -1872,6 +1931,10 @@ module Engine
         return false if strict_time && !ability.when
         return true unless time
 
+        if (ability.type == :tile_lay) && (step = ability_blocking_step)&.is_a?(Step::SpecialTrack)
+          return step.company == ability.owner
+        end
+
         if ability.when == 'any'
           !strict_time
         elsif ability.when == 'owning_corp_or_turn'
@@ -1879,6 +1942,10 @@ module Engine
         else
           ability.when == time.to_s
         end
+      end
+
+      def ability_blocking_step
+        @round.steps.find { |step| step.blocks? && !step.passed? }
       end
 
       def ability_usable?(ability)

@@ -81,7 +81,7 @@ module Engine
           price = action.price
           owner = company.owner
 
-          @game.game_error("Cannot buy #{company.name} from #{owner.name}") unless owner == @game.bank
+          raise GameError, "Cannot buy #{company.name} from #{owner.name}" unless owner == @game.bank
 
           company.owner = player
 
@@ -139,7 +139,7 @@ module Engine
         def process_sell_company(action)
           company = action.company
           player = action.entity
-          @game.game_error("Cannot sell #{company.id}") unless can_sell_company?(company)
+          raise GameError, "Cannot sell #{company.id}" unless can_sell_company?(company)
 
           sell_company(player, company, action.price)
           @round.last_to_act = player

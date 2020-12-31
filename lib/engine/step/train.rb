@@ -7,8 +7,12 @@ module Engine
   module Step
     module Train
       include EmergencyMoney
-      def can_buy_train?(entity = nil)
+      def can_buy_train?(entity = nil, _shell = nil)
         entity ||= current_entity
+        can_buy_normal?(entity)
+      end
+
+      def can_buy_normal?(entity)
         can_buy_normal = room?(entity) &&
           buying_power(entity) >= @depot.min_price(entity)
 
@@ -17,7 +21,7 @@ module Engine
           .any? { |_, _, _, price| buying_power(entity) >= price }
       end
 
-      def room?(entity)
+      def room?(entity, _shell = nil)
         if @game.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT
           entity.trains
         else
@@ -27,6 +31,10 @@ module Engine
 
       def must_buy_train?(entity)
         @game.must_buy_train?(entity)
+      end
+
+      def president_may_contribute?(entity, _shell = nil)
+        must_buy_train?(entity)
       end
 
       def should_buy_train?(entity); end
@@ -41,20 +49,20 @@ module Engine
         @game.queue_log! { @game.phase.buying_train!(entity, train) }
 
         # Check if the train is actually buyable in the current situation
-        @game.game_error('Not a buyable train') unless buyable_train_variants(train, entity).include?(train.variant)
-        @game.game_error('Must pay face value') if must_pay_face_value?(train, entity, price)
+        raise GameError, 'Not a buyable train' unless buyable_train_variants(train, entity).include?(train.variant)
+        raise GameError, 'Must pay face value' if must_pay_face_value?(train, entity, price)
 
         remaining = price - buying_power(entity)
-        if remaining.positive? && must_buy_train?(entity)
+        if remaining.positive? && president_may_contribute?(entity, action.shell)
           cheapest = @depot.min_depot_train
-          @game.game_error("Cannot purchase #{train.name} train: #{cheapest.name} train available") if
+          raise GameError, "Cannot purchase #{train.name} train: #{cheapest.name} train available" if
             train != cheapest &&
             @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST &&
             (!@game.class::EBUY_OTHER_VALUE || train.from_depot?)
 
-          @game.game_error('Cannot contribute funds when exchanging') if exchange
-          @game.game_error('Cannot buy for more than cost') if price > train.price
-          @game.game_error('Cannot contribute funds when affordable trains exist') if cheapest.price <= entity.cash
+          raise GameError, 'Cannot contribute funds when exchanging' if exchange
+          raise GameError, 'Cannot buy for more than cost' if price > train.price
+          raise GameError, 'Cannot contribute funds when affordable trains exist' if cheapest.price <= entity.cash
 
           player = entity.owner
           player.spend(remaining, entity)

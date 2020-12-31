@@ -18,21 +18,21 @@ module Engine
       def process_assign(action)
         company = action.entity
         target = action.target
-        @game.game_error("#{company.name} is already assigned to #{target.name}") if target.assigned?(company.id)
+        raise GameError, "#{company.name} is already assigned to #{target.name}" if target.assigned?(company.id)
 
         case target
         when Hex
-          if (ability = @game.abilities(company, :assign_hexes))
-            assignable_hexes = ability.hexes.map { |h| @game.hex_by_id(h) }
-            Assignable.remove_from_all!(assignable_hexes, company.id) do |unassigned|
-              @log << "#{company.name} is unassigned from #{unassigned.name}"
-            end
-            target.assign!(company.id)
-            ability.use!
-            @log << "#{company.name} is assigned to #{target.name}"
-          else
-            @game.game_error("Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found")
+          unless (ability = @game.abilities(company, :assign_hexes))
+            raise GameError, "Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found"
           end
+
+          assignable_hexes = ability.hexes.map { |h| @game.hex_by_id(h) }
+          Assignable.remove_from_all!(assignable_hexes, company.id) do |unassigned|
+            @log << "#{company.name} is unassigned from #{unassigned.name}"
+          end
+          target.assign!(company.id)
+          ability.use!
+          @log << "#{company.name} is assigned to #{target.name}"
         when Corporation, Minor
           if assignable_corporations(company).include?(target) &&
              (ability = @game.abilities(company, :assign_corporation))
@@ -43,10 +43,10 @@ module Engine
             ability.use!
             @log << "#{company.name} is assigned to #{target.name}"
           else
-            @game.game_error("Could not assign #{company.name} to #{target.name}; no assignable corporations found")
+            raise GameError, "Could not assign #{company.name} to #{target.name}; no assignable corporations found"
           end
         else
-          @game.game_error("Invalid target #{target} for assigning company #{company.name}")
+          raise GameError, "Invalid target #{target} for assigning company #{company.name}"
         end
       end
 

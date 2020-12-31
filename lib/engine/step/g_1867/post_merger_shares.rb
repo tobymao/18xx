@@ -53,7 +53,7 @@ module Engine
             # This could theoretically undo the merge cleanly,
             # but it's easier to let the players press the Undo button.
             @log << 'Merge failed as no player has 20%, please undo'
-          elsif @round.share_dealing_multiple.any?
+          elsif @round.merge_type == :merge && @round.share_dealing_multiple.any?
             # Rule 9.2 D - All players can buy 10% after involved players can buy up to 60%
             @round.share_dealing_players.each(&:unpass!)
             @round.share_dealing_players = @game.players.rotate(@game.players.index(corporation.owner))

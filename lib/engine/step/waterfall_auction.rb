@@ -168,9 +168,9 @@ module Engine
 
       def buy_company(player, company, price)
         if (available = max_bid(player, company)) < price
-          @game.game_error("#{player.name} has #{@game.format_currency(available)} "\
+          raise GameError, "#{player.name} has #{@game.format_currency(available)} "\
                            'available and cannot spend '\
-                           "#{@game.format_currency(price)}")
+                           "#{@game.format_currency(price)}"
         end
 
         company.owner = player

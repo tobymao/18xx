@@ -210,13 +210,13 @@ module Engine
         Round::Operating.new(self, [
                                Step::Bankrupt,
                                Step::Exchange,
-                               Step::DiscardTrain,
                                Step::SpecialTrack,
                                Step::BuyCompany,
                                Step::G1849::Track,
                                Step::Token,
                                Step::Route,
                                Step::G1849::Dividend,
+                               Step::DiscardTrain,
                                Step::BuyTrain,
                                Step::G1849::IssueShares,
                                [Step::BuyCompany, blocks: true],
@@ -344,6 +344,10 @@ module Engine
           return true if neighboring_path.tracks_match(connecting_track)
         end
         false
+      end
+
+      def can_par?(corporation, _parrer)
+        !corporation.ipoed && corporation.next_to_par && !corporation.closed_recently
       end
 
       def upgrade_cost(tile, hex, entity)

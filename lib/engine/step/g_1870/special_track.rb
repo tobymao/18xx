@@ -13,7 +13,7 @@ module Engine
           owner = action.entity.owner
           tile = action.tile
           tile_lay = step.get_tile_lay(owner)
-          @game.game_error('Can only be used to lay yellow tiles') if tile.color != :yellow || !tile_lay[:lay]
+          raise GameError, 'Can only be used to lay yellow tiles' if tile.color != :yellow || !tile_lay[:lay]
 
           extra_cost = tile_lay[:cost] - 40
           extra_cost -= 20 if owner == @game.ssw_corporation && action.hex.name == 'H17'

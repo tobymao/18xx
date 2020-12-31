@@ -9,9 +9,10 @@ module Engine
         def process_choose(action)
           size = action.choice
           entity = action.entity
-          @game.game_error('Corporation size is invalid') unless choices.include?(size)
+          raise GameError, 'Corporation size is invalid' unless choices.include?(size)
+
           corporation = @winning_bid.corporation
-          @game.game_error('Corporation in Nieuw Zeeland must be 5 or 10 share corporation') if
+          raise GameError, 'Corporation in Nieuw Zeeland must be 5 or 10 share corporation' if
             @game.corp_has_new_zealand?(corporation) && size == 2
 
           size_corporation(size)
@@ -28,7 +29,8 @@ module Engine
         def process_buy_tokens(action)
           # Buying tokens is not an 'action' and so can be done with player actions
           entity = action.entity
-          @game.game_error('Cannot buy tokens') unless can_buy_tokens?(entity)
+          raise GameError, 'Cannot buy tokens' unless can_buy_tokens?(entity)
+
           tokens = @game.tokens_needed(entity)
           token_cost = tokens * TOKEN_COST
           entity.spend(token_cost, @game.bank)

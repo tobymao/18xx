@@ -255,15 +255,9 @@ def attempt_repair(actions)
 end
 
 def migrate_data(data)
-players = data['players'].map { |p| [p['id'],p['name']] }.to_h
-  engine = Engine::GAMES_BY_TITLE[data['title']]
   begin
     data['actions'], repairs = attempt_repair(data['actions']) do
-      engine.new(
-        players,
-        id: data['id'],
-        actions: [],
-      )
+      Engine::Game.load(data, actions: [], disable_user_errors: true)
     end
   rescue Exception => e
     puts 'Failed to fix :(', e
@@ -280,12 +274,7 @@ def migrate_db_actions_in_mem(data)
   engine = Engine::GAMES_BY_TITLE[data.title]
   begin
     actions, repairs = attempt_repair(original_actions) do
-      engine.new(
-        data.ordered_players.map { |u| [u.id, u.name] }.to_h,
-        id: data.id,
-        actions: [],
-        optional_rules: data.settings['optional_rules']&.map(&:to_sym),
-      )
+      Engine::Game.load(data, actions: [], disable_user_errors: true)
     end
     puts repairs
     return actions || original_actions
@@ -304,13 +293,7 @@ def migrate_db_actions(data, pin, dry_run=false)
   engine = Engine::GAMES_BY_TITLE[data.title]
   begin
     actions, repairs = attempt_repair(original_actions) do
-      players = data.ordered_players.map { |u| [u.id, u.name] }.to_h
-      engine.new(
-        players,
-        id: data.id,
-        actions: [],
-        optional_rules: data.settings['optional_rules']&.map(&:to_sym),
-      )
+      Engine::Game.load(data, actions: [], disable_user_errors: true)
     end
     if actions && !dry_run
       if repairs
@@ -323,12 +306,7 @@ def migrate_db_actions(data, pin, dry_run=false)
       else # Full rewrite.
         DB.transaction do
           Action.where(game: data).delete
-          game = engine.new(
-            data.ordered_players.map { |u| [u.id, u.name] }.to_h,
-            id: data.id,
-            actions: [],
-            optional_rules: data.settings['optional_rules']&.map(&:to_sym),
-          )
+          game = Engine::Game.load(data, actions: [], disable_user_errors: true)
           actions.each do |action|
             game.process_action(action)
             Action.create(

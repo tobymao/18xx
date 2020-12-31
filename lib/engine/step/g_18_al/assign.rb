@@ -8,14 +8,14 @@ module Engine
       class Assign < Assign
         def process_assign(action)
           company = action.entity
-          @game.game_error("#{company.owner.name} is not SNAR") if company != @game.south_and_north_alabama_railroad
-          @game.game_error("#{company.owner.name} owns no trains") if company.owner.trains.empty?
+          raise GameError, "#{company.owner.name} is not SNAR" if company != @game.south_and_north_alabama_railroad
+          raise GameError, "#{company.owner.name} owns no trains" if company.owner.trains.empty?
 
           target = action.target
           hexes = @game.abilities(company, :assign_hexes)&.hexes
           location = @game.get_location_name(target.id)
           if !@game.loading && @game.graph.reachable_hexes(company.owner).find { |h, _| h.id == target.id }.nil?
-            @game.game_error("#{location} is not reachable")
+            raise GameError, "#{location} is not reachable"
           end
 
           super

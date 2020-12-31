@@ -62,7 +62,7 @@ module Engine
               else
                 'as do not need to buy'
               end
-            @game.game_error("Not able to take loan to purchase at #{@game.format_currency(cost)}, " + reason)
+            raise GameError, "Not able to take loan to purchase at #{@game.format_currency(cost)}, " + reason
           end
         end
       end

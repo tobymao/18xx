@@ -55,6 +55,7 @@ module View
           ]),
           h(:div, [
             render_color('Your Turn', :your_turn, color_for(:your_turn)),
+            render_color('Hotseat Game', :hotseat_game, color_for(:hotseat_game)),
           ]),
         ]),
         render_tile_colors,
@@ -118,6 +119,7 @@ module View
       input_elm(:bg2).value = default_for(:bg2)
       input_elm(:font2).value = default_for(:font2)
       input_elm(:your_turn).value = default_for(:your_turn)
+      input_elm(:hotseat_game).value = default_for(:hotseat_game)
       input_elm(:red_logo).checked = false
 
       TILE_COLORS.each do |color, hex_color|

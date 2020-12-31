@@ -5,39 +5,25 @@ module Engine
     attr_reader :paths
 
     def self.connect!(hex)
-      connections = {}
-      node_paths = []
-      hex_edges = {}
-
       hex.tile.paths.each do |path|
-        path.walk { |p| node_paths << p if p.node? }
-      end
-
-      node_paths.uniq.each do |node_path|
-        node_path.walk(chain: []) do |chain|
+        path.walk(chain: []) do |chain|
           next unless valid_connection?(chain)
 
-          connection = Connection.new(chain)
-          connections[connection] = true
+          path = chain[0]
 
-          [chain[0], chain[-1]].each do |path|
-            hex = path.hex
-            if path.exits.empty?
-              hex_edges[[hex, :internal]] = true
-              hex.connections[:internal] << connection
-            else
-              path.exits.each do |edge|
-                hex_edges[[hex, edge]] = true
-                hex.connections[edge] << connection
-              end
+          connection = Connection.new(chain)
+
+          if path.exits.empty?
+            hex.connections[:internal] << connection
+          else
+            path.exits.each do |edge|
+              hex.connections[edge] << connection
             end
           end
         end
       end
 
-      hex_edges.keys.each do |hex_, edge|
-        connections = hex_.connections[edge]
-        connections.select!(&:valid?)
+      hex.connections.values.each do |connections|
         connections.uniq!(&:hash)
       end
     end

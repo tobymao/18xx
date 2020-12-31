@@ -131,6 +131,7 @@ module Engine
             return true if hex.tile.cities.any? && reachable_city?(path_distances[npath], max_distance)
             return true if hex.tile.towns.any? { |t| !t.halt? } && reachable_town?(path_distances[npath], max_distance)
             return true if hex.tile.towns.any?(&:halt?) && reachable_halt?(path_distances[npath], max_distance)
+            return true if hex.tile.nodes.empty? && reachable_halt?(path_distances[npath], max_distance)
           end
 
           false

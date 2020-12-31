@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-require 'lib/hex'
+require_relative 'hex'
 
 module Lib
   module Settings
     DARK = `window.matchMedia('(prefers-color-scheme: dark)').matches`.freeze
     # http://mkweb.bcgsc.ca/colorblind/ 12 color palette
-    # change SETTINGS = (n.times ... in models/user.rb accordingly
-    ROUTE_COLORS = %i[#A40122 #008DF9 #00FCCF #FF5AAF #8400CD #FF6E3A].freeze
+    ROUTE_COLORS = %i[#A40122 #008DF9 #00FCCF #FF5AAF #8400CD #FF6E3A #009F81 #FFC33B].freeze
 
     ENTER_GREEN = '#3CB371'
     JOIN_YELLOW = '#F0E58C'
     YOUR_TURN_ORANGE = '#FF8C00'
+    HOTSEAT_VIOLET = '#AF8CFF'
     FINISHED_GREY = '#D3D3D3'
 
     ROUTES = ROUTE_COLORS.flat_map.with_index do |color, index|
@@ -26,6 +26,7 @@ module Lib
       font: DARK ? '#ffffff' : '#000000',
       font2: '#000000',
       your_turn: YOUR_TURN_ORANGE,
+      hotseat_game: HOTSEAT_VIOLET,
       **Lib::Hex::COLOR,
       **ROUTES,
     }.freeze
