@@ -90,11 +90,7 @@ module Engine
     end
 
     def can_par?(entity)
-      return false if @par_via_exchange && @par_via_exchange.owner != entity
-      return false if @needs_token_to_par && @tokens.empty?
-      return false if all_abilities.find { |a| a.type == :unparrable }
-
-      !@ipoed
+      @game.corporation_parrable?
     end
 
     def share_price

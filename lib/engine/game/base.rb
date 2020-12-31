@@ -1139,6 +1139,14 @@ module Engine
         raise GameError.new(msg, current_action_id)
       end
 
+      def corporation_parrable?
+        return false if @par_via_exchange && @par_via_exchange.owner != entity
+        return false if @needs_token_to_par && @tokens.empty?
+        return false if all_abilities.find { |a| a.type == :unparrable }
+
+        !@ipoed
+      end
+
       def float_corporation(corporation)
         @log << "#{corporation.name} floats"
 
