@@ -117,72 +117,37 @@ module View
         end
 
         def render_input(company)
-          buy = lambda do
-            hide!
-            process_action(Engine::Action::Bid.new(
-              @current_entity,
-              company: company,
-              price: @step.min_bid(company),
-            ))
-            store(:selected_company, nil, skip: true)
-          end
-
-          choose = lambda do
-            hide!
-            process_action(Engine::Action::Bid.new(@current_entity,
-                                                   company: @selected_company,
-                                                   price: @selected_company.value))
-            store(:selected_company, nil, skip: true)
-          end
-
-          company_actions =
-            if @step.auctioneer? && @step.max_bid(@current_entity, company) < @step.min_bid(company)
-              []
-            elsif @step.may_purchase?(company)
-              [h(:button, { on: { click: buy } }, 'Buy')]
-            elsif @step.may_choose?(company)
-              [h(:button, { on: { click: choose } }, 'Choose')]
-            else
-
-              step = @step.min_increment
-
-              input = h(:input, style: { marginRight: '1rem' }, props: {
-                value: @step.min_bid(company),
-                step: step,
-                min: @step.min_bid(company) + step,
-                max: @step.max_bid(@current_entity, company),
-                type: 'number',
-                size: @current_entity.cash.to_s.size,
-              })
-
-              create_bid = lambda do
-                hide!
-                price = input.JS['elm'].JS['value'].to_i
-                process_action(Engine::Action::Bid.new(
-                  @current_entity,
-                  company: company,
-                  price: price,
-                ))
-                store(:selected_company, nil, skip: true)
-              end
-
-              [
-                input,
-                h(:button, { on: { click: create_bid } }, 'Place Bid'),
-                *render_move_bid_inputs(company, input),
-              ].compact
-            end
+          actions = render_company_actions(company)
 
           if @step.respond_to?(:may_reduce?) && @step.may_reduce?(company)
-            company_actions << h(:button, {
-               on: { click: -> { process_action(Engine::Action::Assign.new(@current_entity, target: company)) } },
- }, 'Reduce Price')
+            actions << h(:button, { on: { click: -> { assign(company) } } }, 'Reduce Price')
           end
 
-          h(:div, { style: { textAlign: 'center', margin: '1rem' } }, company_actions)
+          h(:div, { style: { textAlign: 'center', margin: '1rem' } }, actions)
         end
 
-        def render_move_bid_inputs(company, input)
+        def render_company_actions(company)
+          return [] if @step.auctioneer? && @step.max_bid(@current_entity, company) < @step.min_bid(company)
+          return [h(:button, { on: { click: -> { buy(company) } } }, 'Buy')] if @step.may_purchase?(company)
+          return [h(:button, { on: { click: -> { choose } } }, 'Choose')] if @step.may_choose?(company)
+
+          input = h(:input, style: { marginRight: '1rem' }, props: {
+            value: @step.min_bid(company),
+            step: @step.min_increment,
+            min: @step.min_bid(company),
+            max: @step.max_bid(@current_entity, company),
+            type: 'number',
+            size: @current_entity.cash.to_s.size,
+          })
+
+          [
+            input,
+            h(:button, { on: { click: -> { create_bid(company, input) } } }, 'Place Bid'),
+            *render_move_bid_buttons(company, input),
+          ].compact
+        end
+
+        def render_move_bid_buttons(company, input)
           return [] unless @current_actions.include?('move_bid')
 
           moveable_bids = @step.moveable_bids(@current_entity, company)
@@ -190,20 +155,7 @@ module View
 
           moveable_bids.flat_map do |from_company, from_bids|
             from_bids.map do |from_bid|
-              move_bid = lambda do
-                hide!
-                price = input.JS['elm'].JS['value'].to_i
-                process_action(Engine::Action::MoveBid.new(
-                  @current_entity,
-                  company: company,
-                  from_company: from_company,
-                  price: price,
-                  from_price: from_bid.price,
-                ))
-                store(:selected_company, nil, skip: true)
-              end
-
-              h(:button, { on: { click: move_bid } },
+              h(:button, { on: { click: -> { move_bid(company, input, from_company, from_bid.price) } } },
                 "Move #{from_company.sym} #{@game.format_currency(from_bid.price)} Bid")
             end
           end
@@ -221,18 +173,10 @@ module View
             size: @current_entity.cash.to_s.size,
           })
 
-          create_bid = lambda do
-            hide!
-            price = input.JS['elm'].JS['value'].to_i
-            process_action(Engine::Action::Bid.new(
-              @current_entity,
-              price: price,
-            ))
-          end
           h(:div,
             [
               input,
-              h(:button, { on: { click: create_bid } }, 'Place Bid'),
+              h(:button, { on: { click: -> { create_turn_bid(input) } } }, 'Place Bid'),
             ])
         end
 
@@ -266,6 +210,63 @@ module View
 
         def hidden?
           @block_show || @hidden
+        end
+
+        def create_bid(company, input)
+          hide!
+          price = input.JS['elm'].JS['value'].to_i
+          process_action(Engine::Action::Bid.new(
+            @current_entity,
+            company: company,
+            price: price,
+          ))
+          store(:selected_company, nil, skip: true)
+        end
+
+        def create_turn_bid(input)
+          hide!
+          price = input.JS['elm'].JS['value'].to_i
+          process_action(Engine::Action::Bid.new(
+            @current_entity,
+            price: price,
+          ))
+        end
+
+        def assign(company)
+          process_action(Engine::Action::Assign.new(@current_entity, target: company))
+        end
+
+        def choose
+          hide!
+          process_action(Engine::Action::Bid.new(
+            @current_entity,
+            company: @selected_company,
+            price: @selected_company.value
+          ))
+          store(:selected_company, nil, skip: true)
+        end
+
+        def buy(company)
+          hide!
+          process_action(Engine::Action::Bid.new(
+            @current_entity,
+            company: company,
+            price: @step.min_bid(company),
+          ))
+          store(:selected_company, nil, skip: true)
+        end
+
+        def move_bid(company, input, from_company, from_price)
+          hide!
+          price = input.JS['elm'].JS['value'].to_i
+          process_action(Engine::Action::MoveBid.new(
+            @current_entity,
+            company: company,
+            from_company: from_company,
+            price: price,
+            from_price: from_price,
+          ))
+          store(:selected_company, nil, skip: true)
         end
       end
     end
