@@ -249,6 +249,8 @@ module Engine
       CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = false
       CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = false
 
+      VARIABLE_FLOAT_PERCENTAGES = false
+
       CACHABLE = [
         %i[players player],
         %i[corporations corporation],
@@ -1196,6 +1198,10 @@ module Engine
 
         @bank.spend(corporation.par_price.price * 10, corporation)
         @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+      end
+
+      def total_shares_to_float(corporation, _price)
+        corporation.percent_to_float / corporation.share_percent
       end
 
       def close_corporation(corporation, quiet: false)
