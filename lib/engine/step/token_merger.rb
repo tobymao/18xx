@@ -54,7 +54,7 @@ module Engine
           new_token.city&.hex&.id
         end
 
-        @game.game_error('Used token above limit') if used.size > @game.class::LIMIT_TOKENS_AFTER_MERGER
+        raise GameError, 'Used token above limit' if used.size > @game.class::LIMIT_TOKENS_AFTER_MERGER
 
         surviving.tokens.clear
         surviving_tokens = used + unused

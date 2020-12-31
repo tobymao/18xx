@@ -8,6 +8,8 @@ module Engine
     class SpecialTrack < Base
       include Tracker
 
+      attr_reader :company
+
       ACTIONS = %w[lay_tile].freeze
       ACTIONS_WITH_PASS = %w[lay_tile pass].freeze
 
@@ -31,6 +33,12 @@ module Engine
       end
 
       def process_lay_tile(action)
+        if @company && (@company != action.entity) &&
+           (ability = @game.abilities(@company, :tile_lay, time: 'track')) &&
+           ability.must_lay_together && ability.must_lay_all
+          raise GameError, "Cannot interrupt #{@company.name}'s tile lays"
+        end
+
         ability = tile_lay_abilities(action.entity)
         lay_tile(action, spender: action.entity.owner)
         check_connect(action, ability)
@@ -42,7 +50,7 @@ module Engine
       def process_pass(action)
         entity = action.entity
         ability = tile_lay_abilities(entity)
-        @game.game_error("Not #{entity.name}'s turn: #{action.to_h}") unless entity == @company
+        raise GameError, "Not #{entity.name}'s turn: #{action.to_h}" unless entity == @company
 
         entity.remove_ability(ability)
         @log << "#{entity.owner.name} passes laying additional track with #{entity.name}"
@@ -86,7 +94,7 @@ module Engine
           @game.hex_by_id(hex_id).tile.paths
         end.uniq
 
-        @game.game_error('Paths must be connected') if paths.size != paths[0].select(paths).size
+        raise GameError, 'Paths must be connected' if paths.size != paths[0].select(paths).size
       end
     end
   end

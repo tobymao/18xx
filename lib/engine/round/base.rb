@@ -85,11 +85,13 @@ module Engine
 
           process = s.actions(action.entity).include?(type)
           blocking = s.blocking?
-          @game.game_error("Step #{s.description} cannot process #{action.to_h}") if blocking && !process
+          if blocking && !process
+            raise GameError, "Blocking step #{s.description} cannot process action #{action['id']}"
+          end
 
           blocking || process
         end
-        @game.game_error("No step found for action #{type} at #{action.id}: #{action.to_h}") unless step
+        raise GameError, "No step found for action #{type} at #{action.id}: #{action.to_h}" unless step
 
         step.acted = true
         step.send("process_#{action.type}", action)

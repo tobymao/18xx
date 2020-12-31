@@ -366,7 +366,6 @@ module Engine
               "8",
               "9"
             ],
-           "blocks":false,
            "count": 2
         }
       ]
@@ -401,7 +400,6 @@ module Engine
               "8",
               "9"
             ],
-           "blocks": false,
            "count": 2
         }
       ]

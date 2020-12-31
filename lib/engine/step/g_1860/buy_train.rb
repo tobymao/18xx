@@ -19,16 +19,16 @@ module Engine
           if action.train.owned_by_corporation?
             min, max = spend_minmax(action.entity, action.train)
             unless (min..max).include?(action.price)
-              @game.game_error("#{action.entity.name} may not spend "\
+              raise GameError, "#{action.entity.name} may not spend "\
                                "#{@game.format_currency(action.price)} on "\
                                "#{action.train.owner.name}'s #{action.train.name} "\
                                'train; may only spend between '\
                                "#{@game.format_currency(min)} and "\
-                               "#{@game.format_currency(max)}.")
+                               "#{@game.format_currency(max)}."
             end
             unless (action.price % @game.class::TRAIN_PRICE_MULTIPLE).zero?
-              @game.game_error('Train purchase price must be a multiple of '\
-                               "#{@game.format_currency(@game.class::TRAIN_PRICE_MULTIPLE)}")
+              raise GameError, 'Train purchase price must be a multiple of '\
+                               "#{@game.format_currency(@game.class::TRAIN_PRICE_MULTIPLE)}"
             end
           end
 

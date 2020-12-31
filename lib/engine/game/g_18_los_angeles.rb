@@ -147,7 +147,6 @@ module Engine
       def operating_round(round_num)
         Round::G1846::Operating.new(self, [
           Step::G1846::Bankrupt,
-          Step::DiscardTrain,
           Step::G1846::Assign,
           Step::G18LosAngeles::SpecialToken,
           Step::SpecialTrack,
@@ -156,6 +155,7 @@ module Engine
           Step::G1846::TrackAndToken,
           Step::Route,
           Step::G1846::Dividend,
+          Step::DiscardTrain,
           Step::G1846::BuyTrain,
           [Step::G1846::BuyCompany, blocks: true],
         ], round_num: round_num)
@@ -265,7 +265,7 @@ module Engine
 
         tracks_by_type.each do |_type, tracks|
           tracks.group_by(&:itself).each do |k, v|
-            @game.game_error("Route cannot reuse track on #{k[0].id}") if v.size > 1
+            raise GameError, "Route cannot reuse track on #{k[0].id}" if v.size > 1
           end
         end
       end

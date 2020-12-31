@@ -274,6 +274,7 @@ module Engine
           "type": "tile_lay",
           "owner_type": "corporation",
           "must_lay_together": true,
+          "must_lay_all": true,
           "hexes": [
             "H2",
             "I3"
@@ -306,6 +307,7 @@ module Engine
           "type": "tile_lay",
           "owner_type": "corporation",
           "must_lay_together": true,
+          "must_lay_all": true,
           "hexes": [
             "F4",
             "G5"

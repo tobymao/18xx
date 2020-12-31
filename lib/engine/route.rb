@@ -156,7 +156,7 @@ module Engine
       @connections.each do |c|
         right = c[:right]
         cycles[c[:left]] = true
-        @game.game_error("Cannot use #{right.hex.name} twice") if cycles[right]
+        raise GameError, "Cannot use #{right.hex.name} twice" if cycles[right]
 
         cycles[right] = true
       end
@@ -180,7 +180,7 @@ module Engine
     def check_terminals!
       return if paths.size < 3
 
-      @game.game_error('Route cannot pass through terminal') if ordered_paths[1..-2].any?(&:terminal?)
+      raise GameError, 'Route cannot pass through terminal' if ordered_paths[1..-2].any?(&:terminal?)
     end
 
     def distance
@@ -204,9 +204,9 @@ module Engine
       return @override[:revenue] if @override
 
       visited = visited_stops
-      @game.game_error('Route must have at least 2 stops') if @connections.any? && visited.size < 2
+      raise GameError, 'Route must have at least 2 stops' if @connections.any? && visited.size < 2
       unless (token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) })
-        @game.game_error('Route must contain token')
+        raise GameError, 'Route must contain token'
       end
 
       check_distance!(visited)
@@ -217,7 +217,7 @@ module Engine
       check_other!
 
       visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
-        @game.game_error("Cannot use group #{key} more than once") unless group.one?
+        raise GameError, "Cannot use group #{key} more than once" unless group.one?
       end
 
       @game.revenue_for(self, stops)

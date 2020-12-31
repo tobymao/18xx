@@ -57,14 +57,13 @@ module Engine
           target = action.corporation
 
           if !target || !mergeable(corporation).include?(target)
-            @game.game_error("Choose a corporation to merge with #{corporation.name}")
+            raise GameError, "Choose a corporation to merge with #{corporation.name}"
           end
 
           @game.stock_market.set_par(target, corporation.share_price)
           owner = corporation.owner
 
           @converting = nil
-          @game.close_corporation(corporation)
 
           share = target.shares.first
           @game.share_pool.buy_shares(owner, share.to_bundle, exchange: :free)
@@ -72,11 +71,14 @@ module Engine
           move_tokens(corporation, target)
           receiving = move_assets(corporation, target)
 
+          @game.close_corporation(corporation)
+
           @log << "#{corporation.name} converts into #{target.name} receiving #{receiving.join(', ')}"
 
           # Replace the entity with the new one.
           @round.entities[@round.entity_index] = target
           @round.converted = target
+          @round.merge_type = :convert
           # All players are eligable to buy shares unlike merger
           @round.share_dealing_players = @game.players.rotate(@game.players.index(target.owner))
           @round.share_dealing_multiple = [corporation.owner]
@@ -136,7 +138,7 @@ module Engine
           players = players.rotate(players.index(initiator))
 
           if players.none? { |player| player.cash >= merged_par.price || owners.count(player) >= 2 }
-            @game.game_error('Merge impossible, no player can become president')
+            raise GameError, 'Merge impossible, no player can become president'
           end
 
           @game.stock_market.set_par(target, merged_par)
@@ -191,6 +193,7 @@ module Engine
 
           @merging = nil
           @round.converted = target
+          @round.merge_type = :merge
 
           @round.share_dealing_players = players
           @round.share_dealing_multiple = players
@@ -202,7 +205,7 @@ module Engine
           return finish_merge_to_major(action) if @merge_major
 
           unless mergeable(action.entity).include?(action.corporation)
-            @game.game_error("Cannot merge with t#{action.corporation.name}")
+            raise GameError, "Cannot merge with t#{action.corporation.name}"
           end
 
           @merging ||= [action.entity]
@@ -284,6 +287,7 @@ module Engine
         def round_state
           {
             converted: nil,
+            merge_type: nil,
             share_dealing_players: [],
             share_dealing_multiple: [],
           }

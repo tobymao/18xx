@@ -26,15 +26,15 @@ module Engine
         hex = city.hex
         if !@game.loading && !teleport && !@game.graph.connected_nodes(entity)[city]
           city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
-          @game.game_error("Cannot place token on #{hex.name}#{city_string} because it is not connected")
+          raise GameError, "Cannot place token on #{hex.name}#{city_string} because it is not connected"
         end
 
         if special_ability&.city && (special_ability.city != city.index)
-          @game.game_error("#{special_ability.owner.name} can only place token on #{hex.name} city "\
-                           "#{special_ability.city}, not on city #{city.index}")
+          raise GameError, "#{special_ability.owner.name} can only place token on #{hex.name} city "\
+                           "#{special_ability.city}, not on city #{city.index}"
         end
 
-        @game.game_error('Token is already used') if token.used
+        raise GameError, 'Token is already used' if token.used
 
         token, ability = adjust_token_price_ability!(entity, token, hex, city, special_ability)
         tokener = entity.name

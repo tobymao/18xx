@@ -193,12 +193,10 @@ module Engine
           acquired_corp = @winner.corporation
 
           if !buyer || !mergeable(acquired_corp).include?(buyer)
-            @game.game_error("Choose a corporation to acquire #{acquired_corp.name}")
+            raise GameError, "Choose a corporation to acquire #{acquired_corp.name}"
           end
 
-          if buyer.owner != @winner.entity
-            @game.game_error("Target corporation must be owned by #{@winner.entity.name}")
-          end
+          raise GameError, "Target corporation must be owned by #{@winner.entity.name}" if buyer.owner != @winner.entity
 
           @buyer = buyer
 
@@ -437,7 +435,8 @@ module Engine
           corporation = action.corporation
           price = action.price
 
-          @game.game_error("Bid #{price} is not a multple of 10") unless (price % 10).zero?
+          raise GameError, "Bid #{price} is not a multple of 10" unless (price % 10).zero?
+
           @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
           add_bid(action)
           resolve_bids
@@ -445,8 +444,8 @@ module Engine
 
         def process_assign(action)
           corporation = action.target
-          @game.game_error("Can only assign if offering for sale #{corporation.name}") unless @mode == :offered
-          @game.game_error("Can only offer up #{@offer.name}") unless corporation == @offer
+          raise GameError, "Can only assign if offering for sale #{corporation.name}" unless @mode == :offered
+          raise GameError, "Can only offer up #{@offer.name}" unless corporation == @offer
 
           @game.log << "#{corporation.name} is offered at auction, buying corporation will receive "\
             "#{@game.format_currency(treasury_share_compensation(corporation))} for treasury shares"

@@ -24,22 +24,36 @@ module View
 
     def render_broken_game(e)
       inner = [h(:div, "We're sorry this game cannot be continued due to #{e}")]
-      if e.is_a?(Engine::GameError) && !e.action_id.nil?
-        action = e.action_id - 1
-        inner << h(:div, [
-          h(:a, { attrs: { href: "?action=#{action}" } }, "View the last valid action (#{action})"),
-        ])
-      end
+
+      json = `JSON.stringify(#{@game.actions.last.to_n}, null, 2)`
+      inner << h(:div, "Broken action: #{json}")
+
+      # don't ask for a link for hotseat games
+      action = @game.last_processed_action
+      url = "https://18xx.games/game/#{@game_data['id']}?action=#{action + 1}"
+      game_link =
+        if @game.id.is_a?(Integer)
+          [
+            'this link (',
+            h(:a, { attrs: { href: url } }, url),
+            ') and ',
+          ]
+        else
+          []
+        end
+
       inner << h(:div, [
         'Please ',
         h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues/' } }, 'raise a bug report'),
-        " and include the game id (#{@game_data['id']}) and the following JSON data",
+        ' and include ',
+        *game_link,
+        'the following JSON data',
       ])
       inner << h(Game::GameData,
                  actions: @game_data['actions'],
                  allow_clone: false,
                  allow_delete: @game_data[:mode] == :hotseat)
-      h(:div, inner)
+      h(:div, { style: { 'margin-bottom': '25px' } }, inner)
     end
 
     def cursor
@@ -53,36 +67,14 @@ module View
       return if game_id == @game&.id &&
         ((!cursor && @game.actions.size == @num_actions) || (cursor == @game.actions.size))
 
-      # Some Hotseat games don't have player ids, use names instead.
-      players = @game_data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h
-      # Back compatibility, make hotseat games continue to work after the change to play names
-      if actions&.first&.dig(:entity_type) == 'player' && actions.first[:entity].is_a?(String)
-        players = @game_data['players'].map { |p| [p['name'], p['name']] }.to_h
-      end
-
-      @game = Engine::GAMES_BY_TITLE[@game_data['title']].new(
-        players,
-        id: game_id,
-        actions: cursor ? actions.take(cursor) : actions,
-        pin: @pin,
-        optional_rules: @game_data.dig('settings', 'optional_rules') || [],
-      )
+      @game = Engine::Game.load(@game_data, at_action: cursor, disable_user_errors: @disable_user_errors)
       store(:game, @game, skip: true)
     end
 
     def render
       @pin = @game_data.dig('settings', 'pin')
 
-      if @disable_user_errors
-        # Opal exceptions lack backtraces, so do this outside of a rescue in dev mode to preserve the backtrace
-        load_game
-      else
-        begin
-          load_game
-        rescue StandardError => e
-          return render_broken_game(e)
-        end
-      end
+      load_game
 
       page =
         case route_anchor
@@ -144,10 +136,13 @@ module View
         },
       }
 
-      h(:div, props, [
+      children = [
         menu,
         page,
-      ])
+      ]
+      children.unshift(render_broken_game(@game.exception)) if @game.exception
+
+      h(:div, props, children)
     end
 
     def game_path
@@ -171,7 +166,13 @@ module View
     end
 
     def menu
-      bg_color = active_player ? color_for(:your_turn) : color_for(:bg2)
+      bg_color =  if @game_data['mode'] == :hotseat
+                    color_for(:hotseat_game)
+                  elsif active_player
+                    color_for(:your_turn)
+                  else
+                    color_for(:bg2)
+                  end
       nav_props = {
         attrs: {
           role: 'navigation',
@@ -236,7 +237,8 @@ module View
     end
 
     def render_round
-      description = "#{@game.class.title}: "
+      description = @game_data['mode'] == :hotseat ? '[HOTSEAT] ' : ''
+      description += "#{@game.class.title}: "
       name = @round.class.name.split(':').last
       description += @game.round_description(name)
       description += @game.finished ? ' - Game Over' : " - #{@round.description}"

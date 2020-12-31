@@ -32,6 +32,9 @@ module Engine
     end
 
     def train_limit(entity)
+      limit = train_limit_constant(entity)
+      return limit if limit.positive?
+
       limit =
         if @train_limit.is_a?(Hash)
           @train_limit[entity.type] || 0
@@ -134,7 +137,11 @@ module Engine
     private
 
     def train_limit_increase(entity)
-      @game.abilities(entity, :train_limit) { |ability| return ability.increase }
+      Array(@game.abilities(entity, :train_limit)).sum(&:increase)
+    end
+
+    def train_limit_constant(entity)
+      @game.abilities(entity, :train_limit) { |ability| return ability.constant if ability.constant }
       0
     end
   end

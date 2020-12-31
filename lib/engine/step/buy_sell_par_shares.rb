@@ -148,7 +148,7 @@ module Engine
         share_price = action.share_price
         corporation = action.corporation
         entity = action.entity
-        @game.game_error("#{corporation.name} cannot be parred") unless corporation.can_par?(entity)
+        raise GameError, "#{corporation.name} cannot be parred" unless corporation.can_par?(entity)
 
         @game.stock_market.set_par(corporation, share_price)
         share = corporation.shares.first
@@ -219,7 +219,7 @@ module Engine
       end
 
       def sell_shares(entity, shares, swap: nil)
-        @game.game_error("Cannot sell shares of #{shares.corporation.name}") if !can_sell?(entity, shares) && !swap
+        raise GameError "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap
 
         @round.players_sold[shares.owner][shares.corporation] = :now
         @game.sell_shares_and_change_price(shares, swap: swap)
@@ -239,7 +239,7 @@ module Engine
         price = action.price
         owner = company.owner
 
-        @game.game_error("Cannot buy #{company.name} from #{owner.name}") unless owner.player?
+        raise GameError "Cannot buy #{company.name} from #{owner.name}" unless owner.player?
 
         company.owner = entity
         owner.companies.delete(company)

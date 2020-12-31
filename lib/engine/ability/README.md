@@ -182,13 +182,16 @@ normal tile lay actions.
   labels and city count. Default true.
 - `connect`: If true, and `count` is greater than 1, tiles laid must
   connect to each other. Default true.
-- `blocks`: If true and `count` is greater than 1, all tile lays must
-  be performed at once.
+- `blocks`: If true and `when` is `sold`, then the step
+  `TrackLayWhenCompanySold` will require a tile lay. Default false.
 - `reachable`: If true, when tile layed, a check is done if one of the
   controlling corporation's station tokens are reachable; if not a game
   error is triggered. Default false.
-- `must_lay_together`: If true, all the tile lays must happen at the same
-  time. Default false.
+- `must_lay_together`: If true and `count` is greater than 1, all the tile lays
+  must happen at the same time. Default false.
+- `must_lay_all`: If true and `count` is greater than 1 and `must_lay_together`
+  is true, all the tile lays must be used; if false, then some tile lays may be
+  forfeited. Default false.
 
 ## train_buy
 
@@ -197,12 +200,22 @@ Modify train buy in some way.
 - `face_value`: If true, any inter corporation train buy must be at
   face value. Default false.
 
+## train_discount
+
+Discount the train buy cost. The `count` attribute specify how many times the discount can be used.
+
+- `discount`: Discount amount. If > 1 this is an absolute amount. If 0 < amount < 1 it is the fraction, e.g. 0.75 is a 75% discount.
+- `trains`: An array of all train names that the discount applies to.
+- `closed_when_used_up`: This ability has a count that is decreased each time it is used. If this attribute is true the private is closed when count reaches zero, if false the private
+remains open but the discount can no longer be used. Default true.
+
 ## train_limit
 
 Modify train limit in some way.
 
 - `increase`: If positive, this will increase the train limit with this
   amount in all faces. Default 0.
+- `constant`: If positive, this is the train limit used. Default 0.
 
 ## token
 

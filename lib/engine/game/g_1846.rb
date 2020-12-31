@@ -36,6 +36,7 @@ module Engine
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
       HOME_TOKEN_TIMING = :float
       MUST_BUY_TRAIN = :always
+      CERT_LIMIT_COUNTS_BANKRUPTED = true
 
       ORANGE_GROUP = [
         'Lake Shore Line',
@@ -370,7 +371,6 @@ module Engine
       def operating_round(round_num)
         Round::G1846::Operating.new(self, [
           Step::G1846::Bankrupt,
-          Step::DiscardTrain,
           Step::G1846::Assign,
           Step::SpecialToken,
           Step::SpecialTrack,
@@ -379,6 +379,7 @@ module Engine
           Step::G1846::TrackAndToken,
           Step::Route,
           Step::G1846::Dividend,
+          Step::DiscardTrain,
           Step::G1846::BuyTrain,
           [Step::G1846::BuyCompany, blocks: true],
         ], round_num: round_num)

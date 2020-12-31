@@ -58,6 +58,8 @@ module View
           end
 
           children.concat(render_buttons)
+          children << h(BuyCompaniesAtFaceValue, game: @game) if @current_actions.include?('buy_company') &&
+            @step.purchasable_unsold_companies.any?
           children.concat(render_corporations)
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')

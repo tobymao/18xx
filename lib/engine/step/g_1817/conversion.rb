@@ -66,7 +66,7 @@ module Engine
           target = action.corporation
 
           if !target || !mergeable(corporation).include?(target)
-            @game.game_error("Choose a corporation to merge with #{corporation.name}")
+            raise GameError, "Choose a corporation to merge with #{corporation.name}"
           end
 
           receiving = []
