@@ -225,7 +225,8 @@ module Engine
 
       def track_type(paths)
         types = paths.map(&:track).uniq
-        game_error('Can only change track type at station.') if types.include?(:broad) && types.include?(:narrow)
+        raise GameError, 'Can only change track type at station.' if types.include?(:broad) && types.include?(:narrow)
+
         case
         when types.include?(:narrow)
           :narrow
@@ -251,13 +252,13 @@ module Engine
       def check_distance(route, _visits)
         limit = route.train.distance
         cost = route.connections.sum { |conn| hex_edge_cost(conn, route.train) }
-        game_error("#{cost} is too many hex edges for #{route.train.name} train") if cost > limit
+        raise GameError, "#{cost} is too many hex edges for #{route.train.name} train" if cost > limit
       end
 
       def check_other(route)
         return unless (route.stops.map(&:hex).map(&:id) & PORT_HEXES).any?
 
-        game_error('Route must include two non-port stops.') unless route.stops.size > 2
+        raise GameError, 'Route must include two non-port stops.' unless route.stops.size > 2
       end
 
       def revenue_for(route, stops)
