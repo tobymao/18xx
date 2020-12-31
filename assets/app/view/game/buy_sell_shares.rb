@@ -32,6 +32,8 @@ module View
 
         children = children.compact
         h(:div, children) if children.any?
+
+        nil
       end
 
       def render_buy_shares

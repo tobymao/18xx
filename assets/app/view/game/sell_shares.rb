@@ -48,6 +48,8 @@ module View
 
         buttons = buttons.compact
         h(:div, buttons) if buttons.any?
+
+        nil
       end
 
       private

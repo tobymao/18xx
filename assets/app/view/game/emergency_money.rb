@@ -20,7 +20,7 @@ module View
           corp = [h(Corporation, corporation: corporation)]
           corp << h(SellShares, player: player, corporation: corporation)
 
-          children << h(:div, props, corp)
+          children << h(:div, props, corp.compact)
         end
 
         if @game.round.actions_for(entity).include?('bankrupt') &&
