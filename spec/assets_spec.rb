@@ -272,7 +272,6 @@ describe 'Assets' do
       needs = {
         game_data: data,
         user: data['user'].merge(settings: { consent: true }),
-        disable_user_errors: true,
       }
 
       html = render(app_route: "/game/#{needs[:game_data]['id']}", **needs)

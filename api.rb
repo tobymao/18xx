@@ -116,7 +116,6 @@ class Api < Roda
   end
 
   def render(**needs)
-    return debug(**needs) if request.params['debug'] && !PRODUCTION
     return render_pin(**needs) if needs[:pin]
 
     script = Snabberb.prerender_script(
@@ -138,17 +137,6 @@ class Api < Roda
       desc: "Pin #{pin}",
       js_tags: "<script type='text/javascript' src='#{Assets::PIN_DIR}#{pin}.js'></script>",
       attach_func: "Opal.$$.App.$attach('app', #{Snabberb.wrap(app_route: request.path, **needs)})",
-    )
-  end
-
-  def debug(**needs)
-    needs[:disable_user_errors] = true
-    needs = Snabberb.wrap(app_route: request.path, **needs)
-
-    static(
-      desc: 'Debug',
-      js_tags: ASSETS.js_tags,
-      attach_func: "Opal.$$.App.$attach('app', #{needs})",
     )
   end
 

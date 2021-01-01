@@ -22,7 +22,6 @@ require 'view/reset'
 class App < Snabberb::Component
   include GameManager
   include UserManager
-  needs :disable_user_errors, default: false
   needs :pin, default: nil
 
   def render
@@ -103,7 +102,7 @@ class App < Snabberb::Component
 
     return h('div.padded', 'Loading game...') unless @game_data&.dig('loaded')
 
-    h(View::GamePage, connection: @connection, user: @user, disable_user_errors: @disable_user_errors)
+    h(View::GamePage, connection: @connection, user: @user)
   end
 
   def js_handlers

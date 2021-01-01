@@ -395,7 +395,7 @@ module Engine
         const_set(:LAYOUT, data['layout'].to_sym)
       end
 
-      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [], disable_user_errors: false)
+      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [])
         @id = id
         @turn = 1
         @final_turn = nil
@@ -405,7 +405,6 @@ module Engine
         @log = []
         @queued_log = []
         @actions = []
-        @disable_user_errors = disable_user_errors
         @exception = nil
         @names = if names.is_a?(Hash)
                    names.freeze
@@ -561,22 +560,10 @@ module Engine
         @undo_possible = false
         # replay all actions with a copy
         filtered_actions.each.with_index do |action, index|
-          if !action.nil?
+          if action
             action = action.copy(self) if action.is_a?(Action::Base)
-
-            if @disable_user_errors
-              # Opal exceptions lack backtraces, so do this outside of a rescue
-              # in dev mode to preserve the backtrace
-              process_action(action)
-            else
-              begin
-                process_action(action)
-              rescue Engine::GameError => e
-                @exception = e
-                @actions << action
-                break
-              end
-            end
+            process_action(action)
+            break if @exception
           else
             # Restore the original action to the list to ensure action ids remain consistent but don't apply them
             @actions << actions[index]
@@ -589,8 +576,8 @@ module Engine
       def process_action(action)
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
+        @actions << action
         if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
-          @actions << action
           return clone(@actions)
         end
 
@@ -608,7 +595,6 @@ module Engine
         end
 
         action_processed(action)
-        @actions << action
 
         end_timing = game_end_check&.last
         end_game! if end_timing == :immediate
@@ -630,7 +616,10 @@ module Engine
         end
 
         @last_processed_action = action.id
-
+      rescue Engine::GameError => e
+        @exception = e
+        @actions |= [action]
+      ensure
         self
       end
 
@@ -891,6 +880,8 @@ module Engine
       def routes_revenue(routes)
         routes.sum(&:revenue)
       end
+
+      def subsidy_for(_route, _stops); end
 
       def compute_other_paths(routes, route)
         routes.reject { |r| r == route }.flat_map(&:paths)
