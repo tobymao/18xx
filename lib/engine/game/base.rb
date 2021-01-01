@@ -76,7 +76,7 @@ module Engine
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
-                  :optional_rules, :exception, :last_processed_action
+                  :optional_rules, :exception, :last_processed_action, :broken_action
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -618,6 +618,7 @@ module Engine
       rescue Engine::GameError => e
         @exception = e
         @actions |= [action]
+        @broken_action = action
         self
       end
 

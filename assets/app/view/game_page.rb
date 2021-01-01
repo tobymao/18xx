@@ -24,7 +24,7 @@ module View
     def render_broken_game(e)
       inner = [h(:div, "We're sorry this game cannot be continued due to #{e}")]
 
-      json = `JSON.stringify(#{@game.actions.last&.to_h&.to_n}, null, 2)`
+      json = `JSON.stringify(#{@game.broken_action&.to_h&.to_n}, null, 2)`
       inner << h(:div, "Broken action: #{json}")
 
       # don't ask for a link for hotseat games
