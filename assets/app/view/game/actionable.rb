@@ -59,6 +59,8 @@ module View
         end
 
         game = @game.process_action(action)
+        raise game.exception if game.exeption
+
         @game_data[:actions] << action.to_h
         store(:game_data, @game_data, skip: true)
 
