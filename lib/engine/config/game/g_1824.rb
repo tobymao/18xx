@@ -268,7 +268,7 @@ module Engine
       "name":"Wien-Gloggnitzer Eisenbahngesellschaft (S1)",
       "value":240,
       "revenue":0,
-      "desc":"Buyer take control of pre-staatsbahn S1, which will be exchanged for the Director's certificate of SB when the first 4 train is sold. Pre-Staatsbahnen starts in Wien (E12). Cannot be sold.",
+      "desc":"Buyer take control of pre-staatsbahn S1, which will be exchanged for the Director's certificate of SD when the first 4 train is sold. Pre-Staatsbahnen starts in Wien (E12). Cannot be sold.",
       "abilities": [
         {
           "type": "no_buy",
@@ -281,7 +281,7 @@ module Engine
       "name":"Kärntner Bahn (S2)",
       "value":120,
       "revenue":0,
-      "desc":"Buyer take control of pre-staatsbahn S2, which will be exchanged for a 10% share of SB when the first 4 train is sold. Pre-Staatsbahnen starts in Graz (G10). Cannot be sold.",
+      "desc":"Buyer take control of pre-staatsbahn S2, which will be exchanged for a 10% share of SD when the first 4 train is sold. Pre-Staatsbahnen starts in Graz (G10). Cannot be sold.",
       "abilities": [
         {
           "type": "no_buy",
@@ -294,7 +294,7 @@ module Engine
       "name":"Nordtiroler Staatsbahn (S3)",
       "value":120,
       "revenue":0,
-      "desc":"Buyer take control of pre-staatsbahn S3, which will be exchanged for a 10% share of SB when the first 4 train is sold. Pre-Staatsbahnen starts in Innsbruck (G4). Cannot be sold.",
+      "desc":"Buyer take control of pre-staatsbahn S3, which will be exchanged for a 10% share of SD when the first 4 train is sold. Pre-Staatsbahnen starts in Innsbruck (G4). Cannot be sold.",
       "abilities": [
         {
           "type": "no_buy",

@@ -84,8 +84,8 @@ module Engine
       def init_corporations(stock_market)
         return super unless option_cislethania
 
-        # Remove Coal Railway C4 (SPB) and Regional Railway BH
-        CORPORATIONS.reject! { |c| %w[SPB BH].include?(c['sym']) }
+        # Remove Coal Railway C4 (SPB), Regional Railway BH and SB
+        CORPORATIONS.reject! { |c| %w[SPB SB BH].include?(c['sym']) }
         super
       end
 
