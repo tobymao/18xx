@@ -174,7 +174,6 @@ module View
           end
         
         end
-        puts rust_schedule
         [rust_schedule, obsolete_schedule]
       end
 
@@ -264,19 +263,19 @@ module View
             h('td.right', names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
             h(:td, trains.size),
           ]
-          test = nil
+          
+          rusts = nil
           names_to_prices.keys.each do | key |
             if rust_schedule[key]
-              if(!test)
-                test = []
+              if(!rusts)
+                rusts = []
               end
-              test << rust_schedule[key]&.join(', ') 
+              rusts << rust_schedule[key]&.join(', ') 
             end
           end
-          puts test
 
           upcoming_train_content << h(:td, obsolete_schedule[name]&.join(', ') || 'None') if show_obsolete_schedule
-          upcoming_train_content << h(:td, test&.join(', ') || 'None')
+          upcoming_train_content << h(:td, rusts&.join(', ') || 'None')
 
           upcoming_train_content << h(:td, discounts&.join(' ')) if show_upgrade
           upcoming_train_content << h(:td, train.available_on) if show_available

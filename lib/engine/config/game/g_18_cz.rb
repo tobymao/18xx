@@ -13,7 +13,7 @@ module Engine
           "filename": "18_cz",
           "modulename": "18CZ",
           "currencyFormatStr": "K%d",
-          "bankCash": 120000,
+          "bankCash": 99999,
           "certLimit": {
               "3": 14,
               "4": 12,
@@ -181,42 +181,42 @@ module Engine
                   "color": "red",
                   "code": "city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;icon=image:18_cz/50"
               },
-              "8866": {
+              "8866p": {
                   "count": 2,
                   "color": "green",
                   "code": "town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;frame=color:purple"
               },
-              "14": {
+              "14p": {
                   "count": 1,
                   "color": "green",
                   "code": "city=revenue:20,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple"
               },
-              "887": {
+              "887p": {
                   "count": 4,
                   "color": "green",
                   "code": "town=revenue:20;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0;path=a:2,b:_0;frame=color:purple"
               },
-              "15": {
+              "15p": {
                   "count": 1,
                   "color": "green",
                   "code": "city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;frame=color:purple"
               },
-              "888": {
+              "888p": {
                   "count": 4,
                   "color": "green",
                   "code": "town=revenue:20;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0;path=a:2,b:_0;frame=color:purple"
               },
-              "889": {
+              "889p": {
                   "count": 2,
                   "color": "brown",
                   "code": "town=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple"
               },
-              "611": {
+              "611p": {
                   "count": 1,
                   "color": "brown",
                   "code": "city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;frame=color:purple"
               },
-              "216": {
+              "216p": {
                   "count": 1,
                   "color": "brown",
                   "code": "city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y;frame=color:purple"
@@ -241,7 +241,7 @@ module Engine
                   "color": "gray",
                   "code": "city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Y;frame=color:purple"
               },
-              "595": {
+              "595p": {
                   "count": 2,
                   "color": "gray",
                   "code": "city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple"
@@ -299,21 +299,167 @@ module Engine
           ],
           "companies": [
               {
-                  "name": "Takamatsu E-Railroad",
-                  "value": 20,
+                  "name": "Plan - Tachau",
+                  "value": 25,
                   "revenue": 5,
-                  "desc": "Blocks Takamatsu (K4).",
-                  "sym": "TR",
-                  "max_ownership_percent": 60,
+                  "sym": "PT",
                   "abilities": [
-                      {
-                          "type": "blocks_hexes",
-                          "hexes": [
-                              "K4"
-                          ]
-                      }
+                     
                   ]
-              }
+              },
+              {
+                "name": "Melnik – Mscheno",
+                "value": 30,
+                "revenue": 5,
+                "sym": "MM",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Zwittau – Politschka",
+                "value": 35,
+                "revenue": 5,
+                "sym": "ZP",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Wolframs – Teltsch",
+                "value": 40,
+                "revenue": 5,
+                "sym": "WT",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Strakonitz – Blatna – Bresnitz",
+                "value": 45,
+                "revenue": 5,
+                "sym": "SBB",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Martinitz – Rochlitz",
+                "value": 50,
+                "revenue": 5,
+                "sym": "MR",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Raudnitz – Kmetnowes",
+                "value": 40,
+                "revenue": 10,
+                "sym": "RK",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Schweißing – Haid",
+                "value": 45,
+                "revenue": 10,
+                "sym": "SH",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Deutschbrod – Tischnowitz",
+                "value": 50,
+                "revenue": 10,
+                "sym": "DT",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Troppau – Grätz",
+                "value": 55,
+                "revenue": 10,
+                "sym": "TG",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Hannsdorf – Mährisch Altstadt",
+                "value": 60,
+                "revenue": 10,
+                "sym": "HMA",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Friedland - Bila",
+                "value": 65,
+                "revenue": 10,
+                "sym": "FB",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Aujezd – Luhatschowitz",
+                "value": 55,
+                "revenue": 20,
+                "sym": "AL",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Neuhaus – Wobratain",
+                "value": 60,
+                "revenue": 20,
+                "sym": "NW",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Opočno – Dobruschka",
+                "value": 65,
+                "revenue": 20,
+                "sym": "OD",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Wekelsdorf – Parschnitz – Trautenau",
+                "value": 70,
+                "revenue": 20,
+                "sym": "WPT",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Nezamislitz – Morkowitz",
+                "value": 75,
+                "revenue": 20,
+                "sym": "NM",
+                "abilities": [
+                   
+                ]
+            },
+            {
+                "name": "Taus – Tachau",
+                "value": 80,
+                "revenue": 20,
+                "sym": "TT",
+                "abilities": [
+                   
+                ]
+            }
           ],
           "corporations": [
               {
@@ -635,16 +781,22 @@ module Engine
                           "name": "2+2b",
                           "rusts_on": "4+4e",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 2,
+                                "visit": 2
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 3
+                                "nodes": ["town"],
+                                "pay": 2,
+                                "visit": 2
                               }
                           ],
                           "price": 80
                       }
+                  ],
+                  "events":[
+                    {"type": "middle_companies_available"}
                   ]
               },
               {
@@ -658,12 +810,15 @@ module Engine
                           "name": "2+2c",
                           "rusts_on": "4+4f",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 2,
+                                "visit": 2
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 2
+                                "nodes": ["town"],
+                                "pay": 2,
+                                "visit": 2
                               }
                           ],
                           "price": 80
@@ -681,12 +836,15 @@ module Engine
                           "name": "3+3d",
                           "rusts_on": "5+5h",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 3,
+                                "visit": 3
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 3
+                                "nodes": ["town"],
+                                "pay": 3,
+                                "visit": 3
                               }
                           ],
                           "price": 180
@@ -695,16 +853,22 @@ module Engine
                           "name": "3Ed",
                           "rusts_on": "5E",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 3,
+                                "visit": 3
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 3
+                                "nodes": ["town"],
+                                "pay": 0,
+                                "visit": 99
                               }
                           ],
                           "price": 250
                       }
+                  ],
+                  "events":[
+                    {"type": "large_companies_available"}
                   ]
               },
               {
@@ -717,12 +881,15 @@ module Engine
                           "name": "3+3e",
                           "rusts_on": "5+5h",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 3,
+                                "visit": 3
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 3
+                                "nodes": ["town"],
+                                "pay": 3,
+                                "visit": 3
                               }
                           ],
                           "price": 180
@@ -731,12 +898,15 @@ module Engine
                           "name": "3Ee",
                           "rusts_on": "5E",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 3,
+                                "visit": 3
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 3
+                                "nodes": ["town"],
+                                "pay": 0,
+                                "visit": 99
                               }
                           ],
                           "price": 250
@@ -752,12 +922,15 @@ module Engine
                       {
                           "name": "4+4f",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 4,
+                                "visit": 4
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 4
+                                "nodes": ["town"],
+                                "pay": 4,
+                                "visit": 4
                               }
                           ],
                           "price": 400
@@ -765,12 +938,15 @@ module Engine
                       {
                           "name": "4Ef",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 4,
+                                "visit": 4
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 3
+                                "nodes": ["town"],
+                                "pay": 0,
+                                "visit": 99
                               }
                           ],
                           "price": 350
@@ -786,12 +962,15 @@ module Engine
                       {
                           "name": "4+4g",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 4,
+                                "visit": 4
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 4
+                                "nodes": ["town"],
+                                "pay": 4,
+                                "visit": 4
                               }
                           ],
                           "price": 400
@@ -799,12 +978,15 @@ module Engine
                       {
                           "name": "4Eg",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 4,
+                                "visit": 4
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 3
+                                "nodes": ["town"],
+                                "pay": 0,
+                                "visit": 99
                               }
                           ],
                           "price": 350
@@ -820,12 +1002,15 @@ module Engine
                       {
                           "name": "5+5h",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 5,
+                                "visit": 5
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 4
+                                "nodes": ["town"],
+                                "pay": 5,
+                                "visit": 5
                               }
                           ],
                           "price": 500
@@ -833,12 +1018,15 @@ module Engine
                       {
                           "name": "5E",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 5,
+                                "visit": 5
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 3
+                                "nodes": ["town"],
+                                "pay": 0,
+                                "visit": 99
                               }
                           ],
                           "price": 700
@@ -854,12 +1042,15 @@ module Engine
                       {
                           "name": "5+5i",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 5,
+                                "visit": 5
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 4
+                                "nodes": ["town"],
+                                "pay": 5,
+                                "visit": 5
                               }
                           ],
                           "price": 500
@@ -867,12 +1058,15 @@ module Engine
                       {
                           "name": "6E",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 6,
+                                "visit": 6
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 3
+                                "nodes": ["town"],
+                                "pay": 0,
+                                "visit": 99
                               }
                           ],
                           "price": 800
@@ -888,12 +1082,15 @@ module Engine
                       {
                           "name": "5+5j",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 5,
+                                "visit": 5
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 4
+                                "nodes": ["town"],
+                                "pay": 5,
+                                "visit": 5
                               }
                           ],
                           "price": 500
@@ -901,12 +1098,15 @@ module Engine
                       {
                           "name": "8E",
                           "distance": [
+                            {
+                                "nodes": ["city", "offboard"],
+                                "pay": 8,
+                                "visit": 8
+                              },
                               {
-                                  "nodes": [
-                                      "city",
-                                      "offboard"
-                                  ],
-                                  "distance": 3
+                                "nodes": ["town"],
+                                "pay": 0,
+                                "visit": 99
                               }
                           ],
                           "price": 1000
@@ -1090,7 +1290,9 @@ module Engine
                       "yellow"
                   ],
                   "operating_rounds": 1,
-                  "buy_companies": true
+                  "status":[
+                    "can_buy_companies"
+                  ]
               },
               {
                   "name": "c",
@@ -1103,7 +1305,9 @@ module Engine
                       "yellow"
                   ],
                   "operating_rounds": 1,
-                  "buy_companies": true
+                  "status":[
+                    "can_buy_companies"
+                  ]
               },
               {
                   "name": "d",
@@ -1117,7 +1321,10 @@ module Engine
                       "yellow",
                       "green"
                   ],
-                  "operating_rounds": 1
+                  "operating_rounds": 1,
+                  "status":[
+                    "can_buy_companies"
+                  ]
               },
               {
                   "name": "e",
@@ -1131,7 +1338,10 @@ module Engine
                       "yellow",
                       "green"
                   ],
-                  "operating_rounds": 1
+                  "operating_rounds": 1,
+                  "status":[
+                    "can_buy_companies"
+                  ]                  
               },
               {
                   "name": "f",
@@ -1145,7 +1355,10 @@ module Engine
                       "yellow",
                       "green"
                   ],
-                  "operating_rounds": 1
+                  "operating_rounds": 1,
+                  "status":[
+                    "can_buy_companies"
+                  ]
               },
               {
                   "name": "g",
@@ -1160,7 +1373,10 @@ module Engine
                       "green",
                       "brown"
                   ],
-                  "operating_rounds": 1
+                  "operating_rounds": 1,
+                  "status":[
+                    "can_buy_companies"
+                  ]
               },
               {
                   "name": "h",
@@ -1175,7 +1391,10 @@ module Engine
                       "green",
                       "brown"
                   ],
-                  "operating_rounds": 1
+                  "operating_rounds": 1,
+                  "status":[
+                    "can_buy_companies"
+                  ]
               },
               {
                   "name": "i",
@@ -1191,7 +1410,10 @@ module Engine
                       "brown",
                       "gray"
                   ],
-                  "operating_rounds": 1
+                  "operating_rounds": 1,
+                  "status":[
+                    "can_buy_companies"
+                  ]
               },
               {
                   "name": "j",
@@ -1207,7 +1429,10 @@ module Engine
                       "brown",
                       "gray"
                   ],
-                  "operating_rounds": 1
+                  "operating_rounds": 1,
+                  "status":[
+                    "can_buy_companies"
+                  ]
               }
           ]
       }
