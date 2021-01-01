@@ -614,10 +614,10 @@ module Engine
         end
 
         @last_processed_action = action.id
+        self
       rescue Engine::GameError => e
         @exception = e
         @actions |= [action]
-      ensure
         self
       end
 
