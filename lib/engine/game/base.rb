@@ -1374,6 +1374,10 @@ module Engine
         true
       end
 
+      def assignment_tokens(assignment)
+        self.class::ASSIGNMENT_TOKENS[assignment]
+      end
+
       private
 
       def init_bank

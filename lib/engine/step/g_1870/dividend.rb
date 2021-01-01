@@ -10,20 +10,16 @@ module Engine
         DIVIDEND_TYPES = %i[payout half withhold].freeze
         include HalfPay
 
-        def holder_for_corporation(entity)
-          entity
+        def share_price_change(_entity, revenue)
+          return { share_direction: :left, share_times: 1 } if revenue.zero?
+
+          return { share_direction: :right, share_times: 1 } if revenue == @game.routes_revenue(routes)
+
+          {}
         end
 
-        def share_price_change(_entity, revenue)
-          if revenue.positive?
-            if revenue == @game.routes_revenue(routes)
-              { share_direction: :right, share_times: 1 }
-            else
-              {}
-            end
-          else
-            { share_direction: :left, share_times: 1 }
-          end
+        def holder_for_corporation(entity)
+          entity
         end
       end
     end

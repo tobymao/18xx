@@ -8,6 +8,8 @@ require_relative '../g_1870/stock_market'
 module Engine
   module Game
     class G1870 < Base
+      attr_accessor :connection_runs
+
       register_colors(black: '#37383a',
                       orange: '#f48221',
                       brightGreen: '#76a042',
@@ -53,7 +55,7 @@ module Engine
       P_HEXES = %w[J5 B11 C18 N17].freeze
 
       def stock_round
-        Round::Stock.new(self, [
+        Round::G1870::Stock.new(self, [
           Step::DiscardTrain,
           Step::G1870::BuySellParShares,
           Step::G1870::PriceProtection,
@@ -62,8 +64,15 @@ module Engine
 
       def operating_round(round_num)
         Round::G1870::Operating.new(self, [
+          Step::G1870::ConnectionToken,
+          Step::G1870::ConnectionRoute,
+          Step::G1870::ConnectionDividend,
           Step::Bankrupt,
           Step::Exchange,
+          Step::DiscardTrain,
+          Step::G1870::PriceProtection,
+          Step::G1870::SpecialTrack,
+          Step::Assign,
           Step::G1870::BuyCompany,
           Step::G1870::SpecialTrack,
           Step::G1870::Track,
@@ -86,7 +95,17 @@ module Engine
       end
 
       def setup
+        @connection_runs = {}
+
         river_company.max_price = river_company.value
+
+        @corporations.each do |corporation|
+          ability = abilities(corporation, :destination)
+          hex = hexes.find { |h| h.name == ability.hex }
+
+          hex.assign!(corporation)
+          ability.description = "Destination: #{hex.location_name} (#{hex.name})"
+        end
       end
 
       def event_companies_buyable!
@@ -153,6 +172,15 @@ module Engine
         { can_hold_above_max: true }
       end
 
+      def home_hex(corporation)
+        corporation.tokens.first.city&.hex
+      end
+
+      def destination_hex(corporation)
+        ability = abilities(corporation, :destination)
+        hexes.find { |h| h.name == ability.hex } if ability
+      end
+
       def assignment_tokens(assignment)
         return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
 
@@ -169,10 +197,18 @@ module Engine
 
         revenue += (route.corporation.assigned?('GSC') ? 20 : 10) if stops.any? { |stop| stop.hex.assigned?('GSC') }
 
+        if stops.size >= 2
+          destination = destination_hex(route.corporation)
+          destination_stop = stops.values_at(0, -1).find { |s| s.hex == destination }
+          if destination_stop && !destination.assigned?(route.corporation)
+            revenue += destination_stop.route_revenue(route.phase, route.train)
+          end
+        end
+
         revenue
       end
 
-      def sell_shares_and_change_price(bundle, _allow_president_change: true, _swap: nil)
+      def sell_shares_and_change_price(bundle)
         @round.sell_queue << bundle
 
         @share_pool.sell_shares(bundle)
@@ -200,6 +236,19 @@ module Engine
 
       def border_impassable?(border)
         border.type == :water
+      end
+
+      def check_other(route)
+        return unless (destination = @round.connection_runs[route.corporation])
+
+        home = home_hex(route.corporation)
+        return if route.routes.any? do |r|
+          next if r.visited_stops.size < 2
+
+          (r.visited_stops.values_at(0, -1).map(&:hex) - [home, destination]).none?
+        end
+
+        raise GameError, 'At least one train has to run from the home station to the destination'
       end
     end
   end

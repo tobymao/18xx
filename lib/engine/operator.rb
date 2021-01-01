@@ -7,7 +7,7 @@ module Engine
     include Entity
 
     attr_accessor :rusted_self, :coordinates
-    attr_reader :color, :city, :loans, :logo, :operating_history, :text_color, :tokens, :trains
+    attr_reader :color, :city, :loans, :logo, :logo_filename, :operating_history, :text_color, :tokens, :trains
 
     def init_operator(opts)
       @cash = 0
@@ -16,7 +16,8 @@ module Engine
       # phase rusts happen before a train actually buys, so there is a race condition
       # where buying a train rusts yourself and it looks like you must buy a train
       @rusted_self = false
-      @logo = "/logos/#{opts[:logo]}.svg"
+      @logo_filename = "#{opts[:logo]}.svg"
+      @logo = "/logos/#{@logo_filename}"
       @coordinates = opts[:coordinates]
       @city = opts[:city]
       @tokens = opts[:tokens].map { |price| Token.new(self, price: price) }

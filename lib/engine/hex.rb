@@ -149,6 +149,9 @@ module Engine
           cheater = (index >= old_city.normal_slots) && index
           new_city.exchange_token(token, cheater: cheater) if token
         end
+        old_city.extra_tokens.each do |token|
+          new_city.exchange_token(token, extra: true)
+        end
         old_city.remove_tokens!
       end
 

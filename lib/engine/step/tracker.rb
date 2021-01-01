@@ -5,6 +5,8 @@ require_relative 'base'
 module Engine
   module Step
     module Tracker
+      attr_accessor :laid_track
+
       def setup
         @upgraded = false
         @laid_track = 0

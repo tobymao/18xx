@@ -452,10 +452,8 @@ module Engine
       ],
       "abilities": [
         {
-          "type": "assign_hexes",
-          "hexes": [
-            "N1"
-          ],
+          "type": "destination",
+          "hex": "N1",
           "count": 1
         }
       ],
@@ -473,10 +471,8 @@ module Engine
       ],
       "abilities": [
         {
-          "type": "assign_hexes",
-          "hexes": [
-            "J3"
-          ],
+          "type": "destination",
+          "hex": "J3",
           "count": 1
         }
       ],
@@ -495,10 +491,8 @@ module Engine
       ],
       "abilities": [
         {
-          "type": "assign_hexes",
-          "hexes": [
-            "N17"
-          ],
+          "type": "destination",
+          "hex": "N17",
           "count": 1
         }
       ],
@@ -517,10 +511,8 @@ module Engine
       ],
       "abilities": [
         {
-          "type": "assign_hexes",
-          "hexes": [
-            "M22"
-          ],
+          "type": "destination",
+          "hex": "M22",
           "count": 1
         }
       ],
@@ -539,10 +531,8 @@ module Engine
       ],
       "abilities": [
         {
-          "type": "assign_hexes",
-          "hexes": [
-            "J5"
-          ],
+          "type": "destination",
+          "hex": "J5",
           "count": 1
         }
       ],
@@ -561,10 +551,8 @@ module Engine
       ],
       "abilities": [
         {
-          "type": "assign_hexes",
-          "hexes": [
-            "N1"
-          ],
+          "type": "destination",
+          "hex": "N1",
           "count": 1
         }
       ],
@@ -582,10 +570,8 @@ module Engine
       ],
       "abilities": [
         {
-          "type": "assign_hexes",
-          "hexes": [
-            "A22"
-          ],
+          "type": "destination",
+          "hex": "A22",
           "count": 1
         }
       ],
@@ -603,10 +589,8 @@ module Engine
       ],
       "abilities": [
         {
-          "type": "assign_hexes",
-          "hexes": [
-            "C18"
-          ],
+          "type": "destination",
+          "hex": "C18",
           "count": 1
         }
       ],
@@ -624,10 +608,8 @@ module Engine
       ],
       "abilities": [
         {
-          "type": "assign_hexes",
-          "hexes": [
-            "A2"
-          ],
+          "type": "destination",
+          "hex": "A2",
           "count": 1
         }
       ],
@@ -645,10 +627,8 @@ module Engine
       ],
       "abilities": [
         {
-          "type": "assign_hexes",
-          "hexes": [
-            "N17"
-          ],
+          "type": "destination",
+          "hex": "N17",
           "count": 1
         }
       ],

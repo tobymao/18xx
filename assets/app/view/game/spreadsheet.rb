@@ -22,6 +22,8 @@ module View
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
         @delta_value = Lib::Storage['delta_value']
 
+        @hide_connection_runs = !@game.respond_to?(:connection_runs) || @game.connection_runs.none?
+
         children = []
 
         top_line_props = {
@@ -79,7 +81,13 @@ module View
       end
 
       def render_history_titles(corporations)
-        or_history(corporations).map { |turn, round| h(:th, @game.or_description_short(turn, round)) }
+        conn = if @hide_connection_runs
+                 []
+               else
+                 [h(:th, ''), h(:th, { attrs: { colSpan: 2 } }, 'Conn')]
+               end
+
+        conn.concat(or_history(corporations).map { |turn, round| h(:th, @game.or_description_short(turn, round)) })
       end
 
       def render_player_history
@@ -109,41 +117,30 @@ module View
         end.compact.reverse
       end
 
+      def render_connection_history(corporation)
+        if @hide_connection_runs
+          []
+        elsif @game.connection_runs[corporation]
+          round = @game.or_description_short(*@game.connection_runs[corporation][:turn])
+          children << h(:td, round)
+          children << h(:td, [render_dividend(round, @game.connection_runs[corporation][:info], corporation)])
+        else
+          children << h(:td, '')
+          children << h(:td, '')
+        end
+      end
+
       def render_history(corporation)
         hist = corporation.operating_history
+
         if hist.empty?
           # This is a company that hasn't floated yet
           []
         else
           or_history(@game.all_corporations).map do |x|
-            if hist[x]
-              props = {
-                style: {
-                  opacity: case hist[x].dividend.kind
-                           when 'withhold'
-                             '0.5'
-                           when 'half'
-                             '0.75'
-                           else
-                             '1.0'
-                           end,
-                  textDecorationLine: hist[x].dividend.kind == 'half' ? 'underline' : '',
-                  textDecorationStyle: hist[x].dividend.kind == 'half' ? 'dotted' : '',
-                  padding: '0 0.15rem',
-                },
-              }
+            round = @game.or_description_short(*x)
 
-              if hist[x]&.dividend&.id&.positive?
-                link_h = history_link(hist[x].revenue.abs.to_s,
-                                      "Go to run #{x} of #{corporation.name}",
-                                      hist[x].dividend.id - 1)
-                h(:td, props, [link_h])
-              else
-                h(:td, props, hist[x].revenue.abs.to_s)
-              end
-            else
-              h(:td, '')
-            end
+            h(:td, hist[x] ? [render_dividend(round, hist[x], corporation)] : '')
           end
         end
       end
@@ -336,6 +333,7 @@ module View
           *extra,
           render_companies(corporation),
           h(:th, name_props, corporation.name),
+          *render_connection_history(corporation),
           *render_history(corporation),
         ])
       end
@@ -393,6 +391,35 @@ module View
       def render_player_cert_count(player, cert_limit, props)
         num_certs = @game.num_certs(player)
         h('td.padded_number', num_certs > cert_limit ? props : '', num_certs)
+      end
+
+      def render_dividend(round, info, corporation)
+        kind = info.dividend.kind
+        revenue = info.revenue.abs.to_s
+
+        props = {
+          style: {
+            opacity: case kind
+                     when 'withhold'
+                       '0.5'
+                     when 'half'
+                       '0.75'
+                     else
+                       '1.0'
+                     end,
+            textDecorationLine: kind == 'half' ? 'underline' : '',
+            textDecorationStyle: kind == 'half' ? 'dotted' : '',
+          },
+        }
+
+        if info.dividend&.id&.positive?
+          link_h = history_link(revenue,
+                                "Go to run #{round} of #{corporation.name}",
+                                info.dividend.id - 1)
+          h(:span, props, [link_h])
+        else
+          h(:span, props, revenue)
+        end
       end
 
       def zebra_props(alt_bg = false)

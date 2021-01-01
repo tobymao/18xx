@@ -99,13 +99,37 @@ module View
         PP_WIDE_TOP_CORNER = {
           region_weights: [0, 1, 2, 3, 5, 6],
           x: 0,
-          y: -65,
+          y: -60,
         }.freeze
 
         PP_WIDE_BOTTOM_CORNER = {
           region_weights: [17, 18, 20, 21, 22, 23],
           x: 0,
-          y: 65,
+          y: 60,
+        }.freeze
+
+        PP_TALL_LEFT_CORNER = {
+          region_weights: [5, 12, 13, 19, 20],
+          x: -60,
+          y: 0,
+        }.freeze
+
+        PP_TALL_RIGHT_CORNER = {
+          region_weights: [3, 4, 10, 11, 18],
+          x: 60,
+          y: 0,
+        }.freeze
+
+        PP_WIDER_TOP_CORNER = {
+          region_weights: [4, 10, 12, 13],
+          x: 0,
+          y: -16,
+        }.freeze
+
+        PP_WIDER_BOTTOM_CORNER = {
+          region_weights: [10, 11, 13, 19],
+          x: 0,
+          y: 16,
         }.freeze
 
         SMALL_ITEM_LOCATIONS = [P_RIGHT_CORNER,
@@ -128,6 +152,12 @@ module View
 
         POINTY_WIDE_ITEM_LOCATIONS = [PP_WIDE_TOP_CORNER,
                                       PP_WIDE_BOTTOM_CORNER].freeze
+
+        POINTY_TALL_ITEM_LOCATIONS = [PP_TALL_LEFT_CORNER,
+                                      PP_TALL_RIGHT_CORNER].freeze
+
+        POINTY_WIDER_ITEM_LOCATIONS = [PP_WIDER_BOTTOM_CORNER,
+                                       PP_WIDER_TOP_CORNER].freeze
       end
     end
   end

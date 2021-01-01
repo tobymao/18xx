@@ -7,9 +7,6 @@ module Engine
   module Step
     module G1817
       class Track < Track
-        # Special track lays act as normal lays for 1817
-        attr_accessor :laid_track
-
         def setup
           super
           @hex = nil
