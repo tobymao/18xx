@@ -147,7 +147,8 @@ module Engine
       end
 
       def take_loan(entity, loan)
-        game_error("Cannot take more than #{maximum_loans(entity)} loans") unless can_take_loan?(entity)
+        raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
+
         name = entity.name
         amount = loan.amount - 5
         @log << "#{name} takes a loan and receives #{format_currency(amount)}"
@@ -252,7 +253,7 @@ module Engine
       def revenue_for(route, stops)
         revenue = super
 
-        game_error('Route visits same hex twice') if route.hexes.size != route.hexes.uniq.size
+        raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
 
         route.corporation.companies.each do |company|
           abilities(company, :hex_bonus) do |ability|

@@ -31,38 +31,44 @@ require_relative '../player_info'
 
 module Engine
   module Game
-    def self.load(data, at_action: nil, **kwargs)
-      game_data =
-        case data
-        when String
-          return load(JSON.parse(File.exist?(data) ? File.read(data) : data), at_action: at_action, **kwargs)
-        when Hash
-          {
-            title: data['title'],
-            names: data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h,
-            id: data['id'],
-            actions: data['actions'] || [],
-            pin: data.dig('settings', 'pin'),
-            optional_rules: data.dig('settings', 'optional_rules') || [],
-          }
-        when Integer
-          return load(::Game[data], at_action: at_action, **kwargs)
-        when ::Game
-          {
-            title: data.title,
-            names: data.ordered_players.map { |u| [u.id, u.name] }.to_h,
-            id: data.id,
-            actions: data.actions.map(&:to_h),
-            pin: data.settings['pin'],
-            optional_rules: data.settings['optional_rules'] || [],
-          }
-        end
-      title = game_data.delete(:title)
-      names = game_data.delete(:names)
-      game_data.merge!(kwargs)
-      game_data[:actions] = game_data[:actions].take(at_action) if at_action
+    def self.load(data, at_action: nil, actions: nil, pin: nil, optional_rules: nil, **kwargs)
+      case data
+      when String
+        parsed_data = JSON.parse(File.exist?(data) ? File.read(data) : data)
+        return load(parsed_data,
+                    at_action: at_action,
+                    actions: actions,
+                    pin: pin,
+                    optional_rules: optional_rules,
+                    **kwargs)
+      when Hash
+        title = data['title']
+        names = data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h
+        id = data['id']
+        actions ||= data['actions'] || []
+        pin ||= data.dig('settings', 'pin')
+        optional_rules ||= data.dig('settings', 'optional_rules') || []
+      when Integer
+        return load(::Game[data],
+                    at_action: at_action,
+                    actions: actions,
+                    pin: pin,
+                    optional_rules: optional_rules,
+                    **kwargs)
+      when ::Game
+        title = data.title
+        names = data.ordered_players.map { |u| [u.id, u.name] }.to_h
+        id = data.id
+        actions ||= data.actions.map(&:to_h)
+        pin ||= data.settings['pin']
+        optional_rules ||= data.settings['optional_rules'] || []
+      end
 
-      Engine::GAMES_BY_TITLE[title].new(names, **game_data)
+      actions = actions.take(at_action) if at_action
+
+      Engine::GAMES_BY_TITLE[title].new(
+        names, id: id, actions: actions, pin: pin, optional_rules: optional_rules, **kwargs
+      )
     end
 
     class Base
@@ -1191,6 +1197,14 @@ module Engine
         true
       end
 
+      def can_par?(corporation, parrer)
+        return false if corporation.par_via_exchange && corporation.par_via_exchange.owner != parrer
+        return false if corporation.needs_token_to_par && corporation.tokens.empty?
+        return false if corporation.all_abilities.find { |a| a.type == :unparrable }
+
+        !corporation.ipoed
+      end
+
       def float_corporation(corporation)
         @log << "#{corporation.name} floats"
 
@@ -1447,11 +1461,9 @@ module Engine
       end
 
       def init_corporations(stock_market)
-        min_price = stock_market.par_prices.map(&:price).min
-
         self.class::CORPORATIONS.map do |corporation|
           Corporation.new(
-            min_price: min_price,
+            min_price: stock_market.par_prices.map(&:price).min,
             capitalization: self.class::CAPITALIZATION,
             **corporation.merge(corporation_opts),
           )

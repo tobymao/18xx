@@ -148,7 +148,7 @@ module Engine
         share_price = action.share_price
         corporation = action.corporation
         entity = action.entity
-        raise GameError, "#{corporation.name} cannot be parred" unless corporation.can_par?(entity)
+        raise GameError, "#{corporation.name} cannot be parred" unless @game.can_par?(corporation, entity)
 
         @game.stock_market.set_par(corporation, share_price)
         share = corporation.shares.first
@@ -196,7 +196,9 @@ module Engine
       end
 
       def can_ipo_any?(entity)
-        !bought? && @game.corporations.any? { |c| c.can_par?(entity) && can_buy?(entity, c.shares.first&.to_bundle) }
+        !bought? && @game.corporations.any? do |c|
+          @game.can_par?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
+        end
       end
 
       def ipo_type(_entity)
@@ -209,6 +211,10 @@ module Engine
           !@game.phase.status.include?('can_buy_companies_from_other_players')
 
         @game.purchasable_companies(entity)
+      end
+
+      def purchasable_unsold_companies
+        @game.companies.reject(&:owner)
       end
 
       def get_par_prices(entity, _corp)
@@ -239,15 +245,16 @@ module Engine
         price = action.price
         owner = company.owner
 
-        raise GameError "Cannot buy #{company.name} from #{owner.name}" unless owner.player?
+        raise GameError "Cannot buy #{company.name} from #{owner.name}" if owner&.corporation?
 
         company.owner = entity
-        owner.companies.delete(company)
+        owner&.companies&.delete(company)
 
         entity.companies << company
-        entity.spend(price, owner)
+        entity.spend(price, owner.nil? ? @game.bank : owner)
         @current_actions << action
-        @log << "-- #{entity.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
+        @log << "#{owner ? '-- ' : ''}#{entity.name} buys #{company.name} from "\
+                "#{owner ? owner.name : 'the market'} for #{@game.format_currency(price)}"
       end
     end
   end

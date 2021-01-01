@@ -20,11 +20,13 @@ module View
         needs :selected_corporation, default: nil, store: true
         needs :selected_company, default: nil, store: true
         needs :last_player, default: nil, store: true
+        needs :show_other_players, default: nil, store: true
 
         def render
           @step = @game.round.active_step
           @current_actions = @step.current_actions
           @auctioning_corporation = @step.auctioning_corporation if @step.respond_to?(:auctioning_corporation)
+          @mergeable_entity = @step.mergeable_entity if @step.respond_to?(:mergeable_entity)
           @selected_corporation ||= @auctioning_corporation
 
           @price_protection = @step.price_protection if @step.respond_to?(:price_protection)
@@ -55,16 +57,42 @@ module View
                           "for #{@game.format_currency(@price_protection.price)}")
           end
 
+          children.concat(render_buttons)
           children << h(BuyCompaniesAtFaceValue, game: @game) if @current_actions.include?('buy_company') &&
             @step.purchasable_unsold_companies.any?
           children.concat(render_corporations)
+          children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
           children.concat(render_bank_companies)
           children << h(Players, game: @game)
-          children << h(BuyCompanyFromOtherPlayer, game: @game) if @step.purchasable_companies(@current_entity).any?
+          if @step.respond_to?(:purchasable_companies) && @step.purchasable_companies(@current_entity).any?
+            children << h(BuyCompanyFromOtherPlayer, game: @game)
+          end
           children << h(StockMarket, game: @game)
 
           h(:div, children)
+        end
+
+        def render_buttons
+          buttons = []
+          buttons.concat(render_merge_button) if @current_actions.include?('merge')
+
+          buttons.any? ? [h(:div, buttons)] : []
+        end
+
+        def render_merge_button
+          merge = lambda do
+            if @selected_corporation
+              process_action(Engine::Action::Merge.new(
+                @mergeable_entity,
+                corporation: @selected_corporation,
+              ))
+            else
+              store(:flash_opts, 'Select a corporation to merge with')
+            end
+          end
+
+          [h(:button, { on: { click: merge } }, @step.merge_action)]
         end
 
         def render_corporations
@@ -77,6 +105,7 @@ module View
 
           @game.sorted_corporations.reject(&:closed?).map do |corporation|
             next if @auctioning_corporation && @auctioning_corporation != corporation
+            next if @mergeable_entity && @mergeable_entity != corporation
             next if @price_protection && @price_protection.corporation != corporation
 
             children = []
@@ -148,6 +177,57 @@ module View
           end
 
           h(:button, { on: { click: buy_tokens } }, 'Buy Tokens')
+        end
+
+        def render_mergeable_entities
+          step = @game.round.active_step
+          return unless step.current_actions.include?('merge')
+
+          mergeable_entities = @step.mergeable_entities
+          player_corps = mergeable_entities.select do |target|
+            target.owner == @mergeable_entity.owner || @step.show_other_players
+          end
+          @selected_corporation = player_corps.first if player_corps.one?
+          return unless mergeable_entities
+
+          children = []
+
+          props = {
+            style: {
+              margin: '0.5rem 1rem 0 0',
+            },
+          }
+          children << h(:div, props, @step.mergeable_type(@mergeable_entity))
+
+          hidden_corps = false
+          @show_other_players = true if @step.show_other_players
+          mergeable_entities.each do |target|
+            if @show_other_players || target.owner == @mergeable_entity.owner || !target.owner
+              children << h(Corporation, corporation: target, selected_corporation: @selected_corporation)
+            else
+              hidden_corps = true
+            end
+          end
+
+          button_props = {
+            style: {
+              display: 'grid',
+              gridColumn: '1/4',
+              width: 'max-content',
+            },
+          }
+
+          if hidden_corps
+            children << h('button',
+                          { on: { click: -> { store(:show_other_players, true) } }, **button_props },
+                          'Show corporations from other players')
+          elsif @show_other_players
+            children << h('button',
+                          { on: { click: -> { store(:show_other_players, false) } }, **button_props },
+                          'Hide corporations from other players')
+          end
+
+          children
         end
 
         def render_player_companies

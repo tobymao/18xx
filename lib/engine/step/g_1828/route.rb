@@ -11,6 +11,7 @@ module Engine
             raise GameError, 'Cannot run to Virginia Coalfields without a Coal Marker'
           end
 
+          # C&P route must include the tile it laid this turn
           if action.entity.id == 'C&P' && !route_uses_tile_lay(action.routes)
             raise GameError, "#{action.entity.name} must use laid tile in route"
           end

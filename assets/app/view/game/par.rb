@@ -11,7 +11,7 @@ module View
 
       def render
         entity = @game.current_entity
-        return h(:div, 'Cannot Par') unless @corporation.can_par?(entity)
+        return h(:div, 'Cannot Par') unless @game.can_par?(@corporation, entity)
 
         prices = @game.round.active_step
           .get_par_prices(entity, @corporation)

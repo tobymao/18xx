@@ -111,7 +111,8 @@ module Engine
       end
 
       def take_loan(entity, loan)
-        game_error('Cannot take loan') unless can_take_loan?(entity)
+        raise GameError, 'Cannot take loan' unless can_take_loan?(entity)
+
         name = entity.name
         loan_amount = @round.paid_interest[entity] ? 90 : 100
         @log << "#{name} takes a loan and receives #{format_currency(loan_amount)}"
@@ -234,6 +235,10 @@ module Engine
         super
       end
 
+      def can_par?(corporation, parrer)
+        corporation == national ? false : super
+      end
+
       #
       # Get all possible upgrades for a tile
       # tile: The tile to be upgraded
@@ -274,6 +279,13 @@ module Engine
 
       def init_share_pool
         Engine::G1856::SharePool.new(self)
+      end
+
+      def release_escrow!(corporation)
+        @log << "Releasing #{format_currency(corporation.escrow)} from escrow for #{corporation.name}"
+        corporation.cash += corporation.escrow
+        corporation.escrow = nil
+        corporation.capitalization = :incremental
       end
 
       # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.

@@ -41,6 +41,10 @@ module Engine
           end.size > @game.phase.train_limit(c)
         end
       end
+
+      def trains(corporation)
+        corporation.trains
+      end
     end
   end
 end

@@ -15,6 +15,7 @@ module Engine
         def setup
           super
           @no_upgrades = false
+          @round.last_tile_lay = nil
         end
 
         def round_state
@@ -32,6 +33,10 @@ module Engine
         end
 
         def process_lay_tile(action)
+          if @round.last_tile_lay && action.hex == @round.last_tile_lay.hex
+            raise GameError, 'Cannot lay and upgrade the same tile in the same turn'
+          end
+
           @round.last_tile_lay = action.tile
           super
         end
