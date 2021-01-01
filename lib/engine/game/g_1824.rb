@@ -134,6 +134,24 @@ module Engine
         super
       end
 
+      def init_tiles
+        return super unless option_goods_time
+
+        # Goods Time increase count for some town related tiles
+        TILES['3'] += 3
+        TILES['4'] += 3
+        TILES['56'] += 1
+        TILES['58'] += 3
+        TILES['87'] += 2
+        TILES['630'] += 1
+        TILES['631'] += 1
+
+        # New tile for Goods Time variant
+        TILES['204'] = 3
+
+        super
+      end
+
       def option_cislethania
         @optional_rules&.include?(:cisleithania)
       end
@@ -238,6 +256,19 @@ module Engine
       end
 
       def base_map
+        plain_hexes = %w[B7 B11 B17 B19 B21 C8 C14 C20 C22 C24 D9 D11 D13 D15 D17 E6 E18 E22
+                         F9 F13 F15 F21 F25 G6 G12 G14 G22 G24 H9 H13 H19 H21 I10 I12 I14]
+        one_town = %w[A8 A20 C10 C16 D25 E20 E24 F19 G2 G20 H11 I20 I22]
+        two_towns = %w[B13 B25 F11 I16]
+        if option_goods_time
+          # Variant Goods Time transform some plain hexes to town(s) hexes
+          added_one_town = %w[B7 C8 C20 C22 H21]
+          added_two_towns = %w[F25 G24]
+          plain_hexes -= added_one_town
+          one_town += added_one_town
+          plain_hexes -= added_two_towns
+          two_towns += added_two_towns
+        end
         {
           red: {
             ['A4'] =>
@@ -282,11 +313,11 @@ module Engine
               'city=revenue:yellow_10|brown_40;path=a:1,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
           },
           white: {
-            %w[A8 A20 C10 C16 D25 E20 E24 F19 G2 G20 H11 I20 I22] =>
+            one_town =>
               'town=revenue:0',
             %w[A6 A10] =>
               'town=revenue:0;upgrade=cost:40,terrain:mountain',
-            %w[B13 B25 F11 I16] =>
+            two_towns =>
               'town=revenue:0;town=revenue:0',
             %w[D19 H3] =>
               'city=revenue:0;upgrade=cost:40,terrain:mountain',
@@ -294,8 +325,7 @@ module Engine
               'city=revenue:0;label=T',
             %w[B5 B9 B15 B23 C12 E8 F7 F23 G4 G10 G26 H15 H23] =>
               'city=revenue:0',
-            %w[B7 B11 B17 B19 B21 C8 C14 C20 C22 C24 D9 D11 D13 D15 D17 E6 E18 E22
-               F9 F13 F15 F21 F25 G6 G12 G14 G22 G24 H9 H13 H19 H21 I10 I12 I14] =>
+            plain_hexes =>
               '',
             %w[C18 D21 D23 G8 H5 H7] =>
               'upgrade=cost:40,terrain:mountain',
