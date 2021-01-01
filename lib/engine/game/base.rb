@@ -577,9 +577,7 @@ module Engine
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
         @actions << action
-        if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
-          return clone(@actions)
-        end
+        return clone(@actions) if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
 
         if action.user
           @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
