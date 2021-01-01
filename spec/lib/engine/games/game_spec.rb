@@ -19,9 +19,9 @@ module Engine
           data = JSON.parse(File.read(fixture))
           result = data['result']
 
-          expect(Engine::Game.load(data, disable_user_errors: true).result).to eq(result)
+          expect(Engine::Game.load(data).result).to eq(result)
 
-          rungame = Engine::Game.load(data, disable_user_errors: true, strict: true)
+          rungame = Engine::Game.load(data, strict: true)
           expect(rungame.result).to eq(result)
           expect(rungame.finished).to eq(true)
         end

@@ -264,7 +264,8 @@ end
 def migrate_data(data)
   begin
     data['actions'], repairs = attempt_repair(data['actions'], true) do
-      Engine::Game.load(data, actions: [], disable_user_errors: true)
+      engine = Engine::Game.load(data, actions: [])
+      raise engine.exception if engine.exception
     end
   rescue Exception => e
     puts 'Failed to fix :(', e
@@ -281,7 +282,8 @@ def migrate_db_actions_in_mem(data)
   engine = Engine::GAMES_BY_TITLE[data.title]
   begin
     actions, repairs = attempt_repair(original_actions) do
-      Engine::Game.load(data, actions: [], disable_user_errors: true)
+      engine = Engine::Game.load(data, actions: [])
+      raise engine.exception if engine.exception
     end
     puts repairs
     return actions || original_actions
@@ -300,7 +302,8 @@ def migrate_db_actions(data, pin, dry_run=false, delete=false, debug=false)
   engine = Engine::GAMES_BY_TITLE[data.title]
   begin
     actions, repairs = attempt_repair(original_actions, debug) do
-      Engine::Game.load(data, actions: [], disable_user_errors: true)
+      engine = Engine::Game.load(data, actions: [])
+      raise engine.exception if engine.exception
     end
     if actions && !dry_run
       if repairs
@@ -313,7 +316,8 @@ def migrate_db_actions(data, pin, dry_run=false, delete=false, debug=false)
       else # Full rewrite.
         DB.transaction do
           Action.where(game: data).delete
-          game = Engine::Game.load(data, actions: [], disable_user_errors: true)
+          game = Engine::Game.load(data, actions: [])
+          raise game.exception if game.exception
           actions.each do |action|
             game.process_action(action)
             Action.create(
