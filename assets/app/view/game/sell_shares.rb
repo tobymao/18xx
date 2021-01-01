@@ -47,7 +47,7 @@ module View
         end
 
         buttons = buttons.compact
-        h(:div, buttons) if buttons.any?
+        return h(:div, buttons) if buttons.any?
 
         nil
       end

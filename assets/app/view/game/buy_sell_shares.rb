@@ -31,7 +31,7 @@ module View
         children << h(SellShares, player: @current_entity, corporation: @corporation)
 
         children = children.compact
-        h(:div, children) if children.any?
+        return h(:div, children) if children.any?
 
         nil
       end

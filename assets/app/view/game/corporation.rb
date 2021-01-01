@@ -42,8 +42,8 @@ module View
 
         card_style[:display] = @display
 
-        unless interactive?
-          factor = Native(`window.matchMedia('(prefers-color-scheme: dark)').matches`) ? 0.8 : 0.5
+        unless @interactive
+          factor = color_for(:bg2).to_s[1].to_i(16) > 7 ? 0.3 : 0.6
           card_style[:backgroundColor] = convert_hex_to_rgba(color_for(:bg2), factor)
           card_style[:border] = '1px dashed'
         end
@@ -575,10 +575,6 @@ module View
 
       def selected?
         @corporation == @selected_corporation
-      end
-
-      def interactive?
-        @interactive
       end
 
       def can_assign_corporation?
