@@ -600,6 +600,7 @@ module Engine
         unless action.is_a?(Action::Message)
           @redo_possible = false
           @undo_possible = true
+          @last_game_action = action.id
         end
 
         action_processed(action)
@@ -653,6 +654,10 @@ module Engine
 
       def current_action_id
         @actions.size + 1
+      end
+
+      def last_game_action
+        @last_game_action || 0
       end
 
       def action_from_h(h)

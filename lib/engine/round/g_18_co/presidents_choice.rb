@@ -38,6 +38,7 @@ module Engine
         end
 
         def passed_next_entity_index!
+          @turn_start = @game.current_action_id
           @entity_index = @entity_index % @entities.size
         end
 

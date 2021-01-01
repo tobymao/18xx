@@ -8,7 +8,8 @@ module View
       include Actionable
 
       def render
-        h(:button, { on: { click: -> { process_action(Engine::Action::Undo.new(@game.current_entity)) } } }, 'Undo')
+        action = -> { process_action(Engine::Action::Undo.new(@game.current_entity)) }
+        h(:button, { on: { click: action }, attrs: { disabled: !@game.undo_possible } }, 'Undo')
       end
     end
   end

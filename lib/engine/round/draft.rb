@@ -33,6 +33,8 @@ module Engine
       def next_entity_index!
         return super unless @snake_order
 
+        @turn_start = @game.current_action_id
+
         if (@snaking_up && @entity_index == (@entities.size - 1)) ||
            (!@snaking_up && @entity_index.zero?)
           @snaking_up = !@snaking_up
