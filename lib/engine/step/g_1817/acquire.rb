@@ -454,7 +454,7 @@ module Engine
         end
 
         def auctioning_corporation
-          @offer || @auctioning || @winner&.corporation
+          @offer || @buyer || @auctioning || @winner&.corporation
         end
 
         def setup
