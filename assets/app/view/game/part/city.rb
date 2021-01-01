@@ -285,6 +285,7 @@ module View
                             edge: @edge,
                             token: token,
                             slot_index: slot_index,
+                            extra_token: @city.extra_tokens.include?(token),
                             radius: SLOT_RADIUS,
                             reservation: @city.reservations[slot_index],
                             tile: @tile,
