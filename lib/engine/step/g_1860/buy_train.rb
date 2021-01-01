@@ -57,6 +57,10 @@ module Engine
           depot_trains + other_trains
         end
 
+        def president_may_contribute?(_entity, _shell = nil)
+          false
+        end
+
         def illegal_train_buy?(entity, train)
           @game.bankrupt?(train.owner) ||
             entity.receivership? ||
