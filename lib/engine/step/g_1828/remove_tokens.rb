@@ -50,7 +50,7 @@ module Engine
           city = action.city
           token = city.tokens[action.slot]
           hex = city.hex
-          @game.game_error("Cannot remove #{token.corporation.name} token") unless available_hex(entity, hex)
+          raise GameError, "Cannot remove #{token.corporation.name} token" unless available_hex(entity, hex)
 
           @log << "#{entity.name} removes token from #{hex.name} (#{hex.location_name})"
           token.destroy!

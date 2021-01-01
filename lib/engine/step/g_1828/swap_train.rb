@@ -31,8 +31,8 @@ module Engine
         def process_swap_train(action)
           train = action.train
           entity = action.entity
-          @game.game_error('Only systems can swap trains') unless entity.system?
-          @game.game_error("Train not owned by #{action.entity.name}") unless train.owner == entity
+          raise GameError, 'Only systems can swap trains' unless entity.system?
+          raise GameError, "Train not owned by #{action.entity.name}" unless train.owner == entity
 
           current_shell = entity.shells.find { |shell| shell.trains.include?(train) }
           current_shell.trains.delete(train)

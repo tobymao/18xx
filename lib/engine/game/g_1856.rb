@@ -111,7 +111,8 @@ module Engine
       end
 
       def take_loan(entity, loan)
-        game_error('Cannot take loan') unless can_take_loan?(entity)
+        raise GameError, 'Cannot take loan' unless can_take_loan?(entity)
+
         name = entity.name
         loan_amount = @round.paid_interest[entity] ? 90 : 100
         @log << "#{name} takes a loan and receives #{format_currency(loan_amount)}"

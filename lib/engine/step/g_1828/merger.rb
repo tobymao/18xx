@@ -39,10 +39,10 @@ module Engine
 
         def process_merge(action)
           @target = action.corporation
-          @game.game_error('Invalid action') unless @state == :select_target
-          @game.game_error('Wrong company') unless action.entity == mergeable_entity
+          raise GameError, 'Invalid action' unless @state == :select_target
+          raise GameError, 'Wrong company' unless action.entity == mergeable_entity
           unless mergeable_entities(@round.acting_player, mergeable_entity).include?(@target)
-            @game.game_error("Unable to merge #{mergeable_entity.name} with #{action.corporation.name}")
+            raise GameError, "Unable to merge #{mergeable_entity.name} with #{action.corporation.name}"
           end
 
           @merger = mergeable_entity
@@ -50,9 +50,9 @@ module Engine
         end
 
         def process_choose(action)
-          @game.game_error('Invalid action') unless @player_choice
-          @game.game_error('Not your turn') unless action.entity == @players.first
-          @game.game_error('Invalid choice') unless @player_choice.choices.include?(action.choice)
+          raise GameError, 'Invalid action' unless @player_choice
+          raise GameError, 'Not your turn' unless action.entity == @players.first
+          raise GameError, 'Invalid choice' unless @player_choice.choices.include?(action.choice)
 
           @player_selection = action.choice
           @player_choice = nil

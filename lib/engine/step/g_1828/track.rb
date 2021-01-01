@@ -34,8 +34,9 @@ module Engine
 
         def process_lay_tile(action)
           if @round.last_tile_lay && action.hex == @round.last_tile_lay.hex
-            @game.game_error('Cannot lay and upgrade the same tile in the same turn')
+            raise GameError, 'Cannot lay and upgrade the same tile in the same turn'
           end
+
           @round.last_tile_lay = action.tile
           super
         end
