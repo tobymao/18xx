@@ -652,11 +652,14 @@ module Engine
       "border=edge:3,type:impassable;upgrade=cost:10,terrain:mountain": [
         "J5"
       ],
-      "border=edge:0,type:impassible": [
+      "border=edge:0,type:impassable": [
         "F5"
       ],
-      "border=edge:3,type:impassible": [
+      "border=edge:3,type:impassable": [
         "G4"
+      ],
+      "partition=a:1,b:4,type:water": [
+        "F9"
       ],
       "": [
         "C10",
@@ -665,7 +668,6 @@ module Engine
         "E16",
         "E20",
         "F7",
-        "F9",
         "I8",
         "I10",
         "I16"
