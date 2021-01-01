@@ -18,6 +18,7 @@ module Engine
           raise GameError, 'Cannot lay and upgrade the same tile in the same turn' if action.hex == @hex
 
           super
+          @game.place_cn_montreal_token(action.hex.tile) if action.tile.name == '639'
           @hex = action.hex
         end
 

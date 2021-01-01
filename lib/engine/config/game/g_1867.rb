@@ -179,9 +179,9 @@ module Engine
       "120pC",
       "135pC",
       "150zC",
-      "165zC",
-      "180zC",
-      "200zCm",
+      "165zCm",
+      "180z",
+      "200z",
       "220",
       "245",
       "270",
@@ -740,7 +740,7 @@ module Engine
       "price": 650,
       "num": 2,
       "events":[
-        {"type": "close_companies"},
+        {"type": "nationalize_companies"},
         {"type": "trainless_nationalization"}
       ]
     },
@@ -799,7 +799,7 @@ module Engine
       ],
       "multiplier":2,
       "price": 600,
-      "num": 6,
+      "num": 20,
       "available_on": "8"
     },
     {
@@ -818,7 +818,7 @@ module Engine
       ],
       "multiplier": 2,
       "price": 1500,
-      "num": 7,
+      "num": 20,
       "available_on": "8"
     }
   ],
