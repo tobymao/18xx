@@ -167,9 +167,14 @@ module View
         obsolete_schedule = {}
         @depot.trains.group_by(&:name).each do |name, trains|
           first = trains.first
-          rust_schedule[first.rusts_on] = Array(rust_schedule[first.rusts_on]).append(name)
-          obsolete_schedule[first.obsolete_on] = Array(obsolete_schedule[first.obsolete_on]).append(name)
+          trains.first.variants.each do | name, trainVariant |
+            
+            rust_schedule[trainVariant["rusts_on"]] = Array(rust_schedule[trainVariant["rusts_on"]]).append(name) if !Array(rust_schedule[trainVariant["rusts_on"]]).include?(name)
+            obsolete_schedule[trainVariant["obsolete_on"]] = Array(obsolete_schedule[trainVariant["obsolete_on"]]).append(name) if !Array(obsolete_schedule[trainVariant["obsolete_on"]]).include?(name)
+          end
+        
         end
+        puts rust_schedule
         [rust_schedule, obsolete_schedule]
       end
 
@@ -259,8 +264,19 @@ module View
             h('td.right', names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
             h(:td, trains.size),
           ]
+          test = nil
+          names_to_prices.keys.each do | key |
+            if rust_schedule[key]
+              if(!test)
+                test = []
+              end
+              test << rust_schedule[key]&.join(', ') 
+            end
+          end
+          puts test
+
           upcoming_train_content << h(:td, obsolete_schedule[name]&.join(', ') || 'None') if show_obsolete_schedule
-          upcoming_train_content << h(:td, rust_schedule[name]&.join(', ') || 'None')
+          upcoming_train_content << h(:td, test&.join(', ') || 'None')
 
           upcoming_train_content << h(:td, discounts&.join(' ')) if show_upgrade
           upcoming_train_content << h(:td, train.available_on) if show_available
