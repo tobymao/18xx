@@ -161,7 +161,7 @@ module View
 
       def render_merge
         return [] unless @step.current_actions.include?('choose')
-        return [] unless @step.respond_to?(:can_merge)
+        return [] unless @step.respond_to?(:can_merge?)
         return [] unless @step.can_merge?(@current_entity, @corporation)
 
         merge = lambda do
