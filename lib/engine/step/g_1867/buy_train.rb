@@ -27,9 +27,18 @@ module Engine
           super
         end
 
+        def can_sell?(_entity, _bundle)
+          # Players cannot sell shares in EMR for 1867
+          false
+        end
+
         def must_buy_train?(entity)
           # Can afford one by taking out max loans
           super && @game.buying_power(entity, full: true) >= needed_cash(entity)
+        end
+
+        def president_may_contribute?(_entity, _shell = nil)
+          false
         end
 
         def ebuy_president_can_contribute?(_corporation)
