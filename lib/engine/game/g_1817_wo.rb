@@ -39,7 +39,7 @@ module Engine
       def event_nieuw_zeeland_available!
         # Remove the 1867-style green token from the New Zealand hex
         @log << 'Corporations can now be IPOed in Nieuw Zeeland'
-        @green_token.amp(&:remove!)
+        @green_token.remove!
       end
 
       # Not genericifying 1817's loan logic just so it can be kept simpler, at least for now
