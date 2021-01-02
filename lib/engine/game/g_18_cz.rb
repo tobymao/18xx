@@ -74,7 +74,7 @@ module Engine
         Round::Operating.new(self, [
           Step::SpecialTrack,
           Step::BuyCompany,
-          Step::G18MS::Track,
+          Step::Track,
           Step::Token,
           Step::Route,
           Step::Dividend,
