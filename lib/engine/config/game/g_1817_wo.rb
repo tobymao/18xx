@@ -447,7 +447,12 @@ module Engine
       "distance": 3,
       "price": 250,
       "rusts_on": "6",
-      "num": 7
+      "num": 7,
+      "events": [
+        {
+          "type": "nieuw_zeeland_available"
+        }
+      ]
     },
     {
       "name": "4",
