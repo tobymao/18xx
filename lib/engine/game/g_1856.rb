@@ -262,7 +262,7 @@ module Engine
       end
 
       def can_par?(corporation, parrer)
-        corporation == national ? false : super
+        corporation == national ? national.ipoed : super
       end
 
       #
@@ -515,10 +515,15 @@ module Engine
         @stock_market.market[0].find { |p| p.price == market_price }
       end
 
+      def float_str(entity)
+        return 'Floats in phase 6' if entity == national
+
+        super
+      end
+
       def float_national
         national.float!
         @stock_market.set_par(national, calculate_national_price)
-        national.remove_ability(national.all_abilities.find { |a| a.type == :unparrable })
         national.ipoed = true
       end
 

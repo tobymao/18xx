@@ -529,10 +529,6 @@ module Engine
             "type": "train_limit",
             "description": "3 train limit",
             "increase": 100
-         },
-         {
-            "type": "unparrable",
-            "description": "Unavailable until nationalization"
          }
       ]
     }
