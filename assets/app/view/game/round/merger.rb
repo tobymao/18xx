@@ -43,7 +43,7 @@ module View
             children << h(Corporation, corporation: corporation)
             children << h(BuySellShares, corporation: corporation)
             children << h(Player, game: @game, player: entity) if entity.player?
-            return h(:div, children)
+            return h(:div, children.compact)
           end
 
           buttons = []

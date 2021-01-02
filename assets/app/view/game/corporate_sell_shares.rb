@@ -26,7 +26,7 @@ module View
               player: @entity,
               corporation: source,
               action: Engine::Action::CorporateSellShares),
-          ]
+        ].compact
         end
       end
     end

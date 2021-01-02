@@ -110,36 +110,36 @@ module View
 
             children = []
             children.concat(render_subsidiaries)
-            children << h(Corporation, corporation: corporation)
-            if @selected_corporation == corporation && @game.corporation_available?(corporation)
-              children << render_input
-            end
-            children << h(Choose) if @current_actions.include?('choose') && @step.choice_available?(corporation)
+
+            input = render_input(corporation) if @game.corporation_available?(corporation)
+            choose = h(Choose) if @current_actions.include?('choose') && @step.choice_available?(corporation)
+
+            children << h(Corporation, corporation: corporation, interactive: input || choose)
+            children << input if input && @selected_corporation == corporation
+            children << choose if choose
+
             h(:div, props, children)
           end.compact
         end
 
-        def render_input
+        def render_input(corporation)
           inputs = [
-            @selected_corporation.ipoed ? h(BuySellShares, corporation: @selected_corporation) : render_pre_ipo,
-            render_loan,
-            render_buy_tokens,
+            corporation.ipoed ? h(BuySellShares, corporation: corporation) : render_pre_ipo(corporation),
+            render_loan(corporation),
+            render_buy_tokens(corporation),
           ]
-          if @step.actions(@selected_corporation).include?('buy_shares')
-            inputs << h(IssueShares, entity: @selected_corporation)
-          end
-          h('div.margined_bottom', { style: { width: '20rem' } }, inputs.compact)
+          inputs << h(IssueShares, entity: corporation) if @step.actions(corporation).include?('buy_shares')
+          inputs = inputs.compact
+          h('div.margined_bottom', { style: { width: '20rem' } }, inputs) if inputs.any?
         end
 
-        def render_pre_ipo
-          type = @step.ipo_type(@selected_corporation)
+        def render_pre_ipo(corporation)
+          type = @step.ipo_type(@corporation)
           case type
           when :par
-            return h(Par, corporation: @selected_corporation) if @current_actions.include?('par')
+            return h(Par, corporation: corporation) if @current_actions.include?('par')
           when :bid
-            if @current_actions.include?('bid')
-              return h(Bid, entity: @current_entity, corporation: @selected_corporation)
-            end
+            return h(Bid, entity: @current_entity, corporation: corporation) if @current_actions.include?('bid')
           when String
             return h(:div, type)
           end
@@ -154,12 +154,12 @@ module View
           end
         end
 
-        def render_loan
-          return unless @step.actions(@selected_corporation).include?('take_loan')
+        def render_loan(corporation)
+          return unless @step.actions(corporation).include?('take_loan')
 
           take_loan = lambda do
             process_action(Engine::Action::TakeLoan.new(
-              @selected_corporation,
+              corporation,
               loan: @game.loans[0],
             ))
           end
@@ -167,12 +167,12 @@ module View
           h(:button, { on: { click: take_loan } }, 'Take Loan')
         end
 
-        def render_buy_tokens
-          return unless @step.actions(@selected_corporation).include?('buy_tokens')
+        def render_buy_tokens(corporation)
+          return unless @step.actions(corporation).include?('buy_tokens')
 
           buy_tokens = lambda do
             process_action(Engine::Action::BuyTokens.new(
-              @selected_corporation
+              corporation
             ))
           end
 
