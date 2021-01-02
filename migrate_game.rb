@@ -234,6 +234,7 @@ def attempt_repair(actions, debug)
       action = action.copy(game) if action.is_a?(Engine::Action::Base)
       begin
         game.process_action(action)
+        raise game.exception if game.exception
       rescue Exception => e
         puts e.backtrace if debug
         puts "Break at #{e} #{action}"
@@ -266,6 +267,7 @@ def migrate_data(data)
     data['actions'], repairs = attempt_repair(data['actions'], true) do
       engine = Engine::Game.load(data, actions: [])
       raise engine.exception if engine.exception
+      engine
     end
   rescue Exception => e
     puts 'Failed to fix :(', e
@@ -284,6 +286,7 @@ def migrate_db_actions_in_mem(data)
     actions, repairs = attempt_repair(original_actions) do
       engine = Engine::Game.load(data, actions: [])
       raise engine.exception if engine.exception
+      engine
     end
     puts repairs
     return actions || original_actions
@@ -304,6 +307,7 @@ def migrate_db_actions(data, pin, dry_run=false, delete=false, debug=false)
     actions, repairs = attempt_repair(original_actions, debug) do
       engine = Engine::Game.load(data, actions: [])
       raise engine.exception if engine.exception
+      engine
     end
     if actions && !dry_run
       if repairs
@@ -335,6 +339,7 @@ def migrate_db_actions(data, pin, dry_run=false, delete=false, debug=false)
     return actions || original_actions
   rescue Exception => e
     $broken[data.id]=true
+    puts e.backtrace if debug
     puts 'Something went wrong', e
     if !dry_run
       if pin
