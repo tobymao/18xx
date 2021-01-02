@@ -28,6 +28,7 @@ require_relative '../stock_market'
 require_relative '../tile'
 require_relative '../train'
 require_relative '../player_info'
+require_relative '../log'
 
 module Engine
   module Game
@@ -394,7 +395,7 @@ module Engine
         @loading = false
         @strict = strict
         @finished = false
-        @log = []
+        @log = Engine::Log.new(self)
         @queued_log = []
         @actions = []
         @disable_user_errors = disable_user_errors
