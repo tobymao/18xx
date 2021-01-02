@@ -91,7 +91,7 @@ module Engine
       def new_operating_round
         @or += 1
         @companies.each do |company|
-          company.value = COMPANY_VALUES[@or-1]
+          company.value = COMPANY_VALUES[@or - 1]
           company.min_price = 1
           company.max_price = company.value
         end
