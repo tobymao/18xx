@@ -24,6 +24,7 @@ module Engine
       MARKET_SHARE_LIMIT = 100
 
       def setup
+        # start with first minor tokens placed (as opposed to just reserved)
         @mine = @minors.find { |m| m.name == 'mine' }
         @minors.reject! { |m| m.name == 'mine' }.each do |minor|
           train = @depot.upcoming[0]
@@ -32,10 +33,13 @@ module Engine
           hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token)
         end
 
+        # Place all mine tokens and mark them as non-blocking
+        # route restrictions will be handled elsewhere
         @mine.coordinates.each do |coord|
           hex = hex_by_id(coord)
           hex.tile.cities[0].place_token(@mine, @mine.next_token)
         end
+        @mine.tokens.each { |t| t.type = :neutral }
       end
 
       def init_starting_cash(players, bank)
