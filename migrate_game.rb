@@ -8,6 +8,8 @@ Dir['./models/**/*.rb'].sort.each { |file| require file }
 Sequel.extension :pg_json_ops
 require_relative 'lib/engine'
 
+$broken = {}
+
 def switch_actions(actions, first, second)
   first_idx = actions.index(first)
   second_idx = actions.index(second)
@@ -48,6 +50,11 @@ def repair(game, original_actions, actions, broken_action)
     actions.insert(action_idx, pass.to_h)
     return
   elsif game.active_step.is_a?(Engine::Step::G1817::Acquire)
+    pass = Engine::Action::Pass.new(game.active_step.current_entity)
+    pass.user = pass.entity.player.id
+    actions.insert(action_idx, pass.to_h)
+    return
+  elsif game.active_step.is_a?(Engine::Step::BuySellParShares) && game.is_a?(Engine::Game::G1867) && broken_action['type']=='bid'
     pass = Engine::Action::Pass.new(game.active_step.current_entity)
     pass.user = pass.entity.player.id
     actions.insert(action_idx, pass.to_h)
@@ -211,7 +218,7 @@ def repair(game, original_actions, actions, broken_action)
   raise Exception, "Cannot fix http://18xx.games/game/#{game.id}?action=#{action}"
 end
 
-def attempt_repair(actions)
+def attempt_repair(actions, debug)
   repairs = []
   rewritten = false
   ever_repaired = false
@@ -228,7 +235,7 @@ def attempt_repair(actions)
       begin
         game.process_action(action)
       rescue Exception => e
-        puts e.backtrace
+        puts e.backtrace if debug
         puts "Break at #{e} #{action}"
         ever_repaired = true
         inplace_actions = repair(game, actions, filtered_actions, action)
@@ -256,7 +263,7 @@ end
 
 def migrate_data(data)
   begin
-    data['actions'], repairs = attempt_repair(data['actions']) do
+    data['actions'], repairs = attempt_repair(data['actions'], true) do
       engine = Engine::Game.load(data, actions: [])
       raise engine.exception if engine.exception
     end
@@ -288,13 +295,13 @@ def migrate_db_actions_in_mem(data)
   return original_actions
 end
 
-def migrate_db_actions(data, pin, dry_run=false)
-  raise Exception, "pin is not valid" unless pin
+def migrate_db_actions(data, pin, dry_run=false, delete=false, debug=false)
+  raise Exception, "pin is not valid" unless pin || delete
 
   original_actions = data.actions.map(&:to_h)
   engine = Engine::GAMES_BY_TITLE[data.title]
   begin
-    actions, repairs = attempt_repair(original_actions) do
+    actions, repairs = attempt_repair(original_actions, debug) do
       engine = Engine::Game.load(data, actions: [])
       raise engine.exception if engine.exception
     end
@@ -327,11 +334,19 @@ def migrate_db_actions(data, pin, dry_run=false)
     end
     return actions || original_actions
   rescue Exception => e
+    $broken[data.id]=true
     puts 'Something went wrong', e
     if !dry_run
-      puts "Pinning #{data.id} to #{pin}"
-      data.settings['pin']=pin
-      data.save
+      if pin
+        puts "Pinning #{data.id} to #{pin}"
+        data.settings['pin']=pin
+        data.save
+      elsif delete
+        puts "Deleting #{data.id}"
+        data.destroy
+      end
+    else
+      puts "Needs pinning #{data.id}"
     end
   end
   return original_actions
@@ -360,17 +375,17 @@ def migrate_db_to_json(id, filename)
   File.write(filename, JSON.pretty_generate(json))
 end
 
-def migrate_title(title, pin, dry_run=false)
+def migrate_title(title, pin, dry_run=false, delete = false, debug = false)
   DB[:games].order(:id).where(Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished], title: title).select(:id).paged_each(rows_per_fetch: 1) do |game|
     games = Game.eager(:user, :players, :actions).where(id: [game[:id]]).all
     games.each {|data|
-      migrate_db_actions(data, pin, dry_run)
+      migrate_db_actions(data, pin, dry_run, delete, debug)
     }
 
   end
 end
 
-def migrate_all(pin, dry_run=false, game_ids: nil)
+def migrate_all(pin, dry_run=false, delete = false, debug = false, game_ids: nil)
   where_args = {
     Sequel.pg_jsonb_op(:settings).has_key?('pin') => false,
     status: %w[active finished],
@@ -380,7 +395,7 @@ def migrate_all(pin, dry_run=false, game_ids: nil)
   DB[:games].order(:id).where(**where_args).select(:id).paged_each(rows_per_fetch: 1) do |game|
     games = Game.eager(:user, :players, :actions).where(id: [game[:id]]).all
     games.each {|data|
-      migrate_db_actions(data, pin, dry_run)
+      migrate_db_actions(data, pin, dry_run, delete, debug)
     }
 
   end

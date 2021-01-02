@@ -61,6 +61,9 @@ module Engine
                                             'majors_can_ipo' => ['Majors can be ipoed'],
                                             'minors_cannot_start' => ['Minors cannot start'],
                                             'minors_nationalized' => ['Minors are nationalized'],
+                                            'nationalize_companies' =>
+                                            ['Nationalize Companies',
+                                             'All companies close paying their owner their value'],
                                             'trainless_nationalization' =>
                                             ['Trainless Nationalization',
                                              'Operating Trainless Minors are nationalized'\
@@ -229,6 +232,8 @@ module Engine
           city = token.city
           token.remove!
 
+          next if city.tile.cities.any? { |c| c.tokened_by?(@cn_corporation) }
+
           new_token = @cn_corporation.next_token
           next unless new_token
 
@@ -248,6 +253,17 @@ module Engine
         else
           reset_corporation(corporation)
         end
+      end
+
+      def place_cn_montreal_token(tile)
+        return unless @cn_reservations.any?
+        return if tile.cities.any? { |c| c.tokened_by?(@cn_corporation) }
+        return unless (new_token = @cn_corporation.next_token)
+
+        @log << 'CN lays token on Montreal'
+        @cn_reservations.delete(tile.hex.id)
+        # Montreal only has the one city, given it should be reserved then next token should be valid
+        tile.cities.first.place_token(@cn_corporation, new_token, check_tokenable: false)
       end
 
       def revenue_for(route, stops)
@@ -364,6 +380,8 @@ module Engine
           Step::G1867::Token,
           Step::Route,
           Step::G1867::Dividend,
+          # The blocking buy company needs to be before loan operations
+          [Step::BuyCompany, blocks: true],
           Step::G1867::LoanOperations,
           Step::DiscardTrain,
           Step::G1867::BuyTrain,
@@ -531,6 +549,23 @@ module Engine
 
         @trainless_major = @trainless_major.sort.reverse
         @trainless_nationalization = false
+      end
+
+      def event_nationalize_companies!
+        @log << '-- Event: Private companies are nationalized --'
+
+        @companies.each do |company|
+          if (ability = abilities(company, :close))
+            next if ability.when == 'never' ||
+              @phase.phases.any? { |phase| ability.when == phase[:name] }
+          end
+
+          if company != @hidden_company
+            @bank.spend(company.value, company.owner)
+            @log << "#{company.name} nationalized from #{company.owner.name} for #{format_currency(company.value)}"
+          end
+          company.close!
+        end
       end
     end
   end

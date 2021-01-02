@@ -10,7 +10,7 @@ module Engine
         include PassableAuction
         TOKEN_COST = 50
         MIN_BID = 100
-        MAX_BID = 270
+        MAX_MINOR_PAR = 135
         MAJOR_PHASE = 4
 
         def actions(entity)
@@ -80,7 +80,7 @@ module Engine
           price = winner.price
 
           @log << "#{entity.name} wins bid on #{corporation.name} for #{@game.format_currency(price)}"
-          par_price = price / 2
+          par_price = [price / 2, MAX_MINOR_PAR].min
 
           share_price = @game.find_share_price(par_price)
 
@@ -97,6 +97,9 @@ module Engine
           entity.spend(price, corporation)
 
           @auctioning = nil
+
+          # Player to the right of the winner is the new player
+          @round.goto_entity!(winner.entity)
           pass!
         end
 
