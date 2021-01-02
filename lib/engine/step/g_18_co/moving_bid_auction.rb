@@ -162,14 +162,6 @@ module Engine
           end
         end
 
-        def accept_bid(bid)
-          price = bid.price
-          company = bid.company
-          player = bid.entity
-          @bids.delete(company)
-          buy_company(player, company, price)
-        end
-
         def add_bid(bid)
           company = bid.company || bid.corporation
           entity = bid.entity
