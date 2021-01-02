@@ -13,8 +13,8 @@ if [ ! -z "${bad_vars_msg}" ]; then
     exit 1
 fi
 
-CURRENT_VERSION=12.2
-NEW_VERSION=13.1
+CURRENT_VERSION=UPDATE_ME
+NEW_VERSION=UPDATE_ME
 
 DB_BACKUP=~/db.backup-pg${CURRENT_VERSION}
 echo DB_BACKUP=$DB_BACKUP
@@ -28,7 +28,7 @@ docker-compose exec db postgres --version | grep ${CURRENT_VERSION}
 # bring down server (and containers depending on it) to prevent anything new
 # going to the db; don't want anyone losing actions/games that were created
 # during the db dump
-docker-compose stop rack queue nginx
+docker-compose stop rack queue nginx || true
 
 # dump db
 pg_dump --host localhost --port 5433 --user ${POSTGRES_USER} --no-password --exclude-table schema_info --exclude-table message_bus --data-only --format t ${POSTGRES_DB} | gzip > ${DB_BACKUP}.gz
@@ -47,8 +47,8 @@ mkdir db/data
 docker-compose up --detach --build db
 
 # bring up rack and queue first to talk to the new db and set up their tables
-docker-compose up --detach rack
-docker-compose up --detach queue
+docker-compose up --detach --build rack
+docker-compose up --detach --build queue
 
 # restore db backup in postgres ${NEW_VERSION}
 gunzip -k -f ${DB_BACKUP}.gz
