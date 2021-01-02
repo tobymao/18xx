@@ -545,7 +545,7 @@ module Engine
             # warning adding more types of action here will break existing game
             filtered_actions[index] = action
           else
-            active_undos = []
+            active_undos.clear unless active_undos.empty?
             filtered_actions[index] = action
           end
         end
