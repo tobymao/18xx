@@ -22,6 +22,7 @@ module Engine
         '1817 Rules' => 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view',
       }.freeze
       GAME_DESIGNER = 'Mark Voyer & Brennan Sheremeto'
+      EVENTS_TEXT = G1817::EVENTS_TEXT.merge('nieuw_zeeland_available' => ['Nieuw Zealand opens for new IPOs'])
 
       def self.title
         '1817WO'
@@ -30,6 +31,15 @@ module Engine
       def setup
         super
         @new_zealand_city = hexes.find { |hex| hex.location_name == 'Nieuw Zeeland' }.tile.cities[0]
+        # Put an 1867 style green token in the New Zealand hex
+        @green_token = Token.new(nil, price: 0, logo: '/logos/1817/nz.svg', type: :neutral)
+        @new_zealand_city.exchange_token(@green_token)
+      end
+
+      def event_nieuw_zeeland_available!
+        # Remove the 1867-style green token from the New Zealand hex
+        @log << 'Corporations can now be IPOed in Nieuw Zeeland'
+        @green_token.amp(&:remove!)
       end
 
       # Not genericifying 1817's loan logic just so it can be kept simpler, at least for now
