@@ -429,7 +429,7 @@ module Engine
         @national_formed = true
         @log << "-- #{major.name} merges into #{national.name} --"
         # Trains are transferred
-        major.trains.clone.each do |t|
+        major.trains.dup.each do |t|
           national.buy_train(t, :free)
         end
         # Leftover cash is transferred
@@ -617,7 +617,7 @@ module Engine
         # Other tokens second, ignoring duplicates from the home token set
         @nationalized_corps.each do |corp|
           corp.tokens.each do |token|
-            next if token.city.nil? || home_bases.include?(token.city.hex)
+            next if !token.city || home_bases.include?(token.city.hex)
 
             remove_duplicate_tokens(corp)
             replace_token(corp, token, create_national_token)
@@ -680,7 +680,7 @@ module Engine
       # Convert the home token of the corporation to one of the national's
       # Return the nationalized corps home hex
       def nationalize_home_token(corp, token)
-        if token.nil?
+        unless token
           # Why would this ever happen?
           @log << "#{national.name} is out of tokens and does not get a token for #{corp.name}'s home"
           return
