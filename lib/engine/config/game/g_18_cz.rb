@@ -21,7 +21,7 @@ module Engine
                 "6": 9
             },
             "startingCash": {
-                "3": 350,
+                "3": 380,
                 "4": 300,
                 "5": 250,
                 "6": 210
@@ -497,7 +497,7 @@ module Engine
                 {
                     "float_percent": 50,
                     "sym": "Ug",
-                    "name": "ungar. Staatsbahn",
+                    "name": "Ungarische Staatsbahn",
                     "logo": "18_cz/Ug",
                     "max_ownership_percent": 60,
                     "tokens": [
