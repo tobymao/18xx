@@ -8,14 +8,25 @@ module View
       include Actionable
 
       def render
-        action = lambda do
-          process_action(Engine::Action::Undo.new(@game.current_entity, action_id: @game.round.turn_start))
+        button_text = nil
+        turn_start = nil
+        if @game.turn_start != @game.last_game_action
+          button_text = 'Restart Turn'
+          turn_start = @game.turn_start
+        else
+          button_text = 'Restart Last Turn'
+          turn_start = @game.last_turn_start
         end
-        h('button', { on: { click: action }, attrs: { disabled: button_disabled? } }, 'Restart Turn')
+
+        action = lambda do
+          process_action(Engine::Action::Undo.new(@game.current_entity, action_id: turn_start))
+        end
+
+        h('button', { on: { click: action }, attrs: { disabled: button_disabled? } }, button_text)
       end
 
       def button_disabled?
-        !@game.undo_possible || !@game.round.turn_start || @game.round.turn_start == @game.last_game_action
+        !@game.undo_possible || !@game.turn_start
       end
     end
   end

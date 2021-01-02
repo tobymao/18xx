@@ -71,7 +71,7 @@ module Engine
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
-                  :optional_rules, :exception, :last_processed_action
+                  :optional_rules, :exception, :last_processed_action, :turn_start, :last_turn_start
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -398,6 +398,8 @@ module Engine
         @log = Engine::Log.new(self)
         @queued_log = []
         @actions = []
+        @turn_start = 0
+        @last_turn_start = 0
         @disable_user_errors = disable_user_errors
         @exception = nil
         @names = if names.is_a?(Hash)
@@ -629,6 +631,11 @@ module Engine
         @last_processed_action = action.id
 
         self
+      end
+
+      def next_turn
+        @last_turn_start = @turn_start
+        @turn_start = current_action_id
       end
 
       def store_player_info
