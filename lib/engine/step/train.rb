@@ -135,10 +135,9 @@ module Engine
       end
 
       def buyable_train_variants(train, entity)
-        return [] unless buyable_trains(entity).include?(train)
+        return [] unless train_among_buyable?(entity, train)
 
         variants = train.variants.values
-
         return variants if train.owned_by_corporation?
 
         variants.reject! { |v| entity.cash < v[:price] } if must_issue_before_ebuy?(entity)
@@ -193,6 +192,11 @@ module Engine
       def face_value_ability?(entity)
         @game.abilities(entity, :train_buy) { |ability| return ability.face_value }
         false
+      end
+
+      def train_among_buyable?(entity, train)
+        candidates = buyable_trains(entity)
+        candidates.include?(train) || candidates.any? { |c| c.variants.keys.include?(train.name) }
       end
     end
   end
