@@ -34,7 +34,7 @@ module View
         top_line = h(:div, top_line_props, [
           h(Bank, game: @game),
           h(GameInfo, game: @game, layout: 'upcoming_trains'),
-        ])
+        ].compact)
 
         children << top_line
         children << render_table
