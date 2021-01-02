@@ -214,7 +214,7 @@ module Engine
       end
 
       def purchasable_unsold_companies
-        @game.companies.reject(&:owner)
+        @game.companies.reject(&:owner).reject(&:closed?)
       end
 
       def get_par_prices(entity, _corp)
