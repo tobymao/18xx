@@ -303,8 +303,12 @@ module View
         order_props = { style: { paddingLeft: '1.2em' } }
         operating_order_text = ''
         if operating_order.positive?
-          corporation.operating_history.each do |history|
-            operating_order_text = "#{operating_order}#{history[0] == current_round ? '*' : ''}"
+          if corporation.operated?
+            corporation.operating_history.each do |history|
+              operating_order_text = "#{operating_order}#{history[0] == current_round ? '*' : ''}"
+            end
+          else
+            operating_order_text = operating_order.to_s
           end
         end
 
