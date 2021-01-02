@@ -11,6 +11,7 @@ module View
     needs :game_row_games
     needs :user
     needs :type
+    needs :title, default: nil
 
     LIMIT = 12
 
@@ -26,8 +27,8 @@ module View
       children = [h(:h2, header)]
       p = page.to_i
       @offset = @type == :hotseat ? (p * @limit) : 0
-      children << render_more('Prev', "?#{@type}=#{p - 1}") if p.positive?
-      children << render_more('Next', "?#{@type}=#{p + 1}") if @game_row_games.size > @offset + @limit
+      children << render_more('Prev', page_params(p - 1)) if p.positive?
+      children << render_more('Next', page_params(p + 1)) if @game_row_games.size > @offset + @limit
 
       props = {
         style: {
@@ -39,6 +40,14 @@ module View
       }
 
       h('div.card_header', props, children)
+    end
+
+    def page_params(page)
+      params = {}
+      params[@type] = page
+      params[:title] = @title if @title
+
+      "?#{params.map { |k, v| "#{k}=#{v}" }.join('&')}"
     end
 
     def render_more(text, params)

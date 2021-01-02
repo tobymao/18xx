@@ -16,6 +16,7 @@ class Game < Base
       SELECT *
       FROM games
       WHERE status = '%<status>s'
+        AND title ~ :title
       ORDER BY created_at DESC
       LIMIT #{QUERY_LIMIT}
       OFFSET :%<status>s_offset * #{QUERY_LIMIT - 1}
@@ -32,6 +33,7 @@ class Game < Base
       WHERE g.status = '%<status>s'
         AND ug.id IS NULL
         AND NOT (g.status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
+        AND title ~ :title
       ORDER BY g.created_at DESC
       LIMIT #{QUERY_LIMIT}
       OFFSET :%<status>s_offset * #{QUERY_LIMIT - 1}
@@ -53,6 +55,7 @@ class Game < Base
         ON g.id = ug.id
       WHERE ug.id IS NOT NULL
         OR g.user_id = :user_id
+        AND title ~ :title
       ORDER BY g.id DESC
       LIMIT 1000
     ) personal_games
@@ -80,12 +83,14 @@ class Game < Base
 
   def self.home_games(user, **opts)
     opts = {
-      new_offset: opts['new'],
-      active_offset: opts['active'],
-      finished_offset: opts['finished'],
-    }.transform_values { |v| v&.to_i || 0 }
+      new_offset: opts['new'].to_i || 0,
+      active_offset: opts['active'].to_i || 0,
+      finished_offset: opts['finished'].to_i || 0,
+      title: opts['title'] ? "^#{opts['title']}$" : '.*',
+    }
 
     opts[:user_id] = user.id if user
+
     fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **opts,).all.sort_by(&:id).reverse
   end
 

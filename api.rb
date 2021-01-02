@@ -100,6 +100,11 @@ class Api < Roda
       render_with_games
     end
 
+    r.on 'title', String do |title|
+      request.params['title'] = title
+      render(pin: request.params['pin'], games: Game.home_games(user, **request.params).map(&:to_h))
+    end
+
     r.on 'game', Integer do |id|
       halt(404, 'Game not found') unless (game = Game[id])
 

@@ -109,6 +109,35 @@ describe 'Assets' do
       end
     end
 
+    context '/title' do
+      {
+        '1846' => [
+          'GMT Games',
+          'Golden Spike Games',
+          'Designed by Thomas Lehmann',
+          'Rules',
+          'Sample Market',
+          'Sample Map',
+        ],
+        '18CO' => [
+          'Ryan Driskel',
+          'Rules',
+          'Sample Market',
+          'Sample Map',
+        ],
+      }.each do |game_title, expected_strings|
+        context game_title do
+          it 'renders title' do
+            rendered = render(app_route: "/title/#{game_title}")
+
+            aggregate_failures 'expected strings' do
+              expected_strings.each { |s| expect(rendered).to include(s) }
+            end
+          end
+        end
+      end
+    end
+
     it 'renders new_game' do
       expect(render(app_route: '/new_game')).to include('Create New Game')
     end

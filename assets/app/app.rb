@@ -10,6 +10,7 @@ require 'view/create_game'
 require 'view/invite_game'
 require 'view/home'
 require 'view/confirm'
+require 'view/title_page'
 require 'view/flash'
 require 'view/game_page'
 require 'view/map_page'
@@ -76,6 +77,8 @@ class App < Snabberb::Component
         h(View::MapPage, route: @app_route)
       when /market/
         h(View::MarketPage, route: @app_route)
+      when /title/
+        h(View::TitlePage, route: @app_route, user: @user)
       else
         h(View::Home, user: @user)
       end
