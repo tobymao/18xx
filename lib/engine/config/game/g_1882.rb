@@ -467,7 +467,10 @@ module Engine
       "name": "6",
       "distance": 6,
       "price": 630,
-      "num": 3
+      "num": 3,
+      "events": [
+        {"type": "close_remaining_companies"}
+      ]
     },
     {
       "name": "D",

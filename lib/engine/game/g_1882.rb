@@ -31,6 +31,10 @@ module Engine
       TRACK_RESTRICTION = :permissive
       DISCARDED_TRAINS = :remove
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'close_companies' => ['Most Companies Close',
+                              'Private companies (except Saskatchewan Central) are removed from the game'],
+        'close_remaining_companies' => ['Saskatchewan Central Closes',
+                                        'Saskatchewan Central is removed from the game'],
         'nwr' => ['North West Rebellion',
                   'Remove all yellow tiles from NWR-marked hexes. Station markers remain']
       ).freeze
