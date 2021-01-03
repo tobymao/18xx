@@ -429,7 +429,7 @@ module Engine
     {
       "float_percent": 20,
       "sym": "PRR",
-      "name": "Pennsylvania",
+      "name": "Pennsylvania Railroad",
       "logo": "1846/PRR",
       "tokens": [
         0,
@@ -455,7 +455,7 @@ module Engine
         }
       ],
       "coordinates": "F20",
-      "color": "red",
+      "color": "#FF0000",
       "always_market_price": true
     },
     {
@@ -517,14 +517,14 @@ module Engine
         80
       ],
       "coordinates": "I15",
-      "color": "lightBlue",
+      "color": "#ADD8E6",
       "text_color": "black",
       "always_market_price": true
     },
     {
       "float_percent": 20,
       "sym": "ERIE",
-      "name": "Erie",
+      "name": "Erie Railroad",
       "logo": "1846/ERIE",
       "tokens": [
         0,
@@ -550,7 +550,7 @@ module Engine
         }
       ],
       "coordinates": "E21",
-      "color": "yellow",
+      "color": "#FFF500",
       "text_color": "black",
       "always_market_price": true
     },
