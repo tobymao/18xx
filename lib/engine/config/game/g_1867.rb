@@ -780,8 +780,17 @@ module Engine
       "events": [
         {"type": "signal_end_game"},
         {"type": "minors_nationalized"},
-        {"type": "trainless_nationalization"}
-      ]
+        {"type": "trainless_nationalization"},
+        {"type": "train_trade_allowed"}
+      ],
+      "discount": {
+        "5": 275,
+        "6": 325,
+        "7": 400,
+        "8": 500,
+        "2+2": 300,
+        "5+5E": 750
+      }
     },
     {
       "name": "2+2",
@@ -800,7 +809,15 @@ module Engine
       "multiplier":2,
       "price": 600,
       "num": 20,
-      "available_on": "8"
+      "available_on": "8",
+      "discount": {
+        "5": 275,
+        "6": 325,
+        "7": 400,
+        "8": 500,
+        "2+2": 300,
+        "5+5E": 750
+      }
     },
     {
       "name": "5+5E",
@@ -819,7 +836,15 @@ module Engine
       "multiplier": 2,
       "price": 1500,
       "num": 20,
-      "available_on": "8"
+      "available_on": "8",
+      "discount": {
+        "5": 275,
+        "6": 325,
+        "7": 400,
+        "8": 500,
+        "2+2": 300,
+        "5+5E": 750
+      }
     }
   ],
   "hexes": {

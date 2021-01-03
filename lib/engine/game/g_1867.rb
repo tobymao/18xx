@@ -64,6 +64,9 @@ module Engine
                                             'nationalize_companies' =>
                                             ['Nationalize Companies',
                                              'All companies close paying their owner their value'],
+                                            'train_trade_allowed' =>
+                                            ['Train trade in allowed',
+                                             'Trains can be traded in for 50% towards Phase 8 trains'],
                                             'trainless_nationalization' =>
                                             ['Trainless Nationalization',
                                              'Operating Trainless Minors are nationalized'\
@@ -507,6 +510,10 @@ module Engine
         # Done elsewhere
       end
 
+      def event_train_trade_allowed!
+        # No-op
+      end
+
       def event_minors_cannot_start!
         @corporations, removed = @corporations.partition do |corporation|
           corporation.owned_by_player? || corporation.type != :minor
@@ -555,6 +562,8 @@ module Engine
         @log << '-- Event: Private companies are nationalized --'
 
         @companies.each do |company|
+          next if company.closed?
+
           if (ability = abilities(company, :close))
             next if ability.when == 'never' ||
               @phase.phases.any? { |phase| ability.when == phase[:name] }
