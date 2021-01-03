@@ -22,7 +22,9 @@ module View
           process_action(Engine::Action::Undo.new(@game.current_entity, action_id: turn_start))
         end
 
-        h('button', { on: { click: action }, attrs: { disabled: button_disabled? } }, button_text)
+        h('button',
+          { style: { marginTop: :inherit }, on: { click: action }, attrs: { disabled: button_disabled? } },
+          button_text)
       end
 
       def button_disabled?

@@ -251,19 +251,17 @@ module View
     def render_action
       return h(Game::GameEnd) if @game.finished
 
-      entity = @round.active_step.current_entity
-      current_actions = @round.actions_for(entity) || []
-      return h(Game::DiscardTrains) if current_actions.include?('discard_train')
+      return h(Game::DiscardTrains) if current_entity_actions.include?('discard_train')
 
       case @round
       when Engine::Round::Stock
-        if (%w[place_token lay_tile remove_token] & current_actions).any?
+        if (%w[place_token lay_tile remove_token] & current_entity_actions).any?
           h(Game::Map, game: @game)
         else
           h(Game::Round::Stock, game: @game)
         end
       when Engine::Round::Operating
-        if current_actions.include?('merge')
+        if current_entity_actions.include?('merge')
           h(Game::Round::Merger, game: @game)
         else
           h(Game::Round::Operating, game: @game)
@@ -283,13 +281,17 @@ module View
       h('div.game', [
         render_round,
         h(Game::GameLog, user: @user),
-        h(Game::HistoryControls, num_actions: @num_actions),
+        h(Game::HistoryAndUndo, num_actions: @num_actions),
         h(Game::EntityOrder, round: @round),
         h(Game::Abilities, user: @user, game: @game),
-        h(Game::UndoAndPass, before_process_pass: @before_process_pass),
+        h(Game::Pass, before_process_pass: @before_process_pass, actions: current_entity_actions),
         h(Game::Help, game: @game),
         render_action,
       ])
+    end
+
+    def current_entity_actions
+      @current_entity_actions ||= @game.round.actions_for(@game.round.active_step&.current_entity) || []
     end
   end
 end

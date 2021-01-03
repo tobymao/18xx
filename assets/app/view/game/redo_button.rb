@@ -9,7 +9,9 @@ module View
 
       def render
         action = -> { process_action(Engine::Action::Redo.new(@game.current_entity)) }
-        h(:button, { on: { click: action }, attrs: { disabled: !@game.redo_possible } }, 'Redo')
+        h(:button,
+          { style: { marginTop: :inherit }, on: { click: action }, attrs: { disabled: !@game.redo_possible } },
+          'Redo')
       end
     end
   end
