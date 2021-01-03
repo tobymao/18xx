@@ -21,7 +21,7 @@ module Engine
           return ['merge'] if @converting || @merge_major
 
           actions << 'merge' if can_merge?(entity)
-          actions << 'convert' if can_convert?(entity)
+          actions << 'convert' if !@merging && can_convert?(entity)
           actions << 'pass' if actions.any?
           actions
         end
