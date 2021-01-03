@@ -6,7 +6,7 @@ require 'engine'
 require 'spec_helper'
 
 def game_at_action(game_file, action_id = nil)
-  Engine::Game.load(game_file, at_action: action_id)
+  Engine::Game.load(game_file, at_action: action_id).maybe_raise!
 end
 
 module Engine
