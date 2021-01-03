@@ -16,11 +16,9 @@ module Engine
 
       GAME_LOCATION = 'Austria-Hungary'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/188242/1824-english-rules'
-      # "rules": "https://drive.google.com/file/d/1JuaUSU6fqg6fryN7l_g_r_oFa41rz3zh/view?usp=sharing"
       GAME_DESIGNER = 'Leonhard Orgler & Helmut Ohley'
-      # GAME_PUBLISHER Fox in the Box
-      # GAME_INFO_URL
-      # "bgg": "https://boardgamegeek.com/boardgame/277030/1824-austrian-hungarian-railway-second-edition",
+      GAME_PUBLISHER = :lonny_games
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1824'
       GAME_END_CHECK = { bankrupt: :immediate }.freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -57,7 +55,13 @@ module Engine
 
       def init_optional_rules(optional_rules)
         opt_rules = super
-        validate_optional_rules(opt_rules)
+
+        # 2 player variant always use the Cisleithania map
+        opt_rules << :cisleithania if @players.size == 2 && !opt_rules.include?(:cisleithania)
+
+        # Good Time variant is not applicable if Cisleithania is used
+        opt_rules -= [:goods_time] if opt_rules.include?(:cisleithania)
+
         opt_rules
       end
 
@@ -228,7 +232,7 @@ module Engine
       end
 
       def validate_optional_rules(optional_rules)
-        if optional_rules&.include?(:cisleithania)
+        if optional_rules&.include?(:cisleithania )
           raise GameError 'Cisleithania optional rule is for 2-3 players' if @players.size > 3
           raise GameError 'Cannot use Cisleithania and Goods Time at the same time' if option_goods_time
         elsif @players.size < 3
