@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 # File original copied from g_1817.rb
-# There is no 18xx-maker for this AFAIK -ventusignis
+# There is no 18xx-maker for this AFAIK
 
-# City hex lists are separated into two rows:
-# Row 1 are the subsidized cities
-# Row 2 are the unsubidized cities
+# rubocop:disable Lint/RedundantCopDisableDirective, Layout/LineLength, Layout/HeredocIndentation
 
 module Engine
   module Config
@@ -747,7 +745,6 @@ module Engine
       "offboard=revenue:yellow_0;path=a:2,b:_0": [
         "J20"
       ],
-      
       "offboard=revenue:yellow_0,groups:Mexico;path=a:2,b:_0;path=a:3,b:_0;border=edge:4": [
         "I5"
       ],
@@ -802,7 +799,7 @@ module Engine
       ],
       "icon=image:oil-derrick": [
         "G15",
-        "H4", 
+        "H4",
         "I17", "I21", "I23",
         "J14"
       ],
