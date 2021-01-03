@@ -43,6 +43,9 @@ module Engine
 
       @halts += 1
       @halts = 0 if @halts > @game.max_halts(self)
+      @revenue = nil
+      @revenue_str = nil
+      @subsidy = nil
       @stops = nil
     end
 
@@ -129,6 +132,9 @@ module Engine
       else
         @last_node = node
       end
+      @revenue = nil
+      @revenue_str = nil
+      @subsidy = nil
       @stops = nil
     end
 
