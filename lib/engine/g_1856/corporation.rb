@@ -47,10 +47,6 @@ module Engine
         CAPITALIZATION_STRS[@capitalization || _capitalization_type]
       end
 
-      def total_shares
-        @all_shares.count + 1 # 1 "share" in the @all_shares is the 2 share president's cert
-      end
-
       # This is invoked BEFORE the share is moved out of the corporation
       def escrow_share_buy!
         # Take in money normally when buying the first 50% of stock
