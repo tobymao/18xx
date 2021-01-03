@@ -3,6 +3,10 @@
 # File original copied from g_1817.rb
 # There is no 18xx-maker for this AFAIK -ventusignis
 
+# City hex lists are separated into two rows:
+# Row 1 are the subsidized cities
+# Row 2 are the unsubidized cities
+
 module Engine
   module Config
     module Game
@@ -33,32 +37,46 @@ module Engine
   "layout": "pointy",
   "mustSellInBlocks": false,
   "locationNames": {
-    "A20": "Montréal",
-    "A28": "Maritime Prov.",
-    "B5": "Lansing",
-    "B13": "Toronto",
-    "B17": "Rochester",
-    "C8": "Detroit",
-    "C14": "Buffalo",
-    "C22": "Albany",
-    "C26": "Boston",
-    "D1": "Chicago",
-    "D7": "Toledo",
-    "D9": "Cleveland",
-    "D19": "Scranton",
-    "E22": "New York",
-    "F3": "Indianapolis",
-    "F13": "Pittsburgh",
-    "F19": "Philadelphia",
-    "G6": "Cincinnati",
-    "G18": "Baltimore",
-    "H1": "St. Louis",
-    "H3": "Louisville",
-    "H9": "Charleston",
-    "I12": "Blacksburg",
-    "I16": "Richmond",
-    "J7": "Atlanta",
-    "J15": "Raleigh-Durham"
+    "A15": "Winnipeg",
+    "A27": "Montreal",
+    "B2": "Seattle",
+    "B8": "Helena",
+    "B14": "Fargo",
+    "C3": "Portland",
+    "C17": "Minneapolis",
+    "C23": "Detroit",
+    "C25": "Toronto",
+    "C29": "Boston",
+    "D6": "Boise",
+    "D14": "Omaha",
+    "D20": "Chicago",
+    "D24": "Cleveland",
+    "D28": "New York City",
+    "E1": "San Francisco",
+    "E3": "Sacramento",
+    "E7": "Salt Lake City",
+    "E11": "Denver",
+    "E15": "Kansas City",
+    "E17": "St. Louis",
+    "E23": "Columbus",
+    "F20": "Louisville",
+    "F26": "Baltimore",
+    "G3": "Los Angeles",
+    "G7": "Pheonix",
+    "G11": "Santa Fe",
+    "G17": "Memphis",
+    "G27": "Norfolk",
+    "H8": "Tucson",
+    "H14": "Dallas-Fort Worth",
+    "H20": "Birmingham",
+    "H22": "Atlanta",
+    "I13": "San Antonio",
+    "I15": "Houston",
+    "I19": "New Orelans",
+    "I25": "Jacksonville",
+    "J20": "Port of New Orleans",
+    "J24": "Florida",
+    "I9": "Mexico"
   },
   "tiles": {
     "5": "unlimited",
@@ -760,153 +778,146 @@ module Engine
   ],
   "hexes": {
     "red": {
-      "offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:5,b:_0;path=a:0,b:_0": [
-        "A20"
+      "offboard=revenue:yellow_0;path=a:5,b:_0;path=a:0,b:_0": [
+        "A27"
       ],
-      "offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:0,b:_0": [
-        "A28"
+      "offboard=revenue:yellow_0;path=a:2,b:_0": [
+        "J20"
       ],
-      "offboard=revenue:yellow_30|green_50|brown_60|gray_80;path=a:4,b:_0;path=a:5,b:_0": [
-        "D1"
+      
+      "offboard=revenue:yellow_0,groups:Mexico;path=a:2,b:_0;path=a:3,b:_0;border=edge:4": [
+        "I5"
       ],
-      "offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
-        "H1"
+      "offboard=revenue:yellow_0,groups:Mexico;path=a:2,b:_0;path=a:3,b:_0;border=edge:4;border=edge:1": [
+        "I7", "I9"
       ],
-      "offboard=revenue:yellow_30|green_50|brown_60|gray_80;path=a:2,b:_0;path=a:3,b:_0": [
-        "J7"
+      "offboard=revenue:yellow_0,groups:Mexico;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;border=edge:5": [
+        "I11"
       ],
-      "offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:2,b:_0;path=a:3,b:_0": [
-        "J15"
+      "offboard=revenue:yellow_0,groups:Mexico;path=a:3,b:_0;border=edge:2;border=edge:5": [
+        "J12"
+      ],
+      "offboard=revenue:yellow_0,groups:Mexico;path=a:3,b:_0;border=edge:2": [
+        "K13"
       ]
     },
     "white": {
       "city=revenue:0": [
-        "B5",
-        "B17",
-        "C14",
-        "C22",
-        "F3",
-        "F13",
-        "F19",
-        "I16"
+        "E11", "G3", "H14", "I15", "H20", "H22", "F26", "C29", "D24"
       ],
-      "city=revenue:0;upgrade=cost:20,terrain:lake": [
-        "D7"
-      ],
-      "city=revenue:0;upgrade=cost:15,terrain:mountain": [
-        "D19",
-        "I12"
+      "city=revenue:0;icon=image:18_ms/coins": [
+        "D6", "E3", "E7", "G7", "G11", "H8", "I13", "I25", "G27", "E23"
       ],
       "city=revenue:0;upgrade=cost:10,terrain:water": [
-        "G6",
-        "H3",
-        "H9"
+        "C3", "D14",
+        "C17", "E15", "E17", "F20", "G17", "I19"
       ],
       "upgrade=cost:15,terrain:mountain": [
-        "B25",
-        "C20",
-        "C24",
-        "E16",
-        "E18",
-        "F15",
-        "G12",
-        "G14",
-        "H11",
-        "H13",
-        "H15",
-        "I8",
-        "I10"
+        "B28",
+        "C27",
+        "F4",
+        "G5", "G23"
       ],
       "upgrade=cost:10,terrain:water": [
-        "D13",
-        "E12",
-        "F11",
-        "G4",
-        "G10",
-        "H7"
+        "D18",
+        "E21",
+        "F18",
+        "H18"
       ],
       "upgrade=cost:20,terrain:lake": [
-        "B9",
-        "B27",
-        "D25",
-        "D27",
-        "G20",
-        "H17"
+        "B22"
+      ],
+      "upgrade=cost:15,terrain:mountain;icon=image:mine": [
+        "C7",
+        "E9",
+        "G21"
+      ],
+      "icon=image:mine": [
+        "D16",
+        "E5",
+        "H6"
+      ],
+      "icon=image:oil-derrick": [
+        "G15",
+        "H4", 
+        "I17", "I21", "I23",
+        "J14"
+      ],
+      "icon=image:coalcar": [
+        "E19",
+        "F16"
+      ],
+      "upgrade=cost:15,terrain:mountain;icon=image:coalcar": [
+        "C9",
+        "D8", "D10", "D26",
+        "E25",
+        "F8", "F10", "F22", "F24"
+      ],
+      "icon=image:18_usa/gnr": [
+        "B16", "B18"
+      ],
+      "icon=image:18_usa/gnr;icon=image:mine": [
+        "C19"
+      ],
+      "icon=image:18_usa/gnr;icon=image:coalcar;icon=image:mine": [
+        "B10"
+      ],
+      "icon=image:18_usa/gnr;icon=image:coalcar;icon=image:oil-derrick": [
+        "B12"
+      ],
+      "icon=image:18_usa/gnr;city=revenue:0": [
+        "D20"
+      ],
+      "icon=image:18_usa/gnr;city=revenue:0;icon=image:18_ms/coins": [
+        "B8", "B14"
+      ],
+      "icon=image:18_usa/gnr;upgrade=cost:15,terrain:mountain;icon=image:coalcar": [
+        "B6"
+      ],
+      "icon=image:18_usa/gnr;upgrade=cost:10,terrain:water": [
+        "B4"
       ],
       "": [
-        "B3",
-        "B7",
-        "B11",
-        "B15",
-        "B19",
-        "B21",
-        "B23",
-        "C4",
-        "C6",
-        "C16",
-        "C18",
-        "D3",
-        "D5",
-        "D15",
-        "D17",
-        "D21",
-        "D23",
-        "E2",
-        "E4",
-        "E6",
-        "E8",
-        "E10",
-        "E14",
-        "E20",
-        "F5",
-        "F7",
-        "F9",
-        "F17",
-        "F21",
-        "G2",
-        "G8",
-        "G16",
-        "H5",
-        "I2",
-        "I4",
-        "I6",
-        "I14"
-      ],
-      "border=edge:5,type:impassable": [
-        "C10"
-      ],
-      "border=edge:2,type:impassable": [
-        "D11"
+        "B20", "B26",
+        "C5", "C11", "C13", "C15",
+        "D2", "D4", "D12", "D22",
+        "E13", "E27",
+        "F2", "F6", "F12", "F14",
+        "G9", "G13", "G19", "G25",
+        "H10", "H12", "H16", "H24", "H26"
       ]
     },
     "gray": {
-      "town=revenue:yellow_20|green_30|brown_40;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
-        "B13"
+      "town=revenue:yellow_0;path=a:0,b:_0;path=a:5,b:_0": [
+        "A15"
       ],
-      "city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:5,b:_0;path=a:0,b:_0": [
-        "D9"
+      "town=revenue:yellow_0;path=a:4,b:_0;path=a:5,b:_0": [
+        "B2"
       ],
-      "junction;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0": [
-        "F1"
+      "town=revenue:yellow_0;path=a:2,b:_0;path=a:3,b:_0": [
+        "J24"
+      ],
+      "town=revenue:yellow_0;path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0": [
+        "E1"
+      ],
+      "path=a:1,b:0": [
+        "B30"
+      ],
+      "town=revenue:yellow_30|green_40|brown_50|gray_60;path=a:4,b:_0;path=a:2,b:_0;path=a:0,b:_0": [
+        "C23"
+      ],
+      "town=revenue:yellow_20|green_30|brown_40|gray_50;path=a:1,b:_0;path=a:5,b:_0;path=a:3,b:_0": [
+        "C25"
       ]
     },
     "yellow": {
-      "city=revenue:30;path=a:4,b:_0;path=a:0,b:_0;label=B;upgrade=cost:20,terrain:lake": [
-        "C8"
-      ],
-      "city=revenue:30;path=a:3,b:_0;path=a:5,b:_0;label=B": [
-        "C26"
-      ],
-      "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_1;label=NY;upgrade=cost:20,terrain:lake": [
-        "E22"
-      ],
-      "city=revenue:30;path=a:4,b:_0;path=a:0,b:_0;label=B": [
-        "G18"
+      "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;path=a:3,b:_0;label=NY": [
+        "D28"
       ]
     },
     "blue": {
       "": [
-        "C12"
+        "B24", "C21"
       ]
     }
   },
