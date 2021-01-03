@@ -95,6 +95,11 @@ module Engine
         revenue += 20 if route.corporation.assigned?(port.id) && stops.any? { |stop| stop.hex.assigned?(port.id) }
 
         # TODO: Add bridge and tunnel private revenue modifiers
+        route.corporation.companies.each do |company|
+          abilities(company, :hex_bonus) do |ability|
+            revenue += stops.map { |s| s.hex.id }.uniq&.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
+          end
+        end
 
         revenue
       end
