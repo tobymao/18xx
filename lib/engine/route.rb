@@ -26,16 +26,11 @@ module Engine
     end
 
     def reset!
-      @connection_hexes = nil
-      @hexes = nil
-      @revenue = nil
-      @revenue_str = nil
-      @subsidy = nil
-      @halts = nil
+      clear_cache!
 
+      @halts = nil
       @connection_data = nil
       @last_node = nil
-      @stops = nil
     end
 
     def cycle_halts
@@ -43,7 +38,7 @@ module Engine
 
       @halts += 1
       @halts = 0 if @halts > @game.max_halts(self)
-      @stops = nil
+      clear_cache!
     end
 
     def head
@@ -129,7 +124,8 @@ module Engine
       else
         @last_node = node
       end
-      @stops = nil
+
+      clear_cache!
     end
 
     def paths
@@ -254,6 +250,15 @@ module Engine
     end
 
     private
+
+    def clear_cache!
+      @connection_hexes = nil
+      @hexes = nil
+      @revenue = nil
+      @revenue_str = nil
+      @subsidy = nil
+      @stops = nil
+    end
 
     def find_connections(connections_a, connections_b, other_paths)
       connections_a = connections_a.select { |a| (a.paths & other_paths).empty? }
