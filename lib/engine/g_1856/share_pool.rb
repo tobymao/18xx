@@ -131,6 +131,10 @@ module Engine
 
         presidents_share = bundle.presidents_share || previous_president.shares_of(corporation).find(&:president)
 
+        # Bail out if there is no president's share in the prior president's bundle.
+        # This happens during 1856 nationalization sometimes
+        return unless presidents_share
+
         # take two shares away from the current president and give it to the
         # previous president if they haven't sold the president's share
         # give the president the president's share

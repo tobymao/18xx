@@ -90,6 +90,7 @@ class Api
                 r.params['user'] = user.id
 
                 engine = engine.process_action(r.params)
+                halt(500, "Illegal action #{engine.exception}") if engine.exception
                 action = engine.actions.last.to_h
 
                 Action.create(

@@ -32,7 +32,7 @@ module Engine
                       brown: '#7b352a')
 
       load_from_json(Config::Game::G1856::JSON)
-      attr_reader :loan_value
+      attr_reader :post_nationalization
       DEV_STAGE = :prealpha
 
       # These plain city hexes upgrade to L tiles in brown
@@ -44,6 +44,10 @@ module Engine
       BARRIE_HEX = 'M4'
       LONDON_HEX = 'F15'
       HAMILTON_HEX = 'L15'
+
+      # This is unlimited in 1891
+      # They're also 5% shares if there are more than 20 shares. It's weird.
+      NATIONAL_MAX_SHARE_PERCENT_AWARDED = 200
 
       GAME_LOCATION = 'Ontario, Canada'
       GAME_RULES_URL = 'http://google.com'
@@ -98,7 +102,19 @@ module Engine
         entity.num_player_shares
       end
 
+      def loan_value
+        100
+      end
+
       def interest_rate
+        10
+      end
+
+      def national_token_price
+        100
+      end
+
+      def national_token_limit
         10
       end
 
@@ -111,9 +127,10 @@ module Engine
       end
 
       def take_loan(entity, loan)
-        game_error('Cannot take loan') unless can_take_loan?(entity)
+        raise GameError, 'Cannot take loan' unless can_take_loan?(entity)
+
         name = entity.name
-        loan_amount = @round.paid_interest[entity] ? 90 : 100
+        loan_amount = @round.paid_interest[entity] ? loan_value - interest_rate : loan_value
         @log << "#{name} takes a loan and receives #{format_currency(loan_amount)}"
         @bank.spend(loan_amount, entity)
         entity.loans << loan
@@ -125,12 +142,17 @@ module Engine
           entity.loans.size < maximum_loans(entity) &&
           !@round.took_loan[entity] &&
           !@round.redeemed_loan[entity] &&
-          @loans.any?
+          @loans.any? &&
+          !@post_nationalization
+      end
+
+      def num_loans
+        # @corporations is not available at the time of init_loans
+        110
       end
 
       def init_loans
-        @loan_value = 100
-        110.times.map { |id| Loan.new(id, @loan_value) }
+        num_loans.times.map { |id| Loan.new(id, loan_value) }
       end
 
       def can_pay_interest?(_entity, _extra_cash = 0)
@@ -168,31 +190,37 @@ module Engine
         @brown_barrie ||= @tiles.find { |t| t.name == '127' }
 
         @gray_hamilton ||= @tiles.find { |t| t.name == '123' }
-      end
 
-      def event_nationalization!
-        @log << '-- Event: CGR merger --'
-        # starting with the player who bought the 6 train, go around the table repaying loans
+        @post_nationalization = false
+        @national_formed = false
 
-        # player picks order of their companies.
-        # set aside compnanies that do not repay succesfully
+        @pre_national_percent_by_player = {}
+        @pre_national_market_percent = 0
 
-        # starting with the player who bought the 6 train, go around the table trading shares
-        # trade all shares
-      end
+        @pre_national_market_prices = {}
+        @nationalized_corps = []
 
-      def post_nationalization
-        # TODO: Update this with something more correct once nationalization is implemented
-        true
+        # Is the president of the national a "false" president?
+        # A false president gets the presidency with only one share; in this case the president gets
+        # the full president's certificate but is obligated to buy up to the full presidency in the
+        # following SR unless a different player becomes rightfully president during share exchange
+        # It is impossible for someone who didn't become president in
+        # exchange (1 share tops) to steal the presidency in the SR because
+        # they'd have to buy 2 shares in one action which is a no-no
+        # nil: Presidency not awarded yet at all
+        # true: 1-share false presidency has been awarded
+        # false: 2-sahre true presidency has been awarded
+        @false_national_president = nil
       end
 
       def num_corporations
-        # TODO: Update this with something more correct once nationalization is implemented
-        @corporations.size - 1
+        # Before nationalization, the national is in @corporations but doesn't count
+        # After nationalization, if the national is in corporations it does count
+        @post_nationalization ? @corporations.size : @corporations.size - 1
       end
 
       def cert_limit
-        return PRE_NATIONALIZATION_CERT_LIMIT[@players.size] unless post_nationalization
+        return PRE_NATIONALIZATION_CERT_LIMIT[@players.size] unless @post_nationalization
 
         POST_NATIONALIZATION_CERT_LIMIT[num_corporations][@players.size]
       end
@@ -235,7 +263,7 @@ module Engine
       end
 
       def can_par?(corporation, parrer)
-        corporation == national ? false : super
+        corporation == national ? national.ipoed : super
       end
 
       #
@@ -335,6 +363,9 @@ module Engine
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::HomeToken,
+
+          # Nationalization!!
+          Step::G1856::NationalizationPayoff,
           Step::G1856::Track,
           Step::Token,
           Step::Route,
@@ -354,6 +385,351 @@ module Engine
           Step::SpecialTrack,
           Step::G1856::BuySellParShares,
         ])
+      end
+
+      # Nationalization Methods
+
+      def event_nationalization!
+        @nationalization_trigger ||= @round.active_step.current_entity.owner
+        @log << '-- Event: CGR merger --'
+        corporations_repay_loans
+        @nationalizables = nationalizable_corporations
+        @log << "Merge candidates: #{present_nationalizables(nationalizables)}" if nationalizables.any?
+        # starting with the player who bought the 6 train, go around the table repaying loans
+
+        # player picks order of their companies.
+        # set aside compnanies that do not repay succesfully
+
+        # starting with the player who bought the 6 train, go around the table trading shares
+        # trade all shares
+      end
+
+      def nationalizables
+        @nationalizables ||= []
+      end
+
+      def max_national_shares
+        20
+      end
+
+      def corporations_repay_loans
+        @corporations.each do |corp|
+          next unless corp.floated? && corp.loans.size.positive?
+
+          loans_repaid = [corp.loans.size, (corp.cash / loan_value).to_i].min
+          amount_repaid = loan_value * loans_repaid
+          next unless amount_repaid.positive?
+
+          corp.spend(amount_repaid, @bank)
+          @loans << corp.loans.pop(loans_repaid)
+          @log << "#{corp.name} repays #{format_currency(amount_repaid)} to redeem #{loans_repaid} loans"
+        end
+      end
+
+      def merge_major(major)
+        @national_formed = true
+        @log << "-- #{major.name} merges into #{national.name} --"
+        # Trains are transferred
+        major.trains.dup.each do |t|
+          national.buy_train(t, :free)
+        end
+        # Leftover cash is transferred
+        major.spend(major.cash, national) if major.cash.positive?
+        # Tunnel / Bridge rights are transferred
+        # TODO: Implement tunnel / bridge rights
+
+        # Tokens:
+        # Remove reservations
+
+        hexes.each do |hex|
+          hex.tile.cities.each do |city|
+            if city.tokened_by?(major)
+              city.tokens.map! { |token| token&.corporation == major ? nil : token }
+              city.reservations.delete(major)
+            end
+          end
+        end
+
+        # Shares
+        merge_major_shares(major)
+        @pre_national_market_prices[major.name] = major.share_price.price
+        @nationalized_corps << major
+        # Corporation will close soon, but not now. See post_corp_nationalization
+        nationalizables.delete(major)
+        post_corp_nationalization
+      end
+
+      def merge_major_shares(major)
+        major.player_share_holders.each do |player, num|
+          @pre_national_percent_by_player[player] ||= 0
+          @pre_national_percent_by_player[player] += num
+        end
+        @pre_national_market_percent += (major.num_market_shares * 5)
+      end
+
+      # Issue more shares
+      # Must be called while shares are still all in the IPO.
+      def national_issue_shares!
+        return unless national.total_shares == 10
+
+        @log << "#{national.name} issues 10 more shares and all shares are now 5% shares"
+        national.shares_by_corporation[national].each_with_index do |share, index|
+          # Presidents cert is a 10% 2-share 1-cert paper, everything else is a 5% 1-share 0.5-cert paper
+          share.percent = index.zero? ? 10 : 5
+          share.cert_size = index.zero? ? 1 : 0.5
+        end
+
+        num_shares = national.total_shares
+        10.times do |i|
+          new_share = Share.new(national, percent: 5, index: num_shares + i, cert_size: 0.5)
+          national.shares_by_corporation[national] << new_share
+        end
+      end
+
+      def total_national_percent_issued
+        @pre_national_market_percent + @pre_national_percent_by_player.values.sum
+      end
+
+      def calculate_national_price
+        prices = @pre_national_market_prices.values
+        # If more than two companies merging in drop the lowest share price
+        prices.delete_at(prices.index(prices.min)) if prices.size > 2
+
+        # Average the values of the companies and round *down* to the nearest $5 increment
+        ave = (0.2 * prices.sum / prices.size).to_i * 5
+
+        # The value is 100 at the bare minimum
+        # Also the stock market increases as such:
+        # 90 > 100 > 110 > 125 > 150
+        market_price = if ave < 105
+                         100
+                       # The next share value is 110
+                       elsif ave <= 115
+                         110
+                       # everything else is multiples of 25
+                       else
+                         delta = ave % 25
+                         delta < 12.5 ? ave - delta : ave - delta + 25
+                       end
+
+        # The stock market token is placed on the top row
+        @stock_market.market[0].find { |p| p.price == market_price }
+      end
+
+      def float_str(entity)
+        return 'Floats in phase 6' if entity == national
+
+        super
+      end
+
+      def float_national
+        national.float!
+        @stock_market.set_par(national, calculate_national_price)
+        national.ipoed = true
+      end
+
+      # Handles the share exchange in nationalization
+      # Returns the president Player
+      def national_share_swap
+        index_for_trigger = @players.index(@nationalization_trigger)
+        # This is based off the code in 18MEX; 10 appears to be an arbitrarily large integer
+        #  where the exact value doesn't really matter
+        players_in_order = (0..@players.count - 1).to_a.sort { |i| i < index_for_trigger ? i + 10 : i }
+        # Determine the president before exchanging shares for ease of distribution
+        shares_to_distribute = max_national_shares
+        president_shares = 0
+        president = nil
+        players_in_order.each do |i|
+          player = @players[i]
+          next unless @pre_national_percent_by_player[player]
+
+          shares_awarded = [(@pre_national_percent_by_player[player] / 20).to_i, shares_to_distribute].min
+          shares_to_distribute -= shares_awarded
+          @log << "#{player.name} gets #{shares_awarded} shares of #{national.name}"
+
+          next unless shares_awarded > president_shares
+
+          @log << "#{player.name} becomes president of the #{national.name}"
+          if shares_awarded == 1
+            @log << "#{player.name} will need to buy the 2nd share of the #{national.name} "\
+              "president's cert in the next SR unless a new president is found"
+            @false_national_president = true
+          elsif @false_national_president
+            @log << "Since #{president.name} is no longer president of the #{national.name} "\
+              ' and is no longer obligated to buy a second share in the following SR'
+            @false_national_president = false
+          end
+          president_shares = shares_awarded
+          president = player
+        end
+        # More than 10 shares were issued so issue the second set
+        national_issue_shares! if shares_to_distribute < 10
+        national_share_index = 1
+        players_in_order.each do |i|
+          player = @players[i]
+          player_national_shares = (@pre_national_percent_by_player[player] / 20).to_i
+          # Extra single shares are placed in the market
+          @pre_national_market_percent += (@pre_national_percent_by_player[player] % 20)
+          # We will distribute shares from the national starting with the second, skipping the presidency
+          next unless player_national_shares.positive?
+
+          if player == president
+            if @false_national_president
+              # TODO: Handle this case properly.
+              puts 'TODO'
+            else # This player gets the presidency, which is 2 shares
+              @share_pool.buy_shares(player, national.presidents_share, exchange: :free, exchange_price: 0)
+              player_national_shares -= 2
+            end
+          end
+          # not president, just give them shares
+          while player_national_shares.positive?
+            if national_share_index == max_national_shares
+              @log << "#{national.name} is out of shares to issue, #{player.name} gets no more shares"
+              player_national_shares = 0
+            else
+              @share_pool.buy_shares(
+                player,
+                national.shares_by_corporation[national].last,
+                exchange: :free,
+                exchange_price: 0
+              )
+              player_national_shares -= 1
+              national_share_index += 1
+            end
+          end
+        end
+      end
+
+      def national_token_swap
+        # Token swap
+        # The CGR has ten station markers. Up to ten station markers of the absorbed companies are exchanged for CGR
+        # tokens. All home station markers must be replaced first. Then the other station markers are replaced in
+        # whatever order the president chooses. Because the CGR cannot have two or more station markers on the same
+        # tile, the president of the CGR may choose which one to use, except that exchanging a company's home station
+        # marker must take precedence. All station markers that can be legally exchanged must be, even if the president
+        # would rather not do so. Further station markers may be placed during operating rounds at a cost of $100 each.
+
+        # Homes first, those are mandatory
+        # The case where all 11 corporations are nationalized is undefined behavior in the rules;
+        #  The national only has 10 tokens but home tokens are mandatory. This is exceedingly bad play
+        #  so it shouldn't ever happen..
+        home_bases = @nationalized_corps.map do |c|
+          nationalize_home_token(c, create_national_token)
+        end
+        # So the national will get 11 tokens if and only if all 11 majors merge in
+        remaining_tokens = [national_token_limit - home_bases.size, 0].max
+
+        # Other tokens second, ignoring duplicates from the home token set
+        @nationalized_corps.each do |corp|
+          corp.tokens.each do |token|
+            next if !token.city || home_bases.include?(token.city.hex)
+
+            remove_duplicate_tokens(corp)
+            replace_token(corp, token, create_national_token)
+          end
+        end
+
+        # Then reduce down to limit
+        # TODO: Possibly override ReduceTokens?
+        if national.tokens.size > national_token_limit
+          @log << "#{national.name} will is above token limit and must decide which tokens to remove"
+          # TODO: implement this case, maybe use a varaiation of the below?
+          # @round.corporations_removing_tokens = [buyer, acquired_corp]
+        end
+
+        @log << "#{national.name} has #{remaining_tokens} spare #{format_currency(national_token_price)} tokens"
+        remaining_tokens.times { national.tokens << Engine::Token.new(@national, price: national_token_price) }
+      end
+
+      # Called regardless of if president saved or merged corp
+      def post_corp_nationalization
+        return unless nationalizables.empty?
+
+        unless @national_formed
+          @log << "#{national.name} does not form"
+          national.close!
+          return
+        end
+        float_national
+        national_share_swap
+        # Now that shares and president are determined, it's time to do presidential things
+        national_token_swap
+        # Close corporations now that trains, cash, rights, and tokens have been stripped
+        @nationalized_corps.each { |c| close_corporation(c) }
+
+        # Reduce the nationals train holding limit to the real value
+        # (It was artificially high to avoid forced discard triggering early)
+        # TODO: Do it.
+        @post_nationalization = true
+      end
+
+      # Creates and returns a token for the national
+      def create_national_token
+        token = Engine::Token.new(national, price: national_token_price)
+        national.tokens << token
+        token
+      end
+
+      def remove_duplicate_tokens(corp)
+        # If there are 2 station markers on the same city the
+        # surviving company must remove one and place it on its charter.
+        # In the case of OO and Toronto tiles this is ambigious and must be solved by the user
+
+        cities = Array(corp).flat_map(&:tokens).map(&:city).compact
+        @national.tokens.each do |token|
+          city = token.city
+          token.remove! if cities.include?(city)
+        end
+      end
+
+      # Convert the home token of the corporation to one of the national's
+      # Return the nationalized corps home hex
+      def nationalize_home_token(corp, token)
+        unless token
+          # Why would this ever happen?
+          @log << "#{national.name} is out of tokens and does not get a token for #{corp.name}'s home"
+          return
+        end
+        # A nationalized corporation needs to have a loan which means it needs to have operated so it must have a home
+        home_token = corp.tokens.first
+        home_hex = home_token.city.hex
+
+        replace_token(corp, home_token, token)
+        home_hex
+      end
+
+      def replace_token(major, major_token, token)
+        city = major_token.city
+        @log << "#{major.name}'s token in #{city.hex.name} is replaced with a #{national.name} token"
+        major_token.remove!
+        city.place_token(national, token, check_tokenable: false)
+      end
+
+      def nationalizable_corporations
+        floated_player_corps = @corporations.select { |c| c.floated? && c != national }
+        floated_player_corps.select! { |c| c.loans.size.positive? }
+        # Sort eligible corporations so that they are in player order
+        # starting with the player that bought the 6 train
+        index_for_trigger = @players.index(@nationalization_trigger)
+        # This is based off the code in 18MEX; 10 appears to be an arbitrarily large integer
+        #  where the exact value doesn't really matter
+        order = Hash[@players.each_with_index.map { |p, i| i < index_for_trigger ? [p, i + 10] : [p, i] }]
+        floated_player_corps.sort_by! { |c| [order[c.player], @round.entities.index(c)] }
+      end
+
+      def present_nationalizables(nationalizables)
+        nationalizables.map do |c|
+          "#{c.name} (#{c.player.name})"
+        end.join(', ')
+      end
+
+      def nationalization_president_payoff(major, owed)
+        major.owner.spend(owed, @bank)
+        @loans << major.loans.pop(major.loans.size)
+        @log << "#{major.owner.name} pays off the #{format_currency(owed)} debt for #{major.name}"
+        nationalizables.delete(major)
+        post_corp_nationalization
       end
     end
   end

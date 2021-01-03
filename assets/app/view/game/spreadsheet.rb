@@ -34,7 +34,7 @@ module View
         top_line = h(:div, top_line_props, [
           h(Bank, game: @game),
           h(GameInfo, game: @game, layout: 'upcoming_trains'),
-        ])
+        ].compact)
 
         children << top_line
         children << render_table
@@ -302,12 +302,7 @@ module View
         end
 
         order_props = { style: { paddingLeft: '1.2em' } }
-        operating_order_text = ''
-        if operating_order.positive?
-          corporation.operating_history.each do |history|
-            operating_order_text = "#{operating_order}#{history[0] == current_round ? '*' : ''}"
-          end
-        end
+        operating_order_text = "#{operating_order}#{corporation.operating_history.keys[-1] == current_round ? '*' : ''}"
 
         extra = []
         extra << h(:td, "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?

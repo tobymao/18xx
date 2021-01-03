@@ -40,6 +40,7 @@ module Engine
 
       CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = true
       CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
+      VARIABLE_FLOAT_PERCENTAGES = true
       DISCARDED_TRAIN_DISCOUNT = 50
       MAX_SHARE_VALUE = 485
 
@@ -370,7 +371,7 @@ module Engine
 
         return unless cities_allowed < (cities_visited + start_at_town + end_at_town)
 
-        game_error('Towns on route ends are counted against city limit.')
+        raise GameError, 'Towns on route ends are counted against city limit.'
       end
 
       def revenue_for(route, stops)
@@ -501,19 +502,28 @@ module Engine
         par_nodes.select { |par_node| available_par_prices.include?(par_node.price) }
       end
 
-      # Higher valued par groups require more shares to float. The float percent is adjusted upon parring.
-      def par_change_float_percent(corporation)
+      def total_shares_to_float(corporation, price)
+        find_par_float_percent(corporation, price) / corporation.share_percent
+      end
+
+      def find_par_float_percent(corporation, price)
         PAR_PRICE_GROUPS.each do |key, prices|
           next unless PAR_FLOAT_GROUPS[corporation.float_percent].include?(key)
-          next unless prices.include?(corporation.par_price.price)
+          next unless prices.include?(price)
 
-          if corporation.float_percent != PAR_GROUP_FLOATS[key]
-            corporation.float_percent = PAR_GROUP_FLOATS[key]
-            @log << "#{corporation.name} now requires #{corporation.float_percent}% to float"
-          end
-
-          break
+          return PAR_GROUP_FLOATS[key]
         end
+
+        corporation.float_percent
+      end
+
+      # Higher valued par groups require more shares to float. The float percent is adjusted upon parring.
+      def par_change_float_percent(corporation)
+        new_par = find_par_float_percent(corporation, corporation.par_price.price)
+        return if corporation.float_percent == new_par
+
+        corporation.float_percent = new_par
+        @log << "#{corporation.name} now requires #{corporation.float_percent}% to float"
       end
 
       def emergency_issuable_cash(corporation)

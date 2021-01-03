@@ -27,6 +27,7 @@ module Lib
       green: '#71bf44',
       brown: '#cb7745',
       gray: '#bcbdc0',
+      black: '#000000',
       red: '#ec232a',
       blue: '#35A7FF',
     }.freeze

@@ -76,14 +76,13 @@ module Engine
             if train.owner && @game.train_owner(train) != entity
               raise GameError, "Cannot run another corporation's train. refresh"
             end
-            raise GameError, 'Cannot run train that operated' if train.operated
             raise GameError, 'Cannot run train twice' if trains[train]
 
             leased = ' (leased) ' if @game.insolvent?(entity)
 
             trains[train] = true
             @log << "#{entity.name} runs a #{train.name} train#{leased}for "\
-              "#{@game.format_currency(route.revenue)}: #{@game.revenue_str(route)}"
+              "#{@game.format_currency(route.revenue)}: #{route.revenue_str}"
           end
           pass!
         end

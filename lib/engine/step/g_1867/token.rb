@@ -15,6 +15,10 @@ module Engine
             can_afford_token?(tokens, buying_power(entity))
         end
 
+        def log_skip(entity)
+          super if entity.type == :major
+        end
+
         def can_afford_token?(tokens, cash)
           token = tokens.first
           # Distance must be at least 1, so check minimum price.

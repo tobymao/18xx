@@ -2057,10 +2057,18 @@
       "original_id": 238
     },
     {
+      "type": "pass",
+      "entity": "OP",
+      "entity_type": "corporation",
+      "user": 6120,
+      "original_id": null,
+      "id": 231
+    },
+    {
       "type": "lay_tile",
       "entity": "PM",
       "entity_type": "corporation",
-      "id": 231,
+      "id": 232,
       "hex": "M9",
       "tile": "619-0",
       "rotation": 4,
@@ -2070,14 +2078,22 @@
       "type": "pass",
       "entity": "PM",
       "entity_type": "corporation",
-      "id": 232,
+      "id": 233,
       "original_id": 240
+    },
+    {
+      "type": "pass",
+      "entity": "PM",
+      "entity_type": "corporation",
+      "user": 671,
+      "original_id": null,
+      "id": 234
     },
     {
       "type": "buy_train",
       "entity": "PM",
       "entity_type": "corporation",
-      "id": 233,
+      "id": 235,
       "train": "3-1",
       "price": 225,
       "variant": "3",
@@ -2087,21 +2103,21 @@
       "type": "pass",
       "entity": "PM",
       "entity_type": "corporation",
-      "id": 234,
+      "id": 236,
       "original_id": 242
     },
     {
       "type": "pass",
       "entity": "PM",
       "entity_type": "corporation",
-      "id": 235,
+      "id": 237,
       "original_id": 243
     },
     {
       "type": "lay_tile",
       "entity": "CA",
       "entity_type": "corporation",
-      "id": 236,
+      "id": 238,
       "hex": "I13",
       "tile": "24-0",
       "rotation": 4,
@@ -2111,14 +2127,14 @@
       "type": "pass",
       "entity": "CA",
       "entity_type": "corporation",
-      "id": 237,
+      "id": 239,
       "original_id": 245
     },
     {
       "type": "run_routes",
       "entity": "CA",
       "entity_type": "corporation",
-      "id": 238,
+      "id": 240,
       "routes": [
         {
           "train": "2-3",
@@ -2150,7 +2166,7 @@
       "type": "message",
       "entity": 6126,
       "entity_type": "player",
-      "id": 239,
+      "id": 241,
       "message": "What is \"Skip companies\" step?",
       "original_id": 247
     },
@@ -2158,14 +2174,14 @@
       "type": "pass",
       "entity": "CA",
       "entity_type": "corporation",
-      "id": 240,
+      "id": 242,
       "original_id": 248
     },
     {
       "type": "message",
       "entity": 6124,
       "entity_type": "player",
-      "id": 241,
+      "id": 243,
       "message": "Buy a company",
       "original_id": 249
     },
@@ -2173,15 +2189,23 @@
       "type": "message",
       "entity": 6126,
       "entity_type": "player",
-      "id": 242,
+      "id": 244,
       "message": "ok, I privates, forgot",
       "original_id": 250
+    },
+    {
+      "type": "pass",
+      "entity": "CA",
+      "entity_type": "corporation",
+      "user": 6126,
+      "original_id": null,
+      "id": 245
     },
     {
       "type": "lay_tile",
       "entity": "CS",
       "entity_type": "corporation",
-      "id": 243,
+      "id": 246,
       "hex": "O7",
       "tile": "207-0",
       "rotation": 5,
@@ -2191,14 +2215,14 @@
       "type": "pass",
       "entity": "CS",
       "entity_type": "corporation",
-      "id": 244,
+      "id": 247,
       "original_id": 252
     },
     {
       "type": "run_routes",
       "entity": "CS",
       "entity_type": "corporation",
-      "id": 245,
+      "id": 248,
       "routes": [
         {
           "train": "2-4",
@@ -2216,21 +2240,29 @@
       "type": "pass",
       "entity": "CS",
       "entity_type": "corporation",
-      "id": 246,
+      "id": 249,
       "original_id": 254
     },
     {
       "type": "pass",
       "entity": "CS",
       "entity_type": "corporation",
-      "id": 247,
+      "id": 250,
       "original_id": 255
+    },
+    {
+      "type": "pass",
+      "entity": "CS",
+      "entity_type": "corporation",
+      "user": 671,
+      "original_id": null,
+      "id": 251
     },
     {
       "type": "lay_tile",
       "entity": "NO",
       "entity_type": "corporation",
-      "id": 248,
+      "id": 252,
       "hex": "D16",
       "tile": "622-0",
       "rotation": 1,
@@ -2240,14 +2272,14 @@
       "type": "pass",
       "entity": "NO",
       "entity_type": "corporation",
-      "id": 249,
+      "id": 253,
       "original_id": 257
     },
     {
       "type": "run_routes",
       "entity": "NO",
       "entity_type": "corporation",
-      "id": 250,
+      "id": 254,
       "routes": [
         {
           "train": "2-6",
@@ -2265,21 +2297,29 @@
       "type": "pass",
       "entity": "NO",
       "entity_type": "corporation",
-      "id": 251,
+      "id": 255,
       "original_id": 259
     },
     {
       "type": "pass",
       "entity": "NO",
       "entity_type": "corporation",
-      "id": 252,
+      "id": 256,
       "original_id": 260
+    },
+    {
+      "type": "pass",
+      "entity": "NO",
+      "entity_type": "corporation",
+      "user": 6126,
+      "original_id": null,
+      "id": 257
     },
     {
       "type": "lay_tile",
       "entity": "BO",
       "entity_type": "corporation",
-      "id": 253,
+      "id": 258,
       "hex": "C17",
       "tile": "619-1",
       "rotation": 1,
@@ -2289,14 +2329,14 @@
       "type": "pass",
       "entity": "BO",
       "entity_type": "corporation",
-      "id": 254,
+      "id": 259,
       "original_id": 262
     },
     {
       "type": "run_routes",
       "entity": "BO",
       "entity_type": "corporation",
-      "id": 255,
+      "id": 260,
       "routes": [
         {
           "train": "2-9",
@@ -2318,21 +2358,29 @@
       "type": "pass",
       "entity": "BO",
       "entity_type": "corporation",
-      "id": 256,
+      "id": 261,
       "original_id": 264
     },
     {
       "type": "pass",
       "entity": "BO",
       "entity_type": "corporation",
-      "id": 257,
+      "id": 262,
       "original_id": 265
+    },
+    {
+      "type": "pass",
+      "entity": "BO",
+      "entity_type": "corporation",
+      "user": 6120,
+      "original_id": null,
+      "id": 263
     },
     {
       "type": "lay_tile",
       "entity": "KP",
       "entity_type": "corporation",
-      "id": 258,
+      "id": 264,
       "hex": "E9",
       "tile": "8-1",
       "rotation": 2,
@@ -2342,7 +2390,7 @@
       "type": "lay_tile",
       "entity": "KP",
       "entity_type": "corporation",
-      "id": 259,
+      "id": 265,
       "hex": "D8",
       "tile": "57-0",
       "rotation": 2,
@@ -2352,7 +2400,7 @@
       "type": "run_routes",
       "entity": "KP",
       "entity_type": "corporation",
-      "id": 260,
+      "id": 266,
       "routes": [
         {
           "train": "2-2",
@@ -2371,21 +2419,29 @@
       "type": "pass",
       "entity": "KP",
       "entity_type": "corporation",
-      "id": 261,
+      "id": 267,
       "original_id": 269
     },
     {
       "type": "pass",
       "entity": "KP",
       "entity_type": "corporation",
-      "id": 262,
+      "id": 268,
       "original_id": 270
+    },
+    {
+      "type": "pass",
+      "entity": "KP",
+      "entity_type": "corporation",
+      "user": 671,
+      "original_id": null,
+      "id": 269
     },
     {
       "type": "lay_tile",
       "entity": "TN",
       "entity_type": "corporation",
-      "id": 263,
+      "id": 270,
       "hex": "F16",
       "tile": "120-0",
       "rotation": 1,
@@ -2395,14 +2451,14 @@
       "type": "pass",
       "entity": "TN",
       "entity_type": "corporation",
-      "id": 264,
+      "id": 271,
       "original_id": 272
     },
     {
       "type": "run_routes",
       "entity": "TN",
       "entity_type": "corporation",
-      "id": 265,
+      "id": 272,
       "routes": [
         {
           "train": "2-7",
@@ -2420,7 +2476,7 @@
       "type": "message",
       "entity": 671,
       "entity_type": "player",
-      "id": 266,
+      "id": 273,
       "message": "hit another bug, gotta go for a while",
       "original_id": 274
     },
@@ -2428,7 +2484,7 @@
       "type": "message",
       "entity": 671,
       "entity_type": "player",
-      "id": 267,
+      "id": 274,
       "message": "grab dinner and fight the supermarkets :(",
       "original_id": 275
     },
@@ -2436,7 +2492,7 @@
       "type": "pass",
       "entity": "TN",
       "entity_type": "corporation",
-      "id": 268,
+      "id": 275,
       "user": 671,
       "original_id": 276
     },
@@ -2446,13 +2502,21 @@
       "entity_type": "corporation",
       "user": 6126,
       "original_id": null,
-      "id": 269
+      "id": 276
+    },
+    {
+      "type": "pass",
+      "entity": "TN",
+      "entity_type": "corporation",
+      "user": 6126,
+      "original_id": null,
+      "id": 277
     },
     {
       "type": "merge",
       "entity": "AE",
       "entity_type": "corporation",
-      "id": 270,
+      "id": 278,
       "user": 671,
       "corporation": "CV",
       "original_id": 277
@@ -2461,7 +2525,7 @@
       "type": "merge",
       "entity": "AE",
       "entity_type": "corporation",
-      "id": 271,
+      "id": 279,
       "user": 671,
       "corporation": "CA",
       "original_id": 278
@@ -2470,7 +2534,7 @@
       "type": "merge",
       "entity": "AE",
       "entity_type": "corporation",
-      "id": 272,
+      "id": 280,
       "user": 671,
       "corporation": "TN",
       "original_id": 279
@@ -2479,7 +2543,7 @@
       "type": "merge",
       "entity": "AE",
       "entity_type": "corporation",
-      "id": 273,
+      "id": 281,
       "user": 671,
       "corporation": "CNR",
       "original_id": 282
@@ -2488,7 +2552,7 @@
       "type": "buy_shares",
       "entity": 6124,
       "entity_type": "player",
-      "id": 274,
+      "id": 282,
       "user": 671,
       "shares": [
         "CNR_1"
@@ -2500,7 +2564,7 @@
       "type": "buy_shares",
       "entity": 6126,
       "entity_type": "player",
-      "id": 275,
+      "id": 283,
       "user": 671,
       "shares": [
         "CNR_2"
@@ -2512,7 +2576,7 @@
       "type": "buy_shares",
       "entity": 6126,
       "entity_type": "player",
-      "id": 276,
+      "id": 284,
       "user": 671,
       "shares": [
         "CNR_3"
@@ -2524,7 +2588,7 @@
       "type": "buy_shares",
       "entity": 671,
       "entity_type": "player",
-      "id": 277,
+      "id": 285,
       "shares": [
         "CNR_4"
       ],
@@ -2535,7 +2599,7 @@
       "type": "buy_shares",
       "entity": 6120,
       "entity_type": "player",
-      "id": 278,
+      "id": 286,
       "user": 671,
       "shares": [
         "CNR_5"
@@ -2547,7 +2611,7 @@
       "type": "remove_token",
       "entity": "CNR",
       "entity_type": "corporation",
-      "id": 279,
+      "id": 287,
       "user": 671,
       "city": "L12-0-0",
       "slot": 0,
@@ -2557,7 +2621,7 @@
       "type": "remove_token",
       "entity": "CNR",
       "entity_type": "corporation",
-      "id": 280,
+      "id": 288,
       "user": 671,
       "city": "202-1-0",
       "slot": 0,
@@ -2567,7 +2631,7 @@
       "type": "discard_train",
       "entity": "CNR",
       "entity_type": "corporation",
-      "id": 281,
+      "id": 289,
       "user": 671,
       "train": "2-3",
       "original_id": 290
@@ -2576,7 +2640,7 @@
       "type": "discard_train",
       "entity": "CNR",
       "entity_type": "corporation",
-      "id": 282,
+      "id": 290,
       "user": 671,
       "train": "2-5",
       "original_id": 291
@@ -2585,7 +2649,7 @@
       "type": "end_game",
       "entity": 671,
       "entity_type": "player",
-      "id": 283,
+      "id": 291,
       "original_id": 292
     }
   ],

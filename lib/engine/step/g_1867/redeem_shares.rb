@@ -18,6 +18,10 @@ module Engine
           available_actions
         end
 
+        def log_skip(entity)
+          super if entity.type == :major
+        end
+
         def description
           'Redeem Shares'
         end

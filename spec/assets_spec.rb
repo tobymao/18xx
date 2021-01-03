@@ -224,6 +224,11 @@ describe 'Assets' do
         'Decline',
         'Corporations that can merge with NdM']],
       ['18MEX', 17_849, nil, 'endgame', '18MEX: Operating Round 4.2 (of 2) - Game Over - Bankruptcy'],
+      ['1817', 20_758, 369, 'choose_corp_size',
+       ['1817: Stock Round 2 - Buy or Sell Shares',
+        'Strasburg Railroad',
+        'Loans', '0/2',
+        'Number of Shares:', '2', '5']],
       ['1817', 15_528, 196, 'merge',
        ['Convert',
         'Merge',
@@ -242,8 +247,20 @@ describe 'Assets' do
         'New York, Susquehanna and Western Railway']],
       ['18Chesapeake', 1905, 166, 'blocking_special_track',
        ['Lay Track for Columbia - Philadelphia Railroad']],
-      ['18CO', 20_125, 605, 'end_game',
-       ['18CO: Operating Round 5.1 (of 2) - Game Over']],
+      ['18CO', 20_708, 959, 'pass',
+       ['18CO: Operating Round 6.2 (of 2) - Game Over - Bank Broken']],
+      ['1860', '19_354', 215, 'stock_round_1',
+       ['!!<div>Fishbourne Ferry Company',
+        '<div>Cowes Marina and Harbour',
+        '<div>Brading Harbour Company']],
+      ['1860', '19_354', 350, 'stock_round_2',
+       ['<div>Fishbourne Ferry Company',
+        '<div>Cowes Marina and Harbour',
+        '<div>Brading Harbour Company']],
+      ['1860', '19_354', 444, 'stock_round_3',
+       ['<div>Fishbourne Ferry Company',
+        '!!<div>Cowes Marina and Harbour',
+        '!!<div>Brading Harbour Company']],
       ['1860', '19_354', nil, 'endgame',
        ['1860: Operating Round 8.4 (Nationalization) - Game Over - Nationalization complete']],
     ].freeze
@@ -255,7 +272,6 @@ describe 'Assets' do
       needs = {
         game_data: data,
         user: data['user'].merge(settings: { consent: true }),
-        disable_user_errors: true,
       }
 
       html = render(app_route: "/game/#{needs[:game_data]['id']}", **needs)

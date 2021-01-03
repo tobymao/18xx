@@ -18,6 +18,7 @@ module View
       needs :game, store: true
       needs :display, default: 'inline-block'
       needs :selectable, default: true
+      needs :interactive, default: true
 
       def render
         select_corporation = lambda do
@@ -38,8 +39,16 @@ module View
         card_style = {
           cursor: 'pointer',
         }
-        card_style[:border] = '4px solid' if @game.round.can_act?(@corporation)
+
         card_style[:display] = @display
+
+        unless @interactive
+          factor = color_for(:bg2).to_s[1].to_i(16) > 7 ? 0.3 : 0.6
+          card_style[:backgroundColor] = convert_hex_to_rgba(color_for(:bg2), factor)
+          card_style[:border] = '1px dashed'
+        end
+
+        card_style[:border] = '4px solid' if @game.round.can_act?(@corporation)
 
         if selected?
           card_style[:backgroundColor] = 'lightblue'

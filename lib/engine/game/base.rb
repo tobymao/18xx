@@ -32,38 +32,44 @@ require_relative '../log'
 
 module Engine
   module Game
-    def self.load(data, at_action: nil, **kwargs)
-      game_data =
-        case data
-        when String
-          return load(JSON.parse(File.exist?(data) ? File.read(data) : data), at_action: at_action, **kwargs)
-        when Hash
-          {
-            title: data['title'],
-            names: data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h,
-            id: data['id'],
-            actions: data['actions'] || [],
-            pin: data.dig('settings', 'pin'),
-            optional_rules: data.dig('settings', 'optional_rules') || [],
-          }
-        when Integer
-          return load(::Game[data], at_action: at_action, **kwargs)
-        when ::Game
-          {
-            title: data.title,
-            names: data.ordered_players.map { |u| [u.id, u.name] }.to_h,
-            id: data.id,
-            actions: data.actions.map(&:to_h),
-            pin: data.settings['pin'],
-            optional_rules: data.settings['optional_rules'] || [],
-          }
-        end
-      title = game_data.delete(:title)
-      names = game_data.delete(:names)
-      game_data.merge!(kwargs)
-      game_data[:actions] = game_data[:actions].take(at_action) if at_action
+    def self.load(data, at_action: nil, actions: nil, pin: nil, optional_rules: nil, **kwargs)
+      case data
+      when String
+        parsed_data = JSON.parse(File.exist?(data) ? File.read(data) : data)
+        return load(parsed_data,
+                    at_action: at_action,
+                    actions: actions,
+                    pin: pin,
+                    optional_rules: optional_rules,
+                    **kwargs)
+      when Hash
+        title = data['title']
+        names = data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h
+        id = data['id']
+        actions ||= data['actions'] || []
+        pin ||= data.dig('settings', 'pin')
+        optional_rules ||= data.dig('settings', 'optional_rules') || []
+      when Integer
+        return load(::Game[data],
+                    at_action: at_action,
+                    actions: actions,
+                    pin: pin,
+                    optional_rules: optional_rules,
+                    **kwargs)
+      when ::Game
+        title = data.title
+        names = data.ordered_players.map { |u| [u.id, u.name] }.to_h
+        id = data.id
+        actions ||= data.actions.map(&:to_h)
+        pin ||= data.settings['pin']
+        optional_rules ||= data.settings['optional_rules'] || []
+      end
 
-      Engine::GAMES_BY_TITLE[title].new(names, **game_data)
+      actions = actions.take(at_action) if at_action
+
+      Engine::GAMES_BY_TITLE[title].new(
+        names, id: id, actions: actions, pin: pin, optional_rules: optional_rules, **kwargs
+      )
     end
 
     class Base
@@ -71,7 +77,7 @@ module Engine
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
-                  :optional_rules, :exception, :last_processed_action, :turn_start, :last_turn_start
+                  :optional_rules, :exception, :last_processed_action, :broken_action, :turn_start, :last_turn_start
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -250,6 +256,8 @@ module Engine
       CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = false
       CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = false
 
+      VARIABLE_FLOAT_PERCENTAGES = false
+
       CACHABLE = [
         %i[players player],
         %i[corporations corporation],
@@ -341,6 +349,8 @@ module Engine
           train
         end
 
+        data['companies'] ||= []
+
         data['companies'].map! do |company|
           company.transform_keys!(&:to_sym)
           company[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
@@ -388,7 +398,7 @@ module Engine
         const_set(:LAYOUT, data['layout'].to_sym)
       end
 
-      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [], disable_user_errors: false)
+      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [])
         @id = id
         @turn = 1
         @final_turn = nil
@@ -400,7 +410,7 @@ module Engine
         @actions = []
         @turn_start = 0
         @last_turn_start = 0
-        @disable_user_errors = disable_user_errors
+
         @exception = nil
         @names = if names.is_a?(Hash)
                    names.freeze
@@ -544,7 +554,7 @@ module Engine
             # warning adding more types of action here will break existing game
             filtered_actions[index] = action
           else
-            active_undos = []
+            active_undos.clear unless active_undos.empty?
             filtered_actions[index] = action
           end
         end
@@ -559,22 +569,11 @@ module Engine
         @undo_possible = false
         # replay all actions with a copy
         filtered_actions.each.with_index do |action, index|
-          if !action.nil?
-            action = action.copy(self) if action.is_a?(Action::Base)
+          next if @exception
 
-            if @disable_user_errors
-              # Opal exceptions lack backtraces, so do this outside of a rescue
-              # in dev mode to preserve the backtrace
-              process_action(action)
-            else
-              begin
-                process_action(action)
-              rescue Engine::GameError => e
-                @exception = e
-                @actions << action
-                break
-              end
-            end
+          if action
+            action = action.copy(self) if action.is_a?(Action::Base)
+            process_action(action)
           else
             # Restore the original action to the list to ensure action ids remain consistent but don't apply them
             @actions << actions[index]
@@ -587,10 +586,8 @@ module Engine
       def process_action(action)
         action = action_from_h(action) if action.is_a?(Hash)
         action.id = current_action_id
-        if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
-          @actions << action
-          return clone(@actions)
-        end
+        @actions << action
+        return clone(@actions) if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
 
         if action.user
           @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
@@ -607,7 +604,6 @@ module Engine
         end
 
         action_processed(action)
-        @actions << action
 
         end_timing = game_end_check&.last
         end_game! if end_timing == :immediate
@@ -629,7 +625,10 @@ module Engine
         end
 
         @last_processed_action = action.id
-
+        self
+      rescue Engine::GameError => e
+        @exception = e
+        @broken_action = action
         self
       end
 
@@ -1222,6 +1221,10 @@ module Engine
         @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
       end
 
+      def total_shares_to_float(corporation, _price)
+        corporation.percent_to_float / corporation.share_percent
+      end
+
       def close_corporation(corporation, quiet: false)
         @log << "#{corporation.name} closes" unless quiet
 
@@ -1465,15 +1468,13 @@ module Engine
       end
 
       def init_corporations(stock_market)
-        self.class::CORPORATIONS.map { |corporation| init_corporation(stock_market, corporation) }
-      end
-
-      def init_corporation(stock_market, corporation)
-        Corporation.new(
-          min_price: stock_market.par_prices.map(&:price).min,
-          capitalization: self.class::CAPITALIZATION,
-          **corporation.merge(corporation_opts),
-        )
+        self.class::CORPORATIONS.map do |corporation|
+          Corporation.new(
+            min_price: stock_market.par_prices.map(&:price).min,
+            capitalization: self.class::CAPITALIZATION,
+            **corporation.merge(corporation_opts),
+          )
+        end
       end
 
       def init_hexes(companies, corporations)
@@ -1762,7 +1763,9 @@ module Engine
           # priority deal card goes to the player who will go first if
           # everyone passes starting now.  last_to_act is nil before
           # anyone has gone, in which case the first player has PD.
-          players[((players.index(@round.last_to_act) || -1) + 1) % players.size]
+          last_to_act = @round.last_to_act
+          priority_idx = last_to_act ? (players.index(last_to_act) + 1) % players.size : 0
+          players[priority_idx]
         else
           # We're in a round that iterates over something else, like
           # corporations.  The player list was already rotated when we

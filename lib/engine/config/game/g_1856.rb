@@ -517,18 +517,20 @@ module Engine
       "sym": "CGR",
       "logo": "1856/CGR",
       "name": "Canadian Government Railway",
-      "tokens": [
-        100,
-        100,
-        100,
-        100,
-        100,
-        100,
-        100,
-        100,
-        100
-      ],
-      "color": "cgrBlack"
+      "tokens": [],
+      "color": "cgrBlack",
+      "abilities": [
+         {
+            "type": "train_buy",
+            "description": "Inter train buy/sell at face value",
+            "face_value": true
+         },
+         {
+            "type": "train_limit",
+            "description": "3 train limit",
+            "increase": 100
+         }
+      ]
     }
   ],
   "trains": [
@@ -619,7 +621,7 @@ module Engine
   ],
   "hexes": {
     "red": {
-      "offboard=revenue:yellow_30|brown_50|gray_60;path=a:4,b:_0;path=a:5,b:_0": [
+      "offboard=revenue:yellow_30|brown_50|black_60;path=a:4,b:_0;path=a:5,b:_0": [
         "A20"
       ],
       "border=edge:4": [
@@ -628,22 +630,22 @@ module Engine
       "offboard=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:5,b:_0;border=edge:1": [
         "B13"
       ],
-      "offboard=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:5,b:_0;icon=image:port,sticky:1": [
+      "offboard=revenue:yellow_30|brown_50|black_40;path=a:0,b:_0;path=a:5,b:_0;icon=image:port,sticky:1": [
         "H5"
       ],
       "offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:5,b:_0;icon=image:port,sticky:1": [
         "K2"
       ],
-      "offboard=revenue:yellow_20|brown_30|gray_50,hide:1,groups:Canadian West;path=a:0,b:_0;path=a:1,b:_0;border=edge:5": [
+      "offboard=revenue:yellow_20|brown_30|black_50,hide:1,groups:Canadian West;path=a:0,b:_0;path=a:1,b:_0;border=edge:5": [
         "N1"
       ],
-      "offboard=revenue:yellow_20|brown_30|gray_50,groups:Canadian West;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;border=edge:2": [
+      "offboard=revenue:yellow_20|brown_30|black_50,groups:Canadian West;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;border=edge:2": [
         "O2"
       ],
-      "offboard=revenue:yellow_20|brown_30|gray_50,groups:Lower Canada;path=a:1,b:_0;path=a:2,b:_0;border=edge:0": [
+      "offboard=revenue:yellow_20|brown_30|black_50,groups:Lower Canada;path=a:1,b:_0;path=a:2,b:_0;border=edge:0": [
         "Q8"
       ],
-      "offboard=revenue:yellow_20|brown_30|gray_50,hide:1,groups:Lower Canada;path=a:2,b:_0;border=edge:3": [
+      "offboard=revenue:yellow_20|brown_30|black_50,hide:1,groups:Lower Canada;path=a:2,b:_0;border=edge:3": [
         "Q10"
       ],
       "offboard=revenue:yellow_30|brown_40,hide:1,groups:Buffalo;path=a:2,b:_0;border=edge:3": [
@@ -675,7 +677,7 @@ module Engine
       ]
     },
     "gray": {
-      "town=revenue:yellow_30|brown_50|gray_40;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:port,sticky:1": [
+      "town=revenue:yellow_30|brown_50|black_40;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:port,sticky:1": [
         "F9"
       ]
     },
@@ -925,7 +927,8 @@ module Engine
         "yellow",
         "green",
         "brown",
-        "gray"
+        "gray",
+        "black"
         ],
         "status":[
         "fullcap",

@@ -14,6 +14,9 @@ services:
         RACK_ENV: production
     volumes:
       - ./public:/18xx/public
+    logging:
+      options:
+        max-size: "50m"
 
   queue:
     image: 18xx_queue:prod
@@ -28,12 +31,18 @@ services:
         RACK_ENV: production
     volumes:
       - ./public:/18xx/public
+    logging:
+      options:
+        max-size: "10m"
 
   db:
     environment:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
+    logging:
+      options:
+        max-size: "10m"
 
   nginx:
     build: ./nginx/
@@ -45,3 +54,6 @@ services:
       - /etc/18xxgames/ssl:/etc/18xxgames/ssl
     depends_on:
       - rack
+    logging:
+      options:
+        max-size: "100m"

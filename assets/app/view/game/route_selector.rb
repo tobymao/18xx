@@ -34,8 +34,14 @@ module View
           next unless trains.include?(train)
 
           # A future enhancement to this could be to find trains and move the routes over
-          @routes << Engine::Route.new(@game, @game.phase, train, connection_hexes: connections,
-                                                                  routes: @routes, halts: halts[train])
+          @routes << Engine::Route.new(
+            @game,
+            @game.phase,
+            train,
+            connection_hexes: connections,
+            routes: @routes,
+            halts: halts[train],
+          )
         end.compact
       end
 
@@ -118,7 +124,7 @@ module View
             else
               children << h('td.right', td_props, revenue)
             end
-            children << h(:td, @game.revenue_str(route))
+            children << h(:td, route.revenue_str)
           elsif !selected
             style[:border] = '1px solid'
             style[:padding] = '5px 8px'

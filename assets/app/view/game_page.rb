@@ -18,18 +18,17 @@ module View
     needs :tile_selector, default: nil, store: true
     needs :app_route, store: true
     needs :user
-    needs :disable_user_errors
     needs :connected, default: false, store: true
     needs :before_process_pass, default: -> {}, store: true
 
     def render_broken_game(e)
       inner = [h(:div, "We're sorry this game cannot be continued due to #{e}")]
 
-      json = `JSON.stringify(#{@game.actions.last.to_n}, null, 2)`
+      json = `JSON.stringify(#{@game.broken_action&.to_h&.to_n}, null, 2)`
       inner << h(:div, "Broken action: #{json}")
 
       # don't ask for a link for hotseat games
-      action = @game.last_processed_action
+      action = @game.last_processed_action || 0
       url = "https://18xx.games/game/#{@game_data['id']}?action=#{action + 1}"
       game_link =
         if @game.id.is_a?(Integer)
@@ -65,9 +64,11 @@ module View
       actions = @game_data['actions']
       @num_actions = actions.size
       return if game_id == @game&.id &&
-        ((!cursor && @game.actions.size == @num_actions) || (cursor == @game.actions.size))
+        (@game.exception ||
+         (!cursor && @game.actions.size == @num_actions) ||
+         (cursor == @game.actions.size))
 
-      @game = Engine::Game.load(@game_data, at_action: cursor, disable_user_errors: @disable_user_errors)
+      @game = Engine::Game.load(@game_data, at_action: cursor)
       store(:game, @game, skip: true)
     end
 

@@ -35,6 +35,10 @@ module Engine
         name: 'Z-MAN Games',
         url: 'https://zmangames.com/',
       },
+      lonny_games: {
+        name: 'Lonny Games',
+        url: 'https://www.lonny.at/',
+      },
     }.freeze
   end
 end
