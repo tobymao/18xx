@@ -86,34 +86,46 @@ module Engine
       end
 
       def init_corporations(stock_market)
-        return super unless option_cislethania
+        corporations = CORPORATIONS.dup
 
         # Remove Coal Railway C4 (SPB), Regional Railway BH and SB
-        CORPORATIONS.reject! { |c| %w[SPB SB BH].include?(c['sym']) }
-        super
+        corporations.reject! { |c| %w[SPB SB BH].include?(c['sym']) } if option_cislethania
+
+        corporations.map do |corporation|
+          Corporation.new(
+            min_price: stock_market.par_prices.map(&:price).min,
+            capitalization: self.class::CAPITALIZATION,
+            **corporation.merge(corporation_opts),
+          )
+        end
       end
 
       def init_minors
-        return super unless option_cislethania
+        minors = MINORS.dup
 
-        if @players.size == 2
-          # Remove Pre-Staatsbahn U1 and U2
-          MINORS.reject! { |m| %w[U1 U2].include?(m['sym']) }
-        else
-          # Remove Pre-Staatsbahn U2, and move home location for U1
-          MINORS.reject! { |m| %w[U2].include?(m['sym']) }
-          MINORS.map! do |m|
-            next m unless m['sym'] == 'U1'
+        if option_cislethania
+          if @players.size == 2
+            # Remove Pre-Staatsbahn U1 and U2
+            minors.reject! { |m| %w[U1 U2].include?(m['sym']) }
+          else
+            # Remove Pre-Staatsbahn U2, and move home location for U1
+            minors.reject! { |m| %w[U2].include?(m['sym']) }
+            minors.map! do |m|
+              next m unless m['sym'] == 'U1'
 
-            m['coordinates'] = 'G12'
-            m['city'] = 0
-            m
+              m['coordinates'] = 'G12'
+              m['city'] = 0
+              m
+            end
           end
         end
-        super
+
+        minors.map { |minor| Minor.new(**minor) }
       end
 
       def init_companies(players)
+        companies = COMPANIES.dup
+
         mountain_railway_count =
           case players.size
           when 2
@@ -127,33 +139,37 @@ module Engine
           when 6
             4
           end
+        mountain_railway_count.times { |index| companies << mountain_railway_definition(index) }
 
-        mountain_railway_count.times { |index| COMPANIES << mountain_railway_definition(index) }
+        if option_cislethania
+          # Remove Pre-Staatsbahn U2 and possibly U1
+          p2 = players.size == 2
+          companies.reject! { |m| m['sym'] == 'U2' || (p2 && m['sym'] == 'U1') }
+        end
 
-        return super unless option_cislethania
-
-        # Remove Pre-Staatsbahn U2 and possibly U1
-        p2 = players.size == 2
-        COMPANIES.reject! { |m| m['sym'] == 'U2' || (p2 && m['sym'] == 'U1') }
-        super
+        companies.map { |company| Company.new(**company) }
       end
 
       def init_tiles
-        return super unless option_goods_time
+        tiles = TILES.dup
 
-        # Goods Time increase count for some town related tiles
-        TILES['3'] += 3
-        TILES['4'] += 3
-        TILES['56'] += 1
-        TILES['58'] += 3
-        TILES['87'] += 2
-        TILES['630'] += 1
-        TILES['631'] += 1
+        if option_goods_time
+          # Goods Time increase count for some town related tiles
+          tiles['3'] += 3
+          tiles['4'] += 3
+          tiles['56'] += 1
+          tiles['58'] += 3
+          tiles['87'] += 2
+          tiles['630'] += 1
+          tiles['631'] += 1
 
-        # New tile for Goods Time variant
-        TILES['204'] = 3
+          # New tile for Goods Time variant
+          tiles['204'] = 3
+        end
 
-        super
+        tiles.flat_map do |name, val|
+          init_tile(name, val)
+        end
       end
 
       def option_cislethania
@@ -164,13 +180,20 @@ module Engine
         @optional_rules&.include?(:goods_time)
       end
 
-      def optional_hexes
-        return base_map unless option_cislethania
+      def location_name(coord)
+        unless @location_names
+          @location_names = LOCATION_NAMES.dup
+          if option_cislethania
+            location_names['F25'] = 'Kronstadt'
+            location_names['G12'] = 'Budapest'
+            location_names['I10'] = 'Bosnien'
+          end
+        end
+        @location_names[coord]
+      end
 
-        LOCATION_NAMES['F25'] = 'Kronstadt'
-        LOCATION_NAMES['G12'] = 'Budapest'
-        LOCATION_NAMES['I10'] = 'Bosnien'
-        cislethania_map
+      def optional_hexes
+        option_cislethania ? cislethania_map : base_map
       end
 
       def operating_round(round_num)
@@ -231,33 +254,71 @@ module Engine
           .map { |c| corporation_by_id(c) }
       end
 
-      def validate_optional_rules(optional_rules)
-        if optional_rules&.include?(:cisleithania )
-          raise GameError 'Cisleithania optional rule is for 2-3 players' if @players.size > 3
-          raise GameError 'Cannot use Cisleithania and Goods Time at the same time' if option_goods_time
-        elsif @players.size < 3
-          raise GameError '2 player count requires to use Cisleithania optional rule'
-        end
-      end
+      MOUNTAIN_RAILWAY_DEFINITION = {
+        sym: 'B%1$d',
+        name: '%2$s (B%1$d)',
+        value: 120,
+        revenue: 25,
+        desc: 'Moutain railway (B%1$d). Cannot be sold but can be exchanged for a 10 percent share in a '\
+              'regional railway during phase 3 SR, or when first 4 train is bought. '\
+              'If no regional railway shares are available from IPO this private is lost without compensation.',
+        abilities: [
+          {
+            type: 'no_buy',
+            owner_type: 'player',
+          },
+        ],
+      }.freeze
 
       def mountain_railway_definition(index)
         real_index = index + 1
-        {
-          sym: "M#{real_index}",
-          name: "#{MOUNTAIN_RAILWAY_NAMES[real_index]} (M#{real_index})",
-          value: 120,
-          revenue: 25,
-          desc: "Moutain railway (M#{real_index}). Cannot be sold but can be exchanged for a 10% share in a "\
-                'regional railway during phase 3 SR, or when first 4 train is bought. '\
-                'If no regional railway shares are available from IPO this private is lost without compensation.',
-          abilities: [
-            {
-              type: 'no_buy',
-              owner_type: 'player',
-            },
-          ],
-        }
+        definition = MOUNTAIN_RAILWAY_DEFINITION.dup
+        definition[:sym] = format(definition[:sym], real_index)
+        definition[:name] = format(definition[:name], real_index, MOUNTAIN_RAILWAY_NAMES[real_index])
+        definition[:desc] = format(definition[:desc], real_index)
+        definition
       end
+
+      DRESDEN_1 = 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,hide:1,groups:Dresden;'\
+                      'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
+      DRESDEN_2 = 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Dresden;'\
+                      'path=a:4,b:_0,terminal:1'
+      KIEW_1 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,hide:1,groups:Kiew;'\
+                       'path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
+      KIEW_2 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Kiew;'\
+                       'path=a:0,b:_0,terminal:1'
+      MAINLAND_1 = 'offboard=revenue:yellow_10|green_30|brown_50|gray_70,hide:1,groups:Mainland;'\
+                      'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1'
+      MAINLAND_2 = 'offboard=revenue:yellow_10|green_30|brown_50|gray_70,groups:Mainland;path=a:3,b:_0,terminal:1'
+      BUKAREST_1 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,hide:1,groups:Bukarest;'\
+                   'path=a:1,b:_0,terminal:1'
+      BUKAREST_2 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Bukarest;path=a:2,b:_0,terminal:1'
+      SARAJEVO_1 = 'offboard=revenue:yellow_10|green_10|brown_50|gray_50,hide:1,groups:Sarajevo;'\
+                   'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
+      SARAJEVO_2 = 'city=revenue:yellow_10|green_10|brown_50|gray_50,hide:1,groups:Sarajevo;'\
+                   'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
+      SARAJEVO_3 = 'offboard=revenue:yellow_10|green_10|brown_50|gray_50,groups:Sarajevo;'\
+                   'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
+      WIEN = 'city=revenue:30;path=a:0,b:_0;city=revenue:30;'\
+             'path=a:1,b:_1;city=revenue:30;path=a:2,b:_2;upgrade=cost:20,terrain:water;label=W'
+
+      MINE_1 = 'city=revenue:yellow_10|brown_40;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
+      MINE_2 = 'city=revenue:yellow_10|brown_40;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
+      MINE_3 = 'city=revenue:yellow_20|brown_60;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
+      MINE_4 = 'city=revenue:yellow_10|brown_40;path=a:1,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
+
+      TOWN = 'town=revenue:0'
+      TOWN_WITH_WATER = 'town=revenue:0;upgrade=cost:20,terrain:water'
+      TOWN_WITH_MOUNTAIN = 'town=revenue:0;upgrade=cost:40,terrain:mountain'
+      DOUBLE_TOWN = 'town=revenue:0;town=revenue:0'
+      DOUBLE_TOWN_WITH_WATER = 'town=revenue:0;town=revenue:0;upgrade=cost:20,terrain:water'
+      CITY = 'city=revenue:0'
+      CITY_WITH_WATER = 'city=revenue:0;upgrade=cost:20,terrain:water'
+      CITY_WITH_MOUNTAIN = 'city=revenue:0;upgrade=cost:40,terrain:mountain'
+      CITY_LABEL_T = 'city=revenue:0;label=T'
+      PLAIN = ''
+      PLAIN_WITH_MOUNTAIN = 'upgrade=cost:40,terrain:mountain'
+      PLAIN_WITH_WATER = 'upgrade=cost:20,terrain:water'
 
       def base_map
         plain_hexes = %w[B7 B11 B17 B19 B21 C8 C14 C20 C22 C24 D9 D11 D13 D15 D17 E6 E18 E22
@@ -275,77 +336,40 @@ module Engine
         end
         {
           red: {
-            ['A4'] =>
-              'offboard=revenue:yellow_10|green_20|brown_30|gray_40,hide:1,groups:Dresden;'\
-              'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
-            ['A24'] =>
-              'offboard=revenue:yellow_10|green_30|brown_40|gray_50,hide:1,groups:Kiew;'\
-              'path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
-            ['A26'] =>
-              'offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Kiew;'\
-              'path=a:0,b:_0,terminal:1',
-            ['B3'] =>
-              'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Dresden;'\
-              'path=a:4,b:_0,terminal:1',
-            ['G28'] =>
-              'offboard=revenue:yellow_10|green_30|brown_40|gray_50,hide:1,groups:Bukarest;path=a:1,b:_0,terminal:1',
-            ['H27'] =>
-              'offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Bukarest;path=a:2,b:_0,terminal:1',
-            ['H1'] =>
-              'offboard=revenue:yellow_10|green_30|brown_50|gray_70,hide:1,groups:Mainland;'\
-              'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
-            ['I2'] =>
-              'offboard=revenue:yellow_10|green_30|brown_50|gray_70,groups:Mainland;path=a:3,b:_0,terminal:1',
-            ['J11'] =>
-              'offboard=revenue:yellow_10|green_10|brown_50|gray_50,hide:1,groups:Sarajevo;'\
-              'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
-            ['J13'] =>
-              'city=revenue:yellow_10|green_10|brown_50|gray_50,hide:1,groups:Sarajevo;'\
-              'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
-            ['J15'] =>
-              'offboard=revenue:yellow_10|green_10|brown_50|gray_50,groups:Mainland;'\
-              'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
+            ['A4'] => DRESDEN_1,
+            ['A24'] => KIEW_1,
+            ['A26'] => KIEW_2,
+            ['B3'] => DRESDEN_2,
+            ['G28'] => BUKAREST_1,
+            ['H27'] => BUKAREST_2,
+            ['H1'] => MAINLAND_1,
+            ['I2'] => MAINLAND_2,
+            ['J11'] => SARAJEVO_1,
+            ['J13'] => SARAJEVO_2,
+            ['J15'] => SARAJEVO_3,
           },
           gray: {
-            ['A12'] =>
-              'city=revenue:yellow_10|brown_40;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
-            ['A22'] =>
-              'city=revenue:yellow_20|brown_60;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
-            ['C6'] =>
-              'city=revenue:yellow_10|brown_40;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
-            ['H25'] =>
-              'city=revenue:yellow_10|brown_40;path=a:1,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
+            ['A12'] => MINE_2,
+            ['A22'] => MINE_3,
+            ['C6'] => MINE_1,
+            ['H25'] => MINE_4,
           },
           white: {
-            one_town =>
-              'town=revenue:0',
-            %w[A6 A10] =>
-              'town=revenue:0;upgrade=cost:40,terrain:mountain',
-            two_towns =>
-              'town=revenue:0;town=revenue:0',
-            %w[D19 H3] =>
-              'city=revenue:0;upgrade=cost:40,terrain:mountain',
-            %w[A18 C26 E26 I8] =>
-              'city=revenue:0;label=T',
-            %w[B5 B9 B15 B23 C12 E8 F7 F23 G4 G10 G26 H15 H23] =>
-              'city=revenue:0',
-            plain_hexes =>
-              '',
-            %w[C18 D21 D23 G8 H5 H7] =>
-              'upgrade=cost:40,terrain:mountain',
-            %w[E10 G16] =>
-              'upgrade=cost:20,terrain:water',
-            ['E12'] =>
-              'city=revenue:30;path=a:0,b:_0;city=revenue:30;'\
-              'path=a:1,b:_1;city=revenue:30;path=a:2,b:_2;upgrade=cost:20,terrain:water;label=W',
-            ['F17'] =>
-              'city=revenue:20;path=a:0,b:_0;city=revenue:20;path=a:3,b:_1;upgrade=cost:20,terrain:water;label=Bu',
-            %w[E14 G18] =>
-              'city=revenue:0;upgrade=cost:20,terrain:water',
-            %w[H17 I18] =>
-              'town=revenue:0;upgrade=cost:20,terrain:water',
-            ['E16'] =>
-              'town=revenue:0;town=revenue:0;upgrade=cost:20,terrain:water',
+            one_town => TOWN,
+            %w[A6 A10] => TOWN_WITH_MOUNTAIN,
+            two_towns => DOUBLE_TOWN,
+            %w[D19 H3] => CITY_WITH_MOUNTAIN,
+            %w[A18 C26 E26 I8] => CITY_LABEL_T,
+            %w[B5 B9 B15 B23 C12 E8 F7 F23 G4 G10 G26 H15 H23] => CITY,
+            plain_hexes => PLAIN,
+            %w[C18 D21 D23 G8 H5 H7] => PLAIN_WITH_MOUNTAIN,
+            %w[E10 G16] => PLAIN_WITH_WATER,
+            ['E12'] => WIEN,
+            ['F17'] => 'city=revenue:20;path=a:0,b:_0;city=revenue:20;path=a:3,b:_1;upgrade=cost:20,terrain:water;'\
+                       'label=Bu',
+            %w[E14 G18] => CITY_WITH_WATER,
+            %w[H17 I18] => TOWN_WITH_WATER,
+            ['E16'] => DOUBLE_TOWN_WITH_WATER,
           },
         }
       end
@@ -355,18 +379,10 @@ module Engine
         budapest = @players.size == 3 ? 'city' : 'offboard'
         {
           red: {
-            ['A4'] =>
-              'offboard=revenue:yellow_10|green_20|brown_30|gray_40,hide:1,groups:Dresden;'\
-              'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
-            ['A24'] =>
-              'offboard=revenue:yellow_10|green_30|brown_40|gray_50,hide:1,groups:Kiew;'\
-              'path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
-            ['A26'] =>
-              'offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Kiew;'\
-              'path=a:0,b:_0,terminal:1',
-            ['B3'] =>
-              'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Dresden;'\
-              'path=a:4,b:_0,terminal:1',
+            ['A4'] => DRESDEN_1,
+            ['A24'] => KIEW_1,
+            ['A26'] => KIEW_2,
+            ['B3'] => DRESDEN_2,
             ['E14'] =>
               'offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;'\
               'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
@@ -375,48 +391,30 @@ module Engine
               'path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
             ['F25'] =>
               'offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
-            ['H1'] =>
-              'offboard=revenue:yellow_10|green_30|brown_50|gray_70,hide:1,groups:Mainland;'\
-              'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
-            ['I2'] =>
-              'offboard=revenue:yellow_10|green_30|brown_50|gray_70,groups:Mainland;path=a:3,b:_0,terminal:1',
+            ['H1'] => MAINLAND_1,
+            ['I2'] => MAINLAND_2,
             ['I10'] =>
               'offboard=revenue:yellow_10|green_10|brown_50|gray_50;path=a:1,b:_0,terminal:1;'\
               'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
           },
           gray: {
-            ['A12'] =>
-              'city=revenue:yellow_10|brown_40;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
-            ['A22'] =>
-              'city=revenue:yellow_20|brown_60;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
-            ['C6'] =>
-              'city=revenue:yellow_10|brown_40;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
-            ['B17'] =>
-              'path=a:0,b:3;path=a:1,b:4;path=a:1,b:3;path=a:0,b:4',
+            ['A12'] => MINE_2,
+            ['A22'] => MINE_3,
+            ['B17'] => 'path=a:0,b:3;path=a:1,b:4;path=a:1,b:3;path=a:0,b:4',
+            ['C6'] => MINE_1,
           },
           white: {
-            %w[A8 A20 C10 C16 D25 E24 G2] =>
-              'town=revenue:0',
-            %w[A6 A10] =>
-              'town=revenue:0;upgrade=cost:40,terrain:mountain',
-            %w[B13 B25 F11] =>
-              'town=revenue:0;town=revenue:0',
-            %w[H3] =>
-              'city=revenue:0;upgrade=cost:40,terrain:mountain',
-            %w[A18 C26 E26 I8] =>
-              'city=revenue:0;label=T',
-            %w[B5 B9 B15 B23 C12 E8 F7 G4 G10] =>
-              'city=revenue:0',
+            %w[A8 A20 C10 C16 D25 E24 G2] => TOWN,
+            %w[A6 A10] => TOWN_WITH_MOUNTAIN,
+            %w[B13 B25 F11] => DOUBLE_TOWN_WITH_WATER,
+            %w[H3] => CITY_WITH_MOUNTAIN,
+            %w[A18 C26 E26 I8] => CITY_WITH_MOUNTAIN,
+            %w[B5 B9 B15 B23 C12 E8 F7 G4 G10] => CITY,
             %w[B7 B11 B19 B21 C8 C14 C20 C22 C24 D9 D11 D13 D15 E6
-               F9 F13 G6 H9 H11] =>
-              '',
-            %w[D23 G8 H5 H7] =>
-              'upgrade=cost:40,terrain:mountain',
-            %w[E10] =>
-              'upgrade=cost:20,terrain:water',
-            ['E12'] =>
-              'city=revenue:30;path=a:0,b:_0;city=revenue:30;'\
-              'path=a:1,b:_1;city=revenue:30;path=a:2,b:_2;upgrade=cost:20,terrain:water;label=W',
+               F9 F13 G6 H9 H11] => PLAIN,
+            %w[D23 G8 H5 H7] => PLAIN_WITH_MOUNTAIN,
+            %w[E10] => PLAIN_WITH_WATER,
+            ['E12'] => WIEN,
           },
         }
       end

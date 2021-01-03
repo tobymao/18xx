@@ -304,6 +304,11 @@ module Engine
         self.class::HEXES
       end
 
+      # use to modify location names based on optional rules
+      def location_name(coord)
+        self.class::LOCATION_NAMES[coord]
+      end
+
       # use to modify tiles based on optional rules
       def optional_tiles; end
 
@@ -1574,7 +1579,7 @@ module Engine
               end
 
               # name the location (city/town)
-              location_name = self.class::LOCATION_NAMES[coord]
+              location_name = location_name(coord)
 
               Hex.new(coord, layout: layout, axes: axes, tile: tile, location_name: location_name)
             end
@@ -1583,31 +1588,33 @@ module Engine
       end
 
       def init_tiles
-        self.class::TILES.flat_map do |name, val|
-          if val.is_a?(Integer) || val == 'unlimited'
-            count = val == 'unlimited' ? 1 : val
-            count.times.map do |i|
-              Tile.for(
-                name,
-                index: i,
-                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
-                unlimited: val == 'unlimited'
-              )
-            end
-          else
-            count = val['count'] == 'unlimited' ? 1 : val['count']
-            color = val['color']
-            code = val['code']
-            count.times.map do |i|
-              Tile.from_code(
-                name,
-                color,
-                code,
-                index: i,
-                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
-                unlimited: val['count'] == 'unlimited'
-              )
-            end
+        self.class::TILES.flat_map { |name, val| init_tile(name, val) }
+      end
+
+      def init_tile(name, val)
+        if val.is_a?(Integer) || val == 'unlimited'
+          count = val == 'unlimited' ? 1 : val
+          count.times.map do |i|
+            Tile.for(
+              name,
+              index: i,
+              reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
+              unlimited: val == 'unlimited'
+            )
+          end
+        else
+          count = val['count'] == 'unlimited' ? 1 : val['count']
+          color = val['color']
+          code = val['code']
+          count.times.map do |i|
+            Tile.from_code(
+              name,
+              color,
+              code,
+              index: i,
+              reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
+              unlimited: val['count'] == 'unlimited'
+            )
           end
         end
       end
