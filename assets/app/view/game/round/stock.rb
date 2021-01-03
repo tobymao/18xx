@@ -134,7 +134,7 @@ module View
         end
 
         def render_pre_ipo(corporation)
-          type = @step.ipo_type(@corporation)
+          type = @step.ipo_type(corporation)
           case type
           when :par
             return h(Par, corporation: corporation) if @current_actions.include?('par')
