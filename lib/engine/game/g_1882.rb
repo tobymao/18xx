@@ -183,6 +183,10 @@ module Engine
         @graph.clear_graph_for_all
       end
 
+      def event_close_remaining_companies!
+        event_close_companies!
+      end
+
       def revenue_for(route, stops)
         revenue = super
 
