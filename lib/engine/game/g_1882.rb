@@ -184,7 +184,7 @@ module Engine
       end
 
       def event_close_remaining_companies!
-        event_close_companies!
+        true
       end
 
       def revenue_for(route, stops)
