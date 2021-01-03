@@ -234,7 +234,7 @@ module Engine
       "name": "Hudson Bay",
       "value": 20,
       "revenue": 5,
-      "desc": "Blocks Flin Flon (C11).",
+      "desc": "Blocks hex C11 (Flin Flon) while owned by a player. Closes at the start of Phase 5.",
       "sym": "HB",
       "abilities": [
         {
@@ -250,7 +250,7 @@ module Engine
       "name": "Saskatchewan Central",
       "value": 50,
       "revenue": 10,
-      "desc": "Blocks hex H4 while owned by a player. During a player's stock turn, in any phase, the player owning this company can close it to \"convert\" to the 10-share corporation SC, paying 10% to become the president. This counts as a \"certificate purchase action\". SC shares cannot be purchased by any player unless SC has been converted. The SC floats using the same rules as other corporations. It places its home token location in any available non-reserved city or replaces a neutral station marker on the map. If the next available train is a 3, 4, 5 or 6 adds one more to the available trains. If the private company is sold to a corporation, it no longer can be converted. Closes at the start of Phase 6.",
+      "desc": "Blocks hex H4 while owned by a player. On the owner's turn during a stock round they may convert it to a President's share of the SC by choosing its par price and immediately using their \"buy action\" to purchase an additional share of the SC. This is the only way the SC can be started. Place the SC home token in any available non-reserved city slot or replace a neutral station marker. If the next available train is a 3, 4, 5 or 6, add one train of that type to the Depot. Closes at the start of Phase 6.",
       "sym": "SC",
       "abilities": [
         {
@@ -276,7 +276,7 @@ module Engine
       "name": "North West Rebellion",
       "value": 80,
       "revenue": 15,
-      "desc": "A corporation owning this company may move one of its existing on-map station markers located in a non-NWR indicated city to any open NWR indicated hex city, including upgraded cities. There is no cost to perform this action, but it may only be taken one time per game. There is no track connection requirement. This power is in addition to all normal operating turn actions and may be taken at any time during the operating turn. If the corporation home token is moved, replace it with a neutral station marker from the supply. After performing the action, a single (extra) tile lay or upgrade may be performed on the destination hex. This is in addition to a regular track lay(s) or upgrade performed by the corporation.\nException: A corporation’s home token cannot be moved if a neutral station marker already exists in the corporation’s home hex.",
+      "desc": "A corporation owning this company may move one of its existing on-map station markers located in a non-NWR indicated city to any open NWR indicated hex city, including upgraded cities. There is no cost to perform this action, but it may only be taken one time per game. There is no track connection requirement. This power is in addition to all normal operating turn actions and may be taken at any time during the operating turn. If the corporation home token is moved, replace it with a neutral station marker from the supply. After performing the action, a single (extra) tile lay or upgrade may be performed on the destination hex. This is in addition to a regular track lay(s) or upgrade performed by the corporation.\nException: A corporation’s home token cannot be moved if a neutral station marker already exists in the corporation’s home hex. Closes at the start of Phase 5.",
       "sym": "NWR",
       "abilities": [
         {
@@ -305,7 +305,7 @@ module Engine
       "name": "Trestle Bridge",
       "value": 140,
       "revenue": 0,
-      "desc": "Blocks hex G9 while owned by a player. Earns $10 every time a corporation adds track over a river. During setup, a 10% share certificate selected randomly from the corporations (excluding SC) is placed with this company. When purchased during the private auction, the player receives both the company and the certificate.",
+      "desc": "Blocks hex G9 while owned by a player. Earns $10 every time a corporation adds track over a river. During setup, a 10% share certificate selected randomly from the corporations (excluding SC) is placed with this company. When purchased during the private auction, the player receives both the company and the certificate. Closes at the start of Phase 5.",
       "sym": "TB",
       "abilities": [
         {
