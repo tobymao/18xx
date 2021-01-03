@@ -190,251 +190,214 @@ module Engine
   ],
   "companies": [
     {
-       "name" : "Pittsburgh Steel Mill",
+       "name" : "Lehigh Coal Mine Co.",
+       "value" : 30,
+       "revenue" : 0,
+       "desc" : "Comes with one coal token",
+       "sym": "P1"
+    },
+    {
+       "name" : "Fox Bridge Works",
        "value" : 40,
        "revenue" : 0,
-       "desc" : "Owning corp may place special Pittsburgh yellow tile during tile-laying, regardless of connectivity.  The hex is not reserved, and the power is lost if another company builds there first.",
-       "sym" : "PSM",
-       "abilities": [
-         {
-           "type": "tile_lay",
-           "hexes": [
-             "F13"
-           ],
-           "tiles": [
-             "X00"
-           ],
-           "when": "track",
-           "owner_type": "corporation",
-           "count": 1
-         }
-       ]
+       "desc" : "Comes with one bridge token. $10 discount on rivers",
+       "sym": "P2"
     },
     {
-      "name" : "Mountain Engineers",
-      "value" : 40,
-      "revenue" : 0,
-      "desc" : "Owning company receives $20 after laying a yellow tile in a mountain hex.  Any fees must be paid first.",
-      "sym" : "ME",
-      "abilities": [
-        {
-            "type": "tile_income",
-            "income" : 20,
-            "terrain": "mountain",
-            "owner_type": "corporation",
-            "owner_only": true
-        }
-      ]
+       "name" : "Reece Oil and Gas",
+       "value" : 30,
+       "revenue" : 0,
+       "desc" : "Comes with one oil token",
+       "sym": "P3"
     },
     {
-      "name" : "Ohio Bridge Company",
-      "value" : 40,
-      "revenue" : 0,
-      "desc" : "Comes with one $10 bridge token that may be placed by the owning corp in Louisville, Cincinnati, or Charleston, max one token per city, regardless of connectivity.  Allows owning corp to skip $10 river fee when placing yellow tiles.",
-      "sym" : "OBC",
-      "abilities": [
-        {
-          "type": "tile_discount",
-          "discount" : 10,
-          "terrain": "water",
-          "owner_type": "corporation"
-        },
-        {
-          "type": "assign_hexes",
-          "hexes": [
-            "H3",
-            "G6",
-            "H9"
-          ],
-          "count": 1,
-          "when": "owning_corp_or_turn",
-          "owner_type": "corporation"
-        }
-      ]
+       "name" : "Hendrickson Iron",
+       "value" : 40,
+       "revenue" : 0,
+       "desc" : "Comes with one ore token",
+       "sym": "P4"
     },
     {
-      "name" : "Union Bridge Company",
-      "value" : 80,
-      "revenue" : 0,
-      "desc" : "Comes with two $10 bridge token that may be placed by the owning corp in Louisville, Cincinnati, or Charleston, max one token per city, regardless of connectivity..  Allows owning corp to skip $10 river fee when placing yellow tiles.",
-      "sym" : "UBC",
-      "abilities": [
-        {
-          "type": "tile_discount",
-          "discount" : 10,
-          "terrain": "water",
-          "owner_type": "corporation"
-        },
-        {
-          "type": "assign_hexes",
-          "hexes": [
-            "H3",
-            "G6",
-            "H9"
-          ],
-          "count": 2,
-          "when": "owning_corp_or_turn",
-          "owner_type": "corporation"
-        }
-      ]
+       "name" : "Nobel's Blasting Powder",
+       "value" : 30,
+       "revenue" : 0,
+       "desc" : "$15 discount on mountains",
+       "sym": "P5"
     },
     {
-      "name" : "Train Station",
-      "value" : 80,
-      "revenue" : 0,
-      "desc" : "Provides an additional station marker for the owning corp, awarded at time of purchase",
-      "sym" : "TS",
-      "abilities": [
-        {
-            "type": "additional_token",
-            "count" : 1,
-            "owner_type": "corporation"
-        }
-      ]
+       "name" : "Import/Export Hub",
+       "value" : 30,
+       "revenue" : 0,
+       "desc" : "Discard to replace an offboard value tile with the special tile",
+       "sym": "P6"
     },
     {
-      "name" : "Minor Coal Mine",
-      "value" : 30,
-      "revenue" : 0,
-      "desc" : "Comes with one coal mine marker.  When placing a yellow tile in a mountain hex next to a revenue location, can place token to avoid $15 terrain fee.  Marked yellow hexes cannot be upgraded.  Hexes pay $10 extra revenue and do not count as a stop.  May not start or end a route at a coal mine.",
-      "sym" : "MINC",
-      "abilities": [
-        {
-          "type": "tile_lay",
-          "hexes": [
-            "B25",
-            "C20",
-            "C24",
-            "E18",
-            "F15",
-            "G12",
-            "G14",
-            "H11",
-            "H13",
-            "H15",
-            "I8",
-            "I10"
-          ],
-          "tiles": [
-            "7","8", "9"
-          ],
-          "free": false,
-          "when": "track",
-          "owner_type": "corporation",
-          "count": 1
-        }
-      ]
+       "name" : "Track Engineers",
+       "value" : 40,
+       "revenue" : 0,
+       "desc" : "May lay two extra track tiles instead of one when paying $20",
+       "sym": "P7"
     },
     {
-      "name" : "Coal Mine",
-      "value" : 60,
-      "revenue" : 0,
-      "desc" : "Comes with two coal mine markers.  When placing a yellow tile in a mountain hex next to a revenue location, can place token to avoid $15 terrain fee.  Marked yellow hexes cannot be upgraded.  Hexes pay $10 extra revenue and do not count as a stop.  May not start or end a route at a coal mine.",
-      "sym" : "CM",
-      "abilities": [
-        {
-          "type": "tile_lay",
-          "hexes": [
-            "B25",
-            "C20",
-            "C24",
-            "E18",
-            "F15",
-            "G12",
-            "G14",
-            "H11",
-            "H13",
-            "H15",
-            "I8",
-            "I10"
-          ],
-          "tiles": [
-            "7","8", "9"
-          ],
-          "free": false,
-          "when": "track",
-          "owner_type": "corporation",
-          "count": 2
-        }
-      ]
+       "name" : "Express Freight Service",
+       "value" : 40,
+       "revenue" : 0,
+       "desc" : "+10 to any offboard for this company. Use an extra station token to indicate this",
+       "sym": "P8"
     },
     {
-      "name" : "Major Coal Mine",
-      "value" : 90,
-      "revenue" : 0,
-      "desc" : "Comes with three coal mine markers.  When placing a yellow tile in a mountain hex next to a revenue location, can place token to avoid $15 terrain fee.  Marked yellow hexes cannot be upgraded.  Hexes pay $10 extra revenue and do not count as a stop.  May not start or end a route at a coal mine.",
-      "sym" : "MAJC",
-      "abilities": [
-        {
-          "type": "tile_lay",
-          "hexes": [
-            "B25",
-            "C20",
-            "C24",
-            "E18",
-            "F15",
-            "G12",
-            "G14",
-            "H11",
-            "H13",
-            "H15",
-            "I8",
-            "I10"
-          ],
-          "tiles": [
-            "7","8", "9"
-          ],
-          "free": false,
-          "when": "track",
-          "owner_type": "corporation",
-          "count": 3
-        }
-      ]
+       "name" : "Boomtown",
+       "value" : 40,
+       "revenue" : 0,
+       "desc" : "Discard to upgrade a non-metropolis city to green as a free action even before Phase 3",
+       "sym": "P9"
     },
     {
-      "name" : "Minor Mail Contract",
-      "value" : 60,
-      "revenue" : 0,
-      "desc" : "Pays owning corp $10 at the start of each operating round, as long as the company has at least one train.",
-      "sym" : "MINM",
-      "abilities": [
-        {
-          "type": "revenue_change",
-          "revenue": 10,
-          "when": "has_train",
-          "owner_type": "corporation"
-        }
-      ]
+       "name" : "Carnegie Steel Company",
+       "value" : 40,
+       "revenue" : 0,
+       "desc" : "If this company starts in an unselected and unimproved metropolis, that city becomes a metropolis",
+       "sym": "P10"
     },
     {
-      "name" : "Mail Contract",
-      "value" : 90,
-      "revenue" : 0,
-      "desc" : "Pays owning corp $15 at the start of each operating round, as long as the company has at least one train.",
-      "sym" : "MAIL",
-      "abilities": [
-        {
-          "type": "revenue_change",
-          "revenue": 15,
-          "when": "has_train",
-          "owner_type": "corporation"
-        }
-      ]
+       "name" : "Pettibone & Mulliken",
+       "value" : 40,
+       "revenue" : 0,
+       "desc" : "May upgrade non-city track one color higher than currently allowed. May make an extra non-city upgrade instead of an extra lay when paying $20",
+       "sym": "P11"
     },
     {
-      "name" : "Major Mail Contract",
-      "value" : 120,
-      "revenue" : 0,
-      "desc" : "Pays owning corp $20 at the start of each operating round, as long as the company has at least one train.",
-      "sym" : "MAJM",
-      "abilities": [
-        {
-          "type": "revenue_change",
-          "revenue": 20,
-          "when": "has_train",
-          "owner_type": "corporation"
-        }
-      ]
+       "name" : "Standard Oil Co.",
+       "value" : 60,
+       "revenue" : 0,
+       "desc" : "Comes with two oil tokens",
+       "sym": "P12"
+    },
+    {
+       "name" : "Pennsy Boneyard",
+       "value" : 60,
+       "revenue" : 0,
+       "desc" : "Discard when this company's non-plus train would rust to treat it as a plus train.",
+       "sym": "P13"
+    },
+    {
+       "name" : "Pyramid Scheme",
+       "value" : 60,
+       "revenue" : 0,
+       "desc" : "Minimum bid $5. No special ability",
+       "sym": "P14"
+    },
+    {
+       "name" : "Western Land Grant",
+       "value" : 60,
+       "revenue" : 0,
+       "desc" : "Company may hold one additional loan on this card. This loan only has a $5 interest. Loans may be taken and paid off in any order",
+       "sym": "P15"
+    },
+    {
+       "name" : "Regional Headquarters",
+       "value" : 60,
+       "revenue" : 0,
+       "desc" : "May upgrade a non-metropolis green or brown city to the Reg. HQ tile after Phase 5 starts. The arms labeled '?' may point to impassable hex sides.",
+       "sym": "P16"
+    },
+    {
+       "name" : "Great Northern Railway",
+       "value" : 60,
+       "revenue" : 0,
+       "desc" : "One extra yellow lay per turn on the marked hexes, ignoring terrain fees. +30 per train that runs Fargo-Helena. +60 per train that runs Seattle-Fargo-Helena-Chicago",
+       "sym": "P17"
+    },
+    {
+       "name" : "Peabody Coal Company",
+       "value" : 60,
+       "revenue" : 0,
+       "desc" : "Comes with two coal tokens",
+       "sym": "P18"
+    },
+    {
+       "name" : "Union Switch & Signal",
+       "value" : 80,
+       "revenue" : 0,
+       "desc" : "One train per turn may skip over a city (even a blocked city).",
+       "sym": "P19"
+    },
+    {
+       "name" : "Suem & Wynn Law Firm",
+       "value" : 80,
+       "revenue" : 0,
+       "desc" : "Discard to lay a token in a blocked city. This may be in addition to your normal token lay and may be done before laying track.",
+       "sym": "P20"
+    },
+    {
+       "name" : "Keystone Bridge Co.",
+       "value" : 80,
+       "revenue" : 0,
+       "desc" : "Comes with one bridge token and either one ore or one coal token (your choice, decided when the token is laid)",
+       "sym": "P21"
+    },
+    {
+       "name" : "American Bridge Company",
+       "value" : 80,
+       "revenue" : 0,
+       "desc" : "Comes with two bridge tokens. $10 discount on rivers",
+       "sym": "P22"
+    },
+    {
+       "name" : "Bailey yard",
+       "value" : 80,
+       "revenue" : 0,
+       "desc" : "The company receives one bonus station marker",
+       "sym": "P23"
+    },
+    {
+       "name" : "Anaconda Copper",
+       "value" : 90,
+       "revenue" : 0,
+       "desc" : "Comes with two ore tokens",
+       "sym": "P24"
+    },
+    {
+       "name" : "American Locomotive Co.",
+       "value" : 90,
+       "revenue" : 0,
+       "desc" : "10% discount on train purchases. May discard this to buy a train any time before running. CLOSES ON PHASE 6",
+       "sym": "P25"
+    },
+    {
+       "name" : "Rural Junction",
+       "value" : 90,
+       "revenue" : 0,
+       "desc" : "May place the Rural Junction tiles as a track lay (see rules)",
+       "sym": "P26"
+    },
+    {
+       "name" : "Company Town",
+       "value" : 90,
+       "revenue" : 0,
+       "desc" : "May place -one- Company Town tile as a track lay (see rules)",
+       "sym": "P27"
+    },
+    {
+       "name" : "Consolidation Coal Co.",
+       "value" : 90,
+       "revenue" : 0,
+       "desc" : "Comes with three coal tokens",
+       "sym": "P28"
+    },
+    {
+       "name" : "Bankrupt Railroad",
+       "value" : 120,
+       "revenue" : 0,
+       "desc" : "If this company starts in a city with a No Subsidy tile it immediately takes a free 2-train which may run in its first OR",
+       "sym": "P29"
+    },
+    {
+       "name" : "Double Heading",
+       "value" : 120,
+       "revenue" : 0,
+       "desc" : "Each turn, one non-permanent train may run to one extra city",
+       "sym": "P30"
     }
   ],
   "corporations": [
