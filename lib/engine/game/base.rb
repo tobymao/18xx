@@ -348,6 +348,8 @@ module Engine
           train
         end
 
+        data['companies'] ||= []
+
         data['companies'].map! do |company|
           company.transform_keys!(&:to_sym)
           company[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
