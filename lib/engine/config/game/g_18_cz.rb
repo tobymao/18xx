@@ -966,9 +966,6 @@ module Engine
                     "distance": 4,
                     "price": 350,
                     "num": 4,
-                    "events":[
-                      {"type": "close_companies"}
-                    ],
                     "variants": [
                         {
                             "name": "4+4g",
