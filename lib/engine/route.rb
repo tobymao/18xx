@@ -7,25 +7,35 @@ module Engine
     attr_accessor :halts
     attr_reader :last_node, :phase, :train, :routes
 
-    def initialize(game, phase, train, connection_hexes: [], routes: [], override: nil, halts: nil)
-      @connections = []
+    def initialize(game, phase, train, **opts)
+      @game = game
       @phase = phase
       @train = train
+
+      @routes = opts[:routes] || []
+      @connection_hexes = opts[:connection_hexes]
+      @hexes = opts[:hexes]
+      @revenue = opts[:revenue]
+      @revenue_str = opts[:revenue_str]
+      @subsidy = opts[:subsidy]
+      @halts = opts[:halts]
+
+      @connection_data = nil
       @last_node = nil
-      @last_connection = nil
-      @routes = routes
-      @override = override
-      @game = game
       @stops = nil
-      @halts = halts
-      restore_connections(connection_hexes) if connection_hexes
     end
 
     def reset!
-      @connections.clear
+      @connection_hexes = nil
+      @hexes = nil
+      @revenue = nil
+      @revenue_str = nil
+      @subsidy = nil
+      @halts = nil
+
+      @connection_data = nil
       @last_node = nil
       @stops = nil
-      @halts = nil
     end
 
     def cycle_halts
@@ -37,15 +47,15 @@ module Engine
     end
 
     def head
-      @connections[0]
+      connection_data[0]
     end
 
     def tail
-      @connections[-1]
+      connection_data[-1]
     end
 
     def connections
-      @connections.map { |c| c[:connection] }
+      connection_data&.map { |c| c[:connection] }
     end
 
     def next_connection(node, connection, other)
@@ -56,8 +66,13 @@ module Engine
 
     def select(node, other, keep = nil)
       other_paths = @game.compute_other_paths(@routes, self)
-      other_paths.concat(@connections.reject { |c| c[:connection] == keep }
-                          .flat_map { |c| c[:connection].paths })
+
+      connection_data.each do |c|
+        next if c[:connection] == keep
+
+        other_paths.concat(c[:connection].paths)
+      end
+
       nodes = [node, other]
 
       node.hex.all_connections.select do |c|
@@ -78,29 +93,29 @@ module Engine
     end
 
     def touch_node(node)
-      if @connections.any?
+      if connection_data.any?
         case node
         when head[:left]
           if (connection = next_connection(head[:right], head[:connection], node))
-            @connections[0] = segment(connection, right: head[:right])
+            connection_data[0] = segment(connection, right: head[:right])
           else
-            @connections.shift
+            connection_data.shift
           end
         when tail[:right]
           if (connection = next_connection(tail[:left], tail[:connection], node))
-            @connections[-1] = segment(connection, left: tail[:left])
+            connection_data[-1] = segment(connection, left: tail[:left])
           else
-            @connections.pop
+            connection_data.pop
           end
         when head[:right]
-          @connections.shift
+          connection_data.shift
         when tail[:left]
-          @connections.pop
+          connection_data.pop
         else
           if (connection = select(head[:left], node)[0])
-            @connections.unshift(segment(connection, right: head[:left]))
+            connection_data.unshift(segment(connection, right: head[:left]))
           elsif (connection = select(tail[:right], node)[0])
-            @connections << segment(connection, left: tail[:right])
+            connection_data << segment(connection, left: tail[:right])
           end
         end
       elsif @last_node == node
@@ -109,7 +124,7 @@ module Engine
         if (connection = select(@last_node, node)[0])
           a, b = connection.nodes
           a, b = b, a if @last_node == a
-          @connections << { left: a, right: b, connection: connection }
+          connection_data << { left: a, right: b, connection: connection }
         end
       else
         @last_node = node
@@ -126,23 +141,24 @@ module Engine
     end
 
     def visited_stops
-      @connections.flat_map { |c| [c[:left], c[:right]] }.uniq
+      connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq
     end
 
     def stops
-      @stops ||= compute_stops
+      @stops ||= @game.compute_stops(self)
     end
 
     def hexes
-      return @override[:hexes] if @override
+      return @hexes if @hexes
 
       # find unique node hexes
-      @connections
+      connection_data
         .flat_map { |c| [c[:left], c[:right]] }
         .chunk(&:itself)
         .to_a # opal has a bug that needs this conversion from enum
         .map(&:first)
         .map(&:hex)
+        .compact
     end
 
     def all_hexes
@@ -153,7 +169,7 @@ module Engine
     def check_cycles!
       cycles = {}
 
-      @connections.each do |c|
+      connection_data.each do |c|
         right = c[:right]
         cycles[c[:left]] = true
         raise GameError, "Cannot use #{right.hex.name} twice" if cycles[right]
@@ -171,7 +187,7 @@ module Engine
     end
 
     def ordered_paths
-      @connections.flat_map do |c|
+      connection_data.flat_map do |c|
         cpaths = c[:connection].paths
         cpaths[0].nodes.include?(c[:left]) ? cpaths : cpaths.reverse
       end
@@ -195,36 +211,38 @@ module Engine
       @game.check_other(self)
     end
 
-    def lock!
-      @revenue = revenue
-    end
-
     def revenue
-      return @revenue if @revenue
-      return @override[:revenue] if @override
+      @revenue ||=
+        begin
+          visited = visited_stops
+          raise GameError, 'Route must have at least 2 stops' if connection_data.any? && visited.size < 2
+          unless (token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) })
+            raise GameError, 'Route must contain token'
+          end
 
-      visited = visited_stops
-      raise GameError, 'Route must have at least 2 stops' if @connections.any? && visited.size < 2
-      unless (token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) })
-        raise GameError, 'Route must contain token'
-      end
+          check_distance!(visited)
+          check_cycles!
+          check_overlap!
+          check_terminals!
+          check_connected!(token)
+          check_other!
 
-      check_distance!(visited)
-      check_cycles!
-      check_overlap!
-      check_terminals!
-      check_connected!(token)
-      check_other!
+          visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
+            raise GameError, "Cannot use group #{key} more than once" unless group.one?
+          end
 
-      visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
-        raise GameError, "Cannot use group #{key} more than once" unless group.one?
-      end
-
-      @game.revenue_for(self, stops)
+          @game.revenue_for(self, stops)
+        end
     end
 
     def subsidy
-      @game.subsidy_for(self, stops)
+      return nil unless @game.respond_to?(:subsidy_for)
+
+      @subsidy ||= @game.subsidy_for(self, stops)
+    end
+
+    def revenue_str
+      @revenue_str ||= @game.revenue_str(self)
     end
 
     def corporation
@@ -232,8 +250,10 @@ module Engine
     end
 
     def connection_hexes
-      connections.map(&:id)
+      @connection_hexes ||= connections&.map(&:id)
     end
+
+    private
 
     def find_connections(connections_a, connections_b, other_paths)
       connections_a = connections_a.select { |a| (a.paths & other_paths).empty? }
@@ -252,10 +272,13 @@ module Engine
       []
     end
 
-    private
+    def connection_data
+      return @connection_data if @connection_data
 
-    def restore_connections(connection_hexes)
-      possibilities = connection_hexes.map do |hex_ids|
+      @connection_data = []
+      return @connection_data unless @connection_hexes
+
+      possibilities = @connection_hexes.map do |hex_ids|
         hexes = hex_ids.map { |hex_str| @game.hex_by_id(hex_str.split.first) }
         hexes[0].all_connections.select { |c| c.matches?(hex_ids) }
       end
@@ -268,24 +291,22 @@ module Engine
             (conn.paths & other_paths).empty?
         end
         left, right = connection&.nodes
-        return if !left || !right
+        return @connection_data if !left || !right
 
-        @connections << { left: left, right: right, connection: connection }
+        @connection_data << { left: left, right: right, connection: connection }
       else
         possibilities.each_cons(2).with_index do |pair, index|
           a, b, left, right, middle = find_connections(*pair, other_paths)
-          return @connections.clear if !left&.hex || !right&.hex || !middle&.hex
+          return @connection_data.clear if !left&.hex || !right&.hex || !middle&.hex
 
-          @connections << { left: left, right: middle, connection: a } if index.zero?
-          @connections << { left: middle, right: right, connection: b }
+          @connection_data << { left: left, right: middle, connection: a } if index.zero?
+          @connection_data << { left: middle, right: right, connection: b }
 
           other_paths.concat(a.paths)
         end
       end
-    end
 
-    def compute_stops
-      @game.compute_stops(self)
+      @connection_data
     end
   end
 end

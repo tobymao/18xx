@@ -82,7 +82,7 @@ module Engine
 
             trains[train] = true
             @log << "#{entity.name} runs a #{train.name} train#{leased}for "\
-              "#{@game.format_currency(route.revenue)}: #{@game.revenue_str(route)}"
+              "#{@game.format_currency(route.revenue)}: #{route.revenue_str}"
           end
           pass!
         end

@@ -562,10 +562,11 @@ module Engine
         @undo_possible = false
         # replay all actions with a copy
         filtered_actions.each.with_index do |action, index|
+          next if @exception
+
           if action
             action = action.copy(self) if action.is_a?(Action::Base)
             process_action(action)
-            break if @exception
           else
             # Restore the original action to the list to ensure action ids remain consistent but don't apply them
             @actions << actions[index]
@@ -619,7 +620,6 @@ module Engine
         self
       rescue Engine::GameError => e
         @exception = e
-        @actions |= [action]
         @broken_action = action
         self
       end
@@ -881,8 +881,6 @@ module Engine
       def routes_revenue(routes)
         routes.sum(&:revenue)
       end
-
-      def subsidy_for(_route, _stops); end
 
       def compute_other_paths(routes, route)
         routes.reject { |r| r == route }.flat_map(&:paths)

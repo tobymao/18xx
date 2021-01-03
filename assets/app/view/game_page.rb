@@ -64,7 +64,9 @@ module View
       actions = @game_data['actions']
       @num_actions = actions.size
       return if game_id == @game&.id &&
-        ((!cursor && @game.actions.size == @num_actions) || (cursor == @game.actions.size))
+        (@game.exception ||
+         (!cursor && @game.actions.size == @num_actions) ||
+         (cursor == @game.actions.size))
 
       @game = Engine::Game.load(@game_data, at_action: cursor)
       store(:game, @game, skip: true)
