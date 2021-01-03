@@ -4563,12 +4563,6 @@
       "id": 467
     },
     {
-      "type": "pass",
-      "entity": "CM",
-      "entity_type": "corporation",
-      "id": 468
-    },
-    {
       "type": "buy_shares",
       "entity": 197,
       "entity_type": "player",
@@ -4988,12 +4982,6 @@
       "entity": "KPAC",
       "entity_type": "corporation",
       "id": 511
-    },
-    {
-      "type": "pass",
-      "entity": "KPAC",
-      "entity_type": "corporation",
-      "id": 512
     },
     {
       "type": "pass",
