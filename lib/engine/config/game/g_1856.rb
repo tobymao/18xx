@@ -517,18 +517,20 @@ module Engine
       "sym": "CGR",
       "logo": "1856/CGR",
       "name": "Canadian Government Railway",
-      "tokens": [
-        100,
-        100,
-        100,
-        100,
-        100,
-        100,
-        100,
-        100,
-        100
-      ],
-      "color": "cgrBlack"
+      "tokens": [],
+      "color": "cgrBlack",
+      "abilities": [
+         {
+            "type": "train_buy",
+            "description": "Inter train buy/sell at face value",
+            "face_value": true
+         },
+         {
+            "type": "train_limit",
+            "description": "3 train limit",
+            "increase": 100
+         }
+      ]
     }
   ],
   "trains": [

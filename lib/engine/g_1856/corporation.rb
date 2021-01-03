@@ -5,7 +5,7 @@ require_relative '../corporation'
 module Engine
   module G1856
     class Corporation < Corporation
-      attr_accessor :escrow
+      attr_accessor :escrow, :presidents_share
       CAPITALIZATION_STRS = {
         full: 'Full',
         incremental: 'Incremental',
@@ -43,13 +43,6 @@ module Engine
 
       def capitalization_type_desc
         CAPITALIZATION_STRS[@capitalization || _capitalization_type]
-      end
-
-      def release_escrow!
-        @log << "Releasing #{@game.format_currency(@escrow)} from escrow for ${@name}"
-        @cash += @escrow
-        @escrow = nil
-        @capitalization = :incremental
       end
 
       # This is invoked BEFORE the share is moved out of the corporation
