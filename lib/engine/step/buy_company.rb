@@ -50,8 +50,7 @@ module Engine
         company = action.company
         price = action.price
         owner = company.owner
-
-        raise GameError, "Cannot buy #{company.name} from #{owner.name}" if owner.is_a?(Corporation)
+        raise GameError, "Cannot buy #{company.name} from #{owner.name}" unless @game.company_sellable(company)
 
         min = company.min_price
         max = company.max_price

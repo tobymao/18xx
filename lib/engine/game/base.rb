@@ -1209,6 +1209,11 @@ module Engine
         !corporation.ipoed
       end
 
+      # Called by Engine::Step::BuyCompany to determine if the company's owner is even allowed to sell the company
+      def company_sellable(company)
+        !company.owner.is_a?(Corporation)
+      end
+
       def float_corporation(corporation)
         @log << "#{corporation.name} floats"
 
