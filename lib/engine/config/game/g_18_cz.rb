@@ -766,7 +766,7 @@ module Engine
                     ],
                     "events": [
                         {
-                            "type": "medium_corps_available"
+                            "type": "middle_companies_available"
                         }
                     ]
                 },
@@ -855,7 +855,7 @@ module Engine
                     ],
                     "events": [
                         {
-                            "type": "large_corps_available"
+                            "type": "large_companies_available"
                         }
                     ]
                 },
@@ -1381,7 +1381,10 @@ module Engine
                     "tiles": [
                         "yellow"
                     ],
-                    "operating_rounds": 1
+                    "operating_rounds": 1,
+                    "status": [
+                        "can_buy_companies"
+                    ]
                 },
                 {
                     "name": "c",
@@ -1393,7 +1396,10 @@ module Engine
                     "tiles": [
                         "yellow"
                     ],
-                    "operating_rounds": 1
+                    "operating_rounds": 1,
+                    "status": [
+                        "can_buy_companies"
+                    ]
                 },
                 {
                     "name": "d",
@@ -1459,7 +1465,10 @@ module Engine
                         "green",
                         "brown"
                     ],
-                    "operating_rounds": 1
+                    "operating_rounds": 1,
+                    "status": [
+                        "can_buy_companies"
+                    ]
                 },
                 {
                     "name": "h",
@@ -1474,7 +1483,10 @@ module Engine
                         "green",
                         "brown"
                     ],
-                    "operating_rounds": 1
+                    "operating_rounds": 1,
+                    "status": [
+                        "can_buy_companies"
+                    ]
                 },
                 {
                     "name": "i",
@@ -1490,7 +1502,10 @@ module Engine
                         "brown",
                         "gray"
                     ],
-                    "operating_rounds": 1
+                    "operating_rounds": 1,
+                    "status": [
+                        "can_buy_companies"
+                    ]
                 },
                 {
                     "name": "j",
@@ -1506,7 +1521,10 @@ module Engine
                         "brown",
                         "gray"
                     ],
-                    "operating_rounds": 1
+                    "operating_rounds": 1,
+                    "status": [
+                        "can_buy_companies"
+                    ]
                 }
             ]
         }
