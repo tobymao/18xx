@@ -5,8 +5,7 @@ require_relative '../corporation'
 module Engine
   module G1856
     class Corporation < Corporation
-      attr_accessor :escrow
-      attr_reader :all_shares
+      attr_accessor :escrow, :presidents_share
       CAPITALIZATION_STRS = {
         full: 'Full',
         incremental: 'Incremental',
@@ -17,7 +16,6 @@ module Engine
         @started = false
         @escrow = nil
         super(sym: sym, name: name, **opts)
-        @all_shares = shares_by_corporation[self].dup
         @capitalization = nil
       end
 

@@ -467,11 +467,12 @@ module Engine
       end
 
       # Issue more shares
+      # Must be called while shares are still all in the IPO.
       def national_issue_shares!
         return unless national.total_shares == 10
 
         @log << "#{national.name} issues 10 more shares and all shares are now 5% shares"
-        national.all_shares.each_with_index do |share, index|
+        national.shares_by_corporation[national].each_with_index do |share, index|
           # Presidents cert is a 10% 2-share 1-cert paper, everything else is a 5% 1-share 0.5-cert paper
           share.percent = index.zero? ? 10 : 5
           share.cert_size = index.zero? ? 1 : 0.5
@@ -480,7 +481,6 @@ module Engine
         num_shares = national.total_shares
         10.times do |i|
           new_share = Share.new(national, percent: 5, index: num_shares + i, cert_size: 0.5)
-          national.all_shares << new_share
           national.shares_by_corporation[national] << new_share
         end
       end
@@ -577,7 +577,7 @@ module Engine
               # TODO: Handle this case properly.
               puts 'TODO'
             else # This player gets the presidency, which is 2 shares
-              @share_pool.buy_shares(player, national.all_shares.first, exchange: :free, exchange_price: 0)
+              @share_pool.buy_shares(player, national.presidents_share, exchange: :free, exchange_price: 0)
               player_national_shares -= 2
             end
           end
@@ -589,7 +589,7 @@ module Engine
             else
               @share_pool.buy_shares(
                 player,
-                national.all_shares[national_share_index],
+                national.shares_by_corporation[national].last,
                 exchange: :free,
                 exchange_price: 0
               )
