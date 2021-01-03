@@ -250,7 +250,7 @@ module Engine
       "name": "Saskatchewan Central",
       "value": 50,
       "revenue": 10,
-      "desc": "Blocks hex H4 while owned by a player. On the owner's turn during a stock round they may convert it to a President's share of the SC by choosing its par price and immediately using their \"buy action\" to purchase an additional share of the SC. This is the only way the SC can be started. Place the SC home token in any available non-reserved city slot or replace a neutral station marker. If the next available train is a 3, 4, 5 or 6, add one train of that type to the Depot. Closes at the start of Phase 6.",
+      "desc": "Blocks hex H4 while owned by a player. On the owner's turn during a stock round they may convert it to a President's share of the SC by choosing its par price and using their \"buy action\" to purchase an additional share of the SC. This is the only way the SC can be started. Place the SC home token in any available non-reserved city slot or replace a neutral station. If the next available train is a 3, 4, 5 or 6, add one train of that type to the Depot. Closes at the start of Phase 6.",
       "sym": "SC",
       "abilities": [
         {
@@ -276,7 +276,7 @@ module Engine
       "name": "North West Rebellion",
       "value": 80,
       "revenue": 15,
-      "desc": "A corporation owning this company may move one of its existing on-map station markers located in a non-NWR indicated city to any open NWR indicated hex city, including upgraded cities. There is no cost to perform this action, but it may only be taken one time per game. There is no track connection requirement. This power is in addition to all normal operating turn actions and may be taken at any time during the operating turn. If the corporation home token is moved, replace it with a neutral station marker from the supply. After performing the action, a single (extra) tile lay or upgrade may be performed on the destination hex. This is in addition to a regular track lay(s) or upgrade performed by the corporation.\nException: A corporation’s home token cannot be moved if a neutral station marker already exists in the corporation’s home hex. Closes at the start of Phase 5.",
+      "desc": "The owning corporation may move a single station token located in a non-NWR hex to any open city in an NWR hex. This action is free and may be performed at any time during the corporation's turn. An extra tile lay or upgrade may be performed on the destination hex. If the corporation's home token is moved, replace it with a neutral station (its home token cannot be moved if a neutral station already exists in the corporation’s home hex). Closes at the start of Phase 5.",
       "sym": "NWR",
       "abilities": [
         {
@@ -305,7 +305,7 @@ module Engine
       "name": "Trestle Bridge",
       "value": 140,
       "revenue": 0,
-      "desc": "Blocks hex G9 while owned by a player. Earns $10 every time a corporation adds track over a river. During setup, a 10% share certificate selected randomly from the corporations (excluding SC) is placed with this company. When purchased during the private auction, the player receives both the company and the certificate. Closes at the start of Phase 5.",
+      "desc": "Blocks hex G9 while owned by a player. Earns $10 whenever any corporation pays to cross a river. Comes with a 10% share of a randomly selected corporation (excluding SC). Closes at the start of Phase 5.",
       "sym": "TB",
       "abilities": [
         {
@@ -337,7 +337,7 @@ module Engine
       "name": "Canadian Pacific",
       "value": 180,
       "revenue": 25,
-      "desc": "When purchased during the private auction, this company comes with the 20% president's certificate of the Canadian Pacific (CPR) corporation. The buying player must immediately set the par price for the CPR to any par price. The Canadian Pacific company cannot be purchased by a corporation. This private company closes at the start of phase 5, or when the CPR purchases a train.",
+      "desc": "Purchasing player immediately takes the 20% President's share of the CPR and chooses its par value. This private closes at the start of phase 5 or when the CPR purchases a train. It cannot be bought by a corporation.",
       "sym": "CP",
       "abilities": [
         {
