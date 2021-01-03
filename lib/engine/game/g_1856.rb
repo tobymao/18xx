@@ -725,8 +725,10 @@ module Engine
       end
 
       def nationalization_president_payoff(major, owed)
+        major.spend(major.cash, @bank)
         major.owner.spend(owed, @bank)
         @loans << major.loans.pop(major.loans.size)
+        @log << "#{major.name} spends the remainder of its cash towards repaying loans"
         @log << "#{major.owner.name} pays off the #{format_currency(owed)} debt for #{major.name}"
         nationalizables.delete(major)
         post_corp_nationalization
