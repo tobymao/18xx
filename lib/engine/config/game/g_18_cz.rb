@@ -766,7 +766,7 @@ module Engine
                     ],
                     "events": [
                         {
-                            "type": "middle_companies_available"
+                            "type": "medium_corps_available"
                         }
                     ]
                 },
@@ -855,7 +855,7 @@ module Engine
                     ],
                     "events": [
                         {
-                            "type": "large_companies_available"
+                            "type": "large_corps_available"
                         }
                     ]
                 },
@@ -966,6 +966,9 @@ module Engine
                     "distance": 4,
                     "price": 350,
                     "num": 4,
+                    "events":[
+                      {"type": "close_companies"}
+                    ],
                     "variants": [
                         {
                             "name": "4+4g",
@@ -1381,10 +1384,7 @@ module Engine
                     "tiles": [
                         "yellow"
                     ],
-                    "operating_rounds": 1,
-                    "status": [
-                        "can_buy_companies"
-                    ]
+                    "operating_rounds": 1
                 },
                 {
                     "name": "c",
@@ -1396,10 +1396,7 @@ module Engine
                     "tiles": [
                         "yellow"
                     ],
-                    "operating_rounds": 1,
-                    "status": [
-                        "can_buy_companies"
-                    ]
+                    "operating_rounds": 1
                 },
                 {
                     "name": "d",
@@ -1465,10 +1462,7 @@ module Engine
                         "green",
                         "brown"
                     ],
-                    "operating_rounds": 1,
-                    "status": [
-                        "can_buy_companies"
-                    ]
+                    "operating_rounds": 1
                 },
                 {
                     "name": "h",
@@ -1483,10 +1477,7 @@ module Engine
                         "green",
                         "brown"
                     ],
-                    "operating_rounds": 1,
-                    "status": [
-                        "can_buy_companies"
-                    ]
+                    "operating_rounds": 1
                 },
                 {
                     "name": "i",
@@ -1502,10 +1493,7 @@ module Engine
                         "brown",
                         "gray"
                     ],
-                    "operating_rounds": 1,
-                    "status": [
-                        "can_buy_companies"
-                    ]
+                    "operating_rounds": 1
                 },
                 {
                     "name": "j",
@@ -1521,10 +1509,7 @@ module Engine
                         "brown",
                         "gray"
                     ],
-                    "operating_rounds": 1,
-                    "status": [
-                        "can_buy_companies"
-                    ]
+                    "operating_rounds": 1
                 }
             ]
         }

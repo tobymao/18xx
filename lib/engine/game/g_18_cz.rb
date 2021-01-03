@@ -50,6 +50,13 @@ module Engine
         'VBW' => 1,
       }.freeze
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'medium_corps_available' => ['Medium Sized Corps Available',
+                  '5-share corps ATE, BN, BTE, KFN, NWB are available to start'],
+        'large_corps_available' => ['Large Sized Corps Available',
+                  '10-share corps By, kk, Sx, Pr, Ug are available to start']
+      ).freeze
+
       def setup
         @or = 0
         @current_layer = 1
@@ -130,11 +137,11 @@ module Engine
         @log << "-- Layer #{@current_layer} corporations now available --"
       end
 
-      def event_middle_companies_available!
+      def event_medium_corps_available!
         increase_layer
       end
 
-      def event_large_companies_available!
+      def event_large_corps_available!
         increase_layer
       end
 
