@@ -384,7 +384,7 @@ module Engine
       end
 
       def stock_round
-        Round::Stock.new(self, [
+        Round::G1856::Stock.new(self, [
           Step::DiscardTrain,
           Step::Exchange,
           Step::SpecialTrack,
