@@ -52,9 +52,9 @@ module Engine
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'medium_corps_available' => ['Medium Sized Corps Available',
-                  '5-share corps ATE, BN, BTE, KFN, NWB are available to start'],
+                                     '5-share corps ATE, BN, BTE, KFN, NWB are available to start'],
         'large_corps_available' => ['Large Sized Corps Available',
-                  '10-share corps By, kk, Sx, Pr, Ug are available to start']
+                                    '10-share corps By, kk, Sx, Pr, Ug are available to start']
       ).freeze
 
       def setup
