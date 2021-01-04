@@ -89,7 +89,7 @@ module Engine
         corporations = CORPORATIONS.dup
 
         # Remove Coal Railway C4 (SPB), Regional Railway BH and SB
-        corporations.reject! { |c| %w[SPB SB BH].include?(c['sym']) } if option_cislethania
+        corporations.reject! { |c| %w[SPB SB BH].include?(c[:sym]) } if option_cislethania
 
         corporations.map do |corporation|
           Corporation.new(
@@ -106,10 +106,10 @@ module Engine
         if option_cislethania
           if @players.size == 2
             # Remove Pre-Staatsbahn U1 and U2
-            minors.reject! { |m| %w[U1 U2].include?(m['sym']) }
+            minors.reject! { |m| %w[U1 U2].include?(m[:sym]) }
           else
             # Remove Pre-Staatsbahn U2, and move home location for U1
-            minors.reject! { |m| %w[U2].include?(m['sym']) }
+            minors.reject! { |m| %w[U2].include?(m[:sym]) }
             minors.map! do |m|
               next m unless m['sym'] == 'U1'
 
@@ -181,13 +181,13 @@ module Engine
       end
 
       def location_name(coord)
+        return super unless option_cislethania
+
         unless @location_names
           @location_names = LOCATION_NAMES.dup
-          if option_cislethania
-            location_names['F25'] = 'Kronstadt'
-            location_names['G12'] = 'Budapest'
-            location_names['I10'] = 'Bosnien'
-          end
+          @location_names['F25'] = 'Kronstadt'
+          @location_names['G12'] = 'Budapest'
+          @location_names['I10'] = 'Bosnien'
         end
         @location_names[coord]
       end
