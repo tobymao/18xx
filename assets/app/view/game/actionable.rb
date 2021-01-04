@@ -58,8 +58,7 @@ module View
           action.user = @user['id']
         end
 
-        game = @game.process_action(action)
-        raise game.exception if game.exception
+        game = @game.process_action(action).maybe_raise!
 
         @game_data[:actions] << action.to_h
         store(:game_data, @game_data, skip: true)

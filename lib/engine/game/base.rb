@@ -625,6 +625,12 @@ module Engine
         self
       end
 
+      def maybe_raise!
+        raise @exception if @exception
+
+        self
+      end
+
       def store_player_info
         @players.each do |p|
           p.history << PlayerInfo.new(@round.class.short_name, turn, @round.round_num, player_value(p))
