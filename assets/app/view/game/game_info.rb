@@ -60,10 +60,10 @@ module View
         children << h(:p, "Implemented by #{@game.class::GAME_IMPLEMENTER}") if @game.class::GAME_IMPLEMENTER
         if @game.class::GAME_RULES_URL.is_a?(Hash)
           @game.class::GAME_RULES_URL.each do |desc, url|
-            children << h(:p, [h(:a, { attrs: { href: url } }, desc)])
+            children << h(:p, [h(:a, { attrs: { href: url, target: '_blank' } }, desc)])
           end
         else
-          children << h(:p, [h(:a, { attrs: { href: @game.class::GAME_RULES_URL } }, 'Rules')])
+          children << h(:p, [h(:a, { attrs: { href: @game.class::GAME_RULES_URL, target: '_blank' } }, 'Rules')])
         end
         if @game.optional_rules.any?
           children << h(:h3, 'Optional Rules Used')
@@ -75,7 +75,7 @@ module View
         end
 
         if @game.class::GAME_INFO_URL
-          children << h(:p, [h(:a, { attrs: { href: @game.class::GAME_INFO_URL } }, 'More info')])
+          children << h(:p, [h(:a, { attrs: { href: @game.class::GAME_INFO_URL, target: '_blank' } }, 'More info')])
         end
 
         children
