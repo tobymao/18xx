@@ -564,7 +564,7 @@ module Engine
           s.transfer(major)
         end
 
-        major.spend(major.cash, @bank)
+        major.spend(major.cash, @bank) if major.cash.positive?
         major.close!
         @log << "#{major.name} closes and its tokens becomes #{@sj.name} tokens"
 
