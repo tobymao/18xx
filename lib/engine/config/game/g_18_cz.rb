@@ -30,28 +30,28 @@ module Engine
             "layout": "pointy",
             "mustSellInBlocks": false,
             "locationNames": {
-                "G15": "Jihlava",
-                "D16": "Hradec Kralove",
-                "B10": "Decin",
-                "B12": "Liberec",
-                "C23": "Opava",
-                "E21": "Opava",
-                "G23": "Hulin",
-                "G11": "Tabor",
-                "I11": "Ceske Budejovice",
-                "F6": "Pilzen",
-                "E9": "Kladno",
-                "B8": "Teplice & Ustid nad Labem",
-                "D26": "Frydland & Frydek",
-                "C7": "Chomutov & Most",
-                "E11": "Praha",
-                "D2": "Cheb",
-                "D4": "Karolvy Vary",
-                "E15": "Pardubice",
-                "C25": "Ostrava",
-                "F22": "Pferov",
-                "G19": "Brno",
-                "I9": "Strakonice"
+                "G16": "Jihlava",
+                "D17": "Hradec Kralove",
+                "B11": "Decin",
+                "B13": "Liberec",
+                "C24": "Opava",
+                "E22": "Opava",
+                "G24": "Hulin",
+                "G12": "Tabor",
+                "I12": "Ceske Budejovice",
+                "F7": "Pilzen",
+                "E10": "Kladno",
+                "B9": "Teplice & Ustid nad Labem",
+                "D27": "Frydland & Frydek",
+                "C8": "Chomutov & Most",
+                "E12": "Praha",
+                "D3": "Cheb",
+                "D5": "Karolvy Vary",
+                "E16": "Pardubice",
+                "C26": "Ostrava",
+                "F23": "Pferov",
+                "G20": "Brno",
+                "I10": "Strakonice"
             },
             "tiles": {
                 "1": 1,
@@ -437,8 +437,8 @@ module Engine
                         40
                     ],
                     "coordinates": [
-                        "A7",
-                        "B4"
+                        "A8",
+                        "B5"
                     ],
                     "color": "red",
                     "type": "large"
@@ -454,8 +454,8 @@ module Engine
                         40
                     ],
                     "coordinates": [
-                        "A21",
-                        "B18"
+                        "A22",
+                        "B19"
                     ],
                     "color": "black",
                     "type": "large"
@@ -471,8 +471,8 @@ module Engine
                         40
                     ],
                     "coordinates": [
-                        "F2",
-                        "H4"
+                        "F3",
+                        "H5"
                     ],
                     "color": "blue",
                     "type": "large"
@@ -488,8 +488,8 @@ module Engine
                         40
                     ],
                     "coordinates": [
-                        "J14",
-                        "I17"
+                        "J15",
+                        "I18"
                     ],
                     "color": "orange",
                     "type": "large"
@@ -505,8 +505,8 @@ module Engine
                         40
                     ],
                     "coordinates": [
-                        "G27",
-                        "I23"
+                        "G28",
+                        "I24"
                     ],
                     "color": "purple",
                     "type": "large"
@@ -529,7 +529,7 @@ module Engine
                         100
                     ],
                     "city": 1,
-                    "coordinates": "E11",
+                    "coordinates": "E12",
                     "color": "grey",
                     "type": "medium"
                 },
@@ -551,7 +551,7 @@ module Engine
                         100
                     ],
                     "city": 0,
-                    "coordinates": "E11",
+                    "coordinates": "E12",
                     "color": "yellow",
                     "text_color": "black",
                     "type": "medium"
@@ -575,7 +575,7 @@ module Engine
                     ],
                     "color": "gold",
                     "text_color": "black",
-                    "coordinates": "B8",
+                    "coordinates": "B9",
                     "type": "medium"
                 },
                 {
@@ -595,7 +595,7 @@ module Engine
                         40,
                         100
                     ],
-                    "coordinates": "D2",
+                    "coordinates": "D3",
                     "color": "brightGreen",
                     "text_color": "black",
                     "type": "medium"
@@ -617,7 +617,7 @@ module Engine
                         40,
                         100
                     ],
-                    "coordinates": "G19",
+                    "coordinates": "G20",
                     "color": "lightBlue",
                     "type": "medium"
                 },
@@ -637,7 +637,7 @@ module Engine
                         40,
                         100
                     ],
-                    "coordinates": "D4",
+                    "coordinates": "D5",
                     "color": "white",
                     "text_color": "black",
                     "type": "small"
@@ -658,7 +658,7 @@ module Engine
                         40,
                         100
                     ],
-                    "coordinates": "C25",
+                    "coordinates": "C26",
                     "color": "lightRed",
                     "text_color": "black",
                     "type": "small"
@@ -679,7 +679,7 @@ module Engine
                         40,
                         100
                     ],
-                    "coordinates": "E15",
+                    "coordinates": "E16",
                     "color": "orange",
                     "text_color": "black",
                     "type": "small"
@@ -700,7 +700,7 @@ module Engine
                         40,
                         100
                     ],
-                    "coordinates": "F22",
+                    "coordinates": "F23",
                     "color": "mintGreen",
                     "text_color": "black",
                     "type": "small"
@@ -721,7 +721,7 @@ module Engine
                         40,
                         100
                     ],
-                    "coordinates": "I9",
+                    "coordinates": "I10",
                     "color": "turquoise",
                     "type": "small"
                 }
@@ -1163,200 +1163,205 @@ module Engine
                 }
             ],
             "hexes": {
+                "gray": {
+                    "town=revenue:10;path=a:4,b:_0;path=a:5,b:_0": [
+                        "D1"
+                    ]
+                },
                 "white": {
                     "": [
-                        "A11",
-                        "B24",
-                        "C15",
-                        "D6",
-                        "D8",
-                        "D18",
-                        "D20",
-                        "D22",
-                        "D24",
-                        "E7",
-                        "E17",
-                        "E19",
-                        "E23",
-                        "E25",
-                        "F8",
-                        "F14",
-                        "F16",
-                        "F18",
-                        "F24",
-                        "G7",
-                        "H8",
-                        "H12",
-                        "H20"
+                        "A12",
+                        "B25",
+                        "C16",
+                        "D7",
+                        "D9",
+                        "D19",
+                        "D21",
+                        "D23",
+                        "D25",
+                        "E8",
+                        "E18",
+                        "E20",
+                        "E24",
+                        "E26",
+                        "F9",
+                        "F15",
+                        "F17",
+                        "F19",
+                        "F25",
+                        "G8",
+                        "H9",
+                        "H13",
+                        "H21"
                     ],
                     "border=edge:5,type:impassible": [
-                        "H22",
-                        "I13"
+                        "H23",
+                        "I14"
                     ],
                     "border=edge:4,type:impassible": [
-                        "J12",
-                        "I21",
-                        "G25"
+                        "J13",
+                        "I22",
+                        "G26"
                     ],
                     "border=edge:2,type:impassible": [
-                        "B22"
+                        "B23"
                     ],
                     "border=edge:1,type:impassible": [
-                        "F4",
-                        "I19"
+                        "F5",
+                        "I20"
                     ],
                     "border=edge:2,type:impassible;border=edge:5,type:impassible": [
-                        "G3"
+                        "G4"
                     ],
                     "border=edge:0,type:impassible": [
-                        "G5",
-                        "H18",
-                        "H24"
+                        "G6",
+                        "H19",
+                        "H25"
                     ],
                     "upgrade=cost:40,terrain:mountain": [
-                        "A15",
-                        "C21",
-                        "I7"
+                        "A16",
+                        "C22",
+                        "I8"
                     ],
                     "upgrade=cost:40,terrain:mountain;border=edge:1,type:impassible;border=edge:3,type:impassible": [
-                        "B20"
+                        "B21"
                     ],
                     "upgrade=cost:40,terrain:mountain;border=edge:3,type:impassible": [
-                        "C3"
+                        "C4"
                     ],
                     "upgrade=cost:40,terrain:mountain;border=edge:3,type:impassible;border=edge:1,type:impassible": [
-                        "B6"
+                        "B7"
                     ],
                     "upgrade=cost:20,terrain:mountain": [
-                        "A13",
-                        "D28",
-                        "E27",
-                        "E5",
-                        "H14",
-                        "G13"
+                        "A14",
+                        "D29",
+                        "E28",
+                        "E6",
+                        "H15",
+                        "G14"
                     ],
                     "upgrade=cost:20,terrain:mountain;border=edge:5,type:impassible": [
-                        "F26"
+                        "F27"
                     ],
                     "town=revenue:0;upgrade=cost:40,terrain:mountain;border=edge:2,type:impassible": [
-                        "C5"
+                        "C6"
                     ],
                     "town=revenue:0;upgrade=cost:20,terrain:mountain": [
-                        "J10",
-                        "G17"
+                        "J11",
+                        "G18"
                     ],
                     "town=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:5,type:impassible": [
-                        "H16"
+                        "H17"
                     ],
                     "town=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:1,type:impassible": [
-                        "H6"
+                        "H7"
                     ],
                     "town=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:4,type:impassible": [
-                        "B16"
+                        "B17"
                     ],
                     "city=revenue:0;upgrade=cost:20,terrain:mountain": [
-                        "G15"
+                        "G16"
                     ],
                     "upgrade=cost:10,terrain:water": [
-                        "D10",
-                        "D12",
-                        "D14",
-                        "G9",
-                        "H10"
+                        "D11",
+                        "D13",
+                        "D15",
+                        "G10",
+                        "H11"
                     ],
                     "upgrade=cost:10,terrain:water;border=edge:3,type:impassible": [
-                        "C17"
+                        "C18"
                     ],
                     "town=revenue:0;upgrade=cost:10,terrain:water": [
-                        "F10",
-                        "C9",
-                        "C11"
+                        "F11",
+                        "C10",
+                        "C12"
                     ],
                     "town=revenue:0;upgrade=cost:10,terrain:water;border=edge:1,type:impassible": [
-                        "A9"
+                        "A10"
                     ],
                     "city=revenue:0;upgrade=cost:10,terrain:water": [
-                        "D16",
-                        "E15"
+                        "D17",
+                        "E16"
                     ],
                     "city=revenue:0": [
-                        "B10",
-                        "C23",
-                        "E21",
-                        "G23",
-                        "G11",
-                        "E9",
-                        "D2",
-                        "D4",
-                        "F22"
+                        "B11",
+                        "C24",
+                        "E22",
+                        "G24",
+                        "G12",
+                        "E10",
+                        "D3",
+                        "D5",
+                        "F23"
                     ],
                     "city=revenue:0;label=Y": [
-                        "B12",
-                        "I11",
-                        "F6",
-                        "C25",
-                        "G19",
-                        "I9"
+                        "B13",
+                        "I12",
+                        "F7",
+                        "C26",
+                        "G20",
+                        "I10"
                     ],
                     "town=revenue:0": [
-                        "C13",
-                        "F12",
-                        "G21",
-                        "C27"
+                        "C14",
+                        "F13",
+                        "G22",
+                        "C28"
                     ],
                     "town=revenue:0;border=edge:0,type:impassible": [
-                        "E3"
+                        "E4"
                     ],
                     "town=revenue:0;border=edge:5,type:impassible": [
-                        "E1"
+                        "E2"
                     ],
                     "town=revenue:0;border=edge:2,type:impassible": [
-                        "C19"
+                        "C20"
                     ],
                     "town=revenue:0;town=revenue:0": [
-                        "E13",
-                        "F20",
-                        "B14"
+                        "E14",
+                        "F21",
+                        "B15"
                     ],
                     "city=revenue:20;city=revenue:20;path=a:5,b:_0;path=a:3,b:_1;label=P;upgrade=cost:10,terrain:water": [
-                        "E11"
+                        "E12"
                     ],
                     "label=SX;border=edge:0,type:impassible;border=edge:5,type:impassible;border=edge:4,type:impassible": [
-                        "A7",
-                        "B4"
+                        "A8",
+                        "B5"
                     ],
                     "label=PR;border=edge:0,type:impassible;border=edge:5,type:impassible;border=edge:4,type:impassible;border=edge:1,type:impassible": [
-                        "B18"
+                        "B19"
                     ],
                     "label=PR;border=edge:0,type:impassible;border=edge:5,type:impassible": [
-                        "A21"
+                        "A22"
                     ],
                     "label=BY;border=edge:2,type:impassible;border=edge:3,type:impassible;border=edge:4,type:impassible": [
-                        "H4"
+                        "H5"
                     ],
                     "label=BY;border=edge:2,type:impassible;border=edge:3,type:impassible;border=edge:4,type:impassible;border=edge:5,type:impassible": [
-                        "F2"
+                        "F3"
                     ],
                     "label=kk;border=edge:2,type:impassible;border=edge:3,type:impassible;border=edge:4,type:impassible": [
-                        "I17"
+                        "I18"
                     ],
                     "label=kk;border=edge:1,type:impassible;border=edge:2,type:impassible": [
-                        "J14"
+                        "J15"
                     ],
                     "label=Ug;border=edge:1,type:impassible;border=edge:2,type:impassible;border=edge:3,type:impassible": [
-                        "I23"
+                        "I24"
                     ],
                     "label=Ug;border=edge:1,type:impassible;border=edge:2,type:impassible": [
-                        "G27"
+                        "G28"
                     ]
                 },
                 "yellow": {
                     "city=revenue:0;city=revenue:0;label=OO": [
-                        "D26",
-                        "C7"
+                        "D27",
+                        "C8"
                     ],
                     "city=revenue:0;city=revenue:0;label=OO;upgrade=cost:10,terrain:water;border=edge:2,type:impassible": [
-                        "B8"
+                        "B9"
                     ]
                 }
             },
