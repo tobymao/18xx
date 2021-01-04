@@ -193,7 +193,7 @@ module Engine
       def nationalize!(corporation)
         @log << "#{corporation.name} is nationalized"
 
-        repay_loan(corporation, corporation.loan.first) while corporation.cash > @loan_value && corporation.loans.any?
+        repay_loan(corporation, corporation.loans.first) while corporation.cash > @loan_value && corporation.loans.any?
 
         # Move once automatically
         price = corporation.share_price.price
@@ -444,6 +444,8 @@ module Engine
       end
 
       def round_end
+        return Round::Operating if phase.name.to_i >= 8
+
         Round::G1867::Merger
       end
 
