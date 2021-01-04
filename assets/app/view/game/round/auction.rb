@@ -40,6 +40,7 @@ module View
               render_turn_bid,
               render_show_button,
               *render_companies,
+              *render_minors,
               *render_corporations,
               render_players,
             ].compact)
@@ -180,6 +181,37 @@ module View
             ])
         end
 
+        def render_minors
+          return [] unless @current_actions.include?('bid')
+
+          props = {
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'top',
+            },
+          }
+
+          @step.available.select(&:minor?).map do |minor|
+            children = [h(Corporation, corporation: minor)]
+            children << render_minor_choose_input(minor) if @selected_corporation == minor
+            h(:div, props, children)
+          end
+        end
+
+        def render_minor_choose_input(minor)
+          choose = lambda do
+            hide!
+            process_action(Engine::Action::Bid.new(@current_entity,
+                                                   minor: minor,
+                                                   price: 0))
+            store(:selected_corporation, nil, skip: true)
+          end
+
+          minor_actions = [h(:button, { on: { click: choose } }, 'Choose')]
+
+          h(:div, { style: { textAlign: 'center', margin: '1rem' } }, minor_actions)
+        end
+
         def render_corporations
           return [] if !@current_actions.include?('bid') && !@current_actions.include?('par')
 
@@ -195,13 +227,28 @@ module View
           @step.available.select(&:corporation?).map do |corporation|
             children = []
             children << h(Corporation, corporation: corporation)
-            children << render_ipo_input if @selected_corporation == corporation
+            children << render_ipo_input if @selected_corporation == corporation && !corporation.ipoed
+            children << render_corp_choose_input if @selected_corporation == corporation && corporation.ipoed
             h(:div, props, children)
           end.compact
         end
 
         def render_ipo_input
           h('div.margined_bottom', { style: { width: '20rem' } }, [h(Par, corporation: @selected_corporation)])
+        end
+
+        def render_corp_choose_input
+          choose = lambda do
+            hide!
+            process_action(Engine::Action::Bid.new(@current_entity,
+                                                   corporation: @selected_corporation,
+                                                   price: 0))
+            store(:selected_corporation, nil, skip: true)
+          end
+
+          corp_actions = [h(:button, { on: { click: choose } }, 'Choose')]
+
+          h(:div, { style: { textAlign: 'center', margin: '1rem' } }, corp_actions)
         end
 
         def hide!
