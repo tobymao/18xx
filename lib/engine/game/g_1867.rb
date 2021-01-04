@@ -193,7 +193,7 @@ module Engine
       def nationalize!(corporation)
         @log << "#{corporation.name} is nationalized"
 
-        repay_loan(corporation, corporation.loans.first) while corporation.cash > @loan_value && corporation.loans.any?
+        repay_loan(corporation, corporation.loans.first) while corporation.cash > @loan_value && !corporation.loans.empty?
 
         # Move once automatically
         price = corporation.share_price.price
