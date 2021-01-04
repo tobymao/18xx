@@ -24,6 +24,8 @@ module Engine
 
       load_from_json(Config::Game::G18SJ::JSON)
 
+      DEV_STAGE = :alpha
+
       GAME_LOCATION = 'Sweden'
       GAME_RULES_URL = 'https://drive.google.com/file/d/1WgvqSp5HWhrnCAhAlLiTIe5oXfYtnVt9/view?usp=drivesdk'
       GAME_DESIGNER = 'Örjan Wennman'
