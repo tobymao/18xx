@@ -118,7 +118,7 @@ module View
 
         discountable_trains = @depot.discountable_trains_for(@corporation)
 
-        if discountable_trains.any?
+        if discountable_trains.any? && step.discountable_trains_allowed?(@corporation)
           children << h(:h3, h3_props, 'Exchange Trains')
 
           discountable_trains.each do |train, discount_train, variant, price|

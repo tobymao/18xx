@@ -46,11 +46,15 @@ module Engine
         clear_cache!
       end
 
+      def skip_entity?(entity)
+        entity.closed?
+      end
+
       def next_entity!
         return if @entity_index == @entities.size - 1
 
         next_entity_index!
-        return next_entity! if @entities[@entity_index].closed?
+        return next_entity! if skip_entity?(@entities[@entity_index])
 
         @steps.each(&:unpass!)
         @steps.each(&:setup)

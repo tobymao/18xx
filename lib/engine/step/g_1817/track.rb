@@ -2,11 +2,13 @@
 
 require_relative '../tracker'
 require_relative '../track'
+require_relative '../upgrade_track_max_exits'
 
 module Engine
   module Step
     module G1817
       class Track < Track
+        include UpgradeTrackMaxExits
         # Special track lays act as normal lays for 1817
         attr_accessor :laid_track
 
@@ -31,17 +33,6 @@ module Engine
           psm.remove_ability(ability)
           @game.log << "#{psm.name} closes as it can no longer be used"
           psm.close!
-        end
-
-        def upgradeable_tiles(_entity, hex)
-          return super if hex.tile.color != :green || hex.tile.cities.none?
-
-          tiles = super
-
-          # When upgrading normal cities to brown, players must use tiles with as many exits as will fit.
-          # Find maximum number of exits
-          max_edges = tiles.map { |t| t.edges.length }.max
-          tiles.select { |t| t.edges.length == max_edges }
         end
       end
     end

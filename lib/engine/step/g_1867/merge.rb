@@ -33,6 +33,12 @@ module Engine
           'Merge'
         end
 
+        def pass_description
+          return 'Done Adding Corporations' if @merging
+
+          super
+        end
+
         def can_convert?(entity)
           entity.share_price.types.include?(:convert_range) && entity.type == :minor
         end
