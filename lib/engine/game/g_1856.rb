@@ -466,7 +466,7 @@ module Engine
         @log << "-- #{major.name} merges into #{national.name} --"
         # Trains are transferred
         major.trains.dup.each do |t|
-          national.buy_train(t, :free)
+          buy_train(national, t, :free)
         end
         # Leftover cash is transferred
         major.spend(major.cash, national) if major.cash.positive?

@@ -81,7 +81,7 @@ module Engine
         neutral.owner = @bank
         @free_train = train_by_id('2+-4')
         @free_train.buyable = false
-        neutral.buy_train(@free_train, :free)
+        buy_train(neutral, @free_train, :free)
 
         @or = 0
         @last_or = @optional_rules&.include?(:or_11) ? 11 : 10
@@ -193,9 +193,9 @@ module Engine
 
       def or_set_finished
         case @turn
-        when 3 then rust('2+', 20)
-        when 4 then rust('3+', 30)
-        when 5 then rust('4+', 60)
+        when 3 then rust_all('2+', 20)
+        when 4 then rust_all('3+', 30)
+        when 5 then rust_all('4+', 60)
         end
       end
 
@@ -298,7 +298,7 @@ module Engine
 
       def add_free_train_and_close_company(corporation, company)
         @free_train.buyable = true
-        corporation.buy_train(@free_train, :free)
+        buy_train(corporation, @free_train, :free)
         @free_train.buyable = false
         company.close!
         @log << "#{corporation.name} exchanges #{company.name} for a free non sellable #{@free_train.name} train"
@@ -332,7 +332,7 @@ module Engine
 
       private
 
-      def rust(train, salvage)
+      def rust_all(train, salvage)
         rusted_trains = trains.select { |t| !t.rusted && t.name == train }
         return if rusted_trains.empty?
 
@@ -342,7 +342,7 @@ module Engine
             @bank.spend(salvage, t.owner)
             owners[t.owner.name] += 1
           end
-          t.rust!
+          rust(t)
         end
 
         @log << "-- Event: #{rusted_trains.map(&:name).uniq} trains rust " \

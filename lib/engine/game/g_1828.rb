@@ -394,7 +394,7 @@ module Engine
           train = @depot.upcoming[1]
           train.buyable = false
           train.rusts_on = nil
-          minor.buy_train(train, :free)
+          buy_train(minor, train, :free)
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token, free: true)
         end

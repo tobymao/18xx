@@ -147,7 +147,7 @@ module Engine
         # The DSNG comes with a 2P train
         train = @depot.upcoming[0]
         train.buyable = false
-        dsng.buy_train(train, :free)
+        buy_train(dsng, train, :free)
       end
 
       def init_share_pool

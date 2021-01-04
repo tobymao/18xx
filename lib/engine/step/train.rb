@@ -84,7 +84,7 @@ module Engine
         @game.flush_log!
 
         try_take_loan(entity, price)
-        entity.buy_train(train, price)
+        @game.buy_train(entity, train, price)
         pass! unless can_buy_train?(entity)
       end
 
