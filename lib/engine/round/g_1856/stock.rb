@@ -16,7 +16,7 @@ module Engine
         end
 
         def start_entity
-          players_unvested_holdings[current_entity] = nil
+          players_unvested_holdings[@entities[@entity_index]] = nil
           super
         end
       end
