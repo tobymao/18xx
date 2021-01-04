@@ -306,7 +306,7 @@ describe 'Assets' do
          'corporate_share_sale',
          ['Denver Pacific Railway',
           'Sell 1 ($150)',
-          'Durango and Silverton Narrow Gauge',
+          'Silverton Narrow Gauge',
           'Sell 1 ($120)']],
         [nil, 'pass', ['18CO: Operating Round 6.2 (of 2) - Game Over - Bank Broken']]]],
       ['1860',
