@@ -49,6 +49,8 @@ module Engine
       # They're also 5% shares if there are more than 20 shares. It's weird.
       NATIONAL_MAX_SHARE_PERCENT_AWARDED = 200
 
+      SELL_MOVEMENT = :down_per_10
+
       GAME_LOCATION = 'Ontario, Canada'
       GAME_RULES_URL = 'http://google.com'
       GAME_DESIGNER = 'Bill Dixon'
@@ -656,7 +658,11 @@ module Engine
         # Now that shares and president are determined, it's time to do presidential things
         national_token_swap
         # Close corporations now that trains, cash, rights, and tokens have been stripped
-        @nationalized_corps.each { |c| close_corporation(c) }
+        @nationalized_corps.each do |c|
+          close_corporation(c)
+          # close_corporation does not close the corp from continuing acting in the round so we need close!
+          c.close!
+        end
 
         # Reduce the nationals train holding limit to the real value
         # (It was artificially high to avoid forced discard triggering early)
