@@ -27,9 +27,9 @@ module Engine
 
           @game.transfer_home_token(buyer, minor)
 
-          transfer_trains(buyer, minor) if minor.trains.any?
+          transfer_trains(buyer, minor)
 
-          transfer_money(buyer, minor) if minor.cash.positive?
+          transfer_money(buyer, minor)
 
           minor.close!
 
@@ -42,15 +42,20 @@ module Engine
         # Any trains in minor are transfered, and made buyable
         # Rule 7.3 allows train to be reused during the OR.
         def transfer_trains(buyer, minor)
+          return unless minor.trains.any?
+
           minor.trains.each do |t|
             t.operated = false
             t.buyable = true
           end
-          trains_transfered = minor.transfer(:trains, buyer).map(&:name)
-          @log << "#{buyer.name} receives the trains: #{trains_transfered}"
+
+          transferred = @game.transfer(:trains, minor, buyer)
+          @log << "#{buyer.name} receives the trains: #{transferred.map(&:name).join(', ')}"
         end
 
         def transfer_money(buyer, minor)
+          return unless minor.cash.positive?
+
           @log << "#{buyer.name} receives treasury: #{@game.format_currency(minor.cash)}"
           minor.spend(minor.cash, buyer)
         end
