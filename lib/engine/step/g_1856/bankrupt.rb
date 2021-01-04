@@ -20,7 +20,6 @@ module Engine
           player = action.entity
 
           @log << "-- #{player.name} goes bankrupt --"
-          # TODO: Implement
 
           player.shares_by_corporation.each do |corporation, _|
             next unless corporation.share_price # if a corporation has not parred
@@ -34,7 +33,7 @@ module Engine
           end
           @round.recalculate_order if @round.respond_to?(:recalculate_order)
 
-          player.spend(player.cash, @game.bank, check_positive: false) 
+          player.spend(player.cash, @game.bank, check_positive: false)
 
           @game.declare_bankrupt(player)
         end

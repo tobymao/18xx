@@ -38,13 +38,18 @@ module Engine
           super
         end
 
-        def after_process(_action)
+        def after_process_before_skip(_action)
           # Keep track of last_player for Cash Crisis
           entity = @entities[@entity_index]
           @cash_crisis_player = entity.player
           pay_interest!(entity)
           force_repay_loans!(entity)
           super
+        end
+
+        def skip_steps
+          # We must be careful not to skip through Dividends because the game can end between Route and Dividends
+          super unless @cash_crisis_player&.cash&.negative? || @game.bankrupted
         end
 
         def force_repay_loans!(entity)

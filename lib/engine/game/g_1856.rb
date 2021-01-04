@@ -32,7 +32,7 @@ module Engine
                       brown: '#7b352a')
 
       load_from_json(Config::Game::G1856::JSON)
-      attr_reader :post_nationalization
+      attr_reader :post_nationalization, :bankrupted
       DEV_STAGE = :prealpha
 
       # These plain city hexes upgrade to L tiles in brown
@@ -204,6 +204,8 @@ module Engine
 
         @pre_national_market_prices = {}
         @nationalized_corps = []
+
+        @bankrupted = false
 
         # Is the president of the national a "false" president?
         # A false president gets the presidency with only one share; in this case the president gets
@@ -683,6 +685,11 @@ module Engine
 
         @log << "#{national.name} has #{remaining_tokens} spare #{format_currency(national_token_price)} tokens"
         remaining_tokens.times { national.tokens << Engine::Token.new(@national, price: national_token_price) }
+      end
+
+      def declare_bankrupt(player)
+        @bankrupted = true
+        super
       end
 
       # Called regardless of if president saved or merged corp
