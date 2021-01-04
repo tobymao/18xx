@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 if RUBY_ENGINE == 'opal'
   require_tree '../action'
   require_tree '../round'
@@ -619,6 +618,7 @@ module Engine
         @last_processed_action = action.id
         self
       rescue Engine::GameError => e
+        @actions.pop
         @exception = e
         @broken_action = action
         self
